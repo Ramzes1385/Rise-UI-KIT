@@ -1,0 +1,65 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-dropdown {
+	position: relative;
+
+	&__panel {
+		position: fixed;
+		@include custom-bg(background-color, var(--color-surface));
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-lg);
+		box-shadow: var(--shadow-lg);
+		overflow-y: auto;
+		z-index: 1100;
+		@include interactive;
+
+		// Варианты
+		&--ghost {
+			@include custom-bg(background-color, transparent);
+			border-color: transparent;
+			box-shadow: none;
+
+			@include hover {
+				@include custom-bg(background-color, var(--color-surface-muted));
+			}
+		}
+
+		&--outline {
+			@include custom-bg(background-color, transparent);
+			border-width: 2px;
+		}
+
+		&--shadow {
+			box-shadow: var(--shadow-xl);
+		}
+
+		&--soft {
+			@include custom-bg(background-color, var(--color-primary-soft));
+			border-color: transparent;
+		}
+	}
+}
+
+/* Анимация появления/скрытия dropdown */
+.dropdown-enter-active {
+	transition:
+		opacity 0.15s ease-out,
+		transform 0.15s ease-out;
+}
+
+.dropdown-leave-active {
+	transition:
+		opacity 0.1s ease-in,
+		transform 0.1s ease-in;
+}
+
+.dropdown-enter-from {
+	opacity: 0;
+	transform: translateY(-6px) scaleY(0.95);
+}
+
+.dropdown-leave-to {
+	opacity: 0;
+	transform: translateY(-4px) scaleY(0.98);
+}

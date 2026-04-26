@@ -1,0 +1,118 @@
+.painting-page {
+	padding: 32px 0;
+
+	@include respond-to('md') {
+		padding: 64px 0;
+	}
+
+	&__container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 16px;
+
+		@include respond-to('md') {
+			padding: 0 20px;
+		}
+
+		@include respond-to('xl') {
+			max-width: 1400px;
+		}
+
+		@include respond-to('xxl') {
+			max-width: 1800px;
+		}
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 32px;
+		align-items: start;
+
+		@include respond-to('md') {
+			grid-template-columns: 1fr 1fr;
+			gap: 48px;
+		}
+
+		@include respond-to('lg') {
+			gap: 64px;
+		}
+	}
+
+	&__image-wrapper {
+		border-radius: var(--border-radius-base);
+		overflow: hidden;
+		box-shadow: var(--shadow-lg);
+	}
+
+	&__title {
+		font-size: 24px;
+		font-weight: 800;
+		margin-bottom: 12px;
+		color: var(--color-primary);
+
+		@include respond-to('md') {
+			font-size: 36px;
+			margin-bottom: 16px;
+		}
+	}
+
+	&__price {
+		font-size: 22px;
+		font-weight: 700;
+		color: var(--color-accent);
+		margin-bottom: 24px;
+
+		@include respond-to('md') {
+			font-size: 28px;
+			margin-bottom: 32px;
+		}
+	}
+
+	&__subtitle {
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 12px;
+		color: var(--color-primary);
+
+		@include respond-to('md') {
+			font-size: 20px;
+			margin-bottom: 16px;
+		}
+	}
+
+	&__description {
+		margin-bottom: 24px;
+		line-height: 1.6;
+		font-size: 14px;
+
+		@include respond-to('md') {
+			margin-bottom: 32px;
+			font-size: 16px;
+		}
+	}
+
+	&__specs {
+		margin-bottom: 32px;
+
+		@include respond-to('md') {
+			margin-bottom: 40px;
+		}
+	}
+
+	&__specs-list {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+
+		li {
+			font-size: 14px;
+
+			@include respond-to('md') {
+				font-size: 16px;
+			}
+		}
+	}
+}

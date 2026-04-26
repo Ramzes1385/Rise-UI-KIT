@@ -1,0 +1,97 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-pin {
+	display: flex;
+	gap: sz(12px);
+	justify-content: center;
+
+	&--disabled {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	&__input {
+		width: sz(48px);
+		height: sz(56px);
+		text-align: center;
+		font-size: sz(24px);
+		font-weight: 700;
+		border: 2px solid var(--color-border);
+		border-radius: sz(8px);
+		@include custom-bg(background-color, var(--color-white));
+		@include custom-text(color, var(--color-primary));
+		@include interactive;
+
+		@include hover {
+			border-color: var(--color-text-muted);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		@include focus {
+			outline: none;
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-surface));
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+		}
+
+		@include active {
+			transform: scale(0.95);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+	}
+
+	&--error &__input {
+		border-color: var(--color-error);
+	}
+
+	// Варианты
+	&--ghost {
+		&__input {
+			@include custom-bg(background-color, transparent);
+			border-color: transparent;
+			box-shadow: none;
+		}
+
+		@include hover {
+			&__input {
+				@include custom-bg(background-color, var(--color-surface-muted));
+			}
+		}
+	}
+
+	&--outline {
+		&__input {
+			@include custom-bg(background-color, transparent);
+			border-width: 2px;
+		}
+	}
+
+	&--shadow {
+		&__input {
+			box-shadow: var(--shadow-lg);
+		}
+
+		@include hover {
+			&__input {
+				box-shadow: var(--shadow-xl);
+			}
+		}
+	}
+
+	&--soft {
+		&__input {
+			@include custom-bg(background-color, var(--color-primary-soft));
+			@include custom-text(color, var(--color-primary));
+			border-color: transparent;
+		}
+
+		@include hover {
+			&__input {
+				@include custom-bg(background-color, var(--color-primary-soft-hover));
+			}
+		}
+	}
+}

@@ -1,0 +1,37 @@
+.catalog-page {
+	padding: 32px 0;
+
+	@include respond-to('md') {
+		padding: 64px 0;
+	}
+
+	&__container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 16px;
+
+		@include respond-to('md') {
+			padding: 0 20px;
+		}
+
+		@include respond-to('xl') {
+			max-width: 1400px;
+		}
+
+		@include respond-to('xxl') {
+			max-width: 1800px;
+		}
+	}
+
+	&__title {
+		font-size: 28px;
+		font-weight: 800;
+		color: var(--color-primary);
+		margin-bottom: 24px;
+
+		@include respond-to('md') {
+			font-size: 36px;
+			margin-bottom: 48px;
+		}
+	}
+}

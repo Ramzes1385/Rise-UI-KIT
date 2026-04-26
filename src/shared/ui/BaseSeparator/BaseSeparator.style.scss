@@ -1,0 +1,81 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-separator {
+	display: flex;
+
+	@include custom-text(color, var(--color-text));
+
+	/* Горизонтальный */
+	&--horizontal {
+		flex-direction: row;
+		align-items: center;
+		width: 100%;
+	}
+
+	/* Вертикальный */
+	&--vertical {
+		flex-direction: column;
+		align-items: center;
+		height: 100%;
+		min-height: 24px;
+	}
+
+	/* Линия */
+	&__line {
+		flex: 1;
+		@include custom-bg(background-color, var(--color-border));
+		@include transition(background-color);
+	}
+
+	&--horizontal &__line {
+		height: var(--sep-thickness, 1px);
+		min-width: 0;
+	}
+
+	&--vertical &__line {
+		width: var(--sep-thickness, 1px);
+		min-height: 0;
+	}
+
+	/* Пунктир — горизонтальный */
+	&--dashed.base-separator--horizontal &__line {
+		background: repeating-linear-gradient(
+			90deg,
+			var(--color-border) 0,
+			var(--color-border) 8px,
+			transparent 8px,
+			transparent 14px
+		);
+		background-color: transparent;
+	}
+
+	/* Пунктир — вертикальный */
+	&--dashed.base-separator--vertical &__line {
+		background: repeating-linear-gradient(
+			180deg,
+			var(--color-border) 0,
+			var(--color-border) 8px,
+			transparent 8px,
+			transparent 14px
+		);
+		background-color: transparent;
+	}
+
+	/* Контент между линиями */
+	&__content {
+		padding: var(--sep-pad-y, 10px) var(--sep-pad-x, 20px);
+		font-size: sz(13px);
+		font-weight: 500;
+		@include custom-text(color, var(--color-text-muted));
+		white-space: nowrap;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	&--vertical &__content {
+		padding: var(--sep-pad-x, 20px) var(--sep-pad-y, 10px);
+	}
+}

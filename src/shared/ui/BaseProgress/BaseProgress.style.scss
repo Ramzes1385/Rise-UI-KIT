@@ -1,0 +1,279 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-progress {
+	position: relative;
+	display: flex;
+	align-items: center;
+
+	@include custom-text(color, var(--color-text));
+
+	/* ===== Линейный ===== */
+	&--line {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	&__track {
+		width: 100%;
+		background-color: var(--color-surface-muted);
+		border-radius: var(--border-radius-full);
+		overflow: visible;
+	}
+
+	&__fill {
+		height: 100%;
+		border-radius: var(--border-radius-full);
+		@include transition(width);
+		position: relative;
+	}
+
+	&__tooltip {
+		position: absolute;
+		right: 0;
+		bottom: calc(100% + 6px);
+		transform: translateX(50%);
+		padding: 2px 6px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 700;
+		line-height: 1.4;
+		white-space: nowrap;
+		color: #ffffff;
+		background-color: var(--color-accent);
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border: 4px solid transparent;
+			border-top-color: var(--color-accent);
+		}
+	}
+
+	/* Размеры линейного */
+	.base-progress--line.base-progress--xs &__track {
+		height: 4px;
+	}
+
+	.base-progress--line.base-progress--sm &__track {
+		height: 6px;
+	}
+
+	.base-progress--line.base-progress--md &__track {
+		height: 10px;
+	}
+
+	.base-progress--line.base-progress--lg &__track {
+		height: 16px;
+	}
+
+	/* ===== Круговой ===== */
+	&--circle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__svg {
+		transform: rotate(-90deg);
+	}
+
+	&__track-circle {
+		stroke: var(--color-surface-muted);
+	}
+
+	&__fill-circle {
+		@include transition(stroke-dashoffset);
+	}
+
+	&__circle-label {
+		position: absolute;
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--color-text);
+	}
+
+	/* Размеры кругового */
+	.base-progress--circle.base-progress--xs &__svg {
+		width: 48px;
+		height: 48px;
+	}
+
+	.base-progress--circle.base-progress--sm &__svg {
+		width: 72px;
+		height: 72px;
+	}
+
+	.base-progress--circle.base-progress--md &__svg {
+		width: 100px;
+		height: 100px;
+	}
+
+	.base-progress--circle.base-progress--lg &__svg {
+		width: 140px;
+		height: 140px;
+	}
+
+	// Варианты
+	&--default {
+		.base-progress__fill,
+		.base-progress__fill-circle {
+			@include custom-bg(background-color, var(--color-accent));
+			@include custom-text(stroke, var(--color-accent));
+		}
+
+		.base-progress__tooltip {
+			@include custom-bg(background-color, var(--color-accent));
+
+			&::after {
+				@include custom-text(border-top-color, var(--color-accent));
+			}
+		}
+	}
+
+	&--ghost {
+		opacity: 0.6;
+
+		@include hover {
+			opacity: 1;
+		}
+	}
+
+	&--outline {
+		.base-progress__track {
+			background-color: transparent;
+			border: 1px solid var(--color-border);
+		}
+
+		.base-progress__track-circle {
+			stroke: var(--color-border);
+		}
+	}
+
+	&--shadow {
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+	}
+
+	&--soft {
+		.base-progress__track {
+			@include custom-bg(background-color, var(--color-primary-soft));
+		}
+
+		.base-progress__fill,
+		.base-progress__fill-circle {
+			@include custom-bg(background-color, var(--color-primary));
+			@include custom-text(stroke, var(--color-primary));
+		}
+
+		.base-progress__tooltip {
+			@include custom-bg(background-color, var(--color-primary));
+
+			&::after {
+				@include custom-text(border-top-color, var(--color-primary));
+			}
+		}
+	}
+
+	/* ===== Анимация: полоски ===== */
+	&--striped &__fill {
+		background-image: linear-gradient(
+			45deg,
+			rgba(255, 255, 255, 0.15) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(255, 255, 255, 0.15) 50%,
+			rgba(255, 255, 255, 0.15) 75%,
+			transparent 75%,
+			transparent
+		);
+		background-size: 20px 20px;
+		animation: base-progress-stripes 1s linear infinite;
+	}
+
+	/* ===== Анимация: пульс ===== */
+	&--pulse &__fill {
+		animation: base-progress-pulse 2s ease-in-out infinite;
+	}
+
+	&--pulse &__fill-circle {
+		animation: base-progress-pulse-circle 2s ease-in-out infinite;
+	}
+
+	/* ===== Анимация: свечение ===== */
+	&--glow &__fill {
+		box-shadow:
+			0 0 10px currentColor,
+			0 0 20px currentColor;
+		animation: base-progress-glow 2s ease-in-out infinite;
+	}
+
+	/* ===== Неопределённый ===== */
+	.base-progress--indeterminate.base-progress--line &__track {
+		overflow: hidden;
+	}
+
+	.base-progress--indeterminate.base-progress--line &__fill {
+		width: 40% !important;
+		animation: base-progress-indeterminate 1.5s ease-in-out infinite;
+	}
+}
+
+@keyframes base-progress-stripes {
+	0% {
+		background-position: 20px 0;
+	}
+
+	100% {
+		background-position: 0 0;
+	}
+}
+
+@keyframes base-progress-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.6;
+	}
+}
+
+@keyframes base-progress-pulse-circle {
+	0%,
+	100% {
+		opacity: 1;
+		filter: none;
+	}
+
+	50% {
+		opacity: 0.7;
+		filter: drop-shadow(0 0 4px currentColor);
+	}
+}
+
+@keyframes base-progress-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 5px currentColor;
+	}
+
+	50% {
+		box-shadow:
+			0 0 15px currentColor,
+			0 0 30px currentColor;
+	}
+}
+
+@keyframes base-progress-indeterminate {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	100% {
+		transform: translateX(350%);
+	}
+}

@@ -1,0 +1,263 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-image {
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	@include custom-bg(background-color, var(--color-surface-muted));
+	border: 1px solid var(--color-border);
+	@include interactive;
+
+	&--zoomable {
+		cursor: zoom-in;
+	}
+
+	/* Скругления */
+	&--radius-none {
+		border-radius: 0;
+	}
+
+	&--radius-sm {
+		border-radius: var(--border-radius-base);
+	}
+
+	&--radius-md {
+		border-radius: var(--border-radius-lg);
+	}
+
+	&--radius-lg {
+		border-radius: sz(16px);
+	}
+
+	&--radius-full {
+		border-radius: var(--border-radius-full);
+	}
+
+	&__img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		@include transition(opacity, transform);
+	}
+
+	&--loaded &__img {
+		opacity: 1;
+	}
+
+	/* Режимы заполнения */
+	&--cover &__img {
+		object-fit: cover;
+	}
+
+	&--contain &__img {
+		object-fit: contain;
+		padding: sz(8px);
+	}
+
+	&--fill &__img {
+		object-fit: fill;
+	}
+
+	&--none &__img {
+		object-fit: none;
+	}
+
+	/* Плейсхолдер */
+	&__placeholder {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--color-surface-muted);
+	}
+
+	&__shimmer {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			var(--color-surface-muted) 25%,
+			rgba(228, 228, 231, 0.4) 50%,
+			var(--color-surface-muted) 75%
+		);
+		background-size: 200% 100%;
+		animation: base-image-shimmer 1.5s ease-in-out infinite;
+	}
+
+	/* Ошибка */
+	&__error {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: sz(8px);
+		background-color: var(--color-surface-muted);
+	}
+
+	&__error-icon {
+		font-size: sz(24px);
+		opacity: 0.35;
+	}
+
+	&__error-text {
+		font-size: sz(11px);
+		color: var(--color-text-muted);
+		opacity: 0.6;
+	}
+}
+
+:root[data-theme='dark'] .base-image__shimmer {
+	background: linear-gradient(
+		90deg,
+		var(--color-surface-muted) 25%,
+		rgba(39, 39, 42, 0.6) 50%,
+		var(--color-surface-muted) 75%
+	);
+	background-size: 200% 100%;
+	animation: base-image-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes base-image-shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+/* ===== Зум ===== */
+.base-image__zoom {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.85);
+
+	&-toolbar {
+		position: absolute;
+		top: sz(16px);
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		padding: sz(8px 16px);
+		border-radius: var(--border-radius-full);
+		background-color: rgba(0, 0, 0, 0.6);
+		backdrop-filter: blur(8px);
+	}
+
+	&-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(36px);
+		height: sz(36px);
+		border: none;
+		border-radius: var(--border-radius-full);
+		background-color: rgba(255, 255, 255, 0.15);
+		color: #ffffff;
+		font-size: sz(18px);
+		cursor: pointer;
+		@include transition(background-color, transform, opacity);
+
+		&:hover:not(:disabled) {
+			background-color: rgba(255, 255, 255, 0.3);
+			transform: scale(1.05);
+		}
+
+		&:active:not(:disabled) {
+			transform: scale(0.95);
+		}
+
+		&:disabled {
+			opacity: 0.3;
+			cursor: not-allowed;
+		}
+
+		&--close {
+			margin-left: sz(8px);
+			background-color: rgba(255, 255, 255, 0.1);
+			font-size: sz(14px);
+		}
+	}
+
+	&-scale {
+		min-width: sz(48px);
+		text-align: center;
+		color: #ffffff;
+		font-size: sz(13px);
+		font-weight: 500;
+		user-select: none;
+	}
+
+	&-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		user-select: none;
+	}
+
+	&-img {
+		max-width: 90%;
+		max-height: 85%;
+		object-fit: contain;
+		transform-origin: center center;
+		@include transition(transform);
+		pointer-events: none;
+	}
+	/* ===== Мини-карта ===== */
+	&__minimap {
+		position: absolute;
+		bottom: sz(16px);
+		right: sz(16px);
+		width: sz(120px);
+		height: sz(120px);
+		border: sz(2px) solid rgba(255, 255, 255, 0.3);
+		border-radius: var(--border-radius-base);
+		overflow: hidden;
+		background-color: rgba(0, 0, 0, 0.4);
+		z-index: 10;
+		cursor: pointer;
+	}
+
+	&__minimap-img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		opacity: 0.7;
+		@include transition(transform);
+	}
+
+	&__minimap-viewport {
+		position: absolute;
+		border: sz(2px) solid var(--color-accent);
+		background-color: rgba(249, 115, 22, 0.15);
+		border-radius: 2px;
+		pointer-events: none;
+	}
+}
+
+/* ===== Анимация зума ===== */
+.image-zoom-fade-enter-active,
+.image-zoom-fade-leave-active {
+	transition: opacity 0.3s ease;
+}
+
+.image-zoom-fade-enter-from,
+.image-zoom-fade-leave-to {
+	opacity: 0;
+}

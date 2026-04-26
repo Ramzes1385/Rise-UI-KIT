@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "title": "Индустриальный лев",
+    "description": "Мощный образ льва, выполненный в технике лазерной резки с ручной доводкой. Идеально подходит для лофт-интерьеров.",
+    "price": 15000,
+    "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop",
+    "material": "Сталь 2мм",
+    "size": "60x60 см"
+  },
+  {
+    "id": 2,
+    "title": "Геометрический олень",
+    "description": "Минималистичный дизайн, идеально подходящий для современного интерьера. Символ благородства и грации.",
+    "price": 12000,
+    "imageUrl": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop",
+    "material": "Сталь 2мм",
+    "size": "50x70 см"
+  },
+  {
+    "id": 3,
+    "title": "Карта мира",
+    "description": "Масштабное панно, которое станет центральным элементом вашего офиса или гостиной. Детальная проработка границ.",
+    "price": 25000,
+    "imageUrl": "https://images.unsplash.com/photo-1589519160732-57fc498494f8?q=80&w=1000&auto=format&fit=crop",
+    "material": "Сталь 3мм",
+    "size": "120x80 см"
+  },
+  {
+    "id": 4,
+    "title": "Абстрактная волна",
+    "description": "Динамичная композиция, передающая энергию океана. Плавные линии и игра теней на металле.",
+    "price": 18000,
+    "imageUrl": "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=1000&auto=format&fit=crop",
+    "material": "Сталь 2мм",
+    "size": "80x40 см"
+  },
+  {
+    "id": 5,
+    "title": "Древо жизни",
+    "description": "Символичное изображение с глубоким смыслом. Сложное переплетение ветвей, выполненное с высокой точностью.",
+    "price": 21000,
+    "imageUrl": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?q=80&w=1000&auto=format&fit=crop",
+    "material": "Сталь 2.5мм",
+    "size": "70x70 см"
+  },
+  {
+    "id": 6,
+    "title": "Механический орел",
+    "description": "Стиль стимпанк в металле. Множество мелких деталей создают неповторимый техно-образ.",
+    "price": 19500,
+    "imageUrl": "https://images.unsplash.com/photo-1552083375-1447ce886485?q=80&w=1000&auto=format&fit=crop",
+    "material": "Сталь 2мм",
+    "size": "90x50 см"
+  }
+]

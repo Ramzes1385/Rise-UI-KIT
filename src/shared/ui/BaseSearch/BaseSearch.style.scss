@@ -1,0 +1,295 @@
+.base-search {
+	/* Иконка поиска (в prefix слоте BaseInput) */
+	&__icon {
+		flex-shrink: 0;
+		font-size: 16px;
+		color: var(--color-text-muted);
+		margin-right: 4px;
+	}
+
+	/* Кнопка очистки (в suffix слоте BaseInput) */
+	&__clear {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		border: none;
+		border-radius: var(--border-radius-full);
+		background-color: var(--color-surface-muted);
+		color: var(--color-text-muted);
+		font-size: 10px;
+		cursor: pointer;
+		@include transition(background-color, color);
+
+		&:hover {
+			background-color: var(--color-error);
+			color: var(--color-white);
+		}
+	}
+
+	/* Результат */
+	&__result {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 14px;
+		cursor: pointer;
+		@include transition(background-color);
+
+		&--highlighted,
+		&:hover {
+			background-color: var(--color-surface-muted);
+		}
+	}
+
+	&__result-icon {
+		flex-shrink: 0;
+		font-size: 18px;
+	}
+
+	&__result-content {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__result-title {
+		display: block;
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--color-text);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&__result-desc {
+		display: block;
+		font-size: 12px;
+		color: var(--color-text-muted);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&__result-category {
+		flex-shrink: 0;
+		font-size: 11px;
+		padding: 2px 8px;
+		border-radius: var(--border-radius-full);
+		background-color: var(--color-surface-muted);
+		color: var(--color-text-muted);
+	}
+
+	/* Пустой результат */
+	&__empty {
+		padding: 20px;
+		text-align: center;
+		color: var(--color-text-muted);
+		font-size: 14px;
+	}
+
+	/* ── Триггер модального режима ── */
+	&__modal-trigger {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 16px;
+		background-color: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		color: var(--color-text-muted);
+		cursor: pointer;
+		font-size: 14px;
+		min-height: 40px;
+		width: 100%;
+		text-align: left;
+		@include transition(border-color, background-color);
+
+		&:hover {
+			border-color: var(--color-text-muted);
+			background-color: var(--color-surface-muted);
+		}
+	}
+
+	&__modal-trigger-text {
+		flex: 1;
+	}
+
+	/* ── Модальное окно ── */
+	&__modal-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 1000;
+		background-color: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		padding-top: 10vh;
+	}
+
+	&__modal {
+		width: 90%;
+		max-width: 640px;
+		background-color: var(--color-surface);
+		border-radius: var(--border-radius-lg);
+		box-shadow: var(--shadow-xl);
+		overflow: hidden;
+	}
+
+	&__modal-header {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 16px;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	&__modal-close {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border: none;
+		border-radius: var(--border-radius-full);
+		background-color: var(--color-surface-muted);
+		color: var(--color-text-muted);
+		font-size: 14px;
+		cursor: pointer;
+		@include transition(background-color, color);
+
+		&:hover {
+			background-color: var(--color-error);
+			color: var(--color-white);
+		}
+	}
+
+	&__modal-results {
+		max-height: 400px;
+		overflow-y: auto;
+	}
+
+	/* ── Триггер sidebar режима ── */
+	&__sidebar-trigger {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 16px;
+		background-color: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		color: var(--color-text-muted);
+		cursor: pointer;
+		font-size: 14px;
+		min-height: 40px;
+		width: 100%;
+		text-align: left;
+		@include transition(border-color, background-color);
+
+		&:hover {
+			border-color: var(--color-text-muted);
+			background-color: var(--color-surface-muted);
+		}
+	}
+
+	&__sidebar-trigger-text {
+		flex: 1;
+	}
+
+	/* ── Боковая панель ── */
+	&__sidebar-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 1000;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	&__sidebar {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 380px;
+		max-width: 90vw;
+		background-color: var(--color-surface);
+		box-shadow: var(--shadow-xl);
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__sidebar-header {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 16px;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	&__sidebar-close {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border: none;
+		border-radius: var(--border-radius-full);
+		background-color: var(--color-surface-muted);
+		color: var(--color-text-muted);
+		font-size: 14px;
+		cursor: pointer;
+		@include transition(background-color, color);
+
+		&:hover {
+			background-color: var(--color-error);
+			color: var(--color-white);
+		}
+	}
+
+	&__sidebar-results {
+		flex: 1;
+		overflow-y: auto;
+	}
+}
+
+/* ── Анимация модального окна ── */
+.base-search-modal-enter-active,
+.base-search-modal-leave-active {
+	@include transition(opacity);
+
+	.base-search__modal {
+		@include transition(transform, opacity);
+	}
+}
+
+.base-search-modal-enter-from,
+.base-search-modal-leave-to {
+	opacity: 0;
+
+	.base-search__modal {
+		transform: translateY(-20px) scale(0.95);
+		opacity: 0;
+	}
+}
+
+/* ── Анимация sidebar ── */
+.base-search-sidebar-enter-active,
+.base-search-sidebar-leave-active {
+	@include transition(opacity);
+
+	.base-search__sidebar {
+		@include transition(transform);
+	}
+}
+
+.base-search-sidebar-enter-from,
+.base-search-sidebar-leave-to {
+	opacity: 0;
+
+	.base-search__sidebar {
+		transform: translateX(100%);
+	}
+}

@@ -1,0 +1,63 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	@include interactive;
+
+	@include custom-text(color, var(--color-text));
+
+	&__label {
+		font-size: sz(14px);
+		font-weight: 600;
+		@include custom-text(color, var(--color-text));
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+	}
+
+	&__required {
+		color: var(--color-error);
+	}
+
+	&__description {
+		font-size: sz(12px);
+		@include custom-text(color, var(--color-text-muted));
+	}
+
+	&__error {
+		font-size: sz(12px);
+		@include custom-text(color, var(--color-error));
+		font-weight: 500;
+	}
+
+	// Варианты
+	&--ghost {
+		opacity: 0.8;
+
+		@include hover {
+			opacity: 1;
+		}
+	}
+
+	&--outline {
+		border: 1px solid var(--color-border);
+		padding: sz(12px);
+		border-radius: var(--border-radius-base);
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-sm);
+		padding: sz(12px);
+		border-radius: var(--border-radius-base);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		padding: sz(12px);
+		border-radius: var(--border-radius-base);
+	}
+}

@@ -1,0 +1,19 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-text {
+	@include custom-text(color, var(--color-text));
+	margin: 0;
+
+	// Без переноса
+	&--nowrap {
+		white-space: nowrap;
+	}
+
+	// Обрезка с многоточием (одна строка)
+	&--truncate {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}

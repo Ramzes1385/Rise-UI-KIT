@@ -1,0 +1,84 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-menu {
+	@include custom-bg(background-color, var(--color-white));
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-base);
+	box-shadow: var(--shadow-md);
+	padding: sz(4px);
+	min-width: sz(160px);
+	@include interactive;
+
+	&__item {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		padding: sz(8px) sz(12px);
+		font-size: sz(14px);
+		cursor: pointer;
+		border-radius: sz(4px);
+		outline: none;
+		@include interactive;
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-surface-muted));
+			transform: translateX(sz(4px));
+		}
+
+		@include focus {
+			@include custom-bg(background-color, var(--color-surface-muted));
+			box-shadow: inset 0 0 0 1px var(--color-accent);
+		}
+
+		@include active {
+			@include custom-bg(background-color, var(--color-border));
+			transform: translateX(sz(2px)) scale(0.98);
+		}
+
+		&--disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+	}
+
+	&__icon {
+		font-size: 16px;
+		opacity: 0.7;
+	}
+
+	&__label {
+		@include custom-text(color, var(--color-text));
+	}
+
+	&__divider {
+		height: 1px;
+		background-color: var(--color-border);
+		margin: sz(4px) 0;
+	}
+
+	// Варианты
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	&--outline {
+		@include custom-bg(background-color, transparent);
+		border-width: 2px;
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-lg);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		border-color: transparent;
+
+		.base-menu__label {
+			@include custom-text(color, var(--color-primary));
+		}
+	}
+}

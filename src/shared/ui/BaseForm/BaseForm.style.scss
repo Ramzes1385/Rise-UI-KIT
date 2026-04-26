@@ -1,0 +1,58 @@
+@use '@/shared/assets/styles/functions' as *;
+@use '@/shared/assets/styles/mixins' as *;
+
+.base-form {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: sz(24px);
+	width: 100%;
+	@include interactive;
+
+	&--loading {
+		pointer-events: none;
+	}
+
+	&--disabled {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	&__overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		@include custom-bg(background-color, rgba(255, 255, 255, 0.7));
+		border-radius: inherit;
+	}
+
+	// Варианты
+	&--ghost {
+		gap: sz(12px);
+	}
+
+	&--outline {
+		border: 1px solid var(--color-border);
+		padding: sz(24px);
+		border-radius: var(--border-radius-lg);
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-lg);
+		padding: sz(24px);
+		border-radius: var(--border-radius-lg);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		padding: sz(24px);
+		border-radius: var(--border-radius-lg);
+	}
+}
+
+:root[data-theme='dark'] .base-form__overlay {
+	background-color: rgba(0, 0, 0, 0.5);
+}

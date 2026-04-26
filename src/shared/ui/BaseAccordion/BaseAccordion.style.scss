@@ -1,0 +1,161 @@
+@use '@/shared/assets/styles/functions' as *;
+
+.base-accordion {
+	display: flex;
+	flex-direction: column;
+	outline: 1px solid var(--color-border);
+	border-radius: var(--border-radius-base);
+	overflow: hidden;
+	background-color: var(--color-surface);
+	@include transition(border-color, box-shadow);
+
+	// --- Варианты ---
+
+	&--ghost {
+		outline-color: transparent;
+		background-color: transparent;
+	}
+
+	&--outline {
+		outline-color: var(--color-text-muted);
+	}
+
+	&--shadow {
+		outline-color: transparent;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	&--soft {
+		outline-color: transparent;
+		background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+		backdrop-filter: blur(4px);
+	}
+
+	// --- Элементы ---
+
+	&__item {
+		outline: 1px solid var(--color-border);
+		transition: outline-color var(--transition-base);
+
+		&:last-child {
+			outline: none;
+		}
+
+		&--open {
+			outline-color: transparent;
+		}
+
+		&--disabled {
+			opacity: 0.5;
+			pointer-events: none;
+		}
+	}
+
+	&__header {
+		padding: sz(16px 20px);
+		display: flex;
+		align-items: flex-start;
+		gap: sz(8px);
+		cursor: pointer;
+		outline: none;
+		@include custom-bg(background-color, var(--color-surface));
+		@include transition(background-color, color);
+
+		@include custom-bg-hover(background-color, var(--color-surface-muted));
+
+		@include focus {
+			background-color: var(--custom-bg-hover, var(--custom-bg, var(--color-surface-muted)));
+			@include custom-text(color, var(--color-accent));
+			outline: 2px solid var(--color-accent);
+			outline-offset: -2px;
+		}
+
+		@include custom-bg-active(background-color, var(--color-border));
+	}
+
+	&__icon {
+		align-self: flex-start;
+		flex-shrink: 0;
+	}
+
+	&__label {
+		flex: 1;
+		@include custom-text(color, var(--color-primary));
+	}
+
+	&__arrow {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		align-self: center;
+		color: var(--color-text-muted);
+		@include transition(transform, color);
+	}
+
+	&__item--open &__arrow {
+		transform: rotate(180deg);
+		@include custom-text(color, var(--color-accent));
+	}
+
+	/* Плавное раскрытие через CSS grid transition */
+	&__collapse {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows var(--transition-base);
+	}
+
+	&__collapse--open {
+		grid-template-rows: 1fr;
+	}
+
+	&__content {
+		overflow: hidden;
+		padding: 0 sz(20px);
+		outline: 1px solid transparent;
+		opacity: 0;
+		transition:
+			padding var(--transition-base),
+			outline var(--transition-base),
+			opacity var(--transition-base);
+	}
+
+	&__collapse--open &__content {
+		padding: sz(16px 20px);
+		outline: 1px solid var(--color-border);
+		opacity: 1;
+	}
+
+	&__content > * {
+		margin: 0;
+	}
+
+	// --- Переопределения для вариантов ---
+
+	&--ghost &__item {
+		outline-color: transparent;
+	}
+
+	&--outline &__item {
+		outline-color: var(--color-text-muted);
+	}
+
+	&--outline &__item--open {
+		outline-color: transparent;
+	}
+
+	&--shadow &__item {
+		outline-color: var(--color-border);
+	}
+
+	&--shadow &__item--open {
+		outline-color: transparent;
+	}
+
+	&--soft &__item {
+		outline-color: color-mix(in srgb, var(--color-border) 50%, transparent);
+	}
+
+	&--soft &__item--open {
+		outline-color: transparent;
+	}
+}

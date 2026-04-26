@@ -1,0 +1,223 @@
+@use 'sass:list';
+
+@mixin flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin respond-to($breakpoint) {
+	@if $breakpoint == 'xs' {
+		@media (min-width: 320px) {
+			@content;
+		}
+	} @else if $breakpoint == 'sm' {
+		@media (min-width: 480px) {
+			@content;
+		}
+	} @else if $breakpoint == 'md' {
+		@media (min-width: 768px) {
+			@content;
+		}
+	} @else if $breakpoint == 'lg' {
+		@media (min-width: 1024px) {
+			@content;
+		}
+	} @else if $breakpoint == 'xl' {
+		@media (min-width: 1440px) {
+			@content;
+		}
+	} @else if $breakpoint == 'xxl' {
+		@media (min-width: 1920px) {
+			@content;
+		}
+	}
+}
+
+@mixin transition($props...) {
+	$transitions: ();
+
+	@each $prop in $props {
+		$transitions: list.append($transitions, #{$prop} var(--transition-base), comma);
+	}
+
+	transition: $transitions;
+}
+
+@mixin hover {
+	&:not(:disabled, [disabled], .is-disabled, [class*='--disabled']) {
+		&:hover {
+			@content;
+		}
+	}
+}
+
+@mixin active {
+	&:not(:disabled, [disabled], .is-disabled, [class*='--disabled']) {
+		&:active {
+			@content;
+		}
+	}
+}
+
+@mixin focus {
+	&:focus-visible {
+		@content;
+	}
+}
+
+@mixin interactive {
+	@include transition(background-color, border-color, color, opacity, transform, box-shadow, filter);
+}
+
+// ============================================================================
+// Кастомный цвет фона (custom-bg)
+// ============================================================================
+
+/**
+ * Кастомный цвет фона с fallback.
+ * Когда --custom-bg задана через useCustomColor — используется она,
+ * иначе — значение по умолчанию из темы.
+ *
+ * @example
+ *   @include custom-bg(background-color, var(--color-surface));
+ *   // → background-color: var(--custom-bg, var(--color-surface));
+ */
+@mixin custom-bg($property, $fallback) {
+	#{$property}: var(--custom-bg, #{$fallback});
+}
+
+/**
+ * Кастомный hover-цвет фона с fallback.
+ * Цепочка: --custom-bg-hover → --custom-bg → $fallback.
+ *
+ * @example
+ *   @include custom-bg-hover(background-color, var(--color-surface-muted));
+ */
+@mixin custom-bg-hover($property, $fallback) {
+	@include hover {
+		#{$property}: var(--custom-bg-hover, var(--custom-bg, #{$fallback}));
+	}
+}
+
+/**
+ * Кастомный active-цвет фона с fallback.
+ * Цепочка: --custom-bg-active → --custom-bg → $fallback.
+ *
+ * @example
+ *   @include custom-bg-active(background-color, var(--color-border));
+ */
+@mixin custom-bg-active($property, $fallback) {
+	@include active {
+		#{$property}: var(--custom-bg-active, var(--custom-bg, #{$fallback}));
+	}
+}
+
+/**
+ * Кастомный focus-цвет фона с fallback.
+ *
+ * @example
+ *   @include custom-bg-focus(box-shadow, inset 0 0 0 2px var(--color-accent));
+ */
+@mixin custom-bg-focus($property, $fallback) {
+	@include focus {
+		#{$property}: var(--custom-bg-focus, #{$fallback});
+	}
+}
+
+/**
+ * Комплексный миксин: кастомный цвет фона для всех состояний.
+ *
+ * @param {String} $property — CSS-свойство
+ * @param {*} $base — базовый fallback
+ * @param {*} $hover — hover fallback (по умолчанию = $base)
+ * @param {*} $active — active fallback (по умолчанию = $base)
+ * @param {*} $focus — focus fallback (по умолчанию = null)
+ *
+ * @example
+ *   @include custom-bg-all(background-color, var(--color-accent), var(--color-accent-hover), var(--color-accent));
+ */
+@mixin custom-bg-all($property, $base, $hover: $base, $active: $base, $focus: null) {
+	@include custom-bg($property, $base);
+	@include custom-bg-hover($property, $hover);
+	@include custom-bg-active($property, $active);
+
+	@if $focus != null {
+		@include custom-bg-focus($property, $focus);
+	}
+}
+
+// ============================================================================
+// Кастомный цвет текста (custom-text)
+// ============================================================================
+
+/**
+ * Кастомный цвет текста с fallback.
+ *
+ * @example
+ *   @include custom-text(color, var(--color-primary));
+ *   // → color: var(--custom-text, var(--color-primary));
+ */
+@mixin custom-text($property, $fallback) {
+	#{$property}: var(--custom-text, #{$fallback});
+}
+
+/**
+ * Кастомный hover-цвет текста с fallback.
+ * Цепочка: --custom-text-hover → --custom-text → $fallback.
+ *
+ * @example
+ *   @include custom-text-hover(color, var(--color-accent));
+ */
+@mixin custom-text-hover($property, $fallback) {
+	@include hover {
+		#{$property}: var(--custom-text-hover, var(--custom-text, #{$fallback}));
+	}
+}
+
+/**
+ * Кастомный active-цвет текста с fallback.
+ * Цепочка: --custom-text-active → --custom-text → $fallback.
+ *
+ * @example
+ *   @include custom-text-active(color, var(--color-text));
+ */
+@mixin custom-text-active($property, $fallback) {
+	@include active {
+		#{$property}: var(--custom-text-active, var(--custom-text, #{$fallback}));
+	}
+}
+
+/**
+ * Кастомный focus-цвет текста с fallback.
+ *
+ * @example
+ *   @include custom-text-focus(color, var(--color-accent));
+ */
+@mixin custom-text-focus($property, $fallback) {
+	@include focus {
+		#{$property}: var(--custom-text-focus, #{$fallback});
+	}
+}
+
+/**
+ * Комплексный миксин: кастомный цвет текста для всех состояний.
+ *
+ * @param {String} $property — CSS-свойство
+ * @param {*} $base — базовый fallback
+ * @param {*} $hover — hover fallback (по умолчанию = $base)
+ * @param {*} $active — active fallback (по умолчанию = $base)
+ * @param {*} $focus — focus fallback (по умолчанию = null)
+ *
+ * @example
+ *   @include custom-text-all(color, var(--color-text), var(--color-accent));
+ */
+@mixin custom-text-all($property, $base, $hover: $base, $active: $base, $focus: null) {
+	@include custom-text($property, $base);
+	@include custom-text-hover($property, $hover);
+	@include custom-text-active($property, $active);
+
+	@if $focus != null {
+		@include custom-text-focus($property, $focus);
+	}
+}

@@ -1,0 +1,36 @@
+@use 'sass:list';
+@use 'sass:string';
+
+/**
+ * Масштабирует значение пропорционально CSS-переменной --size-scale.
+ * Применяется к размерам, отступам, шрифтам — ко всему, что должно
+ * пропорционально изменяться при масштабировании компонента.
+ *
+ * Когда --size-scale не задана (по умолчанию 1), значения не меняются.
+ *
+ * @param {Number|String|List} $values — одно или несколько значений (px, em, CSS-переменные)
+ * @return {List} — calc()-выражения с умножением на --size-scale
+ *
+ * @example
+ *   padding: sz(10px 20px);
+ *   // → padding: calc(10px * var(--size-scale, 1)) calc(20px * var(--size-scale, 1));
+ *
+ *   font-size: sz(14px);
+ *   // → font-size: calc(14px * var(--size-scale, 1));
+ *
+ *   border-radius: sz(var(--border-radius-base));
+ *   // → border-radius: calc(var(--border-radius-base) * var(--size-scale, 1));
+ */
+@function sz($values) {
+	$result: ();
+
+	@each $value in $values {
+		@if $value == 0 {
+			$result: list.append($result, 0, space);
+		} @else {
+			$result: list.append($result, string.unquote('calc(#{$value} * var(--size-scale, 1))'), space);
+		}
+	}
+
+	@return $result;
+}

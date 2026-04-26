@@ -1,0 +1,282 @@
+.base-stepper {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	position: relative;
+
+	// ── Ориентация ──
+	&--horizontal {
+		align-items: stretch;
+	}
+
+	&--vertical {
+		align-items: stretch;
+	}
+
+	// ── Шапка ──
+	&__header {
+		display: flex;
+		width: 100%;
+		margin-bottom: sz(24px);
+	}
+
+	// ── Подвал ──
+	&__footer {
+		display: flex;
+		width: 100%;
+		margin-top: sz(24px);
+	}
+
+	// ── Контейнер шагов ──
+	&__items {
+		display: flex;
+		width: 100%;
+		position: relative;
+	}
+
+	&--horizontal &__items {
+		flex-direction: row;
+	}
+
+	&--vertical &__items {
+		flex-direction: column;
+	}
+
+	// ── Шаг ──
+	&__step {
+		display: flex;
+		cursor: pointer;
+		position: relative;
+		outline: none;
+		z-index: 2;
+		@include transition(transform);
+
+		&--disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	&--horizontal &__step {
+		flex-direction: column;
+		align-items: center;
+		flex: 1;
+		gap: sz(4px);
+	}
+
+	&--vertical &__step {
+		flex-direction: row;
+		align-items: flex-start;
+		gap: sz(12px);
+	}
+
+	// ── Галочка ──
+	&__check {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	// ── Обёртка индикатора ──
+	&__indicator-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover:not(.base-stepper__step--disabled) {
+			.base-stepper__indicator {
+				border-color: var(--color-accent);
+				background-color: var(--color-surface-muted);
+			}
+		}
+
+		&:focus-visible {
+			.base-stepper__indicator {
+				box-shadow: 0 0 0 sz(4px) rgba(249, 115, 22, 0.2);
+			}
+		}
+
+		&:active:not(.base-stepper__step--disabled) {
+			transform: scale(0.98);
+		}
+	}
+
+	// ── Индикатор ──
+	&__indicator {
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: 50%;
+		border: sz(2px) solid var(--color-border);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: sz(14px);
+		font-weight: 700;
+		background-color: var(--color-surface);
+		position: relative;
+		z-index: 2;
+		flex-shrink: 0;
+		@include transition(border-color, background-color, color);
+
+		& > span {
+			display: flex;
+			height: 100%;
+			width: 100%;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	&__step--active &__indicator {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
+	&__step--completed &__indicator {
+		background-color: var(--color-accent);
+		border-color: var(--color-accent);
+		color: #ffffff;
+	}
+
+	&__step--completed:hover:not(&__step--disabled) &__indicator {
+		background-color: var(--color-accent-hover);
+		border-color: var(--color-accent-hover);
+	}
+
+	// ── Контент ──
+	&__content {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		z-index: 2;
+	}
+
+	&--horizontal &__content {
+		align-items: center;
+		text-align: center;
+		padding-top: sz(8px);
+	}
+
+	&--vertical &__content {
+		padding-bottom: sz(16px);
+	}
+
+	&__label {
+		font-size: sz(14px);
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	&__description {
+		font-size: sz(12px);
+		opacity: 0.6;
+		margin: 0;
+	}
+
+	// ── Линия: фон (::before) и прогресс (::after) на __items ──
+	&--horizontal &__items::before {
+		content: '';
+		position: absolute;
+		top: sz(15px);
+		height: sz(2px);
+		left: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
+		right: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
+		background-color: var(--color-border);
+		z-index: 1;
+	}
+
+	&--horizontal &__items::after {
+		content: '';
+		position: absolute;
+		top: sz(15px);
+		height: sz(2px);
+		left: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
+		width: calc((100% - 2 * var(--stepper-line-offset, 0%) - #{sz(32px)}) * var(--stepper-progress-scale, 0));
+		background-color: var(--color-accent);
+		z-index: 1;
+	}
+
+	// Вертикальная линия
+	&--vertical &__items::before {
+		content: '';
+		position: absolute;
+		left: sz(15px);
+		width: sz(2px);
+		top: sz(16px);
+		bottom: sz(16px);
+		background-color: var(--color-border);
+		z-index: 1;
+	}
+
+	&--vertical &__items::after {
+		content: '';
+		position: absolute;
+		left: sz(15px);
+		width: sz(2px);
+		top: sz(16px);
+		height: calc((100% - #{sz(32px)}) * var(--stepper-progress-scale, 0));
+		background-color: var(--color-accent);
+		z-index: 1;
+	}
+
+	// ── Форма: circle (по умолчанию) ──
+	&--circle &__indicator {
+		border-radius: 50%;
+	}
+
+	// ── Форма: square ──
+	&--square &__indicator {
+		border-radius: sz(4px);
+	}
+
+	// ── Форма: diamond ──
+	&--diamond &__indicator {
+		border-radius: sz(4px);
+		transform: rotate(45deg);
+		font-size: sz(12px);
+
+		& > span {
+			transform: rotate(-45deg);
+		}
+	}
+
+	&--diamond &__step--active &__indicator,
+	&--diamond &__step--completed &__indicator {
+		transform: rotate(45deg);
+	}
+
+	&--diamond &__step--active &__indicator > span,
+	&--diamond &__step--completed &__indicator > span {
+		transform: rotate(-45deg);
+	}
+
+	// ── Форма: empty — без индикатора ──
+	&--empty &__step {
+		gap: sz(30px);
+	}
+
+	&--empty &__content {
+		padding-top: sz(20px);
+	}
+
+	&--empty &__label {
+		font-weight: 700;
+	}
+
+	&--empty &__step--active &__label {
+		color: var(--color-accent);
+	}
+
+	&--empty &__step--completed &__label {
+		color: var(--color-accent);
+	}
+
+	// ── Вариант: animated — анимация заполнения линии ──
+	&--animated &__items::after {
+		transition: width 0.4s ease;
+	}
+
+	&--animated.base-stepper--vertical &__items::after {
+		transition: height 0.4s ease;
+	}
+}
