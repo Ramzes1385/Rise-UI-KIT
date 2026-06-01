@@ -4,6 +4,15 @@
 
 import type { Preview } from '@storybook/vue3-vite'
 
+// @font-face declarations регистрируются ДО :root, чтобы CSS-правила font-family из _variables.scss
+// сразу видели bundled-шрифты и рендерили их глифами (а не уходили на системный fallback).
+// Без этого Linux CI рендерит в DejaVu Sans, а Windows — в Segoe UI, и visual-тесты
+// стабильно дают ~2% pixel-diff на каждой story.
+//
+// Подмножества (Inter: latin + cyrillic, JetBrains Mono: latin) и font-display: swap
+// подобраны в src/styles/_fonts.scss. Держи этот импорт в синхроне с src/main.ts.
+import '../../src/styles/_fonts.scss'
+
 // Подавление неинформативных предупреждений в консоли браузера/Storybook
 const originalWarn = console.warn
 console.warn = (...args: unknown[]) => {

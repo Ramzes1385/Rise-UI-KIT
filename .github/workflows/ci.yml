@@ -121,12 +121,8 @@ jobs:
     name: E2E & Visual Regression
     needs: storybook-tests
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:
@@ -155,21 +151,6 @@ jobs:
           npm run test:visual
         env:
           PLAYWRIGHT_REUSE_SERVER: "true"
-
-      - name: Auto-update visual snapshots on Linux
-        if: always()
-        run: |
-          node scripts/serve-storybook-static.mjs &
-          npx wait-on http://localhost:6006
-          npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
-
-      - name: Commit updated snapshots
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(visual): update snapshots for Linux CI environment"
-          file_pattern: "tests/visual-snapshots/**/*.png"
 
       - name: Upload Playwright results
         uses: actions/upload-artifact@v4

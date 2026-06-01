@@ -144,9 +144,9 @@ src/components/BaseButton/
 **Типографика:**
 
 ```scss
---font-family-base    // Inter, Segoe UI, Roboto, Arial, sans-serif
+--font-family-base    // 'Inter Variable', 'Segoe UI', Roboto, Arial, sans-serif
 --font-family-heading // = --font-family-base
---font-family-mono    // JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace
+--font-family-mono    // 'JetBrains Mono Variable', 'Fira Code', 'Cascadia Code', Consolas, monospace
 ```
 
 **Остальное:**

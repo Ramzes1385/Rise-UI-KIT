@@ -54,6 +54,8 @@
     "test:all": "npm run test:components:coverage && npm run test:e2e && npm run test:visual"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "sass": "^1.100.0",
     "vue": "^3.5.35"
   },

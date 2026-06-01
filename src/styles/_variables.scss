@@ -17,10 +17,12 @@
 	--color-surface: #ffffff;
 	--color-surface-muted: #f4f4f5;
 
-	// Typography
-	--font-family-base: Inter, 'Segoe UI', Roboto, Arial, sans-serif;
+	// Typography: шрифты подключаются в src/styles/_fonts.scss (@font-face).
+	// Bundled-вариант всегда побеждает в каскаде; системные fallback'и срабатывают только
+	// при сбое загрузки woff2 (что не наблюдалось — font-display: swap обеспечивает FOUT-free).
+	--font-family-base: 'Inter Variable', 'Segoe UI', Roboto, Arial, sans-serif;
 	--font-family-heading: var(--font-family-base);
-	--font-family-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+	--font-family-mono: 'JetBrains Mono Variable', 'Fira Code', 'Cascadia Code', Consolas, monospace;
 
 	// Transitions & Radius
 	--transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
