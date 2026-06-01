@@ -1,13 +1,23 @@
 {
-  "name": "metal-art-site",
+  "name": "@ramzes1385/rise-ui-kit",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
+  "description": "Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.",
+  "homepage": "https://github.com/Ramzes1385/Rise-UI-KIT#readme",
+  "bugs": {
+    "url": "https://github.com/Ramzes1385/Rise-UI-KIT/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ramzes1385/Rise-UI-KIT.git"
+  },
+  "license": "MIT",
+  "author": "Roman <rasspopov.roman@gmail.com>",
   "type": "module",
-  "sideEffects": [
-    "**/*.css",
-    "**/*.scss",
-    "**/*.vue"
-  ],
+  "main": "eslint.config.js",
+  "directories": {
+    "test": "tests"
+  },
   "scripts": {
     "prepare": "husky build/husky",
     "dev": "vite",
@@ -90,5 +100,10 @@
     "vitest": "^4.1.5",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^3.2.6"
-  }
+  },
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.vue"
+  ]
 }

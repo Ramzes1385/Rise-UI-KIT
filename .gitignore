@@ -16,6 +16,7 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+.kilo/
 .DS_Store
 *.suo
 *.ntvs*
@@ -42,6 +43,7 @@ playwright-report/
 .playwright-mcp/
 lighthouse-report.*
 lighthouse-report-mobile.*
+tests/
 
 # === Tooling caches & analyzer output ===
 .eslintcache
