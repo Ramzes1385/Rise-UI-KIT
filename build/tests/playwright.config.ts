@@ -24,7 +24,7 @@ function shouldReuse(): boolean {
 
 export default defineConfig({
 	testDir: '../..',
-	snapshotPathTemplate: '{testDir}/tests/visual-snapshots/{testFilePath}-snapshots/{arg}-{projectName}-{platform}{ext}',
+	snapshotPathTemplate: '{testDir}/tests/visual-snapshots/{testFilePath}-snapshots/{arg}-{projectName}{ext}',
 	timeout: 60_000,
 	workers: 2,
 	expect: {
