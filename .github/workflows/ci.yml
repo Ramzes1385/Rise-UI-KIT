@@ -98,7 +98,6 @@ jobs:
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
-        id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -114,9 +113,13 @@ jobs:
           node scripts/serve-storybook-static.mjs &
           npx wait-on http://localhost:6006
           npm run test:storybook
+          pkill -f "serve-storybook-static.mjs" || true
+        env:
+          PLAYWRIGHT_REUSE_SERVER: "true"
 
   e2e-and-visual:
     name: E2E & Visual Regression
+    needs: storybook-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -146,6 +149,8 @@ jobs:
           npx wait-on http://localhost:6006
           npm run test:e2e
           npm run test:visual
+        env:
+          PLAYWRIGHT_REUSE_SERVER: "true"
 
       - name: Upload Playwright results
         uses: actions/upload-artifact@v4
