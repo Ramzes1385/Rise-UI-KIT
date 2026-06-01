@@ -1,6 +1,6 @@
 {
   "name": "@ramzes1385/rise-ui-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.",
   "homepage": "https://github.com/Ramzes1385/Rise-UI-KIT#readme",
   "bugs": {
@@ -16,10 +16,6 @@
   "main": "eslint.config.js",
   "directories": {
     "test": "tests"
-  },
-  "engines": {
-    "node": ">=22.19.0",
-    "npm": ">=10.9.2"
   },
   "scripts": {
     "prepare": "husky build/husky",
@@ -108,6 +104,10 @@
     "vitest": "^4.1.7",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=22.19.0",
+    "npm": ">=10.9.2"
   },
   "sideEffects": [
     "**/*.css",
