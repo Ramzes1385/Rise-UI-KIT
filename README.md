@@ -22,7 +22,7 @@
 ## Установка
 
 ```bash
-npm install metal-art-site
+npm install rise-ui-kit
 ```
 
 ## Подключение
@@ -32,8 +32,8 @@ npm install metal-art-site
 ```ts
 // main.ts
 import { createApp } from 'vue'
-import { createUiKitPlugin } from 'metal-art-site'
-import 'metal-art-site/styles'
+import { createUiKitPlugin } from 'rise-ui-kit'
+import 'rise-ui-kit/styles'
 
 const app = createApp(App)
 app.use(createUiKitPlugin())
@@ -52,26 +52,26 @@ app.use(createUiKitPlugin({ prefix: 'Ma' }))
 ### Tree-shaking: точечный импорт
 
 ```ts
-import { BaseButton } from 'metal-art-site/components/BaseButton'
-import { BaseInput } from 'metal-art-site/components/BaseInput'
+import { BaseButton } from 'rise-ui-kit/components/BaseButton'
+import { BaseInput } from 'rise-ui-kit/components/BaseInput'
 ```
 
 ### Composables
 
 ```ts
-import { useDebounce, useClickOutside, useBreakpoint } from 'metal-art-site/composables'
+import { useDebounce, useClickOutside, useBreakpoint } from 'rise-ui-kit/composables'
 ```
 
 ### Утилиты
 
 ```ts
-import { formatDate, formatFileSize, assertNonNullable } from 'metal-art-site/utils'
+import { formatDate, formatFileSize, assertNonNullable } from 'rise-ui-kit/utils'
 ```
 
 ### Иконки
 
 ```ts
-import { ICON_SPRITE_PATH } from 'metal-art-site/icons'
+import { ICON_SPRITE_PATH } from 'rise-ui-kit/icons'
 ```
 
 Иконки поставляются как SVG-спрайт, генерируемый из `src/icons/svg/` (90+ иконок). Используются через `<BaseIcon name="icon-name" />`.
