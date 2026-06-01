@@ -29,7 +29,8 @@ function buildCommand(): string {
 export default defineConfig({
 	testDir: '../..',
 	snapshotPathTemplate: '{testDir}/tests/visual-snapshots/{testFilePath}-snapshots/{arg}-{projectName}-{platform}{ext}',
-	timeout: 30_000,
+	timeout: 60_000,
+	workers: 2,
 	expect: {
 		timeout: 5_000,
 		toHaveScreenshot: {

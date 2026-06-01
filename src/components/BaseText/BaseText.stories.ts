@@ -57,9 +57,13 @@ type Story = StoryObj<typeof BaseText>
 // play удалён: дублирует "должен применять инлайн-стиль -webkit-line-clamp когда maxLines > 1" в *.integration.spec.ts
 /** Базовое состояние компонента */
 export const Default: Story = {
-	args: {
-		default: 'Текст компонента BaseText',
-	},
+	render: args => ({
+		components: { BaseText },
+		setup() {
+			return { args }
+		},
+		template: '<BaseText v-bind="args">Текст компонента BaseText</BaseText>',
+	}),
 }
 // play удалён: дублирует "должен применять инлайн-стиль -webkit-line-clamp когда maxLines > 1" в *.integration.spec.ts
 /** Масштабирование размера через sizeScale */

@@ -5,7 +5,7 @@
 import { expect, test } from '@playwright/test'
 
 const COMPONENT = 'ui-baseanimation'
-const STORIES = ['default', 'modes', 'size-scale', 'dark-theme']
+const STORIES = ['default', 'all-types', 'modes', 'dark-theme']
 
 for (const story of STORIES) {
 	test(`BaseAnimation — ${story}`, async ({ page }) => {

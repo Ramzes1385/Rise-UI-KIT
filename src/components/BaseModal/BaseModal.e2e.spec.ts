@@ -7,57 +7,52 @@ import { expect, test } from '@playwright/test'
 
 test('модалка: открывается и закрывается по кнопке', async ({ page }) => {
 	await page.goto('/iframe.html?id=ui-basemodal--default')
+	await page.waitForSelector('.base-button', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
-	// Нажимаем кнопку открытия
 	const openBtn = page.locator('button', { hasText: /открыть|open/i }).first()
 	await openBtn.click()
 
-	// Модалка видна
 	const modal = page.locator('.base-modal')
 	await expect(modal).toBeVisible()
 
-	// Нажимаем кнопку закрытия внутри модалки
-	const closeBtn = modal.locator('.base-modal__close, button', { hasText: /закрыть|close/i }).first()
+	const closeBtn = modal.locator('.base-modal__close')
 	await closeBtn.click()
 
-	// Модалка закрыта
 	await expect(modal).not.toBeVisible()
 })
 
 test('модалка: закрывается по Escape', async ({ page }) => {
 	await page.goto('/iframe.html?id=ui-basemodal--default')
+	await page.waitForSelector('.base-button', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
-	// Открываем модалку
 	const openBtn = page.locator('button', { hasText: /открыть|open/i }).first()
 	await openBtn.click()
 
 	const modal = page.locator('.base-modal')
 	await expect(modal).toBeVisible()
 
-	// Нажимаем Escape
 	await page.keyboard.press('Escape')
 
-	// Модалка закрыта
 	await expect(modal).not.toBeVisible()
 })
 
 test('модалка: закрывается по клику на оверлей', async ({ page }) => {
 	await page.goto('/iframe.html?id=ui-basemodal--default')
+	await page.waitForSelector('.base-button', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
-	// Открываем модалку
 	const openBtn = page.locator('button', { hasText: /открыть|open/i }).first()
 	await openBtn.click()
 
 	const modal = page.locator('.base-modal')
 	await expect(modal).toBeVisible()
 
-	// Кликаем по оверлею
-	const overlay = page.locator('.base-modal__overlay')
-	await overlay.click()
+	const contentBox = await modal.locator('.base-modal__content').boundingBox()
+	const offsetX = contentBox ? contentBox.x - 5 : 5
+	const offsetY = contentBox ? contentBox.y + 5 : 5
+	await page.mouse.click(offsetX, offsetY)
 
-	// Модалка закрыта
 	await expect(modal).not.toBeVisible()
 })
