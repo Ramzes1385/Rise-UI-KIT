@@ -1,6 +1,7 @@
 /**
  * Visual Regression тесты для BaseChat.
  * Снимают baseline-скриншоты ключевых состояний через Storybook.
+ * BaseChat рендерит аватары-картинки — нужен networkidle перед скриншотом.
  */
 
 import { expect, test } from '@playwright/test'
@@ -12,6 +13,8 @@ test.describe('BaseChat visual regression', () => {
 	test('Default: визуальный baseline', async ({ page }) => {
 		await page.goto(`${STORY_PATH}--default`)
 		await page.setViewportSize({ width: 800, height: 700 })
+		await page.waitForLoadState('networkidle')
+		await page.evaluate(() => document.fonts.ready)
 
 		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-chat--default.png', {
 			animations: 'disabled',
@@ -23,6 +26,8 @@ test.describe('BaseChat visual regression', () => {
 	test('DarkTheme: визуальный baseline', async ({ page }) => {
 		await page.goto(`${STORY_PATH}--dark-theme`)
 		await page.setViewportSize({ width: 800, height: 700 })
+		await page.waitForLoadState('networkidle')
+		await page.evaluate(() => document.fonts.ready)
 
 		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-chat--dark-theme.png', {
 			animations: 'disabled',
@@ -34,6 +39,8 @@ test.describe('BaseChat visual regression', () => {
 	test('Support: визуальный baseline', async ({ page }) => {
 		await page.goto(`${STORY_PATH}--support`)
 		await page.setViewportSize({ width: 800, height: 700 })
+		await page.waitForLoadState('networkidle')
+		await page.evaluate(() => document.fonts.ready)
 
 		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-chat--support.png', {
 			animations: 'disabled',
