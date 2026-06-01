@@ -1,7 +1,6 @@
 {
   "name": "@ramzes1385/rise-ui-kit",
   "version": "1.0.0",
-  "private": true,
   "description": "Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.",
   "homepage": "https://github.com/Ramzes1385/Rise-UI-KIT#readme",
   "bugs": {
@@ -19,7 +18,8 @@
     "test": "tests"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^24.16.0",
+    "npm": "^11.13.0"
   },
   "scripts": {
     "prepare": "husky build/husky",
