@@ -1,0 +1,13 @@
+.kilo/
+tests/
+coverage/
+storybook-static/
+test-results/
+dist/
+build/
+scripts/
+.github/
+.playwright-mcp/
+debug-storybook.log
+node_modules/
+*.log

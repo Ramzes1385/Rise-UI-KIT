@@ -1,249 +1,391 @@
-# Metal Art UI Kit
+# Metal Art Site — UI Kit
 
-Vue 3 UI-библиотека базовых компонентов с TypeScript, Vite, SCSS, Storybook и тестовой инфраструктурой.
+Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.
 
-Библиотека не использует FSD-слои приложения. Публичный контракт строится вокруг компонентов, composables, utils, стилей и SVG-иконок.
+## Технологический стек
 
-## Структура библиотеки
+| Категория | Технология |
+|---|---|
+| Фреймворк | Vue 3 (`<script setup lang="ts">`) |
+| Язык | TypeScript ~6.0 |
+| Сборка | Vite 8 (модульная архитектура `build/`) |
+| Стили | SCSS + CSS-переменные + BEM |
+| Unit / Integration | Vitest + @testing-library/vue + @vue/test-utils |
+| Visual Regression | Playwright + Storybook screenshot |
+| Accessibility | Storybook test runner + addon-a11y |
+| E2E | Playwright (Chromium) |
+| Storybook | 10.x (Vue 3 + Vite) |
+| Линтинг | ESLint 9 (flat config) + typescript-eslint + eslint-plugin-vue |
+| Прекоммит-хуки | Husky |
+| Node.js | 22 |
 
-```text
-src/
-├── components/     # публичные UI-компоненты (48 Base*-компонентов)
-├── composables/    # публичные composables компонентов
-├── utils/          # публичные утилиты
-├── styles/         # глобальные SCSS-переменные, миксины, функции и entrypoint стилей
-├── icons/          # контракт и исходные SVG-иконки
-├── playground/     # локальная demo-песочница
-├── index.ts        # корневой публичный API
-├── plugin.ts       # Vue-плагин для глобальной регистрации компонентов
-├── App.vue         # оболочка playground
-└── main.ts         # локальный dev-вход
+## Установка
+
+```bash
+npm install metal-art-site
 ```
 
-Компонент хранится в собственной папке:
+## Подключение
 
-```text
-src/components/BaseButton/
-├── BaseButton.vue
-├── BaseButton.types.ts
-├── BaseButton.style.scss
-├── BaseButton.stories.ts
-├── BaseButton.spec.ts
-├── BaseButton.integration.spec.ts
-├── BaseButton.visual.spec.ts
-├── BaseButton.e2e.spec.ts
-└── index.ts
-```
-
-## Public API
-
-| Entrypoint                 | Назначение                                                                           |
-| -------------------------- | ------------------------------------------------------------------------------------ |
-| `src/index.ts`             | Корневой API: компоненты flat-export, plugin, namespaces для composables/utils/icons |
-| `src/plugin.ts`            | `createUiKitPlugin`, `uiKitPlugin`, `UI_COMPONENTS`                                  |
-| `src/components/index.ts`  | Публичные компоненты и типы компонентов                                              |
-| `src/composables/index.ts` | Публичные composables                                                                |
-| `src/utils/index.ts`       | Публичные утилиты                                                                    |
-| `src/icons/index.ts`       | Константы SVG-спрайта и директории иконок                                            |
-| `src/styles/index.scss`    | Глобальные стили библиотеки                                                          |
-
-Корневой API экспортирует компоненты напрямую, а `composables`, `utils` и `icons` — через namespaces, чтобы избежать конфликтов одноимённых типов.
+### Глобальная регистрация через плагин
 
 ```ts
-import { BaseButton, createUiKitPlugin, composables, icons, utils } from '@/index'
-
-const { useIcon } = composables
-const { ICON_SPRITE_PATH } = icons
-const { formatFileSize } = utils
-```
-
-## Подключение в приложении
-
-Локальный dev-вход подключает стили и Vue-плагин через `src/main.ts`.
-
-```ts
+// main.ts
 import { createApp } from 'vue'
-
-import App from './App.vue'
-import { createUiKitPlugin } from './plugin'
-import './styles/index.scss'
+import { createUiKitPlugin } from 'metal-art-site'
+import 'metal-art-site/styles'
 
 const app = createApp(App)
-
 app.use(createUiKitPlugin())
 app.mount('#app')
 ```
 
-Плагин регистрирует все публичные компоненты глобально. Для предотвращения конфликтов имён можно передать префикс.
+Все компоненты регистрируются с префиксом `Base` (например `<BaseButton>`, `<BaseInput>`).
+
+Кастомный префикс:
 
 ```ts
-app.use(createUiKitPlugin({ prefix: 'Ui' }))
+app.use(createUiKitPlugin({ prefix: 'Ma' }))
+// → <MaButton>, <MaInput>
 ```
 
-После подключения с префиксом компонент `BaseButton` доступен как `UiBaseButton`.
+### Tree-shaking: точечный импорт
 
-## Локальное использование компонентов
-
-Внутри библиотеки используй публичные entrypoints слоя библиотеки:
-
-```vue
-<script setup lang="ts">
-import { BaseButton, BaseIcon } from '@components'
-import type { BaseButtonProps } from '@components/BaseButton'
-
-function handleClick(): void {
-	console.log('click')
-}
-</script>
-
-<template>
-	<BaseButton @click="handleClick">
-		<template #left>
-			<BaseIcon name="check" />
-		</template>
-		Сохранить
-	</BaseButton>
-</template>
+```ts
+import { BaseButton } from 'metal-art-site/components/BaseButton'
+import { BaseInput } from 'metal-art-site/components/BaseInput'
 ```
 
-## Aliases
+### Composables
 
-Разрешённые aliases библиотеки:
+```ts
+import { useDebounce, useClickOutside, useBreakpoint } from 'metal-art-site/composables'
+```
 
-| Alias            | Путь                |
-| ---------------- | ------------------- |
-| `@/*`            | `src/*`             |
-| `@components/*`  | `src/components/*`  |
-| `@composables/*` | `src/composables/*` |
-| `@utils/*`       | `src/utils/*`       |
-| `@styles/*`      | `src/styles/*`      |
-| `@icons/*`       | `src/icons/*`       |
-| `@ui/*`          | `src/components/*`  |
+### Утилиты
 
-Запрещены старые site/FSD aliases: `@shared`, `@app`, `@pages`, `@widgets`, `@features`, `@entities`, `@assets`, `@lib`, `@api`.
+```ts
+import { formatDate, formatFileSize, assertNonNullable } from 'metal-art-site/utils'
+```
 
-## Стили
+### Иконки
 
-Глобальный SCSS-entrypoint:
+```ts
+import { ICON_SPRITE_PATH } from 'metal-art-site/icons'
+```
+
+Иконки поставляются как SVG-спрайт, генерируемый из `src/icons/svg/` (90+ иконок). Используются через `<BaseIcon name="icon-name" />`.
+
+## Компоненты
+
+Библиотека содержит **50 компонентов** в формате `Base*`:
+
+| Категория | Компоненты |
+|---|---|
+| **Кнопки и действия** | BaseButton, BaseSwitch, BaseCheckbox, BaseRadio, BaseRating |
+| **Поля ввода** | BaseInput, BaseTextarea, BaseSelect, BaseSearch, BaseColorPicker, BaseSlider, BaseRange, BaseFileUpload |
+| **Данные** | BaseTable, BasePagination, BaseTree, BaseProgress, BaseBadge, BaseChip, BasePin |
+| **Навигация** | BaseTabs, BaseStepper, BaseBreadcrumbs, BaseMenu, BaseDropdown, BaseMegaMenu, BaseSideBar |
+| **Поверхности** | BaseCard, BaseModal, BaseSlideover, BasePopover, BaseTooltip, BaseAccordion |
+| **Контент** | BaseText, BaseSeparator, BaseEmpty, BaseImage, BaseIcon, BaseAnimation |
+| **Формы** | BaseForm, BaseFormField |
+| **Обратная связь** | BaseAlert, BaseNotification, BaseLoader, BaseSkeleton |
+| **Аватары** | BaseAvatar |
+| **Сложные** | BaseChat, BaseEditor, BaseCalendar, BaseDatePicker, BaseTour |
+
+### Тяжёлые компоненты (async-чанки)
+
+Шесть компонентов вынесены в отдельные асинхронные чанки через `defineAsyncComponent` и не попадают в основной бандл:
+
+- `BaseChat`
+- `BaseEditor`
+- `BaseCalendar`
+- `BaseDatePicker`
+- `BaseTable`
+- `BaseFileUpload`
+
+При глобальной регистрации через плагин они загружаются лениво. При точечном импорте — подключаются напрямую.
+
+## Структура компонента
+
+Каждый `Base*`-компонент следует единой файловой структуре:
+
+```
+src/components/BaseButton/
+├── BaseButton.vue              ← SFC (template + script setup, без <style>)
+├── BaseButton.types.ts         ← Props, Emits, Slots, константы
+├── BaseButton.style.scss       ← BEM-стили с CSS-переменными
+├── BaseButton.spec.ts          ← Unit-тесты (Vitest + @testing-library/vue)
+├── BaseButton.integration.spec.ts ← Integration-тесты (userEvent)
+├── BaseButton.visual.spec.ts   ← Visual regression (Playwright + Storybook)
+├── BaseButton.stories.ts       ← Storybook stories с play-функциями
+└── index.ts                    ← Публичный API компонента
+```
+
+Состав файлов может варьироваться: сложные компоненты (BaseChat, BaseModal) включают доп. e2e-тесты, вложенные подкомпоненты и composables.
+
+## Дизайн-система
+
+### CSS-переменные
+
+Все визуальные параметры управляются через CSS-переменные, определённые в `src/styles/_variables.scss`:
+
+**Цвета:**
 
 ```scss
-@use './variables';
-@use './mixins';
-@use './functions';
+--color-primary, --color-accent, --color-accent-hover
+--color-text, --color-text-muted
+--color-bg, --color-surface, --color-surface-muted
+--color-border, --color-white
+--color-error, --color-success, --color-warning, --color-info
+--color-primary-soft, --color-primary-soft-hover
 ```
 
-`src/styles/index.scss` подключает единый шрифт UI Kit для `body`, форм, кнопок и всех `base-*` компонентов через CSS-переменные `--font-family-base`, `--font-family-heading` и `--font-family-mono`.
+**Типографика:**
 
-Компонентные стили импортируются рядом с компонентом. Глобальные переменные, миксины и функции автоматически инжектятся в каждый SCSS-файл через Vite `additionalData` (см. `build/config/css.ts`), поэтому ручной `@use '@styles/...'` в файлах компонентов не нужен и не допускается.
-
-Правила UI Kit:
-
-- размеры, отступы и шрифты задаются в px;
-- классы пишутся по БЭМ в kebab-case;
-- цвета берутся из CSS-переменных;
-- тёмная тема поддерживается через `[data-theme='dark']`;
-- интерактивные состояния оформляются через общие SCSS-миксины.
-
-## Иконки
-
-Исходные SVG лежат в `src/icons/svg`. Vite-плагин генерирует спрайт `public/icons.svg`.
-
-```vue
-<BaseIcon name="check" aria-label="Готово" />
+```scss
+--font-family-base    // Inter, Segoe UI, Roboto, Arial, sans-serif
+--font-family-heading // = --font-family-base
+--font-family-mono    // JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace
 ```
 
-Для работы со спрайтом используй composable:
+**Остальное:**
 
-```ts
-import { useIcon } from '@composables/useIcon'
-
-const { spritePath, getIconUrl } = useIcon()
+```scss
+--transition-base      // 200ms cubic-bezier(0.4, 0, 0.2, 1)
+--border-radius-sm     // 4px
+--border-radius-base   // 8px
+--border-radius-lg     // 12px
+--border-radius-full   // 9999px
+--shadow-sm / --shadow-md / --shadow-lg / --shadow-xl
 ```
 
-## Storybook
+### Тёмная тема
 
-Storybook читает истории только из компонентов:
+Переключение через атрибут `data-theme="dark"` на корневом элементе:
 
-```text
-src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)
+```html
+<html data-theme="dark">
 ```
 
-Команды:
+Все CSS-переменные автоматически переопределяются для тёмной темы в `_variables.scss`.
 
-```bash
-npm run storybook
-npm run build-storybook
+### SCSS-миксины
+
+Библиотека предоставляет набор миксинов в `src/styles/_mixins.scss`:
+
+| Миксин | Описание |
+|---|---|
+| `flex-center` | `display: flex; align-items: center; justify-content: center` |
+| `respond-to($name)` | Mobile-first media query от брейкпоинта |
+| `respond-below($name)` | Media query до брейкпоинта |
+| `respond-between($from, $to)` | Диапазон между брейкпоинтами |
+| `transition($props...)` | Переход с `--transition-base` |
+| `hover` / `active` / `focus` | Интерактивные состояния (исключают disabled) |
+| `interactive` | Комплексный переход для интерактивных элементов |
+| `custom-bg-*` / `custom-text-*` | Кастомные цвета с fallback-цепочками |
+
+### Брейкпоинты
+
+| Имя | Значение |
+|---|---|
+| `xs` | 320px |
+| `sm` | 480px |
+| `mobile` | 640px |
+| `md` | 768px |
+| `lg` | 1024px |
+| `xl` | 1440px |
+| `xxl` | 1920px |
+
+### SCSS-функция `sz()`
+
+Масштабирует значение пропорционально `--size-scale`:
+
+```scss
+padding: sz(10px 20px);
+// → padding: calc(10px * var(--size-scale, 1)) calc(20px * var(--size-scale, 1));
 ```
 
-## Тесты компонентов
+## Composables
 
-Тесты хранятся рядом с компонентом и не экспортируются из `index.ts` компонента.
+27 composable-функций, используемых внутри компонентов и доступных для внешнего потребления:
 
-| Файл                            | Runner     | Назначение                                               |
-| ------------------------------- | ---------- | -------------------------------------------------------- |
-| `Component.spec.ts`             | Vitest     | Unit-тесты: props, slots, базовый render, ветки template |
-| `Component.integration.spec.ts` | Vitest     | Интеграция: `v-model`, emits, пользовательские действия  |
-| `Component.visual.spec.ts`      | Playwright | Visual regression через Storybook iframe                 |
-| `Component.e2e.spec.ts`         | Playwright | Smoke-сценарии пользовательского поведения               |
-| `Component.stories.ts`          | Storybook  | Стабильные состояния компонента                          |
+| Composable | Назначение |
+|---|---|
+| `useClickOutside` | Детект клика вне элемента |
+| `useEscapeKey` | Обработка Escape |
+| `useScrollLock` | Блокировка прокрутки body |
+| `useDebounce` | Дебаунс значений |
+| `useBreakpoint` | Реактивные брейкпоинты |
+| `useSwipe` | Свайп-жесты |
+| `useCustomColor` | Кастомные цвета bg/text с hover/active/focus |
+| `useCustomClass` | Кастомные CSS-классы (строка или объект) |
+| `useCustomStyle` | Инлайн-стили |
+| `usePadding` | Вычисление padding (число или объект с осями) |
+| `useSizeScale` | Масштабирование компонента (50%–200%) |
+| `useVariant` | BEM-модификаторы вариантов |
+| `usePopup` | Позиционирование попапов |
+| `useFlyoutPosition` | Позиционирование выпадающих элементов |
+| `useDropdownPosition` | Позиционирование дропдаунов |
+| `useIcon` | Работа с SVG-иконками из спрайта |
+| `useImageZoom` | Зум изображений |
+| `useInputMask` | Маски ввода |
+| `useListNavigation` | Навигация по списку клавиатурой |
+| `useMegaMenuTree` | Дерево для мега-меню |
+| `usePasswordVisibility` | Переключение видимости пароля |
+| `useSlider` | Логика слайдера |
+| `useTableData` | Данные таблицы |
+| `useCalendar` | Логика календаря |
+| `useColorPicker` | Логика Color Picker |
+| `useEditorToolbar` | Тулбар редактора |
+| `useAutoScroll` | Автопрокрутка |
 
-Команды:
+## Утилиты
+
+| Модуль | Назначение |
+|---|---|
+| `assertUtils` | Утверждения (assertNonNullable и др.) |
+| `colorUtils` | Работа с цветами |
+| `dateUtils` | Форматирование дат |
+| `fileUtils` | Работа с файлами и MIME-типами |
+| `formatUtils` | Форматирование значений |
+| `imageUtils` | Обработка изображений |
+| `navigationUtils` | Навигационные утилиты |
+| `paginationUtils` | Расчёт пагинации |
+| `rangeUtils` | Утилиты для Range |
+| `schemaUtils` | Схемы валидации |
+| `storybookUtils` | Хелперы для Storybook |
+| `tableUtils` | Утилиты таблиц |
+| `tooltipUtils` | Позиционирование тултипов |
+| `editorDomInspect` | Инспекция DOM редактора |
+
+## Тестирование
+
+Библиотека использует четырёхуровневую стратегию тестирования:
+
+### 1. Unit-тесты (Vitest)
+
+Изолированная проверка пропсов, emits, CSS-модификаторов, слотов:
 
 ```bash
 npm run test:unit
-npm run test:vitest
-npm run test:storybook
-npm run test:e2e
-npm run test:visual
-npm run test:visual:update
-npm run test:all
 ```
 
-Screenshot snapshots лежат вне `src` в `tests/visual-snapshots` и обновляются только после ручного ревью визуальных изменений.
+### 2. Integration-тесты (Vitest + @testing-library/user-event)
 
-## Сборка и разработка
+Проверка пользовательских взаимодействий (клики, фокус, Tab):
 
 ```bash
-npm run dev
-npm run build
-npm run preview
+npm run test:unit  # запускает и unit, и integration
 ```
 
-`npm run dev` запускает playground из `src/playground`. Публичный код библиотеки не должен импортировать playground или demo-код.
+### 3. Storybook-тесты (Storybook test runner)
 
-## Правила импортов
+Интерактивные тесты через `play`-функции в stories + accessibility-проверки:
 
-- Публичные компоненты импортируются из `@components` или конкретной папки компонента.
-- Composables импортируются из `@composables` или конкретной папки composable.
-- Utils импортируются из `@utils` или конкретного модуля утилит.
-- Стили компонентов не экспортируются из TypeScript entrypoints.
-- `src/playground` не импортируется публичным API и компонентами.
-- Старые FSD/site aliases запрещены.
-
-## Пример использования
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseButton, BaseCard, BaseIcon, BaseText } from '@components'
-
-const count = ref(0)
-
-function handleClick(): void {
-	count.value += 1
-}
-</script>
-
-<template>
-	<BaseCard title="UI Kit">
-		<BaseText>Кликов: {{ count }}</BaseText>
-
-		<BaseButton variant="soft" @click="handleClick">
-			<template #left>
-				<BaseIcon name="plus" />
-			</template>
-			Добавить
-		</BaseButton>
-	</BaseCard>
-</template>
+```bash
+npm run test:storybook
+npm run test:a11y
 ```
+
+### 4. Visual Regression + E2E (Playwright)
+
+Скриншот-тесты ключевых состояний компонентов и сквозное тестирование:
+
+```bash
+npm run test:visual
+npm run test:e2e
+```
+
+Обновление скриншотов:
+
+```bash
+npm run test:visual:update
+```
+
+### Покрытие
+
+```bash
+# Полное покрытие с объединением отчётов
+npm run test:coverage:merged
+
+# Отдельные отчёты
+npm run test:components:coverage    # Лёгкие компоненты (100% порог)
+npm run test:components-heavy:coverage  # Тяжёлые компоненты (порог 0%)
+npm run test:composables:coverage   # Composables (100% порог)
+npm run test:utils:coverage         # Утилиты (100% порог)
+```
+
+## Скрипты
+
+| Скрипт | Описание |
+|---|---|
+| `npm run dev` | Dev-сервер Vite |
+| `npm run build` | Production-сборка (vue-tsc + vite build) |
+| `npm run preview` | Превью production-сборки |
+| `npm run lint` | ESLint проверка |
+| `npm run lint:fix` | ESLint автофикс |
+| `npm run storybook` | Запуск Storybook |
+| `npm run build-storybook` | Сборка Storybook |
+| `npm run test:unit` | Unit + Integration тесты |
+| `npm run test:storybook` | Storybook тесты |
+| `npm run test:a11y` | Accessibility тесты |
+| `npm run test:e2e` | E2E тесты (Playwright) |
+| `npm run test:visual` | Visual regression тесты |
+| `npm run test:visual:update` | Обновление скриншотов |
+| `npm run test:coverage:merged` | Полное покрытие (объединённый отчёт) |
+| `npm run test:all` | Компоненты + E2E + Visual |
+
+## Архитектура сборки
+
+Конфигурация Vite разбита на модули в `build/`:
+
+```
+build/
+├── config/
+│   ├── alias.ts       ← Пути и алиасы (@components, @composables, @utils, @icons)
+│   ├── build.ts       ← Production-сборка (чанки, минификация oxc, treeshake)
+│   ├── css.ts         ← SCSS-автоинжект, lightningcss
+│   ├── resolve.ts     ← Разрешение модулей
+│   └── server.ts      ← Dev/preview сервер
+├── plugins/           ← Vite-плагины (SVG, изображения, компрессия)
+├── storybook/         ← Конфигурация Storybook
+├── tests/             ← Конфигурации Vitest и Playwright
+├── utils/             ← Вспомогательные функции сборки
+├── constants.ts       ← Общие константы
+└── husky/             ← Прекоммит-хуки
+```
+
+### Алиасы
+
+| Алиас | Путь |
+|---|---|
+| `@components` | `src/components` |
+| `@composables` | `src/composables` |
+| `@utils` | `src/utils` |
+| `@icons` | `src/icons` |
+| `@styles` | `src/styles` |
+
+### Стратегия чанков
+
+- **Лёгкие компоненты** — в основном бандле
+- **Тяжёлые компоненты** (BaseChat, BaseEditor, BaseCalendar, BaseDatePicker, BaseTable, BaseFileUpload) — отдельные async-чанки через `defineAsyncComponent`
+- **Vendor** — отделён от app-кода (`vendor-vue`, `vendor-libs`)
+- **Минификация** — oxc (нативный минификатор rolldown)
+
+## Принципы библиотеки
+
+1. **Без внешних зависимостей** — только `vue` и `sass` в runtime-зависимостях
+2. **Полная типизация** — все Props, Emits, Slots типизированы через TypeScript-интерфейсы
+3. **CSS-переменные** — кастомизация без переопределения стилей
+4. **BEM-нейминг** — `.base-button`, `.base-button--ghost`, `.base-button__loader`
+5. **Тёмная тема** — из коробки через `data-theme="dark"`
+6. **Tree-shakeable** — ESM-экспорты для точечного подключения
+7. **Масштабирование** — проп `sizeScale` на каждом компоненте (50%–200%)
+8. **Кастомные цвета** — проп `color` с fallback на тему
+9. **Accessibility** — ARIA-атрибуты, фокус по Tab, клавиатурная навигация
+10. **100% покрытие тестами** — для лёгких компонентов, composables и утилит
+
+## Лицензия
+
+Private
