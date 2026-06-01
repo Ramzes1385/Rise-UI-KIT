@@ -1,0 +1,331 @@
+.base-range {
+	display: flex;
+	flex-direction: column;
+	gap: sz(8px);
+	width: 100%;
+	user-select: none;
+
+	&--disabled {
+		opacity: 0.45;
+		pointer-events: none;
+	}
+
+	&--vertical {
+		display: inline-flex;
+		flex-direction: column;
+		align-items: center;
+		width: auto;
+		height: sz(200px);
+
+		.base-range__label {
+			flex-direction: column;
+			gap: sz(2px);
+			align-items: center;
+		}
+
+		.base-range__body {
+			flex-direction: row;
+			height: 100%;
+		}
+
+		.base-range__track-wrapper {
+			position: relative;
+			height: 100%;
+			width: sz(20px);
+			flex-shrink: 0;
+		}
+
+		.base-range__track {
+			top: 0;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			width: sz(6px);
+			height: auto;
+		}
+
+		.base-range__fill {
+			top: auto;
+			left: 0;
+			width: 100%;
+		}
+
+		.base-range__thumb-container {
+			top: auto;
+			left: 50%;
+			transform: translate(-50%, 50%);
+		}
+
+		.base-range__marks {
+			position: relative;
+			flex-direction: row;
+			width: auto;
+			height: 100%;
+			left: auto;
+			top: auto;
+			padding: 0;
+			padding-left: sz(8px);
+		}
+
+		.base-range__mark {
+			transform: translateY(50%);
+			flex-direction: row;
+
+			&--major .base-range__mark-tick {
+				width: sz(12px);
+				height: sz(2px);
+			}
+
+			&--minor .base-range__mark-tick {
+				width: sz(8px);
+				height: sz(2px);
+			}
+
+			&--sub .base-range__mark-tick {
+				width: sz(4px);
+				height: sz(1px);
+			}
+		}
+
+		.base-range__mark-tick {
+			width: sz(2px);
+			height: auto;
+		}
+
+		.base-range__mark-text {
+			padding-top: 0;
+			padding-left: sz(4px);
+		}
+	}
+
+	/* Метка */
+	&__label {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		color: var(--color-text-muted);
+	}
+
+	&__label-min,
+	&__label-max {
+		font-size: sz(12px);
+	}
+
+	&__label-value {
+		font-size: sz(14px);
+	}
+
+	/* Обёртка body (трек + деления) */
+	&__body {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		width: 100%;
+	}
+
+	/* Обёртка трека */
+	&__track-wrapper {
+		position: relative;
+		height: sz(20px);
+		width: 100%;
+		cursor: pointer;
+	}
+
+	/* Трек */
+	&__track {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 100%;
+		height: sz(6px);
+		background-color: var(--color-border);
+		border-radius: sz(3px);
+	}
+
+	/* Заливка (по умолчанию — accent через CSS-переменную) */
+	&__fill {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		border-radius: sz(3px);
+		@include custom-bg(background-color, var(--color-accent));
+		@include transition(background-color);
+	}
+
+	/* Контейнер ползунка — позиционирование */
+	&__thumb-container {
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 2;
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
+
+		&.base-tooltip-wrapper {
+			display: inline-block;
+		}
+	}
+
+	/* Ползунок */
+	&__thumb {
+		position: static;
+		transform: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(18px);
+		height: sz(18px);
+		padding: 0;
+		border-radius: 50%;
+		@include custom-bg(background-color, var(--color-white));
+		border: 2px solid var(--color-accent);
+		cursor: inherit;
+		outline: none;
+		box-shadow: none;
+		font-size: 0;
+		line-height: 0;
+		overflow: visible;
+
+		@include hover {
+			box-shadow: 0 0 0 sz(6px) rgba(249, 115, 22, 0.12);
+			filter: none;
+		}
+
+		@include active {
+			transform: scale(1.15);
+			filter: none;
+		}
+
+		@include focus {
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+		}
+	}
+
+	/* Точка ползунка по умолчанию */
+	&__thumb-dot {
+		width: sz(6px);
+		height: sz(6px);
+		border-radius: 50%;
+		background-color: currentColor;
+	}
+
+	/* Кастомный ползунок — сброс дефолтных стилей */
+	&__thumb--custom {
+		width: auto;
+		height: auto;
+		min-width: sz(18px);
+		min-height: sz(18px);
+		border: none;
+		background: none;
+		font-size: inherit;
+		line-height: inherit;
+
+		@include hover {
+			box-shadow: none;
+		}
+
+		@include active {
+			transform: none;
+		}
+
+		@include focus {
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+		}
+	}
+
+	// ============================================================
+	// Варианты отображения (визуальные поверхности)
+	// ============================================================
+
+	&--ghost &__track {
+		background-color: transparent;
+	}
+
+	&--ghost &__thumb {
+		box-shadow: none;
+	}
+
+	&--outline &__track {
+		background-color: transparent;
+		border: sz(1px) solid var(--color-border);
+		box-sizing: border-box;
+	}
+
+	&--outline &__thumb {
+		border-width: sz(3px);
+	}
+
+	&--shadow &__thumb {
+		box-shadow: var(--shadow-lg);
+
+		@include hover {
+			box-shadow: var(--shadow-xl);
+		}
+	}
+
+	&--soft &__track {
+		@include custom-bg(background-color, var(--color-primary-soft));
+	}
+
+	&--soft &__fill {
+		@include custom-bg(background-color, var(--color-primary-soft-hover));
+	}
+
+	&--soft &__thumb {
+		@include custom-bg(background-color, var(--color-primary-soft));
+	}
+
+	/* Деления шкалы */
+	&__marks {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: sz(20px);
+	}
+
+	&__mark {
+		position: absolute;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0;
+
+		&--major .base-range__mark-tick {
+			height: sz(12px);
+			width: sz(2px);
+		}
+
+		&--minor .base-range__mark-tick {
+			height: sz(8px);
+			width: sz(2px);
+		}
+
+		&--sub .base-range__mark-tick {
+			height: sz(4px);
+			width: sz(1px);
+		}
+	}
+
+	&__mark-tick {
+		background-color: var(--color-border);
+		border-radius: sz(1px);
+		@include transition(background-color);
+	}
+
+	&__mark-text {
+		font-size: sz(10px);
+		color: var(--color-text-muted);
+		white-space: nowrap;
+		padding-top: sz(2px);
+	}
+}

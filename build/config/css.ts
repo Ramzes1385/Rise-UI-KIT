@@ -1,42 +1,46 @@
 /**
- * Конфигурация стилей: SCSS, PostCSS, CSS-модули.
- * Глобальные переменные и миксины подключаются автоматически
- * через additionalData — не нужно импортировать вручную в каждом компоненте.
+ * Конфигурация стилей UI-библиотеки.
+ * Глобальные SCSS-модули (variables/mixins/functions) автоматически инжектятся
+ * во все компонентные стили через prelude, кроме самих модулей-источников
+ * (иначе Sass-ошибка «Module loop: this module is already being loaded»).
+ * Sass: modern-compiler API. CSS-трансформ/минификация: Lightning CSS.
  */
 
 import type { CSSOptions } from 'vite'
 import { isProductionMode } from '../utils/helpers'
 
-/** Глобальные SCSS-файлы, доступные во всех компонентах без импорта */
-const GLOBAL_SCSS_IMPORTS = [
-	'@use "@/shared/assets/styles/variables" as *;',
-	'@use "@/shared/assets/styles/mixins" as *;',
-	'@use "@/shared/assets/styles/functions" as *;',
+/** Глобальный prelude — автоматически инжектится во все .scss-entry компонентов. */
+const GLOBAL_SCSS_PRELUDE = [
+	'@use "@styles/variables" as *;',
+	'@use "@styles/mixins" as *;',
+	'@use "@styles/functions" as *;',
+	'',
 ].join('\n')
 
-/** Глобальные SCSS-файлы, которые не должны импортировать сами себя */
+/** Глобальные SCSS-файлы — не должны импортировать сами себя (защита от module loop). */
 const GLOBAL_SCSS_FILES = ['_variables.scss', '_mixins.scss', '_functions.scss']
 
-/** Создаёт конфигурацию CSS для Vite */
+function shouldSkipImport(filename: string): boolean {
+	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))
+}
+
+function addGlobalImports(source: string, filename: string): string {
+	if (shouldSkipImport(filename)) return source
+	return `${GLOBAL_SCSS_PRELUDE}${source}`
+}
+
+/** Создаёт конфигурацию CSS для Vite. */
 export function createCssConfig(mode: string): CSSOptions {
 	const isProduction = isProductionMode(mode)
 
 	return {
+		transformer: 'lightningcss',
 		preprocessorOptions: {
 			scss: {
-				additionalData: (source: string, filename: string) => {
-					const isGlobal = GLOBAL_SCSS_FILES.some(f => filename.endsWith(f))
-					if (isGlobal) return source
-					return `${GLOBAL_SCSS_IMPORTS}\n${source}`
-				},
-				silenceDeprecations: ['legacy-js-api'],
+				api: 'modern-compiler',
+				additionalData: addGlobalImports,
 				charset: false,
 			},
-		},
-
-		modules: {
-			localsConvention: 'camelCaseOnly',
-			generateScopedName: isProduction ? '[hash:base64:8]' : '[name]__[local]--[hash:base64:5]',
 		},
 
 		devSourcemap: !isProduction,

@@ -1,0 +1,127 @@
+.date-picker-panel {
+	position: fixed;
+	z-index: 1000;
+	background-color: var(--color-surface);
+	border: sz(1px) solid var(--color-border);
+	border-radius: var(--border-radius-lg);
+	box-shadow: var(--shadow-lg);
+	padding: sz(8px);
+
+	[data-theme='dark'] &,
+	&[data-theme='dark'] {
+		background-color: var(--color-surface);
+		border-color: var(--color-border);
+		box-shadow: 0 sz(4px) sz(24px) rgba(0, 0, 0, 0.4);
+	}
+	display: flex;
+  flex-direction: column;
+	flex-wrap: wrap;
+	gap: sz(8px);
+	box-sizing: border-box;
+
+	&--multi {
+    flex-direction: inherit;
+		max-width: 100%;
+		overflow-y: auto;
+		justify-content: space-between;
+
+		.date-picker-panel__calendar {
+			flex: 1 1 sz(260px);
+			min-width: sz(260px);
+			max-width: 100%;
+			width: auto !important;
+
+			&.base-calendar {
+				width: auto;
+				min-width: unset;
+			}
+		}
+	}
+
+	&__header {
+		width: 100%;
+		padding: sz(12px 16px);
+		border-bottom: sz(1px) solid var(--color-border);
+		margin-bottom: sz(8px);
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		box-sizing: border-box;
+		background-color: var(--color-surface);
+		border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+
+		[data-theme='dark'] &,
+		.date-picker-panel[data-theme='dark'] & {
+			background-color: var(--color-surface-muted);
+			border-bottom-color: var(--color-border);
+		}
+	}
+
+	&__nav-group {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+
+		&--prev {
+			justify-content: flex-start;
+		}
+
+		&--next {
+			justify-content: flex-end;
+		}
+	}
+
+	&__nav-btn {
+		width: sz(32px);
+		height: sz(32px);
+		padding: 0;
+		border: sz(1px) solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		background-color: var(--color-surface);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		@include interactive;
+
+		@include hover {
+			background-color: var(--color-border);
+			border-color: var(--color-text-muted);
+		}
+
+		.base-icon {
+			flex-shrink: 0;
+		}
+
+		&--double {
+			.base-icon {
+				&:first-child {
+					margin-right: sz(-14px);
+				}
+			}
+		}
+	}
+
+	&__year-title {
+		font-size: sz(18px);
+		font-weight: 700;
+		color: var(--color-text);
+		padding: 0 sz(16px);
+		user-select: none;
+		white-space: nowrap;
+	}
+}
+
+/* Transition для dropdown */
+.dropdown-enter-active,
+.dropdown-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+	opacity: 0;
+	transform: translateY(-8px);
+}

@@ -1,0 +1,547 @@
+.base-editor {
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-lg);
+	@include custom-bg(background-color, var(--color-surface));
+	overflow: hidden;
+	@include interactive;
+
+	&--focused {
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 sz(3px) rgba(249, 115, 22, 0.15);
+
+		.base-textarea__field {
+			outline: none !important;
+		}
+	}
+
+	&--readonly {
+		background-color: var(--color-surface-muted);
+
+		.base-editor__content {
+			opacity: 0.7;
+		}
+	}
+
+	/* ===== Панель инструментов ===== */
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(3px);
+		padding: sz(5px) sz(6px);
+		border-bottom: 1px solid var(--color-border);
+		@include custom-bg(background-color, var(--color-surface-muted));
+		user-select: none;
+	}
+
+	&__group {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(3px);
+		padding-right: sz(6px);
+		margin-right: sz(3px);
+		border-right: 1px solid var(--color-border);
+
+		&:last-child {
+			border-right: none;
+			margin-right: 0;
+			padding-right: 0;
+		}
+	}
+
+	&__heading-select {
+		width: sz(72px);
+		min-width: sz(130px);
+
+		.base-select {
+			width: 100%;
+		}
+
+		.base-select__trigger {
+			min-height: sz(27px);
+			padding: sz(2px) sz(17px) sz(2px) sz(5px);
+			font-size: sz(10px);
+			box-shadow: none;
+		}
+
+		.base-select__arrow {
+			right: sz(4px);
+		}
+
+		.base-dropdown__panel {
+			min-width: sz(72px);
+		}
+	}
+
+	&__btn,
+	&__btn.base-button {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: sz(27px);
+		min-width: sz(27px);
+		height: sz(27px);
+		padding: 0;
+		border: none;
+		border-radius: var(--border-radius-base);
+		background-color: transparent;
+		color: var(--color-text);
+		cursor: pointer;
+		@include transition(background-color, color);
+
+		svg {
+			width: sz(16px);
+			height: sz(16px);
+			pointer-events: none;
+		}
+
+		.ql-stroke {
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 1.8;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+
+		.ql-fill {
+			fill: currentColor;
+			stroke: none;
+		}
+
+		.ql-error {
+			stroke: var(--color-error);
+		}
+
+		@include hover {
+			background-color: var(--color-border);
+			color: var(--color-accent);
+			box-shadow: none;
+			filter: none;
+		}
+
+		@include active {
+			background-color: var(--color-accent);
+			color: #ffffff;
+
+			.ql-stroke {
+				stroke: #ffffff;
+			}
+
+			.ql-fill {
+				fill: #ffffff;
+			}
+		}
+
+		/* Активное состояние кнопки (форматирование применено) */
+		&--active {
+			background-color: var(--color-accent) !important;
+			color: #ffffff !important;
+
+			.ql-stroke {
+				stroke: #ffffff;
+			}
+
+			.ql-fill {
+				fill: #ffffff;
+			}
+
+			@include hover {
+				background-color: var(--color-accent) !important;
+				color: #ffffff !important;
+				opacity: 0.85;
+			}
+		}
+
+		/* Кнопка с вложенным input (цвет, файл) */
+		&--color {
+			position: relative;
+			overflow: visible;
+		}
+	}
+
+	&__color-picker {
+		display: inline-flex;
+	}
+
+	&__color-picker .base-color-picker__swatch {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(27px);
+		height: sz(27px);
+		padding: 0;
+		border: none;
+		border-radius: var(--border-radius-base);
+		background-color: transparent;
+		box-shadow: none;
+		color: var(--color-text);
+		cursor: pointer;
+		@include transition(background-color, color);
+
+		svg {
+			width: sz(16px);
+			height: sz(16px);
+			pointer-events: none;
+		}
+
+		@include hover {
+			background-color: var(--color-border);
+			color: var(--color-accent);
+		}
+	}
+
+	&__color-picker--active .base-color-picker__swatch {
+		background-color: var(--editor-swatch-color);
+		color: #ffffff;
+
+		@include hover {
+			background-color: var(--editor-swatch-color);
+			color: #ffffff;
+		}
+	}
+
+	&__file-input {
+		display: none;
+	}
+
+	/* ===== Область редактирования ===== */
+	&__content {
+		padding: sz(16px) sz(20px);
+		min-height: sz(200px);
+		max-height: sz(600px);
+		outline: none;
+		overflow-y: auto;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		font-size: sz(15px);
+		line-height: 1.7;
+		@include custom-text(color, var(--color-text));
+
+		&--empty::before {
+			content: attr(data-placeholder);
+			color: var(--color-text-muted);
+			pointer-events: none;
+		}
+
+		/* Жирный */
+		strong {
+			font-weight: 700;
+		}
+
+		/* Курсив */
+		em {
+			font-style: italic;
+		}
+
+		/* Подчёркнутый */
+		u {
+			text-decoration: underline;
+			text-underline-offset: sz(3px);
+		}
+
+		/* Зачёркнутый */
+		s,
+		strike {
+			text-decoration: line-through;
+			opacity: 0.7;
+		}
+
+		/* Ссылки */
+		a {
+			color: var(--color-accent);
+			text-decoration: underline;
+			text-underline-offset: sz(2px);
+		}
+
+		/* Заголовки */
+		h1 {
+			font-size: 1.75em;
+			font-weight: 700;
+			margin: 0.5em 0;
+		}
+
+		h2 {
+			font-size: 1.5em;
+			font-weight: 600;
+			margin: 0.5em 0;
+		}
+
+		h3 {
+			font-size: 1.25em;
+			font-weight: 600;
+			margin: 0.5em 0;
+		}
+
+		h4 {
+			font-size: 1.1em;
+			font-weight: 600;
+			margin: 0.4em 0;
+		}
+
+		h5 {
+			font-size: 1em;
+			font-weight: 600;
+			margin: 0.4em 0;
+		}
+
+		h6 {
+			font-size: 0.9em;
+			font-weight: 600;
+			margin: 0.3em 0;
+			color: var(--color-text-muted);
+		}
+
+		/* Цитаты */
+		blockquote {
+			margin: sz(12px) 0;
+			padding: sz(8px) sz(16px);
+			border-left: sz(4px) solid var(--color-accent);
+			background-color: var(--color-surface-muted);
+			border-radius: 0 var(--border-radius-base) var(--border-radius-base) 0;
+		}
+
+		/* ===== Блок кода ===== */
+		pre {
+			margin: sz(12px) 0;
+			padding: sz(12px);
+			background-color: var(--color-surface-muted);
+			border: 1px solid var(--color-border);
+			border-radius: var(--border-radius-lg);
+			overflow: hidden;
+			position: relative;
+			box-shadow: 0 sz(4px) sz(12px) rgba(0, 0, 0, 0.08);
+		}
+
+		pre::before {
+			content: '';
+			display: block;
+			padding: sz(10px) sz(16px);
+			background-color: var(--color-bg);
+			border-bottom: 1px solid var(--color-border);
+			font-size: 0;
+		}
+
+		pre::after {
+			content: '● ● ●';
+			position: absolute;
+			top: sz(8px);
+			left: sz(14px);
+			font-size: sz(10px);
+			letter-spacing: sz(4px);
+			color: var(--color-text-muted);
+		}
+
+		pre code {
+			display: block;
+			padding: sz(16px);
+			background: none;
+			border: none;
+			border-radius: 0;
+			color: var(--color-text);
+			font-family: var(--font-family-mono);
+			font-size: sz(13px);
+			line-height: 1.7;
+			overflow-x: auto;
+			white-space: pre-wrap;
+			word-break: break-all;
+		}
+
+		/* Инлайн код */
+		code {
+			font-family: var(--font-family-mono);
+			font-size: 0.9em;
+		}
+
+		:not(pre) > code {
+			padding: sz(2px) sz(6px);
+			background-color: var(--color-surface-muted);
+			border: 1px solid var(--color-border);
+			border-radius: sz(4px);
+			color: var(--color-accent);
+		}
+
+		/* Списки */
+		ul,
+		ol {
+			padding-left: sz(24px);
+			margin: sz(8px) 0;
+			overflow-wrap: break-word;
+			word-break: break-word;
+		}
+
+		li {
+			margin: sz(2px) 0;
+			overflow-wrap: break-word;
+			word-break: break-word;
+		}
+
+		ul li::marker {
+			color: var(--color-accent);
+		}
+
+		ol li::marker {
+			color: var(--color-accent);
+			font-weight: 700;
+		}
+
+		/* Разделитель */
+		hr {
+			border: none;
+			border-top: sz(2px) solid var(--color-border);
+			margin: sz(16px) 0;
+		}
+
+		/* Изображения */
+		img {
+			max-width: 100%;
+			height: auto;
+			border-radius: var(--border-radius-base);
+			margin: sz(8px) 0;
+		}
+
+		/* Видео */
+		video {
+			max-width: 100%;
+			height: auto;
+			border-radius: var(--border-radius-base);
+			margin: sz(8px) 0;
+		}
+
+		/* Подсветка медиа при наведении */
+		img:hover,
+		video:hover {
+			outline: sz(2px) solid var(--color-accent);
+			outline-offset: sz(2px);
+			cursor: pointer;
+		}
+	}
+
+	/* ===== Режим кода ===== */
+	&__code {
+		min-height: sz(200px);
+		max-height: sz(600px);
+
+		.base-textarea {
+			border: none;
+			box-shadow: none;
+		}
+
+		.base-textarea__field {
+			padding: sz(16px) sz(20px);
+			min-height: sz(200px);
+			max-height: sz(600px);
+			font-family: var(--font-family-mono);
+			font-size: sz(13px);
+			line-height: 1.7;
+			resize: none;
+			tab-size: 2;
+			outline: none;
+			border: none;
+			&:hover {
+				border-color: transparent;
+				box-shadow: none;
+				outline: none;
+				border: none;
+			}
+
+			&:active {
+				border-color: transparent;
+				box-shadow: none;
+				outline: none;
+				border: none;
+			}
+			&:focus-visible {
+				box-shadow: none;
+			}
+		}
+	}
+
+	/* ===== Контекстное меню медиа ===== */
+	&__context-menu {
+		position: fixed;
+		z-index: 100;
+		background: var(--color-white);
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		box-shadow: var(--shadow-lg);
+		padding: sz(12px);
+		min-width: sz(200px);
+	}
+
+	&__context-menu-row {
+		display: flex;
+		gap: sz(8px);
+		margin-bottom: sz(8px);
+	}
+
+	&__context-menu-actions {
+		display: flex;
+		gap: sz(8px);
+	}
+
+	// Варианты
+	&--ghost {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+
+		.base-editor__toolbar {
+			@include custom-bg(background-color, transparent);
+		}
+	}
+
+	&--outline {
+		@include custom-bg(background-color, transparent);
+		border-width: 2px;
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-lg);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		border-color: transparent;
+
+		.base-editor__toolbar {
+			@include custom-bg(background-color, var(--color-primary-soft-hover));
+		}
+	}
+}
+
+/* ===== Тёмная тема ===== */
+[data-theme='dark'] {
+	.base-editor__content {
+		:not(pre) > code {
+			background-color: var(--color-surface-muted);
+			border-color: var(--color-border);
+			color: var(--color-accent);
+		}
+
+		pre {
+			background-color: #2a2a3d;
+			border-color: #3d3d56;
+		}
+
+		pre::before {
+			background-color: #22223a;
+			border-bottom-color: #3d3d56;
+		}
+
+		pre code {
+			color: #e0e0f0;
+		}
+	}
+
+	.base-editor__code {
+		.base-textarea__field {
+			background-color: #2a2a3d;
+			color: #e0e0f0;
+		}
+	}
+
+	.base-editor__context-menu {
+		background: #2a2a3d;
+		border-color: #3d3d56;
+	}
+}

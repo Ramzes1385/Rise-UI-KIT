@@ -1,0 +1,132 @@
+.base-button {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	--btn-pad-top: 10px;
+	--btn-pad-right: 20px;
+	--btn-pad-bottom: 10px;
+	--btn-pad-left: 20px;
+	padding: sz(var(--btn-pad-top)) sz(var(--btn-pad-right)) sz(var(--btn-pad-bottom)) sz(var(--btn-pad-left));
+	border: 1px solid transparent;
+	border-radius: var(--border-radius-base);
+	@include custom-bg(background-color, var(--color-accent));
+	@include custom-text(color, #ffffff);
+	font-size: sz(14px);
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+	outline: none;
+	max-width: 100%;
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	@include interactive;
+
+	@include hover {
+		filter: brightness(1.1);
+		box-shadow: var(--shadow-md);
+	}
+
+	@include active {
+		filter: brightness(0.9);
+		box-shadow: none;
+	}
+
+	@include focus {
+		box-shadow:
+			0 0 0 2px var(--color-bg),
+			0 0 0 4px var(--color-accent);
+	}
+
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--color-text-muted));
+		box-shadow: none;
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-surface-muted));
+			@include custom-text(color, var(--color-text));
+			box-shadow: none;
+		}
+	}
+
+	&--outline {
+		@include custom-bg(background-color, transparent);
+		border-color: var(--color-border);
+		@include custom-text(color, var(--color-text));
+		box-shadow: none;
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-surface-muted));
+			border-color: var(--color-text-muted);
+			box-shadow: none;
+		}
+	}
+
+	&--shadow {
+		@include custom-bg(background-color, var(--color-white));
+		@include custom-text(color, var(--color-text));
+		box-shadow: var(--shadow-lg);
+
+		@include hover {
+			box-shadow: var(--shadow-xl);
+		}
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		@include custom-text(color, var(--color-primary));
+		box-shadow: none;
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-primary-soft-hover));
+			box-shadow: none;
+		}
+	}
+
+	&--disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	&--loading {
+		.base-button__content {
+			opacity: 0;
+		}
+	}
+
+	&__content {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: sz(6px);
+	}
+
+	&__slot-left,
+	&__slot-right {
+		display: inline-flex;
+		align-items: center;
+		flex-shrink: 0;
+	}
+
+	&__loader {
+		position: absolute;
+		width: sz(18px);
+		height: sz(18px);
+		border: sz(2px) solid currentColor;
+		border-bottom-color: transparent;
+		border-radius: var(--border-radius-full);
+		animation: rotation 0.8s linear infinite;
+	}
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}

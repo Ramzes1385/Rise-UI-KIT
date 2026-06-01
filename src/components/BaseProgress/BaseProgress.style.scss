@@ -1,0 +1,169 @@
+.base-progress {
+	position: relative;
+	display: flex;
+	align-items: center;
+
+	@include custom-text(color, var(--color-text));
+
+	/* ===== Линейный ===== */
+	&--line {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	&__tooltip-trigger {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+
+	&__tooltip-anchor {
+		display: block;
+		width: 0;
+		height: sz(10px);
+	}
+
+	&__track {
+		width: 100%;
+		height: sz(10px);
+		background-color: var(--color-surface-muted);
+		border-radius: var(--border-radius-full);
+		overflow: visible;
+	}
+
+	&__fill {
+		height: 100%;
+		border-radius: var(--border-radius-full);
+		@include transition(width);
+		position: relative;
+		@include custom-bg(background-color, var(--color-accent));
+	}
+
+	/* ===== Круговой ===== */
+	&--circle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__svg {
+		width: sz(100px);
+		height: sz(100px);
+		transform: rotate(-90deg);
+	}
+
+	&__track-circle {
+		stroke: var(--color-surface-muted);
+	}
+
+	&__fill-circle {
+		@include transition(stroke-dashoffset);
+		@include custom-text(stroke, var(--color-accent));
+	}
+
+	&__circle-label {
+		position: absolute;
+		font-size: sz(18px);
+		color: var(--color-text);
+	}
+
+	/* ===== Анимация: полоски ===== */
+	&--striped &__fill {
+		background-image: linear-gradient(
+			45deg,
+			rgba(255, 255, 255, 0.15) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(255, 255, 255, 0.15) 50%,
+			rgba(255, 255, 255, 0.15) 75%,
+			transparent 75%,
+			transparent
+		);
+		background-size: 20px 20px;
+		animation: base-progress-stripes 1s linear infinite;
+	}
+
+	/* ===== Анимация: пульс ===== */
+	&--pulse &__fill {
+		animation: base-progress-pulse 2s ease-in-out infinite;
+	}
+
+	&--pulse &__fill-circle {
+		animation: base-progress-pulse-circle 2s ease-in-out infinite;
+	}
+
+	/* ===== Анимация: свечение ===== */
+	&--glow &__fill {
+		box-shadow:
+			0 0 10px currentColor,
+			0 0 20px currentColor;
+		animation: base-progress-glow 2s ease-in-out infinite;
+	}
+
+	/* ===== Неопределённый ===== */
+	&--indeterminate.base-progress--line &__track {
+		overflow: hidden;
+	}
+
+	&--indeterminate.base-progress--line &__fill {
+		width: 40% !important;
+		animation: base-progress-indeterminate 1.5s ease-in-out infinite;
+	}
+}
+
+@keyframes base-progress-stripes {
+	0% {
+		background-position: 20px 0;
+	}
+
+	100% {
+		background-position: 0 0;
+	}
+}
+
+@keyframes base-progress-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.6;
+	}
+}
+
+@keyframes base-progress-pulse-circle {
+	0%,
+	100% {
+		opacity: 1;
+		filter: none;
+	}
+
+	50% {
+		opacity: 0.7;
+		filter: drop-shadow(0 0 4px currentColor);
+	}
+}
+
+@keyframes base-progress-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 5px currentColor;
+	}
+
+	50% {
+		box-shadow:
+			0 0 15px currentColor,
+			0 0 30px currentColor;
+	}
+}
+
+@keyframes base-progress-indeterminate {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	100% {
+		transform: translateX(350%);
+	}
+}

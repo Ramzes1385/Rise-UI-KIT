@@ -1,0 +1,27 @@
+.base-pagination {
+	display: flex;
+	align-items: center;
+	gap: sz(16px);
+	justify-content: center;
+
+	// Текст внутри кнопок наследует цвет от кнопки (как и иконки)
+	.base-text {
+		color: inherit;
+	}
+
+	&__pages {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__ellipsis {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(40px);
+		height: sz(40px);
+		color: var(--color-text-muted);
+		user-select: none;
+	}
+}

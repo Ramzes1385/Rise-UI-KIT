@@ -1,0 +1,203 @@
+.base-switch {
+	display: inline-flex;
+	flex-direction: column;
+	gap: sz(4px);
+	user-select: none;
+
+	@include custom-text(color, var(--color-text));
+
+	// ── Модификаторы ──
+
+	&--disabled {
+		opacity: 0.5;
+
+		.base-switch__row {
+			cursor: not-allowed;
+		}
+	}
+
+	&--reverse {
+		.base-switch__row {
+			flex-direction: row-reverse;
+		}
+	}
+
+	&--error {
+		.base-switch__slider {
+			border-color: var(--color-error);
+		}
+
+		.base-switch__input:checked ~ &__slider {
+			@include custom-bg(background-color, var(--color-error));
+			border-color: var(--color-error);
+		}
+
+		@include focus {
+			.base-switch__slider {
+				box-shadow:
+					0 0 0 2px var(--color-bg),
+					0 0 0 4px var(--color-error);
+			}
+		}
+	}
+
+	// ── Элементы ──
+
+	&__row {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(10px);
+		cursor: pointer;
+	}
+
+	&__wrapper {
+		position: relative;
+		width: sz(40px);
+		height: sz(20px);
+		flex-shrink: 0;
+	}
+
+	&__input {
+		position: absolute;
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	&__slider {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		@include custom-bg(background-color, var(--color-border));
+		border-radius: var(--border-radius-full);
+		@include interactive;
+	}
+
+	&__input:checked ~ &__slider {
+		@include custom-bg(background-color, var(--color-accent));
+	}
+
+	&__handle {
+		position: absolute;
+		height: sz(16px);
+		width: sz(16px);
+		left: sz(2px);
+		bottom: sz(2px);
+		@include custom-bg(background-color, #ffffff);
+		border-radius: var(--border-radius-full);
+		box-shadow: var(--shadow-sm);
+		@include transition(transform, width);
+	}
+
+	&__input:checked ~ &__slider &__handle {
+		transform: translateX(sz(20px));
+	}
+
+	&__content {
+		display: flex;
+		align-items: center;
+		gap: sz(2px);
+	}
+
+	&__label {
+		font-size: sz(14px);
+		font-weight: 500;
+		@include custom-text(color, var(--color-text));
+		@include transition(color);
+	}
+
+	&__required {
+		color: var(--color-error);
+		font-size: sz(14px);
+		font-weight: 500;
+	}
+
+	&__error-text {
+		font-size: sz(12px);
+		color: var(--color-error);
+	}
+
+	// ── Интерактивные состояния ──
+
+	@include hover {
+		.base-switch__slider {
+			@include custom-bg(background-color, var(--color-primary-soft-hover));
+		}
+
+		.base-switch__input:checked ~ .base-switch__slider {
+			@include custom-bg(background-color, var(--color-accent-hover));
+		}
+
+		.base-switch__label {
+			@include custom-text(color, var(--color-accent));
+		}
+	}
+
+	@include focus {
+		.base-switch__slider {
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+		}
+	}
+
+	@include active {
+		.base-switch__slider {
+			transform: scale(0.95);
+		}
+
+		.base-switch__handle {
+			width: sz(20px);
+		}
+	}
+
+	// ── Вариант outline ──
+
+	&--outline {
+		.base-switch__slider {
+			@include custom-bg(background-color, transparent);
+			border: 2px solid var(--color-border);
+		}
+
+		.base-switch__input:checked ~ &__slider {
+			@include custom-bg(background-color, var(--color-accent));
+			border-color: var(--color-accent);
+		}
+
+		.base-switch__handle {
+			@include custom-bg(background-color, var(--color-text-muted));
+		}
+
+		.base-switch__input:checked ~ &__slider &__handle {
+			@include custom-bg(background-color, #ffffff);
+		}
+
+		@include hover {
+			.base-switch__slider {
+				@include custom-bg(background-color, var(--color-primary-soft));
+				border-color: var(--color-accent);
+			}
+
+			.base-switch__input:checked ~ .base-switch__slider {
+				@include custom-bg(background-color, var(--color-accent-hover));
+				border-color: var(--color-accent-hover);
+			}
+		}
+	}
+
+	// ── Вариант shadow ──
+
+	&--shadow {
+		.base-switch__slider {
+			box-shadow: var(--shadow-lg);
+		}
+
+		@include hover {
+			.base-switch__slider {
+				box-shadow: var(--shadow-xl);
+			}
+		}
+	}
+}

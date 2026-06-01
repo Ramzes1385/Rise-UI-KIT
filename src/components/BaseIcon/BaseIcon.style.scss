@@ -1,0 +1,19 @@
+.base-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	height: auto;
+	fill: currentColor;
+	flex-shrink: 0;
+
+	&__svg {
+		width: sz(20px);
+		height: sz(20px);
+		transform-box: fill-box;
+		transform-origin: center;
+		transition:
+			transform var(--transition-base),
+			color var(--transition-base);
+	}
+}

@@ -1,0 +1,395 @@
+.base-input {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	@include transition(opacity);
+
+	@include custom-text(color, var(--color-text));
+
+	&--error {
+		.base-input__wrapper {
+			border-color: var(--color-error);
+
+			&:hover {
+				border-color: var(--color-error);
+				background-color: var(--color-surface-muted);
+			}
+
+			&:focus-within {
+				border-color: var(--color-error);
+				box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+			}
+		}
+	}
+
+	&--disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	&--readonly {
+		.base-input__wrapper {
+			background-color: var(--color-surface-muted);
+		}
+
+		.base-input__field {
+			cursor: default;
+		}
+	}
+
+	&__label {
+		font-size: sz(13px);
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	&__required {
+		color: var(--color-error);
+		margin-left: sz(2px);
+	}
+
+	// ============================================================
+	// Wrapper — единая граница для всего инпута
+	// ============================================================
+
+	&__wrapper {
+		position: relative;
+		display: flex;
+		align-items: stretch;
+		width: 100%;
+		border: sz(1px) solid var(--color-border);
+		border-radius: sz(var(--border-radius-base));
+		@include custom-bg(background-color, var(--color-surface));
+		overflow: hidden;
+		@include interactive;
+
+		@include hover {
+			border-color: var(--color-text-muted);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		@include focus {
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-surface));
+			box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+		}
+	}
+
+	// ============================================================
+	// Prefix
+	// ============================================================
+
+	&__prefix {
+		display: flex;
+		align-items: center;
+		padding: sz(10px 12px);
+		background-color: var(--color-surface-muted);
+		font-size: sz(14px);
+		color: var(--color-text);
+		white-space: nowrap;
+		font-weight: 500;
+		user-select: none;
+		flex-shrink: 0;
+	}
+
+	// ============================================================
+	// Postfix
+	// ============================================================
+
+	&__postfix {
+		display: flex;
+		align-items: center;
+		padding: sz(10px 12px);
+		background-color: var(--color-surface-muted);
+		font-size: sz(14px);
+		color: var(--color-text);
+		white-space: nowrap;
+		font-weight: 500;
+		user-select: none;
+		flex-shrink: 0;
+	}
+
+	// ============================================================
+	// Поле ввода — без собственной границы
+	// ============================================================
+
+	&__field {
+		width: 100%;
+		padding: sz(10px 14px);
+		border: none;
+		border-radius: 0;
+		background-color: transparent;
+		font-size: sz(14px);
+		color: var(--color-text);
+		outline: none;
+
+		&::placeholder {
+			color: var(--color-text-muted);
+		}
+	}
+
+	// ============================================================
+	// Варианты
+	// ============================================================
+
+	&--default &__wrapper {
+		border: sz(1px) solid var(--color-border);
+		@include custom-bg(background-color, var(--color-surface));
+
+		@include hover {
+			border-color: var(--color-text-muted);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		@include focus {
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-surface));
+			box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+		}
+	}
+
+	&--ghost &__wrapper {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+	}
+
+	&--outline &__wrapper {
+		border-width: 2px;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--shadow &__wrapper {
+		box-shadow: var(--shadow-lg);
+
+		@include hover {
+			box-shadow: var(--shadow-xl);
+		}
+	}
+
+	&--soft &__wrapper {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		border-color: transparent;
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-primary-soft-hover));
+		}
+	}
+
+	&--outline &__prefix {
+		background-color: var(--color-surface-muted);
+	}
+
+	&--outline &__postfix {
+		background-color: var(--color-surface-muted);
+	}
+
+	// ============================================================
+	// Вариант filled
+	// ============================================================
+
+	&--filled &__wrapper {
+		border: sz(1px) solid transparent;
+		background-color: var(--color-surface-muted);
+		border-radius: sz(var(--border-radius-base)) sz(var(--border-radius-base)) 0 0;
+
+		&:hover {
+			background-color: var(--color-border);
+			border-color: transparent;
+		}
+
+		&:focus-within {
+			background-color: var(--color-surface-muted);
+			border-color: var(--color-accent);
+			border-bottom: sz(2px) solid var(--color-accent);
+			box-shadow: none;
+		}
+	}
+
+	&--filled &__prefix {
+		background-color: var(--color-border);
+	}
+
+	&--filled &__postfix {
+		background-color: var(--color-border);
+	}
+
+	// ============================================================
+	// Вариант underline
+	// ============================================================
+
+	&--underline &__wrapper {
+		border: none;
+		border-bottom: sz(1px) solid var(--color-border);
+		border-radius: 0;
+		background-color: transparent;
+
+		&:hover {
+			border-bottom-color: var(--color-text-muted);
+		}
+
+		&:focus-within {
+			border-bottom: sz(2px) solid var(--color-accent);
+			box-shadow: none;
+		}
+	}
+
+	&--underline &__prefix {
+		background-color: transparent;
+		padding-left: 0;
+	}
+
+	&--underline &__postfix {
+		background-color: transparent;
+		padding-right: 0;
+	}
+
+	&--underline &__field {
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	// ============================================================
+	// Размеры — одинаковая высота для field, prefix, postfix
+	// ============================================================
+
+	&--sm &__field {
+		padding: sz(6px 10px);
+		font-size: sz(13px);
+	}
+
+	&--sm &__prefix {
+		padding: sz(6px 8px);
+		font-size: sz(13px);
+	}
+
+	&--sm &__postfix {
+		padding: sz(6px 8px);
+		font-size: sz(13px);
+	}
+
+	&--md &__field {
+		padding: sz(10px 14px);
+		font-size: sz(14px);
+	}
+
+	&--md &__prefix {
+		padding: sz(10px 12px);
+		font-size: sz(14px);
+	}
+
+	&--md &__postfix {
+		padding: sz(10px 12px);
+		font-size: sz(14px);
+	}
+
+	&--lg &__field {
+		padding: sz(14px 18px);
+		font-size: sz(16px);
+	}
+
+	&--lg &__prefix {
+		padding: sz(14px 16px);
+		font-size: sz(16px);
+	}
+
+	&--lg &__postfix {
+		padding: sz(14px 16px);
+		font-size: sz(16px);
+	}
+
+	// ============================================================
+	// Ошибка для вариантов
+	// ============================================================
+
+	&--filled.base-input--error &__wrapper {
+		border-bottom-color: var(--color-error);
+		background-color: rgba(239, 68, 68, 0.06);
+	}
+
+	&--underline.base-input--error &__wrapper {
+		border-bottom-color: var(--color-error);
+	}
+
+	&__error-text {
+		font-size: sz(12px);
+		color: var(--color-error);
+		font-weight: 500;
+	}
+
+	// ============================================================
+	// Кнопка переключения видимости пароля
+	// ============================================================
+
+	&__password-toggle {
+		position: absolute;
+		right: sz(10px);
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: sz(4px 8px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0.7;
+		@include transition(opacity);
+		z-index: 1;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	/* Padding для поля с паролем */
+	&--password &__field {
+		padding-right: sz(44px);
+	}
+
+	/* Пароль + postfix — увеличить правый padding */
+	&--password.base-input--has-postfix &__field {
+		padding-right: sz(80px);
+	}
+
+	&__password-icon {
+		width: sz(20px);
+		height: sz(20px);
+		color: var(--color-text-muted);
+	}
+
+	// ============================================================
+	// Правила пароля
+	// ============================================================
+
+	&__password-rules {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		margin-top: sz(8px);
+	}
+
+	&__password-rule {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		font-size: sz(12px);
+		color: var(--color-error);
+
+		&--valid {
+			color: var(--color-success);
+		}
+	}
+
+	&__password-rule-icon {
+		font-weight: 700;
+	}
+
+	&__password-rule-label {
+		color: inherit;
+	}
+}

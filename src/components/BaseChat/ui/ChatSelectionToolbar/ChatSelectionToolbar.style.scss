@@ -1,0 +1,39 @@
+.base-chat-selection-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: sz(12px) sz(20px);
+	background: var(--color-surface-muted);
+	border-top: sz(1px) solid var(--color-border);
+	animation: slideUp 0.2s ease;
+	z-index: 5;
+
+	&__info {
+		display: flex;
+		align-items: center;
+	}
+
+	&__actions {
+		display: flex;
+		gap: sz(8px);
+	}
+
+	&__btn--danger {
+		color: var(--color-danger) !important;
+
+		&:hover {
+			background-color: rgba(var(--color-danger-rgb, 239, 68, 68), 0.08) !important;
+		}
+	}
+}
+
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

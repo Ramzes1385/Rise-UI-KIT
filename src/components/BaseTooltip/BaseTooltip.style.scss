@@ -1,0 +1,182 @@
+.base-tooltip-wrapper {
+	position: relative;
+	display: inline-block;
+}
+
+.base-tooltip {
+	position: fixed;
+	@include custom-bg(background-color, var(--color-primary));
+	@include custom-text(color, var(--color-white));
+	padding: sz(6px) sz(12px);
+	border-radius: sz(4px);
+	white-space: pre-wrap;
+	max-width: sz(280px);
+	overflow-wrap: break-word;
+	z-index: 9999;
+	pointer-events: none;
+	will-change: transform, opacity;
+  display: flex;
+
+	/* BaseText внутри тултипа наследует цвет и размер */
+	.base-text {
+		color: inherit;
+		font-size: sz(12px);
+	}
+
+	/* Финальные трансформы по позициям */
+	&--top {
+		transform: translate(-50%, -120%);
+	}
+
+	&--bottom {
+		transform: translate(-50%, 20%);
+	}
+
+	&--left {
+		transform: translate(-100%, -50%);
+	}
+
+	&--right {
+		transform: translate(0%, -50%);
+	}
+
+	/* Стрелка */
+	&::after {
+		content: '';
+		position: absolute;
+		border: sz(5px) solid transparent;
+	}
+
+	/* Стрелка сверху (тултип снизу) */
+	&--bottom::after {
+		bottom: calc(100% - 1px * var(--size-scale, 1));
+		left: 50%;
+		transform: translateX(-50%);
+		@include custom-bg(border-bottom-color, var(--color-primary));
+	}
+
+	/* Стрелка снизу (тултип сверху) */
+	&--top::after {
+		top: calc(100% - 1px * var(--size-scale, 1));
+		left: 50%;
+		transform: translateX(-50%);
+		@include custom-bg(border-top-color, var(--color-primary));
+	}
+
+	/* Стрелка справа (тултип слева) */
+	&--left::after {
+		left: calc(100% - 1px * var(--size-scale, 1));
+		top: 50%;
+		transform: translateY(-50%);
+		@include custom-bg(border-left-color, var(--color-primary));
+	}
+
+	/* Стрелка слева (тултип справа) */
+	&--right::after {
+		right: calc(100% - 1px * var(--size-scale, 1));
+		top: 50%;
+		transform: translateY(-50%);
+		@include custom-bg(border-right-color, var(--color-primary));
+	}
+
+	// Варианты
+	&--ghost {
+		@include custom-bg(background-color, var(--color-surface-muted));
+		@include custom-text(color, var(--color-text));
+
+		&::after {
+			display: none;
+		}
+	}
+
+	&--outline {
+		@include custom-bg(background-color, var(--color-bg));
+		@include custom-text(color, var(--color-text));
+		border: 1px solid var(--color-border);
+
+		&::after {
+			display: none;
+		}
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-lg);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		@include custom-text(color, var(--color-primary));
+
+		&.base-tooltip--bottom::after {
+			@include custom-bg(border-bottom-color, var(--color-primary-soft));
+		}
+
+		&.base-tooltip--top::after {
+			@include custom-bg(border-top-color, var(--color-primary-soft));
+		}
+
+		&.base-tooltip--left::after {
+			@include custom-bg(border-left-color, var(--color-primary-soft));
+		}
+
+		&.base-tooltip--right::after {
+			@include custom-bg(border-right-color, var(--color-primary-soft));
+		}
+	}
+}
+
+/* === Vue Transition: tooltip-top === */
+.tooltip-top-enter-active,
+.tooltip-top-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+.tooltip-top-enter-from,
+.tooltip-top-leave-to {
+	opacity: 0;
+	transform: translate(-50%, calc(-100% + 4px));
+}
+
+/* === Vue Transition: tooltip-bottom === */
+.tooltip-bottom-enter-active,
+.tooltip-bottom-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+.tooltip-bottom-enter-from,
+.tooltip-bottom-leave-to {
+	opacity: 0;
+	transform: translateX(-50%) translateY(-4px);
+}
+
+/* === Vue Transition: tooltip-left === */
+.tooltip-left-enter-active,
+.tooltip-left-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+.tooltip-left-enter-from,
+.tooltip-left-leave-to {
+	opacity: 0;
+	transform: translate(calc(-100% + 4px), -50%);
+}
+
+/* === Vue Transition: tooltip-right === */
+.tooltip-right-enter-active,
+.tooltip-right-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+.tooltip-right-enter-from,
+.tooltip-right-leave-to {
+	opacity: 0;
+	transform: translateX(-4px) translateY(-50%);
+}

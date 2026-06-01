@@ -1,0 +1,308 @@
+.base-mega-menu {
+	box-sizing: border-box;
+	@include custom-bg(background-color, var(--color-white));
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-base);
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+	padding: sz(32px);
+	width: 100%;
+	max-width: sz(1200px);
+
+	// ── Columns layout ──
+
+	&__container {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 40px;
+	}
+
+	&__title {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		font-size: sz(16px);
+		font-weight: 700;
+		@include custom-text(color, var(--color-primary));
+		margin-bottom: sz(20px);
+		text-transform: uppercase;
+		letter-spacing: 0.8px;
+		cursor: pointer;
+	}
+
+	&__title-arrow {
+		margin-left: auto;
+		@include transition(transform);
+
+		@include respond-to('md') {
+			display: none;
+		}
+	}
+
+	&__title--open &__title-arrow {
+		transform: rotate(180deg);
+	}
+
+	// ── Списки узлов (рекурсивные) ──
+
+	&__list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+	}
+
+	// Вложенный уровень по умолчанию — аккордеон вниз в потоке.
+	// Используется в columns-layout и на мобильном (узлы в середине широкой панели,
+	// боковой flyout накладывался бы на меню).
+	// Отступ задаётся только padding (margin не суммируем с padding), линия-граница
+	// с зазором от текста — чтобы вертикальные линии уровней не сливались.
+	&__sub-list {
+		list-style: none;
+		margin: sz(2px) 0 0 sz(10px);
+		padding: 0 0 0 sz(16px);
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		border-left: 1px solid var(--color-border);
+	}
+
+	// Каскадная flyout-панель (dropdown-layout, desktop).
+	// Координаты (position: fixed; top/left) задаёт useFlyoutPosition через inline-стиль,
+	// с flip влево при нехватке места справа.
+	&__sub-list--flyout {
+		z-index: 1000;
+		min-width: sz(220px);
+		margin: 0;
+		padding: sz(8px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		box-shadow: var(--shadow-lg);
+		@include custom-bg(background-color, var(--color-white));
+	}
+
+	// ── Узел меню ──
+
+	&__node {
+		position: relative;
+		outline: none;
+
+		&--disabled {
+			opacity: 0.4;
+			pointer-events: none;
+		}
+	}
+
+	&__node-header {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		padding: sz(7px) sz(10px);
+		border-radius: var(--border-radius-base);
+		cursor: pointer;
+		font-size: sz(14px);
+		font-weight: 500;
+		@include custom-text(color, var(--color-text));
+		@include interactive;
+
+		@include hover {
+			@include custom-text(color, var(--color-accent));
+			@include custom-bg(background-color, var(--color-border));
+		}
+
+		@include active {
+			transform: scale(0.99);
+		}
+	}
+
+	&__node-icon {
+		flex-shrink: 0;
+	}
+
+	&__node-label {
+		flex: 1;
+		min-width: 0;
+	}
+
+	// Аккордеон (по умолчанию): стрелка вниз, при раскрытии — вверх
+	&__node-arrow {
+		flex-shrink: 0;
+		opacity: 0.6;
+		transform: rotate(90deg);
+		@include transition(opacity, transform);
+	}
+
+	&__node--open > &__node-header &__node-arrow {
+		opacity: 1;
+		transform: rotate(-90deg);
+	}
+
+	&__node--open > &__node-header {
+		@include custom-bg(background-color, var(--color-border));
+		@include custom-text(color, var(--color-accent));
+	}
+
+	&__node-desc {
+		font-size: sz(12px);
+		color: var(--color-text-muted);
+		margin: 0 0 sz(4px) sz(8px);
+	}
+
+	// ── Dropdown layout ──
+
+	&--dropdown {
+		padding: 0;
+		border: none;
+		box-shadow: none;
+		background-color: transparent;
+		max-width: none;
+
+		// В dropdown на десктопе вложенные уровни — каскад flyout вбок,
+		// поэтому стрелка узла указывает вправо (не вниз, как в аккордеоне).
+		@include respond-to('md') {
+			.base-mega-menu__node-arrow {
+				transform: none;
+			}
+
+			.base-mega-menu__node--open > .base-mega-menu__node-header .base-mega-menu__node-arrow {
+				transform: none;
+			}
+		}
+	}
+
+	&__nav {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	&__nav-item {
+		position: relative;
+
+		&--disabled {
+			opacity: 0.4;
+			pointer-events: none;
+		}
+	}
+
+	&__nav-link {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		padding: sz(8px) sz(16px);
+		border: none;
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--color-text));
+		font-size: sz(14px);
+		font-weight: 500;
+		cursor: pointer;
+		border-radius: var(--border-radius-base);
+		@include interactive;
+
+		@include hover {
+			background-color: var(--color-border);
+			color: var(--color-accent);
+		}
+
+		@include focus {
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+			outline: none;
+		}
+	}
+
+	&__nav-icon {
+		flex-shrink: 0;
+	}
+
+	&__nav-arrow {
+		flex-shrink: 0;
+		@include transition(transform);
+	}
+
+	&__nav-item--open &__nav-arrow {
+		transform: rotate(180deg);
+	}
+
+	&__dropdown {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		min-width: 280px;
+		@include custom-bg(background-color, var(--color-white));
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+		padding: sz(8px);
+		margin-top: sz(4px);
+		z-index: 100;
+	}
+
+	// Варианты
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	&--outline {
+		@include custom-bg(background-color, transparent);
+		border-width: 2px;
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-xl);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		border-color: transparent;
+
+		.base-mega-menu__title {
+			@include custom-text(color, var(--color-primary));
+		}
+	}
+
+	// ── Адаптив (мобильный) ──
+	// Каскадный flyout заменяется аккордеоном вниз в потоке: на узких экранах
+	// боковое раскрытие невозможно. Колонки в один столбец, навигация вертикально.
+
+	@include respond-below('md') {
+		max-width: 100%;
+		padding: sz(16px);
+		overflow-x: hidden;
+
+		&__container {
+			grid-template-columns: 1fr;
+			gap: sz(8px);
+		}
+
+		&__nav {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		&__nav-item {
+			position: static;
+		}
+
+		&__nav-arrow {
+			margin-left: auto;
+		}
+
+		// Dropdown первого уровня раскрывается в потоке (аккордеон), не абсолютным flyout
+		&__dropdown {
+			position: static;
+			min-width: 0;
+			margin-top: 0;
+			border: none;
+			box-shadow: none;
+			padding: 0 0 0 sz(12px);
+		}
+	}
+}

@@ -1,75 +1,119 @@
 /**
- * Vite-плагин для генерации SVG-спрайта из папки src/assets/svg/.
- * На старте сборки и при изменении SVG-файлов пересоздаёт public/icons.svg.
+ * Vite-плагин генерации SVG-спрайта из src/icons/svg.
+ *
+ * Production: спрайт эмитится в dist/icons.svg через this.emitFile() — без записи в public/.
+ * Development: спрайт раздаётся middleware-ом по адресу /icons.svg (in-memory, без файла на диске).
+ * HMR: при изменении SVG отправляется full-reload, спрайт пересобирается лениво при следующем запросе.
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
-import type { Plugin } from 'vite'
+import type { Plugin, ViteDevServer } from 'vite'
 
-/** Директория с исходными SVG-файлами */
-const SVG_DIR = 'src/assets/svg'
+interface SvgSymbol {
+	id: string
+	content: string
+}
 
-/** Путь к генерируемому спрайту */
-const SPRITE_PATH = 'public/icons.svg'
+const SVG_DIR = 'src/icons/svg'
+const SPRITE_FILE_NAME = 'icons.svg'
+const SPRITE_DEV_URL = '/icons.svg'
+const ROOT_ATTRIBUTES = ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin']
 
-/** Читает SVG-файл и извлекает содержимое тега <svg> */
-function extractSvgContent(filePath: string): { id: string; content: string } | null {
-	const raw = fs.readFileSync(filePath, 'utf-8')
+function getSvgId(filePath: string): string {
+	return path.basename(filePath, '.svg')
+}
 
-	/** Имя файла без расширения — становится ID символа */
-	const id = path.basename(filePath, '.svg')
+function getViewBox(source: string): string {
+	const viewMatch = source.match(/viewBox="([^"]+)"/)
+	return viewMatch?.[1] ?? ''
+}
 
-	/** Извлекаем viewBox */
-	const viewMatch = raw.match(/viewBox="([^"]+)"/)
-	const viewBox = viewMatch ? viewMatch[1] : ''
+function getSvgTag(source: string): string {
+	const tagMatch = source.match(/<svg\s+([^>]*)>/)
+	return tagMatch?.[1] ?? ''
+}
 
-	/** Извлекаем внутреннее содержимое SVG */
-	const innerMatch = raw.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)
-	if (!innerMatch) return null
+function getAttr(source: string, name: string): string {
+	const attrMatch = source.match(new RegExp(`${name}="([^"]+)"`))
+	return attrMatch?.[1] ?? ''
+}
 
-	/** Удаляем лишние атрибуты из внутреннего содержимого */
-	const inner = innerMatch[1]
-		.replace(/<svg[^>]*>/, '')
-		.replace(/<\/svg>/, '')
-		.trim()
+function getSymbolAttr(source: string, name: string): string {
+	const value = getAttr(source, name)
+	if (!value) return ''
+	return `${name}="${value}"`
+}
+
+function getSymbolAttrs(source: string): string {
+	const svgTag = getSvgTag(source)
+	const attrs = ROOT_ATTRIBUTES.map(name => getSymbolAttr(svgTag, name)).filter(Boolean)
+	if (!attrs.length) return ''
+	return ` ${attrs.join(' ')}`
+}
+
+function getSvgInner(source: string): string | null {
+	const innerMatch = source.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)
+	return innerMatch?.[1]?.trim() ?? null
+}
+
+function createSymbol(filePath: string): SvgSymbol | null {
+	const source = fs.readFileSync(filePath, 'utf-8')
+	const inner = getSvgInner(source)
+
+	if (!inner) return null
+
+	const id = getSvgId(filePath)
+	const viewBox = getViewBox(source)
+	const attrs = getSymbolAttrs(source)
 
 	return {
 		id,
-		content: `<symbol id="${id}" viewBox="${viewBox}">${inner}</symbol>`,
+		content: `<symbol id="${id}" viewBox="${viewBox}"${attrs}>${inner}</symbol>`,
 	}
 }
 
-/** Генерирует содержимое спрайта из всех SVG в директории */
+function readSvgFiles(): string[] {
+	if (!fs.existsSync(SVG_DIR)) return []
+	return fs.readdirSync(SVG_DIR).filter(file => file.endsWith('.svg'))
+}
+
 function generateSprite(): string {
-	if (!fs.existsSync(SVG_DIR)) return '<svg xmlns="http://www.w3.org/2000/svg"></svg>'
-
-	const files = fs.readdirSync(SVG_DIR).filter(f => f.endsWith('.svg'))
-
-	const symbols = files
-		.map(f => extractSvgContent(path.join(SVG_DIR, f)))
-		.filter(Boolean)
-		.map(s => s!.content)
+	const symbols = readSvgFiles()
+		.map(file => createSymbol(path.join(SVG_DIR, file)))
+		.filter((symbol): symbol is SvgSymbol => Boolean(symbol))
+		.map(symbol => symbol.content)
 
 	return `<svg xmlns="http://www.w3.org/2000/svg">\n  ${symbols.join('\n  ')}\n</svg>`
 }
 
-/** Создаёт плагин генерации SVG-спрайта */
+function attachDevMiddleware(server: ViteDevServer): void {
+	server.middlewares.use(SPRITE_DEV_URL, (_req, res) => {
+		res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8')
+		res.setHeader('Cache-Control', 'no-cache')
+		res.end(generateSprite())
+	})
+}
+
+/** Создаёт плагин генерации SVG-спрайта. */
 export function createSpritePlugin(): Plugin {
 	return {
 		name: 'svg-sprite-generator',
 
-		buildStart() {
-			const sprite = generateSprite()
-			fs.writeFileSync(SPRITE_PATH, sprite, 'utf-8')
+		configureServer(server): void {
+			attachDevMiddleware(server)
 		},
 
-		handleHotUpdate({ file, server }) {
+		generateBundle(): void {
+			this.emitFile({
+				type: 'asset',
+				fileName: SPRITE_FILE_NAME,
+				source: generateSprite(),
+			})
+		},
+
+		handleHotUpdate({ file, server }): void {
 			if (!file.startsWith(path.resolve(SVG_DIR))) return
-
-			const sprite = generateSprite()
-			fs.writeFileSync(SPRITE_PATH, sprite, 'utf-8')
-
 			server.ws.send({ type: 'full-reload' })
 		},
 	}

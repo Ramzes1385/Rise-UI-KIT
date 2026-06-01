@@ -1,40 +1,40 @@
 /**
- * Оптимизация растровых изображений.
- * Сжимает PNG, JPEG, WebP, GIF при сборке.
+ * Оптимизация растровых изображений при production-сборке.
+ *
+ * Используется vite-plugin-image-optimizer (sharp).
  */
 
 import type { PluginOption } from 'vite'
-import imagemin from 'vite-plugin-imagemin'
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import { IMAGE_QUALITY } from '../constants'
 
-/** Создаёт плагин оптимизации изображений */
+/** Создаёт плагин оптимизации растровых изображений */
 export function createImagePlugin(): PluginOption {
-	return imagemin({
-		gifsicle: {
-			optimizationLevel: 3,
-			interlaced: true,
-			colors: IMAGE_QUALITY.gif,
+	return ViteImageOptimizer({
+		test: /\.(jpe?g|png|gif|webp|avif)$/i,
+		includePublic: false,
+		logStats: true,
+		png: {
+			quality: IMAGE_QUALITY.pngQuality.max,
 		},
-
-		optipng: {
-			optimizationLevel: 7,
-		},
-
-		mozjpeg: {
+		jpeg: {
 			quality: IMAGE_QUALITY.mozjpeg,
 			progressive: true,
 		},
-
-		pngquant: {
-			quality: [IMAGE_QUALITY.pngQuality.min / 100, IMAGE_QUALITY.pngQuality.max / 100],
-			speed: 4,
+		jpg: {
+			quality: IMAGE_QUALITY.mozjpeg,
+			progressive: true,
 		},
-
 		webp: {
 			quality: IMAGE_QUALITY.webp,
-			method: 6,
+			effort: 6,
 		},
-
-		svgo: false,
+		avif: {
+			quality: IMAGE_QUALITY.avif,
+			effort: 6,
+		},
+		gif: {
+			colors: IMAGE_QUALITY.gif,
+		},
 	})
 }

@@ -1,0 +1,157 @@
+.base-tree {
+	display: flex;
+	flex-direction: column;
+	padding: sz(4px);
+	min-width: sz(200px);
+
+	// --- Варианты ---
+
+	&--outline {
+		outline: 1px solid var(--color-border);
+		border-radius: var(--border-radius-base);
+	}
+
+	&--shadow {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		border-radius: var(--border-radius-base);
+	}
+
+	&--soft {
+		background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+		backdrop-filter: blur(4px);
+		border-radius: var(--border-radius-base);
+	}
+
+	// --- Элементы ---
+
+	&__node {
+		display: flex;
+		flex-direction: column;
+
+		&--selected > .base-tree__header {
+			background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+			color: var(--color-accent);
+
+			.base-tree__label {
+				font-weight: 500;
+			}
+		}
+
+		&--disabled {
+			opacity: 0.5;
+			pointer-events: none;
+		}
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		border-radius: var(--border-radius-sm);
+		cursor: pointer;
+		outline: none;
+		user-select: none;
+		min-height: sz(32px);
+		@include interactive;
+
+		@include hover {
+			background-color: var(--color-surface-muted);
+		}
+
+		@include focus {
+			background-color: var(--color-surface-muted);
+			outline: 2px solid var(--color-accent);
+			outline-offset: -2px;
+		}
+	}
+
+	&__arrow {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(20px);
+		height: sz(20px);
+		color: var(--color-text-muted);
+		will-change: transform;
+		@include interactive;
+
+		&--expanded {
+			transform: rotate(90deg);
+			color: var(--color-text);
+		}
+
+		&--right {
+			order: 1;
+			margin-left: auto;
+
+			&.base-tree__arrow--expanded {
+				transform: rotate(-90deg);
+			}
+		}
+
+		// Скрыть стрелку для листовых узлов, но сохранить место
+		.base-tree__node--leaf & {
+			visibility: hidden;
+		}
+	}
+
+	&__checkbox {
+		flex-shrink: 0;
+	}
+
+	&__icon {
+		flex-shrink: 0;
+		color: var(--color-text-muted);
+	}
+
+	&__label {
+		flex: 1;
+		color: var(--color-text);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-size: sz(14px);
+		line-height: 1.4;
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		flex-shrink: 0;
+		opacity: 0;
+		@include interactive;
+		order: 2;
+
+		.base-tree__header:hover & {
+			opacity: 1;
+		}
+	}
+
+	&__children {
+		display: grid;
+		grid-template-rows: 0fr;
+		@include interactive;
+		margin-left: sz(10px);
+		padding-left: sz(12px);
+		border-left: 1px solid var(--color-border);
+		will-change: grid-template-rows;
+	}
+
+	&__children--open {
+		grid-template-rows: 1fr;
+	}
+
+	&__children-inner {
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	// --- Переопределения для вариантов ---
+
+	&--outline &__header:focus-visible {
+		outline-offset: 0;
+	}
+}

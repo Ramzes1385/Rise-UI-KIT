@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	<path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M4 2h10l6 6v14H4V2z"/>
+	<path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M14 2v6h6"/>
+	<rect x="4" y="14" width="16" height="7" rx="1.5" fill="#CC342D"/>
+	<text x="12" y="19.2" text-anchor="middle" font-size="5.5" font-weight="700" font-family="monospace" fill="#fff">RB</text>
+</svg>

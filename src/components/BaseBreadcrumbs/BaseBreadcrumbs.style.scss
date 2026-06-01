@@ -1,0 +1,101 @@
+.base-breadcrumbs {
+	width: 100%;
+	@include custom-text(color, var(--color-text));
+
+	&__list {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+
+		&--current {
+			pointer-events: none;
+		}
+
+		&--home {
+			gap: 0;
+		}
+	}
+
+	&__link {
+		&:hover {
+			color: var(--color-accent) !important;
+		}
+	}
+
+	&__current {
+		display: inline-flex;
+		align-items: center;
+		@include custom-text(color, var(--color-text));
+		font-weight: 600;
+    margin-left: 10px;
+	}
+
+	&__icon {
+		flex-shrink: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		vertical-align: middle;
+	}
+
+	&__sep {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--color-text-muted);
+		opacity: 0.5;
+		user-select: none;
+		vertical-align: middle;
+	}
+
+	&__ellipsis-btn {
+		/* Сброс стилей BaseButton ghost для ellipsis */
+		padding: 0 2px !important;
+		min-height: unset !important;
+		height: auto !important;
+		font-size: inherit !important;
+		color: var(--color-text-muted) !important;
+
+		&:hover {
+			color: var(--color-accent) !important;
+		}
+	}
+
+	// Варианты
+	&--ghost {
+		opacity: 0.7;
+
+		@include hover {
+			opacity: 1;
+		}
+	}
+
+	&--outline {
+		border: 1px solid var(--color-border);
+		padding: sz(4px) sz(12px);
+		border-radius: var(--border-radius-base);
+		display: inline-block;
+		width: auto;
+	}
+
+	&--shadow {
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		@include custom-text(color, var(--color-primary));
+		padding: sz(4px) sz(12px);
+		border-radius: var(--border-radius-base);
+		display: inline-block;
+		width: auto;
+	}
+}

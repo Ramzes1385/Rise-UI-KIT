@@ -26,7 +26,26 @@ dist-ssr
 *storybook.log
 storybook-static
 
-# vue-tsc build artifacts
 src/**/*.js
 src/**/*.js.map
 src/**/*.d.ts
+!src/vite-env.d.ts
+build/**/*.d.ts
+vite.config.d.ts
+
+# === Test & coverage artifacts ===
+coverage/
+!coverage/.gitkeep
+coverage-run.log
+test-results/
+playwright-report/
+.playwright-mcp/
+lighthouse-report.*
+lighthouse-report-mobile.*
+
+# === Tooling caches & analyzer output ===
+.eslintcache
+*.tsbuildinfo
+stats.html
+
+public/icons.svg

@@ -1,0 +1,21 @@
+/**
+ * Visual regression тесты для BaseMenu.
+ */
+
+import { expect, test } from '@playwright/test'
+
+const COMPONENT = 'ui-basemenu'
+const STORIES = ['default', 'variants', 'with-disabled', 'dark-theme']
+
+for (const story of STORIES) {
+	test(`BaseMenu — ${story}`, async ({ page }) => {
+		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
+		await page.setViewportSize({ width: 800, height: 400 })
+		const root = page.locator('#storybook-root')
+		await expect(root).toHaveScreenshot(`base-menu--${story}.png`, {
+			animations: 'disabled',
+			caret: 'hide',
+			scale: 'css',
+		})
+	})
+}

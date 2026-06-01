@@ -57,23 +57,6 @@ export const GZIP_COMPRESSION_LEVEL = 9
 export const COMPRESSION_THRESHOLD_BYTES = 1024
 
 // ──────────────────────────────────────────────
-// Terser и обфускация
-// ──────────────────────────────────────────────
-
-/** Консольные методы для удаления из production */
-export const PRODUCTION_DROP_CONSOLE = ['console.log', 'console.info', 'console.debug', 'console.warn'] as const
-
-/** Количество проходов Terser — 2 = оптимальный баланс скорость/размер */
-export const TERSER_COMPRESS_PASSES = 2
-
-// ──────────────────────────────────────────────
-// Legacy
-// ──────────────────────────────────────────────
-
-/** Целевые браузеры для legacy-полифиллов */
-export const LEGACY_TARGETS = ['defaults', 'not IE 11'] as const
-
-// ──────────────────────────────────────────────
 // Пути проекта
 // ──────────────────────────────────────────────
 

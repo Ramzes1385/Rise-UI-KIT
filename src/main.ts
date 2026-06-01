@@ -1,12 +1,10 @@
-import { router, store } from '@/app/providers'
-import { createIconPlugin } from '@/shared/composables/useIcon'
 import { createApp } from 'vue'
+
 import App from './App.vue'
+import { createUiKitPlugin } from './plugin'
+import './styles/index.scss'
 
 const app = createApp(App)
 
-app.use(store)
-app.use(router)
-app.use(createIconPlugin())
-
+app.use(createUiKitPlugin())
 app.mount('#app')

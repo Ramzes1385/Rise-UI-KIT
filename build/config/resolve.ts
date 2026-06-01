@@ -14,6 +14,6 @@ export function createResolveConfig(): ResolveOptions {
 	return {
 		alias: createAliasConfig(),
 		extensions: [...RESOLVE_EXTENSIONS],
-		dedupe: ['vue', 'vue-router', 'pinia'],
+		dedupe: ['vue'],
 	} as ResolveOptions
 }

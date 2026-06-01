@@ -1,0 +1,252 @@
+.base-radio-group {
+	display: flex;
+	flex-direction: column;
+	gap: sz(20px);
+	@include transition(opacity);
+
+	&__label {
+		font-size: sz(14px);
+		font-weight: 600;
+		@include custom-text(color, var(--color-text));
+	}
+
+	&__required {
+		color: var(--color-error);
+		margin-left: sz(2px);
+	}
+
+	&__options {
+		display: flex;
+		gap: sz(20px);
+
+		&--vertical {
+			flex-direction: column;
+			gap: sz(12px);
+		}
+	}
+
+	&--error {
+		.base-radio__circle {
+			border-color: var(--color-error);
+		}
+	}
+
+	&__error-text {
+		font-size: sz(12px);
+		color: var(--color-error);
+	}
+
+	// Варианты
+	&--ghost {
+		.base-radio__circle {
+			@include custom-bg(background-color, transparent);
+			border-color: transparent;
+			box-shadow: none;
+		}
+
+		.base-radio:hover:not(.base-radio--disabled) .base-radio__circle {
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+	}
+
+	&--outline {
+		.base-radio__circle {
+			@include custom-bg(background-color, transparent);
+			border-width: 2px;
+		}
+	}
+
+	&--shadow {
+		.base-radio__circle {
+			box-shadow: var(--shadow-lg);
+		}
+
+		.base-radio:hover:not(.base-radio--disabled) .base-radio__circle {
+			box-shadow: var(--shadow-xl);
+		}
+	}
+
+	&--bordered {
+		.base-radio {
+			border: 1px solid var(--color-border);
+			border-radius: var(--border-radius-lg);
+			padding: sz(10px 18px);
+			@include transition(border-color, background-color);
+		}
+
+		.base-radio--disabled {
+			opacity: 0.5;
+		}
+
+		.base-radio--error {
+			border-color: var(--color-error);
+		}
+
+		.base-radio__wrapper {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+		}
+
+		.base-radio__option-label {
+			cursor: pointer;
+		}
+
+		.base-radio:has(.base-radio__input:checked) {
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-primary-soft));
+		}
+
+		.base-radio:has(.base-radio__input:checked) .base-radio__option-label {
+			@include custom-text(color, var(--color-primary));
+			font-weight: 600;
+		}
+
+		.base-radio:hover:not(.base-radio--disabled) {
+			border-color: var(--color-text-muted);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		.base-radio:hover:not(.base-radio--disabled):has(.base-radio__input:checked) {
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-primary-soft-hover));
+		}
+	}
+}
+
+.base-radio {
+	display: inline-flex;
+	align-items: center;
+	gap: sz(10px);
+	cursor: pointer;
+	user-select: none;
+	@include transition(opacity);
+
+	&--disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	&__wrapper {
+		position: relative;
+		width: sz(20px);
+		height: sz(20px);
+	}
+
+	&__input {
+		position: absolute;
+		opacity: 0;
+		cursor: pointer;
+		height: 0;
+		width: 0;
+
+		&--hidden {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+		}
+	}
+
+	&__circle {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: sz(20px);
+		width: sz(20px);
+		@include custom-bg(background-color, var(--color-surface));
+		border: 1px solid var(--color-border);
+		border-radius: var(--border-radius-full);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: var(--shadow-sm);
+		@include interactive;
+	}
+
+	&__input:checked ~ &__circle {
+		border-color: var(--color-accent);
+	}
+
+	&__dot {
+		width: sz(10px);
+		height: sz(10px);
+		@include custom-bg(background-color, var(--color-accent));
+		border-radius: var(--border-radius-full);
+		@include transition(transform, opacity);
+	}
+
+	&__option-label {
+		font-size: sz(14px);
+		@include custom-text(color, var(--color-text));
+		font-weight: 500;
+		@include transition(color);
+	}
+
+	&--error &__circle {
+		border-color: var(--color-error);
+	}
+
+	@include hover {
+		.base-radio__circle {
+			border-color: var(--color-text-muted);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		.base-radio__option-label {
+			@include custom-text(color, var(--color-primary));
+		}
+	}
+
+	@include focus {
+		.base-radio__circle {
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+		}
+	}
+
+	@include active {
+		.base-radio__circle {
+			transform: scale(0.9);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+	}
+
+	/* ── Утилиты для Storybook (демо hover/focus) ── */
+	&--hover &__circle {
+		border-color: var(--color-text-muted);
+		background-color: var(--color-surface-muted);
+	}
+
+	&--hover &__option-label {
+		color: var(--color-primary);
+	}
+
+	&--focus &__circle {
+		box-shadow:
+			0 0 0 2px var(--color-bg),
+			0 0 0 4px var(--color-accent);
+	}
+}
+
+/* Каскад с уровня группы */
+.base-radio-group--hover .base-radio__circle {
+	border-color: var(--color-text-muted);
+	background-color: var(--color-surface-muted);
+}
+
+.base-radio-group--hover .base-radio__option-label {
+	color: var(--color-primary);
+}
+
+.base-radio-group--focus .base-radio__circle {
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}

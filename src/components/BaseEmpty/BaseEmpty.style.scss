@@ -1,0 +1,64 @@
+.base-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: calc(2rem * var(--size-scale, 100) / 100);
+	border-radius: 8px;
+	width: 100%;
+	box-sizing: border-box;
+
+	// default-вариант (базовые стили)
+	background-color: transparent;
+	border: 1px dashed var(--color-border, #e2e8f0);
+
+	&--ghost {
+		background-color: transparent;
+		border: none;
+		padding: 0;
+	}
+
+	&--soft {
+		background-color: var(--color-bg-soft, #f8fafc);
+		border: none;
+	}
+
+	&__icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: calc(1rem * var(--size-scale, 100) / 100);
+		color: var(--color-text-muted, #94a3b8);
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: calc(0.5rem * var(--size-scale, 100) / 100);
+		max-width: 400px;
+	}
+
+	&__title {
+		margin: 0;
+		color: var(--color-text, #1e293b);
+	}
+
+	&__description {
+		margin: 0;
+		color: var(--color-text-muted, #64748b);
+	}
+
+	&__body {
+		margin-top: calc(0.75rem * var(--size-scale, 100) / 100);
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: calc(0.75rem * var(--size-scale, 100) / 100);
+		margin-top: calc(1.5rem * var(--size-scale, 100) / 100);
+	}
+}

@@ -1,0 +1,172 @@
+.base-popover {
+	@include custom-text(color, var(--color-text));
+
+	&__trigger {
+		cursor: pointer;
+		@include interactive;
+
+		@include hover {
+			opacity: 0.85;
+		}
+	}
+
+	/* Панель — стили для panelClass в BaseDropdown */
+	&__panel {
+		min-width: sz(200px);
+		max-width: sz(320px);
+		overflow: visible;
+		background-color: transparent;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+
+		// Варианты
+		&--default {
+			.base-popover__inner {
+				@include custom-bg(background-color, var(--color-surface));
+				border: 1px solid var(--color-border);
+			}
+
+			.base-popover__arrow {
+				&--bottom {
+					@include custom-bg(border-bottom-color, var(--color-surface));
+				}
+
+				&--top {
+					@include custom-bg(border-top-color, var(--color-surface));
+				}
+
+				&--left {
+					@include custom-bg(border-left-color, var(--color-surface));
+				}
+
+				&--right {
+					@include custom-bg(border-right-color, var(--color-surface));
+				}
+			}
+		}
+
+		&--ghost {
+			.base-popover__inner {
+				@include custom-bg(background-color, transparent);
+				border-color: transparent;
+			}
+
+			.base-popover__arrow {
+				display: none;
+			}
+		}
+
+		&--outline {
+			.base-popover__inner {
+				@include custom-bg(background-color, transparent);
+				border: 2px solid var(--color-border);
+			}
+
+			.base-popover__arrow {
+				&--bottom {
+					border-bottom-color: var(--color-border);
+				}
+
+				&--top {
+					border-top-color: var(--color-border);
+				}
+
+				&--left {
+					border-left-color: var(--color-border);
+				}
+
+				&--right {
+					border-right-color: var(--color-border);
+				}
+			}
+		}
+
+		&--shadow {
+			.base-popover__inner {
+				box-shadow: var(--shadow-lg);
+			}
+		}
+
+		&--soft {
+			.base-popover__inner {
+				@include custom-bg(background-color, var(--color-primary-soft));
+				@include custom-text(color, var(--color-primary));
+				border-color: transparent;
+			}
+
+			.base-popover__arrow {
+				&--bottom {
+					@include custom-bg(border-bottom-color, var(--color-primary-soft));
+				}
+
+				&--top {
+					@include custom-bg(border-top-color, var(--color-primary-soft));
+				}
+
+				&--left {
+					@include custom-bg(border-left-color, var(--color-primary-soft));
+				}
+
+				&--right {
+					@include custom-bg(border-right-color, var(--color-primary-soft));
+				}
+			}
+		}
+	}
+
+	/* Стрелка */
+	&__arrow {
+		position: absolute;
+		width: 0;
+		height: 0;
+		border: sz(6px) solid transparent;
+
+		&--bottom {
+			top: sz(-12px);
+			left: 50%;
+			transform: translateX(-50%);
+			@include custom-bg(border-bottom-color, var(--color-surface));
+		}
+
+		&--top {
+			bottom: sz(-12px);
+			left: 50%;
+			transform: translateX(-50%);
+			@include custom-bg(border-top-color, var(--color-surface));
+		}
+
+		&--left {
+			right: sz(-12px);
+			top: 50%;
+			transform: translateY(-50%);
+			@include custom-bg(border-left-color, var(--color-surface));
+		}
+
+		&--right {
+			left: sz(-12px);
+			top: 50%;
+			transform: translateY(-50%);
+			@include custom-bg(border-right-color, var(--color-surface));
+		}
+	}
+
+	&__inner {
+		padding: sz(12px) sz(16px);
+		border-radius: var(--border-radius-base);
+		font-size: sz(14px);
+		line-height: 1.5;
+
+		h4 {
+			margin: 0 0 sz(6px);
+			font-size: sz(14px);
+			font-weight: 700;
+		}
+
+		p {
+			margin: 0;
+			font-size: sz(13px);
+		}
+	}
+}

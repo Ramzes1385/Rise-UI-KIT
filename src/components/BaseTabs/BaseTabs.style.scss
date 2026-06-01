@@ -1,0 +1,247 @@
+.base-tabs {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	--tabs-hover-bg: color-mix(in srgb, var(--color-surface-muted) 60%, transparent);
+	--tabs-soft-bg: var(--color-primary-soft);
+	--tabs-soft-bg-hover: var(--color-primary-soft-hover);
+	--tabs-active-bg: var(--color-accent);
+	--tabs-active-bg-hover: var(--color-accent-hover);
+	--tabs-active-text: var(--color-white);
+	--tabs-accent-text: var(--color-accent);
+	@include custom-text(color, var(--color-text));
+
+	&__nav {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		position: relative;
+	}
+
+	&__list {
+		display: flex;
+		gap: 6px;
+		overflow-x: auto;
+		scroll-behavior: smooth;
+		scroll-snap-type: x proximity;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-x: contain;
+		touch-action: pan-x;
+		flex: 1;
+		min-width: 0;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+
+		&--dragging {
+			scroll-behavior: auto;
+			scroll-snap-type: none;
+			cursor: grabbing;
+			user-select: none;
+
+			.base-tabs__tab {
+				pointer-events: none;
+			}
+		}
+	}
+
+	&__scroll-btn {
+		flex-shrink: 0;
+		width: 30px;
+		height: 30px;
+		border-radius: var(--border-radius-full);
+		opacity: 0.6;
+		@include transition(opacity);
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	&__tab {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		max-width: none;
+		overflow: visible;
+		padding: sz(10px) sz(16px);
+		font-size: sz(14px);
+		font-weight: 500;
+		border-radius: var(--border-radius-base);
+		@include custom-text(color, var(--color-text-muted));
+		@include custom-bg(background-color, transparent);
+		border: none;
+		cursor: pointer;
+		white-space: nowrap;
+		scroll-snap-align: start;
+		@include interactive;
+
+		@include hover {
+			@include custom-text(color, var(--color-text));
+			@include custom-bg(background-color, var(--tabs-hover-bg));
+		}
+
+		&--disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	&__tab .base-button__content {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 16px;
+		height: 16px;
+		flex-shrink: 0;
+
+		svg {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	&__label {
+		@include transition(color);
+	}
+
+	&__content {
+		padding-top: 16px;
+	}
+
+	// Вариант: underline (по умолчанию) — лёгкая линия-индикатор без заливки
+	&--underline {
+		.base-tabs__nav {
+			border-bottom: 1px solid var(--color-border);
+		}
+
+		.base-tabs__tab {
+			border-radius: var(--border-radius-base) var(--border-radius-base) 0 0;
+		}
+
+		.base-tabs__tab::after {
+			content: '';
+			position: absolute;
+			left: sz(14px);
+			right: sz(14px);
+			bottom: -1px;
+			height: 2px;
+			border-radius: var(--border-radius-full);
+			background-color: transparent;
+			@include transition(background-color, transform);
+			transform: scaleX(0.4);
+			transform-origin: center;
+		}
+
+		.base-tabs__tab--active {
+			@include custom-bg(background-color, transparent);
+		}
+
+		.base-tabs__tab--active .base-tabs__label {
+			color: var(--custom-text-active, var(--tabs-accent-text));
+			font-weight: 600;
+		}
+
+		.base-tabs__tab--active::after {
+			background-color: var(--color-accent);
+			transform: scaleX(1);
+		}
+
+		.base-tabs__tab--active:hover {
+			@include custom-bg(background-color, var(--tabs-hover-bg));
+		}
+	}
+
+	// Вариант: pills — мягкая заливка с акцентным текстом
+	&--pills {
+		.base-tabs__tab {
+			border-radius: var(--border-radius-full);
+		}
+
+		.base-tabs__tab--active {
+			@include custom-bg(background-color, var(--tabs-soft-bg));
+		}
+
+		.base-tabs__tab--active .base-tabs__label {
+			color: var(--custom-text-active, var(--tabs-accent-text));
+			font-weight: 600;
+		}
+
+		.base-tabs__tab--active:hover {
+			@include custom-bg(background-color, var(--tabs-soft-bg-hover));
+		}
+	}
+
+	// Вариант: rounded — полностью скруглённые табы, мягкий акцент
+	&--rounded {
+		.base-tabs__tab {
+			border-radius: var(--border-radius-full);
+			background-color: var(--color-surface-muted);
+
+			@include hover {
+				@include custom-bg(background-color, var(--tabs-hover-bg));
+			}
+		}
+
+		.base-tabs__tab--active {
+			@include custom-bg(background-color, var(--tabs-soft-bg));
+		}
+
+		.base-tabs__tab--active .base-tabs__label {
+			color: var(--custom-text-active, var(--tabs-accent-text));
+			font-weight: 600;
+		}
+
+		.base-tabs__tab--active:hover {
+			@include custom-bg(background-color, var(--tabs-soft-bg-hover));
+		}
+	}
+
+	// Вариант: arc — мягкие арочные табы со скруглением сверху
+	&--arc {
+		.base-tabs__nav {
+			border-bottom: 2px solid var(--color-border);
+		}
+
+		.base-tabs__tab {
+			border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+			background-color: transparent;
+			margin-bottom: -2px;
+
+			@include hover {
+				@include custom-bg(background-color, var(--tabs-hover-bg));
+			}
+		}
+
+		.base-tabs__tab--active {
+			@include custom-bg(background-color, var(--tabs-soft-bg));
+			box-shadow: inset 0 -2px 0 0 var(--color-accent);
+		}
+
+		.base-tabs__tab--active .base-tabs__label {
+			color: var(--custom-text-active, var(--tabs-accent-text));
+			font-weight: 600;
+		}
+
+		.base-tabs__tab--active:hover {
+			@include custom-bg(background-color, var(--tabs-soft-bg-hover));
+		}
+	}
+
+	// На всю ширину
+	&--full-width {
+		.base-tabs__tab {
+			flex: 1;
+		}
+	}
+}

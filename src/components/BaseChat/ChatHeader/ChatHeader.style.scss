@@ -1,0 +1,107 @@
+.base-chat-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: sz(12px) sz(16px);
+	background: var(--color-surface);
+	border-bottom: sz(1px) solid var(--color-border);
+	gap: sz(12px);
+
+	&__info {
+		display: flex;
+		align-items: center;
+		gap: sz(12px);
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__avatar {
+		cursor: pointer;
+		transition: opacity 0.2s ease;
+
+		&:hover {
+			opacity: 0.85;
+		}
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__title {
+		color: var(--color-text);
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	&__subtitle {
+		color: var(--color-text-muted);
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	&__status {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+	}
+
+	&__typing {
+		color: var(--color-accent);
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+	}
+
+	&__dots {
+		display: inline-block;
+		animation: typing-dots 1.4s infinite both;
+	}
+
+	&__search-container {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__search-input {
+		width: 100%;
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+	}
+
+	&__action-btn {
+		color: var(--color-text-muted);
+		transition:
+			color 0.2s ease,
+			transform 0.2s ease;
+
+		&:hover {
+			color: var(--color-accent);
+			transform: scale(1.05);
+		}
+
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+}
+
+@keyframes typing-dots {
+	0% {
+		opacity: 0.2;
+	}
+	20% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0.2;
+	}
+}

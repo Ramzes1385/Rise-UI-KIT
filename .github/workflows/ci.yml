@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, dev]
+  pull_request:
+    branches: [main, master, dev]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+  NODE_OPTIONS: --max-old-space-size=16384
+
+jobs:
+  lint-and-types:
+    name: Lint & Types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check & build
+        run: npm run build
+
+  quality-gates:
+    name: Stories & A11y Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check missing stories
+        run: node scripts/check-stories-coverage.mjs
+
+      - name: Check missing play/keyboard a11y
+        run: node scripts/check-a11y-coverage.mjs
+
+  unit-tests:
+    name: Unit & Integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Components coverage (100% per file)
+        run: npm run test:components:coverage
+
+      - name: Composables coverage (100% per file)
+        run: npm run test:composables:coverage
+
+      - name: Utils coverage (100% per file)
+        run: npm run test:utils:coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-coverage
+          path: coverage/
+          retention-days: 14
+
+  storybook-tests:
+    name: Storybook Interaction & A11y
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Run interaction & a11y tests
+        run: |
+          npx serve storybook-static -p 6006 -L &
+          npx wait-on http://localhost:6006
+          npm run test:storybook
+
+  e2e-and-visual:
+    name: E2E & Visual Regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Run E2E & visual against built Storybook
+        run: |
+          npx serve storybook-static -p 6006 -L &
+          npx wait-on http://localhost:6006
+          npm run test:e2e
+          npm run test:visual
+        env:
+          PLAYWRIGHT_REUSE_SERVER: "true"
+
+      - name: Upload Playwright results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: |
+            test-results/
+            tests/visual-snapshots/**/__screenshots__/*-diff.png
+          retention-days: 14

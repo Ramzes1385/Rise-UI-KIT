@@ -1,0 +1,102 @@
+.base-pin {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: sz(8px);
+
+	&--disabled {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	&__cells {
+		display: flex;
+		gap: sz(12px);
+		justify-content: center;
+	}
+
+	&__error-text {
+		color: var(--color-error);
+	}
+
+	&__input {
+		width: sz(48px);
+		height: sz(56px);
+		text-align: center;
+		font-size: sz(24px);
+		font-weight: 700;
+		border: 2px solid var(--color-border);
+		border-radius: sz(8px);
+		@include custom-bg(background-color, var(--color-white));
+		@include custom-text(color, var(--color-primary));
+		@include interactive;
+
+		// Скрываем стрелки у type="number"
+		&::-webkit-outer-spin-button,
+		&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+
+		&[type='number'] {
+			-moz-appearance: textfield;
+		}
+
+		@include hover {
+			border-color: var(--color-text-muted);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		@include focus {
+			outline: none;
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-surface));
+			box-shadow:
+				0 0 0 2px var(--color-bg),
+				0 0 0 4px var(--color-accent);
+		}
+
+		@include active {
+			transform: scale(0.95);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+	}
+
+	&--error &__input {
+		border-color: var(--color-error);
+	}
+
+	// Варианты — плоский БЭМ (без вложенности)
+	&--ghost &__input {
+		@include custom-bg(background-color, transparent);
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	&--ghost &__input:hover {
+		@include custom-bg(background-color, var(--color-surface-muted));
+	}
+
+	&--outline &__input {
+		@include custom-bg(background-color, transparent);
+		border-width: 2px;
+	}
+
+	&--shadow &__input {
+		box-shadow: var(--shadow-lg);
+	}
+
+	&--shadow &__input:hover {
+		box-shadow: var(--shadow-xl);
+	}
+
+	&--soft &__input {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		@include custom-text(color, var(--color-primary));
+		border-color: transparent;
+	}
+
+	&--soft &__input:hover {
+		@include custom-bg(background-color, var(--color-primary-soft-hover));
+	}
+}

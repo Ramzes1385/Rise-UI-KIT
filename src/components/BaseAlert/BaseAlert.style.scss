@@ -1,0 +1,123 @@
+.base-alert {
+	--alert-bg: var(--color-bg-surface, #fff);
+	--alert-border: var(--color-border, #e2e8f0);
+	--alert-text: var(--color-text, #1e293b);
+	--alert-icon-color: var(--color-primary, #3b82f6);
+
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--alert-border);
+	background-color: var(--alert-bg);
+	color: var(--alert-text);
+	transition: all 0.2s ease-in-out;
+
+	// Стили по умолчанию для разных типов
+	&--info {
+		--alert-bg: #f0f9ff;
+		--alert-border: #bae6fd;
+		--alert-text: #0369a1;
+		--alert-icon-color: #0284c7;
+	}
+
+	&--success {
+		--alert-bg: #f0fdf4;
+		--alert-border: #bbf7d0;
+		--alert-text: #15803d;
+		--alert-icon-color: #16a34a;
+	}
+
+	&--warning {
+		--alert-bg: #fffbeb;
+		--alert-border: #fef3c7;
+		--alert-text: #b45309;
+		--alert-icon-color: #d97706;
+	}
+
+	&--error {
+		--alert-bg: #fef2f2;
+		--alert-border: #fee2e2;
+		--alert-text: #b91c1c;
+		--alert-icon-color: #dc2626;
+	}
+
+	// Варианты отображения
+	&--ghost {
+		background-color: transparent;
+		border-color: transparent;
+	}
+
+	&--outline {
+		background-color: transparent;
+	}
+
+	&--shadow {
+		box-shadow:
+			0 4px 6px -1px rgba(0, 0, 0, 0.1),
+			0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	}
+
+	&--soft {
+		border-color: transparent;
+	}
+
+	&__icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: var(--alert-icon-color);
+	}
+
+	&__content {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	&__title {
+		margin: 0;
+		color: inherit;
+		line-height: 1.25;
+	}
+
+	&__description {
+		margin: 0;
+		color: inherit;
+		opacity: 0.9;
+		line-height: 1.4;
+
+		p {
+			margin: 0;
+		}
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-left: auto;
+		flex-shrink: 0;
+	}
+
+	&__close {
+		color: inherit;
+		opacity: 0.6;
+		transition: opacity 0.2s ease-in-out;
+		padding: 0.25rem;
+		border-radius: 0.25rem;
+
+		&:hover {
+			opacity: 1;
+			background-color: rgba(0, 0, 0, 0.05);
+		}
+
+		&:focus-visible {
+			outline: 2px solid currentColor;
+			outline-offset: 2px;
+		}
+	}
+}

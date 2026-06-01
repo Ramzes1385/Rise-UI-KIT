@@ -1,0 +1,134 @@
+.base-card {
+	@include custom-bg(background-color, var(--color-white));
+	border-radius: var(--border-radius-base);
+	border: 1px solid var(--color-border);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	outline: none;
+	height: var(--card-height, auto);
+	font-size: sz(16px);
+	@include interactive;
+
+	&--hoverable {
+		cursor: pointer;
+
+		@include hover {
+			transform: translateY(sz(-4px));
+			box-shadow: var(--shadow-lg);
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-surface-muted));
+		}
+
+		@include focus {
+			border-color: var(--color-accent);
+			@include custom-bg(background-color, var(--color-surface));
+			box-shadow:
+				0 0 0 sz(2px) var(--color-bg),
+				0 0 0 sz(4px) var(--color-accent);
+		}
+
+		@include active {
+			transform: translateY(sz(-2px)) scale(0.99);
+			@include custom-bg(background-color, var(--color-border));
+		}
+	}
+
+	&--scroll {
+		.base-card__body {
+			overflow-y: auto;
+		}
+	}
+
+	&--truncate {
+		.base-card__body {
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+	}
+
+	// Варианты
+	&--default {
+		@include custom-bg(background-color, var(--color-white));
+	}
+
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	&--outline {
+		@include custom-bg(background-color, transparent);
+		border-width: 2px;
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-lg);
+
+		@include hover {
+			box-shadow: var(--shadow-xl);
+		}
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--color-primary-soft));
+		border-color: transparent;
+
+		.base-card__title {
+			@include custom-text(color, var(--color-primary));
+		}
+	}
+
+	&__header {
+		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		border-bottom: sz(1px) solid var(--color-border);
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: sz(12px);
+		flex-shrink: 0;
+	}
+
+	&__header-text {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__title {
+		margin: 0;
+		font-size: sz(18px);
+		font-weight: 700;
+		@include custom-text(color, var(--color-primary));
+	}
+
+	&__subtitle {
+		margin: sz(4px) 0 0;
+		font-size: sz(14px);
+		@include custom-text(color, var(--color-text));
+		opacity: 0.7;
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		flex-shrink: 0;
+	}
+
+	&__body {
+		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		flex: 1;
+		min-height: 0; // Важно для scroll внутри flex-контейнера
+	}
+
+	&__footer {
+		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		background-color: var(--color-bg);
+		border-top: sz(1px) solid var(--color-border);
+		margin-top: auto;
+		flex-shrink: 0;
+	}
+}

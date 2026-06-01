@@ -1,0 +1,15 @@
+@use './variables';
+@use './mixins';
+@use './functions';
+
+:where(body, button, input, textarea, select, [class^='base-'], [class*=' base-']) {
+	font-family: var(--font-family-base);
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+:where(code, kbd, samp, pre) {
+	font-family: var(--font-family-mono);
+}

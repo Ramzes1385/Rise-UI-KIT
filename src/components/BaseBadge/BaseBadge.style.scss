@@ -1,0 +1,64 @@
+.base-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: sz(4px 10px);
+	font-size: sz(12px);
+	font-weight: 600;
+	border-radius: var(--border-radius-full);
+	line-height: 1;
+	white-space: nowrap;
+	border: sz(1px) solid transparent;
+	@include custom-bg(background-color, var(--color-surface-muted));
+	@include transition(background-color, border-color, color, transform, filter, box-shadow);
+
+	@include hover {
+		transform: scale(1.05);
+		filter: brightness(1.1);
+	}
+
+	@include active {
+		transform: scale(0.95);
+		filter: brightness(0.9);
+	}
+
+	@include focus {
+		box-shadow:
+			0 0 0 2px var(--color-bg),
+			0 0 0 4px var(--color-accent);
+	}
+
+	// --- Варианты ---
+
+	&--ghost {
+		background-color: transparent;
+		border-color: transparent;
+	}
+
+	&--outline {
+		background-color: transparent;
+		border-color: var(--color-border);
+	}
+
+	&--shadow {
+		box-shadow: var(--shadow-sm);
+		background-color: var(--color-surface);
+	}
+
+	&--soft {
+		background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+		border-color: transparent;
+
+		.base-badge__text {
+			color: var(--color-primary);
+		}
+	}
+
+	&__text {
+		@include custom-text(color, var(--color-text));
+		// Перебиваем дефолтный цвет BaseText
+		&.base-text {
+			color: inherit;
+		}
+	}
+}

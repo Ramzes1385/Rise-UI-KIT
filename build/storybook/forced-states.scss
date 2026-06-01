@@ -1,0 +1,280 @@
+/**
+ * Принудительные состояния для Storybook.
+ * Классы --hover, --active, --force-focus позволяют
+ * визуально отобразить интерактивные состояния без реального взаимодействия.
+ */
+
+/* ── BaseButton ── */
+.base-button--hover:not(.base-button--disabled) {
+	filter: brightness(1.1);
+
+	&.base-button--primary {
+		box-shadow: var(--shadow-md);
+	}
+
+	&.base-button--secondary {
+		background-color: var(--color-border);
+	}
+
+	&.base-button--outline {
+		background-color: var(--color-surface-muted);
+		border-color: var(--color-text-muted);
+	}
+
+	&.base-button--ghost {
+		background-color: var(--color-surface-muted);
+		color: var(--color-text);
+	}
+}
+
+.base-button--active:not(.base-button--disabled) {
+	transform: scale(0.96);
+	filter: brightness(0.9);
+}
+
+.base-button--focus:not(.base-button--disabled) {
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}
+
+/* ── BaseInput ── */
+.base-input--hover .base-input__wrapper {
+	border-color: var(--color-text-muted);
+	background-color: var(--color-surface-muted);
+}
+
+.base-input--active .base-input__wrapper {
+	border-color: var(--color-accent);
+}
+
+.base-input--focus .base-input__wrapper {
+	border-color: var(--color-accent);
+	background-color: var(--color-surface);
+	box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+/* ── BaseSelect ── */
+.base-select--hover .base-select__trigger {
+	border-color: var(--color-text-muted);
+}
+
+.base-select--active .base-select__trigger {
+	border-color: var(--color-accent);
+}
+
+.base-select--focus .base-select__trigger {
+	border-color: var(--color-accent);
+	box-shadow: 0 0 0 2px var(--color-accent-alpha, rgba(var(--color-accent-rgb, 59, 130, 246), 0.2));
+}
+
+/* ── BaseTextarea ── */
+.base-textarea--hover .base-textarea__field {
+	border-color: var(--color-text-muted);
+}
+
+.base-textarea--active .base-textarea__field {
+	border-color: var(--color-accent);
+	background-color: var(--color-surface-muted);
+}
+
+.base-textarea--focus .base-textarea__field {
+	border-color: var(--color-accent);
+	box-shadow: 0 0 0 2px var(--color-accent-alpha, rgba(var(--color-accent-rgb, 59, 130, 246), 0.2));
+}
+
+/* ── BaseCheckbox ── */
+.base-checkbox--hover .base-checkbox__input:not(:checked) ~ .base-checkbox__box {
+	border-color: var(--color-text-muted);
+	background-color: var(--color-surface-muted);
+}
+
+.base-checkbox--hover .base-checkbox__input:checked ~ .base-checkbox__box {
+	background-color: var(--color-accent-hover, #e06a1d);
+	border-color: var(--color-accent-hover, #e06a1d);
+}
+
+.base-checkbox--focus .base-checkbox__box {
+	box-shadow: 0 0 0 2px var(--color-accent-alpha, rgba(var(--color-accent-rgb, 59, 130, 246), 0.2));
+}
+
+/* ── BaseRadio ── */
+.base-radio--hover .base-radio__circle {
+	border-color: var(--color-accent);
+}
+
+.base-radio--focus .base-radio__circle {
+	box-shadow: 0 0 0 2px var(--color-accent-alpha, rgba(var(--color-accent-rgb, 59, 130, 246), 0.2));
+}
+
+/* ── BaseSwitch ── */
+.base-switch--hover:not(.base-switch--disabled) .base-switch__slider {
+	background-color: var(--color-text-muted);
+}
+
+.base-switch--hover:not(.base-switch--disabled) .base-switch__label {
+	color: var(--color-primary);
+}
+
+.base-switch--active:not(.base-switch--disabled) .base-switch__slider {
+	transform: scale(0.95);
+}
+
+.base-switch--active:not(.base-switch--disabled) .base-switch__handle {
+	width: 20px;
+}
+
+.base-switch--focus .base-switch__slider {
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}
+
+/* ── BasePin ── */
+.base-pin--hover .base-pin__input {
+	border-color: var(--color-text-muted);
+	background-color: var(--color-surface-muted);
+}
+
+.base-pin--active .base-pin__input {
+	transform: scale(0.95);
+	background-color: var(--color-surface-muted);
+}
+
+.base-pin--focus .base-pin__input {
+	border-color: var(--color-accent);
+	background-color: var(--color-white);
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}
+
+/* ── BaseAccordion ── */
+.base-accordion--hover .base-accordion__header {
+	background-color: var(--color-surface-muted);
+}
+
+.base-accordion--active .base-accordion__header {
+	background-color: var(--color-border);
+}
+
+.base-accordion--focus .base-accordion__header {
+	background-color: var(--color-surface-muted);
+	color: var(--color-accent);
+	box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+
+/* ── BaseMenu ── */
+.base-menu--hover .base-menu__item:not(.base-menu__item--disabled) {
+	background-color: var(--color-surface-muted);
+	transform: translateX(4px);
+}
+
+.base-menu--active .base-menu__item:not(.base-menu__item--disabled) {
+	background-color: var(--color-border);
+	transform: translateX(2px) scale(0.98);
+}
+
+.base-menu--focus .base-menu__item {
+	background-color: var(--color-surface-muted);
+	box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+/* ── BaseTabs ── */
+.base-tabs--hover .base-tabs__tab:not(.base-tabs__tab--disabled) {
+	color: var(--color-text);
+}
+
+.base-tabs--active .base-tabs__tab:not(.base-tabs__tab--disabled) {
+	color: var(--color-accent);
+}
+
+.base-tabs--focus .base-tabs__tab {
+	box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+
+/* ── BaseChip ── */
+.base-chip--hover .base-chip__badge {
+	filter: brightness(1.1);
+	box-shadow: var(--shadow-sm);
+}
+
+.base-chip--focus .base-chip__badge {
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}
+
+/* ── BaseAccordion ── */
+.base-accordion--hover .base-accordion__header {
+	background-color: var(--color-surface-muted);
+}
+
+.base-accordion--active .base-accordion__header {
+	background-color: var(--color-border);
+}
+
+.base-accordion--focus .base-accordion__header {
+	background-color: var(--color-surface-muted);
+	color: var(--color-accent);
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}
+
+/* ── BaseAvatar ── */
+.base-avatar--hover {
+	transform: scale(1.1);
+	z-index: 1;
+	box-shadow: var(--shadow-md);
+	border-color: var(--color-accent);
+}
+
+.base-avatar--active {
+	transform: scale(0.95);
+}
+
+.base-avatar--focus {
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}
+
+/* ── BaseBadge ── */
+.base-badge--hover {
+	transform: scale(1.05);
+	filter: brightness(1.1);
+}
+
+.base-badge--active {
+	transform: scale(0.95);
+	filter: brightness(0.9);
+}
+
+.base-badge--focus {
+	box-shadow:
+		0 0 0 2px var(--color-bg),
+		0 0 0 4px var(--color-accent);
+}
+
+/* ── BaseTree ── */
+.base-tree--hover .base-tree__header {
+	background-color: var(--color-surface-muted);
+}
+
+.base-tree--focus .base-tree__header {
+	background-color: var(--color-surface-muted);
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}
+
+/* ── BaseSideBar ── */
+.base-sidebar--hover .base-sidebar__header {
+	background-color: var(--color-surface-muted);
+}
+
+.base-sidebar--focus .base-sidebar__header {
+	background-color: var(--color-surface-muted);
+	color: var(--color-accent);
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}

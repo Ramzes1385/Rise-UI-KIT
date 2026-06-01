@@ -1,0 +1,89 @@
+.base-chip {
+	position: relative;
+	display: inline-flex;
+
+	&__badge {
+		position: absolute;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: sz(20px);
+		height: sz(20px);
+		padding: 0 sz(5px);
+		font-weight: 700;
+		font-size: sz(11px);
+		white-space: nowrap;
+		border-radius: var(--border-radius-full);
+		border: 2px solid var(--color-bg);
+		z-index: 1;
+		cursor: pointer;
+		@include interactive;
+		@include custom-bg(background-color, var(--color-error));
+		@include custom-text(color, #ffffff);
+
+		/* Позиции */
+		&--top-right {
+			top: 0;
+			right: 0;
+			transform: translate(50%, -50%);
+		}
+
+		&--top-left {
+			top: 0;
+			left: 0;
+			transform: translate(-50%, -50%);
+		}
+
+		&--bottom-right {
+			bottom: 0;
+			right: 0;
+			transform: translate(50%, 50%);
+		}
+
+		&--bottom-left {
+			bottom: 0;
+			left: 0;
+			transform: translate(-50%, 50%);
+		}
+	}
+
+	/* Вариант default — стили в базовом __badge (useVariant пропускает 'default') */
+
+	&--ghost {
+		.base-chip__badge {
+			@include custom-bg(background-color, transparent);
+			@include custom-text(color, var(--color-text));
+			border-color: var(--color-border);
+
+			@include hover {
+				@include custom-bg(background-color, var(--color-surface-muted));
+			}
+		}
+	}
+
+	&--outline {
+		.base-chip__badge {
+			@include custom-bg(background-color, transparent);
+			@include custom-text(color, var(--color-error));
+			border-color: var(--color-error);
+		}
+	}
+
+	&--shadow {
+		.base-chip__badge {
+			box-shadow: var(--shadow-sm);
+
+			@include hover {
+				box-shadow: var(--shadow-md);
+			}
+		}
+	}
+
+	&--soft {
+		.base-chip__badge {
+			@include custom-bg(background-color, var(--color-primary-soft));
+			@include custom-text(color, var(--color-primary));
+			border-color: transparent;
+		}
+	}
+}

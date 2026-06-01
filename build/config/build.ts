@@ -1,21 +1,29 @@
 /**
  * Конфигурация production-сборки.
- * Чанки, минификация Terser, output-пути, лимиты.
+ * Чанки, минификация (oxc — нативный минификатор rolldown), output-пути, лимиты.
  */
 
 import { extname } from 'node:path'
 import type { BuildOptions } from 'vite'
-import {
-	ASSET_SUBDIRS,
-	MAX_CHUNK_WARNING_SIZE_KB,
-	OUTPUT_DIR,
-	PRODUCTION_DROP_CONSOLE,
-	TERSER_COMPRESS_PASSES,
-} from '../constants'
+import { ASSET_SUBDIRS, MAX_CHUNK_WARNING_SIZE_KB, OUTPUT_DIR } from '../constants'
 import { createAssetFileName } from '../utils/helpers'
 
 /** Пакеты Vue-экосистемы */
-const VUE_ECOSYSTEM_PACKAGES = ['vue', '@vue', 'vue-router', 'pinia']
+const VUE_ECOSYSTEM_PACKAGES = ['vue', '@vue']
+
+/**
+ * Карта тяжёлых компонентов приложения → имя предсказуемого чанка.
+ * Применяется в createManualChunks(): если путь модуля начинается с указанной директории,
+ * Rollup выносит его в отдельный async-чанк с фиксированным именем.
+ */
+const HEAVY_APP_CHUNKS: Record<string, string> = {
+	'src/components/BaseChat/': 'base-chat',
+	'src/components/BaseEditor/': 'base-editor',
+	'src/components/BaseDatePicker/': 'base-date-picker',
+	'src/components/BaseCalendar/': 'base-calendar',
+	'src/components/BaseTable/': 'base-table',
+	'src/components/BaseFileUpload/': 'base-file-upload',
+}
 
 /** Проверяет, принадлежит ли модуль одному из указанных пакетов */
 function isFromPackages(moduleId: string, packages: string[]): boolean {
@@ -23,15 +31,40 @@ function isFromPackages(moduleId: string, packages: string[]): boolean {
 }
 
 /**
+ * Сопоставляет id модуля с таблицей тяжёлых компонентов приложения.
+ * Нормализует разделители путей под POSIX перед сравнением.
+ */
+function matchHeavyAppChunk(id: string): string | null {
+	const normalized = id.replace(/\\/g, '/')
+	for (const [prefix, chunkName] of Object.entries(HEAVY_APP_CHUNKS)) {
+		if (normalized.includes(prefix)) return chunkName
+	}
+	return null
+}
+
+/** Сопоставляет id модуля из node_modules с именем vendor-чанка */
+function matchVendorChunk(moduleId: string): string {
+	if (isFromPackages(moduleId, VUE_ECOSYSTEM_PACKAGES)) return 'vendor-vue'
+	return 'vendor-libs'
+}
+
+/**
  * Стратегия разделения на чанки.
- * Только реально используемые пакеты — без мёртвых групп.
+ * Сначала — тяжёлые app-компоненты (физический split под defineAsyncComponent),
+ * затем — vendor-пакеты.
  */
 function createManualChunks(moduleId: string): string | undefined {
+	const heavyChunk = matchHeavyAppChunk(moduleId)
+	if (heavyChunk) return heavyChunk
+
 	if (!moduleId.includes('node_modules')) return undefined
 
-	if (isFromPackages(moduleId, VUE_ECOSYSTEM_PACKAGES)) return 'vendor-vue'
+	return matchVendorChunk(moduleId)
+}
 
-	return 'vendor-libs'
+/** Имя выходного файла ассета по его исходному имени. */
+function buildAssetFileName({ name }: { name?: string }): string {
+	return createAssetFileName(extname(name ?? ''))
 }
 
 /** Создаёт конфигурацию production-сборки */
@@ -49,34 +82,7 @@ export function createBuildConfig(): BuildOptions {
 
 		chunkSizeWarningLimit: MAX_CHUNK_WARNING_SIZE_KB,
 
-		minify: 'terser',
-		terserOptions: {
-			compress: {
-				drop_debugger: true,
-				pure_funcs: [...PRODUCTION_DROP_CONSOLE],
-				passes: TERSER_COMPRESS_PASSES,
-				dead_code: true,
-				collapse_vars: true,
-				reduce_vars: true,
-				hoist_funs: true,
-				hoist_vars: false,
-				booleans_as_integers: false,
-				ecma: 2020,
-				module: true,
-				toplevel: true,
-				unsafe_math: false,
-				unsafe_proto: false,
-			},
-			mangle: {
-				safari10: true,
-				toplevel: true,
-			},
-			format: {
-				comments: false,
-				ascii_only: true,
-				ecma: 2020,
-			},
-		},
+		minify: 'oxc',
 
 		rollupOptions: {
 			output: {
@@ -84,19 +90,15 @@ export function createBuildConfig(): BuildOptions {
 
 				chunkFileNames: `${ASSET_SUBDIRS.js}/[name]-[hash].js`,
 				entryFileNames: `${ASSET_SUBDIRS.js}/[name]-[hash].js`,
-				assetFileNames: assetInfo => {
-					const ext = extname(assetInfo.name ?? '')
-					return createAssetFileName(ext)
-				},
+				assetFileNames: buildAssetFileName,
 			},
 
 			treeshake: {
-				moduleSideEffects: 'no-external',
 				propertyReadSideEffects: false,
 			},
 		},
 
-		reportCompressedSize: true,
+		reportCompressedSize: false,
 		assetsInlineLimit: 4096,
 	}
 }
