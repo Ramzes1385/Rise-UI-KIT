@@ -111,7 +111,7 @@ jobs:
 
       - name: Run interaction & a11y tests
         run: |
-          npx serve storybook-static -p 6006 -L &
+          node scripts/serve-storybook-static.mjs &
           npx wait-on http://localhost:6006
           npm run test:storybook
 
@@ -142,12 +142,10 @@ jobs:
 
       - name: Run E2E & visual against built Storybook
         run: |
-          npx serve storybook-static -p 6006 -L &
+          node scripts/serve-storybook-static.mjs &
           npx wait-on http://localhost:6006
           npm run test:e2e
           npm run test:visual
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
 
       - name: Upload Playwright results
         uses: actions/upload-artifact@v4

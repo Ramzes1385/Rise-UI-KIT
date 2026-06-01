@@ -22,10 +22,6 @@ function shouldReuse(): boolean {
 	return process.env.PLAYWRIGHT_REUSE_SERVER === 'true'
 }
 
-function buildCommand(): string {
-	return `npm run storybook -- --ci --port ${storybookPort}`
-}
-
 export default defineConfig({
 	testDir: '../..',
 	snapshotPathTemplate: '{testDir}/tests/visual-snapshots/{testFilePath}-snapshots/{arg}-{projectName}-{platform}{ext}',
@@ -60,11 +56,13 @@ export default defineConfig({
 			},
 		},
 	],
-	webServer: [
-		{
-			command: buildCommand(),
-			port: storybookPort,
-			reuseExistingServer: shouldReuse(),
-		},
-	],
+	webServer: shouldReuse()
+		? []
+		: [
+				{
+					command: `npm run storybook -- --ci --port ${storybookPort}`,
+					port: storybookPort,
+					reuseExistingServer: false,
+				},
+		  ],
 })
