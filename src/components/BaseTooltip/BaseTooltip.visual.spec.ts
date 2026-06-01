@@ -1,8 +1,10 @@
 /**
  * Visual regression тесты для BaseTooltip.
- * Текст тултипа даёт sub-pixel метрики шрифта, зависящие от OS,
- * поэтому обязательны фиксированный viewport, ожидание загрузки шрифтов
- * и `scale: 'css'` для стабильного bounding box.
+ * Текст тултипа даёт sub-pixel метрики шрифта, отличающиеся между
+ * Windows (GDI ClearType) и Linux (FreeType) на 1-2px, из-за чего
+ * bounding box локатора даёт разные размеры скриншота. Чтобы тест был
+ * кроссплатформенным, берём фиксированный clip с размерами, округлёнными
+ * вверх до 10px — это поглощает дрейф и даёт идентичные размеры на всех OS.
  */
 
 import { expect, test } from '@playwright/test'
@@ -17,7 +19,17 @@ for (const story of STORIES) {
 		await page.waitForLoadState('networkidle')
 		await page.evaluate(() => document.fonts.ready)
 		const root = page.locator('.base-tooltip-wrapper')
-		await expect(root).toHaveScreenshot(`base-tooltip--${story}.png`, {
+		const box = await root.boundingBox()
+		if (!box) throw new Error('BaseTooltip wrapper not found')
+		const PAD = 20
+		const clip = {
+			x: Math.max(0, Math.round(box.x - PAD)),
+			y: Math.max(0, Math.round(box.y - PAD)),
+			width: Math.ceil((box.width + PAD * 2) / 10) * 10,
+			height: Math.ceil((box.height + PAD * 2) / 10) * 10,
+		}
+		await expect(page).toHaveScreenshot(`base-tooltip--${story}.png`, {
+			clip,
 			animations: 'disabled',
 			caret: 'hide',
 			scale: 'css',

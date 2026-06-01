@@ -1,8 +1,10 @@
 /**
  * Visual regression тесты для BaseSeparator.
  * Stories with-slot и dark-theme содержат текст — sub-pixel метрики шрифта
- * зависят от OS, поэтому обязательны фиксированный viewport, ожидание загрузки
- * шрифтов и `scale: 'css'` для стабильного bounding box #storybook-root.
+ * отличаются между Windows (GDI ClearType) и Linux (FreeType) на 1-2px.
+ * Чтобы тест был кроссплатформенным, берём фиксированный clip
+ * #storybook-root с высотой, округлённой вверх до 10px — это поглощает
+ * дрейф и даёт идентичные размеры скриншота на всех OS.
  */
 
 import { expect, test } from '@playwright/test'
@@ -17,7 +19,16 @@ for (const story of STORIES) {
 		await page.waitForLoadState('networkidle')
 		await page.evaluate(() => document.fonts.ready)
 		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-separator--${story}.png`, {
+		const box = await root.boundingBox()
+		if (!box) throw new Error('storybook-root not found')
+		const clip = {
+			x: 0,
+			y: 0,
+			width: Math.ceil(box.width / 10) * 10,
+			height: Math.ceil(box.height / 10) * 10,
+		}
+		await expect(page).toHaveScreenshot(`base-separator--${story}.png`, {
+			clip,
 			animations: 'disabled',
 			caret: 'hide',
 			scale: 'css',
