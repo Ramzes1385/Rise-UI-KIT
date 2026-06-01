@@ -43,7 +43,15 @@ playwright-report/
 .playwright-mcp/
 lighthouse-report.*
 lighthouse-report-mobile.*
-tests/
+# tests/ — точечные исключения вместо broad 'tests/': broad не работает с '!' re-include
+# (Git запрещает re-include файла, если родительская директория исключена).
+tests/**/__screenshots__/
+tests/**/*-diff.png
+tests/**/*-actual.png
+tests/**/*-expected.png
+# Visual baselines (Playwright snapshot) — коммитим, CI диффит против них
+!tests/visual-snapshots/
+!tests/visual-snapshots/**/*.png
 
 # === Tooling caches & analyzer output ===
 .eslintcache
