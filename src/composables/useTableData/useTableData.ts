@@ -116,14 +116,11 @@ function useTableData(options: UseTableDataOptions) {
 					const aVal = a.data[sort.key]
 					const bVal = b.data[sort.key]
 
-					let cmp = 0
-					if (col?.sortType === 'number') {
-						cmp = Number(aVal) - Number(bVal)
-					} else if (col?.sortType === 'date') {
-						cmp = new Date(String(aVal)).getTime() - new Date(String(bVal)).getTime()
-					} else {
-						cmp = String(aVal).localeCompare(String(bVal))
-					}
+					const cmp = col?.sortType === 'number'
+						? Number(aVal) - Number(bVal)
+						: col?.sortType === 'date'
+							? new Date(String(aVal)).getTime() - new Date(String(bVal)).getTime()
+							: String(aVal).localeCompare(String(bVal))
 
 					if (cmp !== 0) return cmp * dir
 				}

@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
 import tseslint from 'typescript-eslint'
+import globals from 'globals'
 
 export default tseslint.config(
 	{
@@ -28,28 +29,8 @@ export default tseslint.config(
 				sourceType: 'module',
 			},
 			globals: {
-				window: 'readonly',
-				document: 'readonly',
-				console: 'readonly',
-				navigator: 'readonly',
-				setTimeout: 'readonly',
-				clearTimeout: 'readonly',
-				setInterval: 'readonly',
-				clearInterval: 'readonly',
-				requestAnimationFrame: 'readonly',
-				cancelAnimationFrame: 'readonly',
-				HTMLElement: 'readonly',
-				HTMLInputElement: 'readonly',
-				HTMLButtonElement: 'readonly',
-				Event: 'readonly',
-				MouseEvent: 'readonly',
-				KeyboardEvent: 'readonly',
-				TouchEvent: 'readonly',
-				DragEvent: 'readonly',
-				URL: 'readonly',
-				DOMParser: 'readonly',
-				IntersectionObserver: 'readonly',
-				ResizeObserver: 'readonly',
+				...globals.browser,
+				...globals.es2021,
 				process: 'readonly',
 			},
 		},
