@@ -153,13 +153,12 @@ jobs:
           PLAYWRIGHT_REUSE_SERVER: "true"
 
       # === Cross-platform baseline regeneration ===
-      # Только на pull_request: генерирует Linux-baselines для кросс-платформенных
-      # отличий в анти-алиасинге (Inter Variable рендерится чуть иначе на Windows
-      # GDI ClearType vs Linux FreeType, даёт 1-2px diff в размерах). Коммитит
-      # обновлённые PNG в тот же PR — reviewer видит diff и мерджит осознанно.
-      # На прямом push в main никогда не срабатывает: branches-ignore + event filter.
+      # Без `if: always()` этот шаг skipped бы по дефолту, когда visual-тесты
+      # упали на platform-различиях (как раз та ситуация, ради которой шаг
+      # и нужен). Только на pull_request: никогда не на main, и head.repo.full_name
+      # == github.repository защищает от форков.
       - name: Regenerate visual baselines on Linux
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
           node scripts/serve-storybook-static.mjs &
           npx wait-on http://localhost:6006
@@ -168,7 +167,7 @@ jobs:
           PLAYWRIGHT_REUSE_SERVER: "true"
 
       - name: Commit updated baselines to PR
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(visual): regenerate baselines for Linux CI (auto)"
