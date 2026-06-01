@@ -18,8 +18,8 @@
     "test": "tests"
   },
   "engines": {
-    "node": "^24.16.0",
-    "npm": "^11.13.0"
+    "node": ">=22.19.0",
+    "npm": ">=10.9.2"
   },
   "scripts": {
     "prepare": "husky build/husky",
@@ -70,6 +70,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^25.9.1",
+    "@types/react": "^19",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/browser-playwright": "^4.1.7",
     "@vitest/coverage-istanbul": "^4.1.7",
