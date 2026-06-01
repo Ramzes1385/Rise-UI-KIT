@@ -24,8 +24,8 @@ for (const story of STORIES) {
 		const clip = {
 			x: 0,
 			y: 0,
-			width: Math.ceil(box.width / 10) * 10,
-			height: Math.ceil(box.height / 10) * 10,
+			width: Math.max(40, Math.floor(box.width / 20) * 20),
+			height: Math.max(20, Math.floor(box.height / 20) * 20),
 		}
 		await expect(page).toHaveScreenshot(`base-separator--${story}.png`, {
 			clip,

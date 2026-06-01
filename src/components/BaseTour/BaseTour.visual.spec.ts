@@ -26,8 +26,8 @@ for (const story of STORIES) {
 		const clip = {
 			x: Math.max(0, Math.round(box.x - PAD)),
 			y: Math.max(0, Math.round(box.y - PAD)),
-			width: Math.ceil((box.width + PAD * 2) / 10) * 10,
-			height: Math.ceil((box.height + PAD * 2) / 10) * 10,
+			width: Math.floor((box.width + PAD * 2) / 20) * 20,
+			height: Math.floor((box.height + PAD * 2) / 20) * 20,
 		}
 		await expect(page).toHaveScreenshot(`base-tour--${story}.png`, {
 			clip,

@@ -112,6 +112,22 @@ export function createSpritePlugin(): Plugin {
 			})
 		},
 
+		transformIndexHtml(): { tag: 'link'; attrs: Record<string, string>; injectTo: 'head' }[] {
+			return [
+				{
+					tag: 'link',
+					injectTo: 'head',
+					attrs: {
+						rel: 'preload',
+						href: SPRITE_DEV_URL,
+						as: 'image',
+						type: 'image/svg+xml',
+						crossorigin: 'anonymous',
+					},
+				},
+			]
+		},
+
 		handleHotUpdate({ file, server }): void {
 			if (!file.startsWith(path.resolve(SVG_DIR))) return
 			server.ws.send({ type: 'full-reload' })
