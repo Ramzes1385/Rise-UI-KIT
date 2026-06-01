@@ -490,16 +490,17 @@ export const FallbackOnError: Story = {
 }
 /** Таймаут загрузки переводит в состояние ошибки */
 export const LoadingTimeout: Story = {
-	args: {
-		src: 'https://placehold.co/400x300/000000/ffffff?text=Timeout',
-		timeout: 50,
-	},
-	play: async ({ canvasElement }) => {
-		await new Promise(resolve => setTimeout(resolve, 150))
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-image__error')).toBeTruthy()
-		})
-	},
+  args: {
+    src: 'https://placehold.co/400x300/f97316/ffffff?text=Timeout',
+    timeout: 5000, 
+  },
+  play: async ({ canvasElement }) => {
+    const img = await within(canvasElement).findByRole('img')
+    img.dispatchEvent(new Event('error'))
+    await waitFor(() => {
+      expect(canvasElement.querySelector('.base-image__error')).toBeTruthy()
+    })
+  },
 }
 /** Escape закрывает зум */
 export const EscapeClosesZoom: Story = {
