@@ -64,7 +64,7 @@ describe('BaseCalendar integration', () => {
 				global: { stubs },
 			})
 
-			const day10 = screen.getByText('10')
+			const day10 = screen.getAllByText('10').find(el => !el.closest('.base-calendar__day--other'))!
 			await fireEvent.click(day10)
 
 			expect(emitted()).toHaveProperty('update:modelValue')
@@ -102,7 +102,7 @@ describe('BaseCalendar integration', () => {
 				global: { stubs },
 			})
 
-			const day10 = screen.getByText('10')
+			const day10 = screen.getAllByText('10').find(el => !el.closest('.base-calendar__day--other'))!
 			await fireEvent.click(day10)
 
 			expect(emitted()).toHaveProperty('update:selectedDates')
