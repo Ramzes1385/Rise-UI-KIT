@@ -1,9 +1,12 @@
 /**
  * Composable для работы с SVG-иконками из спрайта.
  * Спрайт генерируется Vite-плагином из директории src/icons/svg.
+ *
+ * Путь относительный — резолвится относительно base URL текущего документа.
+ * Корректно работает в Vite dev, Storybook dev и в Storybook build под подпапкой (GH Pages).
  */
 
-const SPRITE_PATH = '/icons.svg'
+const SPRITE_PATH = 'icons.svg'
 
 function getIconUrl(name: string): string {
 	return `${SPRITE_PATH}#${name}`

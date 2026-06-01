@@ -50,7 +50,7 @@ describe('BaseBreadcrumbs unit', () => {
 
 			const seps = container.querySelectorAll('.base-breadcrumbs__sep')
 			expect(seps.length).toBeGreaterThan(0)
-			expect(container.querySelector('use')?.getAttribute('href')).toBe('/icons.svg#chevron-right')
+			expect(container.querySelector('use')?.getAttribute('href')).toBe('icons.svg#chevron-right')
 		})
 
 		it('должен рендерить slash-разделитель', () => {
@@ -101,7 +101,7 @@ describe('BaseBreadcrumbs unit', () => {
 				props: { items: ITEMS, separator: 'unknown' as any },
 			})
 
-			expect(container.querySelector('use')?.getAttribute('href')).toBe('/icons.svg#chevron-right')
+			expect(container.querySelector('use')?.getAttribute('href')).toBe('icons.svg#chevron-right')
 		})
 	})
 
@@ -372,7 +372,7 @@ describe('BaseBreadcrumbs unit', () => {
 			// Должны быть chevron-разделители (иконки)
 			const sepIcon = container.querySelector('.base-breadcrumbs__sep use')
 			expect(sepIcon).toBeInTheDocument()
-			expect(sepIcon?.getAttribute('href')).toBe('/icons.svg#chevron-right')
+			expect(sepIcon?.getAttribute('href')).toBe('icons.svg#chevron-right')
 		})
 
 		it('не должен падать и выполнять навигацию при клике на дом, если первый элемент falsy', async () => {

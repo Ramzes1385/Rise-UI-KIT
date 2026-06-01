@@ -46,7 +46,7 @@ describe('BaseAlert unit', () => {
 				props: { icon: 'custom-star' },
 			})
 
-			expect(container.querySelector('use')?.getAttribute('href')).toBe('/icons.svg#custom-star')
+			expect(container.querySelector('use')?.getAttribute('href')).toBe('icons.svg#custom-star')
 		})
 
 		const defaultIcons = {
@@ -62,7 +62,7 @@ describe('BaseAlert unit', () => {
 					props: { type: type as any },
 				})
 
-				expect(container.querySelector('use')?.getAttribute('href')).toBe(`/icons.svg#${iconName}`)
+				expect(container.querySelector('use')?.getAttribute('href')).toBe(`icons.svg#${iconName}`)
 			})
 		})
 
@@ -71,7 +71,7 @@ describe('BaseAlert unit', () => {
 				props: { type: 'unknown' as any },
 			})
 
-			expect(container.querySelector('use')?.getAttribute('href')).toBe('/icons.svg#info')
+			expect(container.querySelector('use')?.getAttribute('href')).toBe('icons.svg#info')
 		})
 	})
 

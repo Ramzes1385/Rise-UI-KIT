@@ -5,18 +5,18 @@ import { useIcon } from './useIcon'
 describe('useIcon', () => {
 	it('возвращает spritePath', () => {
 		const { spritePath } = useIcon()
-		expect(spritePath).toBe('/icons.svg')
+		expect(spritePath).toBe('icons.svg')
 	})
 
 	describe('getIconUrl', () => {
 		it('строит URL иконки из имени', () => {
 			const { getIconUrl } = useIcon()
-			expect(getIconUrl('close')).toBe('/icons.svg#close')
+			expect(getIconUrl('close')).toBe('icons.svg#close')
 		})
 
 		it('строит URL для другого имени', () => {
 			const { getIconUrl } = useIcon()
-			expect(getIconUrl('menu')).toBe('/icons.svg#menu')
+			expect(getIconUrl('menu')).toBe('icons.svg#menu')
 		})
 	})
 
@@ -41,7 +41,7 @@ describe('useIcon', () => {
 		it('возвращает имена иконок из спрайта', () => {
 			// Создаём мок спрайта в DOM
 			const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-			svg.setAttribute('href', '/icons.svg')
+			svg.setAttribute('href', 'icons.svg')
 
 			const symbol1 = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')
 			symbol1.id = 'close'
@@ -61,7 +61,7 @@ describe('useIcon', () => {
 
 		it('возвращает имена иконок из спрайта загруженного через link', () => {
 			const link = document.createElement('link')
-			link.setAttribute('href', '/icons.svg')
+			link.setAttribute('href', 'icons.svg')
 
 			document.body.appendChild(link)
 
@@ -80,7 +80,7 @@ describe('useIcon', () => {
 		expect(result).toHaveProperty('getIconUrl')
 		expect(result).toHaveProperty('isIconExists')
 		expect(result).toHaveProperty('getIconNames')
-		expect(result.spritePath).toBe('/icons.svg')
+		expect(result.spritePath).toBe('icons.svg')
 		expect(result.getIconUrl).toBeTypeOf('function')
 		expect(result.isIconExists).toBeTypeOf('function')
 		expect(result.getIconNames).toBeTypeOf('function')
@@ -88,7 +88,7 @@ describe('useIcon', () => {
 
 	it('возвращает пустые строки для symbol без id', () => {
 		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-		svg.setAttribute('href', '/icons.svg')
+		svg.setAttribute('href', 'icons.svg')
 
 		const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')
 		// id не установлен — будет пустая строка
@@ -110,7 +110,7 @@ describe('useIcon', () => {
 		document.body.appendChild(svgWrong)
 
 		const svgRight = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-		svgRight.setAttribute('href', '/icons.svg')
+		svgRight.setAttribute('href', 'icons.svg')
 		const symbolRight = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')
 		symbolRight.id = 'close'
 		svgRight.appendChild(symbolRight)

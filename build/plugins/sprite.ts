@@ -4,6 +4,9 @@
  * Production: спрайт эмитится в dist/icons.svg через this.emitFile() — без записи в public/.
  * Development: спрайт раздаётся middleware-ом по адресу /icons.svg (in-memory, без файла на диске).
  * HMR: при изменении SVG отправляется full-reload, спрайт пересобирается лениво при следующем запросе.
+ *
+ * Путь SPRITE_PATH относительный — корректно работает в любом base:
+ * Vite dev, Storybook dev, Storybook build под подпапкой (GH Pages: /Rise-UI-KIT/).
  */
 
 import fs from 'node:fs'
@@ -17,7 +20,10 @@ interface SvgSymbol {
 
 const SVG_DIR = 'src/icons/svg'
 const SPRITE_FILE_NAME = 'icons.svg'
-const SPRITE_DEV_URL = '/icons.svg'
+/** Относительный путь — резолвится относительно base URL текущего документа. */
+const SPRITE_PATH = 'icons.svg'
+/** Абсолютный путь для dev-middleware — Vite слушает его на корне сервера. */
+const SPRITE_DEV_URL = `/${SPRITE_FILE_NAME}`
 const ROOT_ATTRIBUTES = ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin']
 
 function getSvgId(filePath: string): string {
@@ -119,7 +125,7 @@ export function createSpritePlugin(): Plugin {
 					injectTo: 'head',
 					attrs: {
 						rel: 'preload',
-						href: SPRITE_DEV_URL,
+						href: SPRITE_PATH,
 						as: 'image',
 						type: 'image/svg+xml',
 						crossorigin: 'anonymous',
