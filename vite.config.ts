@@ -15,6 +15,6 @@ export default defineConfig(({ mode }) => ({
 	css: createCssConfig(mode),
 	server: createServerConfig(),
 	preview: createPreviewConfig(),
-	plugins: createPlugins(mode),
+	plugins: createPlugins(mode, { target: 'app' }),
 	build: createBuildConfig(),
 }))

@@ -12,17 +12,38 @@ import { createSpritePlugin } from './sprite'
 import { createSvgPlugin } from './svg'
 import { createVuePlugin } from './vue'
 
-/** Создаёт массив плагинов в зависимости от режима сборки */
-export function createPlugins(mode: string): PluginOption[] {
+type BuildTarget = 'app' | 'lib'
+
+interface CreatePluginsOptions {
+	target?: BuildTarget
+}
+
+/**
+ * Создаёт массив плагинов в зависимости от режима сборки.
+ *
+ * app — dev/playground/demo/storybook-like сборка
+ * lib — npm package сборка без app-only артефактов
+ */
+export function createPlugins(
+	mode: string,
+	options: CreatePluginsOptions = {},
+): PluginOption[] {
+	const target = options.target ?? 'app'
 	const isProduction = isProductionMode(mode)
+	const isLib = target === 'lib'
 
-	const plugins: PluginOption[] = [createVuePlugin(mode), createSvgPlugin(), createSpritePlugin()]
+	const plugins: PluginOption[] = [
+		createVuePlugin(mode),
+		createSvgPlugin(),
+		createSpritePlugin(),
+	]
 
-	if (isProduction) {
+	if (isProduction && !isLib) {
 		plugins.push(createImagePlugin(), ...createCompressionPlugins())
 	}
 
 	const isAnalyze = process.argv.includes('--analyze')
+
 	if (isAnalyze) {
 		plugins.push(
 			visualizer({

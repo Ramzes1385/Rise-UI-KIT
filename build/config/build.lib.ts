@@ -1,15 +1,8 @@
 import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
-import { createCssConfig } from './build/config/css'
-import { createResolveConfig } from './build/config/resolve'
-import { createPlugins } from './build/plugins'
+import type { BuildOptions } from 'vite'
 
-export default defineConfig(({ mode }) => ({
-	resolve: createResolveConfig(),
-	css: createCssConfig(mode),
-	plugins: createPlugins(mode),
-
-	build: {
+export function createLibBuildConfig(): BuildOptions {
+	return {
 		outDir: 'dist',
 		emptyOutDir: true,
 		sourcemap: false,
@@ -19,10 +12,10 @@ export default defineConfig(({ mode }) => ({
 
 		lib: {
 			entry: {
-				index: resolve(__dirname, 'src/index.ts'),
+				index: resolve(process.cwd(), 'src/index.ts'),
 			},
 			formats: ['es'],
-			fileName: (_format, entryName) => `${entryName}.js`,
+			fileName: () => 'index.js',
 			cssFileName: 'styles',
 		},
 
@@ -47,5 +40,7 @@ export default defineConfig(({ mode }) => ({
 				},
 			},
 		},
-	},
-}))
+
+		reportCompressedSize: false,
+	}
+}

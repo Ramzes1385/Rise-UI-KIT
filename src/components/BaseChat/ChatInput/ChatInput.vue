@@ -183,8 +183,7 @@
 					class="base-chat-input__field"
 					@keydown="handleKeyDown"
 					@keyup="checkAutocomplete"
-					@click="checkAutocomplete"
-					@keydown.enter="handleSend" />
+					@click="checkAutocomplete" />
 			</div>
 
 			<div class="base-chat-input__send-btn-container">
@@ -389,32 +388,59 @@ function handleKeyDown(event: KeyboardEvent): void {
 		if (event.key === 'ArrowDown') {
 			event.preventDefault()
 			activeSuggestionIndex.value = (activeSuggestionIndex.value + 1) % filteredMembers.value.length
-		} else if (event.key === 'ArrowUp') {
+			return
+		}
+
+		if (event.key === 'ArrowUp') {
 			event.preventDefault()
 			activeSuggestionIndex.value =
 				(activeSuggestionIndex.value - 1 + filteredMembers.value.length) % filteredMembers.value.length
-		} else if (event.key === 'Enter') {
+			return
+		}
+
+		if (event.key === 'Enter') {
 			event.preventDefault()
 			selectMention(filteredMembers.value[activeSuggestionIndex.value].name)
-		} else if (event.key === 'Escape') {
+			return
+		}
+
+		if (event.key === 'Escape') {
 			event.preventDefault()
 			showMentions.value = false
+			return
 		}
-	} else if (showCommands.value && filteredCommands.value.length > 0) {
+	}
+
+	if (showCommands.value && filteredCommands.value.length > 0) {
 		if (event.key === 'ArrowDown') {
 			event.preventDefault()
 			activeSuggestionIndex.value = (activeSuggestionIndex.value + 1) % filteredCommands.value.length
-		} else if (event.key === 'ArrowUp') {
+			return
+		}
+
+		if (event.key === 'ArrowUp') {
 			event.preventDefault()
 			activeSuggestionIndex.value =
 				(activeSuggestionIndex.value - 1 + filteredCommands.value.length) % filteredCommands.value.length
-		} else if (event.key === 'Enter') {
+			return
+		}
+
+		if (event.key === 'Enter') {
 			event.preventDefault()
 			selectCommand(filteredCommands.value[activeSuggestionIndex.value].name)
-		} else if (event.key === 'Escape') {
+			return
+		}
+
+		if (event.key === 'Escape') {
 			event.preventDefault()
 			showCommands.value = false
+			return
 		}
+	}
+
+	if (event.key === 'Enter' && !event.shiftKey) {
+		event.preventDefault()
+		handleSend()
 	}
 }
 
