@@ -11,7 +11,7 @@ import type { Plugin } from 'vite'
 import { mergeConfig } from 'vite'
 import { resolvePathInStorybookCache } from 'storybook/internal/common'
 import svgLoader from 'vite-svg-loader'
-import { createSpritePlugin } from '../plugins/sprite'
+import { createSpritePlugin } from '../plugins/sprite.ts'
 
 const PROJECT_ROOT = resolve(process.cwd())
 const COVERAGE_DIR = resolve(PROJECT_ROOT, 'coverage')

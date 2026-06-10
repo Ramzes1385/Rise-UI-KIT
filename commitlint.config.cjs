@@ -1,0 +1,1 @@
+module.exports = require('./build/commitlint/commitlint.config.cjs')
