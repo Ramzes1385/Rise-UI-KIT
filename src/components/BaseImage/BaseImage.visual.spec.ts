@@ -11,10 +11,35 @@ const STORIES = ['default', 'fits', 'border-radii', 'dark-theme']
 
 for (const story of STORIES) {
 	test(`BaseImage — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		await page.waitForLoadState('networkidle')
-		await page.evaluate(() => document.fonts.ready)
+		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`, {
+			waitUntil: 'domcontentloaded',
+		})
+
 		const root = page.locator('#storybook-root')
+
+		await expect(root).toBeVisible()
+
+		await page.evaluate(async () => {
+			await document.fonts.ready
+
+			const images = Array.from(document.images)
+
+			await Promise.all(
+				images.map(
+					image =>
+						new Promise<void>(resolve => {
+							if (image.complete) {
+								resolve()
+								return
+							}
+
+							image.onload = () => resolve()
+							image.onerror = () => resolve()
+						}),
+				),
+			)
+		})
+
 		await expect(root).toHaveScreenshot(`base-image--${story}.png`)
 	})
 }
