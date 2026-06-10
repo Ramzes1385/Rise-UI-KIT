@@ -1,6 +1,6 @@
 {
   "name": "@ramzes1385/rise-ui-kit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.",
   "homepage": "https://github.com/Ramzes1385/Rise-UI-KIT#readme",
   "bugs": {
@@ -56,7 +56,7 @@
   "scripts": {
     "prepare": "husky build/husky",
     "dev": "vite",
-    "build": "vue-tsc -b tsconfig.app.json && vite build",
+    "build": "npm run build:lib",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,vue}\"",
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
@@ -84,7 +84,6 @@
     "test:visual": "playwright test --config build/tests/playwright.config.ts --project=visual-chromium",
     "test:visual:update": "playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots",
     "test:all": "npm run test:components:coverage && npm run test:e2e && npm run test:visual",
-    "build": "npm run build:lib",
     "build:app": "vue-tsc -b tsconfig.app.json && vite build",
     "build:lib": "npm run build:lib:js && npm run build:lib:types && npm run clean:lib-dist",
     "build:lib:js": "vite build --config vite.lib.config.ts",
