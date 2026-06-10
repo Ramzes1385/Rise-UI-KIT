@@ -298,10 +298,10 @@ watch(text, () => {
 	})
 })
 
-function selectMention(memberName: string): void {
+function selectMention(memberName: string): string | null {
 	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
 	/* istanbul ignore next — defensive: inputRef доступен после mount BaseInput */
-	if (!inputEl) return
+	if (!inputEl) return null
 
 	/* istanbul ignore next — defensive: selectionStart всегда number для HTMLInputElement */
 	const cursorPosition = inputEl.selectionStart ?? 0
@@ -312,7 +312,9 @@ function selectMention(memberName: string): void {
 	const newTextBefore =
 		lastSpaceIndex === -1 ? `@${memberName} ` : textBeforeCursor.slice(0, lastSpaceIndex + 1) + `@${memberName} `
 
-	text.value = newTextBefore + textAfterCursor
+	const nextText = newTextBefore + textAfterCursor
+
+	text.value = nextText
 	showMentions.value = false
 
 	nextTick(() => {
@@ -320,12 +322,14 @@ function selectMention(memberName: string): void {
 		const newCursorPos = newTextBefore.length
 		inputEl.setSelectionRange(newCursorPos, newCursorPos)
 	})
+
+	return nextText
 }
 
-function selectCommand(commandName: string): void {
+function selectCommand(commandName: string): string | null {
 	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
 	/* istanbul ignore next — defensive: inputRef доступен после mount BaseInput */
-	if (!inputEl) return
+	if (!inputEl) return null
 
 	/* istanbul ignore next — defensive: selectionStart всегда number для HTMLInputElement */
 	const cursorPosition = inputEl.selectionStart ?? 0
@@ -336,7 +340,9 @@ function selectCommand(commandName: string): void {
 	const newTextBefore =
 		lastSpaceIndex === -1 ? `/${commandName} ` : textBeforeCursor.slice(0, lastSpaceIndex + 1) + `/${commandName} `
 
-	text.value = newTextBefore + textAfterCursor
+	const nextText = newTextBefore + textAfterCursor
+
+	text.value = nextText
 	showCommands.value = false
 
 	nextTick(() => {
@@ -344,6 +350,8 @@ function selectCommand(commandName: string): void {
 		const newCursorPos = newTextBefore.length
 		inputEl.setSelectionRange(newCursorPos, newCursorPos)
 	})
+
+	return nextText
 }
 
 /**
@@ -400,7 +408,15 @@ function handleKeyDown(event: KeyboardEvent): void {
 
 		if (event.key === 'Enter') {
 			event.preventDefault()
-			selectMention(filteredMembers.value[activeSuggestionIndex.value].name)
+
+			const selectedMember = filteredMembers.value[activeSuggestionIndex.value]
+			if (!selectedMember) return
+
+			const nextText = selectMention(selectedMember.name)
+			if (nextText) {
+				sendMessage(nextText)
+			}
+
 			return
 		}
 
@@ -427,7 +443,15 @@ function handleKeyDown(event: KeyboardEvent): void {
 
 		if (event.key === 'Enter') {
 			event.preventDefault()
-			selectCommand(filteredCommands.value[activeSuggestionIndex.value].name)
+
+			const selectedCommand = filteredCommands.value[activeSuggestionIndex.value]
+			if (!selectedCommand) return
+
+			const nextText = selectCommand(selectedCommand.name)
+			if (nextText) {
+				sendMessage(nextText)
+			}
+
 			return
 		}
 
@@ -559,9 +583,8 @@ function handleCancelReply(): void {
 	emit('cancel-reply')
 }
 
-/** Отправка сообщения */
-function handleSend(): void {
-	const trimmedText = text.value.trim()
+function sendMessage(messageText = text.value): void {
+	const trimmedText = messageText.trim()
 	if (!trimmedText && attachments.value.length === 0) return
 
 	emit('send', {
@@ -571,6 +594,11 @@ function handleSend(): void {
 
 	text.value = ''
 	attachments.value = []
+}
+
+/** Отправка сообщения */
+function handleSend(): void {
+	sendMessage()
 }
 
 /** Обработка выбора быстрого ответа */
