@@ -1,0 +1,62 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    "jsx": "preserve",
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@composables/*": ["./src/composables/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@icons/*": ["./src/icons/*"]
+    },
+
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": [
+    "src/index.ts",
+    "src/plugin.ts",
+    "src/vite-env.d.ts",
+    "src/**/*.d.ts",
+
+    "src/components/**/*.ts",
+    "src/components/**/*.vue",
+
+    "src/composables/**/*.ts",
+
+    "src/icons/**/*.ts",
+    "src/icons/**/*.vue",
+
+    "src/utils/**/*.ts"
+  ],
+  "exclude": [
+    "src/main.ts",
+    "src/App.vue",
+    "src/playground/**",
+
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+
+    "src/utils/storybookUtils/**",
+
+    "tests",
+    "node_modules",
+    "dist"
+  ]
+}

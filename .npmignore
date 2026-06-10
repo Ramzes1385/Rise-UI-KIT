@@ -3,7 +3,6 @@ tests/
 coverage/
 storybook-static/
 test-results/
-dist/
 build/
 scripts/
 .github/
