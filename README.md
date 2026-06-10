@@ -1,391 +1,1652 @@
-# Rise — UI Kit
+# Rise UI KIT
 
-Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.
+`@ramzes1385/rise-ui-kit` — UI-kit библиотека компонентов для Vue 3.
 
-## Технологический стек
+Библиотека содержит готовые переиспользуемые компоненты интерфейса, composables, utils, иконки, глобальные стили и Vue plugin для быстрой интеграции в приложение.
 
-| Категория | Технология |
-|---|---|
-| Фреймворк | Vue 3 (`<script setup lang="ts">`) |
-| Язык | TypeScript ~6.0 |
-| Сборка | Vite 8 (модульная архитектура `build/`) |
-| Стили | SCSS + CSS-переменные + BEM |
-| Unit / Integration | Vitest + @testing-library/vue + @vue/test-utils |
-| Visual Regression | Playwright + Storybook screenshot |
-| Accessibility | Storybook test runner + addon-a11y |
-| E2E | Playwright (Chromium) |
-| Storybook | 10.x (Vue 3 + Vite) |
-| Линтинг | ESLint 9 (flat config) + typescript-eslint + eslint-plugin-vue |
-| Прекоммит-хуки | Husky |
-| Node.js | 22 |
+Пакет подходит для использования в Vue 3 проектах, дизайн-системах, админ-панелях, личных кабинетах, внутренних корпоративных интерфейсах и frontend-шаблонах.
+
+---
+
+## Возможности
+
+- Vue 3 компоненты;
+- TypeScript типизация;
+- готовый npm package;
+- поддержка глобальной регистрации компонентов через plugin;
+- поддержка прямого импорта компонентов;
+- готовые стили библиотеки;
+- composables для повторного использования логики;
+- utils для работы с датами, файлами, цветами, таблицами и навигацией;
+- набор базовых компонентов для построения сложных интерфейсов;
+- Storybook/dev-окружение для разработки компонентов;
+- unit/integration тесты;
+- автоматический release через `semantic-release`;
+- npm publish через CI/CD.
+
+---
+
+## Стек
+
+Основной стек проекта:
+
+```txt
+Vue 3
+TypeScript
+Vite
+SCSS
+Vitest
+Storybook
+ESLint
+Prettier
+Husky
+Commitlint
+semantic-release
+```
+
+Дополнительно используются:
+
+```txt
+Vite library mode
+vue-tsc
+Conventional Commits
+GitHub Actions
+npm Trusted Publisher / NPM_TOKEN
+```
+
+---
 
 ## Установка
 
 ```bash
-npm install rise-ui-kit
+npm install @ramzes1385/rise-ui-kit
 ```
 
-## Подключение
+или:
 
-### Глобальная регистрация через плагин
+```bash
+yarn add @ramzes1385/rise-ui-kit
+```
+
+или:
+
+```bash
+pnpm add @ramzes1385/rise-ui-kit
+```
+
+---
+
+## Подключение стилей
+
+Стили библиотеки нужно подключить один раз в точке входа приложения.
+
+Например, в `main.ts`:
 
 ```ts
-// main.ts
+import '@ramzes1385/rise-ui-kit/styles'
+```
+
+---
+
+## Быстрый старт
+
+### Подключение через Vue plugin
+
+Этот способ удобен, если нужно зарегистрировать компоненты глобально.
+
+```ts
 import { createApp } from 'vue'
-import { createUiKitPlugin } from 'rise-ui-kit'
-import 'rise-ui-kit/styles'
+import App from './App.vue'
+
+import { createUiKitPlugin } from '@ramzes1385/rise-ui-kit'
+import '@ramzes1385/rise-ui-kit/styles'
 
 const app = createApp(App)
+
 app.use(createUiKitPlugin())
+
 app.mount('#app')
 ```
 
-Все компоненты регистрируются с префиксом `Base` (например `<BaseButton>`, `<BaseInput>`).
+После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API.
 
-Кастомный префикс:
+```vue
+<template>
+	<BaseButton label="Сохранить" />
+</template>
+```
+
+---
+
+### Прямой импорт компонентов
+
+Этот способ предпочтителен, если нужно контролировать используемые компоненты явно.
+
+```vue
+<script setup lang="ts">
+import { BaseButton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseButton label="Сохранить" />
+</template>
+```
+
+---
+
+## Публичный API
+
+Все внешние импорты должны идти через главный публичный API пакета:
 
 ```ts
-app.use(createUiKitPlugin({ prefix: 'Ma' }))
-// → <MaButton>, <MaInput>
+import { BaseButton, BaseInput, BaseModal, BaseTable, useDebounce, formatFileSize } from '@ramzes1385/rise-ui-kit'
+
+import '@ramzes1385/rise-ui-kit/styles'
 ```
 
-### Tree-shaking: точечный импорт
+Не рекомендуется импортировать внутренние файлы из `dist` напрямую:
 
 ```ts
-import { BaseButton } from 'rise-ui-kit/components/BaseButton'
-import { BaseInput } from 'rise-ui-kit/components/BaseInput'
+// Не использовать
+import BaseButton from '@ramzes1385/rise-ui-kit/dist/components/BaseButton/BaseButton.vue'
 ```
 
-### Composables
+Правильно:
 
 ```ts
-import { useDebounce, useClickOutside, useBreakpoint } from 'rise-ui-kit/composables'
+import { BaseButton } from '@ramzes1385/rise-ui-kit'
 ```
 
-### Утилиты
+---
+
+## Структура пакета
+
+```txt
+src/
+  components/      # UI-компоненты
+  composables/     # Vue composables
+  icons/           # иконки и icon registry
+  styles/          # глобальные стили
+  utils/           # утилиты
+  plugin.ts        # Vue plugin
+  index.ts         # главный публичный API
+
+build/
+  config/          # общие Vite-конфиги
+  plugins/         # Vite plugins
+  lib/             # npm library build
+  tests/           # Vitest config
+  release/         # semantic-release config
+  ci/              # CI/CD конфиги и env examples
+  commitlint/      # commitlint config
+
+dist/              # результат сборки библиотеки
+```
+
+---
+
+# Компоненты
+
+Ниже приведён список основных компонентов библиотеки.
+
+---
+
+## BaseButton
+
+Базовая кнопка.
+
+Подходит для действий, форм, тулбаров, модальных окон и карточек.
+
+### Пример
+
+```vue
+<script setup lang="ts">
+import { BaseButton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseButton label="Сохранить" />
+
+	<BaseButton variant="ghost" label="Отмена" />
+
+	<BaseButton :disabled="true" label="Недоступно" />
+</template>
+```
+
+---
+
+## BaseInput
+
+Базовое поле ввода.
+
+### Пример
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseInput } from '@ramzes1385/rise-ui-kit'
+
+const value = ref('')
+</script>
+
+<template>
+	<BaseInput v-model="value" placeholder="Введите текст" />
+</template>
+```
+
+---
+
+## BaseTextarea
+
+Многострочное поле ввода.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseTextarea } from '@ramzes1385/rise-ui-kit'
+
+const description = ref('')
+</script>
+
+<template>
+	<BaseTextarea v-model="description" placeholder="Описание" />
+</template>
+```
+
+---
+
+## BaseSelect
+
+Компонент выбора значения из списка.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSelect } from '@ramzes1385/rise-ui-kit'
+
+const selected = ref(null)
+
+const options = [
+	{ label: 'Активен', value: 'active' },
+	{ label: 'Неактивен', value: 'inactive' },
+]
+</script>
+
+<template>
+	<BaseSelect v-model="selected" :options="options" placeholder="Выберите статус" />
+</template>
+```
+
+---
+
+## BaseCheckbox
+
+Чекбокс.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseCheckbox } from '@ramzes1385/rise-ui-kit'
+
+const checked = ref(false)
+</script>
+
+<template>
+	<BaseCheckbox v-model="checked" label="Согласен с условиями" />
+</template>
+```
+
+---
+
+## BaseRadio
+
+Radio button.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseRadio } from '@ramzes1385/rise-ui-kit'
+
+const value = ref('email')
+</script>
+
+<template>
+	<BaseRadio v-model="value" value="email" label="Email" />
+
+	<BaseRadio v-model="value" value="phone" label="Телефон" />
+</template>
+```
+
+---
+
+## BaseSwitch
+
+Переключатель.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSwitch } from '@ramzes1385/rise-ui-kit'
+
+const enabled = ref(false)
+</script>
+
+<template>
+	<BaseSwitch v-model="enabled" label="Включить уведомления" />
+</template>
+```
+
+---
+
+## BaseForm
+
+Контейнер формы.
+
+```vue
+<script setup lang="ts">
+import { BaseForm, BaseInput, BaseButton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseForm>
+		<BaseInput placeholder="Email" />
+		<BaseButton label="Отправить" />
+	</BaseForm>
+</template>
+```
+
+---
+
+## BaseFormField
+
+Обёртка для поля формы.
+
+Обычно используется для label, ошибок и вспомогательного текста.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseFormField, BaseInput } from '@ramzes1385/rise-ui-kit'
+
+const email = ref('')
+</script>
+
+<template>
+	<BaseFormField label="Email" error="Некорректный email">
+		<BaseInput v-model="email" placeholder="example@mail.com" />
+	</BaseFormField>
+</template>
+```
+
+---
+
+## BaseModal
+
+Модальное окно.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseModal, BaseButton } from '@ramzes1385/rise-ui-kit'
+
+const isOpen = ref(false)
+</script>
+
+<template>
+	<BaseButton label="Открыть" @click="isOpen = true" />
+
+	<BaseModal v-model="isOpen" title="Подтверждение">
+		<p>Вы уверены?</p>
+	</BaseModal>
+</template>
+```
+
+---
+
+## BaseSlideover
+
+Выезжающая панель.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSlideover, BaseButton } from '@ramzes1385/rise-ui-kit'
+
+const isOpen = ref(false)
+</script>
+
+<template>
+	<BaseButton label="Открыть панель" @click="isOpen = true" />
+
+	<BaseSlideover v-model="isOpen"> Содержимое панели </BaseSlideover>
+</template>
+```
+
+---
+
+## BaseDropdown
+
+Выпадающее меню.
+
+```vue
+<script setup lang="ts">
+import { BaseDropdown, BaseButton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseDropdown>
+		<template #trigger>
+			<BaseButton label="Меню" />
+		</template>
+
+		<div>Пункт меню</div>
+	</BaseDropdown>
+</template>
+```
+
+---
+
+## BasePopover
+
+Popover-компонент.
+
+```vue
+<script setup lang="ts">
+import { BasePopover, BaseButton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BasePopover>
+		<template #trigger>
+			<BaseButton label="Открыть popover" />
+		</template>
+
+		<div>Контент popover</div>
+	</BasePopover>
+</template>
+```
+
+---
+
+## BaseTooltip
+
+Tooltip для подсказок.
+
+```vue
+<script setup lang="ts">
+import { BaseTooltip, BaseButton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseTooltip content="Подсказка">
+		<BaseButton label="Наведи на меня" />
+	</BaseTooltip>
+</template>
+```
+
+---
+
+## BaseTable
+
+Таблица данных.
+
+```vue
+<script setup lang="ts">
+import { BaseTable } from '@ramzes1385/rise-ui-kit'
+
+const columns = [
+	{ key: 'name', label: 'Название' },
+	{ key: 'status', label: 'Статус' },
+]
+
+const rows = [
+	{ id: 1, name: 'Задача 1', status: 'Активна' },
+	{ id: 2, name: 'Задача 2', status: 'Завершена' },
+]
+</script>
+
+<template>
+	<BaseTable :columns="columns" :rows="rows" />
+</template>
+```
+
+---
+
+## BasePagination
+
+Пагинация.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BasePagination } from '@ramzes1385/rise-ui-kit'
+
+const page = ref(1)
+</script>
+
+<template>
+	<BasePagination v-model="page" :total="100" :page-size="10" />
+</template>
+```
+
+---
+
+## BaseTabs
+
+Табы.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseTabs } from '@ramzes1385/rise-ui-kit'
+
+const activeTab = ref('main')
+
+const tabs = [
+	{ label: 'Основное', value: 'main' },
+	{ label: 'Настройки', value: 'settings' },
+]
+</script>
+
+<template>
+	<BaseTabs v-model="activeTab" :items="tabs" />
+</template>
+```
+
+---
+
+## BaseAccordion
+
+Аккордеон.
+
+```vue
+<script setup lang="ts">
+import { BaseAccordion } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseAccordion title="Подробнее"> Контент аккордеона </BaseAccordion>
+</template>
+```
+
+---
+
+## BaseCard
+
+Карточка.
+
+```vue
+<script setup lang="ts">
+import { BaseCard } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseCard>
+		<h3>Заголовок</h3>
+		<p>Описание карточки</p>
+	</BaseCard>
+</template>
+```
+
+---
+
+## BaseAlert
+
+Alert-сообщение.
+
+```vue
+<script setup lang="ts">
+import { BaseAlert } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseAlert type="success" title="Успешно" description="Данные сохранены" />
+</template>
+```
+
+---
+
+## BaseNotification
+
+Уведомление.
+
+```vue
+<script setup lang="ts">
+import { BaseNotification } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseNotification title="Новое уведомление" description="Данные обновлены" />
+</template>
+```
+
+---
+
+## BaseBadge
+
+Badge-компонент.
+
+```vue
+<script setup lang="ts">
+import { BaseBadge } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseBadge label="New" />
+</template>
+```
+
+---
+
+## BaseChip
+
+Chip-компонент.
+
+```vue
+<script setup lang="ts">
+import { BaseChip } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseChip label="Vue" />
+</template>
+```
+
+---
+
+## BaseAvatar
+
+Аватар пользователя.
+
+```vue
+<script setup lang="ts">
+import { BaseAvatar } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseAvatar name="Иван Иванов" src="/avatar.png" />
+</template>
+```
+
+---
+
+## BaseImage
+
+Компонент изображения.
+
+```vue
+<script setup lang="ts">
+import { BaseImage } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseImage src="/image.jpg" alt="Описание изображения" />
+</template>
+```
+
+---
+
+## BaseIcon
+
+Компонент иконки.
+
+```vue
+<script setup lang="ts">
+import { BaseIcon } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseIcon name="search" />
+</template>
+```
+
+---
+
+## BaseLoader
+
+Loader.
+
+```vue
+<script setup lang="ts">
+import { BaseLoader } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseLoader />
+</template>
+```
+
+---
+
+## BaseSkeleton
+
+Skeleton-заглушка.
+
+```vue
+<script setup lang="ts">
+import { BaseSkeleton } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseSkeleton />
+</template>
+```
+
+---
+
+## BaseEmpty
+
+Empty state.
+
+```vue
+<script setup lang="ts">
+import { BaseEmpty } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseEmpty title="Нет данных" description="Попробуйте изменить фильтры" />
+</template>
+```
+
+---
+
+## BaseProgress
+
+Progress bar.
+
+```vue
+<script setup lang="ts">
+import { BaseProgress } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseProgress :value="65" />
+</template>
+```
+
+---
+
+## BaseRange
+
+Range input.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseRange } from '@ramzes1385/rise-ui-kit'
+
+const value = ref(50)
+</script>
+
+<template>
+	<BaseRange v-model="value" :min="0" :max="100" />
+</template>
+```
+
+---
+
+## BaseSlider
+
+Slider/carousel.
+
+```vue
+<script setup lang="ts">
+import { BaseSlider } from '@ramzes1385/rise-ui-kit'
+
+const slides = [
+	{ id: 1, title: 'Слайд 1' },
+	{ id: 2, title: 'Слайд 2' },
+]
+</script>
+
+<template>
+	<BaseSlider :items="slides" />
+</template>
+```
+
+---
+
+## BaseRating
+
+Рейтинг.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseRating } from '@ramzes1385/rise-ui-kit'
+
+const rating = ref(4)
+</script>
+
+<template>
+	<BaseRating v-model="rating" />
+</template>
+```
+
+---
+
+## BaseSearch
+
+Поиск.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSearch } from '@ramzes1385/rise-ui-kit'
+
+const query = ref('')
+</script>
+
+<template>
+	<BaseSearch v-model="query" placeholder="Поиск" />
+</template>
+```
+
+---
+
+## BaseDatePicker
+
+Выбор даты.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseDatePicker } from '@ramzes1385/rise-ui-kit'
+
+const date = ref(null)
+</script>
+
+<template>
+	<BaseDatePicker v-model="date" />
+</template>
+```
+
+---
+
+## BaseCalendar
+
+Календарь.
+
+```vue
+<script setup lang="ts">
+import { BaseCalendar } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseCalendar />
+</template>
+```
+
+---
+
+## BaseColorPicker
+
+Выбор цвета.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseColorPicker } from '@ramzes1385/rise-ui-kit'
+
+const color = ref('#42b883')
+</script>
+
+<template>
+	<BaseColorPicker v-model="color" />
+</template>
+```
+
+---
+
+## BaseFileUpload
+
+Загрузка файлов.
+
+```vue
+<script setup lang="ts">
+import { BaseFileUpload } from '@ramzes1385/rise-ui-kit'
+
+function handleFiles(files: FileList): void {
+	console.log(files)
+}
+</script>
+
+<template>
+	<BaseFileUpload @change="handleFiles" />
+</template>
+```
+
+---
+
+## BaseEditor
+
+Редактор текста.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseEditor } from '@ramzes1385/rise-ui-kit'
+
+const content = ref('')
+</script>
+
+<template>
+	<BaseEditor v-model="content" />
+</template>
+```
+
+---
+
+## BaseChat
+
+Компонент чата.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseChat } from '@ramzes1385/rise-ui-kit'
+
+const messages = ref([
+	{
+		id: '1',
+		text: 'Привет',
+		senderName: 'Анна',
+		createdAt: new Date().toISOString(),
+	},
+])
+
+function handleSend(payload: { text: string }): void {
+	messages.value.push({
+		id: String(Date.now()),
+		text: payload.text,
+		senderName: 'Вы',
+		createdAt: new Date().toISOString(),
+	})
+}
+</script>
+
+<template>
+	<BaseChat :messages="messages" @send="handleSend" />
+</template>
+```
+
+---
+
+## BaseTree
+
+Дерево данных.
+
+```vue
+<script setup lang="ts">
+import { BaseTree } from '@ramzes1385/rise-ui-kit'
+
+const nodes = [
+	{
+		id: '1',
+		label: 'Родитель',
+		children: [{ id: '1-1', label: 'Дочерний элемент' }],
+	},
+]
+</script>
+
+<template>
+	<BaseTree :nodes="nodes" />
+</template>
+```
+
+---
+
+## BaseMegaMenu
+
+Многоуровневое меню.
+
+```vue
+<script setup lang="ts">
+import { BaseMegaMenu } from '@ramzes1385/rise-ui-kit'
+
+const items = [
+	{
+		label: 'Раздел',
+		children: [{ label: 'Подраздел', to: '/section' }],
+	},
+]
+</script>
+
+<template>
+	<BaseMegaMenu :items="items" />
+</template>
+```
+
+---
+
+## BaseMenu
+
+Меню.
+
+```vue
+<script setup lang="ts">
+import { BaseMenu } from '@ramzes1385/rise-ui-kit'
+
+const items = [
+	{ label: 'Профиль', value: 'profile' },
+	{ label: 'Выход', value: 'logout' },
+]
+</script>
+
+<template>
+	<BaseMenu :items="items" />
+</template>
+```
+
+---
+
+## BaseSideBar
+
+Боковая панель навигации.
+
+```vue
+<script setup lang="ts">
+import { BaseSideBar } from '@ramzes1385/rise-ui-kit'
+
+const items = [
+	{ label: 'Главная', to: '/' },
+	{ label: 'Настройки', to: '/settings' },
+]
+</script>
+
+<template>
+	<BaseSideBar :items="items" />
+</template>
+```
+
+---
+
+## BaseBreadcrumbs
+
+Хлебные крошки.
+
+```vue
+<script setup lang="ts">
+import { BaseBreadcrumbs } from '@ramzes1385/rise-ui-kit'
+
+const items = [{ label: 'Главная', to: '/' }, { label: 'Пользователи', to: '/users' }, { label: 'Профиль' }]
+</script>
+
+<template>
+	<BaseBreadcrumbs :items="items" />
+</template>
+```
+
+---
+
+## BaseStepper
+
+Stepper.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseStepper } from '@ramzes1385/rise-ui-kit'
+
+const step = ref(1)
+
+const steps = [{ label: 'Данные' }, { label: 'Проверка' }, { label: 'Готово' }]
+</script>
+
+<template>
+	<BaseStepper v-model="step" :steps="steps" />
+</template>
+```
+
+---
+
+## BaseTour
+
+Компонент пользовательского тура по интерфейсу.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseTour } from '@ramzes1385/rise-ui-kit'
+
+const isOpen = ref(true)
+
+const steps = [
+	{
+		target: '#first-step',
+		title: 'Первый шаг',
+		content: 'Описание первого шага',
+	},
+]
+</script>
+
+<template>
+	<BaseTour v-model:is-open="isOpen" :steps="steps" />
+</template>
+```
+
+---
+
+## BaseText
+
+Компонент текста.
+
+```vue
+<script setup lang="ts">
+import { BaseText } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseText tag="p" :weight="600"> Текст </BaseText>
+</template>
+```
+
+---
+
+## BaseSeparator
+
+Разделитель.
+
+```vue
+<script setup lang="ts">
+import { BaseSeparator } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseSeparator />
+</template>
+```
+
+---
+
+## BasePin
+
+Pin/закреплённый элемент.
+
+```vue
+<script setup lang="ts">
+import { BasePin } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BasePin />
+</template>
+```
+
+---
+
+## BaseAnimation
+
+Компонент анимации.
+
+```vue
+<script setup lang="ts">
+import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseAnimation>
+		<div>Анимированный контент</div>
+	</BaseAnimation>
+</template>
+```
+
+---
+
+# Список компонентов
+
+```txt
+BaseAccordion
+BaseAlert
+BaseAnimation
+BaseAvatar
+BaseBadge
+BaseBreadcrumbs
+BaseButton
+BaseCalendar
+BaseCard
+BaseChat
+BaseCheckbox
+BaseChip
+BaseColorPicker
+BaseDatePicker
+BaseDropdown
+BaseEditor
+BaseEmpty
+BaseFileUpload
+BaseForm
+BaseFormField
+BaseIcon
+BaseImage
+BaseInput
+BaseLoader
+BaseMegaMenu
+BaseMenu
+BaseModal
+BaseNotification
+BasePagination
+BasePin
+BasePopover
+BaseProgress
+BaseRadio
+BaseRange
+BaseRating
+BaseSearch
+BaseSelect
+BaseSeparator
+BaseSideBar
+BaseSkeleton
+BaseSlideover
+BaseSlider
+BaseStepper
+BaseSwitch
+BaseTable
+BaseTabs
+BaseText
+BaseTextarea
+BaseTooltip
+BaseTour
+BaseTree
+```
+
+---
+
+# Composables
+
+Библиотека также экспортирует composables.
+
+## useDebounce
+
+Используется для отложенного вызова функции или реакции на изменение значения.
 
 ```ts
-import { formatDate, formatFileSize, assertNonNullable } from 'rise-ui-kit/utils'
+import { useDebounce } from '@ramzes1385/rise-ui-kit'
+
+const debouncedSearch = useDebounce((value: string) => {
+	console.log(value)
+}, 300)
 ```
 
-### Иконки
+---
+
+## useClickOutside
+
+Отслеживает клик вне элемента.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useClickOutside } from '@ramzes1385/rise-ui-kit'
+
+const rootRef = ref<HTMLElement | null>(null)
+
+useClickOutside(rootRef, () => {
+	console.log('Клик вне блока')
+})
+</script>
+
+<template>
+	<div ref="rootRef">Контент</div>
+</template>
+```
+
+---
+
+## useEscapeKey
+
+Обработка Escape.
 
 ```ts
-import { ICON_SPRITE_PATH } from 'rise-ui-kit/icons'
+import { useEscapeKey } from '@ramzes1385/rise-ui-kit'
+
+useEscapeKey(() => {
+	console.log('Escape pressed')
+})
 ```
 
-Иконки поставляются как SVG-спрайт, генерируемый из `src/icons/svg/` (90+ иконок). Используются через `<BaseIcon name="icon-name" />`.
+---
 
-## Компоненты
+## useScrollLock
 
-Библиотека содержит **50 компонентов** в формате `Base*`:
+Блокировка прокрутки страницы.
 
-| Категория | Компоненты |
-|---|---|
-| **Кнопки и действия** | BaseButton, BaseSwitch, BaseCheckbox, BaseRadio, BaseRating |
-| **Поля ввода** | BaseInput, BaseTextarea, BaseSelect, BaseSearch, BaseColorPicker, BaseSlider, BaseRange, BaseFileUpload |
-| **Данные** | BaseTable, BasePagination, BaseTree, BaseProgress, BaseBadge, BaseChip, BasePin |
-| **Навигация** | BaseTabs, BaseStepper, BaseBreadcrumbs, BaseMenu, BaseDropdown, BaseMegaMenu, BaseSideBar |
-| **Поверхности** | BaseCard, BaseModal, BaseSlideover, BasePopover, BaseTooltip, BaseAccordion |
-| **Контент** | BaseText, BaseSeparator, BaseEmpty, BaseImage, BaseIcon, BaseAnimation |
-| **Формы** | BaseForm, BaseFormField |
-| **Обратная связь** | BaseAlert, BaseNotification, BaseLoader, BaseSkeleton |
-| **Аватары** | BaseAvatar |
-| **Сложные** | BaseChat, BaseEditor, BaseCalendar, BaseDatePicker, BaseTour |
+```ts
+import { useScrollLock } from '@ramzes1385/rise-ui-kit'
 
-### Тяжёлые компоненты (async-чанки)
+const { lock, unlock } = useScrollLock()
 
-Шесть компонентов вынесены в отдельные асинхронные чанки через `defineAsyncComponent` и не попадают в основной бандл:
-
-- `BaseChat`
-- `BaseEditor`
-- `BaseCalendar`
-- `BaseDatePicker`
-- `BaseTable`
-- `BaseFileUpload`
-
-При глобальной регистрации через плагин они загружаются лениво. При точечном импорте — подключаются напрямую.
-
-## Структура компонента
-
-Каждый `Base*`-компонент следует единой файловой структуре:
-
-```
-src/components/BaseButton/
-├── BaseButton.vue              ← SFC (template + script setup, без <style>)
-├── BaseButton.types.ts         ← Props, Emits, Slots, константы
-├── BaseButton.style.scss       ← BEM-стили с CSS-переменными
-├── BaseButton.spec.ts          ← Unit-тесты (Vitest + @testing-library/vue)
-├── BaseButton.integration.spec.ts ← Integration-тесты (userEvent)
-├── BaseButton.visual.spec.ts   ← Visual regression (Playwright + Storybook)
-├── BaseButton.stories.ts       ← Storybook stories с play-функциями
-└── index.ts                    ← Публичный API компонента
+lock()
+unlock()
 ```
 
-Состав файлов может варьироваться: сложные компоненты (BaseChat, BaseModal) включают доп. e2e-тесты, вложенные подкомпоненты и composables.
+---
 
-## Дизайн-система
+## useBreakpoint
 
-### CSS-переменные
+Работа с breakpoint значениями.
 
-Все визуальные параметры управляются через CSS-переменные, определённые в `src/styles/_variables.scss`:
+```ts
+import { useBreakpoint } from '@ramzes1385/rise-ui-kit'
 
-**Цвета:**
-
-```scss
---color-primary, --color-accent, --color-accent-hover
---color-text, --color-text-muted
---color-bg, --color-surface, --color-surface-muted
---color-border, --color-white
---color-error, --color-success, --color-warning, --color-info
---color-primary-soft, --color-primary-soft-hover
+const { isMobile, isTablet, isDesktop } = useBreakpoint()
 ```
 
-**Типографика:**
+---
 
-```scss
---font-family-base    // 'Inter Variable', 'Segoe UI', Roboto, Arial, sans-serif
---font-family-heading // = --font-family-base
---font-family-mono    // 'JetBrains Mono Variable', 'Fira Code', 'Cascadia Code', Consolas, monospace
+## useTableData
+
+Помощник для работы с табличными данными.
+
+```ts
+import { useTableData } from '@ramzes1385/rise-ui-kit'
+
+const table = useTableData({
+	rows: [],
+	columns: [],
+})
 ```
 
-**Остальное:**
+---
 
-```scss
---transition-base      // 200ms cubic-bezier(0.4, 0, 0.2, 1)
---border-radius-sm     // 4px
---border-radius-base   // 8px
---border-radius-lg     // 12px
---border-radius-full   // 9999px
---shadow-sm / --shadow-md / --shadow-lg / --shadow-xl
+## Список composables
+
+```txt
+useAutoScroll
+useBreakpoint
+useCalendar
+useClickOutside
+useColorPicker
+useCustomClass
+useCustomColor
+useCustomStyle
+useDebounce
+useDropdownPosition
+useEditorToolbar
+useEscapeKey
+useFlyoutPosition
+useIcon
+useImageZoom
+useInputMask
+useListNavigation
+useMegaMenuTree
+usePadding
+usePasswordVisibility
+usePopup
+useScrollLock
+useSizeScale
+useSlider
+useSwipe
+useTableData
+useVariant
 ```
 
-### Тёмная тема
+---
 
-Переключение через атрибут `data-theme="dark"` на корневом элементе:
+# Utils
 
-```html
-<html data-theme="dark">
+Библиотека экспортирует набор утилит.
+
+## fileUtils
+
+Утилиты для работы с файлами.
+
+```ts
+import { formatFileSize } from '@ramzes1385/rise-ui-kit'
+
+const size = formatFileSize(1024)
 ```
 
-Все CSS-переменные автоматически переопределяются для тёмной темы в `_variables.scss`.
+---
 
-### SCSS-миксины
+## dateUtils
 
-Библиотека предоставляет набор миксинов в `src/styles/_mixins.scss`:
+Утилиты для работы с датами.
 
-| Миксин | Описание |
-|---|---|
-| `flex-center` | `display: flex; align-items: center; justify-content: center` |
-| `respond-to($name)` | Mobile-first media query от брейкпоинта |
-| `respond-below($name)` | Media query до брейкпоинта |
-| `respond-between($from, $to)` | Диапазон между брейкпоинтами |
-| `transition($props...)` | Переход с `--transition-base` |
-| `hover` / `active` / `focus` | Интерактивные состояния (исключают disabled) |
-| `interactive` | Комплексный переход для интерактивных элементов |
-| `custom-bg-*` / `custom-text-*` | Кастомные цвета с fallback-цепочками |
+```ts
+import { formatDate } from '@ramzes1385/rise-ui-kit'
 
-### Брейкпоинты
-
-| Имя | Значение |
-|---|---|
-| `xs` | 320px |
-| `sm` | 480px |
-| `mobile` | 640px |
-| `md` | 768px |
-| `lg` | 1024px |
-| `xl` | 1440px |
-| `xxl` | 1920px |
-
-### SCSS-функция `sz()`
-
-Масштабирует значение пропорционально `--size-scale`:
-
-```scss
-padding: sz(10px 20px);
-// → padding: calc(10px * var(--size-scale, 1)) calc(20px * var(--size-scale, 1));
+const date = formatDate(new Date())
 ```
 
-## Composables
+---
 
-27 composable-функций, используемых внутри компонентов и доступных для внешнего потребления:
+## colorUtils
 
-| Composable | Назначение |
-|---|---|
-| `useClickOutside` | Детект клика вне элемента |
-| `useEscapeKey` | Обработка Escape |
-| `useScrollLock` | Блокировка прокрутки body |
-| `useDebounce` | Дебаунс значений |
-| `useBreakpoint` | Реактивные брейкпоинты |
-| `useSwipe` | Свайп-жесты |
-| `useCustomColor` | Кастомные цвета bg/text с hover/active/focus |
-| `useCustomClass` | Кастомные CSS-классы (строка или объект) |
-| `useCustomStyle` | Инлайн-стили |
-| `usePadding` | Вычисление padding (число или объект с осями) |
-| `useSizeScale` | Масштабирование компонента (50%–200%) |
-| `useVariant` | BEM-модификаторы вариантов |
-| `usePopup` | Позиционирование попапов |
-| `useFlyoutPosition` | Позиционирование выпадающих элементов |
-| `useDropdownPosition` | Позиционирование дропдаунов |
-| `useIcon` | Работа с SVG-иконками из спрайта |
-| `useImageZoom` | Зум изображений |
-| `useInputMask` | Маски ввода |
-| `useListNavigation` | Навигация по списку клавиатурой |
-| `useMegaMenuTree` | Дерево для мега-меню |
-| `usePasswordVisibility` | Переключение видимости пароля |
-| `useSlider` | Логика слайдера |
-| `useTableData` | Данные таблицы |
-| `useCalendar` | Логика календаря |
-| `useColorPicker` | Логика Color Picker |
-| `useEditorToolbar` | Тулбар редактора |
-| `useAutoScroll` | Автопрокрутка |
+Утилиты для работы с цветами.
 
-## Утилиты
+```ts
+import { isValidColor } from '@ramzes1385/rise-ui-kit'
 
-| Модуль | Назначение |
-|---|---|
-| `assertUtils` | Утверждения (assertNonNullable и др.) |
-| `colorUtils` | Работа с цветами |
-| `dateUtils` | Форматирование дат |
-| `fileUtils` | Работа с файлами и MIME-типами |
-| `formatUtils` | Форматирование значений |
-| `imageUtils` | Обработка изображений |
-| `navigationUtils` | Навигационные утилиты |
-| `paginationUtils` | Расчёт пагинации |
-| `rangeUtils` | Утилиты для Range |
-| `schemaUtils` | Схемы валидации |
-| `storybookUtils` | Хелперы для Storybook |
-| `tableUtils` | Утилиты таблиц |
-| `tooltipUtils` | Позиционирование тултипов |
-| `editorDomInspect` | Инспекция DOM редактора |
+const valid = isValidColor('#42b883')
+```
 
-## Тестирование
+---
 
-Библиотека использует четырёхуровневую стратегию тестирования:
+## Список utils
 
-### 1. Unit-тесты (Vitest)
+```txt
+assertUtils
+colorUtils
+dateUtils
+editorDomInspect
+fileUtils
+formatUtils
+imageUtils
+navigationUtils
+paginationUtils
+rangeUtils
+schemaUtils
+tableUtils
+tooltipUtils
+```
 
-Изолированная проверка пропсов, emits, CSS-модификаторов, слотов:
+---
+
+# Иконки
+
+Иконки используются через `BaseIcon`.
+
+```vue
+<script setup lang="ts">
+import { BaseIcon } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseIcon name="search" />
+	<BaseIcon name="close" />
+	<BaseIcon name="send" />
+</template>
+```
+
+---
+
+# Разработка проекта
+
+## Установка зависимостей
+
+```bash
+npm install
+```
+
+## Запуск dev-режима
+
+```bash
+npm run dev
+```
+
+## Storybook
+
+```bash
+npm run storybook
+```
+
+---
+
+# Тестирование
+
+## Все unit/integration тесты
 
 ```bash
 npm run test:unit
 ```
 
-### 2. Integration-тесты (Vitest + @testing-library/user-event)
-
-Проверка пользовательских взаимодействий (клики, фокус, Tab):
+## Один тестовый файл
 
 ```bash
-npm run test:unit  # запускает и unit, и integration
+npm run test:unit -- src/components/BaseChat/ChatInput/ChatInput.spec.ts
 ```
 
-### 3. Storybook-тесты (Storybook test runner)
+---
 
-Интерактивные тесты через `play`-функции в stories + accessibility-проверки:
+# Сборка
+
+## Сборка npm-библиотеки
 
 ```bash
-npm run test:storybook
-npm run test:a11y
+npm run build:lib
 ```
 
-### 4. Visual Regression + E2E (Playwright)
+Результат:
 
-Скриншот-тесты ключевых состояний компонентов и сквозное тестирование:
+```txt
+dist/index.js
+dist/index.d.ts
+dist/plugin.d.ts
+dist/styles.css
+dist/icons.svg
+```
+
+## App/demo сборка
 
 ```bash
-npm run test:visual
-npm run test:e2e
+npm run build:app
 ```
 
-Обновление скриншотов:
+---
+
+# Проверка npm-пакета
 
 ```bash
-npm run test:visual:update
+npm run pack:dry
 ```
 
-### Покрытие
+Команда собирает библиотеку и показывает, какие файлы попадут в npm package.
+
+---
+
+# Локальная установка `.tgz`
+
+Создать локальный пакет:
 
 ```bash
-# Полное покрытие с объединением отчётов
-npm run test:coverage:merged
+rm -rf dist
+rm -f *.tgz
 
-# Отдельные отчёты
-npm run test:components:coverage    # Лёгкие компоненты (100% порог)
-npm run test:components-heavy:coverage  # Тяжёлые компоненты (порог 0%)
-npm run test:composables:coverage   # Composables (100% порог)
-npm run test:utils:coverage         # Утилиты (100% порог)
+npm run build:lib
+npm pack
 ```
 
-## Скрипты
+Установить в тестовый проект:
 
-| Скрипт | Описание |
-|---|---|
-| `npm run dev` | Dev-сервер Vite |
-| `npm run build` | Production-сборка (vue-tsc + vite build) |
-| `npm run preview` | Превью production-сборки |
-| `npm run lint` | ESLint проверка |
-| `npm run lint:fix` | ESLint автофикс |
-| `npm run storybook` | Запуск Storybook |
-| `npm run build-storybook` | Сборка Storybook |
-| `npm run test:unit` | Unit + Integration тесты |
-| `npm run test:storybook` | Storybook тесты |
-| `npm run test:a11y` | Accessibility тесты |
-| `npm run test:e2e` | E2E тесты (Playwright) |
-| `npm run test:visual` | Visual regression тесты |
-| `npm run test:visual:update` | Обновление скриншотов |
-| `npm run test:coverage:merged` | Полное покрытие (объединённый отчёт) |
-| `npm run test:all` | Компоненты + E2E + Visual |
-
-## Архитектура сборки
-
-Конфигурация Vite разбита на модули в `build/`:
-
-```
-build/
-├── config/
-│   ├── alias.ts       ← Пути и алиасы (@components, @composables, @utils, @icons)
-│   ├── build.ts       ← Production-сборка (чанки, минификация oxc, treeshake)
-│   ├── css.ts         ← SCSS-автоинжект, lightningcss
-│   ├── resolve.ts     ← Разрешение модулей
-│   └── server.ts      ← Dev/preview сервер
-├── plugins/           ← Vite-плагины (SVG, изображения, компрессия)
-├── storybook/         ← Конфигурация Storybook
-├── tests/             ← Конфигурации Vitest и Playwright
-├── utils/             ← Вспомогательные функции сборки
-├── constants.ts       ← Общие константы
-└── husky/             ← Прекоммит-хуки
+```bash
+npm install "D:/IT/IT/Портфолио/Rise-UI-KIT/ramzes1385-rise-ui-kit-x.y.z.tgz"
 ```
 
-### Алиасы
+---
 
-| Алиас | Путь |
-|---|---|
-| `@components` | `src/components` |
-| `@composables` | `src/composables` |
-| `@utils` | `src/utils` |
-| `@icons` | `src/icons` |
-| `@styles` | `src/styles` |
+# CI/CD
 
-### Стратегия чанков
+Для локальной проверки перед push:
 
-- **Лёгкие компоненты** — в основном бандле
-- **Тяжёлые компоненты** (BaseChat, BaseEditor, BaseCalendar, BaseDatePicker, BaseTable, BaseFileUpload) — отдельные async-чанки через `defineAsyncComponent`
-- **Vendor** — отделён от app-кода (`vendor-vue`, `vendor-libs`)
-- **Минификация** — oxc (нативный минификатор rolldown)
+```bash
+npm run ci:validate
+```
 
-## Принципы библиотеки
+Команда должна выполнять:
 
-1. **Без внешних зависимостей** — только `vue` и `sass` в runtime-зависимостях
-2. **Полная типизация** — все Props, Emits, Slots типизированы через TypeScript-интерфейсы
-3. **CSS-переменные** — кастомизация без переопределения стилей
-4. **BEM-нейминг** — `.base-button`, `.base-button--ghost`, `.base-button__loader`
-5. **Тёмная тема** — из коробки через `data-theme="dark"`
-6. **Tree-shakeable** — ESM-экспорты для точечного подключения
-7. **Масштабирование** — проп `sizeScale` на каждом компоненте (50%–200%)
-8. **Кастомные цвета** — проп `color` с fallback на тему
-9. **Accessibility** — ARIA-атрибуты, фокус по Tab, клавиатурная навигация
-10. **100% покрытие тестами** — для лёгких компонентов, composables и утилит
+```txt
+lint
+unit tests
+npm package dry-run
+```
 
-## Лицензия
+---
 
-MIT
+# Release
+
+Релизы управляются через `semantic-release`.
+
+Локальная проверка:
+
+```bash
+npm run release:dry
+```
+
+Реальный релиз запускается только в CI/CD после push в `main`.
+
+---
+
+## Conventional Commits
+
+Примеры:
+
+```txt
+fix: preserve chat autocomplete enter submit
+feat: add base timeline component
+docs: update readme
+ci: configure semantic release
+```
+
+Правила релиза:
+
+```txt
+fix      -> patch
+perf     -> patch
+refactor -> patch
+build    -> patch
+deps     -> patch
+feat     -> minor
+
+docs     -> без релиза
+test     -> без релиза
+chore    -> без релиза
+ci       -> без релиза
+style    -> без релиза
+```
+
+---
+
+## Нельзя делать вручную
+
+После подключения `semantic-release` не нужно вручную выполнять:
+
+```bash
+npm version patch
+npm version minor
+npm version major
+git tag v...
+npm publish
+```
+
+За версии, changelog, теги, GitHub Release и npm publish отвечает `semantic-release`.
+
+---
+
+# Проверка перед push
+
+```bash
+npm run lint
+npm run test:unit
+npm run build:lib
+npm run pack:dry
+npm run release:dry
+```
+
+После проверки:
+
+```bash
+git status
+git add .
+git commit -m "docs: update readme"
+git push origin main
+```
