@@ -62,7 +62,13 @@ storybook-error.png
 
 # Package artifacts
 *.tgz
-release/
+
+# semantic-release npm tarballs output
+/release/
+
+# Keep release configuration
+!build/release/
+!build/release/**
 
 
 # Reports
