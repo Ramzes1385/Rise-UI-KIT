@@ -89,18 +89,30 @@
     "build:lib:js": "vite build --config build/lib/vite.lib.config.ts",
     "build:lib:types": "vue-tsc -p build/lib/tsconfig.lib.json --declaration --emitDeclarationOnly",
     "clean:lib-dist": "node build/lib/clean-lib-dist.mjs",
-    "pack:dry": "npm run build:lib && npm pack --dry-run"
+    "pack:dry": "npm run build:lib && npm pack --dry-run",
+    "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
+    "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
+    "ci:validate": "npm run lint && npm run test:unit && npm run pack:dry",
+    "ci:release": "npm run release"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "sass": "^1.100.0",
-    "vue": "^3.5.35"
+    "vue": "^3.5.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.8",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.1",
     "@storybook/addon-a11y": "^10.4.1",
     "@storybook/addon-docs": "^10.4.1",
     "@storybook/addon-onboarding": "^10.4.1",
@@ -117,6 +129,7 @@
     "@vitest/coverage-v8": "^4.1.7",
     "@vue/test-utils": "^2.4.10",
     "@vue/tsconfig": "^0.9.1",
+    "conventional-changelog-conventionalcommits": "^9.3.1",
     "cross-env": "^10.1.0",
     "eslint": "^10.4.1",
     "eslint-plugin-vue": "^10.9.1",
@@ -132,6 +145,7 @@
     "playwright": "^1.60.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass-embedded": "^1.100.0",
+    "semantic-release": "^25.0.5",
     "sharp": "^0.34.5",
     "start-server-and-test": "^3.0.5",
     "storybook": "^10.4.1",
