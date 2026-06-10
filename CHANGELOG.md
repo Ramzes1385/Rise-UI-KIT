@@ -1,3 +1,9 @@
+## [1.0.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.3...v1.0.4) (2026-06-10)
+
+### Bug Fixes
+
+* preserve chat autocomplete enter submit ([a401700](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a40170097110c59330958d8f1b9b3f04d91d905a))
+
 ## 1.0.0 (2026-06-10)
 
 ### Bug Fixes
