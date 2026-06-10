@@ -35,11 +35,8 @@ build/**/*.d.ts
 vite.config.d.ts
 
 # === Test & coverage artifacts ===
-coverage/
 !coverage/.gitkeep
 coverage-run.log
-test-results/
-playwright-report/
 .playwright-mcp/
 lighthouse-report.*
 lighthouse-report-mobile.*
@@ -56,6 +53,28 @@ tests/**/*-expected.png
 # === Tooling caches & analyzer output ===
 .eslintcache
 *.tsbuildinfo
-stats.html
 
 public/icons.svg
+
+# Storybook / reports
+storybook-static/
+storybook-error.png
+
+# Package artifacts
+*.tgz
+release/
+
+
+# Reports
+coverage/
+reports/
+playwright-report/
+test-results/
+.vitest/
+stats.html
+
+# Env
+.env
+.env.*
+!.env.example
+!build/ci/env/*.example
