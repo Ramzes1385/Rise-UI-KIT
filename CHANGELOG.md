@@ -3,6 +3,13 @@
 ### Bug Fixes
 
 * preserve chat autocomplete enter submit ([a401700](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a40170097110c59330958d8f1b9b3f04d91d905a))
+* retry npm trusted publisher release ([450928a](https://github.com/Ramzes1385/Rise-UI-KIT/commit/450928a81794a6167c15e4d14fe8b3f35b953bfd))
+
+## [1.0.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.3...v1.0.4) (2026-06-10)
+
+### Bug Fixes
+
+* preserve chat autocomplete enter submit ([a401700](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a40170097110c59330958d8f1b9b3f04d91d905a))
 
 ## [1.0.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.3...v1.0.4) (2026-06-10)
 
