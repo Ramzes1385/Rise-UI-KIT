@@ -1,10 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
 import BaseSideBar from '../ui/BaseSideBar.vue'
-
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
 
 describe('BaseSideBar navigation items', () => {
@@ -72,7 +70,6 @@ describe('BaseSideBar navigation items', () => {
 		expect(screen.getByText('Каталог').closest('.base-sidebar-nav__link')).toHaveClass(
 			'base-sidebar-nav__link--parent-active',
 		)
-
 		expect(screen.getByText('Товары').closest('.base-sidebar-nav__link')).toHaveClass('base-sidebar-nav__link--current')
 	})
 
@@ -290,5 +287,229 @@ describe('BaseSideBar navigation items', () => {
 		})
 
 		expect(screen.getByText('8')).toBeInTheDocument()
+		expect(screen.getByTestId('base-badge')).toBeInTheDocument()
+	})
+
+	it('рендерит item с children и to как ссылку и показывает children', () => {
+		render(BaseSideBar, {
+			props: {
+				linkComponent: 'a',
+				items: [
+					{
+						key: 'catalog',
+						label: 'Каталог',
+						to: '/catalog',
+						children: [
+							{
+								key: 'products',
+								label: 'Товары',
+								to: '/catalog/products',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.getByText('Каталог').closest('a')).toHaveAttribute('href', '/catalog')
+		expect(screen.getByText('Товары')).toBeInTheDocument()
+		expect(screen.getByText('Каталог').closest('.base-sidebar-nav__link')).not.toHaveAttribute('aria-expanded')
+		expect(
+			screen.getByText('Каталог').closest('.base-sidebar-nav__link')?.querySelector('.base-sidebar-nav__chevron'),
+		).toBeNull()
+	})
+
+	it('рендерит item с children без to как disclosure button', async () => {
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		const button = screen.getByRole('button', { name: 'Настройки' })
+
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+		expect(screen.queryByText('Профиль')).not.toBeInTheDocument()
+
+		await fireEvent.click(button)
+
+		expect(button).toHaveAttribute('aria-expanded', 'true')
+		expect(screen.getByText('Профиль')).toBeInTheDocument()
+
+		await fireEvent.click(button)
+
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+		expect(screen.queryByText('Профиль')).not.toBeInTheDocument()
+	})
+
+	it('автоматически раскрывает disclosure parent если активен child', () => {
+		render(BaseSideBar, {
+			props: {
+				activeKey: 'profile',
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		const button = screen.getByRole('button', { name: 'Настройки' })
+
+		expect(button).toHaveAttribute('aria-expanded', 'true')
+		expect(screen.getByText('Профиль')).toBeInTheDocument()
+	})
+
+	it('disabled disclosure item не раскрывается', async () => {
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'disabled-group',
+						label: 'Недоступный раздел',
+						isDisabled: true,
+						children: [
+							{
+								key: 'hidden-child',
+								label: 'Скрытый пункт',
+								to: '/hidden',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		const button = screen.getByRole('button', { name: 'Недоступный раздел' })
+
+		expect(button).toBeDisabled()
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+
+		await fireEvent.click(button)
+
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+		expect(screen.queryByText('Скрытый пункт')).not.toBeInTheDocument()
+	})
+
+	it('в collapsed mode не показывает children у disclosure group', () => {
+		render(BaseSideBar, {
+			props: {
+				isCollapsed: true,
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						icon: 'settings',
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.queryByText('Настройки')).not.toBeInTheDocument()
+		expect(screen.queryByText('Профиль')).not.toBeInTheDocument()
+
+		const tooltips = screen.getAllByTestId('base-tooltip')
+
+		expect(tooltips.some(tooltip => tooltip.getAttribute('data-tooltip-text') === 'Настройки')).toBe(true)
+	})
+
+	it('добавляет expanded class на chevron при раскрытии disclosure group', async () => {
+		const { container } = render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		const button = screen.getByRole('button', { name: 'Настройки' })
+		const chevron = container.querySelector('.base-sidebar-nav__chevron')
+
+		expect(chevron).not.toHaveClass('base-sidebar-nav__chevron--expanded')
+
+		await fireEvent.click(button)
+
+		expect(screen.getByText('Профиль')).toBeInTheDocument()
+		expect(chevron).toHaveClass('base-sidebar-nav__chevron--expanded')
+	})
+
+	it('сохраняет footer в разметке в collapsed mode', () => {
+		render(BaseSideBar, {
+			props: {
+				isCollapsed: true,
+				items: [
+					{
+						key: 'dashboard',
+						label: 'Главная',
+						icon: 'home',
+						to: '/dashboard',
+					},
+				],
+			},
+			slots: {
+				footer: '<div data-testid="sidebar-footer">Admin Owner</div>',
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.getByTestId('sidebar-footer')).toBeInTheDocument()
+		expect(screen.getByTestId('sidebar-footer').closest('.base-sidebar__footer')).toBeInTheDocument()
 	})
 })

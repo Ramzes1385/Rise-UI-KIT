@@ -1,5 +1,4 @@
 import type { Page } from '@playwright/test'
-
 import { expect, test } from '@playwright/test'
 
 const STORY_PATH = '/iframe.html?id=ui-basesidebar'
@@ -20,9 +19,11 @@ test.describe('BaseSideBar e2e', () => {
 		await expect(sidebar).not.toHaveClass(/base-sidebar--collapsed/)
 
 		await toggle.click()
+
 		await expect(sidebar).toHaveClass(/base-sidebar--collapsed/)
 
 		await toggle.click()
+
 		await expect(sidebar).not.toHaveClass(/base-sidebar--collapsed/)
 	})
 
@@ -91,7 +92,7 @@ test.describe('BaseSideBar e2e', () => {
 		await expect(disabledItem).toBeDisabled()
 	})
 
-	test('сайдбар: collapsed mode показывает иконки и скрывает labels', async ({ page }) => {
+	test('сайдбар: collapsed mode показывает иконки, скрывает labels и сохраняет footer', async ({ page }) => {
 		await openStory(page, 'collapsed-items')
 
 		const sidebar = page.locator('.base-sidebar')
@@ -99,6 +100,9 @@ test.describe('BaseSideBar e2e', () => {
 		await expect(sidebar).toHaveClass(/base-sidebar--collapsed/)
 		await expect(sidebar.getByText('Главная')).toHaveCount(0)
 		await expect(sidebar.locator('.base-sidebar-nav__icon').first()).toBeVisible()
+		await expect(sidebar.locator('.base-sidebar__footer')).toBeVisible()
+		await expect(sidebar.locator('.sidebar-story-profile__avatar')).toBeVisible()
+		await expect(sidebar.getByText('Roman Admin')).toHaveCount(1)
 	})
 
 	test('сайдбар: collapsed mode показывает tooltip при hover на item', async ({ page }) => {
@@ -157,5 +161,36 @@ test.describe('BaseSideBar e2e', () => {
 
 		await expect(page.getByText('Кастомная главная')).toBeVisible()
 		await expect(page.getByText('Кастомный каталог')).toBeVisible()
+	})
+
+	test('сайдбар: занимает всю высоту родительского контейнера', async ({ page }) => {
+		await openStory(page, 'full-height-layout')
+
+		const wrapper = page.locator('.sidebar-story-full-height')
+		const sidebar = page.locator('.base-sidebar')
+
+		const wrapperBox = await wrapper.boundingBox()
+		const sidebarBox = await sidebar.boundingBox()
+
+		expect(Math.round(sidebarBox?.height ?? 0)).toBe(Math.round(wrapperBox?.height ?? 0))
+	})
+
+	test('сайдбар: disclosure group раскрывает и скрывает children', async ({ page }) => {
+		await openStory(page, 'disclosure-groups')
+
+		const settingsButton = page.getByRole('button', { name: 'Настройки' })
+
+		await expect(settingsButton).toHaveAttribute('aria-expanded', 'false')
+		await expect(page.getByText('Профиль')).toHaveCount(0)
+
+		await settingsButton.click()
+
+		await expect(settingsButton).toHaveAttribute('aria-expanded', 'true')
+		await expect(page.getByText('Профиль')).toBeVisible()
+
+		await settingsButton.click()
+
+		await expect(settingsButton).toHaveAttribute('aria-expanded', 'false')
+		await expect(page.getByText('Профиль')).toHaveCount(0)
 	})
 })

@@ -1,6 +1,8 @@
 .sidebar-story-canvas {
 	min-height: 560px;
 	padding: 32px;
+	height: auto;
+	display: flex;
 	background:
 		radial-gradient(circle at 16px 16px, rgba(249, 115, 22, 0.12), transparent 320px),
 		linear-gradient(180deg, #fff7ed 0%, #ffffff 100%);
