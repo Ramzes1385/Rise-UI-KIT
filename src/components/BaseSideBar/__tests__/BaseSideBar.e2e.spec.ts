@@ -99,6 +99,8 @@ test.describe('BaseSideBar e2e', () => {
 
 		await expect(sidebar).toHaveClass(/base-sidebar--collapsed/)
 		await expect(sidebar.getByText('Главная')).toHaveCount(0)
+		await expect(sidebar.getByText('Товары')).toHaveCount(0)
+		await expect(sidebar.getByText('Категории')).toHaveCount(0)
 		await expect(sidebar.locator('.base-sidebar-nav__icon').first()).toBeVisible()
 		await expect(sidebar.locator('.base-sidebar__footer')).toBeVisible()
 		await expect(sidebar.locator('.sidebar-story-profile__avatar')).toBeVisible()

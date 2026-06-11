@@ -267,13 +267,17 @@ function hasActiveChild(item: SideBarItem): boolean {
 }
 
 function isItemExpanded(item: SideBarItem): boolean {
-  if (!hasChildren(item)) {
-    return false
-  }
+	if (!hasChildren(item)) {
+		return false
+	}
 
-  if (!isDisclosureItem(item)) {
-    return true
-  }
+	if (item.isDisabled) {
+		return false
+	}
+
+	if (!isDisclosureItem(item)) {
+		return true
+	}
 
   return hasActiveChild(item) || expandedItemKeys.value.has(getItemKey(item))
 }

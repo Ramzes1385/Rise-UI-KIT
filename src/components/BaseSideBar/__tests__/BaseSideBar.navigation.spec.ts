@@ -455,6 +455,69 @@ describe('BaseSideBar navigation items', () => {
 		expect(tooltips.some(tooltip => tooltip.getAttribute('data-tooltip-text') === 'Настройки')).toBe(true)
 	})
 
+	it('в collapsed mode не показывает children у item с to', () => {
+		const { container } = render(BaseSideBar, {
+			props: {
+				isCollapsed: true,
+				items: [
+					{
+						key: 'catalog',
+						label: 'Каталог',
+						icon: 'folder',
+						to: '/catalog',
+						children: [
+							{
+								key: 'products',
+								label: 'Товары',
+								to: '/catalog/products',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.queryByText('Каталог')).not.toBeInTheDocument()
+		expect(screen.queryByText('Товары')).not.toBeInTheDocument()
+		expect(container.querySelector('.base-sidebar__navigation [data-testid="base-icon"]')).toHaveTextContent('folder')
+	})
+
+	it('сохраняет item.click и emit itemClick для disclosure group', async () => {
+		const click = vi.fn()
+		const onItemClick = vi.fn()
+
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						click,
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+				onItemClick,
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Настройки' }))
+
+		expect(click).toHaveBeenCalledTimes(1)
+		expect(onItemClick).toHaveBeenCalledTimes(1)
+	})
+
 	it('добавляет expanded class на chevron при раскрытии disclosure group', async () => {
 		const { container } = render(BaseSideBar, {
 			props: {
