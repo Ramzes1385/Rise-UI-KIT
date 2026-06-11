@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.1.0...v1.1.1) (2026-06-11)
+
+### Bug Fixes
+
+* support nested sidebar stories in coverage checks ([cccc13e](https://github.com/Ramzes1385/Rise-UI-KIT/commit/cccc13e1a722df1be10398c1db81c5b08c60f6ed))
+
 ## [1.1.0](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.5...v1.1.0) (2026-06-11)
 
 ### Features
