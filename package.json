@@ -21,6 +21,7 @@
   },
   "files": [
     "dist",
+    "types",
     "README.md"
   ],
   "publishConfig": {
@@ -50,7 +51,16 @@
       "types": "./dist/icons/index.d.ts",
       "import": "./dist/icons.js"
     },
-    "./styles": "./dist/styles.css",
+    "./styles": {
+      "types": "./types/styles.d.ts",
+      "import": "./dist/styles.css",
+      "default": "./dist/styles.css"
+    },
+    "./styles.css": {
+      "types": "./types/styles.d.ts",
+      "import": "./dist/styles.css",
+      "default": "./dist/styles.css"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
