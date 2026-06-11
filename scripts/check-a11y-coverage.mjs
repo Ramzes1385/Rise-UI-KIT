@@ -13,6 +13,21 @@ import { join, resolve } from 'node:path'
 const ROOT = resolve(process.cwd())
 const COMPONENTS_DIR = join(ROOT, 'src/components')
 
+function findStoryPath(componentDir, componentName) {
+  const directPath = join(componentDir, `${componentName}.stories.ts`)
+  const nestedPath = join(componentDir, 'stories', `${componentName}.stories.ts`)
+
+  if (existsSync(directPath)) {
+    return directPath
+  }
+
+  if (existsSync(nestedPath)) {
+    return nestedPath
+  }
+
+  return null
+}
+
 /** Интерактивные компоненты, требующие keyboard navigation */
 const INTERACTIVE_COMPONENTS = new Set([
   'BaseButton', 'BaseInput', 'BaseTextarea', 'BaseSelect',
@@ -136,9 +151,10 @@ function checkA11yCoverage() {
   }
 
   for (const component of baseComponents) {
-    const storyPath = join(COMPONENTS_DIR, component, `${component}.stories.ts`)
+    const componentDir = join(COMPONENTS_DIR, component)
+    const storyPath = findStoryPath(componentDir, component)
 
-    if (!existsSync(storyPath)) {
+    if (!storyPath) {
       results.missingStory.push(component)
       continue
     }

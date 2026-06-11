@@ -1,14 +1,32 @@
 /**
  * Скрипт для проверки покрытия компонентов UI KIT файлами stories.
- * Динамически сканирует директорию src/components на наличие папок Base*
- * и проверяет, что у каждого компонента есть соответствующий .stories.ts файл.
+ * Поддерживает старую структуру:
+ * src/components/BaseComponent/BaseComponent.stories.ts
+ *
+ * И новую структуру:
+ * src/components/BaseComponent/stories/BaseComponent.stories.ts
  */
 
-import { readdirSync, existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
 const ROOT = resolve(process.cwd())
 const COMPONENTS_DIR = join(ROOT, 'src/components')
+
+function findStoryPath(componentDir, componentName) {
+  const directPath = join(componentDir, `${componentName}.stories.ts`)
+  const nestedPath = join(componentDir, 'stories', `${componentName}.stories.ts`)
+
+  if (existsSync(directPath)) {
+    return directPath
+  }
+
+  if (existsSync(nestedPath)) {
+    return nestedPath
+  }
+
+  return null
+}
 
 function checkCoverage() {
   console.log('=== Запуск динамической проверки покрытия UI KIT файлами Stories ===\n')
@@ -18,10 +36,8 @@ function checkCoverage() {
     process.exit(1)
   }
 
-  // Динамически сканируем директорию src/components
   const items = readdirSync(COMPONENTS_DIR, { withFileTypes: true })
 
-  // Фильтруем только папки, начинающиеся с "Base"
   const baseComponents = items
     .filter(item => item.isDirectory() && item.name.startsWith('Base'))
     .map(item => item.name)
@@ -37,9 +53,9 @@ function checkCoverage() {
 
   for (const component of baseComponents) {
     const componentDir = join(COMPONENTS_DIR, component)
-    const storyPath = join(componentDir, `${component}.stories.ts`)
+    const storyPath = findStoryPath(componentDir, component)
 
-    if (existsSync(storyPath)) {
+    if (storyPath) {
       coveredStories.push(component)
     } else {
       missingStories.push(component)
@@ -53,13 +69,13 @@ function checkCoverage() {
 
   if (missingStories.length > 0) {
     console.log('❌ Следующие компоненты не имеют .stories.ts файлов:')
-    missingStories.forEach(name => console.log(`  - ${name}`))
+    missingStories.forEach(name => console.log(` - ${name}`))
     console.log('\nПроверка завершилась с ошибкой.')
     process.exit(1)
-  } else {
-    console.log('✅ Отлично! Все компоненты UI KIT покрыты файлами stories.')
-    process.exit(0)
   }
+
+  console.log('✅ Отлично! Все компоненты UI KIT покрыты файлами stories.')
+  process.exit(0)
 }
 
 checkCoverage()

@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
-import type { SideBarItem } from '../model/BaseSideBar.types'
-
-import { waitFor } from 'storybook/test'
+import { userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import type { SideBarItem } from '../model/BaseSideBar.types'
 
 import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
 import BaseSideBar from '../ui/BaseSideBar.vue'
@@ -889,4 +888,22 @@ export const SideMirror: Story = {
       </div>
     `,
 	}),
+}
+export const KeyboardNavigation: Story = {
+	args: {
+		title: 'Keyboard navigation',
+		items: NAVIGATION_ITEMS,
+		activePath: '/dashboard',
+	},
+	render: args => ({
+		components: { BaseSideBar },
+		setup() {
+			return { args }
+		},
+		template: '<BaseSideBar v-bind="args" />',
+	}),
+	play: async () => {
+		await userEvent.tab()
+		await userEvent.keyboard('{Tab}')
+	},
 }
