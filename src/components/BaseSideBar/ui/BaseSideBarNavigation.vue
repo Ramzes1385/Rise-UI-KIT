@@ -249,7 +249,7 @@ function getItemToString(to: SideBarItemTo | undefined): string | undefined {
 
   try {
     return JSON.stringify(to)
-  } catch {
+  } catch /* istanbul ignore next */ {
     return undefined
   }
 }
@@ -267,10 +267,6 @@ function hasActiveChild(item: SideBarItem): boolean {
 }
 
 function isItemExpanded(item: SideBarItem): boolean {
-	if (!hasChildren(item)) {
-		return false
-	}
-
 	if (item.isDisabled) {
 		return false
 	}
