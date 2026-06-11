@@ -1,3 +1,13 @@
+## [1.2.0](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.1.1...v1.2.0) (2026-06-11)
+
+### Features
+
+* add collapsible sidebar groups ([efd8ba9](https://github.com/Ramzes1385/Rise-UI-KIT/commit/efd8ba97db1bae1a9fdffc4476256f399de8e0a2))
+
+### Bug Fixes
+
+* sidebar uses height auto ([96c56dd](https://github.com/Ramzes1385/Rise-UI-KIT/commit/96c56ddbda2ce61a258e41caedfe254f5403a1fa))
+
 ## [1.1.1](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.1.0...v1.1.1) (2026-06-11)
 
 ### Bug Fixes
