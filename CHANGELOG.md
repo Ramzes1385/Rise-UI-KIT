@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.0...v1.2.1) (2026-06-11)
+
+### Bug Fixes
+
+* trigger sidebar release ([b6c9643](https://github.com/Ramzes1385/Rise-UI-KIT/commit/b6c96435ebf1ff354bca7e9e235c9c1118edb10f))
+
 ## [1.2.0](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.1.1...v1.2.0) (2026-06-11)
 
 ### Features
