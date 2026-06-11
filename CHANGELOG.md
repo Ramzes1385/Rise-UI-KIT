@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.5...v1.1.0) (2026-06-11)
+
+### Features
+
+* improve sidebar navigation API ([0d04846](https://github.com/Ramzes1385/Rise-UI-KIT/commit/0d04846ddd03dbdfeb9e2c166db8e68a0b39fe4d))
+* improve sidebar navigation API ([b354b1c](https://github.com/Ramzes1385/Rise-UI-KIT/commit/b354b1c036faaf40af03a3580aaef5625a2ba5b7))
+
 ## [1.0.5](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.4...v1.0.5) (2026-06-11)
 
 ### Bug Fixes
