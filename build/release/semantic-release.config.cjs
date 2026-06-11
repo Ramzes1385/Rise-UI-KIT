@@ -1,5 +1,11 @@
 module.exports = {
-  branches: ['main'],
+  branches: [
+    'main',
+    {
+      name: 'develop',
+      prerelease: 'dev',
+    },
+  ],
 
   tagFormat: 'v${version}',
 
