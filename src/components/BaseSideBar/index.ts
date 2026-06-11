@@ -1,3 +1,17 @@
-export { SIDEBAR_VARIANTS } from './BaseSideBar.types'
-export type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from './BaseSideBar.types'
-export { default as BaseSideBar } from './BaseSideBar.vue'
+export { SIDEBAR_VARIANTS } from './model/BaseSideBar.types'
+
+export type {
+  BaseSideBarEmits,
+  BaseSideBarItemSlotProps,
+  BaseSideBarNavigationEmits,
+  BaseSideBarNavigationProps,
+  BaseSideBarNavigationSlots,
+  BaseSideBarProps,
+  BaseSideBarSlots,
+  SideBarActiveMatch,
+  SideBarItem,
+  SideBarItemKey,
+  SideBarItemTo,
+} from './model/BaseSideBar.types'
+
+export { default as BaseSideBar } from './ui/BaseSideBar.vue'
