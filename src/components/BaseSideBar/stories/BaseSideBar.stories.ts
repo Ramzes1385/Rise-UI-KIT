@@ -474,10 +474,6 @@ export const ItemClickEvent: Story = {
 				label: 'Выполнить действие',
 				icon: 'play',
 				badge: 'new',
-				click: item => {
-					// eslint-disable-next-line no-console
-					console.log('item.click:', item)
-				},
 			},
 			{
 				key: 'disabled',
@@ -490,15 +486,7 @@ export const ItemClickEvent: Story = {
 	render: args => ({
 		components: { BaseSideBar },
 		setup() {
-			function handleItemClick(item: SideBarItem): void {
-				// eslint-disable-next-line no-console
-				console.log('itemClick event:', item)
-			}
-
-			return {
-				args,
-				handleItemClick,
-			}
+			return args
 		},
 		template: `
       <BaseSideBar
