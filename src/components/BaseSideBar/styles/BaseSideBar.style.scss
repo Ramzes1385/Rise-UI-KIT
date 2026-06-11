@@ -30,9 +30,7 @@
 	flex-direction: column;
 	width: var(--sidebar-width);
 	min-width: var(--sidebar-width);
-	height: 100%;
-	min-height: 0;
-	overflow: hidden;
+	height: auto;
 	border: 1px solid var(--sidebar-border);
 	border-radius: var(--sidebar-radius);
 	background: var(--sidebar-bg);
