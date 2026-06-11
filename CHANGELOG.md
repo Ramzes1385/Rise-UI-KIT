@@ -1,3 +1,9 @@
+## [1.0.5](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.4...v1.0.5) (2026-06-11)
+
+### Bug Fixes
+
+* export styles entry ([e2063ed](https://github.com/Ramzes1385/Rise-UI-KIT/commit/e2063ed99db2292f662a305369758b564ec918a5))
+
 ## [1.0.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.3...v1.0.4) (2026-06-10)
 
 ### Bug Fixes
