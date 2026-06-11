@@ -455,6 +455,69 @@ describe('BaseSideBar navigation items', () => {
 		expect(tooltips.some(tooltip => tooltip.getAttribute('data-tooltip-text') === 'Настройки')).toBe(true)
 	})
 
+	it('в collapsed mode не показывает children у item с to', () => {
+		const { container } = render(BaseSideBar, {
+			props: {
+				isCollapsed: true,
+				items: [
+					{
+						key: 'catalog',
+						label: 'Каталог',
+						icon: 'folder',
+						to: '/catalog',
+						children: [
+							{
+								key: 'products',
+								label: 'Товары',
+								to: '/catalog/products',
+							},
+						],
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.queryByText('Каталог')).not.toBeInTheDocument()
+		expect(screen.queryByText('Товары')).not.toBeInTheDocument()
+		expect(container.querySelector('.base-sidebar__navigation [data-testid="base-icon"]')).toHaveTextContent('folder')
+	})
+
+	it('сохраняет item.click и emit itemClick для disclosure group', async () => {
+		const click = vi.fn()
+		const onItemClick = vi.fn()
+
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						click,
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+				onItemClick,
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Настройки' }))
+
+		expect(click).toHaveBeenCalledTimes(1)
+		expect(onItemClick).toHaveBeenCalledTimes(1)
+	})
+
 	it('добавляет expanded class на chevron при раскрытии disclosure group', async () => {
 		const { container } = render(BaseSideBar, {
 			props: {
@@ -512,4 +575,424 @@ describe('BaseSideBar navigation items', () => {
 		expect(screen.getByTestId('sidebar-footer')).toBeInTheDocument()
 		expect(screen.getByTestId('sidebar-footer').closest('.base-sidebar__footer')).toBeInTheDocument()
 	})
+
+	it('подсвечивает item с isActive: true как current', () => {
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'manual',
+						label: 'Активный вручную',
+						isActive: true,
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.getByText('Активный вручную').closest('.base-sidebar-nav__link')).toHaveClass(
+			'base-sidebar-nav__link--current',
+		)
+	})
+
+	it('эмитит itemClick при клике на child item disclosure group', async () => {
+		const onItemClick = vi.fn()
+
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+				onItemClick,
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Настройки' }))
+		await fireEvent.click(screen.getByRole('link', { name: 'Профиль' }))
+
+		expect(onItemClick).toHaveBeenCalledTimes(2)
+		expect(onItemClick.mock.calls[1][0].key).toBe('profile')
+	})
+
+	it('пробрасывает item slot через BaseSideBar', () => {
+		render(
+			{
+				components: { BaseSideBar },
+				template: `
+					<BaseSideBar :items="items" :link-component="'a'">
+						<template #item="{ item }">
+							<div data-testid="custom-item">{{ item.label }}</div>
+						</template>
+					</BaseSideBar>
+				`,
+				data() {
+					return {
+						items: [
+							{
+								key: 'dashboard',
+								label: 'Главная',
+								icon: 'home',
+							},
+						],
+					}
+				},
+			},
+			{
+				global: {
+					stubs: BASE_SIDEBAR_STUBS,
+				},
+			},
+		)
+
+		expect(screen.getByTestId('custom-item')).toBeInTheDocument()
+	})
+
+	it('пробрасывает слоты icon, label, badge через BaseSideBar', () => {
+		render(
+			{
+				components: { BaseSideBar },
+				template: `
+					<BaseSideBar :items="items" :link-component="'a'">
+						<template #icon="{ item }">
+							<span data-testid="custom-icon">{{ item.icon }}</span>
+						</template>
+						<template #label="{ item }">
+							<span data-testid="custom-label">{{ item.label }}</span>
+						</template>
+						<template #badge="{ item }">
+							<span data-testid="custom-badge">{{ item.badge }}</span>
+						</template>
+					</BaseSideBar>
+				`,
+				data() {
+					return {
+						items: [
+							{
+								key: 'dashboard',
+								label: 'Главная',
+								icon: 'home',
+								badge: 5,
+							},
+						],
+					}
+				},
+			},
+			{
+				global: {
+					stubs: BASE_SIDEBAR_STUBS,
+				},
+			},
+		)
+
+		expect(screen.getByTestId('custom-icon')).toBeInTheDocument()
+		expect(screen.getByTestId('custom-label')).toBeInTheDocument()
+		expect(screen.getByTestId('custom-badge')).toBeInTheDocument()
+	})
+
+	it('в collapsed mode рендерит item slot через BaseSideBar', () => {
+		render(
+			{
+				components: { BaseSideBar },
+				template: `
+					<BaseSideBar :items="items" :is-collapsed="true" :link-component="'a'">
+						<template #item="{ item }">
+							<div data-testid="collapsed-custom-item">{{ item.label }}</div>
+						</template>
+					</BaseSideBar>
+				`,
+				data() {
+					return {
+						items: [
+							{
+								key: 'dashboard',
+								label: 'Главная',
+								icon: 'home',
+							},
+						],
+					}
+				},
+			},
+			{
+				global: {
+					stubs: BASE_SIDEBAR_STUBS,
+				},
+			},
+		)
+
+		expect(screen.getByTestId('collapsed-custom-item')).toBeInTheDocument()
+	})
+
+	it('рендерит item с object to через custom linkComponent', () => {
+		const RouterLinkStub = {
+			name: 'RouterLink',
+			props: ['to'],
+			template: '<a data-testid="router-link" :href="JSON.stringify(to)"><slot /></a>',
+		}
+
+		render(BaseSideBar, {
+			props: {
+				linkComponent: RouterLinkStub,
+				items: [
+					{
+						label: 'Маршрут',
+						to: { name: 'dashboard', params: { id: 1 } },
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		const link = screen.getByTestId('router-link')
+
+		expect(link).toBeInTheDocument()
+		expect(link.getAttribute('href')).toContain('dashboard')
+	})
+
+	it('использует object to как key когда key не задан', () => {
+		render(BaseSideBar, {
+			props: {
+				linkComponent: 'a',
+				items: [
+					{
+						label: 'Объектный маршрут',
+						to: { name: 'settings' },
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.getByText('Объектный маршрут')).toBeInTheDocument()
+		expect(screen.getByText('Объектный маршрут').closest('a')).toHaveAttribute('href', '#')
+	})
+
+
+	it('подсвечивает item с isActive: true как current', () => {
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'manual',
+						label: 'Активный вручную',
+						isActive: true,
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.getByText('Активный вручную').closest('.base-sidebar-nav__link')).toHaveClass(
+			'base-sidebar-nav__link--current',
+		)
+	})
+
+	it('эмитит itemClick при клике на child item disclosure group', async () => {
+		const onItemClick = vi.fn()
+
+		render(BaseSideBar, {
+			props: {
+				items: [
+					{
+						key: 'settings',
+						label: 'Настройки',
+						children: [
+							{
+								key: 'profile',
+								label: 'Профиль',
+								to: '/settings/profile',
+							},
+						],
+					},
+				],
+				onItemClick,
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Настройки' }))
+		await fireEvent.click(screen.getByRole('link', { name: 'Профиль' }))
+
+		expect(onItemClick).toHaveBeenCalledTimes(2)
+		expect(onItemClick.mock.calls[1][0].key).toBe('profile')
+	})
+
+	it('пробрасывает item slot через BaseSideBar', () => {
+		render(
+			{
+				components: { BaseSideBar },
+				template: `
+					<BaseSideBar :items="items" :link-component="'a'">
+						<template #item="{ item }">
+							<div data-testid="custom-item">{{ item.label }}</div>
+						</template>
+					</BaseSideBar>
+				`,
+				data() {
+					return {
+						items: [
+							{
+								key: 'dashboard',
+								label: 'Главная',
+								icon: 'home',
+							},
+						],
+					}
+				},
+			},
+			{
+				global: {
+					stubs: BASE_SIDEBAR_STUBS,
+				},
+			},
+		)
+
+		expect(screen.getByTestId('custom-item')).toBeInTheDocument()
+	})
+
+	it('пробрасывает слоты icon, label, badge через BaseSideBar', () => {
+		render(
+			{
+				components: { BaseSideBar },
+				template: `
+					<BaseSideBar :items="items" :link-component="'a'">
+						<template #icon="{ item }">
+							<span data-testid="custom-icon">{{ item.icon }}</span>
+						</template>
+						<template #label="{ item }">
+							<span data-testid="custom-label">{{ item.label }}</span>
+						</template>
+						<template #badge="{ item }">
+							<span data-testid="custom-badge">{{ item.badge }}</span>
+						</template>
+					</BaseSideBar>
+				`,
+				data() {
+					return {
+						items: [
+							{
+								key: 'dashboard',
+								label: 'Главная',
+								icon: 'home',
+								badge: 5,
+							},
+						],
+					}
+				},
+			},
+			{
+				global: {
+					stubs: BASE_SIDEBAR_STUBS,
+				},
+			},
+		)
+
+		expect(screen.getByTestId('custom-icon')).toBeInTheDocument()
+		expect(screen.getByTestId('custom-label')).toBeInTheDocument()
+		expect(screen.getByTestId('custom-badge')).toBeInTheDocument()
+	})
+
+	it('в collapsed mode рендерит item slot через BaseSideBar', () => {
+		render(
+			{
+				components: { BaseSideBar },
+				template: `
+					<BaseSideBar :items="items" :is-collapsed="true" :link-component="'a'">
+						<template #item="{ item }">
+							<div data-testid="collapsed-custom-item">{{ item.label }}</div>
+						</template>
+					</BaseSideBar>
+				`,
+				data() {
+					return {
+						items: [
+							{
+								key: 'dashboard',
+								label: 'Главная',
+								icon: 'home',
+							},
+						],
+					}
+				},
+			},
+			{
+				global: {
+					stubs: BASE_SIDEBAR_STUBS,
+				},
+			},
+		)
+
+		expect(screen.getByTestId('collapsed-custom-item')).toBeInTheDocument()
+	})
+
+	it('рендерит item с object to через custom linkComponent', () => {
+		const RouterLinkStub = {
+			name: 'RouterLink',
+			props: ['to'],
+			template: '<a data-testid="router-link" :href="JSON.stringify(to)"><slot /></a>',
+		}
+
+		render(BaseSideBar, {
+			props: {
+				linkComponent: RouterLinkStub,
+				items: [
+					{
+						label: 'Маршрут',
+						to: { name: 'dashboard', params: { id: 1 } },
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		const link = screen.getByTestId('router-link')
+
+		expect(link).toBeInTheDocument()
+		expect(link.getAttribute('href')).toContain('dashboard')
+	})
+
+	it('использует object to как key когда key не задан', () => {
+		render(BaseSideBar, {
+			props: {
+				linkComponent: 'a',
+				items: [
+					{
+						label: 'Объектный маршрут',
+						to: { name: 'settings' },
+					},
+				],
+			},
+			global: {
+				stubs: BASE_SIDEBAR_STUBS,
+			},
+		})
+
+		expect(screen.getByText('Объектный маршрут')).toBeInTheDocument()
+		expect(screen.getByText('Объектный маршрут').closest('a')).toHaveAttribute('href', '#')
+	})
+
 })

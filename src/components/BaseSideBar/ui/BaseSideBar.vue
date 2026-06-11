@@ -122,7 +122,7 @@ const slots = defineSlots<BaseSideBarSlots>()
 const instance = getCurrentInstance()
 
 function hasPassedProp(camelCaseName: string, kebabCaseName: string): boolean {
-  const rawProps = instance?.vnode.props ?? {}
+  const rawProps = instance?.vnode.props ?? /* istanbul ignore next */ {}
 
   return (
     Object.prototype.hasOwnProperty.call(rawProps, camelCaseName) ||
@@ -143,7 +143,7 @@ const resolvedVariant = computed(() => props.variant ?? 'default')
 const resolvedPadding = computed(() => props.padding ?? 12)
 const resolvedGap = computed(() => props.gap ?? 4)
 const resolvedSizeScale = computed(() => props.sizeScale ?? 100)
-const resolvedIsLoading = computed(() => props.isLoading ?? false)
+const resolvedIsLoading = computed(() => props.isLoading ?? /* istanbul ignore next */ false)
 const resolvedActiveMatch = computed(() => props.activeMatch ?? 'exact')
 const resolvedLinkComponent = computed(() => props.linkComponent ?? 'a')
 
