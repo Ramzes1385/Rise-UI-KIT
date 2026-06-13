@@ -410,7 +410,7 @@ describe('ChatInput unit', () => {
 			const popover = container.querySelector('.base-chat-input__emoji-popover') as HTMLElement
 			expect(popover).toBeInTheDocument()
 
-			// mousedown по элементу внутри поповера — условие handleOutsideClick ложно
+			// mousedown по элементу внутри wrapper не считается внешним кликом
 			await fireEvent.mouseDown(popover)
 
 			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()

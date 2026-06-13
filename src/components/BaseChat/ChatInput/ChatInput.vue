@@ -160,16 +160,16 @@
 					v-if="showCommands && filteredCommands.length > 0"
 					class="base-chat-input__autocomplete base-chat-input__autocomplete--commands">
 					<div
-						v-for="(cmd, index) in filteredCommands"
-						:key="cmd.name"
+						v-for="(command, index) in filteredCommands"
+						:key="command.name"
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
-						@click="replaceCurrentWord('/', cmd.name)">
+						@click="replaceCurrentWord('/', command.name)">
 						<BaseIcon name="file-config" :size-scale="sizeScale * 0.75" class="base-chat-input__autocomplete-icon" />
 						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * 0.85" :weight="600">/{{ cmd.name }}</BaseText>
+							<BaseText :size-scale="sizeScale * 0.85" :weight="600">/{{ command.name }}</BaseText>
 							<BaseText :size-scale="sizeScale * 0.7" class="base-chat-input__autocomplete-sub">
-								{{ cmd.description }}
+								{{ command.description }}
 							</BaseText>
 						</div>
 					</div>
@@ -211,53 +211,64 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
+import { useClickOutside } from '@composables/useClickOutside'
 import { formatFileSize } from '@utils/fileUtils'
-import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
-import type { ChatMessageAttachment } from '../BaseChat.types'
+import { computed, nextTick, ref, watch } from 'vue'
+import type { ChatCommand, ChatMember, ChatMessageAttachment } from '../BaseChat.types'
 import './ChatInput.style.scss'
 import type { ChatInputEmits, ChatInputProps } from './ChatInput.types'
 
-const props = withDefaults(defineProps<ChatInputProps>(), {
-	sizeScale: 100,
-	replyingTo: null,
-	quickReplies: () => [],
-	members: () => [],
-	commands: () => [],
-})
+interface BaseInputExposed {
+	inputRef: HTMLInputElement | null
+}
+
+const EMPTY_QUICK_REPLIES: string[] = []
+const EMPTY_MEMBERS: ChatMember[] = []
+const EMPTY_COMMANDS: ChatCommand[] = []
+
+const props = defineProps<ChatInputProps>()
 
 const emit = defineEmits<ChatInputEmits>()
+
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const replyingTo = computed(() => props.replyingTo ?? null)
+const quickReplies = computed(() => props.quickReplies ?? EMPTY_QUICK_REPLIES)
+const members = computed(() => props.members ?? EMPTY_MEMBERS)
+const commands = computed(() => props.commands ?? EMPTY_COMMANDS)
 
 const text = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const attachments = ref<ChatMessageAttachment[]>([])
 const isEmojiOpen = ref(false)
 
-const inputComponentRef = ref<any>(null)
+const inputComponentRef = ref<BaseInputExposed | null>(null)
 const showMentions = ref(false)
 const showCommands = ref(false)
 const mentionQuery = ref('')
 const commandQuery = ref('')
 const activeSuggestionIndex = ref(0)
 
+function getInputElement(): HTMLInputElement | null {
+	return inputComponentRef.value?.inputRef ?? null
+}
+
 /** Доступны ли команды в чате */
-const hasCommands = computed(() => props.commands.length > 0)
+const hasCommands = computed(() => commands.value.length > 0)
 
 const filteredMembers = computed(() => {
-	/* istanbul ignore next -- defensive: filteredMembers вызывается только когда members переданы (групповой чат) */
-	if (!props.members) return []
 	const query = mentionQuery.value
-	return props.members.filter(
+	return members.value.filter(
 		member => member.name.toLowerCase().includes(query) || (member.role && member.role.toLowerCase().includes(query)),
 	)
 })
 
 const filteredCommands = computed(() => {
 	const query = commandQuery.value
-	return props.commands.filter(cmd => cmd.name.toLowerCase().includes(query))
+	return commands.value.filter(command => command.name.toLowerCase().includes(query))
 })
 
 function checkAutocomplete(): void {
-	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
+	const inputEl = getInputElement()
 	/* istanbul ignore next — defensive: inputRef доступен после mount BaseInput */
 	if (!inputEl) {
 		showMentions.value = false
@@ -303,7 +314,7 @@ watch(text, () => {
  * Используется для автодополнения @упоминаний и /команд.
  */
 function replaceCurrentWord(prefix: string, value: string): string | null {
-	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
+	const inputEl = getInputElement()
 	/* istanbul ignore next — defensive: inputRef доступен после mount BaseInput */
 	if (!inputEl) return null
 
@@ -345,7 +356,7 @@ function toggleCommands(): void {
 		return
 	}
 
-	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
+	const inputEl = getInputElement()
 	/* istanbul ignore next — defensive: selectionStart всегда number для HTMLInputElement */
 	const cursorPosition = inputEl?.selectionStart ?? text.value.length
 	const textBeforeCursor = text.value.slice(0, cursorPosition)
@@ -448,42 +459,19 @@ function handleKeyDown(event: KeyboardEvent): void {
 }
 
 const emojiWrapperRef = ref<HTMLElement | null>(null)
-const emojiPopoverRef = ref<HTMLElement | null>(null)
+
+useClickOutside({
+	targets: [emojiWrapperRef],
+	callback: () => {
+		isEmojiOpen.value = false
+	},
+	isActive: () => isEmojiOpen.value,
+})
 
 /** Переключение видимости поповера эмодзи */
 function toggleEmoji(): void {
 	isEmojiOpen.value = !isEmojiOpen.value
-	if (isEmojiOpen.value) {
-		nextTick(() => {
-			document.addEventListener('mousedown', handleOutsideClick)
-		})
-	} else {
-		removeListeners()
-	}
 }
-
-/** Обработка клика вне поповера */
-function handleOutsideClick(event: MouseEvent): void {
-	const target = event.target as HTMLElement
-	if (
-		emojiWrapperRef.value &&
-		!emojiWrapperRef.value.contains(target) &&
-		emojiPopoverRef.value &&
-		!emojiPopoverRef.value.contains(target)
-	) {
-		isEmojiOpen.value = false
-		removeListeners()
-	}
-}
-
-/** Удаление слушателей событий */
-function removeListeners(): void {
-	document.removeEventListener('mousedown', handleOutsideClick)
-}
-
-onUnmounted(() => {
-	removeListeners()
-})
 
 /** Популярные эмодзи для быстрого выбора */
 const popularEmojis = [
@@ -526,8 +514,8 @@ function handleFileChange(event: Event): void {
 
 	emit('attach', target.files)
 
-	for (let i = 0; i < target.files.length; i++) {
-		const file = target.files[i]
+	for (let index = 0; index < target.files.length; index++) {
+		const file = target.files[index]
 		const isImage = file.type.startsWith('image/')
 		attachments.value.push({
 			id: Math.random().toString(36).substring(2, 9),
@@ -554,7 +542,6 @@ function removeAttachment(index: number): void {
 function insertEmoji(emoji: string): void {
 	text.value += emoji
 	isEmojiOpen.value = false
-	removeListeners()
 }
 
 /** Отмена ответа на сообщение */

@@ -173,6 +173,8 @@ const { classes } = useCustomClass({
 	elementKeys: ['root'],
 })
 
+const messageListRef = ref<MessageListExposed | null>(null)
+
 // Подключаем локальное состояние чата
 const {
 	searchQuery,
@@ -190,9 +192,9 @@ const {
 	handleAvatarClick,
 	handleInfoClick,
 	handleScrollToPinned,
-} = useChatState(props, emit)
-
-const messageListRef = ref<MessageListExposed | null>(null)
+} = useChatState(props, emit, {
+	scrollToMessage: messageId => messageListRef.value?.scrollToMessage(messageId),
+})
 
 /** Состояние окна подтверждения удаления: список id к удалению и флаг открытия */
 const deleteConfirm = ref<{ isOpen: boolean; ids: string[] }>({ isOpen: false, ids: [] })

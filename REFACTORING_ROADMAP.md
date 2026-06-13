@@ -169,6 +169,7 @@
 
 **Уже сделано:**
 - `BaseDatePicker`, `DatePickerPanel`, `DatePickerField` и `BaseCalendar` переведены на `defineProps<...>()` + `computed` defaults.
+- `ChatInput.vue` переведён на `defineProps<...>()` + локальные `computed` defaults без изменения публичного API.
 
 #### 6. Замена магических чисел и строк на константы
 
@@ -194,14 +195,17 @@
 5. Переименовать `cal` в `calendar`.
 6. Переименовать `msg` в `message` в сложных компонентах.
 
+**Уже сделано:**
+- В `ChatInput.vue` `cmd` заменён на `command`, цикл обработки файлов использует `index` вместо `i`.
+
 #### 8. Устранение побочных эффектов и прямого доступа к DOM
 
 **Проблема:** Компоненты напрямую обращаются к `document`.
 
 **Действия:**
 1. `BaseTable.vue` — обернуть resize в `useColumnResize` composable. ✅
-2. `ChatInput.vue` — использовать `useClickOutside` для поповера эмодзи.
-3. `useChatState.ts` — скролл к сообщению делать через `ref` дочернего списка, а не `document.getElementById`.
+2. `ChatInput.vue` — использовать `useClickOutside` для поповера эмодзи. ✅
+3. `useChatState.ts` — скролл к сообщению делать через `ref` дочернего списка, а не `document.getElementById`. ✅
 4. `ChatMessageList.vue` — clipboard через отдельный utility/composable.
 
 #### 9. Улучшение типизации
@@ -210,6 +214,9 @@
 1. Включить `@typescript-eslint/no-explicit-any` в ESLint.
 2. Заменить `any` на конкретные типы (`inputComponentRef = ref<any>(null)`).
 3. Убрать касты `as HTMLElement` где возможно.
+
+**Уже сделано:**
+- В `ChatInput.vue` `inputComponentRef = ref<any>(null)` заменён на локальный `BaseInputExposed` с `inputRef: HTMLInputElement | null`.
 
 #### 10. Разделение больших SCSS-файлов
 
@@ -234,6 +241,8 @@
 **Действия:**
 1. ✅ `useTableData` разделён на `useTableSort`, `useTableFilter`, `useTablePagination`, `useTableSearch`, `useTableSelection`.
 2. Разделить `useChatState` на `useChatSearch`, `useChatSelection`, `useChatReply`, `useChatInfoPanel`.
+   - ✅ `useChatSearch` вынесен в отдельный composable; `useChatState` сохранён как фасад без изменения публичного API.
+   - ✅ `useChatSelection` вынесен в отдельный composable; `useChatState` делегирует ему toggle выбранных сообщений и emit `message-select`.
 
 ---
 
@@ -295,3 +304,11 @@
 - `src/components/BaseDatePicker/model/BaseDatePickerCalendar.types.ts` — добавлены `pickDatePickerCalendarConfig`, `resolveDatePickerCalendarConfig` и helper для корректных boolean defaults.
 - `src/components/BaseDatePicker/BaseDatePicker.spec.ts` — тесты `calendarConfig` и поведения после удаления `withDefaults`.
 - `src/components/BaseDatePicker/ui/DatePickerPanel/DatePickerPanel.spec.ts` — тесты единого `calendarConfig`.
+- `src/components/BaseChat/ChatInput/ChatInput.vue` — emoji-popover закрывается через `useClickOutside` без ручных listeners на `document`.
+- `src/components/BaseChat/composables/useChatState.ts` — скролл к закреплённому сообщению делегируется callback, DOM остаётся внутри `ChatMessageList`.
+- `src/components/BaseChat/BaseChat.vue` — передаёт в `useChatState` callback на `messageListRef.scrollToMessage`.
+- `src/components/BaseChat/ChatInput/ChatInput.vue` — убран `withDefaults`, defaults перенесены в `computed`, `inputComponentRef` типизирован без `any`, короткие имена `cmd`/`i` заменены на `command`/`index`.
+- `src/components/BaseChat/composables/useChatSearch.ts` — поиск сообщений вынесен из `useChatState` в специализированный composable.
+- `src/components/BaseChat/composables/useChatSearch.spec.ts` — unit-тесты фильтрации, пустого запроса и сообщений без текста.
+- `src/components/BaseChat/composables/useChatSelection.ts` — выделение сообщений вынесено из `useChatState` в специализированный composable.
+- `src/components/BaseChat/composables/useChatSelection.spec.ts` — unit-тесты выбора, снятия выбора и сохранения остальных выбранных сообщений.

@@ -1,5 +1,11 @@
 import { computed, ref } from 'vue'
 import type { ChatMember, ChatMessage } from '../BaseChat.types'
+import { useChatSearch } from './useChatSearch'
+import { useChatSelection } from './useChatSelection'
+
+interface UseChatStateOptions {
+	scrollToMessage?: (messageId: string) => void
+}
 
 export function useChatState(
 	props: {
@@ -15,10 +21,12 @@ export function useChatState(
 		(event: 'pin-message', messageId: string): void
 		(event: 'unpin-message', messageId: string): void
 	},
+	options: UseChatStateOptions = {},
 ) {
-	const searchQuery = ref('')
-	const isSearching = ref(false)
-	const selectedMessageIds = ref<string[]>([])
+	const { searchQuery, isSearching, filteredMessages } = useChatSearch({ getMessages: () => props.messages })
+	const { selectedMessageIds, handleMessageSelect } = useChatSelection({
+		onMessageSelect: messageId => emit('message-select', messageId),
+	})
 	const replyingTo = ref<ChatMessage | null>(null)
 	const isInfoOpen = ref(false)
 	const activeTab = ref<'info' | 'media' | 'files' | 'links' | 'profile'>('info')
@@ -38,13 +46,6 @@ export function useChatState(
 		return pinnedMessages.value[currentPinnedIndex.value] || null
 	})
 
-	// Фильтрация сообщений по поисковому запросу
-	const filteredMessages = computed((): ChatMessage[] => {
-		if (!searchQuery.value) return props.messages
-		const query = searchQuery.value.toLowerCase()
-		return props.messages.filter(msg => msg.text?.toLowerCase().includes(query))
-	})
-
 	// Глобальный массив картинок для Telegram-like скролла галереи
 	const allImagesUrls = computed((): string[] => {
 		const urls: string[] = []
@@ -59,17 +60,6 @@ export function useChatState(
 		}
 		return urls
 	})
-
-	/** Обработка выделения сообщения */
-	function handleMessageSelect(messageId: string): void {
-		const index = selectedMessageIds.value.indexOf(messageId)
-		if (index === -1) {
-			selectedMessageIds.value.push(messageId)
-		} else {
-			selectedMessageIds.value.splice(index, 1)
-		}
-		emit('message-select', messageId)
-	}
 
 	/** Обработка клика по аватару/имени автора */
 	function handleAvatarClick(senderId: string): void {
@@ -103,14 +93,7 @@ export function useChatState(
 
 	/** Скролл к закрепленному сообщению */
 	function handleScrollToPinned(messageId: string): void {
-		const element = document.getElementById(`msg-${messageId}`)
-		if (element) {
-			element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-			element.classList.add('base-chat-message-list__item--highlighted')
-			setTimeout(() => {
-				element.classList.remove('base-chat-message-list__item--highlighted')
-			}, 1500)
-		}
+		options.scrollToMessage?.(messageId)
 	}
 
 	return {

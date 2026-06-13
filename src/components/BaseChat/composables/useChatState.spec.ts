@@ -21,10 +21,13 @@ function message(id: string, overrides: Partial<ChatMessage> = {}): ChatMessage 
 	}
 }
 
-function setup(messages: ChatMessage[]): { state: ReturnType<typeof useChatState>; emit: ReturnType<typeof vi.fn> & Emit } {
+function setup(
+	messages: ChatMessage[],
+	options?: Parameters<typeof useChatState>[2],
+): { state: ReturnType<typeof useChatState>; emit: ReturnType<typeof vi.fn> & Emit } {
 	const emit = vi.fn() as unknown as ReturnType<typeof vi.fn> & Emit
 	const scope = effectScope()
-	const state = scope.run(() => useChatState({ messages }, emit)) as ReturnType<typeof useChatState>
+	const state = scope.run(() => useChatState({ messages }, emit, options)) as ReturnType<typeof useChatState>
 	return { state, emit }
 }
 
@@ -157,26 +160,17 @@ describe('useChatState unit', () => {
 	})
 
 	describe('скролл к закрепу', () => {
-		it('подсвечивает существующий элемент и снимает подсветку по таймеру', () => {
-			vi.useFakeTimers()
-			const element = document.createElement('div')
-			element.id = 'msg-1'
-			element.scrollIntoView = vi.fn()
-			document.body.appendChild(element)
-
-			const { state } = setup([message('1')])
+		it('делегирует скролл к сообщению во внешний callback', () => {
+			const scrollToMessage = vi.fn()
+			const { state } = setup([message('1')], { scrollToMessage })
 			state.handleScrollToPinned('1')
 
-			expect(element.scrollIntoView).toHaveBeenCalled()
-			expect(element.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
-
-			vi.advanceTimersByTime(1500)
-			expect(element.classList.contains('base-chat-message-list__item--highlighted')).toBe(false)
+			expect(scrollToMessage).toHaveBeenCalledWith('1')
 		})
 
-		it('не падает, когда элемент закрепа не найден', () => {
+		it('не падает без внешнего callback скролла', () => {
 			const { state } = setup([message('1')])
-			expect(() => state.handleScrollToPinned('missing')).not.toThrow()
+			expect(() => state.handleScrollToPinned('1')).not.toThrow()
 		})
 	})
 })
