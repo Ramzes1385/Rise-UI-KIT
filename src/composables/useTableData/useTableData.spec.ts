@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import { computed, createApp, h, nextTick, ref } from 'vue'
 
-import type { ColumnFilter, TableColumn, TableRow } from '@components/BaseTable/BaseTable.types'
+import type { ColumnFilter, TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 
 import { useTableData } from './useTableData'
 import type { UseTableDataOptions } from './useTableData.types'
@@ -361,41 +361,6 @@ describe('useTableData', () => {
 			)
 
 			expect(hasMoreRows.value).toBe(false)
-		})
-	})
-
-	// ============================================================
-	// Выбор строк
-	// ============================================================
-
-	describe('Выбор строк (isAllSelected)', () => {
-		it('isAllSelected=true когда все selectable строки выбраны', () => {
-			const allSelectedRows = computed((): TableRow[] => [
-				{ id: 1, data: { name: 'Анна', age: 25, city: 'Москва' }, isSelected: true },
-				{ id: 2, data: { name: 'Борис', age: 30, city: 'Питер' }, isSelected: true },
-				{ id: 3, data: { name: 'Глеб', age: 35, city: 'Москва' }, isSelected: false, isDisabled: true },
-			])
-
-			const { isAllSelected } = useTableData(createDefaultOptions({ rows: allSelectedRows }))
-
-			expect(isAllSelected.value).toBe(true)
-		})
-
-		it('isAllSelected=false когда не все selectable строки выбраны', () => {
-			const { isAllSelected } = useTableData(createDefaultOptions())
-
-			expect(isAllSelected.value).toBe(false)
-		})
-
-		it('isAllSelected=false когда нет selectable строк', () => {
-			const allDisabledRows = computed((): TableRow[] => [
-				{ id: 1, data: { name: 'Анна', age: 25, city: 'Москва' }, isSelected: true, isDisabled: true },
-				{ id: 2, data: { name: 'Борис', age: 30, city: 'Питер' }, isSelected: true, isDisabled: true },
-			])
-
-			const { isAllSelected } = useTableData(createDefaultOptions({ rows: allDisabledRows }))
-
-			expect(isAllSelected.value).toBe(false)
 		})
 	})
 

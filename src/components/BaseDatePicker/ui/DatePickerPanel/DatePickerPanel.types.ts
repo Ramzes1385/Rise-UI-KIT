@@ -1,16 +1,11 @@
-import type {
-	CalendarHighlight,
-	CalendarSelectionMode,
-	CalendarVariant,
-	CalendarWeekday,
-	CalendarWeekends,
-} from '@components/BaseCalendar'
+import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseDatePickerCalendarConfig, BaseDatePickerCalendarProps } from '../../model/BaseDatePickerCalendar.types'
 
 /**
  * Пропсы компонента DatePickerPanel
  */
-export interface DatePickerPanelProps {
+export interface DatePickerPanelProps extends BaseDatePickerCalendarProps {
 	/** Панель открыта */
 	isOpen: boolean
 	/** Выбранная дата */
@@ -23,34 +18,6 @@ export interface DatePickerPanelProps {
 	selectionMode: CalendarSelectionMode
 	/** Вариант календаря */
 	calendarVariant: CalendarVariant
-	/** Минимальная дата */
-	minDate?: Date | null
-	/** Максимальная дата */
-	maxDate?: Date | null
-	/** Выключенные даты */
-	disabledDates?: Date[]
-	/** Выключенные дни недели */
-	disabledWeekdays?: CalendarWeekday[]
-	/** Выключить даты начиная с */
-	disableFrom?: Date | null
-	/** Выключить даты до */
-	disableTo?: Date | null
-	/** Выделенные даты */
-	highlights?: CalendarHighlight[]
-	/** Конфигурация выходных */
-	weekends?: CalendarWeekends | null
-	/** Первый день недели */
-	firstDayOfWeek: CalendarWeekday
-	/** Показывать время */
-	showTime: boolean
-	/** Показывать секунды */
-	showSeconds: boolean
-	/** 24-часовой формат */
-	is24Hour: boolean
-	/** Показывать номер недели */
-	showWeekNumber: boolean
-	/** Локаль */
-	locale: string
 	/** Масштаб размера */
 	sizeScale: number
 	/** Количество отображаемых месяцев */
@@ -61,6 +28,8 @@ export interface DatePickerPanelProps {
 	theme?: string | null
 	/** Кастомные классы */
 	customClass?: CustomClassProp
+	/** Общая конфигурация календаря */
+	calendarConfig?: BaseDatePickerCalendarConfig
 }
 
 /**

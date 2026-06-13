@@ -55,6 +55,24 @@ describe('BaseCalendar unit', () => {
 
 			expect(container.querySelector('.base-calendar__header')).toBeInTheDocument()
 		})
+
+		it('должен сохранять showNavigation=true по умолчанию без пропса', () => {
+			const { container } = render(BaseCalendar, {
+				props: { modelValue: new Date(2025, 0, 15) },
+				global: { stubs },
+			})
+
+			expect(container.querySelector('.base-calendar__nav-btn')).toBeInTheDocument()
+		})
+
+		it('должен сохранять showTodayButton=true по умолчанию без пропса', () => {
+			const { container } = render(BaseCalendar, {
+				props: { modelValue: new Date(2025, 0, 15) },
+				global: { stubs },
+			})
+
+			expect(container.querySelector('.base-calendar__footer')).toBeInTheDocument()
+		})
 	})
 
 	describe('пропс variant', () => {
@@ -148,6 +166,15 @@ describe('BaseCalendar unit', () => {
 		})
 
 		describe('12-часовой формат времени', () => {
+			it('не должен рендерить переключатель AM/PM по умолчанию', () => {
+				const { container } = render(BaseCalendar, {
+					props: { showTime: true, modelValue: new Date(2024, 5, 15, 9, 0) },
+					global: { stubs },
+				})
+
+				expect(container.querySelector('.base-calendar__time-ampm')).not.toBeInTheDocument()
+			})
+
 			it('должен рендерить переключатель AM/PM когда is24Hour=false', () => {
 				const { container } = render(BaseCalendar, {
 					props: { showTime: true, is24Hour: false, modelValue: new Date(2024, 5, 15, 9, 0) },
@@ -183,7 +210,7 @@ describe('BaseCalendar unit', () => {
 			})
 		})
 
-		describe('эмиты', () => {
+			describe('эмиты', () => {
 			it('должен эмитить range-select при выборе диапазона', async () => {
 				const { container, emitted } = render(BaseCalendar, {
 					props: {
@@ -247,6 +274,18 @@ describe('BaseCalendar unit', () => {
 
 				expect(emitted()).toHaveProperty('view-change')
 				expect(['days', 'months', 'years']).toContain((emitted() as Record<string, unknown[][]>)['view-change'][0][0])
+			})
+
+			it('должен сохранять canSwitchView=true по умолчанию без пропса', async () => {
+				const { container, emitted } = render(BaseCalendar, {
+					props: { showNavigation: true },
+					global: { stubs },
+				})
+
+				const titleBtn = container.querySelector('.base-calendar__title-btn') as HTMLElement
+				await fireEvent.click(titleBtn)
+
+				expect(emitted()).toHaveProperty('view-change')
 			})
 		})
 	})

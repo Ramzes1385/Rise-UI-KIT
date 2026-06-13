@@ -36,47 +36,22 @@
 					@click.self="closeModal">
 					<div class="base-search__modal" :class="classes.modal" :style="sizeScaleStyle">
 						<div class="base-search__modal-header" :class="classes.modalHeader">
-							<BaseInput
-								ref="modalInputRef"
-								:model-value="query"
-								:placeholder="placeholder"
-								:variant="variant"
-								:size-scale="sizeScale"
-								:is-disabled="isDisabled"
-								:error="error"
-								:custom-class="classes.modalInput"
-								type="text"
+						<BaseSearchInput
+							ref="modalInputRef"
+							:model-value="query"
+							:placeholder="placeholder"
+							:variant="variant"
+							:size-scale="sizeScale"
+							:is-disabled="isDisabled"
+							:error="error"
+							:has-icon="hasIcon"
+							:has-clear="hasClear"
+							:is-loading="isLoading"
+							:input-class="classes.modalInput"
+							:classes="classes"
 								@update:model-value="handleInput"
-								@keydown="handleKeydown">
-								<template #prefix>
-									<BaseIcon
-										v-if="hasIcon"
-										name="search"
-										class="base-search__icon"
-										:custom-class="classes.icon"
-										:size-scale="calcIconScale('sm', sizeScale)" />
-								</template>
-								<template #suffix>
-									<BaseButton
-										v-if="hasClear && query"
-										variant="ghost"
-										class="base-search__clear"
-										:custom-class="classes.clear"
-										:size-scale="sizeScale"
-										@click="handleClear">
-										<BaseIcon
-											name="x-mark"
-											:custom-class="classes.clearIcon"
-											:size-scale="calcIconScale('xs', sizeScale)" />
-									</BaseButton>
-									<BaseLoader
-										v-if="isLoading"
-										class="base-search__loading"
-										:custom-class="classes.loading"
-										variant="spinner"
-										:size-scale="calcIconScale('xs', sizeScale)" />
-								</template>
-							</BaseInput>
+								@keydown="handleKeydown"
+								@clear="handleClear" />
 							<BaseButton
 								variant="ghost"
 								class="base-search__modal-close"
@@ -90,70 +65,34 @@
 							</BaseButton>
 						</div>
 						<div v-if="shouldShowResults && query" class="base-search__modal-results" :class="classes.modalResults">
-							<slot name="results" :results="visibleResults" :query="query" :is-loading="isLoading">
-								<slot name="loading" v-if="isLoading" />
-								<slot name="result-before" :results="visibleResults" :query="query" />
-								<TransitionGroup v-if="visibleResults.length > 0" name="search-result">
-									<div
-										v-for="(item, index) in visibleResults"
-										:key="item.id"
-										class="base-search__result"
-										:class="[{ 'base-search__result--highlighted': index === highlightedIndex }, classes.result]"
-										@mousedown.prevent="handleSelect(item)"
-										@mouseenter="highlightedIndex = index">
-										<slot name="result" :item="item" :index="index">
-											<BaseImage
-												v-if="item.image"
-												:src="item.image"
-												:alt="item.title"
-												class="base-search__result-image"
-												:custom-class="classes.resultImage"
-												:border-radius="4"
-												fit="cover"
-												:size-scale="sizeScale" />
-											<BaseIcon
-												v-else-if="item.icon"
-												:name="item.icon"
-												class="base-search__result-icon"
-												:custom-class="classes.resultIcon"
-												:size-scale="calcIconScale('sm', sizeScale)" />
-											<div class="base-search__result-content" :class="classes.resultContent">
-												<BaseText
-													tag="span"
-													class="base-search__result-title"
-													:custom-class="classes.resultTitle"
-													:size-scale="sizeScale"
-													>{{ item.title }}</BaseText
-												>
-												<BaseText
-													v-if="item.description"
-													tag="span"
-													class="base-search__result-desc"
-													:custom-class="classes.resultDesc"
-													:size-scale="sizeScale">
-													{{ item.description }}
-												</BaseText>
-											</div>
-											<BaseText
-												v-if="item.category"
-												tag="span"
-												class="base-search__result-category"
-												:custom-class="classes.resultCategory"
-												:size-scale="sizeScale">
-												{{ item.category }}
-											</BaseText>
-										</slot>
-									</div>
-								</TransitionGroup>
-								<template v-else-if="query && !isLoading">
-									<slot name="empty">
-										<div class="base-search__empty" :class="classes.empty">
-											<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">Ничего не найдено</BaseText>
-										</div>
-									</slot>
+							<BaseSearchResults
+								:visible-results="visibleResults"
+								:query="query"
+								:is-loading="isLoading"
+								:size-scale="sizeScale"
+								:highlighted-index="highlightedIndex"
+								:classes="classes"
+								@select="handleSelect"
+								@highlight="highlightedIndex = $event">
+								<template #result="slotProps">
+									<slot name="result" v-bind="slotProps" />
 								</template>
-								<slot name="result-after" :results="visibleResults" :query="query" />
-							</slot>
+								<template #results="slotProps">
+									<slot name="results" v-bind="slotProps" />
+								</template>
+								<template #result-before="slotProps">
+									<slot name="result-before" v-bind="slotProps" />
+								</template>
+								<template #result-after="slotProps">
+									<slot name="result-after" v-bind="slotProps" />
+								</template>
+								<template #empty>
+									<slot name="empty" />
+								</template>
+								<template #loading>
+									<slot name="loading" />
+								</template>
+							</BaseSearchResults>
 						</div>
 					</div>
 				</div>
@@ -198,47 +137,22 @@
 					@click.self="closeSidebar">
 					<div class="base-search__sidebar" :class="classes.sidebar" :style="sizeScaleStyle">
 						<div class="base-search__sidebar-header" :class="classes.sidebarHeader">
-							<BaseInput
-								ref="sidebarInputRef"
-								:model-value="query"
-								:placeholder="placeholder"
-								:variant="variant"
-								:size-scale="sizeScale"
-								:is-disabled="isDisabled"
-								:error="error"
-								:custom-class="classes.sidebarInput"
-								type="text"
+						<BaseSearchInput
+							ref="sidebarInputRef"
+							:model-value="query"
+							:placeholder="placeholder"
+							:variant="variant"
+							:size-scale="sizeScale"
+							:is-disabled="isDisabled"
+							:error="error"
+							:has-icon="hasIcon"
+							:has-clear="hasClear"
+							:is-loading="isLoading"
+							:input-class="classes.sidebarInput"
+							:classes="classes"
 								@update:model-value="handleInput"
-								@keydown="handleKeydown">
-								<template #prefix>
-									<BaseIcon
-										v-if="hasIcon"
-										name="search"
-										class="base-search__icon"
-										:custom-class="classes.icon"
-										:size-scale="calcIconScale('sm', sizeScale)" />
-								</template>
-								<template #suffix>
-									<BaseButton
-										v-if="hasClear && query"
-										variant="ghost"
-										class="base-search__clear"
-										:custom-class="classes.clear"
-										:size-scale="sizeScale"
-										@click="handleClear">
-										<BaseIcon
-											name="x-mark"
-											:custom-class="classes.clearIcon"
-											:size-scale="calcIconScale('xs', sizeScale)" />
-									</BaseButton>
-									<BaseLoader
-										v-if="isLoading"
-										class="base-search__loading"
-										:custom-class="classes.loading"
-										variant="spinner"
-										:size-scale="calcIconScale('xs', sizeScale)" />
-								</template>
-							</BaseInput>
+								@keydown="handleKeydown"
+								@clear="handleClear" />
 							<BaseButton
 								variant="ghost"
 								class="base-search__sidebar-close"
@@ -252,70 +166,34 @@
 							</BaseButton>
 						</div>
 						<div v-if="shouldShowResults && query" class="base-search__sidebar-results" :class="classes.sidebarResults">
-							<slot name="results" :results="visibleResults" :query="query" :is-loading="isLoading">
-								<slot name="loading" v-if="isLoading" />
-								<slot name="result-before" :results="visibleResults" :query="query" />
-								<TransitionGroup v-if="visibleResults.length > 0" name="search-result">
-									<div
-										v-for="(item, index) in visibleResults"
-										:key="item.id"
-										class="base-search__result"
-										:class="[{ 'base-search__result--highlighted': index === highlightedIndex }, classes.result]"
-										@mousedown.prevent="handleSelect(item)"
-										@mouseenter="highlightedIndex = index">
-										<slot name="result" :item="item" :index="index">
-											<BaseImage
-												v-if="item.image"
-												:src="item.image"
-												:alt="item.title"
-												class="base-search__result-image"
-												:custom-class="classes.resultImage"
-												:border-radius="4"
-												fit="cover"
-												:size-scale="sizeScale" />
-											<BaseIcon
-												v-else-if="item.icon"
-												:name="item.icon"
-												class="base-search__result-icon"
-												:custom-class="classes.resultIcon"
-												:size-scale="calcIconScale('sm', sizeScale)" />
-											<div class="base-search__result-content" :class="classes.resultContent">
-												<BaseText
-													tag="span"
-													class="base-search__result-title"
-													:custom-class="classes.resultTitle"
-													:size-scale="sizeScale"
-													>{{ item.title }}</BaseText
-												>
-												<BaseText
-													v-if="item.description"
-													tag="span"
-													class="base-search__result-desc"
-													:custom-class="classes.resultDesc"
-													:size-scale="sizeScale">
-													{{ item.description }}
-												</BaseText>
-											</div>
-											<BaseText
-												v-if="item.category"
-												tag="span"
-												class="base-search__result-category"
-												:custom-class="classes.resultCategory"
-												:size-scale="sizeScale">
-												{{ item.category }}
-											</BaseText>
-										</slot>
-									</div>
-								</TransitionGroup>
-								<template v-else-if="query && !isLoading">
-									<slot name="empty">
-										<div class="base-search__empty" :class="classes.empty">
-											<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">Ничего не найдено</BaseText>
-										</div>
-									</slot>
+							<BaseSearchResults
+								:visible-results="visibleResults"
+								:query="query"
+								:is-loading="isLoading"
+								:size-scale="sizeScale"
+								:highlighted-index="highlightedIndex"
+								:classes="classes"
+								@select="handleSelect"
+								@highlight="highlightedIndex = $event">
+								<template #result="slotProps">
+									<slot name="result" v-bind="slotProps" />
 								</template>
-								<slot name="result-after" :results="visibleResults" :query="query" />
-							</slot>
+								<template #results="slotProps">
+									<slot name="results" v-bind="slotProps" />
+								</template>
+								<template #result-before="slotProps">
+									<slot name="result-before" v-bind="slotProps" />
+								</template>
+								<template #result-after="slotProps">
+									<slot name="result-after" v-bind="slotProps" />
+								</template>
+								<template #empty>
+									<slot name="empty" />
+								</template>
+								<template #loading>
+									<slot name="loading" />
+								</template>
+							</BaseSearchResults>
 						</div>
 					</div>
 				</div>
@@ -335,9 +213,10 @@
 			:match-width="true"
 			:prevent-mousedown="false"
 			:size-scale="sizeScale"
+			:padding="0"
 			:custom-class="classes.dropdown"
-			max-height="320px">
-			<BaseInput
+			@close="handleClose">
+			<BaseSearchInput
 				ref="baseInputRef"
 				:model-value="query"
 				:placeholder="placeholder"
@@ -345,104 +224,46 @@
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
 				:error="error"
-				:custom-class="classes.input"
-				type="text"
+				:has-icon="hasIcon"
+				:has-clear="hasClear"
+				:is-loading="isLoading"
+				:classes="classes"
+				class="base-search__trigger"
 				@update:model-value="handleInput"
+				@keydown="handleKeydown"
 				@focus="handleFocus"
 				@blur="handleBlur"
-				@keydown="handleKeydown">
-				<template #prefix>
-					<BaseIcon
-						v-if="hasIcon"
-						name="search"
-						class="base-search__icon"
-						:custom-class="classes.icon"
-						:size-scale="calcIconScale('sm', sizeScale)" />
-				</template>
-				<template #suffix>
-					<BaseButton
-						v-if="hasClear && query"
-						variant="ghost"
-						class="base-search__clear"
-						:custom-class="classes.clear"
-						:size-scale="sizeScale"
-						@click="handleClear">
-						<BaseIcon name="x-mark" :custom-class="classes.clearIcon" :size-scale="calcIconScale('xs', sizeScale)" />
-					</BaseButton>
-					<BaseLoader
-						v-if="isLoading"
-						variant="spinner"
-						:custom-class="classes.loading"
-						:size-scale="calcIconScale('xs', sizeScale)" />
-				</template>
-			</BaseInput>
+				@clear="handleClear" />
 
 			<template #dropdown>
-				<slot name="results" :results="visibleResults" :query="query" :is-loading="isLoading">
-					<slot name="loading" v-if="isLoading" />
-					<slot name="result-before" :results="visibleResults" :query="query" />
-					<TransitionGroup v-if="visibleResults.length > 0" name="search-result">
-						<div
-							v-for="(item, index) in visibleResults"
-							:key="item.id"
-							class="base-search__result"
-							:class="[{ 'base-search__result--highlighted': index === highlightedIndex }, classes.result]"
-							@mousedown.prevent="handleSelect(item)"
-							@mouseenter="highlightedIndex = index">
-							<slot name="result" :item="item" :index="index">
-								<BaseImage
-									v-if="item.image"
-									:src="item.image"
-									:alt="item.title"
-									class="base-search__result-image"
-									:custom-class="classes.resultImage"
-									:border-radius="4"
-									fit="cover"
-									:size-scale="sizeScale" />
-								<BaseIcon
-									v-else-if="item.icon"
-									:name="item.icon"
-									class="base-search__result-icon"
-									:custom-class="classes.resultIcon"
-									:size-scale="calcIconScale('sm', sizeScale)" />
-								<div class="base-search__result-content" :class="classes.resultContent">
-									<BaseText
-										tag="span"
-										class="base-search__result-title"
-										:custom-class="classes.resultTitle"
-										:size-scale="sizeScale"
-										>{{ item.title }}</BaseText
-									>
-									<BaseText
-										v-if="item.description"
-										tag="span"
-										class="base-search__result-desc"
-										:custom-class="classes.resultDesc"
-										:size-scale="sizeScale">
-										{{ item.description }}
-									</BaseText>
-								</div>
-								<BaseText
-									v-if="item.category"
-									tag="span"
-									class="base-search__result-category"
-									:custom-class="classes.resultCategory"
-									:size-scale="sizeScale">
-									{{ item.category }}
-								</BaseText>
-							</slot>
-						</div>
-					</TransitionGroup>
-
-					<template v-else-if="query && !isLoading">
-						<slot name="empty">
-							<div class="base-search__empty" :class="classes.empty">
-								<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">Ничего не найдено</BaseText>
-							</div>
-						</slot>
+				<BaseSearchResults
+					:visible-results="visibleResults"
+					:query="query"
+					:is-loading="isLoading"
+					:size-scale="sizeScale"
+					:highlighted-index="highlightedIndex"
+					:classes="classes"
+					@select="handleSelect"
+					@highlight="highlightedIndex = $event">
+					<template #result="slotProps">
+						<slot name="result" v-bind="slotProps" />
 					</template>
-					<slot name="result-after" :results="visibleResults" :query="query" />
-				</slot>
+					<template #results="slotProps">
+						<slot name="results" v-bind="slotProps" />
+					</template>
+					<template #result-before="slotProps">
+						<slot name="result-before" v-bind="slotProps" />
+					</template>
+					<template #result-after="slotProps">
+						<slot name="result-after" v-bind="slotProps" />
+					</template>
+					<template #empty>
+						<slot name="empty" />
+					</template>
+					<template #loading>
+						<slot name="loading" />
+					</template>
+				</BaseSearchResults>
 			</template>
 		</BaseDropdown>
 	</div>
@@ -455,10 +276,7 @@ import type { BaseSearchEmits, BaseSearchProps, SearchResult } from './BaseSearc
 import { BaseButton } from '@components/BaseButton'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseImage } from '@components/BaseImage'
 import { BaseInput } from '@components/BaseInput'
-import { BaseLoader } from '@components/BaseLoader'
-import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useEscapeKey } from '@composables/useEscapeKey'
@@ -468,6 +286,8 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import './BaseSearch.style.scss'
+import BaseSearchInput from './ui/BaseSearchInput.vue'
+import BaseSearchResults from './ui/BaseSearchResults.vue'
 
 const props = withDefaults(defineProps<BaseSearchProps>(), {
 	modelValue: '',
@@ -529,9 +349,9 @@ const { classes } = useCustomClass({
 	],
 })
 
-const baseInputRef = ref<InstanceType<typeof BaseInput> | null>(null)
-const modalInputRef = ref<InstanceType<typeof BaseInput> | null>(null)
-const sidebarInputRef = ref<InstanceType<typeof BaseInput> | null>(null)
+const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
+const modalInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
+const sidebarInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 const query = ref(props.modelValue)
 const isFocused = ref(false)
 const isSearchTriggered = ref(false)
@@ -613,6 +433,12 @@ useEscapeKey({
 		if (isSidebarOpen.value) closeSidebar()
 	},
 })
+
+/** Обработка закрытия dropdown */
+function handleClose(): void {
+	isFocused.value = false
+	resetHighlight()
+}
 
 /** Обработка ввода */
 function handleInput(value: string): void {

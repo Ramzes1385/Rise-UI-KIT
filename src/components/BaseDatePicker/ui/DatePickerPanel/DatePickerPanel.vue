@@ -2,12 +2,12 @@
 	<Teleport to="body">
 		<Transition name="dropdown">
 			<div
-				v-if="isOpen"
+				v-if="resolvedProps.isOpen"
 				ref="panelRef"
 				class="date-picker-panel"
 				:class="[{ 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
-				:style="panelStyle"
-				:data-theme="theme">
+				:style="resolvedProps.panelStyle"
+				:data-theme="resolvedProps.theme">
 				<!-- Общая навигация -->
 				<div class="date-picker-panel__header">
 					<div class="date-picker-panel__nav-group date-picker-panel__nav-group--prev">
@@ -15,23 +15,23 @@
 							variant="ghost"
 							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
 							title="Предыдущий год"
-							:size-scale="sizeScale"
+							:size-scale="resolvedProps.sizeScale"
 							@click="handlePrevYear">
-							<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', sizeScale)" />
-							<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', sizeScale)" />
+							<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
+							<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
 						</BaseButton>
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn"
 							title="Предыдущий месяц"
-							:size-scale="sizeScale"
+							:size-scale="resolvedProps.sizeScale"
 							@click="handlePrevRange">
-							<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', sizeScale)" />
+							<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
 						</BaseButton>
 					</div>
 
 					<div class="date-picker-panel__year-title">
-						<BaseText tag="span" :weight="700" :size-scale="sizeScale">
+						<BaseText tag="span" :weight="700" :size-scale="resolvedProps.sizeScale">
 							{{ displayYear }}
 						</BaseText>
 					</div>
@@ -41,58 +41,63 @@
 							variant="ghost"
 							class="date-picker-panel__nav-btn"
 							title="Следующий месяц"
-							:size-scale="sizeScale"
+							:size-scale="resolvedProps.sizeScale"
 							@click="handleNextRange">
-							<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
+							<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
 						</BaseButton>
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
 							title="Следующий год"
-							:size-scale="sizeScale"
+							:size-scale="resolvedProps.sizeScale"
 							@click="handleNextYear">
-							<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
-							<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
+							<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
+							<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
 						</BaseButton>
 					</div>
 				</div>
 
-				<BaseCalendar
-					v-for="item in monthItems"
-					:key="item.key"
-					class="date-picker-panel__calendar"
-					:show-navigation="false"
-					:can-switch-view="false"
-					:show-year="safeMonthsCount === 1"
-					:show-today-button="safeMonthsCount === 1"
+				<DatePickerRangePanel
+					v-if="resolvedProps.selectionMode === 'range'"
 					:model-value="modelValue"
 					:model-value-end="modelValueEnd"
 					:selected-dates="selectedDates"
-					:selection-mode="selectionMode"
-					:variant="calendarVariant"
-					:min-date="minDate"
-					:max-date="maxDate"
-					:disabled-dates="disabledDates"
-					:disabled-weekdays="disabledWeekdays"
-					:disable-from="disableFrom"
-					:disable-to="disableTo"
-					:highlights="highlights"
-					:weekends="weekends"
-					:first-day-of-week="firstDayOfWeek"
-					:show-time="showTime"
-					:show-seconds="showSeconds"
-					:is24-hour="is24Hour"
-					:show-week-number="showWeekNumber"
-					:locale="locale"
-					:size-scale="sizeScale"
-					:initial-month="item.month"
-					:initial-year="item.year"
-					@update:model-value="handleModelUpdate"
-					@update:model-value-end="handleModelEndUpdate"
-					@update:selected-dates="handleSelectedUpdate"
+					:calendar-variant="resolvedProps.calendarVariant"
+					:calendar-config="resolvedCalendarConfig"
+					:size-scale="resolvedProps.sizeScale"
+					:month-items="monthItems"
+					@model-update="handleModelUpdate"
+					@model-end-update="handleModelEndUpdate"
+					@selected-update="handleSelectedUpdate"
 					@range-select="handleRangeSelect"
-					@month-change="m => handleMonthChange(m, monthItems.indexOf(item))"
-					@year-change="y => handleYearChange(y, monthItems.indexOf(item))" />
+					@month-change="handleMonthChange"
+					@year-change="handleYearChange" />
+
+				<template v-else>
+					<BaseCalendar
+						v-for="(item, index) in monthItems"
+						:key="item.key"
+						class="date-picker-panel__calendar"
+						v-bind="resolvedCalendarConfig"
+						:show-navigation="false"
+						:can-switch-view="false"
+						:show-year="safeMonthsCount === 1"
+						:show-today-button="safeMonthsCount === 1"
+						:model-value="modelValue"
+						:model-value-end="modelValueEnd"
+						:selected-dates="selectedDates"
+						:selection-mode="resolvedProps.selectionMode"
+						:variant="resolvedProps.calendarVariant"
+						:size-scale="resolvedProps.sizeScale"
+						:initial-month="item.month"
+						:initial-year="item.year"
+						@update:model-value="handleModelUpdate"
+						@update:model-value-end="handleModelEndUpdate"
+						@update:selected-dates="handleSelectedUpdate"
+						@range-select="handleRangeSelect"
+						@month-change="m => handleMonthChange(m, index)"
+						@year-change="y => handleYearChange(y, index)" />
+				</template>
 			</div>
 		</Transition>
 	</Teleport>
@@ -107,30 +112,24 @@ import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
-import { computed, ref, watch } from 'vue'
+import { computed, getCurrentInstance, ref } from 'vue'
+import { useDatePickerPanelNavigation } from '../../composables/useDatePickerPanelNavigation'
+import { pickDatePickerCalendarConfig, resolveBooleanPropDefault } from '../../model/BaseDatePickerCalendar.types'
+import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
 
-const props = withDefaults(defineProps<DatePickerPanelProps>(), {
-	isOpen: false,
-	selectionMode: 'single',
-	calendarVariant: 'default',
-	firstDayOfWeek: 1,
-	locale: 'ru-RU',
-	sizeScale: 100,
-	showTime: false,
-	showSeconds: false,
-	is24Hour: true,
-	showWeekNumber: false,
-	selectedDates: () => [],
-	minDate: null,
-	maxDate: null,
-	disabledDates: () => [],
-	disabledWeekdays: () => [],
-	disableFrom: null,
-	disableTo: null,
-	highlights: () => [],
-	weekends: null,
-	monthsCount: 1,
-})
+const props = defineProps<DatePickerPanelProps>()
+const rawProps = getCurrentInstance()?.vnode.props
+
+const resolvedProps = computed(() => ({
+	isOpen: props.isOpen ?? false,
+	selectionMode: props.selectionMode ?? 'single',
+	calendarVariant: props.calendarVariant ?? 'default',
+	sizeScale: props.sizeScale ?? 100,
+	selectedDates: props.selectedDates ?? [],
+	monthsCount: props.monthsCount ?? 1,
+	panelStyle: props.panelStyle ?? {},
+	theme: props.theme ?? null,
+}))
 
 const emit = defineEmits<DatePickerPanelEmits>()
 
@@ -153,73 +152,32 @@ const { classes } = useCustomClass({
 /** Ref на элемент панели (для useClickOutside из родителя) */
 const panelRef = ref<HTMLElement | null>(null)
 
-/** Нормализованное количество месяцев */
-const safeMonthsCount = computed((): number => {
-	const count = typeof props.monthsCount === 'number' ? props.monthsCount : 1
-	if (!Number.isFinite(count)) return 1
-	if (count < 1) return 1
-	return Math.floor(count)
-})
-
-/** Текст заголовка с годом */
-const displayYear = computed(() => {
-	const startYear = currentBaseDate.value.getFullYear()
-	const lastMonthDate = new Date(startYear, currentBaseDate.value.getMonth() + safeMonthsCount.value - 1, 1)
-	const endYear = lastMonthDate.getFullYear()
-	return startYear === endYear ? `${startYear}` : `${startYear} - ${endYear}`
-})
-
-/** Дата, определяющая первый отображаемый месяц */
-const currentBaseDate = ref<Date>(new Date())
-
-/** Инициализация базовой даты при открытии или изменении значения */
-watch(
-	() => props.isOpen,
-	isOpen => {
-		if (isOpen) {
-			const date =
-				props.modelValue ||
-				props.modelValueEnd ||
-				(props.selectedDates.length > 0 ? props.selectedDates[0] : new Date())
-			currentBaseDate.value = new Date(date.getFullYear(), date.getMonth(), 1)
-		}
-	},
-	{ immediate: true },
+const resolvedCalendarConfig = computed(
+	() =>
+		props.calendarConfig ??
+		pickDatePickerCalendarConfig({
+			...props,
+			is24Hour: resolveBooleanPropDefault(rawProps, 'is24Hour', props.is24Hour, true),
+		}),
 )
 
-/** Последовательность месяцев без дублирования порядка */
-const monthItems = computed((): Array<{ key: string; month: number; year: number }> => {
-	const result: Array<{ key: string; month: number; year: number }> = []
-
-	for (let index = 0; index < safeMonthsCount.value; index++) {
-		const monthDate = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + index, 1)
-		result.push({
-			key: `${monthDate.getFullYear()}-${monthDate.getMonth()}`,
-			month: monthDate.getMonth(),
-			year: monthDate.getFullYear(),
-		})
-	}
-
-	return result
+const {
+	safeMonthsCount,
+	displayYear,
+	monthItems,
+	handleMonthChange,
+	handleYearChange,
+	handlePrevRange,
+	handleNextRange,
+	handlePrevYear,
+	handleNextYear,
+} = useDatePickerPanelNavigation({
+	isOpen: () => props.isOpen,
+	modelValue: () => props.modelValue,
+	modelValueEnd: () => props.modelValueEnd,
+	selectedDates: () => resolvedProps.value.selectedDates,
+	monthsCount: () => resolvedProps.value.monthsCount,
 })
-
-/** Обработка смены месяца в любом из календарей */
-function handleMonthChange(month: number, itemIndex: number): void {
-	const newBaseDate = new Date(
-		currentBaseDate.value.getFullYear(),
-		currentBaseDate.value.getMonth() + (month - (currentBaseDate.value.getMonth() + itemIndex)),
-		1,
-	)
-	currentBaseDate.value = newBaseDate
-}
-
-/** Обработка смены года в любом из календарей */
-function handleYearChange(year: number, itemIndex: number): void {
-	const targetDate = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + itemIndex, 1)
-	const yearDiff = year - targetDate.getFullYear()
-
-	currentBaseDate.value = new Date(currentBaseDate.value.getFullYear() + yearDiff, currentBaseDate.value.getMonth(), 1)
-}
 
 /** Проксирование modelValue */
 function handleModelUpdate(value: Date | null): void {
@@ -239,34 +197,6 @@ function handleSelectedUpdate(value: Date[]): void {
 /** Проксирование range-select */
 function handleRangeSelect(start: Date, end: Date): void {
 	emit('range-select', start, end)
-}
-
-/** Переход на предыдущий диапазон месяцев */
-function handlePrevRange(): void {
-	currentBaseDate.value = new Date(
-		currentBaseDate.value.getFullYear(),
-		currentBaseDate.value.getMonth() - safeMonthsCount.value,
-		1,
-	)
-}
-
-/** Переход на следующий диапазон месяцев */
-function handleNextRange(): void {
-	currentBaseDate.value = new Date(
-		currentBaseDate.value.getFullYear(),
-		currentBaseDate.value.getMonth() + safeMonthsCount.value,
-		1,
-	)
-}
-
-/** Переход на предыдущий год */
-function handlePrevYear(): void {
-	currentBaseDate.value = new Date(currentBaseDate.value.getFullYear() - 1, currentBaseDate.value.getMonth(), 1)
-}
-
-/** Переход на следующий год */
-function handleNextYear(): void {
-	currentBaseDate.value = new Date(currentBaseDate.value.getFullYear() + 1, currentBaseDate.value.getMonth(), 1)
 }
 
 /** Открыть panelRef для родителя */

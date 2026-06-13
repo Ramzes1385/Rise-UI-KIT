@@ -2,18 +2,18 @@
 	<div ref="wrapperRef" class="base-date-picker" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
 		<DatePickerField
 			:display-value="displayValue"
-			:placeholder="placeholder"
-			:label="label"
-			:error="error"
-			:is-disabled="isDisabled"
-			:is-readonly="isReadonly"
-			:is-required="isRequired"
+			:placeholder="resolvedProps.placeholder"
+			:label="resolvedProps.label"
+			:error="resolvedProps.error"
+			:is-disabled="resolvedProps.isDisabled"
+			:is-readonly="resolvedProps.isReadonly"
+			:is-required="resolvedProps.isRequired"
 			:is-open="isOpen"
-			:is-clearable="isClearable"
+			:is-clearable="resolvedProps.isClearable"
 			:has-value="hasValue"
-			:input-variant="inputVariant"
+			:input-variant="resolvedProps.inputVariant"
 			:color="color"
-			:size-scale="sizeScale"
+			:size-scale="resolvedProps.sizeScale"
 			:custom-class="classes.field"
 			@field-click="handleFieldClick"
 			@clear-click="handleClear"
@@ -29,23 +29,10 @@
 			:model-value="activeValue"
 			:model-value-end="activeValueEnd"
 			:selected-dates="activeDates"
-			:selection-mode="selectionMode"
-			:calendar-variant="calendarVariant"
-			:min-date="minDate"
-			:max-date="maxDate"
-			:disabled-dates="disabledDates"
-			:disabled-weekdays="disabledWeekdays"
-			:disable-from="disableFrom"
-			:disable-to="disableTo"
-			:highlights="highlights"
-			:weekends="weekends"
-			:first-day-of-week="firstDayOfWeek"
-			:show-time="showTime"
-			:show-seconds="showSeconds"
-			:is24-hour="is24Hour"
-			:show-week-number="showWeekNumber"
-			:locale="locale"
-			:size-scale="sizeScale"
+			:selection-mode="resolvedProps.selectionMode"
+			:calendar-variant="resolvedProps.calendarVariant"
+			:calendar-config="calendarConfig"
+			:size-scale="resolvedProps.sizeScale"
 			:months-count="computedMonthsCount"
 			:panel-style="panelStyle"
 			:theme="currentTheme"
@@ -64,47 +51,37 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useSizeScale } from '@composables/useSizeScale'
-import { formatDate, formatMultiple, formatRange } from '@utils/dateUtils'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { formatDatePickerValue } from '@utils/dateUtils'
+import { computed, getCurrentInstance, onMounted, onUnmounted, ref, watch } from 'vue'
 import './BaseDatePicker.style.scss'
+import { resolveBooleanPropDefault, resolveDatePickerCalendarConfig } from './model/BaseDatePickerCalendar.types'
 import type { BaseDatePickerEmits, BaseDatePickerProps } from './BaseDatePicker.types'
 import DatePickerField from './ui/DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './ui/DatePickerPanel/DatePickerPanel.vue'
 
-const props = withDefaults(defineProps<BaseDatePickerProps>(), {
-	selectionMode: 'single',
-	placeholder: 'Выберите дату',
-	dateFormat: 'dd.MM.yyyy',
-	inputVariant: 'outline',
-	calendarVariant: 'default',
-	sizeScale: 100,
-	isDisabled: false,
-	isReadonly: true,
-	isRequired: false,
-	isClearable: false,
-	minDate: null,
-	maxDate: null,
-	disabledDates: () => [],
-	disabledWeekdays: () => [],
-	disableFrom: null,
-	disableTo: null,
-	highlights: () => [],
-	weekends: null,
-	firstDayOfWeek: 1,
-	locale: 'ru-RU',
-	showTime: false,
-	showSeconds: false,
-	is24Hour: true,
-	showWeekNumber: false,
-	closeOnClickOutside: true,
-	closeOnEscape: true,
-	gap: 4,
-	label: '',
-	error: '',
-	isMultiMonth: false,
-})
+const props = defineProps<BaseDatePickerProps>()
+const rawProps = getCurrentInstance()?.vnode.props
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const resolvedProps = computed(() => ({
+	selectionMode: props.selectionMode ?? 'single',
+	placeholder: props.placeholder ?? 'Выберите дату',
+	dateFormat: props.dateFormat ?? 'dd.MM.yyyy',
+	inputVariant: props.inputVariant ?? 'outline',
+	calendarVariant: props.calendarVariant ?? 'default',
+	sizeScale: props.sizeScale ?? 100,
+	isDisabled: props.isDisabled ?? false,
+	isReadonly: resolveBooleanPropDefault(rawProps, 'isReadonly', props.isReadonly, true),
+	isRequired: props.isRequired ?? false,
+	isClearable: props.isClearable ?? false,
+	closeOnClickOutside: resolveBooleanPropDefault(rawProps, 'closeOnClickOutside', props.closeOnClickOutside, true),
+	closeOnEscape: resolveBooleanPropDefault(rawProps, 'closeOnEscape', props.closeOnEscape, true),
+	gap: props.gap ?? 4,
+	label: props.label ?? '',
+	error: props.error ?? '',
+	isMultiMonth: props.isMultiMonth ?? false,
+}))
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -127,9 +104,9 @@ let resizeObserver: ResizeObserver | null = null
 
 /** Расчет количества месяцев, если включен isMultiMonth */
 const computedMonthsCount = computed((): number => {
-	if (!props.isMultiMonth) return 1
+	if (!resolvedProps.value.isMultiMonth) return 1
 
-	const scale = props.sizeScale / 100
+	const scale = resolvedProps.value.sizeScale / 100
 	// Минимальная ширина календаря для расчета
 	const minCalendarWidth = 260 * scale
 	const gap = 8 * scale
@@ -152,8 +129,8 @@ const { panelStyle } = useDropdownPosition({
 	wrapperRef,
 	dropdownRef: panelEl,
 	position: () => 'bottom-start',
-	gap: () => props.gap,
-	matchWidth: () => props.isMultiMonth,
+	gap: () => resolvedProps.value.gap,
+	matchWidth: () => resolvedProps.value.isMultiMonth,
 	maxHeight: () => '500px',
 	isOpen: () => isOpen.value,
 })
@@ -197,55 +174,45 @@ const activeDates = computed((): Date[] => {
 	return props.selectedDates
 })
 
+const calendarConfig = computed(() =>
+	resolveDatePickerCalendarConfig(props, rawProps, props.calendarConfig),
+)
+
 /** Есть ли выбранное значение */
 const hasValue = computed((): boolean => {
-	if (props.selectionMode === 'range') {
+	if (resolvedProps.value.selectionMode === 'range') {
 		return !!(activeValue.value || activeValueEnd.value)
 	}
-	if (props.selectionMode === 'multiple') {
+	if (resolvedProps.value.selectionMode === 'multiple') {
 		return activeDates.value.length > 0
 	}
 	return !!activeValue.value
 })
 
-/** Базовые опции форматирования */
-const formatBaseOpts = computed(() => ({
-	dateFormat: props.dateFormat,
-	showTime: props.showTime,
-	showSeconds: props.showSeconds,
-	is24Hour: props.is24Hour,
-	locale: props.locale,
-}))
-
 /** Отформатированное значение для инпута */
-const displayValue = computed((): string => {
-	const opts = formatBaseOpts.value
-
-	if (props.selectionMode === 'range') {
-		return formatRange({
-			...opts,
-			start: activeValue.value,
-			end: activeValueEnd.value,
-		})
-	}
-
-	if (props.selectionMode === 'multiple') {
-		return formatMultiple({ ...opts, dates: activeDates.value })
-	}
-
-	if (!activeValue.value) return ''
-	return formatDate({ ...opts, date: activeValue.value })
-})
+const displayValue = computed((): string =>
+	formatDatePickerValue({
+		selectionMode: resolvedProps.value.selectionMode,
+		date: activeValue.value,
+		endDate: activeValueEnd.value,
+		dates: activeDates.value,
+		dateFormat: resolvedProps.value.dateFormat,
+		showTime: calendarConfig.value.showTime,
+		showSeconds: calendarConfig.value.showSeconds,
+		is24Hour: calendarConfig.value.is24Hour,
+		locale: calendarConfig.value.locale,
+	}),
+)
 
 /** Открыть дропдаун */
 function open(): void {
-	if (props.isDisabled) return
+	if (resolvedProps.value.isDisabled) return
 	if (isOpen.value) return
 
 	/* istanbul ignore else -- defensive: wrapperRef всегда привязан после mount */
 	if (wrapperRef.value) {
 		// Обновляем ширину перед открытием для точного расчета месяцев
-		if (props.isMultiMonth) {
+		if (resolvedProps.value.isMultiMonth) {
 			wrapperWidth.value = wrapperRef.value.clientWidth
 		}
 		// Определяем текущую тему
@@ -284,7 +251,7 @@ function handleClear(): void {
 function handleModelUpdate(value: Date | null): void {
 	innerValue.value = value
 	emit('update:modelValue', value)
-	if (props.selectionMode === 'single' && value && !props.showTime) {
+	if (resolvedProps.value.selectionMode === 'single' && value && !calendarConfig.value.showTime) {
 		close()
 	}
 }
@@ -309,13 +276,13 @@ function handleRangeSelect(start: Date, end: Date): void {
 	emit('update:modelValueEnd', end)
 	emit('range-select', start, end)
 
-	if (!props.showTime) {
+	if (!calendarConfig.value.showTime) {
 		close()
 	}
 }
 
 onMounted(() => {
-	if (props.isMultiMonth && wrapperRef.value) {
+	if (resolvedProps.value.isMultiMonth && wrapperRef.value) {
 		wrapperWidth.value = wrapperRef.value.clientWidth
 		resizeObserver = new ResizeObserver(entries => {
 			for (const entry of entries) {
@@ -338,12 +305,12 @@ onUnmounted(() => {
 useClickOutside({
 	targets: [wrapperRef, panelEl],
 	callback: close,
-	isActive: () => isOpen.value && props.closeOnClickOutside,
+	isActive: () => isOpen.value && resolvedProps.value.closeOnClickOutside,
 })
 
 /** Закрытие по Escape */
 useEscapeKey({
-	isActive: () => isOpen.value && props.closeOnEscape,
+	isActive: () => isOpen.value && resolvedProps.value.closeOnEscape,
 	callback: close,
 })
 </script>

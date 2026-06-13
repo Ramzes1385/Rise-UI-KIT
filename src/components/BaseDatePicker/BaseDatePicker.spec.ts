@@ -71,7 +71,13 @@ const stubs = {
 	},
 	DatePickerPanel: {
 		template: `
-			<div v-if="isOpen" class="date-picker-panel-stub" :class="customClass">
+			<div
+				v-if="isOpen"
+				class="date-picker-panel-stub"
+				:class="customClass"
+				:data-locale="calendarConfig?.locale"
+				:data-show-time="String(calendarConfig?.showTime)"
+				:data-show-week-number="String(calendarConfig?.showWeekNumber)">
 				panel
 				<button class="emit-model" @click="$emit('model-update', new Date(2024, 0, 2))">model</button>
 				<button class="emit-model-end" @click="$emit('model-end-update', new Date(2024, 0, 3))">modelEnd</button>
@@ -90,20 +96,7 @@ const stubs = {
 			'selectedDates',
 			'selectionMode',
 			'calendarVariant',
-			'minDate',
-			'maxDate',
-			'disabledDates',
-			'disabledWeekdays',
-			'disableFrom',
-			'disableTo',
-			'highlights',
-			'weekends',
-			'firstDayOfWeek',
-			'showTime',
-			'showSeconds',
-			'is24Hour',
-			'showWeekNumber',
-			'locale',
+			'calendarConfig',
 			'sizeScale',
 			'monthsCount',
 			'panelStyle',
@@ -299,6 +292,64 @@ describe('BaseDatePicker unit', () => {
 
 			const field = container.querySelector('.date-picker-field-stub')
 			expect(field).toBeInTheDocument()
+		})
+	})
+
+	describe('внутренний calendarConfig', () => {
+		it('собирает календарные пропсы в единый объект для панели', async () => {
+			const { container } = render(BaseDatePicker, {
+				props: {
+					showWeekNumber: true,
+					locale: 'en-US',
+				},
+				global: { stubs },
+			})
+
+			await fireEvent.click(container.querySelector('.date-picker-field-stub')!)
+
+			const panel = container.querySelector('.date-picker-panel-stub')
+			expect(panel).toHaveAttribute('data-locale', 'en-US')
+			expect(panel).toHaveAttribute('data-show-week-number', 'true')
+		})
+
+		it('принимает публичный calendarConfig как единый объект календарных настроек', async () => {
+			const { container } = render(BaseDatePicker, {
+				props: {
+					calendarConfig: {
+						locale: 'en-US',
+						showTime: true,
+						showWeekNumber: true,
+					},
+				},
+				global: { stubs },
+			})
+
+			await fireEvent.click(container.querySelector('.date-picker-field-stub')!)
+
+			const panel = container.querySelector('.date-picker-panel-stub')
+			expect(panel).toHaveAttribute('data-locale', 'en-US')
+			expect(panel).toHaveAttribute('data-show-time', 'true')
+			expect(panel).toHaveAttribute('data-show-week-number', 'true')
+		})
+
+		it('явные календарные props переопределяют значения из calendarConfig', async () => {
+			const { container } = render(BaseDatePicker, {
+				props: {
+					locale: 'ru-RU',
+					showWeekNumber: false,
+					calendarConfig: {
+						locale: 'en-US',
+						showWeekNumber: true,
+					},
+				},
+				global: { stubs },
+			})
+
+			await fireEvent.click(container.querySelector('.date-picker-field-stub')!)
+
+			const panel = container.querySelector('.date-picker-panel-stub')
+			expect(panel).toHaveAttribute('data-locale', 'ru-RU')
+			expect(panel).toHaveAttribute('data-show-week-number', 'false')
 		})
 	})
 

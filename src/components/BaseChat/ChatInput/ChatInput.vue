@@ -144,7 +144,7 @@
 						:key="member.id"
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
-						@click="selectMention(member.name)">
+						@click="replaceCurrentWord('@', member.name)">
 						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * 0.6" />
 						<div class="base-chat-input__autocomplete-info">
 							<BaseText :size-scale="sizeScale * 0.85" :weight="600">{{ member.name }}</BaseText>
@@ -164,7 +164,7 @@
 						:key="cmd.name"
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
-						@click="selectCommand(cmd.name)">
+						@click="replaceCurrentWord('/', cmd.name)">
 						<BaseIcon name="file-config" :size-scale="sizeScale * 0.75" class="base-chat-input__autocomplete-icon" />
 						<div class="base-chat-input__autocomplete-info">
 							<BaseText :size-scale="sizeScale * 0.85" :weight="600">/{{ cmd.name }}</BaseText>
@@ -298,7 +298,11 @@ watch(text, () => {
 	})
 })
 
-function selectMention(memberName: string): string | null {
+/**
+ * Заменяет текущее слово перед курсором на значение с заданным префиксом.
+ * Используется для автодополнения @упоминаний и /команд.
+ */
+function replaceCurrentWord(prefix: string, value: string): string | null {
 	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
 	/* istanbul ignore next — defensive: inputRef доступен после mount BaseInput */
 	if (!inputEl) return null
@@ -310,39 +314,14 @@ function selectMention(memberName: string): string | null {
 
 	const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ')
 	const newTextBefore =
-		lastSpaceIndex === -1 ? `@${memberName} ` : textBeforeCursor.slice(0, lastSpaceIndex + 1) + `@${memberName} `
+		lastSpaceIndex === -1
+			? `${prefix}${value} `
+			: textBeforeCursor.slice(0, lastSpaceIndex + 1) + `${prefix}${value} `
 
 	const nextText = newTextBefore + textAfterCursor
 
 	text.value = nextText
 	showMentions.value = false
-
-	nextTick(() => {
-		inputEl.focus()
-		const newCursorPos = newTextBefore.length
-		inputEl.setSelectionRange(newCursorPos, newCursorPos)
-	})
-
-	return nextText
-}
-
-function selectCommand(commandName: string): string | null {
-	const inputEl = inputComponentRef.value?.inputRef as HTMLInputElement | null
-	/* istanbul ignore next — defensive: inputRef доступен после mount BaseInput */
-	if (!inputEl) return null
-
-	/* istanbul ignore next — defensive: selectionStart всегда number для HTMLInputElement */
-	const cursorPosition = inputEl.selectionStart ?? 0
-	const textBeforeCursor = text.value.slice(0, cursorPosition)
-	const textAfterCursor = text.value.slice(cursorPosition)
-
-	const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ')
-	const newTextBefore =
-		lastSpaceIndex === -1 ? `/${commandName} ` : textBeforeCursor.slice(0, lastSpaceIndex + 1) + `/${commandName} `
-
-	const nextText = newTextBefore + textAfterCursor
-
-	text.value = nextText
 	showCommands.value = false
 
 	nextTick(() => {
@@ -412,7 +391,7 @@ function handleKeyDown(event: KeyboardEvent): void {
 			const selectedMember = filteredMembers.value[activeSuggestionIndex.value]
 			if (!selectedMember) return
 
-			const nextText = selectMention(selectedMember.name)
+			const nextText = replaceCurrentWord('@', selectedMember.name)
 			if (nextText) {
 				sendMessage(nextText)
 			}
@@ -447,7 +426,7 @@ function handleKeyDown(event: KeyboardEvent): void {
 			const selectedCommand = filteredCommands.value[activeSuggestionIndex.value]
 			if (!selectedCommand) return
 
-			const nextText = selectCommand(selectedCommand.name)
+			const nextText = replaceCurrentWord('/', selectedCommand.name)
 			if (nextText) {
 				sendMessage(nextText)
 			}

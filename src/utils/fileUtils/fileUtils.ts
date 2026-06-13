@@ -42,6 +42,51 @@ function getFileIcon(extension: string): string {
 	return icons[extension.toUpperCase()] || '📎'
 }
 
+/** Карта расширений в имена SVG-иконок файлов */
+const FILE_ICON_NAME_MAP: Record<string, string> = {
+	png: 'file-img',
+	jpg: 'file-img',
+	jpeg: 'file-img',
+	gif: 'file-img',
+	webp: 'file-img',
+	svg: 'file-svg',
+	js: 'file-js',
+	ts: 'file-ts',
+	vue: 'file-vue',
+	scss: 'file-scss',
+	css: 'file-css',
+	html: 'file-html',
+	json: 'file-json',
+	md: 'file-md',
+	txt: 'file-txt',
+	xml: 'file-xml',
+	yaml: 'file-yaml',
+	yml: 'file-yaml',
+	sh: 'file-sh',
+	py: 'file-py',
+	sql: 'file-sql',
+	pdf: 'file-txt',
+	doc: 'file-txt',
+	docx: 'file-txt',
+	xls: 'file-txt',
+	xlsx: 'file-txt',
+	ppt: 'file-txt',
+	pptx: 'file-txt',
+	mp3: 'file-config',
+	wav: 'file-config',
+	mp4: 'file-config',
+	mkv: 'file-config',
+	zip: 'file-lock',
+	rar: 'file-lock',
+	'7z': 'file-lock',
+}
+
+/** Получить имя SVG-иконки по имени файла */
+function getFileIconName(filename: string): string {
+	const ext = getExtension(filename).toLowerCase()
+	return FILE_ICON_NAME_MAP[ext] || 'file-config'
+}
+
 /** Валидировать файл по размеру и допустимым типам */
 function validateFile(file: File, options: FileValidationOptions): FileValidationResult {
 	const errors: string[] = []
@@ -89,4 +134,4 @@ function createImagePreview(file: File): Promise<string | null> {
 	})
 }
 
-export { createImagePreview, formatAcceptHint, formatFileSize, getExtension, getFileIcon, validateFile }
+export { createImagePreview, formatAcceptHint, formatFileSize, getExtension, getFileIcon, getFileIconName, validateFile }

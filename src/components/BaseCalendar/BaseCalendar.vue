@@ -1,86 +1,86 @@
 <template>
-	<BaseCard
-		class="base-calendar"
-		:class="[
-			variantClass,
-			{
-				'base-calendar--week-numbers': showWeekNumber,
-				'base-calendar--disabled': isDisabled,
-				'base-calendar--range': selectionMode === 'range',
-			},
-		]"
-		:custom-class="classes.root"
-		:variant="variant"
-		:color="color"
-		:size-scale="sizeScale"
-		:padding="12"
-		:style="[sizeScaleStyle, customColorStyle, variantStyle]">
-		<!-- Заголовок -->
-		<div v-if="showNavigation" class="base-calendar__header" :class="classes.header">
-			<slot name="header" :month="currentMonth" :year="currentYear">
-				<BaseButton
-					variant="ghost"
-					class="base-calendar__nav-btn"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled || !canPrev"
-					@click="prevMonth">
-					<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', sizeScale)" />
-				</BaseButton>
-				<BaseButton
-					variant="ghost"
-					class="base-calendar__title-btn"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled || !canSwitchView"
-					@click="canSwitchView && switchView()">
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale">{{ headerTitle }}</BaseText>
-				</BaseButton>
-				<BaseButton
-					variant="ghost"
-					class="base-calendar__nav-btn"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled || !canNext"
-					@click="nextMonth">
-					<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
-				</BaseButton>
-			</slot>
-		</div>
-		<div v-else class="base-calendar__header base-calendar__header--simple" :class="classes.header">
-			<BaseText tag="span" :weight="600" :size-scale="sizeScale">{{ headerTitle }}</BaseText>
-		</div>
+		<BaseCard
+			class="base-calendar"
+			:class="[
+				variantClass,
+				{
+					'base-calendar--week-numbers': resolvedProps.showWeekNumber,
+					'base-calendar--disabled': resolvedProps.isDisabled,
+					'base-calendar--range': resolvedProps.selectionMode === 'range',
+				},
+			]"
+			:custom-class="classes.root"
+			:variant="resolvedProps.variant"
+			:color="resolvedProps.color"
+			:size-scale="resolvedProps.sizeScale"
+			:padding="12"
+			:style="[sizeScaleStyle, customColorStyle, variantStyle]">
+			<!-- Заголовок -->
+			<div v-if="resolvedProps.showNavigation" class="base-calendar__header" :class="classes.header">
+				<slot name="header" :month="currentMonth" :year="currentYear">
+					<BaseButton
+						variant="ghost"
+						class="base-calendar__nav-btn"
+						:size-scale="resolvedProps.sizeScale"
+						:is-disabled="resolvedProps.isDisabled || !canPrev"
+						@click="prevMonth">
+						<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
+					</BaseButton>
+					<BaseButton
+						variant="ghost"
+						class="base-calendar__title-btn"
+						:size-scale="resolvedProps.sizeScale"
+						:is-disabled="resolvedProps.isDisabled || !resolvedProps.canSwitchView"
+						@click="resolvedProps.canSwitchView && switchView()">
+						<BaseText tag="span" :weight="600" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
+					</BaseButton>
+					<BaseButton
+						variant="ghost"
+						class="base-calendar__nav-btn"
+						:size-scale="resolvedProps.sizeScale"
+						:is-disabled="resolvedProps.isDisabled || !canNext"
+						@click="nextMonth">
+						<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
+					</BaseButton>
+				</slot>
+			</div>
+			<div v-else class="base-calendar__header base-calendar__header--simple" :class="classes.header">
+				<BaseText tag="span" :weight="600" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
+			</div>
 
 		<!-- Дни -->
-		<template v-if="currentView === 'days'">
-			<div class="base-calendar__weekdays" :class="classes.weekdays">
-				<span v-if="showWeekNumber" class="base-calendar__week-num-header">
-					<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="sizeScale"
-						>№</BaseText
-					>
-				</span>
-				<span v-for="(name, idx) in orderedWeekdays" :key="idx" class="base-calendar__weekday">
-					<BaseText
-						tag="span"
-						:weight="600"
-						:color="{ text: { base: 'var(--color-text-muted)' } }"
-						:size-scale="sizeScale"
-						>{{ name }}</BaseText
-					>
-				</span>
-			</div>
-			<div class="base-calendar__grid" :class="classes.grid" role="grid">
-				<template v-for="(date, idx) in calendarDays" :key="idx">
-					<span v-if="showWeekNumber && idx % 7 === 0" class="base-calendar__week-num">
-						<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="sizeScale">{{
-							getRowWeekNumber(idx)
-						}}</BaseText>
+			<template v-if="currentView === 'days'">
+				<div class="base-calendar__weekdays" :class="classes.weekdays">
+					<span v-if="resolvedProps.showWeekNumber" class="base-calendar__week-num-header">
+						<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="resolvedProps.sizeScale"
+							>№</BaseText
+						>
 					</span>
-					<div class="base-calendar__day-wrapper" :class="classes.dayWrapper">
-						<BaseButton
-							variant="ghost"
-							class="base-calendar__day"
-							:class="[dayClasses(date, !!$slots.day), classes.day]"
-							:is-disabled="isDayDisabled(date) || isDisabled"
-							:size-scale="sizeScale"
-							@click="handleDayClick(date)">
+					<span v-for="(name, idx) in orderedWeekdays" :key="idx" class="base-calendar__weekday">
+						<BaseText
+							tag="span"
+							:weight="600"
+							:color="{ text: { base: 'var(--color-text-muted)' } }"
+							:size-scale="resolvedProps.sizeScale"
+							>{{ name }}</BaseText
+						>
+					</span>
+				</div>
+				<div class="base-calendar__grid" :class="classes.grid" role="grid">
+					<template v-for="(date, idx) in calendarDays" :key="idx">
+						<span v-if="resolvedProps.showWeekNumber && idx % 7 === 0" class="base-calendar__week-num">
+							<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="resolvedProps.sizeScale">{{
+								getRowWeekNumber(idx)
+							}}</BaseText>
+						</span>
+						<div class="base-calendar__day-wrapper" :class="classes.dayWrapper">
+							<BaseButton
+								variant="ghost"
+								class="base-calendar__day"
+								:class="[dayClasses(date, !!$slots.day), classes.day]"
+								:is-disabled="isDayDisabled(date) || resolvedProps.isDisabled"
+								:size-scale="resolvedProps.sizeScale"
+								@click="handleDayClick(date)">
 							<slot
 								name="day"
 								:date="date"
@@ -89,7 +89,7 @@
 								:is-disabled="isDayDisabled(date)"
 								:is-weekend="isWeekend(date)"
 								:is-in-range="isInRange(date)">
-								<BaseText tag="span" :size-scale="sizeScale">{{ date.getDate() }}</BaseText>
+								<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ date.getDate() }}</BaseText>
 							</slot>
 							<span
 								v-if="getHighlight(date)"
@@ -108,8 +108,8 @@
 							<div class="base-calendar__popover-arrow" />
 							<slot name="date-popover" :date="popoverDate" :close="closePopover" :highlights="popoverHighlights">
 								<div class="base-calendar__popover-content">
-									<BaseText tag="span" class="base-calendar__popover-date" :size-scale="sizeScale">{{
-										formatPopoverDate(popoverDate)
+									<BaseText tag="span" class="base-calendar__popover-date" :size-scale="resolvedProps.sizeScale">{{
+										formatPopoverDate({ date: popoverDate, locale: resolvedProps.locale })
 									}}</BaseText>
 								</div>
 								<div v-if="popoverHighlights.length > 0" class="base-calendar__popover-highlights">
@@ -117,7 +117,7 @@
 										<span
 											class="base-calendar__popover-highlight-dot"
 											:style="{ backgroundColor: hl.color || 'var(--color-accent)' }" />
-										<BaseText tag="span" :size-scale="sizeScale">{{ hl.label || 'Событие' }}</BaseText>
+										<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ hl.label || 'Событие' }}</BaseText>
 									</div>
 								</div>
 							</slot>
@@ -135,10 +135,10 @@
 				variant="outline"
 				class="base-calendar__month-btn"
 				:class="{ 'base-calendar__month-btn--current': idx === currentMonth }"
-				:size-scale="sizeScale"
-				:is-disabled="isDisabled"
+				:size-scale="resolvedProps.sizeScale"
+				:is-disabled="resolvedProps.isDisabled"
 				@click="selectMonth(idx)">
-				<BaseText tag="span" :size-scale="sizeScale">{{ name }}</BaseText>
+				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ name }}</BaseText>
 			</BaseButton>
 		</div>
 
@@ -150,65 +150,65 @@
 				variant="outline"
 				class="base-calendar__year-btn"
 				:class="{ 'base-calendar__year-btn--current': year === currentYear }"
-				:size-scale="sizeScale"
-				:is-disabled="isDisabled"
+				:size-scale="resolvedProps.sizeScale"
+				:is-disabled="resolvedProps.isDisabled"
 				@click="selectYear(year)">
-				<BaseText tag="span" :size-scale="sizeScale">{{ year }}</BaseText>
+				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ year }}</BaseText>
 			</BaseButton>
 		</div>
 
 		<!-- Время -->
-		<div v-if="showTime" class="base-calendar__time" :class="classes.time">
+		<div v-if="resolvedProps.showTime" class="base-calendar__time" :class="classes.time">
 			<div class="base-calendar__time-field">
 				<BaseInput
 					v-model="hoursModel"
 					class="base-calendar__time-input"
 					type="number"
 					variant="outline"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled"
+					:size-scale="resolvedProps.sizeScale"
+					:is-disabled="resolvedProps.isDisabled"
 					@change="handleTimeChange" />
-				<BaseText tag="span" class="base-calendar__time-sep" :size-scale="sizeScale">:</BaseText>
+				<BaseText tag="span" class="base-calendar__time-sep" :size-scale="resolvedProps.sizeScale">:</BaseText>
 				<BaseInput
 					v-model="minutesModel"
 					class="base-calendar__time-input"
 					type="number"
 					variant="outline"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled"
+					:size-scale="resolvedProps.sizeScale"
+					:is-disabled="resolvedProps.isDisabled"
 					@change="handleTimeChange" />
-				<template v-if="showSeconds">
-					<BaseText tag="span" class="base-calendar__time-sep" :size-scale="sizeScale">:</BaseText>
+				<template v-if="resolvedProps.showSeconds">
+					<BaseText tag="span" class="base-calendar__time-sep" :size-scale="resolvedProps.sizeScale">:</BaseText>
 					<BaseInput
 						v-model="secondsModel"
 						class="base-calendar__time-input"
 						type="number"
 						variant="outline"
-						:size-scale="sizeScale"
-						:is-disabled="isDisabled"
+						:size-scale="resolvedProps.sizeScale"
+						:is-disabled="resolvedProps.isDisabled"
 						@change="handleTimeChange" />
 				</template>
-				<template v-if="!is24Hour">
+				<template v-if="!resolvedProps.is24Hour">
 					<BaseButton
 						variant="outline"
 						class="base-calendar__time-ampm"
-						:size-scale="sizeScale"
-						:is-disabled="isDisabled"
+						:size-scale="resolvedProps.sizeScale"
+						:is-disabled="resolvedProps.isDisabled"
 						@click="toggleAmPm">
-						<BaseText tag="span" :size-scale="sizeScale">{{ isAm ? 'AM' : 'PM' }}</BaseText>
+						<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ isAm ? 'AM' : 'PM' }}</BaseText>
 					</BaseButton>
 				</template>
 			</div>
 		</div>
 
 		<!-- Подвал -->
-		<div v-if="showTodayButton" class="base-calendar__footer" :class="classes.footer">
+		<div v-if="resolvedProps.showTodayButton" class="base-calendar__footer" :class="classes.footer">
 			<BaseButton
 				variant="ghost"
-				:size-scale="calcIconScale('md', sizeScale)"
-				:is-disabled="isDisabled"
+				:size-scale="calcIconScale('md', resolvedProps.sizeScale)"
+				:is-disabled="resolvedProps.isDisabled"
 				@click="handleTodayClick">
-				<BaseText tag="span" :size-scale="sizeScale">Сегодня</BaseText>
+				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">Сегодня</BaseText>
 			</BaseButton>
 		</div>
 	</BaseCard>
@@ -226,44 +226,73 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { computed, ref, watch } from 'vue'
+import { formatPopoverDate } from '@utils/dateUtils'
+import { computed, getCurrentInstance, ref, watch } from 'vue'
 import './BaseCalendar.style.scss'
 import type { BaseCalendarEmits, BaseCalendarProps } from './BaseCalendar.types'
 
-const props = withDefaults(defineProps<BaseCalendarProps>(), {
-	selectionMode: 'single',
-	variant: 'default',
-	minDate: null,
-	maxDate: null,
-	disabledDates: () => [],
-	disabledWeekdays: () => [],
-	disableFrom: null,
-	disableTo: null,
-	highlights: () => [],
-	events: () => [],
-	weekends: null,
-	firstDayOfWeek: 1,
-	showTime: false,
-	showSeconds: false,
-	is24Hour: true,
-	showWeekNumber: false,
-	locale: 'ru-RU',
-	selectedDates: () => [],
-	showDatePopover: false,
-	sizeScale: 100,
-	isDisabled: false,
-	showNavigation: true,
-	showYear: true,
-	showTodayButton: true,
-	canSwitchView: true,
-})
+const props = defineProps<BaseCalendarProps>()
+const rawProps = getCurrentInstance()?.vnode.props
 
-const { variantClass, variantStyle } = useVariant({ block: 'base-calendar', getVariant: () => props.variant })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
+function toKebabCase(value: string): string {
+	return value.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
+}
+
+function resolveBooleanPropDefault(
+	rawProps: Record<string, unknown> | null | undefined,
+	name: string,
+	value: boolean | undefined,
+	defaultValue: boolean,
+): boolean {
+	const hasProp = Boolean(
+		rawProps &&
+			(Object.prototype.hasOwnProperty.call(rawProps, name) ||
+				Object.prototype.hasOwnProperty.call(rawProps, toKebabCase(name))),
+	)
+
+	return hasProp ? (value ?? defaultValue) : defaultValue
+}
+
+const resolvedProps = computed(() => ({
+	modelValue: props.modelValue ?? null,
+	modelValueEnd: props.modelValueEnd ?? null,
+	selectedDates: props.selectedDates ?? [],
+	selectionMode: props.selectionMode ?? 'single',
+	minDate: props.minDate ?? null,
+	maxDate: props.maxDate ?? null,
+	disabledDates: props.disabledDates ?? [],
+	disabledWeekdays: props.disabledWeekdays ?? [],
+	disableFrom: props.disableFrom ?? null,
+	disableTo: props.disableTo ?? null,
+	highlights: props.highlights ?? [],
+	events: props.events ?? [],
+	weekends: props.weekends ?? null,
+	firstDayOfWeek: props.firstDayOfWeek ?? 1,
+	showTime: props.showTime ?? false,
+	showSeconds: props.showSeconds ?? false,
+	is24Hour: resolveBooleanPropDefault(rawProps, 'is24Hour', props.is24Hour, true),
+	showWeekNumber: props.showWeekNumber ?? false,
+	locale: props.locale ?? 'ru-RU',
+	variant: props.variant ?? 'default',
+	color: props.color,
+	showDatePopover: props.showDatePopover ?? false,
+	sizeScale: props.sizeScale ?? 100,
+	isDisabled: props.isDisabled ?? false,
+	showNavigation: resolveBooleanPropDefault(rawProps, 'showNavigation', props.showNavigation, true),
+	canSwitchView: resolveBooleanPropDefault(rawProps, 'canSwitchView', props.canSwitchView, true),
+	showTodayButton: resolveBooleanPropDefault(rawProps, 'showTodayButton', props.showTodayButton, true),
+	showYear: resolveBooleanPropDefault(rawProps, 'showYear', props.showYear, true),
+	initialMonth: props.initialMonth,
+	initialYear: props.initialYear,
+	customClass: props.customClass,
+}))
+
+const { variantClass, variantStyle } = useVariant({ block: 'base-calendar', getVariant: () => resolvedProps.value.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
+const { customColorStyle } = useCustomColor({ getColor: () => resolvedProps.value.color })
 
 const { classes } = useCustomClass({
-	getClass: () => props.customClass,
+	getClass: () => resolvedProps.value.customClass,
 	elementKeys: [
 		'root',
 		'header',
@@ -284,23 +313,23 @@ const emit = defineEmits<BaseCalendarEmits>()
 const isAm = defineModel<boolean>('isAm', { default: true })
 
 const cal = useCalendar({
-	selectionMode: () => props.selectionMode,
-	modelValue: () => props.modelValue ?? null,
-	modelValueEnd: () => props.modelValueEnd ?? null,
-	selectedDates: () => props.selectedDates,
-	minDate: () => props.minDate ?? null,
-	maxDate: () => props.maxDate ?? null,
-	disabledDates: () => props.disabledDates,
-	disabledWeekdays: () => props.disabledWeekdays,
-	disableFrom: () => props.disableFrom ?? null,
-	disableTo: () => props.disableTo ?? null,
-	highlights: () => props.highlights,
-	weekends: () => props.weekends ?? null,
-	firstDayOfWeek: () => props.firstDayOfWeek,
-	locale: () => props.locale,
-	initialMonth: () => props.initialMonth,
-	initialYear: () => props.initialYear,
-	showYear: () => props.showYear,
+	selectionMode: () => resolvedProps.value.selectionMode,
+	modelValue: () => resolvedProps.value.modelValue,
+	modelValueEnd: () => resolvedProps.value.modelValueEnd,
+	selectedDates: () => resolvedProps.value.selectedDates,
+	minDate: () => resolvedProps.value.minDate,
+	maxDate: () => resolvedProps.value.maxDate,
+	disabledDates: () => resolvedProps.value.disabledDates,
+	disabledWeekdays: () => resolvedProps.value.disabledWeekdays,
+	disableFrom: () => resolvedProps.value.disableFrom,
+	disableTo: () => resolvedProps.value.disableTo,
+	highlights: () => resolvedProps.value.highlights,
+	weekends: () => resolvedProps.value.weekends,
+	firstDayOfWeek: () => resolvedProps.value.firstDayOfWeek,
+	locale: () => resolvedProps.value.locale,
+	initialMonth: () => resolvedProps.value.initialMonth,
+	initialYear: () => resolvedProps.value.initialYear,
+	showYear: () => resolvedProps.value.showYear,
 })
 
 const {
@@ -375,11 +404,11 @@ function from12h(h: number, am: boolean): number {
 const hoursModel = computed({
 	get: (): string => {
 		const h = hours.value
-		return String(props.is24Hour ? h : to12h(h))
+		return String(resolvedProps.value.is24Hour ? h : to12h(h))
 	},
 	set: (val: string): void => {
 		const parsed = parseInt(val, 10) || 0
-		hours.value = props.is24Hour ? parsed : from12h(parsed, isAm.value)
+		hours.value = resolvedProps.value.is24Hour ? parsed : from12h(parsed, isAm.value)
 	},
 })
 
@@ -421,16 +450,6 @@ useClickOutside({
 	isCapture: true,
 })
 
-/** Форматировать дату для popover */
-function formatPopoverDate(date: Date): string {
-	return date.toLocaleDateString(props.locale, {
-		day: 'numeric',
-		month: 'long',
-		year: 'numeric',
-		weekday: 'long',
-	})
-}
-
 /** CSS-классы для ячейки дня */
 function dayClasses(date: Date, isCustomSlot: boolean): Record<string, boolean> {
 	const isCurrent = isCurrentMonth(date)
@@ -450,11 +469,11 @@ function dayClasses(date: Date, isCustomSlot: boolean): Record<string, boolean> 
 
 /** Обработка клика по дню */
 function handleDayClick(date: Date): void {
-	if (isDayDisabled(date) || props.isDisabled) return
+	if (isDayDisabled(date) || resolvedProps.value.isDisabled) return
 
 	emit('date-click', date)
 
-	if (props.showDatePopover || getEvents(date).length > 0) {
+	if (resolvedProps.value.showDatePopover || getEvents(date).length > 0) {
 		popoverDate.value = popoverDate.value && isSameDay(popoverDate.value, date) ? null : date
 		popoverStyle.value = {
 			top: '100%',
@@ -463,12 +482,12 @@ function handleDayClick(date: Date): void {
 		}
 	}
 
-	if (props.selectionMode === 'single') {
+	if (resolvedProps.value.selectionMode === 'single') {
 		handleSingleClick(date)
 		return
 	}
 
-	if (props.selectionMode === 'range') {
+	if (resolvedProps.value.selectionMode === 'range') {
 		handleRangeClick(date)
 		return
 	}
@@ -478,7 +497,7 @@ function handleDayClick(date: Date): void {
 
 /** Выбор одной даты */
 function handleSingleClick(date: Date): void {
-	const result = props.showTime ? buildDateWithTime(date) : date
+	const result = resolvedProps.value.showTime ? buildDateWithTime(date) : date
 	setSingleValue(result)
 	emit('update:modelValue', result)
 }

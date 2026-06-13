@@ -1,4 +1,5 @@
 export * from './assertUtils'
+export * from './clipboardUtils'
 export * from './colorUtils'
 export * from './dateUtils'
 export * from './editorDomInspect'

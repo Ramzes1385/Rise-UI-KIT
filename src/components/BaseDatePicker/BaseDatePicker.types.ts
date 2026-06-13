@@ -1,19 +1,14 @@
-import type {
-	CalendarHighlight,
-	CalendarSelectionMode,
-	CalendarVariant,
-	CalendarWeekday,
-	CalendarWeekends,
-} from '@components/BaseCalendar'
+import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { InputVariant } from '@components/BaseInput'
 import type { CustomClassProp } from '@composables/useCustomClass'
 import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseDatePickerCalendarProps } from './model/BaseDatePickerCalendar.types'
 import type { DateFormat } from '@utils/dateUtils'
 
 /**
  * Пропсы компонента BaseDatePicker
  */
-export interface BaseDatePickerProps {
+export interface BaseDatePickerProps extends BaseDatePickerCalendarProps {
 	/** Выбранная дата */
 	modelValue?: Date | null
 	/** Конец диапазона (для range) */
@@ -30,6 +25,8 @@ export interface BaseDatePickerProps {
 	inputVariant?: InputVariant
 	/** Вариант отображения календаря */
 	calendarVariant?: CalendarVariant
+	/** Общая конфигурация календаря */
+	calendarConfig?: BaseDatePickerCalendarProps
 	/** Кастомный цвет */
 	color?: CustomColor
 	/** Масштаб размера */
@@ -46,34 +43,6 @@ export interface BaseDatePickerProps {
 	isRequired?: boolean
 	/** Показывать кнопку очистки */
 	isClearable?: boolean
-	/** Минимальная дата */
-	minDate?: Date | null
-	/** Максимальная дата */
-	maxDate?: Date | null
-	/** Выключенные даты */
-	disabledDates?: Date[]
-	/** Выключенные дни недели */
-	disabledWeekdays?: CalendarWeekday[]
-	/** Выключить даты начиная с */
-	disableFrom?: Date | null
-	/** Выключить даты до */
-	disableTo?: Date | null
-	/** Выделенные даты */
-	highlights?: CalendarHighlight[]
-	/** Конфигурация выходных */
-	weekends?: CalendarWeekends | null
-	/** Первый день недели */
-	firstDayOfWeek?: CalendarWeekday
-	/** Локаль */
-	locale?: string
-	/** Показывать время */
-	showTime?: boolean
-	/** Показывать секунды */
-	showSeconds?: boolean
-	/** Формат 24ч */
-	is24Hour?: boolean
-	/** Показывать номер недели */
-	showWeekNumber?: boolean
 	/** Закрытие по клику вне */
 	closeOnClickOutside?: boolean
 	/** Закрытие по Escape */

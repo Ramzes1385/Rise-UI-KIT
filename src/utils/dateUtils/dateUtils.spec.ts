@@ -11,7 +11,9 @@ import {
 	buildDateWithTime,
 	daysInMonth,
 	formatDate,
+	formatDatePickerValue,
 	formatMultiple,
+	formatPopoverDate,
 	formatRange,
 	getWeekday,
 	getWeekNumber,
@@ -319,6 +321,78 @@ describe('dateUtils', () => {
 			const dates = [new Date(2025, 5, 10), new Date(2025, 5, 11), new Date(2025, 5, 12), new Date(2025, 5, 13)]
 			const result = formatMultiple({ ...base, dates })
 			expect(result).toContain('4')
+		})
+	})
+
+	// ── formatDatePickerValue ──
+
+	describe('formatDatePickerValue', () => {
+		const base = {
+			dateFormat: 'dd.MM.yyyy' as const,
+			is24Hour: true,
+			locale: 'ru-RU',
+			showSeconds: false,
+			showTime: false,
+		}
+
+		it('форматирует single значение', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'single',
+				date: new Date(2025, 5, 10),
+				endDate: null,
+				dates: [],
+			})
+
+			expect(result).toContain('2025')
+		})
+
+		it('возвращает пустую строку для single без даты', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'single',
+				date: null,
+				endDate: null,
+				dates: [],
+			})
+
+			expect(result).toBe('')
+		})
+
+		it('форматирует range значение', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'range',
+				date: new Date(2025, 5, 10),
+				endDate: new Date(2025, 5, 15),
+				dates: [],
+			})
+
+			expect(result).toContain('—')
+		})
+
+		it('форматирует multiple значение', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'multiple',
+				date: null,
+				endDate: null,
+				dates: [new Date(2025, 5, 10), new Date(2025, 5, 11)],
+			})
+
+			expect(result).toContain(',')
+		})
+	})
+
+	// ── formatPopoverDate ──
+
+	describe('formatPopoverDate', () => {
+		it('форматирует дату с днём недели, месяцем и годом', () => {
+			const result = formatPopoverDate({ date: new Date(2025, 5, 10), locale: 'ru-RU' })
+
+			expect(result).toContain('вторник')
+			expect(result).toContain('июня')
+			expect(result).toContain('2025')
 		})
 	})
 })

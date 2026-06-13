@@ -18,9 +18,9 @@ import BaseImage from '@components/BaseImage/BaseImage.vue'
 import BaseProgress from '@components/BaseProgress/BaseProgress.vue'
 import BaseSwitch from '@components/BaseSwitch/BaseSwitch.vue'
 import BaseText from '@components/BaseText/BaseText.vue'
-import type { TableColumn, TableRow } from './BaseTable.types'
-import { TABLE_VARIANTS } from './BaseTable.types'
-import BaseTable from './BaseTable.vue'
+import type { TableColumn, TableRow } from '../model/BaseTable.types'
+import { TABLE_VARIANTS } from '../model/BaseTable.types'
+import BaseTable from '../BaseTable.vue'
 
 const COLUMNS: TableColumn[] = [
 	{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
@@ -346,6 +346,26 @@ export const Extended: Story = {
 }
 /** Полный набор: фильтры + пагинация + выбор + поиск */
 export const FullToolbar: Story = {
+	parameters: {
+		docs: {
+			source: {
+				code: `<BaseTable
+	:columns="columns"
+	:rows="rows"
+	has-search
+	:has-filters="true"
+	:is-selectable="true"
+	:has-column-settings="true"
+	:has-row-number="true"
+	:has-page-size-selector="true"
+	:page-size="5"
+	:page-size-options="[3, 5, 8]"
+	load-mode="pagination"
+	variant="bordered"
+/>`,
+			},
+		},
+	},
 	args: {
 		columns: EXTENDED_COLUMNS,
 		rows: EXTENDED_ROWS,
@@ -360,6 +380,46 @@ export const FullToolbar: Story = {
 		loadMode: 'pagination',
 		variant: 'bordered',
 	},
+}
+/** С toolbar slots */
+export const WithToolbarSlots: Story = {
+	args: {
+		columns: EXTENDED_COLUMNS,
+		rows: EXTENDED_ROWS,
+		hasSearch: true,
+		hasFilters: true,
+		hasColumnSettings: true,
+	},
+	parameters: {
+		docs: {
+			source: {
+				code: `<BaseTable :columns="columns" :rows="rows" has-search :has-filters="true" :has-column-settings="true">
+	<template #toolbar-prepend>
+		<BaseText tag="span">Быстрые действия</BaseText>
+	</template>
+	<template #toolbar-append>
+		<BaseButton variant="ghost">Экспорт</BaseButton>
+	</template>
+</BaseTable>`,
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseButton, BaseTable, BaseText },
+		setup() {
+			return { args }
+		},
+		template: `
+			<BaseTable v-bind="args">
+				<template #toolbar-prepend>
+					<BaseText tag="span" style="font-size:12px;color:var(--color-text-muted);">Быстрые действия</BaseText>
+				</template>
+				<template #toolbar-append>
+					<BaseButton variant="ghost" :size-scale="90">Экспорт</BaseButton>
+				</template>
+			</BaseTable>
+		`,
+	}),
 }
 /** С пагинацией (BasePagination) */
 export const WithPagination: Story = {

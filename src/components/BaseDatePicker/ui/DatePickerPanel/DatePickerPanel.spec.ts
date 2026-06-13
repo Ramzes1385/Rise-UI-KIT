@@ -18,7 +18,7 @@ const GLOBAL_STUBS = {
 	},
 	BaseCalendar: {
 		template: `
-			<div class="base-calendar" :data-month="initialMonth" :data-year="initialYear">
+			<div class="base-calendar" :data-month="initialMonth" :data-year="initialYear" :data-locale="locale">
 				<button class="emit-model-value" @click="$emit('update:modelValue', new Date())" />
 				<button class="emit-model-end" @click="$emit('update:modelValueEnd', new Date())" />
 				<button class="emit-selected" @click="$emit('update:selectedDates', [])" />
@@ -149,6 +149,43 @@ describe('DatePickerPanel', () => {
 			})
 
 			expect(container.querySelectorAll('.base-button')).toHaveLength(4)
+		})
+
+		it('использует calendarConfig как единый источник календарных пропсов', () => {
+			const { container } = render(DatePickerPanel, {
+				props: {
+					...DEFAULT_PROPS,
+					locale: 'ru-RU',
+					calendarConfig: {
+						minDate: null,
+						maxDate: null,
+						disabledDates: [],
+						disabledWeekdays: [],
+						disableFrom: null,
+						disableTo: null,
+						highlights: [],
+						weekends: null,
+						firstDayOfWeek: 1,
+						locale: 'en-US',
+						showTime: false,
+						showSeconds: false,
+						is24Hour: true,
+						showWeekNumber: false,
+					},
+				},
+				global: { stubs: STUBS },
+			})
+
+			expect(container.querySelector('.base-calendar')).toHaveAttribute('data-locale', 'en-US')
+		})
+
+		it('рендерит range-режим через DatePickerRangePanel', () => {
+			const { container } = render(DatePickerPanel, {
+				props: { ...DEFAULT_PROPS, selectionMode: 'range' },
+				global: { stubs: STUBS },
+			})
+
+			expect(container.querySelector('.base-calendar')).toBeInTheDocument()
 		})
 	})
 

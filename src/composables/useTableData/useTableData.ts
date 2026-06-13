@@ -1,21 +1,18 @@
-import { computed, getCurrentInstance, onBeforeUnmount, ref, type Ref, watch } from 'vue'
+import { computed, watch } from 'vue'
+import type { Ref } from 'vue'
 
-import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
+import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+import { useTableFilter } from '@composables/useTableFilter'
+import { useTablePagination } from '@composables/useTablePagination'
+import { useTableSearch } from '@composables/useTableSearch'
+import { useTableSort } from '@composables/useTableSort'
 
-import type {
-	ColumnFilter,
-	SortDirection,
-	SortState,
-	TableColumn,
-	TableRow,
-} from '@components/BaseTable/BaseTable.types'
-import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
-
-import type { UseTableDataOptions } from './useTableData.types'
+import type { UseTableDataOptions, UseTableDataReturn } from './useTableData.types'
 
 /**
  * Composable для сортировки, фильтрации, пагинации и поиска таблицы.
- * Вынесено из BaseTable — God-компонент на 800+ строк.
+ * Является фасадом над специализированными composables:
+ * useTableSearch, useTableFilter, useTableSort, useTablePagination, useTableSelection.
  *
  * @example
  * ```ts
@@ -24,10 +21,10 @@ import type { UseTableDataOptions } from './useTableData.types'
  *   processedRows, displayedRows, currentPage, totalPages, visiblePages,
  *   getSortDirection, handleSort, handleSearchInput, addFilter, removeFilter,
  * } = useTableData({
- *   rows: toRef(props, 'rows'),
+ *   rows: computed(() => props.rows),
  *   columns: localColumns,
  *   loadMode: () => props.loadMode,
- *   pageSize: toRef(props, 'pageSize'),
+ *   pageSize: computed(() => props.pageSize),
  *   isMultiSort: () => props.isMultiSort,
  *   searchDebounce: () => props.searchDebounce,
  *   onSearch: (q) => emit('search', q),
@@ -36,10 +33,7 @@ import type { UseTableDataOptions } from './useTableData.types'
  * })
  * ```
  */
-/** Размер страницы по умолчанию для режимов button/infinite */
-const DEFAULT_PAGE_SIZE = 5
-
-function useTableData(options: UseTableDataOptions) {
+function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 	const {
 		rows,
 		columns,
@@ -53,12 +47,17 @@ function useTableData(options: UseTableDataOptions) {
 		onPageSizeChange,
 	} = options
 
-	const searchQuery = ref('')
-	const searchTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
-	const sortStates = ref<SortState[]>([])
-	const activeFilters = ref<ColumnFilter[]>([])
-	const currentPage = ref(1)
-	const localPageSize = ref(pageSize.value)
+	const { searchQuery, handleSearchInput } = useTableSearch({ searchDebounce, onSearch })
+
+	const { activeFilters, addFilter: baseAddFilter, removeFilter: baseRemoveFilter, getFilterLabel } = useTableFilter({
+		columns,
+		onFilter,
+	})
+
+	const { sortStates, getSortDirection, getSortIndex, handleSort } = useTableSort({
+		isMultiSort,
+		onSort,
+	})
 
 	// ============================================================
 	// Обработка данных: поиск + фильтры + сортировка
@@ -111,7 +110,7 @@ function useTableData(options: UseTableDataOptions) {
 				for (const sort of sortStates.value) {
 					if (!sort.direction) continue
 
-					const col = columns.value.find(c => c.key === sort.key)
+					const col = columns.value.find((c: TableColumn) => c.key === sort.key)
 					const dir = sort.direction === 'asc' ? 1 : -1
 					const aVal = a.data[sort.key]
 					const bVal = b.data[sort.key]
@@ -131,219 +130,49 @@ function useTableData(options: UseTableDataOptions) {
 		return result
 	})
 
-	// ============================================================
-	// Пагинация
-	// ============================================================
-
-	/** Эффективный размер страницы (с учётом default) */
-	const effectivePageSize = computed((): number => {
-		return localPageSize.value || DEFAULT_PAGE_SIZE
+	const {
+		currentPage,
+		localPageSize,
+		displayedRows,
+		totalPages,
+		visiblePages,
+		hasMoreRows,
+		loadMore,
+		resetPage,
+		handlePageSizeChange,
+	} = useTablePagination({
+		processedRows,
+		loadMode,
+		pageSize,
+		onPageSizeChange,
 	})
 
-	/** Количество загруженных строк для button/infinite режимов */
-	const loadedCount = ref(effectivePageSize.value)
-
-	/** Сброс счётчика при изменении исходных данных */
-	watch(
-		() => rows.value.length,
-		() => {
-			loadedCount.value = effectivePageSize.value
-		},
-	)
-
-	/** Отображаемые строки (с учётом пагинации) */
-	const displayedRows = computed((): TableRow[] => {
-		const mode = loadMode()
-		if (mode === 'pagination') {
-			if (!localPageSize.value) return processedRows.value
-			const start = (currentPage.value - 1) * localPageSize.value
-			return processedRows.value.slice(start, start + localPageSize.value)
-		}
-		if (mode === 'button' || mode === 'infinite') {
-			return processedRows.value.slice(0, loadedCount.value)
-		}
-		return processedRows.value
-	})
-
-	/** Есть ли ещё данные для подгрузки */
-	const hasMoreRows = computed((): boolean => {
-		const mode = loadMode()
-		if (mode === 'button' || mode === 'infinite') {
-			return loadedCount.value < processedRows.value.length
-		}
-		return false
-	})
-
-	/** Подгрузить ещё данные */
-	function loadMore(): void {
-		loadedCount.value += effectivePageSize.value
-	}
-
-	/** Общее количество страниц */
-	const totalPages = computed((): number => {
-		return calcTotalPages(processedRows.value.length, localPageSize.value)
-	})
-
-	/** Видимые номера страниц */
-	const visiblePages = computed((): VisiblePageItem[] => {
-		return calcVisiblePages({ current: currentPage.value, total: totalPages.value })
-	})
-
-	/** Все ли выбраны */
-	const isAllSelected = computed((): boolean => {
-		const selectable = processedRows.value.filter(r => !r.isDisabled)
-		return selectable.length > 0 && selectable.every(r => r.isSelected)
-	})
-
-	// ============================================================
-	// Сортировка
-	// ============================================================
-
-	/** Получить направление сортировки для колонки */
-	function getSortDirection(key: string): SortDirection {
-		const state = sortStates.value.find(s => s.key === key)
-		return state ? state.direction : null
-	}
-
-	/** Получить индекс сортировки (для мульти-сортировки) */
-	function getSortIndex(key: string): number {
-		if (!isMultiSort() || sortStates.value.length <= 1) return 0
-		const index = sortStates.value.findIndex(s => s.key === key)
-		return index >= 0 ? index + 1 : 0
-	}
-
-	/** Обработка сортировки */
-	function handleSort(col: TableColumn): void {
-		if (!col.isSortable) return
-
-		const existingIndex = sortStates.value.findIndex(s => s.key === col.key)
-		let nextDirection: SortDirection = 'asc'
-
-		if (existingIndex >= 0) {
-			const currentDir = sortStates.value[existingIndex].direction
-			nextDirection = currentDir === 'asc' ? 'desc' : currentDir === 'desc' ? null : 'asc'
-		}
-
-		if (isMultiSort()) {
-			if (nextDirection === null) {
-				sortStates.value = sortStates.value.filter(s => s.key !== col.key)
-			} else if (existingIndex >= 0) {
-				sortStates.value[existingIndex].direction = nextDirection
-			} else {
-				sortStates.value.push({ key: col.key, direction: nextDirection })
-			}
-		} else {
-			if (nextDirection === null) {
-				sortStates.value = []
-			} else {
-				sortStates.value = [{ key: col.key, direction: nextDirection }]
-			}
-		}
-
-		if (onSort) onSort(sortStates.value)
-	}
-
-	// ============================================================
-	// Поиск
-	// ============================================================
-
-	/** Ввод поиска с дебаунсом */
-	function handleSearchInput(value: string): void {
-		searchQuery.value = value
-
-		if (searchTimeout.value) {
-			clearTimeout(searchTimeout.value)
-		}
-
-		searchTimeout.value = setTimeout(() => {
-			currentPage.value = 1
-			if (onSearch) onSearch(searchQuery.value)
-		}, searchDebounce())
-	}
-
-	// ============================================================
-	// Фильтры
-	// ============================================================
-
-	/** Добавить фильтр */
 	function addFilter(
 		filterColumn: Ref<string | number>,
 		filterOperator: Ref<string | number>,
 		filterValue: Ref<string>,
 	): void {
-		if (!filterColumn.value || !filterValue.value) return
-		activeFilters.value.push({
-			key: String(filterColumn.value),
-			operator: String(filterOperator.value) as ColumnFilter['operator'],
-			value: filterValue.value,
-		})
-		filterValue.value = ''
-		currentPage.value = 1
-		if (onFilter) onFilter(activeFilters.value)
+		baseAddFilter(filterColumn, filterOperator, filterValue)
+		resetPage()
 	}
 
-	/** Удалить фильтр */
 	function removeFilter(index: number): void {
-		activeFilters.value.splice(index, 1)
-		if (onFilter) onFilter(activeFilters.value)
+		baseRemoveFilter(index)
+		resetPage()
 	}
 
-	/** Метка фильтра */
-	function getFilterLabel(f: ColumnFilter): string {
-		const col = columns.value.find(c => c.key === f.key)
-		const ops: Record<string, string> = {
-			eq: '=',
-			ne: '≠',
-			contains: '∋',
-			gt: '>',
-			lt: '<',
-			gte: '≥',
-			lte: '≤',
-		}
-		return `${col?.label || f.key} ${ops[f.operator] || f.operator} ${f.value}`
+	// Сброс страницы при поиске требует resetPage из pagination
+	function handleSearchInputWithReset(value: string): void {
+		handleSearchInput(value, resetPage)
 	}
 
-	// ============================================================
-	// Размер страницы
-	// ============================================================
-
-	/** Обработчик изменения размера страницы */
-	function handlePageSizeChange(value: string | number | (string | number)[]): void {
-		const newSize = Number(Array.isArray(value) ? value[0] : value)
-		if (newSize !== localPageSize.value) {
-			localPageSize.value = newSize
-			currentPage.value = 1
-			loadedCount.value = newSize || DEFAULT_PAGE_SIZE
-			if (onPageSizeChange) onPageSizeChange(newSize)
-		}
-	}
-
-	/** Сброс страницы и счётчика подгрузки */
-	function resetPage(): void {
-		if (loadMode() === 'pagination') {
-			currentPage.value = 1
-		} else {
-			loadedCount.value = effectivePageSize.value
-		}
-	}
-
-	// ============================================================
-	// Синхронизация и очистка
-	// ============================================================
-
-	/** Синхронизация localPageSize с пропсом */
-	watch(pageSize, newSize => {
-		localPageSize.value = newSize
-	})
-
-	/** Очистка таймаутов */
-	if (getCurrentInstance()) {
-		onBeforeUnmount(() => {
-			if (searchTimeout.value) {
-				clearTimeout(searchTimeout.value)
-			}
-		})
-	}
+	/** Сброс страницы при изменении данных */
+	watch(
+		() => rows.value,
+		() => {
+			resetPage()
+		},
+	)
 
 	return {
 		searchQuery,
@@ -355,12 +184,11 @@ function useTableData(options: UseTableDataOptions) {
 		displayedRows,
 		totalPages,
 		visiblePages,
-		isAllSelected,
 		hasMoreRows,
 		getSortDirection,
 		getSortIndex,
 		handleSort,
-		handleSearchInput,
+		handleSearchInput: handleSearchInputWithReset,
 		addFilter,
 		removeFilter,
 		getFilterLabel,

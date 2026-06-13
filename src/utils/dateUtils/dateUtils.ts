@@ -89,6 +89,28 @@ export interface FormatMultipleOptions {
 	locale: string
 }
 
+/** Режим выбора значения date picker */
+export type DatePickerSelectionMode = 'single' | 'range' | 'multiple'
+
+/** Параметры форматирования значения date picker */
+export interface FormatDatePickerValueOptions {
+	selectionMode: DatePickerSelectionMode
+	date: Date | null
+	endDate: Date | null
+	dates: Date[]
+	dateFormat: DateFormat
+	showTime: boolean
+	showSeconds: boolean
+	is24Hour: boolean
+	locale: string
+}
+
+/** Параметры форматирования даты для popover календаря */
+export interface FormatPopoverDateOptions {
+	date: Date
+	locale: string
+}
+
 /** Форматировать одну дату в строку */
 function formatDate(options: FormatDateOptions): string {
 	const { date, showTime, showSeconds, is24Hour, locale } = options
@@ -139,11 +161,49 @@ function formatMultiple(options: FormatMultipleOptions): string {
 	return `Выбрано: ${dates.length} дат`
 }
 
+/** Форматировать значение date picker с учётом режима выбора */
+function formatDatePickerValue(options: FormatDatePickerValueOptions): string {
+	const baseOpts = {
+		dateFormat: options.dateFormat,
+		showTime: options.showTime,
+		showSeconds: options.showSeconds,
+		is24Hour: options.is24Hour,
+		locale: options.locale,
+	}
+
+	if (options.selectionMode === 'range') {
+		return formatRange({
+			...baseOpts,
+			start: options.date,
+			end: options.endDate,
+		})
+	}
+
+	if (options.selectionMode === 'multiple') {
+		return formatMultiple({ ...baseOpts, dates: options.dates })
+	}
+
+	if (!options.date) return ''
+	return formatDate({ ...baseOpts, date: options.date })
+}
+
+/** Форматировать дату для popover календаря */
+function formatPopoverDate(options: FormatPopoverDateOptions): string {
+	return options.date.toLocaleDateString(options.locale, {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+		weekday: 'long',
+	})
+}
+
 export {
 	buildDateWithTime,
 	daysInMonth,
 	formatDate,
+	formatDatePickerValue,
 	formatMultiple,
+	formatPopoverDate,
 	formatRange,
 	getWeekday,
 	getWeekNumber,

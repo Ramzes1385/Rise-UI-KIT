@@ -289,7 +289,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { getExtension } from '@utils/fileUtils'
+import { getFileIconName } from '@utils/fileUtils'
 import { computed, ref } from 'vue'
 import type { ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
 import './ChatSlideover.style.scss'
@@ -479,48 +479,5 @@ function handleBan(memberId: string): void {
 
 function openLink(url: string): void {
 	window.open(url, '_blank', 'noopener,noreferrer')
-}
-
-/** Получение имени SVG-иконки по расширению файла */
-function getFileIconName(filename: string): string {
-	const ext = getExtension(filename).toLowerCase()
-	const knownExtensions: Record<string, string> = {
-		png: 'file-img',
-		jpg: 'file-img',
-		jpeg: 'file-img',
-		gif: 'file-img',
-		webp: 'file-img',
-		svg: 'file-svg',
-		js: 'file-js',
-		ts: 'file-ts',
-		vue: 'file-vue',
-		scss: 'file-scss',
-		css: 'file-css',
-		html: 'file-html',
-		json: 'file-json',
-		md: 'file-md',
-		txt: 'file-txt',
-		xml: 'file-xml',
-		yaml: 'file-yaml',
-		yml: 'file-yaml',
-		sh: 'file-sh',
-		py: 'file-py',
-		sql: 'file-sql',
-		pdf: 'file-txt',
-		doc: 'file-txt',
-		docx: 'file-txt',
-		xls: 'file-txt',
-		xlsx: 'file-txt',
-		ppt: 'file-txt',
-		pptx: 'file-txt',
-		mp3: 'file-config',
-		wav: 'file-config',
-		mp4: 'file-config',
-		mkv: 'file-config',
-		zip: 'file-lock',
-		rar: 'file-lock',
-		'7z': 'file-lock',
-	}
-	return knownExtensions[ext] || 'file-config'
 }
 </script>

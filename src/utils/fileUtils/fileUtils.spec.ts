@@ -12,6 +12,7 @@ import {
 	formatFileSize,
 	getExtension,
 	getFileIcon,
+	getFileIconName,
 	validateFile,
 } from './fileUtils'
 
@@ -77,6 +78,32 @@ describe('fileUtils', () => {
 
 		it('возвращает скрепку для неизвестного расширения', () => {
 			expect(getFileIcon('xyz')).toBe('📎')
+		})
+	})
+
+	describe('getFileIconName', () => {
+		it('возвращает иконку изображения для PNG', () => {
+			expect(getFileIconName('photo.PNG')).toBe('file-img')
+		})
+
+		it('возвращает иконку TypeScript для ts', () => {
+			expect(getFileIconName('script.ts')).toBe('file-ts')
+		})
+
+		it('возвращает иконку Vue для vue', () => {
+			expect(getFileIconName('Component.vue')).toBe('file-vue')
+		})
+
+		it('возвращает иконку архива для zip', () => {
+			expect(getFileIconName('archive.zip')).toBe('file-lock')
+		})
+
+		it('возвращает иконку по умолчанию для неизвестного расширения', () => {
+			expect(getFileIconName('unknown.xyz')).toBe('file-config')
+		})
+
+		it('возвращает иконку по умолчанию для файла без расширения', () => {
+			expect(getFileIconName('README')).toBe('file-config')
 		})
 	})
 
