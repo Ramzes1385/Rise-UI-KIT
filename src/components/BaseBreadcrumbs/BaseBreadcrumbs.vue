@@ -189,17 +189,17 @@ import { computed, ref } from 'vue'
 import './BaseBreadcrumbs.style.scss'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BreadcrumbItem } from './BaseBreadcrumbs.types'
 
-const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
-	separator: 'chevron',
-	variant: 'default',
-	maxItems: 0,
-	showHome: false,
-	homeIcon: 'home',
-	sizeScale: 100,
-})
+const props = defineProps<BaseBreadcrumbsProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-breadcrumbs', getVariant: () => props.variant })
+const separator = computed(() => props.separator ?? 'chevron')
+const variant = computed(() => props.variant ?? 'default')
+const maxItems = computed(() => props.maxItems ?? 0)
+const showHome = computed(() => props.showHome ?? false)
+const homeIcon = computed(() => props.homeIcon ?? 'home')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-breadcrumbs', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const { classes } = useCustomClass({
@@ -228,16 +228,16 @@ const isExpanded = ref(false)
 
 /** Видимые элементы с учётом maxItems */
 const visibleItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return props.items
-	if (props.items.length <= props.maxItems) return props.items
-	return props.items.slice(-props.maxItems)
+	if (maxItems.value <= 0 || isExpanded.value) return props.items
+	if (props.items.length <= maxItems.value) return props.items
+	return props.items.slice(-maxItems.value)
 })
 
 /** Скрытые элементы */
 const collapsedItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return []
-	if (props.items.length <= props.maxItems) return []
-	return props.items.slice(0, -props.maxItems)
+	if (maxItems.value <= 0 || isExpanded.value) return []
+	if (props.items.length <= maxItems.value) return []
+	return props.items.slice(0, -maxItems.value)
 })
 
 /** Schema.org JSON-LD для SEO */

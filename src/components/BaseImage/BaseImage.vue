@@ -186,28 +186,38 @@ import { useImageZoom } from '@composables/useImageZoom'
 import { useSizeScale } from '@composables/useSizeScale'
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '@utils/imageUtils'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import type { PropType } from 'vue'
 import BaseButton from '../BaseButton/BaseButton.vue'
 import BaseIcon from '../BaseIcon/BaseIcon.vue'
 import BaseText from '../BaseText/BaseText.vue'
 import './BaseImage.style.scss'
 import type { BaseImageEmits, BaseImageProps } from './BaseImage.types'
 
-const props = withDefaults(defineProps<BaseImageProps>(), {
-	fit: 'cover',
-	loading: 'lazy',
-	borderRadius: 12,
-	hasPlaceholder: true,
-	srcWidth: undefined,
-	hasZoom: false,
-	closeOnOverlay: true,
-	initialScale: 1,
-	zoomStep: 0.25,
-	minScale: 0.5,
-	maxScale: 5,
-	showMinimap: true,
-	convertToWebp: false,
-	sizeScale: 100,
-	timeout: 5000, // 5 секунд по умолчанию
+const props = defineProps({
+	src: { type: String, required: true },
+	alt: { type: String, required: true },
+	fallbackSrc: String,
+	timeout: { type: Number, default: 5000 },
+	width: [Number, String] as PropType<BaseImageProps['width']>,
+	height: [Number, String] as PropType<BaseImageProps['height']>,
+	fit: { type: String as PropType<BaseImageProps['fit']>, default: 'cover' },
+	color: Object as PropType<BaseImageProps['color']>,
+	loading: { type: String as PropType<BaseImageProps['loading']>, default: 'lazy' },
+	borderRadius: { type: Number, default: 12 },
+	hasPlaceholder: { type: Boolean, default: true },
+	aspectRatio: String,
+	srcWidth: Number,
+	hasZoom: { type: Boolean, default: false },
+	closeOnOverlay: { type: Boolean, default: true },
+	initialScale: { type: Number, default: 1 },
+	zoomStep: { type: Number, default: 0.25 },
+	minScale: { type: Number, default: 0.5 },
+	maxScale: { type: Number, default: 5 },
+	showMinimap: { type: Boolean, default: true },
+	convertToWebp: { type: Boolean, default: false },
+	gallery: Array as PropType<BaseImageProps['gallery']>,
+	sizeScale: { type: Number, default: 100 },
+	customClass: [String, Object] as PropType<BaseImageProps['customClass']>,
 })
 
 const { classes } = useCustomClass({

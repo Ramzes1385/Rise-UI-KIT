@@ -69,6 +69,19 @@ describe('BaseSlider unit', () => {
 
 			expect(container.querySelector('.base-slider__arrows')).not.toBeInTheDocument()
 		})
+
+		it('должен вернуть стрелки после сброса hasArrows=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSlider, {
+				props: { items: ITEMS, hasArrows: false },
+			})
+
+			expect(wrapper.find('.base-slider__arrows').exists()).toBe(false)
+
+			await wrapper.setProps({ hasArrows: undefined })
+
+			expect(wrapper.find('.base-slider__arrows').exists()).toBe(true)
+		})
 	})
 
 	describe('пропс navigation', () => {

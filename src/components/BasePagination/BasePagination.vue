@@ -45,18 +45,29 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import { computed } from 'vue'
+import type { PropType } from 'vue'
 import './BasePagination.style.scss'
 import type { BasePaginationEmits, BasePaginationProps } from './BasePagination.types'
 
-const props = withDefaults(defineProps<BasePaginationProps>(), {
-	pageSize: 10,
-	maxVisible: 7,
-	showLastPage: true,
-	variant: 'default',
-	sizeScale: 100,
+const props = defineProps({
+	modelValue: { type: Number, required: true },
+	total: { type: Number, required: true },
+	pageSize: { type: Number, default: 10 },
+	maxVisible: { type: Number, default: 7 },
+	showLastPage: { type: Boolean, default: true },
+	variant: { type: String as PropType<BasePaginationProps['variant']>, default: 'default' },
+	color: Object as PropType<BasePaginationProps['color']>,
+	sizeScale: { type: Number, default: 100 },
+	customClass: [String, Object] as PropType<BasePaginationProps['customClass']>,
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const pageSize = computed(() => props.pageSize ?? 10)
+const maxVisible = computed(() => props.maxVisible ?? 7)
+const showLastPage = computed(() => props.showLastPage)
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -65,14 +76,14 @@ const { classes } = useCustomClass({
 
 const emit = defineEmits<BasePaginationEmits>()
 
-const totalPages = computed(() => calcTotalPages(props.total, props.pageSize))
+const totalPages = computed(() => calcTotalPages(props.total, pageSize.value))
 
 const pages = computed(() =>
 	calcVisiblePages({
 		current: props.modelValue,
 		total: totalPages.value,
-		maxVisible: props.maxVisible,
-		showLastPage: props.showLastPage,
+		maxVisible: maxVisible.value,
+		showLastPage: showLastPage.value,
 	}),
 )
 

@@ -354,15 +354,18 @@ import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { onMounted, ref, watch } from 'vue'
+import type { PropType } from 'vue'
 
-const props = withDefaults(defineProps<BaseEditorProps>(), {
-	modelValue: '',
-	placeholder: '',
-	isReadonly: false,
-	variant: 'default',
-	hasToolbar: true,
-	isAutofocus: false,
-	sizeScale: 100,
+const props = defineProps({
+	customClass: [String, Object] as PropType<BaseEditorProps['customClass']>,
+	modelValue: { type: String, default: '' },
+	placeholder: { type: String, default: '' },
+	isReadonly: { type: Boolean, default: false },
+	variant: { type: String as PropType<BaseEditorProps['variant']>, default: 'default' },
+	color: Object as PropType<BaseEditorProps['color']>,
+	hasToolbar: { type: Boolean, default: true },
+	isAutofocus: { type: Boolean, default: false },
+	sizeScale: { type: Number, default: 100 },
 })
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })

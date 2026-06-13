@@ -111,6 +111,25 @@ describe('BaseRating unit', () => {
 	})
 
 	describe('выбор по клику с шагом (isHoverSmooth=false)', () => {
+		it('должен возвращаться к smooth-поведению после сброса isHoverSmooth=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRating, {
+				props: { step: 1, isHoverSmooth: false },
+			})
+
+			let star = wrapper.findAll<HTMLElement>('.base-rating__star')[2].element
+			mockStarRect(star)
+			await fireEvent.mouseMove(star, { clientX: 5 })
+			expect(fillWidth(star)).toBe('100%')
+
+			await wrapper.setProps({ isHoverSmooth: undefined })
+			star = wrapper.findAll<HTMLElement>('.base-rating__star')[2].element
+			mockStarRect(star)
+			await fireEvent.mouseMove(star, { clientX: 5 })
+
+			expect(fillWidth(star)).toBe('25%')
+		})
+
 		it('должен выбирать целое значение при step=1 по клику', async () => {
 			const { container, emitted } = render(BaseRating, { props: { step: 1, isHoverSmooth: false } })
 

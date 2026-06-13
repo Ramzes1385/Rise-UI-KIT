@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { computed, useSlots } from 'vue'
+import type { PropType } from 'vue'
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -61,15 +62,19 @@ import { usePopup } from '@composables/usePopup'
 import './BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps } from './BaseSlideover.types'
 
-const props = withDefaults(defineProps<BaseSlideoverProps>(), {
-	side: 'right',
-	width: 100,
-	isFullWidth: false,
-	closeOnOverlay: true,
-	closeOnEscape: true,
-	isContained: false,
-	hasOverlay: true,
-	padding: 24,
+const props = defineProps({
+	customClass: [String, Object] as PropType<BaseSlideoverProps['customClass']>,
+	isOpen: { type: Boolean, required: true },
+	title: String,
+	side: { type: String as PropType<BaseSlideoverProps['side']>, default: 'right' },
+	width: { type: Number, default: 100 },
+	isFullWidth: { type: Boolean, default: false },
+	closeOnOverlay: { type: Boolean, default: true },
+	closeOnEscape: { type: Boolean, default: true },
+	isContained: { type: Boolean, default: false },
+	container: [String, Object] as PropType<BaseSlideoverProps['container']>,
+	hasOverlay: { type: Boolean, default: true },
+	padding: { type: [Number, Object] as PropType<BaseSlideoverProps['padding']>, default: 24 },
 })
 
 const { classes } = useCustomClass({

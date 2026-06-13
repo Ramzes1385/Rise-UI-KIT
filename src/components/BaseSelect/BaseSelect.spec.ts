@@ -4,7 +4,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 import type { BaseSelectOption } from './BaseSelect.types'
 import BaseSelect from './BaseSelect.vue'
@@ -192,6 +192,7 @@ describe('BaseSelect unit', () => {
 			expect(document.querySelector('.base-select__search')).toBeInTheDocument()
 			expect(document.querySelector('.base-select__search-input')).toBeInTheDocument()
 		})
+
 	})
 
 	describe('пропс sizeScale', () => {
@@ -226,7 +227,7 @@ describe('BaseSelect unit', () => {
 			await new Promise(r => setTimeout(r, 0))
 
 			const option = document.querySelector('.base-select__option') as HTMLElement
-			option.click()
+			await fireEvent.click(option)
 
 			expect(emitted()).toHaveProperty('change')
 		})

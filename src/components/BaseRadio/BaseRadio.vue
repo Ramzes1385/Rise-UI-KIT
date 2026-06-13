@@ -70,19 +70,20 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { computed } from 'vue'
 import './BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps } from './BaseRadio.types'
 
-const props = withDefaults(defineProps<BaseRadioProps>(), {
-	isVertical: false,
-	isRequired: false,
-	variant: 'default',
-	error: '',
-	sizeScale: 100,
-})
+const props = defineProps<BaseRadioProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-radio-group', getVariant: () => props.variant })
+const isVertical = computed(() => props.isVertical ?? false)
+const isRequired = computed(() => props.isRequired ?? false)
+const variant = computed(() => props.variant ?? 'default')
+const error = computed(() => props.error ?? '')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-radio-group', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

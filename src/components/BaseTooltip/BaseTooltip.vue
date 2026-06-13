@@ -33,15 +33,15 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import './BaseTooltip.style.scss'
 import type { BaseTooltipProps } from './BaseTooltip.types'
 
-const props = withDefaults(defineProps<BaseTooltipProps>(), {
-	position: 'top',
-	variant: 'default',
-	isAlwaysVisible: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseTooltipProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-tooltip', getVariant: () => props.variant })
+const position = computed(() => props.position ?? 'top')
+const variant = computed(() => props.variant ?? 'default')
+const isAlwaysVisible = computed(() => props.isAlwaysVisible ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-tooltip', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -58,7 +58,7 @@ let rafId: number | null = null
 const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
 
 /** Имя перехода по позиции */
-const transitionName = computed(() => getTooltipTransition(props.position))
+const transitionName = computed(() => getTooltipTransition(position.value))
 
 /** Обновить координаты триггера */
 function updateCoords(): void {
@@ -91,14 +91,14 @@ function stopUpdateLoop(): void {
 /** Динамические координаты тултипа */
 const tooltipStyle = computed((): Record<string, string> => {
 	return calcTooltipPosition({
-		position: props.position,
+		position: position.value,
 		coords: coords.value,
 		gap: 8,
 	})
 })
 
 function handleEnter(): void {
-	if (props.isAlwaysVisible) return
+	if (isAlwaysVisible.value) return
 
 	/* istanbul ignore if -- hideTimer присутствует только после handleLeave с активным таймером, цепочка тестируется в e2e */
 	if (hideTimer) {
@@ -114,7 +114,7 @@ function handleEnter(): void {
 }
 
 function handleLeave(): void {
-	if (props.isAlwaysVisible) return
+	if (isAlwaysVisible.value) return
 
 	/* istanbul ignore else -- showTimer всегда установлен после handleEnter перед handleLeave */
 	if (showTimer) {
@@ -129,7 +129,7 @@ function handleLeave(): void {
 }
 
 onMounted(() => {
-	if (props.isAlwaysVisible) {
+	if (isAlwaysVisible.value) {
 		updateCoords()
 		isVisible.value = true
 		startUpdateLoop()
@@ -138,7 +138,7 @@ onMounted(() => {
 
 /* istanbul ignore next -- watch isAlwaysVisible: переключение во время жизни компонента покрывается e2e/visual тестами */
 watch(
-	() => props.isAlwaysVisible,
+	() => isAlwaysVisible.value,
 	newVal => {
 		if (newVal) {
 			updateCoords()

@@ -214,6 +214,7 @@ describe('BaseTable unit', () => {
 
 			expect(container.querySelector('.base-table__search')).not.toBeInTheDocument()
 		})
+
 	})
 
 	describe('пропс sizeScale', () => {

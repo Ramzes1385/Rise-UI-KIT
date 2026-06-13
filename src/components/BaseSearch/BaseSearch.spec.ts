@@ -314,6 +314,20 @@ describe('BaseSearch unit', () => {
 			expect(container.querySelector('.base-search__clear')).not.toBeInTheDocument()
 		})
 
+		it('должен вернуть кнопку очистки после сброса hasClear=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, {
+				props: { hasClear: false, modelValue: 'тест' },
+				global: globalConfig,
+			})
+
+			expect(wrapper.find('.base-search__clear').exists()).toBe(false)
+
+			await wrapper.setProps({ hasClear: undefined })
+
+			expect(wrapper.find('.base-search__clear').exists()).toBe(true)
+		})
+
 		it('не должен рендерить кнопку очистки когда запрос пустой', () => {
 			const { container } = render(BaseSearch, {
 				props: { hasClear: true, modelValue: '' },

@@ -160,26 +160,29 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
 import { computed, onBeforeUnmount } from 'vue'
+import type { PropType } from 'vue'
 import './BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps } from './BaseSlider.types'
 
-const props = withDefaults(defineProps<BaseSliderProps>(), {
-	animation: 'slide',
-	navigation: 'dots',
-	isAutoplay: false,
-	autoplayInterval: 4000,
-	hasArrows: true,
-	arrowsPosition: 'center',
-	isLoop: true,
-	isVertical: false,
-	initialIndex: 0,
-	height: '400px',
-	sizeScale: 100,
-	spaceBetween: 0,
-	slidesPerView: 1,
-	slidesPerGroup: 1,
-	hasCaption: true,
-	isZoomable: false,
+const props = defineProps({
+	customClass: [String, Object] as PropType<BaseSliderProps['customClass']>,
+	items: { type: Array as PropType<BaseSliderProps['items']>, required: true },
+	animation: { type: String as PropType<BaseSliderProps['animation']>, default: 'slide' },
+	navigation: { type: String as PropType<BaseSliderProps['navigation']>, default: 'dots' },
+	isAutoplay: { type: Boolean, default: false },
+	autoplayInterval: { type: Number, default: 4000 },
+	hasArrows: { type: Boolean, default: true },
+	arrowsPosition: { type: String as PropType<BaseSliderProps['arrowsPosition']>, default: 'center' },
+	isLoop: { type: Boolean, default: true },
+	isVertical: { type: Boolean, default: false },
+	initialIndex: { type: Number, default: 0 },
+	height: { type: String, default: '400px' },
+	sizeScale: { type: Number, default: 100 },
+	spaceBetween: { type: Number, default: 0 },
+	slidesPerView: { type: Number, default: 1 },
+	slidesPerGroup: { type: Number, default: 1 },
+	hasCaption: { type: Boolean, default: true },
+	isZoomable: { type: Boolean, default: false },
 })
 
 const emit = defineEmits<BaseSliderEmits>()

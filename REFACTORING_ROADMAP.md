@@ -170,6 +170,17 @@
 **Уже сделано:**
 - `BaseDatePicker`, `DatePickerPanel`, `DatePickerField` и `BaseCalendar` переведены на `defineProps<...>()` + `computed` defaults.
 - `ChatInput.vue` переведён на `defineProps<...>()` + локальные `computed` defaults без изменения публичного API.
+- `BaseChat` и вложенные chat-компоненты (`ChatHeader`, `ChatPinnedPanel`, `ChatSelectionToolbar`, `ChatSlideover`, `ChatMessageList`, `ChatMessage`, `ChatMessageContextMenu`) переведены на `defineProps<...>()` + локальные `computed` defaults.
+- Простые базовые компоненты `BaseButton`, `BaseIcon`, `BaseText`, `BaseBadge`, `BaseAvatar`, `BaseCard`, `BaseCheckbox` переведены на `defineProps<...>()` + локальные `computed` defaults.
+- Простые базовые компоненты `BaseChip`, `BaseLoader`, `BaseSkeleton`, `BaseSeparator`, `BaseEmpty`, `BaseForm`, `BaseFormField` переведены на `defineProps<...>()` + локальные `computed` defaults.
+- Компактные базовые компоненты `BaseAlert`, `BaseAccordion`, `BaseAnimation`, `BaseDropdown`, `BaseMenu`, `BasePin`, `BasePopover` переведены на `defineProps<...>()` + локальные `computed` defaults.
+- Базовые компоненты `BaseTooltip`, `BaseTree`, `BaseRating`, `BaseProgress`, `BasePagination` переведены на `defineProps<...>()` + локальные `computed` defaults; boolean-пропсы с default `true` сохраняют поведение `withDefaults`.
+- Form/overlay компоненты `BaseTextarea`, `BaseRadio`, `BaseSwitch`, `BaseSlideover`, `BaseNotification` переведены на `defineProps` defaults без изменения публичного API; для `BaseSlideover.hasOverlay` добавлен regression-тест сброса explicit `false` к default `true`.
+- Navigation/input компоненты `BaseModal`, `BaseBreadcrumbs`, `BaseColorPicker`, `BaseStepper`, `BaseTabs` переведены на `defineProps` defaults без изменения публичного API; для `BaseModal.hasOverlay` добавлен regression-тест сброса explicit `false` к default `true`.
+- Control/media компоненты `BaseInput`, `BaseRange`, `BaseSlider` переведены на `defineProps` defaults без изменения публичного API; для `BaseSlider.hasArrows` добавлен regression-тест сброса explicit `false` к default `true`.
+- Navigation/media компоненты `BaseImage`, `BaseMegaMenu`, `BaseSideBarNavigation` переведены на `defineProps` defaults без изменения публичного API; для `BaseImage.hasPlaceholder` добавлен regression-тест сброса explicit `false` к default `true`.
+- Оставшиеся небольшие компоненты `BaseTour`, `BaseSearch`, `BaseFileUpload` переведены на runtime `defineProps` defaults без изменения публичного API; добавлены regression-тесты для `showSkip`, `hasClear` и `allowPreview` после сброса explicit `false` к default `true`.
+- Тяжёлые компоненты `BaseSelect`, `BaseTable`, `BaseEditor` переведены на `defineProps` defaults без изменения публичного API; для `BaseEditor.hasToolbar` добавлен regression-тест сброса explicit `false` к default `true`.
 
 #### 6. Замена магических чисел и строк на константы
 
@@ -243,6 +254,8 @@
 2. Разделить `useChatState` на `useChatSearch`, `useChatSelection`, `useChatReply`, `useChatInfoPanel`.
    - ✅ `useChatSearch` вынесен в отдельный composable; `useChatState` сохранён как фасад без изменения публичного API.
    - ✅ `useChatSelection` вынесен в отдельный composable; `useChatState` делегирует ему toggle выбранных сообщений и emit `message-select`.
+   - ✅ `useChatInfoPanel` вынесен в отдельный composable; `useChatState` делегирует ему открытие info/profile панели и emit `avatar-click`/`info-click`.
+   - ✅ `useChatReply` вынесен в отдельный composable; `BaseChat` использует обработчики фасада для выбора и сброса reply-сообщения.
 
 ---
 
@@ -308,7 +321,22 @@
 - `src/components/BaseChat/composables/useChatState.ts` — скролл к закреплённому сообщению делегируется callback, DOM остаётся внутри `ChatMessageList`.
 - `src/components/BaseChat/BaseChat.vue` — передаёт в `useChatState` callback на `messageListRef.scrollToMessage`.
 - `src/components/BaseChat/ChatInput/ChatInput.vue` — убран `withDefaults`, defaults перенесены в `computed`, `inputComponentRef` типизирован без `any`, короткие имена `cmd`/`i` заменены на `command`/`index`.
+- `src/components/BaseChat/BaseChat.vue` и вложенные chat-компоненты — убран `withDefaults`, defaults перенесены в локальные `computed` без изменения публичного API.
+- `src/components/BaseButton/BaseButton.vue`, `src/components/BaseIcon/BaseIcon.vue`, `src/components/BaseText/BaseText.vue`, `src/components/BaseBadge/BaseBadge.vue`, `src/components/BaseAvatar/BaseAvatar.vue`, `src/components/BaseCard/BaseCard.vue`, `src/components/BaseCheckbox/BaseCheckbox.vue` — убран `withDefaults`, defaults перенесены в локальные `computed`.
+- `src/components/BaseChip/BaseChip.vue`, `src/components/BaseLoader/BaseLoader.vue`, `src/components/BaseSkeleton/BaseSkeleton.vue`, `src/components/BaseSeparator/BaseSeparator.vue`, `src/components/BaseEmpty/BaseEmpty.vue`, `src/components/BaseForm/BaseForm.vue`, `src/components/BaseFormField/BaseFormField.vue` — убран `withDefaults`, defaults перенесены в локальные `computed`.
+- `src/components/BaseAlert/BaseAlert.vue`, `src/components/BaseAccordion/BaseAccordion.vue`, `src/components/BaseAnimation/BaseAnimation.vue`, `src/components/BaseDropdown/BaseDropdown.vue`, `src/components/BaseMenu/BaseMenu.vue`, `src/components/BasePin/BasePin.vue`, `src/components/BasePopover/BasePopover.vue` — убран `withDefaults`, defaults перенесены в локальные `computed`.
+- `src/components/BaseTooltip/BaseTooltip.vue`, `src/components/BaseTree/BaseTree.vue`, `src/components/BaseRating/BaseRating.vue`, `src/components/BaseProgress/BaseProgress.vue`, `src/components/BasePagination/BasePagination.vue` — убран `withDefaults`, defaults перенесены в локальные `computed`; для boolean defaults `true` учтено отсутствие runtime prop.
+- `src/components/BaseTextarea/BaseTextarea.vue`, `src/components/BaseRadio/BaseRadio.vue`, `src/components/BaseSwitch/BaseSwitch.vue`, `src/components/BaseSlideover/BaseSlideover.vue`, `src/components/BaseNotification/BaseNotification.vue` — убран `withDefaults`, defaults перенесены в локальные `computed` или runtime `defineProps`; `BaseSlideover.spec.ts` покрывает default `hasOverlay` после сброса explicit `false`.
+- `src/components/BaseModal/BaseModal.vue`, `src/components/BaseBreadcrumbs/BaseBreadcrumbs.vue`, `src/components/BaseColorPicker/BaseColorPicker.vue`, `src/components/BaseStepper/BaseStepper.vue`, `src/components/BaseTabs/BaseTabs.vue` — убран `withDefaults`, defaults перенесены в локальные `computed` или runtime `defineProps`; `BaseModal.spec.ts` покрывает default `hasOverlay` после сброса explicit `false`.
+- `src/components/BaseInput/BaseInput.vue`, `src/components/BaseRange/BaseRange.vue`, `src/components/BaseSlider/BaseSlider.vue` — убран `withDefaults`, defaults перенесены в локальные `computed` или runtime `defineProps`; `BaseSlider.spec.ts` покрывает default `hasArrows` после сброса explicit `false`.
+- `src/components/BaseImage/BaseImage.vue`, `src/components/BaseMegaMenu/BaseMegaMenu.vue`, `src/components/BaseSideBar/ui/BaseSideBarNavigation.vue` — убран `withDefaults`, defaults перенесены в локальные `computed` или runtime `defineProps`; `BaseImage.spec.ts` покрывает default `hasPlaceholder` после сброса explicit `false`.
+- `src/components/BaseTour/BaseTour.vue`, `src/components/BaseSearch/BaseSearch.vue`, `src/components/BaseFileUpload/BaseFileUpload.vue` — убран `withDefaults`, defaults перенесены в runtime `defineProps`; тесты покрывают default `showSkip`, `hasClear` и `allowPreview` после сброса explicit `false`.
+- `src/components/BaseSelect/BaseSelect.vue`, `src/components/BaseTable/BaseTable.vue`, `src/components/BaseEditor/BaseEditor.vue` — убран `withDefaults`, defaults перенесены в runtime `defineProps` или локальные `computed`; `BaseEditor.spec.ts` покрывает default `hasToolbar` после сброса explicit `false`.
 - `src/components/BaseChat/composables/useChatSearch.ts` — поиск сообщений вынесен из `useChatState` в специализированный composable.
 - `src/components/BaseChat/composables/useChatSearch.spec.ts` — unit-тесты фильтрации, пустого запроса и сообщений без текста.
 - `src/components/BaseChat/composables/useChatSelection.ts` — выделение сообщений вынесено из `useChatState` в специализированный composable.
 - `src/components/BaseChat/composables/useChatSelection.spec.ts` — unit-тесты выбора, снятия выбора и сохранения остальных выбранных сообщений.
+- `src/components/BaseChat/composables/useChatInfoPanel.ts` — состояние info/profile панели вынесено из `useChatState` в специализированный composable.
+- `src/components/BaseChat/composables/useChatInfoPanel.spec.ts` — unit-тесты открытия профиля, переключения info-панели и callback-событий.
+- `src/components/BaseChat/composables/useChatReply.ts` — состояние ответа на сообщение вынесено из `useChatState` в специализированный composable.
+- `src/components/BaseChat/composables/useChatReply.spec.ts` — unit-тесты выбора и сброса сообщения для ответа.

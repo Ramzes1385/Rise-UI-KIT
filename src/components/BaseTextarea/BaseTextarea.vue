@@ -60,24 +60,24 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import './BaseTextarea.style.scss'
 import type { BaseTextareaEmits, BaseTextareaProps } from './BaseTextarea.types'
 
-const props = withDefaults(defineProps<BaseTextareaProps>(), {
-	modelValue: '',
-	placeholder: '',
-	rows: 4,
-	variant: 'default',
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	isAutosize: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseTextareaProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-textarea', getVariant: () => props.variant })
+const modelValue = computed(() => props.modelValue ?? '')
+const placeholder = computed(() => props.placeholder ?? '')
+const rows = computed(() => props.rows ?? 4)
+const variant = computed(() => props.variant ?? 'default')
+const isDisabled = computed(() => props.isDisabled ?? false)
+const isReadonly = computed(() => props.isReadonly ?? false)
+const isRequired = computed(() => props.isRequired ?? false)
+const isAutosize = computed(() => props.isAutosize ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-textarea', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -91,7 +91,7 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null)
 function adjustHeight(): void {
 	const el = textareaRef.value
 	/* istanbul ignore next -- el всегда существует после mount, ветка !el — защитный guard */
-	if (!el || !props.isAutosize) return
+	if (!el || !isAutosize.value) return
 
 	el.style.height = `${el.scrollHeight}px`
 }
@@ -100,7 +100,7 @@ function handleInput(e: Event): void {
 	const target = e.target as HTMLTextAreaElement
 	emit('update:modelValue', target.value)
 
-	if (props.isAutosize) {
+	if (isAutosize.value) {
 		nextTick(adjustHeight)
 	}
 }
@@ -115,9 +115,9 @@ function handleFocus(e: FocusEvent): void {
 
 /** Подстройка высоты при изменении значения извне */
 watch(
-	() => props.modelValue,
+	() => modelValue.value,
 	() => {
-		if (props.isAutosize) {
+		if (isAutosize.value) {
 			nextTick(adjustHeight)
 		}
 	},
@@ -125,7 +125,7 @@ watch(
 
 /** Подстройка высоты при монтировании */
 onMounted(() => {
-	if (props.isAutosize) {
+	if (isAutosize.value) {
 		nextTick(adjustHeight)
 	}
 })

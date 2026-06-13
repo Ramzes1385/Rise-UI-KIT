@@ -61,16 +61,21 @@ import { usePopup } from '@composables/usePopup'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, useSlots } from 'vue'
+import type { PropType } from 'vue'
 import './BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from './BaseModal.types'
 
-const props = withDefaults(defineProps<BaseModalProps>(), {
-	variant: 'default',
-	closeOnOverlay: true,
-	fullScreen: undefined,
-	sizeScale: 100,
-	isContained: false,
-	hasOverlay: true,
+const props = defineProps({
+	isOpen: { type: Boolean, required: true },
+	title: String,
+	variant: { type: String as PropType<BaseModalProps['variant']>, default: 'default' },
+	color: Object as PropType<BaseModalProps['color']>,
+	closeOnOverlay: { type: Boolean, default: true },
+	fullScreen: String as PropType<BaseModalProps['fullScreen']>,
+	sizeScale: { type: Number, default: 100 },
+	isContained: { type: Boolean, default: false },
+	hasOverlay: { type: Boolean, default: true },
+	customClass: [String, Object] as PropType<BaseModalProps['customClass']>,
 })
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
@@ -102,9 +107,7 @@ const rootClasses = computed(() => {
 /** Итоговые стили корневого элемента */
 const rootStyles = computed(() => {
 	const styles: Record<string, string> = {}
-	/* istanbul ignore next — sizeScale всегда определён через withDefaults(100) */
 	if (sizeScaleStyle.value) Object.assign(styles, sizeScaleStyle.value)
-	/* istanbul ignore next — variant всегда определён через withDefaults('default') */
 	if (variantStyle.value) Object.assign(styles, variantStyle.value)
 	if (customColorStyle.value) Object.assign(styles, customColorStyle.value)
 	return Object.keys(styles).length > 0 ? styles : undefined
@@ -113,9 +116,7 @@ const rootStyles = computed(() => {
 /** Popup-паттерн: оверлей, Escape, блокировка скролла */
 const { handleOverlayClick, close: handleClose } = usePopup({
 	isOpen: () => props.isOpen,
-	closeOnOverlay: () =>
-		/* istanbul ignore next -- defensive `?? true`: closeOnOverlay имеет дефолт true через withDefaults, правая часть недостижима */
-		props.closeOnOverlay ?? true,
+	closeOnOverlay: () => props.closeOnOverlay ?? true,
 	closeOnEscape: () => true,
 	lockScroll: () => !props.isContained,
 	onClose: () => {

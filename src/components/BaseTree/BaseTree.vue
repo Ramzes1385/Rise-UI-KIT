@@ -27,18 +27,18 @@ import { TREE_CONTEXT_KEY } from './BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
 import { useTreeState } from './useTreeState'
 
-const props = withDefaults(defineProps<BaseTreeProps>(), {
-	selectionMode: 'none',
-	arrowPosition: 'left',
-	variant: 'default',
-	sizeScale: 100,
-	isDefaultExpandAll: false,
-})
+const props = defineProps<BaseTreeProps>()
+
+const selectionMode = computed(() => props.selectionMode ?? 'none')
+const arrowPosition = computed(() => props.arrowPosition ?? 'left')
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const isDefaultExpandAll = computed(() => props.isDefaultExpandAll ?? false)
 
 const emit = defineEmits<BaseTreeEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-tree', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-tree', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -47,19 +47,19 @@ const { classes } = useCustomClass({
 
 const { expandedIds, selectedIds, expandedSet, selectedSet, toggleNode, selectNode } = useTreeState({
 	items: toRef(props, 'items'),
-	selectionMode: toRef(props, 'selectionMode'),
+	selectionMode,
 	expandedIds: toRef(props, 'expandedIds'),
 	selectedIds: toRef(props, 'selectedIds'),
-	isDefaultExpandAll: toRef(props, 'isDefaultExpandAll'),
+	isDefaultExpandAll,
 	emit,
 })
 
 provide(TREE_CONTEXT_KEY, {
 	selectionMode: computed(function getSelectionMode() {
-		return props.selectionMode
+		return selectionMode.value
 	}),
 	arrowPosition: computed(function getArrowPosition() {
-		return props.arrowPosition
+		return arrowPosition.value
 	}),
 	expandedIds,
 	selectedIds,

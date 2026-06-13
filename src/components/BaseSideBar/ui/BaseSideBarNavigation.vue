@@ -190,23 +190,17 @@ defineOptions({
 	name: 'BaseSideBarNavigation',
 })
 
-const props = withDefaults(defineProps<BaseSideBarNavigationProps>(), {
-	items: () => [],
-	level: 0,
-	activeMatch: 'exact',
-	linkComponent: 'a',
-	isCollapsed: false,
-})
+const props = defineProps<BaseSideBarNavigationProps>()
 
 const emit = defineEmits<BaseSideBarNavigationEmits>()
 
 defineSlots<BaseSideBarNavigationSlots>()
 
-const resolvedItems = computed(() => props.items)
-const resolvedLevel = computed(() => props.level)
-const resolvedActiveMatch = computed(() => props.activeMatch)
-const resolvedLinkComponent = computed(() => props.linkComponent)
-const resolvedIsCollapsed = computed(() => props.isCollapsed)
+const resolvedItems = computed(() => props.items ?? [])
+const resolvedLevel = computed(() => props.level ?? 0)
+const resolvedActiveMatch = computed(() => props.activeMatch ?? 'exact')
+const resolvedLinkComponent = computed(() => props.linkComponent ?? 'a')
+const resolvedIsCollapsed = computed(() => props.isCollapsed ?? false)
 
 const expandedItemKeys = ref(new Set<SideBarItemKey>())
 

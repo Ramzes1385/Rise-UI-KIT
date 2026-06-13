@@ -108,6 +108,22 @@ describe('BaseTour unit', () => {
 			await screen.findByText('Шаг 1')
 			expect(document.querySelector('.base-tour [aria-label="Пропустить тур"]')).not.toBeInTheDocument()
 		})
+
+		it('возвращает кнопку пропуска после сброса showSkip=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseTour, {
+				props: { isOpen: true, steps: STEPS, showSkip: false },
+				attachTo: document.body,
+			})
+
+			await screen.findByText('Шаг 1')
+			expect(document.querySelector('.base-tour [aria-label="Пропустить тур"]')).not.toBeInTheDocument()
+
+			await wrapper.setProps({ showSkip: undefined })
+
+			expect(document.querySelector('.base-tour [aria-label="Пропустить тур"]')).toBeInTheDocument()
+			wrapper.unmount()
+		})
 	})
 
 	describe('навигация', () => {

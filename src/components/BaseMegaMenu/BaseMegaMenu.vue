@@ -127,16 +127,16 @@ import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import './BaseMegaMenu.style.scss'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, MegaMenuItem } from './BaseMegaMenu.types'
 
-const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
-	trigger: 'click',
-	layout: 'columns',
-	variant: 'default',
-	hoverDelay: 200,
-	sizeScale: 100,
-})
+const props = defineProps<BaseMegaMenuProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-mega-menu', getVariant: () => props.variant })
+const trigger = computed(() => props.trigger ?? 'click')
+const layout = computed(() => props.layout ?? 'columns')
+const variant = computed(() => props.variant ?? 'default')
+const hoverDelay = computed(() => props.hoverDelay ?? 200)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-mega-menu', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -151,10 +151,10 @@ useMegaMenuTreeProvider()
 const { isMobile } = useBreakpoint()
 
 /** На мобильном hover недоступен — раскрытие всегда по клику */
-const effectiveTrigger = computed(() => (isMobile.value ? 'click' : props.trigger))
+const effectiveTrigger = computed(() => (isMobile.value ? 'click' : trigger.value))
 
 /** Единый масштаб иконки для корневого уровня */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
+const iconScale = computed(() => calcIconScale('sm', sizeScale.value))
 
 /** Открытые колонки (columns layout) */
 const openColumns = ref<string[]>([])
@@ -224,7 +224,7 @@ function handleColumnLeave(): void {
 	if (effectiveTrigger.value !== 'hover') return
 	hoverTimer = setTimeout(() => {
 		openColumns.value = []
-	}, props.hoverDelay)
+	}, hoverDelay.value)
 }
 
 // ── Dropdown ──
@@ -253,7 +253,7 @@ function handleNavLeave(): void {
 	if (effectiveTrigger.value !== 'hover') return
 	hoverTimer = setTimeout(() => {
 		openNavItems.value = []
-	}, props.hoverDelay)
+	}, hoverDelay.value)
 }
 
 function isNavOpen(label: string): boolean {

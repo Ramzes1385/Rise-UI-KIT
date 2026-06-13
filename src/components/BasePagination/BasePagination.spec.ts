@@ -95,6 +95,19 @@ describe('BasePagination unit', () => {
 
 			expect(screen.queryByText('20')).not.toBeInTheDocument()
 		})
+
+		it('должен вернуть показ последней страницы после сброса showLastPage=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BasePagination, {
+				props: { modelValue: 1, total: 200, pageSize: 10, maxVisible: 7, showLastPage: false },
+			})
+
+			expect(wrapper.text()).not.toContain('20')
+
+			await wrapper.setProps({ showLastPage: undefined })
+
+			expect(wrapper.text()).toContain('20')
+		})
 	})
 
 	describe('пропс customClass', () => {

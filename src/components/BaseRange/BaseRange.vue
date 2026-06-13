@@ -107,24 +107,24 @@ import { BaseRangeThumb } from './BaseRangeThumb'
 import './BaseRange.style.scss'
 import type { BaseRangeEmits, BaseRangeProps } from './BaseRange.types'
 
-const props = withDefaults(defineProps<BaseRangeProps>(), {
-	modelValue: 0,
-	min: 0,
-	max: 100,
-	step: 1,
-	variant: 'default',
-	isDisabled: false,
-	hasTooltip: false,
-	marks: () => [],
-	isVertical: false,
-	hasLabel: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseRangeProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const modelValue = computed(() => props.modelValue ?? 0)
+const min = computed(() => props.min ?? 0)
+const max = computed(() => props.max ?? 100)
+const step = computed(() => props.step ?? 1)
+const variant = computed(() => props.variant ?? 'default')
+const isDisabled = computed(() => props.isDisabled ?? false)
+const hasTooltip = computed(() => props.hasTooltip ?? false)
+const marks = computed(() => props.marks ?? [])
+const isVertical = computed(() => props.isVertical ?? false)
+const hasLabel = computed(() => props.hasLabel ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { variantClass, variantStyle } = useVariant({
 	block: 'base-range',
-	getVariant: () => props.variant,
+	getVariant: () => variant.value,
 })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
@@ -169,7 +169,7 @@ const mode = computed((): RangeMode => {
 const pointValues = computed((): number[] => {
 	if (props.points) return props.points
 	if (props.rangeValue) return [props.rangeValue[0], props.rangeValue[1]]
-	return [props.modelValue]
+	return [modelValue.value]
 })
 
 /** Использован ли кастомный слот ползунка */
@@ -177,25 +177,25 @@ const hasThumbSlot = computed((): boolean => Boolean(slots.thumb))
 
 /** Текст метки значения */
 const labelText = computed((): string => {
-	if (mode.value === 'single') return String(props.modelValue)
+	if (mode.value === 'single') return String(modelValue.value)
 	return pointValues.value.join(' — ')
 })
 
 /** Позиция тултипа */
 const tooltipPosition = computed((): 'top' | 'right' => {
-	return props.isVertical ? 'right' : 'top'
+	return isVertical.value ? 'right' : 'top'
 })
 
 /** Процент значения на шкале */
 function percent(value: number): number {
-	return toPercent({ value, min: props.min, max: props.max })
+	return toPercent({ value, min: min.value, max: max.value })
 }
 
 /** Стиль одного сегмента заливки между двумя процентами */
 function fillSegmentStyle(fromPercent: number, toPercentValue: number): Record<string, string> {
 	const start = Math.min(fromPercent, toPercentValue)
 	const size = Math.abs(toPercentValue - fromPercent)
-	if (props.isVertical) {
+	if (isVertical.value) {
 		return { bottom: `${start}%`, height: `${size}%` }
 	}
 	return { left: `${start}%`, width: `${size}%` }
@@ -216,7 +216,7 @@ const fillSegments = computed((): Record<string, string>[] => {
 /** Стиль ползунка */
 function thumbStyle(value: number): Record<string, string> {
 	const p = percent(value)
-	if (props.isVertical) {
+	if (isVertical.value) {
 		return { bottom: `${p}%` }
 	}
 	return { left: `${p}%` }
@@ -225,7 +225,7 @@ function thumbStyle(value: number): Record<string, string> {
 /** Стиль метки */
 function markStyle(value: number): Record<string, string> {
 	const p = percent(value)
-	if (props.isVertical) {
+	if (isVertical.value) {
 		return { bottom: `${p}%` }
 	}
 	return { left: `${p}%` }
@@ -233,38 +233,38 @@ function markStyle(value: number): Record<string, string> {
 
 /** Нижняя граница ползунка (значение левого соседа или min) */
 function thumbMin(index: number): number {
-	return index > 0 ? pointValues.value[index - 1] : props.min
+	return index > 0 ? pointValues.value[index - 1] : min.value
 }
 
 /** Верхняя граница ползунка (значение правого соседа или max) */
 function thumbMax(index: number): number {
 	const next = pointValues.value[index + 1]
-	return next === undefined ? props.max : next
+	return next === undefined ? max.value : next
 }
 
 /** Привязка значения к шагу с ограничением границами */
 function snapToStepValue(value: number): number {
-	const snapped = snapToStep({ value, min: props.min, max: props.max, step: props.step })
-	return Math.max(props.min, Math.min(props.max, snapped))
+	const snapped = snapToStep({ value, min: min.value, max: max.value, step: step.value })
+	return Math.max(min.value, Math.min(max.value, snapped))
 }
 
 /** Получить значение из позиции события */
 function getValueFromEvent(e: MouseEvent | TouchEvent): number {
 	/* istanbul ignore next -- Событие приходит только с отрисованного трека. */
-	if (!trackRef.value) return props.min
+	if (!trackRef.value) return min.value
 	const rect = trackRef.value.getBoundingClientRect()
 	const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
 	const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 
 	let ratio: number
-	if (props.isVertical) {
+	if (isVertical.value) {
 		ratio = 1 - (clientY - rect.top) / rect.height
 	} else {
 		ratio = (clientX - rect.left) / rect.width
 	}
 
 	ratio = Math.max(0, Math.min(1, ratio))
-	const raw = props.min + ratio * (props.max - props.min)
+	const raw = min.value + ratio * (max.value - min.value)
 	return snapToStepValue(raw)
 }
 
@@ -298,14 +298,14 @@ function emitUpdate(index: number, value: number): void {
 
 /** Обновить значение активного ползунка по индексу */
 function setPointValue(index: number, rawValue: number): void {
-	const clamped = clampToNeighbors(index, Math.max(props.min, Math.min(props.max, rawValue)))
+	const clamped = clampToNeighbors(index, Math.max(min.value, Math.min(max.value, rawValue)))
 	emitUpdate(index, clamped)
 }
 
 /** Отправить событие change с текущим значением */
 function emitChange(): void {
 	if (mode.value === 'single') {
-		emit('change', props.modelValue)
+		emit('change', modelValue.value)
 		return
 	}
 	if (mode.value === 'range') {
@@ -347,7 +347,7 @@ function handleTouchEnd(): void {
 
 /** Начало перетаскивания ползунка */
 function handleThumbDown(payload: { event: MouseEvent | TouchEvent; index: number }): void {
-	if (props.isDisabled) return
+	if (isDisabled.value) return
 	activeIndex.value = payload.index
 
 	if (payload.event instanceof MouseEvent) {
@@ -375,7 +375,7 @@ function nearestIndex(value: number): number {
 
 /** Клик по треку */
 function handleTrackDown(e: MouseEvent): void {
-	if (props.isDisabled) return
+	if (isDisabled.value) return
 	const value = getValueFromEvent(e)
 	const index = nearestIndex(value)
 	activeIndex.value = index
@@ -386,7 +386,7 @@ function handleTrackDown(e: MouseEvent): void {
 
 /** Клавиатурное управление ползунком */
 function handleThumbKeydown(payload: { event: KeyboardEvent; index: number }): void {
-	if (props.isDisabled) return
+	if (isDisabled.value) return
 
 	const { event, index } = payload
 	const isIncrease = event.key === 'ArrowRight' || event.key === 'ArrowUp'
@@ -394,7 +394,7 @@ function handleThumbKeydown(payload: { event: KeyboardEvent; index: number }): v
 	if (!isIncrease && !isDecrease) return
 	event.preventDefault()
 
-	const delta = isIncrease ? props.step : -props.step
+	const delta = isIncrease ? step.value : -step.value
 	setPointValue(index, snapToStepValue(pointValues.value[index] + delta))
 }
 

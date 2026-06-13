@@ -79,16 +79,16 @@ import './BaseColorPicker.style.scss'
 import { DEFAULT_COLOR_PRESETS } from './BaseColorPicker.types'
 import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from './BaseColorPicker.types'
 
-const props = withDefaults(defineProps<BaseColorPickerProps>(), {
-	position: 'bottom',
-	isHexHidden: false,
-	isPresetsHidden: false,
-	isResettable: false,
-	resetLabel: 'Без цвета',
-	hasTransparentSwatch: false,
-	isDisabled: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseColorPickerProps>()
+
+const position = computed(() => props.position ?? 'bottom')
+const isHexHidden = computed(() => props.isHexHidden ?? false)
+const isPresetsHidden = computed(() => props.isPresetsHidden ?? false)
+const isResettable = computed(() => props.isResettable ?? false)
+const resetLabel = computed(() => props.resetLabel ?? 'Без цвета')
+const hasTransparentSwatch = computed(() => props.hasTransparentSwatch ?? false)
+const isDisabled = computed(() => props.isDisabled ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseColorPickerEmits>()
 defineSlots<BaseColorPickerSlots>()

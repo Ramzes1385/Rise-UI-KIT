@@ -212,20 +212,24 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, ref } from 'vue'
+import type { PropType } from 'vue'
 import './BaseSelect.style.scss'
 import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from './BaseSelect.types'
 
-const props = withDefaults(defineProps<BaseSelectProps>(), {
-	modelValue: '',
-	placeholder: 'Выберите...',
-	label: '',
-	isRequired: false,
-	isMultiple: false,
-	isSearchable: false,
-	isDisabled: false,
-	error: '',
-	variant: 'default',
-	sizeScale: 100,
+const props = defineProps({
+	modelValue: { type: [String, Number, Array] as PropType<BaseSelectProps['modelValue']>, default: '' },
+	options: { type: Array as PropType<BaseSelectProps['options']>, required: true },
+	placeholder: { type: String, default: 'Выберите...' },
+	label: { type: String, default: '' },
+	isRequired: { type: Boolean, default: false },
+	isMultiple: { type: Boolean, default: false },
+	isSearchable: { type: Boolean, default: false },
+	isDisabled: { type: Boolean, default: false },
+	error: { type: String, default: '' },
+	variant: { type: String as PropType<BaseSelectProps['variant']>, default: 'default' },
+	color: Object as PropType<BaseSelectProps['color']>,
+	sizeScale: { type: Number, default: 100 },
+	customClass: [String, Object] as PropType<BaseSelectProps['customClass']>,
 })
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })

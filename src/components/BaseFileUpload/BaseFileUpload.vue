@@ -132,6 +132,7 @@
 import type { BaseFileUploadEmits, BaseFileUploadProps, UploadedFile } from './BaseFileUpload.types'
 
 import { computed, onBeforeUnmount, ref } from 'vue'
+import type { PropType } from 'vue'
 
 import { BaseAnimation } from '@components/BaseAnimation'
 import { BaseButton } from '@components/BaseButton'
@@ -147,20 +148,22 @@ import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, val
 
 import './BaseFileUpload.style.scss'
 
-const props = withDefaults(defineProps<BaseFileUploadProps>(), {
-	isMultiple: false,
-	isDisabled: false,
-	variant: 'default',
-	maxSize: 5,
-	maxCount: 10,
-	label: '',
-	buttonText: 'Выберите файлы',
-	accept: '',
-	previewSize: 64,
-	allowPreview: true,
-	emptyText: 'Перетащите файлы сюда',
-	sizeScale: 100,
-	error: '',
+const props = defineProps({
+	customClass: [String, Object] as PropType<BaseFileUploadProps['customClass']>,
+	accept: { type: String, default: '' },
+	isMultiple: { type: Boolean, default: false },
+	isDisabled: { type: Boolean, default: false },
+	variant: { type: String as PropType<BaseFileUploadProps['variant']>, default: 'default' },
+	color: Object as PropType<BaseFileUploadProps['color']>,
+	maxSize: { type: Number, default: 5 },
+	maxCount: { type: Number, default: 10 },
+	label: { type: String, default: '' },
+	buttonText: { type: String, default: 'Выберите файлы' },
+	previewSize: { type: Number, default: 64 },
+	allowPreview: { type: Boolean, default: true },
+	emptyText: { type: String, default: 'Перетащите файлы сюда' },
+	sizeScale: { type: Number, default: 100 },
+	error: { type: String, default: '' },
 })
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })

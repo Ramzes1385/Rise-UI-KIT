@@ -74,19 +74,19 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import './BaseTabs.style.scss'
 import type { BaseTabsEmits, BaseTabsProps } from './BaseTabs.types'
 
-const props = withDefaults(defineProps<BaseTabsProps>(), {
-	variant: 'underline',
-	isFullWidth: false,
-	isScrollable: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseTabsProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-tabs', getVariant: () => props.variant })
+const variant = computed(() => props.variant ?? 'underline')
+const isFullWidth = computed(() => props.isFullWidth ?? false)
+const isScrollable = computed(() => props.isScrollable ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-tabs', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -180,7 +180,7 @@ let resizeObserver: ResizeObserver | null = null
 function setupObserver(): void {
 	resizeObserver?.disconnect()
 	resizeObserver = null
-	if (props.isScrollable && listRef.value) {
+	if (isScrollable.value && listRef.value) {
 		resizeObserver = new ResizeObserver(updateScrollState)
 		resizeObserver.observe(listRef.value)
 		nextTick(updateScrollState)
@@ -196,7 +196,7 @@ onMounted(() => {
 
 /* istanbul ignore next -- переключение isScrollable во время жизни компонента: ResizeObserver callbacks тестируются e2e */
 watch(
-	() => props.isScrollable,
+	() => isScrollable.value,
 	() => {
 		setupObserver()
 	},

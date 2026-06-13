@@ -145,6 +145,21 @@ describe('BaseModal unit', () => {
 
 			expect(document.querySelector('.base-modal')?.classList.contains('base-modal--no-overlay')).toBe(true)
 		})
+
+		it('должен вернуть overlay после сброса hasOverlay=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseModal, {
+				props: { isOpen: true, hasOverlay: false },
+				attachTo: document.body,
+			})
+
+			expect(document.querySelector('.base-modal')?.classList.contains('base-modal--no-overlay')).toBe(true)
+
+			await wrapper.setProps({ hasOverlay: undefined })
+
+			expect(document.querySelector('.base-modal')?.classList.contains('base-modal--no-overlay')).toBe(false)
+			wrapper.unmount()
+		})
 	})
 
 	describe('слот footer', () => {

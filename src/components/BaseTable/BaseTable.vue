@@ -214,6 +214,7 @@ import { useVariant } from '@composables/useVariant'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle } from '@utils/tableUtils'
 import { computed, ref, useSlots, watch } from 'vue'
+import type { PropType } from 'vue'
 
 import {
 	TABLE_DEFAULT_SKELETON_ROWS,
@@ -232,31 +233,55 @@ import BaseTableHeader from './ui/BaseTableHeader.vue'
 import BaseTablePagination from './ui/BaseTablePagination.vue'
 import BaseTableToolbar from './ui/BaseTableToolbar.vue'
 
-const props = withDefaults(defineProps<BaseTableProps>(), {
-	variant: 'default',
-	isLoading: false,
-	emptyText: 'Нет данных',
-	height: '',
-	isSelectable: false,
-	hasSearch: false,
-	hasFilters: false,
-	pageSize: 0,
-	pageSizeOptions: () => [],
-	loadMode: 'pagination',
-	searchDebounce: TABLE_SEARCH_DEBOUNCE_MS,
-	isMultiSort: false,
-	hasColumnSettings: false,
-	hasRowNumber: false,
-	hasPageSizeSelector: false,
-	isResizable: false,
-	sizeScale: 100,
-	padding: 10,
+const props = defineProps({
+	columns: { type: Array as PropType<BaseTableProps['columns']>, required: true },
+	rows: { type: Array as PropType<BaseTableProps['rows']>, required: true },
+	variant: { type: String as PropType<BaseTableProps['variant']>, default: 'default' },
+	color: Object as PropType<BaseTableProps['color']>,
+	isLoading: { type: Boolean, default: false },
+	emptyText: { type: String, default: 'Нет данных' },
+	height: { type: String, default: '' },
+	isSelectable: { type: Boolean, default: false },
+	hasSearch: { type: Boolean, default: false },
+	hasFilters: { type: Boolean, default: false },
+	pageSize: { type: Number, default: 0 },
+	pageSizeOptions: { type: Array as PropType<BaseTableProps['pageSizeOptions']>, default: () => [] },
+	loadMode: { type: String as PropType<BaseTableProps['loadMode']>, default: 'pagination' },
+	searchDebounce: { type: Number, default: TABLE_SEARCH_DEBOUNCE_MS },
+	nestedConfig: Object as PropType<BaseTableProps['nestedConfig']>,
+	isMultiSort: { type: Boolean, default: false },
+	hasColumnSettings: { type: Boolean, default: false },
+	hasRowNumber: { type: Boolean, default: false },
+	hasPageSizeSelector: { type: Boolean, default: false },
+	isResizable: { type: Boolean, default: false },
+	sizeScale: { type: Number, default: 100 },
+	padding: { type: [Number, Object] as PropType<BaseTableProps['padding']>, default: 10 },
+	customClass: [String, Object] as PropType<BaseTableProps['customClass']>,
 })
+
+const variant = computed(() => props.variant ?? 'default')
+const isLoading = computed(() => props.isLoading ?? false)
+const emptyText = computed(() => props.emptyText ?? 'Нет данных')
+const height = computed(() => props.height ?? '')
+const isSelectable = computed(() => props.isSelectable ?? false)
+const hasSearch = computed(() => props.hasSearch ?? false)
+const hasFilters = computed(() => props.hasFilters ?? false)
+const pageSize = computed(() => props.pageSize ?? 0)
+const pageSizeOptions = computed(() => props.pageSizeOptions ?? [])
+const loadMode = computed(() => props.loadMode ?? 'pagination')
+const searchDebounce = computed(() => props.searchDebounce ?? TABLE_SEARCH_DEBOUNCE_MS)
+const isMultiSort = computed(() => props.isMultiSort ?? false)
+const hasColumnSettings = computed(() => props.hasColumnSettings ?? false)
+const hasRowNumber = computed(() => props.hasRowNumber ?? false)
+const hasPageSizeSelector = computed(() => props.hasPageSizeSelector ?? false)
+const isResizable = computed(() => props.isResizable ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const padding = computed(() => props.padding ?? 10)
 
 const slots = useSlots()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-table', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-table', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -285,7 +310,7 @@ const { classes } = useCustomClass({
 	],
 })
 
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: 10 })
+const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--tbl-pad', defaultPadding: 10 })
 
 const {
 	onBeforeEnter: onExpandBeforeEnter,
@@ -322,7 +347,7 @@ const visibleColumns = computed((): TableColumn[] => {
 
 /** Количество строк скелетона при загрузке */
 const skeletonRows = computed((): number => {
-	return props.pageSize || TABLE_DEFAULT_SKELETON_ROWS
+	return pageSize.value || TABLE_DEFAULT_SKELETON_ROWS
 })
 
 /** Колонки, доступные для фильтрации (все видимые, если isFilterable не задан явно) */
@@ -337,17 +362,17 @@ const hasExpandableRows = computed((): boolean => {
 
 /** Общее количество колонок */
 const totalCols = computed((): number => {
-	return calcTotalColumns(visibleColumns.value.length, props.isSelectable, props.hasRowNumber, hasExpandableRows.value)
+	return calcTotalColumns(visibleColumns.value.length, isSelectable.value, hasRowNumber.value, hasExpandableRows.value)
 })
 
 /** Колонка ресайзимая: пропс таблицы или флаг колонки */
 function isColResizable(col: TableColumn): boolean {
-	return props.isResizable || !!col.isResizable
+	return isResizable.value || !!col.isResizable
 }
 
 /** Использовать фиксированный layout */
 const useFixedLayout = computed((): boolean => {
-	return props.isResizable || visibleColumns.value.some(col => col.flex || col.width)
+	return isResizable.value || visibleColumns.value.some(col => col.flex || col.width)
 })
 
 /** Ширины колонок для colgroup */
@@ -387,10 +412,10 @@ const {
 } = useTableData({
 	rows: computed(() => props.rows),
 	columns: localColumns,
-	loadMode: () => props.loadMode,
-	pageSize: computed(() => props.pageSize),
-	isMultiSort: () => props.isMultiSort,
-	searchDebounce: () => props.searchDebounce,
+	loadMode: () => loadMode.value,
+	pageSize,
+	isMultiSort: () => isMultiSort.value,
+	searchDebounce: () => searchDebounce.value,
 	onSearch: (q: string) => emit('search', q),
 	onSort: states => emit('sort', states),
 	onFilter: filters => emit('filter', filters),
@@ -430,22 +455,22 @@ watch(currentPage, newPage => {
 
 /** Опции селекта размера страницы */
 const pageSizeSelectOptions = computed(() => {
-	return props.pageSizeOptions.map(size => ({
+	return pageSizeOptions.value.map(size => ({
 		value: String(size),
 		label: String(size),
 	}))
 })
 
 const showPageSizeSelector = computed((): boolean => {
-	return props.hasPageSizeSelector && props.pageSizeOptions.length > 0
+	return hasPageSizeSelector.value && pageSizeOptions.value.length > 0
 })
 
 const showToolbar = computed((): boolean => {
-	return props.hasSearch || props.hasFilters || props.hasColumnSettings || !!slots['toolbar-prepend'] || !!slots['toolbar-append']
+	return hasSearch.value || hasFilters.value || hasColumnSettings.value || !!slots['toolbar-prepend'] || !!slots['toolbar-append']
 })
 
 const showPagination = computed((): boolean => {
-	return props.loadMode === 'pagination' && localPageSize.value > 0 && totalPages.value > 1
+	return loadMode.value === 'pagination' && localPageSize.value > 0 && totalPages.value > 1
 })
 
 const showFooterBar = computed((): boolean => {
@@ -486,7 +511,7 @@ function getRowNumber(index: number): number {
 		index,
 		currentPage: currentPage.value,
 		pageSize: localPageSize.value,
-		loadMode: props.loadMode,
+		loadMode: loadMode.value,
 	})
 }
 
@@ -574,7 +599,7 @@ function handleLoadMore(): void {
 
 /** Infinite scroll */
 function handleScroll(e: Event): void {
-	if (props.loadMode !== 'infinite' || !hasMoreRows.value || props.isLoading) return
+	if (loadMode.value !== 'infinite' || !hasMoreRows.value || isLoading.value) return
 
 	const target = e.target as HTMLElement
 	const { scrollTop, scrollHeight, clientHeight } = target

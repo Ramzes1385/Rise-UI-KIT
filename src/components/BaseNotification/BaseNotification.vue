@@ -66,22 +66,22 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import './BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, NotificationItem } from './BaseNotification.types'
 
-const props = withDefaults(defineProps<BaseNotificationProps>(), {
-	title: '',
-	type: 'info',
-	variant: 'default',
-	position: 'top-right',
-	duration: 3000,
-	sizeScale: 100,
-	isContained: false,
-})
+const props = defineProps<BaseNotificationProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-notification', getVariant: () => props.variant })
+const title = computed(() => props.title ?? '')
+const type = computed(() => props.type ?? 'info')
+const variant = computed(() => props.variant ?? 'default')
+const position = computed(() => props.position ?? 'top-right')
+const duration = computed(() => props.duration ?? 3000)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const isContained = computed(() => props.isContained ?? false)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-notification', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -108,7 +108,7 @@ function add(notification: BaseNotificationProps) {
 	const id = nextId++
 	notifications.value.unshift({ ...notification, id })
 
-	const timer = setTimeout(() => remove(id), notification.duration || 3000)
+	const timer = setTimeout(() => remove(id), notification.duration ?? 3000)
 	autoCloseTimers.set(id, timer)
 }
 
@@ -130,8 +130,8 @@ onBeforeUnmount(() => {
 
 /** Декларативное использование (через v-if) */
 onMounted(() => {
-	if (props.title) {
-		add({ ...props })
+	if (title.value) {
+		add({ ...props, title: title.value, type: type.value, position: position.value, duration: duration.value })
 	}
 })
 

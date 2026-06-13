@@ -113,26 +113,32 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import type { PropType } from 'vue'
 
 import type { CustomColor } from '@composables/useCustomColor'
 import './BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from './BaseTour.types'
 import { DEFAULT_RADIUS, useTourLogic } from './useTourLogic'
 
-const props = withDefaults(defineProps<BaseTourProps>(), {
-	isOpen: false,
-	step: 0,
-	placement: 'auto',
-	closeOnOverlayClick: true,
-	closeOnEscape: true,
-	lockScroll: true,
-	scrollIntoView: true,
-	nextLabel: 'Далее',
-	prevLabel: 'Назад',
-	finishLabel: 'Завершить',
-	skipLabel: 'Пропустить',
-	showSkip: true,
-	showProgress: true,
+const props = defineProps({
+	isOpen: { type: Boolean, default: false },
+	steps: { type: Array as PropType<BaseTourProps['steps']>, required: true },
+	step: { type: Number, default: 0 },
+	placement: { type: String as PropType<BaseTourProps['placement']>, default: 'auto' },
+	gap: Number,
+	padding: Number,
+	radius: Number,
+	closeOnOverlayClick: { type: Boolean, default: true },
+	closeOnEscape: { type: Boolean, default: true },
+	lockScroll: { type: Boolean, default: true },
+	scrollIntoView: { type: Boolean, default: true },
+	nextLabel: { type: String, default: 'Далее' },
+	prevLabel: { type: String, default: 'Назад' },
+	finishLabel: { type: String, default: 'Завершить' },
+	skipLabel: { type: String, default: 'Пропустить' },
+	showSkip: { type: Boolean, default: true },
+	showProgress: { type: Boolean, default: true },
+	customClass: [String, Object] as PropType<BaseTourProps['customClass']>,
 })
 
 const emit = defineEmits<BaseTourEmits>()

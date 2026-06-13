@@ -102,6 +102,19 @@ describe('BaseImage unit', () => {
 
 			expect(container.querySelector('.base-image__placeholder')).not.toBeInTheDocument()
 		})
+
+		it('должен вернуть плейсхолдер после сброса hasPlaceholder=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseImage, {
+				props: { src: 'test.jpg', alt: 'Тест', hasPlaceholder: false },
+			})
+
+			expect(wrapper.find('.base-image__placeholder').exists()).toBe(false)
+
+			await wrapper.setProps({ hasPlaceholder: undefined })
+
+			expect(wrapper.find('.base-image__placeholder').exists()).toBe(true)
+		})
 	})
 
 	describe('пропс loading', () => {

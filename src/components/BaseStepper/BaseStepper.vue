@@ -78,19 +78,19 @@ import { useVariant } from '@composables/useVariant'
 import './BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps } from './BaseStepper.types'
 
-const props = withDefaults(defineProps<BaseStepperProps>(), {
-	orientation: 'horizontal',
-	shape: 'circle',
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BaseStepperProps>()
+
+const orientation = computed(() => props.orientation ?? 'horizontal')
+const shape = computed(() => props.shape ?? 'circle')
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseStepperEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { variantClass, variantStyle } = useVariant({
 	block: 'base-stepper',
-	getVariant: () => props.variant,
+	getVariant: () => variant.value,
 })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 

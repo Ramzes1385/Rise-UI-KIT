@@ -43,6 +43,20 @@ describe('BaseEditor unit', () => {
 
 			expect(container.querySelector('.base-editor__toolbar')).not.toBeInTheDocument()
 		})
+
+		it('должен вернуть панель инструментов после сброса hasToolbar=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, {
+				props: { hasToolbar: false },
+				global: globalConfig,
+			})
+
+			expect(wrapper.find('.base-editor__toolbar').exists()).toBe(false)
+
+			await wrapper.setProps({ hasToolbar: undefined })
+
+			expect(wrapper.find('.base-editor__toolbar').exists()).toBe(true)
+		})
 	})
 
 	describe('пропс isReadonly', () => {

@@ -32,22 +32,36 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, ref } from 'vue'
+import type { PropType } from 'vue'
 
 import './BaseRating.style.scss'
 import type { BaseRatingEmits, BaseRatingProps } from './BaseRating.types'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from './BaseRating.utils'
 
-const props = withDefaults(defineProps<BaseRatingProps>(), {
-	modelValue: 0,
-	max: 5,
-	step: 1,
-	icon: 'star',
-	isHoverSmooth: true,
-	isReadonly: false,
-	isDisabled: false,
-	variant: 'default',
-	sizeScale: 100,
+const props = defineProps({
+	modelValue: { type: Number, default: 0 },
+	max: { type: Number, default: 5 },
+	step: { type: Number, default: 1 },
+	isHoverSmooth: { type: Boolean, default: true },
+	icon: { type: String, default: 'star' },
+	iconFilled: String,
+	isReadonly: { type: Boolean, default: false },
+	isDisabled: { type: Boolean, default: false },
+	variant: { type: String as PropType<BaseRatingProps['variant']>, default: 'default' },
+	sizeScale: { type: Number, default: 100 },
+	color: Object as PropType<BaseRatingProps['color']>,
+	customClass: [String, Object] as PropType<BaseRatingProps['customClass']>,
 })
+
+const modelValue = computed(() => props.modelValue ?? 0)
+const max = computed(() => props.max ?? 5)
+const step = computed(() => props.step ?? 1)
+const icon = computed(() => props.icon ?? 'star')
+const isHoverSmooth = computed(() => props.isHoverSmooth)
+const isReadonly = computed(() => props.isReadonly ?? false)
+const isDisabled = computed(() => props.isDisabled ?? false)
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseRatingEmits>()
 
@@ -56,15 +70,15 @@ const { classes } = useCustomClass({
 	elementKeys: ['root', 'icon', 'iconFilled'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-rating', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-rating', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const hoverValue = ref(0)
 
-const isInteractive = computed((): boolean => !props.isReadonly && !props.isDisabled)
-const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : props.modelValue))
-const filledIcon = computed((): string => props.iconFilled || props.icon)
+const isInteractive = computed((): boolean => !isReadonly.value && !isDisabled.value)
+const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : modelValue.value))
+const filledIcon = computed((): string => props.iconFilled || icon.value)
 
 /** Процент заливки звезды по индексу */
 function fillPercent(star: number): number {
@@ -84,9 +98,9 @@ function pointerRatio(event: MouseEvent, target: EventTarget | null): number {
 /** Рассчитать оценку по позиции указателя в звезде (точечно при isHoverSmooth) */
 function valueAt(event: MouseEvent, star: number): number {
 	const ratio = pointerRatio(event, event.currentTarget)
-	return props.isHoverSmooth
-		? rawValueFromPointer(star, ratio, props.max)
-		: valueFromPointer({ star, ratio, step: props.step, max: props.max })
+	return isHoverSmooth.value
+		? rawValueFromPointer(star, ratio, max.value)
+		: valueFromPointer({ star, ratio, step: step.value, max: max.value })
 }
 
 /** Выбор оценки по клику — фиксирует ровно то, что показывает предпросмотр */
@@ -110,7 +124,7 @@ function clearHover(): void {
 
 /** Изменение оценки на шаг */
 function changeBy(direction: number): void {
-	const next = snapRating(props.modelValue + direction * props.step, props.step, props.max)
+	const next = snapRating(modelValue.value + direction * step.value, step.value, max.value)
 	emit('update:modelValue', next)
 	emit('change', next)
 }

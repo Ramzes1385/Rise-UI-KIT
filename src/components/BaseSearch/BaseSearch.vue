@@ -285,26 +285,29 @@ import { useScrollLock } from '@composables/useScrollLock'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import type { PropType } from 'vue'
 import './BaseSearch.style.scss'
 import BaseSearchInput from './ui/BaseSearchInput.vue'
 import BaseSearchResults from './ui/BaseSearchResults.vue'
 
-const props = withDefaults(defineProps<BaseSearchProps>(), {
-	modelValue: '',
-	placeholder: 'Поиск...',
-	sizeScale: 100,
-	variant: 'default',
-	mode: 'default',
-	results: () => [],
-	isInstant: true,
-	debounceMs: 300,
-	isLoading: false,
-	hasClear: true,
-	hasIcon: true,
-	maxResults: 10,
-	isAutofocus: false,
-	isDisabled: false,
-	error: '',
+const props = defineProps({
+	modelValue: { type: String, default: '' },
+	placeholder: { type: String, default: 'Поиск...' },
+	sizeScale: { type: Number, default: 100 },
+	variant: { type: String as PropType<BaseSearchProps['variant']>, default: 'default' },
+	color: Object as PropType<BaseSearchProps['color']>,
+	mode: { type: String as PropType<BaseSearchProps['mode']>, default: 'default' },
+	results: { type: Array as PropType<BaseSearchProps['results']>, default: () => [] },
+	isInstant: { type: Boolean, default: true },
+	debounceMs: { type: Number, default: 300 },
+	isLoading: { type: Boolean, default: false },
+	hasClear: { type: Boolean, default: true },
+	hasIcon: { type: Boolean, default: true },
+	maxResults: { type: Number, default: 10 },
+	isAutofocus: { type: Boolean, default: false },
+	isDisabled: { type: Boolean, default: false },
+	error: { type: String, default: '' },
+	customClass: [String, Object] as PropType<BaseSearchProps['customClass']>,
 })
 
 const emit = defineEmits<BaseSearchEmits>()

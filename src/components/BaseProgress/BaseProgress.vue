@@ -77,18 +77,18 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { computed, watch } from 'vue'
 
-const props = withDefaults(defineProps<BaseProgressProps>(), {
-	max: 100,
-	shape: 'line',
-	animation: 'none',
-	hasLabel: false,
-	isIndeterminate: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseProgressProps>()
+
+const max = computed(() => props.max ?? 100)
+const shape = computed(() => props.shape ?? 'line')
+const animation = computed(() => props.animation ?? 'none')
+const hasLabel = computed(() => props.hasLabel ?? false)
+const isIndeterminate = computed(() => props.isIndeterminate ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseProgressEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -113,9 +113,9 @@ const tooltipColor = computed(() => {
 
 /** Процент заполненности */
 const percent = computed((): number => {
-	if (props.isIndeterminate) return 0
-	const clamped = Math.min(Math.max(props.value, 0), props.max)
-	return Math.round((clamped / props.max) * 100)
+	if (isIndeterminate.value) return 0
+	const clamped = Math.min(Math.max(props.value, 0), max.value)
+	return Math.round((clamped / max.value) * 100)
 })
 
 /** Длина окружности для кругового прогресса */
@@ -125,7 +125,7 @@ const circumference = computed((): number => {
 
 /** Смещение для кругового прогресса */
 const circleOffset = computed((): number => {
-	if (props.isIndeterminate) return circumference.value
+	if (isIndeterminate.value) return circumference.value
 	return circumference.value * (1 - percent.value / 100)
 })
 

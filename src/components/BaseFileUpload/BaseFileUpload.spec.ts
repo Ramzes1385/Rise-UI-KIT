@@ -128,6 +128,30 @@ describe('BaseFileUpload unit', () => {
 		})
 	})
 
+	describe('пропс allowPreview', () => {
+		it('должен вернуть preview zoom после сброса allowPreview=false', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const { BaseImage } = await import('@components/BaseImage')
+			const file = new File(['image'], 'photo.png', { type: 'image/png' })
+			const wrapper = mount(BaseFileUpload, {
+				props: { allowPreview: false },
+			})
+
+			const input = wrapper.find<HTMLInputElement>('input[type="file"]').element
+			Object.defineProperty(input, 'files', { value: [file], configurable: true })
+			await fireEvent.change(input)
+
+			await waitFor(() => {
+				expect(wrapper.findComponent(BaseImage).exists()).toBe(true)
+			})
+			expect(wrapper.findComponent(BaseImage).props('hasZoom')).toBe(false)
+
+			await wrapper.setProps({ allowPreview: undefined })
+
+			expect(wrapper.findComponent(BaseImage).props('hasZoom')).toBe(true)
+		})
+	})
+
 	describe('пропс maxSize', () => {
 		it('должен рендерить подсказку о максимальном размере', () => {
 			render(BaseFileUpload, {
