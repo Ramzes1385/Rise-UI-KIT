@@ -27,17 +27,17 @@ import { computed } from 'vue'
 import './BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps } from './BaseChip.types'
 
-const props = withDefaults(defineProps<BaseChipProps>(), {
-	placement: 'top-right',
-	variant: 'default',
-	isHiddenOnZero: false,
-	hasOverflow: false,
-	maxValue: 99,
-	sizeScale: 100,
-})
+const props = defineProps<BaseChipProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-chip', getVariant: () => props.variant })
+const placement = computed(() => props.placement ?? 'top-right')
+const variant = computed(() => props.variant ?? 'default')
+const isHiddenOnZero = computed(() => props.isHiddenOnZero ?? false)
+const hasOverflow = computed(() => props.hasOverflow ?? false)
+const maxValue = computed(() => props.maxValue ?? 99)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-chip', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const { classes } = useCustomClass({
@@ -57,14 +57,14 @@ const numericValue = computed((): number | null => {
 /** Видимость индикатора */
 const isVisible = computed((): boolean => {
 	if (props.content === undefined || props.content === '') return false
-	if (props.isHiddenOnZero && numericValue.value === 0) return false
+	if (isHiddenOnZero.value && numericValue.value === 0) return false
 	return true
 })
 
 /** Отображаемое содержимое индикатора */
 const displayContent = computed((): string => {
-	if (numericValue.value !== null && props.hasOverflow && numericValue.value > props.maxValue) {
-		return `${props.maxValue}+`
+	if (numericValue.value !== null && hasOverflow.value && numericValue.value > maxValue.value) {
+		return `${maxValue.value}+`
 	}
 	return String(props.content)
 })

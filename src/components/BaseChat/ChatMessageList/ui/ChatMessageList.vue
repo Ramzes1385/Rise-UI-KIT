@@ -73,19 +73,19 @@ import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMe
 import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 
-const props = withDefaults(defineProps<ChatMessageListProps>(), {
-	sizeScale: 100,
-	searchQuery: '',
-	selectedMessageIds: () => [],
-	isGroup: false,
-	isTyping: false,
-	typingUsername: '',
-	avatar: '',
-	allImagesUrls: () => [],
-	currentUserRole: 'member',
-})
+const props = defineProps<ChatMessageListProps>()
 
 const emit = defineEmits<ChatMessageListEmits>()
+
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const searchQuery = computed(() => props.searchQuery ?? '')
+const selectedMessageIds = computed(() => props.selectedMessageIds ?? [])
+const isGroup = computed(() => props.isGroup ?? false)
+const isTyping = computed(() => props.isTyping ?? false)
+const typingUsername = computed(() => props.typingUsername ?? '')
+const avatar = computed(() => props.avatar ?? '')
+const allImagesUrls = computed(() => props.allImagesUrls ?? [])
+const currentUserRole = computed(() => props.currentUserRole ?? 'member')
 
 const listRef = ref<HTMLElement | null>(null)
 const contextMenuRef = ref<InstanceType<typeof ChatMessageContextMenu> | null>(null)
@@ -102,7 +102,7 @@ const contextMenu = ref({
 useAutoScroll({
 	container: listRef,
 	enabled: () => true,
-	watchSource: () => props.messages.length + (props.isTyping ? 1 : 0),
+	watchSource: () => props.messages.length + (isTyping.value ? 1 : 0),
 })
 
 // Закрытие контекстного меню по клику снаружи
@@ -113,14 +113,14 @@ useClickOutside({
 })
 
 /** Набор ID выбранных сообщений */
-const selectedSet = computed(() => new Set(props.selectedMessageIds))
+const selectedSet = computed(() => new Set(selectedMessageIds.value))
 
 /** ID сообщения, для которого открыто контекстное меню */
 const activeContextMessageId = computed(() => contextMenu.value.message?.id ?? null)
 
 /** Проверка, активен ли режим выбора сообщений */
 const isSelectionMode = computed(() => {
-	return props.selectedMessageIds && props.selectedMessageIds.length > 0
+	return selectedMessageIds.value.length > 0
 })
 
 /** Обработка клика по аватару */

@@ -63,28 +63,29 @@ import './BaseCard.style.scss'
 
 import type { BaseCardProps, BaseCardSlots } from './BaseCard.types'
 
-const props = withDefaults(defineProps<BaseCardProps>(), {
-	isHoverable: false,
-	variant: 'default',
-	padding: 24,
-	sizeScale: 100,
-	scroll: false,
-})
+const props = defineProps<BaseCardProps>()
 
 defineSlots<BaseCardSlots>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-card', getVariant: () => props.variant })
+const isHoverable = computed(() => props.isHoverable ?? false)
+const variant = computed(() => props.variant ?? 'default')
+const padding = computed(() => props.padding ?? 24)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const scroll = computed(() => props.scroll ?? false)
+const height = computed(() => props.height)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-card', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'],
 })
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad', defaultPadding: 24 })
+const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--card-pad', defaultPadding: 24 })
 
 /** Стили карточки: padding и высота */
 const cardStyle = computed(() => ({
 	...paddingStyle.value,
-	'--card-height': props.height || 'auto',
+	'--card-height': height.value || 'auto',
 }))
 </script>

@@ -18,24 +18,25 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { computed } from 'vue'
 
 import './BaseBadge.style.scss'
 import type { BaseBadgeEmits, BaseBadgeProps } from './BaseBadge.types'
 
-const props = withDefaults(defineProps<BaseBadgeProps>(), {
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BaseBadgeProps>()
 
 const emit = defineEmits<BaseBadgeEmits>()
+
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'text'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-badge', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-badge', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 function handleClick(): void {

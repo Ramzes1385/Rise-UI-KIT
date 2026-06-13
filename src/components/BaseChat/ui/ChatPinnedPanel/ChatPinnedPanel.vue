@@ -70,10 +70,10 @@ interface ChatPinnedPanelProps {
 	sizeScale?: number
 }
 
-const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
-	currentUserRole: 'member',
-	sizeScale: 100,
-})
+const props = defineProps<ChatPinnedPanelProps>()
+
+const currentUserRole = computed(() => props.currentUserRole ?? 'member')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<{
 	(e: 'update:currentIndex', index: number): void

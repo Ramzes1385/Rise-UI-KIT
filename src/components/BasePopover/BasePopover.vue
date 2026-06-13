@@ -32,14 +32,14 @@ import { computed, ref, watch } from 'vue'
 import './BasePopover.style.scss'
 import type { BasePopoverEmits, BasePopoverProps } from './BasePopover.types'
 
-const props = withDefaults(defineProps<BasePopoverProps>(), {
-	isOpen: false,
-	position: 'bottom',
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BasePopoverProps>()
 
 const emit = defineEmits<BasePopoverEmits>()
+
+const isOpen = computed(() => props.isOpen ?? false)
+const position = computed(() => props.position ?? 'bottom')
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -47,11 +47,11 @@ const { classes } = useCustomClass({
 })
 
 /** Локальное состояние для немедленного реагирования */
-const isOpenLocal = ref(props.isOpen)
+const isOpenLocal = ref(isOpen.value)
 
 /** Синхронизация с prop при внешнем изменении */
 watch(
-	() => props.isOpen,
+	() => isOpen.value,
 	val => {
 		isOpenLocal.value = val
 	},
@@ -59,7 +59,7 @@ watch(
 
 /** CSS-классы панели */
 const panelClasses = computed((): string => {
-	return `base-popover__panel base-popover__panel--${props.variant}`
+	return `base-popover__panel base-popover__panel--${variant.value}`
 })
 
 /** Переключить видимость */

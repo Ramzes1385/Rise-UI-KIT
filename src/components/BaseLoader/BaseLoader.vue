@@ -43,18 +43,19 @@
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
+import { computed } from 'vue'
 import './BaseLoader.style.scss'
 import type { BaseLoaderProps } from './BaseLoader.types'
 
-const props = withDefaults(defineProps<BaseLoaderProps>(), {
-	variant: 'spinner',
-	hasLabel: false,
-	label: 'Загрузка...',
-	isOverlay: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseLoaderProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const variant = computed(() => props.variant ?? 'spinner')
+const hasLabel = computed(() => props.hasLabel ?? false)
+const label = computed(() => props.label ?? 'Загрузка...')
+const isOverlay = computed(() => props.isOverlay ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const { classes } = useCustomClass({

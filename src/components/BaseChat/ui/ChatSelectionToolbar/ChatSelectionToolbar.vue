@@ -34,6 +34,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { computed } from 'vue'
 import './ChatSelectionToolbar.style.scss'
 
 interface ChatSelectionToolbarProps {
@@ -41,9 +42,9 @@ interface ChatSelectionToolbarProps {
 	sizeScale?: number
 }
 
-withDefaults(defineProps<ChatSelectionToolbarProps>(), {
-	sizeScale: 100,
-})
+const props = defineProps<ChatSelectionToolbarProps>()
+
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<{
 	(e: 'forward'): void

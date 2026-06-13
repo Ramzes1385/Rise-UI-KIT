@@ -135,7 +135,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, ref } from 'vue'
 import './BaseChat.style.scss'
-import type { BaseChatEmits, BaseChatProps, ChatMessage, ChatMessageAttachment } from './BaseChat.types'
+import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from './BaseChat.types'
 
 import { ChatHeader } from './ChatHeader'
 import { ChatInput } from './ChatInput'
@@ -150,23 +150,23 @@ interface MessageListExposed {
 	scrollToMessage: (messageId: string) => void
 }
 
-const props = withDefaults(defineProps<BaseChatProps>(), {
-	variant: 'bubble',
-	height: '500px',
-	sizeScale: 100,
-	isTyping: false,
-	typingUsername: '',
-	isGroup: false,
-	members: () => [],
-	quickReplies: () => [],
-	commands: () => [],
-	currentUserRole: 'member',
-})
+const props = defineProps<BaseChatProps>()
 
 const emit = defineEmits<BaseChatEmits>()
 
-const { variantClass, variantStyle } = useVariant({ block: 'base-chat', getVariant: () => props.variant })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const variant = computed(() => props.variant ?? 'bubble')
+const height = computed(() => props.height ?? '500px')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const isTyping = computed(() => props.isTyping ?? false)
+const typingUsername = computed(() => props.typingUsername ?? '')
+const isGroup = computed(() => props.isGroup ?? false)
+const members = computed(() => props.members ?? [])
+const quickReplies = computed(() => props.quickReplies ?? [])
+const commands = computed(() => props.commands ?? [])
+const currentUserRole = computed(() => props.currentUserRole ?? 'member')
+
+const { variantClass, variantStyle } = useVariant({ block: 'base-chat', getVariant: () => variant.value })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -189,6 +189,8 @@ const {
 	filteredMessages,
 	allImagesUrls,
 	handleMessageSelect,
+	handleMessageReply,
+	handleCancelReply,
 	handleAvatarClick,
 	handleInfoClick,
 	handleScrollToPinned,
@@ -221,23 +223,13 @@ function handleReplyClick(replyToId: string): void {
 	messageListRef.value?.scrollToMessage(replyToId)
 }
 
-/** Обработка нажатия кнопки "Ответить" на сообщении */
-function handleMessageReply(msg: ChatMessage): void {
-	replyingTo.value = msg
-}
-
-/** Отмена режима ответа */
-function handleCancelReply(): void {
-	replyingTo.value = null
-}
-
 /** Обработка отправки сообщения */
 function handleSend(payload: { text: string; attachments?: ChatMessageAttachment[] }): void {
 	emit('send', {
 		...payload,
 		replyToId: replyingTo.value?.id || undefined,
 	})
-	replyingTo.value = null
+	handleCancelReply()
 }
 
 /** Обработка прикрепления файлов */

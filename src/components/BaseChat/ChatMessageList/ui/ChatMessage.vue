@@ -151,14 +151,14 @@ interface ChatMessageProps {
 	allImagesUrls?: string[]
 }
 
-const props = withDefaults(defineProps<ChatMessageProps>(), {
-	isGroup: false,
-	isSelectionMode: false,
-	isSelected: false,
-	isContextActive: false,
-	searchQuery: '',
-	allImagesUrls: () => [],
-})
+const props = defineProps<ChatMessageProps>()
+
+const isGroup = computed(() => props.isGroup ?? false)
+const isSelectionMode = computed(() => props.isSelectionMode ?? false)
+const isSelected = computed(() => props.isSelected ?? false)
+const isContextActive = computed(() => props.isContextActive ?? false)
+const searchQuery = computed(() => props.searchQuery ?? '')
+const allImagesUrls = computed(() => props.allImagesUrls ?? [])
 
 const emit = defineEmits<{
 	(event: 'avatar-click'): void
@@ -174,7 +174,7 @@ const emit = defineEmits<{
 }>()
 
 const gallery = computed(() =>
-	props.allImagesUrls && props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message),
+	allImagesUrls.value.length > 0 ? allImagesUrls.value : getMessageImageUrls(props.message),
 )
 
 function getMessageImageUrls(msg: ChatMessage): string[] {

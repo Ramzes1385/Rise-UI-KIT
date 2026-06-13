@@ -132,6 +132,26 @@ describe('useChatState unit', () => {
 		})
 	})
 
+	describe('ответ на сообщение', () => {
+		it('сохраняет сообщение, на которое отвечают', () => {
+			const selectedMessage = message('1')
+			const { state } = setup([selectedMessage])
+
+			state.handleMessageReply(selectedMessage)
+
+			expect(state.replyingTo.value).toStrictEqual(selectedMessage)
+		})
+
+		it('сбрасывает сообщение, на которое отвечают', () => {
+			const { state } = setup([message('1')])
+			state.handleMessageReply(message('1'))
+
+			state.handleCancelReply()
+
+			expect(state.replyingTo.value).toBeNull()
+		})
+	})
+
 	describe('панель информации', () => {
 		it('открывает профиль участника по клику на аватар', () => {
 			const { state, emit } = setup([message('1')])

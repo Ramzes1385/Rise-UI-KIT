@@ -47,18 +47,17 @@ import { computed, ref } from 'vue'
 import './BasePin.style.scss'
 import type { BasePinEmits, BasePinProps } from './BasePin.types'
 
-const props = withDefaults(defineProps<BasePinProps>(), {
-	length: 4,
-	type: 'text',
-	variant: 'default',
-	isDisabled: false,
-	sizeScale: 100,
-})
+const props = defineProps<BasePinProps>()
 
 const hasError = computed(() => Boolean(props.error))
+const length = computed(() => props.length ?? 4)
+const type = computed(() => props.type ?? 'text')
+const variant = computed(() => props.variant ?? 'default')
+const isDisabled = computed(() => props.isDisabled ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-pin', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-pin', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -72,7 +71,7 @@ const inputRefs = ref<HTMLInputElement[]>([])
 /** Ячейки для отображения: пустые строки вместо пробелов-заполнителей */
 const cells = computed(() => {
 	const result: string[] = []
-	for (let i = 0; i < props.length; i++) {
+	for (let i = 0; i < length.value; i++) {
 		const char = props.modelValue[i]
 		result.push(char && char !== ' ' ? char : '')
 	}
@@ -82,7 +81,7 @@ const cells = computed(() => {
 /** Нормализует modelValue в массив фиксированной длины (пробел = пустая ячейка) */
 function normalizeValue(val: string): string[] {
 	const result: string[] = []
-	for (let i = 0; i < props.length; i++) {
+	for (let i = 0; i < length.value; i++) {
 		result.push(val[i] || ' ')
 	}
 	return result
@@ -96,11 +95,11 @@ function handleInput(e: Event, index: number): void {
 	const result = chars.join('').trimEnd()
 	emit('update:modelValue', result)
 
-	if (val && index < props.length - 1) {
+	if (val && index < length.value - 1) {
 		inputRefs.value[index + 1]?.focus()
 	}
 
-	if (result.length === props.length && !result.includes(' ')) {
+	if (result.length === length.value && !result.includes(' ')) {
 		emit('complete', result)
 	}
 }
@@ -125,7 +124,7 @@ function handleKeyDown(e: KeyboardEvent, index: number): void {
 		inputRefs.value[index - 1]?.focus()
 	}
 
-	if (e.key === 'ArrowRight' && index < props.length - 1) {
+	if (e.key === 'ArrowRight' && index < length.value - 1) {
 		e.preventDefault()
 		inputRefs.value[index + 1]?.focus()
 	}
@@ -135,9 +134,9 @@ function handlePaste(e: ClipboardEvent): void {
 	e.preventDefault()
 	/* istanbul ignore next -- defensive `|| ''`: clipboardData всегда установлен в paste-событии, fallback недостижим */
 	const data = e.clipboardData?.getData('text') || ''
-	const val = data.replace(/\s/g, '').slice(0, props.length)
+	const val = data.replace(/\s/g, '').slice(0, length.value)
 	emit('update:modelValue', val)
-	if (val.length === props.length) {
+	if (val.length === length.value) {
 		emit('complete', val)
 	}
 }

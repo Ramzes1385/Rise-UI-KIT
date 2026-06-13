@@ -32,36 +32,37 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { usePadding } from '@composables/usePadding'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { computed } from 'vue'
 
 import './BaseButton.style.scss'
 
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from './BaseButton.types'
 
-const props = withDefaults(defineProps<BaseButtonProps>(), {
-	type: 'button',
-	variant: 'default',
-	padding: 10,
-	isLoading: false,
-	isDisabled: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseButtonProps>()
 
 const emit = defineEmits<BaseButtonEmits>()
 
 defineSlots<BaseButtonSlots>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const type = computed(() => props.type ?? 'button')
+const variant = computed(() => props.variant ?? 'default')
+const padding = computed(() => props.padding ?? 10)
+const isLoading = computed(() => props.isLoading ?? false)
+const isDisabled = computed(() => props.isDisabled ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { variantClass, variantStyle } = useVariant({
 	block: 'base-button',
-	getVariant: () => props.variant,
+	getVariant: () => variant.value,
 })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({ getClass: () => props.customClass })
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad', defaultPadding: 10 })
+const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--btn-pad', defaultPadding: 10 })
 
 /** Обработка клика */
 function handleClick(e: MouseEvent): void {
-	if (!props.isDisabled && !props.isLoading) {
+	if (!isDisabled.value && !isLoading.value) {
 		emit('click', e)
 	}
 }

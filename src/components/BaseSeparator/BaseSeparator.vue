@@ -39,15 +39,15 @@ import './BaseSeparator.style.scss'
 
 import type { BaseSeparatorProps } from './BaseSeparator.types'
 
-const props = withDefaults(defineProps<BaseSeparatorProps>(), {
-	orientation: 'horizontal',
-	thickness: 1,
-	isDashed: false,
-	spacing: 10,
-	sizeScale: 100,
-})
+const props = defineProps<BaseSeparatorProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const orientation = computed(() => props.orientation ?? 'horizontal')
+const thickness = computed(() => props.thickness ?? 1)
+const isDashed = computed(() => props.isDashed ?? false)
+const spacing = computed(() => props.spacing ?? 10)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -56,12 +56,12 @@ const { classes } = useCustomClass({
 
 /** Стиль spacing на контенте: Y = значение, X = значение * 2 */
 const spacingStyle = computed(() => ({
-	'--sep-pad-y': `${props.spacing}px`,
-	'--sep-pad-x': `${props.spacing * 2}px`,
+	'--sep-pad-y': `${spacing.value}px`,
+	'--sep-pad-x': `${spacing.value * 2}px`,
 }))
 
 /** Стиль толщины линии */
 const thicknessStyle = computed(() => ({
-	'--sep-thickness': `${props.thickness}px`,
+	'--sep-thickness': `${thickness.value}px`,
 }))
 </script>

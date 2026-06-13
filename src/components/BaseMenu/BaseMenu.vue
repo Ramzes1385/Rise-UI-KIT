@@ -41,16 +41,17 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { computed } from 'vue'
 import './BaseMenu.style.scss'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from './BaseMenu.types'
 
-const props = withDefaults(defineProps<BaseMenuProps>(), {
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BaseMenuProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-menu', getVariant: () => props.variant })
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-menu', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

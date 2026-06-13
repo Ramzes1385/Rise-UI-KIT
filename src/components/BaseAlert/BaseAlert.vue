@@ -60,22 +60,22 @@ import { computed } from 'vue'
 import './BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps } from './BaseAlert.types'
 
-const props = withDefaults(defineProps<BaseAlertProps>(), {
-	type: 'info',
-	variant: 'default',
-	isClosable: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseAlertProps>()
 
 const emit = defineEmits<BaseAlertEmits>()
+
+const type = computed(() => props.type ?? 'info')
+const variant = computed(() => props.variant ?? 'default')
+const isClosable = computed(() => props.isClosable ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-alert', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-alert', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 /** Иконка оповещения по умолчанию на основе типа */
@@ -88,7 +88,7 @@ const alertIcon = computed((): string => {
 		warning: 'alert-triangle',
 		error: 'x-circle',
 	}
-	return icons[props.type] || 'info'
+	return icons[type.value] || 'info'
 })
 
 /** Обработка клика по кнопке закрытия */

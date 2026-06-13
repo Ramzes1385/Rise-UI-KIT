@@ -75,16 +75,17 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
+import { computed } from 'vue'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 
-withDefaults(defineProps<ChatHeaderProps>(), {
-	sizeScale: 100,
-	isSearching: false,
-	searchQuery: '',
-	isTyping: false,
-	typingUsername: '',
-})
+const props = defineProps<ChatHeaderProps>()
+
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const isSearching = computed(() => props.isSearching ?? false)
+const searchQuery = computed(() => props.searchQuery ?? '')
+const isTyping = computed(() => props.isTyping ?? false)
+const typingUsername = computed(() => props.typingUsername ?? '')
 
 const emit = defineEmits<ChatHeaderEmits>()
 

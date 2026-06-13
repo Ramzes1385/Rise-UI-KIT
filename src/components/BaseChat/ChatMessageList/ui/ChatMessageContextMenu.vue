@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 
 interface ChatMessageContextMenuProps {
@@ -67,9 +67,9 @@ interface ChatMessageContextMenuProps {
 	popularEmojis?: string[]
 }
 
-withDefaults(defineProps<ChatMessageContextMenuProps>(), {
-	popularEmojis: () => ['👍', '❤️', '🔥', '😂', '😮', '😢'],
-})
+const props = defineProps<ChatMessageContextMenuProps>()
+
+const popularEmojis = computed(() => props.popularEmojis ?? ['👍', '❤️', '🔥', '😂', '😮', '😢'])
 
 const emit = defineEmits<{
 	(event: 'reaction', emoji: string): void

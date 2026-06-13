@@ -38,17 +38,18 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { computed } from 'vue'
 import './BaseFormField.style.scss'
 import type { BaseFormFieldProps } from './BaseFormField.types'
 
-const props = withDefaults(defineProps<BaseFormFieldProps>(), {
-	variant: 'default',
-	isRequired: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseFormFieldProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-form-field', getVariant: () => props.variant })
+const variant = computed(() => props.variant ?? 'default')
+const isRequired = computed(() => props.isRequired ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-form-field', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

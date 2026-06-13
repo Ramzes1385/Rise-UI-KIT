@@ -40,18 +40,18 @@ import BaseText from '../BaseText/BaseText.vue'
 import './BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps } from './BaseAvatar.types'
 
-const props = withDefaults(defineProps<BaseAvatarProps>(), {
-	alt: '',
-	shape: 'circle',
-	variant: 'default',
-	isOnline: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseAvatarProps>()
 
 const emit = defineEmits<BaseAvatarEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-avatar', getVariant: () => props.variant })
+const alt = computed(() => props.alt ?? '')
+const shape = computed(() => props.shape ?? 'circle')
+const variant = computed(() => props.variant ?? 'default')
+const isOnline = computed(() => props.isOnline ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-avatar', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

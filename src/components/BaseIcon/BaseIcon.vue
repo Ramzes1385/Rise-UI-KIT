@@ -21,21 +21,21 @@ import { computed } from 'vue'
 import './BaseIcon.style.scss'
 import type { BaseIconProps } from './BaseIcon.types'
 
-const props = withDefaults(defineProps<BaseIconProps>(), {
-	color: '',
-	rotate: 0,
-	isFlipX: false,
-	isFlipY: false,
-	ariaLabel: '',
-	sizeScale: 100,
-})
+const props = defineProps<BaseIconProps>()
+
+const color = computed(() => props.color ?? '')
+const rotate = computed(() => props.rotate ?? 0)
+const isFlipX = computed(() => props.isFlipX ?? false)
+const isFlipY = computed(() => props.isFlipY ?? false)
+const ariaLabel = computed(() => props.ariaLabel ?? '')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'svg'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 
 const { getIconUrl } = useIcon()
 
@@ -43,18 +43,18 @@ const { getIconUrl } = useIcon()
 const iconUrl = computed(() => getIconUrl(props.name))
 
 /** Декоративная иконка — без доступной метки */
-const isDecorative = computed(() => !props.ariaLabel)
+const isDecorative = computed(() => !ariaLabel.value)
 
 /** Инлайн-стили для цвета и трансформаций */
 const iconStyle = computed(() => {
 	const styles: Record<string, string> = {}
 
-	if (props.color) styles.color = props.color
+	if (color.value) styles.color = color.value
 
 	const transforms: string[] = []
-	if (props.rotate) transforms.push(`rotate(${props.rotate}deg)`)
-	if (props.isFlipX) transforms.push('scaleX(-1)')
-	if (props.isFlipY) transforms.push('scaleY(-1)')
+	if (rotate.value) transforms.push(`rotate(${rotate.value}deg)`)
+	if (isFlipX.value) transforms.push('scaleX(-1)')
+	if (isFlipY.value) transforms.push('scaleY(-1)')
 	if (transforms.length) styles.transform = transforms.join(' ')
 
 	return styles

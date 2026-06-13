@@ -52,18 +52,18 @@ import { computed } from 'vue'
 import './BaseEmpty.style.scss'
 import type { BaseEmptyProps } from './BaseEmpty.types'
 
-const props = withDefaults(defineProps<BaseEmptyProps>(), {
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BaseEmptyProps>()
+
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-empty', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-empty', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 /** Иконка по умолчанию */

@@ -13,19 +13,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
 
 import { useCustomClass } from '@composables/useCustomClass'
 
 import './BaseSkeleton.style.scss'
 import type { BaseSkeletonProps } from './BaseSkeleton.types'
 
-const props = withDefaults(defineProps<BaseSkeletonProps>(), {
-	shape: 'rect',
-	isAnimated: true,
-	isPulse: false,
-	sizeScale: 100,
-})
+const props = defineProps<BaseSkeletonProps>()
+const rawProps = getCurrentInstance()?.vnode.props
+
+const shape = computed(() => props.shape ?? 'rect')
+const isAnimated = computed(() =>
+	rawProps && ('isAnimated' in rawProps || 'is-animated' in rawProps) ? (props.isAnimated ?? true) : true,
+)
+const isPulse = computed(() => props.isPulse ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: function () {
@@ -37,7 +40,7 @@ const { classes } = useCustomClass({
 /** Вычисленные стили с учётом sizeScale и color */
 const skeletonStyle = computed(() => {
 	const styles: Record<string, string> = {}
-	const scale = props.sizeScale / 100
+	const scale = sizeScale.value / 100
 
 	if (props.width) {
 		styles.width =

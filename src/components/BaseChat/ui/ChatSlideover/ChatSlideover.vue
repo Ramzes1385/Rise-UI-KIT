@@ -291,12 +291,12 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed, ref } from 'vue'
-import type { ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
+import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
 import './ChatSlideover.style.scss'
 
 interface ChatSlideoverProps {
 	isOpen: boolean
-	activeTab: 'info' | 'media' | 'files' | 'links' | 'profile'
+	activeTab: ChatInfoTab
 	selectedMemberId: string | null
 	title: string
 	subtitle?: string
@@ -308,18 +308,18 @@ interface ChatSlideoverProps {
 	sizeScale?: number
 }
 
-const props = withDefaults(defineProps<ChatSlideoverProps>(), {
-	subtitle: '',
-	avatar: '',
-	isGroup: false,
-	members: () => [],
-	currentUserRole: 'member',
-	sizeScale: 100,
-})
+const props = defineProps<ChatSlideoverProps>()
+
+const subtitle = computed(() => props.subtitle ?? '')
+const avatar = computed(() => props.avatar ?? '')
+const isGroup = computed(() => props.isGroup ?? false)
+const members = computed(() => props.members ?? [])
+const currentUserRole = computed(() => props.currentUserRole ?? 'member')
+const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<{
 	(e: 'update:isOpen', value: boolean): void
-	(e: 'update:activeTab', tab: 'info' | 'media' | 'files' | 'links' | 'profile'): void
+	(e: 'update:activeTab', tab: ChatInfoTab): void
 	(e: 'update:selectedMemberId', id: string | null): void
 	(e: 'file-click', file: ChatMessageAttachment): void
 	(e: 'download-file', file: ChatMessageAttachment): void
@@ -348,30 +348,30 @@ const titleText = computed((): string => {
 })
 
 const availableTabs = computed(() => [
-	{ id: 'info' as const, label: props.isGroup ? 'Участники' : 'Инфо' },
+	{ id: 'info' as const, label: isGroup.value ? 'Участники' : 'Инфо' },
 	{ id: 'media' as const, label: 'Медиа' },
 	{ id: 'files' as const, label: 'Файлы' },
 	{ id: 'links' as const, label: 'Ссылки' },
 ])
 
 const selectedMember = computed((): ChatMember | null => {
-	if (!props.isGroup) {
+	if (!isGroup.value) {
 		// В личном чате всегда показываем профиль собеседника
 		return {
 			id: props.selectedMemberId || 'companion',
 			name: props.title,
-			avatar: props.avatar || '',
+			avatar: avatar.value,
 			role: 'member',
 			status:
-				props.subtitle?.includes('сети') ||
-				props.subtitle?.toLowerCase().includes('онлайн') ||
-				props.subtitle?.toLowerCase().includes('online')
+				subtitle.value.includes('сети') ||
+				subtitle.value.toLowerCase().includes('онлайн') ||
+				subtitle.value.toLowerCase().includes('online')
 					? 'online'
 					: 'offline',
 		}
 	}
 	if (!props.selectedMemberId) return null
-	return props.members.find(m => m.id === props.selectedMemberId) || null
+	return members.value.find(m => m.id === props.selectedMemberId) || null
 })
 
 /** Человекочитаемая дата публикации вложения/ссылки из родительского сообщения */

@@ -3,6 +3,7 @@ import type { CustomColor } from '@composables/useCustomColor'
 
 export type ChatMessageSender = 'me' | 'other'
 export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read'
+export type ChatInfoTab = 'info' | 'media' | 'files' | 'links' | 'profile'
 
 export interface ChatMessageAttachment {
 	/** Уникальный идентификатор вложения */

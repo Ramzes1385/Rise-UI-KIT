@@ -29,18 +29,19 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { computed } from 'vue'
 import './BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormProps } from './BaseForm.types'
 
-const props = withDefaults(defineProps<BaseFormProps>(), {
-	isLoading: false,
-	isDisabled: false,
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BaseFormProps>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-form', getVariant: () => props.variant })
+const isLoading = computed(() => props.isLoading ?? false)
+const isDisabled = computed(() => props.isDisabled ?? false)
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-form', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -50,7 +51,7 @@ const { classes } = useCustomClass({
 const emit = defineEmits<BaseFormEmits>()
 
 function handleSubmit(e: Event): void {
-	if (!props.isLoading && !props.isDisabled) {
+	if (!isLoading.value && !isDisabled.value) {
 		emit('submit', e)
 	}
 }

@@ -16,35 +16,35 @@ import { computed } from 'vue'
 import './BaseText.style.scss'
 import type { BaseTextProps } from './BaseText.types'
 
-const props = withDefaults(defineProps<BaseTextProps>(), {
-	tag: 'p',
-	weight: 400,
-	nowrap: false,
-	sizeScale: 100,
-	truncate: false,
-	maxLines: 1,
-})
+const props = defineProps<BaseTextProps>()
+
+const tag = computed(() => props.tag ?? 'p')
+const weight = computed(() => props.weight ?? 400)
+const nowrap = computed(() => props.nowrap ?? false)
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const truncate = computed(() => props.truncate ?? false)
+const maxLines = computed(() => props.maxLines ?? 1)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 /** Инлайн-стиль для начертания */
 const weightStyle = computed(() => ({
-	fontWeight: props.weight,
+	fontWeight: weight.value,
 }))
 
 /** Инлайн-стиль для ограничения строк */
 const maxLinesStyle = computed(() => {
-	if (!props.truncate) return {}
-	if (props.maxLines > 1) {
+	if (!truncate.value) return {}
+	if (maxLines.value > 1) {
 		return {
 			display: '-webkit-box',
-			WebkitLineClamp: props.maxLines,
+			WebkitLineClamp: maxLines.value,
 			WebkitBoxOrient: 'vertical',
 			overflow: 'hidden',
 		}
@@ -54,7 +54,7 @@ const maxLinesStyle = computed(() => {
 
 /** Классы-модификаторы по БЭМ */
 const modifierClasses = computed(() => [
-	{ 'base-text--nowrap': props.nowrap },
-	{ 'base-text--truncate': props.truncate && props.maxLines <= 1 },
+	{ 'base-text--nowrap': nowrap.value },
+	{ 'base-text--truncate': truncate.value && maxLines.value <= 1 },
 ])
 </script>

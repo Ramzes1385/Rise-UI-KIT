@@ -62,21 +62,21 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import './BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps } from './BaseAccordion.types'
 
-const props = withDefaults(defineProps<BaseAccordionProps>(), {
-	isMultiple: false,
-	variant: 'default',
-	sizeScale: 100,
-})
+const props = defineProps<BaseAccordionProps>()
 
 const emit = defineEmits<BaseAccordionEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-accordion', getVariant: () => props.variant })
+const isMultiple = computed(() => props.isMultiple ?? false)
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-accordion', getVariant: () => variant.value })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -101,7 +101,7 @@ function toggleItem(index: number): void {
 		openIndexes.value.splice(pos, 1)
 		emit('toggle', index, false)
 	} else {
-		if (props.isMultiple) {
+		if (isMultiple.value) {
 			openIndexes.value.push(index)
 		} else {
 			openIndexes.value = [index]

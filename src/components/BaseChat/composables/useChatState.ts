@@ -1,5 +1,7 @@
 import { computed, ref } from 'vue'
 import type { ChatMember, ChatMessage } from '../BaseChat.types'
+import { useChatInfoPanel } from './useChatInfoPanel'
+import { useChatReply } from './useChatReply'
 import { useChatSearch } from './useChatSearch'
 import { useChatSelection } from './useChatSelection'
 
@@ -27,10 +29,11 @@ export function useChatState(
 	const { selectedMessageIds, handleMessageSelect } = useChatSelection({
 		onMessageSelect: messageId => emit('message-select', messageId),
 	})
-	const replyingTo = ref<ChatMessage | null>(null)
-	const isInfoOpen = ref(false)
-	const activeTab = ref<'info' | 'media' | 'files' | 'links' | 'profile'>('info')
-	const selectedMemberId = ref<string | null>(null)
+	const { isInfoOpen, activeTab, selectedMemberId, handleAvatarClick, handleInfoClick } = useChatInfoPanel({
+		onAvatarClick: senderId => emit('avatar-click', senderId),
+		onInfoClick: () => emit('info-click'),
+	})
+	const { replyingTo, handleMessageReply, handleCancelReply } = useChatReply()
 
 	// Управление закрепленными сообщениями (несколько закрепов)
 	const currentPinnedIndex = ref(0)
@@ -49,35 +52,17 @@ export function useChatState(
 	// Глобальный массив картинок для Telegram-like скролла галереи
 	const allImagesUrls = computed((): string[] => {
 		const urls: string[] = []
-		for (const msg of props.messages) {
-			if (msg.attachments) {
-				for (const att of msg.attachments) {
-					if (att.type === 'image') {
-						urls.push(att.url)
+		for (const message of props.messages) {
+			if (message.attachments) {
+				for (const attachment of message.attachments) {
+					if (attachment.type === 'image') {
+						urls.push(attachment.url)
 					}
 				}
 			}
 		}
 		return urls
 	})
-
-	/** Обработка клика по аватару/имени автора */
-	function handleAvatarClick(senderId: string): void {
-		selectedMemberId.value = senderId
-		activeTab.value = 'profile'
-		isInfoOpen.value = true
-		emit('avatar-click', senderId)
-	}
-
-	/** Обработка клика по кнопке информации */
-	function handleInfoClick(): void {
-		isInfoOpen.value = !isInfoOpen.value
-		if (isInfoOpen.value) {
-			activeTab.value = 'info'
-			selectedMemberId.value = null
-		}
-		emit('info-click')
-	}
 
 	/** Перелистывание закрепов */
 	function handleNextPinned(): void {
@@ -110,6 +95,8 @@ export function useChatState(
 		filteredMessages,
 		allImagesUrls,
 		handleMessageSelect,
+		handleMessageReply,
+		handleCancelReply,
 		handleAvatarClick,
 		handleInfoClick,
 		handleNextPinned,
