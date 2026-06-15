@@ -297,7 +297,7 @@ describe('BaseFileUpload unit', () => {
 			const { container } = render(BaseFileUpload, { props: {} })
 			const dropzone = container.querySelector('.base-file-upload__dropzone')!
 
-			await fireEvent.drop(dropzone, { dataTransfer: null })
+			await fireEvent.drop(dropzone, {})
 
 			expect(container.querySelector('.base-file-upload__list')).not.toBeInTheDocument()
 		})

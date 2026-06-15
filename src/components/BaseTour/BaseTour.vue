@@ -120,6 +120,7 @@ import './BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from './BaseTour.types'
 import { DEFAULT_RADIUS, useTourLogic } from './useTourLogic'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	isOpen: { type: Boolean, default: false },
 	steps: { type: Array as PropType<BaseTourProps['steps']>, required: true },
@@ -140,6 +141,7 @@ const props = defineProps({
 	showProgress: { type: Boolean, default: true },
 	customClass: [String, Object] as PropType<BaseTourProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()

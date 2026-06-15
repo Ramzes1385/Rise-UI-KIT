@@ -63,6 +63,18 @@ const COMPONENT_COVERAGE_INCLUDE = ['src/components/**/*.vue']
 
 const COVERAGE_MODE = process.env.COVERAGE_MODE ?? ''
 
+// Storybook addon-vitest определяет режим по process.env.VITEST уже во время
+// построения конфига. В CLI этот env может быть ещё не выставлен, из-за чего
+// storybookTest() возвращает пустой массив плагинов и stories не превращаются в тесты.
+process.env.VITEST ??= 'true'
+
+/** Подавляет шумные логи трансформации storybookTest в консоли тестов. */
+const originalConsoleLog = console.log
+console.log = (...args: unknown[]) => {
+	if (typeof args[0] === 'string' && args[0].includes('[storybookTest transform]')) return
+	originalConsoleLog(...args)
+}
+
 function isCi(): boolean {
 	return process.env.CI === 'true'
 }
@@ -76,6 +88,8 @@ function getCoverageDir(): string {
 function getCoverageInclude(): string[] {
 	if (COVERAGE_MODE === 'storybook') return STORYBOOK_COVERAGE_INCLUDE
 	if (COVERAGE_MODE === 'components') return COMPONENT_COVERAGE_INCLUDE
+	if (COVERAGE_MODE === 'composables') return ['src/composables/**/*.ts']
+	if (COVERAGE_MODE === 'utils') return ['src/utils/**/*.ts']
 	return BASE_COVERAGE_INCLUDE
 }
 
@@ -90,6 +104,10 @@ function getCoverageThresholds() {
 }
 
 const coverageThresholds = getCoverageThresholds()
+const storybookPlugins = await storybookTest({
+	configDir: path.join(dirname, '../storybook'),
+	renderer: 'vue',
+})
 
 export default defineConfig({
 	root: ROOT,
@@ -144,37 +162,34 @@ export default defineConfig({
 					name: 'unit-integration',
 					environment: 'jsdom',
 					pool: 'forks',
+					testTimeout: 30_000,
 					setupFiles: [path.resolve(dirname, 'setup-vitest.ts')],
 					include: ['src/**/*.spec.ts', 'src/**/*.integration.spec.ts'],
 					exclude: ['src/**/*.visual.spec.ts', 'src/**/*.e2e.spec.ts'],
 				},
 			},
-			{
-				extends: true,
-				plugins: [
-					storybookTest({
-						configDir: path.join(dirname, '../storybook'),
-						renderer: 'vue',
-					}),
-				],
-				test: {
-					name: 'storybook',
-					dir: ROOT,
-					browser: {
-						enabled: true,
-						headless: true,
-						provider: playwright({}),
-						instances: [{ browser: 'chromium' }],
-						isolate: false,
-						api: {
-							port: 45000,
-						},
+		{
+			extends: true,
+			plugins: [...storybookPlugins],
+			test: {
+				name: 'storybook',
+				dir: ROOT,
+				exclude: ['**/*.spec.ts', '**/*.integration.spec.ts', '**/*.visual.spec.ts', '**/*.e2e.spec.ts'],
+				browser: {
+					enabled: true,
+					headless: true,
+					provider: playwright({}),
+					instances: [{ browser: 'chromium' }],
+					isolate: false,
+					api: {
+						port: 45000,
 					},
-					setupFiles: [path.resolve(dirname, 'setup-storybook.ts')],
-					testTimeout: 60_000,
-					hookTimeout: 60_000,
 				},
+				setupFiles: [path.resolve(dirname, 'setup-storybook.ts')],
+				testTimeout: 60_000,
+				hookTimeout: 60_000,
 			},
+		},
 		],
 	},
 })

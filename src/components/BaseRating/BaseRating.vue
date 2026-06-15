@@ -38,6 +38,7 @@ import './BaseRating.style.scss'
 import type { BaseRatingEmits, BaseRatingProps } from './BaseRating.types'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from './BaseRating.utils'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	modelValue: { type: Number, default: 0 },
 	max: { type: Number, default: 5 },
@@ -52,6 +53,7 @@ const props = defineProps({
 	color: Object as PropType<BaseRatingProps['color']>,
 	customClass: [String, Object] as PropType<BaseRatingProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const modelValue = computed(() => props.modelValue ?? 0)
 const max = computed(() => props.max ?? 5)

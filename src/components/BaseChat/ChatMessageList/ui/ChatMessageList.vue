@@ -62,6 +62,8 @@
 </template>
 
 <script setup lang="ts">
+import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
 import { useClickOutside } from '@composables/useClickOutside'
 import { copyTextToClipboard } from '@utils/clipboardUtils'

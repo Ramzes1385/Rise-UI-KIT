@@ -193,6 +193,7 @@ import BaseText from '../BaseText/BaseText.vue'
 import './BaseImage.style.scss'
 import type { BaseImageEmits, BaseImageProps } from './BaseImage.types'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	src: { type: String, required: true },
 	alt: { type: String, required: true },
@@ -219,6 +220,7 @@ const props = defineProps({
 	sizeScale: { type: Number, default: 100 },
 	customClass: [String, Object] as PropType<BaseImageProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

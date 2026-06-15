@@ -148,6 +148,7 @@ import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, val
 
 import './BaseFileUpload.style.scss'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	customClass: [String, Object] as PropType<BaseFileUploadProps['customClass']>,
 	accept: { type: String, default: '' },
@@ -165,6 +166,7 @@ const props = defineProps({
 	sizeScale: { type: Number, default: 100 },
 	error: { type: String, default: '' },
 })
+/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { variantClass, variantStyle } = useVariant({ block: 'base-file-upload', getVariant: () => props.variant })

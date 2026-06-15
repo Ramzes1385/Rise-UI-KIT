@@ -1069,6 +1069,37 @@ describe('BaseSearch unit', () => {
 			expect(container.querySelector('.base-dropdown-stub')?.getAttribute('data-is-open')).toBe('false')
 		})
 
+		it('должен закрывать dropdown при событии close', async () => {
+			const focusConfig = {
+				stubs: {
+					...globalConfig.stubs,
+					BaseDropdown: {
+						template:
+							'<div class="base-dropdown-stub" :data-is-open="isOpen" @click="$emit(\'close\')"><slot /><slot v-if="isOpen" name="dropdown" /></div>',
+						props: ['isOpen'],
+						emits: ['close'],
+					},
+					BaseInput: {
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" :value="modelValue" />',
+						props: ['modelValue'],
+						emits: ['focus'],
+						methods: { focus: vi.fn() },
+					},
+				},
+			}
+
+			const { container } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: [{ id: 1, title: 'Тест' }] },
+				global: focusConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await fireEvent.focus(input)
+			expect(container.querySelector('.base-dropdown-stub')?.getAttribute('data-is-open')).toBe('true')
+
+			await fireEvent.click(container.querySelector('.base-dropdown-stub')!)
+			expect(container.querySelector('.base-dropdown-stub')?.getAttribute('data-is-open')).toBe('false')
+		})
+
 		it('должен изменять подсвеченный индекс при наведении мыши на результат', async () => {
 			const focusConfig = {
 				stubs: {

@@ -290,6 +290,7 @@ import './BaseSearch.style.scss'
 import BaseSearchInput from './ui/BaseSearchInput.vue'
 import BaseSearchResults from './ui/BaseSearchResults.vue'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	modelValue: { type: String, default: '' },
 	placeholder: { type: String, default: 'Поиск...' },
@@ -309,6 +310,7 @@ const props = defineProps({
 	error: { type: String, default: '' },
 	customClass: [String, Object] as PropType<BaseSearchProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const emit = defineEmits<BaseSearchEmits>()
 

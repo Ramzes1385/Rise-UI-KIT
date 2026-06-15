@@ -65,6 +65,7 @@ import type { PropType } from 'vue'
 import './BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from './BaseModal.types'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	isOpen: { type: Boolean, required: true },
 	title: String,
@@ -77,6 +78,7 @@ const props = defineProps({
 	hasOverlay: { type: Boolean, default: true },
 	customClass: [String, Object] as PropType<BaseModalProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { variantClass, variantStyle } = useVariant({ block: 'base-modal', getVariant: () => props.variant })

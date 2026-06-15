@@ -164,6 +164,7 @@ import type { PropType } from 'vue'
 import './BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps } from './BaseSlider.types'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	customClass: [String, Object] as PropType<BaseSliderProps['customClass']>,
 	items: { type: Array as PropType<BaseSliderProps['items']>, required: true },
@@ -184,6 +185,7 @@ const props = defineProps({
 	hasCaption: { type: Boolean, default: true },
 	isZoomable: { type: Boolean, default: false },
 })
+/* eslint-enable vue/require-default-prop */
 
 const emit = defineEmits<BaseSliderEmits>()
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })

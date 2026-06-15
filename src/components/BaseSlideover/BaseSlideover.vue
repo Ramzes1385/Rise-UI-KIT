@@ -62,6 +62,7 @@ import { usePopup } from '@composables/usePopup'
 import './BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps } from './BaseSlideover.types'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	customClass: [String, Object] as PropType<BaseSlideoverProps['customClass']>,
 	isOpen: { type: Boolean, required: true },
@@ -76,6 +77,7 @@ const props = defineProps({
 	hasOverlay: { type: Boolean, default: true },
 	padding: { type: [Number, Object] as PropType<BaseSlideoverProps['padding']>, default: 24 },
 })
+/* eslint-enable vue/require-default-prop */
 
 const { classes } = useCustomClass({
 	getClass: function () {

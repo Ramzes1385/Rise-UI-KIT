@@ -216,6 +216,7 @@ import type { PropType } from 'vue'
 import './BaseSelect.style.scss'
 import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from './BaseSelect.types'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	modelValue: { type: [String, Number, Array] as PropType<BaseSelectProps['modelValue']>, default: '' },
 	options: { type: Array as PropType<BaseSelectProps['options']>, required: true },
@@ -231,6 +232,7 @@ const props = defineProps({
 	sizeScale: { type: Number, default: 100 },
 	customClass: [String, Object] as PropType<BaseSelectProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { variantClass, variantStyle } = useVariant({ block: 'base-select', getVariant: () => props.variant })

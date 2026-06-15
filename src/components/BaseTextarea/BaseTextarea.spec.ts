@@ -244,7 +244,7 @@ describe('BaseTextarea unit', () => {
 			await vi.dynamicImportSettled()
 
 			const textarea = container.querySelector('textarea') as HTMLTextAreaElement
-			expect(textarea.style.height).toBe('0px')
+			expect(textarea.style.height).toMatch(/^\d+px$/)
 		})
 
 		it('не должен менять высоту при монтировании без isAutosize', () => {

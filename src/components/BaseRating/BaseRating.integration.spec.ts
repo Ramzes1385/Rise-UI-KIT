@@ -22,8 +22,6 @@ function stars(container: ParentNode): HTMLElement[] {
 
 describe('BaseRating integration', () => {
 	it('должен обновлять внешнее значение через v-model при клике', async () => {
-		const user = userEvent.setup()
-
 		const Host = defineComponent({
 			components: { BaseRating },
 			setup() {
@@ -37,8 +35,10 @@ describe('BaseRating integration', () => {
 		})
 
 		const { container } = render(Host)
-
-		await user.click(stars(container)[3])
+		const star = stars(container)[3]
+		mockStarRect(star)
+		// clientX: 20 дает ratio = 1.0, что для 4-й звезды (index 3) дает значение 4
+		await fireEvent.click(star, { clientX: 20 })
 
 		expect(screen.getByTestId('value')).toHaveTextContent('4')
 	})

@@ -49,6 +49,7 @@ import type { PropType } from 'vue'
 import './BasePagination.style.scss'
 import type { BasePaginationEmits, BasePaginationProps } from './BasePagination.types'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	modelValue: { type: Number, required: true },
 	total: { type: Number, required: true },
@@ -60,6 +61,7 @@ const props = defineProps({
 	sizeScale: { type: Number, default: 100 },
 	customClass: [String, Object] as PropType<BasePaginationProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const pageSize = computed(() => props.pageSize ?? 10)
 const maxVisible = computed(() => props.maxVisible ?? 7)

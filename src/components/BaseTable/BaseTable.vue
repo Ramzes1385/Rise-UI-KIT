@@ -200,7 +200,9 @@ import type { BaseTableEmits, BaseTableProps, TableColumn, TableRow } from './mo
 import './styles/BaseTable.style.scss'
 
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
+import { BaseLoader } from '@components/BaseLoader'
+import { BasePagination } from '@components/BasePagination'
+import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useColumnResize } from '@composables/useColumnResize/useColumnResize'
@@ -230,9 +232,9 @@ import {
 } from './model/BaseTable.constants'
 import BaseTableBody from './ui/BaseTableBody.vue'
 import BaseTableHeader from './ui/BaseTableHeader.vue'
-import BaseTablePagination from './ui/BaseTablePagination.vue'
 import BaseTableToolbar from './ui/BaseTableToolbar.vue'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	columns: { type: Array as PropType<BaseTableProps['columns']>, required: true },
 	rows: { type: Array as PropType<BaseTableProps['rows']>, required: true },
@@ -258,6 +260,7 @@ const props = defineProps({
 	padding: { type: [Number, Object] as PropType<BaseTableProps['padding']>, default: 10 },
 	customClass: [String, Object] as PropType<BaseTableProps['customClass']>,
 })
+/* eslint-enable vue/require-default-prop */
 
 const variant = computed(() => props.variant ?? 'default')
 const isLoading = computed(() => props.isLoading ?? false)
@@ -461,20 +464,8 @@ const pageSizeSelectOptions = computed(() => {
 	}))
 })
 
-const showPageSizeSelector = computed((): boolean => {
-	return hasPageSizeSelector.value && pageSizeOptions.value.length > 0
-})
-
 const showToolbar = computed((): boolean => {
 	return hasSearch.value || hasFilters.value || hasColumnSettings.value || !!slots['toolbar-prepend'] || !!slots['toolbar-append']
-})
-
-const showPagination = computed((): boolean => {
-	return loadMode.value === 'pagination' && localPageSize.value > 0 && totalPages.value > 1
-})
-
-const showFooterBar = computed((): boolean => {
-	return showPageSizeSelector.value || showPagination.value
 })
 
 /** Опции селекта колонок для фильтра */

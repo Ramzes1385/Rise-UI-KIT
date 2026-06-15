@@ -74,11 +74,25 @@ describe('BaseIcon', () => {
 		expect(svg?.style.transform).toContain('scaleX(-1)')
 	})
 
+	it('должен явно обрабатывать isFlipX=false', () => {
+		render(BaseIcon, { props: { name: 'close', isFlipX: false } })
+
+		const svg = getIconSvg()
+		expect(svg?.style.transform).not.toContain('scaleX(-1)')
+	})
+
 	it('должен применять отражение по вертикали', () => {
 		render(BaseIcon, { props: { name: 'close', isFlipY: true } })
 
 		const svg = getIconSvg()
 		expect(svg?.style.transform).toContain('scaleY(-1)')
+	})
+
+	it('должен явно обрабатывать isFlipY=false', () => {
+		render(BaseIcon, { props: { name: 'close', isFlipY: false } })
+
+		const svg = getIconSvg()
+		expect(svg?.style.transform).not.toContain('scaleY(-1)')
 	})
 
 	it('должен комбинировать поворот и отражение', () => {

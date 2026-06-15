@@ -164,7 +164,19 @@ describe('BaseRating unit', () => {
 		it('должен использовать полную звезду при нулевой ширине геометрии', async () => {
 			const { container, emitted } = render(BaseRating, { props: { step: 1, isHoverSmooth: false } })
 
-			await fireEvent.click(getStars(container)[1])
+			const star = getStars(container)[1]
+			vi.spyOn(star, 'getBoundingClientRect').mockReturnValue({
+				left: 0,
+				width: 0,
+				top: 0,
+				right: 0,
+				bottom: 0,
+				height: 0,
+				x: 0,
+				y: 0,
+				toJSON: () => ({}),
+			} as DOMRect)
+			await fireEvent.click(star)
 
 			expect(emitted()['update:modelValue']).toEqual([[2]])
 		})

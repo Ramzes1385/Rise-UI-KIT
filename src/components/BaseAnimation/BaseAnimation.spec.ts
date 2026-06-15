@@ -77,6 +77,33 @@ describe('BaseAnimation unit', () => {
 			const list = container.querySelector('ul')
 			expect(list).toBeInTheDocument()
 		})
+
+		it('должен использовать isGroup=false по умолчанию', () => {
+			const { container } = render(BaseAnimation, {
+				props: { show: true },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			expect(container.querySelector('.base-animation')).toBeInTheDocument()
+		})
+	})
+
+	describe('пропс mode', () => {
+		it('должен использовать mode по умолчанию', () => {
+			const wrapper = mount(BaseAnimation, {
+				props: { show: true },
+				slots: { default: '<p>Контент</p>' },
+			})
+			expect(wrapper.exists()).toBe(true)
+		})
+
+		it('должен использовать заданный mode', () => {
+			const wrapper = mount(BaseAnimation, {
+				props: { show: true, mode: 'in-out' },
+				slots: { default: '<p>Контент</p>' },
+			})
+			expect(wrapper.exists()).toBe(true)
+		})
 	})
 
 	describe('emit after-enter', () => {

@@ -356,6 +356,7 @@ import { useVariant } from '@composables/useVariant'
 import { onMounted, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 
+/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	customClass: [String, Object] as PropType<BaseEditorProps['customClass']>,
 	modelValue: { type: String, default: '' },
@@ -367,6 +368,7 @@ const props = defineProps({
 	isAutofocus: { type: Boolean, default: false },
 	sizeScale: { type: Number, default: 100 },
 })
+/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { variantClass, variantStyle } = useVariant({ block: 'base-editor', getVariant: () => props.variant })
