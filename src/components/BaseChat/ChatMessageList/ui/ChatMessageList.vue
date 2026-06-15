@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH } from '@constants/ui'
+import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'

@@ -273,7 +273,7 @@
 import { calcIconScale } from '@components/BaseIcon'
 import type { BaseSearchEmits, BaseSearchProps, SearchResult } from './BaseSearch.types'
 
-import { UI_DEBOUNCE_DEFAULT_MS, UI_SEARCH_PLACEHOLDER } from '@constants/ui'
+import { UI_DEBOUNCE_DEFAULT_MS, UI_SEARCH_PLACEHOLDER } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon } from '@components/BaseIcon'

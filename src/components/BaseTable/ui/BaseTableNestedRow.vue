@@ -41,7 +41,7 @@
 import { BaseText } from '@components/BaseText'
 
 import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
-import BaseTable from '../BaseTable.vue'
+import BaseTable from './BaseTable.vue'
 
 defineProps<{
 	row: TableRow

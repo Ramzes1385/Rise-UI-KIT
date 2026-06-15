@@ -205,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants/ui'
+import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'

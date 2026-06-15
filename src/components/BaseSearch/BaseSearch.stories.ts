@@ -10,9 +10,9 @@ import { ref } from 'vue'
 
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import type { SearchResult } from '../model/BaseSearch.types'
-import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
-import BaseSearch from '../ui/BaseSearch.vue'
+import type { SearchResult } from './BaseSearch.types'
+import { SEARCH_VARIANTS } from './BaseSearch.types'
+import BaseSearch from './BaseSearch.vue'
 
 /** Демо-данные для результатов поиска (с иконками) */
 const MOCK_RESULTS: SearchResult[] = [

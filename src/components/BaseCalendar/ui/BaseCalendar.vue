@@ -215,7 +215,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_TODAY_TEXT } from '@constants/ui'
+import { UI_TODAY_TEXT } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'

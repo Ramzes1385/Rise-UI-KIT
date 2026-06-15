@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 
 import type { TableColumn } from '../model/BaseTable.types'
-import BaseTable from '../BaseTable.vue'
+import BaseTable from '../ui/BaseTable.vue'
 
 const globalConfig = {
 	stubs: {

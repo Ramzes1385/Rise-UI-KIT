@@ -218,7 +218,7 @@ import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle } fro
 import { computed, ref, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
 
-import { UI_EMPTY_TEXT } from '@constants/ui'
+import { UI_EMPTY_TEXT } from '@constants'
 import {
 	TABLE_DEFAULT_SKELETON_ROWS,
 	TABLE_EXPAND_TRANSITION_DURATION,

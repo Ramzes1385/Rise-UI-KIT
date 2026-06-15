@@ -97,7 +97,7 @@ import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem 
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_SIDEBAR_DEFAULT_WIDTH } from '@constants/ui'
+import { UI_SIDEBAR_DEFAULT_WIDTH } from '@constants'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
