@@ -195,9 +195,9 @@
 
 <script setup lang="ts">
 import { calcIconScale } from '@components/BaseIcon'
-import type { BaseTableEmits, BaseTableProps, TableColumn, TableRow } from './model/BaseTable.types'
+import type { BaseTableEmits, BaseTableProps, TableColumn, TableRow } from '../model/BaseTable.types'
 
-import './styles/BaseTable.style.scss'
+import '../styles/BaseTable.style.scss'
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
@@ -230,10 +230,10 @@ import {
 	TABLE_ROW_SELECTION_WIDTH,
 	TABLE_SEARCH_DEBOUNCE_MS,
 	TABLE_SETTINGS_MAX_HEIGHT,
-} from './model/BaseTable.constants'
-import BaseTableBody from './ui/BaseTableBody.vue'
-import BaseTableHeader from './ui/BaseTableHeader.vue'
-import BaseTableToolbar from './ui/BaseTableToolbar.vue'
+} from '../model/BaseTable.constants'
+import BaseTableBody from './BaseTableBody.vue'
+import BaseTableHeader from './BaseTableHeader.vue'
+import BaseTableToolbar from './BaseTableToolbar.vue'
 
 /* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
