@@ -1,2 +1,2 @@
-export type { BaseSkeletonProps } from './BaseSkeleton.types'
-export { default as BaseSkeleton } from './BaseSkeleton.vue'
+export type { BaseSkeletonProps } from './model/BaseSkeleton.types'
+export { default as BaseSkeleton } from './ui/BaseSkeleton.vue'

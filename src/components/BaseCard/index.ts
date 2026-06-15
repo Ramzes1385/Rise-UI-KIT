@@ -1,2 +1,2 @@
-export type { BaseCardProps, BaseCardSlots } from './BaseCard.types'
-export { default as BaseCard } from './BaseCard.vue'
+export type { BaseCardProps, BaseCardSlots } from './model/BaseCard.types'
+export { default as BaseCard } from './ui/BaseCard.vue'

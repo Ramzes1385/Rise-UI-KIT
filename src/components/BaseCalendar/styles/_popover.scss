@@ -1,0 +1,75 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-calendar {
+	&__popover {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 50;
+		margin-top: sz(8px);
+		background-color: var(--color-surface);
+		border: sz(1px) solid var(--color-border);
+		border-radius: var(--border-radius-base);
+		box-shadow: 0 sz(4px) sz(16px) rgba(0, 0, 0, 0.12);
+		min-width: sz(180px);
+		white-space: nowrap;
+	}
+
+	&__popover-arrow {
+		position: absolute;
+		top: sz(-6px);
+		left: 50%;
+		transform: translateX(-50%) rotate(45deg);
+		width: sz(10px);
+		height: sz(10px);
+		background-color: var(--color-surface);
+		border-top: sz(1px) solid var(--color-border);
+		border-left: sz(1px) solid var(--color-border);
+	}
+
+	&__popover-content {
+		display: flex;
+		align-items: center;
+		padding: sz(8px 12px);
+	}
+
+	&__popover-date {
+		font-size: sz(13px);
+		font-weight: 500;
+		color: var(--color-text);
+	}
+
+	&__popover-highlights {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		padding: sz(4px 12px sz(8px));
+		border-top: sz(1px) solid var(--color-border);
+	}
+
+	&__popover-highlight {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+	}
+
+	&__popover-highlight-dot {
+		width: sz(8px);
+		height: sz(8px);
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	&__day-dot {
+		position: absolute;
+		bottom: sz(2px);
+		left: 50%;
+		transform: translateX(-50%);
+		width: sz(4px);
+		height: sz(4px);
+		border-radius: 50%;
+	}
+}

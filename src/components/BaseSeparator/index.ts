@@ -3,5 +3,5 @@ export type {
 	BaseSeparatorProps,
 	BaseSeparatorSlots,
 	SeparatorOrientation,
-} from './BaseSeparator.types'
-export { default as BaseSeparator } from './BaseSeparator.vue'
+} from './model/BaseSeparator.types'
+export { default as BaseSeparator } from './ui/BaseSeparator.vue'

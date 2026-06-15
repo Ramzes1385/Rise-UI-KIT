@@ -1,0 +1,30 @@
+.base-chat-message-list {
+	&__reply-quote {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		padding: sz(4px) sz(10px);
+		border-left: sz(3px) solid;
+		border-radius: sz(4px);
+		margin-bottom: sz(8px);
+		cursor: pointer;
+		transition: opacity 0.3s ease-in-out;
+
+		&:hover {
+			opacity: 0.85;
+		}
+	}
+
+	&__reply-sender {
+		font-size: sz(12px);
+	}
+
+	&__reply-text {
+		margin: 0;
+		font-size: sz(12px);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: sz(240px);
+	}
+}

@@ -10,16 +10,16 @@
 				custom-class="base-chat-input__quick-reply-btn"
 				:aria-label="`Быстрый ответ: ${reply}`"
 				@click="handleQuickReply(reply)">
-				<BaseText :size-scale="sizeScale * 0.8" :weight="500">{{ reply }}</BaseText>
+				<BaseText :size-scale="sizeScale * UI_SCALE_SMALL" :weight="500">{{ reply }}</BaseText>
 			</BaseButton>
 		</div>
 
 		<!-- Панель ответа на сообщение -->
 		<div v-if="replyingTo" class="base-chat-input__reply-bar">
 			<div class="base-chat-input__reply-info">
-				<BaseIcon name="reply" :size-scale="sizeScale * 0.8" class="base-chat-input__reply-icon" />
+				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-icon" />
 				<div class="base-chat-input__reply-content">
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale * 0.8" class="base-chat-input__reply-sender">
+					<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-sender">
 						{{ replyingTo.senderName || 'Сообщение' }}
 					</BaseText>
 					<BaseText tag="p" :size-scale="sizeScale * 0.75" class="base-chat-input__reply-text">
@@ -30,12 +30,12 @@
 			<BaseButton
 				variant="ghost"
 				:padding="1"
-				:size-scale="sizeScale * 0.8"
+				:size-scale="sizeScale * UI_SCALE_SMALL"
 				class="base-chat-input__reply-cancel"
 				aria-label="Отменить ответ на сообщение"
 				@click="handleCancelReply">
 				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale * 0.8" />
+					<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				</template>
 			</BaseButton>
 		</div>
@@ -49,8 +49,8 @@
 					:alt="file.name"
 					class="base-chat-input__preview-image" />
 				<div v-else class="base-chat-input__preview-file">
-					<BaseIcon name="file" :size-scale="sizeScale * 0.8" />
-					<BaseText tag="span" :size-scale="sizeScale * 0.8" class="base-chat-input__preview-filename">
+					<BaseIcon name="file" :size-scale="sizeScale * UI_SCALE_SMALL" />
+					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__preview-filename">
 						{{ file.name }}
 					</BaseText>
 				</div>
@@ -147,7 +147,7 @@
 						@click="replaceCurrentWord('@', member.name)">
 						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * 0.6" />
 						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * 0.85" :weight="600">{{ member.name }}</BaseText>
+							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">{{ member.name }}</BaseText>
 							<BaseText v-if="member.role" :size-scale="sizeScale * 0.7" class="base-chat-input__autocomplete-sub">
 								{{ member.role === 'admin' ? 'Администратор' : 'Участник' }}
 							</BaseText>
@@ -167,7 +167,7 @@
 						@click="replaceCurrentWord('/', command.name)">
 						<BaseIcon name="file-config" :size-scale="sizeScale * 0.75" class="base-chat-input__autocomplete-icon" />
 						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * 0.85" :weight="600">/{{ command.name }}</BaseText>
+							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">/{{ command.name }}</BaseText>
 							<BaseText :size-scale="sizeScale * 0.7" class="base-chat-input__autocomplete-sub">
 								{{ command.description }}
 							</BaseText>
@@ -205,6 +205,7 @@
 </template>
 
 <script setup lang="ts">
+import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants/ui'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'

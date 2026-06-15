@@ -1,0 +1,247 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-calendar {
+	&__weekdays {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: sz(2px);
+		margin-bottom: sz(4px);
+	}
+
+	&--range &__weekdays {
+		gap: 0;
+	}
+
+	&__week-num-header,
+	&__week-num {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: sz(11px);
+		color: var(--color-text-muted);
+		opacity: 0.5;
+		width: sz(28px);
+	}
+
+	&__weekday {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: sz(12px);
+		font-weight: 600;
+		color: var(--color-text-muted);
+		text-transform: uppercase;
+		padding: sz(4px 0);
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: sz(2px);
+	}
+
+	&--range &__grid {
+		// gap: 0;
+	}
+
+	&__day-wrapper {
+		position: relative;
+	}
+
+	&__day {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: sz(36px);
+		min-width: unset;
+		min-height: unset;
+		padding: 0;
+		border: none;
+		border-radius: var(--border-radius-base);
+		background: transparent;
+		color: var(--color-text);
+		font-size: sz(14px);
+		font-weight: 400;
+		cursor: pointer;
+		@include interactive;
+
+		@include hover {
+			background-color: var(--color-border);
+			color: var(--color-text);
+			filter: none;
+
+			.base-button__content,
+			.base-text {
+				color: var(--color-text);
+			}
+		}
+
+		&--other {
+			@include custom-text(color, var(--color-text-muted));
+			opacity: 0.4;
+		}
+
+		&--today {
+			font-weight: 700;
+			border: sz(2px) solid var(--color-accent);
+			@include custom-bg(background-color, rgba(249, 115, 22, 0.08));
+		}
+
+		&--selected {
+			@include custom-bg(background-color, var(--color-accent));
+			@include custom-text(color, var(--color-white));
+			font-weight: 600;
+			box-shadow: 0 sz(2px) sz(8px) rgba(249, 115, 22, 0.35);
+
+			.base-button__content,
+			.base-text {
+				color: var(--color-white);
+			}
+
+			&.base-calendar__day--today {
+				border-color: var(--color-accent);
+			}
+
+			@include hover {
+				@include custom-bg(background-color, var(--color-accent));
+				@include custom-text(color, var(--color-white));
+				filter: brightness(1.1);
+
+				.base-button__content,
+				.base-text {
+					color: var(--color-white);
+				}
+			}
+		}
+
+		&--range {
+			@include custom-bg(background-color, rgba(249, 115, 22, 0.15));
+			border-radius: 0;
+			@include custom-text(color, var(--color-text));
+
+			.base-button__content,
+			.base-text {
+				color: var(--color-text);
+			}
+
+			@include hover {
+				@include custom-bg(background-color, rgba(249, 115, 22, 0.25));
+				@include custom-text(color, var(--color-text));
+				filter: none;
+
+				.base-button__content,
+				.base-text {
+					color: var(--color-text);
+				}
+			}
+		}
+
+		&--start {
+			border-radius: var(--border-radius-base) 0 0 var(--border-radius-base);
+			@include custom-bg(background-color, var(--color-accent));
+			@include custom-text(color, var(--color-white));
+			box-shadow: 0 sz(2px) sz(8px) rgba(249, 115, 22, 0.35);
+
+			.base-button__content,
+			.base-text {
+				color: var(--color-white);
+			}
+
+			@include hover {
+				@include custom-bg(background-color, var(--color-accent));
+				@include custom-text(color, var(--color-white));
+				filter: brightness(1.1);
+
+				.base-button__content,
+				.base-text {
+					color: var(--color-white);
+				}
+			}
+		}
+
+		&--end {
+			border-radius: 0 var(--border-radius-base) var(--border-radius-base) 0;
+			@include custom-bg(background-color, var(--color-accent));
+			@include custom-text(color, var(--color-white));
+			box-shadow: 0 sz(2px) sz(8px) rgba(249, 115, 22, 0.35);
+
+			.base-button__content,
+			.base-text {
+				color: var(--color-white);
+			}
+
+			@include hover {
+				@include custom-bg(background-color, var(--color-accent));
+				@include custom-text(color, var(--color-white));
+				filter: brightness(1.1);
+
+				.base-button__content,
+				.base-text {
+					color: var(--color-white);
+				}
+			}
+		}
+
+		&--weekend {
+			color: var(--color-error);
+
+			.base-button__content,
+			.base-text {
+				color: var(--color-error);
+			}
+
+			@include hover {
+				color: var(--color-error);
+
+				.base-button__content,
+				.base-text {
+					color: var(--color-error);
+				}
+			}
+		}
+
+		&--custom {
+			padding: 0;
+			min-width: unset;
+			min-height: unset;
+			background: transparent;
+			border: none;
+
+			.base-button__content {
+				padding: 0;
+			}
+
+			@include hover {
+				background: transparent;
+				filter: none;
+
+				.base-button__content,
+				.base-text {
+					color: var(--color-text);
+				}
+			}
+		}
+
+		&--disabled {
+			opacity: 0.3;
+			cursor: not-allowed;
+			pointer-events: none;
+		}
+
+		&--out-of-range {
+			opacity: 0.35;
+		}
+
+		@include focus {
+			box-shadow:
+				0 0 0 sz(2px) var(--color-bg),
+				0 0 0 sz(4px) var(--color-accent);
+			outline: none;
+		}
+	}
+}

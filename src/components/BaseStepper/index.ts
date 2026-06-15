@@ -1,4 +1,4 @@
-export { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from './BaseStepper.types'
+export { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from './model/BaseStepper.types'
 export type {
 	BaseStepperItemSlot,
 	BaseStepperProps,
@@ -6,5 +6,5 @@ export type {
 	StepperOrientation,
 	StepperShape,
 	StepperVariant,
-} from './BaseStepper.types'
-export { default as BaseStepper } from './BaseStepper.vue'
+} from './model/BaseStepper.types'
+export { default as BaseStepper } from './ui/BaseStepper.vue'

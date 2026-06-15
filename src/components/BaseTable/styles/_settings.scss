@@ -1,0 +1,27 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-table {
+	&__settings {
+		position: relative;
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+	}
+
+	&__settings-panel {
+		min-width: sz(180px);
+		width: max-content;
+		max-width: calc(100vw - 24px);
+	}
+
+	&__settings-item {
+		padding: sz(3px) sz(4px);
+		border-radius: var(--border-radius-sm);
+
+		@include hover {
+			background-color: var(--color-surface-muted);
+		}
+	}
+}

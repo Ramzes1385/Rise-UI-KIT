@@ -1,0 +1,132 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-table {
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(8px);
+		padding: sz(8px) sz(12px);
+		box-shadow: inset 0 -1px 0 0 var(--color-border);
+		@include custom-bg(background-color, var(--color-surface-muted));
+		align-items: center;
+	}
+
+	&__search {
+		flex: 1;
+		min-width: 160px;
+		max-width: 280px;
+	}
+
+	&__filters {
+		display: flex;
+		gap: sz(6px);
+		align-items: center;
+		flex-wrap: nowrap;
+	}
+
+	&__filters .base-select,
+	&__filters .base-input {
+		flex: 0 1 sz(150px);
+		min-width: sz(130px);
+	}
+
+	&__filters .base-select__trigger,
+	&__filters .base-input__wrapper {
+		box-sizing: border-box;
+		height: sz(32px);
+		min-height: sz(32px);
+		max-height: sz(32px);
+	}
+
+	&__filters .base-select__trigger {
+		padding: sz(5px) sz(30px) sz(5px) sz(10px);
+	}
+
+	&__filters .base-select__values {
+		align-items: center;
+		flex-wrap: nowrap;
+		gap: sz(4px);
+		font-size: sz(13px);
+		line-height: 1.25;
+		max-height: sz(20px);
+	}
+
+	&__filters .base-input__field {
+		height: 100%;
+		padding: 0 sz(10px);
+		font-size: sz(13px);
+		line-height: sz(30px);
+	}
+
+	&__filter-sep {
+		width: 1px;
+		height: sz(16px);
+		@include custom-bg(background-color, var(--color-border));
+		flex-shrink: 0;
+	}
+
+	&__filter-add-btn.base-button {
+		min-width: sz(24px);
+		height: sz(24px);
+		padding: 0;
+		flex-shrink: 0;
+		overflow: visible;
+		color: var(--color-accent);
+		gap: 0;
+
+		@include hover {
+			@include custom-bg(background-color, var(--color-accent-soft, rgba(249, 115, 22, 0.08)));
+		}
+
+		.base-button__content {
+			overflow: visible;
+		}
+
+		.base-icon {
+			display: block;
+		}
+	}
+
+	&__settings-btn {
+		min-width: sz(28px);
+		width: sz(28px);
+		height: sz(28px);
+		padding: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__active-filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+		width: 100%;
+		padding-top: sz(2px);
+	}
+
+	&__filter-tag {
+		cursor: pointer;
+		font-size: sz(10px);
+		color: var(--color-text-muted);
+		font-weight: 500;
+		line-height: 1;
+		padding: sz(3px) sz(6px);
+		padding-right: sz(4px);
+		border-radius: var(--border-radius-sm);
+		@include custom-bg(background-color, var(--color-surface));
+		outline: 1px solid var(--color-border);
+		outline-offset: -1px;
+		transition:
+			outline-color 0.15s ease,
+			color 0.15s ease;
+		white-space: nowrap;
+
+		@include hover {
+			outline-color: var(--color-accent);
+			color: var(--color-accent);
+		}
+	}
+}

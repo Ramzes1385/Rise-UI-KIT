@@ -4,5 +4,5 @@ export type {
 	BaseProgressSlots,
 	ProgressAnimation,
 	ProgressShape,
-} from './BaseProgress.types'
-export { default as BaseProgress } from './BaseProgress.vue'
+} from './model/BaseProgress.types'
+export { default as BaseProgress } from './ui/BaseProgress.vue'

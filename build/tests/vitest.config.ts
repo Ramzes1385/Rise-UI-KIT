@@ -23,6 +23,7 @@ const ALIASES: Record<string, string> = {
 	'@': path.resolve(ROOT, 'src'),
 	'@components': path.resolve(ROOT, 'src/components'),
 	'@composables': path.resolve(ROOT, 'src/composables'),
+	'@constants': path.resolve(ROOT, 'src/constants'),
 	'@icons': path.resolve(ROOT, 'src/icons'),
 	'@styles': path.resolve(ROOT, 'src/styles'),
 	'@ui': path.resolve(ROOT, 'src/components'),

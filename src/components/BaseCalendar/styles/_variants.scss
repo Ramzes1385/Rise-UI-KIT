@@ -1,0 +1,43 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-calendar {
+	width: sz(300px);
+	user-select: none;
+	overflow: visible;
+	@include custom-text(color, var(--color-text));
+
+	&.base-card .base-card__body {
+		padding: sz(12px);
+		overflow: visible;
+	}
+
+	&--week-numbers &__weekdays {
+		grid-template-columns: sz(28px) repeat(7, 1fr);
+	}
+
+	&--week-numbers &__grid {
+		grid-template-columns: sz(28px) repeat(7, 1fr);
+	}
+
+	&--disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	&--ghost {
+		.base-calendar__day--selected {
+			@include custom-bg(background-color, var(--color-surface-muted));
+			@include custom-text(color, var(--color-text));
+			box-shadow: none;
+		}
+	}
+
+	&--soft {
+		.base-calendar__day--selected {
+			@include custom-bg(background-color, var(--color-primary));
+			@include custom-text(color, var(--color-white));
+		}
+	}
+}

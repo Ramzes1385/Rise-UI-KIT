@@ -1,2 +1,2 @@
-export type { BaseFormEmits, BaseFormProps } from './BaseForm.types'
-export { default as BaseForm } from './BaseForm.vue'
+export type { BaseFormEmits, BaseFormProps } from './model/BaseForm.types'
+export { default as BaseForm } from './ui/BaseForm.vue'

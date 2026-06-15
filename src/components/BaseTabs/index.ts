@@ -1,2 +1,2 @@
-export * from './BaseTabs.types'
-export { default as BaseTabs } from './BaseTabs.vue'
+export * from './model/BaseTabs.types'
+export { default as BaseTabs } from './ui/BaseTabs.vue'

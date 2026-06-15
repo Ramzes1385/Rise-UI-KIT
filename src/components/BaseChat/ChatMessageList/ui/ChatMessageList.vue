@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH } from '@constants/ui'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
@@ -166,8 +167,8 @@ function handleFileClick(file: ChatMessageAttachment): void {
 function handleContextMenu(event: MouseEvent, msg: ChatMessage): void {
 	/* istanbul ignore next — defensive: contextmenu заблокирован в режиме выбора через CSS */
 	if (isSelectionMode.value) return
-	const menuWidth = 200
-	const menuHeight = 280
+	const menuWidth = UI_CONTEXT_MENU_DEFAULT_WIDTH
+	const menuHeight = UI_CONTEXT_MENU_DEFAULT_HEIGHT
 	const windowWidth = window.innerWidth
 	const windowHeight = window.innerHeight
 

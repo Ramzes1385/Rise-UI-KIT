@@ -1,6 +1,6 @@
 export { useEditorToolbar } from '@composables/useEditorToolbar'
 export type { EditorActiveStates, MediaContextMenuState, UseEditorToolbarOptions } from '@composables/useEditorToolbar'
-export { EDITOR_VARIANTS } from './BaseEditor.types'
+export { EDITOR_VARIANTS } from './model/BaseEditor.types'
 export type {
 	BaseEditorEmits,
 	BaseEditorProps,
@@ -8,5 +8,5 @@ export type {
 	EditorAlign,
 	EditorFormat,
 	EditorHeading,
-} from './BaseEditor.types'
-export { default as BaseEditor } from './BaseEditor.vue'
+} from './model/BaseEditor.types'
+export { default as BaseEditor } from './ui/BaseEditor.vue'

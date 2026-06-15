@@ -184,6 +184,10 @@
 3. Вынести тесты в `__tests__/`.
 4. Вынести стили в `styles/`.
 
+**Уже сделано:**
+- `BaseCalendar`, `BaseTable`, `ChatMessageList` приведены к стандарту `ui/model/styles/__tests__`.
+- **Все** оставшиеся компоненты библиотеки (`BaseAccordion`, `BaseAlert`, `BaseAnimation`, `BaseAvatar`, `BaseBadge`, `BaseBreadcrumbs`, `BaseButton`, `BaseCard`, `BaseCheckbox`, `BaseChip`, `BaseColorPicker`, `BaseDropdown`, `BaseEditor`, `BaseEmpty`, `BaseFileUpload`, `BaseForm`, `BaseFormField`, `BaseIcon`, `BaseImage`, `BaseInput`, `BaseLoader`, `BaseMegaMenu`, `BaseMenu`, `BaseModal`, `BaseNotification`, `BasePagination`, `BasePin`, `BasePopover`, `BaseProgress`, `BaseRadio`, `BaseRange`, `BaseRating`, `BaseSelect`, `BaseSeparator`, `BaseSkeleton`, `BaseSlideover`, `BaseSlider`, `BaseStepper`, `BaseSwitch`, `BaseTabs`, `BaseText`, `BaseTextarea`, `BaseTooltip`, `BaseTour`, `BaseTree`) реорганизованы в структуру `ui/model/styles/stories/__tests__` с полным обновлением всех импортов в кодовой базе.
+
 #### 5. Устранение использования `withDefaults`
 
 **Проблема:** `CONTRIBUTING.md` запрещает `withDefaults`, но почти все компоненты его используют.
@@ -216,6 +220,16 @@
    - Размеры (`40px`, `36px`, `280px`, `320px`, `500px`).
    - Задержки (`300` ms).
    - Строки (`'Нет данных'`, `'Ничего не найдено'`, `'Поиск...'`, `'Сегодня'`).
+
+**Уже сделано:**
+- Создан `src/constants/ui.ts` с глобальными константами (`UI_EMPTY_TEXT`, `UI_NO_RESULTS_TEXT`, `UI_SEARCH_PLACEHOLDER`, `UI_TODAY_TEXT`, `UI_DEBOUNCE_DEFAULT_MS`, `UI_ANIMATION_DURATION_MS`, `UI_PANEL_MAX_HEIGHT`, `UI_SIDEBAR_DEFAULT_WIDTH`, `UI_MODAL_DEFAULT_WIDTH`, `UI_SCALE_SMALL`, `UI_SCALE_MEDIUM`, `UI_SCALE_LARGE`, `UI_CONTEXT_MENU_DEFAULT_WIDTH`, `UI_CONTEXT_MENU_DEFAULT_HEIGHT`, `UI_SCALE_AUTOCOMPLETE`).
+- Добавлен алиас `@constants` в `build/config/alias.ts`, `build/tests/vitest.config.ts` и `tsconfig.app.json`.
+- `BaseTable.vue`: заменены `'Нет данных'` на `UI_EMPTY_TEXT`.
+- `BaseSearch.vue`: заменены `'Поиск...'` на `UI_SEARCH_PLACEHOLDER` и `300` на `UI_DEBOUNCE_DEFAULT_MS`.
+- `BaseCalendar.vue`: заменено `'Сегодня'` на `UI_TODAY_TEXT`.
+- `BaseSideBar.vue`: заменено `280` на `UI_SIDEBAR_DEFAULT_WIDTH`.
+- `ChatMessageList.vue`: заменены `200` и `280` на `UI_CONTEXT_MENU_DEFAULT_WIDTH` и `UI_CONTEXT_MENU_DEFAULT_HEIGHT`.
+- `ChatInput.vue`: заменены магические коэффициенты `0.8` и `0.85` на `UI_SCALE_SMALL` и `UI_SCALE_AUTOCOMPLETE`.
 
 ### Средний приоритет
 
@@ -262,6 +276,12 @@
 1. Разбить `BaseTable.style.scss`, `ChatMessageList.style.scss`, `BaseCalendar.style.scss` на модули по БЭМ-блокам.
 2. Вынести общие миксины в `src/styles/mixins/`.
 3. Избегать чрезмерной вложенности (>3 уровня).
+
+**Уже сделано:**
+- `BaseCalendar.style.scss` разбит на `_header.scss`, `_grid.scss`, `_popover.scss`, `_months-years.scss`, `_time.scss`, `_variants.scss`.
+- `ChatMessageList.style.scss` разбит на `_list.scss`, `_reply.scss`, `_attachments.scss`, `_text.scss`, `_reactions.scss`, `_meta.scss`, `_context-menu.scss`, `_animations.scss`.
+- `BaseTable.style.scss` разбит на `_root.scss`, `_toolbar.scss`, `_wrapper.scss`, `_table.scss`, `_header.scss`, `_row.scss`, `_cell.scss`, `_settings.scss`, `_footer-bar.scss`.
+- Все частичные файлы корректно импортируют глобальные миксины и функции через `@use "@styles/..."`.
 
 ### Низкий приоритет
 

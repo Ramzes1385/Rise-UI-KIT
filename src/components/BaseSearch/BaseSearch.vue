@@ -273,6 +273,7 @@
 import { calcIconScale } from '@components/BaseIcon'
 import type { BaseSearchEmits, BaseSearchProps, SearchResult } from './BaseSearch.types'
 
+import { UI_DEBOUNCE_DEFAULT_MS, UI_SEARCH_PLACEHOLDER } from '@constants/ui'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon } from '@components/BaseIcon'
@@ -293,14 +294,14 @@ import BaseSearchResults from './ui/BaseSearchResults.vue'
 /* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
 	modelValue: { type: String, default: '' },
-	placeholder: { type: String, default: 'Поиск...' },
+	placeholder: { type: String, default: UI_SEARCH_PLACEHOLDER },
 	sizeScale: { type: Number, default: 100 },
 	variant: { type: String as PropType<BaseSearchProps['variant']>, default: 'default' },
 	color: Object as PropType<BaseSearchProps['color']>,
 	mode: { type: String as PropType<BaseSearchProps['mode']>, default: 'default' },
 	results: { type: Array as PropType<BaseSearchProps['results']>, default: () => [] },
 	isInstant: { type: Boolean, default: true },
-	debounceMs: { type: Number, default: 300 },
+	debounceMs: { type: Number, default: UI_DEBOUNCE_DEFAULT_MS },
 	isLoading: { type: Boolean, default: false },
 	hasClear: { type: Boolean, default: true },
 	hasIcon: { type: Boolean, default: true },

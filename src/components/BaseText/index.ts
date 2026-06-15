@@ -1,2 +1,2 @@
-export type { BaseTextProps } from './BaseText.types'
-export { default as BaseText } from './BaseText.vue'
+export type { BaseTextProps } from './model/BaseText.types'
+export { default as BaseText } from './ui/BaseText.vue'

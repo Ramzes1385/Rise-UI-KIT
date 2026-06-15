@@ -1,0 +1,46 @@
+.base-chat-message-list {
+	&__text {
+		margin: 0;
+		word-break: break-word;
+	}
+
+	&__link {
+		color: var(--color-primary);
+		text-decoration: underline;
+		transition: color 0.3s ease-in-out;
+
+		&:hover {
+			color: var(--color-accent);
+		}
+	}
+
+	&__mention,
+	&__command {
+		display: inline;
+		padding: 0 sz(2px);
+		margin: 0;
+		border: none;
+		background: rgba(var(--color-accent-rgb, 99, 102, 241), 0.12);
+		color: var(--color-accent);
+		font: inherit;
+		font-weight: 600;
+		border-radius: sz(4px);
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease-in-out,
+			color 0.2s ease-in-out;
+
+		&:hover {
+			background: rgba(var(--color-accent-rgb, 99, 102, 241), 0.22);
+		}
+	}
+
+	&__highlight {
+		background-color: rgba(254, 240, 138, 0.8);
+		color: #000000;
+		border-radius: sz(2px);
+		padding: 0 sz(2px);
+		font-weight: 600;
+		box-shadow: 0 0 0 sz(1px) rgba(254, 240, 138, 0.8);
+	}
+}

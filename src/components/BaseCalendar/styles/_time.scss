@@ -1,0 +1,53 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-calendar {
+	&__time {
+		display: flex;
+		justify-content: center;
+		padding: sz(12px 0 4px);
+		border-top: sz(1px) solid var(--color-border);
+		margin-top: sz(12px);
+	}
+
+	&__time-field {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+	}
+
+	&__time-input {
+		width: sz(52px);
+
+		input[type='number'] {
+			-moz-appearance: textfield;
+			text-align: center;
+			padding: 0 sz(2px);
+
+			&::-webkit-inner-spin-button,
+			&::-webkit-outer-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+		}
+	}
+
+	&__time-sep {
+		font-size: sz(14px);
+		font-weight: 700;
+		color: var(--color-text);
+	}
+
+	&__time-ampm {
+		min-width: sz(52px);
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: center;
+		padding-top: sz(8px);
+		border-top: sz(1px) solid var(--color-border);
+		margin-top: sz(8px);
+	}
+}

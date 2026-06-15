@@ -1,2 +1,2 @@
-export type { BaseRadioEmits, BaseRadioOption, BaseRadioProps } from './BaseRadio.types'
-export { default as BaseRadio } from './BaseRadio.vue'
+export type { BaseRadioEmits, BaseRadioOption, BaseRadioProps } from './model/BaseRadio.types'
+export { default as BaseRadio } from './ui/BaseRadio.vue'

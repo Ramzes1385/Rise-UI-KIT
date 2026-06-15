@@ -5,7 +5,7 @@
 
 import type { App, Plugin } from 'vue'
 
-import BaseIcon from '@components/BaseIcon/BaseIcon.vue'
+import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 
 export interface IconPluginOptions {
 	/** Имя компонента для глобальной регистрации. */

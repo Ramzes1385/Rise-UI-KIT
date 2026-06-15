@@ -1,4 +1,4 @@
-import type { SliderAnimation } from '@components/BaseSlider/BaseSlider.types'
+import type { SliderAnimation } from '@components/BaseSlider/model/BaseSlider.types'
 import type { ComputedRef, Ref } from 'vue'
 
 /** Параметры composable useSlider */

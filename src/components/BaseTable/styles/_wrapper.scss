@@ -1,0 +1,40 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-table {
+	&__wrapper {
+		position: relative;
+		overflow-x: auto;
+		overflow-y: auto;
+
+		&--loading {
+			pointer-events: none;
+		}
+
+		&::-webkit-scrollbar {
+			height: 6px;
+			width: 6px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: var(--color-surface-muted);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: var(--color-border);
+			border-radius: 3px;
+		}
+	}
+
+	&__loading-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 5;
+		pointer-events: none;
+		backdrop-filter: blur(10px);
+	}
+}

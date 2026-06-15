@@ -1,0 +1,43 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-calendar {
+	&__months {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: sz(8px);
+		padding: sz(8px 0);
+		min-height: sz(224px);
+	}
+
+	&__month-btn {
+		width: 100%;
+		justify-content: center;
+
+		&--current {
+			@include custom-bg(background-color, var(--color-accent));
+			@include custom-text(color, var(--color-white));
+			border-color: var(--color-accent);
+		}
+	}
+
+	&__years {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: sz(8px);
+		padding: sz(8px 0);
+		min-height: sz(224px);
+	}
+
+	&__year-btn {
+		width: 100%;
+		justify-content: center;
+
+		&--current {
+			@include custom-bg(background-color, var(--color-accent));
+			@include custom-text(color, var(--color-white));
+			border-color: var(--color-accent);
+		}
+	}
+}

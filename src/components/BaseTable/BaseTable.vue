@@ -218,6 +218,7 @@ import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle } fro
 import { computed, ref, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
 
+import { UI_EMPTY_TEXT } from '@constants/ui'
 import {
 	TABLE_DEFAULT_SKELETON_ROWS,
 	TABLE_EXPAND_TRANSITION_DURATION,
@@ -241,7 +242,7 @@ const props = defineProps({
 	variant: { type: String as PropType<BaseTableProps['variant']>, default: 'default' },
 	color: Object as PropType<BaseTableProps['color']>,
 	isLoading: { type: Boolean, default: false },
-	emptyText: { type: String, default: 'Нет данных' },
+	emptyText: { type: String, default: UI_EMPTY_TEXT },
 	height: { type: String, default: '' },
 	isSelectable: { type: Boolean, default: false },
 	hasSearch: { type: Boolean, default: false },
@@ -264,7 +265,7 @@ const props = defineProps({
 
 const variant = computed(() => props.variant ?? 'default')
 const isLoading = computed(() => props.isLoading ?? false)
-const emptyText = computed(() => props.emptyText ?? 'Нет данных')
+const emptyText = computed(() => props.emptyText ?? UI_EMPTY_TEXT)
 const height = computed(() => props.height ?? '')
 const isSelectable = computed(() => props.isSelectable ?? false)
 const hasSearch = computed(() => props.hasSearch ?? false)

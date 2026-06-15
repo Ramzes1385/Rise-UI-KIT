@@ -1,0 +1,146 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-table {
+	&__th {
+		padding: sz(var(--tbl-pad-top)) sz(var(--tbl-pad-right)) sz(var(--tbl-pad-bottom)) sz(var(--tbl-pad-left));
+		font-size: sz(11px);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		@include custom-text(color, var(--color-text-muted));
+		@include custom-bg(background-color, var(--color-surface-muted));
+		box-shadow: inset 0 -2px 0 0 var(--color-border);
+		white-space: nowrap;
+		position: sticky;
+		top: 0;
+		z-index: 3;
+		overflow: hidden;
+		text-overflow: ellipsis;
+
+		&--left {
+			text-align: left;
+		}
+
+		&--number {
+			width: 40px;
+			text-align: center;
+		}
+
+		&--center {
+			text-align: center;
+		}
+
+		&--right {
+			text-align: right;
+		}
+
+		&--sortable {
+			@include interactive;
+			cursor: pointer;
+
+			@include hover {
+				color: var(--color-accent);
+				background-color: rgba(249, 115, 22, 0.04);
+			}
+		}
+
+		&--sorted {
+			color: var(--color-accent);
+		}
+
+		&--check {
+			text-align: center;
+			padding: 0;
+
+			.base-checkbox__box {
+				box-shadow: none;
+				width: 16px;
+				height: 16px;
+			}
+
+			.base-checkbox__wrapper {
+				width: 16px;
+				height: 16px;
+			}
+
+			.base-checkbox__icon {
+				font-size: 10px;
+			}
+
+			.base-checkbox {
+				gap: 0;
+				margin: auto;
+				max-width: max-content;
+			}
+		}
+
+		&--expand {
+			width: 36px;
+		}
+
+		&--sticky-left {
+			position: sticky;
+			left: 0;
+			z-index: 4;
+		}
+
+		&--sticky-right {
+			position: sticky;
+			right: 0;
+			z-index: 4;
+		}
+	}
+
+	&__th-content {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		min-width: 0;
+	}
+
+	&__th-label {
+		font-size: inherit;
+		font-weight: inherit;
+		text-transform: inherit;
+		letter-spacing: inherit;
+		color: inherit;
+	}
+
+	&__sort-icon {
+		font-size: sz(10px);
+		opacity: 0.5;
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		flex-shrink: 0;
+	}
+
+	&__sort-index {
+		font-size: sz(9px);
+		font-weight: bold;
+		color: var(--color-accent);
+	}
+
+	&__th--sorted &__sort-icon {
+		opacity: 1;
+		color: var(--color-accent);
+	}
+
+	&__resizer {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: sz(5px);
+		height: 100%;
+		cursor: col-resize;
+		user-select: none;
+		z-index: 1;
+
+		@include hover {
+			background-color: var(--color-accent);
+			opacity: 0.5;
+		}
+	}
+}

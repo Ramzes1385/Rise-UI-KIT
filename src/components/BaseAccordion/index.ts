@@ -3,5 +3,5 @@ export type {
 	BaseAccordionItem,
 	BaseAccordionProps,
 	BaseAccordionSlots,
-} from './BaseAccordion.types'
-export { default as BaseAccordion } from './BaseAccordion.vue'
+} from './model/BaseAccordion.types'
+export { default as BaseAccordion } from './ui/BaseAccordion.vue'

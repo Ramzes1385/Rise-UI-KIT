@@ -1,3 +1,3 @@
-export { DROPDOWN_VARIANTS } from './BaseDropdown.types'
-export type { BaseDropdownEmits, BaseDropdownProps, DropdownPosition } from './BaseDropdown.types'
-export { default as BaseDropdown } from './BaseDropdown.vue'
+export { DROPDOWN_VARIANTS } from './model/BaseDropdown.types'
+export type { BaseDropdownEmits, BaseDropdownProps, DropdownPosition } from './model/BaseDropdown.types'
+export { default as BaseDropdown } from './ui/BaseDropdown.vue'

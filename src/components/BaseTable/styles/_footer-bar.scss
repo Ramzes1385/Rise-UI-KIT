@@ -1,0 +1,45 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-table {
+	&__load-more {
+		padding: sz(12px);
+		text-align: center;
+		box-shadow: inset 0 1px 0 0 var(--color-border);
+	}
+
+	&__empty-text {
+		font-size: sz(14px);
+		color: var(--color-text-muted);
+	}
+
+	&__footer-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		padding: sz(6px) sz(10px);
+		box-shadow: inset 0 1px 0 0 var(--color-border);
+		@include custom-bg(background-color, var(--color-surface-muted));
+	}
+
+	&__pagination-info {
+		font-size: sz(11px);
+		color: var(--color-text-muted);
+		white-space: nowrap;
+	}
+
+	&__page-size {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		margin-right: auto;
+	}
+
+	&__page-size-label {
+		font-size: sz(11px);
+		color: var(--color-text-muted);
+		white-space: nowrap;
+	}
+}

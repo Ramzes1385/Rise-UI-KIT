@@ -15,6 +15,7 @@ export function createAliasConfig(): AliasOptions {
 		'@': srcPath,
 		'@components': resolveFromRoot(SOURCE_DIR, 'components'),
 		'@composables': resolveFromRoot(SOURCE_DIR, 'composables'),
+		'@constants': resolveFromRoot(SOURCE_DIR, 'constants'),
 		'@icons': resolveFromRoot(SOURCE_DIR, 'icons'),
 		'@styles': resolveFromRoot(SOURCE_DIR, 'styles'),
 		'@ui': resolveFromRoot(SOURCE_DIR, 'components'),

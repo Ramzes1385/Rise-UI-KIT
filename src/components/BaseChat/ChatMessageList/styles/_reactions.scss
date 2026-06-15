@@ -1,0 +1,51 @@
+.base-chat-message-list {
+	&__reactions-display {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+		margin-top: sz(6px);
+
+		&--me {
+			justify-content: flex-end;
+		}
+
+		&--other {
+			justify-content: flex-start;
+		}
+	}
+
+	&__reaction-badge {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		padding: sz(2px) sz(6px);
+		background: rgba(0, 0, 0, 0.04);
+		border: sz(1px) solid transparent;
+		border-radius: sz(12px);
+		cursor: pointer;
+		transition: all 0.3s ease-in-out;
+		user-select: none;
+
+		&:hover {
+			background: rgba(0, 0, 0, 0.08);
+			transform: scale(1.05);
+		}
+
+		&--active {
+			background: rgba(var(--color-accent-rgb, 99, 102, 241), 0.15) !important;
+			border-color: var(--color-accent) !important;
+			color: var(--color-accent) !important;
+			transform: scale(1.03);
+			box-shadow: 0 sz(2px) sz(6px) rgba(var(--color-accent-rgb, 99, 102, 241), 0.1);
+		}
+	}
+
+	&__reaction-emoji {
+		font-size: sz(14px);
+	}
+
+	&__reaction-count {
+		font-size: sz(11px);
+		font-weight: 600;
+	}
+}

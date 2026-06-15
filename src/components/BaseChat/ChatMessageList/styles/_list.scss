@@ -1,0 +1,213 @@
+.base-chat-message-list {
+	display: flex;
+	flex-direction: column;
+	gap: sz(16px);
+	padding: sz(20px);
+	overflow-y: auto;
+	flex: 1;
+	position: relative;
+	transition: padding 0.3s ease-in-out;
+
+	&--selection-mode {
+		.base-chat-message-list__item {
+			cursor: pointer;
+		}
+	}
+
+	&__item {
+		display: flex;
+		align-items: flex-end;
+		gap: sz(12px);
+		max-width: 85%;
+		transition:
+			transform 0.3s ease-in-out,
+			background-color 0.3s ease-in-out;
+		position: relative;
+		border-radius: sz(8px);
+		padding: sz(4px) sz(8px);
+
+		&--me {
+			align-self: flex-end;
+			flex-direction: row-reverse;
+
+			.base-chat-message-list__bubble {
+				background: var(--color-accent);
+				color: var(--color-white);
+				border-bottom-right-radius: sz(4px);
+			}
+
+			.base-chat-message-list__reply-quote {
+				border-left-color: rgba(255, 255, 255, 0.4);
+				background: rgba(255, 255, 255, 0.1);
+			}
+
+			.base-chat-message-list__reply-sender {
+				color: rgba(255, 255, 255, 0.9);
+			}
+
+			.base-chat-message-list__reply-text {
+				color: rgba(255, 255, 255, 0.8);
+			}
+
+			.base-chat-message-list__actions {
+				left: auto;
+				right: 100%;
+				margin-right: sz(8px);
+			}
+
+			.base-chat-message-list__highlight {
+				background-color: rgba(255, 255, 255, 0.25);
+				color: var(--color-white);
+				box-shadow: 0 0 0 sz(1px) rgba(255, 255, 255, 0.4);
+			}
+
+			.base-chat-message-list__mention,
+			.base-chat-message-list__command {
+				background: rgba(255, 255, 255, 0.2);
+				color: var(--color-white);
+
+				&:hover {
+					background: rgba(255, 255, 255, 0.32);
+				}
+			}
+
+			.base-chat-message-list__link {
+				color: var(--color-white);
+			}
+		}
+
+		&--other {
+			align-self: flex-start;
+
+			.base-chat-message-list__bubble {
+				background: var(--color-surface-muted);
+				color: var(--color-text);
+				border-bottom-left-radius: sz(4px);
+			}
+
+			.base-chat-message-list__reply-quote {
+				border-left-color: var(--color-accent);
+				background: rgba(0, 0, 0, 0.03);
+			}
+
+			.base-chat-message-list__reply-sender {
+				color: var(--color-accent);
+			}
+
+			.base-chat-message-list__reply-text {
+				color: var(--color-text-muted);
+			}
+
+			.base-chat-message-list__actions {
+				right: auto;
+				left: 100%;
+				margin-left: sz(8px);
+			}
+		}
+
+		&--selected {
+			background-color: rgba(var(--color-accent-rgb, 99, 102, 241), 0.08);
+			transform: scale(0.99);
+		}
+
+		&--context-active {
+			background-color: rgba(var(--color-accent-rgb, 99, 102, 241), 0.16);
+			box-shadow: 0 0 0 sz(2px) var(--color-accent);
+
+			.base-chat-message-list__bubble {
+				box-shadow: 0 sz(4px) sz(14px) rgba(var(--color-accent-rgb, 99, 102, 241), 0.25);
+			}
+		}
+
+		&--highlighted {
+			animation: message-highlight 1.5s ease-in-out;
+		}
+
+		&:hover {
+			.base-chat-message-list__actions {
+				opacity: 1;
+				visibility: visible;
+			}
+		}
+	}
+
+	&__checkbox-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-bottom: sz(8px);
+		animation: fadeIn 0.2s ease;
+	}
+
+	&__avatar {
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: transform 0.3s ease-in-out;
+
+		&:hover {
+			transform: scale(1.05);
+		}
+	}
+
+	&__bubble-wrapper {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		max-width: 100%;
+	}
+
+	&__bubble {
+		display: flex;
+		flex-direction: column;
+		padding: sz(10px) sz(14px);
+		border-radius: sz(16px);
+		box-shadow: 0 sz(2px) sz(8px) rgba(0, 0, 0, 0.05);
+		position: relative;
+		transition:
+			background-color 0.3s ease-in-out,
+			box-shadow 0.3s ease-in-out;
+
+		&--typing {
+			padding: sz(12px) sz(16px);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	&__actions {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		display: flex;
+		gap: sz(4px);
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.3s ease-in-out,
+			visibility 0.3s ease-in-out;
+		z-index: 10;
+		background: var(--color-surface);
+		border-radius: sz(20px);
+		padding: sz(2px);
+		box-shadow: 0 sz(2px) sz(6px) rgba(0, 0, 0, 0.1);
+		border: sz(1px) solid var(--color-border);
+	}
+
+	&__action-btn {
+		color: var(--color-text-muted);
+		transition:
+			color 0.3s ease-in-out,
+			background-color 0.3s ease-in-out;
+
+		&:hover {
+			color: var(--color-accent);
+			background-color: var(--color-surface-hover);
+		}
+	}
+
+	&__sender-name {
+		color: var(--color-text-muted);
+		margin-bottom: sz(4px);
+	}
+}

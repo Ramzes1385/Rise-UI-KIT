@@ -1,4 +1,4 @@
-export { TREE_VARIANTS } from './BaseTree.types'
+export { TREE_VARIANTS } from './model/BaseTree.types'
 export type {
 	BaseTreeEmits,
 	BaseTreeProps,
@@ -6,5 +6,5 @@ export type {
 	TreeArrowPosition,
 	TreeNode,
 	TreeSelectionMode,
-} from './BaseTree.types'
-export { default as BaseTree } from './BaseTree.vue'
+} from './model/BaseTree.types'
+export { default as BaseTree } from './ui/BaseTree.vue'

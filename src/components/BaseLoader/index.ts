@@ -1,2 +1,2 @@
-export * from './BaseLoader.types'
-export { default as BaseLoader } from './BaseLoader.vue'
+export * from './model/BaseLoader.types'
+export { default as BaseLoader } from './ui/BaseLoader.vue'

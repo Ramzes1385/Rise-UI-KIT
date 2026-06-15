@@ -1,0 +1,72 @@
+.base-chat-context-menu {
+	position: fixed;
+	background: var(--color-surface);
+	border: sz(1px) solid var(--color-border);
+	border-radius: sz(12px);
+	box-shadow: 0 sz(10px) sz(30px) rgba(0, 0, 0, 0.15);
+	padding: sz(6px);
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	min-width: sz(180px);
+	animation: context-menu-fade 0.15s ease-out;
+
+	&__reactions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: sz(4px) sz(8px);
+		gap: sz(4px);
+	}
+
+	&__reaction-btn {
+		background: transparent;
+		border: none;
+		font-size: sz(20px);
+		cursor: pointer;
+		padding: sz(4px);
+		border-radius: sz(8px);
+		transition: all 0.3s ease-in-out;
+
+		&:hover {
+			background: var(--color-surface-hover);
+			transform: scale(1.2);
+		}
+
+		&:active {
+			transform: scale(0.9);
+		}
+	}
+
+	&__divider {
+		height: sz(1px);
+		background: var(--color-border);
+		margin: sz(6px) 0;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		padding: sz(8px) sz(12px);
+		background: transparent;
+		border: none;
+		border-radius: sz(8px);
+		cursor: pointer;
+		color: var(--color-text);
+		text-align: left;
+		transition:
+			background-color 0.3s ease-in-out,
+			color 0.3s ease-in-out;
+		width: 100%;
+
+		&:hover {
+			background: var(--color-surface-hover);
+			color: var(--color-accent);
+		}
+
+		&:active {
+			background: var(--color-border);
+		}
+	}
+}

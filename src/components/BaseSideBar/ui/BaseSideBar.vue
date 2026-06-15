@@ -97,6 +97,7 @@ import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem 
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
+import { UI_SIDEBAR_DEFAULT_WIDTH } from '@constants/ui'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
@@ -129,7 +130,7 @@ function hasPassedProp(camelCaseName: string, kebabCaseName: string): boolean {
 	)
 }
 
-const resolvedWidth = computed(() => props.width ?? 280)
+const resolvedWidth = computed(() => props.width ?? UI_SIDEBAR_DEFAULT_WIDTH)
 const resolvedCollapsedWidth = computed(() => props.collapsedWidth ?? 68)
 const resolvedIsCollapsible = computed(() => {
 	if (!hasPassedProp('isCollapsible', 'is-collapsible')) {

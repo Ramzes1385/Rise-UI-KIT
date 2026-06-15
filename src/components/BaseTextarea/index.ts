@@ -1,2 +1,2 @@
-export type { BaseTextareaEmits, BaseTextareaProps } from './BaseTextarea.types'
-export { default as BaseTextarea } from './BaseTextarea.vue'
+export type { BaseTextareaEmits, BaseTextareaProps } from './model/BaseTextarea.types'
+export { default as BaseTextarea } from './ui/BaseTextarea.vue'

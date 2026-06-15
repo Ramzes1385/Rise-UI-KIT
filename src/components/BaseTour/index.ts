@@ -1,4 +1,4 @@
-export { default as BaseTour } from './BaseTour.vue'
+export { default as BaseTour } from './ui/BaseTour.vue'
 export type {
 	BaseTourProps,
 	BaseTourEmits,
@@ -6,5 +6,5 @@ export type {
 	TourStep,
 	TourPlacement,
 	TourGeometry,
-} from './BaseTour.types'
-export { TOUR_PLACEMENTS } from './BaseTour.types'
+} from './model/BaseTour.types'
+export { TOUR_PLACEMENTS } from './model/BaseTour.types'

@@ -4,5 +4,5 @@ export type {
 	BaseBreadcrumbsSlots,
 	BreadcrumbItem,
 	BreadcrumbSeparator,
-} from './BaseBreadcrumbs.types'
-export { default as BaseBreadcrumbs } from './BaseBreadcrumbs.vue'
+} from './model/BaseBreadcrumbs.types'
+export { default as BaseBreadcrumbs } from './ui/BaseBreadcrumbs.vue'

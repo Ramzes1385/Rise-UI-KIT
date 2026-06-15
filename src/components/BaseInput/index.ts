@@ -1,2 +1,2 @@
-export type { BaseInputEmits, BaseInputProps, InputVariant, PasswordRule, PasswordRuleResult } from './BaseInput.types'
-export { default as BaseInput } from './BaseInput.vue'
+export type { BaseInputEmits, BaseInputProps, InputVariant, PasswordRule, PasswordRuleResult } from './model/BaseInput.types'
+export { default as BaseInput } from './ui/BaseInput.vue'

@@ -1,2 +1,2 @@
-export type { BaseFileUploadEmits, BaseFileUploadProps, UploadedFile } from './BaseFileUpload.types'
-export { default as BaseFileUpload } from './BaseFileUpload.vue'
+export type { BaseFileUploadEmits, BaseFileUploadProps, UploadedFile } from './model/BaseFileUpload.types'
+export { default as BaseFileUpload } from './ui/BaseFileUpload.vue'

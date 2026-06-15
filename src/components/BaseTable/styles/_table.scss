@@ -1,0 +1,15 @@
+@use "@styles/variables" as *;
+@use "@styles/mixins" as *;
+@use "@styles/functions" as *;
+
+.base-table {
+	&__table {
+		width: 100%;
+		border-collapse: collapse;
+		table-layout: auto;
+
+		&--fixed {
+			table-layout: fixed;
+		}
+	}
+}
