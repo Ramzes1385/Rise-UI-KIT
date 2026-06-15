@@ -149,6 +149,122 @@ if (href) {
 - Обновлены моки в `BaseMegaMenu/__tests__/BaseMegaMenu.spec.ts` — мок `navigateAndEmit`
 - Обновлены моки в `BaseMegaMenu/__tests__/BaseMegaMenu.integration.spec.ts`
 - Обновлены ожидания ошибок в `BaseTree/__tests__/BaseTreeChildren.spec.ts`
+- Обновлён `BaseTableNestedRow.spec.ts` — provide для `TABLE_EXPAND_TRANSITION_KEY`
+
+---
+
+### 7. Разбивка длинных функций (SRP, Глава 3)
+
+**Проблема:** Две функции превышали 50 строк и делали несколько вещей одновременно.
+
+**`BaseInput.vue` — `handleKeydown` (52 строки → 3 функции):**
+
+| Функция | Строк | Ответственность |
+|---|---|---|
+| `handleKeydown` | ~15 | Делегирует по `e.key` |
+| `handleMaskedBackspace` | ~15 | Удаление символа перед курсором + позиция |
+| `handleMaskedDelete` | ~15 | Удаление символа после курсором + позиция |
+
+**`BaseFileUpload.vue` — `addFiles` (55 строк → 3 функции):**
+
+| Функция | Строк | Ответственность |
+|---|---|---|
+| `addFiles` | ~18 | Валидация, вызов `createUploadItem` в цикле |
+| `createUploadItem` | ~16 | Создание одного элемента + превью |
+| `simulateUploadProgress` | ~14 | `setInterval` с прогрессом для одного элемента |
+
+---
+
+### 8. `BreadcrumbsSeparator` подкомпонент (DRY, Глава 6)
+
+**Проблема:** Логика рендера сепаратора (chevron/slash/dot → BaseIcon или BaseText) была скопирована 3 раза в шаблоне `BaseBreadcrumbs.vue`.
+
+**Решение:**
+- Создан `src/components/BaseBreadcrumbs/ui/BreadcrumbsSeparator.vue` (32 строки)
+- Props: `separator`, `sizeScale`, `separatorIconClass`, `separatorTextClass`
+- `BaseBreadcrumbs.vue` сокращён на 37 строк
+
+---
+
+### 9. `BaseSideBarNavigation` — slot-props (DRY, Глава 6)
+
+**Проблема:** 7-полярный объект `{ item, level, isActive, isCurrent, isCollapsed, hasChildren, onClick }` инлайново создавался 6 раз в `<slot>` привязках.
+
+**Решение:** Добавлена `getSlotProps(item)` функция, заменены все 6 инлайновых конструкций на `v-bind="getSlotProps(item)"`. −24 строки.
+
+---
+
+### 10. `BaseComponentProps<V>` — общий тип (DRY, Глава 6)
+
+**Проблема:** 4 поля (`variant`, `sizeScale`, `color`, `customClass`) дублировались в 37+ интерфейсах `BaseXxxProps`.
+
+**Решение:**
+- Создан `src/types/base.types.ts`:
+  ```typescript
+  export interface BaseComponentProps<V extends string = string> {
+    variant?: V
+    sizeScale?: number
+    color?: CustomColor
+    customClass?: CustomClassProp
+  }
+  ```
+- 37 types-файлов обновлены: `interface BaseXxxProps extends BaseComponentProps<VariantType>`
+- Удалены дублирующиеся поля и их JSDoc из каждого интерфейса
+- Удалены отдельные импорты `CustomClassProp` и `CustomColor` (идут через `BaseComponentProps`)
+
+---
+
+### 11. `useExplicitPropDetection` composable (Naming, Глава 2)
+
+**Проблема:** 4 компонента (BaseDropdown, BaseAnimation, BaseSkeleton, BaseCalendar) использовали `rawProps = getCurrentInstance()?.vnode.props` — fragile Vue internal API с расплывчатым именем.
+
+**Решение:**
+- Создан `src/composables/useExplicitPropDetection/useExplicitPropDetection.ts`
+- `wasPropPassed(propName)` — инкапсулирует проверку `propName in vnode.props`
+- Заменён `rawProps` паттерн во всех 4 компонентах
+- В BaseCalendar: `resolveBooleanPropDefault` переписан без параметра `rawProps`
+
+---
+
+### 12. `provide/inject` для transition callbacks (DRY + Props, Главы 3, 6)
+
+**Проблема:** 6 функций transition callbacks (onExpandBeforeEnter, onExpandEnter, и т.д.) прокидывались через 3 уровня компонентов как props: BaseTable → BaseTableBody → BaseTableExpandedRow/BaseTableNestedRow. Итого 18 prop-объявлений и 18 prop-привязок.
+
+**Решение:**
+- Создан `TABLE_EXPAND_TRANSITION_KEY` (InjectionKey) в `BaseTable.types.ts`
+- `BaseTable.vue`: `provide(TABLE_EXPAND_TRANSITION_KEY, { ...6 callbacks })`
+- `BaseTableExpandedRow.vue` / `BaseTableNestedRow.vue`: `inject(TABLE_EXPAND_TRANSITION_KEY)`
+- Удалено 6 props из `BaseTableBody`, 6 из `BaseTableExpandedRow`, 6 из `BaseTableNestedRow`
+- Удалено 12 prop-привязок из шаблона `BaseTableBody`
+
+---
+
+### 13. Группировка props (Chapter 3 — Function Arguments)
+
+**Проблема:** Слишком много индивидуальных props: BaseCalendar (27), BaseImage (22), BaseTour (18).
+
+**Решение:**
+
+| Компонент | Группа | Props |
+|---|---|---|
+| BaseCalendar | `timeConfig` | `showTime`, `showSeconds`, `is24Hour` |
+| BaseCalendar | `constraints` | `minDate`, `maxDate`, `disabledDates`, `disabledWeekdays`, `disableFrom`, `disableTo` |
+| BaseCalendar | `displayConfig` | `showNavigation`, `canSwitchView`, `showTodayButton`, `showYear`, `showWeekNumber` |
+| BaseImage | `zoomConfig` | `hasZoom`, `closeOnOverlay`, `initialScale`, `zoomStep`, `minScale`, `maxScale`, `showMinimap` |
+| BaseTour | `labels` | `next`, `prev`, `finish`, `skip` |
+| BaseTour | `behavior` | `closeOnOverlayClick`, `closeOnEscape`, `lockScroll`, `scrollIntoView` |
+
+Обратная совместимость: индивидуальные props сохранены с `@deprecated`. Группированные props имеют приоритет.
+
+---
+
+### 14. Исправление форматирования (Chapter 5)
+
+| Файл | Проблема | Исправление |
+|---|---|---|
+| `BaseCalendar.vue:1-2` | Двойной отступ `\t\t<BaseCard` | Одинарный `\t<BaseCard` |
+| `BaseTable.vue:54` | `ref` последний атрибут | `ref` первый атрибут |
+| 11 types-файлов | `CustomClassProp` импорт отдельно от основного блока | Объединён в верхний блок импортов |
 
 ---
 
@@ -160,6 +276,18 @@ if (href) {
 | `npm run test:components:coverage` | Lines 100%, Statements 100%, Functions 100% |
 | `npm run test:e2e` | Порт 6006 занят (pre-existing Storybook) |
 | `npm run test:all` | Coverage pass, e2e не запускается из-за окружения |
+| Lint | 0 errors, 0 warnings |
+
+---
+
+## Git-коммиты
+
+| Коммит | Описание |
+|---|---|
+| `0622c56` | useBaseComponent, DRY, dead code, error handling |
+| `2f7e381` | SRP, DRY, props grouping, provide/inject, naming |
+| `411acb4` | fix: remove unused vars in BaseTour |
+| `2ee10c7` | docs: update CLEAN_CODE_REFACTORING.md |
 
 ---
 
@@ -177,8 +305,3 @@ if (href) {
 | `BaseTour.vue` | 357 | 8 | Извлечь `BaseTourSpotlight`, `BaseTourCard` |
 | `BaseFileUpload.vue` | 355 | 6 | Извлечь `BaseFileUploadList`, `BaseFileUploadDropzone`, `useUploadSimulation` |
 | `BaseSlider.vue` | 271 | 7 | Извлечь `BaseSliderNavigation`, `BaseSliderArrows` |
-
-### Major — DRY: шаблоны
-
-- ~~`BaseBreadcrumbs.vue`: сепаратор скопирован 3 раза → `BreadcrumbsSeparator` подкомпонент~~ ✅ Выполнено
-- ~~`BaseSideBarNavigation.vue`: 7-полярный slot-props объект 6 раз → вычислять 1 раз~~ ✅ Выполнено
