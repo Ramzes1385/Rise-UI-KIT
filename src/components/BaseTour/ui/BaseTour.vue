@@ -158,11 +158,9 @@ const contentColor: CustomColor = { text: { base: 'var(--color-text-muted)' } }
 const resolvedNextLabel = computed((): string => props.labels?.next ?? props.nextLabel)
 const resolvedPrevLabel = computed((): string => props.labels?.prev ?? props.prevLabel)
 const resolvedFinishLabel = computed((): string => props.labels?.finish ?? props.finishLabel)
-const resolvedSkipLabel = computed((): string => props.labels?.skip ?? props.skipLabel)
 const resolvedCloseOnOverlayClick = computed((): boolean => props.behavior?.closeOnOverlayClick ?? props.closeOnOverlayClick)
 const resolvedCloseOnEscape = computed((): boolean => props.behavior?.closeOnEscape ?? props.closeOnEscape)
 const resolvedLockScroll = computed((): boolean => props.behavior?.lockScroll ?? props.lockScroll)
-const resolvedScrollIntoView = computed((): boolean => props.behavior?.scrollIntoView ?? props.scrollIntoView)
 
 const isFocusing = ref(false)
 const focusFromViewport = ref(false)
