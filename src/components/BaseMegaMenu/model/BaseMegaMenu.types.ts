@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения мега-меню */
 export const MEGA_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -56,7 +55,7 @@ export type MegaMenuLayout = 'columns' | 'dropdown'
 /**
  * Пропсы компонента BaseMegaMenu
  */
-export interface BaseMegaMenuProps {
+export interface BaseMegaMenuProps extends BaseComponentProps<(typeof MEGA_MENU_VARIANTS)[number]> {
 	/** Колонки меню (для layout=columns) */
 	columns?: MegaMenuColumn[]
 	/** Элементы навигации (для layout=dropdown) */
@@ -67,14 +66,6 @@ export interface BaseMegaMenuProps {
 	layout?: MegaMenuLayout
 	/** Задержка закрытия при hover (мс) */
 	hoverDelay?: number
-	/** Вариант отображения */
-	variant?: (typeof MEGA_MENU_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

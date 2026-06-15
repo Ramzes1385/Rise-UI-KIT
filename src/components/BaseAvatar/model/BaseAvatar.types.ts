@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Формы аватара */
 export const AVATAR_SHAPES = ['circle', 'square'] as const
@@ -10,7 +9,7 @@ export const AVATAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
 /**
  * Пропсы компонента BaseAvatar
  */
-export interface BaseAvatarProps {
+export interface BaseAvatarProps extends BaseComponentProps<(typeof AVATAR_VARIANTS)[number]> {
 	/** URL изображения или GIF */
 	src?: string
 	/** Альтернативный текст */
@@ -19,19 +18,8 @@ export interface BaseAvatarProps {
 	name?: string
 	/** Форма */
 	shape?: (typeof AVATAR_SHAPES)[number]
-	/** Вариант отображения */
-	variant?: (typeof AVATAR_VARIANTS)[number]
 	/** Онлайн-статус */
 	isOnline?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `content`, `img`, `initials`, `online`.
-	 */
-	customClass?: CustomClassProp
 }
 
 /**

@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения переключателя */
 export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
@@ -7,7 +6,7 @@ export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
 /**
  * Пропсы компонента BaseSwitch
  */
-export interface BaseSwitchProps {
+export interface BaseSwitchProps extends BaseComponentProps<(typeof SWITCH_VARIANTS)[number]> {
 	/** Состояние */
 	modelValue?: boolean
 	/** Заголовок поля */
@@ -20,14 +19,6 @@ export interface BaseSwitchProps {
 	isDisabled?: boolean
 	/** Обратный порядок (контент слева, переключатель справа) */
 	reverse?: boolean
-	/** Вариант отображения */
-	variant?: (typeof SWITCH_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные CSS-классы */
-	customClass?: CustomClassProp
 }
 
 /**

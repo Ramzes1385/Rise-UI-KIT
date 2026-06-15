@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения чекбокса */
 export const CHECKBOX_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -7,13 +6,7 @@ export const CHECKBOX_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft
 /**
  * Пропсы компонента BaseCheckbox
  */
-export interface BaseCheckboxProps {
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `labelWrapper`, `wrapper`, `input`, `box`, `icon` (вложенный BaseIcon),
-	 * `label` (вложенный BaseText с подписью), `errorText` (вложенный BaseText с ошибкой).
-	 */
-	customClass?: CustomClassProp
+export interface BaseCheckboxProps extends BaseComponentProps<(typeof CHECKBOX_VARIANTS)[number]> {
 	/** Состояние */
 	modelValue?: boolean
 	/** Заголовок */
@@ -22,12 +15,6 @@ export interface BaseCheckboxProps {
 	error?: string
 	/** Отключенное состояние */
 	isDisabled?: boolean
-	/** Вариант отображения */
-	variant?: (typeof CHECKBOX_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 }
 
 /**

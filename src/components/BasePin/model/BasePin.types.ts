@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения пин-кода */
 export const PIN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -6,9 +6,8 @@ export const PIN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as
 /**
  * Пропсы компонента BasePin
  */
-import type { CustomClassProp } from '@composables/useCustomClass'
 
-export interface BasePinProps {
+export interface BasePinProps extends BaseComponentProps<(typeof PIN_VARIANTS)[number]> {
 	/** Значение */
 	modelValue: string
 	/** Количество цифр */
@@ -17,16 +16,8 @@ export interface BasePinProps {
 	type?: 'text' | 'password' | 'number'
 	/** Отключенное состояние */
 	isDisabled?: boolean
-	/** Вариант отображения */
-	variant?: (typeof PIN_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Сообщение об ошибке. Пустая строка/undefined — ошибки нет */
 	error?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

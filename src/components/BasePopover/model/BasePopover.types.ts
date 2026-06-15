@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения поповера */
 export const POPOVER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -10,21 +10,12 @@ export type PopoverVariant = (typeof POPOVER_VARIANTS)[number]
 export type PopoverPosition = 'top' | 'bottom' | 'left' | 'right'
 
 /** Пропсы компонента BasePopover */
-import type { CustomClassProp } from '@composables/useCustomClass'
 
-export interface BasePopoverProps {
+export interface BasePopoverProps extends BaseComponentProps<PopoverVariant> {
 	/** Состояние открытия */
 	isOpen?: boolean
 	/** Позиция */
 	position?: PopoverPosition
-	/** Вариант отображения */
-	variant?: PopoverVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /** События компонента BasePopover */

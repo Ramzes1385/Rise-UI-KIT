@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения модального окна */
 export const MODAL_VARIANTS = ['default', 'ghost', 'shadow'] as const
@@ -14,27 +13,19 @@ export type ModalFullScreen = 'width' | 'height' | 'both'
 /**
  * Пропсы компонента BaseModal
  */
-export interface BaseModalProps {
+export interface BaseModalProps extends BaseComponentProps<ModalVariant> {
 	/** Состояние открытия */
 	isOpen: boolean
 	/** Заголовок */
 	title?: string
-	/** Вариант отображения */
-	variant?: ModalVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Закрытие по клику на оверлей */
 	closeOnOverlay?: boolean
 	/** Режим fullScreen: по ширине, высоте или оба */
 	fullScreen?: ModalFullScreen
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/** Режим ограничения внутри контейнера. Компонент рендерится на месте (без teleport), родитель должен иметь position: relative и overflow: hidden */
 	isContained?: boolean
 	/** Показывать затемнение фона за модалом */
 	hasOverlay?: boolean
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

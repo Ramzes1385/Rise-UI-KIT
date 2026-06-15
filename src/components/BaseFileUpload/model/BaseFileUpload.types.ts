@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения загрузки файлов */
 export const FILE_UPLOAD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -31,19 +30,13 @@ export interface UploadedFile {
 /**
  * Пропсы компонента BaseFileUpload
  */
-export interface BaseFileUploadProps {
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseFileUploadProps extends BaseComponentProps<(typeof FILE_UPLOAD_VARIANTS)[number]> {
 	/** Принимаемые типы файлов (MIME или расширения) */
 	accept?: string
 	/** Множественный выбор */
 	isMultiple?: boolean
 	/** Отключенное состояние */
 	isDisabled?: boolean
-	/** Вариант отображения */
-	variant?: (typeof FILE_UPLOAD_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Максимальное размер файла (MB) */
 	maxSize?: number
 	/** Максимальное количество файлов */
@@ -58,8 +51,6 @@ export interface BaseFileUploadProps {
 	allowPreview?: boolean
 	/** Текст пустой зоны */
 	emptyText?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/** Текст ошибки */
 	error?: string
 }

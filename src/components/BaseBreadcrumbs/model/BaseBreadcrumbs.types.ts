@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения хлебных крошек */
 export const BREADCRUMBS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -25,32 +25,18 @@ export type BreadcrumbSeparator = 'slash' | 'chevron' | 'dot' | 'arrow'
 /**
  * Пропсы компонента BaseBreadcrumbs
  */
-import type { CustomClassProp } from '@composables/useCustomClass'
 
-export interface BaseBreadcrumbsProps {
+export interface BaseBreadcrumbsProps extends BaseComponentProps<(typeof BREADCRUMBS_VARIANTS)[number]> {
 	/** Элементы крошек */
 	items: BreadcrumbItem[]
 	/** Разделитель */
 	separator?: BreadcrumbSeparator
-	/** Вариант отображения */
-	variant?: (typeof BREADCRUMBS_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Максимальное количество видимых элементов (0 = все) */
 	maxItems?: number
 	/** Показывать иконку дома вместо первой крошки */
 	showHome?: boolean
 	/** Иконка дома (имя из спрайта, по умолчанию home) */
 	homeIcon?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `list`, `item`, `ellipsisBtn`, `link`, `current`, `separator`,
-	 * `separatorIcon`, `separatorText`, `homeIcon`, `itemIcon`, `itemText`,
-	 * `currentIcon`, `currentText`.
-	 */
-	customClass?: CustomClassProp
 }
 
 /**

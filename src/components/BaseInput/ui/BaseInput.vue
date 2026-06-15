@@ -214,47 +214,49 @@ function handleKeydown(e: KeyboardEvent): void {
 
 	if (e.key === 'Backspace') {
 		e.preventDefault()
-
-		/* istanbul ignore else -- DOM clamp boundary: cursorPos === 0 невозможно через setSelectionRange */
-		if (cursorPos > 0) {
-			const { maskPos, valueIndex } = mask.cursorAfterBackspace(cursorPos)
-
-			/* istanbul ignore else -- DOM clamp boundary: valueIndex всегда в пределах current при cursorPos > 0 */
-			if (valueIndex >= 0 && valueIndex < current.length) {
-				const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
-				emit('update:modelValue', newValue)
-
-				requestAnimationFrame(() => {
-					/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
-					if (inputRef.value) {
-						inputRef.value.setSelectionRange(maskPos, maskPos)
-					}
-				})
-			}
-		}
+		handleMaskedBackspace(cursorPos, current)
 	}
 
 	if (e.key === 'Delete') {
 		e.preventDefault()
-
-		/* istanbul ignore else -- DOM clamp boundary: cursorPos === current.length невозможно через setSelectionRange */
-		if (cursorPos < current.length) {
-			const { valueIndex } = mask.cursorAfterDelete(cursorPos)
-
-			/* istanbul ignore else -- DOM clamp boundary: valueIndex всегда в пределах current при cursorPos < length */
-			if (valueIndex >= 0 && valueIndex < current.length) {
-				const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
-				emit('update:modelValue', newValue)
-
-				requestAnimationFrame(() => {
-					/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
-					if (inputRef.value) {
-						inputRef.value.setSelectionRange(cursorPos, cursorPos)
-					}
-				})
-			}
-		}
+		handleMaskedDelete(cursorPos, current)
 	}
+}
+
+/* istanbul ignore else -- DOM clamp boundary: cursorPos === 0 невозможно через setSelectionRange */
+function handleMaskedBackspace(cursorPos: number, current: string): void {
+	if (cursorPos <= 0) return
+	const { maskPos, valueIndex } = mask.cursorAfterBackspace(cursorPos)
+	/* istanbul ignore else -- DOM clamp boundary: valueIndex всегда в пределах current при cursorPos > 0 */
+	if (valueIndex < 0 || valueIndex >= current.length) return
+
+	const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
+	emit('update:modelValue', newValue)
+
+	requestAnimationFrame(() => {
+		/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
+		if (inputRef.value) {
+			inputRef.value.setSelectionRange(maskPos, maskPos)
+		}
+	})
+}
+
+/* istanbul ignore else -- DOM clamp boundary: cursorPos === current.length невозможно через setSelectionRange */
+function handleMaskedDelete(cursorPos: number, current: string): void {
+	if (cursorPos >= current.length) return
+	const { valueIndex } = mask.cursorAfterDelete(cursorPos)
+	/* istanbul ignore else -- DOM clamp boundary: valueIndex всегда в пределах current при cursorPos < length */
+	if (valueIndex < 0 || valueIndex >= current.length) return
+
+	const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
+	emit('update:modelValue', newValue)
+
+	requestAnimationFrame(() => {
+		/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
+		if (inputRef.value) {
+			inputRef.value.setSelectionRange(cursorPos, cursorPos)
+		}
+	})
 }
 
 function handleBlur(e: FocusEvent): void {

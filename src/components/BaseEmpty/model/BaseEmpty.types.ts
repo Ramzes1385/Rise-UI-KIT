@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения пустого состояния */
 export type EmptyVariant = 'default' | 'ghost' | 'soft'
@@ -7,26 +6,13 @@ export type EmptyVariant = 'default' | 'ghost' | 'soft'
 /**
  * Пропсы компонента BaseEmpty
  */
-export interface BaseEmptyProps {
+export interface BaseEmptyProps extends BaseComponentProps<EmptyVariant> {
 	/** Заголовок пустого состояния */
 	title?: string
 	/** Текст описания */
 	description?: string
 	/** Имя иконки по умолчанию */
 	icon?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Вариант визуального оформления */
-	variant?: EmptyVariant
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `iconWrapper`, `icon` (вложенный BaseIcon), `content`,
-	 * `title` (вложенный BaseText заголовка), `description` (вложенный BaseText описания),
-	 * `body`, `actions`.
-	 */
-	customClass?: CustomClassProp
 }
 
 /**

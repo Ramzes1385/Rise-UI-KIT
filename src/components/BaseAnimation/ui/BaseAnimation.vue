@@ -28,16 +28,17 @@
 
 <script setup lang="ts">
 import { useCustomClass } from '@composables/useCustomClass'
-import { computed, getCurrentInstance } from 'vue'
+import { computed } from 'vue'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps } from '../model/BaseAnimation.types'
 
 const props = defineProps<BaseAnimationProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { wasPropPassed } = useExplicitPropDetection()
 
 const emit = defineEmits<BaseAnimationEmits>()
 
-const show = computed(() => (rawProps && 'show' in rawProps ? (props.show ?? true) : true))
+const show = computed(() => (wasPropPassed('show') ? (props.show ?? true) : true))
 const name = computed(() => props.name ?? 'fade')
 const mode = computed(() => props.mode ?? 'out-in')
 const isGroup = computed(() => props.isGroup ?? false)

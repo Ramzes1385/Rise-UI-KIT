@@ -2,6 +2,29 @@ import '@testing-library/jest-dom/vitest'
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
+
+const mockTransitionCallbacks = {
+	onExpandBeforeEnter: vi.fn(),
+	onExpandEnter: vi.fn(),
+	onExpandAfterEnter: vi.fn(),
+	onCollapseBeforeLeave: vi.fn(),
+	onCollapseLeave: vi.fn(),
+	onCollapseAfterLeave: vi.fn(),
+}
+
+function renderWithTransition(component: Parameters<typeof render>[0], options: Parameters<typeof render>[1] = {}) {
+	return render(component, {
+		...options,
+		global: {
+			...options?.global,
+			provide: {
+				...(options?.global?.provide ?? {}),
+				[TABLE_EXPAND_TRANSITION_KEY as symbol]: mockTransitionCallbacks,
+			},
+		},
+	})
+}
 
 describe('BaseTableNestedRow', () => {
 	const mockRow = { id: '1', data: { name: 'Parent' }, children: [{ id: '1-1', data: { name: 'Child' } }] }
@@ -17,12 +40,6 @@ describe('BaseTableNestedRow', () => {
 		isExpanded: vi.fn().mockReturnValue(true),
 		getColumnStyle: vi.fn().mockReturnValue({}),
 		formatCellValue: vi.fn().mockReturnValue('Child'),
-		onExpandBeforeEnter: vi.fn(),
-		onExpandEnter: vi.fn(),
-		onExpandAfterEnter: vi.fn(),
-		onCollapseBeforeLeave: vi.fn(),
-		onCollapseLeave: vi.fn(),
-		onCollapseAfterLeave: vi.fn(),
 	}
 
 	it('должен рендерить вложенную таблицу, если есть nestedConfig и children', () => {
@@ -33,14 +50,14 @@ describe('BaseTableNestedRow', () => {
 				columns: [{ key: 'name', label: 'Name' }],
 			},
 		}
-		const { container } = render(BaseTableNestedRow, { props })
+		const { container } = renderWithTransition(BaseTableNestedRow, { props })
 
 		expect(container.querySelector('.base-table__nested-wrapper')).toBeInTheDocument()
 		expect(container.querySelector('.base-table__nested-title')).toHaveTextContent('Children')
 	})
 
 	it('должен рендерить дочерние строки напрямую, если нет nestedConfig', () => {
-		const { container } = render(BaseTableNestedRow, { props: defaultProps })
+		const { container } = renderWithTransition(BaseTableNestedRow, { props: defaultProps })
 
 		expect(container.querySelector('.base-table__tr--child')).toBeInTheDocument()
 		expect(container.querySelector('.base-table__td--expand')).toBeInTheDocument()
@@ -51,7 +68,7 @@ describe('BaseTableNestedRow', () => {
 			...defaultProps,
 			isExpanded: vi.fn().mockReturnValue(false),
 		}
-		const { container } = render(BaseTableNestedRow, { props })
+		const { container } = renderWithTransition(BaseTableNestedRow, { props })
 
 		expect(container.querySelector('.base-table__nested-wrapper')).not.toBeInTheDocument()
 		expect(container.querySelector('.base-table__tr--child')).not.toBeInTheDocument()
@@ -63,7 +80,7 @@ describe('BaseTableNestedRow', () => {
 			isSelectable: true,
 			hasRowNumber: true,
 		}
-		const { container } = render(BaseTableNestedRow, { props })
+		const { container } = renderWithTransition(BaseTableNestedRow, { props })
 
 		expect(container.querySelector('.base-table__td--check')).toBeInTheDocument()
 		expect(container.querySelector('.base-table__td--number')).toBeInTheDocument()

@@ -108,7 +108,7 @@ export function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 			return
 		}
 
-		if (props.scrollIntoView !== false) {
+		if ((props.behavior?.scrollIntoView ?? props.scrollIntoView) !== false) {
 			scrollTargetIntoView(step.target)
 			await nextTick()
 		}

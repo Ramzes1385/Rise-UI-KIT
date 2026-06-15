@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
 
 /** Типы кнопки */
@@ -11,11 +10,9 @@ export const BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
 /**
  * Пропсы компонента BaseButton
  */
-export interface BaseButtonProps {
+export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIANTS)[number]> {
 	/** Тип кнопки */
 	type?: (typeof BUTTON_TYPES)[number]
-	/** Вариант отображения */
-	variant?: (typeof BUTTON_VARIANTS)[number]
 	/**
 	 * Внутренние отступы. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
@@ -23,16 +20,10 @@ export interface BaseButtonProps {
 	 * По умолчанию 10 → 10px 20px
 	 */
 	padding?: PaddingProp
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Состояние загрузки */
 	isLoading?: boolean
 	/** Отключенное состояние */
 	isDisabled?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы (строка или объект) */
-	customClass?: CustomClassProp
 }
 
 /**

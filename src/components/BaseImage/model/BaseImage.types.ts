@@ -12,6 +12,26 @@ export type ImageFit = 'cover' | 'contain' | 'fill' | 'none'
 export type ImageLoading = 'lazy' | 'eager'
 
 /**
+ * Конфигурация зума изображения
+ */
+export interface ImageZoomConfig {
+	/** Включить зум по клику */
+	hasZoom?: boolean
+	/** Закрытие зума по клику на оверлей */
+	closeOnOverlay?: boolean
+	/** Начальный масштаб зума */
+	initialScale?: number
+	/** Шаг масштаба при зуме */
+	zoomStep?: number
+	/** Минимальный масштаб */
+	minScale?: number
+	/** Максимальный масштаб */
+	maxScale?: number
+	/** Показывать мини-карту при зуме */
+	showMinimap?: boolean
+}
+
+/**
  * Пропсы компонента BaseImage
  */
 export interface BaseImageProps {
@@ -41,20 +61,8 @@ export interface BaseImageProps {
 	aspectRatio?: string
 	/** URL-параметры для оптимизации (ширина) */
 	srcWidth?: number
-	/** Включить зум по клику */
-	hasZoom?: boolean
-	/** Закрытие зума по клику на оверлей */
-	closeOnOverlay?: boolean
-	/** Начальный масштаб зума */
-	initialScale?: number
-	/** Шаг масштаба при зуме */
-	zoomStep?: number
-	/** Минимальный масштаб */
-	minScale?: number
-	/** Максимальный масштаб */
-	maxScale?: number
-	/** Показывать мини-карту при зуме */
-	showMinimap?: boolean
+	/** Группа: конфигурация зума */
+	zoomConfig?: ImageZoomConfig
 	/** Конвертировать в WebP формат */
 	convertToWebp?: boolean
 	/** Галерея изображений для навигации в режиме зума */
@@ -71,6 +79,20 @@ export interface BaseImageProps {
 	 * `galleryCounter` (BaseText).
 	 */
 	customClass?: CustomClassProp
+	/** @deprecated Используйте zoomConfig.hasZoom */
+	hasZoom?: boolean
+	/** @deprecated Используйте zoomConfig.closeOnOverlay */
+	closeOnOverlay?: boolean
+	/** @deprecated Используйте zoomConfig.initialScale */
+	initialScale?: number
+	/** @deprecated Используйте zoomConfig.zoomStep */
+	zoomStep?: number
+	/** @deprecated Используйте zoomConfig.minScale */
+	minScale?: number
+	/** @deprecated Используйте zoomConfig.maxScale */
+	maxScale?: number
+	/** @deprecated Используйте zoomConfig.showMinimap */
+	showMinimap?: boolean
 }
 
 /**

@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения календаря */
 export const CALENDAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -30,8 +29,6 @@ export interface CalendarEvent {
 	date: Date
 	/** Заголовок */
 	label: string
-	/** Цвет (CSS-переменная или hex) */
-	color?: string
 }
 
 /**
@@ -40,8 +37,6 @@ export interface CalendarEvent {
 export interface CalendarHighlight {
 	/** Дата */
 	date: Date
-	/** Цвет (CSS-переменная или hex) */
-	color?: string
 	/** CSS-класс */
 	cssClass?: string
 	/** Подпись (отображается в popover) */
@@ -59,17 +54,21 @@ export interface CalendarWeekends {
 }
 
 /**
- * Пропсы компонента BaseCalendar
+ * Конфигурация времени календаря
  */
-export interface BaseCalendarProps {
-	/** Выбранная дата / начало диапазона */
-	modelValue?: Date | null
-	/** Конец диапазона (для range) */
-	modelValueEnd?: Date | null
-	/** Выбранные даты (для multiple) */
-	selectedDates?: Date[]
-	/** Режим выбора */
-	selectionMode?: CalendarSelectionMode
+export interface CalendarTimeConfig {
+	/** Показывать выбор времени */
+	showTime?: boolean
+	/** Показывать секунды */
+	showSeconds?: boolean
+	/** Формат времени 24ч */
+	is24Hour?: boolean
+}
+
+/**
+ * Ограничения календаря (даты, которые нельзя выбрать)
+ */
+export interface CalendarConstraints {
 	/** Минимальная дата */
 	minDate?: Date | null
 	/** Максимальная дата */
@@ -82,34 +81,12 @@ export interface BaseCalendarProps {
 	disableFrom?: Date | null
 	/** Выключить даты до (отключает все до) */
 	disableTo?: Date | null
-	/** Выделенные даты */
-	highlights?: CalendarHighlight[]
-	/** События */
-	events?: CalendarEvent[]
-	/** Конфигурация выходных */
-	weekends?: CalendarWeekends | null
-	/** Первый день недели (0=вс, 1=пн) */
-	firstDayOfWeek?: CalendarWeekday
-	/** Показывать выбор времени */
-	showTime?: boolean
-	/** Показывать секунды */
-	showSeconds?: boolean
-	/** Формат времени 24ч */
-	is24Hour?: boolean
-	/** Показывать номер недели */
-	showWeekNumber?: boolean
-	/** Локаль */
-	locale?: string
-	/** Вариант отображения */
-	variant?: CalendarVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Показывать popover при клике на дату */
-	showDatePopover?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Отключённый календарь */
-	isDisabled?: boolean
+}
+
+/**
+ * Конфигурация отображения календаря
+ */
+export interface CalendarDisplayConfig {
 	/** Показывать кнопки навигации в шапке */
 	showNavigation?: boolean
 	/** Разрешить переключение вида (месяцы/годы) при клике на заголовок */
@@ -118,12 +95,74 @@ export interface BaseCalendarProps {
 	showTodayButton?: boolean
 	/** Показывать год в заголовке */
 	showYear?: boolean
+	/** Показывать номер недели */
+	showWeekNumber?: boolean
+}
+
+/**
+ * Пропсы компонента BaseCalendar
+ */
+export interface BaseCalendarProps extends BaseComponentProps<CalendarVariant> {
+	/** Выбранная дата / начало диапазона */
+	modelValue?: Date | null
+	/** Конец диапазона (для range) */
+	modelValueEnd?: Date | null
+	/** Выбранные даты (для multiple) */
+	selectedDates?: Date[]
+	/** Режим выбора */
+	selectionMode?: CalendarSelectionMode
+	/** Группа: конфигурация времени */
+	timeConfig?: CalendarTimeConfig
+	/** Группа: ограничения дат */
+	constraints?: CalendarConstraints
+	/** Группа: настройки отображения */
+	displayConfig?: CalendarDisplayConfig
+	/** Выделенные даты */
+	highlights?: CalendarHighlight[]
+	/** События */
+	events?: CalendarEvent[]
+	/** Конфигурация выходных */
+	weekends?: CalendarWeekends | null
+	/** Первый день недели (0=вс, 1=пн) */
+	firstDayOfWeek?: CalendarWeekday
+	/** Локаль */
+	locale?: string
+	/** Показывать popover при клике на дату */
+	showDatePopover?: boolean
+	/** Отключённый календарь */
+	isDisabled?: boolean
 	/** Начальный месяц (0-11). Если не задан — текущий */
 	initialMonth?: number
 	/** Начальный год. Если не задан — текущий */
 	initialYear?: number
-	/** Кастомные классы для стилизации внутренних элементов */
-	customClass?: CustomClassProp
+	/** @deprecated Используйте timeConfig.showTime */
+	showTime?: boolean
+	/** @deprecated Используйте timeConfig.showSeconds */
+	showSeconds?: boolean
+	/** @deprecated Используйте timeConfig.is24Hour */
+	is24Hour?: boolean
+	/** @deprecated Используйте constraints.minDate */
+	minDate?: Date | null
+	/** @deprecated Используйте constraints.maxDate */
+	maxDate?: Date | null
+	/** @deprecated Используйте constraints.disabledDates */
+	disabledDates?: Date[]
+	/** @deprecated Используйте constraints.disabledWeekdays */
+	disabledWeekdays?: CalendarWeekday[]
+	/** @deprecated Используйте constraints.disableFrom */
+	disableFrom?: Date | null
+	/** @deprecated Используйте constraints.disableTo */
+	disableTo?: Date | null
+	/** @deprecated Используйте displayConfig.showNavigation */
+	showNavigation?: boolean
+	/** @deprecated Используйте displayConfig.canSwitchView */
+	canSwitchView?: boolean
+	/** @deprecated Используйте displayConfig.showTodayButton */
+	showTodayButton?: boolean
+	/** @deprecated Используйте displayConfig.showYear */
+	showYear?: boolean
+	/** @deprecated Используйте displayConfig.showWeekNumber */
+	showWeekNumber?: boolean
 }
 
 /**

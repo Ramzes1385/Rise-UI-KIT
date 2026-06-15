@@ -1,5 +1,5 @@
 <template>
-		<BaseCard
+	<BaseCard
 			class="base-calendar"
 			:class="[
 				variantClass,
@@ -225,28 +225,24 @@ import { useCalendar } from '@composables/useCalendar'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { formatPopoverDate } from '@utils/dateUtils'
-import { computed, getCurrentInstance, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseCalendar.style.scss'
 import type { BaseCalendarEmits, BaseCalendarProps } from '../model/BaseCalendar.types'
 
 const props = defineProps<BaseCalendarProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { wasPropPassed } = useExplicitPropDetection()
 
 function toKebabCase(value: string): string {
 	return value.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
 }
 
 function resolveBooleanPropDefault(
-	rawProps: Record<string, unknown> | null | undefined,
 	name: string,
 	value: boolean | undefined,
 	defaultValue: boolean,
 ): boolean {
-	const hasProp = Boolean(
-		rawProps &&
-			(Object.prototype.hasOwnProperty.call(rawProps, name) ||
-				Object.prototype.hasOwnProperty.call(rawProps, toKebabCase(name))),
-	)
+	const hasProp = wasPropPassed(name) || wasPropPassed(toKebabCase(name))
 
 	return hasProp ? (value ?? defaultValue) : defaultValue
 }
@@ -256,30 +252,40 @@ const resolvedProps = computed(() => ({
 	modelValueEnd: props.modelValueEnd ?? null,
 	selectedDates: props.selectedDates ?? [],
 	selectionMode: props.selectionMode ?? 'single',
-	minDate: props.minDate ?? null,
-	maxDate: props.maxDate ?? null,
-	disabledDates: props.disabledDates ?? [],
-	disabledWeekdays: props.disabledWeekdays ?? [],
-	disableFrom: props.disableFrom ?? null,
-	disableTo: props.disableTo ?? null,
+	minDate: props.constraints?.minDate ?? props.minDate ?? null,
+	maxDate: props.constraints?.maxDate ?? props.maxDate ?? null,
+	disabledDates: props.constraints?.disabledDates ?? props.disabledDates ?? [],
+	disabledWeekdays: props.constraints?.disabledWeekdays ?? props.disabledWeekdays ?? [],
+	disableFrom: props.constraints?.disableFrom ?? props.disableFrom ?? null,
+	disableTo: props.constraints?.disableTo ?? props.disableTo ?? null,
 	highlights: props.highlights ?? [],
 	events: props.events ?? [],
 	weekends: props.weekends ?? null,
 	firstDayOfWeek: props.firstDayOfWeek ?? 1,
-	showTime: props.showTime ?? false,
-	showSeconds: props.showSeconds ?? false,
-	is24Hour: resolveBooleanPropDefault(rawProps, 'is24Hour', props.is24Hour, true),
-	showWeekNumber: props.showWeekNumber ?? false,
+	showTime: props.timeConfig?.showTime ?? props.showTime ?? false,
+	showSeconds: props.timeConfig?.showSeconds ?? props.showSeconds ?? false,
+	is24Hour: props.timeConfig?.is24Hour !== undefined
+		? props.timeConfig.is24Hour
+		: resolveBooleanPropDefault('is24Hour', props.is24Hour, true),
+	showWeekNumber: props.displayConfig?.showWeekNumber ?? props.showWeekNumber ?? false,
 	locale: props.locale ?? 'ru-RU',
 	variant: props.variant ?? 'default',
 	color: props.color,
 	showDatePopover: props.showDatePopover ?? false,
 	sizeScale: props.sizeScale ?? 100,
 	isDisabled: props.isDisabled ?? false,
-	showNavigation: resolveBooleanPropDefault(rawProps, 'showNavigation', props.showNavigation, true),
-	canSwitchView: resolveBooleanPropDefault(rawProps, 'canSwitchView', props.canSwitchView, true),
-	showTodayButton: resolveBooleanPropDefault(rawProps, 'showTodayButton', props.showTodayButton, true),
-	showYear: resolveBooleanPropDefault(rawProps, 'showYear', props.showYear, true),
+	showNavigation: props.displayConfig?.showNavigation !== undefined
+		? props.displayConfig.showNavigation
+		: resolveBooleanPropDefault('showNavigation', props.showNavigation, true),
+	canSwitchView: props.displayConfig?.canSwitchView !== undefined
+		? props.displayConfig.canSwitchView
+		: resolveBooleanPropDefault('canSwitchView', props.canSwitchView, true),
+	showTodayButton: props.displayConfig?.showTodayButton !== undefined
+		? props.displayConfig.showTodayButton
+		: resolveBooleanPropDefault('showTodayButton', props.showTodayButton, true),
+	showYear: props.displayConfig?.showYear !== undefined
+		? props.displayConfig.showYear
+		: resolveBooleanPropDefault('showYear', props.showYear, true),
 	initialMonth: props.initialMonth,
 	initialYear: props.initialYear,
 	customClass: props.customClass,

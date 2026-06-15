@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения бейджа */
 export const BADGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -7,20 +6,9 @@ export const BADGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] 
 /**
  * Пропсы компонента BaseBadge
  */
-export interface BaseBadgeProps {
+export interface BaseBadgeProps extends BaseComponentProps<(typeof BADGE_VARIANTS)[number]> {
 	/** Текст */
 	label?: string
-	/** Вариант отображения */
-	variant?: (typeof BADGE_VARIANTS)[number]
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `text`.
-	 */
-	customClass?: CustomClassProp
 }
 
 /**

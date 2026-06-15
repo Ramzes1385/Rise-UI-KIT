@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения аккордеона */
 export const ACCORDION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -25,23 +24,11 @@ export interface BaseAccordionItem {
 /**
  * Пропсы компонента BaseAccordion
  */
-export interface BaseAccordionProps {
+export interface BaseAccordionProps extends BaseComponentProps<(typeof ACCORDION_VARIANTS)[number]> {
 	/** Список элементов */
 	items: BaseAccordionItem[]
 	/** Возможность открывать несколько элементов */
 	isMultiple?: boolean
-	/** Вариант отображения */
-	variant?: (typeof ACCORDION_VARIANTS)[number]
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `item`, `header`, `icon`, `label`, `arrow`, `arrowIcon`, `collapse`,
-	 * `content`, `contentText`.
-	 */
-	customClass?: CustomClassProp
 }
 
 /**

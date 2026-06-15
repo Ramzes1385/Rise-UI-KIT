@@ -7,7 +7,7 @@
 				'base-image--loaded': isLoaded,
 				'base-image--error': hasError,
 				'base-image--placeholder': hasPlaceholder && !isLoaded,
-				'base-image--zoomable': hasZoom,
+				'base-image--zoomable': resolvedHasZoom,
 			},
 			classes.root,
 		]"
@@ -159,7 +159,7 @@
 
 					<!-- Мини-карта -->
 					<div
-						v-if="showMinimap && zoom.currentScale.value > 1"
+						v-if="resolvedShowMinimap && zoom.currentScale.value > 1"
 						class="base-image__minimap"
 						@click="zoom.handleMinimapClick"
 						@mousedown.prevent="zoom.handleMinimapDragStart">
@@ -215,6 +215,7 @@ const props = defineProps({
 	minScale: { type: Number, default: 0.5 },
 	maxScale: { type: Number, default: 5 },
 	showMinimap: { type: Boolean, default: true },
+	zoomConfig: Object as PropType<BaseImageProps['zoomConfig']>,
 	convertToWebp: { type: Boolean, default: false },
 	gallery: Array as PropType<BaseImageProps['gallery']>,
 	sizeScale: { type: Number, default: 100 },
@@ -265,16 +266,19 @@ const hasError = ref(false)
 const isUsingFallback = ref(false)
 let loadingTimeoutId: number | null = null
 
+const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? props.hasZoom)
+const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? props.showMinimap)
+
 /** Composable для зума */
 const zoomImgRef = ref<HTMLElement | null>(null)
 const minimapImgRef = ref<HTMLElement | null>(null)
 
 const zoom = useImageZoom({
-	initialScale: () => props.initialScale,
-	zoomStep: () => props.zoomStep,
-	minScale: () => props.minScale,
-	maxScale: () => props.maxScale,
-	closeOnOverlay: () => props.closeOnOverlay,
+	initialScale: () => props.zoomConfig?.initialScale ?? props.initialScale,
+	zoomStep: () => props.zoomConfig?.zoomStep ?? props.zoomStep,
+	minScale: () => props.zoomConfig?.minScale ?? props.minScale,
+	maxScale: () => props.zoomConfig?.maxScale ?? props.maxScale,
+	closeOnOverlay: () => props.zoomConfig?.closeOnOverlay ?? props.closeOnOverlay,
 	onZoom: (scale: number) => emit('zoom', scale),
 	getZoomImgEl: () => zoomImgRef.value,
 	getMinimapImgEl: () => minimapImgRef.value,
@@ -413,7 +417,7 @@ const currentZoomSrc = computed((): string => {
 
 /** Клик по изображению — открыть зум */
 function handleImageClick(): void {
-	if (!props.hasZoom) return
+	if (!resolvedHasZoom.value) return
 	const foundIndex = galleryList.value.indexOf(props.src)
 	galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
 	zoom.openZoom()

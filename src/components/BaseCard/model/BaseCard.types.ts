@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
 
 /** Варианты отображения карточки */
@@ -8,20 +7,13 @@ export const CARD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] a
 /**
  * Пропсы компонента BaseCard
  */
-export interface BaseCardProps {
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `header`, `title`, `subtitle`, `actions`, `body`, `footer`.
-	 */
-	customClass?: CustomClassProp
+export interface BaseCardProps extends BaseComponentProps<(typeof CARD_VARIANTS)[number]> {
 	/** Заголовок */
 	title?: string
 	/** Подзаголовок */
 	subtitle?: string
 	/** Интерактивная карточка */
 	isHoverable?: boolean
-	/** Вариант отображения */
-	variant?: (typeof CARD_VARIANTS)[number]
 	/**
 	 * Внутренние отступы. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
@@ -31,10 +23,6 @@ export interface BaseCardProps {
 	padding?: PaddingProp
 	/** Высота карточки (px, %, auto и т.д.) */
 	height?: string
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/** Включить прокрутку тела карточки */
 	scroll?: boolean
 }

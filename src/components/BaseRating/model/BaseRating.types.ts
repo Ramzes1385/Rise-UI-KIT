@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения рейтинга */
 export const RATING_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -9,7 +8,7 @@ export type RatingVariant = (typeof RATING_VARIANTS)[number]
 /**
  * Пропсы компонента BaseRating
  */
-export interface BaseRatingProps {
+export interface BaseRatingProps extends BaseComponentProps<RatingVariant> {
 	/** Текущая оценка (v-model), допускает дробные значения */
 	modelValue?: number
 	/** Количество звёзд */
@@ -26,14 +25,6 @@ export interface BaseRatingProps {
 	isReadonly?: boolean
 	/** Заблокирован — без интерактива и приглушён */
 	isDisabled?: boolean
-	/** Вариант отображения */
-	variant?: RatingVariant
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Кастомные классы (строка или объект) */
-	customClass?: CustomClassProp
 }
 
 /**

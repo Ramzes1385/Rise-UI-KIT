@@ -29,6 +29,34 @@ export interface TourGeometry {
 }
 
 /**
+ * Подписи кнопок тура
+ */
+export interface TourLabels {
+	/** Текст кнопки перехода к следующему шагу */
+	next?: string
+	/** Текст кнопки возврата к предыдущему шагу */
+	prev?: string
+	/** Текст кнопки завершения на последнем шаге */
+	finish?: string
+	/** Текст кнопки пропуска тура */
+	skip?: string
+}
+
+/**
+ * Настройки поведения тура
+ */
+export interface TourBehavior {
+	/** Закрывать тур при клике по затемнённому фону */
+	closeOnOverlayClick?: boolean
+	/** Закрывать тур по клавише Escape */
+	closeOnEscape?: boolean
+	/** Блокировать прокрутку страницы во время тура */
+	lockScroll?: boolean
+	/** Прокручивать целевой элемент в зону видимости */
+	scrollIntoView?: boolean
+}
+
+/**
  * Пропсы компонента BaseTour
  */
 export interface BaseTourProps {
@@ -46,22 +74,10 @@ export interface BaseTourProps {
 	padding?: number
 	/** Скруление подсветки (px) */
 	radius?: number
-	/** Закрывать тур при клике по затемнённому фону */
-	closeOnOverlayClick?: boolean
-	/** Закрывать тур по клавише Escape */
-	closeOnEscape?: boolean
-	/** Блокировать прокрутку страницы во время тура */
-	lockScroll?: boolean
-	/** Прокручивать целевой элемент в зону видимости */
-	scrollIntoView?: boolean
-	/** Текст кнопки перехода к следующему шагу */
-	nextLabel?: string
-	/** Текст кнопки возврата к предыдущему шагу */
-	prevLabel?: string
-	/** Текст кнопки завершения на последнем шаге */
-	finishLabel?: string
-	/** Текст кнопки пропуска тура */
-	skipLabel?: string
+	/** Группа: подписи кнопок */
+	labels?: TourLabels
+	/** Группа: настройки поведения */
+	behavior?: TourBehavior
 	/** Показывать кнопку пропуска */
 	showSkip?: boolean
 	/** Показывать индикатор прогресса (точки шагов) */
@@ -73,6 +89,22 @@ export interface BaseTourProps {
 	 * `prevButton`, `nextButton`, `finishButton`.
 	 */
 	customClass?: CustomClassProp
+	/** @deprecated Используйте behavior.closeOnOverlayClick */
+	closeOnOverlayClick?: boolean
+	/** @deprecated Используйте behavior.closeOnEscape */
+	closeOnEscape?: boolean
+	/** @deprecated Используйте behavior.lockScroll */
+	lockScroll?: boolean
+	/** @deprecated Используйте behavior.scrollIntoView */
+	scrollIntoView?: boolean
+	/** @deprecated Используйте labels.next */
+	nextLabel?: string
+	/** @deprecated Используйте labels.prev */
+	prevLabel?: string
+	/** @deprecated Используйте labels.finish */
+	finishLabel?: string
+	/** @deprecated Используйте labels.skip */
+	skipLabel?: string
 }
 
 /** Контекст, передаваемый в default-слот карточки тура */

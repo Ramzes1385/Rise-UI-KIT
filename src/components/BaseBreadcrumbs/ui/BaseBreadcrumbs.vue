@@ -34,22 +34,11 @@
 				<meta itemprop="position" content="1" />
 				<span class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
 					<slot name="separator" :index="-1">
-						<BaseIcon
-							v-if="separator === 'chevron'"
-							name="chevron-right"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							:custom-class="classes.separatorIcon" />
-						<BaseText v-else-if="separator === 'slash'" :size-scale="sizeScale" :custom-class="classes.separatorText"
-							>/</BaseText
-						>
-						<BaseText v-else-if="separator === 'dot'" :size-scale="sizeScale" :custom-class="classes.separatorText"
-							>•</BaseText
-						>
-						<BaseIcon
-							v-else
-							name="chevron-right"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							:custom-class="classes.separatorIcon" />
+						<BreadcrumbsSeparator
+							:separator="separator"
+							:size-scale="sizeScale"
+							:separator-icon-class="classes.separatorIcon"
+							:separator-text-class="classes.separatorText" />
 					</slot>
 				</span>
 			</li>
@@ -70,28 +59,11 @@
 				<li class="base-breadcrumbs__item" :class="classes.item" aria-hidden="true">
 					<span class="base-breadcrumbs__sep" :class="classes.separator">
 						<slot name="separator" :index="0">
-							<BaseIcon
-								v-if="separator === 'chevron'"
-								name="chevron-right"
-								:size-scale="calcIconScale('xs', sizeScale)"
-								:custom-class="classes.separatorIcon" />
-							<BaseText
-								v-else-if="separator === 'slash'"
+							<BreadcrumbsSeparator
+								:separator="separator"
 								:size-scale="sizeScale"
-								:custom-class="classes.separatorText"
-								>/</BaseText
-							>
-							<BaseText
-								v-else-if="separator === 'dot'"
-								:size-scale="sizeScale"
-								:custom-class="classes.separatorText"
-								>•</BaseText
-							>
-							<BaseIcon
-								v-else
-								name="chevron-right"
-								:size-scale="calcIconScale('xs', sizeScale)"
-								:custom-class="classes.separatorIcon" />
+								:separator-icon-class="classes.separatorIcon"
+								:separator-text-class="classes.separatorText" />
 						</slot>
 					</span>
 				</li>
@@ -151,22 +123,11 @@
 
 				<span v-if="!isCurrent(index)" class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
 					<slot name="separator" :index="realIndex(index)">
-						<BaseIcon
-							v-if="separator === 'chevron'"
-							name="chevron-right"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							:custom-class="classes.separatorIcon" />
-						<BaseText v-else-if="separator === 'slash'" :size-scale="sizeScale" :custom-class="classes.separatorText"
-							>/</BaseText
-						>
-						<BaseText v-else-if="separator === 'dot'" :size-scale="sizeScale" :custom-class="classes.separatorText"
-							>•</BaseText
-						>
-						<BaseIcon
-							v-else
-							name="chevron-right"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							:custom-class="classes.separatorIcon" />
+						<BreadcrumbsSeparator
+							:separator="separator"
+							:size-scale="sizeScale"
+							:separator-icon-class="classes.separatorIcon"
+							:separator-text-class="classes.separatorText" />
 					</slot>
 				</span>
 			</li>
@@ -178,6 +139,8 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+
+import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'

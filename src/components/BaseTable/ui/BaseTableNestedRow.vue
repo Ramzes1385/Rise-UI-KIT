@@ -2,12 +2,12 @@
 	<tr v-if="nestedConfig && row.children?.length" class="base-table__tr base-table__tr--nested" :class="trClass">
 		<td :colspan="totalColumns" class="base-table__td base-table__td--nested" :class="tdClass">
 			<Transition
-				@before-enter="onExpandBeforeEnter"
-				@enter="onExpandEnter"
-				@after-enter="onExpandAfterEnter"
-				@before-leave="onCollapseBeforeLeave"
-				@leave="onCollapseLeave"
-				@after-leave="onCollapseAfterLeave">
+				@before-enter="transitionCallbacks.onExpandBeforeEnter"
+				@enter="transitionCallbacks.onExpandEnter"
+				@after-enter="transitionCallbacks.onExpandAfterEnter"
+				@before-leave="transitionCallbacks.onCollapseBeforeLeave"
+				@leave="transitionCallbacks.onCollapseLeave"
+				@after-leave="transitionCallbacks.onCollapseAfterLeave">
 				<div v-if="isExpanded(row)" class="base-table__nested-wrapper">
 					<BaseText v-if="nestedConfig.title" tag="h4" class="base-table__nested-title">
 						{{ nestedConfig.title }}
@@ -39,8 +39,10 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
+import { inject } from 'vue'
 
 import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTable from './BaseTable.vue'
 
 defineProps<{
@@ -56,11 +58,7 @@ defineProps<{
 	isExpanded: (row: TableRow) => boolean
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 	formatCellValue: (column: TableColumn, row: TableRow) => string
-	onExpandBeforeEnter: (element: Element) => void
-	onExpandEnter: (element: Element, done: () => void) => void
-	onExpandAfterEnter: (element: Element) => void
-	onCollapseBeforeLeave: (element: Element) => void
-	onCollapseLeave: (element: Element, done: () => void) => void
-	onCollapseAfterLeave: (element: Element) => void
 }>()
+
+const transitionCallbacks = inject(TABLE_EXPAND_TRANSITION_KEY)!
 </script>

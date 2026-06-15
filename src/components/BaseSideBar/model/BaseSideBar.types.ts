@@ -1,7 +1,6 @@
 import type { Component } from 'vue'
 
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
 
 /** Варианты отображения сайдбара */
@@ -59,7 +58,7 @@ export interface SideBarItem {
 /**
  * Props, которые передаются в слоты item/icon/label/badge
  */
-export interface BaseSideBarItemSlotProps {
+export interface BaseSideBarItemSlotProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number]> {
 	/** Элемент навигации */
 	item: SideBarItem
 
@@ -85,7 +84,7 @@ export interface BaseSideBarItemSlotProps {
 /**
  * Пропсы компонента BaseSideBar
  */
-export interface BaseSideBarProps {
+export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number]> {
 	/** v-model свёрнутого состояния (undefined = внутреннее управление) */
 	isCollapsed?: boolean
 
@@ -101,8 +100,6 @@ export interface BaseSideBarProps {
 	/** Можно ли сворачивать */
 	isCollapsible?: boolean
 
-	/** Вариант отображения */
-	variant?: (typeof SIDEBAR_VARIANTS)[number]
 
 	/**
 	 * Внутренние отступы.
@@ -123,11 +120,7 @@ export interface BaseSideBarProps {
 	 */
 	gap?: number
 
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 
-	/** Масштаб размера (100 = 100%) */
-	sizeScale?: number
 
 	/** Состояние загрузки */
 	isLoading?: boolean
@@ -169,8 +162,6 @@ export interface BaseSideBarProps {
 	 */
 	linkComponent?: string | Component
 
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**
@@ -229,7 +220,7 @@ export interface BaseSideBarSlots {
 /**
  * Пропсы внутреннего компонента навигации BaseSideBarNavigation
  */
-export interface BaseSideBarNavigationProps {
+export interface BaseSideBarNavigationProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number]> {
 	/** Элементы навигации */
 	items?: SideBarItem[]
 

@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения инпута */
 export const INPUT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
@@ -34,12 +34,11 @@ export interface PasswordRuleResult {
 	isValid: boolean
 }
 
-import type { CustomClassProp } from '@composables/useCustomClass'
 
 /**
  * Пропсы компонента BaseInput
  */
-export interface BaseInputProps {
+export interface BaseInputProps extends BaseComponentProps<InputVariant> {
 	/** Значение поля (null трактуется как пустая строка) */
 	modelValue: string | number | null
 	/** Тип инпута */
@@ -56,25 +55,10 @@ export interface BaseInputProps {
 	isRequired?: boolean
 	/** Только для чтения */
 	isReadonly?: boolean
-	/** Вариант отображения */
-	variant?: InputVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/** Префикс (например, код страны) */
 	prefix?: string
 	/** Постфикс (например, единица измерения) */
 	postfix?: string
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `label` (вложенный BaseText), `required` (вложенный BaseText),
-	 * `wrapper`, `prefix` (вложенный BaseText), `field`,
-	 * `passwordToggle` (вложенный BaseButton), `passwordIcon` (вложенный BaseIcon),
-	 * `postfix` (вложенный BaseText), `passwordRules`, `passwordRule`,
-	 * `passwordRuleIcon` (вложенный BaseIcon правила), `errorText` (вложенный BaseText).
-	 */
-	customClass?: CustomClassProp
 	/**
 	 * Маска ввода.
 	 *

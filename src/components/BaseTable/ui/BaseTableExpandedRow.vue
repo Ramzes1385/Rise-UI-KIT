@@ -2,12 +2,12 @@
 	<tr v-if="row.isExpandable" class="base-table__tr base-table__tr--expanded-content" :class="trClass">
 		<td :colspan="totalColumns" class="base-table__td base-table__td--expanded" :class="tdClass">
 			<Transition
-				@before-enter="onExpandBeforeEnter"
-				@enter="onExpandEnter"
-				@after-enter="onExpandAfterEnter"
-				@before-leave="onCollapseBeforeLeave"
-				@leave="onCollapseLeave"
-				@after-leave="onCollapseAfterLeave">
+				@before-enter="transitionCallbacks.onExpandBeforeEnter"
+				@enter="transitionCallbacks.onExpandEnter"
+				@after-enter="transitionCallbacks.onExpandAfterEnter"
+				@before-leave="transitionCallbacks.onCollapseBeforeLeave"
+				@leave="transitionCallbacks.onCollapseLeave"
+				@after-leave="transitionCallbacks.onCollapseAfterLeave">
 				<div v-if="isExpanded(row)" class="base-table__expanded-wrapper">
 					<slot name="expanded-content" :row="row"></slot>
 				</div>
@@ -17,7 +17,10 @@
 </template>
 
 <script setup lang="ts">
+import { inject } from 'vue'
+
 import type { TableRow } from '../model/BaseTable.types'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 
 defineProps<{
 	row: TableRow
@@ -25,11 +28,7 @@ defineProps<{
 	trClass?: string
 	tdClass?: string
 	isExpanded: (row: TableRow) => boolean
-	onExpandBeforeEnter: (element: Element) => void
-	onExpandEnter: (element: Element, done: () => void) => void
-	onExpandAfterEnter: (element: Element) => void
-	onCollapseBeforeLeave: (element: Element) => void
-	onCollapseLeave: (element: Element, done: () => void) => void
-	onCollapseAfterLeave: (element: Element) => void
 }>()
+
+const transitionCallbacks = inject(TABLE_EXPAND_TRANSITION_KEY)!
 </script>

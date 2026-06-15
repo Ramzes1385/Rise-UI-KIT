@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения редактора */
 export const EDITOR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -22,25 +21,17 @@ export type EditorHeading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p'
 /**
  * Пропсы компонента BaseEditor
  */
-export interface BaseEditorProps {
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseEditorProps extends BaseComponentProps<(typeof EDITOR_VARIANTS)[number]> {
 	/** HTML-содержимое */
 	modelValue?: string
 	/** Плейсхолдер */
 	placeholder?: string
 	/** Только чтение */
 	isReadonly?: boolean
-	/** Вариант отображения */
-	variant?: (typeof EDITOR_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Показывать панель инструментов */
 	hasToolbar?: boolean
 	/** Автофокус */
 	isAutofocus?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 }
 
 /**

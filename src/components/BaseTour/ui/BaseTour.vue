@@ -78,20 +78,20 @@
 										:padding="6"
 										variant="ghost"
 										:custom-class="classes.prevButton"
-										@click="goPrev"
-										>{{ prevLabel }}</BaseButton
+									@click="goPrev"
+									>{{ resolvedPrevLabel }}</BaseButton
 									>
 									<BaseButton
 										v-if="!isLast"
 										:padding="6"
 										variant="default"
 										:custom-class="classes.nextButton"
-										@click="goNext"
-										>{{ nextLabel }}</BaseButton
+									@click="goNext"
+									>{{ resolvedNextLabel }}</BaseButton
 									>
-									<BaseButton v-else :padding="6" variant="default" :custom-class="classes.finishButton" @click="handleFinish">{{
-										finishLabel
-									}}</BaseButton>
+								<BaseButton v-else :padding="6" variant="default" :custom-class="classes.finishButton" @click="handleFinish">{{
+									resolvedFinishLabel
+								}}</BaseButton>
 								</div>
 							</div>
 						</template>
@@ -137,6 +137,8 @@ const props = defineProps({
 	prevLabel: { type: String, default: 'Назад' },
 	finishLabel: { type: String, default: 'Завершить' },
 	skipLabel: { type: String, default: 'Пропустить' },
+	labels: Object as PropType<BaseTourProps['labels']>,
+	behavior: Object as PropType<BaseTourProps['behavior']>,
 	showSkip: { type: Boolean, default: true },
 	showProgress: { type: Boolean, default: true },
 	customClass: [String, Object] as PropType<BaseTourProps['customClass']>,
@@ -152,6 +154,15 @@ const MAX_DOTS = 8
 const internalIndex = ref(props.step)
 const activeIndex = computed((): number => internalIndex.value)
 const contentColor: CustomColor = { text: { base: 'var(--color-text-muted)' } }
+
+const resolvedNextLabel = computed((): string => props.labels?.next ?? props.nextLabel)
+const resolvedPrevLabel = computed((): string => props.labels?.prev ?? props.prevLabel)
+const resolvedFinishLabel = computed((): string => props.labels?.finish ?? props.finishLabel)
+const resolvedSkipLabel = computed((): string => props.labels?.skip ?? props.skipLabel)
+const resolvedCloseOnOverlayClick = computed((): boolean => props.behavior?.closeOnOverlayClick ?? props.closeOnOverlayClick)
+const resolvedCloseOnEscape = computed((): boolean => props.behavior?.closeOnEscape ?? props.closeOnEscape)
+const resolvedLockScroll = computed((): boolean => props.behavior?.lockScroll ?? props.lockScroll)
+const resolvedScrollIntoView = computed((): boolean => props.behavior?.scrollIntoView ?? props.scrollIntoView)
 
 const isFocusing = ref(false)
 const focusFromViewport = ref(false)
@@ -284,7 +295,7 @@ function handleFinish(): void {
 }
 
 function handleOverlayClick(): void {
-	if (props.closeOnOverlayClick) handleSkip()
+	if (resolvedCloseOnOverlayClick.value) handleSkip()
 }
 
 /** Останавливает анимацию фокусировки и сбрасывает её состояние */
@@ -323,7 +334,7 @@ async function startFocus(): Promise<void> {
 }
 
 useEscapeKey({
-	isActive: () => props.isOpen && props.closeOnEscape,
+	isActive: () => props.isOpen && resolvedCloseOnEscape.value,
 	callback: handleSkip,
 })
 
@@ -339,7 +350,7 @@ watch(
 	value => {
 		if (value) {
 			internalIndex.value = props.step
-			if (props.lockScroll) lock()
+			if (resolvedLockScroll.value) lock()
 			attachListeners()
 			void startFocus()
 		} else {

@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
 
 /** Варианты отображения выпадающего списка */
@@ -25,15 +24,11 @@ export type DropdownPosition =
 /**
  * Пропсы компонента BaseDropdown
  */
-export interface BaseDropdownProps {
+export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number]> {
 	/** Открыт ли список */
 	isOpen?: boolean
 	/** Позиция относительно триггера */
 	position?: DropdownPosition
-	/** Вариант отображения */
-	variant?: (typeof DROPDOWN_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Отступ от триггера (px) */
 	gap?: number
 	/** Максимальная высота */
@@ -52,10 +47,6 @@ export interface BaseDropdownProps {
 	 * (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси.
 	 */
 	padding?: PaddingProp
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

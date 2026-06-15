@@ -59,13 +59,7 @@
 					:td-class="tdClass"
 					:is-expanded="isExpanded"
 					:get-column-style="getColumnStyle"
-					:format-cell-value="formatCellValue"
-					:on-expand-before-enter="onExpandBeforeEnter"
-					:on-expand-enter="onExpandEnter"
-					:on-expand-after-enter="onExpandAfterEnter"
-					:on-collapse-before-leave="onCollapseBeforeLeave"
-					:on-collapse-leave="onCollapseLeave"
-					:on-collapse-after-leave="onCollapseAfterLeave">
+					:format-cell-value="formatCellValue">
 					<template v-for="column in columns" #[`cell-${column.key}`]="slotProps" :key="column.key">
 						<slot v-if="$slots[`cell-${column.key}`]" :name="`cell-${column.key}`" v-bind="slotProps"></slot>
 					</template>
@@ -77,13 +71,7 @@
 					:total-columns="totalColumns"
 					:tr-class="trClass"
 					:td-class="tdClass"
-					:is-expanded="isExpanded"
-					:on-expand-before-enter="onExpandBeforeEnter"
-					:on-expand-enter="onExpandEnter"
-					:on-expand-after-enter="onExpandAfterEnter"
-					:on-collapse-before-leave="onCollapseBeforeLeave"
-					:on-collapse-leave="onCollapseLeave"
-					:on-collapse-after-leave="onCollapseAfterLeave">
+					:is-expanded="isExpanded">
 					<template #expanded-content="slotProps">
 						<slot name="expanded-content" v-bind="slotProps"></slot>
 					</template>
@@ -131,12 +119,6 @@ defineProps<{
 	getRowNumber: (index: number) => number
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 	formatCellValue: (column: TableColumn, row: TableRow) => string
-	onExpandBeforeEnter: (element: Element) => void
-	onExpandEnter: (element: Element, done: () => void) => void
-	onExpandAfterEnter: (element: Element) => void
-	onCollapseBeforeLeave: (element: Element) => void
-	onCollapseLeave: (element: Element, done: () => void) => void
-	onCollapseAfterLeave: (element: Element) => void
 }>()
 
 const emit = defineEmits<{

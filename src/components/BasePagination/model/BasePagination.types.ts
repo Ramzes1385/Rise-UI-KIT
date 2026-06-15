@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения пагинации */
 export const PAGINATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -6,9 +6,8 @@ export const PAGINATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'so
 /**
  * Пропсы компонента BasePagination
  */
-import type { CustomClassProp } from '@composables/useCustomClass'
 
-export interface BasePaginationProps {
+export interface BasePaginationProps extends BaseComponentProps<(typeof PAGINATION_VARIANTS)[number]> {
 	/** Текущая страница */
 	modelValue: number
 	/** Всего элементов */
@@ -19,14 +18,6 @@ export interface BasePaginationProps {
 	maxVisible?: number
 	/** Показывать последнюю страницу всегда */
 	showLastPage?: boolean
-	/** Вариант отображения */
-	variant?: (typeof PAGINATION_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения меню */
 export const MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -25,21 +24,9 @@ export interface BaseMenuItem {
 /**
  * Пропсы компонента BaseMenu
  */
-export interface BaseMenuProps {
+export interface BaseMenuProps extends BaseComponentProps<(typeof MENU_VARIANTS)[number]> {
 	/** Список элементов */
 	items: BaseMenuItem[][]
-	/** Вариант отображения */
-	variant?: (typeof MENU_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `group`, `item`, `icon` (вложенный BaseIcon), `label` (вложенный BaseText),
-	 * `divider` (вложенный BaseSeparator).
-	 */
-	customClass?: CustomClassProp
 }
 
 /**

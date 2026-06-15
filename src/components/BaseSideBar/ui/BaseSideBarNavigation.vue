@@ -26,25 +26,13 @@
 							:aria-disabled="item.isDisabled || undefined"
 							:aria-expanded="getItemAriaExpanded(item)"
 							@click="handleClick(item, $event)">
-							<slot
-								name="item"
-								:item="item"
-								:level="resolvedLevel"
-								:is-active="isItemActive(item)"
-								:is-current="isCurrentItemActive(item)"
-								:is-collapsed="resolvedIsCollapsed"
-								:has-children="hasChildren(item)"
-								:on-click="(event: MouseEvent) => handleClick(item, event)">
-								<span v-if="item.icon" class="base-sidebar-nav__icon">
-									<slot
-										name="icon"
-										:item="item"
-										:level="resolvedLevel"
-										:is-active="isItemActive(item)"
-										:is-current="isCurrentItemActive(item)"
-										:is-collapsed="resolvedIsCollapsed"
-										:has-children="hasChildren(item)"
-										:on-click="(event: MouseEvent) => handleClick(item, event)">
+						<slot
+							name="item"
+							v-bind="getSlotProps(item)">
+							<span v-if="item.icon" class="base-sidebar-nav__icon">
+								<slot
+									name="icon"
+									v-bind="getSlotProps(item)">
 										<BaseIcon :name="item.icon" />
 									</slot>
 								</span>
@@ -69,39 +57,21 @@
 					:aria-disabled="item.isDisabled || undefined"
 					:aria-expanded="getItemAriaExpanded(item)"
 					@click="handleClick(item, $event)">
-					<slot
-						name="item"
-						:item="item"
-						:level="resolvedLevel"
-						:is-active="isItemActive(item)"
-						:is-current="isCurrentItemActive(item)"
-						:is-collapsed="resolvedIsCollapsed"
-						:has-children="hasChildren(item)"
-						:on-click="(event: MouseEvent) => handleClick(item, event)">
-						<span v-if="item.icon" class="base-sidebar-nav__icon">
-							<slot
-								name="icon"
-								:item="item"
-								:level="resolvedLevel"
-								:is-active="isItemActive(item)"
-								:is-current="isCurrentItemActive(item)"
-								:is-collapsed="resolvedIsCollapsed"
-								:has-children="hasChildren(item)"
-								:on-click="(event: MouseEvent) => handleClick(item, event)">
+				<slot
+					name="item"
+					v-bind="getSlotProps(item)">
+					<span v-if="item.icon" class="base-sidebar-nav__icon">
+						<slot
+							name="icon"
+							v-bind="getSlotProps(item)">
 								<BaseIcon :name="item.icon" />
 							</slot>
 						</span>
 
-						<span class="base-sidebar-nav__label">
-							<slot
-								name="label"
-								:item="item"
-								:level="resolvedLevel"
-								:is-active="isItemActive(item)"
-								:is-current="isCurrentItemActive(item)"
-								:is-collapsed="resolvedIsCollapsed"
-								:has-children="hasChildren(item)"
-								:on-click="(event: MouseEvent) => handleClick(item, event)">
+					<span class="base-sidebar-nav__label">
+						<slot
+							name="label"
+							v-bind="getSlotProps(item)">
 								{{ item.label }}
 							</slot>
 						</span>
@@ -112,15 +82,9 @@
 							:label="String(item.badge)"
 							variant="soft"
 							:size-scale="85">
-							<slot
-								name="badge"
-								:item="item"
-								:level="resolvedLevel"
-								:is-active="isItemActive(item)"
-								:is-current="isCurrentItemActive(item)"
-								:is-collapsed="resolvedIsCollapsed"
-								:has-children="hasChildren(item)"
-								:on-click="(event: MouseEvent) => handleClick(item, event)">
+						<slot
+							name="badge"
+							v-bind="getSlotProps(item)">
 								{{ item.badge }}
 							</slot>
 						</BaseBadge>
@@ -371,5 +335,17 @@ function handleClick(item: SideBarItem, event: MouseEvent): void {
 /* istanbul ignore next */
 function handleChildItemClick(item: SideBarItem, event: MouseEvent): void {
 	emit('itemClick', item, event)
+}
+
+function getSlotProps(item: SideBarItem) {
+	return {
+		item,
+		level: resolvedLevel.value,
+		isActive: isItemActive(item),
+		isCurrent: isCurrentItemActive(item),
+		isCollapsed: resolvedIsCollapsed.value,
+		hasChildren: hasChildren(item),
+		onClick: (event: MouseEvent) => handleClick(item, event),
+	}
 }
 </script>

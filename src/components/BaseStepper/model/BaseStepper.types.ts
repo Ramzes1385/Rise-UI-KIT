@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /**
  * Шаг степпера
@@ -48,14 +48,11 @@ export const STEPPER_ORIENTATIONS = ['horizontal', 'vertical'] as const
 /** Тип ориентации */
 export type StepperOrientation = (typeof STEPPER_ORIENTATIONS)[number]
 
-import type { CustomClassProp } from '@composables/useCustomClass'
 
 /**
  * Пропсы компонента BaseStepper
  */
-export interface BaseStepperProps {
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseStepperProps extends BaseComponentProps<StepperVariant> {
 	/** Текущий шаг (1-based) */
 	modelValue: number
 	/** Список шагов */
@@ -64,12 +61,6 @@ export interface BaseStepperProps {
 	orientation?: StepperOrientation
 	/** Форма индикатора */
 	shape?: StepperShape
-	/** Вариант отображения */
-	variant?: StepperVariant
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 }
 
 /**

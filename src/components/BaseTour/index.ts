@@ -3,6 +3,8 @@ export type {
 	BaseTourProps,
 	BaseTourEmits,
 	BaseTourSlots,
+	TourBehavior,
+	TourLabels,
 	TourStep,
 	TourPlacement,
 	TourGeometry,

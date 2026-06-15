@@ -26,12 +26,13 @@ import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { UI_PANEL_MAX_HEIGHT } from '@constants'
 import { usePadding } from '@composables/usePadding'
-import { computed, getCurrentInstance, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps } from '../model/BaseDropdown.types'
 
 const props = defineProps<BaseDropdownProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { wasPropPassed } = useExplicitPropDetection()
 
 const isOpen = computed(() => props.isOpen ?? false)
 const position = computed(() => props.position ?? 'bottom-start')
@@ -39,10 +40,10 @@ const gap = computed(() => props.gap ?? 4)
 const maxHeight = computed(() => props.maxHeight ?? UI_PANEL_MAX_HEIGHT)
 const matchWidth = computed(() => props.matchWidth ?? false)
 const closeOnEscape = computed(() =>
-	rawProps && ('closeOnEscape' in rawProps || 'close-on-escape' in rawProps) ? (props.closeOnEscape ?? true) : true,
+	wasPropPassed('closeOnEscape') || wasPropPassed('close-on-escape') ? (props.closeOnEscape ?? true) : true,
 )
 const preventMousedown = computed(() =>
-	rawProps && ('preventMousedown' in rawProps || 'prevent-mousedown' in rawProps)
+	wasPropPassed('preventMousedown') || wasPropPassed('prevent-mousedown')
 		? (props.preventMousedown ?? true)
 		: true,
 )

@@ -13,7 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance } from 'vue'
+import { computed } from 'vue'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 
 import { useCustomClass } from '@composables/useCustomClass'
 
@@ -21,11 +22,11 @@ import '../styles/BaseSkeleton.style.scss'
 import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 
 const props = defineProps<BaseSkeletonProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { wasPropPassed } = useExplicitPropDetection()
 
 const shape = computed(() => props.shape ?? 'rect')
 const isAnimated = computed(() =>
-	rawProps && ('isAnimated' in rawProps || 'is-animated' in rawProps) ? (props.isAnimated ?? true) : true,
+	wasPropPassed('isAnimated') || wasPropPassed('is-animated') ? (props.isAnimated ?? true) : true,
 )
 const isPulse = computed(() => props.isPulse ?? false)
 const sizeScale = computed(() => props.sizeScale ?? 100)

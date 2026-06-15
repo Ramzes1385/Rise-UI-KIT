@@ -1,6 +1,6 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
+import type { InjectionKey } from 'vue'
 
 /** Варианты отображения таблицы */
 export const TABLE_VARIANTS = ['default', 'bordered', 'striped'] as const
@@ -158,15 +158,11 @@ export type LoadMode = 'pagination' | 'infinite' | 'button'
 /**
  * Пропсы компонента BaseTable
  */
-export interface BaseTableProps {
+export interface BaseTableProps extends BaseComponentProps<TableVariant> {
 	/** Колонки */
 	columns: TableColumn[]
 	/** Строки */
 	rows: TableRow[]
-	/** Вариант отображения */
-	variant?: TableVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Загрузка */
 	isLoading?: boolean
 	/** Пустое сообщение */
@@ -199,8 +195,6 @@ export interface BaseTableProps {
 	hasPageSizeSelector?: boolean
 	/** Ресайз колонок (все колонки можно растягивать/сжимать) */
 	isResizable?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/**
 	 * Внутренние отступы ячеек. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
@@ -208,8 +202,6 @@ export interface BaseTableProps {
 	 * По умолчанию 10 → 10px 20px
 	 */
 	padding?: PaddingProp
-	/** Кастомные CSS-классы */
-	customClass?: CustomClassProp
 }
 
 /**
@@ -228,6 +220,21 @@ export interface BaseTableEmits {
 	(event: 'column-resize', key: string, width: number): void
 	(event: 'columns-change', columns: TableColumn[]): void
 }
+
+/**
+ * Колбэки Transition для раскрытия/сворачивания строк (provide/inject)
+ */
+export interface TableExpandTransitionCallbacks {
+	onExpandBeforeEnter: (el: Element) => void
+	onExpandEnter: (el: Element, done: () => void) => void
+	onExpandAfterEnter: (el: Element) => void
+	onCollapseBeforeLeave: (el: Element) => void
+	onCollapseLeave: (el: Element, done: () => void) => void
+	onCollapseAfterLeave: (el: Element) => void
+}
+
+/** Ключ provide/inject для transition-колбэков раскрытия строк */
+export const TABLE_EXPAND_TRANSITION_KEY = Symbol('TABLE_EXPAND_TRANSITION') as InjectionKey<TableExpandTransitionCallbacks>
 
 /**
  * Слоты компонента BaseTable

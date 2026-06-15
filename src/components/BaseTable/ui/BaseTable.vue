@@ -46,12 +46,12 @@
 			<div v-if="isLoading && rows.length" class="base-table__loading-overlay" :class="classes.loadingOverlay">
 				<BaseLoader variant="spinner" :size-scale="calcIconScale('sm', sizeScale)" has-label />
 			</div>
-			<div
-				class="base-table__wrapper"
-				:class="[classes.wrapper, { 'base-table__wrapper--loading': isLoading && rows.length }]"
-				:style="height ? { maxHeight: height } : undefined"
-				@scroll="handleScroll"
-				ref="tableWrapperRef">
+		<div
+			ref="tableWrapperRef"
+			class="base-table__wrapper"
+			:class="[classes.wrapper, { 'base-table__wrapper--loading': isLoading && rows.length }]"
+			:style="height ? { maxHeight: height } : undefined"
+			@scroll="handleScroll">
 				<table class="base-table__table" :class="[classes.table, { 'base-table__table--fixed': useFixedLayout }]">
 					<colgroup>
 					<col v-if="isSelectable" :style="{ width: TABLE_ROW_SELECTION_WIDTH }" />
@@ -104,15 +104,9 @@
 						:is-selected="isSelected"
 						:is-expanded="isExpanded"
 						:get-row-number="getRowNumber"
-						:get-column-style="getColumnStyle"
-						:format-cell-value="formatCellValue"
-						:on-expand-before-enter="onExpandBeforeEnter"
-						:on-expand-enter="onExpandEnter"
-						:on-expand-after-enter="onExpandAfterEnter"
-						:on-collapse-before-leave="onCollapseBeforeLeave"
-						:on-collapse-leave="onCollapseLeave"
-						:on-collapse-after-leave="onCollapseAfterLeave"
-						@row-click="handleRowClick"
+					:get-column-style="getColumnStyle"
+					:format-cell-value="formatCellValue"
+					@row-click="handleRowClick"
 						@toggle-row="toggleRow"
 						@toggle-expand="toggleExpand">
 						<template
@@ -188,6 +182,7 @@
 <script setup lang="ts">
 import { calcIconScale } from '@components/BaseIcon'
 import type { BaseTableEmits, BaseTableProps, TableColumn, TableRow } from '../model/BaseTable.types'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 
 import '../styles/BaseTable.style.scss'
 
@@ -204,7 +199,7 @@ import { useTableData } from '@composables/useTableData'
 import { useTableSelection } from '@composables/useTableSelection'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
-import { computed, ref, useSlots, watch } from 'vue'
+import { computed, provide, ref, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
 
 import { UI_EMPTY_TEXT } from '@constants'
@@ -313,6 +308,15 @@ const {
 	onLeave: onCollapseLeave,
 	onAfterLeave: onCollapseAfterLeave,
 } = useExpandTransition({ duration: TABLE_EXPAND_TRANSITION_DURATION })
+
+provide(TABLE_EXPAND_TRANSITION_KEY, {
+	onExpandBeforeEnter,
+	onExpandEnter,
+	onExpandAfterEnter,
+	onCollapseBeforeLeave,
+	onCollapseLeave,
+	onCollapseAfterLeave,
+})
 
 const emit = defineEmits<BaseTableEmits>()
 

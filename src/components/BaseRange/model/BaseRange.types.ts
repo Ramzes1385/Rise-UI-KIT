@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты range */
 export const RANGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -24,7 +23,7 @@ export interface RangeMark {
 }
 
 /** Пропсы компонента BaseRange */
-export interface BaseRangeProps {
+export interface BaseRangeProps extends BaseComponentProps<RangeVariant> {
 	/** Текущее значение (одиночный ползунок) */
 	modelValue?: number
 	/** Диапазон (двойной ползунок) */
@@ -37,10 +36,6 @@ export interface BaseRangeProps {
 	max?: number
 	/** Шаг */
 	step?: number
-	/** Вариант */
-	variant?: RangeVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Отключен */
 	isDisabled?: boolean
 	/** Показывать тултип */
@@ -51,14 +46,10 @@ export interface BaseRangeProps {
 	isVertical?: boolean
 	/** Показывать текущее значение */
 	hasLabel?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /** Пропсы слота thumb */
-export interface ThumbSlotProps {
+export interface ThumbSlotProps extends BaseComponentProps<RangeVariant> {
 	/** Текущее значение ползунка */
 	value: number
 	/** Порядковый индекс ползунка (0 — первый) */

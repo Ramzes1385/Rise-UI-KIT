@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения радиокнопки */
 export const RADIO_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'bordered'] as const
@@ -12,9 +12,8 @@ export interface BaseRadioOption {
 	isDisabled?: boolean
 }
 
-import type { CustomClassProp } from '@composables/useCustomClass'
 
-export interface BaseRadioProps {
+export interface BaseRadioProps extends BaseComponentProps<(typeof RADIO_VARIANTS)[number]> {
 	/** Выбранное значение */
 	modelValue: string | number
 	/** Список опций */
@@ -27,16 +26,8 @@ export interface BaseRadioProps {
 	isRequired?: boolean
 	/** Вертикальное расположение */
 	isVertical?: boolean
-	/** Вариант отображения */
-	variant?: (typeof RADIO_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Текст ошибки */
 	error?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

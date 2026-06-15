@@ -1,7 +1,6 @@
 import type { ComputedRef, InjectionKey, Ref, VNode } from 'vue'
 
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Режим выбора в дереве */
 export type TreeSelectionMode = 'none' | 'single' | 'multiple'
@@ -62,7 +61,7 @@ export const TREE_CONTEXT_KEY: InjectionKey<TreeContext> = Symbol('tree-context'
 /**
  * Пропсы компонента BaseTree
  */
-export interface BaseTreeProps {
+export interface BaseTreeProps extends BaseComponentProps<(typeof TREE_VARIANTS)[number]> {
 	/** Корневые узлы дерева */
 	items: TreeNode[]
 	/** Режим выбора */
@@ -75,14 +74,6 @@ export interface BaseTreeProps {
 	selectedIds?: string[]
 	/** Раскрыть все узлы по умолчанию */
 	isDefaultExpandAll?: boolean
-	/** Вариант отображения */
-	variant?: (typeof TREE_VARIANTS)[number]
-	/** Кастомный цвет компонента */
-	color?: CustomColor
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**
