@@ -63,6 +63,7 @@ const ALIASES: Record<string, string> = {
 	'@': resolve(PROJECT_ROOT, 'src'),
 	'@components': resolve(PROJECT_ROOT, 'src/components'),
 	'@composables': resolve(PROJECT_ROOT, 'src/composables'),
+	'@constants': resolve(PROJECT_ROOT, 'src/constants'),
 	'@icons': resolve(PROJECT_ROOT, 'src/icons'),
 	'@styles': resolve(PROJECT_ROOT, 'src/styles'),
 	'@ui': resolve(PROJECT_ROOT, 'src/components'),
