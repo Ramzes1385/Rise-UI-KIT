@@ -14,11 +14,11 @@
 					{{ title }}
 				</BaseText>
 				<div class="base-chat-header__status">
-					<BaseText v-if="isTyping" tag="span" :size-scale="sizeScale * 0.85" class="base-chat-header__typing">
+					<BaseText v-if="isTyping" tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-header__typing">
 						{{ typingUsername ? `${typingUsername} печатает` : 'Печатает'
 						}}<span class="base-chat-header__dots">...</span>
 					</BaseText>
-					<BaseText v-else-if="subtitle" tag="span" :size-scale="sizeScale * 0.85" class="base-chat-header__subtitle">
+					<BaseText v-else-if="subtitle" tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-header__subtitle">
 						{{ subtitle }}
 					</BaseText>
 				</div>
@@ -35,7 +35,7 @@
 				aria-label="Поиск по сообщениям"
 				@update:model-value="handleSearchInput">
 				<template #prefix>
-					<BaseIcon name="search" :size-scale="sizeScale * 0.8" />
+					<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				</template>
 			</BaseInput>
 		</div>
@@ -75,6 +75,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
+import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import { computed } from 'vue'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'

@@ -38,7 +38,7 @@ export function useChatState(
 	// Управление закрепленными сообщениями (несколько закрепов)
 	const currentPinnedIndex = ref(0)
 	const pinnedMessages = computed((): ChatMessage[] => {
-		return props.messages.filter(msg => msg.isPinned)
+		return props.messages.filter(message => message.isPinned)
 	})
 	const currentPinnedMessage = computed((): ChatMessage | null => {
 		if (pinnedMessages.value.length === 0) return null

@@ -25,6 +25,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { UI_PANEL_MAX_HEIGHT } from '@constants'
 import { usePadding } from '@composables/usePadding'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
@@ -39,7 +40,7 @@ const isOpen = computed(() => props.isOpen ?? false)
 const position = computed(() => props.position ?? 'bottom-start')
 const variant = computed(() => props.variant ?? 'default')
 const gap = computed(() => props.gap ?? 4)
-const maxHeight = computed(() => props.maxHeight ?? '320px')
+const maxHeight = computed(() => props.maxHeight ?? UI_PANEL_MAX_HEIGHT)
 const matchWidth = computed(() => props.matchWidth ?? false)
 const closeOnEscape = computed(() =>
 	rawProps && ('closeOnEscape' in rawProps || 'close-on-escape' in rawProps) ? (props.closeOnEscape ?? true) : true,

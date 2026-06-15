@@ -369,7 +369,6 @@ function handleClick(item: SideBarItem, event: MouseEvent): void {
 }
 
 /* istanbul ignore next */
-/* istanbul ignore next */
 function handleChildItemClick(item: SideBarItem, event: MouseEvent): void {
 	emit('itemClick', item, event)
 }

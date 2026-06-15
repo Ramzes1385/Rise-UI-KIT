@@ -67,7 +67,7 @@ export function useCalendar(options: UseCalendarOptions) {
 	watch(
 		() => options.selectedDates(),
 		val => {
-			internalSelectedDates.value = Array.isArray(val) ? val.map(d => new Date(d)) : []
+			internalSelectedDates.value = Array.isArray(val) ? val.map(item => new Date(item)) : []
 		},
 		{ immediate: true },
 	)
@@ -167,7 +167,7 @@ export function useCalendar(options: UseCalendarOptions) {
 	function isSelected(date: Date): boolean {
 		if (internalValue.value && isSameDay(date, internalValue.value)) return true
 		if (internalValueEnd.value && isSameDay(date, internalValueEnd.value)) return true
-		return internalSelectedDates.value.some(d => isSameDay(date, d))
+		return internalSelectedDates.value.some(item => isSameDay(date, item))
 	}
 
 	/** Проверить, в диапазоне ли дата */
@@ -196,36 +196,36 @@ export function useCalendar(options: UseCalendarOptions) {
 
 	/** Проверить, отключена ли дата */
 	function isDayDisabled(date: Date): boolean {
-		const d = toDateOnly(date)
-		const dTs = d.getTime()
+		const dateOnly = toDateOnly(date)
+		const dateTs = dateOnly.getTime()
 
 		// Проверка списка отключенных дат
 		const disabledDates = options.disabledDates()
 		if (Array.isArray(disabledDates)) {
 			for (const dis of disabledDates) {
-				if (dis && isSameDay(d, new Date(dis))) return true
+				if (dis && isSameDay(dateOnly, new Date(dis))) return true
 			}
 		}
 
 		// Проверка дней недели
 		const disabledWeekdays = options.disabledWeekdays()
-		if (Array.isArray(disabledWeekdays) && disabledWeekdays.includes(getWeekday(d) as CalendarWeekday)) return true
+		if (Array.isArray(disabledWeekdays) && disabledWeekdays.includes(getWeekday(dateOnly) as CalendarWeekday)) return true
 
 		// Проверка минимальной даты
 		const min = options.minDate()
-		if (min && dTs < toDateOnly(new Date(min)).getTime()) return true
+		if (min && dateTs < toDateOnly(new Date(min)).getTime()) return true
 
 		// Проверка максимальной даты
 		const max = options.maxDate()
-		if (max && dTs > toDateOnly(new Date(max)).getTime()) return true
+		if (max && dateTs > toDateOnly(new Date(max)).getTime()) return true
 
 		// Проверка диапазона "от"
 		const from = options.disableFrom()
-		if (from && dTs >= toDateOnly(new Date(from)).getTime()) return true
+		if (from && dateTs >= toDateOnly(new Date(from)).getTime()) return true
 
 		// Проверка диапазона "до"
 		const to = options.disableTo()
-		if (to && dTs <= toDateOnly(new Date(to)).getTime()) return true
+		if (to && dateTs <= toDateOnly(new Date(to)).getTime()) return true
 
 		return false
 	}
@@ -273,7 +273,7 @@ export function useCalendar(options: UseCalendarOptions) {
 	}
 
 	function toggleMultipleDate(date: Date): void {
-		const idx = internalSelectedDates.value.findIndex(d => isSameDay(d, date))
+		const idx = internalSelectedDates.value.findIndex(item => isSameDay(item, date))
 		if (idx > -1) {
 			internalSelectedDates.value.splice(idx, 1)
 		} else {

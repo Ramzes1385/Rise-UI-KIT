@@ -1,5 +1,6 @@
 export {
 	createImagePreview,
+	downloadFile,
 	formatAcceptHint,
 	formatFileSize,
 	getExtension,

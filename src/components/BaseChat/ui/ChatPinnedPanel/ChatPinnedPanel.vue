@@ -1,9 +1,9 @@
 <template>
 	<div v-if="pinnedMessages && pinnedMessages.length > 0" class="base-chat-pinned-panel">
 		<div class="base-chat-pinned-panel__content" @click="handlePanelClick">
-			<BaseIcon name="pin" :size-scale="sizeScale * 0.8" class="base-chat-pinned-panel__pin-icon" />
+			<BaseIcon name="pin" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<div class="base-chat-pinned-panel__text-wrapper">
-				<BaseText tag="span" :weight="600" :size-scale="sizeScale * 0.8" class="base-chat-pinned-panel__title">
+				<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__title">
 					Закрепленное сообщение
 					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} из ${pinnedMessages.length})` : '' }}
 				</BaseText>
@@ -59,6 +59,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { UI_SCALE_SMALL } from '@constants'
 import { computed } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 import './ChatPinnedPanel.style.scss'

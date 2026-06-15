@@ -1,6 +1,6 @@
 <template>
 	<div
-		:id="`msg-${message.id}`"
+		:id="`message-${message.id}`"
 		class="base-chat-message-list__item"
 		:class="[
 			`base-chat-message-list__item--${message.sender}`,
@@ -13,14 +13,14 @@
 		]"
 		@click="isSelectionMode ? handleSelect() : undefined">
 		<div v-if="isSelectionMode" class="base-chat-message-list__checkbox-wrapper" @click.stop>
-			<BaseCheckbox :model-value="isSelected" :size-scale="sizeScale * 0.8" @update:model-value="handleSelect" />
+			<BaseCheckbox :model-value="isSelected" :size-scale="sizeScale * UI_SCALE_SMALL" @update:model-value="handleSelect" />
 		</div>
 
 		<BaseAvatar
 			v-if="message.sender === 'other' && message.senderAvatar"
 			:src="message.senderAvatar"
 			:name="message.senderName || 'Companion'"
-			:size-scale="sizeScale * 0.8"
+			:size-scale="sizeScale * UI_SCALE_SMALL"
 			class="base-chat-message-list__avatar"
 			@click.stop="handleAvatarClick" />
 
@@ -55,7 +55,7 @@
 					v-if="isGroup && message.sender === 'other' && message.senderName"
 					tag="span"
 					:weight="600"
-					:size-scale="sizeScale * 0.8"
+					:size-scale="sizeScale * UI_SCALE_SMALL"
 					class="base-chat-message-list__sender-name"
 					@click.stop="handleAvatarClick">
 					{{ message.senderName }}
@@ -127,6 +127,7 @@ import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseText } from '@components/BaseText'
+import { UI_SCALE_SMALL } from '@constants'
 import { computed } from 'vue'
 import type { ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'

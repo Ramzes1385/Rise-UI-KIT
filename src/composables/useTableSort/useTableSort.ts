@@ -14,22 +14,22 @@ function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 
 	/** Получить направление сортировки для колонки */
 	function getSortDirection(key: string): SortDirection {
-		const state = sortStates.value.find(s => s.key === key)
+		const state = sortStates.value.find(item => item.key === key)
 		return state ? state.direction : null
 	}
 
 	/** Получить индекс сортировки (для мульти-сортировки) */
 	function getSortIndex(key: string): number {
 		if (!isMultiSort() || sortStates.value.length <= 1) return 0
-		const index = sortStates.value.findIndex(s => s.key === key)
+		const index = sortStates.value.findIndex(item => item.key === key)
 		return index >= 0 ? index + 1 : 0
 	}
 
 	/** Обработка сортировки */
-	function handleSort(col: TableColumn): void {
-		if (!col.isSortable) return
+	function handleSort(column: TableColumn): void {
+		if (!column.isSortable) return
 
-		const existingIndex = sortStates.value.findIndex(s => s.key === col.key)
+		const existingIndex = sortStates.value.findIndex(item => item.key === column.key)
 		let nextDirection: SortDirection = 'asc'
 
 		if (existingIndex >= 0) {
@@ -39,17 +39,17 @@ function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 
 		if (isMultiSort()) {
 			if (nextDirection === null) {
-				sortStates.value = sortStates.value.filter(s => s.key !== col.key)
+				sortStates.value = sortStates.value.filter(item => item.key !== column.key)
 			} else if (existingIndex >= 0) {
 				sortStates.value[existingIndex].direction = nextDirection
 			} else {
-				sortStates.value.push({ key: col.key, direction: nextDirection })
+				sortStates.value.push({ key: column.key, direction: nextDirection })
 			}
 		} else {
 			if (nextDirection === null) {
 				sortStates.value = []
 			} else {
-				sortStates.value = [{ key: col.key, direction: nextDirection }]
+				sortStates.value = [{ key: column.key, direction: nextDirection }]
 			}
 		}
 

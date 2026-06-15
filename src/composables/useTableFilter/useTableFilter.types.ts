@@ -27,5 +27,5 @@ export interface UseTableFilterReturn {
 	/** Удалить фильтр */
 	removeFilter: (index: number) => void
 	/** Получить текстовую метку фильтра */
-	getFilterLabel: (f: ColumnFilter) => string
+	getFilterLabel: (filter: ColumnFilter) => string
 }

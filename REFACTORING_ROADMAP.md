@@ -330,10 +330,10 @@
 - `BaseSearch/ui/BaseSearchResults.vue`: `classes: Record<string, any>` → `Record<string, string | undefined>`.
 - `BaseSearch/ui/BaseSearchInput.vue`: `inputClass?: any` → `string | Record<string, string | undefined>`, `classes: Record<string, any>` → `Record<string, string | undefined>`.
 
-**Оставшиеся `any` (с эмуляцией `eslint-disable`):**
-- `useCustomClass.ts` — `result: Record<string, any>` внутри `computed` (смешанные типы: строка, объект, undefined). Закрыто локальным `eslint-disable`.
-- `useCustomStyle.ts` — аналогично, `result: Record<string, any>` для хранения строк, объектов стилей и undefined.
-- `ChatMessageList.vue` legacy-обёртка — 3 каста `as any` для `h()` render function (обратная совместимость).
+**Оставшиеся `any`:**
+- `useCustomClass.ts` — `result: Record<string, any>` заменён на `Record<string, ClassResultInternal>` с кастом к публичному `Record<string, string | undefined>`. ✅
+- `useCustomStyle.ts` — `result: Record<string, any>` заменён на `Record<string, StyleResultValue>`. ✅
+- `ChatMessageList.vue` legacy-обёртка — 3 `as any` убраны через `defineComponent` + каст props. ✅
 - `as HTMLElement` касты в `BaseTable.vue`, `BaseDropdown.vue`, `useImageZoom.ts`, `useColumnResize.ts` — необходимы из-за типов DOM API (`EventTarget`, `Element`, `document.activeElement`).
 
 #### 10. Разделение больших SCSS-файлов

@@ -9,7 +9,7 @@
 		<slot />
 
 		<Teleport to="body">
-			<Transition :name="transitionName" :duration="200">
+			<Transition :name="transitionName" :duration="UI_TRANSITION_DURATION_MS">
 				<div
 					v-if="isVisible"
 					class="base-tooltip"
@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
+import { UI_TRANSITION_DURATION_MS } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'

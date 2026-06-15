@@ -110,14 +110,14 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 				for (const sort of sortStates.value) {
 					if (!sort.direction) continue
 
-					const col = columns.value.find((c: TableColumn) => c.key === sort.key)
+					const column = columns.value.find((item: TableColumn) => item.key === sort.key)
 					const dir = sort.direction === 'asc' ? 1 : -1
 					const aVal = a.data[sort.key]
 					const bVal = b.data[sort.key]
 
-					const cmp = col?.sortType === 'number'
+					const cmp = column?.sortType === 'number'
 						? Number(aVal) - Number(bVal)
-						: col?.sortType === 'date'
+						: column?.sortType === 'date'
 							? new Date(String(aVal)).getTime() - new Date(String(bVal)).getTime()
 							: String(aVal).localeCompare(String(bVal))
 

@@ -294,13 +294,13 @@ const containerStyle = computed((): Record<string, string> => {
 	}
 
 	if (props.width && !props.aspectRatio) {
-		const w = typeof props.width === 'number' ? `${props.width}px` : props.width
-		styles.width = `calc(${w} * var(--size-scale, 1))`
+		const widthValue = typeof props.width === 'number' ? `${props.width}px` : props.width
+		styles.width = `calc(${widthValue} * var(--size-scale, 1))`
 	}
 
 	if (props.height && !props.aspectRatio) {
-		const h = typeof props.height === 'number' ? `${props.height}px` : props.height
-		styles.height = `calc(${h} * var(--size-scale, 1))`
+		const heightValue = typeof props.height === 'number' ? `${props.height}px` : props.height
+		styles.height = `calc(${heightValue} * var(--size-scale, 1))`
 	}
 
 	// Если нет кастомных размеров и картинка не загружена или с ошибкой,

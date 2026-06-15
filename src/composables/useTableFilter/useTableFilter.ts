@@ -36,9 +36,9 @@ function useTableFilter(options: UseTableFilterOptions): UseTableFilterReturn {
 	}
 
 	/** Метка фильтра */
-	function getFilterLabel(f: ColumnFilter): string {
-		const col = columns.value.find(c => c.key === f.key)
-		const ops: Record<string, string> = {
+	function getFilterLabel(filter: ColumnFilter): string {
+		const column = columns.value.find(item => item.key === filter.key)
+		const operators: Record<string, string> = {
 			eq: '=',
 			ne: '≠',
 			contains: '∋',
@@ -47,7 +47,7 @@ function useTableFilter(options: UseTableFilterOptions): UseTableFilterReturn {
 			gte: '≥',
 			lte: '≤',
 		}
-		return `${col?.label || f.key} ${ops[f.operator] || f.operator} ${f.value}`
+		return `${column?.label || filter.key} ${operators[filter.operator] || filter.operator} ${filter.value}`
 	}
 
 	return {

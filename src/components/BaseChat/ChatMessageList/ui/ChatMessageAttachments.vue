@@ -45,7 +45,7 @@
 				<div class="base-chat-message-list__attached-file-info">
 					<BaseText
 						tag="span"
-						:size-scale="sizeScale * 0.85"
+						:size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE"
 						:weight="600"
 						class="base-chat-message-list__attached-file-name">
 						{{ file.name }}
@@ -79,6 +79,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
+import { UI_SCALE_AUTOCOMPLETE } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed } from 'vue'
 import type { ChatMessageAttachment } from '../../BaseChat.types'

@@ -140,6 +140,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
+import { UI_PROGRESS_INTERVAL_MS } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
@@ -297,7 +298,7 @@ async function addFiles(files: File[]): Promise<void> {
 					clearInterval(interval)
 					progressIntervals.delete(interval)
 				}
-			}, 200)
+			}, UI_PROGRESS_INTERVAL_MS)
 			progressIntervals.add(interval)
 		}
 	}

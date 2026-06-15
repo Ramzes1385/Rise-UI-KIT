@@ -4,12 +4,13 @@
  * или из публичного индекса `@components/BaseChat/ChatMessageList`.
  * Этот файл оставлен для обратной совместимости.
  */
-import { h, ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
+
 import ChatMessageList from './ui/ChatMessageList.vue'
 
-export default {
+export default defineComponent({
 	name: 'ChatMessageList',
-	setup(_props: unknown, { attrs, slots, expose }: { attrs: Record<string, unknown>; slots: Record<string, unknown>; expose: (exposed: Record<string, unknown>) => void }) {
+	setup(_props, { attrs, slots, expose }) {
 		const innerRef = ref<InstanceType<typeof ChatMessageList> | null>(null)
 
 		expose({
@@ -19,12 +20,9 @@ export default {
 		return () =>
 			h(
 				ChatMessageList,
-				{
-					ref: innerRef as any,
-					...attrs,
-				} as any,
-				slots as any,
+				{ ref: innerRef, ...attrs } as InstanceType<typeof ChatMessageList>['$props'],
+				slots,
 			)
 	},
-}
+})
 </script>

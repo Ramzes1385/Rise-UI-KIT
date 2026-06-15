@@ -215,20 +215,20 @@ const fillSegments = computed((): Record<string, string>[] => {
 
 /** Стиль ползунка */
 function thumbStyle(value: number): Record<string, string> {
-	const p = percent(value)
+	const percentValue = percent(value)
 	if (isVertical.value) {
-		return { bottom: `${p}%` }
+		return { bottom: `${percentValue}%` }
 	}
-	return { left: `${p}%` }
+	return { left: `${percentValue}%` }
 }
 
 /** Стиль метки */
 function markStyle(value: number): Record<string, string> {
-	const p = percent(value)
+	const percentValue = percent(value)
 	if (isVertical.value) {
-		return { bottom: `${p}%` }
+		return { bottom: `${percentValue}%` }
 	}
-	return { left: `${p}%` }
+	return { left: `${percentValue}%` }
 }
 
 /** Нижняя граница ползунка (значение левого соседа или min) */

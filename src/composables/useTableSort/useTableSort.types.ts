@@ -23,5 +23,5 @@ export interface UseTableSortReturn {
 	/** Получить индекс сортировки (для мульти-сортировки) */
 	getSortIndex: (key: string) => number
 	/** Обработка клика по заголовку колонки */
-	handleSort: (col: TableColumn) => void
+	handleSort: (column: TableColumn) => void
 }

@@ -133,6 +133,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import { downloadFile } from '@utils/fileUtils'
 import { computed, ref } from 'vue'
 import './BaseChat.style.scss'
 import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from './BaseChat.types'
@@ -250,13 +251,7 @@ function handleQuickReply(text: string): void {
 /** Обработка скачивания файла */
 function handleDownloadFile(file: ChatMessageAttachment): void {
 	try {
-		const link = document.createElement('a')
-		link.href = file.url
-		link.download = file.name
-		link.target = '_blank'
-		document.body.appendChild(link)
-		link.click()
-		document.body.removeChild(link)
+		downloadFile(file.url, file.name)
 	} catch (e) {
 		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
 		console.error('Ошибка скачивания файла:', e)

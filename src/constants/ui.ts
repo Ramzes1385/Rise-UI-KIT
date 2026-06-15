@@ -47,3 +47,12 @@ export const UI_CONTEXT_MENU_DEFAULT_HEIGHT = 280
 
 /** Коэффициент масштабирования для элементов автодополнения */
 export const UI_SCALE_AUTOCOMPLETE = 0.85
+
+/** Задержка hover-эффекта в меню (мс) */
+export const UI_HOVER_DELAY_MS = 200
+
+/** Длительность CSS-transition (мс) */
+export const UI_TRANSITION_DURATION_MS = 200
+
+/** Интервал симуляции прогресса загрузки (мс) */
+export const UI_PROGRESS_INTERVAL_MS = 200

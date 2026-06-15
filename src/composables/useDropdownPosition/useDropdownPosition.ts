@@ -43,45 +43,45 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		const rect = getTriggerRect()
 		if (!rect) return
 
-		const g = gap()
+		const gapValue = gap()
 		triggerWidth.value = rect.width
 
 		switch (position()) {
 			case 'bottom-start':
-				coords.value = { top: rect.bottom + g, left: rect.left }
+				coords.value = { top: rect.bottom + gapValue, left: rect.left }
 				break
 			case 'bottom-end':
-				coords.value = { top: rect.bottom + g, left: rect.right }
+				coords.value = { top: rect.bottom + gapValue, left: rect.right }
 				break
 			case 'bottom':
-				coords.value = { top: rect.bottom + g, left: rect.left + rect.width / 2 }
+				coords.value = { top: rect.bottom + gapValue, left: rect.left + rect.width / 2 }
 				break
 			case 'top-start':
-				coords.value = { top: rect.top - g, left: rect.left }
+				coords.value = { top: rect.top - gapValue, left: rect.left }
 				break
 			case 'top-end':
-				coords.value = { top: rect.top - g, left: rect.right }
+				coords.value = { top: rect.top - gapValue, left: rect.right }
 				break
 			case 'top':
-				coords.value = { top: rect.top - g, left: rect.left + rect.width / 2 }
+				coords.value = { top: rect.top - gapValue, left: rect.left + rect.width / 2 }
 				break
 			case 'left-start':
-				coords.value = { top: rect.top, left: rect.left - g }
+				coords.value = { top: rect.top, left: rect.left - gapValue }
 				break
 			case 'left-end':
-				coords.value = { top: rect.bottom, left: rect.left - g }
+				coords.value = { top: rect.bottom, left: rect.left - gapValue }
 				break
 			case 'left':
-				coords.value = { top: rect.top + rect.height / 2, left: rect.left - g }
+				coords.value = { top: rect.top + rect.height / 2, left: rect.left - gapValue }
 				break
 			case 'right-start':
-				coords.value = { top: rect.top, left: rect.right + g }
+				coords.value = { top: rect.top, left: rect.right + gapValue }
 				break
 			case 'right-end':
-				coords.value = { top: rect.bottom, left: rect.right + g }
+				coords.value = { top: rect.bottom, left: rect.right + gapValue }
 				break
 			case 'right':
-				coords.value = { top: rect.top + rect.height / 2, left: rect.right + g }
+				coords.value = { top: rect.top + rect.height / 2, left: rect.right + gapValue }
 				break
 		}
 	}

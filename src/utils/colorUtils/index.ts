@@ -1,5 +1,6 @@
 export {
 	channelToHex,
+	clamp,
 	hexToHsv,
 	hexToRgb,
 	hsvToHex,

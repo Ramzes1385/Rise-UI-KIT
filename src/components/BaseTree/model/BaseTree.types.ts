@@ -53,7 +53,7 @@ export interface TreeContext {
 	/** Выбрать/отменить выбор узла */
 	selectNode: (id: string) => void
 	/** Кастомные классы */
-	classes: ComputedRef<Record<string, string>>
+	classes: ComputedRef<Record<string, string | undefined>>
 }
 
 /** Ключ для provide/inject контекста дерева */

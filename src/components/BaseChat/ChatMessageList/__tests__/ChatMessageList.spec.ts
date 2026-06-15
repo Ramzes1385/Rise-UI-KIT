@@ -69,7 +69,7 @@ describe('ChatMessageList unit', () => {
 		it('не должен запускать выбор при обычном клике по сообщению вне режима выделения', async () => {
 			const { container, emitted } = render(ChatMessageList, { props: { messages: BASE_MESSAGES } })
 
-			const item = container.querySelector('#msg-2') as HTMLElement
+			const item = container.querySelector('#message-2') as HTMLElement
 			await fireEvent.click(item)
 
 			expect(emitted()['message-select']).toBeUndefined()
@@ -143,7 +143,7 @@ describe('ChatMessageList unit', () => {
 				props: { messages: BASE_MESSAGES, selectedMessageIds: ['1'] },
 			})
 
-			const secondItem = container.querySelector('#msg-2') as HTMLElement
+			const secondItem = container.querySelector('#message-2') as HTMLElement
 			await fireEvent.click(secondItem)
 
 			const events = emitted()['message-select'] as Array<[string]>
@@ -622,7 +622,7 @@ describe('ChatMessageList unit', () => {
 
 			;(wrapper.vm as unknown as { scrollToMessage: (id: string) => void }).scrollToMessage('1')
 
-			const target = wrapper.element.querySelector('#msg-1') as HTMLElement
+			const target = wrapper.element.querySelector('#message-1') as HTMLElement
 			expect(scrollIntoView).toHaveBeenCalled()
 			expect(target.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
 

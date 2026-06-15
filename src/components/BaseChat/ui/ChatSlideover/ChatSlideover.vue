@@ -25,7 +25,7 @@
 				class="base-chat-slideover__tab-btn"
 				:class="{ 'base-chat-slideover__tab-btn--active': activeTab === tab.id }"
 				@click="emit('update:activeTab', tab.id)">
-				<BaseText :size-scale="sizeScale * 0.85" :weight="600">{{ tab.label }}</BaseText>
+				<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">{{ tab.label }}</BaseText>
 			</button>
 		</div>
 
@@ -37,14 +37,14 @@
 					<BaseText tag="span" :weight="600" :size-scale="sizeScale * 1.1" class="base-chat-slideover__name">
 						{{ title }}
 					</BaseText>
-					<BaseText tag="span" :size-scale="sizeScale * 0.85" class="base-chat-slideover__status">
+					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
 						{{ isGroup ? `${members.length} участников` : subtitle || 'в сети' }}
 					</BaseText>
-					<BaseText v-if="isGroup" tag="p" :size-scale="sizeScale * 0.85" class="base-chat-slideover__description">
+					<BaseText v-if="isGroup" tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
 						Официальная группа мастерской Металл-Арт. Здесь мы обсуждаем текущие проекты, делимся эскизами, координируем
 						работу кузнецов, скульпторов и дизайнеров. Пожалуйста, соблюдайте правила вежливого общения.
 					</BaseText>
-					<BaseText v-else tag="p" :size-scale="sizeScale * 0.85" class="base-chat-slideover__description">
+					<BaseText v-else tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
 						Анна — ведущий скульптор нашей мастерской с опытом работы более 10 лет. Специализируется на художественной
 						бронзе и монументальной металлической пластике. Выпускница Академии Художеств.
 					</BaseText>
@@ -52,13 +52,13 @@
 
 				<!-- Список участников для групп -->
 				<div v-if="isGroup && members.length > 0" class="base-chat-slideover__members-list">
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale * 0.85" class="base-chat-slideover__section-title">
+					<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__section-title">
 						Участники группы
 					</BaseText>
 					<div class="base-chat-slideover__members-scroll">
 						<div v-for="member in members" :key="member.id" class="base-chat-slideover__member-item">
 							<div class="base-chat-slideover__member-main" @click="handleMemberClick(member.id)">
-								<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * 0.8" />
+								<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_SCALE_SMALL" />
 								<div class="base-chat-slideover__member-info">
 									<BaseText
 										tag="span"
@@ -78,7 +78,7 @@
 								<BaseButton
 									variant="ghost"
 									:padding="1"
-									:size-scale="sizeScale * 0.8"
+									:size-scale="sizeScale * UI_SCALE_SMALL"
 									class="base-chat-slideover__admin-btn"
 									:aria-label="`Действия с участником ${member.name}`"
 									@click="toggleAdminMenu(member.id)">
@@ -121,7 +121,7 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * 0.8" class="base-chat-slideover__info-label"
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
 								>Телефон</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value"
@@ -132,7 +132,7 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * 0.8" class="base-chat-slideover__info-label"
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
 								>Email</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value"
@@ -154,7 +154,7 @@
 					<BaseText tag="span" :weight="600" :size-scale="sizeScale * 1.1" class="base-chat-slideover__name">
 						{{ selectedMember.name }}
 					</BaseText>
-					<BaseText tag="span" :size-scale="sizeScale * 0.85" class="base-chat-slideover__status">
+					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
 						{{ selectedMember.status === 'online' ? 'в сети' : 'не в сети' }}
 					</BaseText>
 
@@ -172,7 +172,7 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * 0.8" class="base-chat-slideover__info-label">Роль</BaseText>
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label">Роль</BaseText>
 							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value">
 								{{ selectedMember.role === 'admin' ? 'Администратор' : 'Участник' }}
 							</BaseText>
@@ -181,7 +181,7 @@
 					<div v-if="selectedMember.warningsCount !== undefined" class="base-chat-slideover__info-item">
 						<BaseIcon name="alert-triangle" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * 0.8" class="base-chat-slideover__info-label"
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
 								>Предупреждения</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value">
@@ -239,7 +239,7 @@
 							:size-scale="sizeScale * 1.2"
 							class="base-chat-slideover__file-icon" />
 						<div class="base-chat-slideover__file-info">
-							<BaseText tag="span" :weight="600" :size-scale="sizeScale * 0.85" class="base-chat-slideover__file-name">
+							<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__file-name">
 								{{ file.name }}
 							</BaseText>
 							<BaseText tag="span" :size-scale="sizeScale * 0.75" class="base-chat-slideover__file-meta">
@@ -248,7 +248,7 @@
 						</div>
 						<BaseIcon
 							name="download"
-							:size-scale="sizeScale * 0.8"
+							:size-scale="sizeScale * UI_SCALE_SMALL"
 							class="base-chat-slideover__file-download"
 							@click.stop="emit('download-file', file)" />
 					</div>
@@ -267,9 +267,9 @@
 						:key="index"
 						class="base-chat-slideover__link-item"
 						@click="openLink(link.url)">
-						<BaseIcon name="link" :size-scale="sizeScale * 0.8" class="base-chat-slideover__link-icon" />
+						<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__link-icon" />
 						<div class="base-chat-slideover__link-info">
-							<BaseText tag="span" :size-scale="sizeScale * 0.85" class="base-chat-slideover__link-url">
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__link-url">
 								{{ link.url }}
 							</BaseText>
 							<BaseText tag="span" :size-scale="sizeScale * 0.7" class="base-chat-slideover__link-date">
@@ -289,6 +289,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
+import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed, ref } from 'vue'
 import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'

@@ -58,7 +58,7 @@ export interface UseTableDataReturn {
 	/** Получить индекс сортировки */
 	getSortIndex: (key: string) => number
 	/** Обработчик сортировки */
-	handleSort: (col: TableColumn) => void
+	handleSort: (column: TableColumn) => void
 	/** Обработчик ввода поиска */
 	handleSearchInput: (value: string) => void
 	/** Добавить фильтр */
@@ -70,7 +70,7 @@ export interface UseTableDataReturn {
 	/** Удалить фильтр */
 	removeFilter: (index: number) => void
 	/** Получить метку фильтра */
-	getFilterLabel: (f: ColumnFilter) => string
+	getFilterLabel: (filter: ColumnFilter) => string
 	/** Обработчик изменения размера страницы */
 	handlePageSizeChange: (value: string | number | (string | number)[]) => void
 	/** Подгрузить ещё */

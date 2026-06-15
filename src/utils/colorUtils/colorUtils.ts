@@ -6,8 +6,8 @@ const MAX_CHANNEL = 255
 const MAX_HUE = 360
 const MAX_PERCENT = 100
 
-/** Ограничить число диапазоном [min, max] */
-function clamp(value: number, min: number, max: number): number {
+/** Ограничить число диапазоном [min, max]. Экспортируется для переиспользования. */
+export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max)
 }
 

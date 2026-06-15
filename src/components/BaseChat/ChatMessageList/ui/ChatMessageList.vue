@@ -33,11 +33,11 @@
 				v-if="avatar"
 				:src="avatar"
 				:name="typingUsername || 'Companion'"
-				:size-scale="sizeScale * 0.8"
+				:size-scale="sizeScale * UI_SCALE_SMALL"
 				class="base-chat-message-list__avatar" />
 			<div class="base-chat-message-list__bubble-wrapper">
 				<div class="base-chat-message-list__bubble base-chat-message-list__bubble--typing">
-					<BaseLoader variant="dots" :size-scale="sizeScale * 0.8" />
+					<BaseLoader variant="dots" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				</div>
 			</div>
 		</div>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH } from '@constants'
+import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH, UI_SCALE_SMALL } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
@@ -270,7 +270,7 @@ function scrollToMessage(messageId: string): void {
 	const container = listRef.value
 	/* istanbul ignore next — defensive: ref может быть null при unmount */
 	if (!container) return
-	const element = container.querySelector<HTMLElement>(`#msg-${messageId}`)
+	const element = container.querySelector<HTMLElement>(`#message-${messageId}`)
 	/* istanbul ignore next — defensive: сообщение могло быть удалено */
 	if (!element) return
 

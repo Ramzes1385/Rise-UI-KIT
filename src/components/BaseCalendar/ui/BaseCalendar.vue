@@ -404,8 +404,8 @@ function from12h(h: number, am: boolean): number {
 /** Двусторонние модели для BaseInput (string ↔ number) */
 const hoursModel = computed({
 	get: (): string => {
-		const h = hours.value
-		return String(resolvedProps.value.is24Hour ? h : to12h(h))
+		const hour = hours.value
+		return String(resolvedProps.value.is24Hour ? hour : to12h(hour))
 	},
 	set: (val: string): void => {
 		const parsed = parseInt(val, 10) || 0
@@ -535,13 +535,11 @@ function handleMultipleClick(date: Date): void {
 
 /** Переключить AM/PM с корректировкой часов */
 function toggleAmPm(): void {
-	const h = hours.value
+	const currentHour = hours.value
 	if (isAm.value) {
-		// AM → PM: добавляем 12
-		hours.value = h < 12 ? h + 12 : h
+		hours.value = currentHour < 12 ? currentHour + 12 : currentHour
 	} else {
-		// PM → AM: вычитаем 12
-		hours.value = h >= 12 ? h - 12 : h
+		hours.value = currentHour >= 12 ? currentHour - 12 : currentHour
 	}
 	isAm.value = !isAm.value
 	handleTimeChange()

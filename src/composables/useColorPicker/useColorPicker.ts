@@ -1,17 +1,12 @@
 import { computed, ref, watch } from 'vue'
 
-import { hexToHsv, hsvToHex, isValidHex, normalizeHex } from '@utils/colorUtils'
+import { clamp, hexToHsv, hsvToHex, isValidHex, normalizeHex } from '@utils/colorUtils'
 
 import type { RelativePoint, UseColorPickerOptions, UseColorPickerReturn } from './useColorPicker.types'
 
 const MAX_HUE = 360
 const MAX_PERCENT = 100
 const DEFAULT_HEX = '#000000'
-
-/** Ограничить число диапазоном [min, max] */
-function clamp(value: number, min: number, max: number): number {
-	return Math.min(Math.max(value, min), max)
-}
 
 /**
  * Composable для логики выбора цвета (HSV-модель).

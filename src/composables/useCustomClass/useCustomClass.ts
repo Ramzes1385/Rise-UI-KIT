@@ -1,45 +1,28 @@
 import { computed } from 'vue'
 
+import { hasElementKeys, isObject } from '@utils/typeUtils'
 import type { CustomClassProp, UseCustomClassOptions } from './useCustomClass.types'
 
-/**
- * Проверяет, является ли значение объектом (не массивом и не null)
- */
-function isObject(value: unknown): value is Record<string, unknown> {
-	return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
+type ClassResultInternal = string | Record<string, string | boolean | undefined> | undefined
 
-/**
- * Проверяет, содержит ли объект ключи элементов
- */
-function hasElementKeys(obj: Record<string, unknown>, keys: string[]): boolean {
-	return keys.some(function (key) {
-		return key in obj
-	})
-}
-
-/**
- * Composable для обработки кастомных классов компонентов.
- * Поддерживает строки (для корневого элемента), а также объекты для стилизации внутренних элементов.
- */
 function useCustomClass(options: UseCustomClassOptions) {
 	const keys = options.elementKeys || ['root']
 
-	const classes = computed<any>(function () {
+	const classes = computed<Record<string, string | undefined>>(function () {
 		const customClass = options.getClass()
-		const result: Record<string, any> = {}
+		const result: Record<string, ClassResultInternal> = {}
 
 		keys.forEach(function (key) {
 			result[key] = undefined
 		})
 
 		if (!customClass) {
-			return result
+			return result as Record<string, string | undefined>
 		}
 
 		if (typeof customClass === 'string') {
 			result.root = customClass
-			return result
+			return result as Record<string, string | undefined>
 		}
 
 		if (isObject(customClass)) {
@@ -51,11 +34,11 @@ function useCustomClass(options: UseCustomClassOptions) {
 					}
 				})
 			} else {
-				result.root = customClass as any
+				result.root = customClass as Record<string, string | boolean | undefined>
 			}
 		}
 
-		return result
+		return result as Record<string, string | undefined>
 	})
 
 	return {

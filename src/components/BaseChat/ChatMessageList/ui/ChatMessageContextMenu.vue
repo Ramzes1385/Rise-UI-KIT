@@ -18,15 +18,15 @@
 			</div>
 			<div class="base-chat-context-menu__divider"></div>
 			<button type="button" class="base-chat-context-menu__item" @click="handleReply">
-				<BaseIcon name="reply" :size-scale="sizeScale * 0.8" />
+				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * 0.9">Ответить</BaseText>
 			</button>
 			<button type="button" class="base-chat-context-menu__item" @click="handleSelect">
-				<BaseIcon name="check" :size-scale="sizeScale * 0.8" />
+				<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * 0.9">Выбрать</BaseText>
 			</button>
 			<button type="button" class="base-chat-context-menu__item" @click="handleCopy">
-				<BaseIcon name="copy" :size-scale="sizeScale * 0.8" />
+				<BaseIcon name="copy" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * 0.9">Копировать текст</BaseText>
 			</button>
 			<button
@@ -34,7 +34,7 @@
 				type="button"
 				class="base-chat-context-menu__item"
 				@click="handlePin">
-				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * 0.8" />
+				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * 0.9">
 					{{ message?.isPinned ? 'Открепить' : 'Закрепить' }}
 				</BaseText>
@@ -44,7 +44,7 @@
 				type="button"
 				class="base-chat-context-menu__item base-chat-context-menu__item--danger"
 				@click="handleDelete">
-				<BaseIcon name="trash" :size-scale="sizeScale * 0.8" />
+				<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * 0.9">Удалить</BaseText>
 			</button>
 		</div>
@@ -54,6 +54,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { UI_SCALE_SMALL } from '@constants'
 import { computed, ref } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 

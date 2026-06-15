@@ -116,6 +116,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
+import { UI_HOVER_DELAY_MS } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
@@ -132,7 +133,7 @@ const props = defineProps<BaseMegaMenuProps>()
 const trigger = computed(() => props.trigger ?? 'click')
 const layout = computed(() => props.layout ?? 'columns')
 const variant = computed(() => props.variant ?? 'default')
-const hoverDelay = computed(() => props.hoverDelay ?? 200)
+const hoverDelay = computed(() => props.hoverDelay ?? UI_HOVER_DELAY_MS)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })

@@ -105,17 +105,17 @@ function useImageZoom(options: UseImageZoomOptions) {
 		natH: number,
 		elW: number,
 		elH: number,
-	): { w: number; h: number; offX: number; offY: number } {
+	): { width: number; height: number; offX: number; offY: number } {
 		const imgAspect = natW / natH
 		const elAspect = elW / elH
 		if (imgAspect > elAspect) {
-			const w = elW
-			const h = elW / imgAspect
-			return { w, h, offX: 0, offY: (elH - h) / 2 }
+			const width = elW
+			const height = elW / imgAspect
+			return { width, height, offX: 0, offY: (elH - height) / 2 }
 		}
-		const h = elH
-		const w = elH * imgAspect
-		return { w, h, offX: (elW - w) / 2, offY: 0 }
+		const height = elH
+		const width = elH * imgAspect
+		return { width, height, offX: (elW - width) / 2, offY: 0 }
 	}
 
 	/** Ограничить позицию картинки */
@@ -154,18 +154,18 @@ function useImageZoom(options: UseImageZoomOptions) {
 
 		// Контент zoom-изображения (object-fit: contain)
 		if (zoomImg && zoomImg instanceof HTMLImageElement && zoomImg.naturalWidth > 0) {
-			const c = calcContain(zoomImg.naturalWidth, zoomImg.naturalHeight, zoomImg.offsetWidth, zoomImg.offsetHeight)
-			zoomContentW.value = c.w
-			zoomContentH.value = c.h
+			const contained = calcContain(zoomImg.naturalWidth, zoomImg.naturalHeight, zoomImg.offsetWidth, zoomImg.offsetHeight)
+			zoomContentW.value = contained.width
+			zoomContentH.value = contained.height
 		}
 
 		// Контент мини-карты
 		if (minimapImg && minimapImg instanceof HTMLImageElement && minimapImg.naturalWidth > 0) {
-			const c = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, 200, 150)
-			mmContentWidth.value = c.w
-			mmContentHeight.value = c.h
-			mmContentOffsetX.value = c.offX
-			mmContentOffsetY.value = c.offY
+			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, 200, 150)
+			mmContentWidth.value = contained.width
+			mmContentHeight.value = contained.height
+			mmContentOffsetX.value = contained.offX
+			mmContentOffsetY.value = contained.offY
 		}
 
 		containerWidth.value = window.innerWidth
