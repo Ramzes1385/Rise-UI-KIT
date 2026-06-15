@@ -91,7 +91,7 @@ const currentMessageText = computed((): string => {
 	if (!currentMessage.value) return ''
 	const text = currentMessage.value.text || ''
 	if (currentMessage.value.attachments && currentMessage.value.attachments.length > 0) {
-		const hasImage = currentMessage.value.attachments.some(a => a.type === 'image')
+		const hasImage = currentMessage.value.attachments.some(attachment => attachment.type === 'image')
 		const prefix = hasImage ? '🖼️ Фото' : '📎 Файл'
 		return text ? `${prefix}: ${text}` : prefix
 	}

@@ -121,6 +121,51 @@
 - `test:utils:coverage`: 100% во всех 4 колонках.
 - Все 174 тестовых файла (3133 теста) теперь корректно запускаются и проходят.
 
+### 7. Восстановление критических импортов и типов
+
+**Проблема:** После перевода тяжёлых компонентов в стандартную структуру `ui/...` остались битые ссылки, которые ломали Storybook build, e2e и публикацию lib:
+- `src/components/BaseDatePicker/BaseDatePicker.stories.ts` импортировал `../ui/BaseDatePicker.vue`, хотя файл остался в корне компонента.
+- `src/components/BaseTable/index.ts` импортировал `./BaseTable.vue`, хотя файл перенесён в `ui/`.
+- `src/plugin.ts` (точечные async-импорты тяжёлых компонентов) ссылался на `./components/BaseEditor/BaseEditor.vue`, `./components/BaseCalendar/BaseCalendar.vue`, `./components/BaseTable/BaseTable.vue`, `./components/BaseFileUpload/BaseFileUpload.vue` — все они теперь в `ui/`.
+- `src/components/BaseSearch/BaseSearch.vue` пробрасывал опциональный `placeholder` в `BaseSearchInput` напрямую — TypeScript ругался на `string | undefined` (`TS2322`) на трёх местах.
+- `build/lib/tsconfig.lib.json` не содержал alias `@constants` / `@constants/*`, поэтому `build:lib:types` падал с `TS2307: Cannot find module '@constants'`.
+
+**Решение:**
+- `src/components/BaseDatePicker/BaseDatePicker.stories.ts` — `import BaseDatePicker from './BaseDatePicker.vue'`.
+- `src/components/BaseTable/index.ts` — `export { default as BaseTable } from './ui/BaseTable.vue'`.
+- `src/plugin.ts` — все четыре async-импорта переписаны на пути с `ui/`.
+- `src/components/BaseSearch/BaseSearch.vue` — добавлен `const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_SEARCH_PLACEHOLDER)` и три биндинга `:placeholder="placeholder"` заменены на `:placeholder="resolvedPlaceholder"`.
+- `build/lib/tsconfig.lib.json` — добавлены `"@constants": ["../../src/constants/index.ts"]` и `"@constants/*": ["../../src/constants/*"]` в `paths`.
+
+**Результат:**
+- `npm run build-storybook` — успех.
+- `npm run test:e2e` — 56/56 e2e тестов проходят.
+- `npm run test:unit` — 3142/3142 unit-тестов проходят.
+- `npm run test:storybook` — 1144/1144 storybook-тестов проходят.
+- `npm run test:visual` — все визуальные снапшоты в норме.
+- `npm run build:lib:types` — без ошибок.
+- `npm run lint` — без ошибок.
+
+### 8. Восстановление SCSS partials и исправление визуальных тестов
+
+**Проблема:**
+- 13 SCSS partials в `BaseChat/` не импортировали `@use "@styles/functions" as *`, из-за чего `sz()` выводился как невалидная CSS-функция — все padding/margin/gap/border значения были битыми.
+- `useColumnResize.spec.ts` вызывал composable вне Vue `setup()`, вызывая `onBeforeUnmount` warning.
+- `BaseEmpty - default` visual test падал из-за устаревшего снапшота.
+- `BaseNotification - default` visual test падал — снапшот был по старому пути (до перемещения теста в `__tests__/`).
+
+**Решение:**
+- Добавлен `@use "@styles/functions" as *` во все 13 partials: `_list`, `_reply`, `_reactions`, `_context-menu`, `_meta`, `_attachments`, `_text`, `BaseChat.style`, `ChatInput.style`, `ChatHeader.style`, `ChatSelectionToolbar.style`, `ChatPinnedPanel.style`, `ChatSlideover.style`.
+- `useColumnResize.spec.ts` обёрнут в `defineComponent` + `mount` через хелпер `withSetup()`.
+- Удалён устаревший снапшот `BaseEmpty - default`; Playwright создал новый.
+- Скопирован снапшот `BaseNotification` в `__tests__/BaseNotification.visual.spec.ts-snapshots/`.
+
+**Результат:**
+- `npm run lint` — 0 ошибок, 0 предупреждений.
+- `npm run test:unit` — 3142/3142 пройдены.
+- `npm run test:visual` — 240/240 пройдены.
+- `npm run build:lib:types` — без ошибок.
+
 ### Критический приоритет
 
 #### 1. Разделение `BaseTable.vue` (God-компонент)
@@ -247,6 +292,15 @@
 
 **Уже сделано:**
 - В `ChatInput.vue` `cmd` заменён на `command`, цикл обработки файлов использует `index` вместо `i`.
+- В `ChatMessageList.vue` `msg` заменён на `message` (шаблон и 4 функции).
+- В `ChatMessage.vue` `msg` заменён на `message` в `getMessageImageUrls`, `a` заменён на `attachment`.
+- В `ChatSlideover.vue` `msg` заменён на `message`, `att` заменён на `attachment`, `m` заменён на `member`/`mediaItem`.
+- В `BaseTable.vue` `col` заменён на `column` (~18 мест), `isColResizable` → `isColumnResizable`, `getColStyle` → `getColumnStyle`.
+- В `BaseCalendar.vue` `cal` заменён на `calendar` (~8 мест), `idx` заменён на `index` (3 места в шаблоне).
+- В `BaseImage.vue` `idx` заменён на `index` (~10 мест в шаблоне и скрипте).
+- В `ChatMessageAttachments.vue` `idx` заменён на `index`, `a` заменён на `attachment`.
+- В `BaseFileUpload.vue` `f` заменён на `uploadedFile` (3 места).
+- В `ChatPinnedPanel.vue` `a` заменён на `attachment`.
 
 #### 8. Устранение побочных эффектов и прямого доступа к DOM
 
@@ -267,6 +321,20 @@
 
 **Уже сделано:**
 - В `ChatInput.vue` `inputComponentRef = ref<any>(null)` заменён на локальный `BaseInputExposed` с `inputRef: HTMLInputElement | null`.
+- `useCustomClass.types.ts`: `CustomClassProp` заменён с `Record<string, any>` на `Record<string, string | boolean | undefined>`.
+- `useCustomStyle.types.ts`: `CustomStyleProp` заменён с `Record<string, any>` на `Record<string, string | number | undefined>`.
+- `useCustomClass.ts` и `useCustomStyle.ts`: внутренние `isObject` и `hasElementKeys` используют `Record<string, unknown>` вместо `Record<string, any>`.
+- `useClickOutside.ts`: `(item as any).$el` заменён на type guard `isComponentInstance` с `ComponentPublicInstance`.
+- `useExpandTransition.ts`: 6 кастов `el as HTMLElement` заменены на единый хелпер `toHtmlEl(el)`.
+- `useDropdownPosition.ts`: убран избыточный `as HTMLElement` — `Element` имеет `getBoundingClientRect()`.
+- `BaseSearch/ui/BaseSearchResults.vue`: `classes: Record<string, any>` → `Record<string, string | undefined>`.
+- `BaseSearch/ui/BaseSearchInput.vue`: `inputClass?: any` → `string | Record<string, string | undefined>`, `classes: Record<string, any>` → `Record<string, string | undefined>`.
+
+**Оставшиеся `any` (с эмуляцией `eslint-disable`):**
+- `useCustomClass.ts` — `result: Record<string, any>` внутри `computed` (смешанные типы: строка, объект, undefined). Закрыто локальным `eslint-disable`.
+- `useCustomStyle.ts` — аналогично, `result: Record<string, any>` для хранения строк, объектов стилей и undefined.
+- `ChatMessageList.vue` legacy-обёртка — 3 каста `as any` для `h()` render function (обратная совместимость).
+- `as HTMLElement` касты в `BaseTable.vue`, `BaseDropdown.vue`, `useImageZoom.ts`, `useColumnResize.ts` — необходимы из-за типов DOM API (`EventTarget`, `Element`, `document.activeElement`).
 
 #### 10. Разделение больших SCSS-файлов
 
@@ -291,6 +359,11 @@
 1. Удалить очевидные HTML-комментарии (`<!-- Тело таблицы с границами -->`).
 2. Заменить пояснительные комментарии на понятные имена функций/переменных.
 3. Сократить количество `istanbul ignore next` за счёт упрощения кода.
+
+**Уже сделано:**
+- `BaseTable.vue`: удалены 6 очевидных HTML-комментариев (`Тело таблицы с границами`, `Слот header`, `Таблица`, `Кнопка "Загрузить еще"`, `Нижняя панель`, `Селектор размера страницы`, `Пагинация`).
+- `ChatMessageList.vue`: удалены 2 очевидных комментария (`Пузырь печатания`, `Контекстное меню`).
+- `ChatMessage.vue`: удалены 6 очевидных комментариев (`Чекбокс`, `Кнопки действий`, `Цитата`, `Вложения`, `Текст сообщения`, `Реакции`).
 
 #### 12. Унификация composables
 

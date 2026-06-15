@@ -32,7 +32,7 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 	function getTriggerRect(): DOMRect | null {
 		if (!wrapperRef.value) return null
 		const trigger = wrapperRef.value.firstElementChild
-		if (trigger) return (trigger as HTMLElement).getBoundingClientRect()
+		if (trigger) return trigger.getBoundingClientRect()
 		return wrapperRef.value.getBoundingClientRect()
 	}
 

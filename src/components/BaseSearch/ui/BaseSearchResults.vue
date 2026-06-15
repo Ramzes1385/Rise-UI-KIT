@@ -77,7 +77,7 @@ interface BaseSearchResultsProps {
 	isLoading: boolean
 	sizeScale: number
 	highlightedIndex: number
-	classes: Record<string, any>
+	classes: Record<string, string | undefined>
 }
 
 defineProps<BaseSearchResultsProps>()

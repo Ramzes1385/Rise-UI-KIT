@@ -1,3 +1,5 @@
+@use "@styles/functions" as *;
+
 .base-chat-message-list {
 	&__reply-quote {
 		display: flex;

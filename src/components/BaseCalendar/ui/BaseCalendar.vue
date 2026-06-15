@@ -56,7 +56,7 @@
 							>№</BaseText
 						>
 					</span>
-					<span v-for="(name, idx) in orderedWeekdays" :key="idx" class="base-calendar__weekday">
+					<span v-for="(name, index) in orderedWeekdays" :key="index" class="base-calendar__weekday">
 						<BaseText
 							tag="span"
 							:weight="600"
@@ -67,12 +67,12 @@
 					</span>
 				</div>
 				<div class="base-calendar__grid" :class="classes.grid" role="grid">
-					<template v-for="(date, idx) in calendarDays" :key="idx">
-						<span v-if="resolvedProps.showWeekNumber && idx % 7 === 0" class="base-calendar__week-num">
-							<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="resolvedProps.sizeScale">{{
-								getRowWeekNumber(idx)
-							}}</BaseText>
-						</span>
+				<template v-for="(date, index) in calendarDays" :key="index">
+					<span v-if="resolvedProps.showWeekNumber && index % 7 === 0" class="base-calendar__week-num">
+						<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="resolvedProps.sizeScale">{{
+							getRowWeekNumber(index)
+						}}</BaseText>
+					</span>
 						<div class="base-calendar__day-wrapper" :class="classes.dayWrapper">
 							<BaseButton
 								variant="ghost"
@@ -130,14 +130,14 @@
 		<!-- Месяцы -->
 		<div v-if="currentView === 'months'" class="base-calendar__months" :class="classes.months">
 			<BaseButton
-				v-for="(name, idx) in monthNames"
-				:key="idx"
+			v-for="(name, index) in monthNames"
+				:key="index"
 				variant="outline"
 				class="base-calendar__month-btn"
-				:class="{ 'base-calendar__month-btn--current': idx === currentMonth }"
+				:class="{ 'base-calendar__month-btn--current': index === currentMonth }"
 				:size-scale="resolvedProps.sizeScale"
 				:is-disabled="resolvedProps.isDisabled"
-				@click="selectMonth(idx)">
+				@click="selectMonth(index)">
 				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ name }}</BaseText>
 			</BaseButton>
 		</div>
@@ -313,7 +313,7 @@ const emit = defineEmits<BaseCalendarEmits>()
 
 const isAm = defineModel<boolean>('isAm', { default: true })
 
-const cal = useCalendar({
+const calendar = useCalendar({
 	selectionMode: () => resolvedProps.value.selectionMode,
 	modelValue: () => resolvedProps.value.modelValue,
 	modelValueEnd: () => resolvedProps.value.modelValueEnd,
@@ -371,7 +371,7 @@ const {
 	toggleMultipleDate,
 	buildDateWithTime,
 	isSameDay,
-} = cal
+} = calendar
 
 /** Эмит изменения месяца */
 watch(currentMonth, newMonth => {
@@ -505,8 +505,8 @@ function handleSingleClick(date: Date): void {
 
 /** Выбор диапазона */
 function handleRangeClick(date: Date): void {
-	const start = cal.internalValue.value
-	const end = cal.internalValueEnd.value
+	const start = calendar.internalValue.value
+	const end = calendar.internalValueEnd.value
 
 	if (!start || (start && end)) {
 		setRangeStart(date)
@@ -523,14 +523,14 @@ function handleRangeClick(date: Date): void {
 			setRangeEnd(date)
 			emit('update:modelValueEnd', date)
 		}
-		emit('range-select', cal.internalValue.value!, cal.internalValueEnd.value!)
+		emit('range-select', calendar.internalValue.value!, calendar.internalValueEnd.value!)
 	}
 }
 
 /** Множественный выбор */
 function handleMultipleClick(date: Date): void {
 	toggleMultipleDate(date)
-	emit('update:selectedDates', [...cal.internalSelectedDates.value])
+	emit('update:selectedDates', [...calendar.internalSelectedDates.value])
 }
 
 /** Переключить AM/PM с корректировкой часов */
@@ -549,8 +549,8 @@ function toggleAmPm(): void {
 
 /** Обновить время */
 function handleTimeChange(): void {
-	if (!cal.internalValue.value) return
-	const result = buildDateWithTime(cal.internalValue.value)
+	if (!calendar.internalValue.value) return
+	const result = buildDateWithTime(calendar.internalValue.value)
 	setSingleValue(result)
 	emit('update:modelValue', result)
 }

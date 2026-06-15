@@ -5,7 +5,7 @@
 			v-if="images.length > 0"
 			class="base-chat-message-list__collage"
 			:class="`base-chat-message-list__collage--count-${Math.min(images.length, 4)}`">
-			<div v-for="(img, idx) in images.slice(0, 4)" :key="img.id" class="base-chat-message-list__collage-item">
+			<div v-for="(img, index) in images.slice(0, 4)" :key="img.id" class="base-chat-message-list__collage-item">
 				<BaseImage
 					:src="img.url"
 					:alt="img.name"
@@ -23,7 +23,7 @@
 						<BaseIcon name="download" :size-scale="sizeScale * 0.7" />
 					</template>
 				</BaseButton>
-				<div v-if="idx === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
+				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
 					<BaseText
 						:weight="600"
 						:size-scale="sizeScale * 1.2"
@@ -95,8 +95,8 @@ const emit = defineEmits<{
 	(event: 'file-click', file: ChatMessageAttachment): void
 }>()
 
-const images = computed(() => props.attachments.filter(a => a.type === 'image'))
-const files = computed(() => props.attachments.filter(a => a.type !== 'image'))
+const images = computed(() => props.attachments.filter(attachment => attachment.type === 'image'))
+const files = computed(() => props.attachments.filter(attachment => attachment.type !== 'image'))
 
 function handleDownload(file: ChatMessageAttachment): void {
 	emit('download', file)

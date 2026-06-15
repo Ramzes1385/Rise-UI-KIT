@@ -1,3 +1,5 @@
+@use "@styles/functions" as *;
+
 .base-chat-context-menu {
 	position: fixed;
 	background: var(--color-surface);

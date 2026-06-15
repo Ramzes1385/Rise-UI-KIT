@@ -17,4 +17,4 @@ export type {
 	TableRow,
 	TableVariant,
 } from './model/BaseTable.types'
-export { default as BaseTable } from './BaseTable.vue'
+export { default as BaseTable } from './ui/BaseTable.vue'

@@ -5,28 +5,27 @@
 		:class="{ 'base-chat-message-list--selection-mode': isSelectionMode }"
 		@scroll="closeContextMenu">
 		<ChatMessageItem
-			v-for="msg in messages"
-			:key="msg.id"
-			:message="msg"
+			v-for="message in messages"
+			:key="message.id"
+			:message="message"
 			:is-group="isGroup"
 			:is-selection-mode="isSelectionMode"
-		:is-selected="selectedSet.has(msg.id)"
-		:is-context-active="activeContextMessageId === msg.id"
+		:is-selected="selectedSet.has(message.id)"
+		:is-context-active="activeContextMessageId === message.id"
 			:size-scale="sizeScale"
 			:search-query="searchQuery"
 			:all-images-urls="allImagesUrls"
-			@avatar-click="handleAvatarClick(msg)"
-			@select="handleSelect(msg.id)"
-			@reply-action="handleReplyAction(msg)"
-			@context-menu="handleContextMenu($event, msg)"
+			@avatar-click="handleAvatarClick(message)"
+			@select="handleSelect(message.id)"
+			@reply-action="handleReplyAction(message)"
+			@context-menu="handleContextMenu($event, message)"
 			@reply-click="handleReplyClick"
 			@download="handleDownload"
 			@file-click="handleFileClick"
 			@mention-click="handleMentionClick"
 			@command-click="handleCommandClick"
-			@reaction-toggle="handleToggleReaction(msg.id, $event)" />
+			@reaction-toggle="handleToggleReaction(message.id, $event)" />
 
-		<!-- Пузырь печатания собеседника внизу списка сообщений -->
 		<div
 			v-if="isTyping"
 			class="base-chat-message-list__item base-chat-message-list__item--other base-chat-message-list__item--typing-indicator">
@@ -43,7 +42,6 @@
 			</div>
 		</div>
 
-		<!-- Контекстное меню -->
 		<ChatMessageContextMenu
 			ref="contextMenuRef"
 			:is-open="contextMenu.isOpen"
@@ -127,11 +125,11 @@ const isSelectionMode = computed(() => {
 })
 
 /** Обработка клика по аватару */
-function handleAvatarClick(msg: ChatMessage): void {
+function handleAvatarClick(message: ChatMessage): void {
 	/* istanbul ignore else — defensive: handleAvatarClick вызывается только из шаблона для sender === 'other' */
-	if (msg.sender === 'other') {
+	if (message.sender === 'other') {
 		/* istanbul ignore next — defensive: senderId/senderName опциональны для других чатов */
-		emit('avatar-click', msg.senderId || msg.senderName || '')
+		emit('avatar-click', message.senderId || message.senderName || '')
 	}
 }
 
@@ -149,8 +147,8 @@ function handleReplyClick(replyToId?: string): void {
 }
 
 /** Обработка нажатия кнопки "Ответить" */
-function handleReplyAction(msg: ChatMessage): void {
-	emit('message-reply', msg)
+function handleReplyAction(message: ChatMessage): void {
+	emit('message-reply', message)
 }
 
 /** Скачивание файла */
@@ -164,7 +162,7 @@ function handleFileClick(file: ChatMessageAttachment): void {
 }
 
 /** Открытие контекстного меню */
-function handleContextMenu(event: MouseEvent, msg: ChatMessage): void {
+function handleContextMenu(event: MouseEvent, message: ChatMessage): void {
 	/* istanbul ignore next — defensive: contextmenu заблокирован в режиме выбора через CSS */
 	if (isSelectionMode.value) return
 	const menuWidth = UI_CONTEXT_MENU_DEFAULT_WIDTH
@@ -188,7 +186,7 @@ function handleContextMenu(event: MouseEvent, msg: ChatMessage): void {
 		isOpen: true,
 		x: Math.max(16, x),
 		y: Math.max(16, y),
-		message: msg,
+		message: message,
 	}
 }
 

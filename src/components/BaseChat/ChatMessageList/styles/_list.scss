@@ -1,3 +1,5 @@
+@use "@styles/functions" as *;
+
 .base-chat-message-list {
 	display: flex;
 	flex-direction: column;

@@ -1,8 +1,6 @@
 <template>
 	<div class="base-table" :class="classes.root" :style="[paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]">
-		<!-- Тело таблицы с границами -->
 		<div class="base-table__body" :class="[variantClass, classes.body]">
-			<!-- Слот header (внутри границ для border-radius) -->
 			<div v-if="$slots.header" class="base-table__header" :class="classes.header">
 				<slot name="header"></slot>
 			</div>
@@ -45,23 +43,21 @@
 				</template>
 			</BaseTableToolbar>
 
-			<!-- Таблица -->
+			<div v-if="isLoading && rows.length" class="base-table__loading-overlay" :class="classes.loadingOverlay">
+				<BaseLoader variant="spinner" :size-scale="calcIconScale('sm', sizeScale)" has-label />
+			</div>
 			<div
 				class="base-table__wrapper"
 				:class="[classes.wrapper, { 'base-table__wrapper--loading': isLoading && rows.length }]"
 				:style="height ? { maxHeight: height } : undefined"
 				@scroll="handleScroll"
 				ref="tableWrapperRef">
-				<!-- Оверлей загрузки -->
-				<div v-if="isLoading && rows.length" class="base-table__loading-overlay" :class="classes.loadingOverlay">
-					<BaseLoader variant="spinner" :size-scale="calcIconScale('sm', sizeScale)" has-label />
-				</div>
 				<table class="base-table__table" :class="[classes.table, { 'base-table__table--fixed': useFixedLayout }]">
 					<colgroup>
 					<col v-if="isSelectable" :style="{ width: TABLE_ROW_SELECTION_WIDTH }" />
 					<col v-if="hasRowNumber" :style="{ width: TABLE_ROW_NUMBER_WIDTH }" />
 					<col v-if="hasExpandableRows" :style="{ width: TABLE_ROW_EXPAND_WIDTH }" />
-						<col v-for="(col, i) in visibleColumns" :key="col.key" :style="{ width: columnWidths[i] }" />
+						<col v-for="(column, i) in visibleColumns" :key="column.key" :style="{ width: columnWidths[i] }" />
 					</colgroup>
 					<BaseTableHeader
 						:columns="visibleColumns"
@@ -76,8 +72,8 @@
 						:th-class="classes.th"
 						:get-sort-direction="getSortDirection"
 						:get-sort-index="getSortIndex"
-						:is-column-resizable="isColResizable"
-						:get-column-style="getColStyle"
+						:is-column-resizable="isColumnResizable"
+						:get-column-style="getColumnStyle"
 						@toggle-all="toggleAll"
 						@sort="handleSort"
 						@resize-start="startResize">
@@ -108,7 +104,7 @@
 						:is-selected="isSelected"
 						:is-expanded="isExpanded"
 						:get-row-number="getRowNumber"
-						:get-column-style="getColStyle"
+						:get-column-style="getColumnStyle"
 						:format-cell-value="formatCellValue"
 						:on-expand-before-enter="onExpandBeforeEnter"
 						:on-expand-enter="onExpandEnter"
@@ -135,14 +131,12 @@
 				</table>
 			</div>
 
-			<!-- Кнопка "Загрузить еще" -->
 			<div v-if="loadMode === 'button' && hasMoreRows" class="base-table__load-more" :class="classes.loadMore">
 				<BaseButton :is-loading="isLoading" :is-disabled="isLoading" :size-scale="sizeScale" @click="handleLoadMore">
 					{{ isLoading ? 'Загрузка...' : 'Загрузить еще' }}
 				</BaseButton>
 			</div>
 
-			<!-- Нижняя панель: селектор размера страницы + пагинация -->
 			<div
 				v-if="
 					(hasPageSizeSelector && pageSizeOptions.length) ||
@@ -150,7 +144,6 @@
 				"
 				class="base-table__footer-bar"
 				:class="classes.footerBar">
-				<!-- Селектор размера страницы — всегда слева -->
 				<div
 					v-if="hasPageSizeSelector && pageSizeOptions.length"
 					class="base-table__page-size"
@@ -161,8 +154,7 @@
 						:size-scale="sizeScale - 20"
 						@update:model-value="handlePageSizeChange" />
 				</div>
-				<!-- Пагинация -->
-				<slot
+			<slot
 					v-if="loadMode === 'pagination' && localPageSize && totalPages > 1"
 					name="pagination"
 					:current-page="currentPage"
@@ -214,7 +206,7 @@ import { useTableData } from '@composables/useTableData'
 import { useTableSelection } from '@composables/useTableSelection'
 import { useVariant } from '@composables/useVariant'
 import { calcPageInfo } from '@utils/paginationUtils'
-import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle } from '@utils/tableUtils'
+import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
 import { computed, ref, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
 
@@ -333,12 +325,12 @@ const localColumns = ref<TableColumn[]>([...props.columns])
 watch(
 	() => props.columns,
 	newCols => {
-		localColumns.value = newCols.map(col => {
-			const existing = localColumns.value.find(c => c.key === col.key)
+		localColumns.value = newCols.map(column => {
+			const existing = localColumns.value.find(c => c.key === column.key)
 			if (existing) {
-				return { ...col, width: existing.width, isHidden: existing.isHidden }
+				return { ...column, width: existing.width, isHidden: existing.isHidden }
 			}
-			return col
+			return column
 		})
 	},
 	{ deep: true },
@@ -346,7 +338,7 @@ watch(
 
 /** Видимые колонки */
 const visibleColumns = computed((): TableColumn[] => {
-	return localColumns.value.filter(col => !col.isHidden)
+	return localColumns.value.filter(column => !column.isHidden)
 })
 
 /** Количество строк скелетона при загрузке */
@@ -356,7 +348,7 @@ const skeletonRows = computed((): number => {
 
 /** Колонки, доступные для фильтрации (все видимые, если isFilterable не задан явно) */
 const filterableColumns = computed((): TableColumn[] => {
-	return localColumns.value.filter(col => !col.isHidden && col.isFilterable !== false)
+	return localColumns.value.filter(column => !column.isHidden && column.isFilterable !== false)
 })
 
 /** Есть ли раскрываемые строки */
@@ -370,13 +362,13 @@ const totalCols = computed((): number => {
 })
 
 /** Колонка ресайзимая: пропс таблицы или флаг колонки */
-function isColResizable(col: TableColumn): boolean {
-	return isResizable.value || !!col.isResizable
+function isColumnResizable(column: TableColumn): boolean {
+	return isResizable.value || !!column.isResizable
 }
 
 /** Использовать фиксированный layout */
 const useFixedLayout = computed((): boolean => {
-	return isResizable.value || visibleColumns.value.some(col => col.flex || col.width)
+	return isResizable.value || visibleColumns.value.some(column => column.flex || column.width)
 })
 
 /** Ширины колонок для colgroup */
@@ -471,9 +463,9 @@ const showToolbar = computed((): boolean => {
 
 /** Опции селекта колонок для фильтра */
 const filterColumnOptions = computed(() => {
-	return filterableColumns.value.map(col => ({
-		value: col.key,
-		label: col.label,
+	return filterableColumns.value.map(column => ({
+		value: column.key,
+		label: column.label,
 	}))
 })
 
@@ -508,14 +500,14 @@ function getRowNumber(index: number): number {
 }
 
 /** Стиль колонки */
-function getColStyle(col: TableColumn): Record<string, string> {
-	return getColumnStyle({ minWidth: col.minWidth, maxWidth: col.maxWidth })
+function getColumnStyle(column: TableColumn): Record<string, string> {
+	return buildColumnStyle({ minWidth: column.minWidth, maxWidth: column.maxWidth })
 }
 
 /** Форматирование значения ячейки */
-function formatCellValue(col: TableColumn, row: TableRow): string {
-	const value = row.data[col.key]
-	if (col.formatter) return col.formatter(value, row)
+function formatCellValue(column: TableColumn, row: TableRow): string {
+	const value = row.data[column.key]
+	if (column.formatter) return column.formatter(value, row)
 	return String(value ?? '')
 }
 
@@ -574,8 +566,8 @@ function handleRowClick(row: TableRow): void {
 }
 
 /** Переключение видимости колонки */
-function toggleColumnVisibility(col: TableColumn): void {
-	const index = localColumns.value.findIndex(c => c.key === col.key)
+function toggleColumnVisibility(column: TableColumn): void {
+	const index = localColumns.value.findIndex(c => c.key === column.key)
 	/* istanbul ignore else -- Защитная ветка при рассинхронизации внешних колонок. */
 	if (index !== -1) {
 		localColumns.value[index].isHidden = !localColumns.value[index].isHidden

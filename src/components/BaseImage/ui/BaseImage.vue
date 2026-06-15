@@ -140,12 +140,12 @@
 					<div v-if="hasGallery" class="base-image__zoom-gallery">
 						<div class="base-image__zoom-gallery-track">
 							<div
-								v-for="(img, idx) in galleryList"
-								:key="idx"
+								v-for="(img, index) in galleryList"
+								:key="index"
 								class="base-image__zoom-thumb"
-								:class="{ 'base-image__zoom-thumb--active': galleryIndex === idx }"
-								@click="handleGalleryGo(idx)">
-								<img :src="img" :alt="`${alt} ${idx + 1}`" class="base-image__zoom-thumb-img" />
+								:class="{ 'base-image__zoom-thumb--active': galleryIndex === index }"
+								@click="handleGalleryGo(index)">
+								<img :src="img" :alt="`${alt} ${index + 1}`" class="base-image__zoom-thumb-img" />
 							</div>
 						</div>
 						<BaseText
@@ -414,8 +414,8 @@ const currentZoomSrc = computed((): string => {
 /** Клик по изображению — открыть зум */
 function handleImageClick(): void {
 	if (!props.hasZoom) return
-	const idx = galleryList.value.indexOf(props.src)
-	galleryIndex.value = idx >= 0 ? idx : 0
+	const foundIndex = galleryList.value.indexOf(props.src)
+	galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
 	zoom.openZoom()
 }
 
@@ -431,10 +431,10 @@ function handleGalleryNext(): void {
 	zoom.resetZoom()
 }
 
-function handleGalleryGo(idx: number): void {
-	/* istanbul ignore next -- defensive guard: idx всегда в пределах thumbnails (v-for на galleryList), out-of-bounds недостижим из UI */
-	if (idx < 0 || idx >= galleryList.value.length) return
-	galleryIndex.value = idx
+function handleGalleryGo(index: number): void {
+	/* istanbul ignore next -- defensive guard: index всегда в пределах thumbnails (v-for на galleryList), out-of-bounds недостижим из UI */
+	if (index < 0 || index >= galleryList.value.length) return
+	galleryIndex.value = index
 	zoom.resetZoom()
 }
 

@@ -1,3 +1,5 @@
+@use "@styles/functions" as *;
+
 .base-chat-input {
 	display: flex;
 	flex-direction: column;

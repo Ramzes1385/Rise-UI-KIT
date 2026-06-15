@@ -39,7 +39,7 @@
 						<BaseSearchInput
 							ref="modalInputRef"
 							:model-value="query"
-							:placeholder="placeholder"
+							:placeholder="resolvedPlaceholder"
 							:variant="variant"
 							:size-scale="sizeScale"
 							:is-disabled="isDisabled"
@@ -140,7 +140,7 @@
 						<BaseSearchInput
 							ref="sidebarInputRef"
 							:model-value="query"
-							:placeholder="placeholder"
+							:placeholder="resolvedPlaceholder"
 							:variant="variant"
 							:size-scale="sizeScale"
 							:is-disabled="isDisabled"
@@ -219,7 +219,7 @@
 			<BaseSearchInput
 				ref="baseInputRef"
 				:model-value="query"
-				:placeholder="placeholder"
+				:placeholder="resolvedPlaceholder"
 				:variant="variant"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
@@ -358,6 +358,7 @@ const { classes } = useCustomClass({
 const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 const modalInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 const sidebarInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
+const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_SEARCH_PLACEHOLDER)
 const query = ref(props.modelValue)
 const isFocused = ref(false)
 const isSearchTriggered = ref(false)

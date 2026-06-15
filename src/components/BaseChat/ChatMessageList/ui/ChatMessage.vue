@@ -12,7 +12,6 @@
 			},
 		]"
 		@click="isSelectionMode ? handleSelect() : undefined">
-		<!-- Чекбокс для выделения -->
 		<div v-if="isSelectionMode" class="base-chat-message-list__checkbox-wrapper" @click.stop>
 			<BaseCheckbox :model-value="isSelected" :size-scale="sizeScale * 0.8" @update:model-value="handleSelect" />
 		</div>
@@ -27,7 +26,6 @@
 
 		<div class="base-chat-message-list__bubble-wrapper">
 			<div class="base-chat-message-list__bubble" @contextmenu.prevent="handleContextMenu">
-				<!-- Кнопки действий при наведении -->
 				<div v-if="!isSelectionMode" class="base-chat-message-list__actions">
 					<BaseButton
 						variant="ghost"
@@ -63,7 +61,6 @@
 					{{ message.senderName }}
 				</BaseText>
 
-				<!-- Цитата (ответ на сообщение) -->
 				<ChatMessageReply
 					:reply-to-id="message.replyToId"
 					:reply-to-sender-name="message.replyToSenderName"
@@ -71,7 +68,6 @@
 					:size-scale="sizeScale"
 					@click="handleReplyClick" />
 
-				<!-- Вложения (медиа/файлы) -->
 				<ChatMessageAttachments
 					:attachments="message.attachments || []"
 					:size-scale="sizeScale"
@@ -79,7 +75,6 @@
 					@download="handleDownload"
 					@file-click="handleFileClick" />
 
-				<!-- Текст сообщения: ссылки, @упоминания, /команды + подсветка поиска -->
 				<ChatMessageText
 					:text="message.text"
 					:size-scale="sizeScale"
@@ -87,7 +82,6 @@
 					@mention-click="handleMentionClick"
 					@command-click="handleCommandClick" />
 
-				<!-- Реакции на сообщение -->
 				<ChatMessageReactions
 					:reactions="message.reactions || []"
 					:sender="message.sender"
@@ -177,8 +171,8 @@ const gallery = computed(() =>
 	allImagesUrls.value.length > 0 ? allImagesUrls.value : getMessageImageUrls(props.message),
 )
 
-function getMessageImageUrls(msg: ChatMessage): string[] {
-	return msg.attachments?.filter(a => a.type === 'image').map(a => a.url) ?? []
+function getMessageImageUrls(message: ChatMessage): string[] {
+	return message.attachments?.filter(attachment => attachment.type === 'image').map(attachment => attachment.url) ?? []
 }
 
 function handleSelect(): void {

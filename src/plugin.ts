@@ -53,11 +53,11 @@ import { BaseTree } from './components/BaseTree'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
 const BaseChat = defineAsyncComponent(() => import('./components/BaseChat/BaseChat.vue'))
-const BaseEditor = defineAsyncComponent(() => import('./components/BaseEditor/BaseEditor.vue'))
+const BaseEditor = defineAsyncComponent(() => import('./components/BaseEditor/ui/BaseEditor.vue'))
 const BaseDatePicker = defineAsyncComponent(() => import('./components/BaseDatePicker/BaseDatePicker.vue'))
-const BaseCalendar = defineAsyncComponent(() => import('./components/BaseCalendar/BaseCalendar.vue'))
-const BaseTable = defineAsyncComponent(() => import('./components/BaseTable/BaseTable.vue'))
-const BaseFileUpload = defineAsyncComponent(() => import('./components/BaseFileUpload/BaseFileUpload.vue'))
+const BaseCalendar = defineAsyncComponent(() => import('./components/BaseCalendar/ui/BaseCalendar.vue'))
+const BaseTable = defineAsyncComponent(() => import('./components/BaseTable/ui/BaseTable.vue'))
+const BaseFileUpload = defineAsyncComponent(() => import('./components/BaseFileUpload/ui/BaseFileUpload.vue'))
 
 export interface UiKitPluginOptions {
 	/** Префикс для глобальных имён компонентов. */

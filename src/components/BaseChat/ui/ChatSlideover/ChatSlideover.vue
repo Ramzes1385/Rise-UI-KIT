@@ -371,22 +371,22 @@ const selectedMember = computed((): ChatMember | null => {
 		}
 	}
 	if (!props.selectedMemberId) return null
-	return members.value.find(m => m.id === props.selectedMemberId) || null
+	return members.value.find(member => member.id === props.selectedMemberId) || null
 })
 
 /** Человекочитаемая дата публикации вложения/ссылки из родительского сообщения */
-function getPublishedLabel(msg: ChatMessage): string {
-	return msg.date || msg.time
+function getPublishedLabel(message: ChatMessage): string {
+	return message.date || message.time
 }
 
 // Извлечение общих медиафайлов (изображений) из сообщений
 const sharedMedia = computed((): SharedAttachment[] => {
 	const media: SharedAttachment[] = []
-	for (const msg of props.messages) {
-		if (msg.attachments) {
-			for (const att of msg.attachments) {
-				if (att.type === 'image') {
-					media.push({ ...att, publishedAt: getPublishedLabel(msg) })
+	for (const message of props.messages) {
+		if (message.attachments) {
+			for (const attachment of message.attachments) {
+				if (attachment.type === 'image') {
+					media.push({ ...attachment, publishedAt: getPublishedLabel(message) })
 				}
 			}
 		}
@@ -395,17 +395,17 @@ const sharedMedia = computed((): SharedAttachment[] => {
 })
 
 const allImagesUrls = computed((): string[] => {
-	return sharedMedia.value.map(m => m.url)
+	return sharedMedia.value.map(mediaItem => mediaItem.url)
 })
 
 // Извлечение общих файлов из сообщений
 const sharedFiles = computed((): SharedAttachment[] => {
 	const files: SharedAttachment[] = []
-	for (const msg of props.messages) {
-		if (msg.attachments) {
-			for (const att of msg.attachments) {
-				if (att.type === 'file') {
-					files.push({ ...att, publishedAt: getPublishedLabel(msg) })
+	for (const message of props.messages) {
+		if (message.attachments) {
+			for (const attachment of message.attachments) {
+				if (attachment.type === 'file') {
+					files.push({ ...attachment, publishedAt: getPublishedLabel(message) })
 				}
 			}
 		}
@@ -418,14 +418,14 @@ const sharedLinks = computed((): SharedLink[] => {
 	const links: SharedLink[] = []
 	const seen = new Set<string>()
 	const urlRegex = /(https?:\/\/[^\s]+)/gi
-	for (const msg of props.messages) {
-		if (msg.text) {
-			const matches = msg.text.match(urlRegex)
+	for (const message of props.messages) {
+		if (message.text) {
+			const matches = message.text.match(urlRegex)
 			if (matches) {
 				for (const url of matches) {
 					if (!seen.has(url)) {
 						seen.add(url)
-						links.push({ url, publishedAt: getPublishedLabel(msg) })
+						links.push({ url, publishedAt: getPublishedLabel(message) })
 					}
 				}
 			}

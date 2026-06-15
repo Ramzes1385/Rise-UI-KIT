@@ -62,8 +62,8 @@ interface BaseSearchInputProps {
 	hasIcon: boolean
 	hasClear: boolean
 	isLoading: boolean
-	inputClass?: any
-	classes: Record<string, any>
+	inputClass?: string | Record<string, string | undefined>
+	classes: Record<string, string | undefined>
 }
 
 defineProps<BaseSearchInputProps>()

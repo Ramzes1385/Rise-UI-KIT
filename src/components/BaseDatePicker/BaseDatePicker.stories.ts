@@ -10,7 +10,7 @@ import { ref } from 'vue'
 
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import BaseDatePicker from '../ui/BaseDatePicker.vue'
+import BaseDatePicker from './BaseDatePicker.vue'
 
 const INPUT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
 

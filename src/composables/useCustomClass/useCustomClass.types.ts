@@ -2,7 +2,7 @@
  * Тип для пропса customClass.
  * Может быть строкой (для корневого элемента) или объектом с классами для внутренних элементов.
  */
-export type CustomClassProp = string | Record<string, any>
+export type CustomClassProp = string | Record<string, string | boolean | undefined>
 
 /**
  * Параметры для composable useCustomClass

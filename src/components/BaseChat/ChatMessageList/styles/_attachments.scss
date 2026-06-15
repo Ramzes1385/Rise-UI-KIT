@@ -1,3 +1,5 @@
+@use "@styles/functions" as *;
+
 .base-chat-message-list {
 	&__attachments {
 		display: flex;

@@ -304,7 +304,7 @@ async function addFiles(files: File[]): Promise<void> {
 
 	emit(
 		'change',
-		uploadedFiles.value.map(f => f.file),
+		uploadedFiles.value.map(uploadedFile => uploadedFile.file),
 	)
 }
 
@@ -321,13 +321,13 @@ function handleFileChange(e: Event): void {
 }
 
 function handleRemove(item: UploadedFile): void {
-	uploadedFiles.value = uploadedFiles.value.filter(f => f.id !== item.id)
+	uploadedFiles.value = uploadedFiles.value.filter(uploadedFile => uploadedFile.id !== item.id)
 	/* istanbul ignore next — previewUrl присутствует только для image-файлов */
 	if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
 	emit('remove', item)
 	emit(
 		'change',
-		uploadedFiles.value.map(f => f.file),
+		uploadedFiles.value.map(uploadedFile => uploadedFile.file),
 	)
 }
 
