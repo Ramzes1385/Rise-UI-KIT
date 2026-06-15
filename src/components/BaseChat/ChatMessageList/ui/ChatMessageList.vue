@@ -236,8 +236,8 @@ async function handleContextMenuCopy(): Promise<void> {
 	if (contextMenu.value.message?.text) {
 		try {
 			await copyTextToClipboard(contextMenu.value.message.text)
-		} catch {
-			// Clipboard API может быть недоступен или отклонён — игнорируем ошибку копирования
+		} catch (e) {
+			console.debug('[BaseChat] Clipboard write failed:', e)
 		}
 	}
 	closeContextMenu()

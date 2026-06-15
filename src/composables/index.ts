@@ -1,4 +1,5 @@
 export * from './useAutoScroll'
+export * from './useBaseComponent'
 export * from './useBreakpoint'
 export * from './useCalendar'
 export * from './useClickOutside'

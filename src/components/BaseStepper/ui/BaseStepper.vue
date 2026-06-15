@@ -71,10 +71,7 @@ import { computed } from 'vue'
 
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps } from '../model/BaseStepper.types'
 
@@ -82,22 +79,16 @@ const props = defineProps<BaseStepperProps>()
 
 const orientation = computed(() => props.orientation ?? 'horizontal')
 const shape = computed(() => props.shape ?? 'circle')
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseStepperEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-stepper',
-	getVariant: () => variant.value,
-})
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const { classes } = useCustomClass({
-	getClass: function () {
-		return props.customClass
-	},
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale ?? 100,
+	getColor: () => props.color,
+	getClass: () => props.customClass,
 	elementKeys: [
 		'root',
 		'header',
@@ -113,7 +104,6 @@ const { classes } = useCustomClass({
 	],
 })
 
-/** CSS-переменные для линии прогресса */
 const progressStyle = computed(() => {
 	const count = props.items.length
 	if (count <= 1) return undefined

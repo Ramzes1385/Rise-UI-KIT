@@ -9,9 +9,24 @@ import { vi } from 'vitest'
 import { nextTick } from 'vue'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
 
-vi.mock('@utils/navigationUtils', () => ({
-	openExternalUrl: vi.fn(),
-}))
+vi.mock('@utils/navigationUtils', () => {
+	const openExternalUrl = vi.fn()
+	return {
+		openExternalUrl,
+		navigateAndEmit: (options: { to?: string; href?: string; target?: string }, emitFn: (url: string) => void) => {
+			if (options.href) {
+				if (options.target === '_self') {
+					window.location.href = options.href
+				} else {
+					openExternalUrl(options.href)
+				}
+				emitFn(options.href)
+			} else if (options.to) {
+				emitFn(options.to)
+			}
+		},
+	}
+})
 
 const COLUMNS: any[] = [
 	{

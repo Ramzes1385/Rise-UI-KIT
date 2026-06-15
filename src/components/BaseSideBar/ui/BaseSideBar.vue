@@ -101,11 +101,8 @@ import { UI_SIDEBAR_DEFAULT_WIDTH } from '@constants'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
 
@@ -139,28 +136,17 @@ const resolvedIsCollapsible = computed(() => {
 
 	return props.isCollapsible === true
 })
-const resolvedVariant = computed(() => props.variant ?? 'default')
 const resolvedPadding = computed(() => props.padding ?? 12)
 const resolvedGap = computed(() => props.gap ?? 4)
-const resolvedSizeScale = computed(() => props.sizeScale ?? 100)
 const resolvedIsLoading = computed(() => props.isLoading === true)
 const resolvedActiveMatch = computed(() => props.activeMatch ?? 'exact')
 const resolvedLinkComponent = computed(() => props.linkComponent ?? 'a')
 
-const { variantClass, variantStyle } = useVariant({
+const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useBaseComponent({
 	block: 'base-sidebar',
-	getVariant: () => resolvedVariant.value,
-})
-
-const { customColorStyle } = useCustomColor({
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale ?? 100,
 	getColor: () => props.color,
-})
-
-const { sizeScaleStyle } = useSizeScale({
-	getScale: () => resolvedSizeScale.value,
-})
-
-const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'],
 })

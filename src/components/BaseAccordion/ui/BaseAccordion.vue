@@ -58,10 +58,7 @@
 <script setup lang="ts">
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, onMounted, ref } from 'vue'
 
 import '../styles/BaseAccordion.style.scss'
@@ -72,13 +69,13 @@ const props = defineProps<BaseAccordionProps>()
 const emit = defineEmits<BaseAccordionEmits>()
 
 const isMultiple = computed(() => props.isMultiple ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-accordion', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-accordion',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'],
 })

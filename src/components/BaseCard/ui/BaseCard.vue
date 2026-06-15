@@ -53,11 +53,8 @@
 import { computed } from 'vue'
 
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 
 import '../styles/BaseCard.style.scss'
 
@@ -68,22 +65,21 @@ const props = defineProps<BaseCardProps>()
 defineSlots<BaseCardSlots>()
 
 const isHoverable = computed(() => props.isHoverable ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const padding = computed(() => props.padding ?? 24)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 const scroll = computed(() => props.scroll ?? false)
 const height = computed(() => props.height)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-card', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-card',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'],
 })
 const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--card-pad', defaultPadding: 24 })
 
-/** Стили карточки: padding и высота */
 const cardStyle = computed(() => ({
 	...paddingStyle.value,
 	'--card-height': height.value || 'auto',

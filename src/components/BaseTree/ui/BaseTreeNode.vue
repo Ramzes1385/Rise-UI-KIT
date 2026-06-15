@@ -114,7 +114,7 @@ function getTreeContext(): TreeContext {
 	const context = inject(TREE_CONTEXT_KEY, undefined)
 	/* istanbul ignore if -- defensive: BaseTreeNode всегда рендерится внутри BaseTree, контекст предоставляется родителем */
 	if (!context) {
-		throw new Error('Контекст дерева не найден')
+		throw new Error('BaseTreeNode: TreeContext not found. Ensure BaseTreeNode is rendered inside BaseTree.')
 	}
 	return context
 }

@@ -68,7 +68,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
-import { openExternalUrl } from '@utils/navigationUtils'
+import { navigateAndEmit } from '@utils/navigationUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import '../styles/BaseMegaMenu.style.scss'
 import type { MegaMenuItem } from '../model/BaseMegaMenu.types'
@@ -127,19 +127,9 @@ function clearTimer(): void {
 
 onBeforeUnmount(clearTimer)
 
-/** Навигация по ссылке узла */
 function navigate(): void {
 	const { to, href, target } = props.item
-	if (href) {
-		if (target === '_self') {
-			window.location.href = href
-		} else {
-			openExternalUrl(href)
-		}
-		emit('navigate', href)
-	} else if (to) {
-		emit('navigate', to)
-	}
+	navigateAndEmit({ to, href, target }, (url) => emit('navigate', url))
 }
 
 /** Клик по узлу: раскрытие (закрывая соседей) или навигация */

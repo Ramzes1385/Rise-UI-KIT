@@ -117,12 +117,9 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { UI_HOVER_DELAY_MS } from '@constants'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
-import { openExternalUrl } from '@utils/navigationUtils'
+import { navigateAndEmit } from '@utils/navigationUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
@@ -132,14 +129,14 @@ const props = defineProps<BaseMegaMenuProps>()
 
 const trigger = computed(() => props.trigger ?? 'click')
 const layout = computed(() => props.layout ?? 'columns')
-const variant = computed(() => props.variant ?? 'default')
 const hoverDelay = computed(() => props.hoverDelay ?? UI_HOVER_DELAY_MS)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-mega-menu', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-mega-menu',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'],
 })
@@ -179,18 +176,8 @@ function hasChildren(item: MegaMenuItem): boolean {
 	return Boolean(item.children && item.children.length > 0)
 }
 
-/** Навигация по ссылке */
 function navigate(to?: string, href?: string, target?: '_blank' | '_self'): void {
-	if (href) {
-		if (target === '_self') {
-			window.location.href = href
-		} else {
-			openExternalUrl(href)
-		}
-		emit('navigate', href)
-	} else if (to) {
-		emit('navigate', to)
-	}
+	navigateAndEmit({ to, href, target }, (url) => emit('navigate', url))
 }
 
 // ── Columns ──

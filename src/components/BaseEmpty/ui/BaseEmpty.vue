@@ -43,10 +43,7 @@
 <script setup lang="ts">
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed } from 'vue'
 
 import '../styles/BaseEmpty.style.scss'
@@ -54,18 +51,16 @@ import type { BaseEmptyProps } from '../model/BaseEmpty.types'
 
 const props = defineProps<BaseEmptyProps>()
 
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-empty',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'],
 })
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-empty', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-/** Иконка по умолчанию */
 const emptyIcon = computed((): string => props.icon || 'inbox')
 </script>

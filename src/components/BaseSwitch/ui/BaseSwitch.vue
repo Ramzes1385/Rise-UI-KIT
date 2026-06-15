@@ -64,10 +64,7 @@
 import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types'
 
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, useId } from 'vue'
 
 import '../styles/BaseSwitch.style.scss'
@@ -75,17 +72,17 @@ import '../styles/BaseSwitch.style.scss'
 const props = defineProps<BaseSwitchProps>()
 
 const modelValue = computed(() => props.modelValue ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const isDisabled = computed(() => props.isDisabled ?? false)
 const isRequired = computed(() => props.isRequired ?? false)
 const reverse = computed(() => props.reverse ?? false)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const inputId = useId()
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-switch', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-switch',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'],
 })

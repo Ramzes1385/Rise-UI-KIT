@@ -46,10 +46,8 @@ const { classes } = useCustomClass({
 	elementKeys: ['root', 'trigger', 'arrow', 'inner', 'panel'],
 })
 
-/** Локальное состояние для немедленного реагирования */
 const isOpenLocal = ref(isOpen.value)
 
-/** Синхронизация с prop при внешнем изменении */
 watch(
 	() => isOpen.value,
 	val => {
@@ -57,18 +55,15 @@ watch(
 	},
 )
 
-/** CSS-классы панели */
 const panelClasses = computed((): string => {
 	return `base-popover__panel base-popover__panel--${variant.value}`
 })
 
-/** Переключить видимость */
 function toggle(): void {
 	isOpenLocal.value = !isOpenLocal.value
 	emit('update:isOpen', isOpenLocal.value)
 }
 
-/** Закрыть popover */
 function handleClose(): void {
 	emit('update:isOpen', false)
 	emit('close')

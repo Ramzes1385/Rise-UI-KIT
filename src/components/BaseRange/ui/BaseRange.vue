@@ -97,10 +97,7 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { snapToStep, toPercent } from '@utils/rangeUtils'
 import { computed, onBeforeUnmount, ref, useSlots } from 'vue'
 import { BaseRangeThumb } from './BaseRangeThumb'
@@ -113,21 +110,16 @@ const modelValue = computed(() => props.modelValue ?? 0)
 const min = computed(() => props.min ?? 0)
 const max = computed(() => props.max ?? 100)
 const step = computed(() => props.step ?? 1)
-const variant = computed(() => props.variant ?? 'default')
 const isDisabled = computed(() => props.isDisabled ?? false)
 const hasTooltip = computed(() => props.hasTooltip ?? false)
 const marks = computed(() => props.marks ?? [])
 const isVertical = computed(() => props.isVertical ?? false)
 const hasLabel = computed(() => props.hasLabel ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-range',
-	getVariant: () => variant.value,
-})
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale ?? 100,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
 		'root',

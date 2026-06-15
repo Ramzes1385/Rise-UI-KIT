@@ -17,10 +17,7 @@ import type { BaseTreeEmits, BaseTreeProps } from '../model/BaseTree.types'
 
 import { computed, provide, toRef } from 'vue'
 
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 
 import '../styles/BaseTree.style.scss'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
@@ -31,16 +28,16 @@ const props = defineProps<BaseTreeProps>()
 
 const selectionMode = computed(() => props.selectionMode ?? 'none')
 const arrowPosition = computed(() => props.arrowPosition ?? 'left')
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 const isDefaultExpandAll = computed(() => props.isDefaultExpandAll ?? false)
 
 const emit = defineEmits<BaseTreeEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-tree', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-tree',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children'],
 })

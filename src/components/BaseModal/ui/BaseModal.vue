@@ -55,11 +55,8 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import { computed, useSlots } from 'vue'
 import type { PropType } from 'vue'
 import '../styles/BaseModal.style.scss'
@@ -80,10 +77,11 @@ const props = defineProps({
 })
 /* eslint-enable vue/require-default-prop */
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-modal', getVariant: () => props.variant })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-modal',
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'],
 })
@@ -91,22 +89,18 @@ const { classes } = useCustomClass({
 const emit = defineEmits<BaseModalEmits>()
 const slots = useSlots()
 
-/** Есть ли footer */
 const hasFooter = !!slots.footer
 
-/** Класс fullScreen-модификатора */
 const fullScreenClass = computed(() => {
 	if (!props.fullScreen) return undefined
 	return `base-modal--fullscreen-${props.fullScreen}`
 })
 
-/** Итоговые классы корневого элемента */
 const rootClasses = computed(() => {
 	const classes: (string | undefined)[] = [variantClass.value, fullScreenClass.value]
 	return classes.filter(Boolean)
 })
 
-/** Итоговые стили корневого элемента */
 const rootStyles = computed(() => {
 	const styles: Record<string, string> = {}
 	if (sizeScaleStyle.value) Object.assign(styles, sizeScaleStyle.value)
@@ -115,7 +109,6 @@ const rootStyles = computed(() => {
 	return Object.keys(styles).length > 0 ? styles : undefined
 })
 
-/** Popup-паттерн: оверлей, Escape, блокировка скролла */
 const { handleOverlayClick, close: handleClose } = usePopup({
 	isOpen: () => props.isOpen,
 	closeOnOverlay: () => props.closeOnOverlay ?? true,

@@ -55,10 +55,7 @@ import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox
 
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed } from 'vue'
 
 import '../styles/BaseCheckbox.style.scss'
@@ -69,14 +66,14 @@ const emit = defineEmits<BaseCheckboxEmits>()
 
 const modelValue = computed(() => props.modelValue ?? false)
 const isDisabled = computed(() => props.isDisabled ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const error = computed(() => props.error ?? '')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-checkbox', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-checkbox',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'],
 })

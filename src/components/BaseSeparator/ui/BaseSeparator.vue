@@ -45,22 +45,18 @@ const orientation = computed(() => props.orientation ?? 'horizontal')
 const thickness = computed(() => props.thickness ?? 1)
 const isDashed = computed(() => props.isDashed ?? false)
 const spacing = computed(() => props.spacing ?? 10)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'line', 'content'],
 })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale ?? 100 })
+const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-/** Стиль spacing на контенте: Y = значение, X = значение * 2 */
 const spacingStyle = computed(() => ({
 	'--sep-pad-y': `${spacing.value}px`,
 	'--sep-pad-x': `${spacing.value * 2}px`,
 }))
 
-/** Стиль толщины линии */
 const thicknessStyle = computed(() => ({
 	'--sep-thickness': `${thickness.value}px`,
 }))

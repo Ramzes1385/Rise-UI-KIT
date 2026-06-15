@@ -21,7 +21,6 @@ const props = defineProps<BaseTextProps>()
 const tag = computed(() => props.tag ?? 'p')
 const weight = computed(() => props.weight ?? 400)
 const nowrap = computed(() => props.nowrap ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 const truncate = computed(() => props.truncate ?? false)
 const maxLines = computed(() => props.maxLines ?? 1)
 
@@ -29,16 +28,13 @@ const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root'],
 })
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale ?? 100 })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-/** Инлайн-стиль для начертания */
 const weightStyle = computed(() => ({
 	fontWeight: weight.value,
 }))
 
-/** Инлайн-стиль для ограничения строк */
 const maxLinesStyle = computed(() => {
 	if (!truncate.value) return {}
 	if (maxLines.value > 1) {
@@ -52,7 +48,6 @@ const maxLinesStyle = computed(() => {
 	return {}
 })
 
-/** Классы-модификаторы по БЭМ */
 const modifierClasses = computed(() => [
 	{ 'base-text--nowrap': nowrap.value },
 	{ 'base-text--truncate': truncate.value && maxLines.value <= 1 },

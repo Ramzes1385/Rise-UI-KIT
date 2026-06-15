@@ -59,6 +59,6 @@ defineSlots<Slots>()
 const treeContext = inject(TREE_CONTEXT_KEY, undefined)
 /* istanbul ignore if -- defensive: BaseTreeChildren всегда рендерится внутри BaseTree, контекст предоставляется родителем */
 if (!treeContext) {
-	throw new Error('Контекст дерева не найден')
+	throw new Error('BaseTreeChildren: TreeContext not found. Ensure BaseTreeChildren is rendered inside BaseTree.')
 }
 </script>

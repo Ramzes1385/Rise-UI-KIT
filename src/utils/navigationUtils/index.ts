@@ -1,2 +1,2 @@
-export { openExternalUrl, resolveNavigation } from './navigationUtils'
+export { openExternalUrl, resolveNavigation, navigateAndEmit } from './navigationUtils'
 export type { NavigateOptions } from './navigationUtils.types'

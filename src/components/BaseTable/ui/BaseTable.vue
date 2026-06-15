@@ -196,15 +196,12 @@ import { BaseLoader } from '@components/BaseLoader'
 import { BasePagination } from '@components/BasePagination'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { useColumnResize } from '@composables/useColumnResize/useColumnResize'
-import { useCustomColor } from '@composables/useCustomColor'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { usePadding } from '@composables/usePadding'
-import { useSizeScale } from '@composables/useSizeScale'
 import { useTableData } from '@composables/useTableData'
 import { useTableSelection } from '@composables/useTableSelection'
-import { useVariant } from '@composables/useVariant'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
 import { computed, ref, useSlots, watch } from 'vue'
@@ -255,7 +252,6 @@ const props = defineProps({
 })
 /* eslint-enable vue/require-default-prop */
 
-const variant = computed(() => props.variant ?? 'default')
 const isLoading = computed(() => props.isLoading ?? false)
 const emptyText = computed(() => props.emptyText ?? UI_EMPTY_TEXT)
 const height = computed(() => props.height ?? '')
@@ -276,10 +272,11 @@ const padding = computed(() => props.padding ?? 10)
 
 const slots = useSlots()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-table', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-table',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
 		'root',

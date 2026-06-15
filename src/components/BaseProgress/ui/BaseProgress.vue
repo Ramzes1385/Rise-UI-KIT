@@ -88,8 +88,6 @@ const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseProgressEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: [
@@ -104,6 +102,8 @@ const { classes } = useCustomClass({
 		'circleLabel',
 	],
 })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 /** Цвет тултипа соответствует цвету заливки */
 const tooltipColor = computed(() => {
@@ -111,19 +111,16 @@ const tooltipColor = computed(() => {
 	return { bg: { base: 'var(--color-accent)' } }
 })
 
-/** Процент заполненности */
 const percent = computed((): number => {
 	if (isIndeterminate.value) return 0
 	const clamped = Math.min(Math.max(props.value, 0), max.value)
 	return Math.round((clamped / max.value) * 100)
 })
 
-/** Длина окружности для кругового прогресса */
 const circumference = computed((): number => {
 	return 2 * Math.PI * 52
 })
 
-/** Смещение для кругового прогресса */
 const circleOffset = computed((): number => {
 	if (isIndeterminate.value) return circumference.value
 	return circumference.value * (1 - percent.value / 100)

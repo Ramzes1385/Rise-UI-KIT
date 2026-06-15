@@ -39,10 +39,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, ref } from 'vue'
 import '../styles/BasePin.style.scss'
 import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
@@ -52,14 +49,14 @@ const props = defineProps<BasePinProps>()
 const hasError = computed(() => Boolean(props.error))
 const length = computed(() => props.length ?? 4)
 const type = computed(() => props.type ?? 'text')
-const variant = computed(() => props.variant ?? 'default')
 const isDisabled = computed(() => props.isDisabled ?? false)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-pin', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-pin',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'cells', 'input', 'errorText'],
 })

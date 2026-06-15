@@ -27,11 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import { computed } from 'vue'
 
 import '../styles/BaseButton.style.scss'
@@ -45,22 +42,18 @@ const emit = defineEmits<BaseButtonEmits>()
 defineSlots<BaseButtonSlots>()
 
 const type = computed(() => props.type ?? 'button')
-const variant = computed(() => props.variant ?? 'default')
 const padding = computed(() => props.padding ?? 10)
 const isLoading = computed(() => props.isLoading ?? false)
 const isDisabled = computed(() => props.isDisabled ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-button',
-	getVariant: () => variant.value,
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale ?? 100,
+	getColor: () => props.color,
+	getClass: () => props.customClass,
 })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({ getClass: () => props.customClass })
 const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--btn-pad', defaultPadding: 10 })
 
-/** Обработка клика */
 function handleClick(e: MouseEvent): void {
 	if (!isDisabled.value && !isLoading.value) {
 		emit('click', e)

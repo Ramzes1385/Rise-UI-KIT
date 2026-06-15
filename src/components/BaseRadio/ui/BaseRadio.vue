@@ -66,10 +66,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed } from 'vue'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
@@ -78,14 +75,14 @@ const props = defineProps<BaseRadioProps>()
 
 const isVertical = computed(() => props.isVertical ?? false)
 const isRequired = computed(() => props.isRequired ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const error = computed(() => props.error ?? '')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-radio-group', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-radio-group',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'],
 })

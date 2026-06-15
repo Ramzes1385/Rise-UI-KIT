@@ -29,10 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, ref, watch } from 'vue'
 import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
 import BaseText from '@components/BaseText/ui/BaseText.vue'
@@ -46,14 +43,14 @@ const emit = defineEmits<BaseAvatarEmits>()
 
 const alt = computed(() => props.alt ?? '')
 const shape = computed(() => props.shape ?? 'circle')
-const variant = computed(() => props.variant ?? 'default')
 const isOnline = computed(() => props.isOnline ?? false)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-avatar', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-avatar',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'content', 'img', 'initials', 'online'],
 })
@@ -68,7 +65,6 @@ watch(
 	},
 )
 
-/** Генерация инициалов из имени */
 const initials = computed(() => {
 	if (!props.name) return '?'
 	return props.name

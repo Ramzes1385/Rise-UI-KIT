@@ -54,12 +54,10 @@ const hasLabel = computed(() => props.hasLabel ?? false)
 const label = computed(() => props.label ?? 'Загрузка...')
 const isOverlay = computed(() => props.isOverlay ?? false)
 const sizeScale = computed(() => props.sizeScale ?? 100)
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'animation', 'spinner', 'label'],
 })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 </script>

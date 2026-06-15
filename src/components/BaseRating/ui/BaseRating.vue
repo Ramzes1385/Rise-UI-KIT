@@ -27,10 +27,7 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, ref } from 'vue'
 import type { PropType } from 'vue'
 
@@ -62,19 +59,18 @@ const icon = computed(() => props.icon ?? 'star')
 const isHoverSmooth = computed(() => props.isHoverSmooth)
 const isReadonly = computed(() => props.isReadonly ?? false)
 const isDisabled = computed(() => props.isDisabled ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseRatingEmits>()
 
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-rating',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'icon', 'iconFilled'],
 })
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-rating', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const hoverValue = ref(0)
 
@@ -82,12 +78,10 @@ const isInteractive = computed((): boolean => !isReadonly.value && !isDisabled.v
 const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : modelValue.value))
 const filledIcon = computed((): string => props.iconFilled || icon.value)
 
-/** Процент заливки звезды по индексу */
 function fillPercent(star: number): number {
 	return starFillPercent(star, displayValue.value)
 }
 
-/** Доля позиции указателя внутри звезды (0..1) */
 function pointerRatio(event: MouseEvent, target: EventTarget | null): number {
 	/* istanbul ignore next — defensive: currentTarget звезды всегда HTMLElement */
 	if (!(target instanceof HTMLElement)) return 1
@@ -113,25 +107,21 @@ function handleClick(event: MouseEvent, star: number): void {
 	emit('change', value)
 }
 
-/** Предпросмотр оценки при наведении */
 function handleHover(event: MouseEvent, star: number): void {
 	if (!isInteractive.value) return
 	hoverValue.value = valueAt(event, star)
 }
 
-/** Сброс предпросмотра */
 function clearHover(): void {
 	hoverValue.value = 0
 }
 
-/** Изменение оценки на шаг */
 function changeBy(direction: number): void {
 	const next = snapRating(modelValue.value + direction * step.value, step.value, max.value)
 	emit('update:modelValue', next)
 	emit('change', next)
 }
 
-/** Навигация стрелками */
 function handleKeydown(event: KeyboardEvent): void {
 	if (!isInteractive.value) return
 	if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {

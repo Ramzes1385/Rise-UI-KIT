@@ -37,7 +37,6 @@ const { classes } = useCustomClass({
 	elementKeys: ['root'],
 })
 
-/** Вычисленные стили с учётом sizeScale и color */
 const skeletonStyle = computed(() => {
 	const styles: Record<string, string> = {}
 	const scale = sizeScale.value / 100

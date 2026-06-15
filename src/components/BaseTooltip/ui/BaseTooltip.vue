@@ -25,10 +25,7 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { UI_TRANSITION_DURATION_MS } from '@constants'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTooltip.style.scss'
@@ -37,14 +34,13 @@ import type { BaseTooltipProps } from '../model/BaseTooltip.types'
 const props = defineProps<BaseTooltipProps>()
 
 const position = computed(() => props.position ?? 'top')
-const variant = computed(() => props.variant ?? 'default')
 const isAlwaysVisible = computed(() => props.isAlwaysVisible ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-tooltip', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-tooltip',
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale ?? 100,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'tooltip', 'text'],
 })
@@ -55,13 +51,10 @@ let showTimer: ReturnType<typeof setTimeout> | null = null
 let hideTimer: ReturnType<typeof setTimeout> | null = null
 let rafId: number | null = null
 
-/** Координаты триггера */
 const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
 
-/** Имя перехода по позиции */
 const transitionName = computed(() => getTooltipTransition(position.value))
 
-/** Обновить координаты триггера */
 function updateCoords(): void {
 	/* istanbul ignore next -- defensive guard: wrapperRef всегда доступен после onMounted */
 	if (!wrapperRef.value) return
@@ -69,7 +62,6 @@ function updateCoords(): void {
 	coords.value = { top: rect.top, left: rect.left, width: rect.width, height: rect.height }
 }
 
-/** Цикл обновления позиции при видимости */
 function startUpdateLoop(): void {
 	function tick(): void {
 		updateCoords()
@@ -81,7 +73,6 @@ function startUpdateLoop(): void {
 	rafId = requestAnimationFrame(tick)
 }
 
-/** Остановить цикл обновления */
 function stopUpdateLoop(): void {
 	if (rafId !== null) {
 		cancelAnimationFrame(rafId)
@@ -89,7 +80,6 @@ function stopUpdateLoop(): void {
 	}
 }
 
-/** Динамические координаты тултипа */
 const tooltipStyle = computed((): Record<string, string> => {
 	return calcTooltipPosition({
 		position: position.value,

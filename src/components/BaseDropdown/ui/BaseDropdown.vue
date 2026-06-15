@@ -21,14 +21,11 @@
 
 <script setup lang="ts">
 import { useClickOutside } from '@composables/useClickOutside'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { UI_PANEL_MAX_HEIGHT } from '@constants'
 import { usePadding } from '@composables/usePadding'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import { computed, getCurrentInstance, ref, watch } from 'vue'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps } from '../model/BaseDropdown.types'
@@ -38,7 +35,6 @@ const rawProps = getCurrentInstance()?.vnode.props
 
 const isOpen = computed(() => props.isOpen ?? false)
 const position = computed(() => props.position ?? 'bottom-start')
-const variant = computed(() => props.variant ?? 'default')
 const gap = computed(() => props.gap ?? 4)
 const maxHeight = computed(() => props.maxHeight ?? UI_PANEL_MAX_HEIGHT)
 const matchWidth = computed(() => props.matchWidth ?? false)
@@ -52,12 +48,11 @@ const preventMousedown = computed(() =>
 )
 const panelClass = computed(() => props.panelClass ?? '')
 const padding = computed(() => props.padding ?? 8)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-dropdown__panel', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-dropdown__panel',
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale ?? 100,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'panel'],
 })

@@ -108,12 +108,9 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { useInputMask } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import { computed, ref } from 'vue'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
@@ -125,17 +122,16 @@ const placeholder = computed(() => props.placeholder ?? '')
 const isDisabled = computed(() => props.isDisabled ?? false)
 const isReadonly = computed(() => props.isReadonly ?? false)
 const isRequired = computed(() => props.isRequired ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 const prefix = computed(() => props.prefix ?? '')
 const postfix = computed(() => props.postfix ?? '')
 const maskValue = computed(() => props.mask ?? '')
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-input', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-input',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
 		'root',
@@ -157,15 +153,12 @@ const { classes } = useCustomClass({
 const emit = defineEmits<BaseInputEmits>()
 const inputRef = ref<HTMLInputElement | null>(null)
 
-/** Composable для масок ввода */
 const mask = useInputMask({ getMask: () => maskValue.value })
 
-/** Composable для видимости пароля */
 const { isPasswordVisible, inputType, togglePasswordVisibility } = usePasswordVisibility({
 	type,
 })
 
-/** Результаты валидации правил пароля */
 const passwordRuleResults = computed<PasswordRuleResult[]>(() => {
 	if (!props.passwordRules) return []
 	const val = props.modelValue == null ? '' : String(props.modelValue)
@@ -176,7 +169,6 @@ const passwordRuleResults = computed<PasswordRuleResult[]>(() => {
 	}))
 })
 
-/** Отображаемое значение (с применённой маской) */
 const displayValue = computed(() => {
 	const val = props.modelValue == null ? '' : String(props.modelValue)
 	if (type.value === 'password') return val
@@ -184,7 +176,6 @@ const displayValue = computed(() => {
 	return mask.applyMask(val, maskValue.value)
 })
 
-/** Обработка ввода */
 function handleInput(e: Event): void {
 	const target = e.target as HTMLInputElement
 	const rawValue = target.value
@@ -212,7 +203,6 @@ function handleInput(e: Event): void {
 	}
 }
 
-/** Обработка клавиш (Backspace/Delete через маску) */
 function handleKeydown(e: KeyboardEvent): void {
 	emit('keydown', e)
 	if (!maskValue.value || type.value === 'password') return
@@ -267,17 +257,14 @@ function handleKeydown(e: KeyboardEvent): void {
 	}
 }
 
-/** Обработка потери фокуса */
 function handleBlur(e: FocusEvent): void {
 	emit('blur', e)
 }
 
-/** Обработка фокуса */
 function handleFocus(e: FocusEvent): void {
 	emit('focus', e)
 }
 
-/** Публичный API */
 defineExpose({
 	inputRef,
 	/* istanbul ignore next — defensive: optional chaining для public API на unmount */

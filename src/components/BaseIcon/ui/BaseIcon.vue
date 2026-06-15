@@ -28,24 +28,18 @@ const rotate = computed(() => props.rotate ?? 0)
 const isFlipX = computed(() => props.isFlipX ?? false)
 const isFlipY = computed(() => props.isFlipY ?? false)
 const ariaLabel = computed(() => props.ariaLabel ?? '')
-const sizeScale = computed(() => props.sizeScale ?? 100)
-
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'svg'],
 })
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale ?? 100 })
 
 const { getIconUrl } = useIcon()
 
-/** URL иконки в спрайте */
 const iconUrl = computed(() => getIconUrl(props.name))
 
-/** Декоративная иконка — без доступной метки */
 const isDecorative = computed(() => !ariaLabel.value)
 
-/** Инлайн-стили для цвета и трансформаций */
 const iconStyle = computed(() => {
 	const styles: Record<string, string> = {}
 

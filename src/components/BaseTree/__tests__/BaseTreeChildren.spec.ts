@@ -33,7 +33,7 @@ describe('BaseTreeChildren', () => {
 					wasExpanded: true,
 				},
 			}),
-		).toThrow('Контекст дерева не найден')
+		).toThrow('BaseTreeChildren: TreeContext not found')
 
 		errorSpy.mockRestore()
 	})
@@ -56,8 +56,7 @@ describe('BaseTreeNode', () => {
 			render(BaseTreeNode, {
 				props: { node: { id: 'x', label: 'X' }, depth: 0, sizeScale: 100 },
 			}),
-		).toThrow('Контекст дерева не найден')
-
+		).toThrow('BaseTreeNode: TreeContext not found')
 		errorSpy.mockRestore()
 	})
 

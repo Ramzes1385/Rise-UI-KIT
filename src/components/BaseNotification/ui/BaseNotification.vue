@@ -62,10 +62,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import '../styles/BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, NotificationItem } from '../model/BaseNotification.types'
@@ -74,21 +71,20 @@ const props = defineProps<BaseNotificationProps>()
 
 const title = computed(() => props.title ?? '')
 const type = computed(() => props.type ?? 'info')
-const variant = computed(() => props.variant ?? 'default')
 const position = computed(() => props.position ?? 'top-right')
 const duration = computed(() => props.duration ?? 3000)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 const isContained = computed(() => props.isContained ?? false)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-notification', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-notification',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'],
 })
 
-/** Маппинг типа уведомления на имя иконки */
 const typeIconMap: Record<string, string> = {
 	success: 'check-circle',
 	error: 'x-circle',

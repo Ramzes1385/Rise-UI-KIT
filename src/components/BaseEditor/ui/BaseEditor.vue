@@ -348,11 +348,8 @@ import type { BaseSelectOption } from '@components/BaseSelect'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import { onMounted, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 
@@ -370,10 +367,11 @@ const props = defineProps({
 })
 /* eslint-enable vue/require-default-prop */
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-editor', getVariant: () => props.variant })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-editor',
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'],
 })

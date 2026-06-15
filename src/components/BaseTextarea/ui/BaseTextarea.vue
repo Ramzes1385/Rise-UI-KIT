@@ -56,10 +56,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTextarea.style.scss'
 import type { BaseTextareaEmits, BaseTextareaProps } from '../model/BaseTextarea.types'
@@ -69,17 +66,17 @@ const props = defineProps<BaseTextareaProps>()
 const modelValue = computed(() => props.modelValue ?? '')
 const placeholder = computed(() => props.placeholder ?? '')
 const rows = computed(() => props.rows ?? 4)
-const variant = computed(() => props.variant ?? 'default')
 const isDisabled = computed(() => props.isDisabled ?? false)
 const isReadonly = computed(() => props.isReadonly ?? false)
 const isRequired = computed(() => props.isRequired ?? false)
 const isAutosize = computed(() => props.isAutosize ?? false)
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-textarea', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-textarea',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'label', 'required', 'field', 'errorText'],
 })
@@ -87,7 +84,6 @@ const { classes } = useCustomClass({
 const emit = defineEmits<BaseTextareaEmits>()
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
-/** Автоматическая подстройка высоты под контент */
 function adjustHeight(): void {
 	const el = textareaRef.value
 	/* istanbul ignore next -- el всегда существует после mount, ветка !el — защитный guard */
@@ -113,7 +109,6 @@ function handleFocus(e: FocusEvent): void {
 	emit('focus', e)
 }
 
-/** Подстройка высоты при изменении значения извне */
 watch(
 	() => modelValue.value,
 	() => {
@@ -123,7 +118,6 @@ watch(
 	},
 )
 
-/** Подстройка высоты при монтировании */
 onMounted(() => {
 	if (isAutosize.value) {
 		nextTick(adjustHeight)

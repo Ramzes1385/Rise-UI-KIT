@@ -207,10 +207,7 @@ import { BaseBadge } from '@components/BaseBadge'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, ref } from 'vue'
 import type { PropType } from 'vue'
 import '../styles/BaseSelect.style.scss'
@@ -234,10 +231,11 @@ const props = defineProps({
 })
 /* eslint-enable vue/require-default-prop */
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-select', getVariant: () => props.variant })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-select',
+	getVariant: () => props.variant,
+	getSizeScale: () => props.sizeScale,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
 		'root',

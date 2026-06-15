@@ -223,10 +223,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
 import { useCalendar } from '@composables/useCalendar'
 import { useClickOutside } from '@composables/useClickOutside'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { formatPopoverDate } from '@utils/dateUtils'
 import { computed, getCurrentInstance, ref, watch } from 'vue'
 import '../styles/BaseCalendar.style.scss'
@@ -288,11 +285,11 @@ const resolvedProps = computed(() => ({
 	customClass: props.customClass,
 }))
 
-const { variantClass, variantStyle } = useVariant({ block: 'base-calendar', getVariant: () => resolvedProps.value.variant })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => resolvedProps.value.color })
-
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-calendar',
+	getVariant: () => resolvedProps.value.variant,
+	getSizeScale: () => resolvedProps.value.sizeScale,
+	getColor: () => resolvedProps.value.color,
 	getClass: () => resolvedProps.value.customClass,
 	elementKeys: [
 		'root',

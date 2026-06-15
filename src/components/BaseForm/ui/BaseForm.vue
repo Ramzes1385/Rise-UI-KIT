@@ -25,10 +25,7 @@
 
 <script setup lang="ts">
 import { BaseLoader } from '@components/BaseLoader'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed } from 'vue'
 import '../styles/BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormProps } from '../model/BaseForm.types'
@@ -37,13 +34,13 @@ const props = defineProps<BaseFormProps>()
 
 const isLoading = computed(() => props.isLoading ?? false)
 const isDisabled = computed(() => props.isDisabled ?? false)
-const variant = computed(() => props.variant ?? 'default')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-form', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-form',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'overlay', 'content'],
 })

@@ -178,11 +178,8 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
-import { openExternalUrl } from '@utils/navigationUtils'
+import { useBaseComponent } from '@composables/useBaseComponent'
+import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import { computed, ref } from 'vue'
 
@@ -192,17 +189,16 @@ import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BreadcrumbItem } from 
 const props = defineProps<BaseBreadcrumbsProps>()
 
 const separator = computed(() => props.separator ?? 'chevron')
-const variant = computed(() => props.variant ?? 'default')
 const maxItems = computed(() => props.maxItems ?? 0)
 const showHome = computed(() => props.showHome ?? false)
 const homeIcon = computed(() => props.homeIcon ?? 'home')
 const sizeScale = computed(() => props.sizeScale ?? 100)
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
-const { variantClass, variantStyle } = useVariant({ block: 'base-breadcrumbs', getVariant: () => variant.value })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const { classes } = useCustomClass({
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
+	block: 'base-breadcrumbs',
+	getVariant: () => props.variant,
+	getSizeScale: () => sizeScale.value,
+	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
 		'root',
@@ -226,14 +222,12 @@ const emit = defineEmits<BaseBreadcrumbsEmits>()
 
 const isExpanded = ref(false)
 
-/** Видимые элементы с учётом maxItems */
 const visibleItems = computed<BreadcrumbItem[]>(() => {
 	if (maxItems.value <= 0 || isExpanded.value) return props.items
 	if (props.items.length <= maxItems.value) return props.items
 	return props.items.slice(-maxItems.value)
 })
 
-/** Скрытые элементы */
 const collapsedItems = computed<BreadcrumbItem[]>(() => {
 	if (maxItems.value <= 0 || isExpanded.value) return []
 	if (props.items.length <= maxItems.value) return []
@@ -243,24 +237,16 @@ const collapsedItems = computed<BreadcrumbItem[]>(() => {
 /** Schema.org JSON-LD для SEO */
 const schemaJson = computed((): string => buildBreadcrumbsSchema(props.items))
 
-/** Является ли текущий (последний) элемент */
 function isCurrent(index: number): boolean {
 	return index === visibleItems.value.length - 1
 }
 
-/** Реальный индекс в исходном массиве */
 function realIndex(visibleIdx: number): number {
 	return props.items.length - visibleItems.value.length + visibleIdx
 }
 
-/** Навигация по ссылке */
 function navigate(item: BreadcrumbItem): void {
-	if (item.href) {
-		openExternalUrl(item.href)
-		emit('navigate', item.href)
-	} else if (item.to) {
-		emit('navigate', item.to)
-	}
+	navigateAndEmit({ to: item.to, href: item.href }, (url) => emit('navigate', url))
 }
 
 function handleItemClick(item: BreadcrumbItem): void {
