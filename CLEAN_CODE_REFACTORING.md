@@ -178,46 +178,7 @@ if (href) {
 | `BaseFileUpload.vue` | 355 | 6 | Извлечь `BaseFileUploadList`, `BaseFileUploadDropzone`, `useUploadSimulation` |
 | `BaseSlider.vue` | 271 | 7 | Извлечь `BaseSliderNavigation`, `BaseSliderArrows` |
 
-### Critical — слишком много props/аргументов
-
-| Компонент | Props | Проблема |
-|---|---|---|
-| `BaseTableBody.vue` | 19 (9 — callbacks) | Prop drilling через 3 уровня. Решение: `provide/inject` для callbacks |
-| `BaseCalendar.vue` | 27 | Группировать: `timeConfig`, `constraints`, `displayConfig` |
-| `BaseImage.vue` | 22 | Группировать zoom-пропы в `zoomConfig` |
-| `BaseTour.vue` | 18 | Группировать: `labels`, `behavior` |
-| `BaseSideBar.vue` | 19 | Группировать |
-| `BaseSlider.vue` | 17 | Группировать |
-| `BaseFileUpload.vue` | 15 | Группировать |
-| `BaseTableToolbar.vue` | 16 | Группировать filter/settings |
-| `BaseTableNestedRow.vue` | 16 | Группировать |
-| `BaseTablePagination.vue` | 14 | Группировать |
-| `BaseTableRow.vue` | 14 | Группировать |
-
-### Critical — функции > 50 строк
-
-| Файл | Функция | Строк | Рекомендация |
-|---|---|---|---|
-| `BaseInput.vue:216` | `handleKeydown` | 52 | Извлечь `handleMaskedBackspace`, `handleMaskedDelete` |
-| `BaseFileUpload.vue:255` | `addFiles` | 55 | Извлечь `simulateUploadProgress`, `createUploadItem` |
-
-### Major — DRY: типы
-
-- `variant/color/sizeScale/customClass` дублируются в 45+ `*.types.ts` файлах
-- Решение: создать `BaseComponentProps<V>` и наследовать от него
-
 ### Major — DRY: шаблоны
 
-- `BaseBreadcrumbs.vue`: сепаратор скопирован 3 раза в шаблоне → `BreadcrumbsSeparator` подкомпонент
-- `BaseSideBarNavigation.vue`: 7-полярный slot-props объект 6 раз → вычислять 1 раз
-
-### Major — именование
-
-- `rawProps` + `getCurrentInstance()?.vnode.props` в 4 компонентах (BaseDropdown, BaseAnimation, BaseSkeleton, BaseCalendar) — fragile Vue internal API
-- Решение: `useExplicitPropDetection()` composable
-
-### Minor — форматирование
-
-- `BaseCalendar.vue:1-2`: двойной отступ в template
-- `BaseTable.vue:54`: `ref` не на первой позиции атрибута
-- 11 types-файлов: split imports (`CustomClassProp` импортируется отдельно от основного блока)
+- ~~`BaseBreadcrumbs.vue`: сепаратор скопирован 3 раза → `BreadcrumbsSeparator` подкомпонент~~ ✅ Выполнено
+- ~~`BaseSideBarNavigation.vue`: 7-полярный slot-props объект 6 раз → вычислять 1 раз~~ ✅ Выполнено
