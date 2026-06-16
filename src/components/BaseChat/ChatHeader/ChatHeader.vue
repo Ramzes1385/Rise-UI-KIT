@@ -10,13 +10,13 @@
 				class="base-chat-header__avatar"
 				@click="handleAvatarClick" />
 			<div class="base-chat-header__text">
-				<BaseText tag="span" :weight="700" :size-scale="sizeScale" class="base-chat-header__title">
+				<BaseText tag="span" :weight="UI_FONT_WEIGHT_BOLD" :size-scale="sizeScale" class="base-chat-header__title">
 					{{ title }}
 				</BaseText>
 				<div class="base-chat-header__status">
 					<BaseText v-if="isTyping" tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-header__typing">
-						{{ typingUsername ? `${typingUsername} печатает` : 'Печатает'
-						}}<span class="base-chat-header__dots">...</span>
+					{{ typingUsername ? `${typingUsername} ${UI_CHAT_TYPING_SUFFIX}` : UI_CHAT_TYPING_LABEL
+					}}<span class="base-chat-header__dots">...</span>
 					</BaseText>
 					<BaseText v-else-if="subtitle" tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-header__subtitle">
 						{{ subtitle }}
@@ -29,7 +29,7 @@
 		<div v-else class="base-chat-header__search-container">
 			<BaseInput
 				:model-value="searchQuery"
-				placeholder="Поиск по сообщениям..."
+				:placeholder="UI_CHAT_SEARCH_PLACEHOLDER"
 				:size-scale="sizeScale * UI_CHAT_SCALE_MEMBER"
 				class="base-chat-header__search-input"
 				:aria-label="UI_CHAT_SEARCH_ARIA"
@@ -47,7 +47,7 @@
 				:padding="1"
 				:size-scale="sizeScale"
 				class="base-chat-header__action-btn"
-				:aria-label="isSearching ? 'Закрыть поиск' : UI_CHAT_SEARCH_ARIA"
+				:aria-label="isSearching ? UI_CHAT_SEARCH_CLOSE : UI_CHAT_SEARCH_ARIA"
 				@click="handleToggleSearch">
 				<template #left>
 					<BaseIcon :name="isSearching ? 'close' : 'search'" :size-scale="sizeScale" />
@@ -75,7 +75,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_INFO_ARIA, UI_CHAT_SCALE_MEMBER, UI_CHAT_SEARCH_ARIA, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_INFO_ARIA, UI_CHAT_SCALE_MEMBER, UI_CHAT_SEARCH_ARIA, UI_CHAT_SEARCH_CLOSE, UI_CHAT_SEARCH_PLACEHOLDER, UI_CHAT_TYPING_LABEL, UI_CHAT_TYPING_SUFFIX, UI_FONT_WEIGHT_BOLD, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 

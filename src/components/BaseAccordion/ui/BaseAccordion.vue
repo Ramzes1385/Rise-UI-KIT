@@ -28,7 +28,7 @@
 					:custom-class="classes.icon" />
 				<BaseText
 					tag="span"
-					:weight="600"
+					:weight="UI_FONT_WEIGHT_SEMIBOLD"
 					:size-scale="props.sizeScale"
 					class="base-accordion__label"
 					:custom-class="classes.label"
@@ -59,6 +59,7 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { onMounted, ref } from 'vue'
 
 import '../styles/BaseAccordion.style.scss'

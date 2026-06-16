@@ -31,7 +31,7 @@
 					</div>
 
 					<div class="date-picker-panel__year-title">
-						<BaseText tag="span" :weight="700" :size-scale="resolvedProps.sizeScale">
+						<BaseText tag="span" :weight="UI_FONT_WEIGHT_BOLD" :size-scale="resolvedProps.sizeScale">
 							{{ displayYear }}
 						</BaseText>
 					</div>
@@ -112,14 +112,15 @@ import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
-import { UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MONTH_ARIA, UI_PREV_YEAR_ARIA } from '@constants'
-import { computed, getCurrentInstance, ref } from 'vue'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { UI_FONT_WEIGHT_BOLD, UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MONTH_ARIA, UI_PREV_YEAR_ARIA } from '@constants'
+import { computed, ref } from 'vue'
 import { useDatePickerPanelNavigation } from '../../composables/useDatePickerPanelNavigation'
-import { pickDatePickerCalendarConfig, resolveBooleanPropDefault } from '../../model/BaseDatePickerCalendar.types'
+import { pickDatePickerCalendarConfig } from '../../model/BaseDatePickerCalendar.types'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
 
 const props = defineProps<DatePickerPanelProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { resolveBooleanPropDefault } = useExplicitPropDetection()
 
 const resolvedProps = computed(() => ({
 	isOpen: props.isOpen ?? false,
@@ -158,7 +159,7 @@ const resolvedCalendarConfig = computed(
 		props.calendarConfig ??
 		pickDatePickerCalendarConfig({
 			...props,
-			is24Hour: resolveBooleanPropDefault(rawProps, 'is24Hour', props.is24Hour, true),
+			is24Hour: resolveBooleanPropDefault('is24Hour', props.is24Hour, true),
 		}),
 )
 

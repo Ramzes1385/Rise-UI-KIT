@@ -136,7 +136,7 @@
 					<input
 						v-model="searchQuery"
 						type="text"
-						placeholder="Поиск..."
+						:placeholder="UI_SEARCH_PLACEHOLDER"
 						class="base-select__search-input"
 						:class="classes.searchInput"
 						@click.stop />
@@ -208,14 +208,14 @@ import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_NO_RESULTS_TEXT } from '@constants'
+import { UI_NO_RESULTS_TEXT, UI_SEARCH_PLACEHOLDER, UI_SELECT_PLACEHOLDER } from '@constants'
 import { computed, ref } from 'vue'
 import '../styles/BaseSelect.style.scss'
 import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from '../model/BaseSelect.types'
 
 const props = withDefaults(defineProps<BaseSelectProps>(), {
 	modelValue: '',
-	placeholder: 'Выберите...',
+	placeholder: UI_SELECT_PLACEHOLDER,
 	label: '',
 	isRequired: false,
 	isMultiple: false,

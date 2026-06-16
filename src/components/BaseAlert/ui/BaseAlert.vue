@@ -15,7 +15,7 @@
 			<BaseText
 				v-if="title"
 				tag="h4"
-				:weight="600"
+				:weight="UI_FONT_WEIGHT_SEMIBOLD"
 				:size-scale="props.sizeScale"
 				class="base-alert__title"
 				:custom-class="classes.title">
@@ -52,6 +52,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { computed } from 'vue'
 
 import '../styles/BaseAlert.style.scss'

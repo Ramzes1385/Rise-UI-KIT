@@ -13,7 +13,7 @@
 			<BaseText
 				v-if="title"
 				tag="h3"
-				:weight="600"
+				:weight="UI_FONT_WEIGHT_SEMIBOLD"
 				:size-scale="props.sizeScale"
 				class="base-empty__title"
 				:custom-class="classes.title">
@@ -44,6 +44,7 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { computed } from 'vue'
 
 import '../styles/BaseEmpty.style.scss'

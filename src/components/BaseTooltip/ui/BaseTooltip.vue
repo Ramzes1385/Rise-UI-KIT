@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { UI_TOOLTIP_HIDE_DELAY_MS, UI_TRANSITION_DURATION_MS } from '@constants'
+import { UI_TOOLTIP_HIDE_DELAY_MS, UI_TOOLTIP_SHOW_DELAY_MS, UI_TRANSITION_DURATION_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -102,7 +102,7 @@ function handleEnter(): void {
 		updateCoords()
 		isVisible.value = true
 		startUpdateLoop()
-	}, 100)
+	}, UI_TOOLTIP_SHOW_DELAY_MS)
 }
 
 function handleLeave(): void {

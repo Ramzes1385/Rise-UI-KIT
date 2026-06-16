@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_DEFAULT_HEIGHT } from '@constants'
+import { UI_CHAT_DEFAULT_HEIGHT, UI_SELECT_DATE_TEXT } from '@constants'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
@@ -53,29 +53,30 @@ import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useSizeScale } from '@composables/useSizeScale'
 import { formatDatePickerValue } from '@utils/dateUtils'
-import { computed, getCurrentInstance, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import './BaseDatePicker.style.scss'
-import { resolveBooleanPropDefault, resolveDatePickerCalendarConfig } from './model/BaseDatePickerCalendar.types'
+import { resolveDatePickerCalendarConfig } from './model/BaseDatePickerCalendar.types'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import type { BaseDatePickerEmits, BaseDatePickerProps } from './BaseDatePicker.types'
 import DatePickerField from './ui/DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './ui/DatePickerPanel/DatePickerPanel.vue'
 
 const props = defineProps<BaseDatePickerProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
 
 const resolvedProps = computed(() => ({
 	selectionMode: props.selectionMode ?? 'single',
-	placeholder: props.placeholder ?? 'Выберите дату',
+	placeholder: props.placeholder ?? UI_SELECT_DATE_TEXT,
 	dateFormat: props.dateFormat ?? 'dd.MM.yyyy',
 	inputVariant: props.inputVariant ?? 'outline',
 	calendarVariant: props.calendarVariant ?? 'default',
 	sizeScale: props.sizeScale ?? 100,
 	isDisabled: props.isDisabled ?? false,
-	isReadonly: resolveBooleanPropDefault(rawProps, 'isReadonly', props.isReadonly, true),
+	isReadonly: resolveBooleanPropDefault('isReadonly', props.isReadonly, true),
 	isRequired: props.isRequired ?? false,
 	isClearable: props.isClearable ?? false,
-	closeOnClickOutside: resolveBooleanPropDefault(rawProps, 'closeOnClickOutside', props.closeOnClickOutside, true),
-	closeOnEscape: resolveBooleanPropDefault(rawProps, 'closeOnEscape', props.closeOnEscape, true),
+	closeOnClickOutside: resolveBooleanPropDefault('closeOnClickOutside', props.closeOnClickOutside, true),
+	closeOnEscape: resolveBooleanPropDefault('closeOnEscape', props.closeOnEscape, true),
 	gap: props.gap ?? 4,
 	label: props.label ?? '',
 	error: props.error ?? '',
@@ -176,7 +177,7 @@ const activeDates = computed((): Date[] => {
 })
 
 const calendarConfig = computed(() =>
-	resolveDatePickerCalendarConfig(props, rawProps, props.calendarConfig),
+	resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig),
 )
 
 /** Есть ли выбранное значение */

@@ -1,229 +1,133 @@
 /**
  * Глобальные константы UI-библиотеки.
- * Используются для устранения магических чисел и строк в компонентах.
+ * Группированы в объекты для удобного доступа.
  */
 
-/** Текст по умолчанию для пустого состояния таблицы */
-export const UI_EMPTY_TEXT = 'Нет данных'
+// ─── Текст ────────────────────────────────────────────────────────
+
+export const UI_TEXT = {
+	EMPTY: 'Нет данных',
+	NO_RESULTS: 'Ничего не найдено',
+	SEARCH_PLACEHOLDER: 'Поиск...',
+	TODAY: 'Сегодня',
+	LOADING: 'Загрузка...',
+	LOADING_ARIA: 'Загрузка',
+	LOAD_MORE: 'Загрузить еще',
+	IMAGE_ERROR: 'Ошибка загрузки',
+	FILE_STATUS_DONE: 'Загружено',
+	FILE_STATUS_ERROR: 'Ошибка',
+	FILE_STATUS_PENDING: 'Ожидание',
+	DELETE: 'Удалить',
+	NO_COLOR: 'Без цвета',
+	CANCEL: 'Отмена',
+	APPLY: 'Применить',
+	SELECT_PLACEHOLDER: 'Выберите...',
+	SELECT_DATE: 'Выберите дату',
+	EXPAND: 'Развернуть',
+	COLLAPSE: 'Свернуть',
+	FILE_SELECT: 'Выберите файлы',
+	FILE_DROP: 'Перетащите файлы сюда',
+	FILE_MAX_SIZE_PREFIX: 'до',
+	FILE_MAX_SIZE_SUFFIX: 'МБ',
+	FILE_MAX_COUNT_PREFIX: 'Максимум файлов:',
+} as const
+
+// ─── Aria-labels ───────────────────────────────────────────────────
+
+export const UI_ARIA = {
+	BREADCRUMBS: 'Навигация',
+	CLOSE: 'Закрыть',
+	PREV_YEAR: 'Предыдущий год',
+	PREV_MONTH: 'Предыдущий месяц',
+	NEXT_MONTH: 'Следующий месяц',
+	NEXT_YEAR: 'Следующий год',
+	SORT: 'Сортировать',
+	PASSWORD_HIDE: 'Скрыть пароль',
+	PASSWORD_SHOW: 'Показать пароль',
+} as const
+
+// ─── Тайминги (мс) ────────────────────────────────────────────────
+
+export const UI_TIMING = {
+	DEBOUNCE_DEFAULT: 300,
+	ANIMATION_DURATION: 300,
+	HOVER_DELAY: 200,
+	TRANSITION_DURATION: 200,
+	PROGRESS_INTERVAL: 200,
+	TOOLTIP_SHOW_DELAY: 100,
+	TOOLTIP_HIDE_DELAY: 150,
+	SLIDER_HOLD_INTERVAL: 150,
+	HIGHLIGHT_DURATION: 1500,
+	NOTIFICATION_AUTO_CLOSE: 3000,
+	IMAGE_LOAD_TIMEOUT: 5000,
+} as const
+
+// ─── Размеры ──────────────────────────────────────────────────────
+
+export const UI_SIZE = {
+	PANEL_MAX_HEIGHT: '320px',
+	SIDEBAR_DEFAULT_WIDTH: 280,
+	MODAL_DEFAULT_WIDTH: 500,
+	CONTEXT_MENU_WIDTH: 200,
+	CONTEXT_MENU_HEIGHT: 280,
+	CHAT_DEFAULT_HEIGHT: '500px',
+	SLIDER_DEFAULT_HEIGHT: '400px',
+	IMAGE_LOADING_MIN_HEIGHT: '120px',
+} as const
+
+// ─── Масштаб ──────────────────────────────────────────────────────
+
+export const UI_SCALE = {
+	SMALL: 0.8,
+	MEDIUM: 1.0,
+	LARGE: 1.2,
+	AUTOCOMPLETE: 0.85,
+} as const
+
+// ─── Font weight ──────────────────────────────────────────────────
+
+export const UI_FONT_WEIGHT = {
+	MEDIUM: 500,
+	SEMIBOLD: 600,
+	BOLD: 700,
+} as const
+
+// ─── Тур ──────────────────────────────────────────────────────────
+
+export const UI_TOUR = {
+	SKIP: 'Пропустить тур',
+	NEXT: 'Далее',
+	PREV: 'Назад',
+	FINISH: 'Завершить',
+	TITLE: 'Тур по интерфейсу',
+} as const
+
+// ─── Фильтр таблицы ───────────────────────────────────────────────
+
+export const UI_FILTER = {
+	COLUMN: 'Колонка',
+	CONDITION: 'Условие',
+	VALUE_PLACEHOLDER: 'Значение...',
+} as const
 
-/** Текст по умолчанию для пустого состояния поиска */
-export const UI_NO_RESULTS_TEXT = 'Ничего не найдено'
+// ─── Календарь ────────────────────────────────────────────────────
 
-/** Текст по умолчанию для плейсхолдера поиска */
-export const UI_SEARCH_PLACEHOLDER = 'Поиск...'
+export const UI_CALENDAR = {
+	EVENT_TEXT: 'Событие',
+} as const
 
-/** Текст кнопки перехода к текущей дате в календаре */
-export const UI_TODAY_TEXT = 'Сегодня'
+// ─── Color Picker ─────────────────────────────────────────────────
 
-/** Текст загрузки */
-export const UI_LOADING_TEXT = 'Загрузка...'
+export const UI_COLOR_PICKER = {
+	SELECTED_COLOR: 'Выбранный цвет',
+	SATURATION_BRIGHTNESS: 'Насыщенность и яркость',
+	HUE: 'Тон',
+	HEX_VALUE: 'HEX-значение',
+	PRESET: 'Пресет',
+} as const
 
-/** Текст aria-label загрузки */
-export const UI_LOADING_ARIA = 'Загрузка'
+// ─── Rating ───────────────────────────────────────────────────────
 
-/** Текст кнопки "Загрузить еще" */
-export const UI_LOAD_MORE_TEXT = 'Загрузить еще'
-
-/** Текст ошибки загрузки изображения */
-export const UI_IMAGE_ERROR_TEXT = 'Ошибка загрузки'
-
-/** Текст "Загружено" (статус файла) */
-export const UI_FILE_STATUS_DONE = 'Загружено'
-
-/** Текст "Ошибка" (статус файла) */
-export const UI_FILE_STATUS_ERROR = 'Ошибка'
-
-/** Текст "Ожидание" (статус файла) */
-export const UI_FILE_STATUS_PENDING = 'Ожидание'
-
-/** Текст кнопки "Удалить" */
-export const UI_DELETE_TEXT = 'Удалить'
-
-/** Текст "Без цвета" в color picker */
-export const UI_NO_COLOR_TEXT = 'Без цвета'
-
-/** Текст кнопки "Пропустить тур" */
-export const UI_SKIP_TOUR_TEXT = 'Пропустить тур'
-
-/** Текст кнопки "Далее" */
-export const UI_NEXT_TEXT = 'Далее'
-
-/** Текст кнопки "Назад" */
-export const UI_PREV_TEXT = 'Назад'
-
-/** aria-label навигации хлебных крошек */
-export const UI_BREADCRUMBS_ARIA = 'Навигация'
-
-/** aria-label кнопки закрытия */
-export const UI_CLOSE_ARIA = 'Закрыть'
-
-/** Текст кнопки "Применить" */
-export const UI_APPLY_TEXT = 'Применить'
-
-/** aria-label предыдущего года */
-export const UI_PREV_YEAR_ARIA = 'Предыдущий год'
-
-/** aria-label предыдущего месяца */
-export const UI_PREV_MONTH_ARIA = 'Предыдущий месяц'
-
-/** aria-label следующего месяца */
-export const UI_NEXT_MONTH_ARIA = 'Следующий месяц'
-
-/** aria-label следующего года */
-export const UI_NEXT_YEAR_ARIA = 'Следующий год'
-
-/** Задержка дебаунса по умолчанию (мс) */
-export const UI_DEBOUNCE_DEFAULT_MS = 300
-
-/** Длительность анимации по умолчанию (мс) */
-export const UI_ANIMATION_DURATION_MS = 300
-
-/** Максимальная высота выпадающих панелей */
-export const UI_PANEL_MAX_HEIGHT = '320px'
-
-/** Ширина боковой панели по умолчанию */
-export const UI_SIDEBAR_DEFAULT_WIDTH = 280
-
-/** Ширина модального окна по умолчанию */
-export const UI_MODAL_DEFAULT_WIDTH = 500
-
-/** Коэффициент масштабирования для мелких элементов */
-export const UI_SCALE_SMALL = 0.8
-
-/** Коэффициент масштабирования для средних элементов */
-export const UI_SCALE_MEDIUM = 1.0
-
-/** Коэффициент масштабирования для крупных элементов */
-export const UI_SCALE_LARGE = 1.2
-
-/** Ширина контекстного меню по умолчанию */
-export const UI_CONTEXT_MENU_DEFAULT_WIDTH = 200
-
-/** Высота контекстного меню по умолчанию */
-export const UI_CONTEXT_MENU_DEFAULT_HEIGHT = 280
-
-/** Коэффициент масштабирования для элементов автодополнения */
-export const UI_SCALE_AUTOCOMPLETE = 0.85
-
-/** Задержка hover-эффекта в меню (мс) */
-export const UI_HOVER_DELAY_MS = 200
-
-/** Длительность CSS-transition (мс) */
-export const UI_TRANSITION_DURATION_MS = 200
-
-/** Интервал симуляции прогресса загрузки (мс) */
-export const UI_PROGRESS_INTERVAL_MS = 200
-
-/** Задержка скрытия тултипа (мс) */
-export const UI_TOOLTIP_HIDE_DELAY_MS = 150
-
-/** Интервал удержания кнопки слайдера (мс) */
-export const UI_SLIDER_HOLD_INTERVAL_MS = 150
-
-/** Длительность подсветки сообщения (мс) */
-export const UI_HIGHLIGHT_DURATION_MS = 1500
-
-/** Auto-close уведомления по умолчанию (мс) */
-export const UI_NOTIFICATION_AUTO_CLOSE_MS = 3000
-
-/** Таймаут загрузки изображения (мс) */
-export const UI_IMAGE_LOAD_TIMEOUT_MS = 5000
-
-/** Font weight: medium (500) */
-export const UI_FONT_WEIGHT_MEDIUM = 500
-
-/** Font weight: semibold (600) */
-export const UI_FONT_WEIGHT_SEMIBOLD = 600
-
-/** Chat: коэффициент масштаба иконок */
-export const UI_CHAT_SCALE_ICON = 0.75
-
-/** Chat: коэффициент масштаба мета-информации */
-export const UI_CHAT_SCALE_META = 0.7
-
-/** Chat: коэффициент масштаба участников */
-export const UI_CHAT_SCALE_MEMBER = 0.9
-
-/** Chat: коэффициент масштаба подстрочного текста */
-export const UI_CHAT_SCALE_SUBTEXT = 0.65
-
-/** Chat: коэффициент масштаба увеличенного аватара */
-export const UI_CHAT_SCALE_AVATAR_LARGE = 1.5
-
-/** Chat: коэффициент масштаба имени */
-export const UI_CHAT_SCALE_NAME = 1.1
-
-/** Chat: коэффициент масштаба файловых иконок */
-export const UI_CHAT_SCALE_FILE_ICON = 1.2
-
-/** Chat: коэффициент масштаба текста подтверждения */
-export const UI_CHAT_SCALE_CONFIRM = 0.95
-
-/** Chat: коэффициент масштаба статуса доставки */
-export const UI_CHAT_SCALE_STATUS = 0.6
-
-/** Chat: коэффициент масштаба спиннера отправки */
-export const UI_CHAT_SCALE_SPINNER = 0.5
-
-/** Высота чата по умолчанию */
-export const UI_CHAT_DEFAULT_HEIGHT = '500px'
-
-/** Высота слайдера по умолчанию */
-export const UI_SLIDER_DEFAULT_HEIGHT = '400px'
-
-/** Минимальная высота изображения при загрузке */
-export const UI_IMAGE_LOADING_MIN_HEIGHT = '120px'
-
-/** Chat: текст "Ответить" */
-export const UI_CHAT_REPLY = 'Ответить'
-
-/** Chat: текст "Выбрать" */
-export const UI_CHAT_SELECT = 'Выбрать'
-
-/** Chat: текст "Копировать текст" */
-export const UI_CHAT_COPY_TEXT = 'Копировать текст'
-
-/** Chat: текст "Закрепить" */
-export const UI_CHAT_PIN = 'Закрепить'
-
-/** Chat: текст "Открепить" */
-export const UI_CHAT_UNPIN = 'Открепить'
-
-/** Chat: текст "Удалить" */
-export const UI_CHAT_DELETE = 'Удалить'
-
-/** Chat: текст "Сообщение" (placeholder) */
-export const UI_CHAT_MESSAGE_PLACEHOLDER = 'Сообщение'
-
-/** Chat: текст "Отправить сообщение" */
-export const UI_CHAT_SEND_ARIA = 'Отправить сообщение'
-
-/** Chat: текст "Прикрепить файл" */
-export const UI_CHAT_ATTACH_ARIA = 'Прикрепить файл'
-
-/** Chat: текст "Отменить ответ" */
-export const UI_CHAT_CANCEL_REPLY_ARIA = 'Отменить ответ на сообщение'
-
-/** Chat: текст "Показать команды" */
-export const UI_CHAT_SHOW_COMMANDS_ARIA = 'Показать команды'
-
-/** Chat: текст "Открыть выбор эмодзи" */
-export const UI_CHAT_EMOJI_ARIA = 'Открыть выбор эмодзи'
-
-/** Chat: текст "Выбор файлов" */
-export const UI_CHAT_FILE_SELECT_ARIA = 'Выбор файлов для прикрепления'
-
-/** Chat: текст "Поиск по сообщениям" */
-export const UI_CHAT_SEARCH_ARIA = 'Поиск по сообщениям'
-
-/** Chat: текст "Информация о чате" */
-export const UI_CHAT_INFO_ARIA = 'Информация о чате'
-
-/** Chat: текст "Удалить сообщения?" */
-export const UI_CHAT_DELETE_CONFIRM = 'Удалить сообщения?'
-
-/** Chat: текст "Ответить на сообщение" */
-export const UI_CHAT_REPLY_ARIA = 'Ответить на сообщение'
-
-/** Chat: текст "Выбрать сообщение" */
-export const UI_CHAT_SELECT_ARIA = 'Выбрать сообщение'
+export const UI_RATING = {
+	ARIA_PREFIX: 'Оценка от 0 до',
+} as const

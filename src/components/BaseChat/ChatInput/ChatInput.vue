@@ -8,7 +8,7 @@
 				variant="ghost"
 				:padding="{ x: 12, y: 6 }"
 				custom-class="base-chat-input__quick-reply-btn"
-				:aria-label="`Быстрый ответ: ${reply}`"
+				:aria-label="`${UI_CHAT_QUICK_REPLY} ${reply}`"
 				@click="handleQuickReply(reply)">
 				<BaseText :size-scale="sizeScale * UI_SCALE_SMALL" :weight="UI_FONT_WEIGHT_MEDIUM">{{ reply }}</BaseText>
 			</BaseButton>
@@ -19,7 +19,7 @@
 			<div class="base-chat-input__reply-info">
 				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-icon" />
 				<div class="base-chat-input__reply-content">
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-sender">
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-sender">
 						{{ replyingTo.senderName || UI_CHAT_MESSAGE_PLACEHOLDER }}
 					</BaseText>
 					<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-input__reply-text">
@@ -59,7 +59,7 @@
 					:padding="1"
 					:size-scale="sizeScale * UI_CHAT_SCALE_META"
 					class="base-chat-input__preview-remove"
-					:aria-label="`Удалить вложение ${file.name}`"
+					:aria-label="`${UI_CHAT_REMOVE_ATTACHMENT} ${file.name}`"
 					@click="removeAttachment(index)">
 					<template #left>
 						<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -126,7 +126,7 @@
 							variant="ghost"
 							:padding="{ x: 4, y: 4 }"
 							custom-class="base-chat-input__emoji-item"
-							:aria-label="`Вставить эмодзи ${emoji}`"
+							:aria-label="`${UI_CHAT_INSERT_EMOJI} ${emoji}`"
 							@click="insertEmoji(emoji)">
 							{{ emoji }}
 						</BaseButton>
@@ -147,9 +147,9 @@
 						@click="replaceCurrentWord('@', member.name)">
 						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_CHAT_SCALE_STATUS" />
 						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">{{ member.name }}</BaseText>
+							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="UI_FONT_WEIGHT_SEMIBOLD">{{ member.name }}</BaseText>
 							<BaseText v-if="member.role" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-input__autocomplete-sub">
-								{{ member.role === 'admin' ? 'Администратор' : 'Участник' }}
+								{{ member.role === 'admin' ? UI_CHAT_ADMIN : UI_CHAT_MEMBER }}
 							</BaseText>
 						</div>
 					</div>
@@ -167,7 +167,7 @@
 						@click="replaceCurrentWord('/', command.name)">
 						<BaseIcon name="file-config" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-input__autocomplete-icon" />
 						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">/{{ command.name }}</BaseText>
+							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="UI_FONT_WEIGHT_SEMIBOLD">/{{ command.name }}</BaseText>
 							<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-input__autocomplete-sub">
 								{{ command.description }}
 							</BaseText>
@@ -178,7 +178,7 @@
 				<BaseInput
 					ref="inputComponentRef"
 					v-model="text"
-					placeholder="Напишите сообщение..."
+					:placeholder="UI_CHAT_MESSAGE_INPUT"
 					:size-scale="sizeScale"
 					class="base-chat-input__field"
 					@keydown="handleKeyDown"
@@ -205,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_ATTACH_ARIA, UI_CHAT_CANCEL_REPLY_ARIA, UI_CHAT_EMOJI_ARIA, UI_CHAT_FILE_SELECT_ARIA, UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_STATUS, UI_CHAT_SEND_ARIA, UI_CHAT_SHOW_COMMANDS_ARIA, UI_FONT_WEIGHT_MEDIUM, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_ADMIN, UI_CHAT_ATTACH_ARIA, UI_CHAT_CANCEL_REPLY_ARIA, UI_CHAT_EMOJI_ARIA, UI_CHAT_FILE_SELECT_ARIA, UI_CHAT_INSERT_EMOJI, UI_CHAT_MEMBER, UI_CHAT_MESSAGE_INPUT, UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_QUICK_REPLY, UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_STATUS, UI_CHAT_SEND_ARIA, UI_CHAT_SHOW_COMMANDS_ARIA, UI_FONT_WEIGHT_MEDIUM, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -214,6 +214,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
 import { useClickOutside } from '@composables/useClickOutside'
 import { formatFileSize } from '@utils/fileUtils'
+import { generateId } from '@utils/idUtils'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { ChatMessageAttachment } from '../BaseChat.types'
 import './ChatInput.style.scss'
@@ -378,76 +379,51 @@ function toggleCommands(): void {
 	})
 }
 
+function handleSuggestionNavigation(
+	event: KeyboardEvent,
+	items: { name: string }[],
+	prefix: string,
+	showFlag: { value: boolean },
+): boolean {
+	if (items.length === 0) return false
+
+	if (event.key === 'ArrowDown') {
+		event.preventDefault()
+		activeSuggestionIndex.value = (activeSuggestionIndex.value + 1) % items.length
+		return true
+	}
+
+	if (event.key === 'ArrowUp') {
+		event.preventDefault()
+		activeSuggestionIndex.value = (activeSuggestionIndex.value - 1 + items.length) % items.length
+		return true
+	}
+
+	if (event.key === 'Enter') {
+		event.preventDefault()
+		const selected = items[activeSuggestionIndex.value]
+		if (!selected) return true
+
+		const nextText = replaceCurrentWord(prefix, selected.name)
+		if (nextText) {
+			sendMessage(nextText)
+		}
+
+		return true
+	}
+
+	if (event.key === 'Escape') {
+		event.preventDefault()
+		showFlag.value = false
+		return true
+	}
+
+	return false
+}
+
 function handleKeyDown(event: KeyboardEvent): void {
-	if (showMentions.value && filteredMembers.value.length > 0) {
-		if (event.key === 'ArrowDown') {
-			event.preventDefault()
-			activeSuggestionIndex.value = (activeSuggestionIndex.value + 1) % filteredMembers.value.length
-			return
-		}
-
-		if (event.key === 'ArrowUp') {
-			event.preventDefault()
-			activeSuggestionIndex.value =
-				(activeSuggestionIndex.value - 1 + filteredMembers.value.length) % filteredMembers.value.length
-			return
-		}
-
-		if (event.key === 'Enter') {
-			event.preventDefault()
-
-			const selectedMember = filteredMembers.value[activeSuggestionIndex.value]
-			if (!selectedMember) return
-
-			const nextText = replaceCurrentWord('@', selectedMember.name)
-			if (nextText) {
-				sendMessage(nextText)
-			}
-
-			return
-		}
-
-		if (event.key === 'Escape') {
-			event.preventDefault()
-			showMentions.value = false
-			return
-		}
-	}
-
-	if (showCommands.value && filteredCommands.value.length > 0) {
-		if (event.key === 'ArrowDown') {
-			event.preventDefault()
-			activeSuggestionIndex.value = (activeSuggestionIndex.value + 1) % filteredCommands.value.length
-			return
-		}
-
-		if (event.key === 'ArrowUp') {
-			event.preventDefault()
-			activeSuggestionIndex.value =
-				(activeSuggestionIndex.value - 1 + filteredCommands.value.length) % filteredCommands.value.length
-			return
-		}
-
-		if (event.key === 'Enter') {
-			event.preventDefault()
-
-			const selectedCommand = filteredCommands.value[activeSuggestionIndex.value]
-			if (!selectedCommand) return
-
-			const nextText = replaceCurrentWord('/', selectedCommand.name)
-			if (nextText) {
-				sendMessage(nextText)
-			}
-
-			return
-		}
-
-		if (event.key === 'Escape') {
-			event.preventDefault()
-			showCommands.value = false
-			return
-		}
-	}
+	if (showMentions.value && handleSuggestionNavigation(event, filteredMembers.value, '@', showMentions)) return
+	if (showCommands.value && handleSuggestionNavigation(event, filteredCommands.value, '/', showCommands)) return
 
 	if (event.key === 'Enter' && !event.shiftKey) {
 		event.preventDefault()
@@ -515,7 +491,7 @@ function handleFileChange(event: Event): void {
 		const file = target.files[index]
 		const isImage = file.type.startsWith('image/')
 		attachments.value.push({
-			id: Math.random().toString(36).substring(2, 9),
+			id: generateId(),
 			name: file.name,
 			type: isImage ? 'image' : 'file',
 			url: URL.createObjectURL(file),

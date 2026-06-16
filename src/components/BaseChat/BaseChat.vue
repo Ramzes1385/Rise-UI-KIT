@@ -88,14 +88,14 @@
 				<template #footer>
 					<div class="base-chat__confirm-actions">
 						<BaseButton variant="ghost" :size-scale="sizeScale" @click="handleCancelDelete">
-							Отмена
+							{{ UI_CANCEL_TEXT }}
 						</BaseButton>
 						<BaseButton
 							variant="default"
 							:size-scale="sizeScale"
 							class="base-chat__confirm-delete-btn"
 							@click="handleConfirmDelete">
-							Удалить
+							{{ UI_DELETE_TEXT }}
 						</BaseButton>
 					</div>
 				</template>
@@ -129,7 +129,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM } from '@constants'
+import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_DELETE_MULTI_CONFIRM, UI_CHAT_DELETE_SINGLE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
@@ -206,8 +206,8 @@ const deleteConfirm = ref<{ isOpen: boolean; ids: string[] }>({ isOpen: false, i
 /** Текст подтверждения с учётом количества удаляемых сообщений */
 const deleteConfirmText = computed((): string => {
 	const count = deleteConfirm.value.ids.length
-	if (count <= 1) return 'Вы действительно хотите удалить это сообщение? Действие необратимо.'
-	return `Вы действительно хотите удалить выбранные сообщения (${count})? Действие необратимо.`
+	if (count <= 1) return UI_CHAT_DELETE_SINGLE_CONFIRM
+	return UI_CHAT_DELETE_MULTI_CONFIRM.replace('{count}', String(count))
 })
 
 /**
@@ -255,7 +255,7 @@ function handleDownloadFile(file: ChatMessageAttachment): void {
 		downloadFile(file.url, file.name)
 	} catch (e) {
 		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
-		console.error('Ошибка скачивания файла:', e)
+		console.error('[BaseChat] Download failed:', e)
 	}
 	emit('download-file', file)
 }

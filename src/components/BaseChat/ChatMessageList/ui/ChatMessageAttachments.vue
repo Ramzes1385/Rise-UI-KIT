@@ -17,7 +17,7 @@
 					:padding="1"
 				:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 				class="base-chat-message-list__download-btn"
-					:aria-label="`Скачать изображение ${img.name}`"
+					:aria-label="`${UI_CHAT_DOWNLOAD_IMAGE} ${img.name}`"
 					@click.stop="handleDownload(img)">
 					<template #left>
 						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -25,7 +25,7 @@
 				</BaseButton>
 				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
 					<BaseText
-						:weight="600"
+						:weight="UI_FONT_WEIGHT_SEMIBOLD"
 						:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
 						class="base-chat-message-list__collage-overlay-text">
 						+{{ images.length - 3 }}
@@ -46,7 +46,7 @@
 					<BaseText
 						tag="span"
 						:size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE"
-						:weight="600"
+						:weight="UI_FONT_WEIGHT_SEMIBOLD"
 						class="base-chat-message-list__attached-file-name">
 						{{ file.name }}
 					</BaseText>
@@ -63,7 +63,7 @@
 					:padding="1"
 :size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 				class="base-chat-message-list__download-btn"
-					:aria-label="`Скачать файл ${file.name}`"
+					:aria-label="`${UI_CHAT_DOWNLOAD_FILE} ${file.name}`"
 					@click.stop="handleDownload(file)">
 					<template #left>
 						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -79,7 +79,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_SCALE_FILE_ICON, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_MEMBER, UI_CHAT_SCALE_META, UI_SCALE_AUTOCOMPLETE } from '@constants'
+import { UI_CHAT_DOWNLOAD_FILE, UI_CHAT_DOWNLOAD_IMAGE, UI_CHAT_SCALE_FILE_ICON, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_MEMBER, UI_CHAT_SCALE_META, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_AUTOCOMPLETE } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed } from 'vue'
 import type { ChatMessageAttachment } from '../../BaseChat.types'

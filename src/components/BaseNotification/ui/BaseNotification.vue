@@ -24,7 +24,7 @@
 						<BaseText
 							tag="h4"
 							:size-scale="props.sizeScale"
-							:weight="600"
+							:weight="UI_FONT_WEIGHT_SEMIBOLD"
 							class="base-notification__title"
 							:custom-class="classes.title">
 							{{ notification.title }}
@@ -62,7 +62,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_NOTIFICATION_AUTO_CLOSE_MS } from '@constants'
+import { UI_FONT_WEIGHT_SEMIBOLD, UI_NOTIFICATION_AUTO_CLOSE_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import '../styles/BaseNotification.style.scss'

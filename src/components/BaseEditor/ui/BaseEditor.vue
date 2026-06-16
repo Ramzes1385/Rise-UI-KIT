@@ -79,19 +79,19 @@
 					<BaseInput
 						:model-value="contextMenu.width"
 						type="number"
-						placeholder="Ширина"
+						:placeholder="UI_EDITOR_WIDTH"
 						:size-scale="80"
 						@update:model-value="contextMenu.width = String($event)" />
 					<BaseInput
 						:model-value="contextMenu.height"
 						type="number"
-						placeholder="Высота"
+						:placeholder="UI_EDITOR_HEIGHT"
 						:size-scale="80"
 						@update:model-value="contextMenu.height = String($event)" />
 				</div>
 				<div class="base-editor__context-menu-actions">
-					<BaseButton :size-scale="80" @click="applyMediaSize">{{ UI_APPLY_TEXT }}</BaseButton>
-					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">{{ UI_DELETE_TEXT }}</BaseButton>
+					<BaseButton :size-scale="80" @click="applyMediaSize">{{ UI_EDITOR_APPLY }}</BaseButton>
+					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">{{ UI_EDITOR_DELETE }}</BaseButton>
 				</div>
 			</div>
 		</Teleport>
@@ -108,7 +108,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { UI_APPLY_TEXT, UI_DELETE_TEXT } from '@constants'
+import { UI_EDITOR_APPLY, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_WIDTH } from '@constants'
 import { onMounted, ref, watch } from 'vue'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
@@ -149,13 +149,13 @@ function checkEmpty(): void {
 }
 
 const headingOptions: BaseSelectOption[] = [
-	{ value: 'p', label: 'Параграф' },
-	{ value: 'h1', label: 'Заголовок 1' },
-	{ value: 'h2', label: 'Заголовок 2' },
-	{ value: 'h3', label: 'Заголовок 3' },
-	{ value: 'h4', label: 'Заголовок 4' },
-	{ value: 'h5', label: 'Заголовок 5' },
-	{ value: 'h6', label: 'Заголовок 6' },
+	{ value: 'p', label: UI_EDITOR_PARAGRAPH },
+	{ value: 'h1', label: `${UI_EDITOR_HEADING_PREFIX} 1` },
+	{ value: 'h2', label: `${UI_EDITOR_HEADING_PREFIX} 2` },
+	{ value: 'h3', label: `${UI_EDITOR_HEADING_PREFIX} 3` },
+	{ value: 'h4', label: `${UI_EDITOR_HEADING_PREFIX} 4` },
+	{ value: 'h5', label: `${UI_EDITOR_HEADING_PREFIX} 5` },
+	{ value: 'h6', label: `${UI_EDITOR_HEADING_PREFIX} 6` },
 ]
 
 function handleInput(): void {

@@ -23,7 +23,7 @@
 							<BaseText
 								v-if="title"
 								tag="h3"
-								:weight="600"
+								:weight="UI_FONT_WEIGHT_SEMIBOLD"
 								class="base-slideover__title"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
@@ -58,7 +58,7 @@ import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
-import { UI_CLOSE_ARIA } from '@constants'
+import { UI_CLOSE_ARIA, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps } from '../model/BaseSlideover.types'
 

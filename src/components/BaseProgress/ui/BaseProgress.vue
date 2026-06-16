@@ -57,7 +57,7 @@
 				v-if="props.hasLabel"
 				tag="span"
 				class="base-progress__circle-label"
-				:weight="700"
+				:weight="UI_FONT_WEIGHT_BOLD"
 				:custom-class="classes.circleLabel">
 				<slot :value="value" :percent="percent">{{ percent }}%</slot>
 			</BaseText>
@@ -75,6 +75,7 @@ import { BaseTooltip } from '@components/BaseTooltip'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
+import { UI_FONT_WEIGHT_BOLD } from '@constants'
 import { computed, watch } from 'vue'
 
 const props = withDefaults(defineProps<BaseProgressProps>(), {

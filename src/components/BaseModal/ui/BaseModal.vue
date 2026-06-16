@@ -19,7 +19,7 @@
 							<BaseText
 								tag="h3"
 								:size-scale="sizeScale"
-								:weight="600"
+								:weight="UI_FONT_WEIGHT_SEMIBOLD"
 								class="base-modal__title"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
@@ -57,6 +57,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { computed, useSlots } from 'vue'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from '../model/BaseModal.types'

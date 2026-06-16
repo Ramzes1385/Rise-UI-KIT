@@ -31,7 +31,7 @@
 						:size-scale="resolvedProps.sizeScale"
 						:is-disabled="resolvedProps.isDisabled || !resolvedProps.canSwitchView"
 						@click="resolvedProps.canSwitchView && switchView()">
-						<BaseText tag="span" :weight="600" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
+						<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
 					</BaseButton>
 					<BaseButton
 						variant="ghost"
@@ -44,7 +44,7 @@
 				</slot>
 			</div>
 			<div v-else class="base-calendar__header base-calendar__header--simple" :class="classes.header">
-				<BaseText tag="span" :weight="600" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
+				<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
 			</div>
 
 		<BaseCalendarDays
@@ -132,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_TODAY_TEXT } from '@constants'
+import { UI_FONT_WEIGHT_SEMIBOLD, UI_TODAY_TEXT } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
@@ -149,20 +149,7 @@ import BaseCalendarMonths from './BaseCalendarMonths.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
 
 const props = defineProps<BaseCalendarProps>()
-const { wasPropPassed } = useExplicitPropDetection()
-
-function toKebabCase(value: string): string {
-	return value.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
-}
-
-function resolveBooleanPropDefault(
-	name: string,
-	value: boolean | undefined,
-	defaultValue: boolean,
-): boolean {
-	const hasProp = wasPropPassed(name) || wasPropPassed(toKebabCase(name))
-	return hasProp ? (value ?? defaultValue) : defaultValue
-}
+const { resolveBooleanPropDefault } = useExplicitPropDetection()
 
 const resolvedProps = computed(() => ({
 	modelValue: props.modelValue ?? null,

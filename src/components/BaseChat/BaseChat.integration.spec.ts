@@ -127,11 +127,11 @@ describe('BaseChat integration', () => {
 			]
 			renderChat({ messages: pinned })
 
-			expect(screen.getByText('Закрепленное сообщение (1 из 2)')).toBeInTheDocument()
+			expect(screen.getByText('Закреплённое сообщение (1 из 2)')).toBeInTheDocument()
 
 			await fireEvent.click(screen.getByLabelText('Следующее закреплённое сообщение'))
 
-			expect(screen.getByText('Закрепленное сообщение (2 из 2)')).toBeInTheDocument()
+			expect(screen.getByText('Закреплённое сообщение (2 из 2)')).toBeInTheDocument()
 		})
 	})
 

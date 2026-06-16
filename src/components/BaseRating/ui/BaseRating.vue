@@ -4,7 +4,7 @@
 		:class="[variantClass, classes.root, { 'base-rating--readonly': isInteractive === false }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="slider"
-		:aria-label="`Оценка от 0 до ${props.max}`"
+		:aria-label="`${UI_RATING_ARIA_PREFIX} ${props.max}`"
 		:aria-valuemin="0"
 		:aria-valuemax="props.max"
 		:aria-valuenow="props.modelValue"
@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_RATING_ARIA_PREFIX } from '@constants'
 import { computed, ref } from 'vue'
 
 import '../styles/BaseRating.style.scss'

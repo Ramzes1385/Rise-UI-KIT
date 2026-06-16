@@ -36,36 +36,13 @@ export interface BaseDatePickerCalendarProps {
 
 export type BaseDatePickerCalendarConfig = Required<BaseDatePickerCalendarProps>
 
-function toKebabCase(value: string): string {
-	return value.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
-}
-
-function hasRuntimeProp(rawProps: Record<string, unknown> | null | undefined, name: string): boolean {
-	return Boolean(
-		rawProps &&
-			(Object.prototype.hasOwnProperty.call(rawProps, name) ||
-				Object.prototype.hasOwnProperty.call(rawProps, toKebabCase(name))),
-	)
-}
-
-export function resolveBooleanPropDefault(
-	rawProps: Record<string, unknown> | null | undefined,
-	name: string,
-	value: boolean | undefined,
-	defaultValue: boolean,
-): boolean {
-	const hasProp = hasRuntimeProp(rawProps, name)
-
-	return hasProp ? (value ?? defaultValue) : defaultValue
-}
-
 function applyExplicitCalendarProp<Key extends keyof BaseDatePickerCalendarProps>(
 	target: BaseDatePickerCalendarProps,
 	source: BaseDatePickerCalendarProps,
-	rawProps: Record<string, unknown> | null | undefined,
+	wasPropPassed: (name: string) => boolean,
 	name: Key,
 ): void {
-	if (!hasRuntimeProp(rawProps, name)) return
+	if (!wasPropPassed(name)) return
 	target[name] = source[name]
 }
 
@@ -90,25 +67,25 @@ export function pickDatePickerCalendarConfig(source: BaseDatePickerCalendarProps
 
 export function resolveDatePickerCalendarConfig(
 	source: BaseDatePickerCalendarProps,
-	rawProps: Record<string, unknown> | null | undefined,
+	wasPropPassed: (name: string) => boolean,
 	config?: BaseDatePickerCalendarProps,
 ): BaseDatePickerCalendarConfig {
 	const merged: BaseDatePickerCalendarProps = { ...(config ?? {}) }
 
-	applyExplicitCalendarProp(merged, source, rawProps, 'minDate')
-	applyExplicitCalendarProp(merged, source, rawProps, 'maxDate')
-	applyExplicitCalendarProp(merged, source, rawProps, 'disabledDates')
-	applyExplicitCalendarProp(merged, source, rawProps, 'disabledWeekdays')
-	applyExplicitCalendarProp(merged, source, rawProps, 'disableFrom')
-	applyExplicitCalendarProp(merged, source, rawProps, 'disableTo')
-	applyExplicitCalendarProp(merged, source, rawProps, 'highlights')
-	applyExplicitCalendarProp(merged, source, rawProps, 'weekends')
-	applyExplicitCalendarProp(merged, source, rawProps, 'firstDayOfWeek')
-	applyExplicitCalendarProp(merged, source, rawProps, 'locale')
-	applyExplicitCalendarProp(merged, source, rawProps, 'showTime')
-	applyExplicitCalendarProp(merged, source, rawProps, 'showSeconds')
-	applyExplicitCalendarProp(merged, source, rawProps, 'is24Hour')
-	applyExplicitCalendarProp(merged, source, rawProps, 'showWeekNumber')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'minDate')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'maxDate')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disabledDates')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disabledWeekdays')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disableFrom')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disableTo')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'highlights')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'weekends')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'firstDayOfWeek')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'locale')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showTime')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showSeconds')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'is24Hour')
+	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showWeekNumber')
 
 	return pickDatePickerCalendarConfig(merged)
 }

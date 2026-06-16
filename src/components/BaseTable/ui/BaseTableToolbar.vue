@@ -5,7 +5,7 @@
 		<div v-if="hasSearch" class="base-table__search" :class="searchClass">
 			<BaseInput
 				:model-value="searchQuery"
-				placeholder="Поиск..."
+				:placeholder="UI_SEARCH_PLACEHOLDER"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('search-input', $event)" />
 		</div>
@@ -14,20 +14,20 @@
 			<BaseSelect
 				:model-value="filterColumn"
 				:options="filterColumnOptions"
-				placeholder="Колонка"
+				:placeholder="UI_FILTER_COLUMN_TEXT"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('update:filter-column', $event)" />
 			<span class="base-table__filter-sep"></span>
 			<BaseSelect
 				:model-value="filterOperator"
 				:options="filterOperatorOptions"
-				placeholder="Условие"
+				:placeholder="UI_FILTER_CONDITION_TEXT"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('update:filter-operator', $event)" />
 			<span class="base-table__filter-sep"></span>
 			<BaseInput
 				:model-value="filterValue"
-				placeholder="Значение..."
+				:placeholder="UI_FILTER_VALUE_PLACEHOLDER"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('update:filter-value', $event)"
 				@keydown.enter="emit('add-filter')" />
@@ -87,6 +87,7 @@ import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseSelect } from '@components/BaseSelect'
+import { UI_FILTER_COLUMN_TEXT, UI_FILTER_CONDITION_TEXT, UI_FILTER_VALUE_PLACEHOLDER, UI_SEARCH_PLACEHOLDER } from '@constants'
 
 import type { ColumnFilter, TableColumn } from '../model/BaseTable.types'
 

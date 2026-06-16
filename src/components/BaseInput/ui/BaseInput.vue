@@ -56,7 +56,7 @@
 				class="base-input__password-toggle"
 				:custom-class="classes.passwordToggle"
 				tabindex="-1"
-				:aria-label="isPasswordVisible ? 'Скрыть пароль' : 'Показать пароль'"
+				:aria-label="isPasswordVisible ? UI_PASSWORD_HIDE_ARIA : UI_PASSWORD_SHOW_ARIA"
 				:size-scale="sizeScale"
 				@click="togglePasswordVisibility">
 				<BaseIcon
@@ -111,6 +111,7 @@ import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useInputMask } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
+import { UI_PASSWORD_HIDE_ARIA, UI_PASSWORD_SHOW_ARIA } from '@constants'
 import { computed, ref, toRef } from 'vue'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'

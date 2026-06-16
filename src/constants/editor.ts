@@ -1,0 +1,37 @@
+/**
+ * Константы редактора.
+ * Группированы в объект UI_EDITOR для удобного доступа.
+ */
+
+export const UI_EDITOR = {
+	BOLD: 'Жирный',
+	ITALIC: 'Курсив',
+	UNDERLINE: 'Подчёркнутый',
+	STRIKETHROUGH: 'Зачёркнутый',
+	TEXT_COLOR: 'Цвет текста',
+	TEXT_COLOR_RESET: 'Сбросить цвет текста',
+	BG_COLOR: 'Цвет фона',
+	BG_COLOR_RESET: 'Сбросить цвет фона',
+	ALIGN_LEFT: 'По левому краю',
+	ALIGN_CENTER: 'По центру',
+	ALIGN_RIGHT: 'По правому краю',
+	ALIGN_JUSTIFY: 'По ширине',
+	LIST_BULLET: 'Маркированный список',
+	LIST_NUMBERED: 'Нумерованный список',
+	FORMAT: 'Формат',
+	LINK: 'Ссылка',
+	IMAGE: 'Изображение',
+	VIDEO: 'Видео',
+	QUOTE: 'Цитата',
+	CODE_BLOCK: 'Блок кода',
+	CLEAR_FORMAT: 'Очистить форматирование',
+	DIVIDER: 'Разделитель',
+	VISUAL_MODE: 'Визуальный режим',
+	CODE_MODE: 'Режим кода',
+	PARAGRAPH: 'Параграф',
+	HEADING_PREFIX: 'Заголовок',
+	WIDTH: 'Ширина',
+	HEIGHT: 'Высота',
+	APPLY: 'Применить',
+	DELETE: 'Удалить',
+} as const

@@ -2,7 +2,7 @@
 	<div v-if="hasToolbar && !isReadonly" class="base-editor__toolbar" :class="classes.toolbar" @mousedown.prevent>
 		<slot name="toolbar">
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="Жирный" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_BOLD" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -12,7 +12,7 @@
 						<BaseIcon name="bold" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Курсив" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_ITALIC" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -22,7 +22,7 @@
 						<BaseIcon name="italic" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Подчёркнутый" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_UNDERLINE" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -32,7 +32,7 @@
 						<BaseIcon name="underline" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Зачёркнутый" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_STRIKETHROUGH" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -45,7 +45,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="Цвет текста" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_TEXT_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="textColorModel"
 						class="base-editor__color-picker"
@@ -55,7 +55,7 @@
 						:size-scale="sizeScale"
 						has-transparent-swatch
 						is-resettable
-						reset-label="Сбросить цвет текста"
+						:reset-label="UI_EDITOR_TEXT_COLOR_RESET"
 						@mousedown.prevent="emit('saveSelection')"
 						@change="(color: string) => emit('handleTextColor', color)"
 						@reset="emit('resetTextColor')">
@@ -64,7 +64,7 @@
 						</template>
 					</BaseColorPicker>
 				</BaseTooltip>
-				<BaseTooltip text="Цвет фона" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_BG_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="backgroundColorModel"
 						class="base-editor__color-picker"
@@ -74,7 +74,7 @@
 						:size-scale="sizeScale"
 						has-transparent-swatch
 						is-resettable
-						reset-label="Сбросить цвет фона"
+						:reset-label="UI_EDITOR_BG_COLOR_RESET"
 						@mousedown.prevent="emit('saveSelection')"
 						@change="(color: string) => emit('handleBackgroundColor', color)"
 						@reset="emit('resetBackgroundColor')">
@@ -86,7 +86,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="По левому краю" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_ALIGN_LEFT" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -96,7 +96,7 @@
 						<BaseIcon name="align-left" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="По центру" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_ALIGN_CENTER" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -106,7 +106,7 @@
 						<BaseIcon name="align-center" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="По правому краю" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_ALIGN_RIGHT" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -116,7 +116,7 @@
 						<BaseIcon name="align-right" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="По ширине" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_ALIGN_JUSTIFY" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -129,7 +129,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="Маркированный список" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_LIST_BULLET" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -139,7 +139,7 @@
 						<BaseIcon name="list-bullet" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Нумерованный список" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_LIST_NUMBERED" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -157,14 +157,14 @@
 						v-model="headingValue"
 						:options="headingOptions"
 						variant="ghost"
-						placeholder="Формат"
+						:placeholder="UI_EDITOR_FORMAT"
 						:size-scale="sizeScale"
 						@change="(val: string | number) => emit('handleHeadingChange', val)" />
 				</div>
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="Ссылка" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_LINK" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -174,7 +174,7 @@
 						<BaseIcon name="link" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Изображение" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_IMAGE" position="top" :size-scale="sizeScale">
 					<label class="base-editor__btn base-editor__btn--color" :class="classes.btn" @mousedown.stop>
 						<BaseIcon name="image" :size-scale="calcIconScale('md', sizeScale)" />
 						<input
@@ -185,7 +185,7 @@
 							@change="(e: Event) => emit('handleImageUpload', e)" />
 					</label>
 				</BaseTooltip>
-				<BaseTooltip text="Видео" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_VIDEO" position="top" :size-scale="sizeScale">
 					<label class="base-editor__btn base-editor__btn--color" :class="classes.btn" @mousedown.stop>
 						<BaseIcon name="video" :size-scale="calcIconScale('md', sizeScale)" />
 						<input
@@ -199,7 +199,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="Цитата" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_QUOTE" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -209,7 +209,7 @@
 						<BaseIcon name="quote" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Блок кода" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_CODE_BLOCK" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -222,7 +222,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip text="Очистить форматирование" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_CLEAR_FORMAT" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -232,7 +232,7 @@
 						<BaseIcon name="format-clear" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip text="Разделитель" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR_DIVIDER" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -242,7 +242,7 @@
 						<BaseIcon name="separator" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip :text="isCodeMode ? 'Визуальный режим' : 'Режим кода'" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="isCodeMode ? UI_EDITOR_VISUAL_MODE : UI_EDITOR_CODE_MODE" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -264,6 +264,31 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
+import {
+	UI_EDITOR_ALIGN_CENTER,
+	UI_EDITOR_ALIGN_JUSTIFY,
+	UI_EDITOR_ALIGN_LEFT,
+	UI_EDITOR_ALIGN_RIGHT,
+	UI_EDITOR_BG_COLOR,
+	UI_EDITOR_BG_COLOR_RESET,
+	UI_EDITOR_CODE_BLOCK,
+	UI_EDITOR_BOLD,
+	UI_EDITOR_CLEAR_FORMAT,
+	UI_EDITOR_CODE_MODE,
+	UI_EDITOR_DIVIDER,
+	UI_EDITOR_FORMAT,
+	UI_EDITOR_ITALIC,
+	UI_EDITOR_LINK,
+	UI_EDITOR_LIST_BULLET,
+	UI_EDITOR_LIST_NUMBERED,
+	UI_EDITOR_QUOTE,
+	UI_EDITOR_STRIKETHROUGH,
+	UI_EDITOR_TEXT_COLOR,
+	UI_EDITOR_TEXT_COLOR_RESET,
+	UI_EDITOR_UNDERLINE,
+	UI_EDITOR_VIDEO,
+	UI_EDITOR_VISUAL_MODE,
+} from '@constants'
 import { ref } from 'vue'
 
 interface ActiveStates {

@@ -5,7 +5,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@click="handleClick">
 		<slot>
-			<BaseText class="base-badge__text" :custom-class="classes.text" tag="span" :weight="600" :size-scale="props.sizeScale">
+			<BaseText class="base-badge__text" :custom-class="classes.text" tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="props.sizeScale">
 				{{ label }}
 			</BaseText>
 		</slot>
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 
 import '../styles/BaseBadge.style.scss'
 import type { BaseBadgeEmits, BaseBadgeProps } from '../model/BaseBadge.types'

@@ -18,7 +18,7 @@
 						v-if="title"
 						tag="h3"
 						:size-scale="props.sizeScale"
-						:weight="600"
+						:weight="UI_FONT_WEIGHT_SEMIBOLD"
 						class="base-card__title"
 						:custom-class="classes.title"
 						>{{ title }}</BaseText
@@ -55,6 +55,7 @@ import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 
 import '../styles/BaseCard.style.scss'
 

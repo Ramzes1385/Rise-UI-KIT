@@ -8,7 +8,7 @@
 				variant="ghost"
 				:padding="1"
 				:size-scale="sizeScale"
-				aria-label="Закрыть панель информации"
+				:aria-label="UI_CHAT_CLOSE_PANEL"
 				@click="emit('update:isOpen', false)">
 				<template #left>
 					<BaseIcon name="close" :size-scale="sizeScale" />
@@ -38,7 +38,7 @@
 						{{ title }}
 					</BaseText>
 					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
-						{{ isGroup ? `${members.length} участников` : subtitle || 'в сети' }}
+						{{ isGroup ? `${members.length} ${UI_CHAT_PARTICIPANTS_SUFFIX}` : subtitle || UI_CHAT_ONLINE }}
 					</BaseText>
 					<BaseText v-if="isGroup" tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
 						Официальная группа мастерской Металл-Арт. Здесь мы обсуждаем текущие проекты, делимся эскизами, координируем
@@ -53,7 +53,7 @@
 				<!-- Список участников для групп -->
 				<div v-if="isGroup && members.length > 0" class="base-chat-slideover__members-list">
 					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__section-title">
-						Участники группы
+						{{ UI_CHAT_PARTICIPANTS_TITLE }}
 					</BaseText>
 					<div class="base-chat-slideover__members-scroll">
 						<div v-for="member in members" :key="member.id" class="base-chat-slideover__member-item">
@@ -80,7 +80,7 @@
 									:padding="1"
 									:size-scale="sizeScale * UI_SCALE_SMALL"
 									class="base-chat-slideover__admin-btn"
-									:aria-label="`Действия с участником ${member.name}`"
+									:aria-label="`${UI_CHAT_MEMBER_ACTIONS} ${member.name}`"
 									@click="toggleAdminMenu(member.id)">
 									<template #left>
 										<BaseIcon name="sort-down" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -94,21 +94,21 @@
 										class="base-chat-slideover__dropdown-item"
 										@click="handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')">
 										<BaseIcon name="file-config" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" />
-										{{ member.role === 'admin' ? 'Разжаловать' : 'Сделать админом' }}
+										{{ member.role === 'admin' ? UI_CHAT_DEMOTE : UI_CHAT_MAKE_ADMIN }}
 									</button>
 									<button
 										type="button"
 										class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 										@click="handleKick(member.id)">
 										<BaseIcon name="x-circle" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" />
-										Исключить
+										{{ UI_CHAT_EXCLUDE }}
 									</button>
 									<button
 										type="button"
 										class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 										@click="handleBan(member.id)">
 										<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" />
-										Забанить
+										{{ UI_CHAT_BAN }}
 									</button>
 								</div>
 							</div>
@@ -122,7 +122,7 @@
 						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
-								>Телефон</BaseText
+								>{{ UI_CHAT_PHONE }}</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
 								>+7 (999) 123-45-67</BaseText
@@ -155,7 +155,7 @@
 						{{ selectedMember.name }}
 					</BaseText>
 					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
-						{{ selectedMember.status === 'online' ? 'в сети' : 'не в сети' }}
+						{{ selectedMember.status === 'online' ? UI_CHAT_ONLINE : UI_CHAT_OFFLINE }}
 					</BaseText>
 
 					<div class="base-chat-slideover__profile-actions">
@@ -163,7 +163,7 @@
 							<template #left>
 								<BaseIcon name="reply" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" />
 							</template>
-							Написать сообщение
+							{{ UI_CHAT_WRITE_MESSAGE }}
 						</BaseButton>
 					</div>
 				</div>
@@ -172,9 +172,9 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label">Роль</BaseText>
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label">{{ UI_CHAT_ROLE }}</BaseText>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value">
-								{{ selectedMember.role === 'admin' ? 'Администратор' : 'Участник' }}
+								{{ selectedMember.role === 'admin' ? UI_CHAT_ADMIN : UI_CHAT_MEMBER }}
 							</BaseText>
 						</div>
 					</div>
@@ -182,7 +182,7 @@
 						<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
-								>Предупреждения</BaseText
+								>{{ UI_CHAT_WARNINGS }}</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value">
 								{{ selectedMember.warningsCount }} / 3
@@ -196,88 +196,28 @@
 						<template #left>
 							<BaseIcon name="arrow-left" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" />
 						</template>
-						Назад к списку
+						{{ UI_CHAT_BACK_TO_LIST }}
 					</BaseButton>
 				</div>
 			</div>
 
 			<!-- Вкладка: Медиа -->
 			<div v-if="activeTab === 'media'" class="base-chat-slideover__pane">
-				<div v-if="sharedMedia.length === 0" class="base-chat-slideover__empty">
-					<BaseIcon name="image" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
-					<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">Нет медиафайлов</BaseText>
-				</div>
-				<div v-else class="base-chat-slideover__media-grid">
-					<div v-for="media in sharedMedia" :key="media.id" class="base-chat-slideover__media-item">
-						<BaseImage
-							:src="media.url"
-							:alt="media.name"
-							:gallery="allImagesUrls"
-							:has-zoom="true"
-							class="base-chat-slideover__media-thumbnail" />
-						<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-slideover__media-date">
-							{{ media.publishedAt }}
-						</BaseText>
-					</div>
-				</div>
+				<ChatSlideoverMedia :messages="messages" :size-scale="sizeScale" />
 			</div>
 
 			<!-- Вкладка: Файлы -->
 			<div v-if="activeTab === 'files'" class="base-chat-slideover__pane">
-				<div v-if="sharedFiles.length === 0" class="base-chat-slideover__empty">
-					<BaseIcon name="file" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
-					<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">Нет файлов</BaseText>
-				</div>
-				<div v-else class="base-chat-slideover__files-list">
-					<div
-						v-for="file in sharedFiles"
-						:key="file.id"
-						class="base-chat-slideover__file-item"
-						@click="emit('file-click', file)">
-						<BaseIcon
-							:name="getFileIconName(file.name)"
-							:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
-							class="base-chat-slideover__file-icon" />
-						<div class="base-chat-slideover__file-info">
-							<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__file-name">
-								{{ file.name }}
-							</BaseText>
-							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-slideover__file-meta">
-								<template v-if="file.size">{{ file.size }} · </template>{{ file.publishedAt }}
-							</BaseText>
-						</div>
-						<BaseIcon
-							name="download"
-							:size-scale="sizeScale * UI_SCALE_SMALL"
-							class="base-chat-slideover__file-download"
-							@click.stop="emit('download-file', file)" />
-					</div>
-				</div>
+				<ChatSlideoverFiles
+					:messages="messages"
+					:size-scale="sizeScale"
+					@file-click="emit('file-click', $event)"
+					@download-file="emit('download-file', $event)" />
 			</div>
 
 			<!-- Вкладка: Ссылки -->
 			<div v-if="activeTab === 'links'" class="base-chat-slideover__pane">
-				<div v-if="sharedLinks.length === 0" class="base-chat-slideover__empty">
-					<BaseIcon name="link" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
-					<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">Нет ссылок</BaseText>
-				</div>
-				<div v-else class="base-chat-slideover__links-list">
-					<div
-						v-for="(link, index) in sharedLinks"
-						:key="index"
-						class="base-chat-slideover__link-item"
-						@click="openLink(link.url)">
-						<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__link-icon" />
-						<div class="base-chat-slideover__link-info">
-							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__link-url">
-								{{ link.url }}
-							</BaseText>
-							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-slideover__link-date">
-								{{ link.publishedAt }}
-							</BaseText>
-						</div>
-					</div>
-				</div>
+				<ChatSlideoverLinks :messages="messages" :size-scale="sizeScale" />
 			</div>
 		</div>
 	</div>
@@ -287,22 +227,46 @@
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import {
+	UI_CHAT_ADMIN,
+	UI_CHAT_BACK_TO_LIST,
+	UI_CHAT_BAN,
+	UI_CHAT_CLOSE_PANEL,
+	UI_CHAT_DEMOTE,
+	UI_CHAT_EXCLUDE,
+	UI_CHAT_FILES_TAB,
+	UI_CHAT_INFORMATION,
+	UI_CHAT_INFO_TAB,
+	UI_CHAT_MAKE_ADMIN,
+	UI_CHAT_MEDIA_TAB,
+	UI_CHAT_MEMBER,
+	UI_CHAT_MEMBER_ACTIONS,
+	UI_CHAT_OFFLINE,
+	UI_CHAT_ONLINE,
+	UI_CHAT_PARTICIPANTS,
+	UI_CHAT_PARTICIPANTS_SUFFIX,
+	UI_CHAT_PARTICIPANTS_TITLE,
+	UI_CHAT_PHONE,
+	UI_CHAT_PROFILE,
+	UI_CHAT_ROLE,
 	UI_CHAT_SCALE_AVATAR_LARGE,
-	UI_CHAT_SCALE_FILE_ICON,
 	UI_CHAT_SCALE_ICON,
 	UI_CHAT_SCALE_MEMBER,
-	UI_CHAT_SCALE_META,
 	UI_CHAT_SCALE_NAME,
+	UI_CHAT_LINKS_TAB,
+	UI_CHAT_VIOLATION,
+	UI_CHAT_WARNINGS,
+	UI_CHAT_WRITE_MESSAGE,
 	UI_FONT_WEIGHT_SEMIBOLD,
 	UI_SCALE_AUTOCOMPLETE,
 	UI_SCALE_SMALL,
 } from '@constants'
-import { getFileIconName } from '@utils/fileUtils'
 import { computed, ref } from 'vue'
 import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
+import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
+import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
+import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
 import './ChatSlideover.style.scss'
 
 interface ChatSlideoverProps {
@@ -340,17 +304,6 @@ const emit = defineEmits<{
 	(e: 'update-member-role', payload: { memberId: string; role: string }): void
 }>()
 
-/** Вложение с датой публикации из родительского сообщения */
-interface SharedAttachment extends ChatMessageAttachment {
-	publishedAt: string
-}
-
-/** Ссылка с датой публикации из родительского сообщения */
-interface SharedLink {
-	url: string
-	publishedAt: string
-}
-
 const activeAdminMenuId = ref<string | null>(null)
 
 function detectOnlineStatus(text: string): 'online' | 'offline' {
@@ -359,15 +312,15 @@ function detectOnlineStatus(text: string): 'online' | 'offline' {
 }
 
 const titleText = computed((): string => {
-	if (props.activeTab === 'profile') return 'Профиль'
-	return 'Информация'
+	if (props.activeTab === 'profile') return UI_CHAT_PROFILE
+	return UI_CHAT_INFORMATION
 })
 
 const availableTabs = computed(() => [
-	{ id: 'info' as const, label: props.isGroup ? 'Участники' : 'Инфо' },
-	{ id: 'media' as const, label: 'Медиа' },
-	{ id: 'files' as const, label: 'Файлы' },
-	{ id: 'links' as const, label: 'Ссылки' },
+	{ id: 'info' as const, label: props.isGroup ? UI_CHAT_PARTICIPANTS : UI_CHAT_INFO_TAB },
+	{ id: 'media' as const, label: UI_CHAT_MEDIA_TAB },
+	{ id: 'files' as const, label: UI_CHAT_FILES_TAB },
+	{ id: 'links' as const, label: UI_CHAT_LINKS_TAB },
 ])
 
 const selectedMember = computed((): ChatMember | null => {
@@ -384,60 +337,9 @@ const selectedMember = computed((): ChatMember | null => {
 	return props.members.find(member => member.id === props.selectedMemberId) || null
 })
 
-/** Человекочитаемая дата публикации вложения/ссылки из родительского сообщения */
-function getPublishedLabel(message: ChatMessage): string {
-	return message.date || message.time
-}
-
-// Извлечение общих медиафайлов (изображений) из сообщений
-const sharedMedia = computed((): SharedAttachment[] => {
-	const media: SharedAttachment[] = []
-	for (const message of props.messages) {
-		for (const attachment of message.attachments ?? []) {
-			if (attachment.type === 'image') {
-				media.push({ ...attachment, publishedAt: getPublishedLabel(message) })
-			}
-		}
-	}
-	return media
-})
-
-const allImagesUrls = computed((): string[] => {
-	return sharedMedia.value.map(mediaItem => mediaItem.url)
-})
-
-// Извлечение общих файлов из сообщений
-const sharedFiles = computed((): SharedAttachment[] => {
-	const files: SharedAttachment[] = []
-	for (const message of props.messages) {
-		for (const attachment of message.attachments ?? []) {
-			if (attachment.type === 'file') {
-				files.push({ ...attachment, publishedAt: getPublishedLabel(message) })
-			}
-		}
-	}
-	return files
-})
-
-// Извлечение ссылок из сообщений
-const sharedLinks = computed((): SharedLink[] => {
-	const links: SharedLink[] = []
-	const seen = new Set<string>()
-	const urlRegex = /(https?:\/\/[^\s]+)/gi
-	for (const message of props.messages) {
-		if (!message.text) continue
-		for (const url of message.text.match(urlRegex) ?? []) {
-			if (seen.has(url)) continue
-			seen.add(url)
-			links.push({ url, publishedAt: getPublishedLabel(message) })
-		}
-	}
-	return links
-})
-
 function getMemberRoleLabel(member: ChatMember): string {
-	if (member.role === 'admin') return 'Администратор'
-	return member.status === 'online' ? 'в сети' : 'не в сети'
+	if (member.role === 'admin') return UI_CHAT_ADMIN
+	return member.status === 'online' ? UI_CHAT_ONLINE : UI_CHAT_OFFLINE
 }
 
 function toggleAdminMenu(memberId: string): void {
@@ -474,11 +376,7 @@ function handleKick(memberId: string): void {
 }
 
 function handleBan(memberId: string): void {
-	emit('ban-member', { memberId, reason: 'Нарушение правил общения', warningsCount: 1 })
+	emit('ban-member', { memberId, reason: UI_CHAT_VIOLATION, warningsCount: 1 })
 	activeAdminMenuId.value = null
-}
-
-function openLink(url: string): void {
-	window.open(url, '_blank', 'noopener,noreferrer')
 }
 </script>

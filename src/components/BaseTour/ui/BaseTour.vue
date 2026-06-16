@@ -6,7 +6,7 @@
 			:class="classes.root"
 			role="dialog"
 			aria-modal="true"
-			:aria-label="currentStep.title || 'Тур по интерфейсу'">
+			:aria-label="currentStep.title || UI_TOUR_TITLE">
 			<div class="base-tour__overlay" :class="classes.overlay" @click="handleOverlayClick" />
 
 			<div
@@ -25,7 +25,7 @@
 					<BaseCard variant="shadow" :padding="8" :custom-class="classes.cardInner">
 						<template v-if="hasHeader" #header>
 							<slot name="title" :step="currentStep" :index="activeIndex">
-								<BaseText v-if="currentStep.title" tag="h3" :weight="600" :custom-class="classes.title">{{
+								<BaseText v-if="currentStep.title" tag="h3" :weight="UI_FONT_WEIGHT_SEMIBOLD" :custom-class="classes.title">{{
 									currentStep.title
 								}}</BaseText>
 							</slot>
@@ -115,7 +115,7 @@ import { useScrollLock } from '@composables/useScrollLock'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import type { CustomColor } from '@composables/useCustomColor'
-import { UI_NEXT_TEXT, UI_PREV_TEXT, UI_SKIP_TOUR_TEXT } from '@constants'
+import { UI_FINISH_TOUR_TEXT, UI_FONT_WEIGHT_SEMIBOLD, UI_NEXT_TEXT, UI_PREV_TEXT, UI_SKIP_TOUR_TEXT, UI_TOUR_TITLE } from '@constants'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from '../model/BaseTour.types'
 import { DEFAULT_RADIUS, useTourLogic } from '../model/useTourLogic'
@@ -130,8 +130,8 @@ const props = withDefaults(defineProps<BaseTourProps>(), {
 	scrollIntoView: true,
 	nextLabel: UI_NEXT_TEXT,
 	prevLabel: UI_PREV_TEXT,
-	finishLabel: 'Завершить',
-	skipLabel: 'Пропустить',
+	finishLabel: UI_FINISH_TOUR_TEXT,
+	skipLabel: UI_SKIP_TOUR_TEXT,
 	showSkip: true,
 	showProgress: true,
 })
@@ -210,7 +210,7 @@ const spotlightStyle = computed((): Record<string, string> | null => {
 			left: `${-margin}px`,
 			width: `calc(100vw + ${margin * 2}px)`,
 			height: `calc(100vh + ${margin * 2}px)`,
-			borderRadius: '0px',
+			borderRadius: '0',
 		}
 	}
 

@@ -95,7 +95,7 @@
 								class="base-slider__title"
 								:custom-class="classes.title"
 								:size-scale="sizeScale"
-								:weight="700"
+								:weight="UI_FONT_WEIGHT_BOLD"
 								>{{ item.title }}</BaseText
 							>
 							<BaseText
@@ -156,7 +156,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS } from '@constants'
+import { UI_FONT_WEIGHT_BOLD, UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'

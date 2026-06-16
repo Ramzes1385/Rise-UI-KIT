@@ -13,7 +13,7 @@
 		<!-- Метка значения -->
 		<div v-if="hasLabel" class="base-range__label" :class="classes.label">
 			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ min }}</BaseText>
-			<BaseText tag="span" class="base-range__label-value" :weight="700" :custom-class="classes.labelValue">{{
+			<BaseText tag="span" class="base-range__label-value" :weight="UI_FONT_WEIGHT_BOLD" :custom-class="classes.labelValue">{{
 				labelText
 			}}</BaseText>
 			<BaseText tag="span" class="base-range__label-max" :custom-class="classes.labelMax">{{ max }}</BaseText>
@@ -85,6 +85,7 @@
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_BOLD } from '@constants'
 import { snapToStep, toPercent } from '@utils/rangeUtils'
 import { computed, ref, useSlots } from 'vue'
 import { useRangeDrag } from '../model/useRangeDrag'

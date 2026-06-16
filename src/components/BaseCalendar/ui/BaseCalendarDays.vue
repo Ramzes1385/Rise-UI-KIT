@@ -9,7 +9,7 @@
 			<span v-for="(name, index) in orderedWeekdays" :key="index" class="base-calendar__weekday">
 				<BaseText
 					tag="span"
-					:weight="600"
+					:weight="UI_FONT_WEIGHT_SEMIBOLD"
 					:color="{ text: { base: 'var(--color-text-muted)' } }"
 					:size-scale="sizeScale"
 					>{{ name }}</BaseText
@@ -66,7 +66,7 @@
 									<span
 										class="base-calendar__popover-highlight-dot"
 										:style="{ backgroundColor: hl.color || 'var(--color-accent)' }" />
-									<BaseText tag="span" :size-scale="sizeScale">{{ hl.label || 'Событие' }}</BaseText>
+									<BaseText tag="span" :size-scale="sizeScale">{{ hl.label || UI_CALENDAR_EVENT_TEXT }}</BaseText>
 								</div>
 							</div>
 						</slot>
@@ -81,6 +81,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseText } from '@components/BaseText'
 import { useClickOutside } from '@composables/useClickOutside'
+import { UI_CALENDAR_EVENT_TEXT, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { formatPopoverDate } from '@utils/dateUtils'
 import { ref } from 'vue'
 import type { CalendarHighlight, CalendarView } from '../model/BaseCalendar.types'

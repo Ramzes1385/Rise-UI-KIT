@@ -1,204 +1,50 @@
 <template>
-	<!-- Режим: модальное окно -->
-	<template v-if="mode === 'modal'">
-		<div
-			class="base-search"
-			:class="[variantClass, { 'base-search--disabled': isDisabled }, classes.root]"
-			:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-			<BaseInput
-				:model-value="query"
-				:placeholder="placeholder"
-				:variant="variant"
-				:size-scale="sizeScale"
-				:is-disabled="isDisabled"
-				:error="error"
-				class="base-search__trigger"
-				:custom-class="classes.trigger"
-				readonly
-				type="text"
-				@focus="openModal">
-				<template #prefix>
-					<BaseIcon
-						v-if="hasIcon"
-						name="search"
-						class="base-search__icon"
-						:custom-class="classes.icon"
-						:size-scale="calcIconScale('sm', sizeScale)" />
-				</template>
-			</BaseInput>
-		</div>
-		<Teleport to="body">
-			<Transition name="base-search-modal">
-				<div
-					v-if="isModalOpen"
-					class="base-search__modal-overlay"
-					:class="classes.modalOverlay"
-					@click.self="closeModal">
-					<div class="base-search__modal" :class="classes.modal" :style="sizeScaleStyle">
-						<div class="base-search__modal-header" :class="classes.modalHeader">
-						<BaseSearchInput
-							ref="modalInputRef"
-							:model-value="query"
-							:placeholder="resolvedPlaceholder"
-							:variant="variant"
-							:size-scale="sizeScale"
-							:is-disabled="isDisabled"
-							:error="error"
-							:has-icon="hasIcon"
-							:has-clear="hasClear"
-							:is-loading="isLoading"
-							:input-class="classes.modalInput"
-							:classes="classes"
-								@update:model-value="handleInput"
-								@keydown="handleKeydown"
-								@clear="handleClear" />
-							<BaseButton
-								variant="ghost"
-								class="base-search__modal-close"
-								:custom-class="classes.modalClose"
-								:size-scale="sizeScale"
-								@click="closeModal">
-								<BaseIcon
-									name="close"
-									:custom-class="classes.modalCloseIcon"
-									:size-scale="calcIconScale('sm', sizeScale)" />
-							</BaseButton>
-						</div>
-						<div v-if="shouldShowResults && query" class="base-search__modal-results" :class="classes.modalResults">
-							<BaseSearchResults
-								:visible-results="visibleResults"
-								:query="query"
-								:is-loading="isLoading"
-								:size-scale="sizeScale"
-								:highlighted-index="highlightedIndex"
-								:classes="classes"
-								@select="handleSelect"
-								@highlight="highlightedIndex = $event">
-								<template #result="slotProps">
-									<slot name="result" v-bind="slotProps" />
-								</template>
-								<template #results="slotProps">
-									<slot name="results" v-bind="slotProps" />
-								</template>
-								<template #result-before="slotProps">
-									<slot name="result-before" v-bind="slotProps" />
-								</template>
-								<template #result-after="slotProps">
-									<slot name="result-after" v-bind="slotProps" />
-								</template>
-								<template #empty>
-									<slot name="empty" />
-								</template>
-								<template #loading>
-									<slot name="loading" />
-								</template>
-							</BaseSearchResults>
-						</div>
-					</div>
-				</div>
-			</Transition>
-		</Teleport>
-	</template>
-
-	<!-- Режим: боковая панель -->
-	<template v-else-if="mode === 'sidebar'">
-		<div
-			class="base-search"
-			:class="[variantClass, { 'base-search--disabled': isDisabled }, classes.root]"
-			:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-			<BaseInput
-				:model-value="query"
-				:placeholder="placeholder"
-				:variant="variant"
-				:size-scale="sizeScale"
-				:is-disabled="isDisabled"
-				:error="error"
-				class="base-search__trigger"
-				:custom-class="classes.trigger"
-				readonly
-				type="text"
-				@focus="openSidebar">
-				<template #prefix>
-					<BaseIcon
-						v-if="hasIcon"
-						name="search"
-						class="base-search__icon"
-						:custom-class="classes.icon"
-						:size-scale="calcIconScale('sm', sizeScale)" />
-				</template>
-			</BaseInput>
-		</div>
-		<Teleport to="body">
-			<Transition name="base-search-sidebar">
-				<div
-					v-if="isSidebarOpen"
-					class="base-search__sidebar-overlay"
-					:class="classes.sidebarOverlay"
-					@click.self="closeSidebar">
-					<div class="base-search__sidebar" :class="classes.sidebar" :style="sizeScaleStyle">
-						<div class="base-search__sidebar-header" :class="classes.sidebarHeader">
-						<BaseSearchInput
-							ref="sidebarInputRef"
-							:model-value="query"
-							:placeholder="resolvedPlaceholder"
-							:variant="variant"
-							:size-scale="sizeScale"
-							:is-disabled="isDisabled"
-							:error="error"
-							:has-icon="hasIcon"
-							:has-clear="hasClear"
-							:is-loading="isLoading"
-							:input-class="classes.sidebarInput"
-							:classes="classes"
-								@update:model-value="handleInput"
-								@keydown="handleKeydown"
-								@clear="handleClear" />
-							<BaseButton
-								variant="ghost"
-								class="base-search__sidebar-close"
-								:custom-class="classes.sidebarClose"
-								:size-scale="sizeScale"
-								@click="closeSidebar">
-								<BaseIcon
-									name="close"
-									:custom-class="classes.sidebarCloseIcon"
-									:size-scale="calcIconScale('sm', sizeScale)" />
-							</BaseButton>
-						</div>
-						<div v-if="shouldShowResults && query" class="base-search__sidebar-results" :class="classes.sidebarResults">
-							<BaseSearchResults
-								:visible-results="visibleResults"
-								:query="query"
-								:is-loading="isLoading"
-								:size-scale="sizeScale"
-								:highlighted-index="highlightedIndex"
-								:classes="classes"
-								@select="handleSelect"
-								@highlight="highlightedIndex = $event">
-								<template #result="slotProps">
-									<slot name="result" v-bind="slotProps" />
-								</template>
-								<template #results="slotProps">
-									<slot name="results" v-bind="slotProps" />
-								</template>
-								<template #result-before="slotProps">
-									<slot name="result-before" v-bind="slotProps" />
-								</template>
-								<template #result-after="slotProps">
-									<slot name="result-after" v-bind="slotProps" />
-								</template>
-								<template #empty>
-									<slot name="empty" />
-								</template>
-								<template #loading>
-									<slot name="loading" />
-								</template>
-							</BaseSearchResults>
-						</div>
-					</div>
-				</div>
-			</Transition>
-		</Teleport>
+	<!-- Режим: модальное окно / боковая панель -->
+	<template v-if="mode === 'modal' || mode === 'sidebar'">
+		<BaseSearchOverlay
+			ref="overlayRef"
+			:panel="mode"
+			:model-value="query"
+			:search-placeholder="resolvedPlaceholder"
+			:trigger-placeholder="placeholder"
+			:variant="variant"
+			:size-scale="sizeScale"
+			:is-disabled="isDisabled"
+			:error="error"
+			:has-icon="hasIcon"
+			:has-clear="hasClear"
+			:is-loading="isLoading"
+			:visible-results="visibleResults"
+			:highlighted-index="highlightedIndex"
+			:should-show-results="shouldShowResults"
+			:classes="classes"
+			:color="color"
+			:custom-class="customClass"
+			@update:model-value="handleInput"
+			@keydown="handleKeydown"
+			@clear="handleClear"
+			@select="handleSelect"
+			@highlight="highlightedIndex = $event"
+			@close="handleOverlayClose">
+			<template #result="slotProps">
+				<slot name="result" v-bind="slotProps" />
+			</template>
+			<template #results="slotProps">
+				<slot name="results" v-bind="slotProps" />
+			</template>
+			<template #result-before="slotProps">
+				<slot name="result-before" v-bind="slotProps" />
+			</template>
+			<template #result-after="slotProps">
+				<slot name="result-after" v-bind="slotProps" />
+			</template>
+			<template #empty>
+				<slot name="empty" />
+			</template>
+			<template #loading>
+				<slot name="loading" />
+			</template>
+		</BaseSearchOverlay>
 	</template>
 
 	<!-- Режим: по умолчанию (inline dropdown) -->
@@ -270,24 +116,19 @@
 </template>
 
 <script setup lang="ts">
-import { calcIconScale } from '@components/BaseIcon'
 import type { BaseSearchEmits, BaseSearchProps, SearchResult } from './BaseSearch.types'
 
 import { UI_DEBOUNCE_DEFAULT_MS, UI_SEARCH_PLACEHOLDER } from '@constants'
-import { BaseButton } from '@components/BaseButton'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
-import { useEscapeKey } from '@composables/useEscapeKey'
 import { useListNavigation } from '@composables/useListNavigation'
-import { useScrollLock } from '@composables/useScrollLock'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import './BaseSearch.style.scss'
 import BaseSearchInput from './ui/BaseSearchInput.vue'
+import BaseSearchOverlay from './ui/BaseSearchOverlay.vue'
 import BaseSearchResults from './ui/BaseSearchResults.vue'
 
 const props = withDefaults(defineProps<BaseSearchProps>(), {
@@ -351,14 +192,11 @@ const { classes } = useCustomClass({
 })
 
 const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
-const modalInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
-const sidebarInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
+const overlayRef = ref<InstanceType<typeof BaseSearchOverlay> | null>(null)
 const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_SEARCH_PLACEHOLDER)
 const query = ref(props.modelValue)
 const isFocused = ref(false)
 const isSearchTriggered = ref(false)
-const isModalOpen = ref(false)
-const isSidebarOpen = ref(false)
 
 /** Видимые результаты (фильтрация по запросу) */
 const visibleResults = computed((): SearchResult[] => {
@@ -419,20 +257,7 @@ const {
 	itemCount: () => visibleResults.value.length,
 	onSelect: index => handleSelect(visibleResults.value[index]),
 	onEscape: () => {
-		if (props.mode === 'modal') closeModal()
-		else if (props.mode === 'sidebar') closeSidebar()
-	},
-})
-
-/** Блокировка скролла для modal/sidebar */
-const { lock: lockScroll, unlock: unlockScroll } = useScrollLock()
-
-/** Закрытие по Escape для modal/sidebar */
-useEscapeKey({
-	isActive: () => isModalOpen.value || isSidebarOpen.value,
-	callback: () => {
-		if (isModalOpen.value) closeModal()
-		if (isSidebarOpen.value) closeSidebar()
+		if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.close()
 	},
 })
 
@@ -491,48 +316,17 @@ function handleSelect(item: SearchResult): void {
 	emit('select', item)
 	emit('update:modelValue', item.title)
 	isFocused.value = false
-	if (props.mode === 'modal') closeModal()
-	else if (props.mode === 'sidebar') closeSidebar()
+	if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.close()
 }
 
-/** Открыть модальное окно */
-function openModal(): void {
-	if (props.isDisabled) return
-	isModalOpen.value = true
-	lockScroll()
-	nextTick(() => {
-		modalInputRef.value?.focus()
-	})
-}
-
-/** Закрыть модальное окно */
-function closeModal(): void {
-	isModalOpen.value = false
-	unlockScroll()
-	resetHighlight()
-}
-
-/** Открыть боковую панель */
-function openSidebar(): void {
-	if (props.isDisabled) return
-	isSidebarOpen.value = true
-	lockScroll()
-	nextTick(() => {
-		sidebarInputRef.value?.focus()
-	})
-}
-
-/** Закрыть боковую панель */
-function closeSidebar(): void {
-	isSidebarOpen.value = false
-	unlockScroll()
+/** Обработка закрытия overlay (modal/sidebar) */
+function handleOverlayClose(): void {
 	resetHighlight()
 }
 
 /** Фокус на активный инпут */
 function focusActiveInput(): void {
-	if (props.mode === 'modal') modalInputRef.value?.focus()
-	else if (props.mode === 'sidebar') sidebarInputRef.value?.focus()
+	if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.focus()
 	else baseInputRef.value?.focus()
 }
 

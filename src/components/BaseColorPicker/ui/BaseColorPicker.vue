@@ -12,7 +12,7 @@
 				:class="classes.swatch"
 				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor }"
 				:disabled="isDisabled"
-				:aria-label="`Выбранный цвет ${swatchColor}`">
+				:aria-label="`${UI_COLOR_PICKER.SELECTED_COLOR} ${swatchColor}`">
 				<slot name="trigger" />
 			</button>
 		</template>
@@ -23,7 +23,7 @@
 				class="base-color-picker__area"
 				:style="{ backgroundColor: picker.hueColor.value }"
 				role="slider"
-				aria-label="Насыщенность и яркость"
+				:aria-label="UI_COLOR_PICKER.SATURATION_BRIGHTNESS"
 				:aria-valuetext="picker.hex.value"
 				@pointerdown="handleAreaPointerDown">
 				<span class="base-color-picker__marker" :style="picker.markerStyle.value" />
@@ -34,7 +34,7 @@
 				type="range"
 				min="0"
 				max="360"
-				aria-label="Тон"
+				:aria-label="UI_COLOR_PICKER.HUE"
 				:value="picker.hsv.value.h"
 				@input="handleHueInput" />
 
@@ -42,7 +42,7 @@
 				v-if="!isHexHidden"
 				class="base-color-picker__hex"
 				type="text"
-				aria-label="HEX-значение"
+				:aria-label="UI_COLOR_PICKER.HEX_VALUE"
 				:value="swatchColor"
 				@change="handleHexChange" />
 
@@ -53,7 +53,7 @@
 					type="button"
 					class="base-color-picker__preset"
 					:style="{ backgroundColor: preset }"
-					:aria-label="`Пресет ${preset}`"
+					:aria-label="`${UI_COLOR_PICKER.PRESET} ${preset}`"
 					@click="handlePresetClick(preset)" />
 			</div>
 
@@ -73,7 +73,7 @@
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
-import { UI_NO_COLOR_TEXT } from '@constants'
+import { UI_COLOR_PICKER, UI_NO_COLOR_TEXT } from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import '../styles/BaseColorPicker.style.scss'

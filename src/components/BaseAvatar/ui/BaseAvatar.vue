@@ -16,7 +16,7 @@
 				<BaseText
 					v-else
 					tag="span"
-					:weight="600"
+					:weight="UI_FONT_WEIGHT_SEMIBOLD"
 					:size-scale="props.sizeScale"
 					class="base-avatar__initials"
 					:custom-class="classes.initials">
@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { computed, ref, watch } from 'vue'
 import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
 import BaseText from '@components/BaseText/ui/BaseText.vue'

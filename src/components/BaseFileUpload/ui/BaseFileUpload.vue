@@ -37,9 +37,9 @@
 				<BaseText v-if="accept" tag="span" class="base-file-upload__hint" :custom-class="classes.hint">{{
 					formatHint
 				}}</BaseText>
-				<BaseText v-if="maxSize" tag="span" class="base-file-upload__hint" :custom-class="classes.hint"
-					>до {{ maxSize }} МБ</BaseText
-				>
+			<BaseText v-if="maxSize" tag="span" class="base-file-upload__hint" :custom-class="classes.hint"
+				>{{ UI_FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_FILE_MAX_SIZE_SUFFIX }}</BaseText
+			>
 			</slot>
 		</div>
 
@@ -139,9 +139,10 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
-import { UI_DELETE_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS } from '@constants'
+import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, validateFile } from '@utils/fileUtils'
+import { generateId } from '@utils/idUtils'
 
 import '../styles/BaseFileUpload.style.scss'
 
@@ -153,10 +154,10 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	maxSize: 5,
 	maxCount: 10,
 	label: '',
-	buttonText: 'Выберите файлы',
+	buttonText: UI_FILE_SELECT_TEXT,
 	previewSize: 64,
 	allowPreview: true,
-	emptyText: 'Перетащите файлы сюда',
+	emptyText: UI_FILE_DROP_TEXT,
 	sizeScale: 100,
 	error: '',
 })
@@ -212,11 +213,6 @@ const scaledPreviewSize = computed(() => Math.round((props.previewSize * props.s
 /** Подсказка по форматам */
 const formatHint = computed(() => formatAcceptHint(props.accept))
 
-/** Генерация уникального ID */
-function generateId(): string {
-	return `f_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
-}
-
 /** Форматирование размера */
 function formatSize(bytes: number): string {
 	return formatFileSize(bytes)
@@ -250,8 +246,9 @@ async function addFiles(files: File[]): Promise<void> {
 
 	const remaining = props.maxCount - uploadedFiles.value.length
 	if (remaining <= 0) {
-		internalErrors.value.push(`Максимум файлов: ${props.maxCount}`)
-		emit('error', `Максимум файлов: ${props.maxCount}`)
+		const msg = `${UI_FILE_MAX_COUNT_PREFIX} ${props.maxCount}`
+		internalErrors.value.push(msg)
+		emit('error', msg)
 		return
 	}
 

@@ -62,17 +62,17 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
-import { computed, getCurrentInstance } from 'vue'
-import { resolveBooleanPropDefault } from '../../model/BaseDatePickerCalendar.types'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { computed } from 'vue'
 
 const props = defineProps<DatePickerFieldProps>()
-const rawProps = getCurrentInstance()?.vnode.props
+const { resolveBooleanPropDefault } = useExplicitPropDetection()
 
 const resolvedProps = computed(() => ({
 	label: props.label ?? '',
 	error: props.error ?? '',
 	isDisabled: props.isDisabled ?? false,
-	isReadonly: resolveBooleanPropDefault(rawProps, 'isReadonly', props.isReadonly, true),
+	isReadonly: resolveBooleanPropDefault('isReadonly', props.isReadonly, true),
 	isRequired: props.isRequired ?? false,
 	isClearable: props.isClearable ?? false,
 	isOpen: props.isOpen ?? false,

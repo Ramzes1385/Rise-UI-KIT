@@ -24,7 +24,7 @@
 						tag="h4"
 						tabindex="0"
 						:size-scale="sizeScale"
-						:weight="600"
+						:weight="UI_FONT_WEIGHT_SEMIBOLD"
 						class="base-mega-menu__title"
 						:class="[{ 'base-mega-menu__title--open': isColumnOpen(column.title) }, classes.title]"
 						@click="toggleColumn(column.title)">
@@ -116,7 +116,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
-import { UI_HOVER_DELAY_MS } from '@constants'
+import { UI_FONT_WEIGHT_SEMIBOLD, UI_HOVER_DELAY_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
 import { navigateAndEmit } from '@utils/navigationUtils'

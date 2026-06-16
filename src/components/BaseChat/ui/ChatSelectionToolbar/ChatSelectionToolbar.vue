@@ -1,30 +1,30 @@
 <template>
 	<div class="base-chat-selection-toolbar">
 		<div class="base-chat-selection-toolbar__info">
-			<BaseText :size-scale="sizeScale" :weight="600"> Выбрано: {{ selectedCount }} </BaseText>
+			<BaseText :size-scale="props.sizeScale" :weight="UI_FONT_WEIGHT_SEMIBOLD"> {{ UI_CHAT_SELECTED_PREFIX }} {{ selectedCount }} </BaseText>
 		</div>
 		<div class="base-chat-selection-toolbar__actions">
-			<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('forward')">
+			<BaseButton variant="ghost" :size-scale="props.sizeScale" @click="emit('forward')">
 				<template #left>
-					<BaseIcon name="reply" :size-scale="sizeScale" />
+					<BaseIcon name="reply" :size-scale="props.sizeScale" />
 				</template>
-				Переслать
+				{{ UI_CHAT_FORWARD }}
 			</BaseButton>
 			<BaseButton
 				variant="ghost"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				class="base-chat-selection-toolbar__btn--danger"
 				@click="emit('delete')">
 				<template #left>
-					<BaseIcon name="x-circle" :size-scale="sizeScale" />
+					<BaseIcon name="x-circle" :size-scale="props.sizeScale" />
 				</template>
-				Удалить
+				{{ UI_CHAT_DELETE }}
 			</BaseButton>
-			<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('cancel')">
+			<BaseButton variant="ghost" :size-scale="props.sizeScale" @click="emit('cancel')">
 				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale" />
+					<BaseIcon name="close" :size-scale="props.sizeScale" />
 				</template>
-				Отмена
+				{{ UI_CHAT_CANCEL }}
 			</BaseButton>
 		</div>
 	</div>
@@ -34,7 +34,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { computed } from 'vue'
+import { UI_CHAT_CANCEL, UI_CHAT_DELETE, UI_CHAT_FORWARD, UI_CHAT_SELECTED_PREFIX, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import './ChatSelectionToolbar.style.scss'
 
 interface ChatSelectionToolbarProps {
@@ -42,9 +42,9 @@ interface ChatSelectionToolbarProps {
 	sizeScale?: number
 }
 
-const props = defineProps<ChatSelectionToolbarProps>()
-
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<ChatSelectionToolbarProps>(), {
+	sizeScale: 100,
+})
 
 const emit = defineEmits<{
 	(e: 'forward'): void

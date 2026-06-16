@@ -3,9 +3,9 @@
 		<div class="base-chat-pinned-panel__content" @click="handlePanelClick">
 			<BaseIcon name="pin" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<div class="base-chat-pinned-panel__text-wrapper">
-				<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__title">
-					Закрепленное сообщение
-					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} из ${pinnedMessages.length})` : '' }}
+				<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__title">
+					{{ UI_CHAT_PINNED_MESSAGE }}
+					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_PINNED_COUNTER} ${pinnedMessages.length})` : '' }}
 				</BaseText>
 				<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-pinned-panel__preview">
 					{{ currentMessageText }}
@@ -20,7 +20,7 @@
 					:padding="1"
 					:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 					class="base-chat-pinned-panel__nav-btn"
-					aria-label="Предыдущее закреплённое сообщение"
+					:aria-label="UI_CHAT_PREV_PINNED_ARIA"
 					@click="handlePrev">
 					<template #left>
 						<BaseIcon name="chevron-up" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -31,7 +31,7 @@
 					:padding="1"
 					:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 					class="base-chat-pinned-panel__nav-btn"
-					aria-label="Следующее закреплённое сообщение"
+					:aria-label="UI_CHAT_NEXT_PINNED_ARIA"
 					@click="handleNext">
 					<template #left>
 						<BaseIcon name="chevron-down" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -45,7 +45,7 @@
 				:padding="1"
 				:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 				class="base-chat-pinned-panel__unpin-btn"
-				aria-label="Открепить сообщение"
+				:aria-label="UI_CHAT_UNPIN_ARIA"
 				@click="handleUnpin">
 				<template #left>
 					<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
@@ -59,7 +59,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_FILE, UI_CHAT_NEXT_PINNED_ARIA, UI_CHAT_PHOTO, UI_CHAT_PINNED_COUNTER, UI_CHAT_PINNED_MESSAGE, UI_CHAT_PREV_PINNED_ARIA, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_UNPIN_ARIA, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_SMALL } from '@constants'
 import { computed } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 import './ChatPinnedPanel.style.scss'
@@ -93,7 +93,7 @@ const currentMessageText = computed((): string => {
 	const text = currentMessage.value.text || ''
 	if (currentMessage.value.attachments && currentMessage.value.attachments.length > 0) {
 		const hasImage = currentMessage.value.attachments.some(attachment => attachment.type === 'image')
-		const prefix = hasImage ? '🖼️ Фото' : '📎 Файл'
+		const prefix = hasImage ? `🖼️ ${UI_CHAT_PHOTO}` : `📎 ${UI_CHAT_FILE}`
 		return text ? `${prefix}: ${text}` : prefix
 	}
 	return text

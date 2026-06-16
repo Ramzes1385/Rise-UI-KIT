@@ -34,26 +34,22 @@ const { classes } = useCustomClass({
 	elementKeys: ['root'],
 })
 
+function scaleDimension(value: number | string, scale: number): string {
+	if (typeof value === 'number') return `${value * scale}px`
+	if (scale === 1) return value
+	return `calc(${value} * ${scale})`
+}
+
 const skeletonStyle = computed(() => {
 	const styles: Record<string, string> = {}
 	const scale = props.sizeScale / 100
 
 	if (props.width) {
-		styles.width =
-			typeof props.width === 'number'
-				? `${props.width * scale}px`
-				: scale === 1
-					? props.width
-					: `calc(${props.width} * ${scale})`
+		styles.width = scaleDimension(props.width, scale)
 	}
 
 	if (props.height) {
-		styles.height =
-			typeof props.height === 'number'
-				? `${props.height * scale}px`
-				: scale === 1
-					? props.height
-					: `calc(${props.height} * ${scale})`
+		styles.height = scaleDimension(props.height, scale)
 	}
 
 	if (props.color) {

@@ -7,11 +7,11 @@
 			:style="{ top: `${y}px`, left: `${x}px` }">
 			<div class="base-chat-context-menu__reactions">
 				<button
-					v-for="emoji in popularEmojis"
+					v-for="emoji in props.popularEmojis"
 					:key="emoji"
 					type="button"
 					class="base-chat-context-menu__reaction-btn"
-					:aria-label="`Поставить реакцию ${emoji}`"
+					:aria-label="`${UI_CHAT_ADD_REACTION} ${emoji}`"
 					@click="handleReaction(emoji)">
 					{{ emoji }}
 				</button>
@@ -54,8 +54,8 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_COPY_TEXT, UI_CHAT_DELETE, UI_CHAT_PIN, UI_CHAT_REPLY, UI_CHAT_SCALE_MEMBER, UI_CHAT_SELECT, UI_CHAT_UNPIN, UI_SCALE_SMALL } from '@constants'
-import { computed, ref } from 'vue'
+import { UI_CHAT_ADD_REACTION, UI_CHAT_COPY_TEXT, UI_CHAT_DELETE, UI_CHAT_PIN, UI_CHAT_REPLY, UI_CHAT_SCALE_MEMBER, UI_CHAT_SELECT, UI_CHAT_UNPIN, UI_SCALE_SMALL } from '@constants'
+import { ref } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 
 interface ChatMessageContextMenuProps {
@@ -68,9 +68,9 @@ interface ChatMessageContextMenuProps {
 	popularEmojis?: string[]
 }
 
-const props = defineProps<ChatMessageContextMenuProps>()
-
-const popularEmojis = computed(() => props.popularEmojis ?? ['👍', '❤️', '🔥', '😂', '😮', '😢'])
+const props = withDefaults(defineProps<ChatMessageContextMenuProps>(), {
+	popularEmojis: () => ['👍', '❤️', '🔥', '😂', '😮', '😢'],
+})
 
 const emit = defineEmits<{
 	(event: 'reaction', emoji: string): void

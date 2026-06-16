@@ -110,7 +110,7 @@
 							:custom-class="classes.currentIcon" />
 						<BaseText
 							tag="span"
-							:weight="600"
+							:weight="UI_FONT_WEIGHT_SEMIBOLD"
 							:size-scale="calcIconScale('sm', sizeScale)"
 							itemprop="name"
 							:custom-class="classes.currentText"
@@ -142,7 +142,7 @@ import { BaseText } from '@components/BaseText'
 
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_BREADCRUMBS_ARIA } from '@constants'
+import { UI_BREADCRUMBS_ARIA, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import { computed, ref } from 'vue'

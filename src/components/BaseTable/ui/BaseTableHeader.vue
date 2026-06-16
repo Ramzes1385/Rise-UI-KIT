@@ -24,7 +24,7 @@
 				@click="emit('sort', column)">
 				<slot :name="`header-${column.key}`" :column="column">
 					<div class="base-table__th-content">
-						<BaseTooltip v-if="column.isSortable" text="Сортировать" position="top" :size-scale="sizeScale">
+						<BaseTooltip v-if="column.isSortable" :text="UI_SORT_ARIA" position="top" :size-scale="sizeScale">
 							<BaseText tag="span" class="base-table__th-label">{{ column.label }}</BaseText>
 						</BaseTooltip>
 						<BaseText v-else tag="span" class="base-table__th-label">{{ column.label }}</BaseText>
@@ -57,6 +57,7 @@ import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
+import { UI_SORT_ARIA } from '@constants'
 
 import type { SortDirection, TableColumn } from '../model/BaseTable.types'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
