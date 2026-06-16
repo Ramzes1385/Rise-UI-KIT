@@ -29,7 +29,7 @@
 								>{{ title }}</BaseText
 							>
 						</slot>
-						<BaseButton variant="ghost" aria-label="Закрыть" :padding="2" @click="handleClose">
+						<BaseButton variant="ghost" :aria-label="UI_CLOSE_ARIA" :padding="2" @click="handleClose">
 							<BaseIcon name="close" />
 						</BaseButton>
 					</div>
@@ -51,7 +51,6 @@
 
 <script setup lang="ts">
 import { computed, useSlots } from 'vue'
-import type { PropType } from 'vue'
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -59,25 +58,20 @@ import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
+import { UI_CLOSE_ARIA } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps } from '../model/BaseSlideover.types'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	customClass: [String, Object] as PropType<BaseSlideoverProps['customClass']>,
-	isOpen: { type: Boolean, required: true },
-	title: String,
-	side: { type: String as PropType<BaseSlideoverProps['side']>, default: 'right' },
-	width: { type: Number, default: 100 },
-	isFullWidth: { type: Boolean, default: false },
-	closeOnOverlay: { type: Boolean, default: true },
-	closeOnEscape: { type: Boolean, default: true },
-	isContained: { type: Boolean, default: false },
-	container: [String, Object] as PropType<BaseSlideoverProps['container']>,
-	hasOverlay: { type: Boolean, default: true },
-	padding: { type: [Number, Object] as PropType<BaseSlideoverProps['padding']>, default: 24 },
+const props = withDefaults(defineProps<BaseSlideoverProps>(), {
+	side: 'right',
+	width: 100,
+	isFullWidth: false,
+	closeOnOverlay: true,
+	closeOnEscape: true,
+	isContained: false,
+	hasOverlay: true,
+	padding: 24,
 })
-/* eslint-enable vue/require-default-prop */
 
 const { classes } = useCustomClass({
 	getClass: function () {

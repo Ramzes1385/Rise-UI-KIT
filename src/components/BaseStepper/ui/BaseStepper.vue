@@ -41,7 +41,7 @@
 						<BaseText
 							tag="span"
 							:size-scale="sizeScale"
-							:weight="500"
+							:weight="UI_FONT_WEIGHT_MEDIUM"
 							class="base-stepper__label"
 							:custom-class="classes.label"
 							>{{ step.label }}</BaseText
@@ -72,21 +72,22 @@ import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT_MEDIUM } from '@constants'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps } from '../model/BaseStepper.types'
 
-const props = defineProps<BaseStepperProps>()
-
-const orientation = computed(() => props.orientation ?? 'horizontal')
-const shape = computed(() => props.shape ?? 'circle')
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseStepperProps>(), {
+	orientation: 'horizontal',
+	shape: 'circle',
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BaseStepperEmits>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-stepper',
 	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale ?? 100,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [

@@ -1,10 +1,10 @@
 <template>
-	<Teleport to="body" :disabled="isContained">
+	<Teleport to="body" :disabled="props.isContained">
 		<div
 			class="base-notification-container"
 			:class="[
-				`base-notification-container--${position}`,
-				{ 'base-notification-container--contained': isContained },
+				`base-notification-container--${props.position}`,
+				{ 'base-notification-container--contained': props.isContained },
 				classes.root,
 			]"
 			:style="sizeScaleStyle">
@@ -17,13 +17,13 @@
 					:style="[variantStyle, customColorStyle]">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
-						:size-scale="calcIconScale('md', sizeScale)"
+						:size-scale="calcIconScale('md', props.sizeScale)"
 						class="base-notification__icon"
 						:custom-class="classes.icon" />
 					<div class="base-notification__content" :class="classes.content">
 						<BaseText
 							tag="h4"
-							:size-scale="sizeScale"
+							:size-scale="props.sizeScale"
 							:weight="600"
 							class="base-notification__title"
 							:custom-class="classes.title">
@@ -32,7 +32,7 @@
 						<BaseText
 							v-if="notification.description"
 							tag="p"
-							:size-scale="sizeScale"
+							:size-scale="props.sizeScale"
 							:color="{ text: { base: 'var(--color-text-muted)' } }"
 							class="base-notification__description"
 							:custom-class="classes.description">
@@ -43,15 +43,15 @@
 						variant="ghost"
 						:padding="2"
 						class="base-notification__close"
-						:size-scale="sizeScale"
+						:size-scale="props.sizeScale"
 						:custom-class="classes.close"
 						@click="remove(notification.id)">
-						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
+						<BaseIcon name="close" :size-scale="calcIconScale('sm', props.sizeScale)" />
 					</BaseButton>
 					<div
 						class="base-notification__progress"
 						:class="classes.progress"
-						:style="{ animationDuration: `${notification.duration || 3000}ms` }"></div>
+						:style="{ animationDuration: `${notification.duration || UI_NOTIFICATION_AUTO_CLOSE_MS}ms` }"></div>
 				</div>
 			</TransitionGroup>
 		</div>
@@ -62,24 +62,25 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { UI_NOTIFICATION_AUTO_CLOSE_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import '../styles/BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, NotificationItem } from '../model/BaseNotification.types'
 
-const props = defineProps<BaseNotificationProps>()
-
-const title = computed(() => props.title ?? '')
-const type = computed(() => props.type ?? 'info')
-const position = computed(() => props.position ?? 'top-right')
-const duration = computed(() => props.duration ?? 3000)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const isContained = computed(() => props.isContained ?? false)
+const props = withDefaults(defineProps<BaseNotificationProps>(), {
+	title: '',
+	type: 'info',
+	position: 'top-right',
+	duration: UI_NOTIFICATION_AUTO_CLOSE_MS,
+	sizeScale: 100,
+	isContained: false,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-notification',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'],
@@ -104,7 +105,7 @@ function add(notification: BaseNotificationProps) {
 	const id = nextId++
 	notifications.value.unshift({ ...notification, id })
 
-	const timer = setTimeout(() => remove(id), notification.duration ?? 3000)
+	const timer = setTimeout(() => remove(id), notification.duration ?? UI_NOTIFICATION_AUTO_CLOSE_MS)
 	autoCloseTimers.set(id, timer)
 }
 
@@ -126,8 +127,8 @@ onBeforeUnmount(() => {
 
 /** Декларативное использование (через v-if) */
 onMounted(() => {
-	if (title.value) {
-		add({ ...props, title: title.value, type: type.value, position: position.value, duration: duration.value })
+	if (props.title) {
+		add({ ...props, title: props.title, type: props.type, position: props.position, duration: props.duration })
 	}
 })
 

@@ -58,24 +58,17 @@ import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
 import { computed, useSlots } from 'vue'
-import type { PropType } from 'vue'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from '../model/BaseModal.types'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	isOpen: { type: Boolean, required: true },
-	title: String,
-	variant: { type: String as PropType<BaseModalProps['variant']>, default: 'default' },
-	color: Object as PropType<BaseModalProps['color']>,
-	closeOnOverlay: { type: Boolean, default: true },
-	fullScreen: String as PropType<BaseModalProps['fullScreen']>,
-	sizeScale: { type: Number, default: 100 },
-	isContained: { type: Boolean, default: false },
-	hasOverlay: { type: Boolean, default: true },
-	customClass: [String, Object] as PropType<BaseModalProps['customClass']>,
+const props = withDefaults(defineProps<BaseModalProps>(), {
+	isOpen: undefined,
+	variant: 'default',
+	closeOnOverlay: true,
+	sizeScale: 100,
+	isContained: false,
+	hasOverlay: true,
 })
-/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-modal',

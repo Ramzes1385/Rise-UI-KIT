@@ -6,8 +6,8 @@
 			variantClass,
 			{
 				'base-switch--error': error,
-				'base-switch--disabled': isDisabled,
-				'base-switch--reverse': reverse,
+				'base-switch--disabled': props.isDisabled,
+				'base-switch--reverse': props.reverse,
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
@@ -18,8 +18,8 @@
 					type="checkbox"
 					class="base-switch__input"
 					:class="classes.input"
-					:checked="modelValue"
-					:disabled="isDisabled"
+					:checked="props.modelValue"
+					:disabled="props.isDisabled"
 					@change="handleChange" />
 				<span class="base-switch__slider" :class="classes.slider">
 					<span class="base-switch__handle" :class="classes.handle"></span>
@@ -32,16 +32,16 @@
 						tag="span"
 						class="base-switch__label"
 						:custom-class="classes.label"
-						:size-scale="sizeScale"
+						:size-scale="props.sizeScale"
 						>{{ label }}</BaseText
 					>
 				</slot>
 				<BaseText
-					v-if="isRequired"
+					v-if="props.isRequired"
 					tag="span"
 					class="base-switch__required"
 					:custom-class="classes.required"
-					:size-scale="sizeScale"
+					:size-scale="props.sizeScale"
 					>*</BaseText
 				>
 				<slot />
@@ -53,7 +53,7 @@
 				tag="span"
 				class="base-switch__error-text"
 				:custom-class="classes.errorText"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				>{{ error }}</BaseText
 			>
 		</slot>
@@ -65,23 +65,23 @@ import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types
 
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed, useId } from 'vue'
+import { useId } from 'vue'
 
 import '../styles/BaseSwitch.style.scss'
 
-const props = defineProps<BaseSwitchProps>()
-
-const modelValue = computed(() => props.modelValue ?? false)
-const isDisabled = computed(() => props.isDisabled ?? false)
-const isRequired = computed(() => props.isRequired ?? false)
-const reverse = computed(() => props.reverse ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseSwitchProps>(), {
+	modelValue: false,
+	isDisabled: false,
+	isRequired: false,
+	reverse: false,
+	sizeScale: 100,
+})
 
 const inputId = useId()
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-switch',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'],

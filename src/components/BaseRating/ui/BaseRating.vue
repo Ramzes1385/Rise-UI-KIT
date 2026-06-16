@@ -4,22 +4,22 @@
 		:class="[variantClass, classes.root, { 'base-rating--readonly': isInteractive === false }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="slider"
-		:aria-label="`Оценка от 0 до ${max}`"
+		:aria-label="`Оценка от 0 до ${props.max}`"
 		:aria-valuemin="0"
-		:aria-valuemax="max"
-		:aria-valuenow="modelValue"
+		:aria-valuemax="props.max"
+		:aria-valuenow="props.modelValue"
 		:tabindex="isInteractive ? 0 : -1"
 		@mouseleave="clearHover"
 		@keydown="handleKeydown">
 		<span
-			v-for="star in max"
+			v-for="star in props.max"
 			:key="star"
 			class="base-rating__star"
 			@click="handleClick($event, star)"
 			@mousemove="handleHover($event, star)">
-			<BaseIcon :name="icon" :size-scale="sizeScale" :custom-class="classes.icon" aria-label="" />
+			<BaseIcon :name="props.icon" :size-scale="props.sizeScale" :custom-class="classes.icon" aria-label="" />
 			<span class="base-rating__star-fill" :style="{ width: `${fillPercent(star)}%` }">
-				<BaseIcon :name="filledIcon" :size-scale="sizeScale" :custom-class="classes.iconFilled" aria-label="" />
+				<BaseIcon :name="filledIcon" :size-scale="props.sizeScale" :custom-class="classes.iconFilled" aria-label="" />
 			</span>
 		</span>
 	</div>
@@ -29,44 +29,29 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { computed, ref } from 'vue'
-import type { PropType } from 'vue'
 
 import '../styles/BaseRating.style.scss'
 import type { BaseRatingEmits, BaseRatingProps } from '../model/BaseRating.types'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../model/BaseRating.utils'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	modelValue: { type: Number, default: 0 },
-	max: { type: Number, default: 5 },
-	step: { type: Number, default: 1 },
-	isHoverSmooth: { type: Boolean, default: true },
-	icon: { type: String, default: 'star' },
-	iconFilled: String,
-	isReadonly: { type: Boolean, default: false },
-	isDisabled: { type: Boolean, default: false },
-	variant: { type: String as PropType<BaseRatingProps['variant']>, default: 'default' },
-	sizeScale: { type: Number, default: 100 },
-	color: Object as PropType<BaseRatingProps['color']>,
-	customClass: [String, Object] as PropType<BaseRatingProps['customClass']>,
+const props = withDefaults(defineProps<BaseRatingProps>(), {
+	modelValue: 0,
+	max: 5,
+	step: 1,
+	isHoverSmooth: true,
+	icon: 'star',
+	isReadonly: false,
+	isDisabled: false,
+	variant: 'default',
+	sizeScale: 100,
 })
-/* eslint-enable vue/require-default-prop */
-
-const modelValue = computed(() => props.modelValue ?? 0)
-const max = computed(() => props.max ?? 5)
-const step = computed(() => props.step ?? 1)
-const icon = computed(() => props.icon ?? 'star')
-const isHoverSmooth = computed(() => props.isHoverSmooth)
-const isReadonly = computed(() => props.isReadonly ?? false)
-const isDisabled = computed(() => props.isDisabled ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const emit = defineEmits<BaseRatingEmits>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-rating',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'icon', 'iconFilled'],
@@ -74,9 +59,9 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 
 const hoverValue = ref(0)
 
-const isInteractive = computed((): boolean => !isReadonly.value && !isDisabled.value)
-const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : modelValue.value))
-const filledIcon = computed((): string => props.iconFilled || icon.value)
+const isInteractive = computed((): boolean => !props.isReadonly && !props.isDisabled)
+const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : props.modelValue))
+const filledIcon = computed((): string => props.iconFilled || props.icon)
 
 function fillPercent(star: number): number {
 	return starFillPercent(star, displayValue.value)
@@ -94,9 +79,9 @@ function pointerRatio(event: MouseEvent, target: EventTarget | null): number {
 /** Рассчитать оценку по позиции указателя в звезде (точечно при isHoverSmooth) */
 function valueAt(event: MouseEvent, star: number): number {
 	const ratio = pointerRatio(event, event.currentTarget)
-	return isHoverSmooth.value
-		? rawValueFromPointer(star, ratio, max.value)
-		: valueFromPointer({ star, ratio, step: step.value, max: max.value })
+	return props.isHoverSmooth
+		? rawValueFromPointer(star, ratio, props.max)
+		: valueFromPointer({ star, ratio, step: props.step, max: props.max })
 }
 
 /** Выбор оценки по клику — фиксирует ровно то, что показывает предпросмотр */
@@ -117,7 +102,7 @@ function clearHover(): void {
 }
 
 function changeBy(direction: number): void {
-	const next = snapRating(modelValue.value + direction * step.value, step.value, max.value)
+	const next = snapRating(props.modelValue + direction * props.step, props.step, props.max)
 	emit('update:modelValue', next)
 	emit('change', next)
 }

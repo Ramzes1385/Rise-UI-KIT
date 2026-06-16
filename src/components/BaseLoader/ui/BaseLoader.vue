@@ -1,13 +1,13 @@
 <template>
 	<div
 		class="base-loader"
-		:class="[`base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
+		:class="[`base-loader--${props.variant}`, { 'base-loader--overlay': props.isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="status"
-		aria-label="Загрузка">
+		:aria-label="UI_LOADING_ARIA">
 		<div class="base-loader__animation" :class="classes.animation">
 			<!-- Spinner -->
-			<template v-if="variant === 'spinner'">
+			<template v-if="props.variant === 'spinner'">
 				<svg class="base-loader__spinner" :class="classes.spinner" viewBox="0 0 50 50">
 					<circle class="base-loader__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
 					<circle class="base-loader__spinner-fill" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
@@ -15,19 +15,19 @@
 			</template>
 
 			<!-- Dots -->
-			<template v-if="variant === 'dots'">
+			<template v-if="props.variant === 'dots'">
 				<span class="base-loader__dot"></span>
 				<span class="base-loader__dot"></span>
 				<span class="base-loader__dot"></span>
 			</template>
 
 			<!-- Pulse -->
-			<template v-if="variant === 'pulse'">
+			<template v-if="props.variant === 'pulse'">
 				<span class="base-loader__pulse"></span>
 			</template>
 
 			<!-- Bars -->
-			<template v-if="variant === 'bars'">
+			<template v-if="props.variant === 'bars'">
 				<span class="base-loader__bar"></span>
 				<span class="base-loader__bar"></span>
 				<span class="base-loader__bar"></span>
@@ -35,7 +35,7 @@
 			</template>
 		</div>
 
-		<span v-if="hasLabel" class="base-loader__label" :class="classes.label">{{ label }}</span>
+		<span v-if="props.hasLabel" class="base-loader__label" :class="classes.label">{{ props.label }}</span>
 	</div>
 </template>
 
@@ -43,21 +43,21 @@
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { computed } from 'vue'
+import { UI_LOADING_ARIA, UI_LOADING_TEXT } from '@constants'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../model/BaseLoader.types'
 
-const props = defineProps<BaseLoaderProps>()
-
-const variant = computed(() => props.variant ?? 'spinner')
-const hasLabel = computed(() => props.hasLabel ?? false)
-const label = computed(() => props.label ?? 'Загрузка...')
-const isOverlay = computed(() => props.isOverlay ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseLoaderProps>(), {
+	variant: 'spinner',
+	hasLabel: false,
+	label: UI_LOADING_TEXT,
+	isOverlay: false,
+	sizeScale: 100,
+})
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'animation', 'spinner', 'label'],
 })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 </script>

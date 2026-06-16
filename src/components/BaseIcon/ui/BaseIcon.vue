@@ -21,34 +21,35 @@ import { computed } from 'vue'
 import '../styles/BaseIcon.style.scss'
 import type { BaseIconProps } from '../model/BaseIcon.types'
 
-const props = defineProps<BaseIconProps>()
-
-const color = computed(() => props.color ?? '')
-const rotate = computed(() => props.rotate ?? 0)
-const isFlipX = computed(() => props.isFlipX ?? false)
-const isFlipY = computed(() => props.isFlipY ?? false)
-const ariaLabel = computed(() => props.ariaLabel ?? '')
+const props = withDefaults(defineProps<BaseIconProps>(), {
+	color: '',
+	rotate: 0,
+	isFlipX: false,
+	isFlipY: false,
+	ariaLabel: '',
+	sizeScale: 100,
+})
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'svg'],
 })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale ?? 100 })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 
 const { getIconUrl } = useIcon()
 
 const iconUrl = computed(() => getIconUrl(props.name))
 
-const isDecorative = computed(() => !ariaLabel.value)
+const isDecorative = computed(() => !props.ariaLabel)
 
 const iconStyle = computed(() => {
 	const styles: Record<string, string> = {}
 
-	if (color.value) styles.color = color.value
+	if (props.color) styles.color = props.color
 
 	const transforms: string[] = []
-	if (rotate.value) transforms.push(`rotate(${rotate.value}deg)`)
-	if (isFlipX.value) transforms.push('scaleX(-1)')
-	if (isFlipY.value) transforms.push('scaleY(-1)')
+	if (props.rotate) transforms.push(`rotate(${props.rotate}deg)`)
+	if (props.isFlipX) transforms.push('scaleX(-1)')
+	if (props.isFlipY) transforms.push('scaleY(-1)')
 	if (transforms.length) styles.transform = transforms.join(' ')
 
 	return styles

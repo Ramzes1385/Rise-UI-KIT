@@ -5,7 +5,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div class="base-empty__icon-wrapper" :class="classes.iconWrapper">
 			<slot name="icon">
-				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', sizeScale)" :custom-class="classes.icon" />
+				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', props.sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
@@ -14,7 +14,7 @@
 				v-if="title"
 				tag="h3"
 				:weight="600"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				class="base-empty__title"
 				:custom-class="classes.title">
 				{{ title }}
@@ -23,7 +23,7 @@
 			<BaseText
 				v-if="description"
 				tag="p"
-				:size-scale="sizeScale - 10"
+				:size-scale="props.sizeScale - 10"
 				class="base-empty__description"
 				:custom-class="classes.description">
 				{{ description }}
@@ -49,14 +49,14 @@ import { computed } from 'vue'
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps } from '../model/BaseEmpty.types'
 
-const props = defineProps<BaseEmptyProps>()
-
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseEmptyProps>(), {
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-empty',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'],

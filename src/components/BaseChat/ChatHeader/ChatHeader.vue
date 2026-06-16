@@ -30,9 +30,9 @@
 			<BaseInput
 				:model-value="searchQuery"
 				placeholder="Поиск по сообщениям..."
-				:size-scale="sizeScale * 0.9"
+				:size-scale="sizeScale * UI_CHAT_SCALE_MEMBER"
 				class="base-chat-header__search-input"
-				aria-label="Поиск по сообщениям"
+				:aria-label="UI_CHAT_SEARCH_ARIA"
 				@update:model-value="handleSearchInput">
 				<template #prefix>
 					<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE_SMALL" />
@@ -47,7 +47,7 @@
 				:padding="1"
 				:size-scale="sizeScale"
 				class="base-chat-header__action-btn"
-				:aria-label="isSearching ? 'Закрыть поиск' : 'Поиск по сообщениям'"
+				:aria-label="isSearching ? 'Закрыть поиск' : UI_CHAT_SEARCH_ARIA"
 				@click="handleToggleSearch">
 				<template #left>
 					<BaseIcon :name="isSearching ? 'close' : 'search'" :size-scale="sizeScale" />
@@ -59,7 +59,7 @@
 				:padding="1"
 				:size-scale="sizeScale"
 				class="base-chat-header__action-btn"
-				aria-label="Информация о чате"
+				:aria-label="UI_CHAT_INFO_ARIA"
 				@click="handleInfoClick">
 				<template #left>
 					<BaseIcon name="info" :size-scale="sizeScale" />
@@ -75,18 +75,17 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
-import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
-import { computed } from 'vue'
+import { UI_CHAT_INFO_ARIA, UI_CHAT_SCALE_MEMBER, UI_CHAT_SEARCH_ARIA, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 
-const props = defineProps<ChatHeaderProps>()
-
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const isSearching = computed(() => props.isSearching ?? false)
-const searchQuery = computed(() => props.searchQuery ?? '')
-const isTyping = computed(() => props.isTyping ?? false)
-const typingUsername = computed(() => props.typingUsername ?? '')
+withDefaults(defineProps<ChatHeaderProps>(), {
+	sizeScale: 100,
+	isSearching: false,
+	searchQuery: '',
+	isTyping: false,
+	typingUsername: '',
+})
 
 const emit = defineEmits<ChatHeaderEmits>()
 

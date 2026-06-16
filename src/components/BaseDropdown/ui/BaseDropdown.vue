@@ -5,10 +5,10 @@
 		<Teleport to="body">
 			<Transition name="dropdown">
 				<div
-					v-if="isOpen"
+					v-if="props.isOpen"
 					ref="dropdownRef"
 					class="base-dropdown__panel"
-					:class="[panelClass, variantClass, classes.panel]"
+					:class="[props.panelClass, variantClass, classes.panel]"
 					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
 					@mousedown="handlePanelMousedown"
 					@focusin="handlePanelFocusin">
@@ -31,14 +31,18 @@ import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps } from '../model/BaseDropdown.types'
 
-const props = defineProps<BaseDropdownProps>()
+const props = withDefaults(defineProps<BaseDropdownProps>(), {
+	isOpen: false,
+	position: 'bottom-start',
+	gap: 4,
+	maxHeight: UI_PANEL_MAX_HEIGHT,
+	matchWidth: false,
+	panelClass: '',
+	padding: 8,
+	sizeScale: 100,
+})
 const { wasPropPassed } = useExplicitPropDetection()
 
-const isOpen = computed(() => props.isOpen ?? false)
-const position = computed(() => props.position ?? 'bottom-start')
-const gap = computed(() => props.gap ?? 4)
-const maxHeight = computed(() => props.maxHeight ?? UI_PANEL_MAX_HEIGHT)
-const matchWidth = computed(() => props.matchWidth ?? false)
 const closeOnEscape = computed(() =>
 	wasPropPassed('closeOnEscape') || wasPropPassed('close-on-escape') ? (props.closeOnEscape ?? true) : true,
 )
@@ -47,17 +51,15 @@ const preventMousedown = computed(() =>
 		? (props.preventMousedown ?? true)
 		: true,
 )
-const panelClass = computed(() => props.panelClass ?? '')
-const padding = computed(() => props.padding ?? 8)
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-dropdown__panel',
 	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale ?? 100,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'panel'],
 })
-const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--dd-pad', defaultPadding: 8 })
+const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: 8 })
 
 const emit = defineEmits<BaseDropdownEmits>()
 
@@ -69,7 +71,7 @@ const savedActiveElement = ref<HTMLElement | null>(null)
 
 /** Сохранение активного элемента при открытии */
 watch(
-	() => isOpen.value,
+	() => props.isOpen,
 	value => {
 		if (value) {
 			savedActiveElement.value = document.activeElement as HTMLElement
@@ -83,11 +85,11 @@ watch(
 const { panelStyle, updatePosition } = useDropdownPosition({
 	wrapperRef,
 	dropdownRef,
-	position: () => position.value,
-	gap: () => gap.value,
-	matchWidth: () => matchWidth.value,
-	maxHeight: () => maxHeight.value,
-	isOpen: () => isOpen.value,
+	position: () => props.position,
+	gap: () => props.gap,
+	matchWidth: () => props.matchWidth,
+	maxHeight: () => props.maxHeight,
+	isOpen: () => props.isOpen,
 })
 
 /** Закрытие дропдауна: эмитит update:isOpen и close */
@@ -100,12 +102,12 @@ function handleClose(): void {
 useClickOutside({
 	targets: [wrapperRef, dropdownRef],
 	callback: handleClose,
-	isActive: () => isOpen.value,
+	isActive: () => props.isOpen,
 })
 
 /** Закрытие по Escape */
 useEscapeKey({
-	isActive: () => isOpen.value && closeOnEscape.value,
+	isActive: () => props.isOpen && closeOnEscape.value,
 	callback: handleClose,
 })
 

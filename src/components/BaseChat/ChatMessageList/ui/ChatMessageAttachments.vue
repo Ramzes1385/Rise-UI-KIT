@@ -15,18 +15,18 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * 0.75"
-					class="base-chat-message-list__download-btn"
+				:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+				class="base-chat-message-list__download-btn"
 					:aria-label="`Скачать изображение ${img.name}`"
 					@click.stop="handleDownload(img)">
 					<template #left>
-						<BaseIcon name="download" :size-scale="sizeScale * 0.7" />
+						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 					</template>
 				</BaseButton>
 				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
 					<BaseText
 						:weight="600"
-						:size-scale="sizeScale * 1.2"
+						:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
 						class="base-chat-message-list__collage-overlay-text">
 						+{{ images.length - 3 }}
 					</BaseText>
@@ -41,7 +41,7 @@
 				:key="file.id"
 				class="base-chat-message-list__attached-file"
 				@click.stop="handleFileClick(file)">
-				<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale * 0.9" class="base-chat-message-list__file-icon" />
+				<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-message-list__file-icon" />
 				<div class="base-chat-message-list__attached-file-info">
 					<BaseText
 						tag="span"
@@ -53,7 +53,7 @@
 					<BaseText
 						v-if="file.size"
 						tag="span"
-						:size-scale="sizeScale * 0.75"
+						:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 						class="base-chat-message-list__attached-file-size">
 						{{ file.size }}
 					</BaseText>
@@ -61,12 +61,12 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * 0.75"
-					class="base-chat-message-list__download-btn"
+:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+				class="base-chat-message-list__download-btn"
 					:aria-label="`Скачать файл ${file.name}`"
 					@click.stop="handleDownload(file)">
 					<template #left>
-						<BaseIcon name="download" :size-scale="sizeScale * 0.7" />
+						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 					</template>
 				</BaseButton>
 			</div>
@@ -79,7 +79,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_SCALE_AUTOCOMPLETE } from '@constants'
+import { UI_CHAT_SCALE_FILE_ICON, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_MEMBER, UI_CHAT_SCALE_META, UI_SCALE_AUTOCOMPLETE } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed } from 'vue'
 import type { ChatMessageAttachment } from '../../BaseChat.types'

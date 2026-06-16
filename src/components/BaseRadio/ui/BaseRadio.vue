@@ -3,7 +3,7 @@
 		class="base-radio-group"
 		:class="[
 			{
-				'base-radio-group--error': error,
+				'base-radio-group--error': props.error,
 			},
 			variantClass,
 			classes.root,
@@ -13,15 +13,15 @@
 			v-if="label"
 			tag="span"
 			class="base-radio-group__label"
-			:size-scale="sizeScale"
+			:size-scale="props.sizeScale"
 			:custom-class="classes.label">
 			{{ label }}
-			<BaseText v-if="isRequired" tag="span" class="base-radio-group__required" :size-scale="sizeScale">*</BaseText>
+			<BaseText v-if="props.isRequired" tag="span" class="base-radio-group__required" :size-scale="props.sizeScale">*</BaseText>
 		</BaseText>
 
 		<div
 			class="base-radio-group__options"
-			:class="[{ 'base-radio-group__options--vertical': isVertical }, classes.options]">
+			:class="[{ 'base-radio-group__options--vertical': props.isVertical }, classes.options]">
 			<label
 				v-for="option in options"
 				:key="option.value"
@@ -29,11 +29,11 @@
 				:class="[
 					{
 						'base-radio--disabled': option.isDisabled,
-						'base-radio--error': error,
+						'base-radio--error': props.error,
 					},
 					classes.radio,
 				]">
-				<slot name="option" :option="option" :is-checked="modelValue === option.value">
+				<slot name="option" :option="option" :is-checked="props.modelValue === option.value">
 					<div class="base-radio__wrapper" :class="classes.wrapper">
 						<input
 							type="radio"
@@ -41,11 +41,11 @@
 							:class="classes.input"
 							:name="name"
 							:value="option.value"
-							:checked="modelValue === option.value"
+							:checked="props.modelValue === option.value"
 							:disabled="option.isDisabled"
 							@change="handleChange(option.value)" />
 						<div class="base-radio__circle" :class="classes.circle">
-							<div v-if="modelValue === option.value" class="base-radio__dot" :class="classes.dot"></div>
+							<div v-if="props.modelValue === option.value" class="base-radio__dot" :class="classes.dot"></div>
 						</div>
 					</div>
 					<span class="base-radio__option-label" :class="classes.optionLabel">{{ option.label }}</span>
@@ -54,12 +54,12 @@
 		</div>
 
 		<BaseText
-			v-if="error"
+			v-if="props.error"
 			tag="span"
 			class="base-radio-group__error-text"
-			:size-scale="sizeScale"
+			:size-scale="props.sizeScale"
 			:custom-class="classes.errorText">
-			{{ error }}
+			{{ props.error }}
 		</BaseText>
 	</div>
 </template>
@@ -67,21 +67,20 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed } from 'vue'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
 
-const props = defineProps<BaseRadioProps>()
-
-const isVertical = computed(() => props.isVertical ?? false)
-const isRequired = computed(() => props.isRequired ?? false)
-const error = computed(() => props.error ?? '')
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseRadioProps>(), {
+	isVertical: false,
+	isRequired: false,
+	error: '',
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-radio-group',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'],

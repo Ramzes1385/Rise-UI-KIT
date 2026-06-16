@@ -93,21 +93,22 @@ import { BaseRangeThumb } from './BaseRangeThumb'
 import '../styles/BaseRange.style.scss'
 import type { BaseRangeEmits, BaseRangeProps } from '../model/BaseRange.types'
 
-const props = defineProps<BaseRangeProps>()
+const props = withDefaults(defineProps<BaseRangeProps>(), {
+	modelValue: 0,
+	min: 0,
+	max: 100,
+	step: 1,
+	isDisabled: false,
+	hasTooltip: false,
+	marks: () => [],
+	isVertical: false,
+	hasLabel: false,
+})
 
-const modelValue = computed(() => props.modelValue ?? 0)
-const min = computed(() => props.min ?? 0)
-const max = computed(() => props.max ?? 100)
-const step = computed(() => props.step ?? 1)
-const isDisabled = computed(() => props.isDisabled ?? false)
-const hasTooltip = computed(() => props.hasTooltip ?? false)
-const marks = computed(() => props.marks ?? [])
-const isVertical = computed(() => props.isVertical ?? false)
-const hasLabel = computed(() => props.hasLabel ?? false)
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-range',
 	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale ?? 100,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
@@ -146,28 +147,28 @@ const mode = computed((): RangeMode => {
 const pointValues = computed((): number[] => {
 	if (props.points) return props.points
 	if (props.rangeValue) return [props.rangeValue[0], props.rangeValue[1]]
-	return [modelValue.value]
+	return [props.modelValue]
 })
 
 const hasThumbSlot = computed((): boolean => Boolean(slots.thumb))
 
 const labelText = computed((): string => {
-	if (mode.value === 'single') return String(modelValue.value)
+	if (mode.value === 'single') return String(props.modelValue)
 	return pointValues.value.join(' — ')
 })
 
 const tooltipPosition = computed((): 'top' | 'right' => {
-	return isVertical.value ? 'right' : 'top'
+	return props.isVertical ? 'right' : 'top'
 })
 
 function percent(value: number): number {
-	return toPercent({ value, min: min.value, max: max.value })
+	return toPercent({ value, min: props.min, max: props.max })
 }
 
 function fillSegmentStyle(fromPercent: number, toPercentValue: number): Record<string, string> {
 	const start = Math.min(fromPercent, toPercentValue)
 	const size = Math.abs(toPercentValue - fromPercent)
-	if (isVertical.value) {
+	if (props.isVertical) {
 		return { bottom: `${start}%`, height: `${size}%` }
 	}
 	return { left: `${start}%`, width: `${size}%` }
@@ -186,7 +187,7 @@ const fillSegments = computed((): Record<string, string>[] => {
 
 function thumbStyle(value: number): Record<string, string> {
 	const percentValue = percent(value)
-	if (isVertical.value) {
+	if (props.isVertical) {
 		return { bottom: `${percentValue}%` }
 	}
 	return { left: `${percentValue}%` }
@@ -194,24 +195,24 @@ function thumbStyle(value: number): Record<string, string> {
 
 function markStyle(value: number): Record<string, string> {
 	const percentValue = percent(value)
-	if (isVertical.value) {
+	if (props.isVertical) {
 		return { bottom: `${percentValue}%` }
 	}
 	return { left: `${percentValue}%` }
 }
 
 function thumbMin(index: number): number {
-	return index > 0 ? pointValues.value[index - 1] : min.value
+	return index > 0 ? pointValues.value[index - 1] : props.min
 }
 
 function thumbMax(index: number): number {
 	const next = pointValues.value[index + 1]
-	return next === undefined ? max.value : next
+	return next === undefined ? props.max : next
 }
 
 function snapToStepValue(value: number): number {
-	const snapped = snapToStep({ value, min: min.value, max: max.value, step: step.value })
-	return Math.max(min.value, Math.min(max.value, snapped))
+	const snapped = snapToStep({ value, min: props.min, max: props.max, step: props.step })
+	return Math.max(props.min, Math.min(props.max, snapped))
 }
 
 function clampToNeighbors(index: number, value: number): number {
@@ -240,13 +241,13 @@ function emitUpdate(index: number, value: number): void {
 }
 
 function setPointValue(index: number, rawValue: number): void {
-	const clamped = clampToNeighbors(index, Math.max(min.value, Math.min(max.value, rawValue)))
+	const clamped = clampToNeighbors(index, Math.max(props.min, Math.min(props.max, rawValue)))
 	emitUpdate(index, clamped)
 }
 
 function emitChange(): void {
 	if (mode.value === 'single') {
-		emit('change', modelValue.value)
+		emit('change', props.modelValue)
 		return
 	}
 	if (mode.value === 'range') {
@@ -259,11 +260,11 @@ function emitChange(): void {
 const { handleThumbDown, handleTrackDown, handleThumbKeydown } = useRangeDrag({
 	trackRef,
 	pointValues,
-	isDisabled,
-	min,
-	max,
-	step,
-	isVertical,
+	isDisabled: () => props.isDisabled,
+	min: () => props.min,
+	max: () => props.max,
+	step: () => props.step,
+	isVertical: () => props.isVertical,
 	thumbMin,
 	thumbMax,
 	snapToStepValue,

@@ -3,11 +3,11 @@ import { onBeforeUnmount, ref } from 'vue'
 interface UseRangeDragOptions {
 	trackRef: { value: HTMLElement | null }
 	pointValues: { value: number[] }
-	isDisabled: { value: boolean }
-	min: { value: number }
-	max: { value: number }
-	step: { value: number }
-	isVertical: { value: boolean }
+	isDisabled: () => boolean
+	min: () => number
+	max: () => number
+	step: () => number
+	isVertical: () => boolean
 	thumbMin: (index: number) => number
 	thumbMax: (index: number) => number
 	snapToStepValue: (value: number) => number
@@ -39,20 +39,20 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 
 	function getValueFromEvent(e: MouseEvent | TouchEvent): number {
 		/* istanbul ignore next -- Событие приходит только с отрисованного трека. */
-		if (!trackRef.value) return min.value
+		if (!trackRef.value) return min()
 		const rect = trackRef.value.getBoundingClientRect()
 		const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
 		const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 
 		let ratio: number
-		if (isVertical.value) {
+		if (isVertical()) {
 			ratio = 1 - (clientY - rect.top) / rect.height
 		} else {
 			ratio = (clientX - rect.left) / rect.width
 		}
 
 		ratio = Math.max(0, Math.min(1, ratio))
-		const raw = min.value + ratio * (max.value - min.value)
+		const raw = min() + ratio * (max() - min())
 		return snapToStepValue(raw)
 	}
 
@@ -83,7 +83,7 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 	}
 
 	function handleThumbDown(payload: { event: MouseEvent | TouchEvent; index: number }): void {
-		if (isDisabled.value) return
+		if (isDisabled()) return
 		activeIndex.value = payload.index
 
 		if (payload.event instanceof MouseEvent) {
@@ -109,7 +109,7 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 	}
 
 	function handleTrackDown(e: MouseEvent): void {
-		if (isDisabled.value) return
+		if (isDisabled()) return
 		const value = getValueFromEvent(e)
 		const index = nearestIndex(value)
 		activeIndex.value = index
@@ -119,7 +119,7 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 	}
 
 	function handleThumbKeydown(payload: { event: KeyboardEvent; index: number }): void {
-		if (isDisabled.value) return
+		if (isDisabled()) return
 
 		const { event, index } = payload
 		const isIncrease = event.key === 'ArrowRight' || event.key === 'ArrowUp'
@@ -127,7 +127,7 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 		if (!isIncrease && !isDecrease) return
 		event.preventDefault()
 
-		const delta = isIncrease ? options.step.value : -options.step.value
+		const delta = isIncrease ? options.step() : -options.step()
 		setPointValue(index, snapToStepValue(pointValues.value[index] + delta))
 	}
 

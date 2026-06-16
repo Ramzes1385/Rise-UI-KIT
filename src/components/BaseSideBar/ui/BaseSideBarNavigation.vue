@@ -1,6 +1,6 @@
 <template>
-	<ul class="base-sidebar-nav" :class="{ 'base-sidebar-nav--nested': resolvedLevel > 0 }" role="list">
-		<template v-for="item in resolvedItems" :key="getItemKey(item)">
+	<ul class="base-sidebar-nav" :class="{ 'base-sidebar-nav--nested': props.level > 0 }" role="list">
+		<template v-for="item in props.items" :key="getItemKey(item)">
 			<li
 				class="base-sidebar-nav__item"
 				:class="{
@@ -9,7 +9,7 @@
 					'base-sidebar-nav__item--disabled': item.isDisabled,
 					'base-sidebar-nav__item--has-children': hasChildren(item),
 				}">
-				<BaseTooltip v-if="resolvedIsCollapsed" :text="item.label" position="right">
+				<BaseTooltip v-if="props.isCollapsed" :text="item.label" position="right">
 					<span class="base-sidebar-nav__tooltip-trigger">
 						<component
 							:is="getItemComponent(item)"
@@ -20,7 +20,7 @@
 								'base-sidebar-nav__link--current': isCurrentItemActive(item),
 								'base-sidebar-nav__link--parent-active':
 									hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
-								'base-sidebar-nav__link--collapsed': resolvedIsCollapsed,
+								'base-sidebar-nav__link--collapsed': props.isCollapsed,
 							}"
 							:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 							:aria-disabled="item.isDisabled || undefined"
@@ -51,7 +51,7 @@
 						'base-sidebar-nav__link--current': isCurrentItemActive(item),
 						'base-sidebar-nav__link--parent-active':
 							hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
-						'base-sidebar-nav__link--collapsed': resolvedIsCollapsed,
+						'base-sidebar-nav__link--collapsed': props.isCollapsed,
 					}"
 					:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 					:aria-disabled="item.isDisabled || undefined"
@@ -102,12 +102,12 @@
 				<div v-if="shouldRenderChildren(item)" class="base-sidebar-nav__children">
 					<BaseSideBarNavigation
 						:items="item.children"
-						:level="resolvedLevel + 1"
+						:level="props.level + 1"
 						:active-key="props.activeKey"
 						:active-path="props.activePath"
-						:active-match="resolvedActiveMatch"
-						:link-component="resolvedLinkComponent"
-						:is-collapsed="resolvedIsCollapsed"
+						:active-match="props.activeMatch"
+						:link-component="props.linkComponent"
+						:is-collapsed="props.isCollapsed"
 						@item-click="handleChildItemClick">
 						<template v-if="$slots.item" #item="slotProps">
 							<slot name="item" v-bind="slotProps" />
@@ -127,7 +127,7 @@
 					</BaseSideBarNavigation>
 				</div>
 
-				<div v-if="item.hasDivider && !resolvedIsCollapsed" class="base-sidebar-nav__divider" />
+				<div v-if="item.hasDivider && !props.isCollapsed" class="base-sidebar-nav__divider" />
 			</li>
 		</template>
 	</ul>
@@ -135,7 +135,7 @@
 
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseIcon } from '@components/BaseIcon'
@@ -154,17 +154,17 @@ defineOptions({
 	name: 'BaseSideBarNavigation',
 })
 
-const props = defineProps<BaseSideBarNavigationProps>()
+const props = withDefaults(defineProps<BaseSideBarNavigationProps>(), {
+	items: () => [],
+	level: 0,
+	activeMatch: 'exact',
+	linkComponent: 'a',
+	isCollapsed: false,
+})
 
 const emit = defineEmits<BaseSideBarNavigationEmits>()
 
 defineSlots<BaseSideBarNavigationSlots>()
-
-const resolvedItems = computed(() => props.items ?? [])
-const resolvedLevel = computed(() => props.level ?? 0)
-const resolvedActiveMatch = computed(() => props.activeMatch ?? 'exact')
-const resolvedLinkComponent = computed(() => props.linkComponent ?? 'a')
-const resolvedIsCollapsed = computed(() => props.isCollapsed ?? false)
 
 const expandedItemKeys = ref(new Set<SideBarItemKey>())
 
@@ -209,7 +209,7 @@ function getItemComponent(item: SideBarItem): string | Component {
 		return 'button'
 	}
 
-	return resolvedLinkComponent.value
+	return props.linkComponent
 }
 
 function getItemProps(item: SideBarItem): Record<string, unknown> {
@@ -220,7 +220,7 @@ function getItemProps(item: SideBarItem): Record<string, unknown> {
 		}
 	}
 
-	if (resolvedLinkComponent.value === 'a') {
+	if (props.linkComponent === 'a') {
 		return {
 			href: getHref(item.to),
 		}
@@ -256,11 +256,11 @@ function isItemExpanded(item: SideBarItem): boolean {
 }
 
 function shouldRenderChildren(item: SideBarItem): boolean {
-	return hasChildren(item) && !resolvedIsCollapsed.value && isItemExpanded(item)
+	return hasChildren(item) && !props.isCollapsed && isItemExpanded(item)
 }
 
 function getItemAriaExpanded(item: SideBarItem): boolean | undefined {
-	if (resolvedIsCollapsed.value || !isDisclosureItem(item)) {
+	if (props.isCollapsed || !isDisclosureItem(item)) {
 		return undefined
 	}
 
@@ -305,7 +305,7 @@ function isCurrentItemActive(item: SideBarItem): boolean {
 		return true
 	}
 
-	if (resolvedActiveMatch.value === 'startsWith' && !hasChildren(item)) {
+	if (props.activeMatch === 'startsWith' && !hasChildren(item)) {
 		return props.activePath.startsWith(`${item.to}/`)
 	}
 
@@ -322,7 +322,7 @@ function handleClick(item: SideBarItem, event: MouseEvent): void {
 	if (isDisclosureItem(item)) {
 		event.preventDefault()
 
-		if (!resolvedIsCollapsed.value) {
+		if (!props.isCollapsed) {
 			toggleItemExpanded(item)
 		}
 	}
@@ -340,10 +340,10 @@ function handleChildItemClick(item: SideBarItem, event: MouseEvent): void {
 function getSlotProps(item: SideBarItem) {
 	return {
 		item,
-		level: resolvedLevel.value,
+		level: props.level,
 		isActive: isItemActive(item),
 		isCurrent: isCurrentItemActive(item),
-		isCollapsed: resolvedIsCollapsed.value,
+		isCollapsed: props.isCollapsed,
 		hasChildren: hasChildren(item),
 		onClick: (event: MouseEvent) => handleClick(item, event),
 	}

@@ -156,36 +156,34 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
+import { UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
 import { computed, onBeforeUnmount } from 'vue'
-import type { PropType } from 'vue'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps } from '../model/BaseSlider.types'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	customClass: [String, Object] as PropType<BaseSliderProps['customClass']>,
-	items: { type: Array as PropType<BaseSliderProps['items']>, required: true },
-	animation: { type: String as PropType<BaseSliderProps['animation']>, default: 'slide' },
-	navigation: { type: String as PropType<BaseSliderProps['navigation']>, default: 'dots' },
-	isAutoplay: { type: Boolean, default: false },
-	autoplayInterval: { type: Number, default: 4000 },
-	hasArrows: { type: Boolean, default: true },
-	arrowsPosition: { type: String as PropType<BaseSliderProps['arrowsPosition']>, default: 'center' },
-	isLoop: { type: Boolean, default: true },
-	isVertical: { type: Boolean, default: false },
-	initialIndex: { type: Number, default: 0 },
-	height: { type: String, default: '400px' },
-	sizeScale: { type: Number, default: 100 },
-	spaceBetween: { type: Number, default: 0 },
-	slidesPerView: { type: Number, default: 1 },
-	slidesPerGroup: { type: Number, default: 1 },
-	hasCaption: { type: Boolean, default: true },
-	isZoomable: { type: Boolean, default: false },
+const props = withDefaults(defineProps<BaseSliderProps>(), {
+	customClass: undefined,
+	items: undefined,
+	animation: 'slide',
+	navigation: 'dots',
+	isAutoplay: false,
+	autoplayInterval: 4000,
+	hasArrows: true,
+	arrowsPosition: 'center',
+	isLoop: true,
+	isVertical: false,
+	initialIndex: 0,
+	height: UI_SLIDER_DEFAULT_HEIGHT,
+	sizeScale: 100,
+	spaceBetween: 0,
+	slidesPerView: 1,
+	slidesPerGroup: 1,
+	hasCaption: true,
+	isZoomable: false,
 })
-/* eslint-enable vue/require-default-prop */
 
 const emit = defineEmits<BaseSliderEmits>()
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
@@ -255,7 +253,7 @@ let holdTimer: ReturnType<typeof setInterval> | null = null
 function startHold(direction: 'prev' | 'next'): void {
 	stopHold()
 	const action = direction === 'next' ? goNext : goPrev
-	holdTimer = setInterval(action, 150)
+	holdTimer = setInterval(action, UI_SLIDER_HOLD_INTERVAL_MS)
 }
 
 /** Остановка удержания */

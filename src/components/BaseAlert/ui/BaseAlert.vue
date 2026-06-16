@@ -1,13 +1,13 @@
 <template>
 	<div
 		class="base-alert"
-		:class="[`base-alert--${type}`, variantClass, classes.root]"
+		:class="[`base-alert--${props.type}`, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="alert"
 		aria-live="polite">
 		<div class="base-alert__icon-wrapper" :class="classes.iconWrapper">
 			<slot name="icon">
-				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.icon" />
+				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', props.sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
@@ -16,7 +16,7 @@
 				v-if="title"
 				tag="h4"
 				:weight="600"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				class="base-alert__title"
 				:custom-class="classes.title">
 				{{ title }}
@@ -24,24 +24,24 @@
 
 			<div class="base-alert__description" :class="classes.description">
 				<slot>
-					<BaseText v-if="description" tag="p" :size-scale="sizeScale - 10" :custom-class="classes.text">
+					<BaseText v-if="description" tag="p" :size-scale="props.sizeScale - 10" :custom-class="classes.text">
 						{{ description }}
 					</BaseText>
 				</slot>
 			</div>
 		</div>
 
-		<div v-if="isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
+		<div v-if="props.isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
 			<slot name="actions" />
 
 			<BaseButton
-				v-if="isClosable"
+				v-if="props.isClosable"
 				variant="ghost"
-				:size-scale="sizeScale - 10"
+				:size-scale="props.sizeScale - 10"
 				class="base-alert__close"
 				:custom-class="classes.close"
 				@click="handleClose">
-				<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" :custom-class="classes.closeIcon" />
+				<BaseIcon name="close" :size-scale="calcIconScale('xs', props.sizeScale)" :custom-class="classes.closeIcon" />
 			</BaseButton>
 		</div>
 	</div>
@@ -57,18 +57,18 @@ import { computed } from 'vue'
 import '../styles/BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps } from '../model/BaseAlert.types'
 
-const props = defineProps<BaseAlertProps>()
+const props = withDefaults(defineProps<BaseAlertProps>(), {
+	type: 'info',
+	isClosable: false,
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BaseAlertEmits>()
-
-const type = computed(() => props.type ?? 'info')
-const isClosable = computed(() => props.isClosable ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-alert',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'],
@@ -84,7 +84,7 @@ const alertIcon = computed((): string => {
 		warning: 'alert-triangle',
 		error: 'x-circle',
 	}
-	return icons[type.value] || 'info'
+	return icons[props.type] || 'info'
 })
 
 /** Обработка клика по кнопке закрытия */

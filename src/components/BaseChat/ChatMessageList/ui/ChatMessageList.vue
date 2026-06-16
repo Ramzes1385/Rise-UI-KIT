@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH, UI_SCALE_SMALL } from '@constants'
+import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH, UI_HIGHLIGHT_DURATION_MS, UI_SCALE_SMALL } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
@@ -74,19 +74,19 @@ import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMe
 import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 
-const props = defineProps<ChatMessageListProps>()
+const props = withDefaults(defineProps<ChatMessageListProps>(), {
+	sizeScale: 100,
+	searchQuery: '',
+	selectedMessageIds: () => [],
+	isGroup: false,
+	isTyping: false,
+	typingUsername: '',
+	avatar: '',
+	allImagesUrls: () => [],
+	currentUserRole: 'member',
+})
 
 const emit = defineEmits<ChatMessageListEmits>()
-
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const searchQuery = computed(() => props.searchQuery ?? '')
-const selectedMessageIds = computed(() => props.selectedMessageIds ?? [])
-const isGroup = computed(() => props.isGroup ?? false)
-const isTyping = computed(() => props.isTyping ?? false)
-const typingUsername = computed(() => props.typingUsername ?? '')
-const avatar = computed(() => props.avatar ?? '')
-const allImagesUrls = computed(() => props.allImagesUrls ?? [])
-const currentUserRole = computed(() => props.currentUserRole ?? 'member')
 
 const listRef = ref<HTMLElement | null>(null)
 const contextMenuRef = ref<InstanceType<typeof ChatMessageContextMenu> | null>(null)
@@ -103,7 +103,7 @@ const contextMenu = ref({
 useAutoScroll({
 	container: listRef,
 	enabled: () => true,
-	watchSource: () => props.messages.length + (isTyping.value ? 1 : 0),
+	watchSource: () => props.messages.length + (props.isTyping ? 1 : 0),
 })
 
 // Закрытие контекстного меню по клику снаружи
@@ -114,14 +114,14 @@ useClickOutside({
 })
 
 /** Набор ID выбранных сообщений */
-const selectedSet = computed(() => new Set(selectedMessageIds.value))
+const selectedSet = computed(() => new Set(props.selectedMessageIds))
 
 /** ID сообщения, для которого открыто контекстное меню */
 const activeContextMessageId = computed(() => contextMenu.value.message?.id ?? null)
 
 /** Проверка, активен ли режим выбора сообщений */
 const isSelectionMode = computed(() => {
-	return selectedMessageIds.value.length > 0
+	return props.selectedMessageIds.length > 0
 })
 
 /** Обработка клика по аватару */
@@ -283,7 +283,7 @@ function scrollToMessage(messageId: string): void {
 	highlightTimeoutId.value = setTimeout(() => {
 		element.classList.remove('base-chat-message-list__item--highlighted')
 		highlightTimeoutId.value = null
-	}, 1500)
+	}, UI_HIGHLIGHT_DURATION_MS)
 }
 
 onBeforeUnmount(() => {

@@ -111,26 +111,26 @@ import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useInputMask } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { computed, ref } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
 
-const props = defineProps<BaseInputProps>()
-
-const type = computed(() => props.type ?? 'text')
-const placeholder = computed(() => props.placeholder ?? '')
-const isDisabled = computed(() => props.isDisabled ?? false)
-const isReadonly = computed(() => props.isReadonly ?? false)
-const isRequired = computed(() => props.isRequired ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const prefix = computed(() => props.prefix ?? '')
-const postfix = computed(() => props.postfix ?? '')
-const maskValue = computed(() => props.mask ?? '')
+const props = withDefaults(defineProps<BaseInputProps>(), {
+	type: 'text',
+	placeholder: '',
+	isDisabled: false,
+	isReadonly: false,
+	isRequired: false,
+	sizeScale: 100,
+	prefix: '',
+	postfix: '',
+	mask: '',
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-input',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
@@ -153,10 +153,10 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 const emit = defineEmits<BaseInputEmits>()
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const mask = useInputMask({ getMask: () => maskValue.value })
+const mask = useInputMask({ getMask: () => props.mask })
 
 const { isPasswordVisible, inputType, togglePasswordVisibility } = usePasswordVisibility({
-	type,
+	type: toRef(props, 'type'),
 })
 
 const passwordRuleResults = computed<PasswordRuleResult[]>(() => {
@@ -171,22 +171,22 @@ const passwordRuleResults = computed<PasswordRuleResult[]>(() => {
 
 const displayValue = computed(() => {
 	const val = props.modelValue == null ? '' : String(props.modelValue)
-	if (type.value === 'password') return val
-	if (!maskValue.value) return val
-	return mask.applyMask(val, maskValue.value)
+	if (props.type === 'password') return val
+	if (!props.mask) return val
+	return mask.applyMask(val, props.mask)
 })
 
 function handleInput(e: Event): void {
 	const target = e.target as HTMLInputElement
 	const rawValue = target.value
 
-	if (maskValue.value && type.value !== 'password') {
-		const cleanValue = mask.stripMask(rawValue, maskValue.value)
+	if (props.mask && props.type !== 'password') {
+		const cleanValue = mask.stripMask(rawValue, props.mask)
 		const limitedValue = mask.limitValue(cleanValue)
 
 		emit('update:modelValue', limitedValue)
 
-		const expectedDisplayValue = mask.applyMask(limitedValue, maskValue.value)
+		const expectedDisplayValue = mask.applyMask(limitedValue, props.mask)
 		if (target.value !== expectedDisplayValue) {
 			target.value = expectedDisplayValue
 		}
@@ -205,7 +205,7 @@ function handleInput(e: Event): void {
 
 function handleKeydown(e: KeyboardEvent): void {
 	emit('keydown', e)
-	if (!maskValue.value || type.value === 'password') return
+	if (!props.mask || props.type === 'password') return
 
 	const target = e.target as HTMLInputElement
 	/* istanbul ignore next -- defensive `?? 0`: selectionStart всегда установлен для input в DOM */

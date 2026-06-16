@@ -3,7 +3,7 @@
 		class="base-pin"
 		:class="[
 			{
-				'base-pin--disabled': isDisabled,
+				'base-pin--disabled': props.isDisabled,
 				'base-pin--error': hasError,
 			},
 			variantClass,
@@ -12,15 +12,15 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div class="base-pin__cells" :class="classes.cells">
 			<input
-				v-for="i in length"
+				v-for="i in props.length"
 				:key="i"
 				ref="inputRefs"
-				:type="type"
+				:type="props.type"
 				maxlength="1"
 				class="base-pin__input"
 				:class="classes.input"
 				:value="cells[i - 1]"
-				:disabled="isDisabled"
+				:disabled="props.isDisabled"
 				@input="handleInput($event, i - 1)"
 				@keydown="handleKeyDown($event, i - 1)"
 				@paste="handlePaste" />
@@ -30,7 +30,7 @@
 			v-if="error"
 			tag="span"
 			class="base-pin__error-text"
-			:size-scale="sizeScale"
+			:size-scale="props.sizeScale"
 			:custom-class="classes.errorText">
 			{{ error }}
 		</BaseText>
@@ -44,18 +44,19 @@ import { computed, ref } from 'vue'
 import '../styles/BasePin.style.scss'
 import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
 
-const props = defineProps<BasePinProps>()
+const props = withDefaults(defineProps<BasePinProps>(), {
+	length: 4,
+	type: 'text',
+	isDisabled: false,
+	sizeScale: 100,
+})
 
 const hasError = computed(() => Boolean(props.error))
-const length = computed(() => props.length ?? 4)
-const type = computed(() => props.type ?? 'text')
-const isDisabled = computed(() => props.isDisabled ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-pin',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'cells', 'input', 'errorText'],
@@ -68,7 +69,7 @@ const inputRefs = ref<HTMLInputElement[]>([])
 /** Ячейки для отображения: пустые строки вместо пробелов-заполнителей */
 const cells = computed(() => {
 	const result: string[] = []
-	for (let i = 0; i < length.value; i++) {
+	for (let i = 0; i < props.length; i++) {
 		const char = props.modelValue[i]
 		result.push(char && char !== ' ' ? char : '')
 	}
@@ -78,7 +79,7 @@ const cells = computed(() => {
 /** Нормализует modelValue в массив фиксированной длины (пробел = пустая ячейка) */
 function normalizeValue(val: string): string[] {
 	const result: string[] = []
-	for (let i = 0; i < length.value; i++) {
+	for (let i = 0; i < props.length; i++) {
 		result.push(val[i] || ' ')
 	}
 	return result
@@ -92,11 +93,11 @@ function handleInput(e: Event, index: number): void {
 	const result = chars.join('').trimEnd()
 	emit('update:modelValue', result)
 
-	if (val && index < length.value - 1) {
+	if (val && index < props.length - 1) {
 		inputRefs.value[index + 1]?.focus()
 	}
 
-	if (result.length === length.value && !result.includes(' ')) {
+	if (result.length === props.length && !result.includes(' ')) {
 		emit('complete', result)
 	}
 }
@@ -121,7 +122,7 @@ function handleKeyDown(e: KeyboardEvent, index: number): void {
 		inputRefs.value[index - 1]?.focus()
 	}
 
-	if (e.key === 'ArrowRight' && index < length.value - 1) {
+	if (e.key === 'ArrowRight' && index < props.length - 1) {
 		e.preventDefault()
 		inputRefs.value[index + 1]?.focus()
 	}
@@ -131,9 +132,9 @@ function handlePaste(e: ClipboardEvent): void {
 	e.preventDefault()
 	/* istanbul ignore next -- defensive `|| ''`: clipboardData всегда установлен в paste-событии, fallback недостижим */
 	const data = e.clipboardData?.getData('text') || ''
-	const val = data.replace(/\s/g, '').slice(0, length.value)
+	const val = data.replace(/\s/g, '').slice(0, props.length)
 	emit('update:modelValue', val)
-	if (val.length === length.value) {
+	if (val.length === props.length) {
 		emit('complete', val)
 	}
 }

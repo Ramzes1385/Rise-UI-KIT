@@ -1,7 +1,7 @@
 <template>
 	<div class="base-chat-slideover" :class="{ 'base-chat-slideover--open': isOpen }">
 		<div class="base-chat-slideover__header">
-			<BaseText tag="span" :weight="600" :size-scale="sizeScale" class="base-chat-slideover__title">
+			<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale" class="base-chat-slideover__title">
 				{{ titleText }}
 			</BaseText>
 			<BaseButton
@@ -25,7 +25,7 @@
 				class="base-chat-slideover__tab-btn"
 				:class="{ 'base-chat-slideover__tab-btn--active': activeTab === tab.id }"
 				@click="emit('update:activeTab', tab.id)">
-				<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">{{ tab.label }}</BaseText>
+				<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="UI_FONT_WEIGHT_SEMIBOLD">{{ tab.label }}</BaseText>
 			</button>
 		</div>
 
@@ -33,8 +33,8 @@
 			<!-- Вкладка: Информация / Участники -->
 			<div v-if="activeTab === 'info'" class="base-chat-slideover__pane">
 				<div class="base-chat-slideover__profile-summary">
-					<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * 1.5" class="base-chat-slideover__avatar" />
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale * 1.1" class="base-chat-slideover__name">
+					<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__avatar" />
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_CHAT_SCALE_NAME" class="base-chat-slideover__name">
 						{{ title }}
 					</BaseText>
 					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
@@ -52,7 +52,7 @@
 
 				<!-- Список участников для групп -->
 				<div v-if="isGroup && members.length > 0" class="base-chat-slideover__members-list">
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__section-title">
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__section-title">
 						Участники группы
 					</BaseText>
 					<div class="base-chat-slideover__members-scroll">
@@ -62,12 +62,12 @@
 								<div class="base-chat-slideover__member-info">
 									<BaseText
 										tag="span"
-										:weight="600"
-										:size-scale="sizeScale * 0.9"
+										:weight="UI_FONT_WEIGHT_SEMIBOLD"
+										:size-scale="sizeScale * UI_CHAT_SCALE_MEMBER"
 										class="base-chat-slideover__member-name">
 										{{ member.name }}
 									</BaseText>
-									<BaseText tag="span" :size-scale="sizeScale * 0.75" class="base-chat-slideover__member-role">
+									<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-slideover__member-role">
 										{{ getMemberRoleLabel(member) }}
 									</BaseText>
 								</div>
@@ -83,7 +83,7 @@
 									:aria-label="`Действия с участником ${member.name}`"
 									@click="toggleAdminMenu(member.id)">
 									<template #left>
-										<BaseIcon name="sort-down" :size-scale="sizeScale * 0.7" />
+										<BaseIcon name="sort-down" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 									</template>
 								</BaseButton>
 
@@ -93,21 +93,21 @@
 										type="button"
 										class="base-chat-slideover__dropdown-item"
 										@click="handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')">
-										<BaseIcon name="file-config" :size-scale="sizeScale * 0.75" />
+										<BaseIcon name="file-config" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" />
 										{{ member.role === 'admin' ? 'Разжаловать' : 'Сделать админом' }}
 									</button>
 									<button
 										type="button"
 										class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 										@click="handleKick(member.id)">
-										<BaseIcon name="x-circle" :size-scale="sizeScale * 0.75" />
+										<BaseIcon name="x-circle" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" />
 										Исключить
 									</button>
 									<button
 										type="button"
 										class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 										@click="handleBan(member.id)">
-										<BaseIcon name="alert-triangle" :size-scale="sizeScale * 0.75" />
+										<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" />
 										Забанить
 									</button>
 								</div>
@@ -119,23 +119,23 @@
 				<!-- Обычные детали (телефон/email) для личных чатов -->
 				<div v-else class="base-chat-slideover__info-details">
 					<div class="base-chat-slideover__info-item">
-						<BaseIcon name="calendar" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
+						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
 								>Телефон</BaseText
 							>
-							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value"
+							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
 								>+7 (999) 123-45-67</BaseText
 							>
 						</div>
 					</div>
 					<div class="base-chat-slideover__info-item">
-						<BaseIcon name="calendar" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
+						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
 								>Email</BaseText
 							>
-							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value"
+							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
 								>info@metal-art.ru</BaseText
 							>
 						</div>
@@ -149,9 +149,9 @@
 					<BaseAvatar
 						:src="selectedMember.avatar"
 						:name="selectedMember.name"
-						:size-scale="sizeScale * 1.5"
+						:size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE"
 						class="base-chat-slideover__avatar" />
-					<BaseText tag="span" :weight="600" :size-scale="sizeScale * 1.1" class="base-chat-slideover__name">
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_CHAT_SCALE_NAME" class="base-chat-slideover__name">
 						{{ selectedMember.name }}
 					</BaseText>
 					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
@@ -161,7 +161,7 @@
 					<div class="base-chat-slideover__profile-actions">
 						<BaseButton variant="default" :size-scale="sizeScale" @click="handleWriteMessage(selectedMember.id)">
 							<template #left>
-								<BaseIcon name="reply" :size-scale="sizeScale * 0.9" />
+								<BaseIcon name="reply" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" />
 							</template>
 							Написать сообщение
 						</BaseButton>
@@ -170,21 +170,21 @@
 
 				<div class="base-chat-slideover__info-details">
 					<div class="base-chat-slideover__info-item">
-						<BaseIcon name="calendar" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
+						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label">Роль</BaseText>
-							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value">
+							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value">
 								{{ selectedMember.role === 'admin' ? 'Администратор' : 'Участник' }}
 							</BaseText>
 						</div>
 					</div>
 					<div v-if="selectedMember.warningsCount !== undefined" class="base-chat-slideover__info-item">
-						<BaseIcon name="alert-triangle" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-icon" />
+						<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
 								>Предупреждения</BaseText
 							>
-							<BaseText tag="span" :size-scale="sizeScale * 0.9" class="base-chat-slideover__info-value">
+							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value">
 								{{ selectedMember.warningsCount }} / 3
 							</BaseText>
 						</div>
@@ -194,7 +194,7 @@
 				<div class="base-chat-slideover__profile-back">
 					<BaseButton variant="ghost" :size-scale="sizeScale" @click="handleBackToInfo">
 						<template #left>
-							<BaseIcon name="arrow-left" :size-scale="sizeScale * 0.9" />
+							<BaseIcon name="arrow-left" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" />
 						</template>
 						Назад к списку
 					</BaseButton>
@@ -204,8 +204,8 @@
 			<!-- Вкладка: Медиа -->
 			<div v-if="activeTab === 'media'" class="base-chat-slideover__pane">
 				<div v-if="sharedMedia.length === 0" class="base-chat-slideover__empty">
-					<BaseIcon name="image" :size-scale="sizeScale * 1.5" class="base-chat-slideover__empty-icon" />
-					<BaseText :size-scale="sizeScale * 0.9" class="base-chat-slideover__empty-text">Нет медиафайлов</BaseText>
+					<BaseIcon name="image" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
+					<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">Нет медиафайлов</BaseText>
 				</div>
 				<div v-else class="base-chat-slideover__media-grid">
 					<div v-for="media in sharedMedia" :key="media.id" class="base-chat-slideover__media-item">
@@ -215,7 +215,7 @@
 							:gallery="allImagesUrls"
 							:has-zoom="true"
 							class="base-chat-slideover__media-thumbnail" />
-						<BaseText tag="span" :size-scale="sizeScale * 0.7" class="base-chat-slideover__media-date">
+						<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-slideover__media-date">
 							{{ media.publishedAt }}
 						</BaseText>
 					</div>
@@ -225,8 +225,8 @@
 			<!-- Вкладка: Файлы -->
 			<div v-if="activeTab === 'files'" class="base-chat-slideover__pane">
 				<div v-if="sharedFiles.length === 0" class="base-chat-slideover__empty">
-					<BaseIcon name="file" :size-scale="sizeScale * 1.5" class="base-chat-slideover__empty-icon" />
-					<BaseText :size-scale="sizeScale * 0.9" class="base-chat-slideover__empty-text">Нет файлов</BaseText>
+					<BaseIcon name="file" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
+					<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">Нет файлов</BaseText>
 				</div>
 				<div v-else class="base-chat-slideover__files-list">
 					<div
@@ -236,13 +236,13 @@
 						@click="emit('file-click', file)">
 						<BaseIcon
 							:name="getFileIconName(file.name)"
-							:size-scale="sizeScale * 1.2"
+							:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
 							class="base-chat-slideover__file-icon" />
 						<div class="base-chat-slideover__file-info">
-							<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__file-name">
+							<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__file-name">
 								{{ file.name }}
 							</BaseText>
-							<BaseText tag="span" :size-scale="sizeScale * 0.75" class="base-chat-slideover__file-meta">
+							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-slideover__file-meta">
 								<template v-if="file.size">{{ file.size }} · </template>{{ file.publishedAt }}
 							</BaseText>
 						</div>
@@ -258,8 +258,8 @@
 			<!-- Вкладка: Ссылки -->
 			<div v-if="activeTab === 'links'" class="base-chat-slideover__pane">
 				<div v-if="sharedLinks.length === 0" class="base-chat-slideover__empty">
-					<BaseIcon name="link" :size-scale="sizeScale * 1.5" class="base-chat-slideover__empty-icon" />
-					<BaseText :size-scale="sizeScale * 0.9" class="base-chat-slideover__empty-text">Нет ссылок</BaseText>
+					<BaseIcon name="link" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
+					<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">Нет ссылок</BaseText>
 				</div>
 				<div v-else class="base-chat-slideover__links-list">
 					<div
@@ -272,7 +272,7 @@
 							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__link-url">
 								{{ link.url }}
 							</BaseText>
-							<BaseText tag="span" :size-scale="sizeScale * 0.7" class="base-chat-slideover__link-date">
+							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-slideover__link-date">
 								{{ link.publishedAt }}
 							</BaseText>
 						</div>
@@ -289,7 +289,17 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
+import {
+	UI_CHAT_SCALE_AVATAR_LARGE,
+	UI_CHAT_SCALE_FILE_ICON,
+	UI_CHAT_SCALE_ICON,
+	UI_CHAT_SCALE_MEMBER,
+	UI_CHAT_SCALE_META,
+	UI_CHAT_SCALE_NAME,
+	UI_FONT_WEIGHT_SEMIBOLD,
+	UI_SCALE_AUTOCOMPLETE,
+	UI_SCALE_SMALL,
+} from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed, ref } from 'vue'
 import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
@@ -309,14 +319,14 @@ interface ChatSlideoverProps {
 	sizeScale?: number
 }
 
-const props = defineProps<ChatSlideoverProps>()
-
-const subtitle = computed(() => props.subtitle ?? '')
-const avatar = computed(() => props.avatar ?? '')
-const isGroup = computed(() => props.isGroup ?? false)
-const members = computed(() => props.members ?? [])
-const currentUserRole = computed(() => props.currentUserRole ?? 'member')
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<ChatSlideoverProps>(), {
+	subtitle: '',
+	avatar: '',
+	isGroup: false,
+	members: () => [],
+	currentUserRole: 'member',
+	sizeScale: 100,
+})
 
 const emit = defineEmits<{
 	(e: 'update:isOpen', value: boolean): void
@@ -343,36 +353,35 @@ interface SharedLink {
 
 const activeAdminMenuId = ref<string | null>(null)
 
+function detectOnlineStatus(text: string): 'online' | 'offline' {
+	const lower = text.toLowerCase()
+	return lower.includes('сети') || lower.includes('онлайн') || lower.includes('online') ? 'online' : 'offline'
+}
+
 const titleText = computed((): string => {
 	if (props.activeTab === 'profile') return 'Профиль'
 	return 'Информация'
 })
 
 const availableTabs = computed(() => [
-	{ id: 'info' as const, label: isGroup.value ? 'Участники' : 'Инфо' },
+	{ id: 'info' as const, label: props.isGroup ? 'Участники' : 'Инфо' },
 	{ id: 'media' as const, label: 'Медиа' },
 	{ id: 'files' as const, label: 'Файлы' },
 	{ id: 'links' as const, label: 'Ссылки' },
 ])
 
 const selectedMember = computed((): ChatMember | null => {
-	if (!isGroup.value) {
-		// В личном чате всегда показываем профиль собеседника
+	if (!props.isGroup) {
 		return {
 			id: props.selectedMemberId || 'companion',
 			name: props.title,
-			avatar: avatar.value,
+			avatar: props.avatar,
 			role: 'member',
-			status:
-				subtitle.value.includes('сети') ||
-				subtitle.value.toLowerCase().includes('онлайн') ||
-				subtitle.value.toLowerCase().includes('online')
-					? 'online'
-					: 'offline',
+			status: detectOnlineStatus(props.subtitle),
 		}
 	}
 	if (!props.selectedMemberId) return null
-	return members.value.find(member => member.id === props.selectedMemberId) || null
+	return props.members.find(member => member.id === props.selectedMemberId) || null
 })
 
 /** Человекочитаемая дата публикации вложения/ссылки из родительского сообщения */
@@ -384,11 +393,9 @@ function getPublishedLabel(message: ChatMessage): string {
 const sharedMedia = computed((): SharedAttachment[] => {
 	const media: SharedAttachment[] = []
 	for (const message of props.messages) {
-		if (message.attachments) {
-			for (const attachment of message.attachments) {
-				if (attachment.type === 'image') {
-					media.push({ ...attachment, publishedAt: getPublishedLabel(message) })
-				}
+		for (const attachment of message.attachments ?? []) {
+			if (attachment.type === 'image') {
+				media.push({ ...attachment, publishedAt: getPublishedLabel(message) })
 			}
 		}
 	}
@@ -403,11 +410,9 @@ const allImagesUrls = computed((): string[] => {
 const sharedFiles = computed((): SharedAttachment[] => {
 	const files: SharedAttachment[] = []
 	for (const message of props.messages) {
-		if (message.attachments) {
-			for (const attachment of message.attachments) {
-				if (attachment.type === 'file') {
-					files.push({ ...attachment, publishedAt: getPublishedLabel(message) })
-				}
+		for (const attachment of message.attachments ?? []) {
+			if (attachment.type === 'file') {
+				files.push({ ...attachment, publishedAt: getPublishedLabel(message) })
 			}
 		}
 	}
@@ -420,16 +425,11 @@ const sharedLinks = computed((): SharedLink[] => {
 	const seen = new Set<string>()
 	const urlRegex = /(https?:\/\/[^\s]+)/gi
 	for (const message of props.messages) {
-		if (message.text) {
-			const matches = message.text.match(urlRegex)
-			if (matches) {
-				for (const url of matches) {
-					if (!seen.has(url)) {
-						seen.add(url)
-						links.push({ url, publishedAt: getPublishedLabel(message) })
-					}
-				}
-			}
+		if (!message.text) continue
+		for (const url of message.text.match(urlRegex) ?? []) {
+			if (seen.has(url)) continue
+			seen.add(url)
+			links.push({ url, publishedAt: getPublishedLabel(message) })
 		}
 	}
 	return links

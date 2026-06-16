@@ -19,15 +19,15 @@
 			<div class="base-chat-context-menu__divider"></div>
 			<button type="button" class="base-chat-context-menu__item" @click="handleReply">
 				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE_SMALL" />
-				<BaseText :size-scale="sizeScale * 0.9">Ответить</BaseText>
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_REPLY }}</BaseText>
 			</button>
 			<button type="button" class="base-chat-context-menu__item" @click="handleSelect">
 				<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE_SMALL" />
-				<BaseText :size-scale="sizeScale * 0.9">Выбрать</BaseText>
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_SELECT }}</BaseText>
 			</button>
 			<button type="button" class="base-chat-context-menu__item" @click="handleCopy">
 				<BaseIcon name="copy" :size-scale="sizeScale * UI_SCALE_SMALL" />
-				<BaseText :size-scale="sizeScale * 0.9">Копировать текст</BaseText>
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_COPY_TEXT }}</BaseText>
 			</button>
 			<button
 				v-if="currentUserRole === 'admin'"
@@ -35,8 +35,8 @@
 				class="base-chat-context-menu__item"
 				@click="handlePin">
 				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * UI_SCALE_SMALL" />
-				<BaseText :size-scale="sizeScale * 0.9">
-					{{ message?.isPinned ? 'Открепить' : 'Закрепить' }}
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">
+					{{ message?.isPinned ? UI_CHAT_UNPIN : UI_CHAT_PIN }}
 				</BaseText>
 			</button>
 			<button
@@ -45,7 +45,7 @@
 				class="base-chat-context-menu__item base-chat-context-menu__item--danger"
 				@click="handleDelete">
 				<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE_SMALL" />
-				<BaseText :size-scale="sizeScale * 0.9">Удалить</BaseText>
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_DELETE }}</BaseText>
 			</button>
 		</div>
 	</Teleport>
@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_COPY_TEXT, UI_CHAT_DELETE, UI_CHAT_PIN, UI_CHAT_REPLY, UI_CHAT_SCALE_MEMBER, UI_CHAT_SELECT, UI_CHAT_UNPIN, UI_SCALE_SMALL } from '@constants'
 import { computed, ref } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 

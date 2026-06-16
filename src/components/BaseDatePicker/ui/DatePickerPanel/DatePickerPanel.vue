@@ -14,7 +14,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
-							title="Предыдущий год"
+							:title="UI_PREV_YEAR_ARIA"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handlePrevYear">
 							<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
@@ -23,7 +23,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn"
-							title="Предыдущий месяц"
+							:title="UI_PREV_MONTH_ARIA"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handlePrevRange">
 							<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
@@ -40,7 +40,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn"
-							title="Следующий месяц"
+							:title="UI_NEXT_MONTH_ARIA"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handleNextRange">
 							<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
@@ -48,7 +48,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
-							title="Следующий год"
+							:title="UI_NEXT_YEAR_ARIA"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handleNextYear">
 							<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
@@ -112,6 +112,7 @@ import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
+import { UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MONTH_ARIA, UI_PREV_YEAR_ARIA } from '@constants'
 import { computed, getCurrentInstance, ref } from 'vue'
 import { useDatePickerPanelNavigation } from '../../composables/useDatePickerPanelNavigation'
 import { pickDatePickerCalendarConfig, resolveBooleanPropDefault } from '../../model/BaseDatePickerCalendar.types'

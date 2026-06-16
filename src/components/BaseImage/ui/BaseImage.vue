@@ -21,7 +21,7 @@
 		<div v-if="hasError" class="base-image__error" :class="classes.error">
 			<slot name="error">
 				<span class="base-image__error-icon">🖼️</span>
-				<span class="base-image__error-text">Ошибка загрузки</span>
+				<span class="base-image__error-text">{{ UI_IMAGE_ERROR_TEXT }}</span>
 			</slot>
 		</div>
 
@@ -176,44 +176,33 @@ import '../styles/BaseImage.style.scss'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { UI_IMAGE_ERROR_TEXT, UI_IMAGE_LOAD_TIMEOUT_MS, UI_IMAGE_LOADING_MIN_HEIGHT } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useImageZoom } from '@composables/useImageZoom'
 import { useSizeScale } from '@composables/useSizeScale'
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '@utils/imageUtils'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
-import type { PropType } from 'vue'
 import { useImageGallery } from '../model/useImageGallery'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	src: { type: String, required: true },
-	alt: { type: String, required: true },
-	fallbackSrc: String,
-	timeout: { type: Number, default: 5000 },
-	width: [Number, String] as PropType<BaseImageProps['width']>,
-	height: [Number, String] as PropType<BaseImageProps['height']>,
-	fit: { type: String as PropType<BaseImageProps['fit']>, default: 'cover' },
-	color: Object as PropType<BaseImageProps['color']>,
-	loading: { type: String as PropType<BaseImageProps['loading']>, default: 'lazy' },
-	borderRadius: { type: Number, default: 12 },
-	hasPlaceholder: { type: Boolean, default: true },
-	aspectRatio: String,
-	srcWidth: Number,
-	hasZoom: { type: Boolean, default: false },
-	closeOnOverlay: { type: Boolean, default: true },
-	initialScale: { type: Number, default: 1 },
-	zoomStep: { type: Number, default: 0.25 },
-	minScale: { type: Number, default: 0.5 },
-	maxScale: { type: Number, default: 5 },
-	showMinimap: { type: Boolean, default: true },
-	zoomConfig: Object as PropType<BaseImageProps['zoomConfig']>,
-	convertToWebp: { type: Boolean, default: false },
-	gallery: Array as PropType<BaseImageProps['gallery']>,
-	sizeScale: { type: Number, default: 100 },
-	customClass: [String, Object] as PropType<BaseImageProps['customClass']>,
+const props = withDefaults(defineProps<BaseImageProps>(), {
+	src: undefined,
+	alt: undefined,
+	timeout: UI_IMAGE_LOAD_TIMEOUT_MS,
+	fit: 'cover',
+	loading: 'lazy',
+	borderRadius: 12,
+	hasPlaceholder: true,
+	hasZoom: false,
+	closeOnOverlay: true,
+	initialScale: 1,
+	zoomStep: 0.25,
+	minScale: 0.5,
+	maxScale: 5,
+	showMinimap: true,
+	convertToWebp: false,
+	sizeScale: 100,
 })
-/* eslint-enable vue/require-default-prop */
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -303,7 +292,7 @@ const containerStyle = computed((): Record<string, string> => {
 
 	if (!hasCustomDimensions.value && (!isLoaded.value || hasError.value)) {
 		styles['aspect-ratio'] = '16/9'
-		styles['min-height'] = '120px'
+		styles['min-height'] = UI_IMAGE_LOADING_MIN_HEIGHT
 		styles['width'] = '100%'
 	}
 

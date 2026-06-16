@@ -10,7 +10,7 @@
 				custom-class="base-chat-input__quick-reply-btn"
 				:aria-label="`Быстрый ответ: ${reply}`"
 				@click="handleQuickReply(reply)">
-				<BaseText :size-scale="sizeScale * UI_SCALE_SMALL" :weight="500">{{ reply }}</BaseText>
+				<BaseText :size-scale="sizeScale * UI_SCALE_SMALL" :weight="UI_FONT_WEIGHT_MEDIUM">{{ reply }}</BaseText>
 			</BaseButton>
 		</div>
 
@@ -20,9 +20,9 @@
 				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-icon" />
 				<div class="base-chat-input__reply-content">
 					<BaseText tag="span" :weight="600" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__reply-sender">
-						{{ replyingTo.senderName || 'Сообщение' }}
+						{{ replyingTo.senderName || UI_CHAT_MESSAGE_PLACEHOLDER }}
 					</BaseText>
-					<BaseText tag="p" :size-scale="sizeScale * 0.75" class="base-chat-input__reply-text">
+					<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-input__reply-text">
 						{{ replyingTo.text }}
 					</BaseText>
 				</div>
@@ -32,7 +32,7 @@
 				:padding="1"
 				:size-scale="sizeScale * UI_SCALE_SMALL"
 				class="base-chat-input__reply-cancel"
-				aria-label="Отменить ответ на сообщение"
+				:aria-label="UI_CHAT_CANCEL_REPLY_ARIA"
 				@click="handleCancelReply">
 				<template #left>
 					<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE_SMALL" />
@@ -57,12 +57,12 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * 0.7"
+					:size-scale="sizeScale * UI_CHAT_SCALE_META"
 					class="base-chat-input__preview-remove"
 					:aria-label="`Удалить вложение ${file.name}`"
 					@click="removeAttachment(index)">
 					<template #left>
-						<BaseIcon name="close" :size-scale="sizeScale * 0.7" />
+						<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 					</template>
 				</BaseButton>
 			</div>
@@ -74,7 +74,7 @@
 				:padding="2"
 				:size-scale="sizeScale"
 				class="base-chat-input__attach-btn"
-				aria-label="Прикрепить файл"
+				:aria-label="UI_CHAT_ATTACH_ARIA"
 				@click="triggerFileSelect">
 				<template #left>
 					<BaseIcon name="attach" :size-scale="sizeScale" />
@@ -86,7 +86,7 @@
 				type="file"
 				multiple
 				class="base-chat-input__file-input"
-				aria-label="Выбор файлов для прикрепления"
+				:aria-label="UI_CHAT_FILE_SELECT_ARIA"
 				@change="handleFileChange" />
 
 			<!-- Кнопка команд (как в Telegram) — появляется только если есть команды -->
@@ -97,7 +97,7 @@
 				:size-scale="sizeScale"
 				class="base-chat-input__commands-btn"
 				:class="{ 'base-chat-input__commands-btn--active': showCommands }"
-				aria-label="Показать команды"
+				:aria-label="UI_CHAT_SHOW_COMMANDS_ARIA"
 				@click="toggleCommands">
 				<template #left>
 					<BaseIcon name="code" :size-scale="sizeScale" />
@@ -111,7 +111,7 @@
 					:padding="2"
 					:size-scale="sizeScale"
 					class="base-chat-input__emoji-btn"
-					aria-label="Открыть выбор эмодзи"
+					:aria-label="UI_CHAT_EMOJI_ARIA"
 					@click="toggleEmoji">
 					<template #left>
 						<BaseIcon name="smile" :size-scale="sizeScale" />
@@ -145,10 +145,10 @@
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
 						@click="replaceCurrentWord('@', member.name)">
-						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * 0.6" />
+						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_CHAT_SCALE_STATUS" />
 						<div class="base-chat-input__autocomplete-info">
 							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">{{ member.name }}</BaseText>
-							<BaseText v-if="member.role" :size-scale="sizeScale * 0.7" class="base-chat-input__autocomplete-sub">
+							<BaseText v-if="member.role" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-input__autocomplete-sub">
 								{{ member.role === 'admin' ? 'Администратор' : 'Участник' }}
 							</BaseText>
 						</div>
@@ -165,10 +165,10 @@
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
 						@click="replaceCurrentWord('/', command.name)">
-						<BaseIcon name="file-config" :size-scale="sizeScale * 0.75" class="base-chat-input__autocomplete-icon" />
+						<BaseIcon name="file-config" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-input__autocomplete-icon" />
 						<div class="base-chat-input__autocomplete-info">
 							<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="600">/{{ command.name }}</BaseText>
-							<BaseText :size-scale="sizeScale * 0.7" class="base-chat-input__autocomplete-sub">
+							<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-input__autocomplete-sub">
 								{{ command.description }}
 							</BaseText>
 						</div>
@@ -193,7 +193,7 @@
 					:size-scale="sizeScale"
 					:disabled="!text.trim() && attachments.length === 0"
 					class="base-chat-input__send-btn"
-					aria-label="Отправить сообщение"
+					:aria-label="UI_CHAT_SEND_ARIA"
 					@click="handleSend">
 					<template #left>
 						<BaseIcon name="send" :size-scale="sizeScale" />
@@ -205,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_ATTACH_ARIA, UI_CHAT_CANCEL_REPLY_ARIA, UI_CHAT_EMOJI_ARIA, UI_CHAT_FILE_SELECT_ARIA, UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_STATUS, UI_CHAT_SEND_ARIA, UI_CHAT_SHOW_COMMANDS_ARIA, UI_FONT_WEIGHT_MEDIUM, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -215,7 +215,7 @@ import { BaseText } from '@components/BaseText'
 import { useClickOutside } from '@composables/useClickOutside'
 import { formatFileSize } from '@utils/fileUtils'
 import { computed, nextTick, ref, watch } from 'vue'
-import type { ChatCommand, ChatMember, ChatMessageAttachment } from '../BaseChat.types'
+import type { ChatMessageAttachment } from '../BaseChat.types'
 import './ChatInput.style.scss'
 import type { ChatInputEmits, ChatInputProps } from './ChatInput.types'
 
@@ -223,19 +223,15 @@ interface BaseInputExposed {
 	inputRef: HTMLInputElement | null
 }
 
-const EMPTY_QUICK_REPLIES: string[] = []
-const EMPTY_MEMBERS: ChatMember[] = []
-const EMPTY_COMMANDS: ChatCommand[] = []
-
-const props = defineProps<ChatInputProps>()
+const props = withDefaults(defineProps<ChatInputProps>(), {
+	sizeScale: 100,
+	replyingTo: null,
+	quickReplies: () => [],
+	members: () => [],
+	commands: () => [],
+})
 
 const emit = defineEmits<ChatInputEmits>()
-
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const replyingTo = computed(() => props.replyingTo ?? null)
-const quickReplies = computed(() => props.quickReplies ?? EMPTY_QUICK_REPLIES)
-const members = computed(() => props.members ?? EMPTY_MEMBERS)
-const commands = computed(() => props.commands ?? EMPTY_COMMANDS)
 
 const text = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -254,18 +250,18 @@ function getInputElement(): HTMLInputElement | null {
 }
 
 /** Доступны ли команды в чате */
-const hasCommands = computed(() => commands.value.length > 0)
+const hasCommands = computed(() => props.commands.length > 0)
 
 const filteredMembers = computed(() => {
 	const query = mentionQuery.value
-	return members.value.filter(
+	return props.members.filter(
 		member => member.name.toLowerCase().includes(query) || (member.role && member.role.toLowerCase().includes(query)),
 	)
 })
 
 const filteredCommands = computed(() => {
 	const query = commandQuery.value
-	return commands.value.filter(command => command.name.toLowerCase().includes(query))
+	return props.commands.filter(command => command.name.toLowerCase().includes(query))
 })
 
 function checkAutocomplete(): void {

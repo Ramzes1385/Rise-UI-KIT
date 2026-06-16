@@ -84,10 +84,10 @@
 						tag="span"
 						class="base-file-upload__status"
 						:class="[`base-file-upload__status--${item.status}`, classes.status]">
-						<template v-if="item.status === 'done'">Загружено</template>
+						<template v-if="item.status === 'done'">{{ UI_FILE_STATUS_DONE }}</template>
 						<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
-						<template v-else-if="item.status === 'error'">Ошибка</template>
-						<template v-else>Ожидание</template>
+						<template v-else-if="item.status === 'error'">{{ UI_FILE_STATUS_ERROR }}</template>
+						<template v-else>{{ UI_FILE_STATUS_PENDING }}</template>
 					</BaseText>
 					<BaseProgress
 						v-if="item.status === 'uploading'"
@@ -102,7 +102,7 @@
 					variant="ghost"
 					class="base-file-upload__remove"
 					:custom-class="classes.remove"
-					title="Удалить"
+					:title="UI_DELETE_TEXT"
 					:size-scale="sizeScale"
 					@click="handleRemove(item)">
 					<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" />
@@ -132,7 +132,6 @@
 import type { BaseFileUploadEmits, BaseFileUploadProps, UploadedFile } from '../model/BaseFileUpload.types'
 
 import { computed, onBeforeUnmount, ref } from 'vue'
-import type { PropType } from 'vue'
 
 import { BaseAnimation } from '@components/BaseAnimation'
 import { BaseButton } from '@components/BaseButton'
@@ -140,31 +139,27 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
-import { UI_PROGRESS_INTERVAL_MS } from '@constants'
+import { UI_DELETE_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, validateFile } from '@utils/fileUtils'
 
 import '../styles/BaseFileUpload.style.scss'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	customClass: [String, Object] as PropType<BaseFileUploadProps['customClass']>,
-	accept: { type: String, default: '' },
-	isMultiple: { type: Boolean, default: false },
-	isDisabled: { type: Boolean, default: false },
-	variant: { type: String as PropType<BaseFileUploadProps['variant']>, default: 'default' },
-	color: Object as PropType<BaseFileUploadProps['color']>,
-	maxSize: { type: Number, default: 5 },
-	maxCount: { type: Number, default: 10 },
-	label: { type: String, default: '' },
-	buttonText: { type: String, default: 'Выберите файлы' },
-	previewSize: { type: Number, default: 64 },
-	allowPreview: { type: Boolean, default: true },
-	emptyText: { type: String, default: 'Перетащите файлы сюда' },
-	sizeScale: { type: Number, default: 100 },
-	error: { type: String, default: '' },
+const props = withDefaults(defineProps<BaseFileUploadProps>(), {
+	accept: '',
+	isMultiple: false,
+	isDisabled: false,
+	variant: 'default',
+	maxSize: 5,
+	maxCount: 10,
+	label: '',
+	buttonText: 'Выберите файлы',
+	previewSize: 64,
+	allowPreview: true,
+	emptyText: 'Перетащите файлы сюда',
+	sizeScale: 100,
+	error: '',
 })
-/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-file-upload',

@@ -90,8 +90,8 @@
 						@update:model-value="contextMenu.height = String($event)" />
 				</div>
 				<div class="base-editor__context-menu-actions">
-					<BaseButton :size-scale="80" @click="applyMediaSize">Применить</BaseButton>
-					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">Удалить</BaseButton>
+					<BaseButton :size-scale="80" @click="applyMediaSize">{{ UI_APPLY_TEXT }}</BaseButton>
+					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">{{ UI_DELETE_TEXT }}</BaseButton>
 				</div>
 			</div>
 		</Teleport>
@@ -108,25 +108,21 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
+import { UI_APPLY_TEXT, UI_DELETE_TEXT } from '@constants'
 import { onMounted, ref, watch } from 'vue'
-import type { PropType } from 'vue'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	customClass: [String, Object] as PropType<BaseEditorProps['customClass']>,
-	modelValue: { type: String, default: '' },
-	placeholder: { type: String, default: '' },
-	isReadonly: { type: Boolean, default: false },
-	variant: { type: String as PropType<BaseEditorProps['variant']>, default: 'default' },
-	color: Object as PropType<BaseEditorProps['color']>,
-	hasToolbar: { type: Boolean, default: true },
-	isAutofocus: { type: Boolean, default: false },
-	sizeScale: { type: Number, default: 100 },
+const props = withDefaults(defineProps<BaseEditorProps>(), {
+	modelValue: '',
+	placeholder: '',
+	isReadonly: false,
+	variant: 'default',
+	hasToolbar: true,
+	isAutofocus: false,
+	sizeScale: 100,
 })
-/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-editor',

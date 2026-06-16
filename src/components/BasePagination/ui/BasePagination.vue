@@ -1,37 +1,37 @@
 <template>
 	<div class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
 		<BaseButton
-			:variant="variant"
-			:is-disabled="modelValue === 1"
-			:size-scale="sizeScale"
+			:variant="props.variant"
+			:is-disabled="props.modelValue === 1"
+			:size-scale="props.sizeScale"
 			:custom-class="classes.prev"
-			@click="changePage(modelValue - 1)">
-			<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', sizeScale)" />
+			@click="changePage(props.modelValue - 1)">
+			<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', props.sizeScale)" />
 		</BaseButton>
 
 		<div class="base-pagination__pages" :class="classes.pages">
 			<template v-for="page in pages" :key="page">
 				<BaseButton
 					v-if="page !== '...'"
-					:variant="modelValue === page ? 'default' : variant"
-					:size-scale="sizeScale"
+					:variant="props.modelValue === page ? 'default' : props.variant"
+					:size-scale="props.sizeScale"
 					:custom-class="classes.button"
 					@click="changePage(page)">
-					<BaseText :size-scale="sizeScale">{{ page }}</BaseText>
+					<BaseText :size-scale="props.sizeScale">{{ page }}</BaseText>
 				</BaseButton>
 				<span v-else class="base-pagination__ellipsis" :class="classes.ellipsis">
-					<BaseText :size-scale="sizeScale">...</BaseText>
+					<BaseText :size-scale="props.sizeScale">...</BaseText>
 				</span>
 			</template>
 		</div>
 
 		<BaseButton
-			:variant="variant"
-			:is-disabled="modelValue === totalPages"
-			:size-scale="sizeScale"
+			:variant="props.variant"
+			:is-disabled="props.modelValue === totalPages"
+			:size-scale="props.sizeScale"
 			:custom-class="classes.next"
-			@click="changePage(modelValue + 1)">
-			<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
+			@click="changePage(props.modelValue + 1)">
+			<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', props.sizeScale)" />
 		</BaseButton>
 	</div>
 </template>
@@ -45,31 +45,18 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import { computed } from 'vue'
-import type { PropType } from 'vue'
 import '../styles/BasePagination.style.scss'
 import type { BasePaginationEmits, BasePaginationProps } from '../model/BasePagination.types'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	modelValue: { type: Number, required: true },
-	total: { type: Number, required: true },
-	pageSize: { type: Number, default: 10 },
-	maxVisible: { type: Number, default: 7 },
-	showLastPage: { type: Boolean, default: true },
-	variant: { type: String as PropType<BasePaginationProps['variant']>, default: 'default' },
-	color: Object as PropType<BasePaginationProps['color']>,
-	sizeScale: { type: Number, default: 100 },
-	customClass: [String, Object] as PropType<BasePaginationProps['customClass']>,
+const props = withDefaults(defineProps<BasePaginationProps>(), {
+	pageSize: 10,
+	maxVisible: 7,
+	showLastPage: true,
+	variant: 'default',
+	sizeScale: 100,
 })
-/* eslint-enable vue/require-default-prop */
 
-const pageSize = computed(() => props.pageSize ?? 10)
-const maxVisible = computed(() => props.maxVisible ?? 7)
-const showLastPage = computed(() => props.showLastPage)
-const variant = computed(() => props.variant ?? 'default')
-const sizeScale = computed(() => props.sizeScale ?? 100)
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -78,14 +65,14 @@ const { classes } = useCustomClass({
 
 const emit = defineEmits<BasePaginationEmits>()
 
-const totalPages = computed(() => calcTotalPages(props.total, pageSize.value))
+const totalPages = computed(() => calcTotalPages(props.total, props.pageSize))
 
 const pages = computed(() =>
 	calcVisiblePages({
 		current: props.modelValue,
 		total: totalPages.value,
-		maxVisible: maxVisible.value,
-		showLastPage: showLastPage.value,
+		maxVisible: props.maxVisible,
+		showLastPage: props.showLastPage,
 	}),
 )
 

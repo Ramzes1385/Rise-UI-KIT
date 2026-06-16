@@ -5,8 +5,8 @@
 			variantClass,
 			{
 				'base-textarea--error': error,
-				'base-textarea--disabled': isDisabled,
-				'base-textarea--autosize': isAutosize,
+				'base-textarea--disabled': props.isDisabled,
+				'base-textarea--autosize': props.isAutosize,
 			},
 			classes.root,
 		]"
@@ -16,14 +16,14 @@
 			tag="label"
 			class="base-textarea__label"
 			:custom-class="classes.label"
-			:size-scale="sizeScale">
+			:size-scale="props.sizeScale">
 			{{ label }}
 			<BaseText
-				v-if="isRequired"
+				v-if="props.isRequired"
 				tag="span"
 				class="base-textarea__required"
 				:custom-class="classes.required"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				>*</BaseText
 			>
 		</BaseText>
@@ -32,12 +32,12 @@
 			ref="textareaRef"
 			class="base-textarea__field"
 			:class="classes.field"
-			:value="modelValue"
-			:placeholder="placeholder"
-			:rows="rows"
+			:value="props.modelValue"
+			:placeholder="props.placeholder"
+			:rows="props.rows"
 			:maxlength="maxlength"
-			:disabled="isDisabled"
-			:readonly="isReadonly"
+			:disabled="props.isDisabled"
+			:readonly="props.isReadonly"
 			:name="name"
 			@input="handleInput"
 			@blur="handleBlur"
@@ -48,7 +48,7 @@
 			tag="span"
 			class="base-textarea__error-text"
 			:custom-class="classes.errorText"
-			:size-scale="sizeScale"
+			:size-scale="props.sizeScale"
 			>{{ error }}</BaseText
 		>
 	</div>
@@ -57,25 +57,25 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTextarea.style.scss'
 import type { BaseTextareaEmits, BaseTextareaProps } from '../model/BaseTextarea.types'
 
-const props = defineProps<BaseTextareaProps>()
-
-const modelValue = computed(() => props.modelValue ?? '')
-const placeholder = computed(() => props.placeholder ?? '')
-const rows = computed(() => props.rows ?? 4)
-const isDisabled = computed(() => props.isDisabled ?? false)
-const isReadonly = computed(() => props.isReadonly ?? false)
-const isRequired = computed(() => props.isRequired ?? false)
-const isAutosize = computed(() => props.isAutosize ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseTextareaProps>(), {
+	modelValue: '',
+	placeholder: '',
+	rows: 4,
+	isDisabled: false,
+	isReadonly: false,
+	isRequired: false,
+	isAutosize: false,
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-textarea',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'label', 'required', 'field', 'errorText'],
@@ -87,7 +87,7 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null)
 function adjustHeight(): void {
 	const el = textareaRef.value
 	/* istanbul ignore next -- el всегда существует после mount, ветка !el — защитный guard */
-	if (!el || !isAutosize.value) return
+	if (!el || !props.isAutosize) return
 
 	el.style.height = `${el.scrollHeight}px`
 }
@@ -96,7 +96,7 @@ function handleInput(e: Event): void {
 	const target = e.target as HTMLTextAreaElement
 	emit('update:modelValue', target.value)
 
-	if (isAutosize.value) {
+	if (props.isAutosize) {
 		nextTick(adjustHeight)
 	}
 }
@@ -110,16 +110,16 @@ function handleFocus(e: FocusEvent): void {
 }
 
 watch(
-	() => modelValue.value,
+	() => props.modelValue,
 	() => {
-		if (isAutosize.value) {
+		if (props.isAutosize) {
 			nextTick(adjustHeight)
 		}
 	},
 )
 
 onMounted(() => {
-	if (isAutosize.value) {
+	if (props.isAutosize) {
 		nextTick(adjustHeight)
 	}
 })

@@ -2,9 +2,9 @@
 	<div
 		class="base-progress"
 		:class="[
-			`base-progress--${shape}`,
-			animation !== 'none' ? `base-progress--${animation}` : '',
-			{ 'base-progress--indeterminate': isIndeterminate },
+			`base-progress--${props.shape}`,
+			props.animation !== 'none' ? `base-progress--${props.animation}` : '',
+			{ 'base-progress--indeterminate': props.isIndeterminate },
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, customColorStyle]"
@@ -13,15 +13,15 @@
 		aria-valuemin="0"
 		aria-valuemax="100">
 		<!-- Линейный прогресс -->
-		<template v-if="shape === 'line'">
+		<template v-if="props.shape === 'line'">
 			<div class="base-progress__track" :class="classes.track">
 				<div class="base-progress__fill" :class="classes.fill" :style="{ width: `${percent}%` }">
-					<div v-if="hasLabel" class="base-progress__tooltip-trigger" :class="classes.tooltipTrigger">
+					<div v-if="props.hasLabel" class="base-progress__tooltip-trigger" :class="classes.tooltipTrigger">
 						<BaseTooltip
 							:text="`${percent}%`"
 							position="top"
 							:is-always-visible="true"
-							:size-scale="sizeScale"
+							:size-scale="props.sizeScale"
 							:color="tooltipColor">
 							<span class="base-progress__tooltip-anchor" :class="classes.tooltipAnchor" />
 						</BaseTooltip>
@@ -31,7 +31,7 @@
 		</template>
 
 		<!-- Круговой прогресс -->
-		<template v-if="shape === 'circle'">
+		<template v-if="props.shape === 'circle'">
 			<svg class="base-progress__svg" :class="classes.svg" viewBox="0 0 120 120">
 				<circle
 					class="base-progress__track-circle"
@@ -54,7 +54,7 @@
 					stroke-linecap="round" />
 			</svg>
 			<BaseText
-				v-if="hasLabel"
+				v-if="props.hasLabel"
 				tag="span"
 				class="base-progress__circle-label"
 				:weight="700"
@@ -77,14 +77,14 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { computed, watch } from 'vue'
 
-const props = defineProps<BaseProgressProps>()
-
-const max = computed(() => props.max ?? 100)
-const shape = computed(() => props.shape ?? 'line')
-const animation = computed(() => props.animation ?? 'none')
-const hasLabel = computed(() => props.hasLabel ?? false)
-const isIndeterminate = computed(() => props.isIndeterminate ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseProgressProps>(), {
+	max: 100,
+	shape: 'line',
+	animation: 'none',
+	hasLabel: false,
+	isIndeterminate: false,
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BaseProgressEmits>()
 
@@ -102,7 +102,7 @@ const { classes } = useCustomClass({
 		'circleLabel',
 	],
 })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 /** Цвет тултипа соответствует цвету заливки */
@@ -112,9 +112,9 @@ const tooltipColor = computed(() => {
 })
 
 const percent = computed((): number => {
-	if (isIndeterminate.value) return 0
-	const clamped = Math.min(Math.max(props.value, 0), max.value)
-	return Math.round((clamped / max.value) * 100)
+	if (props.isIndeterminate) return 0
+	const clamped = Math.min(Math.max(props.value, 0), props.max)
+	return Math.round((clamped / props.max) * 100)
 })
 
 const circumference = computed((): number => {
@@ -122,7 +122,7 @@ const circumference = computed((): number => {
 })
 
 const circleOffset = computed((): number => {
-	if (isIndeterminate.value) return circumference.value
+	if (props.isIndeterminate) return circumference.value
 	return circumference.value * (1 - percent.value / 100)
 })
 

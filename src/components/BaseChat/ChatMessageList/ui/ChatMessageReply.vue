@@ -3,11 +3,11 @@
 		<BaseText
 			tag="span"
 			:weight="600"
-			:size-scale="sizeScale * 0.75"
+			:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 			class="base-chat-message-list__reply-sender">
 			{{ replyToSenderName || 'Сообщение' }}
 		</BaseText>
-		<BaseText tag="p" :size-scale="sizeScale * 0.75" class="base-chat-message-list__reply-text">
+		<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-message-list__reply-text">
 			{{ replyToText }}
 		</BaseText>
 	</div>
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
+import { UI_CHAT_SCALE_ICON } from '@constants'
 
 interface ChatMessageReplyProps {
 	replyToId?: string

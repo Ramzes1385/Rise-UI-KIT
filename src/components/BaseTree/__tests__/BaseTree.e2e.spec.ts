@@ -5,23 +5,6 @@
 
 import { expect, test } from '@playwright/test'
 
-// test('дерево: раскрывает и сворачивает узел по клику', async ({ page }) => {
-//   await page.goto('/iframe.html?id=ui-basetree--default')
-//   await page.waitForSelector('.base-tree', { timeout: 25000 })
-//   await page.setViewportSize({ width: 800, height: 500 })
-
-//   // Используем более гибкий селектор — первый узел внутри дерева
-//   const rootNode = page.locator('.base-tree .base-tree__node').first()
-//   const rootArrow = rootNode.locator('.base-tree__arrow') // убираем прямой потомок '>'
-//   await rootArrow.click()
-
-//   // Ждём, пока класс появится
-//   await expect(rootNode).toHaveClass(/--expanded/)
-
-//   await rootArrow.click()
-//   await expect(rootNode).not.toHaveClass(/--expanded/)
-// })
-
 test('дерево: отключённый узел не раскрывается', async ({ page }) => {
 	await page.goto('/iframe.html?id=ui-basetree--with-disabled')
 	await page.waitForSelector('.base-tree', { timeout: 25000 })

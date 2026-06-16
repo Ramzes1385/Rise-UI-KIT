@@ -48,7 +48,7 @@
 
 			<div v-if="!isPresetsHidden" class="base-color-picker__presets">
 				<button
-					v-for="preset in resolvedPresets"
+					v-for="preset in props.presets"
 					:key="preset"
 					type="button"
 					class="base-color-picker__preset"
@@ -73,22 +73,24 @@
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
+import { UI_NO_COLOR_TEXT } from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import '../styles/BaseColorPicker.style.scss'
 import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../model/BaseColorPicker.types'
 
-const props = defineProps<BaseColorPickerProps>()
-
-const position = computed(() => props.position ?? 'bottom')
-const isHexHidden = computed(() => props.isHexHidden ?? false)
-const isPresetsHidden = computed(() => props.isPresetsHidden ?? false)
-const isResettable = computed(() => props.isResettable ?? false)
-const resetLabel = computed(() => props.resetLabel ?? 'Без цвета')
-const hasTransparentSwatch = computed(() => props.hasTransparentSwatch ?? false)
-const isDisabled = computed(() => props.isDisabled ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseColorPickerProps>(), {
+	position: 'bottom',
+	isHexHidden: false,
+	isPresetsHidden: false,
+	isResettable: false,
+	resetLabel: UI_NO_COLOR_TEXT,
+	hasTransparentSwatch: false,
+	isDisabled: false,
+	sizeScale: 100,
+	presets: () => DEFAULT_COLOR_PRESETS,
+})
 
 const emit = defineEmits<BaseColorPickerEmits>()
 defineSlots<BaseColorPickerSlots>()
@@ -109,8 +111,6 @@ const picker = useColorPicker({
 		emit('change', hex)
 	},
 })
-
-const resolvedPresets = computed(() => props.presets ?? DEFAULT_COLOR_PRESETS)
 
 /** Цвет swatch и поля HEX — нормализованное значение модели (источник истины) */
 const swatchColor = computed(() => normalizeHex(props.modelValue) ?? picker.hex.value)

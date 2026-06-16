@@ -391,7 +391,7 @@ git push -u origin feat/sidebar-disclosure-groups
 - [ ] `npm run build` проходит
 - [ ] Storybook story добавлена или обновлена (если изменён компонент)
 - [ ] Нет `console.log`, закомментированного кода, TODO без Issue
-- [ ] Нет `withDefaults`, inline-типов в `defineProps`/`defineEmits`
+- [ ] `withDefaults` используется для дефолтных значений props (не `computed` fallback)
 - [ ] Нет HTML `title` атрибутов (используй `BaseTooltip`)
 - [ ] Нет прямого импорта `vue-router`
 - [ ] UI Kit компоненты переиспользуются (`BaseIcon`, `BaseBadge`, `BaseButton`, `BaseTooltip`)
@@ -461,9 +461,24 @@ src/components/BaseComponent/
 
 ### Правила компонентов
 
-- Props: `defineProps<BaseComponentProps>()` — без `withDefaults`, без inline-типов
+- Props: `withDefaults(defineProps<BaseComponentProps>(), {...})` — без inline-типов
 - Emits: `defineEmits<BaseComponentEmits>()` — без inline-типов
-- Defaults: через `computed`, не через `withDefaults`
+- Defaults: через `withDefaults`, не через `computed` fallback
+
+```vue
+<script setup lang="ts">
+// ✅ Правильно
+const props = withDefaults(defineProps<BaseButtonProps>(), {
+  variant: 'default',
+  sizeScale: 100,
+  isLoading: false,
+})
+
+// ❌ Неправильно — избыточный computed
+const variant = computed(() => props.variant ?? 'default')
+const sizeScale = computed(() => props.sizeScale ?? 100)
+const isLoading = computed(() => props.isLoading ?? false)
+```
 - Комментарии в `.types.ts` — обязательны (JSDoc)
 - Переиспользуй компоненты UI Kit: `BaseIcon`, `BaseBadge`, `BaseButton`, `BaseTooltip`
 - Не используй HTML `title` — только `BaseTooltip`

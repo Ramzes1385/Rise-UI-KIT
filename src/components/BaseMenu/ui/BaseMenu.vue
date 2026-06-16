@@ -21,14 +21,14 @@
 					class="base-menu__icon"
 					:class="classes.icon"
 					:name="item.icon"
-					:size-scale="calcIconScale('sm', sizeScale)" />
-				<BaseText class="base-menu__label" :class="classes.label" :size-scale="sizeScale">{{ item.label }}</BaseText>
+					:size-scale="calcIconScale('sm', props.sizeScale)" />
+				<BaseText class="base-menu__label" :class="classes.label" :size-scale="props.sizeScale">{{ item.label }}</BaseText>
 			</div>
 			<BaseSeparator
 				v-if="gIndex < items.length - 1"
 				class="base-menu__divider"
 				:class="classes.divider"
-				:size-scale="sizeScale" />
+				:size-scale="props.sizeScale" />
 		</div>
 	</div>
 </template>
@@ -38,18 +38,17 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseSeparator } from '@components/BaseSeparator'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed } from 'vue'
 import '../styles/BaseMenu.style.scss'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../model/BaseMenu.types'
 
-const props = defineProps<BaseMenuProps>()
-
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseMenuProps>(), {
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-menu',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'group', 'item', 'icon', 'label', 'divider'],

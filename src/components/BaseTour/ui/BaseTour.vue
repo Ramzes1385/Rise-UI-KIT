@@ -35,7 +35,7 @@
 							<BaseButton
 								variant="ghost"
 								:padding="4"
-								aria-label="Пропустить тур"
+								:aria-label="UI_SKIP_TOUR_TEXT"
 								:custom-class="classes.closeButton"
 								@click="handleSkip">
 								<BaseIcon name="close" :custom-class="classes.closeIcon" />
@@ -113,37 +113,28 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import type { PropType } from 'vue'
 
 import type { CustomColor } from '@composables/useCustomColor'
+import { UI_NEXT_TEXT, UI_PREV_TEXT, UI_SKIP_TOUR_TEXT } from '@constants'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from '../model/BaseTour.types'
 import { DEFAULT_RADIUS, useTourLogic } from '../model/useTourLogic'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	isOpen: { type: Boolean, default: false },
-	steps: { type: Array as PropType<BaseTourProps['steps']>, required: true },
-	step: { type: Number, default: 0 },
-	placement: { type: String as PropType<BaseTourProps['placement']>, default: 'auto' },
-	gap: Number,
-	padding: Number,
-	radius: Number,
-	closeOnOverlayClick: { type: Boolean, default: true },
-	closeOnEscape: { type: Boolean, default: true },
-	lockScroll: { type: Boolean, default: true },
-	scrollIntoView: { type: Boolean, default: true },
-	nextLabel: { type: String, default: 'Далее' },
-	prevLabel: { type: String, default: 'Назад' },
-	finishLabel: { type: String, default: 'Завершить' },
-	skipLabel: { type: String, default: 'Пропустить' },
-	labels: Object as PropType<BaseTourProps['labels']>,
-	behavior: Object as PropType<BaseTourProps['behavior']>,
-	showSkip: { type: Boolean, default: true },
-	showProgress: { type: Boolean, default: true },
-	customClass: [String, Object] as PropType<BaseTourProps['customClass']>,
+const props = withDefaults(defineProps<BaseTourProps>(), {
+	isOpen: false,
+	step: 0,
+	placement: 'auto',
+	closeOnOverlayClick: true,
+	closeOnEscape: true,
+	lockScroll: true,
+	scrollIntoView: true,
+	nextLabel: UI_NEXT_TEXT,
+	prevLabel: UI_PREV_TEXT,
+	finishLabel: 'Завершить',
+	skipLabel: 'Пропустить',
+	showSkip: true,
+	showProgress: true,
 })
-/* eslint-enable vue/require-default-prop */
 
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()

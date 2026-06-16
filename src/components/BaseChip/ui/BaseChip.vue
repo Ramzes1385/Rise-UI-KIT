@@ -10,7 +10,7 @@
 			class="base-chip__badge"
 			:class="[`base-chip__badge--${placement}`]"
 			:custom-class="classes.badge"
-			:size-scale="sizeScale"
+			:size-scale="props.sizeScale"
 			@click="handleBadgeClick">
 			{{ displayContent }}
 		</BaseText>
@@ -24,18 +24,18 @@ import { computed } from 'vue'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps } from '../model/BaseChip.types'
 
-const props = defineProps<BaseChipProps>()
-
-const placement = computed(() => props.placement ?? 'top-right')
-const isHiddenOnZero = computed(() => props.isHiddenOnZero ?? false)
-const hasOverflow = computed(() => props.hasOverflow ?? false)
-const maxValue = computed(() => props.maxValue ?? 99)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseChipProps>(), {
+	placement: 'top-right',
+	isHiddenOnZero: false,
+	hasOverflow: false,
+	maxValue: 99,
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-chip',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'badge'],
@@ -51,13 +51,13 @@ const numericValue = computed((): number | null => {
 
 const isVisible = computed((): boolean => {
 	if (props.content === undefined || props.content === '') return false
-	if (isHiddenOnZero.value && numericValue.value === 0) return false
+	if (props.isHiddenOnZero && numericValue.value === 0) return false
 	return true
 })
 
 const displayContent = computed((): string => {
-	if (numericValue.value !== null && hasOverflow.value && numericValue.value > maxValue.value) {
-		return `${maxValue.value}+`
+	if (numericValue.value !== null && props.hasOverflow && numericValue.value > props.maxValue) {
+		return `${props.maxValue}+`
 	}
 	return String(props.content)
 })

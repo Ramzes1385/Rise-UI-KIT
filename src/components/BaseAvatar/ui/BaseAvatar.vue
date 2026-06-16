@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="base-avatar"
-		:class="[`base-avatar--${shape}`, variantClass, classes.root]"
+		:class="[`base-avatar--${props.shape}`, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@click="handleClick">
 		<div class="base-avatar__content" :class="classes.content">
@@ -9,7 +9,7 @@
 				<BaseImage
 					v-if="src && !hasImageError"
 					:src="src"
-					:alt="alt"
+					:alt="props.alt"
 					class="base-avatar__img"
 					:custom-class="classes.img"
 					@error="handleImageError" />
@@ -17,14 +17,14 @@
 					v-else
 					tag="span"
 					:weight="600"
-					:size-scale="sizeScale"
+					:size-scale="props.sizeScale"
 					class="base-avatar__initials"
 					:custom-class="classes.initials">
 					{{ initials }}
 				</BaseText>
 			</slot>
 		</div>
-		<span v-if="isOnline" class="base-avatar__online" :class="classes.online"></span>
+		<span v-if="props.isOnline" class="base-avatar__online" :class="classes.online"></span>
 	</div>
 </template>
 
@@ -37,19 +37,19 @@ import BaseText from '@components/BaseText/ui/BaseText.vue'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps } from '../model/BaseAvatar.types'
 
-const props = defineProps<BaseAvatarProps>()
+const props = withDefaults(defineProps<BaseAvatarProps>(), {
+	alt: '',
+	shape: 'circle',
+	isOnline: false,
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BaseAvatarEmits>()
-
-const alt = computed(() => props.alt ?? '')
-const shape = computed(() => props.shape ?? 'circle')
-const isOnline = computed(() => props.isOnline ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-avatar',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'content', 'img', 'initials', 'online'],

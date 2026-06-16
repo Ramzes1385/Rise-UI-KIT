@@ -3,15 +3,15 @@
 		class="base-separator"
 		:style="[thicknessStyle, sizeScaleStyle, customColorStyle]"
 		:class="[
-			`base-separator--${orientation}`,
+			`base-separator--${props.orientation}`,
 			{
-				'base-separator--dashed': isDashed,
+				'base-separator--dashed': props.isDashed,
 				'base-separator--with-content': label || $slots.default,
 			},
 			classes.root,
 		]"
-		:role="orientation === 'horizontal' ? 'separator' : undefined"
-		:aria-orientation="orientation">
+		:role="props.orientation === 'horizontal' ? 'separator' : undefined"
+		:aria-orientation="props.orientation">
 		<!-- Линия без контента -->
 		<template v-if="!label && !$slots.default">
 			<div class="base-separator__line" :class="classes.line"></div>
@@ -39,25 +39,26 @@ import '../styles/BaseSeparator.style.scss'
 
 import type { BaseSeparatorProps } from '../model/BaseSeparator.types'
 
-const props = defineProps<BaseSeparatorProps>()
-
-const orientation = computed(() => props.orientation ?? 'horizontal')
-const thickness = computed(() => props.thickness ?? 1)
-const isDashed = computed(() => props.isDashed ?? false)
-const spacing = computed(() => props.spacing ?? 10)
+const props = withDefaults(defineProps<BaseSeparatorProps>(), {
+	orientation: 'horizontal',
+	thickness: 1,
+	isDashed: false,
+	spacing: 10,
+	sizeScale: 100,
+})
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'line', 'content'],
 })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale ?? 100 })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const spacingStyle = computed(() => ({
-	'--sep-pad-y': `${spacing.value}px`,
-	'--sep-pad-x': `${spacing.value * 2}px`,
+		'--sep-pad-y': `${props.spacing}px`,
+		'--sep-pad-x': `${props.spacing * 2}px`,
 }))
 
 const thicknessStyle = computed(() => ({
-	'--sep-thickness': `${thickness.value}px`,
+		'--sep-thickness': `${props.thickness}px`,
 }))
 </script>

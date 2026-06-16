@@ -125,17 +125,17 @@ import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, MegaMenuItem } from '../model/BaseMegaMenu.types'
 
-const props = defineProps<BaseMegaMenuProps>()
-
-const trigger = computed(() => props.trigger ?? 'click')
-const layout = computed(() => props.layout ?? 'columns')
-const hoverDelay = computed(() => props.hoverDelay ?? UI_HOVER_DELAY_MS)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
+	trigger: 'click',
+	layout: 'columns',
+	hoverDelay: UI_HOVER_DELAY_MS,
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-mega-menu',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'],
@@ -149,10 +149,10 @@ useMegaMenuTreeProvider()
 const { isMobile } = useBreakpoint()
 
 /** На мобильном hover недоступен — раскрытие всегда по клику */
-const effectiveTrigger = computed(() => (isMobile.value ? 'click' : trigger.value))
+const effectiveTrigger = computed(() => (isMobile.value ? 'click' : props.trigger))
 
 /** Единый масштаб иконки для корневого уровня */
-const iconScale = computed(() => calcIconScale('sm', sizeScale.value))
+const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
 
 /** Открытые колонки (columns layout) */
 const openColumns = ref<string[]>([])
@@ -212,7 +212,7 @@ function handleColumnLeave(): void {
 	if (effectiveTrigger.value !== 'hover') return
 	hoverTimer = setTimeout(() => {
 		openColumns.value = []
-	}, hoverDelay.value)
+	}, props.hoverDelay)
 }
 
 // ── Dropdown ──
@@ -241,7 +241,7 @@ function handleNavLeave(): void {
 	if (effectiveTrigger.value !== 'hover') return
 	hoverTimer = setTimeout(() => {
 		openNavItems.value = []
-	}, hoverDelay.value)
+	}, props.hoverDelay)
 }
 
 function isNavOpen(label: string): boolean {

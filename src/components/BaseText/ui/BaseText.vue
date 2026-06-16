@@ -1,6 +1,6 @@
 <template>
 	<component
-		:is="tag"
+		:is="props.tag"
 		class="base-text"
 		:class="[modifierClasses, classes.root]"
 		:style="[sizeScaleStyle, weightStyle, customColorStyle, maxLinesStyle]">
@@ -16,31 +16,32 @@ import { computed } from 'vue'
 import '../styles/BaseText.style.scss'
 import type { BaseTextProps } from '../model/BaseText.types'
 
-const props = defineProps<BaseTextProps>()
-
-const tag = computed(() => props.tag ?? 'p')
-const weight = computed(() => props.weight ?? 400)
-const nowrap = computed(() => props.nowrap ?? false)
-const truncate = computed(() => props.truncate ?? false)
-const maxLines = computed(() => props.maxLines ?? 1)
+const props = withDefaults(defineProps<BaseTextProps>(), {
+	tag: 'p',
+	weight: 400,
+	nowrap: false,
+	truncate: false,
+	maxLines: 1,
+	sizeScale: 100,
+})
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root'],
 })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale ?? 100 })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
 const weightStyle = computed(() => ({
-	fontWeight: weight.value,
+	fontWeight: props.weight,
 }))
 
 const maxLinesStyle = computed(() => {
-	if (!truncate.value) return {}
-	if (maxLines.value > 1) {
+	if (!props.truncate) return {}
+	if (props.maxLines > 1) {
 		return {
 			display: '-webkit-box',
-			WebkitLineClamp: maxLines.value,
+			WebkitLineClamp: props.maxLines,
 			WebkitBoxOrient: 'vertical',
 			overflow: 'hidden',
 		}
@@ -49,7 +50,7 @@ const maxLinesStyle = computed(() => {
 })
 
 const modifierClasses = computed(() => [
-	{ 'base-text--nowrap': nowrap.value },
-	{ 'base-text--truncate': truncate.value && maxLines.value <= 1 },
+	{ 'base-text--nowrap': props.nowrap },
+	{ 'base-text--truncate': props.truncate && props.maxLines <= 1 },
 ])
 </script>

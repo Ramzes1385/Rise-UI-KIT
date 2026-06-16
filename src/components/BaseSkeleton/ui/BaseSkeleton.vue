@@ -2,10 +2,10 @@
 	<div
 		class="base-skeleton"
 		:class="[
-			`base-skeleton--${shape}`,
+			`base-skeleton--${props.shape}`,
 			{
-				'base-skeleton--animated': isAnimated,
-				'base-skeleton--pulse': isPulse,
+				'base-skeleton--animated': props.isAnimated,
+				'base-skeleton--pulse': props.isPulse,
 			},
 			classes.root,
 		]"
@@ -14,22 +14,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 
 import { useCustomClass } from '@composables/useCustomClass'
 
 import '../styles/BaseSkeleton.style.scss'
 import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 
-const props = defineProps<BaseSkeletonProps>()
-const { wasPropPassed } = useExplicitPropDetection()
-
-const shape = computed(() => props.shape ?? 'rect')
-const isAnimated = computed(() =>
-	wasPropPassed('isAnimated') || wasPropPassed('is-animated') ? (props.isAnimated ?? true) : true,
-)
-const isPulse = computed(() => props.isPulse ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseSkeletonProps>(), {
+	shape: 'rect',
+	isAnimated: true,
+	isPulse: false,
+	sizeScale: 100,
+})
 
 const { classes } = useCustomClass({
 	getClass: function () {
@@ -40,7 +36,7 @@ const { classes } = useCustomClass({
 
 const skeletonStyle = computed(() => {
 	const styles: Record<string, string> = {}
-	const scale = sizeScale.value / 100
+	const scale = props.sizeScale / 100
 
 	if (props.width) {
 		styles.width =

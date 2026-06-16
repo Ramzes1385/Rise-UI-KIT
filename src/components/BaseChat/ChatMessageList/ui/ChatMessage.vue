@@ -30,23 +30,23 @@
 					<BaseButton
 						variant="ghost"
 						:padding="1"
-						:size-scale="sizeScale * 0.75"
+						:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 						class="base-chat-message-list__action-btn"
-						aria-label="Ответить на сообщение"
+						:aria-label="UI_CHAT_REPLY_ARIA"
 						@click.stop="handleReplyAction">
 						<template #left>
-							<BaseIcon name="reply" :size-scale="sizeScale * 0.7" />
+							<BaseIcon name="reply" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 						</template>
 					</BaseButton>
 					<BaseButton
 						variant="ghost"
 						:padding="1"
-						:size-scale="sizeScale * 0.75"
+						:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 						class="base-chat-message-list__action-btn"
-						aria-label="Выбрать сообщение"
+						:aria-label="UI_CHAT_SELECT_ARIA"
 						@click.stop="handleSelect">
 						<template #left>
-							<BaseIcon name="check" :size-scale="sizeScale * 0.7" />
+							<BaseIcon name="check" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 						</template>
 					</BaseButton>
 				</div>
@@ -54,7 +54,7 @@
 				<BaseText
 					v-if="isGroup && message.sender === 'other' && message.senderName"
 					tag="span"
-					:weight="600"
+					:weight="UI_FONT_WEIGHT_SEMIBOLD"
 					:size-scale="sizeScale * UI_SCALE_SMALL"
 					class="base-chat-message-list__sender-name"
 					@click.stop="handleAvatarClick">
@@ -91,26 +91,26 @@
 					<BaseIcon
 						v-if="message.isPinned"
 						name="pin"
-						:size-scale="sizeScale * 0.65"
+						:size-scale="sizeScale * UI_CHAT_SCALE_SUBTEXT"
 						class="base-chat-message-list__pin-icon" />
-					<BaseText tag="span" :size-scale="sizeScale * 0.75" class="base-chat-message-list__time">
+					<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-message-list__time">
 						{{ message.time }}
 					</BaseText>
 					<template v-if="message.sender === 'me' && message.status">
 						<BaseLoader
 							v-if="message.status === 'sending'"
 							variant="spinner"
-							:size-scale="sizeScale * 0.5"
+							:size-scale="sizeScale * UI_CHAT_SCALE_SPINNER"
 							class="base-chat-message-list__status base-chat-message-list__status--sending" />
 						<div
 							v-else
 							class="base-chat-message-list__status-wrapper"
 							:class="`base-chat-message-list__status-wrapper--${message.status}`">
-							<BaseIcon name="check" :size-scale="sizeScale * 0.6" class="base-chat-message-list__status-icon" />
+							<BaseIcon name="check" :size-scale="sizeScale * UI_CHAT_SCALE_STATUS" class="base-chat-message-list__status-icon" />
 							<BaseIcon
 								v-if="message.status === 'read' || message.status === 'delivered'"
 								name="check"
-								:size-scale="sizeScale * 0.6"
+								:size-scale="sizeScale * UI_CHAT_SCALE_STATUS"
 								class="base-chat-message-list__status-icon base-chat-message-list__status-icon--second" />
 						</div>
 					</template>
@@ -127,7 +127,7 @@ import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseText } from '@components/BaseText'
-import { UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_REPLY_ARIA, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_SPINNER, UI_CHAT_SCALE_STATUS, UI_CHAT_SCALE_SUBTEXT, UI_CHAT_SELECT_ARIA, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_SMALL } from '@constants'
 import { computed } from 'vue'
 import type { ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
@@ -146,14 +146,14 @@ interface ChatMessageProps {
 	allImagesUrls?: string[]
 }
 
-const props = defineProps<ChatMessageProps>()
-
-const isGroup = computed(() => props.isGroup ?? false)
-const isSelectionMode = computed(() => props.isSelectionMode ?? false)
-const isSelected = computed(() => props.isSelected ?? false)
-const isContextActive = computed(() => props.isContextActive ?? false)
-const searchQuery = computed(() => props.searchQuery ?? '')
-const allImagesUrls = computed(() => props.allImagesUrls ?? [])
+const props = withDefaults(defineProps<ChatMessageProps>(), {
+	isGroup: false,
+	isSelectionMode: false,
+	isSelected: false,
+	isContextActive: false,
+	searchQuery: '',
+	allImagesUrls: () => [],
+})
 
 const emit = defineEmits<{
 	(event: 'avatar-click'): void
@@ -169,7 +169,7 @@ const emit = defineEmits<{
 }>()
 
 const gallery = computed(() =>
-	allImagesUrls.value.length > 0 ? allImagesUrls.value : getMessageImageUrls(props.message),
+	props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message),
 )
 
 function getMessageImageUrls(message: ChatMessage): string[] {

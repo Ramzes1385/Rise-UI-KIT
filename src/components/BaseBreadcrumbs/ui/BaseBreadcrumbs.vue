@@ -3,7 +3,7 @@
 		class="base-breadcrumbs"
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		aria-label="Навигация">
+		:aria-label="UI_BREADCRUMBS_ARIA">
 		<!-- Schema.org JSON-LD для SEO. v-html безопасен: schemaJson экранирует </script> (см. schemaUtils). -->
 		<!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
 		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
@@ -142,6 +142,7 @@ import { BaseText } from '@components/BaseText'
 
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_BREADCRUMBS_ARIA } from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import { computed, ref } from 'vue'
@@ -149,18 +150,18 @@ import { computed, ref } from 'vue'
 import '../styles/BaseBreadcrumbs.style.scss'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 
-const props = defineProps<BaseBreadcrumbsProps>()
-
-const separator = computed(() => props.separator ?? 'chevron')
-const maxItems = computed(() => props.maxItems ?? 0)
-const showHome = computed(() => props.showHome ?? false)
-const homeIcon = computed(() => props.homeIcon ?? 'home')
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
+	separator: 'chevron',
+	maxItems: 0,
+	showHome: false,
+	homeIcon: 'home',
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-breadcrumbs',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
@@ -186,15 +187,15 @@ const emit = defineEmits<BaseBreadcrumbsEmits>()
 const isExpanded = ref(false)
 
 const visibleItems = computed<BreadcrumbItem[]>(() => {
-	if (maxItems.value <= 0 || isExpanded.value) return props.items
-	if (props.items.length <= maxItems.value) return props.items
-	return props.items.slice(-maxItems.value)
+	if (props.maxItems <= 0 || isExpanded.value) return props.items
+	if (props.items.length <= props.maxItems) return props.items
+	return props.items.slice(-props.maxItems)
 })
 
 const collapsedItems = computed<BreadcrumbItem[]>(() => {
-	if (maxItems.value <= 0 || isExpanded.value) return []
-	if (props.items.length <= maxItems.value) return []
-	return props.items.slice(0, -maxItems.value)
+	if (props.maxItems <= 0 || isExpanded.value) return []
+	if (props.items.length <= props.maxItems) return []
+	return props.items.slice(0, -props.maxItems)
 })
 
 /** Schema.org JSON-LD для SEO */

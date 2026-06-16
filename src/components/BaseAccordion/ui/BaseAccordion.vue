@@ -23,13 +23,13 @@
 				<BaseIcon
 					v-if="item.icon"
 					:name="item.icon"
-					:size-scale="calcIconScale('sm', sizeScale)"
+					:size-scale="calcIconScale('sm', props.sizeScale)"
 					class="base-accordion__icon"
 					:custom-class="classes.icon" />
 				<BaseText
 					tag="span"
 					:weight="600"
-					:size-scale="sizeScale"
+					:size-scale="props.sizeScale"
 					class="base-accordion__label"
 					:custom-class="classes.label"
 					>{{ item.label }}</BaseText
@@ -37,7 +37,7 @@
 				<span class="base-accordion__arrow" :class="classes.arrow">
 					<BaseIcon
 						name="chevron-down"
-						:size-scale="calcIconScale('md', sizeScale)"
+						:size-scale="calcIconScale('md', props.sizeScale)"
 						:custom-class="classes.arrowIcon" />
 				</span>
 			</div>
@@ -47,7 +47,7 @@
 				:class="[{ 'base-accordion__collapse--open': openIndexes.includes(index) }, classes.collapse]">
 				<div class="base-accordion__content" :class="classes.content">
 					<slot :name="item.slot || 'default'" :item="item">
-						<BaseText :size-scale="sizeScale" :custom-class="classes.contentText">{{ item.content }}</BaseText>
+						<BaseText :size-scale="props.sizeScale" :custom-class="classes.contentText">{{ item.content }}</BaseText>
 					</slot>
 				</div>
 			</div>
@@ -59,22 +59,22 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import '../styles/BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps } from '../model/BaseAccordion.types'
 
-const props = defineProps<BaseAccordionProps>()
+const props = withDefaults(defineProps<BaseAccordionProps>(), {
+	isMultiple: false,
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BaseAccordionEmits>()
-
-const isMultiple = computed(() => props.isMultiple ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-accordion',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'],
@@ -98,7 +98,7 @@ function toggleItem(index: number): void {
 		openIndexes.value.splice(pos, 1)
 		emit('toggle', index, false)
 	} else {
-		if (isMultiple.value) {
+		if (props.isMultiple) {
 			openIndexes.value.push(index)
 		} else {
 			openIndexes.value = [index]

@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import { UI_CHAT_DEFAULT_HEIGHT } from '@constants'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
@@ -131,7 +132,7 @@ const { panelStyle } = useDropdownPosition({
 	position: () => 'bottom-start',
 	gap: () => resolvedProps.value.gap,
 	matchWidth: () => resolvedProps.value.isMultiMonth,
-	maxHeight: () => '500px',
+	maxHeight: () => UI_CHAT_DEFAULT_HEIGHT,
 	isOpen: () => isOpen.value,
 })
 

@@ -80,9 +80,9 @@
 				:is-open="deleteConfirm.isOpen"
 				:is-contained="true"
 				:size-scale="sizeScale"
-				title="Удалить сообщения?"
+				:title="UI_CHAT_DELETE_CONFIRM"
 				@update:is-open="handleCancelDelete">
-				<BaseText :size-scale="sizeScale * 0.95" class="base-chat__confirm-text">
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_CONFIRM" class="base-chat__confirm-text">
 					{{ deleteConfirmText }}
 				</BaseText>
 				<template #footer>
@@ -129,6 +129,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseText } from '@components/BaseText'
+import { UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM } from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
@@ -151,23 +152,23 @@ interface MessageListExposed {
 	scrollToMessage: (messageId: string) => void
 }
 
-const props = defineProps<BaseChatProps>()
+const props = withDefaults(defineProps<BaseChatProps>(), {
+	variant: 'bubble',
+	height: UI_CHAT_DEFAULT_HEIGHT,
+	sizeScale: 100,
+	isTyping: false,
+	typingUsername: '',
+	isGroup: false,
+	members: () => [],
+	quickReplies: () => [],
+	commands: () => [],
+	currentUserRole: 'member',
+})
 
 const emit = defineEmits<BaseChatEmits>()
 
-const variant = computed(() => props.variant ?? 'bubble')
-const height = computed(() => props.height ?? '500px')
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const isTyping = computed(() => props.isTyping ?? false)
-const typingUsername = computed(() => props.typingUsername ?? '')
-const isGroup = computed(() => props.isGroup ?? false)
-const members = computed(() => props.members ?? [])
-const quickReplies = computed(() => props.quickReplies ?? [])
-const commands = computed(() => props.commands ?? [])
-const currentUserRole = computed(() => props.currentUserRole ?? 'member')
-
-const { variantClass, variantStyle } = useVariant({ block: 'base-chat', getVariant: () => variant.value })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => sizeScale.value })
+const { variantClass, variantStyle } = useVariant({ block: 'base-chat', getVariant: () => props.variant })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

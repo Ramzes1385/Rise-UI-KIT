@@ -7,7 +7,7 @@
 					Закрепленное сообщение
 					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} из ${pinnedMessages.length})` : '' }}
 				</BaseText>
-				<BaseText tag="p" :size-scale="sizeScale * 0.75" class="base-chat-pinned-panel__preview">
+				<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-pinned-panel__preview">
 					{{ currentMessageText }}
 				</BaseText>
 			</div>
@@ -18,23 +18,23 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * 0.75"
+					:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 					class="base-chat-pinned-panel__nav-btn"
 					aria-label="Предыдущее закреплённое сообщение"
 					@click="handlePrev">
 					<template #left>
-						<BaseIcon name="chevron-up" :size-scale="sizeScale * 0.7" />
+						<BaseIcon name="chevron-up" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 					</template>
 				</BaseButton>
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * 0.75"
+					:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 					class="base-chat-pinned-panel__nav-btn"
 					aria-label="Следующее закреплённое сообщение"
 					@click="handleNext">
 					<template #left>
-						<BaseIcon name="chevron-down" :size-scale="sizeScale * 0.7" />
+						<BaseIcon name="chevron-down" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 					</template>
 				</BaseButton>
 			</template>
@@ -43,12 +43,12 @@
 				v-if="currentUserRole === 'admin'"
 				variant="ghost"
 				:padding="1"
-				:size-scale="sizeScale * 0.75"
+				:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 				class="base-chat-pinned-panel__unpin-btn"
 				aria-label="Открепить сообщение"
 				@click="handleUnpin">
 				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale * 0.7" />
+					<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
 				</template>
 			</BaseButton>
 		</div>
@@ -59,7 +59,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_SCALE_SMALL } from '@constants'
 import { computed } from 'vue'
 import type { ChatMessage } from '../../BaseChat.types'
 import './ChatPinnedPanel.style.scss'
@@ -71,10 +71,10 @@ interface ChatPinnedPanelProps {
 	sizeScale?: number
 }
 
-const props = defineProps<ChatPinnedPanelProps>()
-
-const currentUserRole = computed(() => props.currentUserRole ?? 'member')
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
+	currentUserRole: 'member',
+	sizeScale: 100,
+})
 
 const emit = defineEmits<{
 	(e: 'update:currentIndex', index: number): void

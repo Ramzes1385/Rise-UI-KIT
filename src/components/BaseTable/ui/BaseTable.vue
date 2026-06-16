@@ -6,9 +6,9 @@
 			</div>
 			<BaseTableToolbar
 				:show-toolbar="showToolbar"
-				:has-search="hasSearch"
-				:has-filters="hasFilters"
-				:has-column-settings="hasColumnSettings"
+				:has-search="props.hasSearch"
+				:has-filters="props.hasFilters"
+				:has-column-settings="props.hasColumnSettings"
 				:search-query="searchQuery"
 				:filter-column="filterColumn"
 				:filter-operator="filterOperator"
@@ -16,9 +16,9 @@
 				:filter-column-options="filterColumnOptions"
 				:filter-operator-options="filterOperatorOptions"
 				:active-filters="activeFilters"
-				:columns="columns"
+				:columns="props.columns"
 				:is-settings-open="isSettingsOpen"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				:settings-max-height="TABLE_SETTINGS_MAX_HEIGHT"
 				:toolbar-class="classes.toolbar"
 				:search-class="classes.search"
@@ -43,30 +43,30 @@
 				</template>
 			</BaseTableToolbar>
 
-			<div v-if="isLoading && rows.length" class="base-table__loading-overlay" :class="classes.loadingOverlay">
-				<BaseLoader variant="spinner" :size-scale="calcIconScale('sm', sizeScale)" has-label />
+			<div v-if="props.isLoading && props.rows.length" class="base-table__loading-overlay" :class="classes.loadingOverlay">
+				<BaseLoader variant="spinner" :size-scale="calcIconScale('sm', props.sizeScale)" has-label />
 			</div>
 		<div
 			ref="tableWrapperRef"
 			class="base-table__wrapper"
-			:class="[classes.wrapper, { 'base-table__wrapper--loading': isLoading && rows.length }]"
-			:style="height ? { maxHeight: height } : undefined"
+			:class="[classes.wrapper, { 'base-table__wrapper--loading': props.isLoading && props.rows.length }]"
+			:style="props.height ? { maxHeight: props.height } : undefined"
 			@scroll="handleScroll">
 				<table class="base-table__table" :class="[classes.table, { 'base-table__table--fixed': useFixedLayout }]">
 					<colgroup>
-					<col v-if="isSelectable" :style="{ width: TABLE_ROW_SELECTION_WIDTH }" />
-					<col v-if="hasRowNumber" :style="{ width: TABLE_ROW_NUMBER_WIDTH }" />
+					<col v-if="props.isSelectable" :style="{ width: TABLE_ROW_SELECTION_WIDTH }" />
+					<col v-if="props.hasRowNumber" :style="{ width: TABLE_ROW_NUMBER_WIDTH }" />
 					<col v-if="hasExpandableRows" :style="{ width: TABLE_ROW_EXPAND_WIDTH }" />
 						<col v-for="(column, i) in visibleColumns" :key="column.key" :style="{ width: columnWidths[i] }" />
 					</colgroup>
 					<BaseTableHeader
 						:columns="visibleColumns"
-						:is-selectable="isSelectable"
-						:has-row-number="hasRowNumber"
+						:is-selectable="props.isSelectable"
+						:has-row-number="props.hasRowNumber"
 						:has-expandable-rows="hasExpandableRows"
 						:is-all-selected="isAllSelected"
-						:size-scale="sizeScale"
-						:is-multi-sort="isMultiSort"
+						:size-scale="props.sizeScale"
+						:is-multi-sort="props.isMultiSort"
 						:thead-class="classes.thead"
 						:tr-class="classes.tr"
 						:th-class="classes.th"
@@ -88,16 +88,16 @@
 					<BaseTableBody
 						:rows="displayedRows"
 						:columns="visibleColumns"
-						:empty-text="emptyText"
-						:is-loading="isLoading"
+						:empty-text="props.emptyText"
+						:is-loading="props.isLoading"
 						:skeleton-rows="skeletonRows"
-						:is-selectable="isSelectable"
-						:has-row-number="hasRowNumber"
+						:is-selectable="props.isSelectable"
+						:has-row-number="props.hasRowNumber"
 						:has-expandable-rows="hasExpandableRows"
 						:total-columns="totalCols"
-						:size-scale="sizeScale"
-						:load-mode="loadMode"
-						:nested-config="nestedConfig"
+						:size-scale="props.sizeScale"
+						:load-mode="props.loadMode"
+						:nested-config="props.nestedConfig"
 						:tbody-class="classes.tbody"
 						:tr-class="classes.tr"
 						:td-class="classes.td"
@@ -125,37 +125,37 @@
 				</table>
 			</div>
 
-			<div v-if="loadMode === 'button' && hasMoreRows" class="base-table__load-more" :class="classes.loadMore">
-				<BaseButton :is-loading="isLoading" :is-disabled="isLoading" :size-scale="sizeScale" @click="handleLoadMore">
-					{{ isLoading ? 'Загрузка...' : 'Загрузить еще' }}
+			<div v-if="props.loadMode === 'button' && hasMoreRows" class="base-table__load-more" :class="classes.loadMore">
+				<BaseButton :is-loading="props.isLoading" :is-disabled="props.isLoading" :size-scale="props.sizeScale" @click="handleLoadMore">
+					{{ props.isLoading ? UI_LOADING_TEXT : UI_LOAD_MORE_TEXT }}
 				</BaseButton>
 			</div>
 
 			<div
 				v-if="
-					(hasPageSizeSelector && pageSizeOptions.length) ||
-					(loadMode === 'pagination' && localPageSize && totalPages > 1)
+					(props.hasPageSizeSelector && props.pageSizeOptions.length) ||
+					(props.loadMode === 'pagination' && localPageSize && totalPages > 1)
 				"
 				class="base-table__footer-bar"
 				:class="classes.footerBar">
 				<div
-					v-if="hasPageSizeSelector && pageSizeOptions.length"
+					v-if="props.hasPageSizeSelector && props.pageSizeOptions.length"
 					class="base-table__page-size"
 					:class="classes.pageSize">
 					<BaseSelect
 						:model-value="String(localPageSize)"
 						:options="pageSizeSelectOptions"
-						:size-scale="sizeScale - 20"
+						:size-scale="props.sizeScale - 20"
 						@update:model-value="handlePageSizeChange" />
 				</div>
 			<slot
-					v-if="loadMode === 'pagination' && localPageSize && totalPages > 1"
+					v-if="props.loadMode === 'pagination' && localPageSize && totalPages > 1"
 					name="pagination"
 					:current-page="currentPage"
 					:total-pages="totalPages"
 					:visible-pages="visiblePages"
 					:page-size="localPageSize"
-					:page-size-options="pageSizeOptions"
+					:page-size-options="props.pageSizeOptions"
 					:pagination-info="paginationInfo"
 					:page-size-select-options="pageSizeSelectOptions"
 					:handle-page-size-change="handlePageSizeChange">
@@ -168,7 +168,7 @@
 						:page-size="localPageSize"
 						:max-visible="TABLE_PAGINATION_MAX_VISIBLE"
 						variant="ghost"
-						:size-scale="sizeScale - 20" />
+						:size-scale="props.sizeScale - 20" />
 				</slot>
 			</div>
 			<!-- Слот footer (внутри границ для border-radius) -->
@@ -200,9 +200,8 @@ import { useTableSelection } from '@composables/useTableSelection'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcRowNumber } from '@utils/tableUtils'
 import { computed, provide, useSlots, watch } from 'vue'
-import type { PropType } from 'vue'
 
-import { UI_EMPTY_TEXT } from '@constants'
+import { UI_EMPTY_TEXT, UI_LOAD_MORE_TEXT, UI_LOADING_TEXT } from '@constants'
 import {
 	TABLE_EXPAND_TRANSITION_DURATION,
 	TABLE_INFINITE_SCROLL_THRESHOLD,
@@ -221,58 +220,33 @@ import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	columns: { type: Array as PropType<BaseTableProps['columns']>, required: true },
-	rows: { type: Array as PropType<BaseTableProps['rows']>, required: true },
-	variant: { type: String as PropType<BaseTableProps['variant']>, default: 'default' },
-	color: Object as PropType<BaseTableProps['color']>,
-	isLoading: { type: Boolean, default: false },
-	emptyText: { type: String, default: UI_EMPTY_TEXT },
-	height: { type: String, default: '' },
-	isSelectable: { type: Boolean, default: false },
-	hasSearch: { type: Boolean, default: false },
-	hasFilters: { type: Boolean, default: false },
-	pageSize: { type: Number, default: 0 },
-	pageSizeOptions: { type: Array as PropType<BaseTableProps['pageSizeOptions']>, default: () => [] },
-	loadMode: { type: String as PropType<BaseTableProps['loadMode']>, default: 'pagination' },
-	searchDebounce: { type: Number, default: TABLE_SEARCH_DEBOUNCE_MS },
-	nestedConfig: Object as PropType<BaseTableProps['nestedConfig']>,
-	isMultiSort: { type: Boolean, default: false },
-	hasColumnSettings: { type: Boolean, default: false },
-	hasRowNumber: { type: Boolean, default: false },
-	hasPageSizeSelector: { type: Boolean, default: false },
-	isResizable: { type: Boolean, default: false },
-	sizeScale: { type: Number, default: 100 },
-	padding: { type: [Number, Object] as PropType<BaseTableProps['padding']>, default: 10 },
-	customClass: [String, Object] as PropType<BaseTableProps['customClass']>,
+const props = withDefaults(defineProps<BaseTableProps>(), {
+	variant: 'default',
+	isLoading: false,
+	emptyText: UI_EMPTY_TEXT,
+	height: '',
+	isSelectable: false,
+	hasSearch: false,
+	hasFilters: false,
+	pageSize: 0,
+	pageSizeOptions: () => [],
+	loadMode: 'pagination',
+	searchDebounce: TABLE_SEARCH_DEBOUNCE_MS,
+	isMultiSort: false,
+	hasColumnSettings: false,
+	hasRowNumber: false,
+	hasPageSizeSelector: false,
+	isResizable: false,
+	sizeScale: 100,
+	padding: 10,
 })
-/* eslint-enable vue/require-default-prop */
-
-const isLoading = computed(() => props.isLoading ?? false)
-const emptyText = computed(() => props.emptyText ?? UI_EMPTY_TEXT)
-const height = computed(() => props.height ?? '')
-const isSelectable = computed(() => props.isSelectable ?? false)
-const hasSearch = computed(() => props.hasSearch ?? false)
-const hasFilters = computed(() => props.hasFilters ?? false)
-const pageSize = computed(() => props.pageSize ?? 0)
-const pageSizeOptions = computed(() => props.pageSizeOptions ?? [])
-const loadMode = computed(() => props.loadMode ?? 'pagination')
-const searchDebounce = computed(() => props.searchDebounce ?? TABLE_SEARCH_DEBOUNCE_MS)
-const isMultiSort = computed(() => props.isMultiSort ?? false)
-const hasColumnSettings = computed(() => props.hasColumnSettings ?? false)
-const hasRowNumber = computed(() => props.hasRowNumber ?? false)
-const hasPageSizeSelector = computed(() => props.hasPageSizeSelector ?? false)
-const isResizable = computed(() => props.isResizable ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
-const padding = computed(() => props.padding ?? 10)
 
 const slots = useSlots()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-table',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: [
@@ -300,7 +274,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 	],
 })
 
-const { paddingStyle } = usePadding({ getPadding: () => padding.value, prefix: '--tbl-pad', defaultPadding: 10 })
+const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: 10 })
 
 const {
 	onBeforeEnter: onExpandBeforeEnter,
@@ -338,10 +312,10 @@ const {
 } = useTableColumns({
 	columns: computed(() => props.columns),
 	rows: computed(() => props.rows),
-	isResizable: () => isResizable.value,
-	hasRowNumber: () => hasRowNumber.value,
-	isSelectable: () => isSelectable.value,
-	pageSize: () => pageSize.value,
+	isResizable: () => props.isResizable,
+	hasRowNumber: () => props.hasRowNumber,
+	isSelectable: () => props.isSelectable,
+	pageSize: () => props.pageSize,
 	emit,
 })
 
@@ -368,10 +342,10 @@ const {
 } = useTableData({
 	rows: computed(() => props.rows),
 	columns: localColumns,
-	loadMode: () => loadMode.value,
-	pageSize,
-	isMultiSort: () => isMultiSort.value,
-	searchDebounce: () => searchDebounce.value,
+	loadMode: () => props.loadMode,
+	pageSize: computed(() => props.pageSize),
+	isMultiSort: () => props.isMultiSort,
+	searchDebounce: () => props.searchDebounce,
 	onSearch: (q: string) => emit('search', q),
 	onSort: states => emit('sort', states),
 	onFilter: filters => emit('filter', filters),
@@ -402,9 +376,9 @@ const {
 	handleRemoveFilter,
 } = useTableToolbar({
 	filterableColumns: () => filterableColumns.value,
-	hasSearch: () => hasSearch.value,
-	hasFilters: () => hasFilters.value,
-	hasColumnSettings: () => hasColumnSettings.value,
+	hasSearch: () => props.hasSearch,
+	hasFilters: () => props.hasFilters,
+	hasColumnSettings: () => props.hasColumnSettings,
 	slots,
 	addFilter,
 	removeFilter,
@@ -415,7 +389,7 @@ watch(currentPage, newPage => {
 })
 
 const pageSizeSelectOptions = computed(() => {
-	return pageSizeOptions.value.map(size => ({
+	return props.pageSizeOptions.map(size => ({
 		value: String(size),
 		label: String(size),
 	}))
@@ -434,7 +408,7 @@ function getRowNumber(index: number): number {
 		index,
 		currentPage: currentPage.value,
 		pageSize: localPageSize.value,
-		loadMode: loadMode.value,
+		loadMode: props.loadMode,
 	})
 }
 
@@ -452,7 +426,7 @@ function handleLoadMore(): void {
 }
 
 function handleScroll(e: Event): void {
-	if (loadMode.value !== 'infinite' || !hasMoreRows.value || isLoading.value) return
+	if (props.loadMode !== 'infinite' || !hasMoreRows.value || props.isLoading) return
 
 	const target = e.target as HTMLElement
 	const { scrollTop, scrollHeight, clientHeight } = target

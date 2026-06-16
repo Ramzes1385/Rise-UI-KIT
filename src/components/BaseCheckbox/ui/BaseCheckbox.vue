@@ -4,8 +4,8 @@
 		:class="[
 			variantClass,
 			{
-				'base-checkbox--disabled': isDisabled,
-				'base-checkbox--error': error,
+				'base-checkbox--disabled': props.isDisabled,
+				'base-checkbox--error': props.error,
 			},
 			classes.root,
 		]"
@@ -16,14 +16,14 @@
 					type="checkbox"
 					class="base-checkbox__input"
 					:class="classes.input"
-					:checked="modelValue"
-					:disabled="isDisabled"
+				:checked="props.modelValue"
+				:disabled="props.isDisabled"
 					@change="handleChange" />
 				<div class="base-checkbox__box" :class="classes.box">
 					<BaseIcon
-						v-if="modelValue"
+						v-if="props.modelValue"
 						name="check"
-						:size-scale="calcIconScale('xs', sizeScale)"
+						:size-scale="calcIconScale('xs', props.sizeScale)"
 						class="base-checkbox__icon"
 						:custom-class="classes.icon" />
 				</div>
@@ -32,19 +32,19 @@
 				v-if="label"
 				tag="span"
 				class="base-checkbox__label"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				:custom-class="classes.label"
 				>{{ label }}</BaseText
 			>
 		</label>
 		<slot name="error">
 			<BaseText
-				v-if="error"
+				v-if="props.error"
 				tag="span"
 				class="base-checkbox__error-text"
-				:size-scale="sizeScale"
+				:size-scale="props.sizeScale"
 				:custom-class="classes.errorText"
-				>{{ error }}</BaseText
+				>{{ props.error }}</BaseText
 			>
 		</slot>
 	</div>
@@ -56,23 +56,22 @@ import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed } from 'vue'
 
 import '../styles/BaseCheckbox.style.scss'
 
-const props = defineProps<BaseCheckboxProps>()
+const props = withDefaults(defineProps<BaseCheckboxProps>(), {
+	modelValue: false,
+	isDisabled: false,
+	error: '',
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BaseCheckboxEmits>()
-
-const modelValue = computed(() => props.modelValue ?? false)
-const isDisabled = computed(() => props.isDisabled ?? false)
-const error = computed(() => props.error ?? '')
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-checkbox',
 	getVariant: () => props.variant,
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'],

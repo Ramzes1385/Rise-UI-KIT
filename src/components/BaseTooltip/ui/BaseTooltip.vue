@@ -13,7 +13,7 @@
 				<div
 					v-if="isVisible"
 					class="base-tooltip"
-					:class="[[`base-tooltip--${position}`, variantClass], classes.tooltip]"
+					:class="[[`base-tooltip--${props.position}`, variantClass], classes.tooltip]"
 					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]">
 					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
@@ -24,22 +24,23 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { UI_TRANSITION_DURATION_MS } from '@constants'
+import { UI_TOOLTIP_HIDE_DELAY_MS, UI_TRANSITION_DURATION_MS } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps } from '../model/BaseTooltip.types'
 
-const props = defineProps<BaseTooltipProps>()
-
-const position = computed(() => props.position ?? 'top')
-const isAlwaysVisible = computed(() => props.isAlwaysVisible ?? false)
+const props = withDefaults(defineProps<BaseTooltipProps>(), {
+	position: 'top',
+	isAlwaysVisible: false,
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-tooltip',
 	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale ?? 100,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'tooltip', 'text'],
@@ -53,7 +54,7 @@ let rafId: number | null = null
 
 const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
 
-const transitionName = computed(() => getTooltipTransition(position.value))
+const transitionName = computed(() => getTooltipTransition(props.position))
 
 function updateCoords(): void {
 	/* istanbul ignore next -- defensive guard: wrapperRef всегда доступен после onMounted */
@@ -82,14 +83,14 @@ function stopUpdateLoop(): void {
 
 const tooltipStyle = computed((): Record<string, string> => {
 	return calcTooltipPosition({
-		position: position.value,
+		position: props.position,
 		coords: coords.value,
 		gap: 8,
 	})
 })
 
 function handleEnter(): void {
-	if (isAlwaysVisible.value) return
+	if (props.isAlwaysVisible) return
 
 	/* istanbul ignore if -- hideTimer присутствует только после handleLeave с активным таймером, цепочка тестируется в e2e */
 	if (hideTimer) {
@@ -105,7 +106,7 @@ function handleEnter(): void {
 }
 
 function handleLeave(): void {
-	if (isAlwaysVisible.value) return
+	if (props.isAlwaysVisible) return
 
 	/* istanbul ignore else -- showTimer всегда установлен после handleEnter перед handleLeave */
 	if (showTimer) {
@@ -116,11 +117,11 @@ function handleLeave(): void {
 	hideTimer = setTimeout(() => {
 		isVisible.value = false
 		stopUpdateLoop()
-	}, 150)
+	}, UI_TOOLTIP_HIDE_DELAY_MS)
 }
 
 onMounted(() => {
-	if (isAlwaysVisible.value) {
+	if (props.isAlwaysVisible) {
 		updateCoords()
 		isVisible.value = true
 		startUpdateLoop()
@@ -129,7 +130,7 @@ onMounted(() => {
 
 /* istanbul ignore next -- watch isAlwaysVisible: переключение во время жизни компонента покрывается e2e/visual тестами */
 watch(
-	() => isAlwaysVisible.value,
+	() => props.isAlwaysVisible,
 	newVal => {
 		if (newVal) {
 			updateCoords()

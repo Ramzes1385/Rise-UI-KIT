@@ -191,7 +191,7 @@
 					</li>
 					<li v-if="filteredOptions.length === 0" class="base-select__no-results" :class="classes.noResults">
 						<slot name="empty">
-							<BaseText tag="span" :size-scale="sizeScale">Ничего не найдено</BaseText>
+							<BaseText tag="span" :size-scale="sizeScale">{{ UI_NO_RESULTS_TEXT }}</BaseText>
 						</slot>
 					</li>
 				</ul>
@@ -208,28 +208,23 @@ import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_NO_RESULTS_TEXT } from '@constants'
 import { computed, ref } from 'vue'
-import type { PropType } from 'vue'
 import '../styles/BaseSelect.style.scss'
 import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from '../model/BaseSelect.types'
 
-/* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
-const props = defineProps({
-	modelValue: { type: [String, Number, Array] as PropType<BaseSelectProps['modelValue']>, default: '' },
-	options: { type: Array as PropType<BaseSelectProps['options']>, required: true },
-	placeholder: { type: String, default: 'Выберите...' },
-	label: { type: String, default: '' },
-	isRequired: { type: Boolean, default: false },
-	isMultiple: { type: Boolean, default: false },
-	isSearchable: { type: Boolean, default: false },
-	isDisabled: { type: Boolean, default: false },
-	error: { type: String, default: '' },
-	variant: { type: String as PropType<BaseSelectProps['variant']>, default: 'default' },
-	color: Object as PropType<BaseSelectProps['color']>,
-	sizeScale: { type: Number, default: 100 },
-	customClass: [String, Object] as PropType<BaseSelectProps['customClass']>,
+const props = withDefaults(defineProps<BaseSelectProps>(), {
+	modelValue: '',
+	placeholder: 'Выберите...',
+	label: '',
+	isRequired: false,
+	isMultiple: false,
+	isSearchable: false,
+	isDisabled: false,
+	error: '',
+	variant: 'default',
+	sizeScale: 100,
 })
-/* eslint-enable vue/require-default-prop */
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-select',

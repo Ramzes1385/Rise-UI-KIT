@@ -1,9 +1,9 @@
 <template>
 	<!-- Одиночная анимация -->
 	<Transition
-		v-if="!isGroup"
-		:name="name"
-		:mode="mode"
+		v-if="!props.isGroup"
+		:name="props.name"
+		:mode="props.mode"
 		appear
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
@@ -15,8 +15,8 @@
 	<!-- Групповая анимация -->
 	<TransitionGroup
 		v-else
-		:name="name"
-		:tag="tag"
+		:name="props.name"
+		:tag="props.tag"
 		appear
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
@@ -33,16 +33,17 @@ import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps } from '../model/BaseAnimation.types'
 
-const props = defineProps<BaseAnimationProps>()
+const props = withDefaults(defineProps<BaseAnimationProps>(), {
+	name: 'fade',
+	mode: 'out-in',
+	isGroup: false,
+	tag: 'div',
+})
 const { wasPropPassed } = useExplicitPropDetection()
 
 const emit = defineEmits<BaseAnimationEmits>()
 
 const show = computed(() => (wasPropPassed('show') ? (props.show ?? true) : true))
-const name = computed(() => props.name ?? 'fade')
-const mode = computed(() => props.mode ?? 'out-in')
-const isGroup = computed(() => props.isGroup ?? false)
-const tag = computed(() => props.tag ?? 'div')
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

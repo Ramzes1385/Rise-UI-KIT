@@ -1,15 +1,15 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpenLocal"
-		:position="position"
-		:variant="variant"
+		:position="props.position"
+		:variant="props.variant"
 		:color="color"
 		:gap="10"
 		:match-width="false"
 		:prevent-mousedown="false"
 		:panel-class="panelClasses"
 		:padding="0"
-		:size-scale="sizeScale"
+		:size-scale="props.sizeScale"
 		:custom-class="{ root: classes.root, panel: classes.panel }"
 		@close="handleClose">
 		<div class="base-popover__trigger" :class="classes.trigger" @click="toggle">
@@ -17,7 +17,7 @@
 		</div>
 
 		<template #dropdown>
-			<div class="base-popover__arrow" :class="[`base-popover__arrow--${position}`, classes.arrow]"></div>
+			<div class="base-popover__arrow" :class="[`base-popover__arrow--${props.position}`, classes.arrow]"></div>
 			<div class="base-popover__inner" :class="classes.inner">
 				<slot />
 			</div>
@@ -32,31 +32,31 @@ import { computed, ref, watch } from 'vue'
 import '../styles/BasePopover.style.scss'
 import type { BasePopoverEmits, BasePopoverProps } from '../model/BasePopover.types'
 
-const props = defineProps<BasePopoverProps>()
+const props = withDefaults(defineProps<BasePopoverProps>(), {
+	isOpen: false,
+	position: 'bottom',
+	variant: 'default',
+	sizeScale: 100,
+})
 
 const emit = defineEmits<BasePopoverEmits>()
-
-const isOpen = computed(() => props.isOpen ?? false)
-const position = computed(() => props.position ?? 'bottom')
-const variant = computed(() => props.variant ?? 'default')
-const sizeScale = computed(() => props.sizeScale ?? 100)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'trigger', 'arrow', 'inner', 'panel'],
 })
 
-const isOpenLocal = ref(isOpen.value)
+const isOpenLocal = ref(props.isOpen)
 
 watch(
-	() => isOpen.value,
+	() => props.isOpen,
 	val => {
 		isOpenLocal.value = val
 	},
 )
 
 const panelClasses = computed((): string => {
-	return `base-popover__panel base-popover__panel--${variant.value}`
+	return `base-popover__panel base-popover__panel--${props.variant}`
 })
 
 function toggle(): void {

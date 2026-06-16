@@ -71,20 +71,20 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import '../styles/BaseTabs.style.scss'
 import type { BaseTabsEmits, BaseTabsProps } from '../model/BaseTabs.types'
 
-const props = defineProps<BaseTabsProps>()
-
-const isFullWidth = computed(() => props.isFullWidth ?? false)
-const isScrollable = computed(() => props.isScrollable ?? false)
-const sizeScale = computed(() => props.sizeScale ?? 100)
+const props = withDefaults(defineProps<BaseTabsProps>(), {
+	isFullWidth: false,
+	isScrollable: false,
+	sizeScale: 100,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-tabs',
 	getVariant: () => props.variant ?? 'underline',
-	getSizeScale: () => sizeScale.value,
+	getSizeScale: () => props.sizeScale,
 	getColor: () => props.color,
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content'],
@@ -177,7 +177,7 @@ let resizeObserver: ResizeObserver | null = null
 function setupObserver(): void {
 	resizeObserver?.disconnect()
 	resizeObserver = null
-	if (isScrollable.value && listRef.value) {
+	if (props.isScrollable && listRef.value) {
 		resizeObserver = new ResizeObserver(updateScrollState)
 		resizeObserver.observe(listRef.value)
 		nextTick(updateScrollState)
@@ -193,7 +193,7 @@ onMounted(() => {
 
 /* istanbul ignore next -- переключение isScrollable во время жизни компонента: ResizeObserver callbacks тестируются e2e */
 watch(
-	() => isScrollable.value,
+	() => props.isScrollable,
 	() => {
 		setupObserver()
 	},
