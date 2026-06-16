@@ -11,273 +11,37 @@
 			variantClass,
 			classes.root,
 		]">
-		<!-- Панель инструментов -->
-		<div v-if="hasToolbar && !isReadonly" class="base-editor__toolbar" :class="classes.toolbar" @mousedown.prevent>
-			<slot name="toolbar">
-				<!-- Форматирование текста -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="Жирный" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isBold }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('bold')">
-							<BaseIcon name="bold" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Курсив" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isItalic }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('italic')">
-							<BaseIcon name="italic" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Подчёркнутый" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isUnderline }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('underline')">
-							<BaseIcon name="underline" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Зачёркнутый" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isStrike }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('strikeThrough')">
-							<BaseIcon name="strike" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-				</span>
+		<BaseEditorToolbar
+			:active-states="activeStates"
+			:size-scale="sizeScale"
+			:classes="classes"
+			:is-code-mode="isCodeMode"
+			:is-readonly="isReadonly"
+			:has-toolbar="hasToolbar"
+			:heading-options="headingOptions"
+			:text-color="textColor"
+			:background-color="backgroundColor"
+			:is-text-color-active="isTextColorActive"
+			:is-background-color-active="isBackgroundColorActive"
+			@apply-format="applyFormat"
+			@apply-block="applyBlock"
+			@handle-heading-change="handleHeadingChange"
+			@insert-link="insertLink"
+			@handle-image-upload="handleImageUpload"
+			@handle-video-upload="handleVideoUpload"
+			@clear-all-formatting="clearAllFormatting"
+			@insert-separator="insertSeparator"
+			@toggle-code-mode="toggleCodeMode"
+			@save-selection="saveSelection"
+			@handle-text-color="handleTextColor"
+			@handle-background-color="handleBackgroundColor"
+			@reset-text-color="resetTextColor"
+			@reset-background-color="resetBackgroundColorState">
+			<template v-if="$slots.toolbar" #toolbar>
+				<slot name="toolbar" />
+			</template>
+		</BaseEditorToolbar>
 
-				<!-- Цвет текста и фона -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="Цвет текста" position="top" :size-scale="sizeScale">
-						<BaseColorPicker
-							v-model="textColor"
-							class="base-editor__color-picker"
-							:class="{ 'base-editor__color-picker--active': isTextColorActive }"
-							:style="isTextColorActive ? { '--editor-swatch-color': textColor } : undefined"
-							:custom-class="{ swatch: classes.colorPicker }"
-							:size-scale="sizeScale"
-							has-transparent-swatch
-							is-resettable
-							reset-label="Сбросить цвет текста"
-							@mousedown.prevent="saveSelection"
-							@change="handleTextColor"
-							@reset="resetTextColor">
-							<template #trigger>
-								<BaseIcon name="color-picker" :size-scale="calcIconScale('md', sizeScale)" />
-							</template>
-						</BaseColorPicker>
-					</BaseTooltip>
-					<BaseTooltip text="Цвет фона" position="top" :size-scale="sizeScale">
-						<BaseColorPicker
-							v-model="backgroundColor"
-							class="base-editor__color-picker"
-							:class="{ 'base-editor__color-picker--active': isBackgroundColorActive }"
-							:style="isBackgroundColorActive ? { '--editor-swatch-color': backgroundColor } : undefined"
-							:custom-class="{ swatch: classes.colorPicker }"
-							:size-scale="sizeScale"
-							has-transparent-swatch
-							is-resettable
-							reset-label="Сбросить цвет фона"
-							@mousedown.prevent="saveSelection"
-							@change="handleBackgroundColor"
-							@reset="resetBackgroundColorState">
-							<template #trigger>
-								<BaseIcon name="highlight" :size-scale="calcIconScale('md', sizeScale)" />
-							</template>
-						</BaseColorPicker>
-					</BaseTooltip>
-				</span>
-
-				<!-- Выравнивание -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="По левому краю" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isJustifyLeft }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('justifyLeft')">
-							<BaseIcon name="align-left" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="По центру" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isJustifyCenter }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('justifyCenter')">
-							<BaseIcon name="align-center" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="По правому краю" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isJustifyRight }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('justifyRight')">
-							<BaseIcon name="align-right" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="По ширине" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isJustifyFull }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('justifyFull')">
-							<BaseIcon name="align-justify" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-				</span>
-
-				<!-- Списки -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="Маркированный список" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isUnorderedList }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('insertUnorderedList')">
-							<BaseIcon name="list-bullet" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Нумерованный список" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isOrderedList }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyFormat('insertOrderedList')">
-							<BaseIcon name="list-number" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-				</span>
-
-				<!-- Заголовки -->
-				<span class="base-editor__group" :class="classes.group">
-					<div class="base-editor__heading-select" :class="classes.headingSelect">
-						<BaseSelect
-							v-model="headingValue"
-							:options="headingOptions"
-							variant="ghost"
-							placeholder="Формат"
-							:size-scale="sizeScale"
-							@change="handleHeadingChange" />
-					</div>
-				</span>
-
-				<!-- Медиа -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="Ссылка" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[classes.btn]"
-							:size-scale="sizeScale"
-							@click="insertLink">
-							<BaseIcon name="link" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Изображение" position="top" :size-scale="sizeScale">
-						<label class="base-editor__btn base-editor__btn--color" :class="classes.btn" @mousedown.stop>
-							<BaseIcon name="image" :size-scale="calcIconScale('md', sizeScale)" />
-							<input
-								type="file"
-								accept="image/*"
-								class="base-editor__file-input"
-								:class="classes.fileInput"
-								@change="handleImageUpload" />
-						</label>
-					</BaseTooltip>
-					<BaseTooltip text="Видео" position="top" :size-scale="sizeScale">
-						<label class="base-editor__btn base-editor__btn--color" :class="classes.btn" @mousedown.stop>
-							<BaseIcon name="video" :size-scale="calcIconScale('md', sizeScale)" />
-							<input
-								type="file"
-								accept="video/*"
-								class="base-editor__file-input"
-								:class="classes.fileInput"
-								@change="handleVideoUpload" />
-						</label>
-					</BaseTooltip>
-				</span>
-
-				<!-- Цитата, блок кода -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="Цитата" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isBlockquote }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyBlock('blockquote')">
-							<BaseIcon name="quote" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Блок кода" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': activeStates.isPre }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="applyBlock('pre')">
-							<BaseIcon name="code" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-				</span>
-
-				<!-- Очистить, разделитель, режим кода -->
-				<span class="base-editor__group" :class="classes.group">
-					<BaseTooltip text="Очистить форматирование" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[classes.btn]"
-							:size-scale="sizeScale"
-							@click="clearAllFormatting">
-							<BaseIcon name="format-clear" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip text="Разделитель" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[classes.btn]"
-							:size-scale="sizeScale"
-							@click="insertSeparator">
-							<BaseIcon name="separator" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-					<BaseTooltip :text="isCodeMode ? 'Визуальный режим' : 'Режим кода'" position="top" :size-scale="sizeScale">
-						<BaseButton
-							variant="ghost"
-							class="base-editor__btn"
-							:class="[{ 'base-editor__btn--active': isCodeMode }, classes.btn]"
-							:size-scale="sizeScale"
-							@click="toggleCodeMode">
-							<BaseIcon name="code" :size-scale="calcIconScale('md', sizeScale)" />
-						</BaseButton>
-					</BaseTooltip>
-				</span>
-			</slot>
-		</div>
-
-		<!-- Визуальный режим -->
 		<div
 			v-if="!isCodeMode"
 			ref="editorRef"
@@ -293,7 +57,6 @@
 			@keydown="handleKeyDown"
 			@contextmenu="handleContextMenu"></div>
 
-		<!-- Режим кода -->
 		<BaseTextarea
 			v-if="isCodeMode"
 			ref="codeTextareaRef"
@@ -305,7 +68,7 @@
 			@update:model-value="handleCodeInput"
 			@focus="handleFocus"
 			@blur="handleBlur" />
-		<!-- Контекстное меню медиа (teleport для корректного fixed) -->
+
 		<Teleport to="body">
 			<div
 				v-if="contextMenu.isVisible"
@@ -341,17 +104,15 @@ import type { BaseEditorEmits, BaseEditorProps } from '../model/BaseEditor.types
 import '../styles/BaseEditor.style.scss'
 
 import { BaseButton } from '@components/BaseButton'
-import { BaseColorPicker } from '@components/BaseColorPicker'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
-import type { BaseSelectOption } from '@components/BaseSelect'
-import { BaseSelect } from '@components/BaseSelect'
 import { BaseTextarea } from '@components/BaseTextarea'
-import { BaseTooltip } from '@components/BaseTooltip'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { onMounted, ref, watch } from 'vue'
 import type { PropType } from 'vue'
+import type { BaseSelectOption } from '@components/BaseSelect'
+
+import BaseEditorToolbar from './BaseEditorToolbar.vue'
 
 /* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
@@ -381,7 +142,6 @@ const emit = defineEmits<BaseEditorEmits>()
 const editorRef = ref<HTMLDivElement | null>(null)
 const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
 const isFocused = ref(false)
-const headingValue = ref<string | number>('p')
 const isEmpty = ref(true)
 const textColor = ref('#000000')
 const backgroundColor = ref('#ffff00')

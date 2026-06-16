@@ -198,13 +198,12 @@ import { usePadding } from '@composables/usePadding'
 import { useTableData } from '@composables/useTableData'
 import { useTableSelection } from '@composables/useTableSelection'
 import { calcPageInfo } from '@utils/paginationUtils'
-import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
-import { computed, provide, ref, useSlots, watch } from 'vue'
+import { calcRowNumber } from '@utils/tableUtils'
+import { computed, provide, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
 
 import { UI_EMPTY_TEXT } from '@constants'
 import {
-	TABLE_DEFAULT_SKELETON_ROWS,
 	TABLE_EXPAND_TRANSITION_DURATION,
 	TABLE_INFINITE_SCROLL_THRESHOLD,
 	TABLE_MIN_COL_WIDTH,
@@ -215,6 +214,9 @@ import {
 	TABLE_SEARCH_DEBOUNCE_MS,
 	TABLE_SETTINGS_MAX_HEIGHT,
 } from '../model/BaseTable.constants'
+import { useTableColumns } from '../model/useTableColumns'
+import { useTableExpand } from '../model/useTableExpand'
+import { useTableToolbar } from '../model/useTableToolbar'
 import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
@@ -320,71 +322,28 @@ provide(TABLE_EXPAND_TRANSITION_KEY, {
 
 const emit = defineEmits<BaseTableEmits>()
 
-// Локальная копия колонок для управления видимостью и шириной
-const localColumns = ref<TableColumn[]>([...props.columns])
-
-watch(
-	() => props.columns,
-	newCols => {
-		localColumns.value = newCols.map(column => {
-			const existing = localColumns.value.find(c => c.key === column.key)
-			if (existing) {
-				return { ...column, width: existing.width, isHidden: existing.isHidden }
-			}
-			return column
-		})
-	},
-	{ deep: true },
-)
-
-/** Видимые колонки */
-const visibleColumns = computed((): TableColumn[] => {
-	return localColumns.value.filter(column => !column.isHidden)
+const {
+	localColumns,
+	visibleColumns,
+	columnWidths,
+	useFixedLayout,
+	totalCols,
+	filterableColumns,
+	hasExpandableRows,
+	skeletonRows,
+	isColumnResizable,
+	getColumnStyle,
+	toggleColumnVisibility,
+	formatCellValue,
+} = useTableColumns({
+	columns: computed(() => props.columns),
+	rows: computed(() => props.rows),
+	isResizable: () => isResizable.value,
+	hasRowNumber: () => hasRowNumber.value,
+	isSelectable: () => isSelectable.value,
+	pageSize: () => pageSize.value,
+	emit,
 })
-
-/** Количество строк скелетона при загрузке */
-const skeletonRows = computed((): number => {
-	return pageSize.value || TABLE_DEFAULT_SKELETON_ROWS
-})
-
-/** Колонки, доступные для фильтрации (все видимые, если isFilterable не задан явно) */
-const filterableColumns = computed((): TableColumn[] => {
-	return localColumns.value.filter(column => !column.isHidden && column.isFilterable !== false)
-})
-
-/** Есть ли раскрываемые строки */
-const hasExpandableRows = computed((): boolean => {
-	return props.rows.some(row => row.isExpandable || (row.children && row.children.length > 0))
-})
-
-/** Общее количество колонок */
-const totalCols = computed((): number => {
-	return calcTotalColumns(visibleColumns.value.length, isSelectable.value, hasRowNumber.value, hasExpandableRows.value)
-})
-
-/** Колонка ресайзимая: пропс таблицы или флаг колонки */
-function isColumnResizable(column: TableColumn): boolean {
-	return isResizable.value || !!column.isResizable
-}
-
-/** Использовать фиксированный layout */
-const useFixedLayout = computed((): boolean => {
-	return isResizable.value || visibleColumns.value.some(column => column.flex || column.width)
-})
-
-/** Ширины колонок для colgroup */
-const columnWidths = computed((): string[] => {
-	return calcColumnWidths(visibleColumns.value)
-})
-
-// ============================================================
-// Данные таблицы (сортировка, фильтрация, пагинация, поиск)
-// ============================================================
-
-const filterColumn = ref<string | number>('')
-const filterOperator = ref<string | number>('contains')
-const filterValue = ref('')
-const isSettingsOpen = ref(false)
 
 const {
 	searchQuery,
@@ -424,33 +383,37 @@ const { isAllSelected, isSelected, toggleRow: toggleRowSelection, toggleAll: tog
 	onSelect: selectedRows => emit('select', selectedRows),
 })
 
-/** ID раскрытых строк */
-const expandedIds = ref<Set<string | number>>(new Set())
+const { isExpanded, toggleExpand, handleRowClick } = useTableExpand({
+	rows: () => props.rows,
+	emit,
+})
 
-/** Раскрыта ли строка */
-function isExpanded(row: TableRow): boolean {
-	return expandedIds.value.has(row.id)
-}
+const {
+	filterColumn,
+	filterOperator,
+	filterValue,
+	isSettingsOpen,
+	filterColumnOptions,
+	filterOperatorOptions,
+	showToolbar,
+	setFilterColumn,
+	setFilterOperator,
+	handleAddFilter,
+	handleRemoveFilter,
+} = useTableToolbar({
+	filterableColumns: () => filterableColumns.value,
+	hasSearch: () => hasSearch.value,
+	hasFilters: () => hasFilters.value,
+	hasColumnSettings: () => hasColumnSettings.value,
+	slots,
+	addFilter,
+	removeFilter,
+})
 
-/** Синхронизация expandedIds с isExpanded в пропсах (read-only) */
-watch(
-	() => props.rows,
-	() => {
-		const next = new Set(expandedIds.value)
-		for (const row of props.rows) {
-			if (row.isExpanded) next.add(row.id)
-		}
-		expandedIds.value = next
-	},
-	{ immediate: true },
-)
-
-/** Эмит page-change при смене страницы */
 watch(currentPage, newPage => {
 	emit('page-change', newPage)
 })
 
-/** Опции селекта размера страницы */
 const pageSizeSelectOptions = computed(() => {
 	return pageSizeOptions.value.map(size => ({
 		value: String(size),
@@ -458,30 +421,6 @@ const pageSizeSelectOptions = computed(() => {
 	}))
 })
 
-const showToolbar = computed((): boolean => {
-	return hasSearch.value || hasFilters.value || hasColumnSettings.value || !!slots['toolbar-prepend'] || !!slots['toolbar-append']
-})
-
-/** Опции селекта колонок для фильтра */
-const filterColumnOptions = computed(() => {
-	return filterableColumns.value.map(column => ({
-		value: column.key,
-		label: column.label,
-	}))
-})
-
-/** Опции селекта оператора фильтра */
-const filterOperatorOptions = [
-	{ value: 'contains', label: 'Содержит' },
-	{ value: 'eq', label: '=' },
-	{ value: 'ne', label: '≠' },
-	{ value: 'gt', label: '>' },
-	{ value: 'gte', label: '≥' },
-	{ value: 'lt', label: '<' },
-	{ value: 'lte', label: '≤' },
-]
-
-/** Информация о пагинации («1–10 из 100») */
 const paginationInfo = computed((): string => {
 	return calcPageInfo({
 		current: currentPage.value,
@@ -490,7 +429,6 @@ const paginationInfo = computed((): string => {
 	})
 })
 
-/** Получить номер строки */
 function getRowNumber(index: number): number {
 	return calcRowNumber({
 		index,
@@ -500,89 +438,19 @@ function getRowNumber(index: number): number {
 	})
 }
 
-/** Стиль колонки */
-function getColumnStyle(column: TableColumn): Record<string, string> {
-	return buildColumnStyle({ minWidth: column.minWidth, maxWidth: column.maxWidth })
-}
-
-/** Форматирование значения ячейки */
-function formatCellValue(column: TableColumn, row: TableRow): string {
-	const value = row.data[column.key]
-	if (column.formatter) return column.formatter(value, row)
-	return String(value ?? '')
-}
-
-function getSelectValue(value: string | number | (string | number)[]): string | number {
-	/* istanbul ignore next -- defensive: BaseSelect emit'ит одиночное значение, array-ветка недостижима */
-	return Array.isArray(value) ? value[0] : value
-}
-
-function setFilterColumn(value: string | number | (string | number)[]): void {
-	filterColumn.value = getSelectValue(value)
-}
-
-function setFilterOperator(value: string | number | (string | number)[]): void {
-	filterOperator.value = getSelectValue(value)
-}
-
-/** Добавить фильтр (обёртка) */
-function handleAddFilter(): void {
-	addFilter(filterColumn, filterOperator, filterValue)
-}
-
-/** Удалить фильтр (обёртка) */
-function handleRemoveFilter(index: number): void {
-	removeFilter(index)
-}
-
-/** Переключить строку */
 function toggleRow(row: TableRow): void {
 	toggleRowSelection(row)
 }
 
-/** Выбрать все */
 function toggleAll(): void {
 	toggleAllRows()
 }
 
-/** Раскрыть строку */
-function toggleExpand(row: TableRow): void {
-	const isCurrentlyExpanded = expandedIds.value.has(row.id)
-	const next = new Set(expandedIds.value)
-	if (isCurrentlyExpanded) {
-		next.delete(row.id)
-	} else {
-		next.add(row.id)
-	}
-	expandedIds.value = next
-	emit('expand', { ...row, isExpanded: !isCurrentlyExpanded })
-}
-
-/** Клик по строке */
-function handleRowClick(row: TableRow): void {
-	emit('row-click', row)
-	if (row.isExpandable || row.children?.length) {
-		toggleExpand(row)
-	}
-}
-
-/** Переключение видимости колонки */
-function toggleColumnVisibility(column: TableColumn): void {
-	const index = localColumns.value.findIndex(c => c.key === column.key)
-	/* istanbul ignore else -- Защитная ветка при рассинхронизации внешних колонок. */
-	if (index !== -1) {
-		localColumns.value[index].isHidden = !localColumns.value[index].isHidden
-		emit('columns-change', localColumns.value)
-	}
-}
-
-/** Подгрузить ещё данные */
 function handleLoadMore(): void {
 	loadMore()
 	emit('load-more')
 }
 
-/** Infinite scroll */
 function handleScroll(e: Event): void {
 	if (loadMode.value !== 'infinite' || !hasMoreRows.value || isLoading.value) return
 
@@ -606,7 +474,6 @@ function startResize(event: MouseEvent, column: TableColumn): void {
 	startColumnResize(event, column.key)
 }
 
-/** Сброс страницы при изменении данных */
 watch(
 	() => props.rows,
 	() => {

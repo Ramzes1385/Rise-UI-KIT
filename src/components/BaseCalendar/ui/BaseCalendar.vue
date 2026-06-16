@@ -15,7 +15,6 @@
 			:size-scale="resolvedProps.sizeScale"
 			:padding="12"
 			:style="[sizeScaleStyle, customColorStyle, variantStyle]">
-			<!-- Заголовок -->
 			<div v-if="resolvedProps.showNavigation" class="base-calendar__header" :class="classes.header">
 				<slot name="header" :month="currentMonth" :year="currentYear">
 					<BaseButton
@@ -48,101 +47,47 @@
 				<BaseText tag="span" :weight="600" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
 			</div>
 
-		<!-- Дни -->
-			<template v-if="currentView === 'days'">
-				<div class="base-calendar__weekdays" :class="classes.weekdays">
-					<span v-if="resolvedProps.showWeekNumber" class="base-calendar__week-num-header">
-						<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="resolvedProps.sizeScale"
-							>№</BaseText
-						>
-					</span>
-					<span v-for="(name, index) in orderedWeekdays" :key="index" class="base-calendar__weekday">
-						<BaseText
-							tag="span"
-							:weight="600"
-							:color="{ text: { base: 'var(--color-text-muted)' } }"
-							:size-scale="resolvedProps.sizeScale"
-							>{{ name }}</BaseText
-						>
-					</span>
-				</div>
-				<div class="base-calendar__grid" :class="classes.grid" role="grid">
-				<template v-for="(date, index) in calendarDays" :key="index">
-					<span v-if="resolvedProps.showWeekNumber && index % 7 === 0" class="base-calendar__week-num">
-						<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="resolvedProps.sizeScale">{{
-							getRowWeekNumber(index)
-						}}</BaseText>
-					</span>
-						<div class="base-calendar__day-wrapper" :class="classes.dayWrapper">
-							<BaseButton
-								variant="ghost"
-								class="base-calendar__day"
-								:class="[dayClasses(date, !!$slots.day), classes.day]"
-								:is-disabled="isDayDisabled(date) || resolvedProps.isDisabled"
-								:size-scale="resolvedProps.sizeScale"
-								@click="handleDayClick(date)">
-							<slot
-								name="day"
-								:date="date"
-								:is-today="isToday(date)"
-								:is-selected="isSelected(date)"
-								:is-disabled="isDayDisabled(date)"
-								:is-weekend="isWeekend(date)"
-								:is-in-range="isInRange(date)">
-								<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ date.getDate() }}</BaseText>
-							</slot>
-							<span
-								v-if="getHighlight(date)"
-								class="base-calendar__day-dot"
-								:style="{ backgroundColor: getHighlight(date)?.color || 'var(--color-accent)' }" />
-						</BaseButton>
-						<!-- Popover при клике на дату -->
-						<div
-							v-if="popoverDate && isSameDay(date, popoverDate)"
-							ref="popoverRef"
-							class="base-calendar__popover"
-							:class="classes.popover"
-							:style="popoverStyle"
-							@mousedown.stop
-							@click.stop>
-							<div class="base-calendar__popover-arrow" />
-							<slot name="date-popover" :date="popoverDate" :close="closePopover" :highlights="popoverHighlights">
-								<div class="base-calendar__popover-content">
-									<BaseText tag="span" class="base-calendar__popover-date" :size-scale="resolvedProps.sizeScale">{{
-										formatPopoverDate({ date: popoverDate, locale: resolvedProps.locale })
-									}}</BaseText>
-								</div>
-								<div v-if="popoverHighlights.length > 0" class="base-calendar__popover-highlights">
-									<div v-for="(hl, hlIdx) in popoverHighlights" :key="hlIdx" class="base-calendar__popover-highlight">
-										<span
-											class="base-calendar__popover-highlight-dot"
-											:style="{ backgroundColor: hl.color || 'var(--color-accent)' }" />
-										<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ hl.label || 'Событие' }}</BaseText>
-									</div>
-								</div>
-							</slot>
-						</div>
-					</div>
-				</template>
-			</div>
-		</template>
+		<BaseCalendarDays
+			v-if="currentView === 'days'"
+			:current-view="currentView"
+			:show-week-number="resolvedProps.showWeekNumber"
+			:ordered-weekdays="orderedWeekdays"
+			:calendar-days="calendarDays"
+			:size-scale="resolvedProps.sizeScale"
+			:is-disabled="resolvedProps.isDisabled"
+			:locale="resolvedProps.locale"
+			:classes="classes"
+			:is-today="isToday"
+			:is-selected="isSelected"
+			:is-day-disabled="isDayDisabled"
+			:is-weekend="isWeekend"
+			:is-in-range="isInRange"
+			:get-highlight="getHighlight"
+			:get-row-week-number="getRowWeekNumber"
+			:is-same-day="isSameDay"
+			:day-classes="dayClasses"
+			:popover-date="popoverDate"
+			:popover-style="popoverStyle"
+			:popover-highlights="popoverHighlights"
+			:close-popover="closePopover"
+			@day-click="handleDayClick">
+			<template v-if="$slots.day" #day="slotProps">
+				<slot name="day" v-bind="slotProps" />
+			</template>
+			<template v-if="$slots['date-popover']" #date-popover="slotProps">
+				<slot name="date-popover" v-bind="slotProps" />
+			</template>
+		</BaseCalendarDays>
 
-		<!-- Месяцы -->
-		<div v-if="currentView === 'months'" class="base-calendar__months" :class="classes.months">
-			<BaseButton
-			v-for="(name, index) in monthNames"
-				:key="index"
-				variant="outline"
-				class="base-calendar__month-btn"
-				:class="{ 'base-calendar__month-btn--current': index === currentMonth }"
-				:size-scale="resolvedProps.sizeScale"
-				:is-disabled="resolvedProps.isDisabled"
-				@click="selectMonth(index)">
-				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ name }}</BaseText>
-			</BaseButton>
-		</div>
+		<BaseCalendarMonths
+			v-if="currentView === 'months'"
+			:month-names="monthNames"
+			:current-month="currentMonth"
+			:is-disabled="resolvedProps.isDisabled"
+			:size-scale="resolvedProps.sizeScale"
+			:classes="classes"
+			@select="selectMonth" />
 
-		<!-- Годы -->
 		<div v-if="currentView === 'years'" class="base-calendar__years" :class="classes.years">
 			<BaseButton
 				v-for="year in yearRange"
@@ -157,51 +102,23 @@
 			</BaseButton>
 		</div>
 
-		<!-- Время -->
-		<div v-if="resolvedProps.showTime" class="base-calendar__time" :class="classes.time">
-			<div class="base-calendar__time-field">
-				<BaseInput
-					v-model="hoursModel"
-					class="base-calendar__time-input"
-					type="number"
-					variant="outline"
-					:size-scale="resolvedProps.sizeScale"
-					:is-disabled="resolvedProps.isDisabled"
-					@change="handleTimeChange" />
-				<BaseText tag="span" class="base-calendar__time-sep" :size-scale="resolvedProps.sizeScale">:</BaseText>
-				<BaseInput
-					v-model="minutesModel"
-					class="base-calendar__time-input"
-					type="number"
-					variant="outline"
-					:size-scale="resolvedProps.sizeScale"
-					:is-disabled="resolvedProps.isDisabled"
-					@change="handleTimeChange" />
-				<template v-if="resolvedProps.showSeconds">
-					<BaseText tag="span" class="base-calendar__time-sep" :size-scale="resolvedProps.sizeScale">:</BaseText>
-					<BaseInput
-						v-model="secondsModel"
-						class="base-calendar__time-input"
-						type="number"
-						variant="outline"
-						:size-scale="resolvedProps.sizeScale"
-						:is-disabled="resolvedProps.isDisabled"
-						@change="handleTimeChange" />
-				</template>
-				<template v-if="!resolvedProps.is24Hour">
-					<BaseButton
-						variant="outline"
-						class="base-calendar__time-ampm"
-						:size-scale="resolvedProps.sizeScale"
-						:is-disabled="resolvedProps.isDisabled"
-						@click="toggleAmPm">
-						<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ isAm ? 'AM' : 'PM' }}</BaseText>
-					</BaseButton>
-				</template>
-			</div>
-		</div>
+		<BaseCalendarTime
+			v-if="resolvedProps.showTime"
+			:hours="hours"
+			:minutes="minutes"
+			:seconds="seconds"
+			:is24-hour="resolvedProps.is24Hour"
+			:show-seconds="resolvedProps.showSeconds"
+			:is-am="isAm"
+			:is-disabled="resolvedProps.isDisabled"
+			:size-scale="resolvedProps.sizeScale"
+			:classes="classes"
+			@update:hours="hours = $event"
+			@update:minutes="minutes = $event"
+			@update:seconds="seconds = $event"
+			@toggle-am-pm="toggleAmPm"
+			@time-change="handleTimeChange" />
 
-		<!-- Подвал -->
 		<div v-if="resolvedProps.showTodayButton" class="base-calendar__footer" :class="classes.footer">
 			<BaseButton
 				variant="ghost"
@@ -219,16 +136,17 @@ import { UI_TODAY_TEXT } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
 import { useCalendar } from '@composables/useCalendar'
-import { useClickOutside } from '@composables/useClickOutside'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { formatPopoverDate } from '@utils/dateUtils'
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseCalendar.style.scss'
 import type { BaseCalendarEmits, BaseCalendarProps } from '../model/BaseCalendar.types'
+import { useCalendarPopover } from '../model/useCalendarPopover'
+import BaseCalendarDays from './BaseCalendarDays.vue'
+import BaseCalendarMonths from './BaseCalendarMonths.vue'
+import BaseCalendarTime from './BaseCalendarTime.vue'
 
 const props = defineProps<BaseCalendarProps>()
 const { wasPropPassed } = useExplicitPropDetection()
@@ -243,7 +161,6 @@ function resolveBooleanPropDefault(
 	defaultValue: boolean,
 ): boolean {
 	const hasProp = wasPropPassed(name) || wasPropPassed(toKebabCase(name))
-
 	return hasProp ? (value ?? defaultValue) : defaultValue
 }
 
@@ -376,102 +293,37 @@ const {
 	isSameDay,
 } = calendar
 
-/** Эмит изменения месяца */
+const {
+	popoverDate,
+	popoverStyle,
+	popoverHighlights,
+	closePopover,
+	dayClasses,
+} = useCalendarPopover({
+	getEvents,
+	isCurrentMonth,
+	isToday,
+	isSelected,
+	isInRange,
+	isWeekend,
+	isDayDisabled,
+	isRangeStart,
+	isRangeEnd,
+	isOutOfRange,
+})
+
 watch(currentMonth, newMonth => {
 	emit('month-change', newMonth)
 })
 
-/** Эмит изменения года */
 watch(currentYear, newYear => {
 	emit('year-change', newYear)
 })
 
-/** Эмит изменения вида */
 watch(currentView, newView => {
 	emit('view-change', newView)
 })
 
-/** Конвертация 24h→12h для отображения */
-function to12h(h: number): number {
-	if (h === 0) return 12
-	if (h > 12) return h - 12
-	return h
-}
-
-/** Конвертация 12h→24h с учётом AM/PM */
-function from12h(h: number, am: boolean): number {
-	if (am) return h === 12 ? 0 : h
-	return h === 12 ? 12 : h + 12
-}
-
-/** Двусторонние модели для BaseInput (string ↔ number) */
-const hoursModel = computed({
-	get: (): string => {
-		const hour = hours.value
-		return String(resolvedProps.value.is24Hour ? hour : to12h(hour))
-	},
-	set: (val: string): void => {
-		const parsed = parseInt(val, 10) || 0
-		hours.value = resolvedProps.value.is24Hour ? parsed : from12h(parsed, isAm.value)
-	},
-})
-
-const minutesModel = computed({
-	get: (): string => String(minutes.value),
-	set: (val: string): void => {
-		minutes.value = parseInt(val, 10) || 0
-	},
-})
-
-const secondsModel = computed({
-	get: (): string => String(seconds.value),
-	set: (val: string): void => {
-		seconds.value = parseInt(val, 10) || 0
-	},
-})
-
-/** Состояние popover для даты */
-const popoverDate = ref<Date | null>(null)
-const popoverStyle = ref<Record<string, string>>({})
-const popoverRef = ref<HTMLElement | null>(null)
-
-/** Highlights для текущего popover */
-const popoverHighlights = computed(() => {
-	if (!popoverDate.value) return []
-	return getEvents(popoverDate.value)
-})
-
-/** Закрыть popover */
-function closePopover(): void {
-	popoverDate.value = null
-}
-
-/** Закрытие popover по клику вне */
-useClickOutside({
-	targets: [popoverRef],
-	callback: closePopover,
-	isActive: () => !!popoverDate.value,
-	isCapture: true,
-})
-
-/** CSS-классы для ячейки дня */
-function dayClasses(date: Date, isCustomSlot: boolean): Record<string, boolean> {
-	const isCurrent = isCurrentMonth(date)
-	return {
-		'base-calendar__day--other': !isCurrent,
-		'base-calendar__day--today': isToday(date),
-		'base-calendar__day--selected': isCurrent && isSelected(date),
-		'base-calendar__day--range': isCurrent && isInRange(date),
-		'base-calendar__day--weekend': isWeekend(date),
-		'base-calendar__day--disabled': isDayDisabled(date),
-		'base-calendar__day--start': isCurrent && isRangeStart(date),
-		'base-calendar__day--end': isCurrent && isRangeEnd(date),
-		'base-calendar__day--out-of-range': isCurrent && isOutOfRange(date),
-		'base-calendar__day--custom': isCustomSlot,
-	}
-}
-
-/** Обработка клика по дню */
 function handleDayClick(date: Date): void {
 	if (isDayDisabled(date) || resolvedProps.value.isDisabled) return
 
@@ -499,14 +351,12 @@ function handleDayClick(date: Date): void {
 	handleMultipleClick(date)
 }
 
-/** Выбор одной даты */
 function handleSingleClick(date: Date): void {
 	const result = resolvedProps.value.showTime ? buildDateWithTime(date) : date
 	setSingleValue(result)
 	emit('update:modelValue', result)
 }
 
-/** Выбор диапазона */
 function handleRangeClick(date: Date): void {
 	const start = calendar.internalValue.value
 	const end = calendar.internalValueEnd.value
@@ -530,13 +380,11 @@ function handleRangeClick(date: Date): void {
 	}
 }
 
-/** Множественный выбор */
 function handleMultipleClick(date: Date): void {
 	toggleMultipleDate(date)
 	emit('update:selectedDates', [...calendar.internalSelectedDates.value])
 }
 
-/** Переключить AM/PM с корректировкой часов */
 function toggleAmPm(): void {
 	const currentHour = hours.value
 	if (isAm.value) {
@@ -548,7 +396,6 @@ function toggleAmPm(): void {
 	handleTimeChange()
 }
 
-/** Обновить время */
 function handleTimeChange(): void {
 	if (!calendar.internalValue.value) return
 	const result = buildDateWithTime(calendar.internalValue.value)
@@ -556,7 +403,6 @@ function handleTimeChange(): void {
 	emit('update:modelValue', result)
 }
 
-/** Клик по «Сегодня» */
 function handleTodayClick(): void {
 	goToToday()
 	const now = new Date()

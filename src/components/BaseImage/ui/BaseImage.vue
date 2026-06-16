@@ -12,14 +12,12 @@
 			classes.root,
 		]"
 		:style="[containerStyle, borderRadiusStyle, sizeScaleStyle, customColorStyle]">
-		<!-- Плейсхолдер -->
 		<div v-if="hasPlaceholder && !isLoaded && !hasError" class="base-image__placeholder" :class="classes.placeholder">
 			<slot name="placeholder">
 				<div class="base-image__shimmer"></div>
 			</slot>
 		</div>
 
-		<!-- Ошибка загрузки -->
 		<div v-if="hasError" class="base-image__error" :class="classes.error">
 			<slot name="error">
 				<span class="base-image__error-icon">🖼️</span>
@@ -27,7 +25,6 @@
 			</slot>
 		</div>
 
-		<!-- Изображение с picture для оптимизации -->
 		<picture v-if="!hasError">
 			<source v-if="avifSrc" :srcset="avifSrc" type="image/avif" />
 			<source v-if="webpSrc" :srcset="webpSrc" type="image/webp" />
@@ -47,139 +44,138 @@
 				@error="handleError" />
 		</picture>
 
-		<!-- Зум оверлей -->
 		<teleport to="body">
-			<transition name="image-zoom-fade">
-				<div
-					v-if="zoom.isZoomOpen.value"
-					class="base-image__zoom"
-					@wheel.prevent="zoom.handleWheel"
-					@click.self="zoom.handleOverlayClick">
-					<!-- Тулбар -->
-					<div class="base-image__zoom-toolbar">
-						<BaseButton
-							variant="ghost"
-							class="base-image__zoom-btn"
-							:custom-class="classes.zoomOutButton"
-							:is-disabled="zoom.isMinScale.value"
-							@click="zoom.zoomOut">
-							<template #left><BaseIcon name="minus" :custom-class="classes.zoomOutIcon" /></template>
-						</BaseButton>
-						<BaseText tag="span" class="base-image__zoom-scale" :custom-class="classes.zoomScale"
-							>{{ zoom.scalePercent.value }}%</BaseText
-						>
-						<BaseButton
-							variant="ghost"
-							class="base-image__zoom-btn"
-							:custom-class="classes.zoomInButton"
-							:is-disabled="zoom.isMaxScale.value"
-							@click="zoom.zoomIn">
-							<template #left><BaseIcon name="plus" :custom-class="classes.zoomInIcon" /></template>
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							class="base-image__zoom-btn"
-							:custom-class="classes.zoomResetButton"
-							@click="zoom.resetZoom">
-							<template #left><BaseIcon name="rotate-ccw" :custom-class="classes.zoomResetIcon" /></template>
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							class="base-image__zoom-btn"
-							:custom-class="classes.rotateLeftButton"
-							@click="zoom.rotateLeft">
-							<template #left><BaseIcon name="rotate-left" :custom-class="classes.rotateLeftIcon" /></template>
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							class="base-image__zoom-btn"
-							:custom-class="classes.rotateRightButton"
-							@click="zoom.rotateRight">
-							<template #left><BaseIcon name="rotate-right" :custom-class="classes.rotateRightIcon" /></template>
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							class="base-image__zoom-btn base-image__zoom-btn--close"
-							:custom-class="classes.zoomCloseButton"
-							@click="zoom.closeZoom">
-							<template #left><BaseIcon name="close" :custom-class="classes.zoomCloseIcon" /></template>
-						</BaseButton>
-					</div>
-
-					<!-- Навигация по галерее -->
+			<div
+				v-if="zoom.isZoomOpen.value"
+				class="base-image__zoom"
+				@wheel.prevent="zoom.handleWheel"
+				@click.self="zoom.handleOverlayClick">
+				<div class="base-image__zoom-toolbar">
 					<BaseButton
-						v-if="hasGalleryPrev"
 						variant="ghost"
-						class="base-image__zoom-nav base-image__zoom-nav--prev"
-						:custom-class="classes.galleryPrevButton"
-						@click="handleGalleryPrev">
-						<template #left><BaseIcon name="chevron-left" :custom-class="classes.galleryPrevIcon" /></template>
+						class="base-image__zoom-btn"
+						:custom-class="classes.zoomOutButton"
+						:is-disabled="zoom.isMinScale.value"
+						@click="zoom.zoomOut">
+						<template #left><BaseIcon name="minus" :custom-class="classes.zoomOutIcon" /></template>
+					</BaseButton>
+					<BaseText tag="span" class="base-image__zoom-scale" :custom-class="classes.zoomScale"
+						>{{ zoom.scalePercent.value }}%</BaseText
+					>
+					<BaseButton
+						variant="ghost"
+						class="base-image__zoom-btn"
+						:custom-class="classes.zoomInButton"
+						:is-disabled="zoom.isMaxScale.value"
+						@click="zoom.zoomIn">
+						<template #left><BaseIcon name="plus" :custom-class="classes.zoomInIcon" /></template>
 					</BaseButton>
 					<BaseButton
-						v-if="hasGalleryNext"
 						variant="ghost"
-						class="base-image__zoom-nav base-image__zoom-nav--next"
-						:custom-class="classes.galleryNextButton"
-						@click="handleGalleryNext">
-						<template #left><BaseIcon name="chevron-right" :custom-class="classes.galleryNextIcon" /></template>
+						class="base-image__zoom-btn"
+						:custom-class="classes.zoomResetButton"
+						@click="zoom.resetZoom">
+						<template #left><BaseIcon name="rotate-ccw" :custom-class="classes.zoomResetIcon" /></template>
 					</BaseButton>
-
-					<!-- Изображение с перетаскиванием -->
-					<div class="base-image__zoom-container">
-						<img
-							ref="zoomImgRef"
-							:src="currentZoomSrc"
-							:alt="alt"
-							class="base-image__zoom-img"
-							:style="zoom.zoomImageStyle.value"
-							draggable="false"
-							@load="() => nextTick(zoom.syncSizes)" />
-					</div>
-
-					<!-- Полоса миниатюр галереи -->
-					<div v-if="hasGallery" class="base-image__zoom-gallery">
-						<div class="base-image__zoom-gallery-track">
-							<div
-								v-for="(img, index) in galleryList"
-								:key="index"
-								class="base-image__zoom-thumb"
-								:class="{ 'base-image__zoom-thumb--active': galleryIndex === index }"
-								@click="handleGalleryGo(index)">
-								<img :src="img" :alt="`${alt} ${index + 1}`" class="base-image__zoom-thumb-img" />
-							</div>
-						</div>
-						<BaseText
-							v-if="galleryList.length > 1"
-							tag="span"
-							class="base-image__zoom-counter"
-							:custom-class="classes.galleryCounter"
-							>{{ galleryIndex + 1 }} / {{ galleryList.length }}</BaseText
-						>
-					</div>
-
-					<!-- Мини-карта -->
-					<div
-						v-if="resolvedShowMinimap && zoom.currentScale.value > 1"
-						class="base-image__minimap"
-						@click="zoom.handleMinimapClick"
-						@mousedown.prevent="zoom.handleMinimapDragStart">
-						<img
-							ref="minimapImgRef"
-							:src="currentZoomSrc"
-							:alt="alt"
-							class="base-image__minimap-img"
-							:style="zoom.minimapImageStyle.value"
-							draggable="false"
-							@load="() => nextTick(zoom.syncSizes)" />
-						<div class="base-image__minimap-viewport" :style="zoom.minimapViewportStyle.value" />
-					</div>
+					<BaseButton
+						variant="ghost"
+						class="base-image__zoom-btn"
+						:custom-class="classes.rotateLeftButton"
+						@click="zoom.rotateLeft">
+						<template #left><BaseIcon name="rotate-left" :custom-class="classes.rotateLeftIcon" /></template>
+					</BaseButton>
+					<BaseButton
+						variant="ghost"
+						class="base-image__zoom-btn"
+						:custom-class="classes.rotateRightButton"
+						@click="zoom.rotateRight">
+						<template #left><BaseIcon name="rotate-right" :custom-class="classes.rotateRightIcon" /></template>
+					</BaseButton>
+					<BaseButton
+						variant="ghost"
+						class="base-image__zoom-btn base-image__zoom-btn--close"
+						:custom-class="classes.zoomCloseButton"
+						@click="zoom.closeZoom">
+						<template #left><BaseIcon name="close" :custom-class="classes.zoomCloseIcon" /></template>
+					</BaseButton>
 				</div>
-			</transition>
+
+				<BaseButton
+					v-if="gallery.hasGalleryPrev.value"
+					variant="ghost"
+					class="base-image__zoom-nav base-image__zoom-nav--prev"
+					:custom-class="classes.galleryPrevButton"
+					@click="gallery.handleGalleryPrev">
+					<template #left><BaseIcon name="chevron-left" :custom-class="classes.galleryPrevIcon" /></template>
+				</BaseButton>
+				<BaseButton
+					v-if="gallery.hasGalleryNext.value"
+					variant="ghost"
+					class="base-image__zoom-nav base-image__zoom-nav--next"
+					:custom-class="classes.galleryNextButton"
+					@click="gallery.handleGalleryNext">
+					<template #left><BaseIcon name="chevron-right" :custom-class="classes.galleryNextIcon" /></template>
+				</BaseButton>
+
+				<div class="base-image__zoom-container">
+					<img
+						ref="zoomImgRef"
+						:src="gallery.currentZoomSrc.value"
+						:alt="alt"
+						class="base-image__zoom-img"
+						:style="zoom.zoomImageStyle.value"
+						draggable="false"
+						@load="() => nextTick(zoom.syncSizes)" />
+				</div>
+
+				<div v-if="gallery.hasGallery.value" class="base-image__zoom-gallery">
+					<div class="base-image__zoom-gallery-track">
+						<div
+							v-for="(img, index) in gallery.galleryList.value"
+							:key="index"
+							class="base-image__zoom-thumb"
+							:class="{ 'base-image__zoom-thumb--active': gallery.galleryIndex.value === index }"
+							@click="gallery.handleGalleryGo(index)">
+							<img :src="img" :alt="`${alt} ${index + 1}`" class="base-image__zoom-thumb-img" />
+						</div>
+					</div>
+					<BaseText
+						v-if="gallery.galleryList.value.length > 1"
+						tag="span"
+						class="base-image__zoom-counter"
+						:custom-class="classes.galleryCounter"
+						>{{ gallery.galleryIndex.value + 1 }} / {{ gallery.galleryList.value.length }}</BaseText
+					>
+				</div>
+
+				<div
+					v-if="resolvedShowMinimap && zoom.currentScale.value > 1"
+					class="base-image__minimap"
+					@click="zoom.handleMinimapClick"
+					@mousedown.prevent="zoom.handleMinimapDragStart">
+					<img
+						ref="minimapImgRef"
+						:src="gallery.currentZoomSrc.value"
+						:alt="alt"
+						class="base-image__minimap-img"
+						:style="zoom.minimapImageStyle.value"
+						draggable="false"
+						@load="() => nextTick(zoom.syncSizes)" />
+					<div class="base-image__minimap-viewport" :style="zoom.minimapViewportStyle.value"></div>
+				</div>
+			</div>
 		</teleport>
 	</div>
 </template>
 
 <script setup lang="ts">
+import type { BaseImageEmits, BaseImageProps } from '../model/BaseImage.types'
+
+import '../styles/BaseImage.style.scss'
+
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useImageZoom } from '@composables/useImageZoom'
@@ -187,11 +183,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '@utils/imageUtils'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import type { PropType } from 'vue'
-import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
-import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
-import BaseText from '@components/BaseText/ui/BaseText.vue'
-import '../styles/BaseImage.style.scss'
-import type { BaseImageEmits, BaseImageProps } from '../model/BaseImage.types'
+import { useImageGallery } from '../model/useImageGallery'
 
 /* eslint-disable vue/require-default-prop -- intentionally optional props keep Vue runtime behavior unchanged after withDefaults removal */
 const props = defineProps({
@@ -254,7 +246,6 @@ const { classes } = useCustomClass({
 const { sizeScaleStyle: baseSizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-/** Стили масштабирования */
 const sizeScaleStyle = computed((): Record<string, string> | undefined => {
 	return baseSizeScaleStyle.value as Record<string, string> | undefined
 })
@@ -269,7 +260,6 @@ let loadingTimeoutId: number | null = null
 const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? props.hasZoom)
 const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? props.showMinimap)
 
-/** Composable для зума */
 const zoomImgRef = ref<HTMLElement | null>(null)
 const minimapImgRef = ref<HTMLElement | null>(null)
 
@@ -284,12 +274,16 @@ const zoom = useImageZoom({
 	getMinimapImgEl: () => minimapImgRef.value,
 })
 
-/** Проверка наличия кастомных размеров */
+const gallery = useImageGallery({
+	gallery: () => props.gallery,
+	src: () => props.src,
+	resetZoom: () => zoom.resetZoom(),
+})
+
 const hasCustomDimensions = computed((): boolean => {
 	return !!props.width || !!props.height || !!props.aspectRatio
 })
 
-/** Контейнер стили */
 const containerStyle = computed((): Record<string, string> => {
 	const styles: Record<string, string> = {}
 
@@ -307,8 +301,6 @@ const containerStyle = computed((): Record<string, string> => {
 		styles.height = `calc(${heightValue} * var(--size-scale, 1))`
 	}
 
-	// Если нет кастомных размеров и картинка не загружена или с ошибкой,
-	// задаем дефолтные пропорции, чтобы контейнер не схлопывался
 	if (!hasCustomDimensions.value && (!isLoaded.value || hasError.value)) {
 		styles['aspect-ratio'] = '16/9'
 		styles['min-height'] = '120px'
@@ -318,16 +310,13 @@ const containerStyle = computed((): Record<string, string> => {
 	return styles
 })
 
-/** Скругление через inline-стиль */
 const borderRadiusStyle = computed((): Record<string, string> => {
 	if (props.borderRadius === 0) return { borderRadius: '0' }
 	return { borderRadius: `calc(${props.borderRadius}px * var(--size-scale, 1))` }
 })
 
-/** Оптимизированный src с параметром ширины */
 const optimizedSrc = computed((): string => buildOptimizedSrc(props.src, props.srcWidth))
 
-/** Текущий URL изображения с учетом резервного */
 const currentSrc = computed((): string => {
 	if (isUsingFallback.value && props.fallbackSrc) {
 		return props.fallbackSrc
@@ -335,29 +324,24 @@ const currentSrc = computed((): string => {
 	return optimizedSrc.value
 })
 
-/** AVIF источник */
 const avifSrc = computed((): string | null => {
 	if (isExternalImage(props.src)) return null
 	return replaceExtension(props.src, '.avif')
 })
 
-/** WebP источник */
 const webpSrc = computed((): string | null => {
 	if (props.convertToWebp) return replaceExtension(props.src, '.webp')
 	if (isExternalImage(props.src)) return null
 	return replaceExtension(props.src, '.webp')
 })
 
-/** Srcset для адаптивных изображений */
 const srcsetValue = computed((): string | undefined => buildSrcset(props.src, props.srcWidth))
 
-/** Sizes для адаптивных изображений */
 const sizesValue = computed((): string => {
 	if (props.width) return `${props.width}px`
 	return '100vw'
 })
 
-/** Очистка таймаута загрузки */
 function clearLoadingTimeout(): void {
 	if (loadingTimeoutId !== null) {
 		clearTimeout(loadingTimeoutId)
@@ -365,12 +349,10 @@ function clearLoadingTimeout(): void {
 	}
 }
 
-/** Запуск таймаута загрузки */
 function startLoadingTimeout(): void {
 	clearLoadingTimeout()
 	if (props.timeout && props.timeout > 0) {
 		loadingTimeoutId = window.setTimeout(() => {
-			/* istanbul ignore next -- defensive guard: timeout-callback запускается только при незавершённой загрузке, иначе clearLoadingTimeout уже отменил его */
 			if (!isLoaded.value && !hasError.value) {
 				handleError()
 			}
@@ -378,14 +360,12 @@ function startLoadingTimeout(): void {
 	}
 }
 
-/** Обработка загрузки */
 function handleLoad(): void {
 	clearLoadingTimeout()
 	isLoaded.value = true
 	emit('load')
 }
 
-/** Обработка ошибки */
 function handleError(): void {
 	clearLoadingTimeout()
 	if (props.fallbackSrc && !isUsingFallback.value) {
@@ -399,56 +379,19 @@ function handleError(): void {
 	}
 }
 
-/** Галерея изображений в режиме зума */
-const galleryIndex = ref(0)
-
-const galleryList = computed((): string[] => props.gallery ?? [])
-
-const hasGallery = computed((): boolean => galleryList.value.length > 1)
-
-const hasGalleryPrev = computed((): boolean => hasGallery.value && galleryIndex.value > 0)
-
-const hasGalleryNext = computed((): boolean => hasGallery.value && galleryIndex.value < galleryList.value.length - 1)
-
-const currentZoomSrc = computed((): string => {
-	if (hasGallery.value) return galleryList.value[galleryIndex.value] ?? props.src
-	return props.src
-})
-
-/** Клик по изображению — открыть зум */
 function handleImageClick(): void {
 	if (!resolvedHasZoom.value) return
-	const foundIndex = galleryList.value.indexOf(props.src)
-	galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
+	const foundIndex = gallery.galleryList.value.indexOf(props.src)
+	gallery.galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
 	zoom.openZoom()
 }
 
-function handleGalleryPrev(): void {
-	if (!hasGalleryPrev.value) return
-	galleryIndex.value--
-	zoom.resetZoom()
-}
-
-function handleGalleryNext(): void {
-	if (!hasGalleryNext.value) return
-	galleryIndex.value++
-	zoom.resetZoom()
-}
-
-function handleGalleryGo(index: number): void {
-	/* istanbul ignore next -- defensive guard: index всегда в пределах thumbnails (v-for на galleryList), out-of-bounds недостижим из UI */
-	if (index < 0 || index >= galleryList.value.length) return
-	galleryIndex.value = index
-	zoom.resetZoom()
-}
-
-/** Глобальный обработчик клавиш для зума */
 function handleGlobalKeyDown(event: KeyboardEvent): void {
 	if (!zoom.isZoomOpen.value) return
 	if (event.key === 'ArrowLeft') {
-		handleGalleryPrev()
+		gallery.handleGalleryPrev()
 	} else if (event.key === 'ArrowRight') {
-		handleGalleryNext()
+		gallery.handleGalleryNext()
 	} else if (event.key === 'Escape') {
 		zoom.closeZoom()
 	}

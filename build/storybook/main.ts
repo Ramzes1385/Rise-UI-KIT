@@ -102,7 +102,7 @@ const config: StorybookConfig = {
 
 	staticDirs: (dirs = []) => serveProjectCoverage(dirs as StaticDir[]),
 
-	viteFinal(config) {
+		viteFinal(config) {
 		const isVitest = !!process.env.VITEST
 		const merged = mergeConfig(config, {
 			root: PROJECT_ROOT,
@@ -113,6 +113,7 @@ const config: StorybookConfig = {
 			},
 			resolve: {
 				alias: ALIASES,
+				extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
 			},
 			css: {
 				preprocessorOptions: {
