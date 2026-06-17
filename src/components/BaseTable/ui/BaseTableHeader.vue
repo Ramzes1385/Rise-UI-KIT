@@ -59,14 +59,9 @@ import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { UI_SORT_ARIA } from '@constants'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
-import type { TableColumn } from '../model/BaseTable.types'
-import type { BaseTableHeaderProps } from './BaseTableHeader.types'
+import type { BaseTableHeaderEmits, BaseTableHeaderProps } from '../model/BaseTableHeader.types'
 
 defineProps<BaseTableHeaderProps>()
 
-const emit = defineEmits<{
-	(event: 'toggle-all'): void
-	(event: 'sort', column: TableColumn): void
-	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
-}>()
+const emit = defineEmits<BaseTableHeaderEmits>()
 </script>

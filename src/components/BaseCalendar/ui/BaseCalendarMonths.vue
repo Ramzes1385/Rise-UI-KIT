@@ -17,16 +17,9 @@
 <script setup lang="ts">
 import { BaseButton } from '@components/BaseButton'
 import { BaseText } from '@components/BaseText'
+import type { BaseCalendarMonthsEmits, BaseCalendarMonthsProps } from '../model/BaseCalendarMonths.types'
 
-defineProps<{
-	monthNames: string[]
-	currentMonth: number
-	isDisabled: boolean
-	sizeScale: number
-	classes: Record<string, string>
-}>()
+defineProps<BaseCalendarMonthsProps>()
 
-const emit = defineEmits<{
-	select: [index: number]
-}>()
+const emit = defineEmits<BaseCalendarMonthsEmits>()
 </script>

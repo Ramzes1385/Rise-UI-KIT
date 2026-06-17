@@ -19,15 +19,9 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
-import type { TableRow } from '../model/BaseTable.types'
+import type { BaseTableExpandedRowProps } from '../model/BaseTableExpandedRow.types'
 
-defineProps<{
-	row: TableRow
-	totalColumns: number
-	trClass?: string
-	tdClass?: string
-	isExpanded: (row: TableRow) => boolean
-}>()
+defineProps<BaseTableExpandedRowProps>()
 
 const transitionCallbacks = inject(TABLE_EXPAND_TRANSITION_KEY)!
 </script>

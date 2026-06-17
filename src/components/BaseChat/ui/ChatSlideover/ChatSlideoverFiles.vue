@@ -45,20 +45,15 @@ import {
 } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../model/ChatSlideoverFiles.types'
 
 interface SharedAttachment extends ChatMessageAttachment {
 	publishedAt: string
 }
 
-const props = defineProps<{
-	messages: ChatMessage[]
-	sizeScale: number
-}>()
+const props = defineProps<ChatSlideoverFilesProps>()
 
-const emit = defineEmits<{
-	'file-click': [file: ChatMessageAttachment]
-	'download-file': [file: ChatMessageAttachment]
-}>()
+const emit = defineEmits<ChatSlideoverFilesEmits>()
 
 function getPublishedLabel(message: ChatMessage): string {
 	return message.date || message.time

@@ -11,11 +11,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
+import type { FormFieldErrorProps } from '../model/FormFieldError.types'
 
-defineProps<{
-	error: string
-	className?: string
-	customClass?: string | Record<string, string | undefined>
-	sizeScale?: number
-}>()
+defineProps<FormFieldErrorProps>()
 </script>

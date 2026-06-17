@@ -42,7 +42,7 @@ import { inject } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTable from './BaseTable.vue'
-import type { BaseTableNestedRowProps } from './BaseTableNestedRow.types'
+import type { BaseTableNestedRowProps } from '../model/BaseTableNestedRow.types'
 
 defineProps<BaseTableNestedRowProps>()
 

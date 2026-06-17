@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits<{
-	(event: 'resize-start', value: MouseEvent): void
-}>()
+import type { BaseTableResizeHandleEmits } from '../model/BaseTableResizeHandle.types'
+
+const emit = defineEmits<BaseTableResizeHandleEmits>()
 </script>

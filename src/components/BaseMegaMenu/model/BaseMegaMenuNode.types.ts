@@ -29,3 +29,11 @@ export interface BaseMegaMenuNodeEmits {
 	(event: 'navigate', url: string): void
 	(event: 'item-click', item: MegaMenuItem): void
 }
+
+/**
+ * Слоты узла BaseMegaMenuNode.
+ */
+export interface BaseMegaMenuNodeSlots {
+	/** Кастомный рендер пункта меню */
+	item?: (props: { item: MegaMenuItem; level: number }) => unknown
+}

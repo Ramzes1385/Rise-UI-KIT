@@ -71,12 +71,11 @@ import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import '../styles/BaseMegaMenu.style.scss'
-import type { MegaMenuItem } from '../model/BaseMegaMenu.types'
-import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps } from '../model/BaseMegaMenuNode.types'
+import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../model/BaseMegaMenuNode.types'
 
 const props = defineProps<BaseMegaMenuNodeProps>()
 const emit = defineEmits<BaseMegaMenuNodeEmits>()
-defineSlots<{ item?: (props: { item: MegaMenuItem; level: number }) => unknown }>()
+defineSlots<BaseMegaMenuNodeSlots>()
 
 /** Реестр дерева: открыт только один узел на уровень во всей ветви */
 const tree = useMegaMenuTree()

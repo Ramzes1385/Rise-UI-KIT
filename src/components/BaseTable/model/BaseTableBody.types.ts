@@ -1,4 +1,4 @@
-import type { LoadMode, NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { LoadMode, NestedTableConfig, TableColumn, TableRow } from './BaseTable.types'
 
 /** Props компонента BaseTableBody */
 export interface BaseTableBodyProps {
@@ -42,4 +42,11 @@ export interface BaseTableBodyProps {
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 	/** Форматирование значения ячейки */
 	formatCellValue: (column: TableColumn, row: TableRow) => string
+}
+
+/** Emits компонента BaseTableBody */
+export interface BaseTableBodyEmits {
+	(event: 'row-click', row: TableRow): void
+	(event: 'toggle-row', row: TableRow): void
+	(event: 'toggle-expand', row: TableRow): void
 }

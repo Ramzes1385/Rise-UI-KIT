@@ -75,25 +75,15 @@ import {
 	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import type { ChatMessage } from '../../model/BaseChat.types'
+import type { ChatPinnedPanelEmits, ChatPinnedPanelProps } from '../../model/ChatPinnedPanel.types'
 import './ChatPinnedPanel.style.scss'
-
-interface ChatPinnedPanelProps {
-	pinnedMessages: ChatMessage[]
-	currentIndex: number
-	currentUserRole?: 'admin' | 'member'
-	sizeScale?: number
-}
 
 const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
 	currentUserRole: 'member',
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
-const emit = defineEmits<{
-	(e: 'update:currentIndex', index: number): void
-	(e: 'click', messageId: string): void
-	(e: 'unpin', messageId: string): void
-}>()
+const emit = defineEmits<ChatPinnedPanelEmits>()
 
 const currentMessage = computed((): ChatMessage | null => {
 	/* istanbul ignore next — defensive: панель скрыта при pinnedMessages пустом (v-if) */

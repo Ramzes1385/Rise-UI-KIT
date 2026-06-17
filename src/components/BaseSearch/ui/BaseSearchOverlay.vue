@@ -110,38 +110,11 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
-import type { SearchResult } from '../model/BaseSearch.types'
-
-interface BaseSearchOverlayProps {
-	panel: 'modal' | 'sidebar'
-	modelValue: string
-	searchPlaceholder: string
-	triggerPlaceholder: string
-	variant: string
-	sizeScale: number
-	isDisabled: boolean
-	error: string
-	hasIcon: boolean
-	hasClear: boolean
-	isLoading: boolean
-	visibleResults: SearchResult[]
-	highlightedIndex: number
-	shouldShowResults: boolean
-	classes: Record<string, string>
-	color?: Record<string, unknown>
-	customClass?: Record<string, string | undefined>
-}
+import type { BaseSearchOverlayEmits, BaseSearchOverlayProps } from '../model/BaseSearchOverlay.types'
 
 const props = defineProps<BaseSearchOverlayProps>()
 
-const emit = defineEmits<{
-	'update:modelValue': [value: string]
-	keydown: [event: KeyboardEvent]
-	clear: []
-	select: [item: SearchResult]
-	highlight: [index: number]
-	close: []
-}>()
+const emit = defineEmits<BaseSearchOverlayEmits>()
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { variantClass, variantStyle } = useVariant({ block: 'base-search', getVariant: () => props.variant })

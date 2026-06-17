@@ -25,15 +25,13 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { UI_CHAT_NO_MEDIA, UI_CHAT_SCALE_AVATAR_LARGE, UI_CHAT_SCALE_MEMBER, UI_CHAT_SCALE_META } from '@constants'
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatSlideoverMediaProps } from '../../model/ChatSlideoverMedia.types'
 
 interface SharedAttachment extends ChatMessageAttachment {
 	publishedAt: string
 }
 
-const props = defineProps<{
-	messages: ChatMessage[]
-	sizeScale: number
-}>()
+const props = defineProps<ChatSlideoverMediaProps>()
 
 function getPublishedLabel(message: ChatMessage): string {
 	return message.date || message.time

@@ -92,18 +92,10 @@ import {
 } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import type { ChatMessageAttachment } from '../../model/BaseChat.types'
-
-interface ChatMessageAttachmentsProps {
-	attachments: ChatMessageAttachment[]
-	sizeScale: number
-	gallery?: string[]
-}
+import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../model/ChatMessageAttachments.types'
 
 const props = defineProps<ChatMessageAttachmentsProps>()
-const emit = defineEmits<{
-	(event: 'download', file: ChatMessageAttachment): void
-	(event: 'file-click', file: ChatMessageAttachment): void
-}>()
+const emit = defineEmits<ChatMessageAttachmentsEmits>()
 
 const images = computed(() => props.attachments.filter(attachment => attachment.type === 'image'))
 const files = computed(() => props.attachments.filter(attachment => attachment.type !== 'image'))

@@ -270,22 +270,9 @@ import {
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
-import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatMember } from '../../model/BaseChat.types'
+import type { ChatSlideoverEmits, ChatSlideoverProps } from '../../model/ChatSlideover.types'
 import './ChatSlideover.style.scss'
-
-interface ChatSlideoverProps {
-	isOpen: boolean
-	activeTab: ChatInfoTab
-	selectedMemberId: string | null
-	title: string
-	subtitle?: string
-	avatar?: string
-	isGroup?: boolean
-	members?: ChatMember[]
-	messages: ChatMessage[]
-	currentUserRole?: 'admin' | 'member'
-	sizeScale?: number
-}
 
 const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	subtitle: '',
@@ -296,17 +283,7 @@ const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
-const emit = defineEmits<{
-	(e: 'update:isOpen', value: boolean): void
-	(e: 'update:activeTab', tab: ChatInfoTab): void
-	(e: 'update:selectedMemberId', id: string | null): void
-	(e: 'file-click', file: ChatMessageAttachment): void
-	(e: 'download-file', file: ChatMessageAttachment): void
-	(e: 'write-message', memberId: string): void
-	(e: 'kick-member', memberId: string): void
-	(e: 'ban-member', payload: { memberId: string; reason?: string; warningsCount?: number }): void
-	(e: 'update-member-role', payload: { memberId: string; role: string }): void
-}>()
+const emit = defineEmits<ChatSlideoverEmits>()
 
 const activeAdminMenuId = ref<string | null>(null)
 

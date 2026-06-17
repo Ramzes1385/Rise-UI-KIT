@@ -50,31 +50,11 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseLoader } from '@components/BaseLoader'
-import type { SearchVariant } from '../model/BaseSearch.types'
-
-interface BaseSearchInputProps {
-	modelValue: string
-	placeholder: string
-	variant: SearchVariant
-	sizeScale: number
-	isDisabled: boolean
-	error: string
-	hasIcon: boolean
-	hasClear: boolean
-	isLoading: boolean
-	inputClass?: string | Record<string, string | undefined>
-	classes: Record<string, string | undefined>
-}
+import type { BaseSearchInputEmits, BaseSearchInputProps } from '../model/BaseSearchInput.types'
 
 defineProps<BaseSearchInputProps>()
 
-const emit = defineEmits<{
-	(event: 'update:modelValue', value: string): void
-	(event: 'keydown', e: KeyboardEvent): void
-	(event: 'focus'): void
-	(event: 'blur'): void
-	(event: 'clear'): void
-}>()
+const emit = defineEmits<BaseSearchInputEmits>()
 
 const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
 

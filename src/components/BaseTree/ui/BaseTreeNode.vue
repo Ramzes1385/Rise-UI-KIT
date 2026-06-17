@@ -84,25 +84,12 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeChildren from './BaseTreeChildren.vue'
-import type { TreeContext, TreeNode } from '../model/BaseTree.types'
-import type { VNode } from 'vue'
+import type { TreeContext } from '../model/BaseTree.types'
+import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../model/BaseTreeNode.types'
 import '../styles/BaseTree.style.scss'
 
-interface Props {
-	node: TreeNode
-	depth: number
-	sizeScale: number
-}
-
-interface TreeNodeSlots {
-	icon?: (props: { node: TreeNode }) => VNode[]
-	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => VNode[]
-	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => VNode[]
-	actions?: (props: { node: TreeNode }) => VNode[]
-}
-
-const props = defineProps<Props>()
-defineSlots<TreeNodeSlots>()
+const props = defineProps<BaseTreeNodeProps>()
+defineSlots<BaseTreeNodeSlots>()
 
 const treeContext = getTreeContext()
 

@@ -44,18 +44,11 @@ import {
 } from '@constants'
 import './ChatSelectionToolbar.style.scss'
 
-interface ChatSelectionToolbarProps {
-	selectedCount: number
-	sizeScale?: number
-}
+import type { ChatSelectionToolbarEmits, ChatSelectionToolbarProps } from '../../model/ChatSelectionToolbar.types'
 
 withDefaults(defineProps<ChatSelectionToolbarProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
-const emit = defineEmits<{
-	(e: 'forward'): void
-	(e: 'delete'): void
-	(e: 'cancel'): void
-}>()
+const emit = defineEmits<ChatSelectionToolbarEmits>()
 </script>

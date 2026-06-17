@@ -144,19 +144,9 @@ import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageReply from './ChatMessageReply.vue'
 import ChatMessageText from './ChatMessageText.vue'
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatMessageItemEmits, ChatMessageItemProps } from '../model/ChatMessageItem.types'
 
-interface ChatMessageProps {
-	message: ChatMessage
-	isGroup?: boolean
-	isSelectionMode?: boolean
-	isSelected?: boolean
-	isContextActive?: boolean
-	sizeScale: number
-	searchQuery?: string
-	allImagesUrls?: string[]
-}
-
-const props = withDefaults(defineProps<ChatMessageProps>(), {
+const props = withDefaults(defineProps<ChatMessageItemProps>(), {
 	isGroup: false,
 	isSelectionMode: false,
 	isSelected: false,
@@ -165,18 +155,7 @@ const props = withDefaults(defineProps<ChatMessageProps>(), {
 	allImagesUrls: () => [],
 })
 
-const emit = defineEmits<{
-	(event: 'avatar-click'): void
-	(event: 'select'): void
-	(event: 'reply-action'): void
-	(event: 'context-menu', payload: MouseEvent): void
-	(event: 'reply-click', replyToId: string): void
-	(event: 'download', file: ChatMessageAttachment): void
-	(event: 'file-click', file: ChatMessageAttachment): void
-	(event: 'mention-click', mention: string): void
-	(event: 'command-click', command: string): void
-	(event: 'reaction-toggle', emoji: string): void
-}>()
+const emit = defineEmits<ChatMessageItemEmits>()
 
 const gallery = computed(() =>
 	props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message),

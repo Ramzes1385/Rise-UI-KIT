@@ -33,18 +33,11 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_META, UI_SCALE } from '@constants'
-import type { ChatMessageAttachment } from '../model/BaseChat.types'
-
-interface ChatFilePreviewProps {
-	attachments: ChatMessageAttachment[]
-	sizeScale: number
-}
+import type { ChatFilePreviewEmits, ChatFilePreviewProps } from './ChatFilePreview.types'
 
 defineProps<ChatFilePreviewProps>()
 
-const emit = defineEmits<{
-	remove: [index: number]
-}>()
+const emit = defineEmits<ChatFilePreviewEmits>()
 
 function handleRemove(index: number): void {
 	emit('remove', index)

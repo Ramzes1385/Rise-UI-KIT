@@ -55,14 +55,9 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
-import type { TableRow } from '../model/BaseTable.types'
-import type { BaseTableRowProps } from './BaseTableRow.types'
+import type { BaseTableRowEmits, BaseTableRowProps } from '../model/BaseTableRow.types'
 
 defineProps<BaseTableRowProps>()
 
-const emit = defineEmits<{
-	(event: 'row-click', row: TableRow): void
-	(event: 'toggle-row', row: TableRow): void
-	(event: 'toggle-expand', row: TableRow): void
-}>()
+const emit = defineEmits<BaseTableRowEmits>()
 </script>

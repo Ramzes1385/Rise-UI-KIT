@@ -126,17 +126,9 @@ import { nextTick, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import type { useImageGallery } from '../model/useImageGallery'
-import type { useImageZoom } from '@composables/useImageZoom'
+import type { BaseImageZoomProps } from '../model/BaseImageZoom.types'
 
-defineProps<{
-	zoom: ReturnType<typeof useImageZoom>
-	gallery: ReturnType<typeof useImageGallery>
-	alt: string
-	classes: Record<string, string>
-	showMinimap: boolean
-	currentScale: number
-}>()
+defineProps<BaseImageZoomProps>()
 
 const zoomImgRef = ref<HTMLElement | null>(null)
 const minimapImgRef = ref<HTMLElement | null>(null)

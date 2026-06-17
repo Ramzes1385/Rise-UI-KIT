@@ -116,7 +116,7 @@ import { UI_FONT_WEIGHT_BOLD, UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MON
 import { pickDatePickerCalendarConfig } from '../../model/BaseDatePickerCalendar.types'
 import { useDatePickerPanelNavigation } from '../../model/useDatePickerPanelNavigation'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
-import type { DatePickerPanelEmits, DatePickerPanelProps } from './DatePickerPanel.types'
+import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../model/DatePickerPanel.types'
 
 const props = defineProps<DatePickerPanelProps>()
 const { resolveBooleanPropDefault } = useExplicitPropDetection()

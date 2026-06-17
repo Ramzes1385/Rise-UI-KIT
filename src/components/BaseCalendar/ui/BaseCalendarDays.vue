@@ -84,8 +84,7 @@ import { BaseText } from '@components/BaseText'
 import { useClickOutside } from '@composables/useClickOutside'
 import { UI_CALENDAR_EVENT_TEXT, UI_FONT_WEIGHT } from '@constants'
 import { formatPopoverDate } from '@utils/dateUtils'
-import type { CalendarHighlight } from '../model/BaseCalendar.types'
-import type { BaseCalendarDaysProps } from './BaseCalendarDays.types'
+import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../model/BaseCalendarDays.types'
 
 const props = defineProps<BaseCalendarDaysProps>()
 
@@ -98,19 +97,7 @@ useClickOutside({
 	isCapture: true,
 })
 
-const emit = defineEmits<{
-	dayClick: [date: Date]
-}>()
+const emit = defineEmits<BaseCalendarDaysEmits>()
 
-defineSlots<{
-	day(props: {
-		date: Date
-		isToday: boolean
-		isSelected: boolean
-		isDisabled: boolean
-		isWeekend: boolean
-		isInRange: boolean
-	}): unknown
-	'date-popover'(props: { date: Date; close: () => void; highlights: CalendarHighlight[] }): unknown
-}>()
+defineSlots<BaseCalendarDaysSlots>()
 </script>

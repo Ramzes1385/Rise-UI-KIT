@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { BaseCalendar } from '@components/BaseCalendar'
-import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from './DatePickerRangePanel.types'
+import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from '../../model/DatePickerRangePanel.types'
 
 defineProps<DatePickerRangePanelProps>()
 

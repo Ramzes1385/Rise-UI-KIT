@@ -16,18 +16,10 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_SCALE_ICON, UI_FONT_WEIGHT } from '@constants'
-
-interface ChatMessageReplyProps {
-	replyToId?: string
-	replyToSenderName?: string
-	replyToText?: string
-	sizeScale: number
-}
+import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../model/ChatMessageReply.types'
 
 const props = defineProps<ChatMessageReplyProps>()
-const emit = defineEmits<{
-	(event: 'click', replyToId: string): void
-}>()
+const emit = defineEmits<ChatMessageReplyEmits>()
 
 function handleClick(): void {
 	/* istanbul ignore next — defensive: клик возможен только при наличии replyToId (v-if) */

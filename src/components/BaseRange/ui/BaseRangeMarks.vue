@@ -16,11 +16,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import type { BaseRangeProps } from '../model/BaseRange.types'
+import type { BaseRangeMarksProps } from '../model/BaseRangeMarks.types'
 
-defineProps<{
-	marks: NonNullable<BaseRangeProps['marks']>
-	markStyle: (value: number) => Record<string, string>
-	classes: Record<string, string>
-}>()
+defineProps<BaseRangeMarksProps>()
 </script>

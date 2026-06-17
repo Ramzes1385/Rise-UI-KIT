@@ -171,53 +171,11 @@ import {
 	UI_EDITOR_VIDEO,
 	UI_EDITOR_VISUAL_MODE,
 } from '@constants'
-import type { BaseSelectOption } from '@components/BaseSelect'
+import type { BaseEditorToolbarEmits, BaseEditorToolbarProps, BaseEditorToolbarSlots, EditorActiveStates } from '../model/BaseEditorToolbar.types'
 
-interface ActiveStates {
-	isBold: boolean
-	isItalic: boolean
-	isUnderline: boolean
-	isStrike: boolean
-	isJustifyLeft: boolean
-	isJustifyCenter: boolean
-	isJustifyRight: boolean
-	isJustifyFull: boolean
-	isUnorderedList: boolean
-	isOrderedList: boolean
-	isBlockquote: boolean
-	isPre: boolean
-}
+const props = defineProps<BaseEditorToolbarProps>()
 
-const props = defineProps<{
-	activeStates: ActiveStates
-	sizeScale: number
-	classes: Record<string, string>
-	isCodeMode: boolean
-	isReadonly: boolean
-	hasToolbar: boolean
-	headingOptions: BaseSelectOption[]
-	textColor: string
-	backgroundColor: string
-	isTextColorActive: boolean
-	isBackgroundColorActive: boolean
-}>()
-
-const emit = defineEmits<{
-	applyFormat: [command: string]
-	applyBlock: [tag: string]
-	handleHeadingChange: [value: string | number]
-	insertLink: []
-	handleImageUpload: [event: Event]
-	handleVideoUpload: [event: Event]
-	clearAllFormatting: []
-	insertSeparator: []
-	toggleCodeMode: []
-	saveSelection: []
-	handleTextColor: [color: string]
-	handleBackgroundColor: [color: string]
-	resetTextColor: []
-	resetBackgroundColor: []
-}>()
+const emit = defineEmits<BaseEditorToolbarEmits>()
 
 const headingValue = ref<string | number>('p')
 const textColorModel = ref(props.textColor)
@@ -226,7 +184,7 @@ const backgroundColorModel = ref(props.backgroundColor)
 interface ToolbarButton {
 	icon: string
 	label: string
-	activeKey: keyof ActiveStates
+	activeKey: keyof EditorActiveStates
 	action: string
 	type: 'format' | 'block'
 }
@@ -266,7 +224,5 @@ const buttonGroups = computed(() => [
 	},
 ])
 
-defineSlots<{
-	toolbar(): unknown
-}>()
+defineSlots<BaseEditorToolbarSlots>()
 </script>

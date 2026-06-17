@@ -72,28 +72,13 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { UI_TEXT } from '@constants'
-import type { BaseSelectOption } from '../model/BaseSelect.types'
+import type { BaseSelectDropdownEmits, BaseSelectDropdownProps, BaseSelectDropdownSlots } from '../model/BaseSelectDropdown.types'
 
-defineProps<{
-	filteredOptions: BaseSelectOption[]
-	isSearchable: boolean
-	isMultiple: boolean
-	sizeScale: number
-	isSelected: (value: string | number) => boolean
-	classes: Record<string, string | undefined>
-	sizeScaleStyle: Record<string, string> | undefined
-}>()
+defineProps<BaseSelectDropdownProps>()
 
-defineEmits<{
-	select: [option: BaseSelectOption]
-}>()
+defineEmits<BaseSelectDropdownEmits>()
 
-defineSlots<{
-	header: () => unknown
-	option: (props: { option: BaseSelectOption; isSelected: boolean }) => unknown
-	empty: () => unknown
-	footer: () => unknown
-}>()
+defineSlots<BaseSelectDropdownSlots>()
 
 const searchQuery = defineModel<string>('searchQuery', { default: '' })
 </script>

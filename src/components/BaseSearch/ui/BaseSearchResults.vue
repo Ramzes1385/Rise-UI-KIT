@@ -71,22 +71,11 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { UI_TEXT } from '@constants'
 import type { SearchResult } from '../model/BaseSearch.types'
-
-interface BaseSearchResultsProps {
-	visibleResults: SearchResult[]
-	query: string
-	isLoading: boolean
-	sizeScale: number
-	highlightedIndex: number
-	classes: Record<string, string | undefined>
-}
+import type { BaseSearchResultsEmits, BaseSearchResultsProps } from '../model/BaseSearchResults.types'
 
 defineProps<BaseSearchResultsProps>()
 
-const emit = defineEmits<{
-	(event: 'select', item: SearchResult): void
-	(event: 'highlight', index: number): void
-}>()
+const emit = defineEmits<BaseSearchResultsEmits>()
 
 function handleSelect(item: SearchResult): void {
 	emit('select', item)

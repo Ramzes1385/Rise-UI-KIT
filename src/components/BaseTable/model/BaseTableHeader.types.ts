@@ -1,4 +1,4 @@
-import type { SortDirection, TableColumn } from '../model/BaseTable.types'
+import type { SortDirection, TableColumn } from './BaseTable.types'
 
 /** Props компонента BaseTableHeader */
 export interface BaseTableHeaderProps {
@@ -30,4 +30,11 @@ export interface BaseTableHeaderProps {
 	isColumnResizable: (column: TableColumn) => boolean
 	/** Получение CSS-стилей для колонки */
 	getColumnStyle: (column: TableColumn) => Record<string, string>
+}
+
+/** Emits компонента BaseTableHeader */
+export interface BaseTableHeaderEmits {
+	(event: 'toggle-all'): void
+	(event: 'sort', column: TableColumn): void
+	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
 }

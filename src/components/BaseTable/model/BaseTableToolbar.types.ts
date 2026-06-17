@@ -1,4 +1,4 @@
-import type { ColumnFilter, TableColumn } from '../model/BaseTable.types'
+import type { ColumnFilter, TableColumn } from './BaseTable.types'
 
 /** Props компонента BaseTableToolbar */
 export interface BaseTableToolbarProps {
@@ -44,4 +44,17 @@ export interface BaseTableToolbarProps {
 	activeFiltersClass?: string
 	/** Функция получения текстовой метки для фильтра */
 	getFilterLabel: (filter: ColumnFilter) => string
+}
+
+/** Emits компонента BaseTableToolbar */
+export interface BaseTableToolbarEmits {
+	(event: 'search-input', value: string): void
+	(event: 'update:filter-column', value: string | number | (string | number)[]): void
+	(event: 'update:filter-operator', value: string | number | (string | number)[]): void
+	(event: 'update:filter-value', value: string): void
+	(event: 'add-filter'): void
+	(event: 'remove-filter', index: number): void
+	(event: 'toggle-settings'): void
+	(event: 'update:is-settings-open', value: boolean): void
+	(event: 'toggle-column-visibility', column: TableColumn): void
 }

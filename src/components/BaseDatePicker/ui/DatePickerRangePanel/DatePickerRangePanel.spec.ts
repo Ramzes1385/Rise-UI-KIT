@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render } from '@testing-library/vue'
 import DatePickerRangePanel from './DatePickerRangePanel.vue'
-import type { DatePickerRangePanelProps } from './DatePickerRangePanel.types'
+import type { DatePickerRangePanelProps } from '../../model/DatePickerRangePanel.types'
 
 const DEFAULT_PROPS: DatePickerRangePanelProps = {
 	modelValue: new Date(2026, 0, 15),

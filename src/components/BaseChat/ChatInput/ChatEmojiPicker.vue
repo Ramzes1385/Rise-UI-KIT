@@ -35,14 +35,11 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useClickOutside } from '@composables/useClickOutside'
 import { UI_CHAT_EMOJI_ARIA, UI_CHAT_INSERT_EMOJI } from '@constants'
+import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './ChatEmojiPicker.types'
 
-defineProps<{
-	sizeScale: number
-}>()
+defineProps<ChatEmojiPickerProps>()
 
-const emit = defineEmits<{
-	select: [emoji: string]
-}>()
+const emit = defineEmits<ChatEmojiPickerEmits>()
 
 const isEmojiOpen = ref(false)
 const emojiWrapperRef = ref<HTMLElement | null>(null)

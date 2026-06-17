@@ -68,30 +68,13 @@ import {
 	UI_CHAT_UNPIN,
 	UI_SCALE,
 } from '@constants'
-import type { ChatMessage } from '../../model/BaseChat.types'
-
-interface ChatMessageContextMenuProps {
-	isOpen: boolean
-	x: number
-	y: number
-	message: ChatMessage | null
-	currentUserRole: 'admin' | 'member'
-	sizeScale: number
-	popularEmojis?: string[]
-}
+import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'
 
 withDefaults(defineProps<ChatMessageContextMenuProps>(), {
 	popularEmojis: () => ['👍', '❤️', '🔥', '😂', '😮', '😢'],
 })
 
-const emit = defineEmits<{
-	(event: 'reaction', emoji: string): void
-	(event: 'reply'): void
-	(event: 'select'): void
-	(event: 'copy'): void
-	(event: 'pin'): void
-	(event: 'delete'): void
-}>()
+const emit = defineEmits<ChatMessageContextMenuEmits>()
 
 const menuRef = ref<HTMLElement | null>(null)
 

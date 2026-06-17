@@ -48,26 +48,11 @@ import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
+import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../model/BaseCalendarTime.types'
 
-const props = defineProps<{
-	hours: number
-	minutes: number
-	seconds: number
-	is24Hour: boolean
-	showSeconds: boolean
-	isAm: boolean
-	isDisabled: boolean
-	sizeScale: number
-	classes: Record<string, string>
-}>()
+const props = defineProps<BaseCalendarTimeProps>()
 
-const emit = defineEmits<{
-	'update:hours': [value: number]
-	'update:minutes': [value: number]
-	'update:seconds': [value: number]
-	toggleAmPm: []
-	timeChange: []
-}>()
+const emit = defineEmits<BaseCalendarTimeEmits>()
 
 function to12h(h: number): number {
 	if (h === 0) return 12

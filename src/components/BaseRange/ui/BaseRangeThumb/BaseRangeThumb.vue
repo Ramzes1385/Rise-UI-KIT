@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseRangeThumbEmits, BaseRangeThumbProps, BaseRangeThumbSlots } from './BaseRangeThumb.types'
+import type { BaseRangeThumbEmits, BaseRangeThumbProps, BaseRangeThumbSlots } from '../../model/BaseRangeThumb.types'
 
 const props = defineProps<BaseRangeThumbProps>()
 const emit = defineEmits<BaseRangeThumbEmits>()

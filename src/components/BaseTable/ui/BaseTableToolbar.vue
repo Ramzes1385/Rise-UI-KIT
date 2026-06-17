@@ -93,20 +93,9 @@ import {
 	UI_FILTER_VALUE_PLACEHOLDER,
 	UI_TEXT,
 } from '@constants'
-import type { TableColumn } from '../model/BaseTable.types'
-import type { BaseTableToolbarProps } from './BaseTableToolbar.types'
+import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../model/BaseTableToolbar.types'
 
 defineProps<BaseTableToolbarProps>()
 
-const emit = defineEmits<{
-	(event: 'search-input', value: string): void
-	(event: 'update:filter-column', value: string | number | (string | number)[]): void
-	(event: 'update:filter-operator', value: string | number | (string | number)[]): void
-	(event: 'update:filter-value', value: string): void
-	(event: 'add-filter'): void
-	(event: 'remove-filter', index: number): void
-	(event: 'toggle-settings'): void
-	(event: 'update:is-settings-open', value: boolean): void
-	(event: 'toggle-column-visibility', column: TableColumn): void
-}>()
+const emit = defineEmits<BaseTableToolbarEmits>()
 </script>

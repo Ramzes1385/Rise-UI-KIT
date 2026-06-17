@@ -13,6 +13,7 @@ export function createAliasConfig(): AliasOptions {
 
 	return {
 		'@': srcPath,
+		'@/': `${srcPath}/`,
 		'@components': resolveFromRoot(SOURCE_DIR, 'components'),
 		'@composables': resolveFromRoot(SOURCE_DIR, 'composables'),
 		'@constants': resolveFromRoot(SOURCE_DIR, 'constants'),

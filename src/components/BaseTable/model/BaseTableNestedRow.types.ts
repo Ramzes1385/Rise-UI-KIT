@@ -1,4 +1,4 @@
-import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { NestedTableConfig, TableColumn, TableRow } from './BaseTable.types'
 
 /** Props компонента BaseTableNestedRow */
 export interface BaseTableNestedRowProps {

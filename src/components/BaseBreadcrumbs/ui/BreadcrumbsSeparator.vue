@@ -20,13 +20,7 @@
 <script setup lang="ts">
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-
-interface BreadcrumbsSeparatorProps {
-	separator: string
-	sizeScale: number
-	separatorIconClass?: string
-	separatorTextClass?: string
-}
+import type { BreadcrumbsSeparatorProps } from '../model/BreadcrumbsSeparator.types'
 
 defineProps<BreadcrumbsSeparatorProps>()
 </script>

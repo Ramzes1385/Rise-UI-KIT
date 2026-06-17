@@ -34,16 +34,14 @@ import {
 	UI_SCALE,
 } from '@constants'
 import type { ChatMessage } from '../../model/BaseChat.types'
+import type { ChatSlideoverLinksProps } from '../../model/ChatSlideoverLinks.types'
 
 interface SharedLink {
 	url: string
 	publishedAt: string
 }
 
-const props = defineProps<{
-	messages: ChatMessage[]
-	sizeScale: number
-}>()
+const props = defineProps<ChatSlideoverLinksProps>()
 
 function getPublishedLabel(message: ChatMessage): string {
 	return message.date || message.time

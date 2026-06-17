@@ -10,17 +10,9 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
+import type { FormFieldLabelProps } from '../model/FormFieldLabel.types'
 
-withDefaults(defineProps<{
-	label: string
-	tag?: string
-	isRequired?: boolean
-	className?: string
-	customClass?: string | Record<string, string | undefined>
-	requiredClassName?: string
-	requiredCustomClass?: string | Record<string, string | undefined>
-	sizeScale?: number
-}>(), {
+withDefaults(defineProps<FormFieldLabelProps>(), {
 	tag: 'label',
 	isRequired: undefined,
 	className: undefined,

@@ -95,14 +95,9 @@ import { BaseText } from '@components/BaseText'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'
-import type { TableRow } from '../model/BaseTable.types'
-import type { BaseTableBodyProps } from './BaseTableBody.types'
+import type { BaseTableBodyEmits, BaseTableBodyProps } from '../model/BaseTableBody.types'
 
 defineProps<BaseTableBodyProps>()
 
-const emit = defineEmits<{
-	(event: 'row-click', row: TableRow): void
-	(event: 'toggle-row', row: TableRow): void
-	(event: 'toggle-expand', row: TableRow): void
-}>()
+const emit = defineEmits<BaseTableBodyEmits>()
 </script>

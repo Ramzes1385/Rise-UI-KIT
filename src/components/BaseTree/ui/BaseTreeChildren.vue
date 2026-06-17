@@ -31,27 +31,11 @@
 import { inject } from 'vue'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
-import type { TreeNode } from '../model/BaseTree.types'
-import type { VNode } from 'vue'
+import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../model/BaseTreeChildren.types'
 import '../styles/BaseTree.style.scss'
 
-interface Props {
-	children: TreeNode[]
-	depth: number
-	sizeScale: number
-	isExpanded: boolean
-	wasExpanded: boolean
-}
-
-interface Slots {
-	icon?: (props: { node: TreeNode }) => VNode[]
-	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => VNode[]
-	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => VNode[]
-	actions?: (props: { node: TreeNode }) => VNode[]
-}
-
-defineProps<Props>()
-defineSlots<Slots>()
+defineProps<BaseTreeChildrenProps>()
+defineSlots<BaseTreeChildrenSlots>()
 
 const treeContext = inject(TREE_CONTEXT_KEY, undefined)
 /* istanbul ignore if -- defensive: BaseTreeChildren всегда рендерится внутри BaseTree, контекст предоставляется родителем */

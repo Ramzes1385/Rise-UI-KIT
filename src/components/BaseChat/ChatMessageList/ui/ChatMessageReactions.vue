@@ -13,17 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatMessageReaction } from '../../model/BaseChat.types'
-
-interface ChatMessageReactionsProps {
-	reactions: ChatMessageReaction[]
-	sender: 'me' | 'other'
-}
+import type { ChatMessageReactionsEmits, ChatMessageReactionsProps } from '../model/ChatMessageReactions.types'
 
 defineProps<ChatMessageReactionsProps>()
-const emit = defineEmits<{
-	(event: 'toggle', emoji: string): void
-}>()
+const emit = defineEmits<ChatMessageReactionsEmits>()
 
 function handleClick(emoji: string): void {
 	emit('toggle', emoji)

@@ -62,7 +62,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import type { DatePickerFieldEmits, DatePickerFieldProps } from './DatePickerField.types'
+import type { DatePickerFieldEmits, DatePickerFieldProps } from '../../model/DatePickerField.types'
 
 const props = defineProps<DatePickerFieldProps>()
 const { resolveBooleanPropDefault } = useExplicitPropDetection()

@@ -40,23 +40,10 @@
 import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useMessageParser } from '@composables/useMessageParser'
-import type { MessageToken, TextPart } from '@composables/useMessageParser/useMessageParser.types'
-
-interface ChatMessageTextProps {
-	text: string
-	sizeScale: number
-	searchQuery?: string
-}
-
-interface HighlightedToken extends MessageToken {
-	highlightedParts: TextPart[]
-}
+import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../model/ChatMessageText.types'
 
 const props = defineProps<ChatMessageTextProps>()
-const emit = defineEmits<{
-	(event: 'mention-click', mention: string): void
-	(event: 'command-click', command: string): void
-}>()
+const emit = defineEmits<ChatMessageTextEmits>()
 
 const { getHighlightedParts, parseMessageText } = useMessageParser({
 	searchQuery: () => props.searchQuery ?? '',
