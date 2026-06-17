@@ -62,7 +62,7 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_FONT_WEIGHT, UI_TIMING } from '@constants'
+import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import '../styles/BaseNotification.style.scss'
@@ -73,7 +73,7 @@ const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	type: 'info',
 	position: 'top-right',
 	duration: UI_TIMING.NOTIFICATION_AUTO_CLOSE,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	isContained: false,
 })
 

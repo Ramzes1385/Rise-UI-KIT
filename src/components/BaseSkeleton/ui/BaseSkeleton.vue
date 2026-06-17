@@ -19,12 +19,13 @@ import { useCustomClass } from '@composables/useCustomClass'
 
 import '../styles/BaseSkeleton.style.scss'
 import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseSkeletonProps>(), {
 	shape: 'rect',
 	isAnimated: true,
 	isPulse: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { classes } = useCustomClass({

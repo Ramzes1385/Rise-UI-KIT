@@ -264,6 +264,7 @@ import {
 	UI_CHAT_WRITE_MESSAGE,
 	UI_FONT_WEIGHT,
 	UI_SCALE,
+	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import { computed, ref } from 'vue'
 import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
@@ -292,7 +293,7 @@ const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	isGroup: false,
 	members: () => [],
 	currentUserRole: 'member',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<{

@@ -71,6 +71,7 @@ import {
 	UI_CHAT_UNPIN_ARIA,
 	UI_FONT_WEIGHT,
 	UI_SCALE,
+	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import { computed } from 'vue'
 import type { ChatMessage } from '../../model/BaseChat.types'
@@ -85,7 +86,7 @@ interface ChatPinnedPanelProps {
 
 const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
 	currentUserRole: 'member',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<{

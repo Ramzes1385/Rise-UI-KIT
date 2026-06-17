@@ -8,7 +8,6 @@
 		:custom-class="classes.dropdown"
 		@close="handleClose">
 		<div
-			ref="selectRef"
 			class="base-select"
 			:class="[
 				variantClass,
@@ -21,27 +20,21 @@
 				classes.root,
 			]"
 			:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-			<BaseText
-				v-if="label"
-				tag="label"
-				class="base-select__label"
-				:custom-class="classes.label"
-				:size-scale="sizeScale">
-				{{ label }}
-				<BaseText
-					v-if="isRequired"
-					tag="span"
-					class="base-select__required"
-					:custom-class="classes.required"
-					:size-scale="sizeScale"
-					>*</BaseText
-				>
-			</BaseText>
+		<FormFieldLabel
+			v-if="label"
+			:label="label"
+			:is-required="isRequired"
+			class-name="base-select__label"
+			:custom-class="classes.label"
+			required-class-name="base-select__required"
+			:required-custom-class="classes.required"
+			:size-scale="sizeScale" />
 
-			<div
-				class="base-select__trigger"
-				:class="classes.trigger"
-				:tabindex="isDisabled ? -1 : 0"
+		<div
+			ref="selectRef"
+			class="base-select__trigger"
+			:class="classes.trigger"
+			:tabindex="isDisabled ? -1 : 0"
 				@click="toggleDropdown"
 				@keydown.enter.prevent="toggleDropdown"
 				@keydown.space.prevent="toggleDropdown">
@@ -49,12 +42,12 @@
 					<div class="base-select__values" :class="classes.values">
 						<template v-if="isMultiple && Array.isArray(modelValue) && modelValue.length > 0">
 							<template v-if="$slots.tag">
-								<slot name="tag" :labels="selectedLabels" :remove="removeValue" />
+								<slot name="tag" :labels="selectedLabels" :items="selectedItems" :remove="removeValue" />
 							</template>
 							<template v-else>
 								<BaseBadge
-									v-for="val in selectedLabels"
-									:key="val"
+									v-for="item in selectedItems"
+									:key="item.value"
 									class="base-select__tag"
 									:custom-class="classes.tag"
 									:size-scale="sizeScale">
@@ -63,14 +56,14 @@
 										class="base-select__tag-text"
 										:custom-class="classes.tagText"
 										:size-scale="sizeScale"
-										>{{ val }}</BaseText
+										>{{ item.label }}</BaseText
 									>
 									<BaseIcon
 										class="base-select__tag-close"
 										:custom-class="classes.tagClose"
 										name="x-mark"
 										:size-scale="calcIconScale('xs', sizeScale)"
-										@click.stop="removeValue(val)" />
+										@click.stop="removeValue(item.value)" />
 								</BaseBadge>
 							</template>
 						</template>
@@ -120,14 +113,11 @@
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</div>
 
-		<BaseText
-			v-if="formField.error"
-			tag="span"
-			class="base-select__error-text"
+		<FormFieldError
+			:error="formField.error"
+			class-name="base-select__error-text"
 			:custom-class="classes.errorText"
-			:size-scale="sizeScale"
-			>{{ formField.error }}</BaseText
-		>
+			:size-scale="sizeScale" />
 		</div>
 
 		<template #dropdown>
@@ -161,11 +151,12 @@
 <script setup lang="ts">
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseDropdown } from '@components/BaseDropdown'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { computed, ref } from 'vue'
 import '../styles/BaseSelect.style.scss'
 import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from '../model/BaseSelect.types'
@@ -180,8 +171,8 @@ const props = withDefaults(defineProps<BaseSelectProps>(), {
 	isSearchable: false,
 	isDisabled: false,
 	error: '',
-	variant: 'default',
-	sizeScale: 100,
+	variant: DEFAULT_VARIANT,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
@@ -222,21 +213,23 @@ const formField = useFormField({
 
 const isOpen = ref(false)
 const searchQuery = ref('')
+const selectRef = ref<HTMLDivElement | null>(null)
 
 const selectedOption = computed(() => {
 	return props.options.find(opt => opt.value === props.modelValue) ?? null
 })
 
 const selectedLabel = computed(() => {
-	const option = props.options.find(opt => opt.value === props.modelValue)
-	return option ? option.label : ''
+	return selectedOption.value?.label ?? ''
 })
 
-const selectedLabels = computed((): string[] => {
+const selectedItems = computed((): BaseSelectOption[] => {
 	const values = props.modelValue
 	if (!Array.isArray(values)) return []
-	return props.options.filter(opt => values.includes(opt.value)).map(opt => opt.label)
+	return props.options.filter(opt => values.includes(opt.value))
 })
+
+const selectedLabels = computed((): string[] => selectedItems.value.map(opt => opt.label))
 
 const filteredOptions = computed(() => {
 	if (!searchQuery.value) return props.options
@@ -291,17 +284,24 @@ function handleSelect(option: BaseSelectOption): void {
 	}
 }
 
-function removeValue(label: string): void {
-	const option = props.options.find(opt => opt.label === label)
-	/* istanbul ignore next — defensive: removeValue вызывается только из multiple-режима */
-	if (option && Array.isArray(props.modelValue)) {
-		const newValue = props.modelValue.filter(v => v !== option.value)
-		emit('update:modelValue', newValue)
-		emit('change', newValue)
-	}
+function removeValue(value: string | number): void {
+	if (!Array.isArray(props.modelValue)) return
+	const targetValue = resolveOptionValue(value)
+	const newValue = props.modelValue.filter(v => v !== targetValue)
+	emit('update:modelValue', newValue)
+	emit('change', newValue)
+}
+
+function resolveOptionValue(value: string | number): string | number {
+	if (props.options.some(opt => opt.value === value)) return value
+	const byLabel = props.options.find(opt => opt.label === value)
+	return byLabel ? byLabel.value : value
 }
 
 defineExpose({
+	selectRef,
+	focus: () => selectRef.value?.focus(),
+	blur: () => selectRef.value?.blur(),
 	validate: formField.validate,
 	reset: formField.reset,
 })

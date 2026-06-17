@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { UI_TIMING } from '@constants'
+import { UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -34,7 +34,7 @@ import type { BaseTooltipProps } from '../model/BaseTooltip.types'
 const props = withDefaults(defineProps<BaseTooltipProps>(), {
 	position: 'top',
 	isAlwaysVisible: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip', props, ['root', 'tooltip', 'text'])

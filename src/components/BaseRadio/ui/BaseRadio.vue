@@ -9,15 +9,16 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseText
+		<FormFieldLabel
 			v-if="label"
 			tag="span"
-			class="base-radio-group__label"
-			:size-scale="props.sizeScale"
-			:custom-class="classes.label">
-			{{ label }}
-			<BaseText v-if="props.isRequired" tag="span" class="base-radio-group__required" :size-scale="props.sizeScale">*</BaseText>
-		</BaseText>
+			:label="label"
+			:is-required="props.isRequired"
+			class-name="base-radio-group__label"
+			:custom-class="classes.label"
+			required-class-name="base-radio-group__required"
+			:required-custom-class="classes.required"
+			:size-scale="props.sizeScale" />
 
 		<div
 			class="base-radio-group__options"
@@ -53,29 +54,27 @@
 			</label>
 		</div>
 
-		<BaseText
-			v-if="formField.error"
-			tag="span"
-			class="base-radio-group__error-text"
-			:size-scale="props.sizeScale"
-			:custom-class="classes.errorText">
-			{{ formField.error }}
-		</BaseText>
+		<FormFieldError
+			:error="formField.error"
+			class-name="base-radio-group__error-text"
+			:custom-class="classes.errorText"
+			:size-scale="props.sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { BaseText } from '@components/BaseText'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseRadioProps>(), {
 	isVertical: false,
 	isRequired: false,
 	error: '',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio-group', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])

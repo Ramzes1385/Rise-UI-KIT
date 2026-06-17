@@ -14,17 +14,15 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseText v-if="label" tag="label" class="base-input__label" :custom-class="classes.label" :size-scale="sizeScale">
-			{{ label }}
-			<BaseText
-				v-if="isRequired"
-				tag="span"
-				class="base-input__required"
-				:custom-class="classes.required"
-				:size-scale="sizeScale"
-				>*</BaseText
-			>
-		</BaseText>
+		<FormFieldLabel
+			v-if="label"
+			:label="label"
+			:is-required="isRequired"
+			class-name="base-input__label"
+			:custom-class="classes.label"
+			required-class-name="base-input__required"
+			:required-custom-class="classes.required"
+			:size-scale="sizeScale" />
 
 		<div class="base-input__wrapper" :class="classes.wrapper">
 			<slot name="prefix">
@@ -93,14 +91,11 @@
 			</div>
 		</div>
 
-		<BaseText
-			v-if="formField.error"
-			tag="span"
-			class="base-input__error-text"
+		<FormFieldError
+			:error="formField.error"
+			class-name="base-input__error-text"
 			:custom-class="classes.errorText"
-			:size-scale="sizeScale"
-			>{{ formField.error }}</BaseText
-		>
+			:size-scale="sizeScale" />
 	</div>
 </template>
 
@@ -108,11 +103,12 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { UI_ARIA } from '@constants'
+import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
 import { computed, ref, toRef } from 'vue'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
@@ -123,7 +119,7 @@ const props = withDefaults(defineProps<BaseInputProps>(), {
 	isDisabled: false,
 	isReadonly: false,
 	isRequired: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	prefix: '',
 	postfix: '',
 	mask: '',

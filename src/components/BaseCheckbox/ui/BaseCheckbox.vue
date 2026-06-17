@@ -28,24 +28,20 @@
 						:custom-class="classes.icon" />
 				</div>
 			</div>
-			<BaseText
+			<FormFieldLabel
 				v-if="label"
 				tag="span"
-				class="base-checkbox__label"
-				:size-scale="props.sizeScale"
+				:label="label"
+				class-name="base-checkbox__label"
 				:custom-class="classes.label"
-				>{{ label }}</BaseText
-			>
+				:size-scale="props.sizeScale" />
 		</label>
 		<slot name="error">
-			<BaseText
-				v-if="formField.error"
-				tag="span"
-				class="base-checkbox__error-text"
-				:size-scale="props.sizeScale"
+			<FormFieldError
+				:error="formField.error"
+				class-name="base-checkbox__error-text"
 				:custom-class="classes.errorText"
-				>{{ formField.error }}</BaseText
-			>
+				:size-scale="props.sizeScale" />
 		</slot>
 	</div>
 </template>
@@ -54,18 +50,19 @@
 import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox.types'
 
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { toHTMLInputElement } from '@utils/domUtils'
 
 import '../styles/BaseCheckbox.style.scss'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseCheckboxProps>(), {
 	modelValue: false,
 	isDisabled: false,
 	error: '',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseCheckboxEmits>()

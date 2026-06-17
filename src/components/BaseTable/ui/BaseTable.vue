@@ -202,7 +202,7 @@ import { toHTMLElement } from '@utils/domUtils'
 import { calcRowNumber } from '@utils/tableUtils'
 import { computed, provide, useSlots, watch } from 'vue'
 
-import { UI_TEXT } from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import {
 	TABLE_EXPAND_TRANSITION_DURATION,
 	TABLE_INFINITE_SCROLL_THRESHOLD,
@@ -222,7 +222,7 @@ import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
 
 const props = withDefaults(defineProps<BaseTableProps>(), {
-	variant: 'default',
+	variant: DEFAULT_VARIANT,
 	isLoading: false,
 	emptyText: UI_TEXT.EMPTY,
 	height: '',
@@ -238,7 +238,7 @@ const props = withDefaults(defineProps<BaseTableProps>(), {
 	hasRowNumber: false,
 	hasPageSizeSelector: false,
 	isResizable: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	padding: 10,
 })
 

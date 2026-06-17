@@ -24,7 +24,7 @@
 
 			<div class="base-alert__description" :class="classes.description">
 				<slot>
-					<BaseText v-if="description" tag="p" :size-scale="props.sizeScale - 10" :custom-class="classes.text">
+					<BaseText v-if="description" tag="p" :size-scale="props.sizeScale - SIZE_SCALE_OFFSET" :custom-class="classes.text">
 						{{ description }}
 					</BaseText>
 				</slot>
@@ -37,7 +37,7 @@
 			<BaseButton
 				v-if="props.isClosable"
 				variant="ghost"
-				:size-scale="props.sizeScale - 10"
+				:size-scale="props.sizeScale - SIZE_SCALE_OFFSET"
 				class="base-alert__close"
 				:custom-class="classes.close"
 				@click="handleClose">
@@ -52,7 +52,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, SIZE_SCALE_OFFSET } from '@constants'
 import { computed } from 'vue'
 
 import '../styles/BaseAlert.style.scss'
@@ -61,7 +61,7 @@ import type { BaseAlertEmits, BaseAlertProps } from '../model/BaseAlert.types'
 const props = withDefaults(defineProps<BaseAlertProps>(), {
 	type: 'info',
 	isClosable: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseAlertEmits>()

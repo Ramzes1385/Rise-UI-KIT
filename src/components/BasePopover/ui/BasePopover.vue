@@ -31,12 +31,13 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { computed, ref, watch } from 'vue'
 import '../styles/BasePopover.style.scss'
 import type { BasePopoverEmits, BasePopoverProps } from '../model/BasePopover.types'
+import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 
 const props = withDefaults(defineProps<BasePopoverProps>(), {
 	isOpen: false,
 	position: 'bottom',
-	variant: 'default',
-	sizeScale: 100,
+	variant: DEFAULT_VARIANT,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BasePopoverEmits>()

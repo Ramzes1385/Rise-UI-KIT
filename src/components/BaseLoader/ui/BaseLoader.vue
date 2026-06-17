@@ -43,7 +43,7 @@
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../model/BaseLoader.types'
 
@@ -52,7 +52,7 @@ const props = withDefaults(defineProps<BaseLoaderProps>(), {
 	hasLabel: false,
 	label: UI_TEXT.LOADING,
 	isOverlay: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

@@ -16,7 +16,7 @@ export interface BaseBadgeProps extends BaseComponentProps<(typeof BADGE_VARIANT
  */
 export interface BaseBadgeEmits {
 	/** Событие клика по бейджу */
-	(event: 'click'): void
+	(event: 'click', e: MouseEvent): void
 }
 
 /**

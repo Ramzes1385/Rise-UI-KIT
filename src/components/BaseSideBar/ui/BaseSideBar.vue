@@ -97,7 +97,7 @@ import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem 
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_COLLAPSE_TEXT, UI_EXPAND_TEXT, UI_FONT_WEIGHT_BOLD, UI_SIDEBAR_DEFAULT_WIDTH } from '@constants'
+import { UI_COLLAPSE_TEXT, UI_EXPAND_TEXT, UI_FONT_WEIGHT_BOLD, UI_SIDEBAR_DEFAULT_WIDTH, SIZE_SCALE_DEFAULT} from '@constants'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
@@ -122,7 +122,7 @@ const props = withDefaults(defineProps<BaseSideBarProps>(), {
 	linkComponent: 'a',
 	isCollapsible: true,
 	isLoading: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 const emit = defineEmits<BaseSideBarEmits>()
 const slots = defineSlots<BaseSideBarSlots>()

@@ -23,11 +23,12 @@ import '../styles/BaseTree.style.scss'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
 import { useTreeState } from '../model/useTreeState'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseTreeProps>(), {
 	selectionMode: 'none',
 	arrowPosition: 'left',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	isDefaultExpandAll: false,
 })
 

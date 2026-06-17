@@ -5,12 +5,13 @@
 				v-if="isOpen"
 				class="base-modal"
 				:class="[
-					rootClasses,
+					variantClass,
+					fullScreenClass,
 					isContained && 'base-modal--contained',
 					!hasOverlay && 'base-modal--no-overlay',
 					classes.root,
 				]"
-				:style="rootStyles"
+				:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 				@click.self="handleOverlayClick">
 				<div class="base-modal__content" :class="classes.content">
 					<!-- Заголовок -->
@@ -27,7 +28,7 @@
 						</div>
 						<BaseButton
 							variant="ghost"
-							:padding="2"
+							:padding="MODAL_CLOSE_BUTTON_PADDING"
 							:size-scale="sizeScale"
 							class="base-modal__close"
 							:custom-class="classes.close"
@@ -57,16 +58,16 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, MODAL_CLOSE_BUTTON_PADDING, DEFAULT_VARIANT} from '@constants'
 import { computed, useSlots } from 'vue'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from '../model/BaseModal.types'
 
 const props = withDefaults(defineProps<BaseModalProps>(), {
 	isOpen: undefined,
-	variant: 'default',
+	variant: DEFAULT_VARIANT,
 	closeOnOverlay: true,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	isContained: false,
 	hasOverlay: true,
 })
@@ -81,19 +82,6 @@ const hasFooter = computed(() => Boolean(slots.footer))
 const fullScreenClass = computed(() => {
 	if (!props.fullScreen) return undefined
 	return `base-modal--fullscreen-${props.fullScreen}`
-})
-
-const rootClasses = computed(() => {
-	const classes: (string | undefined)[] = [variantClass.value, fullScreenClass.value]
-	return classes.filter(Boolean)
-})
-
-const rootStyles = computed(() => {
-	const styles: Record<string, string> = {}
-	if (sizeScaleStyle.value) Object.assign(styles, sizeScaleStyle.value)
-	if (variantStyle.value) Object.assign(styles, variantStyle.value)
-	if (customColorStyle.value) Object.assign(styles, customColorStyle.value)
-	return Object.keys(styles).length > 0 ? styles : undefined
 })
 
 const { handleOverlayClick, close: handleClose } = usePopup({

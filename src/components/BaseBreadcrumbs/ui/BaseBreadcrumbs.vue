@@ -142,7 +142,7 @@ import { BaseText } from '@components/BaseText'
 
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
+import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import { computed, ref } from 'vue'
@@ -155,7 +155,7 @@ const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
 	maxItems: 0,
 	showHome: false,
 	homeIcon: 'home',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-breadcrumbs', props, [

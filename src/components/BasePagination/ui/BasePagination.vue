@@ -47,13 +47,14 @@ import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import { computed } from 'vue'
 import '../styles/BasePagination.style.scss'
 import type { BasePaginationEmits, BasePaginationProps } from '../model/BasePagination.types'
+import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 
 const props = withDefaults(defineProps<BasePaginationProps>(), {
 	pageSize: 10,
 	maxVisible: 7,
 	showLastPage: true,
-	variant: 'default',
-	sizeScale: 100,
+	variant: DEFAULT_VARIANT,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })

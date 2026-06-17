@@ -172,6 +172,7 @@ import {
 	UI_CHAT_SHOW_COMMANDS_ARIA,
 	UI_FONT_WEIGHT,
 	UI_SCALE,
+	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
@@ -193,7 +194,7 @@ interface BaseInputExposed {
 }
 
 const props = withDefaults(defineProps<ChatInputProps>(), {
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	replyingTo: null,
 	quickReplies: () => [],
 	members: () => [],

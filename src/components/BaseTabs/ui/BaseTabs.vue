@@ -74,11 +74,12 @@ import { useBaseComponent } from '@composables/useBaseComponent'
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import '../styles/BaseTabs.style.scss'
 import type { BaseTabsEmits, BaseTabsProps } from '../model/BaseTabs.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseTabsProps>(), {
 	isFullWidth: false,
 	isScrollable: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({

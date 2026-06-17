@@ -72,14 +72,14 @@ import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps } from '../model/BaseStepper.types'
 
 const props = withDefaults(defineProps<BaseStepperProps>(), {
 	orientation: 'horizontal',
 	shape: 'circle',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseStepperEmits>()

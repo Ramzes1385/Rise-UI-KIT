@@ -27,14 +27,13 @@
 			</span>
 			<span class="base-switch__content" :class="classes.content">
 				<slot name="label">
-					<BaseText
+					<FormFieldLabel
 						v-if="label"
 						tag="span"
-						class="base-switch__label"
+						:label="label"
+						class-name="base-switch__label"
 						:custom-class="classes.label"
-						:size-scale="props.sizeScale"
-						>{{ label }}</BaseText
-					>
+						:size-scale="props.sizeScale" />
 				</slot>
 				<BaseText
 					v-if="props.isRequired"
@@ -48,14 +47,11 @@
 			</span>
 		</label>
 		<slot name="error">
-			<BaseText
-				v-if="formField.error"
-				tag="span"
-				class="base-switch__error-text"
+			<FormFieldError
+				:error="formField.error"
+				class-name="base-switch__error-text"
 				:custom-class="classes.errorText"
-				:size-scale="props.sizeScale"
-				>{{ formField.error }}</BaseText
-			>
+				:size-scale="props.sizeScale" />
 		</slot>
 	</div>
 </template>
@@ -64,19 +60,21 @@
 import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types'
 
 import { BaseText } from '@components/BaseText'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { useId } from 'vue'
 
 import '../styles/BaseSwitch.style.scss'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseSwitchProps>(), {
 	modelValue: false,
 	isDisabled: false,
 	isRequired: false,
 	reverse: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const inputId = useId()

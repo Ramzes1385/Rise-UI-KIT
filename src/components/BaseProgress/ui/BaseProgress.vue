@@ -75,7 +75,7 @@ import { BaseTooltip } from '@components/BaseTooltip'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_FONT_WEIGHT_BOLD, UI_PROGRESS_CIRCLE_RADIUS } from '@constants'
+import { UI_FONT_WEIGHT_BOLD, UI_PROGRESS_CIRCLE_RADIUS, SIZE_SCALE_DEFAULT} from '@constants'
 import { computed, watch } from 'vue'
 
 const props = withDefaults(defineProps<BaseProgressProps>(), {
@@ -84,7 +84,7 @@ const props = withDefaults(defineProps<BaseProgressProps>(), {
 	animation: 'none',
 	hasLabel: false,
 	isIndeterminate: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseProgressEmits>()

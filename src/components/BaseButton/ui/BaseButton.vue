@@ -1,5 +1,6 @@
 <template>
 	<button
+		ref="buttonRef"
 		class="base-button"
 		:class="[
 			variantClass,
@@ -29,29 +30,38 @@
 <script setup lang="ts">
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
+import { SIZE_SCALE_DEFAULT } from '@constants'
+import { ref } from 'vue'
 
 import '../styles/BaseButton.style.scss'
-
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
+
 
 const props = withDefaults(defineProps<BaseButtonProps>(), {
 	type: 'button',
 	padding: 10,
 	isLoading: false,
 	isDisabled: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseButtonEmits>()
 
 defineSlots<BaseButtonSlots>()
 
+const buttonRef = ref<HTMLButtonElement | null>(null)
+
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-button', props)
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad', defaultPadding: 10 })
 
 function handleClick(e: MouseEvent): void {
-	if (!props.isDisabled && !props.isLoading) {
-		emit('click', e)
-	}
+	if (props.isDisabled || props.isLoading) return
+	emit('click', e)
 }
+
+defineExpose({
+	buttonRef,
+	focus: () => buttonRef.value?.focus(),
+	blur: () => buttonRef.value?.blur(),
+})
 </script>

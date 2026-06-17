@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { computed, ref, watch } from 'vue'
 import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
 import BaseText from '@components/BaseText/ui/BaseText.vue'
@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<BaseAvatarProps>(), {
 	alt: '',
 	shape: 'circle',
 	isOnline: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseAvatarEmits>()
@@ -63,10 +63,11 @@ const initials = computed(() => {
 	if (!props.name) return '?'
 	return props.name
 		.split(' ')
-		.map(n => n[0])
+		.map(n => n[0] ?? '')
+		.filter(Boolean)
 		.slice(0, 2)
 		.join('')
-		.toUpperCase()
+		.toUpperCase() || '?'
 })
 
 function handleImageError(): void {

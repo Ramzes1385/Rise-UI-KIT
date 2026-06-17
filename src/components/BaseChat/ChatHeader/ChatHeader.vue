@@ -85,12 +85,13 @@ import {
 	UI_CHAT_TYPING_SUFFIX,
 	UI_FONT_WEIGHT_BOLD,
 	UI_SCALE,
+	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 
 withDefaults(defineProps<ChatHeaderProps>(), {
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	isSearching: false,
 	searchQuery: '',
 	isTyping: false,

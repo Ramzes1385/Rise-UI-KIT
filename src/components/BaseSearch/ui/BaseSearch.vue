@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import type { BaseSearchEmits, BaseSearchProps, SearchResult } from '../model/BaseSearch.types'
 
-import { UI_TEXT, UI_TIMING } from '@constants'
+import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
@@ -134,8 +134,8 @@ import BaseSearchResults from './BaseSearchResults.vue'
 const props = withDefaults(defineProps<BaseSearchProps>(), {
 	modelValue: '',
 	placeholder: UI_TEXT.SEARCH_PLACEHOLDER,
-	sizeScale: 100,
-	variant: 'default',
+	sizeScale: SIZE_SCALE_DEFAULT,
+	variant: DEFAULT_VARIANT,
 	mode: 'default',
 	results: () => [],
 	isInstant: true,

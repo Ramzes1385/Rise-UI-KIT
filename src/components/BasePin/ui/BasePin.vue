@@ -26,31 +26,29 @@
 				@paste="handlePaste" />
 		</div>
 
-		<BaseText
-			v-if="formField.error"
-			tag="span"
-			class="base-pin__error-text"
-			:size-scale="props.sizeScale"
-			:custom-class="classes.errorText">
-			{{ formField.error }}
-		</BaseText>
+		<FormFieldError
+			:error="formField.error"
+			class-name="base-pin__error-text"
+			:custom-class="classes.errorText"
+			:size-scale="props.sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { BaseText } from '@components/BaseText'
+import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, ref } from 'vue'
 import '../styles/BasePin.style.scss'
 import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BasePinProps>(), {
 	length: 4,
 	type: 'text',
 	isDisabled: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const formField = useFormField({

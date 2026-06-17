@@ -23,13 +23,14 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { computed } from 'vue'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps } from '../model/BaseChip.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseChipProps>(), {
 	placement: 'top-right',
 	isHiddenOnZero: false,
 	hasOverflow: false,
 	maxValue: 99,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, ['root', 'badge'])

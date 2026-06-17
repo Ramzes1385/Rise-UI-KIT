@@ -26,14 +26,14 @@
 <script setup lang="ts">
 import { BaseLoader } from '@components/BaseLoader'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormProps } from '../model/BaseForm.types'
 
 const props = withDefaults(defineProps<BaseFormProps>(), {
 	isLoading: false,
 	isDisabled: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form', props, ['root', 'overlay', 'content'])

@@ -129,7 +129,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseText } from '@components/BaseText'
-import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT } from '@constants'
+import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { downloadFile } from '@utils/fileUtils'
 import { ref } from 'vue'
@@ -153,7 +153,7 @@ interface MessageListExposed {
 const props = withDefaults(defineProps<BaseChatProps>(), {
 	variant: 'bubble',
 	height: UI_CHAT_DEFAULT_HEIGHT,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	isTyping: false,
 	typingUsername: '',
 	isGroup: false,

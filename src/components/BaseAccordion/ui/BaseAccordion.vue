@@ -59,7 +59,7 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { onMounted, ref } from 'vue'
 
 import '../styles/BaseAccordion.style.scss'
@@ -67,7 +67,7 @@ import type { BaseAccordionEmits, BaseAccordionProps } from '../model/BaseAccord
 
 const props = withDefaults(defineProps<BaseAccordionProps>(), {
 	isMultiple: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseAccordionEmits>()

@@ -116,7 +116,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
-import { UI_FONT_WEIGHT, UI_TIMING } from '@constants'
+import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
 import { navigateAndEmit } from '@utils/navigationUtils'
@@ -129,7 +129,7 @@ const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
 	trigger: 'click',
 	layout: 'columns',
 	hoverDelay: UI_TIMING.HOVER_DELAY,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'])

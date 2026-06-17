@@ -40,6 +40,7 @@ import {
 	UI_CHAT_FORWARD,
 	UI_CHAT_SELECTED_PREFIX,
 	UI_FONT_WEIGHT,
+	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import './ChatSelectionToolbar.style.scss'
 
@@ -49,7 +50,7 @@ interface ChatSelectionToolbarProps {
 }
 
 const props = withDefaults(defineProps<ChatSelectionToolbarProps>(), {
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<{

@@ -11,22 +11,15 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseText
+		<FormFieldLabel
 			v-if="label"
-			tag="label"
-			class="base-textarea__label"
+			:label="label"
+			:is-required="props.isRequired"
+			class-name="base-textarea__label"
 			:custom-class="classes.label"
-			:size-scale="props.sizeScale">
-			{{ label }}
-			<BaseText
-				v-if="props.isRequired"
-				tag="span"
-				class="base-textarea__required"
-				:custom-class="classes.required"
-				:size-scale="props.sizeScale"
-				>*</BaseText
-			>
-		</BaseText>
+			required-class-name="base-textarea__required"
+			:required-custom-class="classes.required"
+			:size-scale="props.sizeScale" />
 
 		<textarea
 			ref="textareaRef"
@@ -43,25 +36,23 @@
 			@blur="handleBlur"
 			@focus="handleFocus"></textarea>
 
-		<BaseText
-			v-if="formField.error"
-			tag="span"
-			class="base-textarea__error-text"
+		<FormFieldError
+			:error="formField.error"
+			class-name="base-textarea__error-text"
 			:custom-class="classes.errorText"
-			:size-scale="props.sizeScale"
-			>{{ formField.error }}</BaseText
-		>
+			:size-scale="props.sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { BaseText } from '@components/BaseText'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTextarea.style.scss'
 import type { BaseTextareaEmits, BaseTextareaProps } from '../model/BaseTextarea.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseTextareaProps>(), {
 	modelValue: '',
@@ -71,7 +62,7 @@ const props = withDefaults(defineProps<BaseTextareaProps>(), {
 	isReadonly: false,
 	isRequired: false,
 	isAutosize: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-textarea', props, ['root', 'label', 'required', 'field', 'errorText'])

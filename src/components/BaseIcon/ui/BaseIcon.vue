@@ -20,6 +20,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { computed } from 'vue'
 import '../styles/BaseIcon.style.scss'
 import type { BaseIconProps } from '../model/BaseIcon.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseIconProps>(), {
 	color: '',
@@ -27,7 +28,7 @@ const props = withDefaults(defineProps<BaseIconProps>(), {
 	isFlipX: false,
 	isFlipY: false,
 	ariaLabel: '',
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

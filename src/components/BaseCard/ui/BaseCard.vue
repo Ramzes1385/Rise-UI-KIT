@@ -55,7 +55,7 @@ import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 
 import '../styles/BaseCard.style.scss'
 
@@ -64,7 +64,7 @@ import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
 const props = withDefaults(defineProps<BaseCardProps>(), {
 	isHoverable: false,
 	padding: 24,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	scroll: false,
 })
 

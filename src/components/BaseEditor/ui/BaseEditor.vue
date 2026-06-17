@@ -36,7 +36,7 @@
 			@handle-text-color="handleTextColor"
 			@handle-background-color="handleBackgroundColor"
 			@reset-text-color="resetTextColor"
-			@reset-background-color="resetBackgroundColorState">
+			@reset-background-color="resetBackgroundColor">
 			<template v-if="$slots.toolbar" #toolbar>
 				<slot name="toolbar" />
 			</template>
@@ -108,7 +108,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { UI_EDITOR_APPLY, UI_EDITOR_DEFAULT_BG_COLOR, UI_EDITOR_DEFAULT_TEXT_COLOR, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH } from '@constants'
+import { UI_EDITOR_APPLY, UI_EDITOR_DEFAULT_BG_COLOR, UI_EDITOR_DEFAULT_TEXT_COLOR, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { onMounted, ref, watch } from 'vue'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
@@ -118,10 +118,10 @@ const props = withDefaults(defineProps<BaseEditorProps>(), {
 	modelValue: '',
 	placeholder: '',
 	isReadonly: false,
-	variant: 'default',
+	variant: DEFAULT_VARIANT,
 	hasToolbar: true,
 	isAutofocus: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'])
@@ -175,8 +175,8 @@ const {
 	handleHeadingChange,
 	applyColor,
 	applyBackgroundColor,
-	resetColor,
-	resetBackgroundColor,
+	resetColor: resetColorFn,
+	resetBackgroundColor: resetBackgroundColorFn,
 	insertLink,
 	clearAllFormatting,
 	insertSeparator,
@@ -212,12 +212,12 @@ function handleBackgroundColor(color: string): void {
 }
 
 function resetTextColor(): void {
-	resetColor()
+	resetColorFn()
 	isTextColorActive.value = false
 }
 
-function resetBackgroundColorState(): void {
-	resetBackgroundColor()
+function resetBackgroundColor(): void {
+	resetBackgroundColorFn()
 	isBackgroundColorActive.value = false
 }
 

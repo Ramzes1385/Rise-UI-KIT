@@ -38,10 +38,11 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
 import type { BaseFormFieldProps } from '../model/BaseFormField.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseFormFieldProps>(), {
 	isRequired: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'])

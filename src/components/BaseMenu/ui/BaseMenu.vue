@@ -40,9 +40,10 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseMenu.style.scss'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../model/BaseMenu.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseMenuProps>(), {
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, ['root', 'group', 'item', 'icon', 'label', 'divider'])

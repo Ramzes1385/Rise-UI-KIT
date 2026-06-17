@@ -62,7 +62,7 @@ import type { BaseImageEmits, BaseImageProps } from '../model/BaseImage.types'
 import '../styles/BaseImage.style.scss'
 
 import BaseImageZoom from './BaseImageZoom.vue'
-import { UI_IMAGE_ERROR_TEXT, UI_IMAGE_LOAD_TIMEOUT_MS, UI_IMAGE_LOADING_MIN_HEIGHT } from '@constants'
+import { UI_IMAGE_ERROR_TEXT, UI_IMAGE_LOAD_TIMEOUT_MS, UI_IMAGE_LOADING_MIN_HEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useImageZoom } from '@composables/useImageZoom'
@@ -87,7 +87,7 @@ const props = withDefaults(defineProps<BaseImageProps>(), {
 	maxScale: 5,
 	showMinimap: true,
 	convertToWebp: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { classes } = useCustomClass({

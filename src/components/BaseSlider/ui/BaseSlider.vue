@@ -156,7 +156,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_FONT_WEIGHT_BOLD, UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS } from '@constants'
+import { UI_FONT_WEIGHT_BOLD, UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS, SIZE_SCALE_DEFAULT} from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
@@ -177,7 +177,7 @@ const props = withDefaults(defineProps<BaseSliderProps>(), {
 	isVertical: false,
 	initialIndex: 0,
 	height: UI_SLIDER_DEFAULT_HEIGHT,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	spaceBetween: 0,
 	slidesPerView: 1,
 	slidesPerGroup: 1,

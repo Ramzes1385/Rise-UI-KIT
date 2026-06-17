@@ -44,14 +44,14 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { computed } from 'vue'
 
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps } from '../model/BaseEmpty.types'
 
 const props = withDefaults(defineProps<BaseEmptyProps>(), {
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'])

@@ -24,7 +24,7 @@ import { useClickOutside } from '@composables/useClickOutside'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
-import { UI_PANEL_MAX_HEIGHT } from '@constants'
+import { UI_PANEL_MAX_HEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import { usePadding } from '@composables/usePadding'
 import { computed, ref, watch } from 'vue'
@@ -40,7 +40,7 @@ const props = withDefaults(defineProps<BaseDropdownProps>(), {
 	matchWidth: false,
 	panelClass: '',
 	padding: 8,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 const { wasPropPassed } = useExplicitPropDetection()
 

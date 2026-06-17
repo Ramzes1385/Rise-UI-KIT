@@ -65,6 +65,7 @@ import {
 	UI_CONTEXT_MENU_DEFAULT_WIDTH,
 	UI_HIGHLIGHT_DURATION_MS,
 	UI_SCALE,
+	SIZE_SCALE_DEFAULT,
 } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
@@ -80,7 +81,7 @@ import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	searchQuery: '',
 	selectedMessageIds: () => [],
 	isGroup: false,

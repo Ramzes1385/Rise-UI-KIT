@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 
 import type { UseSizeScaleOptions } from './useSizeScale.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 /**
  * Composable для пропорционального масштабирования размеров компонента.
@@ -10,7 +11,7 @@ import type { UseSizeScaleOptions } from './useSizeScale.types'
  * @example
  * ```vue
  * <script setup>
- * const props = withDefaults(defineProps<{ sizeScale?: number }>(), { sizeScale: 100 })
+ * const props = withDefaults(defineProps<{ sizeScale?: number }>(), { sizeScale: SIZE_SCALE_DEFAULT })
  * const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
  * </script>
  *
@@ -21,9 +22,9 @@ import type { UseSizeScaleOptions } from './useSizeScale.types'
  */
 function useSizeScale(options: UseSizeScaleOptions) {
 	const sizeScaleStyle = computed(() => {
-		const scale = options.getScale() ?? 100
-		if (scale === 100) return undefined
-		return { '--size-scale': String(scale / 100) }
+		const scale = options.getScale() ?? SIZE_SCALE_DEFAULT
+		if (scale === SIZE_SCALE_DEFAULT) return undefined
+		return { '--size-scale': String(scale / SIZE_SCALE_DEFAULT) }
 	})
 
 	return { sizeScaleStyle }

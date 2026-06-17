@@ -15,6 +15,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { computed } from 'vue'
 import '../styles/BaseText.style.scss'
 import type { BaseTextProps } from '../model/BaseText.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 const props = withDefaults(defineProps<BaseTextProps>(), {
 	tag: 'p',
@@ -22,7 +23,7 @@ const props = withDefaults(defineProps<BaseTextProps>(), {
 	nowrap: false,
 	truncate: false,
 	maxLines: 1,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { classes } = useCustomClass({

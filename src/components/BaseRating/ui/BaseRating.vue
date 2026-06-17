@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_RATING_ARIA_PREFIX } from '@constants'
+import { UI_RATING_ARIA_PREFIX, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { computed, ref } from 'vue'
 
 import '../styles/BaseRating.style.scss'
@@ -43,8 +43,8 @@ const props = withDefaults(defineProps<BaseRatingProps>(), {
 	icon: 'star',
 	isReadonly: false,
 	isDisabled: false,
-	variant: 'default',
-	sizeScale: 100,
+	variant: DEFAULT_VARIANT,
+	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseRatingEmits>()

@@ -21,6 +21,7 @@ export const UI_TEXT = {
 	NO_COLOR: 'Без цвета',
 	CANCEL: 'Отмена',
 	APPLY: 'Применить',
+	REQUIRED_FIELD: 'Обязательное поле',
 	SELECT_PLACEHOLDER: 'Выберите...',
 	SELECT_DATE: 'Выберите дату',
 	EXPAND: 'Развернуть',
@@ -143,3 +144,9 @@ export const UI_PROGRESS_STEP_MIN = 5
 export const UI_PROGRESS_STEP_RANGE = 20
 export const CALENDAR_GRID_CELLS = 42
 export const MS_PER_DAY = 86_400_000
+export const SIZE_SCALE_DEFAULT = 100
+/** Относительное уменьшение sizeScale для второстепенного контента (описания, иконки на кнопках) */
+export const SIZE_SCALE_OFFSET = 10
+/** Padding кнопки закрытия в модальном окне */
+export const MODAL_CLOSE_BUTTON_PADDING = 2
+export const DEFAULT_VARIANT = 'default'

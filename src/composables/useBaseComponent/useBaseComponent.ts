@@ -4,6 +4,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import type { BaseComponentProps } from '@/types/base.types'
 import type { UseBaseComponentOptions } from './useBaseComponent.types'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 
 /**
  * Composable для базовой логики UI-компонента.
@@ -43,7 +44,7 @@ function useStandardBaseComponent<T extends BaseComponentProps>(
 	return useBaseComponent({
 		block,
 		getVariant: () => props.variant,
-		getSizeScale: () => props.sizeScale ?? 100,
+		getSizeScale: () => props.sizeScale ?? SIZE_SCALE_DEFAULT,
 		getColor: () => props.color,
 		getClass: () => props.customClass,
 		elementKeys,

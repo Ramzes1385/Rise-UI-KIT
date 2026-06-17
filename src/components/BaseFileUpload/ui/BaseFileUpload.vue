@@ -139,7 +139,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
-import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS, UI_PROGRESS_STEP_MIN, UI_PROGRESS_STEP_RANGE } from '@constants'
+import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS, UI_PROGRESS_STEP_MIN, UI_PROGRESS_STEP_RANGE, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, validateFile } from '@utils/fileUtils'
@@ -152,7 +152,7 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	accept: '',
 	isMultiple: false,
 	isDisabled: false,
-	variant: 'default',
+	variant: DEFAULT_VARIANT,
 	maxSize: 5,
 	maxCount: 10,
 	label: '',
@@ -160,7 +160,7 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	previewSize: 64,
 	allowPreview: true,
 	emptyText: UI_FILE_DROP_TEXT,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	error: '',
 })
 

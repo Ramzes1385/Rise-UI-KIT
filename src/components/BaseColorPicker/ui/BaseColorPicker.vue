@@ -73,7 +73,7 @@
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
-import { UI_COLOR_PICKER, UI_NO_COLOR_TEXT } from '@constants'
+import { UI_COLOR_PICKER, UI_NO_COLOR_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
@@ -89,7 +89,7 @@ const props = withDefaults(defineProps<BaseColorPickerProps>(), {
 	resetLabel: UI_NO_COLOR_TEXT,
 	hasTransparentSwatch: false,
 	isDisabled: false,
-	sizeScale: 100,
+	sizeScale: SIZE_SCALE_DEFAULT,
 	presets: () => DEFAULT_COLOR_PRESETS,
 })
 
