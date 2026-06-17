@@ -104,14 +104,14 @@
 /* Анимация */
 .slideover-enter-active,
 .slideover-leave-active {
-	transition: opacity 0.3s ease;
+	transition: opacity var(--transition-base);
 
 	.base-slideover__panel--right {
-		transition: transform 0.3s ease;
+		transition: transform var(--transition-base);
 	}
 
 	.base-slideover__panel--left {
-		transition: transform 0.3s ease;
+		transition: transform var(--transition-base);
 	}
 }
 

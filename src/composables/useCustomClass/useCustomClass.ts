@@ -5,6 +5,10 @@ import type { CustomClassProp, UseCustomClassOptions } from './useCustomClass.ty
 
 type ClassResultInternal = string | Record<string, string | boolean | undefined> | undefined
 
+/**
+ * Composable для вычисления CSS-классов компонента.
+ * Поддерживает customClass в виде строки, объекта или массива с element-level ключами.
+ */
 function useCustomClass(options: UseCustomClassOptions) {
 	const keys = options.elementKeys || ['root']
 

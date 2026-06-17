@@ -198,9 +198,9 @@ function handleItemClick(item: SideBarItem, event: MouseEvent): void {
 
 watch(
 	() => props.isCollapsed,
-	(val: boolean | undefined) => {
+	(collapsed: boolean | undefined) => {
 		if (isCollapsedControlled.value) {
-			internalCollapsed.value = val === true
+			internalCollapsed.value = collapsed === true
 		}
 	},
 	{ immediate: true },

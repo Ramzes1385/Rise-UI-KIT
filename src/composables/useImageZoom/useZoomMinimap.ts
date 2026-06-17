@@ -1,3 +1,5 @@
+import { UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH } from '@constants'
+import { toHTMLElement } from '@utils/domUtils'
 import { computed, ref, type Ref } from 'vue'
 
 interface UseZoomMinimapOptions {
@@ -14,6 +16,9 @@ interface UseZoomMinimapOptions {
 	clampPosition: () => void
 }
 
+/**
+ * Composable для миникарты зума: отображение viewport и навигация кликом.
+ */
 function useZoomMinimap(options: UseZoomMinimapOptions) {
 	const {
 		currentScale,
@@ -36,8 +41,8 @@ function useZoomMinimap(options: UseZoomMinimapOptions) {
 	const minimapStartTranslateY = ref(0)
 
 	const minimapViewportStyle = computed((): Record<string, string> => {
-		const mmW = 200
-		const mmH = 150
+		const mmW = UI_MINIMAP_WIDTH
+		const mmH = UI_MINIMAP_HEIGHT
 		const scale = currentScale.value
 		const baseW = zoomContentW.value
 		const baseH = zoomContentH.value
@@ -113,7 +118,8 @@ function useZoomMinimap(options: UseZoomMinimapOptions) {
 
 	function handleMinimapClick(event: MouseEvent): void {
 		if (zoomContentW.value <= 0 || zoomContentH.value <= 0) return
-		const target = event.currentTarget as HTMLElement
+		const target = toHTMLElement(event.currentTarget)
+		if (!target) return
 		const rect = target.getBoundingClientRect()
 		const clickX = event.clientX - rect.left
 		const clickY = event.clientY - rect.top

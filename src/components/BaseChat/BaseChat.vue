@@ -253,11 +253,11 @@ function handleQuickReply(text: string): void {
 function handleDownloadFile(file: ChatMessageAttachment): void {
 	try {
 		downloadFile(file.url, file.name)
+		emit('download-file', file)
 	} catch (e) {
 		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
-		console.error('[BaseChat] Download failed:', e)
+		emit('error', { type: 'download', message: `[BaseChat] Download failed: ${file.name}`, detail: e })
 	}
-	emit('download-file', file)
 }
 
 /** Переслать выделенные сообщения */

@@ -59,25 +59,11 @@ import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { UI_SORT_ARIA } from '@constants'
 
-import type { SortDirection, TableColumn } from '../model/BaseTable.types'
+import type { TableColumn } from '../model/BaseTable.types'
+import type { BaseTableHeaderProps } from './BaseTableHeader.types'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
 
-defineProps<{
-	columns: TableColumn[]
-	isSelectable: boolean
-	hasRowNumber: boolean
-	hasExpandableRows: boolean
-	isAllSelected: boolean
-	sizeScale: number
-	isMultiSort: boolean
-	theadClass?: string
-	trClass?: string
-	thClass?: string
-	getSortDirection: (key: string) => SortDirection
-	getSortIndex: (key: string) => number
-	isColumnResizable: (column: TableColumn) => boolean
-	getColumnStyle: (column: TableColumn) => Record<string, string>
-}>()
+defineProps<BaseTableHeaderProps>()
 
 const emit = defineEmits<{
 	(event: 'toggle-all'): void

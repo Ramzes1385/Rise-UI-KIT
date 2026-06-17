@@ -28,7 +28,7 @@
 		cursor: pointer;
 		padding: sz(4px);
 		border-radius: sz(8px);
-		transition: all 0.3s ease-in-out;
+		transition: all var(--transition-slow);
 
 		&:hover {
 			background: var(--color-surface-hover);
@@ -58,8 +58,8 @@
 		color: var(--color-text);
 		text-align: left;
 		transition:
-			background-color 0.3s ease-in-out,
-			color 0.3s ease-in-out;
+			background-color var(--transition-slow),
+			color var(--transition-slow);
 		width: 100%;
 
 		&:hover {

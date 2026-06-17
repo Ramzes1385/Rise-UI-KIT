@@ -18,7 +18,7 @@
 		flex: 1;
 		min-width: 0;
 		cursor: pointer;
-		transition: opacity 0.2s ease;
+		transition: opacity var(--transition-base);
 
 		&:hover {
 			opacity: 0.85;
@@ -62,7 +62,7 @@
 
 	&__nav-btn {
 		color: var(--color-text-muted);
-		transition: color 0.2s ease;
+		transition: color var(--transition-base);
 
 		&:hover {
 			color: var(--color-accent);
@@ -71,7 +71,7 @@
 
 	&__unpin-btn {
 		color: var(--color-text-muted);
-		transition: color 0.2s ease;
+		transition: color var(--transition-base);
 
 		&:hover {
 			color: var(--color-danger);

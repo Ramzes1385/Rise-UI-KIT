@@ -65,6 +65,7 @@ import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types
 
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { useId } from 'vue'
 
 import '../styles/BaseSwitch.style.scss'
@@ -90,7 +91,8 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 const emit = defineEmits<BaseSwitchEmits>()
 
 function handleChange(e: Event): void {
-	const target = e.target as HTMLInputElement
+	const target = toHTMLInputElement(e.target)
+	if (!target) return
 	emit('update:modelValue', target.checked)
 	emit('change', target.checked)
 }

@@ -1,3 +1,4 @@
+import { MS_PER_DAY } from '@constants'
 import type { BuildDateOptions } from './dateUtils.types'
 
 /** Сравнить две даты без учёта времени */
@@ -26,7 +27,7 @@ function getWeekNumber(date: Date): number {
 	const dayNum = d.getUTCDay() || 7
 	d.setUTCDate(d.getUTCDate() + 4 - dayNum)
 	const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-	return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+	return Math.ceil(((d.getTime() - yearStart.getTime()) / MS_PER_DAY + 1) / 7)
 }
 
 /** Собрать новую дату с указанным временем */

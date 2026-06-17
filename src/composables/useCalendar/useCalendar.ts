@@ -21,22 +21,22 @@ export function useCalendar(options: UseCalendarOptions) {
 
 	watch(
 		() => options.initialMonth?.(),
-		val => {
-			if (val !== undefined) currentMonth.value = val
+		month => {
+			if (month !== undefined) currentMonth.value = month
 		},
 	)
 
 	watch(
 		() => options.initialYear?.(),
-		val => {
-			if (val !== undefined) currentYear.value = val
+		year => {
+			if (year !== undefined) currentYear.value = year
 		},
 	)
 
 	watch(
 		() => options.modelValue(),
-		val => {
-			const date = val ? new Date(val) : null
+		newValue => {
+			const date = newValue ? new Date(newValue) : null
 			internalValue.value = date
 			if (date && options.initialMonth?.() === undefined) {
 				currentMonth.value = date.getMonth()
@@ -51,16 +51,16 @@ export function useCalendar(options: UseCalendarOptions) {
 
 	watch(
 		() => options.modelValueEnd(),
-		val => {
-			internalValueEnd.value = val ? new Date(val) : null
+		endDate => {
+			internalValueEnd.value = endDate ? new Date(endDate) : null
 		},
 		{ immediate: true },
 	)
 
 	watch(
 		() => options.selectedDates(),
-		val => {
-			internalSelectedDates.value = Array.isArray(val) ? val.map(item => new Date(item)) : []
+		dates => {
+			internalSelectedDates.value = Array.isArray(dates) ? dates.map(item => new Date(item)) : []
 		},
 		{ immediate: true },
 	)

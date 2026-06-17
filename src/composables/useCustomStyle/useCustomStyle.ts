@@ -5,6 +5,10 @@ import type { CustomStyleProp, UseCustomStyleOptions } from './useCustomStyle.ty
 
 type StyleResultValue = string | number | Record<string, string | number | undefined> | undefined
 
+/**
+ * Composable для вычисления объекта стилей компонента.
+ * Поддерживает customStyle в виде строки, объекта или массива с element-level ключами.
+ */
 function useCustomStyle(options: UseCustomStyleOptions) {
 	const keys = options.elementKeys || ['root']
 

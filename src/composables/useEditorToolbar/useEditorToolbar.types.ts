@@ -32,4 +32,5 @@ export interface UseEditorToolbarOptions {
 	editorRef: Ref<HTMLDivElement | null>
 	codeTextareaRef: Ref<HTMLTextAreaElement | { textareaRef: HTMLTextAreaElement | null } | null>
 	onInput: () => void
+	promptForUrl?: () => string | null
 }

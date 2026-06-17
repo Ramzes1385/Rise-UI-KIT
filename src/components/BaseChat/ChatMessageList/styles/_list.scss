@@ -8,7 +8,7 @@
 	overflow-y: auto;
 	flex: 1;
 	position: relative;
-	transition: padding 0.3s ease-in-out;
+	transition: padding var(--transition-slow);
 
 	&--selection-mode {
 		.base-chat-message-list__item {
@@ -22,8 +22,8 @@
 		gap: sz(12px);
 		max-width: 85%;
 		transition:
-			transform 0.3s ease-in-out,
-			background-color 0.3s ease-in-out;
+			transform var(--transition-slow),
+			background-color var(--transition-slow);
 		position: relative;
 		border-radius: sz(8px);
 		padding: sz(4px) sz(8px);
@@ -144,7 +144,7 @@
 	&__avatar {
 		cursor: pointer;
 		flex-shrink: 0;
-		transition: transform 0.3s ease-in-out;
+		transition: transform var(--transition-slow);
 
 		&:hover {
 			transform: scale(1.05);
@@ -166,8 +166,8 @@
 		box-shadow: 0 sz(2px) sz(8px) rgba(0, 0, 0, 0.05);
 		position: relative;
 		transition:
-			background-color 0.3s ease-in-out,
-			box-shadow 0.3s ease-in-out;
+			background-color var(--transition-slow),
+			box-shadow var(--transition-slow);
 
 		&--typing {
 			padding: sz(12px) sz(16px);
@@ -186,8 +186,8 @@
 		opacity: 0;
 		visibility: hidden;
 		transition:
-			opacity 0.3s ease-in-out,
-			visibility 0.3s ease-in-out;
+			opacity var(--transition-slow),
+			visibility var(--transition-slow);
 		z-index: 10;
 		background: var(--color-surface);
 		border-radius: sz(20px);
@@ -199,8 +199,8 @@
 	&__action-btn {
 		color: var(--color-text-muted);
 		transition:
-			color 0.3s ease-in-out,
-			background-color 0.3s ease-in-out;
+			color var(--transition-slow),
+			background-color var(--transition-slow);
 
 		&:hover {
 			color: var(--color-accent);

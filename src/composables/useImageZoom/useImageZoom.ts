@@ -1,8 +1,12 @@
 import type { UseImageZoomOptions } from './useImageZoom.types'
 
+import { UI_FULL_ROTATION_DEG, UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH, UI_ROTATION_STEP_DEG } from '@constants'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useZoomMinimap } from './useZoomMinimap'
 
+/**
+ * Composable для зума изображений: панорамирование, вращение, масштабирование и миникарта.
+ */
 function useImageZoom(options: UseImageZoomOptions) {
 	const isZoomOpen = ref(false)
 	const currentScale = ref(options.initialScale())
@@ -13,8 +17,8 @@ function useImageZoom(options: UseImageZoomOptions) {
 	const zoomContentW = ref(0)
 	const zoomContentH = ref(0)
 
-	const mmContentWidth = ref(200)
-	const mmContentHeight = ref(150)
+	const mmContentWidth = ref<number>(UI_MINIMAP_WIDTH)
+	const mmContentHeight = ref<number>(UI_MINIMAP_HEIGHT)
 	const mmContentOffsetX = ref(0)
 	const mmContentOffsetY = ref(0)
 
@@ -88,7 +92,7 @@ function useImageZoom(options: UseImageZoomOptions) {
 		}
 
 		if (minimapImg && minimapImg instanceof HTMLImageElement && minimapImg.naturalWidth > 0) {
-			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, 200, 150)
+			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, UI_MINIMAP_WIDTH, UI_MINIMAP_HEIGHT)
 			mmContentWidth.value = contained.width
 			mmContentHeight.value = contained.height
 			mmContentOffsetX.value = contained.offX
@@ -140,11 +144,11 @@ function useImageZoom(options: UseImageZoomOptions) {
 	}
 
 	function rotateLeft(): void {
-		rotation.value = (rotation.value - 90) % 360
+		rotation.value = (rotation.value - UI_ROTATION_STEP_DEG) % UI_FULL_ROTATION_DEG
 	}
 
 	function rotateRight(): void {
-		rotation.value = (rotation.value + 90) % 360
+		rotation.value = (rotation.value + UI_ROTATION_STEP_DEG) % UI_FULL_ROTATION_DEG
 	}
 
 	function handleWheel(event: WheelEvent): void {

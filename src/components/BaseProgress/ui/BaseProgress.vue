@@ -75,7 +75,7 @@ import { BaseTooltip } from '@components/BaseTooltip'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_FONT_WEIGHT_BOLD } from '@constants'
+import { UI_FONT_WEIGHT_BOLD, UI_PROGRESS_CIRCLE_RADIUS } from '@constants'
 import { computed, watch } from 'vue'
 
 const props = withDefaults(defineProps<BaseProgressProps>(), {
@@ -119,7 +119,7 @@ const percent = computed((): number => {
 })
 
 const circumference = computed((): number => {
-	return 2 * Math.PI * 52
+	return 2 * Math.PI * UI_PROGRESS_CIRCLE_RADIUS
 })
 
 const circleOffset = computed((): number => {
@@ -127,7 +127,7 @@ const circleOffset = computed((): number => {
 	return circumference.value * (1 - percent.value / 100)
 })
 
-watch(percent, val => {
-	if (val >= 100) emit('complete')
+watch(percent, value => {
+	if (value >= 100) emit('complete')
 })
 </script>

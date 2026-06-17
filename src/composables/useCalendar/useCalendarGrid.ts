@@ -1,3 +1,4 @@
+import { CALENDAR_GRID_CELLS } from '@constants'
 import { computed, type Ref } from 'vue'
 
 import { daysInMonth, getWeekNumber, getWeekday } from '@utils/dateUtils'
@@ -12,6 +13,9 @@ interface UseCalendarGridOptions {
 	showYear?: () => boolean | undefined
 }
 
+/**
+ * Composable для вычисления сетки дней календаря, названий месяцев, дней недели и диапазонов годов.
+ */
 function useCalendarGrid(options: UseCalendarGridOptions) {
 	const { currentMonth, currentYear, currentView, locale, firstDayOfWeek, showYear } = options
 
@@ -76,7 +80,7 @@ function useCalendarGrid(options: UseCalendarGridOptions) {
 			days.push(new Date(currentYear.value, currentMonth.value, d))
 		}
 
-		const remaining = 42 - days.length
+		const remaining = CALENDAR_GRID_CELLS - days.length
 		const nextMonth = currentMonth.value === 11 ? 0 : currentMonth.value + 1
 		const nextYear = currentMonth.value === 11 ? currentYear.value + 1 : currentYear.value
 		for (let d = 1; d <= remaining; d++) {

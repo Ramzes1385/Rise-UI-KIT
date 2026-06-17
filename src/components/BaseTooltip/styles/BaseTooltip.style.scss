@@ -129,8 +129,8 @@
 .tooltip-top-enter-active,
 .tooltip-top-leave-active {
 	transition:
-		opacity 0.2s ease,
-		transform 0.2s ease;
+		opacity var(--transition-base),
+		transform var(--transition-base);
 }
 
 .tooltip-top-enter-from,
@@ -143,8 +143,8 @@
 .tooltip-bottom-enter-active,
 .tooltip-bottom-leave-active {
 	transition:
-		opacity 0.2s ease,
-		transform 0.2s ease;
+		opacity var(--transition-base),
+		transform var(--transition-base);
 }
 
 .tooltip-bottom-enter-from,
@@ -157,8 +157,8 @@
 .tooltip-left-enter-active,
 .tooltip-left-leave-active {
 	transition:
-		opacity 0.2s ease,
-		transform 0.2s ease;
+		opacity var(--transition-base),
+		transform var(--transition-base);
 }
 
 .tooltip-left-enter-from,
@@ -171,8 +171,8 @@
 .tooltip-right-enter-active,
 .tooltip-right-leave-active {
 	transition:
-		opacity 0.2s ease,
-		transform 0.2s ease;
+		opacity var(--transition-base),
+		transform var(--transition-base);
 }
 
 .tooltip-right-enter-from,

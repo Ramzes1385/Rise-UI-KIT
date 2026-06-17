@@ -84,31 +84,10 @@ import { useClickOutside } from '@composables/useClickOutside'
 import { UI_CALENDAR_EVENT_TEXT, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
 import { formatPopoverDate } from '@utils/dateUtils'
 import { ref } from 'vue'
-import type { CalendarHighlight, CalendarView } from '../model/BaseCalendar.types'
+import type { CalendarHighlight } from '../model/BaseCalendar.types'
+import type { BaseCalendarDaysProps } from './BaseCalendarDays.types'
 
-const props = defineProps<{
-	currentView: CalendarView
-	showWeekNumber: boolean
-	orderedWeekdays: string[]
-	calendarDays: Date[]
-	sizeScale: number
-	isDisabled: boolean
-	locale: string
-	classes: Record<string, string>
-	isToday: (date: Date) => boolean
-	isSelected: (date: Date) => boolean
-	isDayDisabled: (date: Date) => boolean
-	isWeekend: (date: Date) => boolean
-	isInRange: (date: Date) => boolean
-	getHighlight: (date: Date) => { color?: string } | undefined
-	getRowWeekNumber: (index: number) => number
-	isSameDay: (a: Date, b: Date) => boolean
-	dayClasses: (date: Date, isCustomSlot: boolean) => Record<string, boolean>
-	popoverDate: Date | null
-	popoverStyle: Record<string, string>
-	popoverHighlights: CalendarHighlight[]
-	closePopover: () => void
-}>()
+const props = defineProps<BaseCalendarDaysProps>()
 
 const popoverRef = ref<HTMLElement | null>(null)
 

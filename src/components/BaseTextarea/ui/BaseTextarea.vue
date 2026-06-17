@@ -57,6 +57,7 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLTextAreaElement } from '@utils/domUtils'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTextarea.style.scss'
 import type { BaseTextareaEmits, BaseTextareaProps } from '../model/BaseTextarea.types'
@@ -93,7 +94,8 @@ function adjustHeight(): void {
 }
 
 function handleInput(e: Event): void {
-	const target = e.target as HTMLTextAreaElement
+	const target = toHTMLTextAreaElement(e.target)
+	if (!target) return
 	emit('update:modelValue', target.value)
 
 	if (props.isAutosize) {

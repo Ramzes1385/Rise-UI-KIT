@@ -4,6 +4,10 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import type { UseBaseComponentOptions } from './useBaseComponent.types'
 
+/**
+ * Composable для базовой логики UI-компонента.
+ * Объединяет useSizeScale, useVariant, useCustomColor и useCustomClass в один вызов.
+ */
 function useBaseComponent(options: UseBaseComponentOptions) {
 	const { sizeScaleStyle } = useSizeScale({ getScale: options.getSizeScale })
 

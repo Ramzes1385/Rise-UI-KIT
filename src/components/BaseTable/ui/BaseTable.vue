@@ -198,6 +198,7 @@ import { usePadding } from '@composables/usePadding'
 import { useTableData } from '@composables/useTableData'
 import { useTableSelection } from '@composables/useTableSelection'
 import { calcPageInfo } from '@utils/paginationUtils'
+import { toHTMLElement } from '@utils/domUtils'
 import { calcRowNumber } from '@utils/tableUtils'
 import { computed, provide, useSlots, watch } from 'vue'
 
@@ -428,7 +429,8 @@ function handleLoadMore(): void {
 function handleScroll(e: Event): void {
 	if (props.loadMode !== 'infinite' || !hasMoreRows.value || props.isLoading) return
 
-	const target = e.target as HTMLElement
+	const target = toHTMLElement(e.target)
+	if (!target) return
 	const { scrollTop, scrollHeight, clientHeight } = target
 
 	if (scrollHeight - scrollTop - clientHeight < TABLE_INFINITE_SCROLL_THRESHOLD) {

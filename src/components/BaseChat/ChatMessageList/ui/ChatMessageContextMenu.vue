@@ -17,15 +17,15 @@
 				</button>
 			</div>
 			<div class="base-chat-context-menu__divider"></div>
-			<button type="button" class="base-chat-context-menu__item" @click="handleReply">
+			<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_REPLY" @click="handleReply">
 				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_REPLY }}</BaseText>
 			</button>
-			<button type="button" class="base-chat-context-menu__item" @click="handleSelect">
+			<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_SELECT" @click="handleSelect">
 				<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_SELECT }}</BaseText>
 			</button>
-			<button type="button" class="base-chat-context-menu__item" @click="handleCopy">
+			<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_COPY_TEXT" @click="handleCopy">
 				<BaseIcon name="copy" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_COPY_TEXT }}</BaseText>
 			</button>
@@ -33,6 +33,7 @@
 				v-if="currentUserRole === 'admin'"
 				type="button"
 				class="base-chat-context-menu__item"
+				:aria-label="message?.isPinned ? UI_CHAT_UNPIN : UI_CHAT_PIN"
 				@click="handlePin">
 				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">
@@ -43,6 +44,7 @@
 				v-if="currentUserRole === 'admin' || message?.sender === 'me'"
 				type="button"
 				class="base-chat-context-menu__item base-chat-context-menu__item--danger"
+				:aria-label="UI_CHAT_DELETE"
 				@click="handleDelete">
 				<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE_SMALL" />
 				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_DELETE }}</BaseText>

@@ -56,6 +56,7 @@ import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/domUtils'
 
 import '../styles/BaseCheckbox.style.scss'
 
@@ -78,7 +79,8 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 })
 
 function handleChange(e: Event): void {
-	const target = e.target as HTMLInputElement
+	const target = toHTMLInputElement(e.target)
+	if (!target) return
 	emit('update:modelValue', target.checked)
 	emit('change', target.checked)
 }

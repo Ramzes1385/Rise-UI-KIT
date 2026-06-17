@@ -108,7 +108,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { UI_EDITOR_APPLY, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_WIDTH } from '@constants'
+import { UI_EDITOR_APPLY, UI_EDITOR_DEFAULT_BG_COLOR, UI_EDITOR_DEFAULT_TEXT_COLOR, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH } from '@constants'
 import { onMounted, ref, watch } from 'vue'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
@@ -139,8 +139,8 @@ const editorRef = ref<HTMLDivElement | null>(null)
 const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
 const isFocused = ref(false)
 const isEmpty = ref(true)
-const textColor = ref('#000000')
-const backgroundColor = ref('#ffff00')
+const textColor = ref(UI_EDITOR_DEFAULT_TEXT_COLOR)
+const backgroundColor = ref(UI_EDITOR_DEFAULT_BG_COLOR)
 
 function checkEmpty(): void {
 	/* istanbul ignore next -- defensive: editorRef всегда привязан после mount */
@@ -198,7 +198,12 @@ const {
 	handleImageUpload,
 	handleVideoUpload,
 	convertInlineHtml,
-} = useEditorToolbar({ editorRef, codeTextareaRef, onInput: handleInput })
+} = useEditorToolbar({
+	editorRef,
+	codeTextareaRef,
+	onInput: handleInput,
+	promptForUrl: () => prompt(UI_EDITOR_URL_PROMPT),
+})
 
 const isTextColorActive = ref(false)
 const isBackgroundColorActive = ref(false)

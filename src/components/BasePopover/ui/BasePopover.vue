@@ -50,8 +50,8 @@ const isOpenLocal = ref(props.isOpen)
 
 watch(
 	() => props.isOpen,
-	val => {
-		isOpenLocal.value = val
+	isOpen => {
+		isOpenLocal.value = isOpen
 	},
 )
 

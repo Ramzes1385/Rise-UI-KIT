@@ -346,8 +346,8 @@ onBeforeUnmount(() => {
 
 watch(
 	() => props.modelValue,
-	val => {
-		if (val !== query.value) query.value = val
+	newValue => {
+		if (newValue !== query.value) query.value = newValue
 	},
 )
 </script>

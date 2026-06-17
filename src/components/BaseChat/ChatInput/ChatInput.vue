@@ -41,32 +41,11 @@
 		</div>
 
 		<!-- Список выбранных файлов (превью) -->
-		<div v-if="attachments.length > 0" class="base-chat-input__previews">
-			<div v-for="(file, index) in attachments" :key="file.id" class="base-chat-input__preview">
-				<BaseImage
-					v-if="file.type === 'image'"
-					:src="file.url"
-					:alt="file.name"
-					class="base-chat-input__preview-image" />
-				<div v-else class="base-chat-input__preview-file">
-					<BaseIcon name="file" :size-scale="sizeScale * UI_SCALE_SMALL" />
-					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__preview-filename">
-						{{ file.name }}
-					</BaseText>
-				</div>
-				<BaseButton
-					variant="ghost"
-					:padding="1"
-					:size-scale="sizeScale * UI_CHAT_SCALE_META"
-					class="base-chat-input__preview-remove"
-					:aria-label="`${UI_CHAT_REMOVE_ATTACHMENT} ${file.name}`"
-					@click="removeAttachment(index)">
-					<template #left>
-						<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
-					</template>
-				</BaseButton>
-			</div>
-		</div>
+		<ChatFilePreview
+			v-if="attachments.length > 0"
+			:attachments="attachments"
+			:size-scale="sizeScale"
+			@remove="removeAttachment" />
 
 		<div class="base-chat-input__controls">
 			<BaseButton
@@ -104,35 +83,7 @@
 				</template>
 			</BaseButton>
 
-			<!-- Кнопка эмодзи с поповером -->
-			<div ref="emojiWrapperRef" class="base-chat-input__emoji-wrapper">
-				<BaseButton
-					variant="ghost"
-					:padding="2"
-					:size-scale="sizeScale"
-					class="base-chat-input__emoji-btn"
-					:aria-label="UI_CHAT_EMOJI_ARIA"
-					@click="toggleEmoji">
-					<template #left>
-						<BaseIcon name="smile" :size-scale="sizeScale" />
-					</template>
-				</BaseButton>
-
-				<div v-if="isEmojiOpen" ref="emojiPopoverRef" class="base-chat-input__emoji-popover">
-					<div class="base-chat-input__emoji-list">
-						<BaseButton
-							v-for="emoji in popularEmojis"
-							:key="emoji"
-							variant="ghost"
-							:padding="{ x: 4, y: 4 }"
-							custom-class="base-chat-input__emoji-item"
-							:aria-label="`${UI_CHAT_INSERT_EMOJI} ${emoji}`"
-							@click="insertEmoji(emoji)">
-							{{ emoji }}
-						</BaseButton>
-					</div>
-				</div>
-			</div>
+			<ChatEmojiPicker :size-scale="sizeScale" @select="insertEmoji" />
 
 			<div class="base-chat-input__field-container">
 				<!-- Выпадающий список упоминаний (@) -->
@@ -205,18 +156,19 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_ADMIN, UI_CHAT_ATTACH_ARIA, UI_CHAT_CANCEL_REPLY_ARIA, UI_CHAT_EMOJI_ARIA, UI_CHAT_FILE_SELECT_ARIA, UI_CHAT_INSERT_EMOJI, UI_CHAT_MEMBER, UI_CHAT_MESSAGE_INPUT, UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_QUICK_REPLY, UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_STATUS, UI_CHAT_SEND_ARIA, UI_CHAT_SHOW_COMMANDS_ARIA, UI_FONT_WEIGHT_MEDIUM, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_ADMIN, UI_CHAT_ATTACH_ARIA, UI_CHAT_CANCEL_REPLY_ARIA, UI_CHAT_FILE_SELECT_ARIA, UI_CHAT_MEMBER, UI_CHAT_MESSAGE_INPUT, UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_QUICK_REPLY, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_STATUS, UI_CHAT_SEND_ARIA, UI_CHAT_SHOW_COMMANDS_ARIA, UI_FONT_WEIGHT_MEDIUM, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseImage } from '@components/BaseImage'
 import { BaseInput } from '@components/BaseInput'
+import ChatFilePreview from './ChatFilePreview.vue'
 import { BaseText } from '@components/BaseText'
-import { useClickOutside } from '@composables/useClickOutside'
 import { formatFileSize } from '@utils/fileUtils'
 import { generateId } from '@utils/idUtils'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { ChatMessageAttachment } from '../BaseChat.types'
+import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import './ChatInput.style.scss'
 import type { ChatInputEmits, ChatInputProps } from './ChatInput.types'
 
@@ -237,7 +189,6 @@ const emit = defineEmits<ChatInputEmits>()
 const text = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const attachments = ref<ChatMessageAttachment[]>([])
-const isEmojiOpen = ref(false)
 
 const inputComponentRef = ref<BaseInputExposed | null>(null)
 const showMentions = ref(false)
@@ -431,49 +382,6 @@ function handleKeyDown(event: KeyboardEvent): void {
 	}
 }
 
-const emojiWrapperRef = ref<HTMLElement | null>(null)
-
-useClickOutside({
-	targets: [emojiWrapperRef],
-	callback: () => {
-		isEmojiOpen.value = false
-	},
-	isActive: () => isEmojiOpen.value,
-})
-
-/** Переключение видимости поповера эмодзи */
-function toggleEmoji(): void {
-	isEmojiOpen.value = !isEmojiOpen.value
-}
-
-/** Популярные эмодзи для быстрого выбора */
-const popularEmojis = [
-	'😀',
-	'😂',
-	'😊',
-	'😍',
-	'👍',
-	'👎',
-	'🔥',
-	'🎉',
-	'❤️',
-	'🤔',
-	'😎',
-	'🙌',
-	'👏',
-	'🚀',
-	'✨',
-	'👀',
-	'😢',
-	'😡',
-	'💩',
-	'💯',
-	'🙏',
-	'💡',
-	'📌',
-	'📎',
-]
-
 /** Триггер выбора файлов */
 function triggerFileSelect(): void {
 	fileInputRef.value?.click()
@@ -481,7 +389,8 @@ function triggerFileSelect(): void {
 
 /** Обработка изменения файлов */
 function handleFileChange(event: Event): void {
-	const target = event.target as HTMLInputElement
+	const target = toHTMLInputElement(event.target)
+	if (!target) return
 	/* istanbul ignore next -- defensive: change-событие input[type=file] всегда с files */
 	if (!target.files || target.files.length === 0) return
 
@@ -514,7 +423,6 @@ function removeAttachment(index: number): void {
 /** Вставка эмодзи в поле ввода */
 function insertEmoji(emoji: string): void {
 	text.value += emoji
-	isEmojiOpen.value = false
 }
 
 /** Отмена ответа на сообщение */

@@ -14,6 +14,9 @@ interface UseToolbarSelectionOptions {
 	editorRef: Ref<HTMLDivElement | null>
 }
 
+/**
+ * Composable для управления состоянием выделения в редакторе и определения активных форматов.
+ */
 function useToolbarSelection(options: UseToolbarSelectionOptions) {
 	const { editorRef } = options
 

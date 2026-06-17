@@ -12,7 +12,7 @@
 	flex-direction: column;
 	z-index: 20;
 	transform: translateX(100%);
-	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: transform var(--transition-slow);
 	box-shadow: -sz(4px) 0 sz(20px) rgba(0, 0, 0, 0.05);
 
 	&--open {
@@ -44,7 +44,7 @@
 		padding: sz(10px) 0;
 		cursor: pointer;
 		color: var(--color-text-muted);
-		transition: all 0.2s ease;
+		transition: all var(--transition-base);
 		border-bottom: sz(2px) solid transparent;
 
 		&:hover {
@@ -155,7 +155,7 @@
 		flex: 1;
 		min-width: 0;
 		cursor: pointer;
-		transition: opacity 0.2s ease;
+		transition: opacity var(--transition-base);
 
 		&:hover {
 			opacity: 0.85;
@@ -219,7 +219,7 @@
 		color: var(--color-text);
 		font-size: sz(12px);
 		text-align: left;
-		transition: background-color 0.2s ease;
+		transition: background-color var(--transition-base);
 		width: 100%;
 
 		&:hover {
@@ -339,7 +339,7 @@
 		border: sz(1px) solid var(--color-border);
 		border-radius: sz(8px);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all var(--transition-base);
 
 		&:hover {
 			background: var(--color-surface-hover);
@@ -380,7 +380,7 @@
 		color: var(--color-text-muted);
 		cursor: pointer;
 		opacity: 0.6;
-		transition: all 0.2s ease;
+		transition: all var(--transition-base);
 
 		&:hover {
 			color: var(--color-accent);
@@ -403,7 +403,7 @@
 		border: sz(1px) solid var(--color-border);
 		border-radius: sz(8px);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all var(--transition-base);
 
 		&:hover {
 			background: var(--color-surface-hover);

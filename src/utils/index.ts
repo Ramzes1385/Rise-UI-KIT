@@ -1,6 +1,7 @@
 export * from './clipboardUtils'
 export * from './colorUtils'
 export * from './dateUtils'
+export * from './domUtils'
 export * from './editorDomInspect'
 export * from './fileUtils'
 export * from './idUtils'

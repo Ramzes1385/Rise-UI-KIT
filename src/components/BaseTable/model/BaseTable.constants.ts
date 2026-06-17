@@ -29,5 +29,8 @@ export const TABLE_SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
 /** Дебаунс поиска по умолчанию (мс) */
 export const TABLE_SEARCH_DEBOUNCE_MS = 300
 
+/** Размер страницы по умолчанию */
+export const TABLE_DEFAULT_PAGE_SIZE = 5
+
 /** Максимальное количество видимых номеров страниц в пагинации */
 export const TABLE_PAGINATION_MAX_VISIBLE = 4

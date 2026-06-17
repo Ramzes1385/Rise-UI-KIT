@@ -1,45 +1,15 @@
 <template>
 	<div v-if="hasToolbar && !isReadonly" class="base-editor__toolbar" :class="classes.toolbar" @mousedown.prevent>
 		<slot name="toolbar">
-			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_BOLD" position="top" :size-scale="sizeScale">
+			<span v-for="group in buttonGroups" :key="group.key" class="base-editor__group" :class="classes.group">
+				<BaseTooltip v-for="btn in group.items" :key="btn.icon" :text="btn.label" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isBold }, classes.btn]"
+						:class="[{ 'base-editor__btn--active': activeStates[btn.activeKey] }, classes.btn]"
 						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'bold')">
-						<BaseIcon name="bold" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_ITALIC" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isItalic }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'italic')">
-						<BaseIcon name="italic" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_UNDERLINE" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isUnderline }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'underline')">
-						<BaseIcon name="underline" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_STRIKETHROUGH" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isStrike }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'strikeThrough')">
-						<BaseIcon name="strike" :size-scale="calcIconScale('md', sizeScale)" />
+						@click="btn.type === 'format' ? emit('applyFormat', btn.action) : emit('applyBlock', btn.action)">
+						<BaseIcon :name="btn.icon" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
 			</span>
@@ -82,72 +52,6 @@
 							<BaseIcon name="highlight" :size-scale="calcIconScale('md', sizeScale)" />
 						</template>
 					</BaseColorPicker>
-				</BaseTooltip>
-			</span>
-
-			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_ALIGN_LEFT" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isJustifyLeft }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'justifyLeft')">
-						<BaseIcon name="align-left" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_ALIGN_CENTER" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isJustifyCenter }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'justifyCenter')">
-						<BaseIcon name="align-center" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_ALIGN_RIGHT" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isJustifyRight }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'justifyRight')">
-						<BaseIcon name="align-right" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_ALIGN_JUSTIFY" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isJustifyFull }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'justifyFull')">
-						<BaseIcon name="align-justify" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-			</span>
-
-			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_LIST_BULLET" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isUnorderedList }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'insertUnorderedList')">
-						<BaseIcon name="list-bullet" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_LIST_NUMBERED" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isOrderedList }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyFormat', 'insertOrderedList')">
-						<BaseIcon name="list-number" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
 				</BaseTooltip>
 			</span>
 
@@ -195,29 +99,6 @@
 							:class="classes.fileInput"
 							@change="(e: Event) => emit('handleVideoUpload', e)" />
 					</label>
-				</BaseTooltip>
-			</span>
-
-			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_QUOTE" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isBlockquote }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyBlock', 'blockquote')">
-						<BaseIcon name="quote" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
-				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_CODE_BLOCK" position="top" :size-scale="sizeScale">
-					<BaseButton
-						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates.isPre }, classes.btn]"
-						:size-scale="sizeScale"
-						@click="emit('applyBlock', 'pre')">
-						<BaseIcon name="code" :size-scale="calcIconScale('md', sizeScale)" />
-					</BaseButton>
 				</BaseTooltip>
 			</span>
 
@@ -277,6 +158,7 @@ import {
 	UI_EDITOR_CODE_MODE,
 	UI_EDITOR_DIVIDER,
 	UI_EDITOR_FORMAT,
+	UI_EDITOR_IMAGE,
 	UI_EDITOR_ITALIC,
 	UI_EDITOR_LINK,
 	UI_EDITOR_LIST_BULLET,
@@ -289,7 +171,7 @@ import {
 	UI_EDITOR_VIDEO,
 	UI_EDITOR_VISUAL_MODE,
 } from '@constants'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 interface ActiveStates {
 	isBold: boolean
@@ -340,6 +222,49 @@ const emit = defineEmits<{
 const headingValue = ref<string | number>('p')
 const textColorModel = ref(props.textColor)
 const backgroundColorModel = ref(props.backgroundColor)
+
+interface ToolbarButton {
+	icon: string
+	label: string
+	activeKey: keyof ActiveStates
+	action: string
+	type: 'format' | 'block'
+}
+
+const buttonGroups = computed(() => [
+	{
+		key: 'format',
+		items: [
+			{ icon: 'bold', label: UI_EDITOR_BOLD, activeKey: 'isBold', action: 'bold', type: 'format' },
+			{ icon: 'italic', label: UI_EDITOR_ITALIC, activeKey: 'isItalic', action: 'italic', type: 'format' },
+			{ icon: 'underline', label: UI_EDITOR_UNDERLINE, activeKey: 'isUnderline', action: 'underline', type: 'format' },
+			{ icon: 'strike', label: UI_EDITOR_STRIKETHROUGH, activeKey: 'isStrike', action: 'strikeThrough', type: 'format' },
+		] as ToolbarButton[],
+	},
+	{
+		key: 'align',
+		items: [
+			{ icon: 'align-left', label: UI_EDITOR_ALIGN_LEFT, activeKey: 'isJustifyLeft', action: 'justifyLeft', type: 'format' },
+			{ icon: 'align-center', label: UI_EDITOR_ALIGN_CENTER, activeKey: 'isJustifyCenter', action: 'justifyCenter', type: 'format' },
+			{ icon: 'align-right', label: UI_EDITOR_ALIGN_RIGHT, activeKey: 'isJustifyRight', action: 'justifyRight', type: 'format' },
+			{ icon: 'align-justify', label: UI_EDITOR_ALIGN_JUSTIFY, activeKey: 'isJustifyFull', action: 'justifyFull', type: 'format' },
+		] as ToolbarButton[],
+	},
+	{
+		key: 'list',
+		items: [
+			{ icon: 'list-bullet', label: UI_EDITOR_LIST_BULLET, activeKey: 'isUnorderedList', action: 'insertUnorderedList', type: 'format' },
+			{ icon: 'list-number', label: UI_EDITOR_LIST_NUMBERED, activeKey: 'isOrderedList', action: 'insertOrderedList', type: 'format' },
+		] as ToolbarButton[],
+	},
+	{
+		key: 'block',
+		items: [
+			{ icon: 'quote', label: UI_EDITOR_QUOTE, activeKey: 'isBlockquote', action: 'blockquote', type: 'block' },
+			{ icon: 'code', label: UI_EDITOR_CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
+		] as ToolbarButton[],
+	},
+])
 
 defineSlots<{
 	toolbar(): unknown

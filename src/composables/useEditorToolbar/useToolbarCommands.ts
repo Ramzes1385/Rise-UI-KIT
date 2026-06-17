@@ -20,8 +20,12 @@ interface UseToolbarCommandsOptions {
 	wrapCodeSelection: (open: string, close: string) => void
 	insertCodeAtCursor: (html: string) => void
 	getCodeTextarea: () => HTMLTextAreaElement | null
+	promptForUrl?: () => string | null
 }
 
+/**
+ * Composable для выполнения команд редактора: форматирование, блоки, цвет, медиа.
+ */
 function useToolbarCommands(options: UseToolbarCommandsOptions) {
 	const {
 		editorRef,
@@ -35,6 +39,7 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 		wrapCodeSelection,
 		insertCodeAtCursor,
 		getCodeTextarea,
+		promptForUrl,
 	} = options
 
 	function applyFormat(command: string): void {
@@ -155,15 +160,13 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 	}
 
 	function insertLink(): void {
+		const url = promptForUrl?.()
+		if (!url) return
 		if (isCodeMode.value) {
-			const url = prompt('Введите URL ссылки:')
-			if (!url) return
 			wrapCodeSelection(`<a href="${url}">`, '</a>')
 			return
 		}
 		saveSelection()
-		const url = prompt('Введите URL ссылки:')
-		if (!url) return
 		restoreSelection()
 		document.execCommand('createLink', false, url)
 		saveSelection()

@@ -24,6 +24,7 @@
 				type="button"
 				class="base-chat-slideover__tab-btn"
 				:class="{ 'base-chat-slideover__tab-btn--active': activeTab === tab.id }"
+				:aria-label="tab.label"
 				@click="emit('update:activeTab', tab.id)">
 				<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="UI_FONT_WEIGHT_SEMIBOLD">{{ tab.label }}</BaseText>
 			</button>
@@ -41,12 +42,10 @@
 						{{ isGroup ? `${members.length} ${UI_CHAT_PARTICIPANTS_SUFFIX}` : subtitle || UI_CHAT_ONLINE }}
 					</BaseText>
 					<BaseText v-if="isGroup" tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
-						Официальная группа мастерской Металл-Арт. Здесь мы обсуждаем текущие проекты, делимся эскизами, координируем
-						работу кузнецов, скульпторов и дизайнеров. Пожалуйста, соблюдайте правила вежливого общения.
+						{{ UI_CHAT_DEMO_GROUP_DESCRIPTION }}
 					</BaseText>
 					<BaseText v-else tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
-						Анна — ведущий скульптор нашей мастерской с опытом работы более 10 лет. Специализируется на художественной
-						бронзе и монументальной металлической пластике. Выпускница Академии Художеств.
+						{{ UI_CHAT_DEMO_PROFILE_DESCRIPTION }}
 					</BaseText>
 				</div>
 
@@ -125,7 +124,7 @@
 								>{{ UI_CHAT_PHONE }}</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
-								>+7 (999) 123-45-67</BaseText
+								>{{ UI_CHAT_DEMO_PHONE }}</BaseText
 							>
 						</div>
 					</div>
@@ -136,7 +135,7 @@
 								>Email</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
-								>info@metal-art.ru</BaseText
+								>{{ UI_CHAT_DEMO_EMAIL }}</BaseText
 							>
 						</div>
 					</div>
@@ -233,6 +232,10 @@ import {
 	UI_CHAT_BACK_TO_LIST,
 	UI_CHAT_BAN,
 	UI_CHAT_CLOSE_PANEL,
+	UI_CHAT_DEMO_EMAIL,
+	UI_CHAT_DEMO_GROUP_DESCRIPTION,
+	UI_CHAT_DEMO_PHONE,
+	UI_CHAT_DEMO_PROFILE_DESCRIPTION,
 	UI_CHAT_DEMOTE,
 	UI_CHAT_EXCLUDE,
 	UI_CHAT_FILES_TAB,
@@ -253,6 +256,7 @@ import {
 	UI_CHAT_SCALE_AVATAR_LARGE,
 	UI_CHAT_SCALE_ICON,
 	UI_CHAT_SCALE_MEMBER,
+	UI_CHAT_SCALE_META,
 	UI_CHAT_SCALE_NAME,
 	UI_CHAT_LINKS_TAB,
 	UI_CHAT_VIOLATION,

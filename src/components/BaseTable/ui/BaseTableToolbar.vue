@@ -89,31 +89,10 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseSelect } from '@components/BaseSelect'
 import { UI_FILTER_COLUMN_TEXT, UI_FILTER_CONDITION_TEXT, UI_FILTER_VALUE_PLACEHOLDER, UI_SEARCH_PLACEHOLDER } from '@constants'
 
-import type { ColumnFilter, TableColumn } from '../model/BaseTable.types'
+import type { TableColumn } from '../model/BaseTable.types'
+import type { BaseTableToolbarProps } from './BaseTableToolbar.types'
 
-defineProps<{
-	showToolbar: boolean
-	hasSearch: boolean
-	hasFilters: boolean
-	hasColumnSettings: boolean
-	searchQuery: string
-	filterColumn: string | number
-	filterOperator: string | number
-	filterValue: string
-	filterColumnOptions: Array<{ value: string | number; label: string }>
-	filterOperatorOptions: Array<{ value: string; label: string }>
-	activeFilters: ColumnFilter[]
-	columns: TableColumn[]
-	isSettingsOpen: boolean
-	sizeScale: number
-	settingsMaxHeight: string
-	toolbarClass?: string
-	searchClass?: string
-	filtersClass?: string
-	settingsClass?: string
-	activeFiltersClass?: string
-	getFilterLabel: (filter: ColumnFilter) => string
-}>()
+defineProps<BaseTableToolbarProps>()
 
 const emit = defineEmits<{
 	(event: 'search-input', value: string): void

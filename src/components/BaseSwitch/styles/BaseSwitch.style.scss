@@ -85,7 +85,7 @@
 		width: sz(16px);
 		left: sz(2px);
 		bottom: sz(2px);
-		@include custom-bg(background-color, #ffffff);
+		@include custom-bg(background-color, var(--color-text-inverse));
 		border-radius: var(--border-radius-full);
 		box-shadow: var(--shadow-sm);
 		@include transition(transform, width);
@@ -171,7 +171,7 @@
 		}
 
 		.base-switch__input:checked ~ &__slider &__handle {
-			@include custom-bg(background-color, #ffffff);
+			@include custom-bg(background-color, var(--color-text-inverse));
 		}
 
 		@include hover {

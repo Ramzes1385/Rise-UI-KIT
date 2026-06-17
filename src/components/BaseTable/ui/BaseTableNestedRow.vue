@@ -41,24 +41,11 @@
 import { BaseText } from '@components/BaseText'
 import { inject } from 'vue'
 
-import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
+import type { BaseTableNestedRowProps } from './BaseTableNestedRow.types'
 import BaseTable from './BaseTable.vue'
 
-defineProps<{
-	row: TableRow
-	columns: TableColumn[]
-	nestedConfig?: NestedTableConfig
-	totalColumns: number
-	sizeScale: number
-	isSelectable: boolean
-	hasRowNumber: boolean
-	trClass?: string
-	tdClass?: string
-	isExpanded: (row: TableRow) => boolean
-	getColumnStyle: (column: TableColumn) => Record<string, string>
-	formatCellValue: (column: TableColumn, row: TableRow) => string
-}>()
+defineProps<BaseTableNestedRowProps>()
 
 const transitionCallbacks = inject(TABLE_EXPAND_TRANSITION_KEY)!
 </script>

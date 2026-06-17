@@ -1,4 +1,5 @@
 import { onBeforeUnmount, ref } from 'vue'
+import { toHTMLElement } from '@utils/domUtils'
 
 interface ResizeColumn {
 	key: string
@@ -22,6 +23,9 @@ interface UseColumnResizeParams<TColumn extends ResizeColumn> {
 	onColumnsChange: (columns: TColumn[]) => void
 }
 
+/**
+ * Composable для изменения ширины колонок таблицы через перетаскивание.
+ */
 export function useColumnResize<TColumn extends ResizeColumn>({
 	columns,
 	visibleColumns,
@@ -102,7 +106,8 @@ export function useColumnResize<TColumn extends ResizeColumn>({
 	}
 
 	function startResize(event: MouseEvent, columnKey: string): void {
-		const th = (event.target as HTMLElement).closest('th') as HTMLElement | null
+		const target = toHTMLElement(event.target)
+		const th = target?.closest('th') ?? null
 		/* istanbul ignore next -- defensive: resize-handle всегда внутри th */
 		if (!th) return
 
@@ -115,7 +120,7 @@ export function useColumnResize<TColumn extends ResizeColumn>({
 			const isLast = visibleIndex === visibleKeys.length - 1
 			const siblingTh = isLast ? th.previousElementSibling : th.nextElementSibling
 			/* istanbul ignore next -- defensive `: 0`: соседний th существует при наличии siblingKey */
-			siblingWidth = siblingTh ? (siblingTh as HTMLElement).offsetWidth : 0
+			siblingWidth = siblingTh instanceof HTMLElement ? siblingTh.offsetWidth : 0
 		}
 
 		resizeState.value = {

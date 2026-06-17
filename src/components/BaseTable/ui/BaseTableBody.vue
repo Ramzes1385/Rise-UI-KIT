@@ -93,33 +93,13 @@ import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 
-import type { LoadMode, NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { TableRow } from '../model/BaseTable.types'
+import type { BaseTableBodyProps } from './BaseTableBody.types'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'
 
-defineProps<{
-	rows: TableRow[]
-	columns: TableColumn[]
-	emptyText: string
-	isLoading: boolean
-	skeletonRows: number
-	isSelectable: boolean
-	hasRowNumber: boolean
-	hasExpandableRows: boolean
-	totalColumns: number
-	sizeScale: number
-	loadMode: LoadMode
-	nestedConfig?: NestedTableConfig
-	tbodyClass?: string
-	trClass?: string
-	tdClass?: string
-	isSelected: (row: TableRow) => boolean
-	isExpanded: (row: TableRow) => boolean
-	getRowNumber: (index: number) => number
-	getColumnStyle: (column: TableColumn) => Record<string, string>
-	formatCellValue: (column: TableColumn, row: TableRow) => string
-}>()
+defineProps<BaseTableBodyProps>()
 
 const emit = defineEmits<{
 	(event: 'row-click', row: TableRow): void

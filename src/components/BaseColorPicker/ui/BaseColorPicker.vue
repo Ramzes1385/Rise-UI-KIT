@@ -75,6 +75,7 @@ import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
 import { UI_COLOR_PICKER, UI_NO_COLOR_TEXT } from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import '../styles/BaseColorPicker.style.scss'
 import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
@@ -145,12 +146,16 @@ onBeforeUnmount(() => stopAreaDrag?.())
 
 /** Изменение тона через слайдер */
 function handleHueInput(event: Event): void {
-	picker.setHue(Number((event.target as HTMLInputElement).value))
+	const target = toHTMLInputElement(event.target)
+	if (!target) return
+	picker.setHue(Number(target.value))
 }
 
 /** Ручной ввод HEX */
 function handleHexChange(event: Event): void {
-	picker.setHex((event.target as HTMLInputElement).value)
+	const target = toHTMLInputElement(event.target)
+	if (!target) return
+	picker.setHex(target.value)
 }
 
 /** Выбор цвета-пресета — выбор завершён, закрываем панель */

@@ -8,7 +8,7 @@
 	background: var(--color-surface);
 	border-top: sz(1px) solid var(--color-border);
 	position: relative;
-	transition: all 0.3s ease;
+	transition: all var(--transition-slow);
 
 	&__reply-bar {
 		display: flex;
@@ -58,7 +58,7 @@
 
 	&__reply-cancel {
 		color: var(--color-text-muted);
-		transition: color 0.2s ease;
+		transition: color var(--transition-base);
 
 		&:hover {
 			color: var(--color-danger);
@@ -127,7 +127,7 @@
 
 	&__attach-btn {
 		color: var(--color-text-muted);
-		transition: color 0.2s ease;
+		transition: color var(--transition-base);
 
 		&:hover {
 			color: var(--color-accent);
@@ -141,8 +141,8 @@
 	&__commands-btn {
 		color: var(--color-text-muted);
 		transition:
-			color 0.2s ease,
-			background-color 0.2s ease;
+			color var(--transition-base),
+			background-color var(--transition-base);
 
 		&:hover {
 			color: var(--color-accent);
@@ -161,7 +161,7 @@
 
 	&__emoji-btn {
 		color: var(--color-text-muted);
-		transition: color 0.2s ease;
+		transition: color var(--transition-base);
 
 		&:hover {
 			color: var(--color-accent);
@@ -207,7 +207,7 @@
 		box-shadow: none;
 		filter: none;
 		transition:
-			background-color 0.2s ease,
+			background-color var(--transition-base),
 			transform 0.1s ease;
 
 		&:hover {
@@ -268,9 +268,9 @@
 		cursor: pointer;
 		border-left: sz(3px) solid transparent;
 		transition:
-			background-color 0.2s ease,
-			border-color 0.2s ease,
-			color 0.2s ease;
+			background-color var(--transition-base),
+			border-color var(--transition-base),
+			color var(--transition-base);
 
 		&:hover {
 			background-color: var(--color-surface-hover);
@@ -326,7 +326,7 @@
 		color: var(--color-text);
 		box-shadow: none;
 		filter: none;
-		transition: all 0.2s ease;
+		transition: all var(--transition-base);
 
 		&:hover {
 			background: var(--color-surface-hover);

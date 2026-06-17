@@ -234,11 +234,9 @@ function handleContextMenuSelect(): void {
 /** Действие "Копировать" из контекстного меню */
 async function handleContextMenuCopy(): Promise<void> {
 	if (contextMenu.value.message?.text) {
-		try {
-			await copyTextToClipboard(contextMenu.value.message.text)
-		} catch (e) {
-			console.debug('[BaseChat] Clipboard write failed:', e)
-		}
+		await copyTextToClipboard(contextMenu.value.message.text).catch(() => {
+			/* clipboard write failure is non-critical */
+		})
 	}
 	closeContextMenu()
 }

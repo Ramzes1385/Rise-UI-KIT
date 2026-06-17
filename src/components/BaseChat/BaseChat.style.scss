@@ -29,7 +29,7 @@
 		flex-direction: column;
 		z-index: 50;
 		transform: translateX(100%);
-		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform var(--transition-slow);
 		box-shadow: var(--shadow-lg);
 
 		&--open {
@@ -66,7 +66,7 @@
 		cursor: pointer;
 		color: var(--color-text-muted);
 		text-align: center;
-		transition: all 0.3s ease-in-out;
+		transition: all var(--transition-slow);
 
 		&:hover {
 			color: var(--color-text);
@@ -185,7 +185,7 @@
 		gap: sz(12px);
 		padding: sz(6px) sz(8px);
 		border-radius: var(--border-radius-md);
-		transition: background-color 0.3s ease-in-out;
+		transition: background-color var(--transition-slow);
 
 		&:hover {
 			background-color: var(--color-surface-hover);
@@ -251,8 +251,8 @@
 		cursor: pointer;
 		border: sz(1px) solid var(--color-border);
 		transition:
-			transform 0.3s ease-in-out,
-			border-color 0.3s ease-in-out;
+			transform var(--transition-slow),
+			border-color var(--transition-slow);
 
 		&:hover {
 			transform: scale(1.05);
@@ -284,7 +284,7 @@
 		border: sz(1px) solid var(--color-border);
 		border-radius: var(--border-radius-md);
 		cursor: pointer;
-		transition: all 0.3s ease-in-out;
+		transition: all var(--transition-slow);
 
 		&:hover {
 			border-color: var(--color-primary);
@@ -324,7 +324,7 @@
 
 	&__file-download-icon {
 		color: var(--color-text-muted);
-		transition: all 0.3s ease-in-out;
+		transition: all var(--transition-slow);
 	}
 
 	// Список ссылок
@@ -345,7 +345,7 @@
 		border: sz(1px) solid var(--color-border);
 		border-radius: var(--border-radius-md);
 		cursor: pointer;
-		transition: all 0.3s ease-in-out;
+		transition: all var(--transition-slow);
 
 		&:hover {
 			border-color: var(--color-primary);
@@ -363,14 +363,14 @@
 
 	&__link-icon {
 		color: var(--color-text-muted);
-		transition: color 0.3s ease-in-out;
+		transition: color var(--transition-slow);
 		flex-shrink: 0;
 	}
 
 	&__link-url {
 		color: var(--color-text);
 		word-break: break-all;
-		transition: color 0.3s ease-in-out;
+		transition: color var(--transition-slow);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: -webkit-box;

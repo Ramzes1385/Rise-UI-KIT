@@ -138,4 +138,5 @@ export interface BaseChatEmits {
 	(event: 'update-member-role', payload: { memberId: string; role: string }): void
 	(event: 'mention-click', mention: string): void
 	(event: 'command-click', command: string): void
+	(event: 'error', payload: { type: string; message: string; detail?: unknown }): void
 }

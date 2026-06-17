@@ -19,7 +19,7 @@
 
 	&__avatar {
 		cursor: pointer;
-		transition: opacity 0.2s ease;
+		transition: opacity var(--transition-base);
 
 		&:hover {
 			opacity: 0.85;
@@ -82,8 +82,8 @@
 	&__action-btn {
 		color: var(--color-text-muted);
 		transition:
-			color 0.2s ease,
-			transform 0.2s ease;
+			color var(--transition-base),
+			transform var(--transition-base);
 
 		&:hover {
 			color: var(--color-accent);

@@ -127,21 +127,21 @@
 		right: 0;
 		padding: sz(24px) sz(16px) sz(16px);
 		background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-		color: #ffffff;
+		color: var(--color-text-inverse);
 	}
 
 	&__title {
 		margin: 0 0 sz(4px);
 		font-size: sz(18px);
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--color-text-inverse);
 	}
 
 	&__desc {
 		margin: 0;
 		font-size: sz(14px);
 		opacity: 0.85;
-		color: #ffffff;
+		color: var(--color-text-inverse);
 	}
 
 	/* Стрелки */
@@ -170,7 +170,7 @@
 		box-shadow: var(--shadow-md);
 
 		&:hover {
-			background-color: #ffffff;
+			background-color: var(--color-text-inverse);
 			transform: scale(1.1);
 		}
 
@@ -351,7 +351,7 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		color: white;
+		color: var(--color-text-inverse);
 		font-size: sz(16px);
 		text-shadow: 0 sz(1px) sz(3px) rgba(0, 0, 0, 0.5);
 		pointer-events: none;

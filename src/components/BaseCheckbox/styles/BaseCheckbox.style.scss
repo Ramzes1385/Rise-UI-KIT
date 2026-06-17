@@ -62,7 +62,7 @@
 	}
 
 	&__icon {
-		@include custom-text(color, #ffffff);
+		@include custom-text(color, var(--color-text-inverse));
 		font-size: sz(12px);
 		font-weight: 800;
 	}
@@ -93,8 +93,8 @@
 
 	/* Наведение на отмеченный чекбокс — лёгкое затемнение accent */
 	&:hover:not(&--disabled) &__input:checked ~ &__box {
-		background-color: var(--color-accent-hover, #e06a1d);
-		border-color: var(--color-accent-hover, #e06a1d);
+		background-color: var(--color-accent-hover);
+		border-color: var(--color-accent-hover);
 	}
 
 	&:hover:not(&--disabled) &__label {
@@ -114,7 +114,7 @@
 
 	&:active:not(&--disabled) &__input:checked ~ &__box {
 		transform: scale(0.9);
-		background-color: var(--color-accent-hover, #e06a1d);
+		background-color: var(--color-accent-hover);
 	}
 
 	// Варианты

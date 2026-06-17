@@ -13,6 +13,9 @@ interface UseCalendarNavigationOptions {
 	disableTo: () => Date | null
 }
 
+/**
+ * Composable для навигации по календарю: переключение месяцев, лет и видов отображения.
+ */
 function useCalendarNavigation(options: UseCalendarNavigationOptions) {
 	const { currentMonth, currentYear, currentView, minDate, maxDate, disableFrom, disableTo } = options
 

@@ -34,4 +34,7 @@ export const UI_EDITOR = {
 	HEIGHT: 'Высота',
 	APPLY: 'Применить',
 	DELETE: 'Удалить',
+	URL_PROMPT: 'Введите URL ссылки:',
+	DEFAULT_TEXT_COLOR: '#000000',
+	DEFAULT_BG_COLOR: '#ffff00',
 } as const

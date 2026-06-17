@@ -73,6 +73,9 @@ export const UI_SIZE = {
 	CHAT_DEFAULT_HEIGHT: '500px',
 	SLIDER_DEFAULT_HEIGHT: '400px',
 	IMAGE_LOADING_MIN_HEIGHT: '120px',
+	MINIMAP_WIDTH: 200,
+	MINIMAP_HEIGHT: 150,
+	PROGRESS_CIRCLE_RADIUS: 52,
 } as const
 
 // ─── Масштаб ──────────────────────────────────────────────────────
@@ -82,6 +85,8 @@ export const UI_SCALE = {
 	MEDIUM: 1.0,
 	LARGE: 1.2,
 	AUTOCOMPLETE: 0.85,
+	ROTATION_STEP_DEG: 90,
+	FULL_ROTATION_DEG: 360,
 } as const
 
 // ─── Font weight ──────────────────────────────────────────────────
@@ -131,3 +136,10 @@ export const UI_COLOR_PICKER = {
 export const UI_RATING = {
 	ARIA_PREFIX: 'Оценка от 0 до',
 } as const
+
+// ─── Числовые константы ────────────────────────────────────────────
+
+export const UI_PROGRESS_STEP_MIN = 5
+export const UI_PROGRESS_STEP_RANGE = 20
+export const CALENDAR_GRID_CELLS = 42
+export const MS_PER_DAY = 86_400_000

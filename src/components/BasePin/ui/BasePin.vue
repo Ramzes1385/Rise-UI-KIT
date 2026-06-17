@@ -40,6 +40,7 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, ref } from 'vue'
 import '../styles/BasePin.style.scss'
 import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
@@ -86,7 +87,8 @@ function normalizeValue(val: string): string[] {
 }
 
 function handleInput(e: Event, index: number): void {
-	const target = e.target as HTMLInputElement
+	const target = toHTMLInputElement(e.target)
+	if (!target) return
 	const val = target.value.slice(-1)
 	const chars = normalizeValue(props.modelValue)
 	chars[index] = val || ' '

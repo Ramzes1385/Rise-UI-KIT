@@ -217,8 +217,8 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		startAutoplay()
 	}
 
-	watch(isAutoplay, val => {
-		if (val) startAutoplay()
+	watch(isAutoplay, enabled => {
+		if (enabled) startAutoplay()
 		else pauseAutoplay()
 	})
 

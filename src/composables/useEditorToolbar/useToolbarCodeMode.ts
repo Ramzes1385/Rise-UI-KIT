@@ -7,6 +7,9 @@ interface UseToolbarCodeModeOptions {
 	onInput: () => void
 }
 
+/**
+ * Composable для переключения режима кода/HTML в редакторе и синхронизации содержимого.
+ */
 function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 	const { editorRef, codeTextareaRef, onInput } = options
 

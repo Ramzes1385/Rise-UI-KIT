@@ -23,6 +23,7 @@ function useEditorToolbar(options: UseEditorToolbarOptions) {
 		wrapCodeSelection: codeMode.wrapCodeSelection,
 		insertCodeAtCursor: codeMode.insertCodeAtCursor,
 		getCodeTextarea: codeMode.getCodeTextarea,
+		promptForUrl: options.promptForUrl,
 	})
 
 	return {

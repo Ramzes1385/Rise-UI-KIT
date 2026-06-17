@@ -120,3 +120,9 @@
 | Новых unit-тестов | 7 (typeUtils) |
 | Новых констант | 3 (`UI_HOVER_DELAY_MS`, `UI_TRANSITION_DURATION_MS`, `UI_PROGRESS_INTERVAL_MS`) |
 | Новых утилит | 2 (`isObject`/`hasElementKeys` в typeUtils, `downloadFile` в fileUtils) |
+
+---
+
+## Следующие этапы
+
+См. `CLEAN_CODE_REFACTORING.md` (этап 2), `CLEAN_CODE_AUDIT_2.md` (этап 3), `CLEAN_CODE_AUDIT_3.md` (этап 4), `CLEAN_CODE_AUDIT_4.md` (этап 5).

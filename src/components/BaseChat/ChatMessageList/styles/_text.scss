@@ -9,7 +9,7 @@
 	&__link {
 		color: var(--color-primary);
 		text-decoration: underline;
-		transition: color 0.3s ease-in-out;
+		transition: color var(--transition-slow);
 
 		&:hover {
 			color: var(--color-accent);
@@ -29,8 +29,8 @@
 		border-radius: sz(4px);
 		cursor: pointer;
 		transition:
-			background-color 0.2s ease-in-out,
-			color 0.2s ease-in-out;
+			background-color var(--transition-base),
+			color var(--transition-base);
 
 		&:hover {
 			background: rgba(var(--color-accent-rgb, 99, 102, 241), 0.22);

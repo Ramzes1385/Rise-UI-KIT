@@ -122,33 +122,33 @@
 
 		@include active {
 			background-color: var(--color-accent);
-			color: #ffffff;
+			color: var(--color-text-inverse);
 
 			.ql-stroke {
-				stroke: #ffffff;
+				stroke: var(--color-text-inverse);
 			}
 
 			.ql-fill {
-				fill: #ffffff;
+				fill: var(--color-text-inverse);
 			}
 		}
 
 		/* Активное состояние кнопки (форматирование применено) */
 		&--active {
 			background-color: var(--color-accent) !important;
-			color: #ffffff !important;
+			color: var(--color-text-inverse) !important;
 
 			.ql-stroke {
-				stroke: #ffffff;
+				stroke: var(--color-text-inverse);
 			}
 
 			.ql-fill {
-				fill: #ffffff;
+				fill: var(--color-text-inverse);
 			}
 
 			@include hover {
 				background-color: var(--color-accent) !important;
-				color: #ffffff !important;
+				color: var(--color-text-inverse) !important;
 				opacity: 0.85;
 			}
 		}
@@ -193,11 +193,11 @@
 
 	&__color-picker--active .base-color-picker__swatch {
 		background-color: var(--editor-swatch-color);
-		color: #ffffff;
+		color: var(--color-text-inverse);
 
 		@include hover {
 			background-color: var(--editor-swatch-color);
-			color: #ffffff;
+			color: var(--color-text-inverse);
 		}
 	}
 
@@ -305,8 +305,8 @@
 		pre {
 			margin: sz(12px) 0;
 			padding: sz(12px);
-			background-color: var(--color-surface-muted);
-			border: 1px solid var(--color-border);
+			background-color: var(--color-code-bg);
+			border: 1px solid var(--color-code-border);
 			border-radius: var(--border-radius-lg);
 			overflow: hidden;
 			position: relative;
@@ -317,8 +317,8 @@
 			content: '';
 			display: block;
 			padding: sz(10px) sz(16px);
-			background-color: var(--color-bg);
-			border-bottom: 1px solid var(--color-border);
+			background-color: var(--color-code-header-bg);
+			border-bottom: 1px solid var(--color-code-border);
 			font-size: 0;
 		}
 
@@ -338,7 +338,7 @@
 			background: none;
 			border: none;
 			border-radius: 0;
-			color: var(--color-text);
+			color: var(--color-code-text);
 			font-family: var(--font-family-mono);
 			font-size: sz(13px);
 			line-height: 1.7;
@@ -519,29 +519,29 @@
 		}
 
 		pre {
-			background-color: #2a2a3d;
-			border-color: #3d3d56;
+			background-color: var(--color-code-bg);
+			border-color: var(--color-code-border);
 		}
 
 		pre::before {
-			background-color: #22223a;
-			border-bottom-color: #3d3d56;
+			background-color: var(--color-code-header-bg);
+			border-bottom-color: var(--color-code-border);
 		}
 
 		pre code {
-			color: #e0e0f0;
+			color: var(--color-code-text);
 		}
 	}
 
 	.base-editor__code {
 		.base-textarea__field {
-			background-color: #2a2a3d;
-			color: #e0e0f0;
+			background-color: var(--color-code-bg);
+			color: var(--color-code-text);
 		}
 	}
 
 	.base-editor__context-menu {
-		background: #2a2a3d;
-		border-color: #3d3d56;
+		background: var(--color-code-bg);
+		border-color: var(--color-code-border);
 	}
 }

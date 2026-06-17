@@ -16,6 +16,52 @@
 	// Surfaces
 	--color-surface: #ffffff;
 	--color-surface-muted: #f4f4f5;
+	--color-bg-soft: #f8fafc;
+
+	// Text on accent/overlay backgrounds (always white)
+	--color-text-inverse: #ffffff;
+
+	// Alert state colors
+	--color-info-bg: #f0f9ff;
+	--color-info-border: #bae6fd;
+	--color-info-text: #0369a1;
+	--color-info-icon: #0284c7;
+	--color-success-bg: #f0fdf4;
+	--color-success-border: #bbf7d0;
+	--color-success-text: #15803d;
+	--color-success-icon: #16a34a;
+	--color-warning-bg: #fffbeb;
+	--color-warning-border: #fef3c7;
+	--color-warning-text: #b45309;
+	--color-warning-icon: #d97706;
+	--color-error-bg: #fef2f2;
+	--color-error-border: #fee2e2;
+	--color-error-text: #b91c1c;
+	--color-error-icon: #dc2626;
+
+	// Code/editor chrome
+	--color-code-bg: var(--color-surface-muted);
+	--color-code-border: var(--color-border);
+	--color-code-header-bg: var(--color-bg);
+	--color-code-text: var(--color-text);
+
+	// Sidebar
+	--color-sidebar-bg: #ffffff;
+	--color-sidebar-border: #f1dfd0;
+	--color-sidebar-text: #24160f;
+	--color-sidebar-muted: #80695a;
+	--color-sidebar-subtle: #ad9484;
+	--color-sidebar-hover-bg: #fff7ed;
+	--color-sidebar-current-bg: #ffedd5;
+	--color-sidebar-current-border: #fdba74;
+	--color-sidebar-current-text: #ea580c;
+	--color-sidebar-badge-bg: #fed7aa;
+	--color-sidebar-badge-text: #9a3412;
+	--color-sidebar-footer-bg: #fff7ed;
+	--color-sidebar-children-line: #f1dfd0;
+	--color-sidebar-soft-bg: #fffaf5;
+	--color-sidebar-soft-border: #fed7aa;
+	--color-sidebar-soft-footer-bg: #ffedd5;
 
 	// Typography: шрифты подключаются в src/styles/_fonts.scss (@font-face).
 	// Bundled-вариант всегда побеждает в каскаде; системные fallback'и срабатывают только
@@ -26,6 +72,7 @@
 
 	// Transitions & Radius
 	--transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 	--border-radius-sm: 4px;
 	--border-radius-base: 8px;
 	--border-radius-lg: 12px;
@@ -81,6 +128,52 @@ $breakpoints: (
 	// Surfaces
 	--color-surface: #18181b;
 	--color-surface-muted: #27272a;
+	--color-bg-soft: #111113;
+
+	// Text on accent/overlay backgrounds (always white)
+	--color-text-inverse: #ffffff;
+
+	// Alert state colors - Dark
+	--color-info-bg: #0c1929;
+	--color-info-border: #1e3a5f;
+	--color-info-text: #93c5fd;
+	--color-info-icon: #60a5fa;
+	--color-success-bg: #052e16;
+	--color-success-border: #166534;
+	--color-success-text: #86efac;
+	--color-success-icon: #4ade80;
+	--color-warning-bg: #422006;
+	--color-warning-border: #78350f;
+	--color-warning-text: #fcd34d;
+	--color-warning-icon: #fbbf24;
+	--color-error-bg: #450a0a;
+	--color-error-border: #7f1d1d;
+	--color-error-text: #fca5a5;
+	--color-error-icon: #f87171;
+
+	// Code/editor chrome - Dark
+	--color-code-bg: #2a2a3d;
+	--color-code-border: #3d3d56;
+	--color-code-header-bg: #22223a;
+	--color-code-text: #e0e0f0;
+
+	// Sidebar - Dark
+	--color-sidebar-bg: #17110d;
+	--color-sidebar-border: #3c291d;
+	--color-sidebar-text: #fff7ed;
+	--color-sidebar-muted: #d6bba7;
+	--color-sidebar-subtle: #9f8069;
+	--color-sidebar-hover-bg: #241912;
+	--color-sidebar-current-bg: rgba(249, 115, 22, 0.16);
+	--color-sidebar-current-border: rgba(251, 146, 60, 0.34);
+	--color-sidebar-current-text: #fb923c;
+	--color-sidebar-badge-bg: rgba(249, 115, 22, 0.2);
+	--color-sidebar-badge-text: #fdba74;
+	--color-sidebar-footer-bg: #211711;
+	--color-sidebar-children-line: #3c291d;
+	--color-sidebar-soft-bg: #1d1510;
+	--color-sidebar-soft-border: #4a3220;
+	--color-sidebar-soft-footer-bg: #2a1d15;
 
 	--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);

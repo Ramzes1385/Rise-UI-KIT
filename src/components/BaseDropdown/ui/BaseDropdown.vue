@@ -25,6 +25,7 @@ import { useBaseComponent } from '@composables/useBaseComponent'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { UI_PANEL_MAX_HEIGHT } from '@constants'
+import { getActiveElement } from '@utils/domUtils'
 import { usePadding } from '@composables/usePadding'
 import { computed, ref, watch } from 'vue'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
@@ -74,7 +75,7 @@ watch(
 	() => props.isOpen,
 	value => {
 		if (value) {
-			savedActiveElement.value = document.activeElement as HTMLElement
+			savedActiveElement.value = getActiveElement()
 		} else {
 			savedActiveElement.value = null
 		}

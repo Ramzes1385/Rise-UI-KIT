@@ -7,6 +7,9 @@ interface UseToolbarMediaMenuOptions {
 	onInput: () => void
 }
 
+/**
+ * Composable для контекстного меню медиа в редакторе: изменение размера изображений/видео, скрытие/удаление.
+ */
 function useToolbarMediaMenu(options: UseToolbarMediaMenuOptions) {
 	const { onInput } = options
 

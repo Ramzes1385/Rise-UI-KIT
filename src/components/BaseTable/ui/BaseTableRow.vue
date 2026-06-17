@@ -56,24 +56,10 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 
-import type { TableColumn, TableRow } from '../model/BaseTable.types'
+import type { TableRow } from '../model/BaseTable.types'
+import type { BaseTableRowProps } from './BaseTableRow.types'
 
-defineProps<{
-	row: TableRow
-	columns: TableColumn[]
-	rowIndex: number
-	rowNumber: number
-	isSelectable: boolean
-	hasRowNumber: boolean
-	hasExpandableRows: boolean
-	isSelected: boolean
-	isExpanded: boolean
-	sizeScale: number
-	trClass?: string
-	tdClass?: string
-	getColumnStyle: (column: TableColumn) => Record<string, string>
-	formatCellValue: (column: TableColumn, row: TableRow) => string
-}>()
+defineProps<BaseTableRowProps>()
 
 const emit = defineEmits<{
 	(event: 'row-click', row: TableRow): void

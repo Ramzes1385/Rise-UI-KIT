@@ -9,19 +9,19 @@
 	--sidebar-width: 280px;
 	--sidebar-collapsed-width: 68px;
 	--sidebar-gap: 4px;
-	--sidebar-bg: #ffffff;
-	--sidebar-border: #f1dfd0;
-	--sidebar-text: #24160f;
-	--sidebar-muted: #80695a;
-	--sidebar-subtle: #ad9484;
-	--sidebar-hover-bg: #fff7ed;
-	--sidebar-current-bg: #ffedd5;
-	--sidebar-current-border: #fdba74;
-	--sidebar-current-text: #ea580c;
-	--sidebar-badge-bg: #fed7aa;
-	--sidebar-badge-text: #9a3412;
-	--sidebar-footer-bg: #fff7ed;
-	--sidebar-children-line: #f1dfd0;
+	--sidebar-bg: var(--color-sidebar-bg);
+	--sidebar-border: var(--color-sidebar-border);
+	--sidebar-text: var(--color-sidebar-text);
+	--sidebar-muted: var(--color-sidebar-muted);
+	--sidebar-subtle: var(--color-sidebar-subtle);
+	--sidebar-hover-bg: var(--color-sidebar-hover-bg);
+	--sidebar-current-bg: var(--color-sidebar-current-bg);
+	--sidebar-current-border: var(--color-sidebar-current-border);
+	--sidebar-current-text: var(--color-sidebar-current-text);
+	--sidebar-badge-bg: var(--color-sidebar-badge-bg);
+	--sidebar-badge-text: var(--color-sidebar-badge-text);
+	--sidebar-footer-bg: var(--color-sidebar-footer-bg);
+	--sidebar-children-line: var(--color-sidebar-children-line);
 	--sidebar-shadow: 0 10px 34px rgba(124, 45, 18, 0.08);
 	--sidebar-radius: 18px;
 	--sidebar-item-radius: 11px;
@@ -140,9 +140,9 @@
 	}
 
 	&--soft {
-		--sidebar-bg: #fffaf5;
-		--sidebar-border: #fed7aa;
-		--sidebar-footer-bg: #ffedd5;
+		--sidebar-bg: var(--color-sidebar-soft-bg);
+		--sidebar-border: var(--color-sidebar-soft-border);
+		--sidebar-footer-bg: var(--color-sidebar-soft-footer-bg);
 	}
 
 	&__header {
@@ -222,19 +222,6 @@
 }
 
 :where(.dark, [data-theme='dark']) .base-sidebar {
-	--sidebar-bg: #17110d;
-	--sidebar-border: #3c291d;
-	--sidebar-text: #fff7ed;
-	--sidebar-muted: #d6bba7;
-	--sidebar-subtle: #9f8069;
-	--sidebar-hover-bg: #241912;
-	--sidebar-current-bg: rgba(249, 115, 22, 0.16);
-	--sidebar-current-border: rgba(251, 146, 60, 0.34);
-	--sidebar-current-text: #fb923c;
-	--sidebar-badge-bg: rgba(249, 115, 22, 0.2);
-	--sidebar-badge-text: #fdba74;
-	--sidebar-footer-bg: #211711;
-	--sidebar-children-line: #3c291d;
 	--sidebar-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
 }
 

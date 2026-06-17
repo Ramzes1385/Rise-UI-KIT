@@ -114,6 +114,7 @@ import { usePasswordVisibility } from '@composables/usePasswordVisibility'
 import { UI_PASSWORD_HIDE_ARIA, UI_PASSWORD_SHOW_ARIA } from '@constants'
 import { computed, ref, toRef } from 'vue'
 import '../styles/BaseInput.style.scss'
+import { toHTMLInputElement } from '@utils/domUtils'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
 
 const props = withDefaults(defineProps<BaseInputProps>(), {
@@ -178,7 +179,8 @@ const displayValue = computed(() => {
 })
 
 function handleInput(e: Event): void {
-	const target = e.target as HTMLInputElement
+	const target = toHTMLInputElement(e.target)
+	if (!target) return
 	const rawValue = target.value
 
 	if (props.mask && props.type !== 'password') {
@@ -208,7 +210,8 @@ function handleKeydown(e: KeyboardEvent): void {
 	emit('keydown', e)
 	if (!props.mask || props.type === 'password') return
 
-	const target = e.target as HTMLInputElement
+	const target = toHTMLInputElement(e.target)
+	if (!target) return
 	/* istanbul ignore next -- defensive `?? 0`: selectionStart всегда установлен для input в DOM */
 	const cursorPos = target.selectionStart ?? 0
 	const current = props.modelValue == null ? '' : String(props.modelValue)

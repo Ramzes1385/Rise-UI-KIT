@@ -1,10 +1,7 @@
 import type { UseExpandTransitionOptions, UseExpandTransitionReturn } from './useExpandTransition.types'
+import { toHTMLElement } from '@utils/domUtils'
 
 const DEFAULT_DURATION = 300
-
-function toHtmlEl(el: Element): HTMLElement {
-	return el as HTMLElement
-}
 
 function resetStyles(el: HTMLElement): void {
 	el.style.height = ''
@@ -17,18 +14,21 @@ function applyTransition(el: HTMLElement, duration: number): void {
 	el.style.transition = `height ${duration}ms ease, opacity ${duration}ms ease`
 }
 
+/**
+ * Composable для Vue transition-хуков анимации expand/collapse.
+ */
 function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpandTransitionReturn {
 	const duration = options.duration ?? DEFAULT_DURATION
 
 	function onBeforeEnter(el: Element): void {
-		const htmlEl = toHtmlEl(el)
+		const htmlEl = toHTMLElement(el)
 		htmlEl.style.height = '0'
 		htmlEl.style.overflow = 'hidden'
 		htmlEl.style.opacity = '0'
 	}
 
 	function onEnter(el: Element, done: () => void): void {
-		const htmlEl = toHtmlEl(el)
+		const htmlEl = toHTMLElement(el)
 		const height = htmlEl.scrollHeight
 
 		applyTransition(htmlEl, duration)
@@ -48,17 +48,17 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 	}
 
 	function onAfterEnter(el: Element): void {
-		resetStyles(toHtmlEl(el))
+		resetStyles(toHTMLElement(el))
 	}
 
 	function onBeforeLeave(el: Element): void {
-		const htmlEl = toHtmlEl(el)
+		const htmlEl = toHTMLElement(el)
 		htmlEl.style.height = `${htmlEl.scrollHeight}px`
 		htmlEl.style.overflow = 'hidden'
 	}
 
 	function onLeave(el: Element, done: () => void): void {
-		const htmlEl = toHtmlEl(el)
+		const htmlEl = toHTMLElement(el)
 
 		applyTransition(htmlEl, duration)
 
@@ -77,7 +77,7 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 	}
 
 	function onAfterLeave(el: Element): void {
-		resetStyles(toHtmlEl(el))
+		resetStyles(toHTMLElement(el))
 	}
 
 	return {

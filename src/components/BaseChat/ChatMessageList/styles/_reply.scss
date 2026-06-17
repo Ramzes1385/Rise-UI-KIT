@@ -10,7 +10,7 @@
 		border-radius: sz(4px);
 		margin-bottom: sz(8px);
 		cursor: pointer;
-		transition: opacity 0.3s ease-in-out;
+		transition: opacity var(--transition-slow);
 
 		&:hover {
 			opacity: 0.85;

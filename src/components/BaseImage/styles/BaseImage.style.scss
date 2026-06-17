@@ -141,7 +141,7 @@
 		border: none;
 		border-radius: var(--border-radius-full);
 		background-color: rgba(255, 255, 255, 0.15);
-		color: #ffffff;
+		color: var(--color-text-inverse);
 		cursor: pointer;
 		@include transition(background-color, transform, opacity);
 
@@ -168,7 +168,7 @@
 	&-scale {
 		min-width: sz(48px);
 		text-align: center;
-		color: #ffffff;
+		color: var(--color-text-inverse);
 		font-size: sz(13px);
 		font-weight: 500;
 		user-select: none;
@@ -199,7 +199,7 @@
 		top: 50%;
 		transform: translateY(-50%);
 		z-index: 10;
-		color: #ffffff;
+		color: var(--color-text-inverse);
 		width: sz(44px);
 		height: sz(44px);
 		border-radius: sz(var(--border-radius-full));
@@ -317,7 +317,7 @@
 /* ===== Анимация зума ===== */
 .image-zoom-fade-enter-active,
 .image-zoom-fade-leave-active {
-	transition: opacity 0.3s ease;
+	transition: opacity var(--transition-slow);
 }
 
 .image-zoom-fade-enter-from,

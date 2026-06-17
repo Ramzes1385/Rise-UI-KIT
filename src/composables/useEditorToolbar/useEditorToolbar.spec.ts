@@ -74,7 +74,6 @@ describe('useEditorToolbar', () => {
 			writable: true,
 		})
 		mockGetSelection()
-		vi.spyOn(window, 'prompt').mockReturnValue('https://example.com')
 		vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test')
 	})
 
@@ -351,7 +350,7 @@ describe('useEditorToolbar', () => {
 	describe('insertLink', () => {
 		it('визуальный режим: вызывает createLink', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }))
 			insertLink()
 			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com')
 		})
@@ -359,7 +358,7 @@ describe('useEditorToolbar', () => {
 		it('режим кода: оборачивает в a', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
 			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }),
 			)
 			isCodeMode.value = true
 			codeContent.value = 'link'
@@ -368,10 +367,9 @@ describe('useEditorToolbar', () => {
 		})
 
 		it('режим кода: отмена prompt', () => {
-			vi.spyOn(window, 'prompt').mockReturnValue(null)
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
 			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => null }),
 			)
 			isCodeMode.value = true
 			codeContent.value = 'link'
@@ -968,12 +966,9 @@ describe('useEditorToolbar', () => {
 		})
 
 		it('insertLink: пользователь отменил prompt → ранний return', () => {
-			// Покрывает useEditorToolbar.ts:211 — `if (!url) return`.
-			vi.spyOn(window, 'prompt').mockReturnValueOnce(null)
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => null }))
 			insertLink()
-			// onInput НЕ должен быть вызван (вышли до execCommand)
 			expect(onInput).not.toHaveBeenCalled()
 		})
 

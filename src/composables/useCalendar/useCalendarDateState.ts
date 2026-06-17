@@ -20,6 +20,9 @@ interface UseCalendarDateStateOptions {
 	weekends: () => CalendarWeekends | null
 }
 
+/**
+ * Composable для управления выбором дат календаря: диапазон, отключённые даты, подсветки.
+ */
 function useCalendarDateState(options: UseCalendarDateStateOptions) {
 	const {
 		internalValue,

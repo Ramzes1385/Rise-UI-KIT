@@ -53,13 +53,15 @@ describe('useColumnResize', () => {
 			}),
 		)
 
-		const mockTh = {
-			offsetWidth: 100,
-			closest: vi.fn().mockReturnValue({ offsetWidth: 100 }),
-		}
+		const mockTh = document.createElement('th')
+		Object.defineProperty(mockTh, 'offsetWidth', { value: 100 })
+		vi.spyOn(mockTh, 'closest').mockReturnValue(mockTh)
+
+		const mockTarget = document.createElement('div')
+		vi.spyOn(mockTarget, 'closest').mockReturnValue(mockTh)
 
 		const mockEvent = {
-			target: { closest: vi.fn().mockReturnValue(mockTh) },
+			target: mockTarget,
 			pageX: 500,
 		} as unknown as MouseEvent
 
@@ -80,13 +82,15 @@ describe('useColumnResize', () => {
 			}),
 		)
 
-		const mockTh = {
-			offsetWidth: 100,
-			closest: vi.fn().mockReturnValue({ offsetWidth: 100 }),
-		}
+		const mockTh = document.createElement('th')
+		Object.defineProperty(mockTh, 'offsetWidth', { value: 100 })
+		vi.spyOn(mockTh, 'closest').mockReturnValue(mockTh)
+
+		const mockTarget = document.createElement('div')
+		vi.spyOn(mockTarget, 'closest').mockReturnValue(mockTh)
 
 		const mockEvent = {
-			target: { closest: vi.fn().mockReturnValue(mockTh) },
+			target: mockTarget,
 			pageX: 500,
 		} as unknown as MouseEvent
 

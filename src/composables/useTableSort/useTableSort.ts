@@ -1,12 +1,12 @@
-/**
- * Composable для управления сортировкой таблицы.
- */
 import { ref } from 'vue'
 
 import type { SortDirection, SortState, TableColumn } from '@components/BaseTable/model/BaseTable.types'
 
 import type { UseTableSortOptions, UseTableSortReturn } from './useTableSort.types'
 
+/**
+ * Composable для управления сортировкой таблицы.
+ */
 function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 	const { isMultiSort, onSort } = options
 

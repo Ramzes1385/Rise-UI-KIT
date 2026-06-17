@@ -139,9 +139,10 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
-import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS } from '@constants'
+import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS, UI_PROGRESS_STEP_MIN, UI_PROGRESS_STEP_RANGE } from '@constants'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, validateFile } from '@utils/fileUtils'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { generateId } from '@utils/idUtils'
 
 import '../styles/BaseFileUpload.style.scss'
@@ -246,9 +247,9 @@ async function addFiles(files: File[]): Promise<void> {
 
 	const remaining = props.maxCount - uploadedFiles.value.length
 	if (remaining <= 0) {
-		const msg = `${UI_FILE_MAX_COUNT_PREFIX} ${props.maxCount}`
-		internalErrors.value.push(msg)
-		emit('error', msg)
+		const errorMessage = `${UI_FILE_MAX_COUNT_PREFIX} ${props.maxCount}`
+		internalErrors.value.push(errorMessage)
+		emit('error', errorMessage)
 		return
 	}
 
@@ -293,7 +294,7 @@ function simulateUploadProgress(itemId: string): void {
 			progressIntervals.delete(interval)
 			return
 		}
-		item.progress = Math.min(item.progress + Math.floor(Math.random() * 20) + 5, 100)
+		item.progress = Math.min(item.progress + Math.floor(Math.random() * UI_PROGRESS_STEP_RANGE) + UI_PROGRESS_STEP_MIN, 100)
 		if (item.progress >= 100) {
 			item.status = 'done'
 			item.progress = 100
@@ -309,11 +310,10 @@ function triggerUpload(): void {
 }
 
 function handleFileChange(e: Event): void {
-	const target = e.target as HTMLInputElement
-	if (target.files) {
-		addFiles(Array.from(target.files))
-		target.value = ''
-	}
+	const target = toHTMLInputElement(e.target)
+	if (!target || !target.files) return
+	addFiles(Array.from(target.files))
+	target.value = ''
 }
 
 function handleRemove(item: UploadedFile): void {

@@ -1,6 +1,3 @@
-/**
- * Composable для управления фильтрами колонок таблицы.
- */
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 
@@ -8,6 +5,9 @@ import type { ColumnFilter } from '@components/BaseTable/model/BaseTable.types'
 
 import type { UseTableFilterOptions, UseTableFilterReturn } from './useTableFilter.types'
 
+/**
+ * Composable для управления фильтрами колонок таблицы.
+ */
 function useTableFilter(options: UseTableFilterOptions): UseTableFilterReturn {
 	const { columns, onFilter } = options
 
