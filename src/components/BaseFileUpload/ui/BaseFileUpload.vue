@@ -140,7 +140,8 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
 import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS, UI_PROGRESS_STEP_MIN, UI_PROGRESS_STEP_RANGE } from '@constants'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, validateFile } from '@utils/fileUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { generateId } from '@utils/idUtils'
@@ -163,13 +164,7 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	error: '',
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-file-upload',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-file-upload', props, [
 		'root',
 		'label',
 		'dropzone',
@@ -189,10 +184,14 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 		'remove',
 		'errors',
 		'errorItem',
-	],
-})
+	])
 
 const emit = defineEmits<BaseFileUploadEmits>()
+
+const formField = useFormField({
+	value: () => undefined,
+	error: () => props.error,
+})
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const uploadedFiles = ref<UploadedFile[]>([])
@@ -203,7 +202,7 @@ const internalErrors = ref<string[]>([])
 const progressIntervals = new Set<ReturnType<typeof setInterval>>()
 
 /** Отображаемые ошибки (проп + внутренние) */
-const displayErrors = computed(() => [...(props.error ? [props.error] : []), ...internalErrors.value])
+const displayErrors = computed(() => [...(formField.error ? [formField.error] : []), ...internalErrors.value])
 
 /** Есть ли хотя бы одна ошибка */
 const hasError = computed(() => displayErrors.value.length > 0)
@@ -346,5 +345,10 @@ function handleDrop(e: DragEvent): void {
 onBeforeUnmount(() => {
 	progressIntervals.forEach(clearInterval)
 	progressIntervals.clear()
+})
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
 })
 </script>

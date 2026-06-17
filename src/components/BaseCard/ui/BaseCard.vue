@@ -18,7 +18,7 @@
 						v-if="title"
 						tag="h3"
 						:size-scale="props.sizeScale"
-						:weight="UI_FONT_WEIGHT_SEMIBOLD"
+						:weight="UI_FONT_WEIGHT.SEMIBOLD"
 						class="base-card__title"
 						:custom-class="classes.title"
 						>{{ title }}</BaseText
@@ -53,9 +53,9 @@
 import { computed } from 'vue'
 
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { UI_FONT_WEIGHT } from '@constants'
 
 import '../styles/BaseCard.style.scss'
 
@@ -72,14 +72,7 @@ defineSlots<BaseCardSlots>()
 
 const height = computed(() => props.height)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-card',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-card', props, ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'])
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad', defaultPadding: 24 })
 
 const cardStyle = computed(() => ({

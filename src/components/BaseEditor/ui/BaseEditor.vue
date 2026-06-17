@@ -106,7 +106,7 @@ import '../styles/BaseEditor.style.scss'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { UI_EDITOR_APPLY, UI_EDITOR_DEFAULT_BG_COLOR, UI_EDITOR_DEFAULT_TEXT_COLOR, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH } from '@constants'
 import { onMounted, ref, watch } from 'vue'
@@ -124,14 +124,7 @@ const props = withDefaults(defineProps<BaseEditorProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-editor',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'])
 
 const emit = defineEmits<BaseEditorEmits>()
 

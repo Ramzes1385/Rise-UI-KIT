@@ -84,7 +84,7 @@
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT_BOLD } from '@constants'
 import { snapToStep, toPercent } from '@utils/rangeUtils'
 import { computed, ref, useSlots } from 'vue'
@@ -106,13 +106,7 @@ const props = withDefaults(defineProps<BaseRangeProps>(), {
 	hasLabel: false,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-range',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-range', props, [
 		'root',
 		'label',
 		'labelMin',
@@ -129,8 +123,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 		'mark',
 		'markTick',
 		'markText',
-	],
-})
+	])
 
 const emit = defineEmits<BaseRangeEmits>()
 const slots = useSlots()

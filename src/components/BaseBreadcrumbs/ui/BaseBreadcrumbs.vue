@@ -3,7 +3,7 @@
 		class="base-breadcrumbs"
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:aria-label="UI_BREADCRUMBS_ARIA">
+		:aria-label="UI_ARIA.BREADCRUMBS">
 		<!-- Schema.org JSON-LD для SEO. v-html безопасен: schemaJson экранирует </script> (см. schemaUtils). -->
 		<!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
 		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
@@ -110,7 +110,7 @@
 							:custom-class="classes.currentIcon" />
 						<BaseText
 							tag="span"
-							:weight="UI_FONT_WEIGHT_SEMIBOLD"
+							:weight="UI_FONT_WEIGHT.SEMIBOLD"
 							:size-scale="calcIconScale('sm', sizeScale)"
 							itemprop="name"
 							:custom-class="classes.currentText"
@@ -141,8 +141,8 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_BREADCRUMBS_ARIA, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import { computed, ref } from 'vue'
@@ -158,13 +158,7 @@ const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-breadcrumbs',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-breadcrumbs', props, [
 		'root',
 		'list',
 		'item',
@@ -179,8 +173,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 		'itemText',
 		'currentIcon',
 		'currentText',
-	],
-})
+	])
 
 const emit = defineEmits<BaseBreadcrumbsEmits>()
 

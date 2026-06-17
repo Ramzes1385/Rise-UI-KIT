@@ -7,8 +7,8 @@
 				:alt="file.name"
 				class="base-chat-input__preview-image" />
 			<div v-else class="base-chat-input__preview-file">
-				<BaseIcon name="file" :size-scale="sizeScale * UI_SCALE_SMALL" />
-				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-input__preview-filename">
+				<BaseIcon name="file" :size-scale="sizeScale * UI_SCALE.SMALL" />
+				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-input__preview-filename">
 					{{ file.name }}
 				</BaseText>
 			</div>
@@ -28,12 +28,12 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_META, UI_SCALE_SMALL } from '@constants'
+import { UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_META, UI_SCALE } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import type { ChatMessageAttachment } from '../BaseChat.types'
+import type { ChatMessageAttachment } from '../model/BaseChat.types'
 
 interface ChatFilePreviewProps {
 	attachments: ChatMessageAttachment[]

@@ -27,19 +27,20 @@
 		</div>
 
 		<BaseText
-			v-if="error"
+			v-if="formField.error"
 			tag="span"
 			class="base-pin__error-text"
 			:size-scale="props.sizeScale"
 			:custom-class="classes.errorText">
-			{{ error }}
+			{{ formField.error }}
 		</BaseText>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, ref } from 'vue'
 import '../styles/BasePin.style.scss'
@@ -52,16 +53,14 @@ const props = withDefaults(defineProps<BasePinProps>(), {
 	sizeScale: 100,
 })
 
-const hasError = computed(() => Boolean(props.error))
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-pin',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'cells', 'input', 'errorText'],
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
 })
+
+const hasError = computed(() => Boolean(formField.error))
+
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])
 
 const emit = defineEmits<BasePinEmits>()
 
@@ -140,4 +139,9 @@ function handlePaste(e: ClipboardEvent): void {
 		emit('complete', val)
 	}
 }
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

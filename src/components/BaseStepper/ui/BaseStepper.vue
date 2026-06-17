@@ -41,7 +41,7 @@
 						<BaseText
 							tag="span"
 							:size-scale="sizeScale"
-							:weight="UI_FONT_WEIGHT_MEDIUM"
+							:weight="UI_FONT_WEIGHT.MEDIUM"
 							class="base-stepper__label"
 							:custom-class="classes.label"
 							>{{ step.label }}</BaseText
@@ -71,8 +71,8 @@ import { computed } from 'vue'
 
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT_MEDIUM } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps } from '../model/BaseStepper.types'
 
@@ -84,13 +84,7 @@ const props = withDefaults(defineProps<BaseStepperProps>(), {
 
 const emit = defineEmits<BaseStepperEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-stepper',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-stepper', props, [
 		'root',
 		'header',
 		'items',
@@ -102,8 +96,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 		'label',
 		'description',
 		'footer',
-	],
-})
+	])
 
 const progressStyle = computed(() => {
 	const count = props.items.length

@@ -127,7 +127,7 @@
 
 			<div v-if="props.loadMode === 'button' && hasMoreRows" class="base-table__load-more" :class="classes.loadMore">
 				<BaseButton :is-loading="props.isLoading" :is-disabled="props.isLoading" :size-scale="props.sizeScale" @click="handleLoadMore">
-					{{ props.isLoading ? UI_LOADING_TEXT : UI_LOAD_MORE_TEXT }}
+					{{ props.isLoading ? UI_TEXT.LOADING : UI_TEXT.LOAD_MORE }}
 				</BaseButton>
 			</div>
 
@@ -191,7 +191,7 @@ import { BaseLoader } from '@components/BaseLoader'
 import { BasePagination } from '@components/BasePagination'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useColumnResize } from '@composables/useColumnResize/useColumnResize'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { usePadding } from '@composables/usePadding'
@@ -202,7 +202,7 @@ import { toHTMLElement } from '@utils/domUtils'
 import { calcRowNumber } from '@utils/tableUtils'
 import { computed, provide, useSlots, watch } from 'vue'
 
-import { UI_EMPTY_TEXT, UI_LOAD_MORE_TEXT, UI_LOADING_TEXT } from '@constants'
+import { UI_TEXT } from '@constants'
 import {
 	TABLE_EXPAND_TRANSITION_DURATION,
 	TABLE_INFINITE_SCROLL_THRESHOLD,
@@ -224,7 +224,7 @@ import BaseTableToolbar from './BaseTableToolbar.vue'
 const props = withDefaults(defineProps<BaseTableProps>(), {
 	variant: 'default',
 	isLoading: false,
-	emptyText: UI_EMPTY_TEXT,
+	emptyText: UI_TEXT.EMPTY,
 	height: '',
 	isSelectable: false,
 	hasSearch: false,
@@ -244,13 +244,7 @@ const props = withDefaults(defineProps<BaseTableProps>(), {
 
 const slots = useSlots()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-table',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-table', props, [
 		'root',
 		'body',
 		'header',
@@ -272,8 +266,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 		'pageSize',
 		'paginationInfo',
 		'footer',
-	],
-})
+	])
 
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: 10 })
 

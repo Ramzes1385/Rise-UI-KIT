@@ -4,7 +4,7 @@
 			:display-value="displayValue"
 			:placeholder="resolvedProps.placeholder"
 			:label="resolvedProps.label"
-			:error="resolvedProps.error"
+			:error="formField.error"
 			:is-disabled="resolvedProps.isDisabled"
 			:is-readonly="resolvedProps.isReadonly"
 			:is-required="resolvedProps.isRequired"
@@ -48,18 +48,19 @@
 import { UI_CHAT_DEFAULT_HEIGHT, UI_SELECT_DATE_TEXT } from '@constants'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useCustomClass } from '@composables/useCustomClass'
+import { useFormField } from '@composables/useFormField'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useSizeScale } from '@composables/useSizeScale'
 import { formatDatePickerValue } from '@utils/dateUtils'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import './BaseDatePicker.style.scss'
-import { resolveDatePickerCalendarConfig } from './model/BaseDatePickerCalendar.types'
+import '../styles/BaseDatePicker.style.scss'
+import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import type { BaseDatePickerEmits, BaseDatePickerProps } from './BaseDatePicker.types'
-import DatePickerField from './ui/DatePickerField/DatePickerField.vue'
-import DatePickerPanel from './ui/DatePickerPanel/DatePickerPanel.vue'
+import type { BaseDatePickerEmits, BaseDatePickerProps } from '../model/BaseDatePicker.types'
+import DatePickerField from './DatePickerField/DatePickerField.vue'
+import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
 
 const props = defineProps<BaseDatePickerProps>()
 const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
@@ -82,6 +83,12 @@ const resolvedProps = computed(() => ({
 	error: props.error ?? '',
 	isMultiMonth: props.isMultiMonth ?? false,
 }))
+
+const formField = useFormField({
+	value: () => props.modelValue ?? null,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
@@ -314,5 +321,10 @@ useClickOutside({
 useEscapeKey({
 	isActive: () => isOpen.value && resolvedProps.value.closeOnEscape,
 	callback: close,
+})
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
 })
 </script>

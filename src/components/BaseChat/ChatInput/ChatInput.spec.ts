@@ -9,7 +9,7 @@ import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ChatCommand, ChatMember, ChatMessage } from '../BaseChat.types'
+import type { ChatCommand, ChatMember, ChatMessage } from '../model/BaseChat.types'
 import ChatInput from './ChatInput.vue'
 
 const MEMBERS: ChatMember[] = [

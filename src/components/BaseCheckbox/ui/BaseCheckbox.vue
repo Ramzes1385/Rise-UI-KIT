@@ -5,7 +5,7 @@
 			variantClass,
 			{
 				'base-checkbox--disabled': props.isDisabled,
-				'base-checkbox--error': props.error,
+				'base-checkbox--error': formField.error,
 			},
 			classes.root,
 		]"
@@ -39,12 +39,12 @@
 		</label>
 		<slot name="error">
 			<BaseText
-				v-if="props.error"
+				v-if="formField.error"
 				tag="span"
 				class="base-checkbox__error-text"
 				:size-scale="props.sizeScale"
 				:custom-class="classes.errorText"
-				>{{ props.error }}</BaseText
+				>{{ formField.error }}</BaseText
 			>
 		</slot>
 	</div>
@@ -55,7 +55,8 @@ import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox
 
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import { toHTMLInputElement } from '@utils/domUtils'
 
 import '../styles/BaseCheckbox.style.scss'
@@ -69,14 +70,12 @@ const props = withDefaults(defineProps<BaseCheckboxProps>(), {
 
 const emit = defineEmits<BaseCheckboxEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-checkbox',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'],
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
 })
+
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox', props, ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'])
 
 function handleChange(e: Event): void {
 	const target = toHTMLInputElement(e.target)
@@ -84,4 +83,9 @@ function handleChange(e: Event): void {
 	emit('update:modelValue', target.checked)
 	emit('change', target.checked)
 }
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

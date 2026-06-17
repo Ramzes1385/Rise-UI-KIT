@@ -19,7 +19,7 @@
 							<BaseText
 								tag="h3"
 								:size-scale="sizeScale"
-								:weight="UI_FONT_WEIGHT_SEMIBOLD"
+								:weight="UI_FONT_WEIGHT.SEMIBOLD"
 								class="base-modal__title"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
@@ -55,9 +55,9 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
-import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { UI_FONT_WEIGHT } from '@constants'
 import { computed, useSlots } from 'vue'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from '../model/BaseModal.types'
@@ -71,19 +71,12 @@ const props = withDefaults(defineProps<BaseModalProps>(), {
 	hasOverlay: true,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-modal',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'])
 
 const emit = defineEmits<BaseModalEmits>()
 const slots = useSlots()
 
-const hasFooter = !!slots.footer
+const hasFooter = computed(() => Boolean(slots.footer))
 
 const fullScreenClass = computed(() => {
 	if (!props.fullScreen) return undefined

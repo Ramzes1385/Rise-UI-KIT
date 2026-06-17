@@ -116,9 +116,9 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseSearchEmits, BaseSearchProps, SearchResult } from './BaseSearch.types'
+import type { BaseSearchEmits, BaseSearchProps, SearchResult } from '../model/BaseSearch.types'
 
-import { UI_DEBOUNCE_DEFAULT_MS, UI_SEARCH_PLACEHOLDER } from '@constants'
+import { UI_TEXT, UI_TIMING } from '@constants'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
@@ -126,20 +126,20 @@ import { useListNavigation } from '@composables/useListNavigation'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import './BaseSearch.style.scss'
-import BaseSearchInput from './ui/BaseSearchInput.vue'
-import BaseSearchOverlay from './ui/BaseSearchOverlay.vue'
-import BaseSearchResults from './ui/BaseSearchResults.vue'
+import '../styles/BaseSearch.style.scss'
+import BaseSearchInput from './BaseSearchInput.vue'
+import BaseSearchOverlay from './BaseSearchOverlay.vue'
+import BaseSearchResults from './BaseSearchResults.vue'
 
 const props = withDefaults(defineProps<BaseSearchProps>(), {
 	modelValue: '',
-	placeholder: UI_SEARCH_PLACEHOLDER,
+	placeholder: UI_TEXT.SEARCH_PLACEHOLDER,
 	sizeScale: 100,
 	variant: 'default',
 	mode: 'default',
 	results: () => [],
 	isInstant: true,
-	debounceMs: UI_DEBOUNCE_DEFAULT_MS,
+	debounceMs: UI_TIMING.DEBOUNCE_DEFAULT,
 	isLoading: false,
 	hasClear: true,
 	hasIcon: true,
@@ -193,7 +193,7 @@ const { classes } = useCustomClass({
 
 const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 const overlayRef = ref<InstanceType<typeof BaseSearchOverlay> | null>(null)
-const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_SEARCH_PLACEHOLDER)
+const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_TEXT.SEARCH_PLACEHOLDER)
 const query = ref(props.modelValue)
 const isFocused = ref(false)
 const isSearchTriggered = ref(false)

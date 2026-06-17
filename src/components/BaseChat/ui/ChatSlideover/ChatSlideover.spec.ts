@@ -8,7 +8,7 @@ import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { ChatMember, ChatMessage } from '../../BaseChat.types'
+import type { ChatMember, ChatMessage } from '../../model/BaseChat.types'
 import ChatSlideover from './ChatSlideover.vue'
 
 const MEMBERS: ChatMember[] = [

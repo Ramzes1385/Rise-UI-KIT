@@ -9,7 +9,7 @@ import { fireEvent, render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { ChatMessage } from '../../BaseChat.types'
+import type { ChatMessage } from '../../model/BaseChat.types'
 import ChatMessageList from '../ui/ChatMessageList.vue'
 
 const BASE_MESSAGES: ChatMessage[] = [

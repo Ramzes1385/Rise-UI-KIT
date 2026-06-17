@@ -1,6 +1,6 @@
 import { effectScope } from 'vue'
 
-import type { ChatMessage } from '../BaseChat.types'
+import type { ChatMessage } from '../model/BaseChat.types'
 import { useChatReply } from './useChatReply'
 
 function message(id: string): ChatMessage {

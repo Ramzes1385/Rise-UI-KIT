@@ -13,7 +13,7 @@
 			<BaseText
 				v-if="title"
 				tag="h3"
-				:weight="UI_FONT_WEIGHT_SEMIBOLD"
+				:weight="UI_FONT_WEIGHT.SEMIBOLD"
 				:size-scale="props.sizeScale"
 				class="base-empty__title"
 				:custom-class="classes.title">
@@ -43,8 +43,8 @@
 <script setup lang="ts">
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT } from '@constants'
 import { computed } from 'vue'
 
 import '../styles/BaseEmpty.style.scss'
@@ -54,14 +54,7 @@ const props = withDefaults(defineProps<BaseEmptyProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-empty',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'])
 
 const emptyIcon = computed((): string => props.icon || 'inbox')
 </script>

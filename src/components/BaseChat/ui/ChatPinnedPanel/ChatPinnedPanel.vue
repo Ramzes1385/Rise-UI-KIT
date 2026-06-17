@@ -1,9 +1,9 @@
 <template>
 	<div v-if="pinnedMessages && pinnedMessages.length > 0" class="base-chat-pinned-panel">
 		<div class="base-chat-pinned-panel__content" @click="handlePanelClick">
-			<BaseIcon name="pin" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__pin-icon" />
+			<BaseIcon name="pin" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<div class="base-chat-pinned-panel__text-wrapper">
-				<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-pinned-panel__title">
+				<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-pinned-panel__title">
 					{{ UI_CHAT_PINNED_MESSAGE }}
 					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_PINNED_COUNTER} ${pinnedMessages.length})` : '' }}
 				</BaseText>
@@ -59,9 +59,21 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_FILE, UI_CHAT_NEXT_PINNED_ARIA, UI_CHAT_PHOTO, UI_CHAT_PINNED_COUNTER, UI_CHAT_PINNED_MESSAGE, UI_CHAT_PREV_PINNED_ARIA, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_UNPIN_ARIA, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_SMALL } from '@constants'
+import {
+	UI_CHAT_FILE,
+	UI_CHAT_NEXT_PINNED_ARIA,
+	UI_CHAT_PHOTO,
+	UI_CHAT_PINNED_COUNTER,
+	UI_CHAT_PINNED_MESSAGE,
+	UI_CHAT_PREV_PINNED_ARIA,
+	UI_CHAT_SCALE_ICON,
+	UI_CHAT_SCALE_META,
+	UI_CHAT_UNPIN_ARIA,
+	UI_FONT_WEIGHT,
+	UI_SCALE,
+} from '@constants'
 import { computed } from 'vue'
-import type { ChatMessage } from '../../BaseChat.types'
+import type { ChatMessage } from '../../model/BaseChat.types'
 import './ChatPinnedPanel.style.scss'
 
 interface ChatPinnedPanelProps {

@@ -25,7 +25,7 @@
 					<BaseCard variant="shadow" :padding="8" :custom-class="classes.cardInner">
 						<template v-if="hasHeader" #header>
 							<slot name="title" :step="currentStep" :index="activeIndex">
-								<BaseText v-if="currentStep.title" tag="h3" :weight="UI_FONT_WEIGHT_SEMIBOLD" :custom-class="classes.title">{{
+								<BaseText v-if="currentStep.title" tag="h3" :weight="UI_FONT_WEIGHT.SEMIBOLD" :custom-class="classes.title">{{
 									currentStep.title
 								}}</BaseText>
 							</slot>
@@ -115,7 +115,14 @@ import { useScrollLock } from '@composables/useScrollLock'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import type { CustomColor } from '@composables/useCustomColor'
-import { UI_FINISH_TOUR_TEXT, UI_FONT_WEIGHT_SEMIBOLD, UI_NEXT_TEXT, UI_PREV_TEXT, UI_SKIP_TOUR_TEXT, UI_TOUR_TITLE } from '@constants'
+import {
+	UI_FINISH_TOUR_TEXT,
+	UI_FONT_WEIGHT,
+	UI_NEXT_TEXT,
+	UI_PREV_TEXT,
+	UI_SKIP_TOUR_TEXT,
+	UI_TOUR_TITLE,
+} from '@constants'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from '../model/BaseTour.types'
 import { DEFAULT_RADIUS, useTourLogic } from '../model/useTourLogic'

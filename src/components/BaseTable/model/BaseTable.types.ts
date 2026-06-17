@@ -156,6 +156,34 @@ export type TableVariant = (typeof TABLE_VARIANTS)[number]
 export type LoadMode = 'pagination' | 'infinite' | 'button'
 
 /**
+ * Конфигурация функций таблицы (замена boolean-пропсов при мажорном релизе)
+ */
+export interface TableFeaturesConfig {
+	/** Показывать поиск */
+	search?: boolean
+	/** Показывать фильтры */
+	filters?: boolean
+	/** Показывать настройки колонок */
+	columnSettings?: boolean
+	/** Показывать номер строки */
+	rowNumber?: boolean
+	/** Показывать селектор размера страницы */
+	pageSizeSelector?: boolean
+}
+
+/**
+ * Конфигурация поведения таблицы (замена boolean-пропсов при мажорном релизе)
+ */
+export interface TableBehaviorConfig {
+	/** Выделяемые строки */
+	selectable?: boolean
+	/** Множественная сортировка */
+	multiSort?: boolean
+	/** Ресайз колонок */
+	resizable?: boolean
+}
+
+/**
  * Пропсы компонента BaseTable
  */
 export interface BaseTableProps extends BaseComponentProps<TableVariant> {
@@ -169,11 +197,11 @@ export interface BaseTableProps extends BaseComponentProps<TableVariant> {
 	emptyText?: string
 	/** Высота таблицы (для фиксированного заголовка) */
 	height?: string
-	/** Выделяемые строки */
+	/** @deprecated Используйте behavior.selectable. Будет удалён в v2 */
 	isSelectable?: boolean
-	/** Показывать поиск */
+	/** @deprecated Используйте features.search. Будет удалён в v2 */
 	hasSearch?: boolean
-	/** Показывать фильтры */
+	/** @deprecated Используйте features.filters. Будет удалён в v2 */
 	hasFilters?: boolean
 	/** Размер страницы */
 	pageSize?: number
@@ -185,16 +213,20 @@ export interface BaseTableProps extends BaseComponentProps<TableVariant> {
 	searchDebounce?: number
 	/** Конфиг вложенной таблицы */
 	nestedConfig?: NestedTableConfig
-	/** Множественная сортировка */
+	/** @deprecated Используйте behavior.multiSort. Будет удалён в v2 */
 	isMultiSort?: boolean
-	/** Показывать настройки колонок */
+	/** @deprecated Используйте features.columnSettings. Будет удалён в v2 */
 	hasColumnSettings?: boolean
-	/** Показывать номер строки */
+	/** @deprecated Используйте features.rowNumber. Будет удалён в v2 */
 	hasRowNumber?: boolean
-	/** Показывать селектор размера страницы */
+	/** @deprecated Используйте features.pageSizeSelector. Будет удалён в v2 */
 	hasPageSizeSelector?: boolean
-	/** Ресайз колонок (все колонки можно растягивать/сжимать) */
+	/** @deprecated Используйте behavior.resizable. Будет удалён в v2 */
 	isResizable?: boolean
+	/** Конфигурация функций таблицы (заменяет boolean-пропсы) */
+	features?: TableFeaturesConfig
+	/** Конфигурация поведения таблицы (заменяет boolean-пропсы) */
+	behavior?: TableBehaviorConfig
 	/**
 	 * Внутренние отступы ячеек. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения

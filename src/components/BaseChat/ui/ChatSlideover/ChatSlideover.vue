@@ -1,7 +1,7 @@
 <template>
 	<div class="base-chat-slideover" :class="{ 'base-chat-slideover--open': isOpen }">
 		<div class="base-chat-slideover__header">
-			<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale" class="base-chat-slideover__title">
+			<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale" class="base-chat-slideover__title">
 				{{ titleText }}
 			</BaseText>
 			<BaseButton
@@ -26,7 +26,7 @@
 				:class="{ 'base-chat-slideover__tab-btn--active': activeTab === tab.id }"
 				:aria-label="tab.label"
 				@click="emit('update:activeTab', tab.id)">
-				<BaseText :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" :weight="UI_FONT_WEIGHT_SEMIBOLD">{{ tab.label }}</BaseText>
+				<BaseText :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" :weight="UI_FONT_WEIGHT.SEMIBOLD">{{ tab.label }}</BaseText>
 			</button>
 		</div>
 
@@ -35,33 +35,33 @@
 			<div v-if="activeTab === 'info'" class="base-chat-slideover__pane">
 				<div class="base-chat-slideover__profile-summary">
 					<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__avatar" />
-					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_CHAT_SCALE_NAME" class="base-chat-slideover__name">
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_CHAT_SCALE_NAME" class="base-chat-slideover__name">
 						{{ title }}
 					</BaseText>
-					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
+					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__status">
 						{{ isGroup ? `${members.length} ${UI_CHAT_PARTICIPANTS_SUFFIX}` : subtitle || UI_CHAT_ONLINE }}
 					</BaseText>
-					<BaseText v-if="isGroup" tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
+					<BaseText v-if="isGroup" tag="p" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__description">
 						{{ UI_CHAT_DEMO_GROUP_DESCRIPTION }}
 					</BaseText>
-					<BaseText v-else tag="p" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__description">
+					<BaseText v-else tag="p" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__description">
 						{{ UI_CHAT_DEMO_PROFILE_DESCRIPTION }}
 					</BaseText>
 				</div>
 
 				<!-- Список участников для групп -->
 				<div v-if="isGroup && members.length > 0" class="base-chat-slideover__members-list">
-					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__section-title">
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__section-title">
 						{{ UI_CHAT_PARTICIPANTS_TITLE }}
 					</BaseText>
 					<div class="base-chat-slideover__members-scroll">
 						<div v-for="member in members" :key="member.id" class="base-chat-slideover__member-item">
 							<div class="base-chat-slideover__member-main" @click="handleMemberClick(member.id)">
-								<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_SCALE_SMALL" />
+								<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_SCALE.SMALL" />
 								<div class="base-chat-slideover__member-info">
 									<BaseText
 										tag="span"
-										:weight="UI_FONT_WEIGHT_SEMIBOLD"
+										:weight="UI_FONT_WEIGHT.SEMIBOLD"
 										:size-scale="sizeScale * UI_CHAT_SCALE_MEMBER"
 										class="base-chat-slideover__member-name">
 										{{ member.name }}
@@ -77,7 +77,7 @@
 								<BaseButton
 									variant="ghost"
 									:padding="1"
-									:size-scale="sizeScale * UI_SCALE_SMALL"
+									:size-scale="sizeScale * UI_SCALE.SMALL"
 									class="base-chat-slideover__admin-btn"
 									:aria-label="`${UI_CHAT_MEMBER_ACTIONS} ${member.name}`"
 									@click="toggleAdminMenu(member.id)">
@@ -120,7 +120,7 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__info-label"
 								>{{ UI_CHAT_PHONE }}</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
@@ -131,7 +131,7 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__info-label"
 								>Email</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value"
@@ -150,10 +150,10 @@
 						:name="selectedMember.name"
 						:size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE"
 						class="base-chat-slideover__avatar" />
-					<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_CHAT_SCALE_NAME" class="base-chat-slideover__name">
+					<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_CHAT_SCALE_NAME" class="base-chat-slideover__name">
 						{{ selectedMember.name }}
 					</BaseText>
-					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__status">
+					<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__status">
 						{{ selectedMember.status === 'online' ? UI_CHAT_ONLINE : UI_CHAT_OFFLINE }}
 					</BaseText>
 
@@ -171,7 +171,7 @@
 					<div class="base-chat-slideover__info-item">
 						<BaseIcon name="calendar" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label">{{ UI_CHAT_ROLE }}</BaseText>
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__info-label">{{ UI_CHAT_ROLE }}</BaseText>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value">
 								{{ selectedMember.role === 'admin' ? UI_CHAT_ADMIN : UI_CHAT_MEMBER }}
 							</BaseText>
@@ -180,7 +180,7 @@
 					<div v-if="selectedMember.warningsCount !== undefined" class="base-chat-slideover__info-item">
 						<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-icon" />
 						<div class="base-chat-slideover__info-text-wrapper">
-							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__info-label"
+							<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__info-label"
 								>{{ UI_CHAT_WARNINGS }}</BaseText
 							>
 							<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__info-value">
@@ -232,15 +232,16 @@ import {
 	UI_CHAT_BACK_TO_LIST,
 	UI_CHAT_BAN,
 	UI_CHAT_CLOSE_PANEL,
+	UI_CHAT_DEMOTE,
 	UI_CHAT_DEMO_EMAIL,
 	UI_CHAT_DEMO_GROUP_DESCRIPTION,
 	UI_CHAT_DEMO_PHONE,
 	UI_CHAT_DEMO_PROFILE_DESCRIPTION,
-	UI_CHAT_DEMOTE,
 	UI_CHAT_EXCLUDE,
 	UI_CHAT_FILES_TAB,
 	UI_CHAT_INFORMATION,
 	UI_CHAT_INFO_TAB,
+	UI_CHAT_LINKS_TAB,
 	UI_CHAT_MAKE_ADMIN,
 	UI_CHAT_MEDIA_TAB,
 	UI_CHAT_MEMBER,
@@ -258,16 +259,14 @@ import {
 	UI_CHAT_SCALE_MEMBER,
 	UI_CHAT_SCALE_META,
 	UI_CHAT_SCALE_NAME,
-	UI_CHAT_LINKS_TAB,
 	UI_CHAT_VIOLATION,
 	UI_CHAT_WARNINGS,
 	UI_CHAT_WRITE_MESSAGE,
-	UI_FONT_WEIGHT_SEMIBOLD,
-	UI_SCALE_AUTOCOMPLETE,
-	UI_SCALE_SMALL,
+	UI_FONT_WEIGHT,
+	UI_SCALE,
 } from '@constants'
 import { computed, ref } from 'vue'
-import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
+import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'

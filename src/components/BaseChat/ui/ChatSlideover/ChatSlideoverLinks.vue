@@ -9,9 +9,9 @@
 			:key="index"
 			class="base-chat-slideover__link-item"
 			@click="openLink(link.url)">
-			<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE_SMALL" class="base-chat-slideover__link-icon" />
+			<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__link-icon" />
 			<div class="base-chat-slideover__link-info">
-				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__link-url">
+				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__link-url">
 					{{ link.url }}
 				</BaseText>
 				<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-slideover__link-date">
@@ -30,11 +30,10 @@ import {
 	UI_CHAT_SCALE_AVATAR_LARGE,
 	UI_CHAT_SCALE_MEMBER,
 	UI_CHAT_SCALE_META,
-	UI_SCALE_AUTOCOMPLETE,
-	UI_SCALE_SMALL,
+	UI_SCALE,
 } from '@constants'
 import { computed } from 'vue'
-import type { ChatMessage } from '../../BaseChat.types'
+import type { ChatMessage } from '../../model/BaseChat.types'
 
 interface SharedLink {
 	url: string

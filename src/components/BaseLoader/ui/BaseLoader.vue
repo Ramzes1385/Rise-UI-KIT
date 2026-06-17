@@ -4,7 +4,7 @@
 		:class="[`base-loader--${props.variant}`, { 'base-loader--overlay': props.isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="status"
-		:aria-label="UI_LOADING_ARIA">
+		:aria-label="UI_TEXT.LOADING_ARIA">
 		<div class="base-loader__animation" :class="classes.animation">
 			<!-- Spinner -->
 			<template v-if="props.variant === 'spinner'">
@@ -43,14 +43,14 @@
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_LOADING_ARIA, UI_LOADING_TEXT } from '@constants'
+import { UI_TEXT } from '@constants'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../model/BaseLoader.types'
 
 const props = withDefaults(defineProps<BaseLoaderProps>(), {
 	variant: 'spinner',
 	hasLabel: false,
-	label: UI_LOADING_TEXT,
+	label: UI_TEXT.LOADING,
 	isOverlay: false,
 	sizeScale: 100,
 })

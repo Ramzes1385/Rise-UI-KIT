@@ -5,7 +5,7 @@
 			classes.root,
 			variantClass,
 			{
-				'base-switch--error': error,
+				'base-switch--error': formField.error,
 				'base-switch--disabled': props.isDisabled,
 				'base-switch--reverse': props.reverse,
 			},
@@ -49,12 +49,12 @@
 		</label>
 		<slot name="error">
 			<BaseText
-				v-if="error"
+				v-if="formField.error"
 				tag="span"
 				class="base-switch__error-text"
 				:custom-class="classes.errorText"
 				:size-scale="props.sizeScale"
-				>{{ error }}</BaseText
+				>{{ formField.error }}</BaseText
 			>
 		</slot>
 	</div>
@@ -64,7 +64,8 @@
 import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types'
 
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { useId } from 'vue'
 
@@ -79,16 +80,15 @@ const props = withDefaults(defineProps<BaseSwitchProps>(), {
 })
 
 const inputId = useId()
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-switch',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'])
 
 const emit = defineEmits<BaseSwitchEmits>()
+
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
 
 function handleChange(e: Event): void {
 	const target = toHTMLInputElement(e.target)
@@ -96,4 +96,9 @@ function handleChange(e: Event): void {
 	emit('update:modelValue', target.checked)
 	emit('change', target.checked)
 }
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

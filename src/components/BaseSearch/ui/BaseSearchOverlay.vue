@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
 import { calcIconScale } from '@components/BaseIcon'
-import type { SearchResult } from '../BaseSearch.types'
+import type { SearchResult } from '../model/BaseSearch.types'
 
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'

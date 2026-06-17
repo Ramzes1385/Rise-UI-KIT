@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { ChatMessage } from '../BaseChat.types'
+import type { ChatMessage } from '../model/BaseChat.types'
 
 export function useChatReply() {
 	const replyingTo = ref<ChatMessage | null>(null)

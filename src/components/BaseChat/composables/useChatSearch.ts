@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import type { ChatMessage } from '../BaseChat.types'
+import type { ChatMessage } from '../model/BaseChat.types'
 
 interface UseChatSearchOptions {
 	getMessages: () => ChatMessage[]

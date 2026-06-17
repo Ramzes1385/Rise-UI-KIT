@@ -15,7 +15,7 @@
 				{
 					'base-select--open': isOpen,
 					'base-select--disabled': isDisabled,
-					'base-select--error': error,
+					'base-select--error': formField.error,
 					'base-select--multiple': isMultiple,
 				},
 				classes.root,
@@ -120,84 +120,40 @@
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</div>
 
-			<BaseText
-				v-if="error"
-				tag="span"
-				class="base-select__error-text"
-				:custom-class="classes.errorText"
-				:size-scale="sizeScale"
-				>{{ error }}</BaseText
-			>
+		<BaseText
+			v-if="formField.error"
+			tag="span"
+			class="base-select__error-text"
+			:custom-class="classes.errorText"
+			:size-scale="sizeScale"
+			>{{ formField.error }}</BaseText
+		>
 		</div>
 
 		<template #dropdown>
-			<div class="base-select__dropdown-content" :class="classes.dropdownContent" :style="sizeScaleStyle">
-				<div v-if="isSearchable" class="base-select__search" :class="classes.search">
-					<input
-						v-model="searchQuery"
-						type="text"
-						:placeholder="UI_SEARCH_PLACEHOLDER"
-						class="base-select__search-input"
-						:class="classes.searchInput"
-						@click.stop />
-				</div>
-
-				<slot name="header" />
-
-				<ul class="base-select__options" :class="classes.options">
-					<li
-						v-for="option in filteredOptions"
-						:key="option.value"
-						class="base-select__option"
-						:class="[
-							{
-								'base-select__option--selected': isSelected(option.value),
-								'base-select__option--disabled': option.isDisabled,
-								'base-select__option--with-desc': option.description,
-							},
-							classes.option,
-						]"
-						@click="handleSelect(option)">
-						<slot name="option" :option="option" :is-selected="isSelected(option.value)">
-							<span v-if="isMultiple" class="base-select__checkbox" :class="classes.checkbox">
-								<BaseIcon v-if="isSelected(option.value)" name="check" :size-scale="calcIconScale('xs', sizeScale)" />
-							</span>
-							<BaseText
-								v-if="option.icon"
-								tag="span"
-								class="base-select__option-icon"
-								:custom-class="classes.optionIcon"
-								:size-scale="sizeScale"
-								>{{ option.icon }}</BaseText
-							>
-							<div class="base-select__option-content" :class="classes.optionContent">
-								<BaseText
-									tag="span"
-									class="base-select__option-label"
-									:custom-class="classes.optionLabel"
-									:size-scale="sizeScale"
-									>{{ option.label }}</BaseText
-								>
-								<BaseText
-									v-if="option.description"
-									tag="span"
-									class="base-select__option-desc"
-									:custom-class="classes.optionDesc"
-									:size-scale="sizeScale"
-									>{{ option.description }}</BaseText
-								>
-							</div>
-						</slot>
-					</li>
-					<li v-if="filteredOptions.length === 0" class="base-select__no-results" :class="classes.noResults">
-						<slot name="empty">
-							<BaseText tag="span" :size-scale="sizeScale">{{ UI_NO_RESULTS_TEXT }}</BaseText>
-						</slot>
-					</li>
-				</ul>
-
-				<slot name="footer" />
-			</div>
+			<BaseSelectDropdown
+				v-model:search-query="searchQuery"
+				:filtered-options="filteredOptions"
+				:is-searchable="isSearchable"
+				:is-multiple="isMultiple"
+				:size-scale="sizeScale"
+				:is-selected="isSelected"
+				:classes="classes"
+				:size-scale-style="sizeScaleStyle"
+				@select="handleSelect">
+				<template #header>
+					<slot name="header" />
+				</template>
+				<template #option="slotProps">
+					<slot name="option" v-bind="slotProps" />
+				</template>
+				<template #empty>
+					<slot name="empty" />
+				</template>
+				<template #footer>
+					<slot name="footer" />
+				</template>
+			</BaseSelectDropdown>
 		</template>
 	</BaseDropdown>
 </template>
@@ -207,15 +163,17 @@ import { BaseBadge } from '@components/BaseBadge'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_NO_RESULTS_TEXT, UI_SEARCH_PLACEHOLDER, UI_SELECT_PLACEHOLDER } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
+import { UI_TEXT } from '@constants'
 import { computed, ref } from 'vue'
 import '../styles/BaseSelect.style.scss'
 import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from '../model/BaseSelect.types'
+import BaseSelectDropdown from './BaseSelectDropdown.vue'
 
 const props = withDefaults(defineProps<BaseSelectProps>(), {
 	modelValue: '',
-	placeholder: UI_SELECT_PLACEHOLDER,
+	placeholder: UI_TEXT.SELECT_PLACEHOLDER,
 	label: '',
 	isRequired: false,
 	isMultiple: false,
@@ -226,13 +184,7 @@ const props = withDefaults(defineProps<BaseSelectProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-select',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
 		'root',
 		'dropdown',
 		'label',
@@ -258,10 +210,15 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 		'optionLabel',
 		'optionDesc',
 		'noResults',
-	],
-})
+	])
 
 const emit = defineEmits<BaseSelectEmits>()
+
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
 
 const isOpen = ref(false)
 const searchQuery = ref('')
@@ -302,6 +259,7 @@ function toggleDropdown(): void {
 
 function handleClose(): void {
 	searchQuery.value = ''
+	formField.onBlur()
 }
 
 function isSelected(value: string | number): boolean {
@@ -342,4 +300,9 @@ function removeValue(label: string): void {
 		emit('change', newValue)
 	}
 }
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

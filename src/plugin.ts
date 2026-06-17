@@ -52,9 +52,9 @@ import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
-const BaseChat = defineAsyncComponent(() => import('./components/BaseChat/BaseChat.vue'))
+const BaseChat = defineAsyncComponent(() => import('./components/BaseChat/ui/BaseChat.vue'))
 const BaseEditor = defineAsyncComponent(() => import('./components/BaseEditor/ui/BaseEditor.vue'))
-const BaseDatePicker = defineAsyncComponent(() => import('./components/BaseDatePicker/BaseDatePicker.vue'))
+const BaseDatePicker = defineAsyncComponent(() => import('./components/BaseDatePicker/ui/BaseDatePicker.vue'))
 const BaseCalendar = defineAsyncComponent(() => import('./components/BaseCalendar/ui/BaseCalendar.vue'))
 const BaseTable = defineAsyncComponent(() => import('./components/BaseTable/ui/BaseTable.vue'))
 const BaseFileUpload = defineAsyncComponent(() => import('./components/BaseFileUpload/ui/BaseFileUpload.vue'))

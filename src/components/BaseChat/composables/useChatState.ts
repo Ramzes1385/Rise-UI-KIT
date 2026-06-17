@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import type { ChatMember, ChatMessage } from '../BaseChat.types'
+import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 import { useChatInfoPanel } from './useChatInfoPanel'
 import { useChatReply } from './useChatReply'
 import { useChatSearch } from './useChatSearch'

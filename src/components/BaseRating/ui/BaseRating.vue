@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_RATING_ARIA_PREFIX } from '@constants'
 import { computed, ref } from 'vue'
 
@@ -49,14 +49,7 @@ const props = withDefaults(defineProps<BaseRatingProps>(), {
 
 const emit = defineEmits<BaseRatingEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-rating',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'icon', 'iconFilled'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-rating', props, ['root', 'icon', 'iconFilled'])
 
 const hoverValue = ref(0)
 

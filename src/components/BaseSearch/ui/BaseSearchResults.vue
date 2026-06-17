@@ -57,7 +57,7 @@
 		<template v-else-if="query && !isLoading">
 			<slot name="empty">
 				<div class="base-search__empty" :class="classes.empty">
-					<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">{{ UI_NO_RESULTS_TEXT }}</BaseText>
+					<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">{{ UI_TEXT.NO_RESULTS }}</BaseText>
 				</div>
 			</slot>
 		</template>
@@ -69,8 +69,8 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_NO_RESULTS_TEXT } from '@constants'
-import type { SearchResult } from '../BaseSearch.types'
+import { UI_TEXT } from '@constants'
+import type { SearchResult } from '../model/BaseSearch.types'
 
 interface BaseSearchResultsProps {
 	visibleResults: SearchResult[]

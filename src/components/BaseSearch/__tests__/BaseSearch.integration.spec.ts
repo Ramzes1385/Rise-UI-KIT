@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseSearch from './BaseSearch.vue'
+import BaseSearch from '../ui/BaseSearch.vue'
 
 /** Мокаем DOM-зависимые композаблы */
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))

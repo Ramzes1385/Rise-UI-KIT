@@ -37,7 +37,7 @@
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseSeparator } from '@components/BaseSeparator'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseMenu.style.scss'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../model/BaseMenu.types'
 
@@ -45,14 +45,7 @@ const props = withDefaults(defineProps<BaseMenuProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-menu',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'group', 'item', 'icon', 'label', 'divider'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, ['root', 'group', 'item', 'icon', 'label', 'divider'])
 
 const emit = defineEmits<BaseMenuEmits>()
 

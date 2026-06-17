@@ -24,7 +24,7 @@
 						<BaseText
 							tag="h4"
 							:size-scale="props.sizeScale"
-							:weight="UI_FONT_WEIGHT_SEMIBOLD"
+							:weight="UI_FONT_WEIGHT.SEMIBOLD"
 							class="base-notification__title"
 							:custom-class="classes.title">
 							{{ notification.title }}
@@ -51,7 +51,7 @@
 					<div
 						class="base-notification__progress"
 						:class="classes.progress"
-						:style="{ animationDuration: `${notification.duration || UI_NOTIFICATION_AUTO_CLOSE_MS}ms` }"></div>
+						:style="{ animationDuration: `${notification.duration || UI_TIMING.NOTIFICATION_AUTO_CLOSE}ms` }"></div>
 				</div>
 			</TransitionGroup>
 		</div>
@@ -62,8 +62,8 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_FONT_WEIGHT_SEMIBOLD, UI_NOTIFICATION_AUTO_CLOSE_MS } from '@constants'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT, UI_TIMING } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import '../styles/BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, NotificationItem } from '../model/BaseNotification.types'
@@ -72,19 +72,12 @@ const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	title: '',
 	type: 'info',
 	position: 'top-right',
-	duration: UI_NOTIFICATION_AUTO_CLOSE_MS,
+	duration: UI_TIMING.NOTIFICATION_AUTO_CLOSE,
 	sizeScale: 100,
 	isContained: false,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-notification',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-notification', props, ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'])
 
 const typeIconMap: Record<string, string> = {
 	success: 'check-circle',
@@ -105,7 +98,7 @@ function add(notification: BaseNotificationProps) {
 	const id = nextId++
 	notifications.value.unshift({ ...notification, id })
 
-	const timer = setTimeout(() => remove(id), notification.duration ?? UI_NOTIFICATION_AUTO_CLOSE_MS)
+	const timer = setTimeout(() => remove(id), notification.duration ?? UI_TIMING.NOTIFICATION_AUTO_CLOSE)
 	autoCloseTimers.set(id, timer)
 }
 

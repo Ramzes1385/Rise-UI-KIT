@@ -1,7 +1,7 @@
 <template>
 	<div class="base-chat-selection-toolbar">
 		<div class="base-chat-selection-toolbar__info">
-			<BaseText :size-scale="props.sizeScale" :weight="UI_FONT_WEIGHT_SEMIBOLD"> {{ UI_CHAT_SELECTED_PREFIX }} {{ selectedCount }} </BaseText>
+			<BaseText :size-scale="props.sizeScale" :weight="UI_FONT_WEIGHT.SEMIBOLD"> {{ UI_CHAT_SELECTED_PREFIX }} {{ selectedCount }} </BaseText>
 		</div>
 		<div class="base-chat-selection-toolbar__actions">
 			<BaseButton variant="ghost" :size-scale="props.sizeScale" @click="emit('forward')">
@@ -34,7 +34,13 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_CANCEL, UI_CHAT_DELETE, UI_CHAT_FORWARD, UI_CHAT_SELECTED_PREFIX, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import {
+	UI_CHAT_CANCEL,
+	UI_CHAT_DELETE,
+	UI_CHAT_FORWARD,
+	UI_CHAT_SELECTED_PREFIX,
+	UI_FONT_WEIGHT,
+} from '@constants'
 import './ChatSelectionToolbar.style.scss'
 
 interface ChatSelectionToolbarProps {

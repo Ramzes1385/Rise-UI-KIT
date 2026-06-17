@@ -13,14 +13,14 @@
 		]"
 		@click="isSelectionMode ? handleSelect() : undefined">
 		<div v-if="isSelectionMode" class="base-chat-message-list__checkbox-wrapper" @click.stop>
-			<BaseCheckbox :model-value="isSelected" :size-scale="sizeScale * UI_SCALE_SMALL" @update:model-value="handleSelect" />
+			<BaseCheckbox :model-value="isSelected" :size-scale="sizeScale * UI_SCALE.SMALL" @update:model-value="handleSelect" />
 		</div>
 
 		<BaseAvatar
 			v-if="message.sender === 'other' && message.senderAvatar"
 			:src="message.senderAvatar"
 			:name="message.senderName || 'Companion'"
-			:size-scale="sizeScale * UI_SCALE_SMALL"
+			:size-scale="sizeScale * UI_SCALE.SMALL"
 			class="base-chat-message-list__avatar"
 			@click.stop="handleAvatarClick" />
 
@@ -54,8 +54,8 @@
 				<BaseText
 					v-if="isGroup && message.sender === 'other' && message.senderName"
 					tag="span"
-					:weight="UI_FONT_WEIGHT_SEMIBOLD"
-					:size-scale="sizeScale * UI_SCALE_SMALL"
+					:weight="UI_FONT_WEIGHT.SEMIBOLD"
+					:size-scale="sizeScale * UI_SCALE.SMALL"
 					class="base-chat-message-list__sender-name"
 					@click.stop="handleAvatarClick">
 					{{ message.senderName }}
@@ -127,9 +127,19 @@ import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_REPLY_ARIA, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_META, UI_CHAT_SCALE_SPINNER, UI_CHAT_SCALE_STATUS, UI_CHAT_SCALE_SUBTEXT, UI_CHAT_SELECT_ARIA, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_SMALL } from '@constants'
+import {
+	UI_CHAT_REPLY_ARIA,
+	UI_CHAT_SCALE_ICON,
+	UI_CHAT_SCALE_META,
+	UI_CHAT_SCALE_SPINNER,
+	UI_CHAT_SCALE_STATUS,
+	UI_CHAT_SCALE_SUBTEXT,
+	UI_CHAT_SELECT_ARIA,
+	UI_FONT_WEIGHT,
+	UI_SCALE,
+} from '@constants'
 import { computed } from 'vue'
-import type { ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
+import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageReply from './ChatMessageReply.vue'

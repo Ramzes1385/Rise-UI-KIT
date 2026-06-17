@@ -8,7 +8,7 @@ import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, waitFor } from '@testing-library/vue'
 import { nextTick } from 'vue'
 
-import BaseSearch from './BaseSearch.vue'
+import BaseSearch from '../ui/BaseSearch.vue'
 
 /** Мокаем DOM-зависимые композаблы */
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))

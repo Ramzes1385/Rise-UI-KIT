@@ -2,7 +2,7 @@
 	<div v-if="replyToId" class="base-chat-message-list__reply-quote" @click.stop="handleClick">
 		<BaseText
 			tag="span"
-			:weight="UI_FONT_WEIGHT_SEMIBOLD"
+			:weight="UI_FONT_WEIGHT.SEMIBOLD"
 			:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
 			class="base-chat-message-list__reply-sender">
 			{{ replyToSenderName || UI_CHAT_MESSAGE_PLACEHOLDER }}
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_SCALE_ICON, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_SCALE_ICON, UI_FONT_WEIGHT } from '@constants'
 
 interface ChatMessageReplyProps {
 	replyToId?: string

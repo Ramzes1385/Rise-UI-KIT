@@ -13,7 +13,9 @@ export type {
 	SortDirection,
 	SortState,
 	SortType,
+	TableBehaviorConfig,
 	TableColumn,
+	TableFeaturesConfig,
 	TableRow,
 	TableVariant,
 } from './model/BaseTable.types'

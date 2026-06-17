@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { computed } from 'vue'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps } from '../model/BaseChip.types'
@@ -32,14 +32,7 @@ const props = withDefaults(defineProps<BaseChipProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-chip',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'badge'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, ['root', 'badge'])
 
 const emit = defineEmits<BaseChipEmits>()
 

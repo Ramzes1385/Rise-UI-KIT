@@ -115,7 +115,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { UI_FONT_WEIGHT_BOLD, UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MONTH_ARIA, UI_PREV_YEAR_ARIA } from '@constants'
 import { computed, ref } from 'vue'
-import { useDatePickerPanelNavigation } from '../../composables/useDatePickerPanelNavigation'
+import { useDatePickerPanelNavigation } from '../../model/useDatePickerPanelNavigation'
 import { pickDatePickerCalendarConfig } from '../../model/BaseDatePickerCalendar.types'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
 

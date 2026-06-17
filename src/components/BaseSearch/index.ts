@@ -1,4 +1,4 @@
-export { SEARCH_VARIANTS } from './BaseSearch.types'
+export { SEARCH_VARIANTS } from './model/BaseSearch.types'
 export type {
 	BaseSearchEmits,
 	BaseSearchProps,
@@ -6,5 +6,5 @@ export type {
 	SearchMode,
 	SearchResult,
 	SearchVariant,
-} from './BaseSearch.types'
-export { default as BaseSearch } from './BaseSearch.vue'
+} from './model/BaseSearch.types'
+export { default as BaseSearch } from './ui/BaseSearch.vue'

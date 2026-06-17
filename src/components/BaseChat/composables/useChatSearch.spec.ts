@@ -1,6 +1,6 @@
 import { effectScope } from 'vue'
 
-import type { ChatMessage } from '../BaseChat.types'
+import type { ChatMessage } from '../model/BaseChat.types'
 import { useChatSearch } from './useChatSearch'
 
 function message(id: string, overrides: Partial<ChatMessage> = {}): ChatMessage {

@@ -2,6 +2,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { UseBaseComponentOptions } from './useBaseComponent.types'
 
 /**
@@ -26,4 +27,27 @@ function useBaseComponent(options: UseBaseComponentOptions) {
 	return { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes }
 }
 
-export { useBaseComponent }
+/**
+ * Упрощённая обёртка над useBaseComponent.
+ * Принимает props напрямую вместо getter-функций, устраняя бойлерплейт.
+ *
+ * @param block — БЭМ-блок (например 'base-button')
+ * @param props — реактивные пропсы компонента (BaseComponentProps)
+ * @param elementKeys — ключи элементов для customClass
+ */
+function useStandardBaseComponent<T extends BaseComponentProps>(
+	block: string,
+	props: T,
+	elementKeys?: string[],
+) {
+	return useBaseComponent({
+		block,
+		getVariant: () => props.variant,
+		getSizeScale: () => props.sizeScale ?? 100,
+		getColor: () => props.color,
+		getClass: () => props.customClass,
+		elementKeys,
+	})
+}
+
+export { useBaseComponent, useStandardBaseComponent }

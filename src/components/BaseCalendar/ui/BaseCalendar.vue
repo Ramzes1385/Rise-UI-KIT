@@ -31,7 +31,7 @@
 						:size-scale="resolvedProps.sizeScale"
 						:is-disabled="resolvedProps.isDisabled || !resolvedProps.canSwitchView"
 						@click="resolvedProps.canSwitchView && switchView()">
-						<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
+						<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
 					</BaseButton>
 					<BaseButton
 						variant="ghost"
@@ -44,7 +44,7 @@
 				</slot>
 			</div>
 			<div v-else class="base-calendar__header base-calendar__header--simple" :class="classes.header">
-				<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
+				<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="resolvedProps.sizeScale">{{ headerTitle }}</BaseText>
 			</div>
 
 		<BaseCalendarDays
@@ -125,75 +125,31 @@
 				:size-scale="calcIconScale('md', resolvedProps.sizeScale)"
 				:is-disabled="resolvedProps.isDisabled"
 				@click="handleTodayClick">
-				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ UI_TODAY_TEXT }}</BaseText>
+				<BaseText tag="span" :size-scale="resolvedProps.sizeScale">{{ UI_TEXT.TODAY }}</BaseText>
 			</BaseButton>
 		</div>
 	</BaseCard>
 </template>
 
 <script setup lang="ts">
-import { UI_FONT_WEIGHT_SEMIBOLD, UI_TODAY_TEXT } from '@constants'
+import { UI_FONT_WEIGHT, UI_TEXT } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCalendar } from '@composables/useCalendar'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { computed, watch } from 'vue'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { watch } from 'vue'
 import '../styles/BaseCalendar.style.scss'
 import type { BaseCalendarEmits, BaseCalendarProps } from '../model/BaseCalendar.types'
 import { useCalendarPopover } from '../model/useCalendarPopover'
+import { useCalendarResolvedProps } from '../model/useCalendarResolvedProps'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
 
 const props = defineProps<BaseCalendarProps>()
-const { resolveBooleanPropDefault } = useExplicitPropDetection()
-
-const resolvedProps = computed(() => ({
-	modelValue: props.modelValue ?? null,
-	modelValueEnd: props.modelValueEnd ?? null,
-	selectedDates: props.selectedDates ?? [],
-	selectionMode: props.selectionMode ?? 'single',
-	minDate: props.constraints?.minDate ?? props.minDate ?? null,
-	maxDate: props.constraints?.maxDate ?? props.maxDate ?? null,
-	disabledDates: props.constraints?.disabledDates ?? props.disabledDates ?? [],
-	disabledWeekdays: props.constraints?.disabledWeekdays ?? props.disabledWeekdays ?? [],
-	disableFrom: props.constraints?.disableFrom ?? props.disableFrom ?? null,
-	disableTo: props.constraints?.disableTo ?? props.disableTo ?? null,
-	highlights: props.highlights ?? [],
-	events: props.events ?? [],
-	weekends: props.weekends ?? null,
-	firstDayOfWeek: props.firstDayOfWeek ?? 1,
-	showTime: props.timeConfig?.showTime ?? props.showTime ?? false,
-	showSeconds: props.timeConfig?.showSeconds ?? props.showSeconds ?? false,
-	is24Hour: props.timeConfig?.is24Hour !== undefined
-		? props.timeConfig.is24Hour
-		: resolveBooleanPropDefault('is24Hour', props.is24Hour, true),
-	showWeekNumber: props.displayConfig?.showWeekNumber ?? props.showWeekNumber ?? false,
-	locale: props.locale ?? 'ru-RU',
-	variant: props.variant ?? 'default',
-	color: props.color,
-	showDatePopover: props.showDatePopover ?? false,
-	sizeScale: props.sizeScale ?? 100,
-	isDisabled: props.isDisabled ?? false,
-	showNavigation: props.displayConfig?.showNavigation !== undefined
-		? props.displayConfig.showNavigation
-		: resolveBooleanPropDefault('showNavigation', props.showNavigation, true),
-	canSwitchView: props.displayConfig?.canSwitchView !== undefined
-		? props.displayConfig.canSwitchView
-		: resolveBooleanPropDefault('canSwitchView', props.canSwitchView, true),
-	showTodayButton: props.displayConfig?.showTodayButton !== undefined
-		? props.displayConfig.showTodayButton
-		: resolveBooleanPropDefault('showTodayButton', props.showTodayButton, true),
-	showYear: props.displayConfig?.showYear !== undefined
-		? props.displayConfig.showYear
-		: resolveBooleanPropDefault('showYear', props.showYear, true),
-	initialMonth: props.initialMonth,
-	initialYear: props.initialYear,
-	customClass: props.customClass,
-}))
+const resolvedProps = useCalendarResolvedProps(props)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
 	block: 'base-calendar',

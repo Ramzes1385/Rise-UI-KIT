@@ -129,23 +129,21 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseText } from '@components/BaseText'
-import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_DELETE_MULTI_CONFIRM, UI_CHAT_DELETE_SINGLE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT } from '@constants'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
+import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { downloadFile } from '@utils/fileUtils'
-import { computed, ref } from 'vue'
-import './BaseChat.style.scss'
-import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from './BaseChat.types'
+import { ref } from 'vue'
+import '../styles/BaseChat.style.scss'
+import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from '../model/BaseChat.types'
 
-import { ChatHeader } from './ChatHeader'
-import { ChatInput } from './ChatInput'
-import { ChatMessageList } from './ChatMessageList'
-import { useChatState } from './composables/useChatState'
-import { ChatPinnedPanel } from './ui/ChatPinnedPanel'
-import { ChatSelectionToolbar } from './ui/ChatSelectionToolbar'
-import { ChatSlideover } from './ui/ChatSlideover'
+import { ChatHeader } from '../ChatHeader'
+import { ChatInput } from '../ChatInput'
+import { ChatMessageList } from '../ChatMessageList'
+import { useChatDeleteConfirm } from '../composables/useChatDeleteConfirm'
+import { useChatState } from '../composables/useChatState'
+import { ChatPinnedPanel } from './ChatPinnedPanel'
+import { ChatSelectionToolbar } from './ChatSelectionToolbar'
+import { ChatSlideover } from './ChatSlideover'
 
 /** Публичные методы ChatMessageList, экспонированные через defineExpose */
 interface MessageListExposed {
@@ -167,13 +165,7 @@ const props = withDefaults(defineProps<BaseChatProps>(), {
 
 const emit = defineEmits<BaseChatEmits>()
 
-const { variantClass, variantStyle } = useVariant({ block: 'base-chat', getVariant: () => props.variant })
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root'],
-})
+const { variantClass, variantStyle, sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-chat', props, ['root'])
 
 const messageListRef = ref<MessageListExposed | null>(null)
 
@@ -200,14 +192,20 @@ const {
 	scrollToMessage: messageId => messageListRef.value?.scrollToMessage(messageId),
 })
 
-/** Состояние окна подтверждения удаления: список id к удалению и флаг открытия */
-const deleteConfirm = ref<{ isOpen: boolean; ids: string[] }>({ isOpen: false, ids: [] })
-
-/** Текст подтверждения с учётом количества удаляемых сообщений */
-const deleteConfirmText = computed((): string => {
-	const count = deleteConfirm.value.ids.length
-	if (count <= 1) return UI_CHAT_DELETE_SINGLE_CONFIRM
-	return UI_CHAT_DELETE_MULTI_CONFIRM.replace('{count}', String(count))
+// Логика подтверждения удаления
+const {
+	deleteConfirm,
+	deleteConfirmText,
+	handleDeleteSelected,
+	handleDeleteSingle,
+	handleConfirmDelete,
+	handleCancelDelete,
+	handleForwardSelected,
+	handleCancelSelection,
+} = useChatDeleteConfirm({
+	selectedMessageIds,
+	onDelete: ids => emit('delete-messages', ids),
+	onForward: ids => emit('forward-messages', ids),
 })
 
 /**
@@ -258,44 +256,6 @@ function handleDownloadFile(file: ChatMessageAttachment): void {
 		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
 		emit('error', { type: 'download', message: `[BaseChat] Download failed: ${file.name}`, detail: e })
 	}
-}
-
-/** Переслать выделенные сообщения */
-function handleForwardSelected(): void {
-	emit('forward-messages', selectedMessageIds.value)
-	selectedMessageIds.value = []
-}
-
-/** Запросить удаление выделенных сообщений (открыть подтверждение) */
-function handleDeleteSelected(): void {
-	if (selectedMessageIds.value.length === 0) return
-	deleteConfirm.value = { isOpen: true, ids: [...selectedMessageIds.value] }
-}
-
-/** Запросить удаление одного сообщения (открыть подтверждение) */
-function handleDeleteSingle(messageId: string): void {
-	deleteConfirm.value = { isOpen: true, ids: [messageId] }
-}
-
-/** Подтвердить удаление: эмитим событие и сбрасываем выбор */
-function handleConfirmDelete(): void {
-	const ids = deleteConfirm.value.ids
-	/* istanbul ignore next — defensive: модалка открывается только при непустом ids */
-	if (ids.length > 0) {
-		emit('delete-messages', ids)
-	}
-	selectedMessageIds.value = []
-	deleteConfirm.value = { isOpen: false, ids: [] }
-}
-
-/** Отменить удаление: закрываем окно, выбор сохраняем */
-function handleCancelDelete(): void {
-	deleteConfirm.value = { isOpen: false, ids: [] }
-}
-
-/** Отменить выделение сообщений */
-function handleCancelSelection(): void {
-	selectedMessageIds.value = []
 }
 
 /** Закрепить сообщение */

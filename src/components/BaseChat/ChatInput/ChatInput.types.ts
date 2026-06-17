@@ -1,4 +1,4 @@
-import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../BaseChat.types'
+import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../model/BaseChat.types'
 
 export interface ChatInputProps {
 	/** Масштаб размера */

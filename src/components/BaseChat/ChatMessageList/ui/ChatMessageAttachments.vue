@@ -25,7 +25,7 @@
 				</BaseButton>
 				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
 					<BaseText
-						:weight="UI_FONT_WEIGHT_SEMIBOLD"
+						:weight="UI_FONT_WEIGHT.SEMIBOLD"
 						:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
 						class="base-chat-message-list__collage-overlay-text">
 						+{{ images.length - 3 }}
@@ -45,8 +45,8 @@
 				<div class="base-chat-message-list__attached-file-info">
 					<BaseText
 						tag="span"
-						:size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE"
-						:weight="UI_FONT_WEIGHT_SEMIBOLD"
+						:size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE"
+						:weight="UI_FONT_WEIGHT.SEMIBOLD"
 						class="base-chat-message-list__attached-file-name">
 						{{ file.name }}
 					</BaseText>
@@ -79,10 +79,19 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_DOWNLOAD_FILE, UI_CHAT_DOWNLOAD_IMAGE, UI_CHAT_SCALE_FILE_ICON, UI_CHAT_SCALE_ICON, UI_CHAT_SCALE_MEMBER, UI_CHAT_SCALE_META, UI_FONT_WEIGHT_SEMIBOLD, UI_SCALE_AUTOCOMPLETE } from '@constants'
+import {
+	UI_CHAT_DOWNLOAD_FILE,
+	UI_CHAT_DOWNLOAD_IMAGE,
+	UI_CHAT_SCALE_FILE_ICON,
+	UI_CHAT_SCALE_ICON,
+	UI_CHAT_SCALE_MEMBER,
+	UI_CHAT_SCALE_META,
+	UI_FONT_WEIGHT,
+	UI_SCALE,
+} from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed } from 'vue'
-import type { ChatMessageAttachment } from '../../BaseChat.types'
+import type { ChatMessageAttachment } from '../../model/BaseChat.types'
 
 interface ChatMessageAttachmentsProps {
 	attachments: ChatMessageAttachment[]

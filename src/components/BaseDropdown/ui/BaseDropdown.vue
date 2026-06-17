@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { useClickOutside } from '@composables/useClickOutside'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { UI_PANEL_MAX_HEIGHT } from '@constants'
@@ -52,14 +52,7 @@ const preventMousedown = computed(() =>
 		? (props.preventMousedown ?? true)
 		: true,
 )
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-dropdown__panel',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'panel'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel'])
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: 8 })
 
 const emit = defineEmits<BaseDropdownEmits>()

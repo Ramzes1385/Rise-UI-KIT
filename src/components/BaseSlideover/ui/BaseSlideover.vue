@@ -23,13 +23,13 @@
 							<BaseText
 								v-if="title"
 								tag="h3"
-								:weight="UI_FONT_WEIGHT_SEMIBOLD"
+								:weight="UI_FONT_WEIGHT.SEMIBOLD"
 								class="base-slideover__title"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
 							>
 						</slot>
-						<BaseButton variant="ghost" :aria-label="UI_CLOSE_ARIA" :padding="2" @click="handleClose">
+						<BaseButton variant="ghost" :aria-label="UI_ARIA.CLOSE" :padding="2" @click="handleClose">
 							<BaseIcon name="close" />
 						</BaseButton>
 					</div>
@@ -58,7 +58,7 @@ import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
-import { UI_CLOSE_ARIA, UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps } from '../model/BaseSlideover.types'
 
@@ -110,11 +110,8 @@ const { paddingStyle: panelStyle } = usePadding({
 const emit = defineEmits<BaseSlideoverEmits>()
 const slots = useSlots()
 
-/** Есть ли header */
-const hasHeader = !!slots.header || !!props.title
-
-/** Есть ли footer */
-const hasFooter = !!slots.footer
+const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title))
+const hasFooter = computed(() => Boolean(slots.footer))
 
 /** Popup-паттерн: оверлей, Escape, блокировка скролла */
 const { handleOverlayClick, close: handleClose } = usePopup({

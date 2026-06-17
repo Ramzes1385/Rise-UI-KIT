@@ -13,7 +13,7 @@
 		@submit.prevent="handleSubmit">
 		<!-- Оверлей загрузки -->
 		<div class="base-form__overlay" :class="[{ 'base-form__overlay--visible': props.isLoading }, classes.overlay]">
-			<BaseLoader variant="spinner" size="md" :has-label="true" :label="UI_LOADING_TEXT" :size-scale="props.sizeScale" />
+			<BaseLoader variant="spinner" size="md" :has-label="true" :label="UI_TEXT.LOADING" :size-scale="props.sizeScale" />
 		</div>
 
 		<!-- Контент формы -->
@@ -25,8 +25,8 @@
 
 <script setup lang="ts">
 import { BaseLoader } from '@components/BaseLoader'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_LOADING_TEXT } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_TEXT } from '@constants'
 import '../styles/BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormProps } from '../model/BaseForm.types'
 
@@ -36,14 +36,7 @@ const props = withDefaults(defineProps<BaseFormProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-form',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'overlay', 'content'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form', props, ['root', 'overlay', 'content'])
 
 const emit = defineEmits<BaseFormEmits>()
 

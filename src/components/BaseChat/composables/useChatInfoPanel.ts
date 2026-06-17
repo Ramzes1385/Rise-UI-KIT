@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { ChatInfoTab } from '../BaseChat.types'
+import type { ChatInfoTab } from '../model/BaseChat.types'
 
 interface UseChatInfoPanelOptions {
 	onAvatarClick: (senderId: string) => void

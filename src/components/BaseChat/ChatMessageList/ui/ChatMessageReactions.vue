@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatMessageReaction } from '../../BaseChat.types'
+import type { ChatMessageReaction } from '../../model/BaseChat.types'
 
 interface ChatMessageReactionsProps {
 	reactions: ChatMessageReaction[]

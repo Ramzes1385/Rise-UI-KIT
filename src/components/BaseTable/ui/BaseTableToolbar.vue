@@ -5,7 +5,7 @@
 		<div v-if="hasSearch" class="base-table__search" :class="searchClass">
 			<BaseInput
 				:model-value="searchQuery"
-				:placeholder="UI_SEARCH_PLACEHOLDER"
+				:placeholder="UI_TEXT.SEARCH_PLACEHOLDER"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('search-input', $event)" />
 		</div>
@@ -87,7 +87,12 @@ import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseSelect } from '@components/BaseSelect'
-import { UI_FILTER_COLUMN_TEXT, UI_FILTER_CONDITION_TEXT, UI_FILTER_VALUE_PLACEHOLDER, UI_SEARCH_PLACEHOLDER } from '@constants'
+import {
+	UI_FILTER_COLUMN_TEXT,
+	UI_FILTER_CONDITION_TEXT,
+	UI_FILTER_VALUE_PLACEHOLDER,
+	UI_TEXT,
+} from '@constants'
 
 import type { TableColumn } from '../model/BaseTable.types'
 import type { BaseTableToolbarProps } from './BaseTableToolbar.types'

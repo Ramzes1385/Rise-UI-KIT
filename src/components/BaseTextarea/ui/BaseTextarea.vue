@@ -4,7 +4,7 @@
 		:class="[
 			variantClass,
 			{
-				'base-textarea--error': error,
+				'base-textarea--error': formField.error,
 				'base-textarea--disabled': props.isDisabled,
 				'base-textarea--autosize': props.isAutosize,
 			},
@@ -44,19 +44,20 @@
 			@focus="handleFocus"></textarea>
 
 		<BaseText
-			v-if="error"
+			v-if="formField.error"
 			tag="span"
 			class="base-textarea__error-text"
 			:custom-class="classes.errorText"
 			:size-scale="props.sizeScale"
-			>{{ error }}</BaseText
+			>{{ formField.error }}</BaseText
 		>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTextarea.style.scss'
@@ -73,16 +74,16 @@ const props = withDefaults(defineProps<BaseTextareaProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-textarea',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'label', 'required', 'field', 'errorText'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-textarea', props, ['root', 'label', 'required', 'field', 'errorText'])
 
 const emit = defineEmits<BaseTextareaEmits>()
+
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
+
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 function adjustHeight(): void {
@@ -104,6 +105,7 @@ function handleInput(e: Event): void {
 }
 
 function handleBlur(e: FocusEvent): void {
+	formField.onBlur()
 	emit('blur', e)
 }
 
@@ -126,5 +128,5 @@ onMounted(() => {
 	}
 })
 
-defineExpose({ textareaRef, adjustHeight })
+defineExpose({ textareaRef, adjustHeight, validate: formField.validate, reset: formField.reset })
 </script>

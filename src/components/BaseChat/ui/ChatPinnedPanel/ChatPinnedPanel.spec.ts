@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-import type { ChatMessage } from '../../BaseChat.types'
+import type { ChatMessage } from '../../model/BaseChat.types'
 import ChatPinnedPanel from './ChatPinnedPanel.vue'
 
 function message(id: string, overrides: Partial<ChatMessage> = {}): ChatMessage {

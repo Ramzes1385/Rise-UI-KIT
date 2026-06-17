@@ -4,7 +4,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
 			{
-				'base-form-field--error': error,
+				'base-form-field--error': formField.error,
 			},
 			variantClass,
 			classes.root,
@@ -20,13 +20,13 @@
 			<slot />
 		</div>
 
-		<p v-if="description && !error" class="base-form-field__description" :class="classes.description">
+		<p v-if="description && !formField.error" class="base-form-field__description" :class="classes.description">
 			{{ description }}
 		</p>
 
 		<BaseAnimation name="fade" :size-scale="props.sizeScale" :custom-class="classes.animation">
-			<p v-if="error" class="base-form-field__error" :class="classes.error">
-				{{ error }}
+			<p v-if="formField.error" class="base-form-field__error" :class="classes.error">
+				{{ formField.error }}
 			</p>
 		</BaseAnimation>
 	</div>
@@ -34,7 +34,8 @@
 
 <script setup lang="ts">
 import { BaseAnimation } from '@components/BaseAnimation'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
 import type { BaseFormFieldProps } from '../model/BaseFormField.types'
 
@@ -43,12 +44,16 @@ const props = withDefaults(defineProps<BaseFormFieldProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-form-field',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'],
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'])
+
+const formField = useFormField({
+	value: () => undefined,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
 })
 </script>

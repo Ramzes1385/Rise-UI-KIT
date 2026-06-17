@@ -33,11 +33,11 @@
 				v-if="avatar"
 				:src="avatar"
 				:name="typingUsername || 'Companion'"
-				:size-scale="sizeScale * UI_SCALE_SMALL"
+				:size-scale="sizeScale * UI_SCALE.SMALL"
 				class="base-chat-message-list__avatar" />
 			<div class="base-chat-message-list__bubble-wrapper">
 				<div class="base-chat-message-list__bubble base-chat-message-list__bubble--typing">
-					<BaseLoader variant="dots" :size-scale="sizeScale * UI_SCALE_SMALL" />
+					<BaseLoader variant="dots" :size-scale="sizeScale * UI_SCALE.SMALL" />
 				</div>
 			</div>
 		</div>
@@ -60,7 +60,12 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CONTEXT_MENU_DEFAULT_HEIGHT, UI_CONTEXT_MENU_DEFAULT_WIDTH, UI_HIGHLIGHT_DURATION_MS, UI_SCALE_SMALL } from '@constants'
+import {
+	UI_CONTEXT_MENU_DEFAULT_HEIGHT,
+	UI_CONTEXT_MENU_DEFAULT_WIDTH,
+	UI_HIGHLIGHT_DURATION_MS,
+	UI_SCALE,
+} from '@constants'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
@@ -68,7 +73,7 @@ import { useClickOutside } from '@composables/useClickOutside'
 import { copyTextToClipboard } from '@utils/clipboardUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import type { Ref } from 'vue'
-import type { ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
+import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import '../styles/ChatMessageList.style.scss'
 import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMessageList.types'
 import ChatMessageItem from './ChatMessage.vue'

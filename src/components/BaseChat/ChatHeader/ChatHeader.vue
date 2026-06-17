@@ -14,11 +14,11 @@
 					{{ title }}
 				</BaseText>
 				<div class="base-chat-header__status">
-					<BaseText v-if="isTyping" tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-header__typing">
+					<BaseText v-if="isTyping" tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-header__typing">
 					{{ typingUsername ? `${typingUsername} ${UI_CHAT_TYPING_SUFFIX}` : UI_CHAT_TYPING_LABEL
 					}}<span class="base-chat-header__dots">...</span>
 					</BaseText>
-					<BaseText v-else-if="subtitle" tag="span" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-header__subtitle">
+					<BaseText v-else-if="subtitle" tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-header__subtitle">
 						{{ subtitle }}
 					</BaseText>
 				</div>
@@ -35,7 +35,7 @@
 				:aria-label="UI_CHAT_SEARCH_ARIA"
 				@update:model-value="handleSearchInput">
 				<template #prefix>
-					<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE_SMALL" />
+					<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE.SMALL" />
 				</template>
 			</BaseInput>
 		</div>
@@ -75,7 +75,17 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_INFO_ARIA, UI_CHAT_SCALE_MEMBER, UI_CHAT_SEARCH_ARIA, UI_CHAT_SEARCH_CLOSE, UI_CHAT_SEARCH_PLACEHOLDER, UI_CHAT_TYPING_LABEL, UI_CHAT_TYPING_SUFFIX, UI_FONT_WEIGHT_BOLD, UI_SCALE_AUTOCOMPLETE, UI_SCALE_SMALL } from '@constants'
+import {
+	UI_CHAT_INFO_ARIA,
+	UI_CHAT_SCALE_MEMBER,
+	UI_CHAT_SEARCH_ARIA,
+	UI_CHAT_SEARCH_CLOSE,
+	UI_CHAT_SEARCH_PLACEHOLDER,
+	UI_CHAT_TYPING_LABEL,
+	UI_CHAT_TYPING_SUFFIX,
+	UI_FONT_WEIGHT_BOLD,
+	UI_SCALE,
+} from '@constants'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 

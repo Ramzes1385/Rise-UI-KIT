@@ -3,7 +3,7 @@
 		class="base-radio-group"
 		:class="[
 			{
-				'base-radio-group--error': props.error,
+				'base-radio-group--error': formField.error,
 			},
 			variantClass,
 			classes.root,
@@ -29,7 +29,7 @@
 				:class="[
 					{
 						'base-radio--disabled': option.isDisabled,
-						'base-radio--error': props.error,
+						'base-radio--error': formField.error,
 					},
 					classes.radio,
 				]">
@@ -54,19 +54,20 @@
 		</div>
 
 		<BaseText
-			v-if="props.error"
+			v-if="formField.error"
 			tag="span"
 			class="base-radio-group__error-text"
 			:size-scale="props.sizeScale"
 			:custom-class="classes.errorText">
-			{{ props.error }}
+			{{ formField.error }}
 		</BaseText>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
 
@@ -77,19 +78,23 @@ const props = withDefaults(defineProps<BaseRadioProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-radio-group',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio-group', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])
 
 const emit = defineEmits<BaseRadioEmits>()
+
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
 
 function handleChange(value: string | number): void {
 	emit('update:modelValue', value)
 	emit('change', value)
 }
+
+defineExpose({
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

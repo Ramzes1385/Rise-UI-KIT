@@ -9,7 +9,7 @@
 		<slot />
 
 		<Teleport to="body">
-			<Transition :name="transitionName" :duration="UI_TRANSITION_DURATION_MS">
+			<Transition :name="transitionName" :duration="UI_TIMING.TRANSITION_DURATION">
 				<div
 					v-if="isVisible"
 					class="base-tooltip"
@@ -24,8 +24,8 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { UI_TOOLTIP_HIDE_DELAY_MS, UI_TOOLTIP_SHOW_DELAY_MS, UI_TRANSITION_DURATION_MS } from '@constants'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_TIMING } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import '../styles/BaseTooltip.style.scss'
@@ -37,14 +37,7 @@ const props = withDefaults(defineProps<BaseTooltipProps>(), {
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-tooltip',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'tooltip', 'text'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip', props, ['root', 'tooltip', 'text'])
 
 const isVisible = ref(false)
 const wrapperRef = ref<HTMLElement | null>(null)
@@ -102,7 +95,7 @@ function handleEnter(): void {
 		updateCoords()
 		isVisible.value = true
 		startUpdateLoop()
-	}, UI_TOOLTIP_SHOW_DELAY_MS)
+	}, UI_TIMING.TOOLTIP_SHOW_DELAY)
 }
 
 function handleLeave(): void {
@@ -117,7 +110,7 @@ function handleLeave(): void {
 	hideTimer = setTimeout(() => {
 		isVisible.value = false
 		stopUpdateLoop()
-	}, UI_TOOLTIP_HIDE_DELAY_MS)
+	}, UI_TIMING.TOOLTIP_HIDE_DELAY)
 }
 
 onMounted(() => {

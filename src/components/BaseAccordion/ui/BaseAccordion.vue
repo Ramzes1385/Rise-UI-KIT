@@ -28,7 +28,7 @@
 					:custom-class="classes.icon" />
 				<BaseText
 					tag="span"
-					:weight="UI_FONT_WEIGHT_SEMIBOLD"
+					:weight="UI_FONT_WEIGHT.SEMIBOLD"
 					:size-scale="props.sizeScale"
 					class="base-accordion__label"
 					:custom-class="classes.label"
@@ -58,8 +58,8 @@
 <script setup lang="ts">
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT } from '@constants'
 import { onMounted, ref } from 'vue'
 
 import '../styles/BaseAccordion.style.scss'
@@ -72,14 +72,7 @@ const props = withDefaults(defineProps<BaseAccordionProps>(), {
 
 const emit = defineEmits<BaseAccordionEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-accordion',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-accordion', props, ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'])
 
 const openIndexes = ref<number[]>([])
 

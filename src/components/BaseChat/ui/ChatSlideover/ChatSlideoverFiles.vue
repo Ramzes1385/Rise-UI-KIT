@@ -14,7 +14,7 @@
 				:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
 				class="base-chat-slideover__file-icon" />
 			<div class="base-chat-slideover__file-info">
-				<BaseText tag="span" :weight="UI_FONT_WEIGHT_SEMIBOLD" :size-scale="sizeScale * UI_SCALE_AUTOCOMPLETE" class="base-chat-slideover__file-name">
+				<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__file-name">
 					{{ file.name }}
 				</BaseText>
 				<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-slideover__file-meta">
@@ -23,7 +23,7 @@
 			</div>
 			<BaseIcon
 				name="download"
-				:size-scale="sizeScale * UI_SCALE_SMALL"
+				:size-scale="sizeScale * UI_SCALE.SMALL"
 				class="base-chat-slideover__file-download"
 				@click.stop="emit('download-file', file)" />
 		</div>
@@ -39,13 +39,12 @@ import {
 	UI_CHAT_SCALE_FILE_ICON,
 	UI_CHAT_SCALE_ICON,
 	UI_CHAT_SCALE_MEMBER,
-	UI_FONT_WEIGHT_SEMIBOLD,
-	UI_SCALE_AUTOCOMPLETE,
-	UI_SCALE_SMALL,
+	UI_FONT_WEIGHT,
+	UI_SCALE,
 } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import { computed } from 'vue'
-import type { ChatMessage, ChatMessageAttachment } from '../../BaseChat.types'
+import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 
 interface SharedAttachment extends ChatMessageAttachment {
 	publishedAt: string

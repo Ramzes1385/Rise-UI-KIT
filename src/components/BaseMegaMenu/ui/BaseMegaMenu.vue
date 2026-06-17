@@ -24,7 +24,7 @@
 						tag="h4"
 						tabindex="0"
 						:size-scale="sizeScale"
-						:weight="UI_FONT_WEIGHT_SEMIBOLD"
+						:weight="UI_FONT_WEIGHT.SEMIBOLD"
 						class="base-mega-menu__title"
 						:class="[{ 'base-mega-menu__title--open': isColumnOpen(column.title) }, classes.title]"
 						@click="toggleColumn(column.title)">
@@ -116,8 +116,8 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
-import { UI_FONT_WEIGHT_SEMIBOLD, UI_HOVER_DELAY_MS } from '@constants'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT, UI_TIMING } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
@@ -128,18 +128,11 @@ import type { BaseMegaMenuEmits, BaseMegaMenuProps, MegaMenuItem } from '../mode
 const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
 	trigger: 'click',
 	layout: 'columns',
-	hoverDelay: UI_HOVER_DELAY_MS,
+	hoverDelay: UI_TIMING.HOVER_DELAY,
 	sizeScale: 100,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-mega-menu',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'])
 
 const emit = defineEmits<BaseMegaMenuEmits>()
 

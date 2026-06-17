@@ -50,7 +50,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseLoader } from '@components/BaseLoader'
 import { ref } from 'vue'
-import type { SearchVariant } from '../BaseSearch.types'
+import type { SearchVariant } from '../model/BaseSearch.types'
 
 interface BaseSearchInputProps {
 	modelValue: string

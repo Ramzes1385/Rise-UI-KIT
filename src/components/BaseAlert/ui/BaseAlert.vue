@@ -15,7 +15,7 @@
 			<BaseText
 				v-if="title"
 				tag="h4"
-				:weight="UI_FONT_WEIGHT_SEMIBOLD"
+				:weight="UI_FONT_WEIGHT.SEMIBOLD"
 				:size-scale="props.sizeScale"
 				class="base-alert__title"
 				:custom-class="classes.title">
@@ -51,8 +51,8 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT_SEMIBOLD } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT } from '@constants'
 import { computed } from 'vue'
 
 import '../styles/BaseAlert.style.scss'
@@ -66,14 +66,7 @@ const props = withDefaults(defineProps<BaseAlertProps>(), {
 
 const emit = defineEmits<BaseAlertEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-alert',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'])
 
 /** Иконка оповещения по умолчанию на основе типа */
 const alertIcon = computed((): string => {

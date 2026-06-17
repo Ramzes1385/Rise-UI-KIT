@@ -4,7 +4,7 @@
 		:class="[
 			variantClass,
 			{
-				'base-input--error': error,
+				'base-input--error': formField.error,
 				'base-input--disabled': isDisabled,
 				'base-input--readonly': isReadonly,
 				'base-input--has-prefix': prefix || $slots.prefix,
@@ -46,8 +46,8 @@
 				:placeholder="placeholder"
 				:disabled="isDisabled"
 				:readonly="isReadonly"
-				@input="handleInput"
-				@keydown="handleKeydown"
+				@input="masked.handleInput"
+				@keydown="masked.handleKeydown"
 				@blur="handleBlur"
 				@focus="handleFocus" />
 			<BaseButton
@@ -56,7 +56,7 @@
 				class="base-input__password-toggle"
 				:custom-class="classes.passwordToggle"
 				tabindex="-1"
-				:aria-label="isPasswordVisible ? UI_PASSWORD_HIDE_ARIA : UI_PASSWORD_SHOW_ARIA"
+				:aria-label="isPasswordVisible ? UI_ARIA.PASSWORD_HIDE : UI_ARIA.PASSWORD_SHOW"
 				:size-scale="sizeScale"
 				@click="togglePasswordVisibility">
 				<BaseIcon
@@ -94,12 +94,12 @@
 		</div>
 
 		<BaseText
-			v-if="error"
+			v-if="formField.error"
 			tag="span"
 			class="base-input__error-text"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale"
-			>{{ error }}</BaseText
+			>{{ formField.error }}</BaseText
 		>
 	</div>
 </template>
@@ -108,13 +108,13 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { useInputMask } from '@composables/useInputMask'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/useFormField'
+import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { UI_PASSWORD_HIDE_ARIA, UI_PASSWORD_SHOW_ARIA } from '@constants'
+import { UI_ARIA } from '@constants'
 import { computed, ref, toRef } from 'vue'
 import '../styles/BaseInput.style.scss'
-import { toHTMLInputElement } from '@utils/domUtils'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
 
 const props = withDefaults(defineProps<BaseInputProps>(), {
@@ -129,33 +129,29 @@ const props = withDefaults(defineProps<BaseInputProps>(), {
 	mask: '',
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-input',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'label',
-		'required',
-		'wrapper',
-		'prefix',
-		'field',
-		'passwordToggle',
-		'passwordIcon',
-		'postfix',
-		'passwordRules',
-		'passwordRule',
-		'passwordRuleIcon',
-		'errorText',
-	],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-input', props, [
+	'root', 'label', 'required', 'wrapper', 'prefix', 'field',
+	'passwordToggle', 'passwordIcon', 'postfix', 'passwordRules',
+	'passwordRule', 'passwordRuleIcon', 'errorText',
+])
 
 const emit = defineEmits<BaseInputEmits>()
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const mask = useInputMask({ getMask: () => props.mask })
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
+	isRequired: () => props.isRequired,
+})
+
+const masked = useMaskedInputHandlers({
+	getMask: () => props.mask,
+	getValue: () => props.modelValue,
+	isPassword: () => props.type === 'password',
+	emit: (event, value) => emit(event, value),
+	onKeydown: (e) => emit('keydown', e),
+	inputRef,
+})
 
 const { isPasswordVisible, inputType, togglePasswordVisibility } = usePasswordVisibility({
 	type: toRef(props, 'type'),
@@ -175,95 +171,11 @@ const displayValue = computed(() => {
 	const val = props.modelValue == null ? '' : String(props.modelValue)
 	if (props.type === 'password') return val
 	if (!props.mask) return val
-	return mask.applyMask(val, props.mask)
+	return masked.applyMask(val, props.mask)
 })
 
-function handleInput(e: Event): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	const rawValue = target.value
-
-	if (props.mask && props.type !== 'password') {
-		const cleanValue = mask.stripMask(rawValue, props.mask)
-		const limitedValue = mask.limitValue(cleanValue)
-
-		emit('update:modelValue', limitedValue)
-
-		const expectedDisplayValue = mask.applyMask(limitedValue, props.mask)
-		if (target.value !== expectedDisplayValue) {
-			target.value = expectedDisplayValue
-		}
-
-		requestAnimationFrame(() => {
-			/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
-			if (inputRef.value) {
-				const newPos = mask.cursorAfterInput(limitedValue.length)
-				inputRef.value.setSelectionRange(newPos, newPos)
-			}
-		})
-	} else {
-		emit('update:modelValue', rawValue)
-	}
-}
-
-function handleKeydown(e: KeyboardEvent): void {
-	emit('keydown', e)
-	if (!props.mask || props.type === 'password') return
-
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	/* istanbul ignore next -- defensive `?? 0`: selectionStart всегда установлен для input в DOM */
-	const cursorPos = target.selectionStart ?? 0
-	const current = props.modelValue == null ? '' : String(props.modelValue)
-
-	if (e.key === 'Backspace') {
-		e.preventDefault()
-		handleMaskedBackspace(cursorPos, current)
-	}
-
-	if (e.key === 'Delete') {
-		e.preventDefault()
-		handleMaskedDelete(cursorPos, current)
-	}
-}
-
-/* istanbul ignore else -- DOM clamp boundary: cursorPos === 0 невозможно через setSelectionRange */
-function handleMaskedBackspace(cursorPos: number, current: string): void {
-	if (cursorPos <= 0) return
-	const { maskPos, valueIndex } = mask.cursorAfterBackspace(cursorPos)
-	/* istanbul ignore else -- DOM clamp boundary: valueIndex всегда в пределах current при cursorPos > 0 */
-	if (valueIndex < 0 || valueIndex >= current.length) return
-
-	const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
-	emit('update:modelValue', newValue)
-
-	requestAnimationFrame(() => {
-		/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
-		if (inputRef.value) {
-			inputRef.value.setSelectionRange(maskPos, maskPos)
-		}
-	})
-}
-
-/* istanbul ignore else -- DOM clamp boundary: cursorPos === current.length невозможно через setSelectionRange */
-function handleMaskedDelete(cursorPos: number, current: string): void {
-	if (cursorPos >= current.length) return
-	const { valueIndex } = mask.cursorAfterDelete(cursorPos)
-	/* istanbul ignore else -- DOM clamp boundary: valueIndex всегда в пределах current при cursorPos < length */
-	if (valueIndex < 0 || valueIndex >= current.length) return
-
-	const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
-	emit('update:modelValue', newValue)
-
-	requestAnimationFrame(() => {
-		/* istanbul ignore next — defensive: inputRef доступен после mount, RAF выполняется в том же кадре */
-		if (inputRef.value) {
-			inputRef.value.setSelectionRange(cursorPos, cursorPos)
-		}
-	})
-}
-
 function handleBlur(e: FocusEvent): void {
+	formField.onBlur()
 	emit('blur', e)
 }
 
@@ -277,5 +189,7 @@ defineExpose({
 	focus: () => inputRef.value?.focus(),
 	/* istanbul ignore next — defensive: optional chaining для public API на unmount */
 	blur: () => inputRef.value?.blur(),
+	validate: formField.validate,
+	reset: formField.reset,
 })
 </script>

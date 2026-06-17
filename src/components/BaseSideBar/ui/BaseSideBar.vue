@@ -101,7 +101,7 @@ import { UI_COLLAPSE_TEXT, UI_EXPAND_TEXT, UI_FONT_WEIGHT_BOLD, UI_SIDEBAR_DEFAU
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { usePadding } from '@composables/usePadding'
 
@@ -129,14 +129,7 @@ const slots = defineSlots<BaseSideBarSlots>()
 
 const { wasPropPassed } = useExplicitPropDetection()
 
-const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useBaseComponent({
-	block: 'base-sidebar',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'],
-})
+const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-sidebar', props, ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'])
 
 const { paddingStyle } = usePadding({
 	getPadding: () => props.padding,
