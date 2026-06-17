@@ -461,22 +461,22 @@ describe('BaseInput unit', () => {
 						limitValue: (v: string) => v,
 						cursorAfterInput: () => 0,
 						cursorAfterBackspace: () => ({ maskPos: 0, valueIndex: 0 }),
-						cursorAfterDelete: () => ({ maskPos: 0, valueIndex: 999 }),
-					})
-					return {
-						handleInput: (e: Event) => {
+					cursorAfterDelete: (_pos: number) => ({ maskPos: 0, valueIndex: 999 }),
+				})
+				return {
+					handleInput: (e: Event) => {
+						const target = e.target as HTMLInputElement
+						opts.emit('update:modelValue', target.value)
+					},
+					handleKeydown: (e: KeyboardEvent) => {
+						opts.onKeydown?.(e)
+						if (e.key === 'Delete') {
 							const target = e.target as HTMLInputElement
-							opts.emit('update:modelValue', target.value)
-						},
-						handleKeydown: (e: KeyboardEvent) => {
-							opts.onKeydown?.(e)
-							if (e.key === 'Delete') {
-								const target = e.target as HTMLInputElement
-								const cursorPos = target.selectionStart ?? 0
-								const current = opts.getValue() == null ? '' : String(opts.getValue())
-								e.preventDefault()
-								if (cursorPos >= current.length) return
-								const { valueIndex } = maskFns.cursorAfterDelete(cursorPos)
+							const cursorPos = target.selectionStart ?? 0
+							const current = opts.getValue() == null ? '' : String(opts.getValue())
+							e.preventDefault()
+							if (cursorPos >= current.length) return
+							const { valueIndex } = maskFns.cursorAfterDelete(cursorPos)
 								if (valueIndex < 0 || valueIndex >= current.length) return
 								const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
 								opts.emit('update:modelValue', newValue)

@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 
 interface UseImageGalleryOptions {
 	gallery: () => string[] | undefined
@@ -7,12 +8,12 @@ interface UseImageGalleryOptions {
 }
 
 interface UseImageGalleryReturn {
-	galleryIndex: ReturnType<typeof ref<number>>
-	galleryList: ReturnType<typeof computed<string[]>>
-	hasGallery: ReturnType<typeof computed<boolean>>
-	hasGalleryPrev: ReturnType<typeof computed<boolean>>
-	hasGalleryNext: ReturnType<typeof computed<boolean>>
-	currentZoomSrc: ReturnType<typeof computed<string>>
+	galleryIndex: Ref<number>
+	galleryList: ComputedRef<string[]>
+	hasGallery: ComputedRef<boolean>
+	hasGalleryPrev: ComputedRef<boolean>
+	hasGalleryNext: ComputedRef<boolean>
+	currentZoomSrc: ComputedRef<string>
 	handleGalleryPrev: () => void
 	handleGalleryNext: () => void
 	handleGalleryGo: (index: number) => void

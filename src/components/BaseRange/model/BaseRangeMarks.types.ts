@@ -7,5 +7,5 @@ export interface BaseRangeMarksProps {
 	/** Получение CSS-стилей для метки */
 	markStyle: (value: number) => Record<string, string>
 	/** Объект CSS-классов для кастомизации элементов шкалы */
-	classes: Record<string, string>
+	classes: Record<string, string | undefined>
 }

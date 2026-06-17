@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { defineComponent, ref } from 'vue'
 import { useColumnResize } from './useColumnResize'
+import type { Ref } from 'vue'
 
 function withSetup(fn: () => ReturnType<typeof useColumnResize>) {
 	let result: ReturnType<typeof useColumnResize>
@@ -26,8 +27,8 @@ describe('useColumnResize', () => {
 		{ key: 'col3', width: '200px' },
 	]
 
-	let columns: ReturnType<typeof ref>
-	let visibleColumns: ReturnType<typeof ref>
+	let columns: Ref<Array<{ key: string; width: string }>>
+	let visibleColumns: Ref<Array<{ key: string; width: string }>>
 
 	beforeEach(() => {
 		vi.clearAllMocks()

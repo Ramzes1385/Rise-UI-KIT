@@ -10,7 +10,7 @@ export interface BaseImageZoomProps {
 	/** Альтернативный текст */
 	alt: string
 	/** Объект CSS-классов для кастомизации элементов зума */
-	classes: Record<string, string>
+	classes: Record<string, string | undefined>
 	/** Показывать мини-карту при зуме */
 	showMinimap: boolean
 	/** Текущий масштаб */

@@ -3,7 +3,7 @@ export interface FormFieldLabelProps {
 	/** Текст метки */
 	label: string
 	/** HTML-тег обёртки */
-	tag?: string
+	tag?: 'label' | 'span' | 'div' | 'p' | 'small' | 'strong' | 'em' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 	/** Показывать звёздочку обязательности */
 	isRequired?: boolean
 	/** CSS-класс для обёртки */

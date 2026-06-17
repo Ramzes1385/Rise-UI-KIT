@@ -17,7 +17,7 @@ export interface BaseCalendarDaysProps {
 	/** Локаль для форматирования дат */
 	locale: string
 	/** Объект CSS-классов для кастомизации элементов календаря */
-	classes: Record<string, string>
+	classes: Record<string, string | undefined>
 	/** Проверка, является ли дата сегодняшней */
 	isToday: (date: Date) => boolean
 	/** Проверка, выбрана ли дата */

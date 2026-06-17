@@ -9,7 +9,7 @@ export interface BaseCalendarMonthsProps {
 	/** Масштаб размера */
 	sizeScale: number
 	/** Объект CSS-классов для кастомизации элементов месяцев */
-	classes: Record<string, string>
+	classes: Record<string, string | undefined>
 }
 
 /** Emits компонента BaseCalendarMonths */

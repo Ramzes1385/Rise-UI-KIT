@@ -95,7 +95,7 @@ describe('useFormField', () => {
 		})
 
 		it('возвращает пустую строку когда внешняя ошибка убрана', () => {
-			const externalError = ref('Ошибка')
+			const externalError = ref<string | undefined>('Ошибка')
 			const field = useFormField({
 				value: () => 'hello',
 				error: () => externalError.value,

@@ -39,6 +39,8 @@ export interface CalendarHighlight {
 	date: Date
 	/** CSS-класс */
 	cssClass?: string
+	/** Цвет маркера */
+	color?: string
 	/** Подпись (отображается в popover) */
 	label?: string
 }

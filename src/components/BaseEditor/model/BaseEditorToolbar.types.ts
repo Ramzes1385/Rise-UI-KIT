@@ -23,7 +23,7 @@ export interface BaseEditorToolbarProps {
 	/** Масштаб размера */
 	sizeScale: number
 	/** Объект CSS-классов для кастомизации элементов тулбара */
-	classes: Record<string, string>
+	classes: Record<string, string | undefined>
 	/** Режим кода */
 	isCodeMode: boolean
 	/** Только чтение */

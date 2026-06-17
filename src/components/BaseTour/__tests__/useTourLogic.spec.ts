@@ -7,7 +7,7 @@
 import '@testing-library/jest-dom/vitest'
 import { effectScope } from 'vue'
 import { resolvePlacement, useTourLogic } from '../model/useTourLogic'
-import type { BaseTourProps } from './BaseTour.types'
+import type { BaseTourProps } from '../model/BaseTour.types'
 import type { EffectScope } from 'vue'
 
 function rectAt(top: number, left: number, width = 60, height = 40): DOMRect {

@@ -63,7 +63,7 @@
 						variant="ghost"
 						:placeholder="UI_EDITOR_FORMAT"
 						:size-scale="sizeScale"
-						@change="(val: string | number) => emit('handleHeadingChange', val)" />
+						@change="(val: string | number | (string | number)[]) => emit('handleHeadingChange', val as string | number)" />
 				</div>
 			</span>
 

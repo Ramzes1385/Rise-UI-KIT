@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import type { CalendarHighlight } from './BaseCalendar.types'
+import type { ComputedRef, Ref } from 'vue'
 
 interface UseCalendarPopoverOptions {
 	getEvents: (date: Date) => CalendarHighlight[]
@@ -15,9 +16,9 @@ interface UseCalendarPopoverOptions {
 }
 
 interface UseCalendarPopoverReturn {
-	popoverDate: ReturnType<typeof ref<Date | null>>
-	popoverStyle: ReturnType<typeof ref<Record<string, string>>>
-	popoverHighlights: ReturnType<typeof computed<CalendarHighlight[]>>
+	popoverDate: Ref<Date | null>
+	popoverStyle: Ref<Record<string, string>>
+	popoverHighlights: ComputedRef<CalendarHighlight[]>
 	closePopover: () => void
 	dayClasses: (date: Date, isCustomSlot: boolean) => Record<string, boolean>
 }

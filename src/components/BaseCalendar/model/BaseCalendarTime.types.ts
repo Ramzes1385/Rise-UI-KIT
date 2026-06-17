@@ -17,7 +17,7 @@ export interface BaseCalendarTimeProps {
 	/** Масштаб размера */
 	sizeScale: number
 	/** Объект CSS-классов для кастомизации элементов времени */
-	classes: Record<string, string>
+	classes: Record<string, string | undefined>
 }
 
 /** Emits компонента BaseCalendarTime */

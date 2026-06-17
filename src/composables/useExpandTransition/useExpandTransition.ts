@@ -21,14 +21,14 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 	const duration = options.duration ?? DEFAULT_DURATION
 
 	function onBeforeEnter(el: Element): void {
-		const htmlEl = toHTMLElement(el)
+		const htmlEl = toHTMLElement(el)!
 		htmlEl.style.height = '0'
 		htmlEl.style.overflow = 'hidden'
 		htmlEl.style.opacity = '0'
 	}
 
 	function onEnter(el: Element, done: () => void): void {
-		const htmlEl = toHTMLElement(el)
+		const htmlEl = toHTMLElement(el)!
 		const height = htmlEl.scrollHeight
 
 		applyTransition(htmlEl, duration)
@@ -48,17 +48,17 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 	}
 
 	function onAfterEnter(el: Element): void {
-		resetStyles(toHTMLElement(el))
+		resetStyles(toHTMLElement(el)!)
 	}
 
 	function onBeforeLeave(el: Element): void {
-		const htmlEl = toHTMLElement(el)
+		const htmlEl = toHTMLElement(el)!
 		htmlEl.style.height = `${htmlEl.scrollHeight}px`
 		htmlEl.style.overflow = 'hidden'
 	}
 
 	function onLeave(el: Element, done: () => void): void {
-		const htmlEl = toHTMLElement(el)
+		const htmlEl = toHTMLElement(el)!
 
 		applyTransition(htmlEl, duration)
 
@@ -77,7 +77,7 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 	}
 
 	function onAfterLeave(el: Element): void {
-		resetStyles(toHTMLElement(el))
+		resetStyles(toHTMLElement(el)!)
 	}
 
 	return {
