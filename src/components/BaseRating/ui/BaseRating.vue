@@ -4,36 +4,35 @@
 		:class="[variantClass, classes.root, { 'base-rating--readonly': isInteractive === false }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="slider"
-		:aria-label="`${UI_RATING_ARIA_PREFIX} ${props.max}`"
+		:aria-label="`${UI_RATING_ARIA_PREFIX} ${max}`"
 		:aria-valuemin="0"
-		:aria-valuemax="props.max"
-		:aria-valuenow="props.modelValue"
+		:aria-valuemax="max"
+		:aria-valuenow="modelValue"
 		:tabindex="isInteractive ? 0 : -1"
 		@mouseleave="clearHover"
 		@keydown="handleKeydown">
 		<span
-			v-for="star in props.max"
+			v-for="star in max"
 			:key="star"
 			class="base-rating__star"
 			@click="handleClick($event, star)"
 			@mousemove="handleHover($event, star)">
-			<BaseIcon :name="props.icon" :size-scale="props.sizeScale" :custom-class="classes.icon" aria-label="" />
+			<BaseIcon :name="icon" :size-scale="sizeScale" :custom-class="classes.icon" aria-label="" />
 			<span class="base-rating__star-fill" :style="{ width: `${fillPercent(star)}%` }">
-				<BaseIcon :name="filledIcon" :size-scale="props.sizeScale" :custom-class="classes.iconFilled" aria-label="" />
+				<BaseIcon :name="filledIcon" :size-scale="sizeScale" :custom-class="classes.iconFilled" aria-label="" />
 			</span>
 		</span>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_RATING_ARIA_PREFIX, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import { computed, ref } from 'vue'
-
 import '../styles/BaseRating.style.scss'
-import type { BaseRatingEmits, BaseRatingProps } from '../model/BaseRating.types'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../model/BaseRating.utils'
+import type { BaseRatingEmits, BaseRatingProps } from '../model/BaseRating.types'
 
 const props = withDefaults(defineProps<BaseRatingProps>(), {
 	modelValue: 0,

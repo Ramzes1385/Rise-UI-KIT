@@ -1,15 +1,15 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpenLocal"
-		:position="props.position"
-		:variant="props.variant"
+		:position="position"
+		:variant="variant"
 		:color="color"
 		:gap="10"
 		:match-width="false"
 		:prevent-mousedown="false"
 		:panel-class="panelClasses"
 		:padding="0"
-		:size-scale="props.sizeScale"
+		:size-scale="sizeScale"
 		:custom-class="{ root: classes.root, panel: classes.panel }"
 		@close="handleClose">
 		<div class="base-popover__trigger" :class="classes.trigger" @click="toggle">
@@ -17,7 +17,7 @@
 		</div>
 
 		<template #dropdown>
-			<div class="base-popover__arrow" :class="[`base-popover__arrow--${props.position}`, classes.arrow]"></div>
+			<div class="base-popover__arrow" :class="[`base-popover__arrow--${position}`, classes.arrow]"></div>
 			<div class="base-popover__inner" :class="classes.inner">
 				<slot />
 			</div>
@@ -26,12 +26,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
-import { computed, ref, watch } from 'vue'
 import '../styles/BasePopover.style.scss'
-import type { BasePopoverEmits, BasePopoverProps } from '../model/BasePopover.types'
 import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
+import type { BasePopoverEmits, BasePopoverProps } from '../model/BasePopover.types'
 
 const props = withDefaults(defineProps<BasePopoverProps>(), {
 	isOpen: false,

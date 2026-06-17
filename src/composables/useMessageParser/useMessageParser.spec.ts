@@ -4,7 +4,6 @@
  */
 
 import { describe, expect, it } from 'vitest'
-
 import { useMessageParser } from './useMessageParser'
 
 describe('useMessageParser', () => {

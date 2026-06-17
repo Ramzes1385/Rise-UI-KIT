@@ -1,5 +1,4 @@
 import { ref, watch } from 'vue'
-
 import type { TableRow } from './BaseTable.types'
 import type { UseTableExpandOptions, UseTableExpandReturn } from './useTableExpand.types'
 

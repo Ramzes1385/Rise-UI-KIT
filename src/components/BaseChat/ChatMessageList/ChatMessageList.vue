@@ -5,7 +5,6 @@
  * Этот файл оставлен для обратной совместимости.
  */
 import { defineComponent, h, ref } from 'vue'
-
 import ChatMessageList from './ui/ChatMessageList.vue'
 
 export default defineComponent({

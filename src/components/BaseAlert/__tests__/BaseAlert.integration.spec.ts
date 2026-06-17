@@ -8,7 +8,6 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
-
 import BaseAlert from '../ui/BaseAlert.vue'
 
 describe('BaseAlert integration', () => {

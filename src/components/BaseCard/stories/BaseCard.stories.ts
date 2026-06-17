@@ -3,13 +3,11 @@
  * Демонстрирует все вариации, размеры и слоты.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, within } from 'storybook/test'
-
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { CARD_VARIANTS } from '../model/BaseCard.types'
 import BaseCard from '../ui/BaseCard.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseCard> = {
 	title: 'UI/BaseCard',

@@ -4,16 +4,16 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
 			{
-				'base-form--loading': props.isLoading,
-				'base-form--disabled': props.isDisabled,
+				'base-form--loading': isLoading,
+				'base-form--disabled': isDisabled,
 			},
 			variantClass,
 			classes.root,
 		]"
 		@submit.prevent="handleSubmit">
 		<!-- Оверлей загрузки -->
-		<div class="base-form__overlay" :class="[{ 'base-form__overlay--visible': props.isLoading }, classes.overlay]">
-			<BaseLoader variant="spinner" size="md" :has-label="true" :label="UI_TEXT.LOADING" :size-scale="props.sizeScale" />
+		<div class="base-form__overlay" :class="[{ 'base-form__overlay--visible': isLoading }, classes.overlay]">
+			<BaseLoader variant="spinner" size="md" :has-label="true" :label="UI_TEXT.LOADING" :size-scale="sizeScale" />
 		</div>
 
 		<!-- Контент формы -->

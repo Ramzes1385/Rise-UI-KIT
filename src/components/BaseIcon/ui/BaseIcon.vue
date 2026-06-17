@@ -14,13 +14,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useIcon } from '@composables/useIcon'
 import { useSizeScale } from '@composables/useSizeScale'
-import { computed } from 'vue'
 import '../styles/BaseIcon.style.scss'
-import type { BaseIconProps } from '../model/BaseIcon.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseIconProps } from '../model/BaseIcon.types'
 
 const props = withDefaults(defineProps<BaseIconProps>(), {
 	color: '',

@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-
 import BasePin from '../ui/BasePin.vue'
 
 describe('BasePin unit', () => {

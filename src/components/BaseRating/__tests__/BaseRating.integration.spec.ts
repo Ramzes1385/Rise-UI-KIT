@@ -8,7 +8,6 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
-
 import BaseRating from '../ui/BaseRating.vue'
 
 function mockStarRect(star: HTMLElement, width = 20): void {

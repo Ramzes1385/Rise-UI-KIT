@@ -152,15 +152,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onBeforeUnmount } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_FONT_WEIGHT_BOLD, UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS, SIZE_SCALE_DEFAULT} from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
-import { computed, onBeforeUnmount } from 'vue'
+import { UI_FONT_WEIGHT_BOLD, UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps } from '../model/BaseSlider.types'
 

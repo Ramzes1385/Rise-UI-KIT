@@ -3,14 +3,12 @@
  * Демонстрирует все варианты цветов, размеры и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, within } from 'storybook/test'
-
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { BADGE_VARIANTS } from '../model/BaseBadge.types'
 import BaseBadge from '../ui/BaseBadge.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseBadge> = {
 	title: 'UI/BaseBadge',

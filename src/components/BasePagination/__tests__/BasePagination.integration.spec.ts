@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-
 import BasePagination from '../ui/BasePagination.vue'
 
 describe('BasePagination integration', () => {

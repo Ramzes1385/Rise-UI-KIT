@@ -3,11 +3,10 @@
  * Демонстрирует все вариации, размеры, позиции и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, within } from 'storybook/test'
-
 import { CHIP_VARIANTS } from '../model/BaseChip.types'
 import BaseChip from '../ui/BaseChip.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseChip> = {
 	title: 'UI/BaseChip',

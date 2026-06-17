@@ -1,6 +1,5 @@
-import type { UseSwipeOptions } from './useSwipe.types'
-
 import { onBeforeUnmount, ref } from 'vue'
+import type { UseSwipeOptions } from './useSwipe.types'
 
 /**
  * Composable для обработки свайпа и перетаскивания (touch + mouse).

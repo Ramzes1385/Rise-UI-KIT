@@ -1,6 +1,6 @@
 <template>
-	<ul class="base-sidebar-nav" :class="{ 'base-sidebar-nav--nested': props.level > 0 }" role="list">
-		<template v-for="item in props.items" :key="getItemKey(item)">
+	<ul class="base-sidebar-nav" :class="{ 'base-sidebar-nav--nested': level > 0 }" role="list">
+		<template v-for="item in items" :key="getItemKey(item)">
 			<li
 				class="base-sidebar-nav__item"
 				:class="{
@@ -9,7 +9,7 @@
 					'base-sidebar-nav__item--disabled': item.isDisabled,
 					'base-sidebar-nav__item--has-children': hasChildren(item),
 				}">
-				<BaseTooltip v-if="props.isCollapsed" :text="item.label" position="right">
+				<BaseTooltip v-if="isCollapsed" :text="item.label" position="right">
 					<span class="base-sidebar-nav__tooltip-trigger">
 						<component
 							:is="getItemComponent(item)"
@@ -20,7 +20,7 @@
 								'base-sidebar-nav__link--current': isCurrentItemActive(item),
 								'base-sidebar-nav__link--parent-active':
 									hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
-								'base-sidebar-nav__link--collapsed': props.isCollapsed,
+								'base-sidebar-nav__link--collapsed': isCollapsed,
 							}"
 							:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 							:aria-disabled="item.isDisabled || undefined"
@@ -51,7 +51,7 @@
 						'base-sidebar-nav__link--current': isCurrentItemActive(item),
 						'base-sidebar-nav__link--parent-active':
 							hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
-						'base-sidebar-nav__link--collapsed': props.isCollapsed,
+						'base-sidebar-nav__link--collapsed': isCollapsed,
 					}"
 					:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 					:aria-disabled="item.isDisabled || undefined"
@@ -102,12 +102,12 @@
 				<div v-if="shouldRenderChildren(item)" class="base-sidebar-nav__children">
 					<BaseSideBarNavigation
 						:items="item.children"
-						:level="props.level + 1"
-						:active-key="props.activeKey"
-						:active-path="props.activePath"
-						:active-match="props.activeMatch"
-						:link-component="props.linkComponent"
-						:is-collapsed="props.isCollapsed"
+						:level="level + 1"
+						:active-key="activeKey"
+						:active-path="activePath"
+						:active-match="activeMatch"
+						:link-component="linkComponent"
+						:is-collapsed="isCollapsed"
 						@item-click="handleChildItemClick">
 						<template v-if="$slots.item" #item="slotProps">
 							<slot name="item" v-bind="slotProps" />
@@ -127,20 +127,17 @@
 					</BaseSideBarNavigation>
 				</div>
 
-				<div v-if="item.hasDivider && !props.isCollapsed" class="base-sidebar-nav__divider" />
+				<div v-if="item.hasDivider && !isCollapsed" class="base-sidebar-nav__divider" />
 			</li>
 		</template>
 	</ul>
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
 import { ref } from 'vue'
-
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseTooltip } from '@components/BaseTooltip'
-
 import type {
 	BaseSideBarNavigationEmits,
 	BaseSideBarNavigationProps,
@@ -149,6 +146,7 @@ import type {
 	SideBarItemKey,
 	SideBarItemTo,
 } from '../model/BaseSideBar.types'
+import type { Component } from 'vue'
 
 defineOptions({
 	name: 'BaseSideBarNavigation',

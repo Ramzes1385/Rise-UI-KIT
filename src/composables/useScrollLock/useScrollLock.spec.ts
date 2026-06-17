@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-
 import { useScrollLock } from './useScrollLock'
 
 describe('useScrollLock', () => {

@@ -3,11 +3,10 @@
  * Проверяют рендер, CSS-модификаторы и базовое поведение.
  */
 
-import { useEscapeKey } from '@composables/useEscapeKey'
-import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, waitFor } from '@testing-library/vue'
+import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-
+import { useEscapeKey } from '@composables/useEscapeKey'
 import BaseSearch from '../ui/BaseSearch.vue'
 
 /** Мокаем DOM-зависимые композаблы */

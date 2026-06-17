@@ -6,15 +6,15 @@
 			variantClass,
 			classes.root,
 			{
-				'base-button--loading': props.isLoading,
-				'base-button--disabled': props.isDisabled || props.isLoading,
+				'base-button--loading': isLoading,
+				'base-button--disabled': isDisabled || isLoading,
 			},
 		]"
 		:style="[paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
-		:type="props.type"
-		:disabled="props.isDisabled || props.isLoading"
+		:type="type"
+		:disabled="isDisabled || isLoading"
 		@click="handleClick">
-		<span v-if="props.isLoading" class="base-button__loader"></span>
+		<span v-if="isLoading" class="base-button__loader"></span>
 		<span class="base-button__content">
 			<span v-if="$slots.left" class="base-button__slot-left">
 				<slot name="left" />
@@ -28,11 +28,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import { ref } from 'vue'
-
 import '../styles/BaseButton.style.scss'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
 

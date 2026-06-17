@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import BaseFormField from '../ui/BaseFormField.vue'
 
 describe('BaseFormField unit', () => {

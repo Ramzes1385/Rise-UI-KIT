@@ -1,5 +1,4 @@
 import { inject, provide, readonly, ref } from 'vue'
-
 import { MEGA_MENU_PATH_SEPARATOR, MEGA_MENU_TREE_KEY } from './useMegaMenuTree.types'
 import type { MegaMenuTree } from './useMegaMenuTree.types'
 

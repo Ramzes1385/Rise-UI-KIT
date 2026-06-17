@@ -1,15 +1,13 @@
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { MENU_VARIANTS } from '../model/BaseMenu.types'
+import BaseMenu from '../ui/BaseMenu.vue'
+import type { BaseMenuItem } from '../model/BaseMenu.types'
 /**
  * Stories для компонента BaseMenu.
  * Демонстрирует все возможности и интерактивные состояния.
  */
 import type { Meta, StoryObj } from '@storybook/vue3'
-import { expect, fn, userEvent, waitFor } from 'storybook/test'
-
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import type { BaseMenuItem } from '../model/BaseMenu.types'
-import { MENU_VARIANTS } from '../model/BaseMenu.types'
-import BaseMenu from '../ui/BaseMenu.vue'
 
 const ITEMS: BaseMenuItem[][] = [
 	[

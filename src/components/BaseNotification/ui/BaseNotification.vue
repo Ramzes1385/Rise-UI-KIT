@@ -1,10 +1,10 @@
 <template>
-	<Teleport to="body" :disabled="props.isContained">
+	<Teleport to="body" :disabled="isContained">
 		<div
 			class="base-notification-container"
 			:class="[
-				`base-notification-container--${props.position}`,
-				{ 'base-notification-container--contained': props.isContained },
+				`base-notification-container--${position}`,
+				{ 'base-notification-container--contained': isContained },
 				classes.root,
 			]"
 			:style="sizeScaleStyle">
@@ -17,13 +17,13 @@
 					:style="[variantStyle, customColorStyle]">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
-						:size-scale="calcIconScale('md', props.sizeScale)"
+						:size-scale="calcIconScale('md', sizeScale)"
 						class="base-notification__icon"
 						:custom-class="classes.icon" />
 					<div class="base-notification__content" :class="classes.content">
 						<BaseText
 							tag="h4"
-							:size-scale="props.sizeScale"
+							:size-scale="sizeScale"
 							:weight="UI_FONT_WEIGHT.SEMIBOLD"
 							class="base-notification__title"
 							:custom-class="classes.title">
@@ -32,7 +32,7 @@
 						<BaseText
 							v-if="notification.description"
 							tag="p"
-							:size-scale="props.sizeScale"
+							:size-scale="sizeScale"
 							:color="{ text: { base: 'var(--color-text-muted)' } }"
 							class="base-notification__description"
 							:custom-class="classes.description">
@@ -43,10 +43,10 @@
 						variant="ghost"
 						:padding="2"
 						class="base-notification__close"
-						:size-scale="props.sizeScale"
+						:size-scale="sizeScale"
 						:custom-class="classes.close"
 						@click="remove(notification.id)">
-						<BaseIcon name="close" :size-scale="calcIconScale('sm', props.sizeScale)" />
+						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
 					</BaseButton>
 					<div
 						class="base-notification__progress"
@@ -59,12 +59,12 @@
 </template>
 
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, NotificationItem } from '../model/BaseNotification.types'
 

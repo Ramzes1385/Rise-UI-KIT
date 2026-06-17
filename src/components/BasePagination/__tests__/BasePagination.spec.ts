@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import BasePagination from '../ui/BasePagination.vue'
 
 describe('BasePagination unit', () => {

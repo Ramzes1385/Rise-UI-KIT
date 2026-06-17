@@ -3,15 +3,13 @@
  * Демонстрирует варианты, размеры через sizeScale, состояния и закрытие.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { BaseButton } from '@components/BaseButton'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import BaseModal from '../ui/BaseModal.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseModal> = {
 	title: 'UI/BaseModal',

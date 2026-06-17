@@ -1,7 +1,6 @@
+import type { TableColumn } from './BaseTable.types'
 import type { ComputedRef, Ref } from 'vue'
 import type { useSlots } from 'vue'
-
-import type { TableColumn } from './BaseTable.types'
 
 export interface UseTableToolbarOptions {
 	filterableColumns: () => TableColumn[]

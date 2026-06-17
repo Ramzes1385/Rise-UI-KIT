@@ -4,7 +4,6 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from './imageUtils'
 
 describe('imageUtils', () => {

@@ -28,14 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import type { VNode } from 'vue'
-import type { TreeNode } from '../model/BaseTree.types'
-
 import { inject } from 'vue'
-
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
-
+import type { TreeNode } from '../model/BaseTree.types'
+import type { VNode } from 'vue'
 import '../styles/BaseTree.style.scss'
 
 interface Props {

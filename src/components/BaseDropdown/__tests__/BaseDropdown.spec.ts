@@ -7,7 +7,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import BaseDropdown from '../ui/BaseDropdown.vue'
 
 const { clickOutsideMock, escapeKeyMock } = vi.hoisted(() => ({

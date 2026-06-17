@@ -5,7 +5,6 @@
 
 import { mount } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
-
 import { useSlider } from './useSlider'
 import type { UseSliderReturn } from './useSlider.types'
 

@@ -57,19 +57,18 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseImageEmits, BaseImageProps } from '../model/BaseImage.types'
-
+import { computed, onUnmounted, ref, watch } from 'vue'
 import '../styles/BaseImage.style.scss'
 
-import BaseImageZoom from './BaseImageZoom.vue'
-import { UI_IMAGE_ERROR_TEXT, UI_IMAGE_LOAD_TIMEOUT_MS, UI_IMAGE_LOADING_MIN_HEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useImageZoom } from '@composables/useImageZoom'
 import { useSizeScale } from '@composables/useSizeScale'
+import { UI_IMAGE_ERROR_TEXT, UI_IMAGE_LOAD_TIMEOUT_MS, UI_IMAGE_LOADING_MIN_HEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '@utils/imageUtils'
-import { computed, onUnmounted, ref, watch } from 'vue'
 import { useImageGallery } from '../model/useImageGallery'
+import BaseImageZoom from './BaseImageZoom.vue'
+import type { BaseImageEmits, BaseImageProps } from '../model/BaseImage.types'
 
 const props = withDefaults(defineProps<BaseImageProps>(), {
 	src: undefined,

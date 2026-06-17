@@ -1,5 +1,4 @@
 import { nextTick, onMounted, watch } from 'vue'
-
 import type { UseAutoScrollOptions } from './useAutoScroll.types'
 
 /**

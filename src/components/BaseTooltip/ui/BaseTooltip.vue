@@ -13,7 +13,7 @@
 				<div
 					v-if="isVisible"
 					class="base-tooltip"
-					:class="[[`base-tooltip--${props.position}`, variantClass], classes.tooltip]"
+					:class="[[`base-tooltip--${position}`, variantClass], classes.tooltip]"
 					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]">
 					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
@@ -23,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { BaseText } from '@components/BaseText'
-import { UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { BaseText } from '@components/BaseText'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps } from '../model/BaseTooltip.types'
 

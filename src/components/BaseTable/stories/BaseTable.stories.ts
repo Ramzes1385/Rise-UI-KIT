@@ -3,13 +3,8 @@
  * Демонстрирует все варианты, размеры, сортировку, выбор, поиск и состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import BaseAvatar from '@components/BaseAvatar/ui/BaseAvatar.vue'
 import BaseBadge from '@components/BaseBadge/ui/BaseBadge.vue'
 import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
@@ -18,9 +13,12 @@ import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
 import BaseProgress from '@components/BaseProgress/ui/BaseProgress.vue'
 import BaseSwitch from '@components/BaseSwitch/ui/BaseSwitch.vue'
 import BaseText from '@components/BaseText/ui/BaseText.vue'
-import type { TableColumn, TableRow } from '../model/BaseTable.types'
+import { buildArgTypes } from '@utils/storybookUtils'
+import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { TABLE_VARIANTS } from '../model/BaseTable.types'
 import BaseTable from '../ui/BaseTable.vue'
+import type { TableColumn, TableRow } from '../model/BaseTable.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const COLUMNS: TableColumn[] = [
 	{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },

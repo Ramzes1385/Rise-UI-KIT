@@ -1,5 +1,4 @@
 import { nextTick, ref } from 'vue'
-
 import { useDatePickerPanelNavigation } from '../model/useDatePickerPanelNavigation'
 
 describe('useDatePickerPanelNavigation', () => {

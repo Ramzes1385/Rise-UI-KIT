@@ -122,13 +122,12 @@
 </template>
 
 <script setup lang="ts">
-import type { useImageZoom } from '@composables/useImageZoom'
-import type { useImageGallery } from '../model/useImageGallery'
-
+import { nextTick, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { nextTick, ref } from 'vue'
+import type { useImageGallery } from '../model/useImageGallery'
+import type { useImageZoom } from '@composables/useImageZoom'
 
 defineProps<{
 	zoom: ReturnType<typeof useImageZoom>

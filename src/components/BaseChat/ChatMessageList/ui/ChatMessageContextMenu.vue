@@ -7,7 +7,7 @@
 			:style="{ top: `${y}px`, left: `${x}px` }">
 			<div class="base-chat-context-menu__reactions">
 				<button
-					v-for="emoji in props.popularEmojis"
+					v-for="emoji in popularEmojis"
 					:key="emoji"
 					type="button"
 					class="base-chat-context-menu__reaction-btn"
@@ -54,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
@@ -67,7 +68,6 @@ import {
 	UI_CHAT_UNPIN,
 	UI_SCALE,
 } from '@constants'
-import { ref } from 'vue'
 import type { ChatMessage } from '../../model/BaseChat.types'
 
 interface ChatMessageContextMenuProps {
@@ -80,7 +80,7 @@ interface ChatMessageContextMenuProps {
 	popularEmojis?: string[]
 }
 
-const props = withDefaults(defineProps<ChatMessageContextMenuProps>(), {
+withDefaults(defineProps<ChatMessageContextMenuProps>(), {
 	popularEmojis: () => ['👍', '❤️', '🔥', '😂', '😮', '😢'],
 })
 

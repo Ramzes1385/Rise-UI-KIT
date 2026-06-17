@@ -6,9 +6,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-
-import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
+import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 
 /** Стандартный набор элементов для тестов */
 const ITEMS: BreadcrumbItem[] = [

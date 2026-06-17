@@ -98,10 +98,9 @@
 </template>
 
 <script setup lang="ts">
-import { calcIconScale } from '@components/BaseIcon'
-import type { SearchResult } from '../model/BaseSearch.types'
-
+import { computed, nextTick, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
+import { calcIconScale } from '@components/BaseIcon'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useCustomColor } from '@composables/useCustomColor'
@@ -109,9 +108,9 @@ import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { computed, nextTick, ref } from 'vue'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
+import type { SearchResult } from '../model/BaseSearch.types'
 
 interface BaseSearchOverlayProps {
 	panel: 'modal' | 'sidebar'

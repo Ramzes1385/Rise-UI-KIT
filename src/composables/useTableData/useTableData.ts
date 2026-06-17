@@ -1,13 +1,11 @@
 import { computed, watch } from 'vue'
-import type { Ref } from 'vue'
-
-import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 import { useTableFilter } from '@composables/useTableFilter'
 import { useTablePagination } from '@composables/useTablePagination'
 import { useTableSearch } from '@composables/useTableSearch'
 import { useTableSort } from '@composables/useTableSort'
-
 import type { UseTableDataOptions, UseTableDataReturn } from './useTableData.types'
+import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { Ref } from 'vue'
 
 /**
  * Composable для сортировки, фильтрации, пагинации и поиска таблицы.

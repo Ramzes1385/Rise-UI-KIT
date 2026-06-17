@@ -100,16 +100,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, toRef } from 'vue'
 import { BaseButton } from '@components/BaseButton'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
 import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
-import { computed, ref, toRef } from 'vue'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
 

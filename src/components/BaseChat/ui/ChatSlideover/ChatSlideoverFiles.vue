@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
@@ -43,7 +44,6 @@ import {
 	UI_SCALE,
 } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
-import { computed } from 'vue'
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 
 interface SharedAttachment extends ChatMessageAttachment {

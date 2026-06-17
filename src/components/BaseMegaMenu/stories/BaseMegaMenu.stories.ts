@@ -4,13 +4,11 @@
  * раскладки columns/dropdown и триггеры click/hover.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
 import { MEGA_MENU_VARIANTS } from '../model/BaseMegaMenu.types'
+import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const COLUMNS = [
 	{

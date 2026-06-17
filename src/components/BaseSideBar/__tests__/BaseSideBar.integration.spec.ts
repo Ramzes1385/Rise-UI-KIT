@@ -1,10 +1,7 @@
 import '@testing-library/jest-dom/vitest'
-
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
-
 import BaseSideBar from '../ui/BaseSideBar.vue'
-
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
 
 describe('BaseSideBar integration', () => {

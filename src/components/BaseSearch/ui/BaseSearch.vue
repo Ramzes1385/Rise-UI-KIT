@@ -116,20 +116,19 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseSearchEmits, BaseSearchProps, SearchResult } from '../model/BaseSearch.types'
-
-import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useListNavigation } from '@composables/useListNavigation'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import '../styles/BaseSearch.style.scss'
+import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import BaseSearchInput from './BaseSearchInput.vue'
+import '../styles/BaseSearch.style.scss'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
+import type { BaseSearchEmits, BaseSearchProps, SearchResult } from '../model/BaseSearch.types'
 
 const props = withDefaults(defineProps<BaseSearchProps>(), {
 	modelValue: '',

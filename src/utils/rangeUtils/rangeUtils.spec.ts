@@ -4,7 +4,6 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { calcFillStyle, calcThumbStyle, snapToStep, toPercent } from './rangeUtils'
 
 describe('rangeUtils', () => {

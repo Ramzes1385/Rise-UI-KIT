@@ -3,7 +3,7 @@
 		class="base-pin"
 		:class="[
 			{
-				'base-pin--disabled': props.isDisabled,
+				'base-pin--disabled': isDisabled,
 				'base-pin--error': hasError,
 			},
 			variantClass,
@@ -12,15 +12,15 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div class="base-pin__cells" :class="classes.cells">
 			<input
-				v-for="i in props.length"
+				v-for="i in length"
 				:key="i"
 				ref="inputRefs"
-				:type="props.type"
+				:type="type"
 				maxlength="1"
 				class="base-pin__input"
 				:class="classes.input"
 				:value="cells[i - 1]"
-				:disabled="props.isDisabled"
+				:disabled="isDisabled"
 				@input="handleInput($event, i - 1)"
 				@keydown="handleKeyDown($event, i - 1)"
 				@paste="handlePaste" />
@@ -30,19 +30,19 @@
 			:error="formField.error"
 			class-name="base-pin__error-text"
 			:custom-class="classes.errorText"
-			:size-scale="props.sizeScale" />
+			:size-scale="sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { computed, ref } from 'vue'
-import '../styles/BasePin.style.scss'
-import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import '../styles/BasePin.style.scss'
+import { toHTMLInputElement } from '@utils/domUtils'
+import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
 
 const props = withDefaults(defineProps<BasePinProps>(), {
 	length: 4,

@@ -4,13 +4,12 @@
  * Включает анти-регрессионные истории.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const INPUT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
 

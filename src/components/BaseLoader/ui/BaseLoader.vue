@@ -1,13 +1,13 @@
 <template>
 	<div
 		class="base-loader"
-		:class="[`base-loader--${props.variant}`, { 'base-loader--overlay': props.isOverlay }, classes.root]"
+		:class="[`base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="status"
 		:aria-label="UI_TEXT.LOADING_ARIA">
 		<div class="base-loader__animation" :class="classes.animation">
 			<!-- Spinner -->
-			<template v-if="props.variant === 'spinner'">
+			<template v-if="variant === 'spinner'">
 				<svg class="base-loader__spinner" :class="classes.spinner" viewBox="0 0 50 50">
 					<circle class="base-loader__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
 					<circle class="base-loader__spinner-fill" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
@@ -15,19 +15,19 @@
 			</template>
 
 			<!-- Dots -->
-			<template v-if="props.variant === 'dots'">
+			<template v-if="variant === 'dots'">
 				<span class="base-loader__dot"></span>
 				<span class="base-loader__dot"></span>
 				<span class="base-loader__dot"></span>
 			</template>
 
 			<!-- Pulse -->
-			<template v-if="props.variant === 'pulse'">
+			<template v-if="variant === 'pulse'">
 				<span class="base-loader__pulse"></span>
 			</template>
 
 			<!-- Bars -->
-			<template v-if="props.variant === 'bars'">
+			<template v-if="variant === 'bars'">
 				<span class="base-loader__bar"></span>
 				<span class="base-loader__bar"></span>
 				<span class="base-loader__bar"></span>
@@ -35,7 +35,7 @@
 			</template>
 		</div>
 
-		<span v-if="props.hasLabel" class="base-loader__label" :class="classes.label">{{ props.label }}</span>
+		<span v-if="hasLabel" class="base-loader__label" :class="classes.label">{{ label }}</span>
 	</div>
 </template>
 

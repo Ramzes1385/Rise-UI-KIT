@@ -3,15 +3,14 @@
  * Демонстрирует все вариации, мультивыбор, поиск, ошибки и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import type { BaseSelectOption } from '../model/BaseSelect.types'
 import { SELECT_VARIANTS } from '../model/BaseSelect.types'
 import BaseSelect from '../ui/BaseSelect.vue'
+import type { BaseSelectOption } from '../model/BaseSelect.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Демо-опции для stories */
 const OPTIONS: BaseSelectOption[] = [

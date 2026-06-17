@@ -51,7 +51,6 @@
 
 <script setup lang="ts">
 import { computed, useSlots } from 'vue'
-
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'

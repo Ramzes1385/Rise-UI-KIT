@@ -7,13 +7,13 @@
 		<div v-if="hasHeader" class="base-sidebar__header" :class="classes.header">
 			<template v-if="!isCollapsedState">
 				<slot name="header">
-					<BaseText v-if="props.title" tag="h3" :weight="UI_FONT_WEIGHT_BOLD" class="base-sidebar__title" :custom-class="classes.title">
-						{{ props.title }}
+					<BaseText v-if="title" tag="h3" :weight="UI_FONT_WEIGHT_BOLD" class="base-sidebar__title" :custom-class="classes.title">
+						{{ title }}
 					</BaseText>
 				</slot>
 			</template>
 
-			<BaseTooltip v-if="props.isCollapsible && isCollapsedState" :text="UI_EXPAND_TEXT" position="right">
+			<BaseTooltip v-if="isCollapsible && isCollapsedState" :text="UI_EXPAND_TEXT" position="right">
 				<BaseButton
 					variant="ghost"
 					:aria-label="toggleLabel"
@@ -26,7 +26,7 @@
 			</BaseTooltip>
 
 			<BaseButton
-				v-else-if="props.isCollapsible"
+				v-else-if="isCollapsible"
 				variant="ghost"
 				:aria-label="toggleLabel"
 				:padding="6"
@@ -38,18 +38,18 @@
 		</div>
 
 		<div
-			v-if="hasNavigation && !props.isLoading && (!isCollapsedState || hasItems)"
+			v-if="hasNavigation && !isLoading && (!isCollapsedState || hasItems)"
 			class="base-sidebar__navigation"
 			:class="classes.navigation">
 			<slot v-if="!isCollapsedState && $slots.navigation" name="navigation" />
 
 			<BaseSideBarNavigation
 				v-else-if="hasItems"
-				:items="props.items"
-				:active-key="props.activeKey"
-				:active-path="props.activePath"
-				:active-match="props.activeMatch"
-				:link-component="props.linkComponent"
+				:items="items"
+				:active-key="activeKey"
+				:active-path="activePath"
+				:active-match="activeMatch"
+				:link-component="linkComponent"
 				:is-collapsed="isCollapsedState"
 				@item-click="handleItemClick">
 				<template v-if="$slots.item" #item="slotProps">
@@ -70,18 +70,18 @@
 			</BaseSideBarNavigation>
 		</div>
 
-		<div v-if="props.isLoading" class="base-sidebar__loading" :class="classes.loading">
+		<div v-if="isLoading" class="base-sidebar__loading" :class="classes.loading">
 			<BaseSkeleton shape="rect" :width="'100%'" :height="20" style="margin-bottom: 8px" />
 			<BaseSkeleton shape="rect" :width="'82%'" :height="20" style="margin-bottom: 8px" />
 			<BaseSkeleton shape="rect" :width="'64%'" :height="20" style="margin-bottom: 8px" />
 			<BaseSkeleton shape="rect" :width="'92%'" :height="20" />
 		</div>
 
-		<div v-if="hasBody && !isCollapsedState && !props.isLoading" class="base-sidebar__body" :class="classes.body">
+		<div v-if="hasBody && !isCollapsedState && !isLoading" class="base-sidebar__body" :class="classes.body">
 			<slot />
 		</div>
 
-		<div v-if="hasFooter && !props.isLoading" class="base-sidebar__footer" :class="classes.footer">
+		<div v-if="hasFooter && !isLoading" class="base-sidebar__footer" :class="classes.footer">
 			<slot name="footer" />
 		</div>
 
@@ -93,20 +93,17 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
-
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_COLLAPSE_TEXT, UI_EXPAND_TEXT, UI_FONT_WEIGHT_BOLD, UI_SIDEBAR_DEFAULT_WIDTH, SIZE_SCALE_DEFAULT} from '@constants'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { usePadding } from '@composables/usePadding'
-
+import { UI_COLLAPSE_TEXT, UI_EXPAND_TEXT, UI_FONT_WEIGHT_BOLD, UI_SIDEBAR_DEFAULT_WIDTH, SIZE_SCALE_DEFAULT} from '@constants'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
-
+import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
 
 defineOptions({

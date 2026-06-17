@@ -3,10 +3,9 @@
  * Демонстрирует ориентации, толщины, отступы и слоты.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, within } from 'storybook/test'
-
 import BaseSeparator from '../ui/BaseSeparator.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseSeparator> = {
 	title: 'UI/BaseSeparator',

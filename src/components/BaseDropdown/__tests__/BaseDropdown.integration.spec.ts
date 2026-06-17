@@ -7,7 +7,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render } from '@testing-library/vue'
-
 import BaseDropdown from '../ui/BaseDropdown.vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))

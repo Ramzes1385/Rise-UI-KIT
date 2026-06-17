@@ -4,7 +4,7 @@
 		:class="[
 			variantClass,
 			{
-				'base-checkbox--disabled': props.isDisabled,
+				'base-checkbox--disabled': isDisabled,
 				'base-checkbox--error': formField.error,
 			},
 			classes.root,
@@ -16,14 +16,14 @@
 					type="checkbox"
 					class="base-checkbox__input"
 					:class="classes.input"
-				:checked="props.modelValue"
-				:disabled="props.isDisabled"
+				:checked="modelValue"
+				:disabled="isDisabled"
 					@change="handleChange" />
 				<div class="base-checkbox__box" :class="classes.box">
 					<BaseIcon
-						v-if="props.modelValue"
+						v-if="modelValue"
 						name="check"
-						:size-scale="calcIconScale('xs', props.sizeScale)"
+						:size-scale="calcIconScale('xs', sizeScale)"
 						class="base-checkbox__icon"
 						:custom-class="classes.icon" />
 				</div>
@@ -34,29 +34,27 @@
 				:label="label"
 				class-name="base-checkbox__label"
 				:custom-class="classes.label"
-				:size-scale="props.sizeScale" />
+				:size-scale="sizeScale" />
 		</label>
 		<slot name="error">
 			<FormFieldError
 				:error="formField.error"
 				class-name="base-checkbox__error-text"
 				:custom-class="classes.errorText"
-				:size-scale="props.sizeScale" />
+				:size-scale="sizeScale" />
 		</slot>
 	</div>
 </template>
 
 <script setup lang="ts">
-import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox.types'
-
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
-import { toHTMLInputElement } from '@utils/domUtils'
-
-import '../styles/BaseCheckbox.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import { toHTMLInputElement } from '@utils/domUtils'
+import '../styles/BaseCheckbox.style.scss'
+import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox.types'
 
 const props = withDefaults(defineProps<BaseCheckboxProps>(), {
 	modelValue: false,

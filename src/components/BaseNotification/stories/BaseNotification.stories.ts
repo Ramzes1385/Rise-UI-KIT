@@ -3,14 +3,12 @@
  * Демонстрирует все типы, варианты и масштабирование уведомлений.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '../model/BaseNotification.types'
 import BaseNotification from '../ui/BaseNotification.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseNotification> = {
 	title: 'UI/BaseNotification',

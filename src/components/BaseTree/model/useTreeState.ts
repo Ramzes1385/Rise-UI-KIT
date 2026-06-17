@@ -1,9 +1,7 @@
-import type { ComputedRef, Ref } from 'vue'
-import type { BaseTreeEmits, TreeNode, TreeSelectionMode } from './BaseTree.types'
-
 import { computed, ref, watch } from 'vue'
-
 import { buildDescendantsCache, collectExpandableIds } from './BaseTree.utils'
+import type { BaseTreeEmits, TreeNode, TreeSelectionMode } from './BaseTree.types'
+import type { ComputedRef, Ref } from 'vue'
 
 interface UseTreeStateOptions {
 	items: Ref<TreeNode[]>

@@ -3,10 +3,9 @@
  * Демонстрирует все формы, анимации и кастомный цвет фона.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, within } from 'storybook/test'
-
 import BaseSkeleton from '../ui/BaseSkeleton.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseSkeleton> = {
 	title: 'UI/BaseSkeleton',

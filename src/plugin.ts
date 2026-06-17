@@ -1,6 +1,4 @@
-import type { App, Component, Plugin } from 'vue'
 import { defineAsyncComponent } from 'vue'
-
 // Точечные импорты обходят top-level barrel src/components/index.ts —
 // иначе sub-barrel ./components/BaseChat/index.ts тянул бы тяжёлый BaseChat.vue
 // статически через цепочку re-export, ломая физический split на async-чанки
@@ -50,6 +48,7 @@ import { BaseTextarea } from './components/BaseTextarea'
 import { BaseTooltip } from './components/BaseTooltip'
 import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
+import type { App, Component, Plugin } from 'vue'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
 const BaseChat = defineAsyncComponent(() => import('./components/BaseChat/ui/BaseChat.vue'))

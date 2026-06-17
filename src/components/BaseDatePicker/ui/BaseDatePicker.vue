@@ -45,22 +45,22 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_DEFAULT_HEIGHT, UI_SELECT_DATE_TEXT } from '@constants'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useCustomClass } from '@composables/useCustomClass'
-import { useFormField } from '@composables/useFormField'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
-import { useSizeScale } from '@composables/useSizeScale'
-import { formatDatePickerValue } from '@utils/dateUtils'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import '../styles/BaseDatePicker.style.scss'
-import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import type { BaseDatePickerEmits, BaseDatePickerProps } from '../model/BaseDatePicker.types'
+import { useFormField } from '@composables/useFormField'
+import { useSizeScale } from '@composables/useSizeScale'
+import { UI_CHAT_DEFAULT_HEIGHT, UI_SELECT_DATE_TEXT } from '@constants'
+import '../styles/BaseDatePicker.style.scss'
+import { formatDatePickerValue } from '@utils/dateUtils'
+import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
+import type { BaseDatePickerEmits, BaseDatePickerProps } from '../model/BaseDatePicker.types'
 
 const props = defineProps<BaseDatePickerProps>()
 const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()

@@ -1,6 +1,5 @@
-import { CALENDAR_GRID_CELLS } from '@constants'
 import { computed, type Ref } from 'vue'
-
+import { CALENDAR_GRID_CELLS } from '@constants'
 import { daysInMonth, getWeekNumber, getWeekday } from '@utils/dateUtils'
 import type { CalendarView, CalendarWeekday } from './useCalendar.types'
 

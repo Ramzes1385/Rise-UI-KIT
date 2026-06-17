@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-
 import { useListNavigation } from './useListNavigation'
 
 describe('useListNavigation', () => {

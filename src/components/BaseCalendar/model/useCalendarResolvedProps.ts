@@ -1,7 +1,7 @@
-import type { ComputedRef } from 'vue'
-import type { BaseCalendarProps } from './BaseCalendar.types'
 import { computed } from 'vue'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import type { BaseCalendarProps } from './BaseCalendar.types'
+import type { ComputedRef } from 'vue'
 
 export interface ResolvedCalendarProps {
 	modelValue: Date | null

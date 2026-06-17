@@ -1,9 +1,9 @@
 <template>
 	<!-- Одиночная анимация -->
 	<Transition
-		v-if="!props.isGroup"
-		:name="props.name"
-		:mode="props.mode"
+		v-if="!isGroup"
+		:name="name"
+		:mode="mode"
 		appear
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
@@ -15,8 +15,8 @@
 	<!-- Групповая анимация -->
 	<TransitionGroup
 		v-else
-		:name="props.name"
-		:tag="props.tag"
+		:name="name"
+		:tag="tag"
 		appear
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
@@ -27,8 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCustomClass } from '@composables/useCustomClass'
 import { computed } from 'vue'
+import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps } from '../model/BaseAnimation.types'

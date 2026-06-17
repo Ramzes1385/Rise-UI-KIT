@@ -8,10 +8,9 @@
  * Transition может задерживать рендер — используем waitFor с увеличенным timeout.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
-
 import DatePickerPanel from './DatePickerPanel.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const PANEL_SELECTOR = '.date-picker-panel'
 const WAIT_OPTIONS = { timeout: 5000 }

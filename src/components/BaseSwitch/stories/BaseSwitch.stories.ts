@@ -3,16 +3,13 @@
  * Демонстрирует все вариации, состояния, слоты и CSS-состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
-
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { SWITCH_VARIANTS } from '../model/BaseSwitch.types'
 import BaseSwitch from '../ui/BaseSwitch.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseSwitch> = {
 	title: 'UI/BaseSwitch',

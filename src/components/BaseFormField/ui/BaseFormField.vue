@@ -12,7 +12,7 @@
 		<div v-if="label" class="base-form-field__header" :class="classes.header">
 			<label :for="props.for" class="base-form-field__label" :class="classes.label">
 				{{ label }}
-				<span v-if="props.isRequired" class="base-form-field__required" :class="classes.required">*</span>
+				<span v-if="isRequired" class="base-form-field__required" :class="classes.required">*</span>
 			</label>
 		</div>
 
@@ -24,7 +24,7 @@
 			{{ description }}
 		</p>
 
-		<BaseAnimation name="fade" :size-scale="props.sizeScale" :custom-class="classes.animation">
+		<BaseAnimation name="fade" :size-scale="sizeScale" :custom-class="classes.animation">
 			<p v-if="formField.error" class="base-form-field__error" :class="classes.error">
 				{{ formField.error }}
 			</p>
@@ -37,8 +37,8 @@ import { BaseAnimation } from '@components/BaseAnimation'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
-import type { BaseFormFieldProps } from '../model/BaseFormField.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseFormFieldProps } from '../model/BaseFormField.types'
 
 const props = withDefaults(defineProps<BaseFormFieldProps>(), {
 	isRequired: false,

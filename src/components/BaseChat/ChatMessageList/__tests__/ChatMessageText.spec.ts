@@ -4,10 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
-
 import ChatMessageText from '../ui/ChatMessageText.vue'
 
 describe('ChatMessageText', () => {

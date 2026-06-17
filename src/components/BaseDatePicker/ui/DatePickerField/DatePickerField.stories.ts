@@ -3,10 +3,9 @@
  * Используются для генерации покрытия в Storybook.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent } from 'storybook/test'
-
 import DatePickerField from './DatePickerField.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof DatePickerField> = {
 	title: 'UI/BaseDatePicker/ui/DatePickerField',

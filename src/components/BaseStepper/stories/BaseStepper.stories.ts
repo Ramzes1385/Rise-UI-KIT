@@ -3,16 +3,14 @@
  * Демонстрирует все ориентации, формы, варианты, слоты и состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import type { BaseStepperStep } from '../model/BaseStepper.types'
 import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../model/BaseStepper.types'
 import BaseStepper from '../ui/BaseStepper.vue'
+import type { BaseStepperStep } from '../model/BaseStepper.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const ITEMS: BaseStepperStep[] = [
 	{ label: 'Данные', description: 'Личная информация' },

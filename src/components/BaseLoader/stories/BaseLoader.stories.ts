@@ -3,10 +3,9 @@
  * Демонстрирует все варианты, масштабирование и состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, within } from 'storybook/test'
-
 import BaseLoader from '../ui/BaseLoader.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseLoader> = {
 	title: 'UI/BaseLoader',

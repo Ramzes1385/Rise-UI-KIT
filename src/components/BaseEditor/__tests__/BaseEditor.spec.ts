@@ -6,7 +6,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render } from '@testing-library/vue'
-
 import BaseEditor from '../ui/BaseEditor.vue'
 
 /** Стабаем дочерние компоненты для изоляции */

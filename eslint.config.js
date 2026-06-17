@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
+import perfectionist from 'eslint-plugin-perfectionist'
 import tseslint from 'typescript-eslint'
 import globals from 'globals'
 
@@ -22,6 +23,7 @@ export default tseslint.config(
 
   {
     files: ['**/*.{ts,vue}'],
+    plugins: { perfectionist },
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
@@ -43,6 +45,22 @@ export default tseslint.config(
       'no-var': 'error',
       'prefer-const': 'warn',
 
+      // Единый порядок импортов: builtin/external → internal (@-алиасы) → relative → type → style (scss).
+      'perfectionist/sort-imports': ['error', {
+        type: 'alphabetical',
+        order: 'asc',
+        newlinesBetween: 0,
+        internalPattern: ['^@/', '^@components(/|$)', '^@composables(/|$)', '^@constants(/|$)', '^@utils(/|$)', '^@icons(/|$)', '^@styles(/|$)', '^@ui(/|$)'],
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          ['parent', 'sibling', 'index'],
+          'type',
+          'style',
+          'unknown',
+        ],
+      }],
       // Форматирование шаблонов контролируется стилем проекта (табы), не ESLint.
       'vue/html-indent': 'off',
       'vue/max-attributes-per-line': 'off',

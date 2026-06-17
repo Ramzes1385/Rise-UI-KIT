@@ -3,15 +3,14 @@
  * Демонстрирует все вариации: single, range, multiple, time, highlights, disabled.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
 import { CALENDAR_VARIANTS } from '../model/BaseCalendar.types'
 import BaseCalendar from '../ui/BaseCalendar.vue'
+import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const now = new Date()
 const y = now.getFullYear()

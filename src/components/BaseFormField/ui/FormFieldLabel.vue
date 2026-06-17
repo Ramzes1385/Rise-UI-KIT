@@ -22,5 +22,11 @@ withDefaults(defineProps<{
 	sizeScale?: number
 }>(), {
 	tag: 'label',
+	isRequired: undefined,
+	className: undefined,
+	customClass: undefined,
+	requiredClassName: undefined,
+	requiredCustomClass: undefined,
+	sizeScale: undefined,
 })
 </script>

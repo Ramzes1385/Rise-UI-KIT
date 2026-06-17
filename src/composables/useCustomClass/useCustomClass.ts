@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-
 import { hasElementKeys, isObject } from '@utils/typeUtils'
 import type { CustomClassProp, UseCustomClassOptions } from './useCustomClass.types'
 

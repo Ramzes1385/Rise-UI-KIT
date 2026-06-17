@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
-import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 import { useChatInfoPanel } from './useChatInfoPanel'
 import { useChatReply } from './useChatReply'
 import { useChatSearch } from './useChatSearch'
 import { useChatSelection } from './useChatSelection'
+import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 
 interface UseChatStateOptions {
 	scrollToMessage?: (messageId: string) => void

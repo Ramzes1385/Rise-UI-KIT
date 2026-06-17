@@ -7,7 +7,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render } from '@testing-library/vue'
-
 import BaseModal from '../ui/BaseModal.vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))

@@ -2,11 +2,10 @@ import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 import { h, markRaw } from 'vue'
-
-import type { BaseSideBarItemSlotProps } from '../model/BaseSideBar.types'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import BaseSideBarNavigation from '../ui/BaseSideBarNavigation.vue'
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
+import type { BaseSideBarItemSlotProps } from '../model/BaseSideBar.types'
 
 describe('BaseSideBar navigation items', () => {
 	it('рендерит items как навигацию', () => {

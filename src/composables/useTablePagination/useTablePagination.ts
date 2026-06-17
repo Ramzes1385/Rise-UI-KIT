@@ -1,11 +1,9 @@
 import { computed, ref, watch } from 'vue'
-
-import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
 import { TABLE_DEFAULT_PAGE_SIZE } from '@components/BaseTable/model/BaseTable.constants'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
-import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
-
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './useTablePagination.types'
+import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
 
 /**
  * Composable для управления пагинацией и подгрузкой таблицы.

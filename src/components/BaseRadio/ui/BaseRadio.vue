@@ -13,16 +13,16 @@
 			v-if="label"
 			tag="span"
 			:label="label"
-			:is-required="props.isRequired"
+			:is-required="isRequired"
 			class-name="base-radio-group__label"
 			:custom-class="classes.label"
 			required-class-name="base-radio-group__required"
 			:required-custom-class="classes.required"
-			:size-scale="props.sizeScale" />
+			:size-scale="sizeScale" />
 
 		<div
 			class="base-radio-group__options"
-			:class="[{ 'base-radio-group__options--vertical': props.isVertical }, classes.options]">
+			:class="[{ 'base-radio-group__options--vertical': isVertical }, classes.options]">
 			<label
 				v-for="option in options"
 				:key="option.value"
@@ -34,7 +34,7 @@
 					},
 					classes.radio,
 				]">
-				<slot name="option" :option="option" :is-checked="props.modelValue === option.value">
+				<slot name="option" :option="option" :is-checked="modelValue === option.value">
 					<div class="base-radio__wrapper" :class="classes.wrapper">
 						<input
 							type="radio"
@@ -42,11 +42,11 @@
 							:class="classes.input"
 							:name="name"
 							:value="option.value"
-							:checked="props.modelValue === option.value"
+							:checked="modelValue === option.value"
 							:disabled="option.isDisabled"
 							@change="handleChange(option.value)" />
 						<div class="base-radio__circle" :class="classes.circle">
-							<div v-if="props.modelValue === option.value" class="base-radio__dot" :class="classes.dot"></div>
+							<div v-if="modelValue === option.value" class="base-radio__dot" :class="classes.dot"></div>
 						</div>
 					</div>
 					<span class="base-radio__option-label" :class="classes.optionLabel">{{ option.label }}</span>
@@ -58,7 +58,7 @@
 			:error="formField.error"
 			class-name="base-radio-group__error-text"
 			:custom-class="classes.errorText"
-			:size-scale="props.sizeScale" />
+			:size-scale="sizeScale" />
 	</div>
 </template>
 
@@ -67,8 +67,8 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
-import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
 
 const props = withDefaults(defineProps<BaseRadioProps>(), {
 	isVertical: false,

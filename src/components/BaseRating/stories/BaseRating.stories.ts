@@ -3,14 +3,12 @@
  * Демонстрирует выбор оценки, варианты, размеры, readonly и тёмную тему.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref, watch } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { RATING_VARIANTS } from '../model/BaseRating.types'
 import BaseRating from '../ui/BaseRating.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseRating> = {
 	title: 'UI/BaseRating',

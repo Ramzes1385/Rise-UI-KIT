@@ -139,10 +139,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseColorPicker } from '@components/BaseColorPicker'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
-import type { BaseSelectOption } from '@components/BaseSelect'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
 import {
@@ -171,7 +171,7 @@ import {
 	UI_EDITOR_VIDEO,
 	UI_EDITOR_VISUAL_MODE,
 } from '@constants'
-import { computed, ref } from 'vue'
+import type { BaseSelectOption } from '@components/BaseSelect'
 
 interface ActiveStates {
 	isBold: boolean

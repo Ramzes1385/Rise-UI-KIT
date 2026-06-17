@@ -3,14 +3,13 @@
  * Покрывает все v-if ветки: range, vertical, tooltip, marks, label, custom thumb.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fireEvent, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { RANGE_VARIANTS } from '../model/BaseRange.types'
 import BaseRange from '../ui/BaseRange.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseRange> = {
 	title: 'UI/BaseRange',

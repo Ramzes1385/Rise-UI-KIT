@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-
 import BaseSkeleton from '../ui/BaseSkeleton.vue'
 
 describe('BaseSkeleton integration', () => {

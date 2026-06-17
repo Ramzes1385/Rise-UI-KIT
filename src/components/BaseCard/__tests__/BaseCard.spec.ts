@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import BaseCard from '../ui/BaseCard.vue'
 
 describe('BaseCard unit', () => {

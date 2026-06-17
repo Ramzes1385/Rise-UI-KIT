@@ -5,7 +5,6 @@
 
 import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
-
 import { useFlyoutPosition } from './useFlyoutPosition'
 
 function withSetup<T>(composable: () => T): { result: T; wrapper: ReturnType<typeof mount> } {

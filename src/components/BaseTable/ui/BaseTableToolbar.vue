@@ -93,7 +93,6 @@ import {
 	UI_FILTER_VALUE_PLACEHOLDER,
 	UI_TEXT,
 } from '@constants'
-
 import type { TableColumn } from '../model/BaseTable.types'
 import type { BaseTableToolbarProps } from './BaseTableToolbar.types'
 

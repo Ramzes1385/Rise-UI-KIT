@@ -3,15 +3,13 @@
  * Демонстрирует все позиции и настройки.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { DROPDOWN_VARIANTS } from '../model/BaseDropdown.types'
 import BaseDropdown from '../ui/BaseDropdown.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseDropdown> = {
 	title: 'UI/BaseDropdown',

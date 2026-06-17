@@ -1,7 +1,6 @@
-import type { ComputedRef, Ref } from 'vue'
-
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
 import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
+import type { ComputedRef, Ref } from 'vue'
 
 /**
  * Опции composable useTablePagination

@@ -3,13 +3,12 @@
  * Демонстрирует все вариации, состояния и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
-
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
 import BaseTextarea from '../ui/BaseTextarea.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseTextarea> = {
 	title: 'UI/BaseTextarea',

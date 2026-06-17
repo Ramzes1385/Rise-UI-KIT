@@ -5,11 +5,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { fireEvent, render } from '@testing-library/vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, ref } from 'vue'
-
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
 
 const Host = defineComponent({

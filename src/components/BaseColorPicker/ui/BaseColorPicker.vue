@@ -48,7 +48,7 @@
 
 			<div v-if="!isPresetsHidden" class="base-color-picker__presets">
 				<button
-					v-for="preset in props.presets"
+					v-for="preset in presets"
 					:key="preset"
 					type="button"
 					class="base-color-picker__preset"
@@ -70,13 +70,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
 import { UI_COLOR_PICKER, UI_NO_COLOR_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
-import { computed, onBeforeUnmount, ref } from 'vue'
 import '../styles/BaseColorPicker.style.scss'
 import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../model/BaseColorPicker.types'

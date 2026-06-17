@@ -99,8 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseEditorEmits, BaseEditorProps } from '../model/BaseEditor.types'
-
+import { onMounted, ref, watch } from 'vue'
 import '../styles/BaseEditor.style.scss'
 
 import { BaseButton } from '@components/BaseButton'
@@ -108,11 +107,11 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { UI_EDITOR_APPLY, UI_EDITOR_DEFAULT_BG_COLOR, UI_EDITOR_DEFAULT_TEXT_COLOR, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import { onMounted, ref, watch } from 'vue'
-import type { BaseSelectOption } from '@components/BaseSelect'
-
+import { UI_EDITOR_APPLY, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { useEditorState } from '../composables/useEditorState'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
+import type { BaseEditorEmits, BaseEditorProps } from '../model/BaseEditor.types'
+import type { BaseSelectOption } from '@components/BaseSelect'
 
 const props = withDefaults(defineProps<BaseEditorProps>(), {
 	modelValue: '',
@@ -130,16 +129,6 @@ const emit = defineEmits<BaseEditorEmits>()
 
 const editorRef = ref<HTMLDivElement | null>(null)
 const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
-const isFocused = ref(false)
-const isEmpty = ref(true)
-const textColor = ref(UI_EDITOR_DEFAULT_TEXT_COLOR)
-const backgroundColor = ref(UI_EDITOR_DEFAULT_BG_COLOR)
-
-function checkEmpty(): void {
-	/* istanbul ignore next -- defensive: editorRef всегда привязан после mount */
-	if (!editorRef.value) return
-	isEmpty.value = (editorRef.value.textContent ?? '').trim() === ''
-}
 
 const headingOptions: BaseSelectOption[] = [
 	{ value: 'p', label: UI_EDITOR_PARAGRAPH },
@@ -151,18 +140,10 @@ const headingOptions: BaseSelectOption[] = [
 	{ value: 'h6', label: `${UI_EDITOR_HEADING_PREFIX} 6` },
 ]
 
-function handleInput(): void {
-	if (isCodeMode.value) {
-		emit('update:modelValue', codeContent.value)
-		return
-	}
-	/* istanbul ignore next -- defensive: editorRef всегда привязан после mount */
-	if (!editorRef.value) return
-	convertInlineHtml()
-	emit('update:modelValue', editorRef.value.innerHTML)
-	updateActiveStates()
-	checkEmpty()
-}
+// Тонкая обёртка над обработчиком ввода: разрывает цикл
+// useEditorToolbar(onInput) ↔ handleInput(зависит от outputs тулбара).
+// handleInput назначается ниже, после деструктуризации тулбара.
+const inputHandler = { fn: () => {} }
 
 const {
 	activeStates,
@@ -194,32 +175,43 @@ const {
 } = useEditorToolbar({
 	editorRef,
 	codeTextareaRef,
-	onInput: handleInput,
+	onInput: () => inputHandler.fn(),
 	promptForUrl: () => prompt(UI_EDITOR_URL_PROMPT),
 })
 
-const isTextColorActive = ref(false)
-const isBackgroundColorActive = ref(false)
+const {
+	isFocused,
+	isEmpty,
+	textColor,
+	backgroundColor,
+	isTextColorActive,
+	isBackgroundColorActive,
+	checkEmpty,
+	handleTextColor,
+	handleBackgroundColor,
+	resetTextColor,
+	resetBackgroundColor,
+} = useEditorState({
+	editorRef,
+	applyColor,
+	applyBackgroundColor,
+	resetColor: resetColorFn,
+	resetBackgroundColor: resetBackgroundColorFn,
+})
 
-function handleTextColor(color: string): void {
-	applyColor(color)
-	isTextColorActive.value = true
+function handleInput(): void {
+	if (isCodeMode.value) {
+		emit('update:modelValue', codeContent.value)
+		return
+	}
+	/* istanbul ignore next -- defensive: editorRef всегда привязан после mount */
+	if (!editorRef.value) return
+	convertInlineHtml()
+	emit('update:modelValue', editorRef.value.innerHTML)
+	updateActiveStates()
+	checkEmpty()
 }
-
-function handleBackgroundColor(color: string): void {
-	applyBackgroundColor(color)
-	isBackgroundColorActive.value = true
-}
-
-function resetTextColor(): void {
-	resetColorFn()
-	isTextColorActive.value = false
-}
-
-function resetBackgroundColor(): void {
-	resetBackgroundColorFn()
-	isBackgroundColorActive.value = false
-}
+inputHandler.fn = handleInput
 
 function handleFocus(): void {
 	isFocused.value = true

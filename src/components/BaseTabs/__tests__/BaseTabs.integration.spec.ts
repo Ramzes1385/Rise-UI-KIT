@@ -6,9 +6,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-
-import type { TabItem } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
+import type { TabItem } from '../model/BaseTabs.types'
 
 const TABS: TabItem[] = [
 	{ id: 'info', label: 'Информация' },

@@ -3,7 +3,6 @@
  */
 
 import { createApp, h } from 'vue'
-
 import { useTableSearch } from './useTableSearch'
 
 function withSetup<T>(composable: () => T): [T, () => void] {

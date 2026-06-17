@@ -5,9 +5,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { ref } from 'vue'
-
 import { useCustomStyle } from './useCustomStyle'
 
 describe('useCustomStyle', () => {

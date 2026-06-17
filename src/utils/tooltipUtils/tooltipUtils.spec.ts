@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-
 import { calcTooltipPosition, getTooltipTransition } from './tooltipUtils'
 
 describe('tooltipUtils', () => {

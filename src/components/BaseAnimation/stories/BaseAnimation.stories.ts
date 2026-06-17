@@ -3,16 +3,14 @@
  * Демонстрирует все типы анимаций, режимы и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { ANIMATION_MODES, ANIMATION_NAMES } from '../model/BaseAnimation.types'
 import BaseAnimation from '../ui/BaseAnimation.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseAnimation> = {
 	title: 'UI/BaseAnimation',

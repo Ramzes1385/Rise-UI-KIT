@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-
 import BasePopover from '../ui/BasePopover.vue'
 
 describe('BasePopover integration', () => {

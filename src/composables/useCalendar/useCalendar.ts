@@ -1,10 +1,9 @@
-import { buildDateWithTime as buildDateWithTimeUtil, getWeekNumber, isSameDay } from '@utils/dateUtils'
 import { ref, watch } from 'vue'
-
-import type { CalendarView, UseCalendarOptions } from './useCalendar.types'
+import { buildDateWithTime as buildDateWithTimeUtil, getWeekNumber, isSameDay } from '@utils/dateUtils'
 import { useCalendarDateState } from './useCalendarDateState'
 import { useCalendarGrid } from './useCalendarGrid'
 import { useCalendarNavigation } from './useCalendarNavigation'
+import type { CalendarView, UseCalendarOptions } from './useCalendar.types'
 
 export function useCalendar(options: UseCalendarOptions) {
 	const currentMonth = ref(options.initialMonth?.() ?? new Date().getMonth())

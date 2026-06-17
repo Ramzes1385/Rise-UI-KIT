@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render } from '@testing-library/vue'
-
 import BaseImage from '../ui/BaseImage.vue'
 
 describe('BaseImage unit', () => {

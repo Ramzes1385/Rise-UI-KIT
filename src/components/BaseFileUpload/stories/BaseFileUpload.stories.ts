@@ -4,14 +4,12 @@
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { FILE_UPLOAD_VARIANTS } from '../model/BaseFileUpload.types'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Создать тестовый File */
 function createTestFile(name: string, size: number, type: string): File {

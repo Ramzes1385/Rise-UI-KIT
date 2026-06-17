@@ -23,13 +23,13 @@
 				<BaseIcon
 					v-if="item.icon"
 					:name="item.icon"
-					:size-scale="calcIconScale('sm', props.sizeScale)"
+					:size-scale="calcIconScale('sm', sizeScale)"
 					class="base-accordion__icon"
 					:custom-class="classes.icon" />
 				<BaseText
 					tag="span"
 					:weight="UI_FONT_WEIGHT.SEMIBOLD"
-					:size-scale="props.sizeScale"
+					:size-scale="sizeScale"
 					class="base-accordion__label"
 					:custom-class="classes.label"
 					>{{ item.label }}</BaseText
@@ -37,7 +37,7 @@
 				<span class="base-accordion__arrow" :class="classes.arrow">
 					<BaseIcon
 						name="chevron-down"
-						:size-scale="calcIconScale('md', props.sizeScale)"
+						:size-scale="calcIconScale('md', sizeScale)"
 						:custom-class="classes.arrowIcon" />
 				</span>
 			</div>
@@ -47,7 +47,7 @@
 				:class="[{ 'base-accordion__collapse--open': openIndexes.includes(index) }, classes.collapse]">
 				<div class="base-accordion__content" :class="classes.content">
 					<slot :name="item.slot || 'default'" :item="item">
-						<BaseText :size-scale="props.sizeScale" :custom-class="classes.contentText">{{ item.content }}</BaseText>
+						<BaseText :size-scale="sizeScale" :custom-class="classes.contentText">{{ item.content }}</BaseText>
 					</slot>
 				</div>
 			</div>
@@ -56,12 +56,11 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-import { onMounted, ref } from 'vue'
-
 import '../styles/BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps } from '../model/BaseAccordion.types'
 

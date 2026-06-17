@@ -1,5 +1,5 @@
-import type { Ref } from 'vue'
 import { nextTick, ref } from 'vue'
+import type { Ref } from 'vue'
 
 interface UseToolbarCodeModeOptions {
 	editorRef: Ref<HTMLDivElement | null>

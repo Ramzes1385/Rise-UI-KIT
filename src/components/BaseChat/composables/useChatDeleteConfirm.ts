@@ -1,6 +1,6 @@
-import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
 import { UI_CHAT_DELETE_MULTI_CONFIRM, UI_CHAT_DELETE_SINGLE_CONFIRM } from '@constants'
+import type { Ref } from 'vue'
 
 export type UseChatDeleteConfirmOptions = {
 	selectedMessageIds: Ref<string[]>

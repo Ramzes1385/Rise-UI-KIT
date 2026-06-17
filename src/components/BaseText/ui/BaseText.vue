@@ -1,6 +1,6 @@
 <template>
 	<component
-		:is="props.tag"
+		:is="tag"
 		class="base-text"
 		:class="[modifierClasses, classes.root]"
 		:style="[sizeScaleStyle, weightStyle, customColorStyle, maxLinesStyle]">
@@ -9,13 +9,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { computed } from 'vue'
 import '../styles/BaseText.style.scss'
-import type { BaseTextProps } from '../model/BaseText.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseTextProps } from '../model/BaseText.types'
 
 const props = withDefaults(defineProps<BaseTextProps>(), {
 	tag: 'p',

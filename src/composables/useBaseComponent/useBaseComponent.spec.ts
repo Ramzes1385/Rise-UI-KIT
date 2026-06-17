@@ -1,6 +1,6 @@
+import { render } from '@testing-library/vue'
 import { describe, it, expect } from 'vitest'
 import { defineComponent, h } from 'vue'
-import { render } from '@testing-library/vue'
 import { useBaseComponent } from './useBaseComponent'
 
 const TestComponent = defineComponent({

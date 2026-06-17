@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="base-avatar"
-		:class="[`base-avatar--${props.shape}`, variantClass, classes.root]"
+		:class="[`base-avatar--${shape}`, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@click="handleClick">
 		<div class="base-avatar__content" :class="classes.content">
@@ -9,7 +9,7 @@
 				<BaseImage
 					v-if="src && !hasImageError"
 					:src="src"
-					:alt="props.alt"
+					:alt="alt"
 					class="base-avatar__img"
 					:custom-class="classes.img"
 					@error="handleImageError" />
@@ -17,24 +17,23 @@
 					v-else
 					tag="span"
 					:weight="UI_FONT_WEIGHT.SEMIBOLD"
-					:size-scale="props.sizeScale"
+					:size-scale="sizeScale"
 					class="base-avatar__initials"
 					:custom-class="classes.initials">
 					{{ initials }}
 				</BaseText>
 			</slot>
 		</div>
-		<span v-if="props.isOnline" class="base-avatar__online" :class="classes.online"></span>
+		<span v-if="isOnline" class="base-avatar__online" :class="classes.online"></span>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { computed, ref, watch } from 'vue'
 import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
 import BaseText from '@components/BaseText/ui/BaseText.vue'
-
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps } from '../model/BaseAvatar.types'
 

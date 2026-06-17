@@ -5,11 +5,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { fireEvent, render } from '@testing-library/vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
-
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
 
 /** Мок размеров SV-области (200×140 в начале координат) */

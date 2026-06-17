@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-
 import { buildArgTypes } from './storybookUtils'
 
 describe('storybookUtils', () => {

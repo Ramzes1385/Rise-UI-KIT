@@ -3,11 +3,10 @@
  * Демонстрирует все режимы и варианты.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import BaseImage from '../ui/BaseImage.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseImage> = {
 	title: 'UI/BaseImage',

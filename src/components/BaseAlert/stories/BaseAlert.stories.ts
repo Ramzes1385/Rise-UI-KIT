@@ -3,14 +3,12 @@
  * Демонстрирует все типы оповещений, варианты отображения, интерактивные состояния и слоты.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-
 import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import BaseAlert from '../ui/BaseAlert.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseAlert> = {
 	title: 'UI/BaseAlert',

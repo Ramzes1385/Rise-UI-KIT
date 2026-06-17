@@ -1,11 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
-import type { SideBarItem } from '../model/BaseSideBar.types'
 import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
 import BaseSideBar from '../ui/BaseSideBar.vue'
-
+import type { SideBarItem } from '../model/BaseSideBar.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 import './BaseSideBar.stories.scss'
 
 const BASIC_ITEMS: SideBarItem[] = [

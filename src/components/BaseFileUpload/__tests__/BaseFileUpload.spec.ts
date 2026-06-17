@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
 
 vi.mock('@utils/fileUtils', async importOriginal => {

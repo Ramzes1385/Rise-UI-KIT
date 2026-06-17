@@ -3,16 +3,13 @@
  * Демонстрирует все состояния и режимы.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { nextTick, ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import BaseEditor from '../ui/BaseEditor.vue'
-
 import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
+import BaseEditor from '../ui/BaseEditor.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseEditor> = {
 	title: 'UI/BaseEditor',

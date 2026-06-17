@@ -4,13 +4,11 @@
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, within } from 'storybook/test'
-
 import { BaseText } from '@components/BaseText'
-
-import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
+import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },

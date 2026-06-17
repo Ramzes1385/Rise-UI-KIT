@@ -3,15 +3,13 @@
  * Демонстрирует все позиции, варианты и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { POPOVER_VARIANTS } from '../model/BasePopover.types'
 import BasePopover from '../ui/BasePopover.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BasePopover> = {
 	title: 'UI/BasePopover',

@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { vi } from 'vitest'
-
 import BaseNotification from '../ui/BaseNotification.vue'
 
 describe('BaseNotification integration', () => {

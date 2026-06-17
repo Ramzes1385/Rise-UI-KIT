@@ -1,5 +1,4 @@
 import { reactive, ref } from 'vue'
-
 import { useClickOutside } from '@composables/useClickOutside'
 import type { MediaContextMenuState } from './useEditorToolbar.types'
 

@@ -104,6 +104,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
@@ -112,9 +113,6 @@ import { useBreakpoint } from '@composables/useBreakpoint'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-
-import type { CustomColor } from '@composables/useCustomColor'
 import {
 	UI_FINISH_TOUR_TEXT,
 	UI_FONT_WEIGHT,
@@ -123,9 +121,10 @@ import {
 	UI_SKIP_TOUR_TEXT,
 	UI_TOUR_TITLE,
 } from '@constants'
+import { DEFAULT_RADIUS, useTourLogic } from '../model/useTourLogic'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from '../model/BaseTour.types'
-import { DEFAULT_RADIUS, useTourLogic } from '../model/useTourLogic'
+import type { CustomColor } from '@composables/useCustomColor'
 
 const props = withDefaults(defineProps<BaseTourProps>(), {
 	isOpen: false,

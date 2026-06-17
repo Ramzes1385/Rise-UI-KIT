@@ -6,9 +6,8 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { h } from 'vue'
-
-import type { BaseTourSlotContext, TourStep } from '../model/BaseTour.types'
 import BaseTour from '../ui/BaseTour.vue'
+import type { BaseTourSlotContext, TourStep } from '../model/BaseTour.types'
 
 vi.mock('@composables/useScrollLock', () => ({
 	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),

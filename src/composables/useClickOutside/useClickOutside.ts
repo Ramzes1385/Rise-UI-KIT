@@ -1,7 +1,6 @@
 import { onBeforeUnmount, onMounted } from 'vue'
-import type { ComponentPublicInstance } from 'vue'
-
 import type { UseClickOutsideOptions } from './useClickOutside.types'
+import type { ComponentPublicInstance } from 'vue'
 
 function isComponentInstance(value: unknown): value is ComponentPublicInstance {
 	return typeof value === 'object' && value !== null && '$el' in value

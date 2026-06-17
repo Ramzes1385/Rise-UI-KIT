@@ -1,5 +1,4 @@
 import { computed, ref } from 'vue'
-
 import type { UseTableToolbarOptions, UseTableToolbarReturn } from './useTableToolbar.types'
 
 const FILTER_OPERATOR_OPTIONS = [

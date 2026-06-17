@@ -1,8 +1,6 @@
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-
-import type { ComputedRef, Ref } from 'vue'
-
 import type { BaseTourProps, TourGeometry, TourPlacement, TourStep } from './BaseTour.types'
+import type { ComputedRef, Ref } from 'vue'
 
 /** Параметры логики тура */
 export interface UseTourLogicOptions {

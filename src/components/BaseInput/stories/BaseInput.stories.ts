@@ -1,14 +1,13 @@
+import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
+import { ref } from 'vue'
+import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { INPUT_VARIANTS } from '../model/BaseInput.types'
+import BaseInput from '../ui/BaseInput.vue'
 /**
  * Stories для компонента BaseInput.
  * Демонстрирует все вариации, размеры, состояния, слоты и интерактивные состояния.
  */
 import type { Meta, StoryObj } from '@storybook/vue3'
-import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
-import { ref } from 'vue'
-
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import { INPUT_VARIANTS } from '../model/BaseInput.types'
-import BaseInput from '../ui/BaseInput.vue'
 
 const meta: Meta<typeof BaseInput> = {
 	title: 'UI/BaseInput',

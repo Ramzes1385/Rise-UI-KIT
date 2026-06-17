@@ -1,6 +1,6 @@
+import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { defineComponent, ref } from 'vue'
-import { mount } from '@vue/test-utils'
 import { useColumnResize } from './useColumnResize'
 
 function withSetup(fn: () => ReturnType<typeof useColumnResize>) {

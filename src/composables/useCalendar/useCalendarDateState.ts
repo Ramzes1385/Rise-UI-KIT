@@ -1,7 +1,6 @@
-import type { Ref } from 'vue'
-
 import { getWeekday, isSameDay, toDateOnly } from '@utils/dateUtils'
 import type { CalendarHighlight, CalendarSelectionMode, CalendarWeekday, CalendarWeekends } from './useCalendar.types'
+import type { Ref } from 'vue'
 
 interface UseCalendarDateStateOptions {
 	internalValue: Ref<Date | null>

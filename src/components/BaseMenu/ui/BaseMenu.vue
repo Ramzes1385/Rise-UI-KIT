@@ -21,14 +21,14 @@
 					class="base-menu__icon"
 					:class="classes.icon"
 					:name="item.icon"
-					:size-scale="calcIconScale('sm', props.sizeScale)" />
-				<BaseText class="base-menu__label" :class="classes.label" :size-scale="props.sizeScale">{{ item.label }}</BaseText>
+					:size-scale="calcIconScale('sm', sizeScale)" />
+				<BaseText class="base-menu__label" :class="classes.label" :size-scale="sizeScale">{{ item.label }}</BaseText>
 			</div>
 			<BaseSeparator
 				v-if="gIndex < items.length - 1"
 				class="base-menu__divider"
 				:class="classes.divider"
-				:size-scale="props.sizeScale" />
+				:size-scale="sizeScale" />
 		</div>
 	</div>
 </template>
@@ -39,8 +39,8 @@ import { BaseSeparator } from '@components/BaseSeparator'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseMenu.style.scss'
-import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../model/BaseMenu.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../model/BaseMenu.types'
 
 const props = withDefaults(defineProps<BaseMenuProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,

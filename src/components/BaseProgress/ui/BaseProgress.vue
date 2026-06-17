@@ -2,9 +2,9 @@
 	<div
 		class="base-progress"
 		:class="[
-			`base-progress--${props.shape}`,
-			props.animation !== 'none' ? `base-progress--${props.animation}` : '',
-			{ 'base-progress--indeterminate': props.isIndeterminate },
+			`base-progress--${shape}`,
+			animation !== 'none' ? `base-progress--${animation}` : '',
+			{ 'base-progress--indeterminate': isIndeterminate },
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, customColorStyle]"
@@ -13,15 +13,15 @@
 		aria-valuemin="0"
 		aria-valuemax="100">
 		<!-- Линейный прогресс -->
-		<template v-if="props.shape === 'line'">
+		<template v-if="shape === 'line'">
 			<div class="base-progress__track" :class="classes.track">
 				<div class="base-progress__fill" :class="classes.fill" :style="{ width: `${percent}%` }">
-					<div v-if="props.hasLabel" class="base-progress__tooltip-trigger" :class="classes.tooltipTrigger">
+					<div v-if="hasLabel" class="base-progress__tooltip-trigger" :class="classes.tooltipTrigger">
 						<BaseTooltip
 							:text="`${percent}%`"
 							position="top"
 							:is-always-visible="true"
-							:size-scale="props.sizeScale"
+							:size-scale="sizeScale"
 							:color="tooltipColor">
 							<span class="base-progress__tooltip-anchor" :class="classes.tooltipAnchor" />
 						</BaseTooltip>
@@ -31,7 +31,7 @@
 		</template>
 
 		<!-- Круговой прогресс -->
-		<template v-if="props.shape === 'circle'">
+		<template v-if="shape === 'circle'">
 			<svg class="base-progress__svg" :class="classes.svg" viewBox="0 0 120 120">
 				<circle
 					class="base-progress__track-circle"
@@ -54,7 +54,7 @@
 					stroke-linecap="round" />
 			</svg>
 			<BaseText
-				v-if="props.hasLabel"
+				v-if="hasLabel"
 				tag="span"
 				class="base-progress__circle-label"
 				:weight="UI_FONT_WEIGHT_BOLD"
@@ -66,8 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseProgressEmits, BaseProgressProps } from '../model/BaseProgress.types'
-
+import { computed, watch } from 'vue'
 import '../styles/BaseProgress.style.scss'
 
 import { BaseText } from '@components/BaseText'
@@ -76,7 +75,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { UI_FONT_WEIGHT_BOLD, UI_PROGRESS_CIRCLE_RADIUS, SIZE_SCALE_DEFAULT} from '@constants'
-import { computed, watch } from 'vue'
+import type { BaseProgressEmits, BaseProgressProps } from '../model/BaseProgress.types'
 
 const props = withDefaults(defineProps<BaseProgressProps>(), {
 	max: 100,

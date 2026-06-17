@@ -3,10 +3,8 @@
  */
 
 import { ref } from 'vue'
-
-import type { TableColumn } from '@components/BaseTable/model/BaseTable.types'
-
 import { useTableFilter } from './useTableFilter'
+import type { TableColumn } from '@components/BaseTable/model/BaseTable.types'
 
 const testColumns = ref<TableColumn[]>([
 	{ key: 'name', label: 'Имя' },

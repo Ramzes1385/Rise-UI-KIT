@@ -5,7 +5,6 @@
 
 import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
-
 import { useEditorToolbar } from './useEditorToolbar'
 
 /** Обёртка для вызова composable внутри Vue-контекста */

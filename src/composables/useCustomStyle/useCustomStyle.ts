@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-
 import { hasElementKeys, isObject } from '@utils/typeUtils'
 import type { CustomStyleProp, UseCustomStyleOptions } from './useCustomStyle.types'
 

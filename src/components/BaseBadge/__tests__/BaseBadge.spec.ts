@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import BaseBadge from '../ui/BaseBadge.vue'
 
 describe('BaseBadge unit', () => {

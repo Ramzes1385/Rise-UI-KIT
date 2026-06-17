@@ -1,8 +1,8 @@
-import type { Args, Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../model/BaseChat.types'
 import BaseChat from '../ui/BaseChat.vue'
+import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../model/BaseChat.types'
+import type { Args, Meta, StoryObj } from '@storybook/vue3'
 
 /** Диспатчит нативное событие contextmenu в указанной точке */
 function dispatchContextMenu(target: HTMLElement, x: number, y: number): void {

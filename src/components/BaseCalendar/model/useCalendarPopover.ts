@@ -1,5 +1,4 @@
 import { computed, ref } from 'vue'
-
 import type { CalendarHighlight } from './BaseCalendar.types'
 
 interface UseCalendarPopoverOptions {

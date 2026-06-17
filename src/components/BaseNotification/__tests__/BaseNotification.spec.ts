@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import { render, waitFor } from '@testing-library/vue'
 import { vi } from 'vitest'
-
 import BaseNotification from '../ui/BaseNotification.vue'
 
 /** Получить элемент уведомления из teleport */

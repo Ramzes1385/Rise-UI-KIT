@@ -1,6 +1,5 @@
-import type { ArgTypes } from '@storybook/vue3'
-
 import type { BuildArgTypesOptions, PropMeta } from './storybookUtils.types'
+import type { ArgTypes } from '@storybook/vue3'
 
 /** Скрытые пропы Vue по умолчанию */
 const HIDDEN_VUE_PROPS = ['class', 'style', 'key', 'ref']

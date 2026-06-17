@@ -6,9 +6,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-
-import type { BaseAccordionItem } from '../model/BaseAccordion.types'
 import BaseAccordion from '../ui/BaseAccordion.vue'
+import type { BaseAccordionItem } from '../model/BaseAccordion.types'
 
 /** Стандартный набор элементов для тестов */
 const ITEMS: BaseAccordionItem[] = [

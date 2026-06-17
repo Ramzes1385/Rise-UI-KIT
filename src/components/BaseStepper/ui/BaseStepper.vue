@@ -66,9 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { calcIconScale } from '@components/BaseIcon'
 import { computed } from 'vue'
-
+import { calcIconScale } from '@components/BaseIcon'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'

@@ -1,8 +1,6 @@
 import { onUnmounted, watch } from 'vue'
-
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
-
 import type { UsePopupOptions } from './usePopup.types'
 
 /**

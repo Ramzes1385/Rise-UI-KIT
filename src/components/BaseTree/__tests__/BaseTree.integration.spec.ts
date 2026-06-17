@@ -6,9 +6,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
-
-import type { TreeNode } from '../model/BaseTree.types'
 import BaseTree from '../ui/BaseTree.vue'
+import type { TreeNode } from '../model/BaseTree.types'
 
 /** Узлы с вложенностью */
 const NESTED_ITEMS: TreeNode[] = [

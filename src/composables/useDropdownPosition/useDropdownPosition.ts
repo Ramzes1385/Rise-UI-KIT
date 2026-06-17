@@ -1,5 +1,4 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-
 import type { UseDropdownPositionOptions } from './useDropdownPosition.types'
 
 /**

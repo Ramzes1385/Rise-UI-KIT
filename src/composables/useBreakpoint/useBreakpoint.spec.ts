@@ -1,8 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick } from 'vue'
-
 import { getViewportWidth, useBreakpoint } from './useBreakpoint'
 import { BREAKPOINTS } from './useBreakpoint.types'
 import type { UseBreakpointReturn } from './useBreakpoint.types'

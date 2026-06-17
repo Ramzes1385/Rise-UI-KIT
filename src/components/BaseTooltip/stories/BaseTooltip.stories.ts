@@ -4,16 +4,12 @@
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
-
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
-import BaseTooltip from '../ui/BaseTooltip.vue'
-
-import { TOOLTIP_VARIANTS } from '../model/BaseTooltip.types'
-
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { TOOLTIP_VARIANTS } from '../model/BaseTooltip.types'
+import BaseTooltip from '../ui/BaseTooltip.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseTooltip> = {
 	title: 'UI/BaseTooltip',

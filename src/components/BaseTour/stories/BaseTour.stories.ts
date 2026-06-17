@@ -3,15 +3,13 @@
  * Демонстрирует пошаговый онбординг-тур: подсветку элементов, навигацию и кастомизацию.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
-
-import type { TourStep } from '../model/BaseTour.types'
 import { TOUR_PLACEMENTS } from '../model/BaseTour.types'
 import BaseTour from '../ui/BaseTour.vue'
+import type { TourStep } from '../model/BaseTour.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const STEPS: TourStep[] = [
 	{ target: '#tour-logo', title: 'Логотип', content: 'Здесь находится логотип приложения.' },

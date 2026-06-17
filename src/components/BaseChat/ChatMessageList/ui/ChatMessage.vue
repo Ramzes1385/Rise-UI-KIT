@@ -121,6 +121,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
@@ -138,12 +139,11 @@ import {
 	UI_FONT_WEIGHT,
 	UI_SCALE,
 } from '@constants'
-import { computed } from 'vue'
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageReply from './ChatMessageReply.vue'
 import ChatMessageText from './ChatMessageText.vue'
+import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 
 interface ChatMessageProps {
 	message: ChatMessage

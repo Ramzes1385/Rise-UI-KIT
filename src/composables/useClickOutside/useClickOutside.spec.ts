@@ -1,10 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-
 import { render } from '@testing-library/vue'
-import type { Ref } from 'vue'
 import { defineComponent, h, shallowRef } from 'vue'
-
 import { useClickOutside } from './useClickOutside'
+import type { Ref } from 'vue'
 
 /** Создать тестовый компонент с useClickOutside */
 function createTestComponent(options: {

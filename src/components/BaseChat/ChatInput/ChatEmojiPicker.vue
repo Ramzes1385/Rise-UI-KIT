@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_EMOJI_ARIA, UI_CHAT_INSERT_EMOJI } from '@constants'
+import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useClickOutside } from '@composables/useClickOutside'
-import { ref } from 'vue'
+import { UI_CHAT_EMOJI_ARIA, UI_CHAT_INSERT_EMOJI } from '@constants'
 
 defineProps<{
 	sizeScale: number

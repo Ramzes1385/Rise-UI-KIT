@@ -7,7 +7,6 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { nextTick } from 'vue'
-
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 
 /** Захваченный callback для closeOnClickOutside */

@@ -4,7 +4,6 @@
  */
 
 import { mount } from '@vue/test-utils'
-
 import { useSwipe } from './useSwipe'
 
 /** Обёртка для вызова composable внутри Vue-контекста */

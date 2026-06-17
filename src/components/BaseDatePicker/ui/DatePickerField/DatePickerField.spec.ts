@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-
 import DatePickerField from './DatePickerField.vue'
 
 /** Общие стабы для UI Kit компонентов */

@@ -1,8 +1,6 @@
 import { computed, ref, watch } from 'vue'
-
-import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
-
 import type { UseTableSelectionOptions, UseTableSelectionReturn } from './useTableSelection.types'
+import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
 
 /**
  * Composable для управления выбором строк таблицы.

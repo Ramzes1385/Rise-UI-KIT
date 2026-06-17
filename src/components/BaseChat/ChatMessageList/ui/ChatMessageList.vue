@@ -60,6 +60,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseLoader } from '@components/BaseLoader'
+import { useAutoScroll } from '@composables/useAutoScroll'
+import { useClickOutside } from '@composables/useClickOutside'
 import {
 	UI_CONTEXT_MENU_DEFAULT_HEIGHT,
 	UI_CONTEXT_MENU_DEFAULT_WIDTH,
@@ -67,18 +72,13 @@ import {
 	UI_SCALE,
 	SIZE_SCALE_DEFAULT,
 } from '@constants'
-import { BaseAvatar } from '@components/BaseAvatar'
-import { BaseLoader } from '@components/BaseLoader'
-import { useAutoScroll } from '@composables/useAutoScroll'
-import { useClickOutside } from '@composables/useClickOutside'
 import { copyTextToClipboard } from '@utils/clipboardUtils'
-import { computed, onBeforeUnmount, ref } from 'vue'
-import type { Ref } from 'vue'
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
-import '../styles/ChatMessageList.style.scss'
-import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMessageList.types'
 import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
+import '../styles/ChatMessageList.style.scss'
+import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMessageList.types'
+import type { Ref } from 'vue'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,

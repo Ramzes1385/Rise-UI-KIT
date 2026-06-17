@@ -78,12 +78,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseText } from '@components/BaseText'
 import { useClickOutside } from '@composables/useClickOutside'
 import { UI_CALENDAR_EVENT_TEXT, UI_FONT_WEIGHT } from '@constants'
 import { formatPopoverDate } from '@utils/dateUtils'
-import { ref } from 'vue'
 import type { CalendarHighlight } from '../model/BaseCalendar.types'
 import type { BaseCalendarDaysProps } from './BaseCalendarDays.types'
 

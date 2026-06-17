@@ -1,5 +1,4 @@
 import { ref, type Ref } from 'vue'
-
 import type { UseListNavigationOptions } from './useListNavigation.types'
 
 /**

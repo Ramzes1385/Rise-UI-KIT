@@ -156,6 +156,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, ref, watch } from 'vue'
+import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseInput } from '@components/BaseInput'
+import { BaseText } from '@components/BaseText'
 import {
 	UI_CHAT_ADMIN,
 	UI_CHAT_ATTACH_ARIA,
@@ -174,18 +180,12 @@ import {
 	UI_SCALE,
 	SIZE_SCALE_DEFAULT,
 } from '@constants'
-import { BaseAvatar } from '@components/BaseAvatar'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
-import ChatFilePreview from './ChatFilePreview.vue'
-import { BaseText } from '@components/BaseText'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { formatFileSize } from '@utils/fileUtils'
 import { generateId } from '@utils/idUtils'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { computed, nextTick, ref, watch } from 'vue'
-import type { ChatMessageAttachment } from '../model/BaseChat.types'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
+import ChatFilePreview from './ChatFilePreview.vue'
+import type { ChatMessageAttachment } from '../model/BaseChat.types'
 import './ChatInput.style.scss'
 import type { ChatInputEmits, ChatInputProps } from './ChatInput.types'
 

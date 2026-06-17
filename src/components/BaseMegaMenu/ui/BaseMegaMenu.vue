@@ -112,15 +112,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBreakpoint } from '@composables/useBreakpoint'
-import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useBreakpoint } from '@composables/useBreakpoint'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
+import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
-import { computed, onBeforeUnmount, ref } from 'vue'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, MegaMenuItem } from '../model/BaseMegaMenu.types'

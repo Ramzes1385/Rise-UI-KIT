@@ -78,18 +78,14 @@
 </template>
 
 <script setup lang="ts">
-import type { VNode } from 'vue'
-import type { TreeContext, TreeNode } from '../model/BaseTree.types'
-
 import { computed, inject, ref, watch } from 'vue'
-
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import BaseTreeChildren from './BaseTreeChildren.vue'
-
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-
+import BaseTreeChildren from './BaseTreeChildren.vue'
+import type { TreeContext, TreeNode } from '../model/BaseTree.types'
+import type { VNode } from 'vue'
 import '../styles/BaseTree.style.scss'
 
 interface Props {

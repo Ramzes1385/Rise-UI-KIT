@@ -44,10 +44,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
-import { computed } from 'vue'
 
 const props = defineProps<{
 	hours: number

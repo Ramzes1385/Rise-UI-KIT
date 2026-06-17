@@ -1,6 +1,5 @@
-import type { ComputedRef, Ref } from 'vue'
-
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { ComputedRef, Ref } from 'vue'
 
 /**
  * Опции composable useTableSelection

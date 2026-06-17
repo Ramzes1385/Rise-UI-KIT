@@ -3,15 +3,15 @@
 		class="base-separator"
 		:style="[thicknessStyle, sizeScaleStyle, customColorStyle]"
 		:class="[
-			`base-separator--${props.orientation}`,
+			`base-separator--${orientation}`,
 			{
-				'base-separator--dashed': props.isDashed,
+				'base-separator--dashed': isDashed,
 				'base-separator--with-content': label || $slots.default,
 			},
 			classes.root,
 		]"
-		:role="props.orientation === 'horizontal' ? 'separator' : undefined"
-		:aria-orientation="props.orientation">
+		:role="orientation === 'horizontal' ? 'separator' : undefined"
+		:aria-orientation="orientation">
 		<!-- Линия без контента -->
 		<template v-if="!label && !$slots.default">
 			<div class="base-separator__line" :class="classes.line"></div>
@@ -30,15 +30,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-
 import '../styles/BaseSeparator.style.scss'
 
-import type { BaseSeparatorProps } from '../model/BaseSeparator.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseSeparatorProps } from '../model/BaseSeparator.types'
 
 const props = withDefaults(defineProps<BaseSeparatorProps>(), {
 	orientation: 'horizontal',

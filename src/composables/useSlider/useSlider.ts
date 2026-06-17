@@ -1,7 +1,6 @@
-import type { UseSliderOptions, UseSliderReturn } from './useSlider.types'
-
-import { useSwipe } from '@composables/useSwipe'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useSwipe } from '@composables/useSwipe'
+import type { UseSliderOptions, UseSliderReturn } from './useSlider.types'
 
 /**
  * Composable для логики слайдера.

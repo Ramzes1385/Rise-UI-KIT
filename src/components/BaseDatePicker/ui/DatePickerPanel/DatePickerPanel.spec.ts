@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-
 import DatePickerPanel from './DatePickerPanel.vue'
 
 /** Стабы для UI Kit компонентов */

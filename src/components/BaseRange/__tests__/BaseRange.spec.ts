@@ -5,10 +5,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
-
 import BaseRange from '../ui/BaseRange.vue'
 
 /** Общие глобальные компоненты для всех тестов */

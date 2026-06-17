@@ -67,14 +67,14 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import '../styles/BaseTabs.style.scss'
-import type { BaseTabsEmits, BaseTabsProps } from '../model/BaseTabs.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseTabsEmits, BaseTabsProps } from '../model/BaseTabs.types'
 
 const props = withDefaults(defineProps<BaseTabsProps>(), {
 	isFullWidth: false,

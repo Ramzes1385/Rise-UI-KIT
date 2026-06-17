@@ -6,7 +6,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, waitFor } from '@testing-library/vue'
-
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
 
 /** Создание мок-файла */

@@ -1,5 +1,5 @@
-import type { Ref } from 'vue'
 import { useInputMask } from './useInputMask'
+import type { Ref } from 'vue'
 
 export type UseMaskedInputHandlersOptions = {
 	getMask: () => string

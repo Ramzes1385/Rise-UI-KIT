@@ -6,8 +6,8 @@
 			variantClass,
 			{
 				'base-switch--error': formField.error,
-				'base-switch--disabled': props.isDisabled,
-				'base-switch--reverse': props.reverse,
+				'base-switch--disabled': isDisabled,
+				'base-switch--reverse': reverse,
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
@@ -18,8 +18,8 @@
 					type="checkbox"
 					class="base-switch__input"
 					:class="classes.input"
-					:checked="props.modelValue"
-					:disabled="props.isDisabled"
+					:checked="modelValue"
+					:disabled="isDisabled"
 					@change="handleChange" />
 				<span class="base-switch__slider" :class="classes.slider">
 					<span class="base-switch__handle" :class="classes.handle"></span>
@@ -33,14 +33,14 @@
 						:label="label"
 						class-name="base-switch__label"
 						:custom-class="classes.label"
-						:size-scale="props.sizeScale" />
+						:size-scale="sizeScale" />
 				</slot>
 				<BaseText
-					v-if="props.isRequired"
+					v-if="isRequired"
 					tag="span"
 					class="base-switch__required"
 					:custom-class="classes.required"
-					:size-scale="props.sizeScale"
+					:size-scale="sizeScale"
 					>*</BaseText
 				>
 				<slot />
@@ -51,23 +51,21 @@
 				:error="formField.error"
 				class-name="base-switch__error-text"
 				:custom-class="classes.errorText"
-				:size-scale="props.sizeScale" />
+				:size-scale="sizeScale" />
 		</slot>
 	</div>
 </template>
 
 <script setup lang="ts">
-import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types'
-
-import { BaseText } from '@components/BaseText'
+import { useId } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { useId } from 'vue'
-
-import '../styles/BaseSwitch.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import { toHTMLInputElement } from '@utils/domUtils'
+import '../styles/BaseSwitch.style.scss'
+import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types'
 
 const props = withDefaults(defineProps<BaseSwitchProps>(), {
 	modelValue: false,

@@ -223,6 +223,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -266,11 +267,10 @@ import {
 	UI_SCALE,
 	SIZE_SCALE_DEFAULT,
 } from '@constants'
-import { computed, ref } from 'vue'
-import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
+import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import './ChatSlideover.style.scss'
 
 interface ChatSlideoverProps {

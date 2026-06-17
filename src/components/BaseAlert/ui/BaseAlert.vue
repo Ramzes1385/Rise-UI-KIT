@@ -1,13 +1,13 @@
 <template>
 	<div
 		class="base-alert"
-		:class="[`base-alert--${props.type}`, variantClass, classes.root]"
+		:class="[`base-alert--${type}`, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="alert"
 		aria-live="polite">
 		<div class="base-alert__icon-wrapper" :class="classes.iconWrapper">
 			<slot name="icon">
-				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', props.sizeScale)" :custom-class="classes.icon" />
+				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
@@ -16,7 +16,7 @@
 				v-if="title"
 				tag="h4"
 				:weight="UI_FONT_WEIGHT.SEMIBOLD"
-				:size-scale="props.sizeScale"
+				:size-scale="sizeScale"
 				class="base-alert__title"
 				:custom-class="classes.title">
 				{{ title }}
@@ -24,37 +24,36 @@
 
 			<div class="base-alert__description" :class="classes.description">
 				<slot>
-					<BaseText v-if="description" tag="p" :size-scale="props.sizeScale - SIZE_SCALE_OFFSET" :custom-class="classes.text">
+					<BaseText v-if="description" tag="p" :size-scale="sizeScale - SIZE_SCALE_OFFSET" :custom-class="classes.text">
 						{{ description }}
 					</BaseText>
 				</slot>
 			</div>
 		</div>
 
-		<div v-if="props.isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
+		<div v-if="isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
 			<slot name="actions" />
 
 			<BaseButton
-				v-if="props.isClosable"
+				v-if="isClosable"
 				variant="ghost"
-				:size-scale="props.sizeScale - SIZE_SCALE_OFFSET"
+				:size-scale="sizeScale - SIZE_SCALE_OFFSET"
 				class="base-alert__close"
 				:custom-class="classes.close"
 				@click="handleClose">
-				<BaseIcon name="close" :size-scale="calcIconScale('xs', props.sizeScale)" :custom-class="classes.closeIcon" />
+				<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" :custom-class="classes.closeIcon" />
 			</BaseButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, SIZE_SCALE_OFFSET } from '@constants'
-import { computed } from 'vue'
-
 import '../styles/BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps } from '../model/BaseAlert.types'
 

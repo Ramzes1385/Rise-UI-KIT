@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-
 import { buildBreadcrumbsSchema } from './schemaUtils'
 
 describe('schemaUtils', () => {

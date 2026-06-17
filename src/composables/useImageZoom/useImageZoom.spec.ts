@@ -5,7 +5,6 @@
 
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-
 import { useImageZoom } from './useImageZoom'
 
 /** Обёртка для вызова composable внутри Vue-контекста */

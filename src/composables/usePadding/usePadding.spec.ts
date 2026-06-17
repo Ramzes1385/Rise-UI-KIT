@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
-
 import { resolvePadding, usePadding } from './usePadding'
 
 describe('resolvePadding', () => {

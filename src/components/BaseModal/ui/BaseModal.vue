@@ -53,13 +53,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed, useSlots } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, MODAL_CLOSE_BUTTON_PADDING, DEFAULT_VARIANT} from '@constants'
-import { computed, useSlots } from 'vue'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps } from '../model/BaseModal.types'
 

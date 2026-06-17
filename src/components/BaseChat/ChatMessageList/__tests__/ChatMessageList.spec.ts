@@ -8,9 +8,8 @@ import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-
-import type { ChatMessage } from '../../model/BaseChat.types'
 import ChatMessageList from '../ui/ChatMessageList.vue'
+import type { ChatMessage } from '../../model/BaseChat.types'
 
 const BASE_MESSAGES: ChatMessage[] = [
 	{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна', senderAvatar: 'a.png' },

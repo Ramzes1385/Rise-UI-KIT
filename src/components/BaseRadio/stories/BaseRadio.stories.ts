@@ -3,15 +3,14 @@
  * Демонстрирует все вариации, состояния и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import type { BaseRadioOption } from '../model/BaseRadio.types'
 import { RADIO_VARIANTS } from '../model/BaseRadio.types'
 import BaseRadio from '../ui/BaseRadio.vue'
+import type { BaseRadioOption } from '../model/BaseRadio.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const OPTIONS: BaseRadioOption[] = [
 	{ value: 'metal', label: 'Металл' },

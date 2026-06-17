@@ -1,5 +1,4 @@
 import { onBeforeUnmount, onMounted } from 'vue'
-
 import type { UseEscapeKeyOptions } from './useEscapeKey.types'
 
 /**

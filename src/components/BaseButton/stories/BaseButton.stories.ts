@@ -3,13 +3,11 @@
  * Демонстрирует все вариации, состояния, слоты и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, within } from 'storybook/test'
-
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { BUTTON_TYPES, BUTTON_VARIANTS } from '../model/BaseButton.types'
 import BaseButton from '../ui/BaseButton.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseButton> = {
 	title: 'UI/BaseButton',

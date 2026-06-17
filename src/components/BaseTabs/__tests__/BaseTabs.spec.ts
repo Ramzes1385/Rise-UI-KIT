@@ -14,8 +14,8 @@ global.ResizeObserver = class ResizeObserver {
 	disconnect() {}
 }
 
-import type { TabItem } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
+import type { TabItem } from '../model/BaseTabs.types'
 
 const TABS: TabItem[] = [
 	{ id: 'info', label: 'Информация' },

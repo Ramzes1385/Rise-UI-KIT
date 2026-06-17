@@ -92,12 +92,11 @@ import { calcIconScale } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
-
-import type { TableRow } from '../model/BaseTable.types'
-import type { BaseTableBodyProps } from './BaseTableBody.types'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'
+import type { TableRow } from '../model/BaseTable.types'
+import type { BaseTableBodyProps } from './BaseTableBody.types'
 
 defineProps<BaseTableBodyProps>()
 

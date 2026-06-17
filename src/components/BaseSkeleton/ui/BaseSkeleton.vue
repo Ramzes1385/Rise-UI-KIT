@@ -2,10 +2,10 @@
 	<div
 		class="base-skeleton"
 		:class="[
-			`base-skeleton--${props.shape}`,
+			`base-skeleton--${shape}`,
 			{
-				'base-skeleton--animated': props.isAnimated,
-				'base-skeleton--pulse': props.isPulse,
+				'base-skeleton--animated': isAnimated,
+				'base-skeleton--pulse': isPulse,
 			},
 			classes.root,
 		]"
@@ -14,12 +14,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
 import { useCustomClass } from '@composables/useCustomClass'
-
 import '../styles/BaseSkeleton.style.scss'
-import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 
 const props = withDefaults(defineProps<BaseSkeletonProps>(), {
 	shape: 'rect',

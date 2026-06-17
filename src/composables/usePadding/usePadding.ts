@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-
 import type {
 	PaddingProp,
 	PaddingValue,

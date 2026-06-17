@@ -45,11 +45,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseLoader } from '@components/BaseLoader'
-import { ref } from 'vue'
 import type { SearchVariant } from '../model/BaseSearch.types'
 
 interface BaseSearchInputProps {

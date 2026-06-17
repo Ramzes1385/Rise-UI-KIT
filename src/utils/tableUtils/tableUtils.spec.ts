@@ -4,7 +4,6 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle } from './tableUtils'
 
 describe('tableUtils', () => {

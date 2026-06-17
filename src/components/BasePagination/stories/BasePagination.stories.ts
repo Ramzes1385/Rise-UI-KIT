@@ -3,14 +3,13 @@
  * Демонстрирует все варианты, многоточия и состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { PAGINATION_VARIANTS } from '../model/BasePagination.types'
 import BasePagination from '../ui/BasePagination.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BasePagination> = {
 	title: 'UI/BasePagination',

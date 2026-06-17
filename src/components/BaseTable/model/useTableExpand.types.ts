@@ -1,6 +1,5 @@
-import type { Ref } from 'vue'
-
 import type { BaseTableEmits, TableRow } from './BaseTable.types'
+import type { Ref } from 'vue'
 
 export interface UseTableExpandOptions {
 	rows: () => TableRow[]

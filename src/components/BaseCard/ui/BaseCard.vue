@@ -4,20 +4,20 @@
 		:class="[
 			variantClass,
 			{
-				'base-card--hoverable': props.isHoverable,
-				'base-card--scroll': props.scroll,
-				'base-card--truncate': !props.scroll && props.height,
+				'base-card--hoverable': isHoverable,
+				'base-card--scroll': scroll,
+				'base-card--truncate': !scroll && height,
 			},
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, cardStyle]">
 		<div v-if="title || subtitle || $slots.header || $slots.actions" class="base-card__header" :class="classes.header">
-			<slot name="header" :size-scale="props.sizeScale">
+			<slot name="header" :size-scale="sizeScale">
 				<div class="base-card__header-text">
 					<BaseText
 						v-if="title"
 						tag="h3"
-						:size-scale="props.sizeScale"
+						:size-scale="sizeScale"
 						:weight="UI_FONT_WEIGHT.SEMIBOLD"
 						class="base-card__title"
 						:custom-class="classes.title"
@@ -26,7 +26,7 @@
 				<BaseText
 					v-if="subtitle"
 					tag="p"
-					:size-scale="props.sizeScale"
+					:size-scale="sizeScale"
 					:color="{ text: { base: 'var(--color-text-muted)' } }"
 						class="base-card__subtitle"
 						:custom-class="classes.subtitle"
@@ -35,28 +35,26 @@
 				</div>
 			</slot>
 			<div v-if="$slots.actions" class="base-card__actions" :class="classes.actions">
-				<slot name="actions" :size-scale="props.sizeScale" />
+				<slot name="actions" :size-scale="sizeScale" />
 			</div>
 		</div>
 
 		<div class="base-card__body" :class="classes.body">
-			<slot :size-scale="props.sizeScale" />
+			<slot :size-scale="sizeScale" />
 		</div>
 
 		<footer v-if="$slots.footer" class="base-card__footer" :class="classes.footer">
-			<slot name="footer" :size-scale="props.sizeScale" />
+			<slot name="footer" :size-scale="sizeScale" />
 		</footer>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-
 import '../styles/BaseCard.style.scss'
 
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'

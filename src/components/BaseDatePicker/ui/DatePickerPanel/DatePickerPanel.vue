@@ -105,8 +105,7 @@
 
 <script setup lang="ts">
 import './DatePickerPanel.style.scss'
-import type { DatePickerPanelEmits, DatePickerPanelProps } from './DatePickerPanel.types'
-
+import { computed, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
@@ -114,10 +113,10 @@ import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { UI_FONT_WEIGHT_BOLD, UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MONTH_ARIA, UI_PREV_YEAR_ARIA } from '@constants'
-import { computed, ref } from 'vue'
-import { useDatePickerPanelNavigation } from '../../model/useDatePickerPanelNavigation'
 import { pickDatePickerCalendarConfig } from '../../model/BaseDatePickerCalendar.types'
+import { useDatePickerPanelNavigation } from '../../model/useDatePickerPanelNavigation'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
+import type { DatePickerPanelEmits, DatePickerPanelProps } from './DatePickerPanel.types'
 
 const props = defineProps<DatePickerPanelProps>()
 const { resolveBooleanPropDefault } = useExplicitPropDetection()

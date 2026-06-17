@@ -10,7 +10,7 @@
 			class="base-chip__badge"
 			:class="[`base-chip__badge--${placement}`]"
 			:custom-class="classes.badge"
-			:size-scale="props.sizeScale"
+			:size-scale="sizeScale"
 			@click="handleBadgeClick">
 			{{ displayContent }}
 		</BaseText>
@@ -18,12 +18,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { computed } from 'vue'
 import '../styles/BaseChip.style.scss'
-import type { BaseChipEmits, BaseChipProps } from '../model/BaseChip.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseChipEmits, BaseChipProps } from '../model/BaseChip.types'
 
 const props = withDefaults(defineProps<BaseChipProps>(), {
 	placement: 'top-right',

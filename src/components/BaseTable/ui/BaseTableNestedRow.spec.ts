@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/vue'
-import BaseTableNestedRow from './BaseTableNestedRow.vue'
+import { describe, it, expect, vi } from 'vitest'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
+import BaseTableNestedRow from './BaseTableNestedRow.vue'
 
 const mockTransitionCallbacks = {
 	onExpandBeforeEnter: vi.fn(),

@@ -3,13 +3,12 @@
  * Демонстрирует все состояния, интерактивные состояния и тёмную тему.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseCheckbox> = {
 	title: 'UI/BaseCheckbox',

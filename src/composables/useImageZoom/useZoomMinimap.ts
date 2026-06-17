@@ -1,6 +1,6 @@
+import { computed, ref, type Ref } from 'vue'
 import { UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
-import { computed, ref, type Ref } from 'vue'
 
 interface UseZoomMinimapOptions {
 	currentScale: Ref<number>

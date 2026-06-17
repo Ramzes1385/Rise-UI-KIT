@@ -1,8 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-
 import { render } from '@testing-library/vue'
 import { defineComponent, h } from 'vue'
-
 import { useEscapeKey } from './useEscapeKey'
 
 /** Создать тестовый компонент с useEscapeKey */

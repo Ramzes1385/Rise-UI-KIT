@@ -1,53 +1,53 @@
 <template>
 	<div class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
 		<BaseButton
-			:variant="props.variant"
-			:is-disabled="props.modelValue === 1"
-			:size-scale="props.sizeScale"
+			:variant="variant"
+			:is-disabled="modelValue === 1"
+			:size-scale="sizeScale"
 			:custom-class="classes.prev"
-			@click="changePage(props.modelValue - 1)">
-			<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', props.sizeScale)" />
+			@click="changePage(modelValue - 1)">
+			<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', sizeScale)" />
 		</BaseButton>
 
 		<div class="base-pagination__pages" :class="classes.pages">
 			<template v-for="page in pages" :key="page">
 				<BaseButton
 					v-if="page !== '...'"
-					:variant="props.modelValue === page ? 'default' : props.variant"
-					:size-scale="props.sizeScale"
+					:variant="modelValue === page ? 'default' : variant"
+					:size-scale="sizeScale"
 					:custom-class="classes.button"
 					@click="changePage(page)">
-					<BaseText :size-scale="props.sizeScale">{{ page }}</BaseText>
+					<BaseText :size-scale="sizeScale">{{ page }}</BaseText>
 				</BaseButton>
 				<span v-else class="base-pagination__ellipsis" :class="classes.ellipsis">
-					<BaseText :size-scale="props.sizeScale">...</BaseText>
+					<BaseText :size-scale="sizeScale">...</BaseText>
 				</span>
 			</template>
 		</div>
 
 		<BaseButton
-			:variant="props.variant"
-			:is-disabled="props.modelValue === totalPages"
-			:size-scale="props.sizeScale"
+			:variant="variant"
+			:is-disabled="modelValue === totalPages"
+			:size-scale="sizeScale"
 			:custom-class="classes.next"
-			@click="changePage(props.modelValue + 1)">
-			<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', props.sizeScale)" />
+			@click="changePage(modelValue + 1)">
+			<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 		</BaseButton>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
-import { computed } from 'vue'
-import '../styles/BasePagination.style.scss'
-import type { BasePaginationEmits, BasePaginationProps } from '../model/BasePagination.types'
 import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
+import '../styles/BasePagination.style.scss'
+import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
+import type { BasePaginationEmits, BasePaginationProps } from '../model/BasePagination.types'
 
 const props = withDefaults(defineProps<BasePaginationProps>(), {
 	pageSize: 10,

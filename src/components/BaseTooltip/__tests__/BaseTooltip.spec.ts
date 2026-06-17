@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen, waitFor } from '@testing-library/vue'
-
 import BaseTooltip from '../ui/BaseTooltip.vue'
 
 /** Опции рендера без заглушек Transition и Teleport */

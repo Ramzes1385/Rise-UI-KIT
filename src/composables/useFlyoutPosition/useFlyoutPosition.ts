@@ -1,5 +1,4 @@
 import { nextTick, onBeforeUnmount, onMounted, readonly, ref, watch } from 'vue'
-
 import type { UseFlyoutPositionOptions, UseFlyoutPositionReturn } from './useFlyoutPosition.types'
 
 const DEFAULT_GAP = 4

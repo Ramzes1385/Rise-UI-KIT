@@ -5,7 +5,6 @@
 
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
-
 import { useMegaMenuTree, useMegaMenuTreeProvider } from './useMegaMenuTree'
 import type { MegaMenuTree } from './useMegaMenuTree.types'
 

@@ -132,21 +132,21 @@
 </template>
 
 <script setup lang="ts">
-import { UI_FONT_WEIGHT, UI_TEXT } from '@constants'
+import { watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useCalendar } from '@composables/useCalendar'
 import { useBaseComponent } from '@composables/useBaseComponent'
-import { watch } from 'vue'
+import { useCalendar } from '@composables/useCalendar'
+import { UI_FONT_WEIGHT, UI_TEXT } from '@constants'
 import '../styles/BaseCalendar.style.scss'
-import type { BaseCalendarEmits, BaseCalendarProps } from '../model/BaseCalendar.types'
 import { useCalendarPopover } from '../model/useCalendarPopover'
 import { useCalendarResolvedProps } from '../model/useCalendarResolvedProps'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
+import type { BaseCalendarEmits, BaseCalendarProps } from '../model/BaseCalendar.types'
 
 const props = defineProps<BaseCalendarProps>()
 const resolvedProps = useCalendarResolvedProps(props)

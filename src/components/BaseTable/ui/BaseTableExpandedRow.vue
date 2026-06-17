@@ -18,9 +18,8 @@
 
 <script setup lang="ts">
 import { inject } from 'vue'
-
-import type { TableRow } from '../model/BaseTable.types'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
+import type { TableRow } from '../model/BaseTable.types'
 
 defineProps<{
 	row: TableRow

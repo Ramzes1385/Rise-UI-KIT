@@ -1,6 +1,5 @@
-import type { ComputedRef, InjectionKey, Ref, VNode } from 'vue'
-
 import type { BaseComponentProps } from '@/types/base.types'
+import type { ComputedRef, InjectionKey, Ref, VNode } from 'vue'
 
 /** Режим выбора в дереве */
 export type TreeSelectionMode = 'none' | 'single' | 'multiple'

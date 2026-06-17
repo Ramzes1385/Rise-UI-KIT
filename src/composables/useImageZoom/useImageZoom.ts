@@ -1,8 +1,7 @@
-import type { UseImageZoomOptions } from './useImageZoom.types'
-
-import { UI_FULL_ROTATION_DEG, UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH, UI_ROTATION_STEP_DEG } from '@constants'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { UI_FULL_ROTATION_DEG, UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH, UI_ROTATION_STEP_DEG } from '@constants'
 import { useZoomMinimap } from './useZoomMinimap'
+import type { UseImageZoomOptions } from './useImageZoom.types'
 
 /**
  * Composable для зума изображений: панорамирование, вращение, масштабирование и миникарта.

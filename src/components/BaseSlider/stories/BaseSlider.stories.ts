@@ -3,13 +3,11 @@
  * Демонстрирует все варианты анимации, навигации и состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
-
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import type { SliderItem } from '../model/BaseSlider.types'
 import BaseSlider from '../ui/BaseSlider.vue'
+import type { SliderItem } from '../model/BaseSlider.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const ITEMS: SliderItem[] = [
 	{ src: 'https://placehold.co/800x400/f97316/ffffff?text=Slide+1', alt: 'Слайд 1', title: 'Первый слайд' },

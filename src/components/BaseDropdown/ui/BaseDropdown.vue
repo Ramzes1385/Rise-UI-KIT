@@ -5,10 +5,10 @@
 		<Teleport to="body">
 			<Transition name="dropdown">
 				<div
-					v-if="props.isOpen"
+					v-if="isOpen"
 					ref="dropdownRef"
 					class="base-dropdown__panel"
-					:class="[props.panelClass, variantClass, classes.panel]"
+					:class="[panelClass, variantClass, classes.panel]"
 					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
 					@mousedown="handlePanelMousedown"
 					@focusin="handlePanelFocusin">
@@ -20,15 +20,15 @@
 </template>
 
 <script setup lang="ts">
-import { useClickOutside } from '@composables/useClickOutside'
+import { computed, ref, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useClickOutside } from '@composables/useClickOutside'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { usePadding } from '@composables/usePadding'
 import { UI_PANEL_MAX_HEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { getActiveElement } from '@utils/domUtils'
-import { usePadding } from '@composables/usePadding'
-import { computed, ref, watch } from 'vue'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps } from '../model/BaseDropdown.types'
 

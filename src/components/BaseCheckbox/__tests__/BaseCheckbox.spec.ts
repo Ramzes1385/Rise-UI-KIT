@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
 
 describe('BaseCheckbox unit', () => {

@@ -3,10 +3,10 @@
  * Проверяют взаимодействие: клик по треку, перетаскивание, клавиатура.
  */
 
-import { BaseText } from '@components/BaseText'
-import { BaseTooltip } from '@components/BaseTooltip'
-import '@testing-library/jest-dom/vitest'
 import { fireEvent, render } from '@testing-library/vue'
+import { BaseText } from '@components/BaseText'
+import '@testing-library/jest-dom/vitest'
+import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'
 
 /** Общие глобальные компоненты для всех тестов */

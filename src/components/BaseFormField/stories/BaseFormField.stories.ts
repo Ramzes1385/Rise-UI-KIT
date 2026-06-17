@@ -3,14 +3,12 @@
  * Демонстрирует все состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, within } from 'storybook/test'
-
 import { BaseInput } from '@components/BaseInput'
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
 import BaseFormField from '../ui/BaseFormField.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseFormField> = {
 	title: 'UI/BaseFormField',

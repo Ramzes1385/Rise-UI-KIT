@@ -1,5 +1,5 @@
-import type { UseExpandTransitionOptions, UseExpandTransitionReturn } from './useExpandTransition.types'
 import { toHTMLElement } from '@utils/domUtils'
+import type { UseExpandTransitionOptions, UseExpandTransitionReturn } from './useExpandTransition.types'
 
 const DEFAULT_DURATION = 300
 

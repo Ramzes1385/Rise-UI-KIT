@@ -1,5 +1,4 @@
 import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
-
 import type { UseTableSearchOptions, UseTableSearchReturn } from './useTableSearch.types'
 
 /**

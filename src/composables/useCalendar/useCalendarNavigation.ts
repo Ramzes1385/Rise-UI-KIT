@@ -1,5 +1,4 @@
 import { computed, type Ref } from 'vue'
-
 import { toDateOnly } from '@utils/dateUtils'
 import type { CalendarView } from './useCalendar.types'
 

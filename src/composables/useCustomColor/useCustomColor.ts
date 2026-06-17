@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-
 import type { ColorStates, CustomColor, UseCustomColorOptions } from './useCustomColor.types'
 
 /**

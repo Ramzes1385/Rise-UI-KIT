@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
@@ -90,7 +91,6 @@ import {
 	UI_SCALE,
 } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
-import { computed } from 'vue'
 import type { ChatMessageAttachment } from '../../model/BaseChat.types'
 
 interface ChatMessageAttachmentsProps {

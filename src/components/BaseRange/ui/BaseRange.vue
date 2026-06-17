@@ -82,12 +82,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, useSlots } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT_BOLD } from '@constants'
 import { snapToStep, toPercent } from '@utils/rangeUtils'
-import { computed, ref, useSlots } from 'vue'
 import { useRangeDrag } from '../model/useRangeDrag'
 import BaseRangeMarks from './BaseRangeMarks.vue'
 import { BaseRangeThumb } from './BaseRangeThumb'

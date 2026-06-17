@@ -1,7 +1,6 @@
 import { computed } from 'vue'
-
-import type { UseSizeScaleOptions } from './useSizeScale.types'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { UseSizeScaleOptions } from './useSizeScale.types'
 
 /**
  * Composable для пропорционального масштабирования размеров компонента.

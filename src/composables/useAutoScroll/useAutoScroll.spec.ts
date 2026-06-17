@@ -5,7 +5,6 @@
 
 import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
-
 import { useAutoScroll } from './useAutoScroll'
 
 /** Обёртка для вызова composable внутри Vue-контекста */

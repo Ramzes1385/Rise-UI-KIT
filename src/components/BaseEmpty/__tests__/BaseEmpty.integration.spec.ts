@@ -8,7 +8,6 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
-
 import BaseEmpty from '../ui/BaseEmpty.vue'
 
 describe('BaseEmpty integration', () => {

@@ -1,6 +1,4 @@
-import type { Ref } from 'vue'
 import { reactive } from 'vue'
-
 import {
 	FORMAT_CONFIG,
 	getBlockAlign,
@@ -9,6 +7,7 @@ import {
 	isInsideTags,
 } from '@utils/editorDomInspect'
 import type { EditorActiveStates } from './useEditorToolbar.types'
+import type { Ref } from 'vue'
 
 interface UseToolbarSelectionOptions {
 	editorRef: Ref<HTMLDivElement | null>

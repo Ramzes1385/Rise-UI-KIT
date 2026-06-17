@@ -58,10 +58,9 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { UI_SORT_ARIA } from '@constants'
-
+import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
 import type { TableColumn } from '../model/BaseTable.types'
 import type { BaseTableHeaderProps } from './BaseTableHeader.types'
-import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
 
 defineProps<BaseTableHeaderProps>()
 

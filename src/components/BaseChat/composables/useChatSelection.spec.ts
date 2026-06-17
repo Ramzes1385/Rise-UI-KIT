@@ -1,5 +1,4 @@
 import { effectScope } from 'vue'
-
 import { useChatSelection } from './useChatSelection'
 
 function setup(): { selection: ReturnType<typeof useChatSelection>; onMessageSelect: ReturnType<typeof vi.fn> } {

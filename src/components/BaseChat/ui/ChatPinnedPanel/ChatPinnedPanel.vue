@@ -56,6 +56,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
@@ -73,7 +74,6 @@ import {
 	UI_SCALE,
 	SIZE_SCALE_DEFAULT,
 } from '@constants'
-import { computed } from 'vue'
 import type { ChatMessage } from '../../model/BaseChat.types'
 import './ChatPinnedPanel.style.scss'
 

@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
-
 import { useCustomColor } from './useCustomColor'
 import type { CustomColor } from './useCustomColor.types'
 

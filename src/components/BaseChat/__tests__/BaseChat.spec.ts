@@ -5,8 +5,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import type { ChatMessage } from '../model/BaseChat.types'
 import BaseChat from '../ui/BaseChat.vue'
+import type { ChatMessage } from '../model/BaseChat.types'
 
 const MOCK_MESSAGES: ChatMessage[] = [
 	{

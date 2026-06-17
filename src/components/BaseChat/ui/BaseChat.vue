@@ -125,17 +125,15 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseText } from '@components/BaseText'
-import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { downloadFile } from '@utils/fileUtils'
-import { ref } from 'vue'
 import '../styles/BaseChat.style.scss'
-import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from '../model/BaseChat.types'
-
 import { ChatHeader } from '../ChatHeader'
 import { ChatInput } from '../ChatInput'
 import { ChatMessageList } from '../ChatMessageList'
@@ -144,6 +142,7 @@ import { useChatState } from '../composables/useChatState'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
 import { ChatSlideover } from './ChatSlideover'
+import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from '../model/BaseChat.types'
 
 /** Публичные методы ChatMessageList, экспонированные через defineExpose */
 interface MessageListExposed {

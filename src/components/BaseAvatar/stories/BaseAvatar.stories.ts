@@ -3,15 +3,13 @@
  * Демонстрирует все вариации, размеры, формы и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { AVATAR_SHAPES, AVATAR_VARIANTS } from '../model/BaseAvatar.types'
 import BaseAvatar from '../ui/BaseAvatar.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseAvatar> = {
 	title: 'UI/BaseAvatar',

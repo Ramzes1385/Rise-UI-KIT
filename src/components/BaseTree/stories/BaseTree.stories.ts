@@ -3,17 +3,15 @@
  * Демонстрирует все вариации, режимы выбора, слоты и CSS-состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import type { TreeNode } from '../model/BaseTree.types'
+import { buildArgTypes } from '@utils/storybookUtils'
+import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { TREE_VARIANTS } from '../model/BaseTree.types'
 import BaseTree from '../ui/BaseTree.vue'
+import type { TreeNode } from '../model/BaseTree.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Названия для генерации дерева */
 const LEVEL_NAMES = [

@@ -4,14 +4,12 @@
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import type { TabItem } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
+import type { TabItem } from '../model/BaseTabs.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const TABS: TabItem[] = [
 	{ id: 'info', label: 'Информация' },

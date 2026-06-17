@@ -136,17 +136,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-
-import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
-import { computed, ref } from 'vue'
-
+import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import '../styles/BaseBreadcrumbs.style.scss'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 

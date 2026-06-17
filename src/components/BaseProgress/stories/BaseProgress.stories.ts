@@ -3,11 +3,10 @@
  * Демонстрирует формы, масштабирование и анимации.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import BaseProgress from '../ui/BaseProgress.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseProgress> = {
 	title: 'UI/BaseProgress',

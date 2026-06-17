@@ -3,13 +3,11 @@
  * Демонстрирует все начертания, цвета, теги и комбинации.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, within } from 'storybook/test'
-
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import { TEXT_TAGS } from '../model/BaseText.types'
 import BaseText from '../ui/BaseText.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseText> = {
 	title: 'UI/BaseText',

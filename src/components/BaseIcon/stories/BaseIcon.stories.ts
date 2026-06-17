@@ -3,9 +3,8 @@
  * Демонстрирует масштабирование, трансформации, цвета и использование с иконками из спрайта.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
-
 import BaseIcon from '../ui/BaseIcon.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Список иконок из спрайта */
 const ICON_NAMES = [

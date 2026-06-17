@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useMessageParser } from '@composables/useMessageParser'
 import type { MessageToken, TextPart } from '@composables/useMessageParser/useMessageParser.types'
-import { computed } from 'vue'
 
 interface ChatMessageTextProps {
 	text: string

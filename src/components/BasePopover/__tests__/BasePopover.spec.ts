@@ -6,7 +6,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
-
 import BasePopover from '../ui/BasePopover.vue'
 
 /** Общие слоты для рендера */

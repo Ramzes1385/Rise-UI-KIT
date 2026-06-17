@@ -3,10 +3,8 @@
  * Демонстрирует простые и сложные формы с валидацией.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseInput } from '@components/BaseInput'
@@ -15,6 +13,7 @@ import { BaseTextarea } from '@components/BaseTextarea'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { FORM_VARIANTS } from '../model/BaseForm.types'
 import BaseForm from '../ui/BaseForm.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseForm> = {
 	title: 'UI/BaseForm',

@@ -1,7 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-
 import { createApp } from 'vue'
-
 import { createIconPlugin } from './iconPlugin'
 
 describe('createIconPlugin', () => {

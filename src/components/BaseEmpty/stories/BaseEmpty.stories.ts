@@ -3,14 +3,12 @@
  * Демонстрирует все варианты пустого состояния, интерактивные состояния, слоты и масштабирование.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, within } from 'storybook/test'
-
 import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
-
 import BaseEmpty from '../ui/BaseEmpty.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseEmpty> = {
 	title: 'UI/BaseEmpty',

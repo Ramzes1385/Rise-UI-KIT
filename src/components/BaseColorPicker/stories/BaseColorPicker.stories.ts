@@ -3,12 +3,11 @@
  * Демонстрирует выбор цвета, ввод HEX, пресеты, позиции и состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fireEvent, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
-import BaseColorPicker from '../ui/BaseColorPicker.vue'
 import { COLOR_PICKER_POSITIONS } from '../model/BaseColorPicker.types'
+import BaseColorPicker from '../ui/BaseColorPicker.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseColorPicker> = {
 	title: 'UI/BaseColorPicker',

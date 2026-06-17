@@ -5,10 +5,9 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
-
 import { BaseText } from '@components/BaseText'
-import type { BaseRadioOption } from '../model/BaseRadio.types'
 import BaseRadio from '../ui/BaseRadio.vue'
+import type { BaseRadioOption } from '../model/BaseRadio.types'
 
 const OPTIONS: BaseRadioOption[] = [
 	{ value: 'metal', label: 'Металл' },

@@ -1,9 +1,9 @@
 <template>
 	<div
 		class="base-tree"
-		:class="[variantClass, { 'base-tree--arrow-right': props.arrowPosition === 'right' }, classes.root]"
+		:class="[variantClass, { 'base-tree--arrow-right': arrowPosition === 'right' }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseTreeNode v-for="node in items" :key="node.id" :node="node" :depth="0" :size-scale="props.sizeScale">
+		<BaseTreeNode v-for="node in items" :key="node.id" :node="node" :depth="0" :size-scale="sizeScale">
 			<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
 			<template #arrow="slotProps"><slot name="arrow" v-bind="slotProps" /></template>
 			<template #label="slotProps"><slot name="label" v-bind="slotProps" /></template>
@@ -13,17 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseTreeEmits, BaseTreeProps } from '../model/BaseTree.types'
-
 import { computed, provide, toRef } from 'vue'
-
 import { useBaseComponent } from '@composables/useBaseComponent'
-
+import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTree.style.scss'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import BaseTreeNode from './BaseTreeNode.vue'
 import { useTreeState } from '../model/useTreeState'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import BaseTreeNode from './BaseTreeNode.vue'
+import type { BaseTreeEmits, BaseTreeProps } from '../model/BaseTree.types'
 
 const props = withDefaults(defineProps<BaseTreeProps>(), {
 	selectionMode: 'none',

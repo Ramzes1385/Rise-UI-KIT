@@ -4,7 +4,6 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { calcPageInfo, calcTotalPages, calcVisiblePages } from './paginationUtils'
 
 describe('paginationUtils', () => {

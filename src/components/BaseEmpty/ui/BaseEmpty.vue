@@ -5,7 +5,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div class="base-empty__icon-wrapper" :class="classes.iconWrapper">
 			<slot name="icon">
-				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', props.sizeScale)" :custom-class="classes.icon" />
+				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
@@ -14,7 +14,7 @@
 				v-if="title"
 				tag="h3"
 				:weight="UI_FONT_WEIGHT.SEMIBOLD"
-				:size-scale="props.sizeScale"
+				:size-scale="sizeScale"
 				class="base-empty__title"
 				:custom-class="classes.title">
 				{{ title }}
@@ -23,7 +23,7 @@
 			<BaseText
 				v-if="description"
 				tag="p"
-				:size-scale="props.sizeScale - 10"
+				:size-scale="sizeScale - 10"
 				class="base-empty__description"
 				:custom-class="classes.description">
 				{{ description }}
@@ -41,12 +41,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-import { computed } from 'vue'
-
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps } from '../model/BaseEmpty.types'
 

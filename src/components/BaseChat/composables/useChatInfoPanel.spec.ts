@@ -1,5 +1,4 @@
 import { effectScope } from 'vue'
-
 import { useChatInfoPanel } from './useChatInfoPanel'
 
 function setup(): { panel: ReturnType<typeof useChatInfoPanel>; onAvatarClick: ReturnType<typeof vi.fn>; onInfoClick: ReturnType<typeof vi.fn> } {

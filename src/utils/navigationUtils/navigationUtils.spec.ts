@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-
 import { openExternalUrl, resolveNavigation } from './navigationUtils'
 
 describe('navigationUtils', () => {

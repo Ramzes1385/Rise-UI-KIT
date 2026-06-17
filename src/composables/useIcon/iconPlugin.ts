@@ -3,9 +3,8 @@
  * Нужен, когда проекту удобнее подключить иконку один раз через app.use().
  */
 
-import type { App, Plugin } from 'vue'
-
 import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
+import type { App, Plugin } from 'vue'
 
 export interface IconPluginOptions {
 	/** Имя компонента для глобальной регистрации. */

@@ -9,9 +9,8 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { afterEach, beforeEach, vi } from 'vitest'
-
-import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 import BaseChat from '../ui/BaseChat.vue'
+import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 
 const MESSAGES: ChatMessage[] = [
 	{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна' },

@@ -4,15 +4,14 @@
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import type { SearchResult } from '../model/BaseSearch.types'
 import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
 import BaseSearch from '../ui/BaseSearch.vue'
+import type { SearchResult } from '../model/BaseSearch.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Демо-данные для результатов поиска (с иконками) */
 const MOCK_RESULTS: SearchResult[] = [

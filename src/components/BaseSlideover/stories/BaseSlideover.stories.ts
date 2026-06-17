@@ -3,15 +3,13 @@
  * Демонстрирует все вариации, состояния и слоты.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { BaseButton } from '@components/BaseButton'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
 import BaseSlideover from '../ui/BaseSlideover.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Найти открытый слайдовер в body (teleport target) */
 async function findSlideover(): Promise<HTMLElement> {

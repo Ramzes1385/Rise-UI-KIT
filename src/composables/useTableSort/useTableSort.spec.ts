@@ -3,10 +3,8 @@
  */
 
 import { createApp, h, ref } from 'vue'
-
-import type { TableColumn } from '@components/BaseTable/model/BaseTable.types'
-
 import { useTableSort } from './useTableSort'
+import type { TableColumn } from '@components/BaseTable/model/BaseTable.types'
 
 const testColumns = ref<TableColumn[]>([
 	{ key: 'name', label: 'Имя', isSortable: true, sortType: 'string' },

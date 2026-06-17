@@ -3,12 +3,11 @@
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fireEvent, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import BasePin from '../ui/BasePin.vue'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Получает инпуты pin'а или бросает ошибку */
 function getInputs(root: ParentNode): HTMLInputElement[] {

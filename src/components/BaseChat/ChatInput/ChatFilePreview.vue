@@ -28,11 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_META, UI_SCALE } from '@constants'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
+import { UI_CHAT_REMOVE_ATTACHMENT, UI_CHAT_SCALE_META, UI_SCALE } from '@constants'
 import type { ChatMessageAttachment } from '../model/BaseChat.types'
 
 interface ChatFilePreviewProps {

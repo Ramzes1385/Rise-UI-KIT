@@ -5,7 +5,6 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-
 import BaseIcon from '../ui/BaseIcon.vue'
 
 /** Мокаем useIcon — разрыв циклической зависимости */

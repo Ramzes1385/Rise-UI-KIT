@@ -4,7 +4,6 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-
 import { useInputMask } from './useInputMask'
 
 describe('useInputMask', () => {

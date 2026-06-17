@@ -1,6 +1,5 @@
-import type { ComputedRef, Ref } from 'vue'
-
 import type { BaseTableEmits, TableColumn, TableRow } from './BaseTable.types'
+import type { ComputedRef, Ref } from 'vue'
 
 export interface UseTableColumnsOptions {
 	columns: Ref<TableColumn[]>

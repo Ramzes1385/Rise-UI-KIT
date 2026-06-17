@@ -3,17 +3,15 @@
  * Демонстрирует все вариации, режимы и интерактивные состояния.
  */
 
-import type { Meta, StoryObj } from '@storybook/vue3'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
-
 import BaseBadge from '@components/BaseBadge/ui/BaseBadge.vue'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-
-import type { BaseAccordionItem } from '../model/BaseAccordion.types'
 import { ACCORDION_VARIANTS } from '../model/BaseAccordion.types'
 import BaseAccordion from '../ui/BaseAccordion.vue'
+import type { BaseAccordionItem } from '../model/BaseAccordion.types'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 /** Стандартный набор элементов */
 const ITEMS: BaseAccordionItem[] = [

@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render } from '@testing-library/vue'
-
 import DatePickerRangePanel from './DatePickerRangePanel.vue'
 import type { DatePickerRangePanelProps } from './DatePickerRangePanel.types'
 

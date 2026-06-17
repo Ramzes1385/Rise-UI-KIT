@@ -1,11 +1,10 @@
-import type { Ref } from 'vue'
 import { nextTick } from 'vue'
-
 import {
 	FORMAT_CONFIG,
 	isInsideList,
 } from '@utils/editorDomInspect'
 import type { EditorActiveStates } from './useEditorToolbar.types'
+import type { Ref } from 'vue'
 
 interface UseToolbarCommandsOptions {
 	editorRef: Ref<HTMLDivElement | null>

@@ -1,7 +1,5 @@
 import { computed, ref, watch } from 'vue'
-
 import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
-
 import { TABLE_DEFAULT_SKELETON_ROWS } from './BaseTable.constants'
 import type { TableColumn, TableRow } from './BaseTable.types'
 import type { UseTableColumnsOptions, UseTableColumnsReturn } from './useTableColumns.types'

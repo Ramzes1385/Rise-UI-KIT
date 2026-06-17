@@ -5,9 +5,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
-
-import type { TableColumn, TableRow } from '../model/BaseTable.types'
 import BaseTable from '../ui/BaseTable.vue'
+import type { TableColumn, TableRow } from '../model/BaseTable.types'
 
 /** Стабаем дочерние компоненты для изоляции */
 const globalConfig = {

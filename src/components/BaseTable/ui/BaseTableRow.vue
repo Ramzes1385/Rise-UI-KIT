@@ -55,7 +55,6 @@
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
-
 import type { TableRow } from '../model/BaseTable.types'
 import type { BaseTableRowProps } from './BaseTableRow.types'
 

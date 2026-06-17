@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
@@ -32,7 +33,6 @@ import {
 	UI_CHAT_SCALE_META,
 	UI_SCALE,
 } from '@constants'
-import { computed } from 'vue'
 import type { ChatMessage } from '../../model/BaseChat.types'
 
 interface SharedLink {
