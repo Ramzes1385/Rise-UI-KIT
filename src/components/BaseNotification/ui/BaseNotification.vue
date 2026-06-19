@@ -67,7 +67,7 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseNotification.style.scss'
-import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots, NotificationItem } from '../model/BaseNotification.types'
+import type { BaseNotificationEmits, BaseNotificationExpose, BaseNotificationProps, BaseNotificationSlots, NotificationItem } from '../model/BaseNotification.types'
 
 const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	title: '',
@@ -128,5 +128,5 @@ onMounted(() => {
 	}
 })
 
-defineExpose({ add, remove })
+defineExpose<BaseNotificationExpose>({ add, remove })
 </script>

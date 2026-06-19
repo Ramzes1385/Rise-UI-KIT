@@ -5,6 +5,7 @@
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { SELECT_VARIANTS } from '../model/BaseSelect.types'
 import BaseSelect from '../ui/BaseSelect.vue'
@@ -863,7 +864,7 @@ export const MultipleDeselect: Story = {
 /** Селект с обязательным label — ветка isRequired=true */
 export const RequiredLabel: Story = {
 	args: {
-		label: 'Обязательное поле',
+		label: UI_TEXT.REQUIRED_FIELD,
 		isRequired: true,
 		options: OPTIONS,
 		placeholder: 'Выберите',

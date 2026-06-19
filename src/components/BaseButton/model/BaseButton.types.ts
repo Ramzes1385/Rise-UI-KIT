@@ -44,3 +44,15 @@ export interface BaseButtonSlots {
 	/** Контент справа от текста (иконка) */
 	right?: () => unknown
 }
+
+/**
+ * Публичный контракт BaseButton (defineExpose)
+ */
+export interface BaseButtonExpose {
+	/** Корневой DOM-элемент кнопки */
+	buttonRef: HTMLButtonElement | null
+	/** Устанавливает фокус на кнопку */
+	focus: () => void
+	/** Снимает фокус с кнопки */
+	blur: () => void
+}

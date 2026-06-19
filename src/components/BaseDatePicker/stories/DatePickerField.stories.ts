@@ -6,6 +6,7 @@
  */
 
 import { expect, fn, userEvent } from 'storybook/test'
+import { UI_TEXT } from '@constants'
 import DatePickerField from '../ui/DatePickerField/DatePickerField.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -14,7 +15,7 @@ const meta: Meta<typeof DatePickerField> = {
 	component: DatePickerField,
 	args: {
 		displayValue: '',
-		placeholder: 'Выберите дату',
+		placeholder: UI_TEXT.SELECT_DATE,
 		'onField-click': fn(),
 		'onClear-click': fn(),
 		'onIcon-click': fn(),

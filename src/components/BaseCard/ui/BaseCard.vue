@@ -54,7 +54,7 @@ import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseCard.style.scss'
 
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
@@ -71,7 +71,7 @@ defineSlots<BaseCardSlots>()
 const height = computed(() => props.height)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-card', props, ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad', defaultPadding: 24 })
+const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad', defaultPadding: UI_SIZE.PADDING.XL })
 
 const cardStyle = computed(() => ({
 	...paddingStyle.value,

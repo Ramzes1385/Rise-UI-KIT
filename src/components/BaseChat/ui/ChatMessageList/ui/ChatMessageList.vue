@@ -69,7 +69,7 @@ import { SIZE_SCALE_DEFAULT, UI_SCALE } from '@constants'
 import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 import '../styles/ChatMessageList.style.scss'
-import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMessageList.types'
+import type { ChatMessageListEmits, ChatMessageListExpose, ChatMessageListProps } from '../model/ChatMessageList.types'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -122,5 +122,5 @@ const selectedSet = computed(() => new Set(props.selectedMessageIds))
 const activeContextMessageId = computed(() => contextMenu.value.message?.id ?? null)
 const isSelectionMode = computed(() => props.selectedMessageIds.length > 0)
 
-defineExpose({ scrollToMessage })
+defineExpose<ChatMessageListExpose>({ scrollToMessage })
 </script>

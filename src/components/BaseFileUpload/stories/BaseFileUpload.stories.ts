@@ -5,6 +5,7 @@
  */
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { FILE_UPLOAD_VARIANTS } from '../model/BaseFileUpload.types'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
@@ -257,7 +258,7 @@ export const DarkTheme: Story = {
 export const Loading: Story = {
 	args: {
 		isDisabled: true,
-		label: 'Загрузка...',
+		label: UI_TEXT.LOADING,
 	},
 }
 /** Нет загруженных файлов */

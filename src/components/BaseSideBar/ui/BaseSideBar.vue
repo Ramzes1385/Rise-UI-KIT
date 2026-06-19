@@ -113,8 +113,8 @@ defineOptions({
 const props = withDefaults(defineProps<BaseSideBarProps>(), {
 	width: UI_SIZE.SIDEBAR_DEFAULT_WIDTH,
 	collapsedWidth: 68,
-	padding: 12,
-	gap: 4,
+	padding: UI_SIZE.PADDING.LG,
+	gap: UI_SIZE.GAP.SM,
 	activeMatch: 'exact',
 	linkComponent: 'a',
 	isCollapsible: true,
@@ -131,7 +131,7 @@ const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } 
 const { paddingStyle } = usePadding({
 	getPadding: () => props.padding,
 	prefix: '--sidebar-pad',
-	defaultPadding: 12,
+	defaultPadding: UI_SIZE.PADDING.LG,
 })
 
 const internalCollapsed = ref(false)

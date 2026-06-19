@@ -30,12 +30,12 @@ import { usePadding } from '@composables/usePadding'
 import { UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
-import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
+import type { BaseDropdownEmits, BaseDropdownExpose, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
 
 const props = withDefaults(defineProps<BaseDropdownProps>(), {
 	isOpen: false,
 	position: 'bottom-start',
-	gap: 4,
+	gap: UI_SIZE.GAP.SM,
 	maxHeight: UI_SIZE.PANEL_MAX_HEIGHT,
 	matchWidth: false,
 	panelClass: '',
@@ -53,7 +53,7 @@ const preventMousedown = computed(() =>
 		: true,
 )
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: 8 })
+const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: UI_SIZE.PADDING.SM })
 
 const emit = defineEmits<BaseDropdownEmits>()
 defineSlots<BaseDropdownSlots>()
@@ -120,5 +120,5 @@ function handlePanelFocusin(): void {
 	}
 }
 
-defineExpose({ updatePosition })
+defineExpose<BaseDropdownExpose>({ updatePosition })
 </script>

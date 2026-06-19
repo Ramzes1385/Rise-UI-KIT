@@ -92,9 +92,11 @@ import {
 	UI_TEXT,
 } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
-import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../model/BaseTableToolbar.types'
+import type { BaseTableToolbarEmits, BaseTableToolbarProps, BaseTableToolbarSlots } from '../model/BaseTableToolbar.types'
 
 defineProps<BaseTableToolbarProps>()
 
 const emit = defineEmits<BaseTableToolbarEmits>()
+
+defineSlots<BaseTableToolbarSlots>()
 </script>

@@ -18,7 +18,8 @@
 			"@constants": ["../../src/constants/index.ts"],
 			"@constants/*": ["../../src/constants/*"],
 			"@utils/*": ["../../src/utils/*"],
-			"@icons/*": ["../../src/icons/*"]
+			"@icons/*": ["../../src/icons/*"],
+			"@plugins/*": ["../../src/plugins/*"]
 		},
 
 		"noEmit": false,
@@ -42,6 +43,8 @@
 
 		"../../src/icons/**/*.ts",
 		"../../src/icons/**/*.vue",
+
+		"../../src/plugins/**/*.ts",
 
 		"../../src/utils/**/*.ts"
 	],

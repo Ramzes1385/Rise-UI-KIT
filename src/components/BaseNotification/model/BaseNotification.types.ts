@@ -60,3 +60,13 @@ export interface BaseNotificationEmits {
 export interface BaseNotificationSlots {
 	default?: () => unknown
 }
+
+/**
+ * Публичный API компонента BaseNotification
+ */
+export interface BaseNotificationExpose {
+	/** Добавить уведомление программно */
+	add: (notification: BaseNotificationProps) => void
+	/** Удалить уведомление по id */
+	remove: (id: number) => void
+}

@@ -25,6 +25,7 @@ const ALIASES: Record<string, string> = {
 	'@composables': path.resolve(ROOT, 'src/composables'),
 	'@constants': path.resolve(ROOT, 'src/constants'),
 	'@icons': path.resolve(ROOT, 'src/icons'),
+	'@plugins': path.resolve(ROOT, 'src/plugins'),
 	'@styles': path.resolve(ROOT, 'src/styles'),
 	'@ui': path.resolve(ROOT, 'src/components'),
 	'@utils': path.resolve(ROOT, 'src/utils'),
@@ -149,11 +150,9 @@ export default defineConfig({
 				'**/*.e2e.spec.ts',
 				'**/*.stories.ts',
 				'**/*.types.ts',
-				'**/*.style.scss',
-				'**/index.ts',
-				// Storybook play-helpers — выполняются только в storybook browser-runner
-				'src/utils/storybookUtils/a11yHelpers.ts',
-			],
+			'**/*.style.scss',
+			'**/index.ts',
+		],
 			...(coverageThresholds ? { thresholds: coverageThresholds } : {}),
 		},
 		projects: [

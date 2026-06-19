@@ -5,6 +5,7 @@
 
 import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { INPUT_VARIANTS } from '../model/BaseInput.types'
 import BaseInput from '../ui/BaseInput.vue'
@@ -160,7 +161,7 @@ export const InputTypes: Story = {
 /** Поле с ошибкой */
 export const WithError: Story = {
 	args: {
-		error: 'Обязательное поле',
+		error: UI_TEXT.REQUIRED_FIELD,
 		label: 'Email',
 	},
 	render: args => ({
@@ -174,7 +175,7 @@ export const WithError: Story = {
 	play: async ({ canvasElement, step }) => {
 		const canvas = within(canvasElement)
 		await step('Отображается сообщение об ошибке', async () => {
-			expect(canvas.getByText('Обязательное поле')).toBeInTheDocument()
+			expect(canvas.getByText(UI_TEXT.REQUIRED_FIELD)).toBeInTheDocument()
 			const input = canvas.getByRole('textbox')
 			await userEvent.type(input, 'test')
 			expect(input).toHaveValue('test')

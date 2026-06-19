@@ -5,6 +5,7 @@
 
 import { expect, userEvent, within } from 'storybook/test'
 import { BaseInput } from '@components/BaseInput'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
 import BaseFormField from '../ui/BaseFormField.vue'
@@ -156,7 +157,7 @@ export const Required: Story = {
 		},
 		template: `
 			<BaseFormField v-bind="args">
-				<BaseInput model-value="" placeholder="Обязательное поле" />
+				<BaseInput model-value="" :placeholder="UI_TEXT.REQUIRED_FIELD" />
 			</BaseFormField>
 		`,
 	}),

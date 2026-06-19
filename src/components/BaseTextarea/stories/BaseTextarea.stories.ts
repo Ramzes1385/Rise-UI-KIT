@@ -5,6 +5,7 @@
 
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
 import BaseTextarea from '../ui/BaseTextarea.vue'
@@ -170,7 +171,7 @@ export const WithError: Story = {
 	args: {
 		label: 'Описание',
 		isRequired: true,
-		error: 'Обязательное поле',
+		error: UI_TEXT.REQUIRED_FIELD,
 	},
 	render: args => ({
 		components: { BaseTextarea },

@@ -1,5 +1,6 @@
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes } from '@utils/storybookUtils'
 import BaseChat from '../ui/BaseChat.vue'
 import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../model/BaseChat.types'
@@ -566,7 +567,7 @@ export const Loading: Story = {
 	args: {
 		messages: [],
 		title: 'Чат с Анной',
-		subtitle: 'Загрузка...',
+		subtitle: UI_TEXT.LOADING,
 		isTyping: true,
 	},
 }

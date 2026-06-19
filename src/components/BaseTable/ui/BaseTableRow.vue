@@ -56,9 +56,11 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
-import type { BaseTableRowEmits, BaseTableRowProps } from '../model/BaseTableRow.types'
+import type { BaseTableRowEmits, BaseTableRowProps, BaseTableRowSlots } from '../model/BaseTableRow.types'
 
 defineProps<BaseTableRowProps>()
 
 const emit = defineEmits<BaseTableRowEmits>()
+
+defineSlots<BaseTableRowSlots>()
 </script>

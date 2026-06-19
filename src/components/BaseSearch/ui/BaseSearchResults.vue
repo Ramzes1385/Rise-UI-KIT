@@ -72,11 +72,13 @@ import { BaseText } from '@components/BaseText'
 import { UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import type { SearchResult } from '../model/BaseSearch.types'
-import type { BaseSearchResultsEmits, BaseSearchResultsProps } from '../model/BaseSearchResults.types'
+import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../model/BaseSearchResults.types'
 
 defineProps<BaseSearchResultsProps>()
 
 const emit = defineEmits<BaseSearchResultsEmits>()
+
+defineSlots<BaseSearchResultsSlots>()
 
 function handleSelect(item: SearchResult): void {
 	emit('select', item)

@@ -27,3 +27,31 @@ export interface BaseSearchOverlayEmits {
 	highlight: [index: number]
 	close: []
 }
+
+/**
+ * Публичный контракт BaseSearchOverlay (defineExpose)
+ */
+export interface BaseSearchOverlayExpose {
+	/** Устанавливает фокус на поле ввода оверлея */
+	focus: () => void
+	/** Открывает оверлей */
+	open: () => void
+	/** Закрывает оверлей */
+	close: () => void
+}
+
+/** Слоты компонента BaseSearchOverlay (пробрасываются в BaseSearchResults) */
+export interface BaseSearchOverlaySlots {
+	/** Кастомный рендер всего списка результатов */
+	results?: (props: { results: SearchResult[]; query: string; isLoading: boolean }) => unknown
+	/** Индикатор загрузки */
+	loading?: () => unknown
+	/** Контент перед списком результатов */
+	'result-before'?: (props: { results: SearchResult[]; query: string }) => unknown
+	/** Кастомный рендер одного результата */
+	result?: (props: { item: SearchResult; index: number }) => unknown
+	/** Контент при отсутствии результатов */
+	empty?: () => unknown
+	/** Контент после списка результатов */
+	'result-after'?: (props: { results: SearchResult[]; query: string }) => unknown
+}

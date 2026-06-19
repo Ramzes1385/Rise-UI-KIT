@@ -6,7 +6,8 @@
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { UI_TEXT } from '@constants'
+import { buildArgTypes, STORY_WAIT_TIMEOUT, playShiftTab } from '@utils/storybookUtils'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -113,7 +114,7 @@ const meta: Meta<typeof BaseDatePicker> = {
 		calendarVariant: 'default',
 		sizeScale: 100,
 		isMultiMonth: false,
-		placeholder: 'Выберите дату',
+		placeholder: UI_TEXT.SELECT_DATE,
 		locale: 'ru-RU',
 		isDisabled: false,
 		isRequired: false,
@@ -401,7 +402,7 @@ export const WithLabel: Story = {
 export const WithError: Story = {
 	args: {
 		label: 'Дата',
-		error: 'Выберите дату',
+		error: UI_TEXT.SELECT_DATE,
 	},
 	parameters: {
 		docs: {
@@ -491,7 +492,7 @@ export const Interactive: Story = {
 			<BaseDatePicker
 				v-bind="args"
 				v-model="value"
-				label="Выберите дату"
+				:label="UI_TEXT.SELECT_DATE"
 				is-clearable
 				@open="handleOpen"
 				@close="handleClose" />
@@ -652,7 +653,7 @@ export const DateFormat: Story = {
 const PANEL_SELECTOR = '.date-picker-panel'
 const FIELD_SELECTOR = '.base-input__field'
 const DAY_SELECTOR = '.base-calendar__day:not([disabled])'
-const WAIT_OPTIONS = { timeout: 5000 }
+const WAIT_OPTIONS = { timeout: STORY_WAIT_TIMEOUT }
 
 /**
  * Получить input-элемент поля даты из canvas-а.
@@ -974,7 +975,7 @@ export const ExternalEndUpdate: Story = {
 		template: `
 			<div>
 				<BaseDatePicker v-bind="args" v-model="start" v-model:model-value-end="end" />
-				<button data-testid="apply" @click="applyNew">Применить</button>
+				<button data-testid="apply" @click="applyNew">{{ UI_TEXT.APPLY }}</button>
 			</div>
 		`,
 	}),
@@ -999,7 +1000,7 @@ export const ExternalSelectedUpdate: Story = {
 		template: `
 			<div>
 				<BaseDatePicker v-bind="args" v-model:selected-dates="dates" />
-				<button data-testid="apply" @click="applyNew">Применить</button>
+				<button data-testid="apply" @click="applyNew">{{ UI_TEXT.APPLY }}</button>
 			</div>
 		`,
 	}),
@@ -1052,7 +1053,7 @@ export const MultiMonthOpen: Story = {
 /** Пустой дата-пикер без выбранной даты */
 export const Empty: Story = {
 	args: {
-		placeholder: 'Выберите дату',
+		placeholder: UI_TEXT.SELECT_DATE,
 	},
 }
 /** Кастомные CSS-классы */

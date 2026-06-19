@@ -26,6 +26,15 @@
 
 ---
 
+## Миграция на 2.0.0
+
+- **`createIconPlugin` перенесён в `src/plugins/iconPlugin/`** (ранее — внутри `@composables/useIcon`). Импорт через `@composables` сохранён для обратной совместимости; новый каноничный путь — `@ramses1385/rise-ui-kit/plugins` (или `export * as plugins` из корня пакета).
+- **Subpath-экспорты `./components`, `./composables`, `./utils`, `./icons`, `./plugins` теперь разрешаются корректно** (ранее `dist/` содержал только `index.js`, и subpath-импорты указывали на несуществующие файлы). Главный импорт `@ramzes1385/rise-ui-kit` работает без изменений.
+- Добавлены константы `UI_SIZE.GAP`, `UI_SIZE.PADDING`, `UI_FONT_WEIGHT.REGULAR`, `UI_TIMING.TOUR_FOCUS_DURATION`, `UI_TIMING.SLIDER_AUTOPLAY_INTERVAL`.
+- Stories и компоненты приведены к единому контракту `defineExpose<...>` / `defineSlots<...>`; литералы текстов заменены на `UI_TEXT.*`.
+
+---
+
 ## Стек
 
 Основной стек проекта:
@@ -166,6 +175,7 @@ src/
   components/      # UI-компоненты
   composables/     # Vue composables
   icons/           # иконки и icon registry
+  plugins/         # Vue-плагины (createIconPlugin и др.)
   styles/          # глобальные стили
   utils/           # утилиты
   plugin.ts        # Vue plugin

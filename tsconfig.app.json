@@ -38,6 +38,12 @@
       "@icons/*": [
         "src/icons/*"
       ],
+      "@plugins": [
+        "src/plugins/index.ts"
+      ],
+      "@plugins/*": [
+        "src/plugins/*"
+      ],
       "@styles": [
         "src/styles/index.scss"
       ],

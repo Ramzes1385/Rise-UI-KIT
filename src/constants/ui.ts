@@ -61,6 +61,8 @@ export const UI_TIMING = {
 	HIGHLIGHT_DURATION: 1500,
 	NOTIFICATION_AUTO_CLOSE: 3000,
 	IMAGE_LOAD_TIMEOUT: 5000,
+	TOUR_FOCUS_DURATION: 450,
+	SLIDER_AUTOPLAY_INTERVAL: 4000,
 } as const
 
 // ─── Размеры ──────────────────────────────────────────────────────
@@ -78,6 +80,16 @@ export const UI_SIZE = {
 	MINIMAP_HEIGHT: 150,
 	PROGRESS_CIRCLE_RADIUS: 52,
 	DATEPICKER_GAP: 4,
+	GAP: {
+		SM: 4,
+		MD: 8,
+	},
+	PADDING: {
+		SM: 8,
+		MD: 10,
+		LG: 12,
+		XL: 24,
+	},
 } as const
 
 // ─── Масштаб ──────────────────────────────────────────────────────
@@ -94,6 +106,7 @@ export const UI_SCALE = {
 // ─── Font weight ──────────────────────────────────────────────────
 
 export const UI_FONT_WEIGHT = {
+	REGULAR: 400,
 	MEDIUM: 500,
 	SEMIBOLD: 600,
 	BOLD: 700,

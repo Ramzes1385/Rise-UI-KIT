@@ -18,3 +18,11 @@ export interface ChatMessageContextMenuEmits {
 	(event: 'pin'): void
 	(event: 'delete'): void
 }
+
+/**
+ * Публичный API компонента ChatMessageContextMenu
+ */
+export interface ChatMessageContextMenuExpose {
+	/** Ref на DOM-элемент меню */
+	menuRef: HTMLElement | null
+}

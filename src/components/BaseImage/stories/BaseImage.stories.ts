@@ -5,6 +5,7 @@
 
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { UI_TIMING } from '@constants'
 import { buildArgTypes } from '@utils/storybookUtils'
 import BaseImage from '../ui/BaseImage.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -471,7 +472,7 @@ export const FallbackOnError: Story = {
 export const LoadingTimeout: Story = {
   args: {
     src: 'https://placehold.co/400x300/f97316/ffffff?text=Timeout',
-    timeout: 5000, 
+    timeout: UI_TIMING.IMAGE_LOAD_TIMEOUT,
   },
   play: async ({ canvasElement }) => {
     const img = await within(canvasElement).findByRole('img')

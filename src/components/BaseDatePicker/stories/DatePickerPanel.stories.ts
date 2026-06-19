@@ -11,11 +11,12 @@
  */
 
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { STORY_WAIT_TIMEOUT } from '@utils/storybookUtils'
 import DatePickerPanel from '../ui/DatePickerPanel/DatePickerPanel.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 const PANEL_SELECTOR = '.date-picker-panel'
-const WAIT_OPTIONS = { timeout: 5000 }
+const WAIT_OPTIONS = { timeout: STORY_WAIT_TIMEOUT }
 
 const meta: Meta<typeof DatePickerPanel> = {
 	title: 'UI/BaseDatePicker/DatePickerPanel',

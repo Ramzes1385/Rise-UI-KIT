@@ -1,4 +1,4 @@
-export { buildArgTypes } from './storybookUtils'
+export { buildArgTypes, STORY_WAIT_TIMEOUT } from './storybookUtils'
 export { getA11yParameters, playActivation, playEscapeClose, playFocusTest, playKeyboardNavigation, playShiftTab } from './storybookUtils'
 export type { BuildArgTypesOptions, ControlConfig, PropMeta } from './storybookUtils.types'
 export type {

@@ -4,6 +4,7 @@
  */
 
 import { expect, within } from 'storybook/test'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes } from '@utils/storybookUtils'
 import BaseLoader from '../ui/BaseLoader.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -41,7 +42,7 @@ const meta: Meta<typeof BaseLoader> = {
 	args: {
 		variant: 'spinner',
 		hasLabel: false,
-		label: 'Загрузка...',
+		label: UI_TEXT.LOADING,
 		isOverlay: false,
 		sizeScale: 100,
 	},
@@ -54,7 +55,7 @@ export const Default: Story = {
 	play: async ({ canvasElement }) => {
 		const loader = canvasElement.querySelector('[role="status"]')
 		expect(loader).toBeInTheDocument()
-		expect(loader?.getAttribute('aria-label')).toBe('Загрузка')
+		expect(loader?.getAttribute('aria-label')).toBe(UI_TEXT.LOADING_ARIA)
 		// Проверяем наличие SVG spinner
 		const svg = loader?.querySelector('svg.base-loader__spinner')
 		expect(svg).toBeInTheDocument()
@@ -161,7 +162,7 @@ export const AllVariantsWithLabel: Story = {
 	}),
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement)
-		const labels = canvas.getAllByText('Загрузка...')
+		const labels = canvas.getAllByText(UI_TEXT.LOADING)
 		expect(labels).toHaveLength(4)
 	},
 }

@@ -58,3 +58,11 @@ export interface BaseTableToolbarEmits {
 	(event: 'update:is-settings-open', value: boolean): void
 	(event: 'toggle-column-visibility', column: TableColumn): void
 }
+
+/** Слоты компонента BaseTableToolbar */
+export interface BaseTableToolbarSlots {
+	/** Контент перед элементами тулбара */
+	'toolbar-prepend'?: () => unknown
+	/** Контент после элементов тулбара */
+	'toolbar-append'?: () => unknown
+}

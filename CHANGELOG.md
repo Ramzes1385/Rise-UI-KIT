@@ -14,16 +14,6 @@
 
 * sidebar uses height auto ([96c56dd](https://github.com/Ramzes1385/Rise-UI-KIT/commit/96c56ddbda2ce61a258e41caedfe254f5403a1fa))
 
-## [1.2.0](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.1.1...v1.2.0) (2026-06-11)
-
-### Features
-
-* add collapsible sidebar groups ([efd8ba9](https://github.com/Ramzes1385/Rise-UI-KIT/commit/efd8ba97db1bae1a9fdffc4476256f399de8e0a2))
-
-### Bug Fixes
-
-* sidebar uses height auto ([96c56dd](https://github.com/Ramzes1385/Rise-UI-KIT/commit/96c56ddbda2ce61a258e41caedfe254f5403a1fa))
-
 ## [1.1.1](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.1.0...v1.1.1) (2026-06-11)
 
 ### Bug Fixes
@@ -49,18 +39,6 @@
 
 * preserve chat autocomplete enter submit ([a401700](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a40170097110c59330958d8f1b9b3f04d91d905a))
 * retry npm trusted publisher release ([450928a](https://github.com/Ramzes1385/Rise-UI-KIT/commit/450928a81794a6167c15e4d14fe8b3f35b953bfd))
-
-## [1.0.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.3...v1.0.4) (2026-06-10)
-
-### Bug Fixes
-
-* preserve chat autocomplete enter submit ([a401700](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a40170097110c59330958d8f1b9b3f04d91d905a))
-
-## [1.0.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.0.3...v1.0.4) (2026-06-10)
-
-### Bug Fixes
-
-* preserve chat autocomplete enter submit ([a401700](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a40170097110c59330958d8f1b9b3f04d91d905a))
 
 ## 1.0.0 (2026-06-10)
 

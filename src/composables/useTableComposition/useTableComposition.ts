@@ -10,8 +10,8 @@ import { TABLE } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcRowNumber } from '@utils/tableUtils'
-import type { TableColumn, TableRow } from '../model/BaseTable.types'
 import type { UseTableCompositionOptions } from './useTableComposition.types'
+import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 
 /** Описание: агрегирует логику таблицы — сортировка, фильтрация, поиск, пагинация, выбор строк, раскрытие, ресайз колонок и infinite scroll */
 function useTableComposition(options: UseTableCompositionOptions) {
@@ -77,7 +77,6 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		getFilterLabel,
 		handlePageSizeChange,
 		loadMore,
-		resetPage,
 	} = useTableData({
 		rows,
 		columns: localColumns,
@@ -187,13 +186,6 @@ function useTableComposition(options: UseTableCompositionOptions) {
 	function startResize(event: MouseEvent, column: TableColumn): void {
 		startColumnResize(event, column.key)
 	}
-
-	watch(
-		() => rows.value,
-		() => {
-			resetPage()
-		},
-	)
 
 	return {
 		searchQuery,

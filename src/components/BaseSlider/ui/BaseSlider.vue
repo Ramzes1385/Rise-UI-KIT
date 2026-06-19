@@ -171,7 +171,7 @@ const props = withDefaults(defineProps<BaseSliderProps>(), {
 	animation: 'slide',
 	navigation: 'dots',
 	isAutoplay: false,
-	autoplayInterval: 4000,
+	autoplayInterval: UI_TIMING.SLIDER_AUTOPLAY_INTERVAL,
 	hasArrows: true,
 	arrowsPosition: 'center',
 	isLoop: true,

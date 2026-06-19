@@ -4,6 +4,7 @@
  */
 
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { MENU_VARIANTS } from '../model/BaseMenu.types'
 import BaseMenu from '../ui/BaseMenu.vue'
@@ -23,7 +24,7 @@ const ITEMS: BaseMenuItem[][] = [
 ]
 
 const SIMPLE_ITEMS: BaseMenuItem[][] = [
-	[{ label: 'Редактировать' }, { label: 'Дублировать' }, { label: 'Удалить', hasDivider: true }],
+	[{ label: 'Редактировать' }, { label: 'Дублировать' }, { label: UI_TEXT.DELETE, hasDivider: true }],
 ]
 
 const NAV_ITEMS: BaseMenuItem[][] = [

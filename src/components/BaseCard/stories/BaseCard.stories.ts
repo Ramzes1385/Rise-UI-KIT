@@ -4,6 +4,7 @@
  */
 
 import { expect, within } from 'storybook/test'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { CARD_VARIANTS } from '../model/BaseCard.types'
 import BaseCard from '../ui/BaseCard.vue'
@@ -184,7 +185,7 @@ export const WithFooter: Story = {
 				Основное содержимое
 				<template #footer>
 					<div style="display:flex;justify-content:flex-end;gap:8px;">
-						<button style="padding:6px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">Отмена</button>
+						<button style="padding:6px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">${UI_TEXT.CANCEL}</button>
 						<button style="padding:6px 16px;background:var(--color-accent);color:white;border:none;border-radius:var(--border-radius-base);cursor:pointer;">ОК</button>
 					</div>
 				</template>
@@ -194,7 +195,7 @@ export const WithFooter: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement)
 		expect(canvas.getByText('Карточка с футером')).toBeInTheDocument()
-		expect(canvas.getByText('Отмена')).toBeInTheDocument()
+		expect(canvas.getByText(UI_TEXT.CANCEL)).toBeInTheDocument()
 		expect(canvas.getByText('ОК')).toBeInTheDocument()
 	},
 }

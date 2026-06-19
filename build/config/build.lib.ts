@@ -13,9 +13,13 @@ export function createLibBuildConfig(): BuildOptions {
 		lib: {
 			entry: {
 				index: resolve(process.cwd(), 'src/index.ts'),
+				components: resolve(process.cwd(), 'src/components/index.ts'),
+				composables: resolve(process.cwd(), 'src/composables/index.ts'),
+				utils: resolve(process.cwd(), 'src/utils/index.ts'),
+				icons: resolve(process.cwd(), 'src/icons/index.ts'),
+				plugins: resolve(process.cwd(), 'src/plugins/index.ts'),
 			},
 			formats: ['es'],
-			fileName: () => 'index.js',
 			cssFileName: 'styles',
 		},
 
@@ -23,6 +27,7 @@ export function createLibBuildConfig(): BuildOptions {
 			external: ['vue'],
 
 			output: {
+				entryFileNames: '[name].js',
 				chunkFileNames: 'chunks/[name]-[hash].js',
 
 				assetFileNames: assetInfo => {

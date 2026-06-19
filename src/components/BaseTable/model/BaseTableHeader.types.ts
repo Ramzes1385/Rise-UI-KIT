@@ -38,3 +38,9 @@ export interface BaseTableHeaderEmits {
 	(event: 'sort', column: TableColumn): void
 	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
 }
+
+/** Слоты компонента BaseTableHeader */
+export interface BaseTableHeaderSlots {
+	/** Кастомный рендер заголовка колонки (`header-<columnKey>`) */
+	[name: `header-${string}`]: (props: { column: TableColumn }) => unknown
+}

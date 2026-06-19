@@ -3,11 +3,15 @@
 /* v8 ignore start -- a11y-функции тестируются через storybook tests, не unit */
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 /* v8 ignore stop */
+import { UI_TIMING } from '@constants'
 import type { BuildArgTypesOptions, PropMeta } from './storybookUtils.types'
 import type { ArgTypes } from '@storybook/vue3'
 
 /** Скрытые пропы Vue по умолчанию */
 const HIDDEN_VUE_PROPS = ['class', 'style', 'key', 'ref']
+
+/** Таймаут ожидания для storybook play-функций (мс) — единый источник со временем загрузки изображения */
+const STORY_WAIT_TIMEOUT = UI_TIMING.IMAGE_LOAD_TIMEOUT
 
 /**
  * Строит argTypes для Storybook из мета-информации о пропах.
@@ -70,7 +74,7 @@ function buildPropArgType(meta: PropMeta): Record<string, unknown> {
 	return entry
 }
 
-export { buildArgTypes }
+export { buildArgTypes, STORY_WAIT_TIMEOUT }
 
 /* v8 ignore start -- a11y-функции тестируются через storybook tests, не unit */
 

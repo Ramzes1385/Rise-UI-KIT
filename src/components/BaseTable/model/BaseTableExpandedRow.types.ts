@@ -13,3 +13,9 @@ export interface BaseTableExpandedRowProps {
 	/** Проверка, раскрыта ли строка */
 	isExpanded: (row: TableRow) => boolean
 }
+
+/** Слоты компонента BaseTableExpandedRow */
+export interface BaseTableExpandedRowSlots {
+	/** Контент раскрытой строки */
+	'expanded-content'?: (props: { row: TableRow }) => unknown
+}

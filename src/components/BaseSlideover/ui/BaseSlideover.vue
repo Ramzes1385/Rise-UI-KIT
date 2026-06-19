@@ -57,7 +57,7 @@ import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
-import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
+import { UI_ARIA, UI_FONT_WEIGHT, UI_SIZE } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
 
@@ -102,7 +102,7 @@ const { paddingStyle: panelStyle } = usePadding({
 	getPadding: () => props.padding,
 	prefix: '--slideover-pad',
 	axisMultiplier: 1,
-	defaultPadding: 24,
+	defaultPadding: UI_SIZE.PADDING.XL,
 	omitUnsetSides: true,
 })
 

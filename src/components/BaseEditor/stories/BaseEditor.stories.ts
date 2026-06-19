@@ -5,7 +5,8 @@
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { nextTick, ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { UI_TEXT } from '@constants'
+import { buildArgTypes, STORY_WAIT_TIMEOUT, playShiftTab } from '@utils/storybookUtils'
 import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
 import BaseEditor from '../ui/BaseEditor.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -380,7 +381,7 @@ export const Interactive: Story = {
 export const Loading: Story = {
 	args: {
 		isReadonly: true,
-		placeholder: 'Загрузка...',
+		placeholder: UI_TEXT.LOADING,
 	},
 	render: args => ({
 		components: { BaseEditor },
@@ -424,7 +425,7 @@ export const LongContent: Story = {
 // ── Интерактивные тесты ──
 
 const EDITOR_SELECTOR = '.base-editor__content'
-const WAIT_OPTIONS = { timeout: 5000 }
+const WAIT_OPTIONS = { timeout: STORY_WAIT_TIMEOUT }
 
 /**
  * Получить contenteditable-элемент редактора.

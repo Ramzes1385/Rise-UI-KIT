@@ -26,7 +26,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_TIMING, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
@@ -79,7 +79,7 @@ const tooltipStyle = computed((): Record<string, string> => {
 	return calcTooltipPosition({
 		position: props.position,
 		coords: coords.value,
-		gap: 8,
+		gap: UI_SIZE.GAP.MD,
 	})
 })
 

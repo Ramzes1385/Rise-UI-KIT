@@ -60,9 +60,11 @@ import { BaseTooltip } from '@components/BaseTooltip'
 import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
-import type { BaseTableHeaderEmits, BaseTableHeaderProps } from '../model/BaseTableHeader.types'
+import type { BaseTableHeaderEmits, BaseTableHeaderProps, BaseTableHeaderSlots } from '../model/BaseTableHeader.types'
 
 defineProps<BaseTableHeaderProps>()
 
 const emit = defineEmits<BaseTableHeaderEmits>()
+
+defineSlots<BaseTableHeaderSlots>()
 </script>

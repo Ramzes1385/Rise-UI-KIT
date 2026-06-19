@@ -51,6 +51,10 @@
       "types": "./dist/icons/index.d.ts",
       "import": "./dist/icons.js"
     },
+    "./plugins": {
+      "types": "./dist/plugins/index.d.ts",
+      "import": "./dist/plugins.js"
+    },
     "./styles": {
       "types": "./types/styles.d.ts",
       "import": "./dist/styles.css",

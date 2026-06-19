@@ -5,6 +5,7 @@
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
@@ -142,7 +143,7 @@ export const DisabledChecked: Story = {
 /** С ошибкой */
 export const WithError: Story = {
 	args: {
-		error: 'Обязательное поле',
+		error: UI_TEXT.REQUIRED_FIELD,
 	},
 	render: args => ({
 		components: { BaseCheckbox },
@@ -154,7 +155,7 @@ export const WithError: Story = {
 	}),
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement)
-		expect(canvas.getByText('Обязательное поле')).toBeInTheDocument()
+		expect(canvas.getByText(UI_TEXT.REQUIRED_FIELD)).toBeInTheDocument()
 	},
 }
 /** Без подписи */

@@ -13,6 +13,7 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseSwitch } from '@components/BaseSwitch'
 import { BaseText } from '@components/BaseText'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { TABLE_VARIANTS } from '../model/BaseTable.types'
 import BaseTable from '../ui/BaseTable.vue'
@@ -2058,7 +2059,7 @@ export const ButtonLoadMode: Story = {
 export const ButtonLoadModeLoading: Story = {
 	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), loadMode: 'button', pageSize: 2, isLoading: true },
 	play: async ({ canvasElement }) => {
-		expect(canvasElement.textContent).toContain('Загрузка...')
+		expect(canvasElement.textContent).toContain(UI_TEXT.LOADING)
 	},
 }
 /** Режим догрузки по кнопке — всё загружено */

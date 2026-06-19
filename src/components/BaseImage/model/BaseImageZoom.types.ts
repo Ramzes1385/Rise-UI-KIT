@@ -16,3 +16,13 @@ export interface BaseImageZoomProps {
 	/** Текущий масштаб */
 	currentScale: number
 }
+
+/**
+ * Публичный API компонента BaseImageZoom
+ */
+export interface BaseImageZoomExpose {
+	/** Ref на основное изображение зума */
+	zoomImgRef: HTMLElement | null
+	/** Ref на изображение мини-карты */
+	minimapImgRef: HTMLElement | null
+}

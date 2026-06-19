@@ -1,4 +1,4 @@
-import type { BaseTableEmits, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { BaseTableEmits, TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 import type { Slots } from 'vue'
 
 export interface UseTableCompositionOptions {

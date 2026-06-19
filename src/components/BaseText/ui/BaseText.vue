@@ -14,12 +14,12 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseText.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_FONT_WEIGHT } from '@constants'
 import type { BaseTextProps, BaseTextSlots } from '../model/BaseText.types'
 
 const props = withDefaults(defineProps<BaseTextProps>(), {
 	tag: 'p',
-	weight: 400,
+	weight: UI_FONT_WEIGHT.REGULAR,
 	nowrap: false,
 	truncate: false,
 	maxLines: 1,

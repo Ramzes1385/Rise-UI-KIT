@@ -95,9 +95,11 @@ import { calcIconScale } from '@utils/iconUtils'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'
-import type { BaseTableBodyEmits, BaseTableBodyProps } from '../model/BaseTableBody.types'
+import type { BaseTableBodyEmits, BaseTableBodyProps, BaseTableBodySlots } from '../model/BaseTableBody.types'
 
 defineProps<BaseTableBodyProps>()
 
 const emit = defineEmits<BaseTableBodyEmits>()
+
+defineSlots<BaseTableBodySlots>()
 </script>

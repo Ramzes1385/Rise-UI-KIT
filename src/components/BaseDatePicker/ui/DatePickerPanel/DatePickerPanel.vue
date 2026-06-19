@@ -117,7 +117,7 @@ import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { pickDatePickerCalendarConfig } from '../../model/BaseDatePickerCalendar.types'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
-import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../model/DatePickerPanel.types'
+import type { DatePickerPanelEmits, DatePickerPanelExpose, DatePickerPanelProps } from '../../model/DatePickerPanel.types'
 
 const props = defineProps<DatePickerPanelProps>()
 const { resolveBooleanPropDefault } = useExplicitPropDetection()
@@ -202,5 +202,5 @@ function handleRangeSelect(start: Date, end: Date): void {
 }
 
 /** Открыть panelRef для родителя */
-defineExpose({ panelRef })
+defineExpose<DatePickerPanelExpose>({ panelRef })
 </script>

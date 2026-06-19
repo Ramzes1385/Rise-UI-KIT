@@ -122,38 +122,3 @@ describe('useIcon', () => {
 		document.body.removeChild(svgRight)
 	})
 })
-
-import { createApp } from 'vue'
-import { createIconPlugin } from './iconPlugin'
-
-describe('createIconPlugin', () => {
-	it('должен создавать плагин с методом install', () => {
-		const plugin = createIconPlugin()
-		expect(plugin).toHaveProperty('install')
-		expect(plugin.install).toBeTypeOf('function')
-	})
-
-	it('должен регистрировать компонент с именем по умолчанию', () => {
-		const app = createApp({})
-		const plugin = createIconPlugin()
-		app.use(plugin)
-
-		expect(app.component('BaseIcon')).toBeDefined()
-	})
-
-	it('должен регистрировать компонент с именем по умолчанию при пустых опциях', () => {
-		const app = createApp({})
-		const plugin = createIconPlugin({})
-		app.use(plugin)
-
-		expect(app.component('BaseIcon')).toBeDefined()
-	})
-
-	it('должен регистрировать компонент с кастомным именем', () => {
-		const app = createApp({})
-		const plugin = createIconPlugin({ componentName: 'MyIcon' })
-		app.use(plugin)
-
-		expect(app.component('MyIcon')).toBeDefined()
-	})
-})

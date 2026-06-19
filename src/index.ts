@@ -1,6 +1,7 @@
 export * from './components'
 export * as composables from './composables'
 export * as icons from './icons'
+export * as plugins from './plugins'
 export { createUiKitPlugin, default, UI_COMPONENTS, uiKitPlugin } from './plugin'
 export type { UiKitPluginOptions } from './plugin'
 export * as utils from './utils'

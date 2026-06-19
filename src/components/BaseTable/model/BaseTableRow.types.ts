@@ -38,3 +38,9 @@ export interface BaseTableRowEmits {
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
 }
+
+/** Слоты компонента BaseTableRow */
+export interface BaseTableRowSlots {
+	/** Кастомный рендер ячейки по ключу колонки (`cell-<columnKey>`) */
+	[name: `cell-${string}`]: (props: { row: TableRow; value: unknown; column: TableColumn; index: number }) => unknown
+}

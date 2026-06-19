@@ -66,3 +66,11 @@ export interface BaseDropdownSlots {
 	/** Содержимое выпадающей панели */
 	dropdown?: () => unknown
 }
+
+/**
+ * Публичный API компонента BaseDropdown
+ */
+export interface BaseDropdownExpose {
+	/** Обновить позицию панели вручную */
+	updatePosition: () => void
+}

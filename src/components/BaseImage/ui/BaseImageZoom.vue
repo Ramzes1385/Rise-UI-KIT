@@ -126,12 +126,12 @@ import { nextTick, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import type { BaseImageZoomProps } from '../model/BaseImageZoom.types'
+import type { BaseImageZoomExpose, BaseImageZoomProps } from '../model/BaseImageZoom.types'
 
 defineProps<BaseImageZoomProps>()
 
 const zoomImgRef = ref<HTMLElement | null>(null)
 const minimapImgRef = ref<HTMLElement | null>(null)
 
-defineExpose({ zoomImgRef, minimapImgRef })
+defineExpose<BaseImageZoomExpose>({ zoomImgRef, minimapImgRef })
 </script>

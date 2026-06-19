@@ -31,9 +31,9 @@
 import { ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_SIZE } from '@constants'
 import '../styles/BaseButton.style.scss'
-import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
+import type { BaseButtonEmits, BaseButtonExpose, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
 
 
 const props = withDefaults(defineProps<BaseButtonProps>(), {
@@ -51,18 +51,14 @@ defineSlots<BaseButtonSlots>()
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-button', props, ['root'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad', defaultPadding: 10 })
+const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad', defaultPadding: UI_SIZE.PADDING.MD })
 
 function handleClick(e: MouseEvent): void {
 	if (props.isDisabled || props.isLoading) return
 	emit('click', e)
 }
 
-defineExpose<{
-	buttonRef: HTMLButtonElement | null
-	focus: () => void
-	blur: () => void
-}>({
+defineExpose<BaseButtonExpose>({
 	buttonRef,
 	focus: () => buttonRef.value?.focus(),
 	blur: () => buttonRef.value?.blur(),

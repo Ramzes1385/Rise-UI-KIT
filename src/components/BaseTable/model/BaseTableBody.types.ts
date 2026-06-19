@@ -50,3 +50,13 @@ export interface BaseTableBodyEmits {
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
 }
+
+/** Слоты компонента BaseTableBody */
+export interface BaseTableBodySlots {
+	/** Контент при пустой таблице */
+	empty?: () => unknown
+	/** Контент раскрытой строки */
+	'expanded-content'?: (props: { row: TableRow }) => unknown
+	/** Кастомный рендер ячейки по ключу колонки (`cell-<columnKey>`) */
+	[name: `cell-${string}`]: (props: { row: TableRow; value: unknown; column: TableColumn; index?: number }) => unknown
+}

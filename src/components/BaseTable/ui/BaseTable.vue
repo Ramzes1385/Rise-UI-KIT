@@ -192,7 +192,7 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { usePadding } from '@composables/usePadding'
 import { useTableComposition } from '@composables/useTableComposition'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT, TABLE } from '@constants'
+import { UI_TEXT, UI_SIZE, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT, TABLE } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTableBody from './BaseTableBody.vue'
@@ -221,7 +221,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 	'th', 'tbody', 'td', 'loadMore', 'footerBar', 'pageSize', 'paginationInfo', 'footer',
 ])
 
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: 10 })
+const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: UI_SIZE.PADDING.MD })
 
 const expand = useExpandTransition({ duration: TABLE.EXPAND_TRANSITION_DURATION })
 

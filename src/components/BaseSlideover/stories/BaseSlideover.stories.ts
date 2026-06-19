@@ -6,6 +6,7 @@
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
+import { UI_TEXT } from '@constants'
 import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -205,7 +206,7 @@ export const WithSlots: Story = {
 
 					<template #footer>
 						<div style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px; border-top: 1px solid var(--color-border);">
-							<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
+							<BaseButton variant="outline" @click="isOpen = false">${UI_TEXT.CANCEL}</BaseButton>
 							<BaseButton @click="isOpen = false">Сохранить</BaseButton>
 						</div>
 					</template>

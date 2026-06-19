@@ -43,3 +43,11 @@ export interface ChatMessageListEmits {
 export interface ChatMessageListSlots {
 	default?: () => unknown
 }
+
+/**
+ * Публичный API компонента ChatMessageList
+ */
+export interface ChatMessageListExpose {
+	/** Прокрутить к сообщению по id */
+	scrollToMessage: (messageId: string) => void
+}
