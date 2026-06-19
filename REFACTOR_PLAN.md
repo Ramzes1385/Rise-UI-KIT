@@ -3,6 +3,10 @@
 > Цель: привести **все слои** (`src/components/**`, `src/composables/**`, `src/constants/**`, `src/utils/**`) к единому стилю, ничего не сломав, и актуализировать stories.
 >
 > Принципы Мартина: DRY (единый контракт `BaseComponentProps`, единый источник констант), SRP (логика в composables, чистые функции в utils, константы отдельно), LSP/ISP (единый публичный API), OCP (один паттерн папки = один канон), «правило бойскаута», осмысленные имена, маленькие функции, один уровень абстракции.
+>
+> **Жёсткие требования (критерии приёмки):**
+> 1. **Все тесты проходят успешно** — `npm run lint`, `npm run test:unit`, `npm run test:storybook`, `npm run build:lib` (включая `vue-tsc` генерацию `.d.ts`) — без единой ошибки/падения. Любой шаг, после которого тесты красные, считается незавершённым и не принимается.
+> 2. **`customClass` у всех компонентов и его отображение в Storybook** — каждый компонент (через `BaseComponentProps`) обязан поддерживать `customClass`, а его stories — содержать `customClass` в `buildArgTypes` (control `object`) и отдельную story-демонстрацию, покрывающую все `elementKeys` `useCustomClass` (по образцу `BaseTabs`/`BaseSelect`). См. раздел 1.6.
 
 ---
 
@@ -56,6 +60,22 @@ Form-field компоненты экспонируют разные наборы
 
 **Действие:** убрать реэкспорт utils из `BaseIcon/index.ts`; проверить потребителей `calcIconScale`/`ICON_SCALE` — они должны импортировать из `@utils/iconUtils` (или `@utils`) напрямую. Низкий риск.
 
+### 1.6. `customClass` — единая поддержка и отражение в Storybook (LSP/ISP)
+`customClass` уже входит в `BaseComponentProps` (`src/types/base.types.ts:9`), поэтому **тип** есть у всех компонентов через `extends BaseComponentProps`. Однако в stories отражено **непоследовательно**: из 51 компонента `customClass` в `buildArgTypes`/отдельной story присутствует лишь у части (`BaseTabs`, `BaseSelect`, `BaseBreadcrumbs`, `BaseModal`, `BasePin`, `BaseRange`, `BaseFileUpload`, `BaseSlideover`, `BaseMegaMenu` и др.); у остальных он либо отсутствует в argTypes, либо нет демонстрационной story.
+
+Эталон реализации — `BaseTabs`/`BaseSelect`: `customClass` в `buildArgTypes({ props: { customClass: { control: 'object' } } })` + отдельная story «customClass — покрытие всех elementKeys», где `customClass` передаётся объектом со всеми ключами `elementKeys` из `useCustomClass` соответствующего компонента.
+
+**Действие (для каждого компонента, где `customClass` не отражён):**
+1. Убедиться, что `useCustomClass` в SFC вызывается с полным набором `elementKeys` (корневой + именованные элементы). При отсутствии `elementKeys` — добавить (иначе `customClass` как объект не применится к элементам).
+2. В `stories/<Cmp>.stories.ts`:
+   - добавить `customClass: { control: 'object', description: 'Кастомные классы для элементов.' }` в `buildArgTypes({ props })`;
+   - добавить отдельную story `CustomClass`, в `args.customClass` передать объект со всеми `elementKeys` (значения — осмысленные demo-классы, видимые визуально, например фон/обводка).
+3. Для sub-компонентов (`BaseRadio`, `BaseRange`-thumb, `BaseSideBarNavigation` и т.д.), где `customClass` наследуется или проксируется от родителя — задокументировать в JSDoc пропса, как класс пробрасывается, и покрыть демонстрацией в stories родителя.
+
+**Проверка:** в Storybook у каждого компонента должен быть виден контрол `customClass` (object) и preview, где изменение объекта классов визуально применяется к корню и элементам. Добавить/обновить visual-snapshot-тесты (`npm run test:visual`) для новых `CustomClass` stories.
+
+> ⚠️ Не дублировать `customClass` в `model/*.types.ts` — он уже в `BaseComponentProps`; переопределение вручную (как в `FormFieldLabel.types.ts`/`FormFieldError.types.ts` через `string | Record<...>`) — исключение для суб-компонентов без `extends BaseComponentProps`; задокументировать либо унифицировать на `CustomClassProp`.
+
 ---
 
 ## 2. Stories — остаточное
@@ -102,7 +122,7 @@ Form-field компоненты экспонируют разные наборы
 
 ## 5. Порядок выполнения (безопасные инкременты)
 
-Каждый шаг = отдельный коммит. После каждого: `npm run lint` + `npm run test:unit`; для затронутых компонентов — `npm run test:storybook` (и `npm run test:visual` для UI-изменений).
+Каждый шаг = отдельный коммит. После каждого: `npm run lint` + `npm run test:unit`; для затронутых компонентов — `npm run test:storybook` (и `npm run test:visual` для UI-изменений). **Коммит принимается только если все затронутые тесты зелёные.**
 
 1. **`BaseIcon/index.ts`** (п. 1.5): убрать реэкспорт utils, мигрировать потребителей. — низкий риск.
 2. **Composables `*.types.ts`** (п. 3.2): `useChatReply`, `useExplicitPropDetection`, `useIcon`, `useScrollLock`. — низкий риск, чисто типы.
@@ -114,6 +134,7 @@ Form-field компоненты экспонируют разные наборы
 8. **`defineExpose` контракт form-field** (п. 1.4): ввести `FormFieldExpose`, унифицировать. — средний риск.
 9. **`BaseCalendar`/`BaseDatePicker` defaults** (п. 1.3): верифицировать паттерн, задокументировать либо частично мигрировать. — низкий/средний.
 10. **Sub-stories `DatePicker*`** (п. 2.1): `buildArgTypes` или документирование исключения. — низкий.
+11. **`customClass` во всех stories** (п. 1.6): по компонентам добавить `customClass` в `buildArgTypes` + демонстрационную story `CustomClass` (покрытие всех `elementKeys`); обновить visual-snapshot-тесты. — средний риск (визуальные изменения).
 
 > Порядок по рискам: сначала типы/JSDoc/реэкспорты (низкий), затем поведенческие/структурные (средний).
 
@@ -121,16 +142,25 @@ Form-field компоненты экспонируют разные наборы
 
 ## 6. Критерий готовности (остаточный)
 
+**Тесты (обязательно все зелёные):**
 - `npm run lint` — без ошибок.
-- `npm run test:unit` — зелёный.
-- `npm run test:storybook` — зелёный для затронутых.
-- `npm run build:lib` — собирается, типы генерируются.
+- `npm run test:unit` — зелёный (все unit/integration тесты проходят).
+- `npm run test:storybook` — зелёный (все stories-тесты, включая play-функции и coverage).
+- `npm run test:visual` — зелёный (visual-snapshots актуальны, при изменении UI — обновить через `npm run test:visual:update`).
+- `npm run build:lib` — собирается, типы генерируются (`vue-tsc` без ошибок, `.d.ts` формируются).
+
+**Структурные критерии:**
 - `BaseChat` — все sub-компоненты (включая `ChatMessageList`) в `ui/`.
 - `BaseIcon/index.ts` — не реэкспортирует utils.
 - `BaseEditor` — нет `inputCallbackRef`.
 - Все composables имеют `*.types.ts` и JSDoc на главной функции; нет `useTableSortFilter` shim (или он задокументирован как переходный).
 - Все utils-модули имеют `*.types.ts` и файловый JSDoc.
 - Form-field семейство — единый `defineExpose` контракт.
+
+**`customClass` (обязательно):**
+- Каждый компонент поддерживает `customClass` через `BaseComponentProps` (нет ручных переопределений, кроме задокументированных sub-исключений).
+- В каждом `stories/<Cmp>.stories.ts`: `customClass` присутствует в `buildArgTypes({ props })` (control `object`) и есть отдельная story `CustomClass`, покрывающая все `elementKeys` `useCustomClass` данного компонента.
+- В Storybook контрол `customClass` виден и визуально применяется к корню/элементам.
 
 ---
 
@@ -139,4 +169,6 @@ Form-field компоненты экспонируют разные наборы
 - **Перенос `ChatMessageList`** (п. 1.1) и **удаление `useTableSortFilter` shim** (п. 3.1) — меняют пути/публичный API. Перед изменением сверить `src/index.ts`, `package.json` exports, алиасы в `tsconfig.app.json`, `build/lib/tsconfig.lib.json`, `build/config/alias.ts`, `build/storybook/main.ts`, `build/tests/vitest.config.ts` (5 мест дублирования alias — синхронизировать при необходимости).
 - **`BaseEditor` input-логика** (п. 1.2) — высокочувствительна к порядку инициализации; обязательно прогнать coverage-тесты редактора.
 - **`defineExpose` унификация** (п. 1.4) — добавление `focus`/`blur` требует реальных ref'ов; не вводить «заглушки».
+- **`customClass` в stories** (п. 1.6) — новые демонстрационные stories меняют визуальный output; обязательно обновлять visual-snapshots (`npm run test:visual:update`), иначе `test:visual` упадёт. Следить, чтобы `elementKeys` в `useCustomClass` соответствовали реально существующим элементам шаблона.
+- **Полный прогон тестов перед merge** — ни один шаг не считается завершённым, если красный хотя бы один из `lint`/`test:unit`/`test:storybook`/`build:lib`. Особенно следить за `test:storybook` (play-функции чувствительны к структуре DOM после правок шаблонов) и `build:lib` (`vue-tsc` ловит несоответствия типов, невидимые для ESLint).
 - Все «аудит»-пункты (JSDoc, types) — механические, но объёмные; выполнять группами по коммиту на кластер (chat / table / calendar / utils).
