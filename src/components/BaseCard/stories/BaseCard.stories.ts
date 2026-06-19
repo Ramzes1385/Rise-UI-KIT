@@ -37,6 +37,7 @@ const meta: Meta<typeof BaseCard> = {
 				description: 'Масштаб размера (50–200%)',
 			},
 			scroll: { control: 'boolean' },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -352,5 +353,22 @@ export const SubtitleOnly: Story = {
 		expect(title).not.toBeInTheDocument()
 		const header = canvasElement.querySelector('.base-card__header')
 		expect(header).toBeInTheDocument()
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'crd-root',
+			header: 'crd-header',
+			title: 'crd-title',
+			subtitle: 'crd-subtitle',
+			actions: 'crd-actions',
+			body: 'crd-body',
+			footer: 'crd-footer',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.crd-root')).toBeTruthy()
 	},
 }

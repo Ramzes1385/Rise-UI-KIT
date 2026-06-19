@@ -3,6 +3,8 @@
  * Группированы в объект UI_CHAT для удобного доступа.
  */
 
+import { UI_TEXT } from './ui'
+
 /** Масштабные коэффициенты чата */
 export const UI_CHAT_SCALE = {
 	ICON: 0.75,
@@ -24,7 +26,7 @@ export const UI_CHAT_TEXT = {
 	COPY: 'Копировать текст',
 	PIN: 'Закрепить',
 	UNPIN: 'Открепить',
-	DELETE: 'Удалить',
+	DELETE: UI_TEXT.DELETE,
 	MESSAGE_PLACEHOLDER: 'Сообщение',
 	SEND_ARIA: 'Отправить сообщение',
 	ATTACH_ARIA: 'Прикрепить файл',
@@ -49,7 +51,7 @@ export const UI_CHAT_TEXT = {
 	FILE: 'Файл',
 	SELECTED_PREFIX: 'Выбрано:',
 	FORWARD: 'Переслать',
-	CANCEL: 'Отмена',
+	CANCEL: UI_TEXT.CANCEL,
 	WRITE_MESSAGE: 'Написать сообщение',
 	ROLE: 'Роль',
 	WARNINGS: 'Предупреждения',

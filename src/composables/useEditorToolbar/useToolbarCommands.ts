@@ -1,26 +1,10 @@
+/** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
 import { nextTick } from 'vue'
 import {
 	FORMAT_CONFIG,
 	isInsideList,
 } from '@utils/editorDomUtils'
-import type { EditorActiveStates } from './useEditorToolbar.types'
-import type { Ref } from 'vue'
-
-interface UseToolbarCommandsOptions {
-	editorRef: Ref<HTMLDivElement | null>
-	onInput: () => void
-	activeStates: EditorActiveStates
-	updateActiveStates: () => void
-	saveSelection: () => void
-	restoreSelection: () => boolean
-	ensureSelection: () => void
-	isCodeMode: Ref<boolean>
-	codeContent: Ref<string>
-	wrapCodeSelection: (open: string, close: string) => void
-	insertCodeAtCursor: (html: string) => void
-	getCodeTextarea: () => HTMLTextAreaElement | null
-	promptForUrl?: () => string | null
-}
+import type { UseToolbarCommandsOptions } from './useToolbarCommands.types'
 
 /**
  * Composable для выполнения команд редактора: форматирование, блоки, цвет, медиа.
@@ -322,4 +306,3 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 }
 
 export { useToolbarCommands }
-export type { UseToolbarCommandsOptions }

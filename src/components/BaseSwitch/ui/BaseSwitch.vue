@@ -62,7 +62,7 @@ import { ref, useId } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseSwitch.style.scss'
@@ -96,7 +96,7 @@ function handleChange(e: Event): void {
 	emit('change', target.checked)
 }
 
-defineExpose({
+defineExpose<FormFieldExpose>({
 	rootRef,
 	focus: () => rootRef.value?.querySelector('input')?.focus(),
 	blur: () => rootRef.value?.querySelector('input')?.blur(),

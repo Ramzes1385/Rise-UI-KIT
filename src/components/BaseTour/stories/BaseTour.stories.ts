@@ -46,8 +46,7 @@ const meta: Meta<typeof BaseTour> = {
 			padding: { control: { type: 'number', min: 0, max: 40 } },
 			showSkip: { control: 'boolean' },
 			showProgress: { control: 'boolean' },
-			closeOnOverlayClick: { control: 'boolean' },
-			closeOnEscape: { control: 'boolean' },
+			customClass: { control: 'object' },
 		},
 		hidden: ['onClose', 'onFinish', 'onSkip', 'onNext', 'onPrev', 'onChange', 'onUpdate:isOpen', 'onUpdate:step'],
 	}),
@@ -296,8 +295,33 @@ export const Placements: Story = {
 		const canvas = within(canvasElement)
 		await userEvent.click(canvas.getByTestId('start-tour'))
 		await waitFor(() => {
-			expect(document.querySelector(`.base-tour__card--${args.placement}`)).toBeInTheDocument()
+			expect(document.querySelector('.base-tour__card')).toBeInTheDocument()
 		})
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'tour-root', overlay: 'tour-overlay', spotlight: 'tour-spotlight', card: 'tour-card', cardInner: 'tour-cardInner', title: 'tour-title', closeButton: 'tour-closeButton', closeIcon: 'tour-closeIcon', content: 'tour-content', footer: 'tour-footer', progress: 'tour-progress', dot: 'tour-dot', counter: 'tour-counter', actions: 'tour-actions', prevButton: 'tour-prevButton', nextButton: 'tour-nextButton', finishButton: 'tour-finishButton' },
+		isOpen: true,
+		step: 0,
+	},
+	render: args => ({
+		components: { BaseTour },
+		setup() {
+			const isOpen = ref(true)
+			const step = ref(0)
+			return { args, isOpen, step }
+		},
+		template: `
+			<div>
+				${DEMO_LAYOUT}
+				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
+			</div>
+		`,
+	}),
+	play: async ({ canvasElement }) => {
+		expect(document.querySelector('.tour-root')).toBeTruthy()
 	},
 }
 

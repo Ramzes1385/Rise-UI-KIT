@@ -1,3 +1,4 @@
+/** Composable: управление видимостью пароля в инпуте */
 import { computed, ref } from 'vue'
 import type { UsePasswordVisibilityOptions } from './usePasswordVisibility.types'
 

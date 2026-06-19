@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для BasePin.
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
 import { expect, fireEvent, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { PIN_VARIANTS } from '../model/BasePin.types'
 import BasePin from '../ui/BasePin.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'

@@ -41,6 +41,7 @@ const meta: Meta<typeof BaseEmpty> = {
 				control: 'object',
 				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -177,5 +178,13 @@ export const DefaultIcon: Story = {
 		expect(canvas.getByText('Без иконки')).toBeInTheDocument()
 		const iconWrapper = canvasElement.querySelector('.base-empty__icon-wrapper')
 		expect(iconWrapper).toBeInTheDocument()
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'emp-root', iconWrapper: 'emp-iconWrapper', icon: 'emp-icon', content: 'emp-content', title: 'emp-title', description: 'emp-description', body: 'emp-body', actions: 'emp-actions' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.emp-root')).toBeTruthy()
 	},
 }

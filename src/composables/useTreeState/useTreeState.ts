@@ -1,7 +1,9 @@
+/** Composable: состояние дерева (expand/collapse, выбор, кэш потомков) */
 import { computed, ref, watch } from 'vue'
 import { buildDescendantsCache, collectExpandableIds } from '@utils/treeUtils'
 import type { UseTreeStateOptions, UseTreeStateResult } from './useTreeState.types'
 
+/** Composable для состояния дерева — expand/collapse, выбор (single/multi/checkbox), кэш потомков. */
 function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 	const {
 		items,

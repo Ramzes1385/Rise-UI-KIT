@@ -178,6 +178,18 @@ export const DarkTheme: Story = {
 		sizeScale: 140,
 	},
 }
+/** customClass — покрывает elementKeys */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'ico-root',
+			svg: 'ico-svg',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.ico-root')).toBeTruthy()
+	},
+}
 /** С ariaLabel — покрывает ложную ветку `isDecorative` (role='img', aria-hidden=undefined) */
 export const WithAriaLabel: Story = {
 	args: {

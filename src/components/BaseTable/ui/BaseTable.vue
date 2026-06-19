@@ -19,7 +19,7 @@
 				:columns="columns"
 				:is-settings-open="isSettingsOpen"
 				:size-scale="sizeScale"
-				:settings-max-height="TABLE_SETTINGS_MAX_HEIGHT"
+				:settings-max-height="TABLE.SETTINGS_MAX_HEIGHT"
 				:toolbar-class="classes.toolbar"
 				:search-class="classes.search"
 				:filters-class="classes.filters"
@@ -54,9 +54,9 @@
 			@scroll="handleScroll">
 				<table class="base-table__table" :class="[classes.table, { 'base-table__table--fixed': useFixedLayout }]">
 					<colgroup>
-					<col v-if="isSelectable" :style="{ width: TABLE_ROW_SELECTION_WIDTH }" />
-					<col v-if="hasRowNumber" :style="{ width: TABLE_ROW_NUMBER_WIDTH }" />
-					<col v-if="hasExpandableRows" :style="{ width: TABLE_ROW_EXPAND_WIDTH }" />
+					<col v-if="isSelectable" :style="{ width: TABLE.ROW_SELECTION_WIDTH }" />
+					<col v-if="hasRowNumber" :style="{ width: TABLE.ROW_NUMBER_WIDTH }" />
+					<col v-if="hasExpandableRows" :style="{ width: TABLE.ROW_EXPAND_WIDTH }" />
 						<col v-for="(column, i) in visibleColumns" :key="column.key" :style="{ width: columnWidths[i] }" />
 					</colgroup>
 					<BaseTableHeader
@@ -166,7 +166,7 @@
 						v-model="currentPage"
 						:total="processedRows.length"
 						:page-size="localPageSize"
-						:max-visible="TABLE_PAGINATION_MAX_VISIBLE"
+						:max-visible="TABLE.PAGINATION_MAX_VISIBLE"
 						variant="ghost"
 						:size-scale="sizeScale - 20" />
 				</slot>
@@ -182,10 +182,9 @@
 <script setup lang="ts">
 import { computed, provide, useSlots } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { calcIconScale } from '@components/BaseIcon'
+import { BaseLoader } from '@components/BaseLoader'
 import '../styles/BaseTable.style.scss'
 
-import { BaseLoader } from '@components/BaseLoader'
 import { BasePagination } from '@components/BasePagination'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
@@ -193,17 +192,8 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { usePadding } from '@composables/usePadding'
 import { useTableComposition } from '@composables/useTableComposition'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import {
-	TABLE_EXPAND_TRANSITION_DURATION,
-	TABLE_INFINITE_SCROLL_THRESHOLD,
-	TABLE_PAGINATION_MAX_VISIBLE,
-	TABLE_ROW_EXPAND_WIDTH,
-	TABLE_ROW_NUMBER_WIDTH,
-	TABLE_ROW_SELECTION_WIDTH,
-	TABLE_SEARCH_DEBOUNCE_MS,
-	TABLE_SETTINGS_MAX_HEIGHT,
-} from '@constants/table'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT, TABLE } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
@@ -215,18 +205,10 @@ const props = withDefaults(defineProps<BaseTableProps>(), {
 	isLoading: false,
 	emptyText: UI_TEXT.EMPTY,
 	height: '',
-	isSelectable: false,
-	hasSearch: false,
-	hasFilters: false,
 	pageSize: 0,
 	pageSizeOptions: () => [],
 	loadMode: 'pagination',
-	searchDebounce: TABLE_SEARCH_DEBOUNCE_MS,
-	isMultiSort: false,
-	hasColumnSettings: false,
-	hasRowNumber: false,
-	hasPageSizeSelector: false,
-	isResizable: false,
+	searchDebounce: TABLE.SEARCH_DEBOUNCE_MS,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	padding: 10,
 })
@@ -241,7 +223,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: 10 })
 
-const expand = useExpandTransition({ duration: TABLE_EXPAND_TRANSITION_DURATION })
+const expand = useExpandTransition({ duration: TABLE.EXPAND_TRANSITION_DURATION })
 
 provide(TABLE_EXPAND_TRANSITION_KEY, {
 	onExpandBeforeEnter: expand.onBeforeEnter,
@@ -254,6 +236,15 @@ provide(TABLE_EXPAND_TRANSITION_KEY, {
 
 const emit = defineEmits<BaseTableEmits>()
 defineSlots<BaseTableSlots>()
+
+const isSelectable = computed(() => props.behavior?.selectable ?? false)
+const hasSearch = computed(() => props.features?.search ?? false)
+const hasFilters = computed(() => props.features?.filters ?? false)
+const isMultiSort = computed(() => props.behavior?.multiSort ?? false)
+const hasColumnSettings = computed(() => props.features?.columnSettings ?? false)
+const hasRowNumber = computed(() => props.features?.rowNumber ?? false)
+const hasPageSizeSelector = computed(() => props.features?.pageSizeSelector ?? false)
+const isResizable = computed(() => props.behavior?.resizable ?? false)
 
 const {
 	searchQuery,
@@ -310,17 +301,17 @@ const {
 	columns: computed(() => props.columns),
 	loadMode: computed(() => props.loadMode),
 	pageSize: computed(() => props.pageSize),
-	isMultiSort: computed(() => props.isMultiSort),
+	isMultiSort,
 	searchDebounce: computed(() => props.searchDebounce),
-	isResizable: computed(() => props.isResizable),
-	hasRowNumber: computed(() => props.hasRowNumber),
-	isSelectable: computed(() => props.isSelectable),
-	hasSearch: computed(() => props.hasSearch),
-	hasFilters: computed(() => props.hasFilters),
-	hasColumnSettings: computed(() => props.hasColumnSettings),
+	isResizable,
+	hasRowNumber,
+	isSelectable,
+	hasSearch,
+	hasFilters,
+	hasColumnSettings,
 	isLoading: computed(() => props.isLoading),
 	pageSizeOptions: computed(() => props.pageSizeOptions),
-	infiniteScrollThreshold: TABLE_INFINITE_SCROLL_THRESHOLD,
+	infiniteScrollThreshold: TABLE.INFINITE_SCROLL_THRESHOLD,
 	emit,
 	slots,
 })

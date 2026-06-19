@@ -50,7 +50,7 @@ defineSlots<BaseButtonSlots>()
 
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-button', props)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-button', props, ['root'])
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad', defaultPadding: 10 })
 
 function handleClick(e: MouseEvent): void {
@@ -58,7 +58,11 @@ function handleClick(e: MouseEvent): void {
 	emit('click', e)
 }
 
-defineExpose({
+defineExpose<{
+	buttonRef: HTMLButtonElement | null
+	focus: () => void
+	blur: () => void
+}>({
 	buttonRef,
 	focus: () => buttonRef.value?.focus(),
 	blur: () => buttonRef.value?.blur(),

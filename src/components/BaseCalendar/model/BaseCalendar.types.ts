@@ -137,34 +137,6 @@ export interface BaseCalendarProps extends BaseComponentProps<CalendarVariant> {
 	initialMonth?: number
 	/** Начальный год. Если не задан — текущий */
 	initialYear?: number
-	/** @deprecated Используйте timeConfig.showTime */
-	showTime?: boolean
-	/** @deprecated Используйте timeConfig.showSeconds */
-	showSeconds?: boolean
-	/** @deprecated Используйте timeConfig.is24Hour */
-	is24Hour?: boolean
-	/** @deprecated Используйте constraints.minDate */
-	minDate?: Date | null
-	/** @deprecated Используйте constraints.maxDate */
-	maxDate?: Date | null
-	/** @deprecated Используйте constraints.disabledDates */
-	disabledDates?: Date[]
-	/** @deprecated Используйте constraints.disabledWeekdays */
-	disabledWeekdays?: CalendarWeekday[]
-	/** @deprecated Используйте constraints.disableFrom */
-	disableFrom?: Date | null
-	/** @deprecated Используйте constraints.disableTo */
-	disableTo?: Date | null
-	/** @deprecated Используйте displayConfig.showNavigation */
-	showNavigation?: boolean
-	/** @deprecated Используйте displayConfig.canSwitchView */
-	canSwitchView?: boolean
-	/** @deprecated Используйте displayConfig.showTodayButton */
-	showTodayButton?: boolean
-	/** @deprecated Используйте displayConfig.showYear */
-	showYear?: boolean
-	/** @deprecated Используйте displayConfig.showWeekNumber */
-	showWeekNumber?: boolean
 }
 
 /**

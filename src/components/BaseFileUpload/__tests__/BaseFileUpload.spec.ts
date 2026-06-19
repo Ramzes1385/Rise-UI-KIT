@@ -143,11 +143,11 @@ describe('BaseFileUpload unit', () => {
 			await waitFor(() => {
 				expect(wrapper.findComponent(BaseImage).exists()).toBe(true)
 			})
-			expect(wrapper.findComponent(BaseImage).props('hasZoom')).toBe(false)
+			expect(wrapper.findComponent(BaseImage).props('zoomConfig')).toEqual({ hasZoom: false })
 
 			await wrapper.setProps({ allowPreview: undefined })
 
-			expect(wrapper.findComponent(BaseImage).props('hasZoom')).toBe(true)
+			expect(wrapper.findComponent(BaseImage).props('zoomConfig')).toEqual({ hasZoom: true })
 		})
 	})
 

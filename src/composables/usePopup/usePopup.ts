@@ -1,3 +1,4 @@
+/** Composable: паттерн popup (оверлей, Escape, блокировка скролла) */
 import { onUnmounted, watch } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'

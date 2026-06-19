@@ -1,3 +1,4 @@
+/** Composable: базовая логика UI-компонента (размер, вариант, цвет, классы) */
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'

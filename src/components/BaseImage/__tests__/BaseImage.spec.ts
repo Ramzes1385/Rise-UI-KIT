@@ -161,9 +161,9 @@ describe('BaseImage unit', () => {
 	})
 
 	describe('пропс hasZoom', () => {
-		it('должен применять класс --zoomable когда hasZoom=true', () => {
+		it('должен применять класс --zoomable когда zoomConfig.hasZoom=true', () => {
 			const { container } = render(BaseImage, {
-				props: { src: 'test.jpg', alt: 'Тест', hasZoom: true },
+				props: { src: 'test.jpg', alt: 'Тест', zoomConfig: { hasZoom: true } },
 			})
 
 			expect(container.querySelector('.base-image')?.classList.contains('base-image--zoomable')).toBe(true)
@@ -342,7 +342,7 @@ describe('BaseImage unit', () => {
 	describe('emit zoom', () => {
 		it('должен эмитить zoom при изменении масштаба', async () => {
 			const { emitted, container } = render(BaseImage, {
-				props: { src: 'test.jpg', alt: 'Тест', hasZoom: true },
+				props: { src: 'test.jpg', alt: 'Тест', zoomConfig: { hasZoom: true } },
 			})
 
 			const img = container.querySelector('img')

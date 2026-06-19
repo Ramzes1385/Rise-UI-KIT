@@ -33,6 +33,7 @@ const meta: Meta<typeof BaseSeparator> = {
 			sizeScale: {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -247,5 +248,13 @@ export const Interactive: Story = {
 		const canvas = within(canvasElement)
 		const separator = canvas.getByRole('separator')
 		expect(separator).toBeInTheDocument()
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'sep-root', line: 'sep-line', content: 'sep-content' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.sep-root')).toBeTruthy()
 	},
 }

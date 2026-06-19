@@ -48,11 +48,11 @@
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTextarea.style.scss'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
-import type { BaseTextareaEmits, BaseTextareaProps } from '../model/BaseTextarea.types'
+import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../model/BaseTextarea.types'
 
 const props = withDefaults(defineProps<BaseTextareaProps>(), {
 	modelValue: '',
@@ -68,6 +68,8 @@ const props = withDefaults(defineProps<BaseTextareaProps>(), {
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-textarea', props, ['root', 'label', 'required', 'field', 'errorText'])
 
 const emit = defineEmits<BaseTextareaEmits>()
+
+defineSlots<BaseTextareaSlots>()
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -119,7 +121,7 @@ onMounted(() => {
 	}
 })
 
-defineExpose({
+defineExpose<FormFieldExpose & { textareaRef: HTMLTextAreaElement | null; adjustHeight: () => void }>({
 	rootRef: textareaRef,
 	textareaRef,
 	adjustHeight,

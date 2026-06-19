@@ -446,4 +446,66 @@ describe('BaseRating unit', () => {
 			expect(emitted()['update:modelValue']).toEqual([[3]])
 		})
 	})
+
+	describe('defineExpose (FormFieldExpose)', () => {
+		it('должен экспонировать rootRef指向 корневой элемент', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRating)
+
+			const exposed = wrapper.vm as unknown as { rootRef: HTMLElement | null }
+			expect(exposed.rootRef).toBeInstanceOf(HTMLElement)
+			expect(exposed.rootRef?.classList.contains('base-rating')).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен вызывать focus на корневом элементе через exposed.focus()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRating)
+			const root = wrapper.find('.base-rating').element
+			const focusSpy = vi.spyOn(root, 'focus')
+
+			const exposed = wrapper.vm as unknown as { focus: () => void }
+			exposed.focus()
+
+			expect(focusSpy).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен вызывать blur на корневом элементе через exposed.blur()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRating)
+			const root = wrapper.find('.base-rating').element
+			const blurSpy = vi.spyOn(root, 'blur')
+
+			const exposed = wrapper.vm as unknown as { blur: () => void }
+			exposed.blur()
+
+			expect(blurSpy).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен возвращать isValid при вызове exposed.validate()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRating, { props: { modelValue: 3 } })
+
+			const exposed = wrapper.vm as unknown as { validate: () => boolean }
+			const result = exposed.validate()
+
+			expect(typeof result).toBe('boolean')
+			expect(result).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен сбрасывать состояние при вызове exposed.reset()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRating, { props: { modelValue: 3 } })
+
+			const exposed = wrapper.vm as unknown as { reset: () => void; validate: () => boolean }
+			exposed.validate()
+			exposed.reset()
+
+			expect(() => exposed.reset()).not.toThrow()
+			wrapper.unmount()
+		})
+	})
 })

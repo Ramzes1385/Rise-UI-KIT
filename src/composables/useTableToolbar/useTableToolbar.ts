@@ -1,3 +1,4 @@
+/** Composable: тулбар таблицы — фильтры и настройки колонок */
 import { computed, ref } from 'vue'
 import type { UseTableToolbarOptions, UseTableToolbarReturn } from './useTableToolbar.types'
 
@@ -11,6 +12,7 @@ const FILTER_OPERATOR_OPTIONS = [
 	{ value: 'lte', label: '≤' },
 ]
 
+/** Composable для тулбара таблицы — фильтры, настройки колонок, видимость тулбара. */
 function useTableToolbar(options: UseTableToolbarOptions): UseTableToolbarReturn {
 	const { filterableColumns, hasSearch, hasFilters, hasColumnSettings, slots, addFilter, removeFilter } = options
 

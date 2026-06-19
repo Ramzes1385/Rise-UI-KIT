@@ -1,3 +1,4 @@
+/** Composable: Vue transition-хуки анимации expand/collapse */
 import { toHTMLElement } from '@utils/domUtils'
 import type { UseExpandTransitionOptions, UseExpandTransitionReturn } from './useExpandTransition.types'
 

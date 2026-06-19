@@ -141,10 +141,9 @@ const headingOptions: BaseSelectOption[] = [
 	{ value: 'h6', label: `${UI_EDITOR.HEADING_PREFIX} 6` },
 ]
 
-// Тонкая обёртка над обработчиком ввода: разрывает цикл
-// useEditorToolbar(onInput) ↔ handleInput(зависит от outputs тулбара).
-// handleInput назначается ниже, после деструктуризации тулбара.
-const inputCallbackRef = { fn: () => {} }
+// handleInput зависит от outputs обоих composables, поэтому определяется после них.
+// Ленивый вызов через замыкание разрывает цикл зависимости.
+let handleInput: () => void = () => {}
 
 const {
 	activeStates,
@@ -176,7 +175,7 @@ const {
 } = useEditorToolbar({
 	editorRef,
 	codeTextareaRef,
-	onInput: () => inputCallbackRef.fn(),
+	onInput: () => handleInput(),
 	promptForUrl: () => prompt(UI_EDITOR.URL_PROMPT),
 })
 
@@ -200,7 +199,7 @@ const {
 	resetBackgroundColor: resetBackgroundColorFn,
 })
 
-function handleInput(): void {
+handleInput = () => {
 	if (isCodeMode.value) {
 		emit('update:modelValue', codeContent.value)
 		return
@@ -212,7 +211,6 @@ function handleInput(): void {
 	updateActiveStates()
 	checkEmpty()
 }
-inputCallbackRef.fn = handleInput
 
 function handleFocus(): void {
 	isFocused.value = true

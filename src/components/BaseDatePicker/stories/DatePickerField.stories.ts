@@ -1,6 +1,8 @@
 /**
  * Stories для DatePickerField.
  * Используются для генерации покрытия в Storybook.
+ * Внутренний sub-компонент — buildArgTypes не используется,
+ * args задаются напрямую в meta.args (без контроля через args-таблицу).
  */
 
 import { expect, fn, userEvent } from 'storybook/test'

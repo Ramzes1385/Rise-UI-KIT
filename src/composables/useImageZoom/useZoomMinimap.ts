@@ -1,20 +1,8 @@
-import { computed, ref, type Ref } from 'vue'
+/** Composable: миникарта зума (отображение viewport, навигация кликом) */
+import { computed, ref } from 'vue'
 import { UI_SIZE } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
-
-interface UseZoomMinimapOptions {
-	currentScale: Ref<number>
-	translateX: Ref<number>
-	translateY: Ref<number>
-	rotation: Ref<number>
-	zoomContentW: Ref<number>
-	zoomContentH: Ref<number>
-	mmContentWidth: Ref<number>
-	mmContentHeight: Ref<number>
-	mmContentOffsetX: Ref<number>
-	mmContentOffsetY: Ref<number>
-	clampPosition: () => void
-}
+import type { UseZoomMinimapOptions } from './useZoomMinimap.types'
 
 /**
  * Composable для миникарты зума: отображение viewport и навигация кликом.
@@ -158,4 +146,3 @@ function useZoomMinimap(options: UseZoomMinimapOptions) {
 }
 
 export { useZoomMinimap }
-export type { UseZoomMinimapOptions }

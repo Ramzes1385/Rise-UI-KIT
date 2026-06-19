@@ -1,7 +1,9 @@
+/** Composable: панель информации чата */
 import { ref } from 'vue'
 import type { UseChatInfoPanelOptions } from './useChatInfoPanel.types'
 import type { ChatInfoTab } from '@components/BaseChat/model/BaseChat.types'
 
+/** Composable для панели информации чата — открытие/закрытие, вкладки, выбранного участника. */
 function useChatInfoPanel(options: UseChatInfoPanelOptions) {
 	const isInfoOpen = ref(false)
 	const activeTab = ref<ChatInfoTab>('info')

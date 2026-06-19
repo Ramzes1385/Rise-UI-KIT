@@ -100,12 +100,12 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { calcIconScale } from '@components/BaseIcon'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
+import { calcIconScale } from '@utils/iconUtils'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
 import type { BaseSearchOverlayEmits, BaseSearchOverlayProps } from '../model/BaseSearchOverlay.types'
@@ -156,5 +156,9 @@ function focus(): void {
 	inputRef.value?.focus()
 }
 
-defineExpose({ focus, open, close })
+defineExpose<{
+	focus: () => void
+	open: () => void
+	close: () => void
+}>({ focus, open, close })
 </script>

@@ -486,16 +486,23 @@ export const WithCustomClass: Story = {
 		showHome: true,
 		maxItems: 2,
 		customClass: {
-			root: 'bc-root',
-			list: 'bc-list',
-			item: 'bc-item',
-			ellipsisBtn: 'bc-ellipsis',
-			link: 'bc-link',
-			current: 'bc-current',
-			separator: 'bc-sep',
+			root: 'breadcrumbs-root',
+			list: 'breadcrumbs-list',
+			item: 'breadcrumbs-item',
+			ellipsisBtn: 'breadcrumbs-ellipsisBtn',
+			link: 'breadcrumbs-link',
+			current: 'breadcrumbs-current',
+			separator: 'breadcrumbs-separator',
+			separatorIcon: 'breadcrumbs-separatorIcon',
+			separatorText: 'breadcrumbs-separatorText',
+			homeIcon: 'breadcrumbs-homeIcon',
+			itemIcon: 'breadcrumbs-itemIcon',
+			itemText: 'breadcrumbs-itemText',
+			currentIcon: 'breadcrumbs-currentIcon',
+			currentText: 'breadcrumbs-currentText',
 		},
 	},
 	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.bc-root')).toBeTruthy()
+		expect(canvasElement.querySelector('.breadcrumbs-root')).toBeTruthy()
 	},
 }

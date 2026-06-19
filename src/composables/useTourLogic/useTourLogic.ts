@@ -1,3 +1,4 @@
+/** Composable: guided tour — навигация по шагам, геометрия подсветки, размещение тултипа */
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import type { UseTourLogicOptions, UseTourLogicReturn } from './useTourLogic.types'
 import type { TourGeometry, TourPlacement, TourStep } from '@components/BaseTour/model/BaseTour.types'
@@ -44,6 +45,7 @@ function computeCardPosition(
 	return { top: centerY, left: rect.right + gap }
 }
 
+/** Composable для guided tour — навигация по шагам, геометрия подсветки, размещение тултипа. */
 function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 	const { props, getIndex } = options
 
@@ -62,7 +64,7 @@ function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 			return
 		}
 
-		if ((props.behavior?.scrollIntoView ?? props.scrollIntoView) !== false) {
+		if (props.behavior?.scrollIntoView !== false) {
 			scrollTargetIntoView(step.target)
 			await nextTick()
 		}

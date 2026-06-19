@@ -142,12 +142,13 @@
 import { computed, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseColorPicker } from '@components/BaseColorPicker'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
 import {
 	UI_EDITOR,
 } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BaseEditorToolbarEmits, BaseEditorToolbarProps, BaseEditorToolbarSlots, EditorActiveStates } from '../model/BaseEditorToolbar.types'
 
 const props = defineProps<BaseEditorToolbarProps>()

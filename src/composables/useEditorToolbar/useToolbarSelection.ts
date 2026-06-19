@@ -1,3 +1,4 @@
+/** Composable: управление состоянием выделения в редакторе и определение активных форматов */
 import { reactive } from 'vue'
 import {
 	FORMAT_CONFIG,
@@ -7,11 +8,7 @@ import {
 	isInsideTags,
 } from '@utils/editorDomUtils'
 import type { EditorActiveStates } from './useEditorToolbar.types'
-import type { Ref } from 'vue'
-
-interface UseToolbarSelectionOptions {
-	editorRef: Ref<HTMLDivElement | null>
-}
+import type { UseToolbarSelectionOptions } from './useToolbarSelection.types'
 
 /**
  * Composable для управления состоянием выделения в редакторе и определения активных форматов.
@@ -101,4 +98,3 @@ function useToolbarSelection(options: UseToolbarSelectionOptions) {
 }
 
 export { useToolbarSelection }
-export type { UseToolbarSelectionOptions }

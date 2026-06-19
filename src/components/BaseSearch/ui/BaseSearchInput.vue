@@ -47,9 +47,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseLoader } from '@components/BaseLoader'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BaseSearchInputEmits, BaseSearchInputProps } from '../model/BaseSearchInput.types'
 
 defineProps<BaseSearchInputProps>()
@@ -82,7 +83,9 @@ function focus(): void {
 	inputRef.value?.focus()
 }
 
-defineExpose({
+defineExpose<{
+	focus: () => void
+}>({
 	focus,
 })
 </script>

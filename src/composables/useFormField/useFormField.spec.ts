@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { ref, nextTick } from 'vue'
+import { UI_TEXT } from '@constants'
 import { useFormField } from './useFormField'
 
 describe('useFormField', () => {
@@ -114,7 +115,7 @@ describe('useFormField', () => {
 				isRequired: () => true,
 			})
 			field.onBlur()
-			expect(field.error).toBe('Обязательное поле')
+			expect(field.error).toBe(UI_TEXT.REQUIRED_FIELD)
 		})
 
 		it('не показывает ошибку до touch', () => {

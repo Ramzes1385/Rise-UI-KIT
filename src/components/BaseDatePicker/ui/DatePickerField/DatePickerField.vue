@@ -58,10 +58,11 @@
 import './DatePickerField.style.scss'
 import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { calcIconScale } from '@utils/iconUtils'
 import type { DatePickerFieldEmits, DatePickerFieldProps, DatePickerFieldSlots } from '../../model/DatePickerField.types'
 
 const props = defineProps<DatePickerFieldProps>()

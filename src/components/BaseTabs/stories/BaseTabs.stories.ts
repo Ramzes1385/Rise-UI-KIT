@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseTabs.
  * Демонстрирует все варианты, состояния и интерактивные состояния.
  * Каждая story содержит play-функцию для 100% coverage.
@@ -6,8 +6,7 @@
 
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { TABS_VARIANTS } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
 import type { TabItem } from '../model/BaseTabs.types'

@@ -157,7 +157,7 @@ describe('BaseTour unit', () => {
 
 		it('использует кастомные подписи кнопок', async () => {
 			render(BaseTour, {
-				props: { isOpen: true, steps: STEPS, nextLabel: 'Вперёд', prevLabel: 'Обратно' },
+				props: { isOpen: true, steps: STEPS, labels: { next: 'Вперёд', prev: 'Обратно' } },
 			})
 			expect(await screen.findByText('Вперёд')).toBeInTheDocument()
 		})
@@ -214,9 +214,9 @@ describe('BaseTour unit', () => {
 			expect(emitted().skip).toBeTruthy()
 		})
 
-		it('не закрывается по клику на оверлей при closeOnOverlayClick=false', async () => {
+		it('не закрывается по клику на оверлей при behavior.closeOnOverlayClick=false', async () => {
 			const { emitted } = render(BaseTour, {
-				props: { isOpen: true, steps: STEPS, closeOnOverlayClick: false },
+				props: { isOpen: true, steps: STEPS, behavior: { closeOnOverlayClick: false } },
 			})
 			await screen.findByText('Шаг 1')
 			await fireEvent.click(document.querySelector('.base-tour__overlay')!)
@@ -282,9 +282,9 @@ describe('BaseTour unit', () => {
 			expect(document.querySelector('.base-tour__spotlight')).toBeInTheDocument()
 		})
 
-		it('не вызывает scrollIntoView при scrollIntoView=false', async () => {
+		it('не вызывает scrollIntoView при behavior.scrollIntoView=false', async () => {
 			render(BaseTour, {
-				props: { isOpen: true, steps: STEPS, scrollIntoView: false },
+				props: { isOpen: true, steps: STEPS, behavior: { scrollIntoView: false } },
 			})
 			expect(await screen.findByText('Шаг 1')).toBeInTheDocument()
 		})
@@ -321,8 +321,8 @@ describe('BaseTour unit', () => {
 			expect(document.querySelector('.base-tour')).not.toBeInTheDocument()
 		})
 
-		it('не блокирует прокрутку при lockScroll=false', async () => {
-			render(BaseTour, { props: { isOpen: true, steps: STEPS, lockScroll: false } })
+		it('не блокирует прокрутку при behavior.lockScroll=false', async () => {
+			render(BaseTour, { props: { isOpen: true, steps: STEPS, behavior: { lockScroll: false } } })
 			expect(await screen.findByText('Шаг 1')).toBeInTheDocument()
 		})
 
@@ -412,9 +412,9 @@ describe('BaseTour unit', () => {
 			expect(emitted().skip).toBeTruthy()
 		})
 
-		it('не закрывается по Escape при closeOnEscape=false', async () => {
+		it('не закрывается по Escape при behavior.closeOnEscape=false', async () => {
 			const { emitted } = render(BaseTour, {
-				props: { isOpen: true, steps: STEPS, closeOnEscape: false },
+				props: { isOpen: true, steps: STEPS, behavior: { closeOnEscape: false } },
 			})
 			await screen.findByText('Шаг 1')
 			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))

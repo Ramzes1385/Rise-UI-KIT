@@ -1,3 +1,4 @@
+/** Composable: логика выбора и фильтрации для BaseSelect */
 import { computed, ref } from 'vue'
 import type { UseSelectOptions } from './useSelect.types'
 import type { BaseSelectOption } from '@components/BaseSelect/model/BaseSelect.types'

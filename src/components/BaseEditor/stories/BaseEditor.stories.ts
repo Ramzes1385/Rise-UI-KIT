@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseEditor.
  * Демонстрирует все состояния и режимы.
  */
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { nextTick, ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
 import BaseEditor from '../ui/BaseEditor.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -30,6 +29,7 @@ const meta: Meta<typeof BaseEditor> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 		hidden: ['modelValue', 'onUpdate:modelValue', 'onFocus', 'onBlur'],
 	}),
@@ -684,6 +684,33 @@ export const ContextMenuMedia: Story = {
 		if (applyBtn instanceof HTMLElement) {
 			await userEvent.click(applyBtn)
 		}
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	render: args => ({
+		components: { BaseEditor },
+		setup() {
+			const content = ref('<p>Текст</p>')
+			return { args, content }
+		},
+		template: '<BaseEditor v-model="content" v-bind="args" />',
+	}),
+	args: {
+		customClass: {
+			root: 'ed-root',
+			toolbar: 'ed-toolbar',
+			btn: 'ed-btn',
+			group: 'ed-group',
+			colorPicker: 'ed-colorPicker',
+			headingSelect: 'ed-headingSelect',
+			fileInput: 'ed-fileInput',
+			content: 'ed-content',
+			code: 'ed-code',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.ed-root')).toBeTruthy()
 	},
 }
 /** Удаление медиа через контекстное меню — покрывает removeMedia */

@@ -50,6 +50,7 @@ const meta: Meta<typeof BaseAlert> = {
 				control: 'object',
 				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -290,5 +291,25 @@ export const LongContent: Story = {
 		expect(title?.textContent?.length).toBeGreaterThan(200)
 		const desc = canvasElement.querySelector('.base-alert__description')
 		expect(desc?.textContent?.length).toBeGreaterThan(300)
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'alr-root',
+			iconWrapper: 'alr-iconWrapper',
+			icon: 'alr-icon',
+			content: 'alr-content',
+			title: 'alr-title',
+			description: 'alr-description',
+			text: 'alr-text',
+			actions: 'alr-actions',
+			close: 'alr-close',
+			closeIcon: 'alr-closeIcon',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.alr-root')).toBeTruthy()
 	},
 }

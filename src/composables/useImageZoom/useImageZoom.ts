@@ -1,3 +1,4 @@
+/** Composable: зум изображений (панорамирование, вращение, масштабирование, миникарта) */
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { UI_SCALE, UI_SIZE } from '@constants'
 import { useZoomMinimap } from './useZoomMinimap'

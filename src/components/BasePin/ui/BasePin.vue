@@ -39,11 +39,11 @@
 import { computed, ref } from 'vue'
 import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BasePin.style.scss'
 import { toHTMLInputElement } from '@utils/domUtils'
-import type { BasePinEmits, BasePinProps } from '../model/BasePin.types'
+import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'
 
 const props = withDefaults(defineProps<BasePinProps>(), {
 	length: 4,
@@ -62,6 +62,8 @@ const hasError = computed(() => Boolean(formField.error))
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])
 
 const emit = defineEmits<BasePinEmits>()
+
+defineSlots<BasePinSlots>()
 
 const inputRefs = ref<HTMLInputElement[]>([])
 const rootRef = ref<HTMLElement | null>(null)
@@ -140,7 +142,7 @@ function handlePaste(e: ClipboardEvent): void {
 	}
 }
 
-defineExpose({
+defineExpose<FormFieldExpose>({
 	rootRef,
 	focus: () => rootRef.value?.querySelector('input')?.focus(),
 	blur: () => rootRef.value?.querySelector('input')?.blur(),

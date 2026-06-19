@@ -18,8 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BreadcrumbsSeparatorProps } from '../model/BreadcrumbsSeparator.types'
 
 defineProps<BreadcrumbsSeparatorProps>()

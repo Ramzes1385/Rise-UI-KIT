@@ -1,3 +1,4 @@
+/** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
 import { ref } from 'vue'
 import type { UseSideBarNavigationOptions } from './useSideBarNavigation.types'
 import type {

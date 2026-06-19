@@ -80,8 +80,9 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch } from 'vue'
 import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { calcIconScale } from '@utils/iconUtils'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeChildren from './BaseTreeChildren.vue'
 import type { TreeContext } from '../model/BaseTree.types'

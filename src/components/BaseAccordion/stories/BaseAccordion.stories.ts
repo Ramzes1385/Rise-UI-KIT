@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseAccordion.
  * Демонстрирует все вариации, режимы и интерактивные состояния.
  */
@@ -6,8 +6,7 @@
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseText } from '@components/BaseText'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { ACCORDION_VARIANTS } from '../model/BaseAccordion.types'
 import BaseAccordion from '../ui/BaseAccordion.vue'
 import type { BaseAccordionItem } from '../model/BaseAccordion.types'
@@ -84,6 +83,7 @@ const meta: Meta<typeof BaseAccordion> = {
 			items: {
 				table: { disable: true },
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -433,5 +433,25 @@ export const Empty: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		expect(canvasElement).toBeInTheDocument()
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'acc-root',
+			item: 'acc-item',
+			header: 'acc-header',
+			icon: 'acc-icon',
+			label: 'acc-label',
+			arrow: 'acc-arrow',
+			arrowIcon: 'acc-arrowIcon',
+			collapse: 'acc-collapse',
+			content: 'acc-content',
+			contentText: 'acc-contentText',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.acc-root')).toBeTruthy()
 	},
 }

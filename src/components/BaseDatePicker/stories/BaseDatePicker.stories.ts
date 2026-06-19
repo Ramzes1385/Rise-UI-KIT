@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseDatePicker.
  * Демонстрирует все вариации: single, range, multiple, time, disabled, clearable.
  * Включает анти-регрессионные истории.
@@ -6,8 +6,7 @@
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -105,6 +104,7 @@ const meta: Meta<typeof BaseDatePicker> = {
 				control: 'date',
 				description: 'Максимально допустимая дата для выбора. Пример: `:max-date="new Date(2025, 11, 31)"`',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 	args: {
@@ -1053,5 +1053,22 @@ export const MultiMonthOpen: Story = {
 export const Empty: Story = {
 	args: {
 		placeholder: 'Выберите дату',
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'dp-root', field: 'dp-field', panel: 'dp-panel' },
+	},
+	render: args => ({
+		components: { BaseDatePicker },
+		setup() {
+			const value = ref<Date | null>(null)
+			return { args, value }
+		},
+		template: '<BaseDatePicker v-bind="args" v-model="value" />',
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.dp-root')).toBeTruthy()
 	},
 }

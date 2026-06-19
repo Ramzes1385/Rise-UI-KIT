@@ -176,4 +176,63 @@ describe('BaseColorPicker — unit', () => {
 		await fireEvent.click(reset)
 		expect(emitted()).toHaveProperty('reset')
 	})
+
+	describe('defineExpose (FormFieldExpose)', () => {
+		it('должен экспонировать rootRef指向 swatch-кнопку', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+
+			const exposed = wrapper.vm as unknown as { rootRef: HTMLElement | null }
+			expect(exposed.rootRef).toBeInstanceOf(HTMLElement)
+			expect(exposed.rootRef?.classList.contains('base-color-picker__swatch')).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен вызывать focus на swatch через exposed.focus()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+			const swatch = wrapper.find('.base-color-picker__swatch').element
+			const focusSpy = vi.spyOn(swatch, 'focus')
+
+			const exposed = wrapper.vm as unknown as { focus: () => void }
+			exposed.focus()
+
+			expect(focusSpy).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен вызывать blur на swatch через exposed.blur()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+			const swatch = wrapper.find('.base-color-picker__swatch').element
+			const blurSpy = vi.spyOn(swatch, 'blur')
+
+			const exposed = wrapper.vm as unknown as { blur: () => void }
+			exposed.blur()
+
+			expect(blurSpy).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен возвращать isValid при вызове exposed.validate()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+
+			const exposed = wrapper.vm as unknown as { validate: () => boolean }
+			const result = exposed.validate()
+
+			expect(typeof result).toBe('boolean')
+			expect(result).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен сбрасывать состояние при вызове exposed.reset()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+
+			const exposed = wrapper.vm as unknown as { reset: () => void }
+			expect(() => exposed.reset()).not.toThrow()
+			wrapper.unmount()
+		})
+	})
 })

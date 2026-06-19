@@ -32,6 +32,7 @@ const meta: Meta<typeof BaseFormField> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -239,4 +240,12 @@ export const LongContent: Story = {
 		`,
 	}),
 	tags: ['!a11y'],
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'ff-root', header: 'ff-header', label: 'ff-label', required: 'ff-required', content: 'ff-content', description: 'ff-description', animation: 'ff-animation', error: 'ff-error' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.ff-root')).toBeTruthy()
+	},
 }

@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseRadio.
  * Демонстрирует все вариации, состояния и интерактивные состояния.
  */
 
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { RADIO_VARIANTS } from '../model/BaseRadio.types'
 import BaseRadio from '../ui/BaseRadio.vue'
 import type { BaseRadioOption } from '../model/BaseRadio.types'
@@ -52,6 +51,7 @@ const meta: Meta<typeof BaseRadio> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -535,5 +535,13 @@ export const LongContent: Story = {
 		await step('Обратная фокусировка по Shift+Tab', async () => {
 			await playShiftTab(canvasElement, { selector: 'input[type="radio"]' })
 		})
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'rad-root', label: 'rad-label', options: 'rad-options', radio: 'rad-radio', wrapper: 'rad-wrapper', input: 'rad-input', circle: 'rad-circle', dot: 'rad-dot', optionLabel: 'rad-optionLabel', errorText: 'rad-errorText' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.rad-root')).toBeTruthy()
 	},
 }

@@ -33,6 +33,7 @@ const meta: Meta<typeof BaseBadge> = {
 				control: 'object',
 				description: 'Объект CustomColor: bg (фоновый цвет), text (цвет текста) и их состояния hover/active/focus',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -167,7 +168,16 @@ export const SizeScale: Story = {
 	}),
 	play: async ({ canvasElement }) => {
 		const badges = canvasElement.querySelectorAll('.base-badge')
-		expect(badges.length).toBe(3)
+		expect(badges.length).toBe(BADGE_VARIANTS.length)
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'bdg-root', text: 'bdg-text' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.bdg-root')).toBeTruthy()
 	},
 }
 /** Все интерактивные состояния рядом */

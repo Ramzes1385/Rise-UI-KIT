@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseInput.
  * Демонстрирует все вариации, размеры, состояния, слоты и интерактивные состояния.
  */
 
 import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { INPUT_VARIANTS } from '../model/BaseInput.types'
 import BaseInput from '../ui/BaseInput.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -565,13 +564,23 @@ export const Readonly: Story = {
 	},
 }
 /** Кастомные классы */
-export const CustomClasses: Story = {
+export const WithCustomClass: Story = {
 	args: {
 		label: 'Кастомные классы',
 		customClass: {
-			root: 'custom-input-root',
-			label: 'custom-input-label',
-			field: 'custom-input-field',
+			root: 'input-root',
+			label: 'input-label',
+			field: 'input-field',
+			required: 'input-required',
+			wrapper: 'input-wrapper',
+			prefix: 'input-prefix',
+			passwordToggle: 'input-passwordToggle',
+			passwordIcon: 'input-passwordIcon',
+			postfix: 'input-postfix',
+			passwordRules: 'input-passwordRules',
+			passwordRule: 'input-passwordRule',
+			passwordRuleIcon: 'input-passwordRuleIcon',
+			errorText: 'input-errorText',
 		},
 	},
 	render: args => ({
@@ -584,9 +593,9 @@ export const CustomClasses: Story = {
 	}),
 	play: async ({ canvasElement, step }) => {
 		await step('Кастомные классы применились', async () => {
-			const root = canvasElement.querySelector('.custom-input-root')
-			const label = canvasElement.querySelector('.custom-input-label')
-			const field = canvasElement.querySelector('.custom-input-field')
+			const root = canvasElement.querySelector('.input-root')
+			const label = canvasElement.querySelector('.input-label')
+			const field = canvasElement.querySelector('.input-field')
 			expect(root).toBeInTheDocument()
 			expect(label).toBeInTheDocument()
 			expect(field).toBeInTheDocument()

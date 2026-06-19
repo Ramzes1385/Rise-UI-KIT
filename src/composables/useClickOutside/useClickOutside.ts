@@ -1,3 +1,4 @@
+/** Composable: отслеживание клика вне заданных элементов */
 import { onBeforeUnmount, onMounted } from 'vue'
 import type { UseClickOutsideOptions } from './useClickOutside.types'
 import type { ComponentPublicInstance } from 'vue'

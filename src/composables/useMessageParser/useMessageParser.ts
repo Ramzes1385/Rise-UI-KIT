@@ -1,3 +1,4 @@
+/** Composable: разбор текста сообщения на сегменты */
 import type {
 	MessageToken,
 	TextPart,

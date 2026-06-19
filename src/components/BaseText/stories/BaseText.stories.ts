@@ -37,6 +37,7 @@ const meta: Meta<typeof BaseText> = {
 				control: { type: 'range', min: 1, max: 10, step: 1 },
 				description: 'Количество строк перед обрезкой (только с truncate)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -283,4 +284,20 @@ export const LongContent: Story = {
 		`,
 	}),
 	tags: ['!a11y'],
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'txt-root' },
+	},
+	render: args => ({
+		components: { BaseText },
+		setup() {
+			return { args }
+		},
+		template: '<BaseText v-bind="args">Текст с кастомным классом</BaseText>',
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.txt-root')).toBeTruthy()
+	},
 }

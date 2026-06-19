@@ -7,6 +7,7 @@
 		class="base-color-picker">
 		<template #trigger>
 			<button
+				ref="swatchRef"
 				type="button"
 				class="base-color-picker__swatch"
 				:class="classes.swatch"
@@ -74,6 +75,7 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { UI_COLOR_PICKER, UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
@@ -101,9 +103,14 @@ const { classes } = useCustomClass({
 	elementKeys: ['root', 'swatch', 'panel', 'preset', 'reset'],
 })
 
+const swatchRef = ref<HTMLElement | null>(null)
 const areaRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
 let stopAreaDrag: (() => void) | null = null
+
+const formField = useFormField({
+	value: () => props.modelValue,
+})
 
 const picker = useColorPicker({
 	getValue: () => props.modelValue,
@@ -169,4 +176,12 @@ function handleReset(): void {
 	emit('reset')
 	isOpen.value = false
 }
+
+defineExpose<FormFieldExpose>({
+	rootRef: swatchRef,
+	focus: () => swatchRef.value?.focus(),
+	blur: () => swatchRef.value?.blur(),
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

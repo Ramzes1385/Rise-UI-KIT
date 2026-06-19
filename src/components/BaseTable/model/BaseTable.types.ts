@@ -197,12 +197,6 @@ export interface BaseTableProps extends BaseComponentProps<TableVariant> {
 	emptyText?: string
 	/** Высота таблицы (для фиксированного заголовка) */
 	height?: string
-	/** @deprecated Используйте behavior.selectable. Будет удалён в v2 */
-	isSelectable?: boolean
-	/** @deprecated Используйте features.search. Будет удалён в v2 */
-	hasSearch?: boolean
-	/** @deprecated Используйте features.filters. Будет удалён в v2 */
-	hasFilters?: boolean
 	/** Размер страницы */
 	pageSize?: number
 	/** Варианты размера страницы для селектора */
@@ -213,16 +207,7 @@ export interface BaseTableProps extends BaseComponentProps<TableVariant> {
 	searchDebounce?: number
 	/** Конфиг вложенной таблицы */
 	nestedConfig?: NestedTableConfig
-	/** @deprecated Используйте behavior.multiSort. Будет удалён в v2 */
-	isMultiSort?: boolean
-	/** @deprecated Используйте features.columnSettings. Будет удалён в v2 */
-	hasColumnSettings?: boolean
-	/** @deprecated Используйте features.rowNumber. Будет удалён в v2 */
-	hasRowNumber?: boolean
-	/** @deprecated Используйте features.pageSizeSelector. Будет удалён в v2 */
-	hasPageSizeSelector?: boolean
-	/** @deprecated Используйте behavior.resizable. Будет удалён в v2 */
-	isResizable?: boolean
+
 	/** Конфигурация функций таблицы (заменяет boolean-пропсы) */
 	features?: TableFeaturesConfig
 	/** Конфигурация поведения таблицы (заменяет boolean-пропсы) */

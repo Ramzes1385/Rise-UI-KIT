@@ -173,10 +173,10 @@ describe('BaseTable unit', () => {
 		})
 	})
 
-	describe('пропс isSelectable', () => {
-		it('должен рендерить колонку чекбоксов когда isSelectable=true', () => {
+	describe('behavior.selectable', () => {
+		it('должен рендерить колонку чекбоксов когда behavior.selectable=true', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, isSelectable: true },
+				props: { columns: COLUMNS, rows: ROWS, behavior: { selectable: true } },
 				global: globalConfig,
 			})
 
@@ -184,9 +184,9 @@ describe('BaseTable unit', () => {
 			expect(container.querySelector('.base-table__td--check')).toBeInTheDocument()
 		})
 
-		it('не должен рендерить колонку чекбоксов когда isSelectable=false', () => {
+		it('не должен рендерить колонку чекбоксов когда behavior.selectable=false', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, isSelectable: false },
+				props: { columns: COLUMNS, rows: ROWS, behavior: { selectable: false } },
 				global: globalConfig,
 			})
 
@@ -195,19 +195,19 @@ describe('BaseTable unit', () => {
 		})
 	})
 
-	describe('пропс hasSearch', () => {
-		it('должен рендерить панель поиска когда hasSearch=true', () => {
+	describe('features.search', () => {
+		it('должен рендерить панель поиска когда features.search=true', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasSearch: true },
+				props: { columns: COLUMNS, rows: ROWS, features: { search: true } },
 				global: globalConfig,
 			})
 
 			expect(container.querySelector('.base-table__search')).toBeInTheDocument()
 		})
 
-		it('не должен рендерить панель поиска когда hasSearch=false', () => {
+		it('не должен рендерить панель поиска когда features.search=false', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasSearch: false },
+				props: { columns: COLUMNS, rows: ROWS, features: { search: false } },
 				global: globalConfig,
 			})
 
@@ -322,7 +322,7 @@ describe('BaseTable unit', () => {
 
 		it('должен эмитить select при клике на чекбокс строки', async () => {
 			const { container, emitted } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, isSelectable: true },
+				props: { columns: COLUMNS, rows: ROWS, behavior: { selectable: true } },
 				global: globalConfig,
 			})
 
@@ -346,7 +346,7 @@ describe('BaseTable unit', () => {
 
 		it('должен эмитить select при клике на чекбокс выделения всех строк', async () => {
 			const { container, emitted } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, isSelectable: true },
+				props: { columns: COLUMNS, rows: ROWS, behavior: { selectable: true } },
 				global: globalConfig,
 			})
 
@@ -358,7 +358,7 @@ describe('BaseTable unit', () => {
 
 		it('должен эмитить filter при добавлении фильтра', async () => {
 			const { container, emitted } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasFilters: true },
+				props: { columns: COLUMNS, rows: ROWS, features: { filters: true } },
 				global: globalConfig,
 			})
 
@@ -385,7 +385,7 @@ describe('BaseTable unit', () => {
 			vi.useFakeTimers()
 
 			const { container, emitted } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasSearch: true, searchDebounce: 100 },
+				props: { columns: COLUMNS, rows: ROWS, features: { search: true }, searchDebounce: 100 },
 				global: globalConfig,
 			})
 
@@ -447,7 +447,7 @@ describe('BaseTable unit', () => {
 				props: {
 					columns: COLUMNS,
 					rows: ROWS,
-					hasPageSizeSelector: true,
+					features: { pageSizeSelector: true },
 					pageSizeOptions: [5, 10, 20],
 					pageSize: 5,
 					loadMode: 'pagination',
@@ -506,9 +506,9 @@ describe('BaseTable unit', () => {
 			expect((emitted() as Record<string, unknown[][]>)['column-resize'][0][1] as number).toBeGreaterThan(0)
 		})
 
-		it('должен рендерить ресайзер для всех колонок при isResizable=true', () => {
+		it('должен рендерить ресайзер для всех колонок при behavior.resizable=true', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, isResizable: true },
+				props: { columns: COLUMNS, rows: ROWS, behavior: { resizable: true } },
 				global: globalConfig,
 			})
 
@@ -516,7 +516,7 @@ describe('BaseTable unit', () => {
 			expect(resizers.length).toBe(COLUMNS.length)
 		})
 
-		it('не должен рендерить ресайзер без isResizable на таблице и колонке', () => {
+		it('не должен рендерить ресайзер без behavior.resizable на таблице и колонке', () => {
 			const { container } = render(BaseTable, {
 				props: { columns: COLUMNS, rows: ROWS },
 				global: globalConfig,
@@ -526,13 +526,13 @@ describe('BaseTable unit', () => {
 			expect(resizers.length).toBe(0)
 		})
 
-		it('должен рендерить ресайзер при isResizable=true даже без isResizable на колонке', () => {
+		it('должен рендерить ресайзер при behavior.resizable=true даже без isResizable на колонке', () => {
 			const columns: TableColumn[] = [
 				{ key: 'name', label: 'Имя' },
 				{ key: 'age', label: 'Возраст' },
 			]
 			const { container } = render(BaseTable, {
-				props: { columns, rows: ROWS, isResizable: true },
+				props: { columns, rows: ROWS, behavior: { resizable: true } },
 				global: globalConfig,
 			})
 
@@ -542,7 +542,7 @@ describe('BaseTable unit', () => {
 
 		it('должен эмитить columns-change при переключении видимости колонки', async () => {
 			const { container, emitted } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasColumnSettings: true },
+				props: { columns: COLUMNS, rows: ROWS, features: { columnSettings: true } },
 				global: globalConfig,
 			})
 
@@ -626,10 +626,10 @@ describe('BaseTable unit', () => {
 		})
 	})
 
-	describe('пропс hasRowNumber', () => {
-		it('должен рендерить колонку с номерами строк когда hasRowNumber=true', () => {
+	describe('features.rowNumber', () => {
+		it('должен рендерить колонку с номерами строк когда features.rowNumber=true', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasRowNumber: true },
+				props: { columns: COLUMNS, rows: ROWS, features: { rowNumber: true } },
 				global: globalConfig,
 			})
 
@@ -637,9 +637,9 @@ describe('BaseTable unit', () => {
 			expect(container.querySelector('.base-table__td--number')).toBeInTheDocument()
 		})
 
-		it('не должен рендерить колонку с номерами когда hasRowNumber=false', () => {
+		it('не должен рендерить колонку с номерами когда features.rowNumber=false', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasRowNumber: false },
+				props: { columns: COLUMNS, rows: ROWS, features: { rowNumber: false } },
 				global: globalConfig,
 			})
 
@@ -686,19 +686,19 @@ describe('BaseTable unit', () => {
 		})
 	})
 
-	describe('пропс hasColumnSettings', () => {
-		it('должен рендерить настройки колонок когда hasColumnSettings=true', () => {
+	describe('features.columnSettings', () => {
+		it('должен рендерить настройки колонок когда features.columnSettings=true', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasColumnSettings: true },
+				props: { columns: COLUMNS, rows: ROWS, features: { columnSettings: true } },
 				global: globalConfig,
 			})
 
 			expect(container.querySelector('.base-table__settings')).toBeInTheDocument()
 		})
 
-		it('не должен рендерить настройки колонок когда hasColumnSettings=false', () => {
+		it('не должен рендерить настройки колонок когда features.columnSettings=false', () => {
 			const { container } = render(BaseTable, {
-				props: { columns: COLUMNS, rows: ROWS, hasColumnSettings: false },
+				props: { columns: COLUMNS, rows: ROWS, features: { columnSettings: false } },
 				global: globalConfig,
 			})
 
@@ -721,10 +721,7 @@ describe('BaseTable unit', () => {
 				props: {
 					columns: COLUMNS,
 					rows: ROWS,
-					hasSearch: true,
-					hasFilters: true,
-					hasColumnSettings: true,
-					hasPageSizeSelector: true,
+					features: { search: true, filters: true, columnSettings: true, pageSizeSelector: true },
 					pageSizeOptions: [1, 2],
 					pageSize: 1,
 					loadMode: 'pagination',

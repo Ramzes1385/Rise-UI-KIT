@@ -1,3 +1,4 @@
+/** Composable: состояние редактора (фокус, цвет текста/фона, пустой контент) */
 import { ref } from 'vue'
 import { UI_EDITOR } from '@constants'
 import type { UseEditorStateOptions } from './useEditorState.types'

@@ -157,3 +157,12 @@ export const CircleIndeterminate: Story = {
 		hasLabel: true,
 	},
 }
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'prg-root', track: 'prg-track', fill: 'prg-fill', tooltipTrigger: 'prg-tooltipTrigger', tooltipAnchor: 'prg-tooltipAnchor', svg: 'prg-svg', trackCircle: 'prg-trackCircle', fillCircle: 'prg-fillCircle', circleLabel: 'prg-circleLabel' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.prg-root')).toBeTruthy()
+	},
+}

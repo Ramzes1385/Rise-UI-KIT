@@ -66,10 +66,11 @@
 </template>
 
 <script setup lang="ts">
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { UI_TEXT } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import type { SearchResult } from '../model/BaseSearch.types'
 import type { BaseSearchResultsEmits, BaseSearchResultsProps } from '../model/BaseSearchResults.types'
 

@@ -67,11 +67,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { calcIconScale } from '@components/BaseIcon'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'
 

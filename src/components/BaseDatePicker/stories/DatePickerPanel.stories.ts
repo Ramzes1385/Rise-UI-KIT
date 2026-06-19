@@ -1,6 +1,8 @@
 /**
  * Stories для DatePickerPanel.
  * Каждая story содержит play-функцию для 100% coverage.
+ * Внутренний sub-компонент — buildArgTypes не используется,
+ * args задаются напрямую в meta.args (без контроля через args-таблицу).
  *
  * ВНИМАНИЕ: DatePickerPanel использует <Teleport to="body"> и <Transition name="dropdown">,
  * поэтому элементы рендерятся за пределами canvasElement в document.body.

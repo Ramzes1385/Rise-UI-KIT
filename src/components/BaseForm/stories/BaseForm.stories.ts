@@ -32,6 +32,7 @@ const meta: Meta<typeof BaseForm> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 		hidden: ['onSubmit'],
 	}),
@@ -547,5 +548,13 @@ export const WithCustomColorTextOnly: Story = {
 		color: {
 			text: { base: '#dc2626', hover: '#ef4444' },
 		},
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'frm-root', overlay: 'frm-overlay', content: 'frm-content' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.frm-root')).toBeTruthy()
 	},
 }

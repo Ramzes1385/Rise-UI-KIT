@@ -2986,3 +2986,18 @@ export const PinnedJumpToMessage: Story = {
 		} catch { /* ignore */ }
 	},
 }
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'chat-root' },
+		messages: MOCK_MESSAGES,
+		title: 'Чат с Анной',
+		subtitle: 'В сети',
+		avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+		height: '500px',
+		variant: 'bubble',
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.chat-root')).toBeTruthy()
+	},
+}

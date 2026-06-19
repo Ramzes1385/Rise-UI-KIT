@@ -1,3 +1,4 @@
+/** Composable: управление состоянием загрузки файлов (валидация, drag-and-drop, прогресс) */
 import { computed, onBeforeUnmount, ref } from 'vue'
 import {
 	UI_TEXT,

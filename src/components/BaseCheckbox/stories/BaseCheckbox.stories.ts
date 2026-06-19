@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseCheckbox.
  * Демонстрирует все состояния, интерактивные состояния и тёмную тему.
  */
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -354,6 +353,25 @@ export const SizeScale: Story = {
 		},
 		template: '<BaseCheckbox v-model="value" v-bind="args" />',
 	}),
+}
+/** customClass — покрывает elementKeys */
+export const WithCustomClass: Story = {
+	args: {
+		label: 'С кастомными классами',
+		customClass: {
+			root: 'chk-root',
+			labelWrapper: 'chk-labelWrapper',
+			wrapper: 'chk-wrapper',
+			input: 'chk-input',
+			box: 'chk-box',
+			icon: 'chk-icon',
+			label: 'chk-label',
+			errorText: 'chk-errorText',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.chk-root')).toBeTruthy()
+	},
 }
 /** Чекбокс с длинным текстом подписи */
 export const LongContent: Story = {

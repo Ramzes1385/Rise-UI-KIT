@@ -55,6 +55,7 @@ const meta: Meta<typeof BaseButton> = {
 			onClick: {
 				table: { disable: true },
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -623,5 +624,15 @@ export const CustomColor: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement)
 		expect(canvas.getByText('Кастомный цвет')).toBeInTheDocument()
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		default: 'Кастомный класс',
+		customClass: { root: 'btn-root' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.btn-root')).toBeTruthy()
 	},
 }

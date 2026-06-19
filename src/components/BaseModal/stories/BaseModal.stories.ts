@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseModal.
  * Демонстрирует варианты, размеры через sizeScale, состояния и закрытие.
  */
@@ -6,8 +6,7 @@
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import BaseModal from '../ui/BaseModal.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -43,6 +42,7 @@ const meta: Meta<typeof BaseModal> = {
 			onClose: { table: { disable: true } },
 			onConfirm: { table: { disable: true } },
 			'onUpdate:isOpen': { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 

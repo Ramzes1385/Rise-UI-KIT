@@ -1,3 +1,5 @@
+/** Утилиты: расчёт позиции и привязка к шагу для range/slider компонентов */
+
 import type { RangeScaleOptions, SnapToStepOptions } from './rangeUtils.types'
 
 /** Рассчитать процент значения на шкале (0–100) */

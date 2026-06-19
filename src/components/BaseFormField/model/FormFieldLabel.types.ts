@@ -1,3 +1,5 @@
+import type { CustomClassProp } from '@composables/useCustomClass'
+
 /** Props компонента FormFieldLabel */
 export interface FormFieldLabelProps {
 	/** Текст метки */
@@ -9,11 +11,11 @@ export interface FormFieldLabelProps {
 	/** CSS-класс для обёртки */
 	className?: string
 	/** Кастомный CSS-класс обёртки */
-	customClass?: string | Record<string, string | undefined>
+	customClass?: CustomClassProp
 	/** CSS-класс для звёздочки обязательности */
 	requiredClassName?: string
 	/** Кастомный CSS-класс звёздочки обязательности */
-	requiredCustomClass?: string | Record<string, string | undefined>
+	requiredCustomClass?: CustomClassProp
 	/** Масштаб размера */
 	sizeScale?: number
 }

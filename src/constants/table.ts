@@ -1,36 +1,31 @@
 /**
  * Константы компонента BaseTable.
+ * Группированы в объект TABLE для удобного доступа.
  */
 
-/** Ширина колонки выбора строк */
-export const TABLE_ROW_SELECTION_WIDTH = '40px'
+import { UI_TIMING } from './ui'
 
-/** Ширина колонки номера строки */
-export const TABLE_ROW_NUMBER_WIDTH = '40px'
-
-/** Ширина колонки раскрытия строки */
-export const TABLE_ROW_EXPAND_WIDTH = '36px'
-
-/** Минимальная ширина колонки при ресайзе (px) */
-export const TABLE_MIN_COL_WIDTH = 50
-
-/** Порог срабатывания infinite scroll (px до низа) */
-export const TABLE_INFINITE_SCROLL_THRESHOLD = 50
-
-/** Количество строк скелетона по умолчанию */
-export const TABLE_DEFAULT_SKELETON_ROWS = 5
-
-/** Длительность анимации раскрытия/сворачивания строки (мс) */
-export const TABLE_EXPAND_TRANSITION_DURATION = 300
-
-/** Максимальная высота панели настроек колонок */
-export const TABLE_SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
-
-/** Дебаунс поиска по умолчанию (мс) */
-export const TABLE_SEARCH_DEBOUNCE_MS = 300
-
-/** Размер страницы по умолчанию */
-export const TABLE_DEFAULT_PAGE_SIZE = 5
-
-/** Максимальное количество видимых номеров страниц в пагинации */
-export const TABLE_PAGINATION_MAX_VISIBLE = 4
+export const TABLE = {
+	/** Ширина колонки выбора строк */
+	ROW_SELECTION_WIDTH: '40px',
+	/** Ширина колонки номера строки */
+	ROW_NUMBER_WIDTH: '40px',
+	/** Ширина колонки раскрытия строки */
+	ROW_EXPAND_WIDTH: '36px',
+	/** Минимальная ширина колонки при ресайзе (px) */
+	MIN_COL_WIDTH: 50,
+	/** Порог срабатывания infinite scroll (px до низа) */
+	INFINITE_SCROLL_THRESHOLD: 50,
+	/** Количество строк скелетона по умолчанию */
+	DEFAULT_SKELETON_ROWS: 5,
+	/** Длительность анимации раскрытия/сворачивания строки (мс) */
+	EXPAND_TRANSITION_DURATION: UI_TIMING.ANIMATION_DURATION,
+	/** Максимальная высота панели настроек колонок */
+	SETTINGS_MAX_HEIGHT: 'min(320px, 50vh)',
+	/** Дебаунс поиска по умолчанию (мс) */
+	SEARCH_DEBOUNCE_MS: UI_TIMING.DEBOUNCE_DEFAULT,
+	/** Размер страницы по умолчанию */
+	DEFAULT_PAGE_SIZE: 5,
+	/** Максимальное количество видимых номеров страниц в пагинации */
+	PAGINATION_MAX_VISIBLE: 4,
+} as const

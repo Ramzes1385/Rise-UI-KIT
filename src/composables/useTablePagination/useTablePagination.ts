@@ -1,5 +1,6 @@
+/** Composable: управление пагинацией таблицы */
 import { computed, ref, watch } from 'vue'
-import { TABLE_DEFAULT_PAGE_SIZE } from '@constants/table'
+import { TABLE } from '@constants'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './useTablePagination.types'
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
@@ -16,7 +17,7 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 
 	/** Эффективный размер страницы (с учётом default) */
 	const effectivePageSize = computed((): number => {
-		return localPageSize.value || TABLE_DEFAULT_PAGE_SIZE
+		return localPageSize.value || TABLE.DEFAULT_PAGE_SIZE
 	})
 
 	/** Количество загруженных строк для button/infinite режимов */
@@ -74,7 +75,7 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		if (newSize !== localPageSize.value) {
 			localPageSize.value = newSize
 			currentPage.value = 1
-			loadedCount.value = newSize || TABLE_DEFAULT_PAGE_SIZE
+			loadedCount.value = newSize || TABLE.DEFAULT_PAGE_SIZE
 			if (onPageSizeChange) onPageSizeChange(newSize)
 		}
 	}

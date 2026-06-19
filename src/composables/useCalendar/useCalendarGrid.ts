@@ -1,16 +1,8 @@
-import { computed, type Ref } from 'vue'
+/** Composable: вычисление сетки дней календаря, названий месяцев, дней недели и диапазонов годов */
+import { computed } from 'vue'
 import { CALENDAR_GRID_CELLS } from '@constants'
 import { daysInMonth, getWeekNumber, getWeekday } from '@utils/dateUtils'
-import type { CalendarView, CalendarWeekday } from './useCalendar.types'
-
-interface UseCalendarGridOptions {
-	currentMonth: Ref<number>
-	currentYear: Ref<number>
-	currentView: Ref<CalendarView>
-	locale: () => string
-	firstDayOfWeek: () => CalendarWeekday
-	showYear?: () => boolean | undefined
-}
+import type { UseCalendarGridOptions } from './useCalendarGrid.types'
 
 /**
  * Composable для вычисления сетки дней календаря, названий месяцев, дней недели и диапазонов годов.
@@ -116,4 +108,3 @@ function useCalendarGrid(options: UseCalendarGridOptions) {
 }
 
 export { useCalendarGrid }
-export type { UseCalendarGridOptions }

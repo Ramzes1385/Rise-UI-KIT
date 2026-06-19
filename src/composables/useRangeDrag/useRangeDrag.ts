@@ -1,3 +1,4 @@
+/** Composable: drag-взаимодействие ползунков range-слайдера */
 import { onBeforeUnmount, ref } from 'vue'
 import type { UseRangeDragOptions, UseRangeDragReturn } from './useRangeDrag.types'
 

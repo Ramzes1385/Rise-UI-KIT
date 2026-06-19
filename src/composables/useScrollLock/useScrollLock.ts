@@ -1,3 +1,6 @@
+/** Composable: блокировка скролла body с компенсацией скроллбара */
+import type { UseScrollLockReturn } from './useScrollLock.types'
+
 /**
  * Composable для блокировки скролла body.
  * Сохраняет и восстанавливает предыдущее значение overflow.
@@ -13,10 +16,7 @@
  * })
  * ```
  */
-function useScrollLock(): {
-	lock: () => void
-	unlock: () => void
-} {
+function useScrollLock(): UseScrollLockReturn {
 	let previousOverflow = ''
 	let previousPaddingRight = ''
 	let isLocked = false

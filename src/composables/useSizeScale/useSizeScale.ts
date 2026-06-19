@@ -1,3 +1,4 @@
+/** Composable: пропорциональное масштабирование размеров компонента */
 import { computed } from 'vue'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { UseSizeScaleOptions } from './useSizeScale.types'

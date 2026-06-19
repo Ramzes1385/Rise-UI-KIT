@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseTooltip.
  * Демонстрирует все позиции, варианты и состояния.
  * Каждая story содержит play-функцию для 100% coverage.
@@ -6,8 +6,7 @@
 
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { TOOLTIP_VARIANTS } from '../model/BaseTooltip.types'
 import BaseTooltip from '../ui/BaseTooltip.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -36,6 +35,7 @@ const meta: Meta<typeof BaseTooltip> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -685,5 +685,29 @@ export const TooltipDisabled: Story = {
 			},
 			{ timeout: 500 },
 		)
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'tt-root', tooltip: 'tt-tooltip', text: 'tt-text' },
+	},
+	render: args => ({
+		components: { BaseTooltip },
+		setup() {
+			return { args }
+		},
+		template: `
+			<div style="padding:60px;display:flex;justify-content:center;">
+				<BaseTooltip v-bind="args">
+					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
+						Наведите
+					</span>
+				</BaseTooltip>
+			</div>
+		`,
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.tt-root')).toBeTruthy()
 	},
 }

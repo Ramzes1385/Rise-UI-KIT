@@ -1,3 +1,4 @@
+/** Composable: сортировка, фильтрация, пагинация и поиск таблицы */
 import { computed, watch } from 'vue'
 import { useTableFilter } from '@composables/useTableFilter'
 import { useTablePagination } from '@composables/useTablePagination'

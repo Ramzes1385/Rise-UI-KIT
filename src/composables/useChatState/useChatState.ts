@@ -1,3 +1,4 @@
+/** Composable: оркестратор состояния чата */
 import { computed, ref } from 'vue'
 import { useChatInfoPanel } from '@composables/useChatInfoPanel'
 import { useChatReply } from '@composables/useChatReply'
@@ -6,6 +7,7 @@ import { useChatSelection } from '@composables/useChatSelection'
 import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from './useChatState.types'
 import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 
+/** Оркестратор состояния чата — объединяет поиск, выделение, панель информации, ответ, закреплённые сообщения. */
 function useChatState(
 	props: UseChatStateProps,
 	emit: UseChatStateEmit,

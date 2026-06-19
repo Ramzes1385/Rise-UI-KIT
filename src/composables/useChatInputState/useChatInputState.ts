@@ -1,3 +1,4 @@
+/** Composable: управление состоянием ввода чата */
 import { computed, nextTick, ref, watch } from 'vue'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { formatFileSize } from '@utils/fileUtils'

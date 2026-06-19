@@ -40,6 +40,7 @@ const meta: Meta<typeof BaseAnimation> = {
 				control: 'text',
 				description: 'HTML-тег для TransitionGroup',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -287,6 +288,15 @@ export const Interactive: Story = {
 		await waitFor(() => expect(args['onAfter-leave']).toHaveBeenCalled())
 		await userEvent.click(button)
 		await waitFor(() => expect(args['onAfter-enter']).toHaveBeenCalled())
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'anim-root' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.anim-root')).toBeTruthy()
 	},
 }
 

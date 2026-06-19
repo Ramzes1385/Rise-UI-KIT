@@ -1,3 +1,4 @@
+/** Composable: дебаунс значения и функции */
 import { customRef, onBeforeUnmount } from 'vue'
 
 /**

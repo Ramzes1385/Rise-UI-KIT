@@ -84,13 +84,14 @@ import { BaseBadge } from '@components/BaseBadge'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseSelect } from '@components/BaseSelect'
 import {
 	UI_FILTER,
 	UI_TEXT,
 } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../model/BaseTableToolbar.types'
 
 defineProps<BaseTableToolbarProps>()

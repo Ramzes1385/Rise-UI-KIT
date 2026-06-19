@@ -1,10 +1,12 @@
+/** Composable: управление состоянием календаря — навигация, переключение вида, выбор дат */
 import { ref, watch } from 'vue'
 import { buildDateWithTime as buildDateWithTimeUtil, getWeekNumber, isSameDay } from '@utils/dateUtils'
 import { useCalendarDateState } from './useCalendarDateState'
 import { useCalendarGrid } from './useCalendarGrid'
-import { useCalendarNavigation } from './useCalendarNavigation'
+import { useCalendarViewNavigation } from './useCalendarViewNavigation'
 import type { CalendarView, UseCalendarOptions } from './useCalendar.types'
 
+/** Composable для управления состоянием календаря — навигация, переключение вида, выбор дат. */
 function useCalendar(options: UseCalendarOptions) {
 	const currentMonth = ref(options.initialMonth?.() ?? new Date().getMonth())
 	const currentYear = ref(options.initialYear?.() ?? new Date().getFullYear())
@@ -90,7 +92,7 @@ function useCalendar(options: UseCalendarOptions) {
 		weekends: options.weekends,
 	})
 
-	const navigation = useCalendarNavigation({
+	const navigation = useCalendarViewNavigation({
 		currentMonth,
 		currentYear,
 		currentView,

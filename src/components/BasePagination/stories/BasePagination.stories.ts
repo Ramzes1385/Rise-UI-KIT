@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BasePagination.
  * Демонстрирует все варианты, многоточия и состояния.
  */
 
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { PAGINATION_VARIANTS } from '../model/BasePagination.types'
 import BasePagination from '../ui/BasePagination.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -31,6 +30,7 @@ const meta: Meta<typeof BasePagination> = {
 			modelValue: { table: { disable: true } },
 			'onUpdate:modelValue': { table: { disable: true } },
 			onChange: { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -364,5 +364,13 @@ export const OutOfRangePage: Story = {
 		if (nextBtn instanceof HTMLButtonElement && !nextBtn.disabled) {
 			await userEvent.click(nextBtn)
 		}
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'pgn-root', prev: 'pgn-prev', next: 'pgn-next', pages: 'pgn-pages', button: 'pgn-button', ellipsis: 'pgn-ellipsis' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.pgn-root')).toBeTruthy()
 	},
 }

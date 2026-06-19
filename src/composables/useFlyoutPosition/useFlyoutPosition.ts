@@ -1,3 +1,4 @@
+/** Composable: позиционирование каскадной flyout-панели через position: fixed */
 import { nextTick, onBeforeUnmount, onMounted, readonly, ref, watch } from 'vue'
 import type { UseFlyoutPositionOptions, UseFlyoutPositionReturn } from './useFlyoutPosition.types'
 

@@ -34,6 +34,7 @@ const meta: Meta<typeof BaseLoader> = {
 			sizeScale: {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -131,7 +132,15 @@ export const SizeScale: Story = {
 	}),
 	play: async ({ canvasElement }) => {
 		const loaders = canvasElement.querySelectorAll('[role="status"]')
-		expect(loaders).toHaveLength(5)
+		expect(loaders).toHaveLength(4)
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'ldr-root', animation: 'ldr-animation', spinner: 'ldr-spinner', label: 'ldr-label' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.ldr-root')).toBeTruthy()
 	},
 }
 /** Все варианты с текстом */

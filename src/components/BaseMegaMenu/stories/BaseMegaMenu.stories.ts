@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseMegaMenu.
  * Демонстрирует рекурсивную вложенность без ограничения глубины,
  * раскладки columns/dropdown и триггеры click/hover.
  */
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { MEGA_MENU_VARIANTS } from '../model/BaseMegaMenu.types'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -138,6 +137,7 @@ const meta: Meta<typeof BaseMegaMenu> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 	args: {
@@ -373,13 +373,19 @@ export const ColumnsDisabled: Story = {
 export const WithCustomClass: Story = {
 	args: {
 		customClass: {
-			root: 'custom-mega-root',
-			container: 'custom-mega-container',
-			column: 'custom-mega-column',
+			root: 'mega-menu-root',
+			container: 'mega-menu-container',
+			column: 'mega-menu-column',
+			title: 'mega-menu-title',
+			list: 'mega-menu-list',
+			nav: 'mega-menu-nav',
+			navItem: 'mega-menu-navItem',
+			navLink: 'mega-menu-navLink',
+			dropdown: 'mega-menu-dropdown',
 		},
 	},
 	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.custom-mega-root')).toBeTruthy()
+		expect(canvasElement.querySelector('.mega-menu-root')).toBeTruthy()
 	},
 }
 

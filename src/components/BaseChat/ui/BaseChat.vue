@@ -136,13 +136,13 @@ import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
 import { useChatState } from '@composables/useChatState'
 import { UI_TEXT, UI_SIZE, UI_CHAT_SCALE, UI_CHAT_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseChat.style.scss'
-import { ChatMessageList } from '../ChatMessageList'
 import { ChatHeader } from './ChatHeader'
 import { ChatInput } from './ChatInput'
+import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
 import { ChatSlideover } from './ChatSlideover'
-import type { BaseChatEmits, BaseChatProps } from '../model/BaseChat.types'
+import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../model/BaseChat.types'
 
 /** Публичные методы ChatMessageList, экспонированные через defineExpose */
 interface MessageListExposed {
@@ -163,6 +163,8 @@ const props = withDefaults(defineProps<BaseChatProps>(), {
 })
 
 const emit = defineEmits<BaseChatEmits>()
+
+defineSlots<BaseChatSlots>()
 
 const { variantClass, variantStyle, sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-chat', props, ['root'])
 

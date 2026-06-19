@@ -1,23 +1,7 @@
+/** Composable: управление выбором дат календаря — диапазон, отключённые даты, подсветки */
 import { getWeekday, isSameDay, toDateOnly } from '@utils/dateUtils'
-import type { CalendarHighlight, CalendarSelectionMode, CalendarWeekday, CalendarWeekends } from './useCalendar.types'
-import type { Ref } from 'vue'
-
-interface UseCalendarDateStateOptions {
-	internalValue: Ref<Date | null>
-	internalValueEnd: Ref<Date | null>
-	internalSelectedDates: Ref<Date[]>
-	currentMonth: Ref<number>
-	currentYear: Ref<number>
-	selectionMode: () => CalendarSelectionMode
-	disabledDates: () => Date[]
-	disabledWeekdays: () => CalendarWeekday[]
-	minDate: () => Date | null
-	maxDate: () => Date | null
-	disableFrom: () => Date | null
-	disableTo: () => Date | null
-	highlights: () => CalendarHighlight[]
-	weekends: () => CalendarWeekends | null
-}
+import type { CalendarHighlight, CalendarWeekday } from './useCalendar.types'
+import type { UseCalendarDateStateOptions } from './useCalendarDateState.types'
 
 /**
  * Composable для управления выбором дат календаря: диапазон, отключённые даты, подсветки.
@@ -139,4 +123,3 @@ function useCalendarDateState(options: UseCalendarDateStateOptions) {
 }
 
 export { useCalendarDateState }
-export type { UseCalendarDateStateOptions }

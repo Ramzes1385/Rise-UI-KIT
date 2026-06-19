@@ -50,6 +50,7 @@
 	<!-- Режим: по умолчанию (inline dropdown) -->
 	<div
 		v-else
+		ref="rootRef"
 		class="base-search"
 		:class="[variantClass, { 'base-search--disabled': isDisabled, 'base-search--loading': isLoading }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
@@ -119,8 +120,9 @@
 import { computed, ref } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { useSearchState } from '@composables/useSearchState'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import BaseSearchInput from './BaseSearchInput.vue'
 import '../styles/BaseSearch.style.scss'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
@@ -135,7 +137,7 @@ const props = withDefaults(defineProps<BaseSearchProps>(), {
 	mode: 'default',
 	results: () => [],
 	isInstant: true,
-	debounceMs: 300,
+	debounceMs: UI_TIMING.DEBOUNCE_DEFAULT,
 	isLoading: false,
 	hasClear: true,
 	hasIcon: true,
@@ -147,6 +149,13 @@ const props = withDefaults(defineProps<BaseSearchProps>(), {
 
 const emit = defineEmits<BaseSearchEmits>()
 defineSlots<BaseSearchSlots>()
+
+const rootRef = ref<HTMLElement | null>(null)
+
+const formField = useFormField({
+	value: () => props.modelValue,
+	error: () => props.error,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
 	'base-search',
@@ -229,5 +238,21 @@ const {
 	},
 	focusActiveInput,
 	closeOverlay,
+})
+
+defineExpose<FormFieldExpose>({
+	rootRef,
+	focus: focusActiveInput,
+	blur: () => {
+		if (props.mode === 'modal' || props.mode === 'sidebar') {
+			if (document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur()
+			}
+		} else {
+			rootRef.value?.querySelector<HTMLElement>('.base-input')?.blur()
+		}
+	},
+	validate: formField.validate,
+	reset: formField.reset,
 })
 </script>

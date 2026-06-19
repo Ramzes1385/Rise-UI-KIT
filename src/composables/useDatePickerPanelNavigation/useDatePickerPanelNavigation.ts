@@ -1,3 +1,4 @@
+/** Composable: навигация по месяцам/годам панели дейтпикера, вычисление отображаемого года и списка месяцев */
 import { computed, ref, watch } from 'vue'
 import type { UseDatePickerPanelNavigationOptions, MonthItem } from './useDatePickerPanelNavigation.types'
 

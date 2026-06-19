@@ -1,11 +1,10 @@
-/**
+﻿/**
  * Stories для компонента BaseSlider.
  * Демонстрирует все варианты анимации, навигации и состояния.
  */
 
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import BaseSlider from '../ui/BaseSlider.vue'
 import type { SliderItem } from '../model/BaseSlider.types'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -79,6 +78,7 @@ const meta: Meta<typeof BaseSlider> = {
 			hasCaption: { control: 'boolean' },
 			isZoomable: { control: 'boolean' },
 			items: { control: 'object' },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -1078,5 +1078,14 @@ export const LongContent: Story = {
 					'Очень длинное название второго слайда которое выходит за пределы одной строки и проверяет переполнение контента',
 			},
 		],
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'sld-root', arrows: 'sld-arrows', arrow: 'sld-arrow', viewport: 'sld-viewport', track: 'sld-track', slide: 'sld-slide', caption: 'sld-caption', title: 'sld-title', desc: 'sld-desc', navigation: 'sld-navigation', dots: 'sld-dots', dot: 'sld-dot', thumbs: 'sld-thumbs', thumb: 'sld-thumb' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.sld-root')).toBeTruthy()
 	},
 }

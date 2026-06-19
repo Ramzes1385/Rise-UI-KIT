@@ -1,7 +1,9 @@
+/** Composable: подтверждение удаления сообщений чата */
 import { computed, ref } from 'vue'
 import { UI_CHAT_TEXT } from '@constants'
 import type { UseChatDeleteConfirmOptions, UseChatDeleteConfirmReturn } from './useChatDeleteConfirm.types'
 
+/** Composable для подтверждения удаления сообщений чата — состояние диалога, выбранные ID, текст подтверждения. */
 function useChatDeleteConfirm(options: UseChatDeleteConfirmOptions): UseChatDeleteConfirmReturn {
 	const deleteConfirm = ref<{ isOpen: boolean; ids: string[] }>({ isOpen: false, ids: [] })
 

@@ -1,3 +1,4 @@
+/** Composable: применение маски ввода к значениям полей */
 import type { NearestTokenResult, UseInputMaskOptions } from './useInputMask.types'
 
 /**

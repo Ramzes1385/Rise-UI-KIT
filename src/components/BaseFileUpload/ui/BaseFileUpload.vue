@@ -61,7 +61,7 @@
 						class="base-file-upload__preview-img"
 						:custom-class="classes.previewImg"
 						fit="contain"
-						:has-zoom="allowPreview" />
+						:zoom-config="{ hasZoom: allowPreview }" />
 				</div>
 
 				<div class="base-file-upload__info" :class="classes.info">
@@ -133,16 +133,17 @@
 import { computed, ref } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFileUploadState } from '@composables/useFileUploadState'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../model/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
@@ -235,7 +236,7 @@ function handleFileChange(e: Event): void {
 	target.value = ''
 }
 
-defineExpose({
+defineExpose<FormFieldExpose>({
 	rootRef,
 	focus: () => rootRef.value?.focus(),
 	blur: () => rootRef.value?.blur(),

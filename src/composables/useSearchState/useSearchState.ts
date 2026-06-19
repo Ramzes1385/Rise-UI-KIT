@@ -1,3 +1,4 @@
+/** Composable: управление состоянием поиска (запрос, debounce, фильтрация, навигация) */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useListNavigation } from '@composables/useListNavigation'
 import type { UseSearchStateOptions } from './useSearchState.types'

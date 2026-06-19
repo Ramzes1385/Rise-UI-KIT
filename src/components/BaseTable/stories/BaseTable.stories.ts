@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseTable.
  * Демонстрирует все варианты, размеры, сортировку, выбор, поиск и состояния.
  */
@@ -13,8 +13,7 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseSwitch } from '@components/BaseSwitch'
 import { BaseText } from '@components/BaseText'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { TABLE_VARIANTS } from '../model/BaseTable.types'
 import BaseTable from '../ui/BaseTable.vue'
 import type { TableColumn, TableRow } from '../model/BaseTable.types'
@@ -138,16 +137,8 @@ const meta: Meta<typeof BaseTable> = {
 			isLoading: { control: 'boolean' },
 			emptyText: { control: 'text' },
 			height: { control: 'text', description: 'Высота таблицы для sticky header и скролла' },
-			isSelectable: { control: 'boolean' },
-			hasSearch: { control: 'boolean' },
-			hasFilters: { control: 'boolean' },
-			hasColumnSettings: { control: 'boolean' },
-			hasRowNumber: { control: 'boolean' },
-			hasPageSizeSelector: {
-				control: 'boolean',
-				description: 'Показывать селектор размера страницы внизу слева',
-			},
-			isMultiSort: { control: 'boolean' },
+			features: { control: 'object', description: 'Конфигурация функций (search, filters, columnSettings, rowNumber, pageSizeSelector)' },
+			behavior: { control: 'object', description: 'Конфигурация поведения (selectable, multiSort, resizable)' },
 			sizeScale: {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
@@ -190,6 +181,7 @@ const meta: Meta<typeof BaseTable> = {
 			'onColumn-resize': { table: { disable: true } },
 			'onColumns-change': { table: { disable: true } },
 			'onLoad-more': { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -201,18 +193,10 @@ const meta: Meta<typeof BaseTable> = {
 		isLoading: false,
 		emptyText: 'Нет данных',
 		height: '',
-		isSelectable: false,
-		hasSearch: false,
-		hasFilters: false,
 		pageSize: 0,
 		pageSizeOptions: [],
 		loadMode: 'pagination',
 		searchDebounce: 300,
-		hasColumnSettings: false,
-		hasRowNumber: false,
-		hasPageSizeSelector: false,
-		isResizable: false,
-		isMultiSort: false,
 		nestedConfig: undefined,
 		sizeScale: 100,
 		padding: 10,
@@ -326,13 +310,13 @@ export const StickyHeader: Story = {
 /** С поиском */
 export const WithSearch: Story = {
 	args: {
-		hasSearch: true,
+		features: { search: true },
 	},
 }
 /** С выбором строк */
 export const Selectable: Story = {
 	args: {
-		isSelectable: true,
+		behavior: { selectable: true },
 	},
 }
 /** Расширенная таблица */
@@ -350,12 +334,8 @@ export const FullToolbar: Story = {
 				code: `<BaseTable
 	:columns="columns"
 	:rows="rows"
-	has-search
-	:has-filters="true"
-	:is-selectable="true"
-	:has-column-settings="true"
-	:has-row-number="true"
-	:has-page-size-selector="true"
+	:features="{ search: true, filters: true, columnSettings: true, rowNumber: true, pageSizeSelector: true }"
+	:behavior="{ selectable: true }"
 	:page-size="5"
 	:page-size-options="[3, 5, 8]"
 	load-mode="pagination"
@@ -367,12 +347,8 @@ export const FullToolbar: Story = {
 	args: {
 		columns: EXTENDED_COLUMNS,
 		rows: EXTENDED_ROWS,
-		hasSearch: true,
-		hasFilters: true,
-		isSelectable: true,
-		hasColumnSettings: true,
-		hasRowNumber: true,
-		hasPageSizeSelector: true,
+		features: { search: true, filters: true, columnSettings: true, rowNumber: true, pageSizeSelector: true },
+		behavior: { selectable: true },
 		pageSize: 5,
 		pageSizeOptions: [3, 5, 8],
 		loadMode: 'pagination',
@@ -384,14 +360,12 @@ export const WithToolbarSlots: Story = {
 	args: {
 		columns: EXTENDED_COLUMNS,
 		rows: EXTENDED_ROWS,
-		hasSearch: true,
-		hasFilters: true,
-		hasColumnSettings: true,
+		features: { search: true, filters: true, columnSettings: true },
 	},
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" has-search :has-filters="true" :has-column-settings="true">
+				code: `<BaseTable :columns="columns" :rows="rows" :features="{ search: true, filters: true, columnSettings: true }">
 	<template #toolbar-prepend>
 		<BaseText tag="span">Быстрые действия</BaseText>
 	</template>
@@ -440,7 +414,7 @@ export const WithColumnSettings: Story = {
 	args: {
 		columns: EXTENDED_COLUMNS,
 		rows: EXTENDED_ROWS,
-		hasColumnSettings: true,
+		features: { columnSettings: true },
 	},
 }
 /** С номерами строк */
@@ -448,7 +422,7 @@ export const WithRowNumbers: Story = {
 	args: {
 		columns: EXTENDED_COLUMNS,
 		rows: EXTENDED_ROWS,
-		hasRowNumber: true,
+		features: { rowNumber: true },
 	},
 }
 /** С бесконечной подгрузкой */
@@ -891,7 +865,7 @@ export const OrdersDashboard: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" variant="bordered" has-search has-filters is-selectable has-row-number page-size="5" load-mode="pagination">
+				code: `<BaseTable :columns="columns" :rows="rows" variant="bordered" :features="{ search: true, filters: true, rowNumber: true }" :behavior="{ selectable: true }" page-size="5" load-mode="pagination">
   <template #cell-status="{ value }">
     <BaseBadge :variant="..." :size-scale="80">{{ value }}</BaseBadge>
   </template>
@@ -1024,10 +998,8 @@ export const OrdersDashboard: Story = {
 			},
 		] as TableRow[],
 		variant: 'bordered',
-		hasSearch: true,
-		hasFilters: true,
-		isSelectable: true,
-		hasRowNumber: true,
+		features: { search: true, filters: true, rowNumber: true },
+		behavior: { selectable: true },
 		pageSize: 5,
 		pageSizeOptions: [5, 10],
 		loadMode: 'pagination',
@@ -1118,7 +1090,7 @@ export const Resizable: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" is-resizable />`,
+				code: `<BaseTable :columns="columns" :rows="rows" :behavior="{ resizable: true }" />`,
 			},
 		},
 	},
@@ -1130,7 +1102,7 @@ export const Resizable: Story = {
 			{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
 		] as TableColumn[],
 		rows: EXTENDED_ROWS,
-		isResizable: true,
+		behavior: { resizable: true },
 		variant: 'bordered',
 	},
 }
@@ -1942,14 +1914,8 @@ export const Interactive: Story = {
 		columns: COVERAGE_COLUMNS,
 		rows: buildCoverageRows(),
 		color: { bg: { base: '#ffffff' }, text: { base: '#111827' } },
-		hasSearch: true,
-		hasFilters: true,
-		hasColumnSettings: true,
-		hasRowNumber: true,
-		hasPageSizeSelector: true,
-		isSelectable: true,
-		isResizable: true,
-		isMultiSort: true,
+		features: { search: true, filters: true, columnSettings: true, rowNumber: true, pageSizeSelector: true },
+		behavior: { selectable: true, resizable: true, multiSort: true },
 		pageSize: 6,
 		pageSizeOptions: [2, 3, 6],
 		searchDebounce: 0,
@@ -2018,7 +1984,7 @@ export const SortByColumn: Story = {
 }
 /** Выбор строк */
 export const SelectRow: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), isSelectable: true },
+	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), behavior: { selectable: true } },
 	async play({ canvasElement }) {
 		const inputs = canvasElement.querySelectorAll<HTMLInputElement>('.base-table__table input[type="checkbox"]')
 		await userEvent.click(inputs.item(1))
@@ -2026,7 +1992,7 @@ export const SelectRow: Story = {
 }
 /** Поиск по таблице */
 export const SearchTable: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), hasSearch: true, searchDebounce: 0 },
+	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), features: { search: true }, searchDebounce: 0 },
 	async play({ canvasElement }) {
 		await typeSelector(canvasElement, '.base-table__search .base-input__field', 'Роза')
 		await waitFor(() => expect(canvasElement.textContent).toContain('Роза'))
@@ -2041,7 +2007,7 @@ export const EmptyTable: Story = {
 }
 /** С поиском и фильтрами */
 export const WithSearchAndFilters: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), hasSearch: true, hasFilters: true },
+	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), features: { search: true, filters: true } },
 	async play({ canvasElement }) {
 		expect(canvasElement.querySelector('.base-table__search')).toBeTruthy()
 		expect(canvasElement.querySelector('.base-table__filters')).toBeTruthy()
@@ -2059,7 +2025,7 @@ export const LoadingState: Story = {
 }
 /** Загрузка со скелетоном */
 export const LoadingSkeletonFull: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: [], isLoading: true, isSelectable: true, hasRowNumber: true, pageSize: 3 },
+	args: { columns: COVERAGE_COLUMNS, rows: [], isLoading: true, behavior: { selectable: true }, features: { rowNumber: true }, pageSize: 3 },
 	play: async ({ canvasElement }) => {
 		expect(canvasElement.querySelector('.base-table__td--check')).toBeTruthy()
 		expect(canvasElement.querySelector('.base-table__td--number')).toBeTruthy()
@@ -2111,7 +2077,7 @@ export const InfiniteLoadMode: Story = {
 }
 /** Multi-sort */
 export const MultiSortTable: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), isMultiSort: true },
+	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), behavior: { multiSort: true } },
 	async play({ canvasElement }) {
 		await clickText(canvasElement, '.base-table__th', 'ID')
 		await clickText(canvasElement, '.base-table__th', 'Название')
@@ -2189,8 +2155,8 @@ export const ExpandableChildren: Story = {
 				],
 			},
 		],
-		isSelectable: true,
-		hasRowNumber: true,
+		behavior: { selectable: true },
+		features: { rowNumber: true },
 	},
 	play: async ({ canvasElement }) => {
 		await waitFor(() => {
@@ -2286,7 +2252,7 @@ export const ResizeSingleColumn: Story = {
 	args: {
 		columns: [{ key: 'name', label: 'Только название', isResizable: true }],
 		rows: [{ id: 1, data: { name: 'Один' } }],
-		isResizable: true,
+		behavior: { resizable: true },
 	},
 	play: async ({ canvasElement }) => {
 		await dragResizer(canvasElement, 0)
@@ -2348,7 +2314,7 @@ export const ResizeNoMove: Story = {
 			{ id: 1, data: { name: 'A', material: 'Сталь' } },
 			{ id: 2, data: { name: 'B', material: 'Медь' } },
 		],
-		isResizable: true,
+		behavior: { resizable: true },
 	},
 	play: async ({ canvasElement }) => {
 		const resizer = canvasElement.querySelector<HTMLElement>('.base-table__resizer')
@@ -2363,5 +2329,16 @@ export const ResizeNoMove: Story = {
 		await waitFor(() => {
 			expect(canvasElement.querySelector('.base-table')).toBeTruthy()
 		})
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'tbl-root', body: 'tbl-body', header: 'tbl-header', toolbar: 'tbl-toolbar', search: 'tbl-search', filters: 'tbl-filters', settings: 'tbl-settings', activeFilters: 'tbl-activeFilters', wrapper: 'tbl-wrapper', loadingOverlay: 'tbl-loadingOverlay', table: 'tbl-table', thead: 'tbl-thead', tr: 'tbl-tr', th: 'tbl-th', tbody: 'tbl-tbody', td: 'tbl-td', loadMore: 'tbl-loadMore', footerBar: 'tbl-footerBar', pageSize: 'tbl-pageSize', paginationInfo: 'tbl-paginationInfo', footer: 'tbl-footer' },
+		columns: COLUMNS,
+		rows: ROWS,
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.tbl-root')).toBeTruthy()
 	},
 }

@@ -1,9 +1,11 @@
+/** Composable: тулбар редактора (выделение, код-режим, медиа-меню, команды форматирования) */
 import { useToolbarCodeMode } from './useToolbarCodeMode'
 import { useToolbarCommands } from './useToolbarCommands'
 import { useToolbarMediaMenu } from './useToolbarMediaMenu'
 import { useToolbarSelection } from './useToolbarSelection'
 import type { UseEditorToolbarOptions } from './useEditorToolbar.types'
 
+/** Composable для тулбара редактора — объединяет отслеживание выделения, код-режим, медиа-меню, команды форматирования. */
 function useEditorToolbar(options: UseEditorToolbarOptions) {
 	const { editorRef, codeTextareaRef, onInput } = options
 

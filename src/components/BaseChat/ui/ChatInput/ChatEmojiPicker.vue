@@ -5,7 +5,7 @@
 			:padding="2"
 			:size-scale="sizeScale"
 			class="base-chat-input__emoji-btn"
-			:aria-label="UI_CHAT_EMOJI_ARIA"
+			:aria-label="UI_CHAT_TEXT.EMOJI_ARIA"
 			@click="toggleEmoji">
 			<template #left>
 				<BaseIcon name="smile" :size-scale="sizeScale" />
@@ -20,7 +20,7 @@
 					variant="ghost"
 					:padding="{ x: 4, y: 4 }"
 					custom-class="base-chat-input__emoji-item"
-					:aria-label="`${UI_CHAT_INSERT_EMOJI} ${emoji}`"
+					:aria-label="`${UI_CHAT_TEXT.INSERT_EMOJI} ${emoji}`"
 					@click="selectEmoji(emoji)">
 					{{ emoji }}
 				</BaseButton>
@@ -34,7 +34,7 @@ import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useClickOutside } from '@composables/useClickOutside'
-import { UI_CHAT_EMOJI_ARIA, UI_CHAT_INSERT_EMOJI } from '@constants'
+import { UI_CHAT_TEXT } from '@constants'
 import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './ChatEmojiPicker.types'
 
 defineProps<ChatEmojiPickerProps>()

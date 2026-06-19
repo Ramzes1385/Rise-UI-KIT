@@ -1,3 +1,4 @@
+/** Composable: значения, стили и сегменты заполнения range-слайдера */
 import { computed } from 'vue'
 import { snapToStep, toPercent } from '@utils/rangeUtils'
 import type { RangeMode, UseRangeValuesOptions, UseRangeValuesReturn } from './useRangeValues.types'

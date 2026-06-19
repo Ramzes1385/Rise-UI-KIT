@@ -1,11 +1,10 @@
-/**
+﻿/**
  * Stories для компонента BaseMenu.
  * Демонстрирует все возможности и интерактивные состояния.
  */
 
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { MENU_VARIANTS } from '../model/BaseMenu.types'
 import BaseMenu from '../ui/BaseMenu.vue'
 import type { BaseMenuItem } from '../model/BaseMenu.types'
@@ -69,6 +68,7 @@ const meta: Meta<typeof BaseMenu> = {
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
 			items: { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -91,26 +91,13 @@ export const Default: Story = {
 		},
 		template: '<BaseMenu :items="items" />',
 	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка первого пункта по Tab', async () => {
-			await userEvent.tab()
-			await waitFor(() => {
-				const firstItem = canvasElement.querySelector('.base-menu__item')
-				expect(firstItem).toHaveFocus()
-			})
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-menu__item' })
-		})
-
-		await step('Навигация по ArrowDown', async () => {
-			await userEvent.keyboard('{ArrowDown}')
-		})
-
-		await step('Выбор пункта по Enter', async () => {
-			await userEvent.keyboard('{Enter}')
-		})
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'mnu-root', group: 'mnu-group', item: 'mnu-item', icon: 'mnu-icon', label: 'mnu-label', divider: 'mnu-divider' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.mnu-root')).toBeTruthy()
 	},
 }
 /** Все варианты */

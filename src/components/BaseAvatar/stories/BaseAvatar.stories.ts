@@ -51,6 +51,7 @@ const meta: Meta<typeof BaseAvatar> = {
 				control: 'object',
 				description: 'Объект CustomColor: bg (фоновый цвет), text (цвет текста) и их состояния hover/active/focus',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -405,6 +406,21 @@ export const ImageLoadError: Story = {
 			expect(initials).toBeTruthy()
 			expect(initials?.textContent).toContain('ИП')
 		})
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'av-root',
+			content: 'av-content',
+			img: 'av-img',
+			initials: 'av-initials',
+			online: 'av-online',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.av-root')).toBeTruthy()
 	},
 }
 /** Сброс ошибки при смене src */

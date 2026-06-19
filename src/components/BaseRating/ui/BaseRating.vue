@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-rating"
 		:class="[variantClass, classes.root, { 'base-rating--readonly': isInteractive === false }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
@@ -29,10 +30,11 @@
 import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { UI_RATING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseRating.style.scss'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
-import type { BaseRatingEmits, BaseRatingProps } from '../model/BaseRating.types'
+import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../model/BaseRating.types'
 
 const props = withDefaults(defineProps<BaseRatingProps>(), {
 	modelValue: 0,
@@ -47,6 +49,14 @@ const props = withDefaults(defineProps<BaseRatingProps>(), {
 })
 
 const emit = defineEmits<BaseRatingEmits>()
+
+defineSlots<BaseRatingSlots>()
+
+const rootRef = ref<HTMLElement | null>(null)
+
+const formField = useFormField({
+	value: () => props.modelValue,
+})
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-rating', props, ['root', 'icon', 'iconFilled'])
 
@@ -110,4 +120,12 @@ function handleKeydown(event: KeyboardEvent): void {
 		changeBy(-1)
 	}
 }
+
+defineExpose<FormFieldExpose>({
+	rootRef,
+	focus: () => rootRef.value?.focus(),
+	blur: () => rootRef.value?.blur(),
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

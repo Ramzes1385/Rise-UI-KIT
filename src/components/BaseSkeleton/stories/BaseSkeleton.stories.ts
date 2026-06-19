@@ -30,6 +30,7 @@ const meta: Meta<typeof BaseSkeleton> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -165,5 +166,13 @@ export const WithoutDimensions: Story = {
 			expect(root.style.width).toBe('')
 			expect(root.style.height).toBe('')
 		}
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'skl-root' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.skl-root')).toBeTruthy()
 	},
 }

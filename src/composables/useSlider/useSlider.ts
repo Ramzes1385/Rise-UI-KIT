@@ -1,3 +1,4 @@
+/** Composable: логика слайдера (навигация, autoplay, drag, snap) */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useSwipe } from '@composables/useSwipe'
 import type { UseSliderOptions, UseSliderReturn } from './useSlider.types'

@@ -26,6 +26,7 @@ const meta: Meta<typeof BaseColorPicker> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 		hidden: ['onUpdate:modelValue', 'onChange'],
 	}),
@@ -202,5 +203,21 @@ export const DarkTheme: Story = {
 	render: renderWithModel,
 	play: async ({ canvasElement }) => {
 		expect(getSwatch(canvasElement)).toBeInTheDocument()
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	render: renderWithModel,
+	args: {
+		customClass: {
+			root: 'cp-root',
+			swatch: 'cp-swatch',
+			panel: 'cp-panel',
+			preset: 'cp-preset',
+			reset: 'cp-reset',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.cp-root')).toBeTruthy()
 	},
 }

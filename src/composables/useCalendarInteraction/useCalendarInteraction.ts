@@ -1,8 +1,9 @@
+/** Composable: обработка кликов по дням календаря, переключение AM/PM и кнопки «Сегодня» */
 import { watch } from 'vue'
-import type { UseCalendarNavigationOptions } from './useCalendarNavigation.types'
+import type { UseCalendarInteractionOptions } from './useCalendarInteraction.types'
 
-/** Описание: обрабатывает клики по дням календаря, навигацию по месяцам/годам и переключение AM/PM, возвращает обработчики для дней, времени и кнопки «Сегодня» */
-function useCalendarNavigation(options: UseCalendarNavigationOptions) {
+/** Описание: обрабатывает клики по дням календаря, переключение AM/PM и кнопки «Сегодня», возвращает обработчики */
+function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 	const { calendar, popover, getSelectionMode, getShowTime, getIsDisabled, getShowDatePopover, isAm, emit } = options
 
 	const {
@@ -125,5 +126,5 @@ function useCalendarNavigation(options: UseCalendarNavigationOptions) {
 	}
 }
 
-export { useCalendarNavigation }
-export type { UseCalendarNavigationOptions }
+export { useCalendarInteraction }
+export type { UseCalendarInteractionOptions }

@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseStepper.
  * Демонстрирует все ориентации, формы, варианты, слоты и состояния.
  */
 
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../model/BaseStepper.types'
 import BaseStepper from '../ui/BaseStepper.vue'
 import type { BaseStepperStep } from '../model/BaseStepper.types'
@@ -65,6 +64,7 @@ const meta: Meta<typeof BaseStepper> = {
 			},
 			'onUpdate:modelValue': { table: { disable: true } },
 			onChange: { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -104,6 +104,23 @@ export const Default: Story = {
 		await step('Обратная фокусировка по Shift+Tab', async () => {
 			await playShiftTab(canvasElement, { selector: '.base-stepper' })
 		})
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'stp-root', header: 'stp-header', items: 'stp-items', step: 'stp-step', indicatorWrapper: 'stp-indicatorWrapper', indicator: 'stp-indicator', check: 'stp-check', content: 'stp-content', label: 'stp-label', description: 'stp-description', footer: 'stp-footer' },
+	},
+	render: args => ({
+		components: { BaseStepper },
+		setup() {
+			const step = ref(1)
+			return { args, step }
+		},
+		template: '<BaseStepper v-model="step" v-bind="args" />',
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.stp-root')).toBeTruthy()
 	},
 }
 /** Все варианты отображения */

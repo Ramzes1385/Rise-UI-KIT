@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseSearch.
  * Демонстрирует все варианты и режимы с готовыми данными.
  * Каждая story содержит play-функцию для 100% coverage.
@@ -6,8 +6,7 @@
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
 import BaseSearch from '../ui/BaseSearch.vue'
 import type { SearchResult } from '../model/BaseSearch.types'
@@ -119,6 +118,7 @@ const meta: Meta<typeof BaseSearch> = {
 			debounceMs: { control: 'number' },
 			maxResults: { control: 'number' },
 			error: { control: 'text' },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -1148,5 +1148,46 @@ export const LongContent: Story = {
 				category: 'Абстракция',
 			},
 		] as never,
+	},
+}
+/** Кастомные классы для элементов */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'srch-root',
+			trigger: 'srch-trigger',
+			icon: 'srch-icon',
+			modal: 'srch-modal',
+			modalOverlay: 'srch-modalOverlay',
+			modalHeader: 'srch-modal-header',
+			modalInput: 'srch-modal-input',
+			clear: 'srch-clear',
+			clearIcon: 'srch-clearIcon',
+			loading: 'srch-loading',
+			modalClose: 'srch-modal-close',
+			modalCloseIcon: 'srch-modalCloseIcon',
+			modalResults: 'srch-modal-results',
+			result: 'srch-result',
+			resultContent: 'srch-result-content',
+			resultTitle: 'srch-result-title',
+			resultImage: 'srch-resultImage',
+			resultIcon: 'srch-resultIcon',
+			resultDesc: 'srch-resultDesc',
+			resultCategory: 'srch-resultCategory',
+			empty: 'srch-empty',
+			emptyText: 'srch-emptyText',
+			dropdown: 'srch-dropdown',
+			input: 'srch-input',
+			sidebarOverlay: 'srch-sidebarOverlay',
+			sidebar: 'srch-sidebar',
+			sidebarHeader: 'srch-sidebarHeader',
+			sidebarInput: 'srch-sidebarInput',
+			sidebarClose: 'srch-sidebarClose',
+			sidebarCloseIcon: 'srch-sidebarCloseIcon',
+			sidebarResults: 'srch-sidebarResults',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.srch-root')).toBeTruthy()
 	},
 }

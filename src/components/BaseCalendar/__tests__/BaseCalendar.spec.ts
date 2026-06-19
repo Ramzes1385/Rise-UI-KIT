@@ -145,10 +145,10 @@ describe('BaseCalendar unit', () => {
 		})
 	})
 
-	describe('пропс showTime', () => {
-		it('должен рендерить секцию времени при showTime=true', () => {
+	describe('пропс timeConfig.showTime', () => {
+		it('должен рендерить секцию времени при timeConfig.showTime=true', () => {
 			const { container } = render(BaseCalendar, {
-				props: { showTime: true },
+				props: { timeConfig: { showTime: true } },
 				global: { stubs },
 			})
 
@@ -167,7 +167,7 @@ describe('BaseCalendar unit', () => {
 		describe('12-часовой формат времени', () => {
 			it('не должен рендерить переключатель AM/PM по умолчанию', () => {
 				const { container } = render(BaseCalendar, {
-					props: { showTime: true, modelValue: new Date(2024, 5, 15, 9, 0) },
+					props: { timeConfig: { showTime: true }, modelValue: new Date(2024, 5, 15, 9, 0) },
 					global: { stubs },
 				})
 
@@ -176,7 +176,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен рендерить переключатель AM/PM когда is24Hour=false', () => {
 				const { container } = render(BaseCalendar, {
-					props: { showTime: true, is24Hour: false, modelValue: new Date(2024, 5, 15, 9, 0) },
+					props: { timeConfig: { showTime: true, is24Hour: false }, modelValue: new Date(2024, 5, 15, 9, 0) },
 					global: { stubs },
 				})
 
@@ -185,7 +185,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен переключать AM на PM по клику и корректировать часы', async () => {
 				const { container, emitted } = render(BaseCalendar, {
-					props: { showTime: true, is24Hour: false, modelValue: new Date(2024, 5, 15, 9, 0) },
+					props: { timeConfig: { showTime: true, is24Hour: false }, modelValue: new Date(2024, 5, 15, 9, 0) },
 					global: { stubs },
 				})
 
@@ -197,7 +197,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен переключать PM на AM по клику и корректировать часы', async () => {
 				const { container, emitted } = render(BaseCalendar, {
-					props: { showTime: true, is24Hour: false, modelValue: new Date(2024, 5, 15, 21, 0) },
+					props: { timeConfig: { showTime: true, is24Hour: false }, modelValue: new Date(2024, 5, 15, 21, 0) },
 					global: { stubs },
 				})
 
@@ -232,7 +232,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен эмитить month-change при переключении месяца', async () => {
 				const { container, emitted } = render(BaseCalendar, {
-					props: { showNavigation: true },
+					props: { displayConfig: { showNavigation: true } },
 					global: { stubs },
 				})
 
@@ -245,7 +245,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен эмитить year-change при выборе года', async () => {
 				const { container, emitted } = render(BaseCalendar, {
-					props: { canSwitchView: true, showNavigation: true },
+					props: { displayConfig: { canSwitchView: true, showNavigation: true } },
 					global: { stubs },
 				})
 
@@ -264,7 +264,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен эмитить view-change при переключении вида', async () => {
 				const { container, emitted } = render(BaseCalendar, {
-					props: { canSwitchView: true, showNavigation: true },
+					props: { displayConfig: { canSwitchView: true, showNavigation: true } },
 					global: { stubs },
 				})
 
@@ -277,7 +277,7 @@ describe('BaseCalendar unit', () => {
 
 			it('должен сохранять canSwitchView=true по умолчанию без пропса', async () => {
 				const { container, emitted } = render(BaseCalendar, {
-					props: { showNavigation: true },
+					props: { displayConfig: { showNavigation: true } },
 					global: { stubs },
 				})
 
@@ -289,10 +289,10 @@ describe('BaseCalendar unit', () => {
 		})
 	})
 
-	describe('пропс showWeekNumber', () => {
+	describe('пропс displayConfig.showWeekNumber', () => {
 		it('должен рендерить колонку номера недели', () => {
 			const { container } = render(BaseCalendar, {
-				props: { showWeekNumber: true },
+				props: { displayConfig: { showWeekNumber: true } },
 				global: { stubs },
 			})
 
@@ -316,7 +316,7 @@ describe('BaseCalendar unit', () => {
 		it('должен распределять объект классов по внутренним элементам', () => {
 			const { container } = render(BaseCalendar, {
 				props: {
-					showTime: true,
+					timeConfig: { showTime: true },
 					customClass: {
 						root: 'custom-calendar-root',
 						header: 'custom-calendar-header',

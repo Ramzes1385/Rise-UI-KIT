@@ -39,15 +39,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BasePagination.style.scss'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
-import type { BasePaginationEmits, BasePaginationProps } from '../model/BasePagination.types'
+import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../model/BasePagination.types'
 
 const props = withDefaults(defineProps<BasePaginationProps>(), {
 	pageSize: 10,
@@ -65,6 +66,8 @@ const { classes } = useCustomClass({
 })
 
 const emit = defineEmits<BasePaginationEmits>()
+
+defineSlots<BasePaginationSlots>()
 
 const totalPages = computed(() => calcTotalPages(props.total, props.pageSize))
 

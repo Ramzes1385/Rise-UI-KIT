@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseSwitch.
  * Демонстрирует все вариации, состояния, слоты и CSS-состояния.
  */
 
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { SWITCH_VARIANTS } from '../model/BaseSwitch.types'
 import BaseSwitch from '../ui/BaseSwitch.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -36,6 +35,7 @@ const meta: Meta<typeof BaseSwitch> = {
 			modelValue: { control: 'boolean' },
 			'onUpdate:modelValue': { table: { disable: true } },
 			onChange: { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 	args: {
@@ -377,5 +377,22 @@ export const LongContent: Story = {
 		await step('Обратная фокусировка по Shift+Tab', async () => {
 			await playShiftTab(canvasElement, { selector: 'input[type="checkbox"]' })
 		})
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'sw-root', row: 'sw-row', wrapper: 'sw-wrapper', input: 'sw-input', slider: 'sw-slider', handle: 'sw-handle', content: 'sw-content', label: 'sw-label', required: 'sw-required', errorText: 'sw-errorText' },
+	},
+	render: args => ({
+		components: { BaseSwitch },
+		setup() {
+			const value = ref(false)
+			return { args, value }
+		},
+		template: '<BaseSwitch v-model="value" v-bind="args" />',
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.sw-root')).toBeTruthy()
 	},
 }

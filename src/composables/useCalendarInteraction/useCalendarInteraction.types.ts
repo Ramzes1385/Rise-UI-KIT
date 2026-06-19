@@ -5,7 +5,7 @@ import type { CalendarSelectionMode, CalendarView } from '@components/BaseCalend
 export type Calendar = ReturnType<typeof useCalendar>
 export type Popover = ReturnType<typeof useCalendarPopover>
 
-export interface UseCalendarNavigationOptions {
+export interface UseCalendarInteractionOptions {
 	calendar: Calendar
 	popover: Popover
 	getSelectionMode: () => CalendarSelectionMode

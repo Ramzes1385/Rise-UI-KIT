@@ -1,10 +1,13 @@
+/** Composable: определение явно переданных пропсов и разрешение дефолтов булевых значений */
 import { getCurrentInstance } from 'vue'
+import type { UseExplicitPropDetectionReturn } from './useExplicitPropDetection.types'
 
 function toKebabCase(value: string): string {
 	return value.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
 }
 
-function useExplicitPropDetection() {
+/** Detects whether a prop was explicitly passed by the parent (camelCase/kebab-case) and resolves boolean defaults. */
+function useExplicitPropDetection(): UseExplicitPropDetectionReturn {
 	const rawProps = getCurrentInstance()?.vnode.props ?? null
 
 	function wasPropPassed(propName: string): boolean {

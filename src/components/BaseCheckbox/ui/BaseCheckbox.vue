@@ -50,11 +50,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCheckbox.style.scss'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
 
@@ -84,7 +85,7 @@ function handleChange(e: Event): void {
 	emit('change', target.checked)
 }
 
-defineExpose({
+defineExpose<FormFieldExpose>({
 	rootRef,
 	focus: () => rootRef.value?.querySelector('input')?.focus(),
 	blur: () => rootRef.value?.querySelector('input')?.blur(),

@@ -1,3 +1,4 @@
+/** Composable: действия над сообщениями чата */
 import { onBeforeUnmount, ref } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import {

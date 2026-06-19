@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseNotification.
  * Демонстрирует все типы, варианты и масштабирование уведомлений.
  */
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '../model/BaseNotification.types'
 import BaseNotification from '../ui/BaseNotification.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -44,6 +43,7 @@ const meta: Meta<typeof BaseNotification> = {
 			isContained: { table: { disable: true } },
 			notificationKey: { table: { disable: true } },
 			onClose: { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -387,5 +387,13 @@ export const Positions: Story = {
 			const container = document.querySelector('.base-notification--top-left')
 			expect(container).toBeTruthy()
 		})
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'ntf-root', notification: 'ntf-notification', icon: 'ntf-icon', content: 'ntf-content', title: 'ntf-title', description: 'ntf-description', close: 'ntf-close', progress: 'ntf-progress' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.ntf-root')).toBeTruthy()
 	},
 }

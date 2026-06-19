@@ -1,6 +1,6 @@
-/**
- * Type guard: проверяет, что значение — непустой объект (не массив, не null).
- */
+/** Утилиты: type-guard функции */
+
+/** Проверяет, что значение — непустой объект (не массив, не null). */
 function isObject(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value)
 }

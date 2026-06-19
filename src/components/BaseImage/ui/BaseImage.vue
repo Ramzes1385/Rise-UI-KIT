@@ -78,13 +78,6 @@ const props = withDefaults(defineProps<BaseImageProps>(), {
 	loading: 'lazy',
 	borderRadius: 12,
 	hasPlaceholder: true,
-	hasZoom: false,
-	closeOnOverlay: true,
-	initialScale: 1,
-	zoomStep: 0.25,
-	minScale: 0.5,
-	maxScale: 5,
-	showMinimap: true,
 	convertToWebp: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
@@ -127,8 +120,8 @@ const sizeScaleStyle = computed((): Record<string, string> | undefined => {
 const emit = defineEmits<BaseImageEmits>()
 defineSlots<BaseImageSlots>()
 
-const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? props.hasZoom)
-const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? props.showMinimap)
+const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? false)
+const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? true)
 
 const zoomRef = ref<InstanceType<typeof BaseImageZoom> | null>(null)
 
@@ -139,11 +132,11 @@ const gallery = useImageGallery({
 })
 
 const zoom = useImageZoom({
-	initialScale: () => props.zoomConfig?.initialScale ?? props.initialScale,
-	zoomStep: () => props.zoomConfig?.zoomStep ?? props.zoomStep,
-	minScale: () => props.zoomConfig?.minScale ?? props.minScale,
-	maxScale: () => props.zoomConfig?.maxScale ?? props.maxScale,
-	closeOnOverlay: () => props.zoomConfig?.closeOnOverlay ?? props.closeOnOverlay,
+	initialScale: () => props.zoomConfig?.initialScale ?? 1,
+	zoomStep: () => props.zoomConfig?.zoomStep ?? 0.25,
+	minScale: () => props.zoomConfig?.minScale ?? 0.5,
+	maxScale: () => props.zoomConfig?.maxScale ?? 5,
+	closeOnOverlay: () => props.zoomConfig?.closeOnOverlay ?? true,
 	onZoom: (scale: number) => emit('zoom', scale),
 	getZoomImgEl: () => zoomRef.value?.zoomImgRef ?? null,
 	getMinimapImgEl: () => zoomRef.value?.minimapImgRef ?? null,

@@ -5,6 +5,7 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
+import { describe, expect, it, vi } from 'vitest'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'
@@ -374,6 +375,65 @@ describe('BaseRange unit', () => {
 			expect(container.querySelector('.base-range__mark')).toHaveClass('custom-mark')
 			expect(container.querySelector('.base-range__mark-tick')).toHaveClass('custom-mark-tick')
 			expect(container.querySelector('.base-range__mark-text')).toHaveClass('custom-mark-text')
+		})
+	})
+
+	describe('defineExpose (FormFieldExpose)', () => {
+		it('должен экспонировать rootRef指向 корневой элемент', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRange, { global: globalComponents })
+
+			const exposed = wrapper.vm as unknown as { rootRef: HTMLElement | null }
+			expect(exposed.rootRef).toBeInstanceOf(HTMLElement)
+			expect(exposed.rootRef?.classList.contains('base-range')).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен вызывать focus на первом thumb через exposed.focus()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRange, { global: globalComponents })
+			const thumb = wrapper.find('.base-range__thumb').element
+			const focusSpy = vi.spyOn(thumb, 'focus')
+
+			const exposed = wrapper.vm as unknown as { focus: () => void }
+			exposed.focus()
+
+			expect(focusSpy).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен вызывать blur на первом thumb через exposed.blur()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRange, { global: globalComponents })
+			const thumb = wrapper.find('.base-range__thumb').element
+			const blurSpy = vi.spyOn(thumb, 'blur')
+
+			const exposed = wrapper.vm as unknown as { blur: () => void }
+			exposed.blur()
+
+			expect(blurSpy).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен возвращать isValid при вызове exposed.validate()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRange, { props: { modelValue: 50 }, global: globalComponents })
+
+			const exposed = wrapper.vm as unknown as { validate: () => boolean }
+			const result = exposed.validate()
+
+			expect(typeof result).toBe('boolean')
+			expect(result).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен сбрасывать состояние при вызове exposed.reset()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseRange, { props: { modelValue: 50 }, global: globalComponents })
+
+			const exposed = wrapper.vm as unknown as { reset: () => void }
+			expect(() => exposed.reset()).not.toThrow()
+			wrapper.unmount()
 		})
 	})
 })

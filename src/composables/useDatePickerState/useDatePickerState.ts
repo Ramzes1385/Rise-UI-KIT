@@ -1,3 +1,4 @@
+/** Composable: управление состоянием дейтпикера — открытие/закрытие, значения, форматирование, позиционирование панели */
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useDropdownPosition } from '@composables/useDropdownPosition'

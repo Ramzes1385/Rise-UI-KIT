@@ -14,25 +14,25 @@ describe('BaseImage integration', () => {
 	}
 
 	describe('hasZoom', () => {
-		it('должен применять класс --zoomable когда hasZoom=true', () => {
+		it('должен применять класс --zoomable когда zoomConfig.hasZoom=true', () => {
 			const { container } = render(BaseImage, {
-				props: { ...defaultProps, hasZoom: true },
+				props: { ...defaultProps, zoomConfig: { hasZoom: true } },
 			})
 
 			expect(container.querySelector('.base-image')?.classList.contains('base-image--zoomable')).toBe(true)
 		})
 
-		it('не должен применять класс --zoomable когда hasZoom=false', () => {
+		it('не должен применять класс --zoomable когда zoomConfig.hasZoom=false', () => {
 			const { container } = render(BaseImage, {
-				props: { ...defaultProps, hasZoom: false },
+				props: { ...defaultProps, zoomConfig: { hasZoom: false } },
 			})
 
 			expect(container.querySelector('.base-image')?.classList.contains('base-image--zoomable')).toBe(false)
 		})
 
-		it('должен открывать зум при клике на изображение когда hasZoom=true', async () => {
+		it('должен открывать зум при клике на изображение когда zoomConfig.hasZoom=true', async () => {
 			const { container } = render(BaseImage, {
-				props: { ...defaultProps, hasZoom: true },
+				props: { ...defaultProps, zoomConfig: { hasZoom: true } },
 			})
 
 			const img = container.querySelector('.base-image__img')
@@ -42,9 +42,9 @@ describe('BaseImage integration', () => {
 			expect(zoom).toBeInTheDocument()
 		})
 
-		it('не должен открывать зум при клике когда hasZoom=false', async () => {
+		it('не должен открывать зум при клике когда zoomConfig.hasZoom=false', async () => {
 			const { container } = render(BaseImage, {
-				props: { ...defaultProps, hasZoom: false },
+				props: { ...defaultProps, zoomConfig: { hasZoom: false } },
 			})
 
 			const img = container.querySelector('.base-image__img')
@@ -56,9 +56,9 @@ describe('BaseImage integration', () => {
 	})
 
 	describe('закрытие зума', () => {
-		it('должен закрывать зум по клику на оверлей когда closeOnOverlay=true', async () => {
+		it('должен закрывать зум по клику на оверлей когда zoomConfig.closeOnOverlay=true', async () => {
 			const { container } = render(BaseImage, {
-				props: { ...defaultProps, hasZoom: true, closeOnOverlay: true },
+				props: { ...defaultProps, zoomConfig: { hasZoom: true, closeOnOverlay: true } },
 			})
 
 			const img = container.querySelector('.base-image__img')
@@ -72,9 +72,9 @@ describe('BaseImage integration', () => {
 			expect(container.ownerDocument.querySelector('.base-image__zoom')).not.toBeInTheDocument()
 		})
 
-		it('не должен закрывать зум по клику на оверлей когда closeOnOverlay=false', async () => {
+		it('не должен закрывать зум по клику на оверлей когда zoomConfig.closeOnOverlay=false', async () => {
 			const { container } = render(BaseImage, {
-				props: { ...defaultProps, hasZoom: true, closeOnOverlay: false },
+				props: { ...defaultProps, zoomConfig: { hasZoom: true, closeOnOverlay: false } },
 			})
 
 			const img = container.querySelector('.base-image__img')
@@ -94,7 +94,7 @@ describe('BaseImage integration', () => {
 			const { container } = render(BaseImage, {
 				props: {
 					...defaultProps,
-					hasZoom: true,
+					zoomConfig: { hasZoom: true },
 					gallery: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
 				},
 			})
@@ -110,7 +110,7 @@ describe('BaseImage integration', () => {
 			const { container } = render(BaseImage, {
 				props: {
 					...defaultProps,
-					hasZoom: true,
+					zoomConfig: { hasZoom: true },
 					gallery: ['img1.jpg', 'img2.jpg'],
 				},
 			})
@@ -126,7 +126,7 @@ describe('BaseImage integration', () => {
 			const { container } = render(BaseImage, {
 				props: {
 					...defaultProps,
-					hasZoom: true,
+					zoomConfig: { hasZoom: true },
 					gallery: ['img1.jpg', 'img2.jpg'],
 				},
 			})
@@ -142,7 +142,7 @@ describe('BaseImage integration', () => {
 			const { container } = render(BaseImage, {
 				props: {
 					...defaultProps,
-					hasZoom: true,
+					zoomConfig: { hasZoom: true },
 					gallery: ['img1.jpg', 'img2.jpg'],
 				},
 			})

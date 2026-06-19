@@ -88,10 +88,10 @@
 </template>
 
 <script setup lang="ts">
-import { calcIconScale } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseText } from '@components/BaseText'
+import { calcIconScale } from '@utils/iconUtils'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'

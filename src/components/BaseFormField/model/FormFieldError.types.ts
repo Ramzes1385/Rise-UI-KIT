@@ -1,3 +1,5 @@
+import type { CustomClassProp } from '@composables/useCustomClass'
+
 /** Props компонента FormFieldError */
 export interface FormFieldErrorProps {
 	/** Текст ошибки */
@@ -5,7 +7,7 @@ export interface FormFieldErrorProps {
 	/** CSS-класс для обёртки */
 	className?: string
 	/** Кастомный CSS-класс обёртки */
-	customClass?: string | Record<string, string | undefined>
+	customClass?: CustomClassProp
 	/** Масштаб размера */
 	sizeScale?: number
 }

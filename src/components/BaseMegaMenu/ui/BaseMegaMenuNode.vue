@@ -65,10 +65,11 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
+import { calcIconScale } from '@utils/iconUtils'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../model/BaseMegaMenuNode.types'

@@ -54,7 +54,8 @@
 <script setup lang="ts">
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BaseTableRowEmits, BaseTableRowProps } from '../model/BaseTableRow.types'
 
 defineProps<BaseTableRowProps>()

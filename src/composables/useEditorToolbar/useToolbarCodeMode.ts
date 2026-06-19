@@ -1,11 +1,6 @@
+/** Composable: переключение режима кода/HTML в редакторе и синхронизация содержимого */
 import { nextTick, ref } from 'vue'
-import type { Ref } from 'vue'
-
-interface UseToolbarCodeModeOptions {
-	editorRef: Ref<HTMLDivElement | null>
-	codeTextareaRef: Ref<HTMLTextAreaElement | { textareaRef: HTMLTextAreaElement | null } | null>
-	onInput: () => void
-}
+import type { UseToolbarCodeModeOptions } from './useToolbarCodeMode.types'
 
 /**
  * Composable для переключения режима кода/HTML в редакторе и синхронизации содержимого.
@@ -80,4 +75,3 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 }
 
 export { useToolbarCodeMode }
-export type { UseToolbarCodeModeOptions }

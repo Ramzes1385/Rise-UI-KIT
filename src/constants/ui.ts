@@ -77,6 +77,7 @@ export const UI_SIZE = {
 	MINIMAP_WIDTH: 200,
 	MINIMAP_HEIGHT: 150,
 	PROGRESS_CIRCLE_RADIUS: 52,
+	DATEPICKER_GAP: 4,
 } as const
 
 // ─── Масштаб ──────────────────────────────────────────────────────
@@ -140,13 +141,14 @@ export const UI_RATING = {
 
 // ─── Числовые константы ────────────────────────────────────────────
 
-export const UI_PROGRESS_STEP_MIN = 5
-export const UI_PROGRESS_STEP_RANGE = 20
-export const CALENDAR_GRID_CELLS = 42
-export const MS_PER_DAY = 86_400_000
-export const SIZE_SCALE_DEFAULT = 100
-/** Относительное уменьшение sizeScale для второстепенного контента (описания, иконки на кнопках) */
-export const SIZE_SCALE_OFFSET = 10
-/** Padding кнопки закрытия в модальном окне */
-export const MODAL_CLOSE_BUTTON_PADDING = 2
-export const DEFAULT_VARIANT = 'default'
+export const UI_PROGRESS_STEP_MIN = 5 as const
+export const UI_PROGRESS_STEP_RANGE = 20 as const
+export const CALENDAR_GRID_CELLS = 42 as const
+export const MS_PER_DAY = 86_400_000 as const
+export const SIZE_SCALE_DEFAULT = 100 as const
+export const SIZE_SCALE_OFFSET = 10 as const
+export const MODAL_CLOSE_BUTTON_PADDING = 2 as const
+export const DEFAULT_VARIANT = 'default' as const
+
+/** Путь к SVG-спрайту иконок */
+export const UI_ICON_SPRITE_PATH = 'icons.svg' as const

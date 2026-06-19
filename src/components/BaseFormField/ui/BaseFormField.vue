@@ -37,7 +37,7 @@
 import { ref } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldValidateExpose } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
@@ -58,10 +58,8 @@ const formField = useFormField({
 	isRequired: () => props.isRequired,
 })
 
-defineExpose({
+defineExpose<FormFieldValidateExpose>({
 	rootRef,
-	focus: () => {},
-	blur: () => {},
 	validate: formField.validate,
 	reset: formField.reset,
 })

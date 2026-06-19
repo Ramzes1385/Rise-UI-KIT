@@ -1,14 +1,14 @@
 <template>
 	<div class="base-chat-selection-toolbar">
 		<div class="base-chat-selection-toolbar__info">
-			<BaseText :size-scale="sizeScale" :weight="UI_FONT_WEIGHT.SEMIBOLD"> {{ UI_CHAT_SELECTED_PREFIX }} {{ selectedCount }} </BaseText>
+			<BaseText :size-scale="sizeScale" :weight="UI_FONT_WEIGHT.SEMIBOLD"> {{ UI_CHAT_TEXT.SELECTED_PREFIX }} {{ selectedCount }} </BaseText>
 		</div>
 		<div class="base-chat-selection-toolbar__actions">
 			<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('forward')">
 				<template #left>
 					<BaseIcon name="reply" :size-scale="sizeScale" />
 				</template>
-				{{ UI_CHAT_FORWARD }}
+				{{ UI_CHAT_TEXT.FORWARD }}
 			</BaseButton>
 			<BaseButton
 				variant="ghost"
@@ -24,7 +24,7 @@
 				<template #left>
 					<BaseIcon name="close" :size-scale="sizeScale" />
 				</template>
-				{{ UI_CHAT_CANCEL }}
+				{{ UI_CHAT_TEXT.CANCEL }}
 			</BaseButton>
 		</div>
 	</div>
@@ -35,9 +35,6 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
-	UI_CHAT_CANCEL,
-	UI_CHAT_FORWARD,
-	UI_CHAT_SELECTED_PREFIX,
 	UI_CHAT_TEXT,
 	UI_FONT_WEIGHT,
 	SIZE_SCALE_DEFAULT,

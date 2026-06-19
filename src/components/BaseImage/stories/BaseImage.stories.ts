@@ -46,7 +46,6 @@ const meta: Meta<typeof BaseImage> = {
 		loading: 'lazy',
 		borderRadius: 12,
 		hasPlaceholder: true,
-		hasZoom: false,
 		sizeScale: 100,
 	},
 }
@@ -229,7 +228,7 @@ export const AspectRatio: Story = {
 /** С зумом по клику */
 export const WithZoom: Story = {
 	args: {
-		hasZoom: true,
+		zoomConfig: { hasZoom: true },
 		src: 'https://placehold.co/800x600/f97316/ffffff?text=Metal+Art+Zoom',
 	},
 	play: async ({ canvasElement, step }) => {
@@ -244,8 +243,7 @@ export const WithZoom: Story = {
 /** Зум с мини-картой и поворотом */
 export const ZoomWithMinimap: Story = {
 	args: {
-		hasZoom: true,
-		showMinimap: true,
+		zoomConfig: { hasZoom: true, showMinimap: true },
 		src: 'https://placehold.co/800x600/f97316/ffffff?text=Metal+Art+Zoom',
 	},
 	play: async ({ canvasElement, step }) => {
@@ -282,7 +280,7 @@ export const ZoomWithMinimap: Story = {
 /** Зум с галереей изображений */
 export const ZoomWithGallery: Story = {
 	args: {
-		hasZoom: true,
+		zoomConfig: { hasZoom: true },
 		src: 'https://placehold.co/800x600/f97316/ffffff?text=Image+1',
 		gallery: [
 			'https://placehold.co/800x600/f97316/ffffff?text=Image+1',
@@ -301,7 +299,7 @@ export const ZoomWithGallery: Story = {
 /** Зум с большой галереей */
 export const ZoomWithLargeGallery: Story = {
 	args: {
-		hasZoom: true,
+		zoomConfig: { hasZoom: true },
 		src: 'https://placehold.co/800x600/f97316/ffffff?text=Photo+1',
 		gallery: [
 			'https://placehold.co/800x600/f97316/ffffff?text=Photo+1',
@@ -376,7 +374,7 @@ export const DifferentSizes: Story = {
 /** Галерея: навигация prev/next */
 export const GalleryNavigation: Story = {
 	args: {
-		hasZoom: true,
+		zoomConfig: { hasZoom: true },
 		src: 'https://placehold.co/800x600/f97316/ffffff?text=1',
 		gallery: [
 			'https://placehold.co/800x600/f97316/ffffff?text=1',
@@ -486,7 +484,7 @@ export const LoadingTimeout: Story = {
 /** Escape закрывает зум */
 export const EscapeClosesZoom: Story = {
 	args: {
-		hasZoom: true,
+		zoomConfig: { hasZoom: true },
 		src: 'https://placehold.co/800x600/f97316/ffffff?text=Escape+Zoom',
 	},
 	play: async ({ canvasElement }) => {
@@ -500,8 +498,7 @@ export const EscapeClosesZoom: Story = {
 /** Клик по оверлею закрывает зум (closeOnOverlay=true) — покрывает handleOverlayClick */
 export const OverlayClickClosesZoom: Story = {
 	args: {
-		hasZoom: true,
-		closeOnOverlay: true,
+		zoomConfig: { hasZoom: true, closeOnOverlay: true },
 		src: 'https://placehold.co/800x600/22c55e/ffffff?text=Overlay+Close',
 	},
 	play: async ({ canvasElement }) => {
@@ -515,8 +512,7 @@ export const OverlayClickClosesZoom: Story = {
 /** Клик по оверлею при closeOnOverlay=false не закрывает зум */
 export const OverlayClickKeepsZoom: Story = {
 	args: {
-		hasZoom: true,
-		closeOnOverlay: false,
+		zoomConfig: { hasZoom: true, closeOnOverlay: false },
 		src: 'https://placehold.co/800x600/ef4444/ffffff?text=Overlay+Keep',
 	},
 	play: async ({ canvasElement }) => {
@@ -528,10 +524,10 @@ export const OverlayClickKeepsZoom: Story = {
 		await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
 	},
 }
-/** Клик по изображению без зума — покрывает if (!props.hasZoom) return (стр. 357) */
+/** Клик по изображению без зума — покрывает if (!resolvedHasZoom) return */
 export const ClickWithoutZoom: Story = {
 	args: {
-		hasZoom: false,
+		zoomConfig: { hasZoom: false },
 		src: 'https://placehold.co/400x300/64748b/ffffff?text=No+Zoom',
 	},
 	play: async ({ canvasElement }) => {
@@ -551,10 +547,10 @@ export const ZeroTimeout: Story = {
 		expect(canvasElement.querySelector('.base-image__error')).toBeFalsy()
 	},
 }
-/** Игнорируемая клавиша при открытом зуме — покрывает false-ветку event.key === 'Escape' (стр. 388) */
+/** Игнорируемая клавиша при открытом зуме — покрывает false-ветку event.key === 'Escape' */
 export const IgnoredKeyInZoom: Story = {
 	args: {
-		hasZoom: true,
+		zoomConfig: { hasZoom: true },
 		src: 'https://placehold.co/800x600/0ea5e9/ffffff?text=Ignored+Key',
 	},
 	play: async ({ canvasElement }) => {
@@ -564,6 +560,39 @@ export const IgnoredKeyInZoom: Story = {
 		expect(zoom).toBeInTheDocument()
 		closeZoom()
 		await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
+	},
+}
+/** customClass — покрывает elementKeys */
+export const WithCustomClass: Story = {
+	args: {
+		src: 'https://placehold.co/400x300/f97316/ffffff?text=CustomClass',
+		customClass: {
+			root: 'image-root',
+			placeholder: 'image-placeholder',
+			error: 'image-error',
+			img: 'image-img',
+			zoomOutButton: 'image-zoomOutButton',
+			zoomOutIcon: 'image-zoomOutIcon',
+			zoomScale: 'image-zoomScale',
+			zoomInButton: 'image-zoomInButton',
+			zoomInIcon: 'image-zoomInIcon',
+			zoomResetButton: 'image-zoomResetButton',
+			zoomResetIcon: 'image-zoomResetIcon',
+			rotateLeftButton: 'image-rotateLeftButton',
+			rotateLeftIcon: 'image-rotateLeftIcon',
+			rotateRightButton: 'image-rotateRightButton',
+			rotateRightIcon: 'image-rotateRightIcon',
+			zoomCloseButton: 'image-zoomCloseButton',
+			zoomCloseIcon: 'image-zoomCloseIcon',
+			galleryPrevButton: 'image-galleryPrevButton',
+			galleryPrevIcon: 'image-galleryPrevIcon',
+			galleryNextButton: 'image-galleryNextButton',
+			galleryNextIcon: 'image-galleryNextIcon',
+			galleryCounter: 'image-galleryCounter',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.image-root')).toBeTruthy()
 	},
 }
 /** Сокращение галереи при открытом зуме — покрывает fallback galleryList[idx] ?? props.src (стр. 351) */
@@ -584,7 +613,7 @@ export const GalleryShrinkFallback: Story = {
 		template: `
 			<div>
 				<button type="button" class="story-shrink" @click="shrinkGallery">Shrink</button>
-				<BaseImage :has-zoom="true" alt="Превью" :src="items[0]" :gallery="items" />
+				<BaseImage :zoom-config="{ hasZoom: true }" alt="Превью" :src="items[0]" :gallery="items" />
 			</div>
 		`,
 	}),

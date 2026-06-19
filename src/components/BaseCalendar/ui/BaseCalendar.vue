@@ -134,20 +134,25 @@
 <script setup lang="ts">
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useCalendar } from '@composables/useCalendar'
-import { useCalendarNavigation } from '@composables/useCalendarNavigation'
+import { useCalendarInteraction } from '@composables/useCalendarInteraction'
 import { useCalendarPopover } from '@composables/useCalendarPopover'
 import { useCalendarResolvedProps } from '@composables/useCalendarResolvedProps'
 import { UI_FONT_WEIGHT, UI_TEXT } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCalendar.style.scss'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
 import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '../model/BaseCalendar.types'
 
+// Дефолты резолвятся в useCalendarResolvedProps, а не через withDefaults:
+// 1) boolean-пропы с дефолтом true требуют wasPropPassed (?? не работает для false ?? true)
+// 2) вложенные config-объекты (timeConfig, displayConfig, constraints) дают тройной приоритет
+// См. useCalendarResolvedProps — единый источник дефолтов.
 const props = defineProps<BaseCalendarProps>()
 const resolvedProps = useCalendarResolvedProps(props)
 
@@ -250,7 +255,7 @@ const {
 	isOutOfRange,
 })
 
-const { handleDayClick, toggleAmPm, handleTimeChange, handleTodayClick } = useCalendarNavigation({
+const { handleDayClick, toggleAmPm, handleTimeChange, handleTodayClick } = useCalendarInteraction({
 	calendar,
 	popover: {
 		popoverDate,

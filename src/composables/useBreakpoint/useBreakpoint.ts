@@ -1,3 +1,4 @@
+/** Composable: реактивное отслеживание ширины окна и флагов брейкпоинтов */
 import { computed, onBeforeUnmount, onMounted, readonly, ref } from 'vue'
 import { BREAKPOINTS } from './useBreakpoint.types'
 import type { BreakpointName, UseBreakpointReturn } from './useBreakpoint.types'

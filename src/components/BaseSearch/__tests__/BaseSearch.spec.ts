@@ -1592,4 +1592,89 @@ describe('BaseSearch unit', () => {
 			expect(container.querySelector('.base-search__clear')).toBeInTheDocument()
 		})
 	})
+
+	describe('defineExpose (FormFieldExpose)', () => {
+		it('должен экспонировать rootRef指向 корневой элемент в default-режиме', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { global: globalConfig })
+
+			const exposed = wrapper.vm as unknown as { rootRef: HTMLElement | null }
+			expect(exposed.rootRef).toBeInstanceOf(HTMLElement)
+			expect(exposed.rootRef?.classList.contains('base-search')).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен вызывать focusActiveInput через exposed.focus()', async () => {
+			const focusMock = vi.fn()
+			const focusConfig = {
+				stubs: {
+					...globalConfig.stubs,
+					BaseInput: {
+						template: '<div class="base-input-stub"></div>',
+						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type', 'customClass'],
+						methods: { focus: focusMock },
+					},
+				},
+			}
+
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { global: focusConfig })
+
+			const exposed = wrapper.vm as unknown as { focus: () => void }
+			exposed.focus()
+
+			expect(focusMock).toHaveBeenCalled()
+			wrapper.unmount()
+		})
+
+		it('должен вызывать blur через exposed.blur() в default-режиме', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { global: globalConfig })
+
+			const exposed = wrapper.vm as unknown as { blur: () => void }
+			expect(() => exposed.blur()).not.toThrow()
+			wrapper.unmount()
+		})
+
+		it('должен возвращать isValid при вызове exposed.validate()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { props: { modelValue: 'тест' }, global: globalConfig })
+
+			const exposed = wrapper.vm as unknown as { validate: () => boolean }
+			const result = exposed.validate()
+
+			expect(typeof result).toBe('boolean')
+			expect(result).toBe(true)
+			wrapper.unmount()
+		})
+
+		it('должен возвращать false при validate с ошибкой', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { props: { modelValue: '', error: 'Обязательное поле' }, global: globalConfig })
+
+			const exposed = wrapper.vm as unknown as { validate: () => boolean }
+			const result = exposed.validate()
+
+			expect(result).toBe(false)
+			wrapper.unmount()
+		})
+
+		it('должен сбрасывать состояние при вызове exposed.reset()', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { props: { modelValue: 'тест' }, global: globalConfig })
+
+			const exposed = wrapper.vm as unknown as { reset: () => void }
+			expect(() => exposed.reset()).not.toThrow()
+			wrapper.unmount()
+		})
+
+		it('должен вызывать blur через document.activeElement в modal-режиме', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseSearch, { props: { mode: 'modal' }, global: globalConfig })
+
+			const exposed = wrapper.vm as unknown as { blur: () => void }
+			expect(() => exposed.blur()).not.toThrow()
+			wrapper.unmount()
+		})
+	})
 })

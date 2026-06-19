@@ -860,6 +860,36 @@ export const SideMirror: Story = {
   }),
 }
 
+/** customClass — покрывает elementKeys */
+export const WithCustomClass: Story = {
+  args: {
+    title: 'Custom classes',
+    items: BASIC_ITEMS,
+    activePath: '/dashboard',
+    customClass: {
+      root: 'sb-root',
+      header: 'sb-header',
+      title: 'sb-title',
+      toggle: 'sb-toggle',
+      navigation: 'sb-navigation',
+      body: 'sb-body',
+      footer: 'sb-footer',
+      loading: 'sb-loading',
+      collapsed: 'sb-collapsed',
+    },
+  },
+  render: args => ({
+    components: { BaseSideBar },
+    setup() {
+      return { args }
+    },
+    template: '<BaseSideBar v-bind="args" />',
+  }),
+  play: async ({ canvasElement }) => {
+    expect(canvasElement.querySelector('.sb-root')).toBeTruthy()
+  },
+}
+
 export const KeyboardNavigation: Story = {
   args: {
     title: 'Keyboard navigation',

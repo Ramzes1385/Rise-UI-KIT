@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseTree.
  * Демонстрирует все вариации, режимы выбора, слоты и CSS-состояния.
  */
@@ -6,8 +6,7 @@
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { TREE_VARIANTS } from '../model/BaseTree.types'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../model/BaseTree.types'
@@ -156,6 +155,7 @@ const meta: Meta<typeof BaseTree> = {
 			'onUpdate:selectedIds': { table: { disable: true } },
 			onToggle: { table: { disable: true } },
 			onSelect: { table: { disable: true } },
+			customClass: { control: 'object' },
 		},
 	}),
 	args: {
@@ -947,5 +947,22 @@ export const KeyboardEnterTogglePlay: Story = {
 		await waitFor(() => {
 			expect(canvasElement.querySelector('.base-tree__node--expanded')).toBeTruthy()
 		})
+	},
+}
+/** Кастомные CSS-классы */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'tree-root', node: 'tree-node', header: 'tree-header', arrow: 'tree-arrow', checkbox: 'tree-checkbox', icon: 'tree-icon', label: 'tree-label', actions: 'tree-actions', children: 'tree-children' },
+		items: SAMPLE_ITEMS,
+	},
+	render: args => ({
+		components: { BaseTree },
+		setup() {
+			return { args }
+		},
+		template: '<div style="max-width:360px;"><BaseTree v-bind="args" /></div>',
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.tree-root')).toBeTruthy()
 	},
 }

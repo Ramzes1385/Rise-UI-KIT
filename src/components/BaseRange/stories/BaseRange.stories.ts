@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для BaseRange — 100% coverage.
  * Покрывает все v-if ветки: range, vertical, tooltip, marks, label, custom thumb.
  */
 
 import { expect, fireEvent, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { RANGE_VARIANTS } from '../model/BaseRange.types'
 import BaseRange from '../ui/BaseRange.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -29,6 +28,7 @@ const meta: Meta<typeof BaseRange> = {
 			isVertical: { control: 'boolean' },
 			hasLabel: { control: 'boolean' },
 			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
+			customClass: { control: 'object' },
 		},
 	}),
 	args: { modelValue: 40, min: 0, max: 100, step: 1, variant: 'default', sizeScale: 100 },
@@ -668,11 +668,20 @@ export const WithCustomClass: Story = {
 		customClass: {
 			root: 'cc-root',
 			label: 'cc-label',
+			labelMin: 'cc-labelMin',
+			labelValue: 'cc-labelValue',
+			labelMax: 'cc-labelMax',
 			body: 'cc-body',
+			trackWrapper: 'cc-trackWrapper',
 			track: 'cc-track',
 			fill: 'cc-fill',
+			thumbContainer: 'cc-thumbContainer',
 			thumb: 'cc-thumb',
+			thumbDot: 'cc-thumbDot',
 			marks: 'cc-marks',
+			mark: 'cc-mark',
+			markTick: 'cc-markTick',
+			markText: 'cc-markText',
 		},
 	},
 	play: async ({ canvasElement }) => {

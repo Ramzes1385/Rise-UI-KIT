@@ -1,6 +1,9 @@
+/** Composable: управление полем формы (touched/dirty, валидация, reset) */
 import { computed, ref, watch } from 'vue'
+import { UI_TEXT } from '@constants'
 import type { UseFormFieldOptions, UseFormFieldReturn, ValidationRule } from './useFormField.types'
 
+/** Composable для управления полем формы — touched/dirty, валидация, обработчики blur/change, reset. */
 function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 	const isTouched = ref(false)
 	const isDirty = ref(false)
@@ -22,7 +25,7 @@ function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 
 		if (options.isRequired?.()) {
 			if (val === null || val === undefined || val === '') {
-				return 'Обязательное поле'
+				return UI_TEXT.REQUIRED_FIELD
 			}
 		}
 

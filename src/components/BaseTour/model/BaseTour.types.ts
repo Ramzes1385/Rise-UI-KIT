@@ -82,22 +82,6 @@ export interface BaseTourProps extends BaseComponentProps {
 	showSkip?: boolean
 	/** Показывать индикатор прогресса (точки шагов) */
 	showProgress?: boolean
-	/** @deprecated Используйте behavior.closeOnOverlayClick */
-	closeOnOverlayClick?: boolean
-	/** @deprecated Используйте behavior.closeOnEscape */
-	closeOnEscape?: boolean
-	/** @deprecated Используйте behavior.lockScroll */
-	lockScroll?: boolean
-	/** @deprecated Используйте behavior.scrollIntoView */
-	scrollIntoView?: boolean
-	/** @deprecated Используйте labels.next */
-	nextLabel?: string
-	/** @deprecated Используйте labels.prev */
-	prevLabel?: string
-	/** @deprecated Используйте labels.finish */
-	finishLabel?: string
-	/** @deprecated Используйте labels.skip */
-	skipLabel?: string
 }
 
 /** Контекст, передаваемый в default-слот карточки тура */

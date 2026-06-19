@@ -1,3 +1,4 @@
+/** Composable: управление поиском по таблице */
 import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
 import type { UseTableSearchOptions, UseTableSearchReturn } from './useTableSearch.types'
 

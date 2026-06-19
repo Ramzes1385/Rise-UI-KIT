@@ -40,6 +40,7 @@ const meta: Meta<typeof BaseChip> = {
 				control: 'text',
 				description: 'Контент (слот)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -379,5 +380,15 @@ export const LongContent: Story = {
 		const chip = canvasElement.querySelector('.base-chip')
 		expect(chip).toBeInTheDocument()
 		expect(chip?.textContent?.length).toBeGreaterThan(100)
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		content: 3,
+		customClass: { root: 'chip-root', badge: 'chip-badge' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.chip-root')).toBeTruthy()
 	},
 }

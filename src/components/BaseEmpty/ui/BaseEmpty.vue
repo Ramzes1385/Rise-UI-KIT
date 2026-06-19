@@ -42,10 +42,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'
 

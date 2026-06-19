@@ -1,4 +1,4 @@
-/** Утилиты: работа с буфером обмена */
+/** Утилиты: работа с буфером обмена (содержит сайд-эффект — обращение к navigator.clipboard) */
 
 /** Скопировать текст в буфер обмена, если API доступно */
 async function copyTextToClipboard(text: string): Promise<void> {

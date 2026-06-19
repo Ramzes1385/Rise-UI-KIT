@@ -3,6 +3,8 @@
  * Группированы в объект UI_EDITOR для удобного доступа.
  */
 
+import { UI_TEXT } from './ui'
+
 export const UI_EDITOR = {
 	BOLD: 'Жирный',
 	ITALIC: 'Курсив',
@@ -32,8 +34,8 @@ export const UI_EDITOR = {
 	HEADING_PREFIX: 'Заголовок',
 	WIDTH: 'Ширина',
 	HEIGHT: 'Высота',
-	APPLY: 'Применить',
-	DELETE: 'Удалить',
+	APPLY: UI_TEXT.APPLY,
+	DELETE: UI_TEXT.DELETE,
 	URL_PROMPT: 'Введите URL ссылки:',
 	DEFAULT_TEXT_COLOR: '#000000',
 	DEFAULT_BG_COLOR: '#ffff00',

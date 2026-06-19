@@ -1,3 +1,4 @@
+/** Composable: агрегация логики таблицы */
 import { computed, watch } from 'vue'
 import { useColumnResize } from '@composables/useColumnResize'
 import { useTableColumns } from '@composables/useTableColumns'
@@ -5,9 +6,7 @@ import { useTableData } from '@composables/useTableData'
 import { useTableExpand } from '@composables/useTableExpand'
 import { useTableSelection } from '@composables/useTableSelection'
 import { useTableToolbar } from '@composables/useTableToolbar'
-import {
-	TABLE_MIN_COL_WIDTH,
-} from '@constants/table'
+import { TABLE } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcRowNumber } from '@utils/tableUtils'
@@ -180,7 +179,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 	const { startResize: startColumnResize } = useColumnResize({
 		columns: localColumns,
 		visibleColumns,
-		minWidth: TABLE_MIN_COL_WIDTH,
+		minWidth: TABLE.MIN_COL_WIDTH,
 		onColumnResize: (key, width) => emit('column-resize', key, width),
 		onColumnsChange: columns => emit('columns-change', columns),
 	})

@@ -1,3 +1,4 @@
+/** Composable: управление сортировкой таблицы */
 import { ref } from 'vue'
 import type { UseTableSortOptions, UseTableSortReturn } from './useTableSort.types'
 import type { SortDirection, SortState, TableColumn } from '@components/BaseTable/model/BaseTable.types'

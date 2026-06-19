@@ -49,6 +49,7 @@ const meta: Meta<typeof BaseRating> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -429,5 +430,13 @@ export const SmoothHover: Story = {
 
 		await userEvent.unhover(star)
 		await waitFor(() => expect(fill.style.width).toBe('0%'))
+	},
+}
+export const WithCustomClass: Story = {
+	args: {
+		customClass: { root: 'rat-root', icon: 'rat-icon', iconFilled: 'rat-iconFilled' },
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.rat-root')).toBeTruthy()
 	},
 }

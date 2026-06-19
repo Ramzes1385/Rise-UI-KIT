@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseFileUpload.
  * Демонстрирует все вариации, состояния и интерактивные состояния.
  * Каждая story содержит play-функцию для 100% coverage.
  */
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { FILE_UPLOAD_VARIANTS } from '../model/BaseFileUpload.types'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -41,6 +40,7 @@ const meta: Meta<typeof BaseFileUpload> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 		hidden: ['onChange', 'onError', 'onRemove'],
 	}),
@@ -418,18 +418,32 @@ export const ChangeNoFiles: Story = {
 export const WithCustomClass: Story = {
 	args: {
 		customClass: {
-			root: 'cc-root',
-			label: 'cc-label',
-			dropzone: 'cc-dropzone',
-			text: 'cc-text',
-			hint: 'cc-hint',
+			root: 'file-upload-root',
+			label: 'file-upload-label',
+			dropzone: 'file-upload-dropzone',
+			text: 'file-upload-text',
+			hint: 'file-upload-hint',
+			list: 'file-upload-list',
+			item: 'file-upload-item',
+			preview: 'file-upload-preview',
+			previewImg: 'file-upload-previewImg',
+			info: 'file-upload-info',
+			name: 'file-upload-name',
+			meta: 'file-upload-meta',
+			ext: 'file-upload-ext',
+			size: 'file-upload-size',
+			status: 'file-upload-status',
+			progress: 'file-upload-progress',
+			remove: 'file-upload-remove',
+			errors: 'file-upload-errors',
+			errorItem: 'file-upload-errorItem',
 		},
 	},
 	play: async ({ canvasElement }) => {
 		await waitFor(() => {
-			expect(canvasElement.querySelector('.cc-root')).toBeTruthy()
+			expect(canvasElement.querySelector('.file-upload-root')).toBeTruthy()
 		})
-		expect(canvasElement.querySelector('.cc-dropzone')).toBeTruthy()
+		expect(canvasElement.querySelector('.file-upload-dropzone')).toBeTruthy()
 	},
 }
 /** Удаление одного из нескольких файлов — покрывает arrow `.map` (стр. 317) */

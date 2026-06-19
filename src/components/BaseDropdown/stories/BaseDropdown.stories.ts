@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseDropdown.
  * Демонстрирует все позиции и настройки.
  */
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { DROPDOWN_VARIANTS } from '../model/BaseDropdown.types'
 import BaseDropdown from '../ui/BaseDropdown.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -50,6 +49,7 @@ const meta: Meta<typeof BaseDropdown> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 		hidden: ['onClose', 'onUpdate:isOpen'],
 	}),
@@ -496,6 +496,32 @@ export const NoPreventMousedown: Story = {
 		const panelEl = document.body.querySelector('.base-dropdown__panel') as HTMLElement
 		panelEl?.dispatchEvent(mousedownEvent)
 		expect(mousedownEvent.defaultPrevented).toBe(false)
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		isOpen: true,
+		customClass: { root: 'dd-root', panel: 'dd-panel' },
+	},
+	render: args => ({
+		components: { BaseDropdown },
+		setup() {
+			return { args }
+		},
+		template: `
+			<div style="padding:80px;display:flex;justify-content:center;">
+				<BaseDropdown v-bind="args">
+					<button>Триггер</button>
+					<template #dropdown>
+						<div>Контент</div>
+					</template>
+				</BaseDropdown>
+			</div>
+		`,
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.dd-root')).toBeTruthy()
 	},
 }
 /** Объектный padding панели: оси x/y и точечные стороны */

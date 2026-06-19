@@ -64,20 +64,6 @@ export interface BaseImageProps extends BaseComponentProps {
 	convertToWebp?: boolean
 	/** Галерея изображений для навигации в режиме зума */
 	gallery?: string[]
-	/** @deprecated Используйте zoomConfig.hasZoom */
-	hasZoom?: boolean
-	/** @deprecated Используйте zoomConfig.closeOnOverlay */
-	closeOnOverlay?: boolean
-	/** @deprecated Используйте zoomConfig.initialScale */
-	initialScale?: number
-	/** @deprecated Используйте zoomConfig.zoomStep */
-	zoomStep?: number
-	/** @deprecated Используйте zoomConfig.minScale */
-	minScale?: number
-	/** @deprecated Используйте zoomConfig.maxScale */
-	maxScale?: number
-	/** @deprecated Используйте zoomConfig.showMinimap */
-	showMinimap?: boolean
 }
 
 /**

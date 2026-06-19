@@ -67,7 +67,7 @@
 import { ref } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
@@ -97,7 +97,7 @@ function handleChange(value: string | number): void {
 	emit('change', value)
 }
 
-defineExpose({
+defineExpose<FormFieldExpose>({
 	rootRef,
 	focus: () => rootRef.value?.querySelector('input')?.focus(),
 	blur: () => rootRef.value?.querySelector('input')?.blur(),

@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseSelect.
  * Демонстрирует все вариации, мультивыбор, поиск, ошибки и интерактивные состояния.
  */
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
 import { SELECT_VARIANTS } from '../model/BaseSelect.types'
 import BaseSelect from '../ui/BaseSelect.vue'
 import type { BaseSelectOption } from '../model/BaseSelect.types'
@@ -51,6 +50,7 @@ const meta: Meta<typeof BaseSelect> = {
 			isSearchable: { control: 'boolean' },
 			isDisabled: { control: 'boolean' },
 			error: { control: 'text' },
+			customClass: { control: 'object' },
 		},
 		hidden: ['modelValue', 'options', 'onUpdate:modelValue', 'onChange'],
 	}),
@@ -960,6 +960,7 @@ export const WithCustomClass: Story = {
 		label: 'С классами',
 		isRequired: true,
 		error: 'Ошибка',
+		isSearchable: true,
 		customClass: {
 			root: 'sel-root',
 			dropdown: 'sel-dropdown',
@@ -967,9 +968,25 @@ export const WithCustomClass: Story = {
 			required: 'sel-required',
 			trigger: 'sel-trigger',
 			values: 'sel-values',
+			tag: 'sel-tag',
+			tagText: 'sel-tagText',
+			tagClose: 'sel-tagClose',
+			icon: 'sel-icon',
+			valueText: 'sel-valueText',
 			placeholder: 'sel-placeholder',
 			arrow: 'sel-arrow',
 			errorText: 'sel-error',
+			dropdownContent: 'sel-dropdownContent',
+			search: 'sel-search',
+			searchInput: 'sel-searchInput',
+			options: 'sel-options',
+			option: 'sel-option',
+			checkbox: 'sel-checkbox',
+			optionIcon: 'sel-optionIcon',
+			optionContent: 'sel-optionContent',
+			optionLabel: 'sel-optionLabel',
+			optionDesc: 'sel-optionDesc',
+			noResults: 'sel-noResults',
 		},
 	},
 	render: args => ({

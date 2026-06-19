@@ -1,21 +1,8 @@
+/** Composable: обработчики ввода для маскированных полей */
 import { useInputMask } from './useInputMask'
-import type { Ref } from 'vue'
+import type { UseMaskedInputHandlersOptions, UseMaskedInputHandlersReturn } from './useMaskedInputHandlers.types'
 
-export type UseMaskedInputHandlersOptions = {
-	getMask: () => string
-	getValue: () => string | number | null
-	isPassword: () => boolean
-	emit: (event: 'update:modelValue', value: string) => void
-	onKeydown?: (e: KeyboardEvent) => void
-	inputRef: Ref<HTMLInputElement | null>
-}
-
-export type UseMaskedInputHandlersReturn = {
-	handleInput: (e: Event) => void
-	handleKeydown: (e: KeyboardEvent) => void
-	applyMask: (value: string, mask: string) => string
-}
-
+/** Обработчики ввода для маскированных полей — применение маски, управление курсором, эмит значений. */
 function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMaskedInputHandlersReturn {
 	const mask = useInputMask({ getMask: options.getMask })
 

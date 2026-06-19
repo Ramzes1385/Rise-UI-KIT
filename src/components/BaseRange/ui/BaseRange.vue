@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-range"
 		:class="[
 			variantClass,
@@ -86,6 +87,7 @@ import { computed, ref, useSlots } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
 import { UI_FONT_WEIGHT } from '@constants'
@@ -129,8 +131,13 @@ const emit = defineEmits<BaseRangeEmits>()
 defineSlots<BaseRangeSlots>()
 const slots = useSlots()
 
+const rootRef = ref<HTMLElement | null>(null)
 const trackRef = ref<HTMLElement | null>(null)
 const hasThumbSlot = computed((): boolean => Boolean(slots.thumb))
+
+const formField = useFormField({
+	value: () => props.modelValue,
+})
 
 const {
 	pointValues,
@@ -159,5 +166,13 @@ const { handleThumbDown, handleTrackDown, handleThumbKeydown } = useRangeDrag({
 	snapToStepValue,
 	setPointValue,
 	emitChange,
+})
+
+defineExpose<FormFieldExpose>({
+	rootRef,
+	focus: () => rootRef.value?.querySelector<HTMLElement>('.base-range__thumb')?.focus(),
+	blur: () => rootRef.value?.querySelector<HTMLElement>('.base-range__thumb')?.blur(),
+	validate: formField.validate,
+	reset: formField.reset,
 })
 </script>

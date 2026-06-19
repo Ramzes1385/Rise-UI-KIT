@@ -1,7 +1,4 @@
-/**
- * Утилиты инспекции DOM для contenteditable-редактора.
- * Заменяют устаревшие document.queryCommandState / queryCommandValue.
- */
+/** Утилиты: инспекция DOM для contenteditable-редактора */
 
 /** Блочные теги для определения родительского блока */
 const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DIV', 'BLOCKQUOTE', 'PRE', 'ADDRESS', 'LI'])

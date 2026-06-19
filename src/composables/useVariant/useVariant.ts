@@ -1,3 +1,4 @@
+/** Composable: управление вариантом отображения компонента (БЭМ-модификатор, CSS-переменная) */
 import { computed } from 'vue'
 import type { UseVariantOptions } from './useVariant.types'
 

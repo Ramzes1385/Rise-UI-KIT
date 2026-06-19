@@ -1,3 +1,4 @@
+/** Composable: изменение ширины колонок таблицы через перетаскивание */
 import { onBeforeUnmount, ref } from 'vue'
 import { toHTMLElement } from '@utils/domUtils'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './useColumnResize.types'

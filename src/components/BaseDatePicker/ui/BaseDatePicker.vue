@@ -50,15 +50,19 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDatePickerState } from '@composables/useDatePickerState'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldValidateExpose } from '@composables/useFormField'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT, UI_SIZE } from '@constants'
 import '../styles/BaseDatePicker.style.scss'
 import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
 import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../model/BaseDatePicker.types'
 
+// Дефолты резолвятся через useExplicitPropDetection, а не withDefaults:
+// 1) boolean-пропы с дефолтом true (isReadonly, closeOnClickOutside, closeOnEscape) требуют wasPropPassed
+// 2) календарные под-пропы (locale, firstDayOfWeek и др.) явно пробрасываются в calendarConfig
+//    только если родитель их передал — иначе дефолты конфига не перезаписываются.
 const props = defineProps<BaseDatePickerProps>()
 const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
 
@@ -75,7 +79,7 @@ const resolvedProps = computed(() => ({
 	isClearable: props.isClearable ?? false,
 	closeOnClickOutside: resolveBooleanPropDefault('closeOnClickOutside', props.closeOnClickOutside, true),
 	closeOnEscape: resolveBooleanPropDefault('closeOnEscape', props.closeOnEscape, true),
-	gap: props.gap ?? 4,
+	gap: props.gap ?? UI_SIZE.DATEPICKER_GAP,
 	label: props.label ?? '',
 	error: props.error ?? '',
 	isMultiMonth: props.isMultiMonth ?? false,
@@ -126,10 +130,8 @@ const {
 	calendarConfig,
 })
 
-defineExpose({
+defineExpose<FormFieldValidateExpose>({
 	rootRef: wrapperRef,
-	focus: () => {},
-	blur: () => {},
 	validate: formField.validate,
 	reset: formField.reset,
 })

@@ -61,12 +61,13 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseNotification.style.scss'
-import type { BaseNotificationEmits, BaseNotificationProps, NotificationItem } from '../model/BaseNotification.types'
+import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots, NotificationItem } from '../model/BaseNotification.types'
 
 const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	title: '',
@@ -87,6 +88,8 @@ const typeIconMap: Record<string, string> = {
 }
 
 const emit = defineEmits<BaseNotificationEmits>()
+
+defineSlots<BaseNotificationSlots>()
 
 const notifications = ref<NotificationItem[]>([])
 let nextId = 0

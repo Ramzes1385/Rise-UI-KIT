@@ -1,10 +1,8 @@
+/** Composable: контекстное меню медиа в редакторе (изменение размера, удаление) */
 import { reactive, ref } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import type { MediaContextMenuState } from './useEditorToolbar.types'
-
-interface UseToolbarMediaMenuOptions {
-	onInput: () => void
-}
+import type { UseToolbarMediaMenuOptions } from './useToolbarMediaMenu.types'
 
 /**
  * Composable для контекстного меню медиа в редакторе: изменение размера изображений/видео, скрытие/удаление.
@@ -76,4 +74,3 @@ function useToolbarMediaMenu(options: UseToolbarMediaMenuOptions) {
 }
 
 export { useToolbarMediaMenu }
-export type { UseToolbarMediaMenuOptions }

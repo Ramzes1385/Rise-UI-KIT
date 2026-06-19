@@ -153,13 +153,14 @@ import { ref } from 'vue'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { useSelect } from '@composables/useSelect'
-import '../styles/BaseSelect.style.scss'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import '../styles/BaseSelect.style.scss'
+import { calcIconScale } from '@utils/iconUtils'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
 import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model/BaseSelect.types'
 
@@ -234,7 +235,7 @@ const {
 	onBlur: formField.onBlur,
 })
 
-defineExpose({
+defineExpose<FormFieldExpose & { selectRef: HTMLDivElement | null }>({
 	rootRef: selectRef,
 	selectRef,
 	focus: () => selectRef.value?.focus(),

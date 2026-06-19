@@ -69,9 +69,10 @@
 </template>
 
 <script setup lang="ts">
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { UI_TEXT } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import type { BaseSelectDropdownEmits, BaseSelectDropdownProps, BaseSelectDropdownSlots } from '../model/BaseSelectDropdown.types'
 
 defineProps<BaseSelectDropdownProps>()

@@ -1,3 +1,4 @@
+/** Composable: управление галереей изображений (навигация, текущий src) */
 import { computed, ref } from 'vue'
 import type { UseImageGalleryOptions, UseImageGalleryReturn } from './useImageGallery.types'
 

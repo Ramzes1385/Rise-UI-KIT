@@ -1,7 +1,9 @@
+/** Composable: раскрытие и сворачивание строк таблицы */
 import { ref, watch } from 'vue'
 import type { UseTableExpandOptions, UseTableExpandReturn } from './useTableExpand.types'
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
 
+/** Composable для раскрытия/сворачивания строк таблицы — отслеживание expanded-состояния, toggle. */
 function useTableExpand(options: UseTableExpandOptions): UseTableExpandReturn {
 	const { rows, emit } = options
 

@@ -1,21 +1,12 @@
-import { computed, type Ref } from 'vue'
+/** Composable: навигация по календарю — переключение месяцев, лет и видов отображения */
+import { computed } from 'vue'
 import { toDateOnly } from '@utils/dateUtils'
-import type { CalendarView } from './useCalendar.types'
-
-interface UseCalendarNavigationOptions {
-	currentMonth: Ref<number>
-	currentYear: Ref<number>
-	currentView: Ref<CalendarView>
-	minDate: () => Date | null
-	maxDate: () => Date | null
-	disableFrom: () => Date | null
-	disableTo: () => Date | null
-}
+import type { UseCalendarViewNavigationOptions } from './useCalendarViewNavigation.types'
 
 /**
  * Composable для навигации по календарю: переключение месяцев, лет и видов отображения.
  */
-function useCalendarNavigation(options: UseCalendarNavigationOptions) {
+function useCalendarViewNavigation(options: UseCalendarViewNavigationOptions) {
 	const { currentMonth, currentYear, currentView, minDate, maxDate, disableFrom, disableTo } = options
 
 	const canPrev = computed((): boolean => {
@@ -115,5 +106,4 @@ function useCalendarNavigation(options: UseCalendarNavigationOptions) {
 	}
 }
 
-export { useCalendarNavigation }
-export type { UseCalendarNavigationOptions }
+export { useCalendarViewNavigation }

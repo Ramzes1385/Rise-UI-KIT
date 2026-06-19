@@ -1,3 +1,4 @@
+/** Composable: управление состоянием изображения (загрузка, fallback, оптимизированные src) */
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { UI_SIZE } from '@constants'
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '@utils/imageUtils'

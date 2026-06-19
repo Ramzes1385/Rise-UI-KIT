@@ -154,13 +154,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
 import { UI_FONT_WEIGHT, UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
 

@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BaseCalendar.
  * Демонстрирует все вариации: single, range, multiple, time, highlights, disabled.
  */
 
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { CALENDAR_VARIANTS } from '../model/BaseCalendar.types'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
@@ -40,7 +39,7 @@ const WEEKENDS: CalendarWeekends = {
 const meta: Meta<typeof BaseCalendar> = {
 	title: 'UI/BaseCalendar',
 	component: BaseCalendar,
-	argTypes: buildArgTypes({
+		argTypes: buildArgTypes({
 		props: {
 			modelValue: {
 				control: 'date',
@@ -77,70 +76,62 @@ const meta: Meta<typeof BaseCalendar> = {
 				control: 'text',
 				description: 'Локаль для форматирования дат (например, ru-RU). Пример: `locale="en-US"`',
 			},
-			showTime: {
+			'timeConfig.showTime': {
 				control: 'boolean',
-				description: 'Показывать блок выбора времени. Пример: `show-time`',
+				description: 'Показывать блок выбора времени. Пример: `:time-config="{ showTime: true }"`',
 			},
-			showSeconds: {
+			'timeConfig.showSeconds': {
 				control: 'boolean',
-				description: 'Показывать выбор секунд. Пример: `show-seconds`',
+				description: 'Показывать выбор секунд. Пример: `:time-config="{ showSeconds: true }"`',
 			},
-			is24Hour: {
+			'timeConfig.is24Hour': {
 				control: 'boolean',
-				description: 'Использовать 24-часовой формат времени. Пример: `:is24-hour="false"`',
+				description: 'Использовать 24-часовой формат времени. Пример: `:time-config="{ is24Hour: false }"`',
 			},
-			showWeekNumber: {
+			'displayConfig.showWeekNumber': {
 				control: 'boolean',
-				description: 'Отображать номера недель. Пример: `show-week-number`',
+				description: 'Отображать номера недель. Пример: `:display-config="{ showWeekNumber: true }"`',
 			},
-			showDatePopover: {
+			'displayConfig.showNavigation': {
 				control: 'boolean',
-				description: 'Показывать всплывающее окно с событиями при клике на дату. Пример: `show-date-popover`',
+				description: 'Отображать кнопки переключения месяцев/лет в шапке. Пример: `:display-config="{ showNavigation: false }"`',
 			},
-			isDisabled: {
-				control: 'boolean',
-				description: 'Отключить взаимодействие с календарем. Пример: `is-disabled`',
-			},
-			showNavigation: {
-				control: 'boolean',
-				description: 'Отображать кнопки переключения месяцев/лет в шапке. Пример: `:show-navigation="false"`',
-			},
-			canSwitchView: {
+			'displayConfig.canSwitchView': {
 				control: 'boolean',
 				description:
-					'Разрешить смену вида (дни/месяцы/годы) при клике на заголовок. Пример: `:can-switch-view="false"`',
+					'Разрешить смену вида (дни/месяцы/годы) при клике на заголовок. Пример: `:display-config="{ canSwitchView: false }"`',
 			},
-			showTodayButton: {
+			'displayConfig.showTodayButton': {
 				control: 'boolean',
-				description: 'Отображать кнопку "Сегодня" в подвале. Пример: `:show-today-button="false"`',
+				description: 'Отображать кнопку "Сегодня" в подвале. Пример: `:display-config="{ showTodayButton: false }"`',
 			},
-			showYear: {
+			'displayConfig.showYear': {
 				control: 'boolean',
-				description: 'Отображать год в заголовке. Пример: `:show-year="false"`',
+				description: 'Отображать год в заголовке. Пример: `:display-config="{ showYear: false }"`',
 			},
-			minDate: {
+			'constraints.minDate': {
 				control: 'date',
-				description: 'Минимально допустимая дата для выбора. Пример: `:min-date="new Date(2024, 0, 1)"`',
+				description: 'Минимально допустимая дата для выбора. Пример: `:constraints="{ minDate: new Date(2024, 0, 1) }"`',
 			},
-			maxDate: {
+			'constraints.maxDate': {
 				control: 'date',
-				description: 'Максимально допустимая дата для выбора. Пример: `:max-date="new Date()"`',
+				description: 'Максимально допустимая дата для выбора. Пример: `:constraints="{ maxDate: new Date() }"`',
 			},
-			disabledDates: {
+			'constraints.disabledDates': {
 				control: 'object',
-				description: 'Список отключенных дат. Пример: `:disabled-dates="[new Date()]"`',
+				description: 'Список отключенных дат. Пример: `:constraints="{ disabledDates: [new Date()] }"`',
 			},
-			disabledWeekdays: {
+			'constraints.disabledWeekdays': {
 				control: 'object',
-				description: 'Отключенные дни недели (0-6). Пример: `:disabled-weekdays="[0, 6]"`',
+				description: 'Отключенные дни недели (0-6). Пример: `:constraints="{ disabledWeekdays: [0, 6] }"`',
 			},
-			disableFrom: {
+			'constraints.disableFrom': {
 				control: 'date',
-				description: 'Отключить даты начиная с указанной. Пример: `:disable-from="new Date()"`',
+				description: 'Отключить даты начиная с указанной. Пример: `:constraints="{ disableFrom: new Date() }"`',
 			},
-			disableTo: {
+			'constraints.disableTo': {
 				control: 'date',
-				description: 'Отключить даты до указанной. Пример: `:disable-to="new Date()"`',
+				description: 'Отключить даты до указанной. Пример: `:constraints="{ disableTo: new Date() }"`',
 			},
 			highlights: {
 				control: 'object',
@@ -167,6 +158,7 @@ const meta: Meta<typeof BaseCalendar> = {
 				control: 'number',
 				description: 'Начальный год. Пример: `:initial-year="2025"`',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 	args: {
@@ -175,16 +167,10 @@ const meta: Meta<typeof BaseCalendar> = {
 		sizeScale: 100,
 		firstDayOfWeek: 1,
 		locale: 'ru-RU',
-		showTime: false,
-		showSeconds: false,
-		is24Hour: true,
-		showWeekNumber: false,
+		timeConfig: { showTime: false, showSeconds: false, is24Hour: true },
+		displayConfig: { showWeekNumber: false, showNavigation: true, canSwitchView: true, showTodayButton: true, showYear: true },
 		showDatePopover: false,
 		isDisabled: false,
-		showNavigation: true,
-		canSwitchView: true,
-		showTodayButton: true,
-		showYear: true,
 	},
 }
 
@@ -360,7 +346,7 @@ export const MultipleSelection: Story = {
 /** Выбор даты вместе со временем */
 export const WithTime: Story = {
 	args: {
-		showTime: true,
+		timeConfig: { showTime: true },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -378,7 +364,7 @@ export const WithTime: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: '<BaseCalendar show-time v-model="value" />',
+				code: '<BaseCalendar :time-config="{ showTime: true }" v-model="value" />',
 			},
 		},
 	},
@@ -386,8 +372,7 @@ export const WithTime: Story = {
 /** Выбор времени с секундами */
 export const WithTimeAndSeconds: Story = {
 	args: {
-		showTime: true,
-		showSeconds: true,
+		timeConfig: { showTime: true, showSeconds: true },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -405,7 +390,7 @@ export const WithTimeAndSeconds: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: '<BaseCalendar show-time show-seconds v-model="value" />',
+				code: '<BaseCalendar :time-config="{ showTime: true, showSeconds: true }" v-model="value" />',
 			},
 		},
 	},
@@ -413,9 +398,7 @@ export const WithTimeAndSeconds: Story = {
 /** 12-часовой формат времени с AM/PM */
 export const Time12Hour: Story = {
 	args: {
-		showTime: true,
-		showSeconds: true,
-		is24Hour: false,
+		timeConfig: { showTime: true, showSeconds: true, is24Hour: false },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -433,7 +416,7 @@ export const Time12Hour: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: '<BaseCalendar show-time show-seconds :is24-hour="false" v-model="value" />',
+				code: '<BaseCalendar :time-config="{ showTime: true, showSeconds: true, is24Hour: false }" v-model="value" />',
 			},
 		},
 	},
@@ -495,7 +478,7 @@ export const WithWeekends: Story = {
 /** Отключённые отдельные даты */
 export const WithDisabledDates: Story = {
 	args: {
-		disabledDates: [new Date(y, m, 10), new Date(y, m, 11), new Date(y, m, 12)],
+		constraints: { disabledDates: [new Date(y, m, 10), new Date(y, m, 11), new Date(y, m, 12)] },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -513,7 +496,7 @@ export const WithDisabledDates: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseCalendar :disabled-dates="[new Date(y, m, 10)]" v-model="value" />`,
+				code: `<BaseCalendar :constraints="{ disabledDates: [new Date(y, m, 10)] }" v-model="value" />`,
 			},
 		},
 	},
@@ -521,8 +504,7 @@ export const WithDisabledDates: Story = {
 /** Отключение дат вне заданного диапазона */
 export const WithDisableRange: Story = {
 	args: {
-		disableTo: new Date(y, m, 5),
-		disableFrom: new Date(y, m, 25),
+		constraints: { disableTo: new Date(y, m, 5), disableFrom: new Date(y, m, 25) },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -540,7 +522,7 @@ export const WithDisableRange: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseCalendar :disable-to="disableTo" :disable-from="disableFrom" v-model="value" />`,
+				code: `<BaseCalendar :constraints="{ disableTo, disableFrom }" v-model="value" />`,
 			},
 		},
 	},
@@ -548,8 +530,7 @@ export const WithDisableRange: Story = {
 /** Ограничение навигации через minDate и maxDate */
 export const WithMinMax: Story = {
 	args: {
-		minDate: new Date(y, m - 2, 1),
-		maxDate: new Date(y, m + 2, 0),
+		constraints: { minDate: new Date(y, m - 2, 1), maxDate: new Date(y, m + 2, 0) },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -567,7 +548,7 @@ export const WithMinMax: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseCalendar :min-date="minDate" :max-date="maxDate" v-model="value" />`,
+				code: `<BaseCalendar :constraints="{ minDate, maxDate }" v-model="value" />`,
 			},
 		},
 	},
@@ -575,8 +556,7 @@ export const WithMinMax: Story = {
 /** Ограничение выбора дат диапазоном minDate–maxDate */
 export const WithMinMaxDates: Story = {
 	args: {
-		minDate: new Date(y, m, 5),
-		maxDate: new Date(y, m, 25),
+		constraints: { minDate: new Date(y, m, 5), maxDate: new Date(y, m, 25) },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -603,7 +583,7 @@ export const WithMinMaxDates: Story = {
 /** Отображение номеров недель */
 export const WithWeekNumbers: Story = {
 	args: {
-		showWeekNumber: true,
+		displayConfig: { showWeekNumber: true },
 	},
 	render: args => ({
 		components: { BaseCalendar },
@@ -618,7 +598,7 @@ export const WithWeekNumbers: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: '<BaseCalendar show-week-number v-model="value" />',
+				code: '<BaseCalendar :display-config="{ showWeekNumber: true }" v-model="value" />',
 			},
 		},
 	},
@@ -806,8 +786,8 @@ export const WeekendsWithHighlights: Story = {
 /** Все функции сразу: время, недели, выходные, подсветка */
 export const FullFeatured: Story = {
 	args: {
-		showTime: true,
-		showWeekNumber: true,
+		timeConfig: { showTime: true },
+		displayConfig: { showWeekNumber: true },
 		weekends: WEEKENDS,
 		highlights: HIGHLIGHTS,
 	},
@@ -827,7 +807,7 @@ export const FullFeatured: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseCalendar show-time show-week-number :weekends="weekends" :highlights="highlights" v-model="value" />`,
+				code: `<BaseCalendar :time-config="{ showTime: true }" :display-config="{ showWeekNumber: true }" :weekends="weekends" :highlights="highlights" v-model="value" />`,
 			},
 		},
 	},
@@ -1046,23 +1026,23 @@ export const SwitchView: Story = {
 }
 /** Без кнопок навигации по месяцам */
 export const NoNavigation: Story = {
-	args: { showNavigation: false },
+	args: { displayConfig: { showNavigation: false } },
 }
 /** Без возможности смены вида календаря */
 export const NoSwitchView: Story = {
-	args: { canSwitchView: false },
+	args: { displayConfig: { canSwitchView: false } },
 }
 /** Без кнопки «Сегодня» */
 export const NoTodayButton: Story = {
-	args: { showTodayButton: false },
+	args: { displayConfig: { showTodayButton: false } },
 }
 /** Без отображения года в заголовке */
 export const NoYear: Story = {
-	args: { showYear: false },
+	args: { displayConfig: { showYear: false } },
 }
 /** Переключение AM/PM в 12-часовом формате */
 export const ToggleAmPm: Story = {
-	args: { showTime: true, is24Hour: false },
+	args: { timeConfig: { showTime: true, is24Hour: false } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1086,7 +1066,7 @@ export const ToggleAmPm: Story = {
 }
 /** Изменение времени в полях ввода */
 export const ChangeTime: Story = {
-	args: { showTime: true },
+	args: { timeConfig: { showTime: true } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1154,7 +1134,7 @@ export const DatePopover: Story = {
 }
 /** Отключённые дни недели */
 export const DisabledWeekdays: Story = {
-	args: { disabledWeekdays: [0, 6] },
+	args: { constraints: { disabledWeekdays: [0, 6] } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1213,7 +1193,7 @@ export const SelectRangeReverse: Story = {
 }
 /** Изменение времени в 12-часовом формате */
 export const ChangeTime12Hour: Story = {
-	args: { showTime: true, is24Hour: false },
+	args: { timeConfig: { showTime: true, is24Hour: false } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1255,7 +1235,7 @@ export const ChangeTime12Hour: Story = {
 }
 /** Изменение времени с секундами */
 export const ChangeTimeWithSeconds: Story = {
-	args: { showTime: true, showSeconds: true },
+	args: { timeConfig: { showTime: true, showSeconds: true } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1286,7 +1266,7 @@ export const ChangeTimeWithSeconds: Story = {
 }
 /** Интерактивный клик по отключённому дню */
 export const ClickDisabledDayInteractive: Story = {
-	args: { disabledWeekdays: [0, 6] },
+	args: { constraints: { disabledWeekdays: [0, 6] } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1489,7 +1469,7 @@ export const DatePopoverWithHighlights: Story = {
 }
 /** Ввод PM часа в 12-часовом формате — покрывает from12h строка 374 */
 export const ChangeTime12HourPM: Story = {
-	args: { showTime: true, is24Hour: false },
+	args: { timeConfig: { showTime: true, is24Hour: false } },
 	render: args => ({
 		components: { BaseCalendar },
 		setup() {
@@ -1556,5 +1536,26 @@ export const CustomColor: Story = {
 	play: async ({ canvasElement }) => {
 		const calendar = canvasElement.querySelector('.base-calendar') as HTMLElement
 		expect(calendar).toBeInTheDocument()
+	},
+}
+/** Кастомные CSS-классы через customClass */
+export const WithCustomClass: Story = {
+	args: {
+		customClass: {
+			root: 'cal-root',
+			header: 'cal-header',
+			weekdays: 'cal-weekdays',
+			grid: 'cal-grid',
+			dayWrapper: 'cal-dayWrapper',
+			day: 'cal-day',
+			popover: 'cal-popover',
+			months: 'cal-months',
+			years: 'cal-years',
+			time: 'cal-time',
+			footer: 'cal-footer',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.cal-root')).toBeTruthy()
 	},
 }

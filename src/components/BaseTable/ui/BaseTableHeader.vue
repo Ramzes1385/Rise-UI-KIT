@@ -54,10 +54,11 @@
 
 <script setup lang="ts">
 import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { UI_ARIA } from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
 import type { BaseTableHeaderEmits, BaseTableHeaderProps } from '../model/BaseTableHeader.types'
 

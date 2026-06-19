@@ -1,4 +1,6 @@
+/** Composable: координирование пошагового тура (переходы, фокусировка, стили) */
 import { computed, nextTick, ref } from 'vue'
+import { UI_TOUR } from '@constants'
 import { DEFAULT_RADIUS } from '../useTourLogic'
 import type { UseTourCoordinationOptions } from './useTourCoordination.types'
 import type { BaseTourSlotContext } from '@components/BaseTour/model/BaseTour.types'
@@ -15,12 +17,12 @@ function useTourCoordination(options: UseTourCoordinationOptions) {
 	let focusTimer: ReturnType<typeof setTimeout> | null = null
 	let focusRaf = 0
 
-	const resolvedNextLabel = computed((): string => props.labels?.next ?? props.nextLabel)
-	const resolvedPrevLabel = computed((): string => props.labels?.prev ?? props.prevLabel)
-	const resolvedFinishLabel = computed((): string => props.labels?.finish ?? props.finishLabel)
-	const resolvedCloseOnOverlayClick = computed((): boolean => props.behavior?.closeOnOverlayClick ?? props.closeOnOverlayClick)
-	const resolvedCloseOnEscape = computed((): boolean => props.behavior?.closeOnEscape ?? props.closeOnEscape)
-	const resolvedLockScroll = computed((): boolean => props.behavior?.lockScroll ?? props.lockScroll)
+	const resolvedNextLabel = computed((): string => props.labels?.next ?? UI_TOUR.NEXT)
+	const resolvedPrevLabel = computed((): string => props.labels?.prev ?? UI_TOUR.PREV)
+	const resolvedFinishLabel = computed((): string => props.labels?.finish ?? UI_TOUR.FINISH)
+	const resolvedCloseOnOverlayClick = computed((): boolean => props.behavior?.closeOnOverlayClick ?? true)
+	const resolvedCloseOnEscape = computed((): boolean => props.behavior?.closeOnEscape ?? true)
+	const resolvedLockScroll = computed((): boolean => props.behavior?.lockScroll ?? true)
 
 	const spotlightStyle = computed((): Record<string, string> | null => {
 		const value = geometry.value

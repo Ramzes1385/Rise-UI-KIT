@@ -1,3 +1,4 @@
+/** Composable: разрешение padding (число/объект) в отступы по четырём сторонам */
 import { computed } from 'vue'
 import type {
 	PaddingProp,

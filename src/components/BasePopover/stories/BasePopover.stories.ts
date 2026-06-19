@@ -1,12 +1,11 @@
-/**
+﻿/**
  * Stories для компонента BasePopover.
  * Демонстрирует все позиции, варианты и интерактивные состояния.
  */
 
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { POPOVER_VARIANTS } from '../model/BasePopover.types'
 import BasePopover from '../ui/BasePopover.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -31,6 +30,7 @@ const meta: Meta<typeof BasePopover> = {
 				control: { type: 'range', min: 50, max: 200, step: 10 },
 				description: 'Масштаб размера (50–200%, по умолчанию 100)',
 			},
+			customClass: { control: 'object' },
 		},
 		hidden: ['onClose', 'onUpdate:isOpen'],
 	}),
@@ -503,4 +503,28 @@ export const LongContent: Story = {
 			</div>
 		`,
 	}),
+}
+export const WithCustomClass: Story = {
+	args: {
+		isOpen: true,
+		customClass: { root: 'pop-root', trigger: 'pop-trigger', arrow: 'pop-arrow', inner: 'pop-inner', panel: 'pop-panel' },
+	},
+	render: args => ({
+		components: { BasePopover },
+		setup() {
+			const isOpen = ref(true)
+			return { args, isOpen }
+		},
+		template: `
+			<div style="padding:80px;display:flex;justify-content:center;">
+				<BasePopover v-bind="args" v-model:is-open="isOpen">
+					<template #trigger><button>Триггер</button></template>
+					<div style="padding:12px;">Контент</div>
+				</BasePopover>
+			</div>
+		`,
+	}),
+	play: async ({ canvasElement }) => {
+		expect(canvasElement.querySelector('.pop-root')).toBeTruthy()
+	},
 }

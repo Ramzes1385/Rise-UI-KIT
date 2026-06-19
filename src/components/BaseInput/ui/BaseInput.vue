@@ -103,13 +103,14 @@
 import { computed, ref, toRef } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { BaseIcon, calcIconScale } from '@components/BaseIcon'
+import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
+import { useFormField, type FormFieldExpose } from '@composables/useFormField'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
 import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
+import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../model/BaseInput.types'
 
@@ -180,7 +181,7 @@ function handleFocus(e: FocusEvent): void {
 	emit('focus', e)
 }
 
-defineExpose({
+defineExpose<FormFieldExpose & { inputRef: HTMLInputElement | null }>({
 	rootRef: inputRef,
 	inputRef,
 	/* istanbul ignore next — defensive: optional chaining для public API на unmount */

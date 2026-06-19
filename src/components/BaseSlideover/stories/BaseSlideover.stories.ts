@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Stories для компонента BaseSlideover.
  * Демонстрирует все вариации, состояния и слоты.
  */
@@ -6,8 +6,7 @@
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -82,6 +81,7 @@ const meta: Meta<typeof BaseSlideover> = {
 				description:
 					'Отступы контента. Число (px) задаёт горизонталь (вертикаль базовая). Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения (например { x: 25, y: 43 }); стороны переопределяют оси. По умолчанию 24',
 			},
+			customClass: { control: 'object' },
 		},
 	}),
 
@@ -681,7 +681,10 @@ export const WithCustomClass: Story = {
 		customClass: {
 			root: 'my-slideover-root',
 			panel: 'my-slideover-panel',
+			header: 'my-slideover-header',
 			title: 'my-slideover-title',
+			body: 'my-slideover-body',
+			footer: 'my-slideover-footer',
 		},
 	},
 	render: args => ({
