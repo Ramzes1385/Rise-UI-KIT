@@ -55,7 +55,7 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, SIZE_SCALE_OFFSET } from '@constants'
 import '../styles/BaseAlert.style.scss'
-import type { BaseAlertEmits, BaseAlertProps } from '../model/BaseAlert.types'
+import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/BaseAlert.types'
 
 const props = withDefaults(defineProps<BaseAlertProps>(), {
 	type: 'info',
@@ -64,6 +64,7 @@ const props = withDefaults(defineProps<BaseAlertProps>(), {
 })
 
 const emit = defineEmits<BaseAlertEmits>()
+defineSlots<BaseAlertSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'])
 

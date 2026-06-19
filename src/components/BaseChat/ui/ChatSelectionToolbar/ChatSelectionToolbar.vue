@@ -18,7 +18,7 @@
 				<template #left>
 					<BaseIcon name="x-circle" :size-scale="sizeScale" />
 				</template>
-				{{ UI_CHAT_DELETE }}
+				{{ UI_CHAT_TEXT.DELETE }}
 			</BaseButton>
 			<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('cancel')">
 				<template #left>
@@ -36,9 +36,9 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
 	UI_CHAT_CANCEL,
-	UI_CHAT_DELETE,
 	UI_CHAT_FORWARD,
 	UI_CHAT_SELECTED_PREFIX,
+	UI_CHAT_TEXT,
 	UI_FONT_WEIGHT,
 	SIZE_SCALE_DEFAULT,
 } from '@constants'

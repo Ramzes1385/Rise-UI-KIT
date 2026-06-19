@@ -1,9 +1,9 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /**
  * Пропсы компонента BaseIcon
  */
-export interface BaseIconProps {
+export interface BaseIconProps extends Omit<BaseComponentProps, 'color'> {
 	/** Имя иконки (соответствует имени SVG-файла без расширения) */
 	name: string
 	/** Цвет (CSS-значение или переменная) */
@@ -16,8 +16,16 @@ export interface BaseIconProps {
 	isFlipY?: boolean
 	/** Доступная метка для скринридеров (пустая строка — декоративная иконка) */
 	ariaLabel?: string
-	/** Масштаб размера (100 = 20px, 60 = 12px, 140 = 28px) */
-	sizeScale?: number
-	/** Кастомные классы (строка или объект) */
-	customClass?: CustomClassProp
+}
+
+/**
+ * События компонента BaseIcon
+ */
+export type BaseIconEmits = Record<string, never>
+
+/**
+ * Слоты компонента BaseIcon
+ */
+export interface BaseIconSlots {
+	default?: () => unknown
 }

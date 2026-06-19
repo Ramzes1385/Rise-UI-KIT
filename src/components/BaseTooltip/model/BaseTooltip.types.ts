@@ -14,3 +14,16 @@ export interface BaseTooltipProps extends BaseComponentProps<(typeof TOOLTIP_VAR
 	/** Всегда видим */
 	isAlwaysVisible?: boolean
 }
+
+/**
+ * События компонента BaseTooltip
+ */
+export type BaseTooltipEmits = Record<string, never>
+
+/**
+ * Слоты компонента BaseTooltip
+ */
+export interface BaseTooltipSlots {
+	/** Триггер тултипа */
+	default?: () => unknown
+}

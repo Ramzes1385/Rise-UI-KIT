@@ -1,22 +1,6 @@
-/** Параметры для расчёта номера строки */
-interface RowNumberOptions {
-	/** Индекс строки в текущей странице */
-	index: number
-	/** Текущая страница */
-	currentPage: number
-	/** Размер страницы */
-	pageSize: number
-	/** Режим загрузки */
-	loadMode: string
-}
+/** Утилиты: нумерация строк и стилизация колонок таблицы */
 
-/** Параметры для стиля колонки */
-interface ColumnStyleOptions {
-	/** Минимальная ширина */
-	minWidth?: string
-	/** Максимальная ширина */
-	maxWidth?: string
-}
+import type { ColumnStyleOptions, RowNumberOptions } from './tableUtils.types'
 
 /** Рассчитать номер строки с учётом пагинации */
 function calcRowNumber(options: RowNumberOptions): number {
@@ -64,4 +48,3 @@ function calcColumnWidths(columns: Array<{ width?: string; flex?: number }>): st
 }
 
 export { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle }
-export type { ColumnStyleOptions, RowNumberOptions }

@@ -4,7 +4,7 @@
 		:class="[variantClass, classes.root, { 'base-rating--readonly': isInteractive === false }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="slider"
-		:aria-label="`${UI_RATING_ARIA_PREFIX} ${max}`"
+		:aria-label="`${UI_RATING.ARIA_PREFIX} ${max}`"
 		:aria-valuemin="0"
 		:aria-valuemax="max"
 		:aria-valuenow="modelValue"
@@ -29,9 +29,9 @@
 import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_RATING_ARIA_PREFIX, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { UI_RATING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseRating.style.scss'
-import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../model/BaseRating.utils'
+import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 import type { BaseRatingEmits, BaseRatingProps } from '../model/BaseRating.types'
 
 const props = withDefaults(defineProps<BaseRatingProps>(), {

@@ -11,43 +11,43 @@
 					:key="emoji"
 					type="button"
 					class="base-chat-context-menu__reaction-btn"
-					:aria-label="`${UI_CHAT_ADD_REACTION} ${emoji}`"
+					:aria-label="`${UI_CHAT_TEXT.ADD_REACTION} ${emoji}`"
 					@click="handleReaction(emoji)">
 					{{ emoji }}
 				</button>
 			</div>
 			<div class="base-chat-context-menu__divider"></div>
-			<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_REPLY" @click="handleReply">
-				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_REPLY }}</BaseText>
-			</button>
-			<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_SELECT" @click="handleSelect">
-				<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_SELECT }}</BaseText>
-			</button>
-			<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_COPY_TEXT" @click="handleCopy">
-				<BaseIcon name="copy" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_COPY_TEXT }}</BaseText>
-			</button>
+		<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_TEXT.REPLY" @click="handleReply">
+			<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" />
+			<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER">{{ UI_CHAT_TEXT.REPLY }}</BaseText>
+		</button>
+		<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_TEXT.SELECT" @click="handleSelect">
+			<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE.SMALL" />
+			<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER">{{ UI_CHAT_TEXT.SELECT }}</BaseText>
+		</button>
+		<button type="button" class="base-chat-context-menu__item" :aria-label="UI_CHAT_TEXT.COPY" @click="handleCopy">
+			<BaseIcon name="copy" :size-scale="sizeScale * UI_SCALE.SMALL" />
+			<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER">{{ UI_CHAT_TEXT.COPY }}</BaseText>
+		</button>
 			<button
 				v-if="currentUserRole === 'admin'"
 				type="button"
 				class="base-chat-context-menu__item"
-				:aria-label="message?.isPinned ? UI_CHAT_UNPIN : UI_CHAT_PIN"
-				@click="handlePin">
-				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">
-					{{ message?.isPinned ? UI_CHAT_UNPIN : UI_CHAT_PIN }}
-				</BaseText>
+			:aria-label="message?.isPinned ? UI_CHAT_TEXT.UNPIN : UI_CHAT_TEXT.PIN"
+			@click="handlePin">
+			<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * UI_SCALE.SMALL" />
+			<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER">
+				{{ message?.isPinned ? UI_CHAT_TEXT.UNPIN : UI_CHAT_TEXT.PIN }}
+			</BaseText>
 			</button>
 			<button
 				v-if="currentUserRole === 'admin' || message?.sender === 'me'"
 				type="button"
 				class="base-chat-context-menu__item base-chat-context-menu__item--danger"
-				:aria-label="UI_CHAT_DELETE"
-				@click="handleDelete">
-				<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER">{{ UI_CHAT_DELETE }}</BaseText>
+			:aria-label="UI_CHAT_TEXT.DELETE"
+			@click="handleDelete">
+			<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE.SMALL" />
+			<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER">{{ UI_CHAT_TEXT.DELETE }}</BaseText>
 			</button>
 		</div>
 	</Teleport>
@@ -58,14 +58,8 @@ import { ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
-	UI_CHAT_ADD_REACTION,
-	UI_CHAT_COPY_TEXT,
-	UI_CHAT_DELETE,
-	UI_CHAT_PIN,
-	UI_CHAT_REPLY,
-	UI_CHAT_SCALE_MEMBER,
-	UI_CHAT_SELECT,
-	UI_CHAT_UNPIN,
+	UI_CHAT_SCALE,
+	UI_CHAT_TEXT,
 	UI_SCALE,
 } from '@constants'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'

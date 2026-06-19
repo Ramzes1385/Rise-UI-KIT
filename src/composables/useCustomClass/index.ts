@@ -1,2 +1,2 @@
-export * from './useCustomClass'
-export * from './useCustomClass.types'
+export { useCustomClass } from './useCustomClass'
+export type { CustomClassProp, UseCustomClassOptions } from './useCustomClass.types'

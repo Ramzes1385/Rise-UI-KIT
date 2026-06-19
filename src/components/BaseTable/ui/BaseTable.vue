@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, useSlots, watch } from 'vue'
+import { computed, provide, useSlots } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@components/BaseIcon'
 import '../styles/BaseTable.style.scss'
@@ -190,34 +190,25 @@ import { BasePagination } from '@components/BasePagination'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useColumnResize } from '@composables/useColumnResize'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { usePadding } from '@composables/usePadding'
-import { useTableData } from '@composables/useTableData'
-import { useTableSelection } from '@composables/useTableSelection'
+import { useTableComposition } from '@composables/useTableComposition'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import { toHTMLElement } from '@utils/domUtils'
-import { calcPageInfo } from '@utils/paginationUtils'
-import { calcRowNumber } from '@utils/tableUtils'
 import {
 	TABLE_EXPAND_TRANSITION_DURATION,
 	TABLE_INFINITE_SCROLL_THRESHOLD,
-	TABLE_MIN_COL_WIDTH,
 	TABLE_PAGINATION_MAX_VISIBLE,
 	TABLE_ROW_EXPAND_WIDTH,
 	TABLE_ROW_NUMBER_WIDTH,
 	TABLE_ROW_SELECTION_WIDTH,
 	TABLE_SEARCH_DEBOUNCE_MS,
 	TABLE_SETTINGS_MAX_HEIGHT,
-} from '../model/BaseTable.constants'
+} from '@constants/table'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
-import { useTableColumns } from '../model/useTableColumns'
-import { useTableExpand } from '../model/useTableExpand'
-import { useTableToolbar } from '../model/useTableToolbar'
 import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
-import type { BaseTableEmits, BaseTableProps, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../model/BaseTable.types'
 
 const props = withDefaults(defineProps<BaseTableProps>(), {
 	variant: DEFAULT_VARIANT,
@@ -243,73 +234,26 @@ const props = withDefaults(defineProps<BaseTableProps>(), {
 const slots = useSlots()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-table', props, [
-		'root',
-		'body',
-		'header',
-		'toolbar',
-		'search',
-		'filters',
-		'settings',
-		'activeFilters',
-		'wrapper',
-		'loadingOverlay',
-		'table',
-		'thead',
-		'tr',
-		'th',
-		'tbody',
-		'td',
-		'loadMore',
-		'footerBar',
-		'pageSize',
-		'paginationInfo',
-		'footer',
-	])
+	'root', 'body', 'header', 'toolbar', 'search', 'filters', 'settings',
+	'activeFilters', 'wrapper', 'loadingOverlay', 'table', 'thead', 'tr',
+	'th', 'tbody', 'td', 'loadMore', 'footerBar', 'pageSize', 'paginationInfo', 'footer',
+])
 
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad', defaultPadding: 10 })
 
-const {
-	onBeforeEnter: onExpandBeforeEnter,
-	onEnter: onExpandEnter,
-	onAfterEnter: onExpandAfterEnter,
-	onBeforeLeave: onCollapseBeforeLeave,
-	onLeave: onCollapseLeave,
-	onAfterLeave: onCollapseAfterLeave,
-} = useExpandTransition({ duration: TABLE_EXPAND_TRANSITION_DURATION })
+const expand = useExpandTransition({ duration: TABLE_EXPAND_TRANSITION_DURATION })
 
 provide(TABLE_EXPAND_TRANSITION_KEY, {
-	onExpandBeforeEnter,
-	onExpandEnter,
-	onExpandAfterEnter,
-	onCollapseBeforeLeave,
-	onCollapseLeave,
-	onCollapseAfterLeave,
+	onExpandBeforeEnter: expand.onBeforeEnter,
+	onExpandEnter: expand.onEnter,
+	onExpandAfterEnter: expand.onAfterEnter,
+	onCollapseBeforeLeave: expand.onBeforeLeave,
+	onCollapseLeave: expand.onLeave,
+	onCollapseAfterLeave: expand.onAfterLeave,
 })
 
 const emit = defineEmits<BaseTableEmits>()
-
-const {
-	localColumns,
-	visibleColumns,
-	columnWidths,
-	useFixedLayout,
-	totalCols,
-	filterableColumns,
-	hasExpandableRows,
-	skeletonRows,
-	isColumnResizable,
-	getColumnStyle,
-	toggleColumnVisibility,
-	formatCellValue,
-} = useTableColumns({
-	columns: computed(() => props.columns),
-	rows: computed(() => props.rows),
-	isResizable: () => props.isResizable,
-	hasRowNumber: () => props.hasRowNumber,
-	isSelectable: () => props.isSelectable,
-	pageSize: () => props.pageSize,
-	emit,
-})
+defineSlots<BaseTableSlots>()
 
 const {
 	searchQuery,
@@ -321,40 +265,27 @@ const {
 	totalPages,
 	visiblePages,
 	hasMoreRows,
+	visibleColumns,
+	columnWidths,
+	useFixedLayout,
+	totalCols,
+	hasExpandableRows,
+	skeletonRows,
+	isColumnResizable,
+	getColumnStyle,
+	toggleColumnVisibility,
+	formatCellValue,
+	isAllSelected,
+	isSelected,
+	isExpanded,
+	toggleExpand,
+	handleRowClick,
 	getSortDirection,
 	getSortIndex,
 	handleSort,
 	handleSearchInput,
-	addFilter,
-	removeFilter,
 	getFilterLabel,
 	handlePageSizeChange,
-	loadMore,
-	resetPage,
-} = useTableData({
-	rows: computed(() => props.rows),
-	columns: localColumns,
-	loadMode: () => props.loadMode,
-	pageSize: computed(() => props.pageSize),
-	isMultiSort: () => props.isMultiSort,
-	searchDebounce: () => props.searchDebounce,
-	onSearch: (q: string) => emit('search', q),
-	onSort: states => emit('sort', states),
-	onFilter: filters => emit('filter', filters),
-	onPageSizeChange: (size: number) => emit('page-size-change', size),
-})
-
-const { isAllSelected, isSelected, toggleRow: toggleRowSelection, toggleAll: toggleAllRows } = useTableSelection({
-	rows: computed(() => props.rows),
-	onSelect: selectedRows => emit('select', selectedRows),
-})
-
-const { isExpanded, toggleExpand, handleRowClick } = useTableExpand({
-	rows: () => props.rows,
-	emit,
-})
-
-const {
 	filterColumn,
 	filterOperator,
 	filterValue,
@@ -366,85 +297,31 @@ const {
 	setFilterOperator,
 	handleAddFilter,
 	handleRemoveFilter,
-} = useTableToolbar({
-	filterableColumns: () => filterableColumns.value,
-	hasSearch: () => props.hasSearch,
-	hasFilters: () => props.hasFilters,
-	hasColumnSettings: () => props.hasColumnSettings,
+	pageSizeSelectOptions,
+	paginationInfo,
+	getRowNumber,
+	toggleRow,
+	toggleAll,
+	handleLoadMore,
+	handleScroll,
+	startResize,
+} = useTableComposition({
+	rows: computed(() => props.rows),
+	columns: computed(() => props.columns),
+	loadMode: computed(() => props.loadMode),
+	pageSize: computed(() => props.pageSize),
+	isMultiSort: computed(() => props.isMultiSort),
+	searchDebounce: computed(() => props.searchDebounce),
+	isResizable: computed(() => props.isResizable),
+	hasRowNumber: computed(() => props.hasRowNumber),
+	isSelectable: computed(() => props.isSelectable),
+	hasSearch: computed(() => props.hasSearch),
+	hasFilters: computed(() => props.hasFilters),
+	hasColumnSettings: computed(() => props.hasColumnSettings),
+	isLoading: computed(() => props.isLoading),
+	pageSizeOptions: computed(() => props.pageSizeOptions),
+	infiniteScrollThreshold: TABLE_INFINITE_SCROLL_THRESHOLD,
+	emit,
 	slots,
-	addFilter,
-	removeFilter,
 })
-
-watch(currentPage, newPage => {
-	emit('page-change', newPage)
-})
-
-const pageSizeSelectOptions = computed(() => {
-	return props.pageSizeOptions.map(size => ({
-		value: String(size),
-		label: String(size),
-	}))
-})
-
-const paginationInfo = computed((): string => {
-	return calcPageInfo({
-		current: currentPage.value,
-		pageSize: localPageSize.value,
-		total: processedRows.value.length,
-	})
-})
-
-function getRowNumber(index: number): number {
-	return calcRowNumber({
-		index,
-		currentPage: currentPage.value,
-		pageSize: localPageSize.value,
-		loadMode: props.loadMode,
-	})
-}
-
-function toggleRow(row: TableRow): void {
-	toggleRowSelection(row)
-}
-
-function toggleAll(): void {
-	toggleAllRows()
-}
-
-function handleLoadMore(): void {
-	loadMore()
-	emit('load-more')
-}
-
-function handleScroll(e: Event): void {
-	if (props.loadMode !== 'infinite' || !hasMoreRows.value || props.isLoading) return
-
-	const target = toHTMLElement(e.target)
-	if (!target) return
-	const { scrollTop, scrollHeight, clientHeight } = target
-
-	if (scrollHeight - scrollTop - clientHeight < TABLE_INFINITE_SCROLL_THRESHOLD) {
-		handleLoadMore()
-	}
-}
-
-const { startResize: startColumnResize } = useColumnResize({
-	columns: localColumns,
-	visibleColumns,
-	minWidth: TABLE_MIN_COL_WIDTH,
-	onColumnResize: (key, width) => emit('column-resize', key, width),
-	onColumnsChange: columns => emit('columns-change', columns),
-})
-
-function startResize(event: MouseEvent, column: TableColumn): void {
-	startColumnResize(event, column.key)
-}
-
-watch(
-	() => props.rows,
-	() => {
-		resetPage()
-	},
-)
 </script>

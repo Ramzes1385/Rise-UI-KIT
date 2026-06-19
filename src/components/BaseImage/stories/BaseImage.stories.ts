@@ -5,6 +5,7 @@
 
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import BaseImage from '../ui/BaseImage.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -12,50 +13,31 @@ const meta: Meta<typeof BaseImage> = {
 	title: 'UI/BaseImage',
 	component: BaseImage,
 
-	argTypes: {
-		src: { control: 'text' },
-		alt: { control: 'text' },
-		width: { control: 'text' },
-		height: { control: 'text' },
-		fit: {
-			control: 'inline-radio',
-			options: ['cover', 'contain', 'fill', 'none'],
+	argTypes: buildArgTypes({
+		props: {
+			src: { control: 'text' },
+			alt: { control: 'text' },
+			fallbackSrc: { control: 'text', description: 'URL резервного изображения при ошибке загрузки' },
+			timeout: { control: 'number', description: 'Таймаут загрузки (мс)' },
+			width: { control: 'text' },
+			height: { control: 'text' },
+			fit: { control: 'inline-radio', options: ['cover', 'contain', 'fill', 'none'] },
+			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
+			loading: { control: 'inline-radio', options: ['lazy', 'eager'] },
+			borderRadius: { control: { type: 'range', min: 0, max: 9999, step: 1 }, description: 'Скругление в px (0–9999)' },
+			hasPlaceholder: { control: 'boolean' },
+			aspectRatio: { control: 'text' },
+			srcWidth: { control: 'number' },
+			zoomConfig: { control: 'object', description: 'Конфигурация зума { hasZoom, closeOnOverlay, initialScale, zoomStep, minScale, maxScale, showMinimap }' },
+			convertToWebp: { control: 'boolean' },
+			gallery: { control: 'object', description: 'Массив URL изображений для навигации в режиме зума' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
+			customClass: { control: 'object' },
+			onLoad: { table: { disable: true } },
+			onError: { table: { disable: true } },
+			onZoom: { table: { disable: true } },
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		loading: {
-			control: 'inline-radio',
-			options: ['lazy', 'eager'],
-		},
-		borderRadius: {
-			control: { type: 'range', min: 0, max: 9999, step: 1 },
-			description: 'Скругление в px (0–9999)',
-		},
-		hasPlaceholder: { control: 'boolean' },
-		aspectRatio: { control: 'text' },
-		srcWidth: { control: 'number' },
-		hasZoom: { control: 'boolean' },
-		closeOnOverlay: { control: 'boolean' },
-		initialScale: { control: 'number', min: 0.5, max: 3, step: 0.1 },
-		zoomStep: { control: 'number', min: 0.1, max: 1, step: 0.1 },
-		minScale: { control: 'number' },
-		maxScale: { control: 'number' },
-		showMinimap: { control: 'boolean' },
-		convertToWebp: { control: 'boolean' },
-		gallery: {
-			control: 'object',
-			description: 'Массив URL изображений для навигации в режиме зума',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		onLoad: { table: { disable: true } },
-		onError: { table: { disable: true } },
-		onZoom: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		src: 'https://placehold.co/400x300/f97316/ffffff?text=Metal+Art',

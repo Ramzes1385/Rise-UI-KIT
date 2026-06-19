@@ -53,3 +53,10 @@ export interface NotificationItem extends BaseNotificationProps {
 export interface BaseNotificationEmits {
 	(event: 'close'): void
 }
+
+/**
+ * Слоты компонента BaseNotification
+ */
+export interface BaseNotificationSlots {
+	default?: () => unknown
+}

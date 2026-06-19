@@ -15,7 +15,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_TEXT_COLOR" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.TEXT_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="textColorModel"
 						class="base-editor__color-picker"
@@ -25,7 +25,7 @@
 						:size-scale="sizeScale"
 						has-transparent-swatch
 						is-resettable
-						:reset-label="UI_EDITOR_TEXT_COLOR_RESET"
+						:reset-label="UI_EDITOR.TEXT_COLOR_RESET"
 						@mousedown.prevent="emit('saveSelection')"
 						@change="(color: string) => emit('handleTextColor', color)"
 						@reset="emit('resetTextColor')">
@@ -34,7 +34,7 @@
 						</template>
 					</BaseColorPicker>
 				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_BG_COLOR" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.BG_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="backgroundColorModel"
 						class="base-editor__color-picker"
@@ -44,7 +44,7 @@
 						:size-scale="sizeScale"
 						has-transparent-swatch
 						is-resettable
-						:reset-label="UI_EDITOR_BG_COLOR_RESET"
+						:reset-label="UI_EDITOR.BG_COLOR_RESET"
 						@mousedown.prevent="emit('saveSelection')"
 						@change="(color: string) => emit('handleBackgroundColor', color)"
 						@reset="emit('resetBackgroundColor')">
@@ -61,14 +61,14 @@
 						v-model="headingValue"
 						:options="headingOptions"
 						variant="ghost"
-						:placeholder="UI_EDITOR_FORMAT"
+						:placeholder="UI_EDITOR.FORMAT"
 						:size-scale="sizeScale"
 						@change="(val: string | number | (string | number)[]) => emit('handleHeadingChange', val as string | number)" />
 				</div>
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_LINK" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.LINK" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -78,7 +78,7 @@
 						<BaseIcon name="link" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_IMAGE" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.IMAGE" position="top" :size-scale="sizeScale">
 					<label class="base-editor__btn base-editor__btn--color" :class="classes.btn" @mousedown.stop>
 						<BaseIcon name="image" :size-scale="calcIconScale('md', sizeScale)" />
 						<input
@@ -89,7 +89,7 @@
 							@change="(e: Event) => emit('handleImageUpload', e)" />
 					</label>
 				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_VIDEO" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.VIDEO" position="top" :size-scale="sizeScale">
 					<label class="base-editor__btn base-editor__btn--color" :class="classes.btn" @mousedown.stop>
 						<BaseIcon name="video" :size-scale="calcIconScale('md', sizeScale)" />
 						<input
@@ -103,7 +103,7 @@
 			</span>
 
 			<span class="base-editor__group" :class="classes.group">
-				<BaseTooltip :text="UI_EDITOR_CLEAR_FORMAT" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.CLEAR_FORMAT" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -113,7 +113,7 @@
 						<BaseIcon name="format-clear" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip :text="UI_EDITOR_DIVIDER" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="UI_EDITOR.DIVIDER" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -123,7 +123,7 @@
 						<BaseIcon name="separator" :size-scale="calcIconScale('md', sizeScale)" />
 					</BaseButton>
 				</BaseTooltip>
-				<BaseTooltip :text="isCodeMode ? UI_EDITOR_VISUAL_MODE : UI_EDITOR_CODE_MODE" position="top" :size-scale="sizeScale">
+				<BaseTooltip :text="isCodeMode ? UI_EDITOR.VISUAL_MODE : UI_EDITOR.CODE_MODE" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
 						class="base-editor__btn"
@@ -146,30 +146,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
 import {
-	UI_EDITOR_ALIGN_CENTER,
-	UI_EDITOR_ALIGN_JUSTIFY,
-	UI_EDITOR_ALIGN_LEFT,
-	UI_EDITOR_ALIGN_RIGHT,
-	UI_EDITOR_BG_COLOR,
-	UI_EDITOR_BG_COLOR_RESET,
-	UI_EDITOR_CODE_BLOCK,
-	UI_EDITOR_BOLD,
-	UI_EDITOR_CLEAR_FORMAT,
-	UI_EDITOR_CODE_MODE,
-	UI_EDITOR_DIVIDER,
-	UI_EDITOR_FORMAT,
-	UI_EDITOR_IMAGE,
-	UI_EDITOR_ITALIC,
-	UI_EDITOR_LINK,
-	UI_EDITOR_LIST_BULLET,
-	UI_EDITOR_LIST_NUMBERED,
-	UI_EDITOR_QUOTE,
-	UI_EDITOR_STRIKETHROUGH,
-	UI_EDITOR_TEXT_COLOR,
-	UI_EDITOR_TEXT_COLOR_RESET,
-	UI_EDITOR_UNDERLINE,
-	UI_EDITOR_VIDEO,
-	UI_EDITOR_VISUAL_MODE,
+	UI_EDITOR,
 } from '@constants'
 import type { BaseEditorToolbarEmits, BaseEditorToolbarProps, BaseEditorToolbarSlots, EditorActiveStates } from '../model/BaseEditorToolbar.types'
 
@@ -193,33 +170,33 @@ const buttonGroups = computed(() => [
 	{
 		key: 'format',
 		items: [
-			{ icon: 'bold', label: UI_EDITOR_BOLD, activeKey: 'isBold', action: 'bold', type: 'format' },
-			{ icon: 'italic', label: UI_EDITOR_ITALIC, activeKey: 'isItalic', action: 'italic', type: 'format' },
-			{ icon: 'underline', label: UI_EDITOR_UNDERLINE, activeKey: 'isUnderline', action: 'underline', type: 'format' },
-			{ icon: 'strike', label: UI_EDITOR_STRIKETHROUGH, activeKey: 'isStrike', action: 'strikeThrough', type: 'format' },
+			{ icon: 'bold', label: UI_EDITOR.BOLD, activeKey: 'isBold', action: 'bold', type: 'format' },
+			{ icon: 'italic', label: UI_EDITOR.ITALIC, activeKey: 'isItalic', action: 'italic', type: 'format' },
+			{ icon: 'underline', label: UI_EDITOR.UNDERLINE, activeKey: 'isUnderline', action: 'underline', type: 'format' },
+			{ icon: 'strike', label: UI_EDITOR.STRIKETHROUGH, activeKey: 'isStrike', action: 'strikeThrough', type: 'format' },
 		] as ToolbarButton[],
 	},
 	{
 		key: 'align',
 		items: [
-			{ icon: 'align-left', label: UI_EDITOR_ALIGN_LEFT, activeKey: 'isJustifyLeft', action: 'justifyLeft', type: 'format' },
-			{ icon: 'align-center', label: UI_EDITOR_ALIGN_CENTER, activeKey: 'isJustifyCenter', action: 'justifyCenter', type: 'format' },
-			{ icon: 'align-right', label: UI_EDITOR_ALIGN_RIGHT, activeKey: 'isJustifyRight', action: 'justifyRight', type: 'format' },
-			{ icon: 'align-justify', label: UI_EDITOR_ALIGN_JUSTIFY, activeKey: 'isJustifyFull', action: 'justifyFull', type: 'format' },
+			{ icon: 'align-left', label: UI_EDITOR.ALIGN_LEFT, activeKey: 'isJustifyLeft', action: 'justifyLeft', type: 'format' },
+			{ icon: 'align-center', label: UI_EDITOR.ALIGN_CENTER, activeKey: 'isJustifyCenter', action: 'justifyCenter', type: 'format' },
+			{ icon: 'align-right', label: UI_EDITOR.ALIGN_RIGHT, activeKey: 'isJustifyRight', action: 'justifyRight', type: 'format' },
+			{ icon: 'align-justify', label: UI_EDITOR.ALIGN_JUSTIFY, activeKey: 'isJustifyFull', action: 'justifyFull', type: 'format' },
 		] as ToolbarButton[],
 	},
 	{
 		key: 'list',
 		items: [
-			{ icon: 'list-bullet', label: UI_EDITOR_LIST_BULLET, activeKey: 'isUnorderedList', action: 'insertUnorderedList', type: 'format' },
-			{ icon: 'list-number', label: UI_EDITOR_LIST_NUMBERED, activeKey: 'isOrderedList', action: 'insertOrderedList', type: 'format' },
+			{ icon: 'list-bullet', label: UI_EDITOR.LIST_BULLET, activeKey: 'isUnorderedList', action: 'insertUnorderedList', type: 'format' },
+			{ icon: 'list-number', label: UI_EDITOR.LIST_NUMBERED, activeKey: 'isOrderedList', action: 'insertOrderedList', type: 'format' },
 		] as ToolbarButton[],
 	},
 	{
 		key: 'block',
 		items: [
-			{ icon: 'quote', label: UI_EDITOR_QUOTE, activeKey: 'isBlockquote', action: 'blockquote', type: 'block' },
-			{ icon: 'code', label: UI_EDITOR_CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
+			{ icon: 'quote', label: UI_EDITOR.QUOTE, activeKey: 'isBlockquote', action: 'blockquote', type: 'block' },
+			{ icon: 'code', label: UI_EDITOR.CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
 		] as ToolbarButton[],
 	},
 ])

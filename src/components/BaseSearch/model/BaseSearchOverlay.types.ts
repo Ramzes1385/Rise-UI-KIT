@@ -1,13 +1,12 @@
-import type { SearchResult } from './BaseSearch.types'
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { SearchResult, SearchVariant } from './BaseSearch.types'
+import type { BaseComponentProps } from '@/types/base.types'
 
-export interface BaseSearchOverlayProps {
+export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant> {
 	panel: 'modal' | 'sidebar'
 	modelValue: string
 	searchPlaceholder: string
 	triggerPlaceholder: string
-	variant: 'default' | 'ghost' | 'outline' | 'shadow' | 'soft' | 'filled' | 'underline'
+	variant: SearchVariant
 	sizeScale: number
 	isDisabled: boolean
 	error: string
@@ -18,8 +17,6 @@ export interface BaseSearchOverlayProps {
 	highlightedIndex: number
 	shouldShowResults: boolean
 	classes: Record<string, string | undefined>
-	color?: CustomColor
-	customClass?: CustomClassProp
 }
 
 export interface BaseSearchOverlayEmits {

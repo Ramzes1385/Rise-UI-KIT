@@ -1,10 +1,9 @@
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { BaseComponentProps } from '@/types/base.types'
 
-export interface ChatMessageListProps {
+export interface ChatMessageListProps extends BaseComponentProps {
 	/** Список сообщений */
 	messages: ChatMessage[]
-	/** Масштаб размера */
-	sizeScale?: number
 	/** Поисковый запрос для подсветки */
 	searchQuery?: string
 	/** Список ID выделенных сообщений */
@@ -36,4 +35,11 @@ export interface ChatMessageListEmits {
 	(event: 'delete-message', messageId: string): void
 	(event: 'mention-click', mention: string): void
 	(event: 'command-click', command: string): void
+}
+
+/**
+ * Слоты компонента ChatMessageList
+ */
+export interface ChatMessageListSlots {
+	default?: () => unknown
 }

@@ -95,7 +95,7 @@
 								class="base-slider__title"
 								:custom-class="classes.title"
 								:size-scale="sizeScale"
-								:weight="UI_FONT_WEIGHT_BOLD"
+								:weight="UI_FONT_WEIGHT.BOLD"
 								>{{ item.title }}</BaseText
 							>
 							<BaseText
@@ -160,9 +160,9 @@ import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
-import { UI_FONT_WEIGHT_BOLD, UI_SLIDER_DEFAULT_HEIGHT, UI_SLIDER_HOLD_INTERVAL_MS, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_FONT_WEIGHT, UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseSlider.style.scss'
-import type { BaseSliderEmits, BaseSliderProps } from '../model/BaseSlider.types'
+import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
 
 const props = withDefaults(defineProps<BaseSliderProps>(), {
 	customClass: undefined,
@@ -176,7 +176,7 @@ const props = withDefaults(defineProps<BaseSliderProps>(), {
 	isLoop: true,
 	isVertical: false,
 	initialIndex: 0,
-	height: UI_SLIDER_DEFAULT_HEIGHT,
+	height: UI_SIZE.SLIDER_DEFAULT_HEIGHT,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	spaceBetween: 0,
 	slidesPerView: 1,
@@ -186,6 +186,7 @@ const props = withDefaults(defineProps<BaseSliderProps>(), {
 })
 
 const emit = defineEmits<BaseSliderEmits>()
+defineSlots<BaseSliderSlots>()
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 
 const { classes } = useCustomClass({
@@ -253,7 +254,7 @@ let holdTimer: ReturnType<typeof setInterval> | null = null
 function startHold(direction: 'prev' | 'next'): void {
 	stopHold()
 	const action = direction === 'next' ? goNext : goPrev
-	holdTimer = setInterval(action, UI_SLIDER_HOLD_INTERVAL_MS)
+	holdTimer = setInterval(action, UI_TIMING.SLIDER_HOLD_INTERVAL)
 }
 
 /** Остановка удержания */

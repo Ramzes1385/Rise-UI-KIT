@@ -28,7 +28,7 @@ import { BaseLoader } from '@components/BaseLoader'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseForm.style.scss'
-import type { BaseFormEmits, BaseFormProps } from '../model/BaseForm.types'
+import type { BaseFormEmits, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
 
 const props = withDefaults(defineProps<BaseFormProps>(), {
 	isLoading: false,
@@ -39,6 +39,7 @@ const props = withDefaults(defineProps<BaseFormProps>(), {
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form', props, ['root', 'overlay', 'content'])
 
 const emit = defineEmits<BaseFormEmits>()
+defineSlots<BaseFormSlots>()
 
 function handleSubmit(e: Event): void {
 	if (!props.isLoading && !props.isDisabled) {

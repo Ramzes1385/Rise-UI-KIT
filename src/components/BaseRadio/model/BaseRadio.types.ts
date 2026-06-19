@@ -37,3 +37,10 @@ export interface BaseRadioEmits {
 	(event: 'update:modelValue', value: string | number): void
 	(event: 'change', value: string | number): void
 }
+
+/**
+ * Слоты компонента BaseRadio
+ */
+export interface BaseRadioSlots {
+	default?: () => unknown
+}

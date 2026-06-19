@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-pin"
 		:class="[
 			{
@@ -63,6 +64,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 const emit = defineEmits<BasePinEmits>()
 
 const inputRefs = ref<HTMLInputElement[]>([])
+const rootRef = ref<HTMLElement | null>(null)
 
 /** Ячейки для отображения: пустые строки вместо пробелов-заполнителей */
 const cells = computed(() => {
@@ -139,6 +141,9 @@ function handlePaste(e: ClipboardEvent): void {
 }
 
 defineExpose({
+	rootRef,
+	focus: () => rootRef.value?.querySelector('input')?.focus(),
+	blur: () => rootRef.value?.querySelector('input')?.blur(),
 	validate: formField.validate,
 	reset: formField.reset,
 })

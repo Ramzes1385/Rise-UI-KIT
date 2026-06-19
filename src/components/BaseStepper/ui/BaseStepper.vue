@@ -73,7 +73,7 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseStepper.style.scss'
-import type { BaseStepperEmits, BaseStepperProps } from '../model/BaseStepper.types'
+import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'
 
 const props = withDefaults(defineProps<BaseStepperProps>(), {
 	orientation: 'horizontal',
@@ -82,6 +82,7 @@ const props = withDefaults(defineProps<BaseStepperProps>(), {
 })
 
 const emit = defineEmits<BaseStepperEmits>()
+defineSlots<BaseStepperSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-stepper', props, [
 		'root',

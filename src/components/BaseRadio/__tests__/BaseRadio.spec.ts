@@ -26,7 +26,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const labels = container.querySelectorAll('.base-radio')
+			const labels = container.querySelectorAll('.base-radio-item')
 			expect(labels).toHaveLength(OPTIONS.length)
 		})
 
@@ -60,7 +60,7 @@ describe('BaseRadio unit', () => {
 			})
 
 			expect(screen.getByText('Выберите материал')).toBeInTheDocument()
-			expect(container.querySelector('.base-radio-group__label')).toBeInTheDocument()
+			expect(container.querySelector('.base-radio__label')).toBeInTheDocument()
 		})
 
 		it('не должен рендерить заголовок группы когда label не передан', () => {
@@ -69,7 +69,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			expect(container.querySelector('.base-radio-group__label')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-radio__label')).not.toBeInTheDocument()
 		})
 	})
 
@@ -104,7 +104,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const dots = container.querySelectorAll('.base-radio__dot')
+			const dots = container.querySelectorAll('.base-radio-item__dot')
 			expect(dots).toHaveLength(1)
 		})
 	})
@@ -116,8 +116,8 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const optionsContainer = container.querySelector('.base-radio-group__options')
-			expect(optionsContainer?.classList.contains('base-radio-group__options--vertical')).toBe(true)
+			const optionsContainer = container.querySelector('.base-radio__options')
+			expect(optionsContainer?.classList.contains('base-radio__options--vertical')).toBe(true)
 		})
 
 		it('не должен добавлять класс --vertical по умолчанию', () => {
@@ -126,8 +126,8 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const optionsContainer = container.querySelector('.base-radio-group__options')
-			expect(optionsContainer?.classList.contains('base-radio-group__options--vertical')).toBe(false)
+			const optionsContainer = container.querySelector('.base-radio__options')
+			expect(optionsContainer?.classList.contains('base-radio__options--vertical')).toBe(false)
 		})
 	})
 
@@ -138,7 +138,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const required = document.querySelector('.base-radio-group__required')
+			const required = document.querySelector('.base-radio__required')
 			expect(required).toBeInTheDocument()
 		})
 
@@ -148,7 +148,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			expect(container.querySelector('.base-radio-group__required')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-radio__required')).not.toBeInTheDocument()
 		})
 	})
 
@@ -159,7 +159,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			expect(container.firstElementChild?.classList.contains('base-radio-group--error')).toBe(true)
+			expect(container.firstElementChild?.classList.contains('base-radio--error')).toBe(true)
 		})
 
 		it('должен добавлять класс --error на опции когда передан error', () => {
@@ -168,7 +168,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const errorItems = container.querySelectorAll('.base-radio--error')
+			const errorItems = container.querySelectorAll('.base-radio-item--error')
 			expect(errorItems.length).toBeGreaterThan(0)
 		})
 
@@ -187,7 +187,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			expect(container.querySelector('.base-radio-group__error-text')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-radio__error-text')).not.toBeInTheDocument()
 		})
 	})
 
@@ -198,7 +198,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			const disabledItems = container.querySelectorAll('.base-radio--disabled')
+			const disabledItems = container.querySelectorAll('.base-radio-item--disabled')
 			expect(disabledItems).toHaveLength(1)
 		})
 
@@ -240,7 +240,7 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			expect(container.querySelector('.base-radio-group')).toHaveClass('custom-radio-root')
+			expect(container.querySelector('.base-radio')).toHaveClass('custom-radio-root')
 		})
 
 		it('должен распределять объект классов по внутренним элементам', () => {
@@ -267,16 +267,16 @@ describe('BaseRadio unit', () => {
 				...GLOBAL_COMPONENTS,
 			})
 
-			expect(container.querySelector('.base-radio-group')).toHaveClass('custom-root')
-			expect(container.querySelector('.base-radio-group__label')).toHaveClass('custom-label')
-			expect(container.querySelector('.base-radio-group__options')).toHaveClass('custom-options')
-			expect(container.querySelector('.base-radio')).toHaveClass('custom-radio')
-			expect(container.querySelector('.base-radio__wrapper')).toHaveClass('custom-wrapper')
-			expect(container.querySelector('.base-radio__input')).toHaveClass('custom-input')
-			expect(container.querySelector('.base-radio__circle')).toHaveClass('custom-circle')
-			expect(container.querySelector('.base-radio__dot')).toHaveClass('custom-dot')
-			expect(container.querySelector('.base-radio__option-label')).toHaveClass('custom-option-label')
-			expect(container.querySelector('.base-radio-group__error-text')).toHaveClass('custom-error-text')
+			expect(container.querySelector('.base-radio')).toHaveClass('custom-root')
+			expect(container.querySelector('.base-radio__label')).toHaveClass('custom-label')
+			expect(container.querySelector('.base-radio__options')).toHaveClass('custom-options')
+			expect(container.querySelector('.base-radio-item')).toHaveClass('custom-radio')
+			expect(container.querySelector('.base-radio-item__wrapper')).toHaveClass('custom-wrapper')
+			expect(container.querySelector('.base-radio-item__input')).toHaveClass('custom-input')
+			expect(container.querySelector('.base-radio-item__circle')).toHaveClass('custom-circle')
+			expect(container.querySelector('.base-radio-item__dot')).toHaveClass('custom-dot')
+			expect(container.querySelector('.base-radio-item__option-label')).toHaveClass('custom-option-label')
+			expect(container.querySelector('.base-radio__error-text')).toHaveClass('custom-error-text')
 		})
 	})
 })

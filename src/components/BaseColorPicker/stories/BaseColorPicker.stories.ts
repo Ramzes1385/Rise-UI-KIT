@@ -5,6 +5,7 @@
 
 import { expect, fireEvent, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { COLOR_PICKER_POSITIONS } from '../model/BaseColorPicker.types'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -13,20 +14,21 @@ const meta: Meta<typeof BaseColorPicker> = {
 	title: 'UI/BaseColorPicker',
 	component: BaseColorPicker,
 
-	argTypes: {
-		modelValue: { control: 'color' },
-		position: { control: 'inline-radio', options: COLOR_PICKER_POSITIONS },
-		presets: { control: 'object', description: 'Массив HEX-цветов пресетов' },
-		isHexHidden: { control: 'boolean' },
-		isPresetsHidden: { control: 'boolean' },
-		isDisabled: { control: 'boolean' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
+	argTypes: buildArgTypes({
+		props: {
+			modelValue: { control: 'color' },
+			position: { control: 'inline-radio', options: COLOR_PICKER_POSITIONS },
+			presets: { control: 'object', description: 'Массив HEX-цветов пресетов' },
+			isHexHidden: { control: 'boolean' },
+			isPresetsHidden: { control: 'boolean' },
+			isDisabled: { control: 'boolean' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
 		},
-		'onUpdate:modelValue': { table: { disable: true } },
-		onChange: { table: { disable: true } },
-	},
+		hidden: ['onUpdate:modelValue', 'onChange'],
+	}),
 
 	args: {
 		modelValue: '#f97316',

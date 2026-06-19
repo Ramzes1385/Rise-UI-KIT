@@ -20,7 +20,7 @@ function getIconNames(): string[] {
  * Composable для работы с SVG-иконками из спрайта.
  * Путь резолвится относительного base URL документа.
  */
-export function useIcon() {
+function useIcon() {
 	return {
 		spritePath: SPRITE_PATH,
 		getIconUrl,
@@ -28,3 +28,5 @@ export function useIcon() {
 		getIconNames,
 	}
 }
+
+export { useIcon }

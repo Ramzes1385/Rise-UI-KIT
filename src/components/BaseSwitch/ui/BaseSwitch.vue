@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-switch"
 		:class="[
 			classes.root,
@@ -57,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { useId } from 'vue'
+import { ref, useId } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -65,7 +66,7 @@ import { useFormField } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseSwitch.style.scss'
-import type { BaseSwitchEmits, BaseSwitchProps } from '../model/BaseSwitch.types'
+import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../model/BaseSwitch.types'
 
 const props = withDefaults(defineProps<BaseSwitchProps>(), {
 	modelValue: false,
@@ -76,9 +77,11 @@ const props = withDefaults(defineProps<BaseSwitchProps>(), {
 })
 
 const inputId = useId()
+const rootRef = ref<HTMLElement | null>(null)
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'])
 
 const emit = defineEmits<BaseSwitchEmits>()
+defineSlots<BaseSwitchSlots>()
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -94,6 +97,9 @@ function handleChange(e: Event): void {
 }
 
 defineExpose({
+	rootRef,
+	focus: () => rootRef.value?.querySelector('input')?.focus(),
+	blur: () => rootRef.value?.querySelector('input')?.blur(),
 	validate: formField.validate,
 	reset: formField.reset,
 })

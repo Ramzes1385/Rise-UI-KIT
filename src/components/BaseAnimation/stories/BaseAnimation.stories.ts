@@ -5,7 +5,7 @@
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
+import { BaseButton } from '@components/BaseButton'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { ANIMATION_MODES, ANIMATION_NAMES } from '../model/BaseAnimation.types'

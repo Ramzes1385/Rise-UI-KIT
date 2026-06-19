@@ -35,3 +35,10 @@ export interface BaseMenuProps extends BaseComponentProps<(typeof MENU_VARIANTS)
 export interface BaseMenuEmits {
 	(event: 'select', item: BaseMenuItem): void
 }
+
+/**
+ * Слоты компонента BaseMenu
+ */
+export interface BaseMenuSlots {
+	default?: () => unknown
+}

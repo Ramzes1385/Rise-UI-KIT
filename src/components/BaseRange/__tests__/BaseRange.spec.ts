@@ -108,7 +108,7 @@ describe('BaseRange unit', () => {
 				global: globalComponents,
 			})
 
-			expect(container.querySelector('.base-tooltip-wrapper')).toBeInTheDocument()
+			expect(container.querySelector('.base-tooltip')).toBeInTheDocument()
 		})
 	})
 

@@ -56,3 +56,13 @@ export interface BaseDropdownEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
 }
+
+/**
+ * Слоты компонента BaseDropdown
+ */
+export interface BaseDropdownSlots {
+	/** Триггер (кнопка или другой элемент) */
+	default?: () => unknown
+	/** Содержимое выпадающей панели */
+	dropdown?: () => unknown
+}

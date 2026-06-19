@@ -74,7 +74,7 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
-import { UI_COLOR_PICKER, UI_NO_COLOR_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_COLOR_PICKER, UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseColorPicker.style.scss'
@@ -86,7 +86,7 @@ const props = withDefaults(defineProps<BaseColorPickerProps>(), {
 	isHexHidden: false,
 	isPresetsHidden: false,
 	isResettable: false,
-	resetLabel: UI_NO_COLOR_TEXT,
+	resetLabel: UI_TEXT.NO_COLOR,
 	hasTransparentSwatch: false,
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -131,15 +131,15 @@ function applyAreaPoint(clientX: number, clientY: number): void {
 /** Начало выбора в SV-области с захватом перемещения */
 function handleAreaPointerDown(event: PointerEvent): void {
 	applyAreaPoint(event.clientX, event.clientY)
-	const onMove = (moveEvent: PointerEvent): void => applyAreaPoint(moveEvent.clientX, moveEvent.clientY)
-	const onUp = (): void => stopAreaDrag?.()
+	const handlePointerMove = (moveEvent: PointerEvent): void => applyAreaPoint(moveEvent.clientX, moveEvent.clientY)
+	const handlePointerUp = (): void => stopAreaDrag?.()
 	stopAreaDrag = (): void => {
-		window.removeEventListener('pointermove', onMove)
-		window.removeEventListener('pointerup', onUp)
+		window.removeEventListener('pointermove', handlePointerMove)
+		window.removeEventListener('pointerup', handlePointerUp)
 		stopAreaDrag = null
 	}
-	window.addEventListener('pointermove', onMove)
-	window.addEventListener('pointerup', onUp)
+	window.addEventListener('pointermove', handlePointerMove)
+	window.addEventListener('pointerup', handlePointerUp)
 }
 
 onBeforeUnmount(() => stopAreaDrag?.())

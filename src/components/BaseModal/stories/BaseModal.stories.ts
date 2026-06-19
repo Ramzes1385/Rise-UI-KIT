@@ -6,6 +6,7 @@
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import BaseModal from '../ui/BaseModal.vue'
@@ -15,33 +16,35 @@ const meta: Meta<typeof BaseModal> = {
 	title: 'UI/BaseModal',
 	component: BaseModal,
 
-	argTypes: {
-		isOpen: { control: 'boolean' },
-		title: { control: 'text' },
-		variant: {
-			control: 'radio',
-			options: MODAL_VARIANTS,
+	argTypes: buildArgTypes({
+		props: {
+			isOpen: { control: 'boolean' },
+			title: { control: 'text' },
+			variant: {
+				control: 'radio',
+				options: MODAL_VARIANTS,
+			},
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			closeOnOverlay: { control: 'boolean' },
+			fullScreen: {
+				control: 'inline-radio',
+				options: ['width', 'height', 'both'],
+				description: 'Режим fullScreen: width — на всю ширину, height — на всю высоту, both — полноэкранный',
+			},
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (100 = 500px ширина)',
+			},
+			isContained: { control: 'boolean' },
+			hasOverlay: { control: 'boolean' },
+			onClose: { table: { disable: true } },
+			onConfirm: { table: { disable: true } },
+			'onUpdate:isOpen': { table: { disable: true } },
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		closeOnOverlay: { control: 'boolean' },
-		fullScreen: {
-			control: 'inline-radio',
-			options: ['width', 'height', 'both'],
-			description: 'Режим fullScreen: width — на всю ширину, height — на всю высоту, both — полноэкранный',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (100 = 500px ширина)',
-		},
-		isContained: { control: 'boolean' },
-		hasOverlay: { control: 'boolean' },
-		onClose: { table: { disable: true } },
-		onConfirm: { table: { disable: true } },
-		'onUpdate:isOpen': { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		isOpen: false,

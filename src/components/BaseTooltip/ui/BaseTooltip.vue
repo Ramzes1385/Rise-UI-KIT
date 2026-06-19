@@ -1,9 +1,9 @@
 <template>
 	<div
 		ref="wrapperRef"
-		class="base-tooltip-wrapper"
-		:class="classes.root"
-		:style="sizeScaleStyle"
+		class="base-tooltip"
+		:class="[variantClass, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@mouseenter="handleEnter"
 		@mouseleave="handleLeave">
 		<slot />
@@ -12,9 +12,9 @@
 			<Transition :name="transitionName" :duration="UI_TIMING.TRANSITION_DURATION">
 				<div
 					v-if="isVisible"
-					class="base-tooltip"
-					:class="[[`base-tooltip--${position}`, variantClass], classes.tooltip]"
-					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]">
+					class="base-tooltip-popup"
+					:class="[[`base-tooltip-popup--${position}`], classes.tooltip]"
+					:style="tooltipStyle">
 					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
 			</Transition>
@@ -29,13 +29,14 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
-import type { BaseTooltipProps } from '../model/BaseTooltip.types'
+import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
 
 const props = withDefaults(defineProps<BaseTooltipProps>(), {
 	position: 'top',
 	isAlwaysVisible: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
+defineSlots<BaseTooltipSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip', props, ['root', 'tooltip', 'text'])
 

@@ -5,6 +5,7 @@
  */
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { MEGA_MENU_VARIANTS } from '../model/BaseMegaMenu.types'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
@@ -123,22 +124,22 @@ const DEEP_TREE = [
 const meta: Meta<typeof BaseMegaMenu> = {
 	title: 'UI/BaseMegaMenu',
 	component: BaseMegaMenu,
-	argTypes: {
-		trigger: { control: 'select', options: ['click', 'hover'] },
-		layout: { control: 'select', options: ['columns', 'dropdown'] },
-		variant: { control: 'select', options: MEGA_MENU_VARIANTS },
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+	argTypes: buildArgTypes({
+		props: {
+			trigger: { control: 'select', options: ['click', 'hover'] },
+			layout: { control: 'select', options: ['columns', 'dropdown'] },
+			variant: { control: 'select', options: MEGA_MENU_VARIANTS },
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			hoverDelay: { control: 'number' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
 		},
-		hoverDelay: { control: 'number' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		class: { table: { disable: true } },
-		style: { table: { disable: true } },
-	},
+	}),
 	args: {
 		columns: COLUMNS,
 		trigger: 'click',

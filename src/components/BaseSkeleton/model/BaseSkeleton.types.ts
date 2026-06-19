@@ -1,11 +1,9 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /**
  * Пропсы компонента BaseSkeleton
  */
-export interface BaseSkeletonProps {
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseSkeletonProps extends Omit<BaseComponentProps, 'color'> {
 	/** Ширина (px или %) */
 	width?: string | number
 	/** Высота (px или %) */
@@ -18,6 +16,16 @@ export interface BaseSkeletonProps {
 	color?: string
 	/** Пульсация */
 	isPulse?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
+}
+
+/**
+ * События компонента BaseSkeleton
+ */
+export type BaseSkeletonEmits = Record<string, never>
+
+/**
+ * Слоты компонента BaseSkeleton
+ */
+export interface BaseSkeletonSlots {
+	default?: () => unknown
 }

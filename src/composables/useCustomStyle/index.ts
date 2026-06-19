@@ -1,2 +1,2 @@
-export * from './useCustomStyle'
-export * from './useCustomStyle.types'
+export { useCustomStyle } from './useCustomStyle'
+export type { CustomStyleProp, UseCustomStyleOptions } from './useCustomStyle.types'

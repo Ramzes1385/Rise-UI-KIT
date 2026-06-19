@@ -23,3 +23,13 @@ export interface BasePopoverEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
 }
+
+/**
+ * Слоты компонента BasePopover
+ */
+export interface BasePopoverSlots {
+	/** Триггер */
+	trigger?: () => unknown
+	/** Содержимое поповера */
+	default?: () => unknown
+}

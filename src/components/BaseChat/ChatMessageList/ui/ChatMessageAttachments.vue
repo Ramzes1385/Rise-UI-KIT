@@ -15,18 +15,18 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-				:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+				:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 				class="base-chat-message-list__download-btn"
-					:aria-label="`${UI_CHAT_DOWNLOAD_IMAGE} ${img.name}`"
+					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_IMAGE} ${img.name}`"
 					@click.stop="handleDownload(img)">
 					<template #left>
-						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
+						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
 					</template>
 				</BaseButton>
 				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
 					<BaseText
 						:weight="UI_FONT_WEIGHT.SEMIBOLD"
-						:size-scale="sizeScale * UI_CHAT_SCALE_FILE_ICON"
+						:size-scale="sizeScale * UI_CHAT_SCALE.FILE_ICON"
 						class="base-chat-message-list__collage-overlay-text">
 						+{{ images.length - 3 }}
 					</BaseText>
@@ -41,7 +41,7 @@
 				:key="file.id"
 				class="base-chat-message-list__attached-file"
 				@click.stop="handleFileClick(file)">
-				<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-message-list__file-icon" />
+				<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER" class="base-chat-message-list__file-icon" />
 				<div class="base-chat-message-list__attached-file-info">
 					<BaseText
 						tag="span"
@@ -53,7 +53,7 @@
 					<BaseText
 						v-if="file.size"
 						tag="span"
-						:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+						:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 						class="base-chat-message-list__attached-file-size">
 						{{ file.size }}
 					</BaseText>
@@ -61,12 +61,12 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 				class="base-chat-message-list__download-btn"
-					:aria-label="`${UI_CHAT_DOWNLOAD_FILE} ${file.name}`"
+					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
 					@click.stop="handleDownload(file)">
 					<template #left>
-						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
+						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
 					</template>
 				</BaseButton>
 			</div>
@@ -81,12 +81,8 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import {
-	UI_CHAT_DOWNLOAD_FILE,
-	UI_CHAT_DOWNLOAD_IMAGE,
-	UI_CHAT_SCALE_FILE_ICON,
-	UI_CHAT_SCALE_ICON,
-	UI_CHAT_SCALE_MEMBER,
-	UI_CHAT_SCALE_META,
+	UI_CHAT_SCALE,
+	UI_CHAT_TEXT,
 	UI_FONT_WEIGHT,
 	UI_SCALE,
 } from '@constants'

@@ -1,3 +1,5 @@
+/** Утилиты: расчёт пагинации и видимых страниц */
+
 import type { PageInfoOptions, VisiblePageItem, VisiblePagesOptions } from './paginationUtils.types'
 
 /** Рассчитать общее количество страниц */

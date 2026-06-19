@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../model/BaseRating.utils'
+import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 
 describe('BaseRating utils', () => {
 	describe('snapRating', () => {

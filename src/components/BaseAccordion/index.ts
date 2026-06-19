@@ -1,3 +1,4 @@
+export { ACCORDION_VARIANTS } from './model/BaseAccordion.types'
 export type {
 	BaseAccordionEmits,
 	BaseAccordionItem,

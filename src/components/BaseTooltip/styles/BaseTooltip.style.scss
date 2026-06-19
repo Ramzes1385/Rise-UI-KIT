@@ -1,9 +1,9 @@
-.base-tooltip-wrapper {
+.base-tooltip {
 	position: relative;
 	display: inline-block;
 }
 
-.base-tooltip {
+.base-tooltip-popup {
 	position: fixed;
 	@include custom-bg(background-color, var(--color-primary));
 	@include custom-text(color, var(--color-white));
@@ -107,19 +107,19 @@
 		@include custom-bg(background-color, var(--color-primary-soft));
 		@include custom-text(color, var(--color-primary));
 
-		&.base-tooltip--bottom::after {
+		&.base-tooltip-popup--bottom::after {
 			@include custom-bg(border-bottom-color, var(--color-primary-soft));
 		}
 
-		&.base-tooltip--top::after {
+		&.base-tooltip-popup--top::after {
 			@include custom-bg(border-top-color, var(--color-primary-soft));
 		}
 
-		&.base-tooltip--left::after {
+		&.base-tooltip-popup--left::after {
 			@include custom-bg(border-left-color, var(--color-primary-soft));
 		}
 
-		&.base-tooltip--right::after {
+		&.base-tooltip-popup--right::after {
 			@include custom-bg(border-right-color, var(--color-primary-soft));
 		}
 	}

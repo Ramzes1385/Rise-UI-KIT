@@ -14,7 +14,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
-							:title="UI_PREV_YEAR_ARIA"
+							:title="UI_ARIA.PREV_YEAR"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handlePrevYear">
 							<BaseIcon name="chevron-left" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
@@ -23,7 +23,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn"
-							:title="UI_PREV_MONTH_ARIA"
+							:title="UI_ARIA.PREV_MONTH"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handlePrevRange">
 							<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
@@ -31,7 +31,7 @@
 					</div>
 
 					<div class="date-picker-panel__year-title">
-						<BaseText tag="span" :weight="UI_FONT_WEIGHT_BOLD" :size-scale="resolvedProps.sizeScale">
+						<BaseText tag="span" :weight="UI_FONT_WEIGHT.BOLD" :size-scale="resolvedProps.sizeScale">
 							{{ displayYear }}
 						</BaseText>
 					</div>
@@ -40,7 +40,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn"
-							:title="UI_NEXT_MONTH_ARIA"
+							:title="UI_ARIA.NEXT_MONTH"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handleNextRange">
 							<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
@@ -48,7 +48,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
-							:title="UI_NEXT_YEAR_ARIA"
+							:title="UI_ARIA.NEXT_YEAR"
 							:size-scale="resolvedProps.sizeScale"
 							@click="handleNextYear">
 							<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', resolvedProps.sizeScale)" />
@@ -111,10 +111,10 @@ import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
+import { useDatePickerPanelNavigation } from '@composables/useDatePickerPanelNavigation'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { UI_FONT_WEIGHT_BOLD, UI_NEXT_MONTH_ARIA, UI_NEXT_YEAR_ARIA, UI_PREV_MONTH_ARIA, UI_PREV_YEAR_ARIA } from '@constants'
+import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import { pickDatePickerCalendarConfig } from '../../model/BaseDatePickerCalendar.types'
-import { useDatePickerPanelNavigation } from '../../model/useDatePickerPanelNavigation'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
 import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../model/DatePickerPanel.types'
 

@@ -1,3 +1,5 @@
+/** Утилиты: валидация и обработка файлов */
+
 import type { FileValidationOptions, FileValidationResult } from './fileUtils.types'
 
 /** Получить расширение файла из имени */

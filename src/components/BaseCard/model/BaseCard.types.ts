@@ -45,3 +45,8 @@ export interface BaseCardSlots {
 	/** Действия в заголовке */
 	actions?: (props: BaseCardSlotBindings) => unknown
 }
+
+/**
+ * События компонента BaseCard
+ */
+export type BaseCardEmits = Record<string, never>

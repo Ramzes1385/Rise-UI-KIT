@@ -27,16 +27,16 @@ import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { usePadding } from '@composables/usePadding'
-import { UI_PANEL_MAX_HEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
-import type { BaseDropdownEmits, BaseDropdownProps } from '../model/BaseDropdown.types'
+import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
 
 const props = withDefaults(defineProps<BaseDropdownProps>(), {
 	isOpen: false,
 	position: 'bottom-start',
 	gap: 4,
-	maxHeight: UI_PANEL_MAX_HEIGHT,
+	maxHeight: UI_SIZE.PANEL_MAX_HEIGHT,
 	matchWidth: false,
 	panelClass: '',
 	padding: 8,
@@ -56,6 +56,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: 8 })
 
 const emit = defineEmits<BaseDropdownEmits>()
+defineSlots<BaseDropdownSlots>()
 
 const wrapperRef = ref<HTMLElement | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)

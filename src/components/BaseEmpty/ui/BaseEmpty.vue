@@ -47,13 +47,14 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseEmpty.style.scss'
-import type { BaseEmptyProps } from '../model/BaseEmpty.types'
+import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'
 
 const props = withDefaults(defineProps<BaseEmptyProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'])
+defineSlots<BaseEmptySlots>()
 
 const emptyIcon = computed((): string => props.icon || 'inbox')
 </script>

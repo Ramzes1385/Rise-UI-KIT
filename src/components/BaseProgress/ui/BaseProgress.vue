@@ -57,7 +57,7 @@
 				v-if="hasLabel"
 				tag="span"
 				class="base-progress__circle-label"
-				:weight="UI_FONT_WEIGHT_BOLD"
+				:weight="UI_FONT_WEIGHT.BOLD"
 				:custom-class="classes.circleLabel">
 				<slot :value="value" :percent="percent">{{ percent }}%</slot>
 			</BaseText>
@@ -74,8 +74,8 @@ import { BaseTooltip } from '@components/BaseTooltip'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_FONT_WEIGHT_BOLD, UI_PROGRESS_CIRCLE_RADIUS, SIZE_SCALE_DEFAULT} from '@constants'
-import type { BaseProgressEmits, BaseProgressProps } from '../model/BaseProgress.types'
+import { UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
+import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
 
 const props = withDefaults(defineProps<BaseProgressProps>(), {
 	max: 100,
@@ -87,6 +87,7 @@ const props = withDefaults(defineProps<BaseProgressProps>(), {
 })
 
 const emit = defineEmits<BaseProgressEmits>()
+defineSlots<BaseProgressSlots>()
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -118,7 +119,7 @@ const percent = computed((): number => {
 })
 
 const circumference = computed((): number => {
-	return 2 * Math.PI * UI_PROGRESS_CIRCLE_RADIUS
+	return 2 * Math.PI * UI_SIZE.PROGRESS_CIRCLE_RADIUS
 })
 
 const circleOffset = computed((): number => {

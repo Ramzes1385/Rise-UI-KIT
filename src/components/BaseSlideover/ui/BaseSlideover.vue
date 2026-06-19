@@ -59,7 +59,7 @@ import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
 import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseSlideover.style.scss'
-import type { BaseSlideoverEmits, BaseSlideoverProps } from '../model/BaseSlideover.types'
+import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
 
 const props = withDefaults(defineProps<BaseSlideoverProps>(), {
 	side: 'right',
@@ -107,6 +107,7 @@ const { paddingStyle: panelStyle } = usePadding({
 })
 
 const emit = defineEmits<BaseSlideoverEmits>()
+defineSlots<BaseSlideoverSlots>()
 const slots = useSlots()
 
 const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title))

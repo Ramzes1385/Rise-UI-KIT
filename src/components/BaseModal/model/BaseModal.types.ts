@@ -36,3 +36,12 @@ export interface BaseModalEmits {
 	(event: 'close'): void
 	(event: 'confirm'): void
 }
+
+/**
+ * Слоты компонента BaseModal
+ */
+export interface BaseModalSlots {
+	default?: () => unknown
+	/** Подвал модального окна */
+	footer?: () => unknown
+}

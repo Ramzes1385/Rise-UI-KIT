@@ -23,7 +23,7 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseChip.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseChipEmits, BaseChipProps } from '../model/BaseChip.types'
+import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../model/BaseChip.types'
 
 const props = withDefaults(defineProps<BaseChipProps>(), {
 	placement: 'top-right',
@@ -36,6 +36,7 @@ const props = withDefaults(defineProps<BaseChipProps>(), {
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, ['root', 'badge'])
 
 const emit = defineEmits<BaseChipEmits>()
+defineSlots<BaseChipSlots>()
 
 const numericValue = computed((): number | null => {
 	if (typeof props.content === 'number') return props.content

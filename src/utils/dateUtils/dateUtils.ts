@@ -1,3 +1,5 @@
+/** Утилиты: работа с датами — сравнение, парсинг, форматирование */
+
 import { MS_PER_DAY } from '@constants'
 import type { BuildDateOptions } from './dateUtils.types'
 

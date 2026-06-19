@@ -63,3 +63,12 @@ export interface BaseFileUploadEmits {
 	(event: 'error', message: string): void
 	(event: 'remove', file: UploadedFile): void
 }
+
+/**
+ * Слоты компонента BaseFileUpload
+ */
+export interface BaseFileUploadSlots {
+	default?: () => unknown
+	/** Кастомная зона загрузки */
+	trigger?: () => unknown
+}

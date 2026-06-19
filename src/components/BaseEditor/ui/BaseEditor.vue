@@ -79,19 +79,19 @@
 					<BaseInput
 						:model-value="contextMenu.width"
 						type="number"
-						:placeholder="UI_EDITOR_WIDTH"
+						:placeholder="UI_EDITOR.WIDTH"
 						:size-scale="80"
 						@update:model-value="contextMenu.width = String($event)" />
 					<BaseInput
 						:model-value="contextMenu.height"
 						type="number"
-						:placeholder="UI_EDITOR_HEIGHT"
+						:placeholder="UI_EDITOR.HEIGHT"
 						:size-scale="80"
 						@update:model-value="contextMenu.height = String($event)" />
 				</div>
 				<div class="base-editor__context-menu-actions">
-					<BaseButton :size-scale="80" @click="applyMediaSize">{{ UI_EDITOR_APPLY }}</BaseButton>
-					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">{{ UI_EDITOR_DELETE }}</BaseButton>
+					<BaseButton :size-scale="80" @click="applyMediaSize">{{ UI_EDITOR.APPLY }}</BaseButton>
+					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">{{ UI_EDITOR.DELETE }}</BaseButton>
 				</div>
 			</div>
 		</Teleport>
@@ -106,11 +106,11 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { UI_EDITOR_APPLY, UI_EDITOR_DELETE, UI_EDITOR_HEADING_PREFIX, UI_EDITOR_HEIGHT, UI_EDITOR_PARAGRAPH, UI_EDITOR_URL_PROMPT, UI_EDITOR_WIDTH, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import { useEditorState } from '../composables/useEditorState'
+import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
-import type { BaseEditorEmits, BaseEditorProps } from '../model/BaseEditor.types'
+import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../model/BaseEditor.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
 const props = withDefaults(defineProps<BaseEditorProps>(), {
@@ -126,24 +126,25 @@ const props = withDefaults(defineProps<BaseEditorProps>(), {
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'])
 
 const emit = defineEmits<BaseEditorEmits>()
+defineSlots<BaseEditorSlots>()
 
 const editorRef = ref<HTMLDivElement | null>(null)
 const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
 
 const headingOptions: BaseSelectOption[] = [
-	{ value: 'p', label: UI_EDITOR_PARAGRAPH },
-	{ value: 'h1', label: `${UI_EDITOR_HEADING_PREFIX} 1` },
-	{ value: 'h2', label: `${UI_EDITOR_HEADING_PREFIX} 2` },
-	{ value: 'h3', label: `${UI_EDITOR_HEADING_PREFIX} 3` },
-	{ value: 'h4', label: `${UI_EDITOR_HEADING_PREFIX} 4` },
-	{ value: 'h5', label: `${UI_EDITOR_HEADING_PREFIX} 5` },
-	{ value: 'h6', label: `${UI_EDITOR_HEADING_PREFIX} 6` },
+	{ value: 'p', label: UI_EDITOR.PARAGRAPH },
+	{ value: 'h1', label: `${UI_EDITOR.HEADING_PREFIX} 1` },
+	{ value: 'h2', label: `${UI_EDITOR.HEADING_PREFIX} 2` },
+	{ value: 'h3', label: `${UI_EDITOR.HEADING_PREFIX} 3` },
+	{ value: 'h4', label: `${UI_EDITOR.HEADING_PREFIX} 4` },
+	{ value: 'h5', label: `${UI_EDITOR.HEADING_PREFIX} 5` },
+	{ value: 'h6', label: `${UI_EDITOR.HEADING_PREFIX} 6` },
 ]
 
 // Тонкая обёртка над обработчиком ввода: разрывает цикл
 // useEditorToolbar(onInput) ↔ handleInput(зависит от outputs тулбара).
 // handleInput назначается ниже, после деструктуризации тулбара.
-const inputHandler = { fn: () => {} }
+const inputCallbackRef = { fn: () => {} }
 
 const {
 	activeStates,
@@ -175,8 +176,8 @@ const {
 } = useEditorToolbar({
 	editorRef,
 	codeTextareaRef,
-	onInput: () => inputHandler.fn(),
-	promptForUrl: () => prompt(UI_EDITOR_URL_PROMPT),
+	onInput: () => inputCallbackRef.fn(),
+	promptForUrl: () => prompt(UI_EDITOR.URL_PROMPT),
 })
 
 const {
@@ -211,7 +212,7 @@ function handleInput(): void {
 	updateActiveStates()
 	checkEmpty()
 }
-inputHandler.fn = handleInput
+inputCallbackRef.fn = handleInput
 
 function handleFocus(): void {
 	isFocused.value = true

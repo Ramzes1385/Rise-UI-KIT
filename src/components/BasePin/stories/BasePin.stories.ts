@@ -5,7 +5,9 @@
 
 import { expect, fireEvent, fn, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { PIN_VARIANTS } from '../model/BasePin.types'
 import BasePin from '../ui/BasePin.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -39,6 +41,19 @@ async function pasteInto(input: HTMLInputElement, data: string): Promise<void> {
 const meta: Meta<typeof BasePin> = {
 	title: 'UI/BasePin',
 	component: BasePin,
+	argTypes: buildArgTypes({
+		props: {
+			variant: { control: 'radio', options: PIN_VARIANTS },
+			length: { control: 'number' },
+			type: { control: 'text' },
+			modelValue: { control: 'text' },
+			isDisabled: { control: 'boolean' },
+			error: { control: 'text' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
+			customClass: { control: 'object' },
+			onComplete: { table: { disable: true } },
+		},
+	}),
 	args: {
 		modelValue: '',
 		length: 4,

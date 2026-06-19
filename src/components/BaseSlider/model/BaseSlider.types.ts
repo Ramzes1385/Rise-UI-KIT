@@ -26,14 +26,12 @@ export type SliderAnimation = 'slide' | 'fade' | 'scale' | 'flip'
  */
 export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /**
  * Пропсы компонента BaseSlider
  */
-export interface BaseSliderProps {
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseSliderProps extends BaseComponentProps {
 	/** Элементы слайдера */
 	items: SliderItem[]
 	/** Анимация переключения */
@@ -56,8 +54,6 @@ export interface BaseSliderProps {
 	initialIndex?: number
 	/** Высота слайдера */
 	height?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/** Отступ между слайдами (px) */
 	spaceBetween?: number
 	/** Количество видимых слайдов */

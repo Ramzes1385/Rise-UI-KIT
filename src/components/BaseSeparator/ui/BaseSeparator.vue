@@ -36,7 +36,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseSeparator.style.scss'
 
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseSeparatorProps } from '../model/BaseSeparator.types'
+import type { BaseSeparatorProps, BaseSeparatorSlots } from '../model/BaseSeparator.types'
 
 const props = withDefaults(defineProps<BaseSeparatorProps>(), {
 	orientation: 'horizontal',
@@ -45,6 +45,7 @@ const props = withDefaults(defineProps<BaseSeparatorProps>(), {
 	spacing: 10,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
+defineSlots<BaseSeparatorSlots>()
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'line', 'content'],

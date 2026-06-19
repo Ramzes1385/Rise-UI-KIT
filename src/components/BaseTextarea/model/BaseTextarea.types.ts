@@ -39,3 +39,10 @@ export interface BaseTextareaEmits {
 	(event: 'blur', e: FocusEvent): void
 	(event: 'focus', e: FocusEvent): void
 }
+
+/**
+ * Слоты компонента BaseTextarea
+ */
+export interface BaseTextareaSlots {
+	default?: () => unknown
+}

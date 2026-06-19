@@ -1,3 +1,5 @@
+/** Утилиты: навигация и открытие внешних ссылок */
+
 import type { NavigateOptions } from './navigationUtils.types'
 
 function openExternalUrl(url: string, target: '_blank' | '_self' = '_blank'): void {

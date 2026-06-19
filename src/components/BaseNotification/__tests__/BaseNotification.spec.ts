@@ -10,7 +10,7 @@ import BaseNotification from '../ui/BaseNotification.vue'
 
 /** Получить элемент уведомления из teleport */
 function getNotification() {
-	return document.querySelector('.base-notification')
+	return document.querySelector('.base-notification-item')
 }
 
 describe('BaseNotification unit', () => {
@@ -18,7 +18,7 @@ describe('BaseNotification unit', () => {
 		it('должен рендерить контейнер уведомлений', () => {
 			render(BaseNotification)
 
-			expect(document.querySelector('.base-notification-container')).toBeInTheDocument()
+			expect(document.querySelector('.base-notification')).toBeInTheDocument()
 		})
 
 		it('должен рендерить контейнер с title', async () => {
@@ -31,35 +31,35 @@ describe('BaseNotification unit', () => {
 	})
 
 	describe('пропс type', () => {
-		it('должен применять класс base-notification--info по умолчанию', async () => {
+		it('должен применять класс base-notification-item--info по умолчанию', async () => {
 			render(BaseNotification, { props: { title: 'Тест', duration: 0 } })
 
 			await waitFor(() => {
-				expect(getNotification()).toHaveClass('base-notification--info')
+				expect(getNotification()).toHaveClass('base-notification-item--info')
 			})
 		})
 
-		it('должен применять класс base-notification--success', async () => {
+		it('должен применять класс base-notification-item--success', async () => {
 			render(BaseNotification, { props: { title: 'Успех', type: 'success', duration: 0 } })
 
 			await waitFor(() => {
-				expect(getNotification()).toHaveClass('base-notification--success')
+				expect(getNotification()).toHaveClass('base-notification-item--success')
 			})
 		})
 
-		it('должен применять класс base-notification--error', async () => {
+		it('должен применять класс base-notification-item--error', async () => {
 			render(BaseNotification, { props: { title: 'Ошибка', type: 'error', duration: 0 } })
 
 			await waitFor(() => {
-				expect(getNotification()).toHaveClass('base-notification--error')
+				expect(getNotification()).toHaveClass('base-notification-item--error')
 			})
 		})
 
-		it('должен применять класс base-notification--warning', async () => {
+		it('должен применять класс base-notification-item--warning', async () => {
 			render(BaseNotification, { props: { title: 'Внимание', type: 'warning', duration: 0 } })
 
 			await waitFor(() => {
-				expect(getNotification()).toHaveClass('base-notification--warning')
+				expect(getNotification()).toHaveClass('base-notification-item--warning')
 			})
 		})
 	})
@@ -69,7 +69,7 @@ describe('BaseNotification unit', () => {
 			render(BaseNotification, { props: { title: 'Тест', description: 'Подробности', duration: 0 } })
 
 			await waitFor(() => {
-				const desc = document.querySelector('.base-notification__description')
+				const desc = document.querySelector('.base-notification-item__description')
 				expect(desc).toBeInTheDocument()
 				expect(desc).toHaveTextContent('Подробности')
 			})
@@ -82,7 +82,7 @@ describe('BaseNotification unit', () => {
 				expect(getNotification()).toBeInTheDocument()
 			})
 
-			expect(document.querySelector('.base-notification__description')).not.toBeInTheDocument()
+			expect(document.querySelector('.base-notification-item__description')).not.toBeInTheDocument()
 		})
 	})
 
@@ -94,7 +94,7 @@ describe('BaseNotification unit', () => {
 				expect(getNotification()).toBeInTheDocument()
 			})
 
-			const progress = document.querySelector('.base-notification__progress') as HTMLElement
+			const progress = document.querySelector('.base-notification-item__progress') as HTMLElement
 			expect(progress).toBeInTheDocument()
 			// 0 || 3000 = 3000ms
 			expect(progress.style.animationDuration).toBe('3000ms')
@@ -104,7 +104,7 @@ describe('BaseNotification unit', () => {
 			render(BaseNotification, { props: { title: 'Тест', duration: 5000 } })
 
 			await waitFor(() => {
-				expect(document.querySelector('.base-notification__progress')).toBeInTheDocument()
+				expect(document.querySelector('.base-notification-item__progress')).toBeInTheDocument()
 			})
 		})
 
@@ -135,7 +135,7 @@ describe('BaseNotification unit', () => {
 				expect(getNotification()).toBeInTheDocument()
 			})
 
-			const closeBtn = document.querySelector('.base-notification__close') as HTMLElement
+			const closeBtn = document.querySelector('.base-notification-item__close') as HTMLElement
 			closeBtn.click()
 
 			await vi.advanceTimersByTimeAsync(0)
@@ -156,7 +156,7 @@ describe('BaseNotification unit', () => {
 				},
 			})
 
-			expect(document.querySelector('.base-notification-container')).toHaveClass('custom-container-class')
+			expect(document.querySelector('.base-notification')).toHaveClass('custom-container-class')
 		})
 
 		it('должен распределять объект классов по внутренним элементам', async () => {
@@ -179,14 +179,14 @@ describe('BaseNotification unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(document.querySelector('.base-notification-container')).toHaveClass('custom-container')
-				expect(document.querySelector('.base-notification')).toHaveClass('custom-notification')
-				expect(document.querySelector('.base-notification__icon')).toHaveClass('custom-icon')
-				expect(document.querySelector('.base-notification__content')).toHaveClass('custom-content')
-				expect(document.querySelector('.base-notification__title')).toHaveClass('custom-title')
-				expect(document.querySelector('.base-notification__description')).toHaveClass('custom-description')
-				expect(document.querySelector('.base-notification__close')).toHaveClass('custom-close')
-				expect(document.querySelector('.base-notification__progress')).toHaveClass('custom-progress')
+				expect(document.querySelector('.base-notification')).toHaveClass('custom-container')
+				expect(document.querySelector('.base-notification-item')).toHaveClass('custom-notification')
+				expect(document.querySelector('.base-notification-item__icon')).toHaveClass('custom-icon')
+				expect(document.querySelector('.base-notification-item__content')).toHaveClass('custom-content')
+				expect(document.querySelector('.base-notification-item__title')).toHaveClass('custom-title')
+				expect(document.querySelector('.base-notification-item__description')).toHaveClass('custom-description')
+				expect(document.querySelector('.base-notification-item__close')).toHaveClass('custom-close')
+				expect(document.querySelector('.base-notification-item__progress')).toHaveClass('custom-progress')
 			})
 		})
 	})
@@ -205,7 +205,7 @@ describe('BaseNotification unit', () => {
 				expect(getNotification()).toBeInTheDocument()
 			})
 
-			expect(getNotification()).toHaveClass('base-notification--info')
+			expect(getNotification()).toHaveClass('base-notification-item--info')
 		})
 
 		it('не должен эмитить close при удалении уведомления, если в списке еще остаются другие уведомления', async () => {
@@ -218,24 +218,24 @@ describe('BaseNotification unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(document.querySelector('.base-notification')).toBeInTheDocument()
+				expect(document.querySelector('.base-notification-item')).toBeInTheDocument()
 			})
 
 			// Добавляем второе уведомление через метод add
 			wrapper.vm.add({ title: 'Второе', duration: 0 })
 
 			await waitFor(() => {
-				const notifications = document.querySelectorAll('.base-notification')
+				const notifications = document.querySelectorAll('.base-notification-item')
 				expect(notifications.length).toBe(2)
 			})
 
 			// Удаляем первое уведомление
-			const closeButtons = document.querySelectorAll('.base-notification__close')
+			const closeButtons = document.querySelectorAll('.base-notification-item__close')
 			const firstCloseBtn = closeButtons[0] as HTMLElement
 			firstCloseBtn.click()
 
 			await waitFor(() => {
-				const notifications = document.querySelectorAll('.base-notification')
+				const notifications = document.querySelectorAll('.base-notification-item')
 				expect(notifications.length).toBe(1)
 			})
 
@@ -252,11 +252,11 @@ describe('BaseNotification unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(document.querySelector('.base-notification')).toBeInTheDocument()
+				expect(document.querySelector('.base-notification-item')).toBeInTheDocument()
 			})
 
 			expect(() => wrapper.vm.remove(999)).not.toThrow()
-			expect(document.querySelector('.base-notification')).toBeInTheDocument()
+			expect(document.querySelector('.base-notification-item')).toBeInTheDocument()
 		})
 	})
 })

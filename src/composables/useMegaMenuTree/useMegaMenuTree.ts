@@ -40,7 +40,7 @@ function createTree(): MegaMenuTree {
  * const tree = useMegaMenuTreeProvider()
  * ```
  */
-export function useMegaMenuTreeProvider(): MegaMenuTree {
+function useMegaMenuTreeProvider(): MegaMenuTree {
 	const tree = createTree()
 	provide(MEGA_MENU_TREE_KEY, tree)
 	return tree
@@ -51,6 +51,8 @@ export function useMegaMenuTreeProvider(): MegaMenuTree {
  * Используется рекурсивными узлами. Если провайдер отсутствует —
  * возвращает изолированный экземпляр (узел работает автономно).
  */
-export function useMegaMenuTree(): MegaMenuTree {
+function useMegaMenuTree(): MegaMenuTree {
 	return inject(MEGA_MENU_TREE_KEY, null) ?? createTree()
 }
+
+export { useMegaMenuTreeProvider, useMegaMenuTree }

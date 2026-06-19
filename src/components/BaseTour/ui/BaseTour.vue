@@ -6,7 +6,7 @@
 			:class="classes.root"
 			role="dialog"
 			aria-modal="true"
-			:aria-label="currentStep.title || UI_TOUR_TITLE">
+			:aria-label="currentStep.title || UI_TOUR.TITLE">
 			<div class="base-tour__overlay" :class="classes.overlay" @click="handleOverlayClick" />
 
 			<div
@@ -35,7 +35,7 @@
 							<BaseButton
 								variant="ghost"
 								:padding="4"
-								:aria-label="UI_SKIP_TOUR_TEXT"
+								:aria-label="UI_TOUR.SKIP"
 								:custom-class="classes.closeButton"
 								@click="handleSkip">
 								<BaseIcon name="close" :custom-class="classes.closeIcon" />
@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
@@ -113,17 +113,14 @@ import { useBreakpoint } from '@composables/useBreakpoint'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
+import { useTourCoordination } from '@composables/useTourCoordination'
+import { useTourLogic } from '@composables/useTourLogic'
 import {
-	UI_FINISH_TOUR_TEXT,
 	UI_FONT_WEIGHT,
-	UI_NEXT_TEXT,
-	UI_PREV_TEXT,
-	UI_SKIP_TOUR_TEXT,
-	UI_TOUR_TITLE,
+	UI_TOUR,
 } from '@constants'
-import { DEFAULT_RADIUS, useTourLogic } from '../model/useTourLogic'
 import '../styles/BaseTour.style.scss'
-import type { BaseTourEmits, BaseTourProps, BaseTourSlotContext, BaseTourSlots } from '../model/BaseTour.types'
+import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseTour.types'
 import type { CustomColor } from '@composables/useCustomColor'
 
 const props = withDefaults(defineProps<BaseTourProps>(), {
@@ -134,10 +131,10 @@ const props = withDefaults(defineProps<BaseTourProps>(), {
 	closeOnEscape: true,
 	lockScroll: true,
 	scrollIntoView: true,
-	nextLabel: UI_NEXT_TEXT,
-	prevLabel: UI_PREV_TEXT,
-	finishLabel: UI_FINISH_TOUR_TEXT,
-	skipLabel: UI_SKIP_TOUR_TEXT,
+	nextLabel: UI_TOUR.NEXT,
+	prevLabel: UI_TOUR.PREV,
+	finishLabel: UI_TOUR.FINISH,
+	skipLabel: UI_TOUR.SKIP,
 	showSkip: true,
 	showProgress: true,
 })
@@ -145,24 +142,9 @@ const props = withDefaults(defineProps<BaseTourProps>(), {
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()
 
-const FOCUS_DURATION = 450
-const MAX_DOTS = 8
-
 const internalIndex = ref(props.step)
 const activeIndex = computed((): number => internalIndex.value)
 const contentColor: CustomColor = { text: { base: 'var(--color-text-muted)' } }
-
-const resolvedNextLabel = computed((): string => props.labels?.next ?? props.nextLabel)
-const resolvedPrevLabel = computed((): string => props.labels?.prev ?? props.prevLabel)
-const resolvedFinishLabel = computed((): string => props.labels?.finish ?? props.finishLabel)
-const resolvedCloseOnOverlayClick = computed((): boolean => props.behavior?.closeOnOverlayClick ?? props.closeOnOverlayClick)
-const resolvedCloseOnEscape = computed((): boolean => props.behavior?.closeOnEscape ?? props.closeOnEscape)
-const resolvedLockScroll = computed((): boolean => props.behavior?.lockScroll ?? props.lockScroll)
-
-const isFocusing = ref(false)
-const focusFromViewport = ref(false)
-let focusTimer: ReturnType<typeof setTimeout> | null = null
-let focusRaf = 0
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -195,138 +177,39 @@ const { geometry, currentStep, isFirst, isLast, total, recalculate, attachListen
 	getIndex: () => internalIndex.value,
 })
 
-const hasHeader = computed((): boolean => Boolean(currentStep.value?.title))
-
-/** Показывать точки прогресса (для небольшого числа шагов) либо компактную полосу */
-const useDots = computed((): boolean => total.value <= MAX_DOTS)
-
-/** Заполнение полосы прогресса в процентах (для большого числа шагов, total > MAX_DOTS) */
-const progressPercent = computed((): number => {
-	return Math.round((activeIndex.value / (total.value - 1)) * 100)
+const {
+	isFocusing,
+	spotlightStyle,
+	cardStyle,
+	slotContext,
+	hasHeader,
+	useDots,
+	progressPercent,
+	resolvedNextLabel,
+	resolvedPrevLabel,
+	resolvedFinishLabel,
+	resolvedCloseOnEscape,
+	resolvedLockScroll,
+	goNext,
+	goPrev,
+	handleSkip,
+	handleFinish,
+	handleOverlayClick,
+	startFocus,
+	stopFocus,
+} = useTourCoordination({
+	props,
+	emit,
+	internalIndex,
+	activeIndex,
+	currentStep,
+	isFirst,
+	isLast,
+	total,
+	geometry,
+	isMobile,
+	recalculate,
 })
-
-const spotlightStyle = computed((): Record<string, string> | null => {
-	const value = geometry.value
-	if (!value) return null
-
-	if (focusFromViewport.value) {
-		const margin = 48
-		return {
-			top: `${-margin}px`,
-			left: `${-margin}px`,
-			width: `calc(100vw + ${margin * 2}px)`,
-			height: `calc(100vh + ${margin * 2}px)`,
-			borderRadius: '0',
-		}
-	}
-
-	const { top, left, width, height } = value.spotlight
-	return {
-		top: `${top}px`,
-		left: `${left}px`,
-		width: `${width}px`,
-		height: `${height}px`,
-		borderRadius: `${props.radius ?? DEFAULT_RADIUS}px`,
-	}
-})
-
-const cardStyle = computed((): Record<string, string> | null => {
-	const value = geometry.value
-	if (!value) return null
-	if (isMobile.value) return {}
-	return { top: `${value.card.top}px`, left: `${value.card.left}px` }
-})
-
-const slotContext = computed((): BaseTourSlotContext | null => {
-	const step = currentStep.value
-	/* istanbul ignore next -- defensive: карточка рендерится только при истинном currentStep (v-if на корне) */
-	if (!step) return null
-	return {
-		step,
-		index: activeIndex.value,
-		total: total.value,
-		isFirst: isFirst.value,
-		isLast: isLast.value,
-		next: goNext,
-		prev: goPrev,
-		skip: handleSkip,
-		finish: handleFinish,
-	}
-})
-
-function setIndex(value: number): void {
-	internalIndex.value = value
-	emit('update:step', value)
-	emit('change', value)
-}
-
-function goNext(): void {
-	if (isLast.value) return
-	const next = internalIndex.value + 1
-	setIndex(next)
-	emit('next', next)
-}
-
-function goPrev(): void {
-	if (isFirst.value) return
-	const prev = internalIndex.value - 1
-	setIndex(prev)
-	emit('prev', prev)
-}
-
-function close(): void {
-	emit('update:isOpen', false)
-	emit('close')
-}
-
-function handleSkip(): void {
-	emit('skip')
-	close()
-}
-
-function handleFinish(): void {
-	emit('finish')
-	close()
-}
-
-function handleOverlayClick(): void {
-	if (resolvedCloseOnOverlayClick.value) handleSkip()
-}
-
-/** Останавливает анимацию фокусировки и сбрасывает её состояние */
-function stopFocus(): void {
-	if (focusTimer !== null) {
-		clearTimeout(focusTimer)
-		focusTimer = null
-	}
-	if (focusRaf !== 0) {
-		cancelAnimationFrame(focusRaf)
-		focusRaf = 0
-	}
-	isFocusing.value = false
-	focusFromViewport.value = false
-}
-
-/**
- * Запускает анимацию фокусировки при старте тура: подсветка начинается
- * с полного вьюпорта и плавно «съезжает» на целевой элемент.
- */
-async function startFocus(): Promise<void> {
-	stopFocus()
-	isFocusing.value = true
-	focusFromViewport.value = true
-
-	await recalculate()
-	await nextTick()
-
-	focusRaf = requestAnimationFrame(() => {
-		focusFromViewport.value = false
-		focusTimer = setTimeout(() => {
-			isFocusing.value = false
-			focusTimer = null
-		}, FOCUS_DURATION)
-	})
-}
 
 useEscapeKey({
 	isActive: () => props.isOpen && resolvedCloseOnEscape.value,

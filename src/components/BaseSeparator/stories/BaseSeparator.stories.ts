@@ -4,6 +4,7 @@
  */
 
 import { expect, within } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
 import BaseSeparator from '../ui/BaseSeparator.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -11,27 +12,29 @@ const meta: Meta<typeof BaseSeparator> = {
 	title: 'UI/BaseSeparator',
 	component: BaseSeparator,
 
-	argTypes: {
-		orientation: {
-			control: 'inline-radio',
-			options: ['horizontal', 'vertical'],
+	argTypes: buildArgTypes({
+		props: {
+			orientation: {
+				control: 'inline-radio',
+				options: ['horizontal', 'vertical'],
+			},
+			label: { control: 'text' },
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			thickness: {
+				control: { type: 'range', min: 1, max: 10, step: 1 },
+			},
+			isDashed: { control: 'boolean' },
+			spacing: {
+				control: { type: 'range', min: 0, max: 40, step: 2 },
+			},
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+			},
 		},
-		label: { control: 'text' },
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		thickness: {
-			control: { type: 'range', min: 1, max: 10, step: 1 },
-		},
-		isDashed: { control: 'boolean' },
-		spacing: {
-			control: { type: 'range', min: 0, max: 40, step: 2 },
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-		},
-	},
+	}),
 
 	args: {
 		orientation: 'horizontal',

@@ -31,7 +31,7 @@ import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BasePopover.style.scss'
 import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
-import type { BasePopoverEmits, BasePopoverProps } from '../model/BasePopover.types'
+import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
 
 const props = withDefaults(defineProps<BasePopoverProps>(), {
 	isOpen: false,
@@ -41,6 +41,7 @@ const props = withDefaults(defineProps<BasePopoverProps>(), {
 })
 
 const emit = defineEmits<BasePopoverEmits>()
+defineSlots<BasePopoverSlots>()
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

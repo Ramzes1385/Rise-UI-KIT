@@ -1,11 +1,6 @@
-/** Элемент хлебных крошек для Schema.org */
-interface SchemaBreadcrumbItem {
-	/** Название элемента */
-	label: string
-	/** URL (to или href) */
-	to?: string
-	href?: string
-}
+/** Утилиты: генерация Schema.org JSON-LD разметки */
+
+import type { SchemaBreadcrumbItem } from './schemaUtils.types'
 
 /** Построить Schema.org JSON-LD для BreadcrumbList */
 function buildBreadcrumbsSchema(items: SchemaBreadcrumbItem[]): string {
@@ -36,4 +31,3 @@ function escapeJsonForScript(json: string): string {
 }
 
 export { buildBreadcrumbsSchema }
-export type { SchemaBreadcrumbItem }

@@ -3,11 +3,11 @@
 		<BaseText
 			tag="span"
 			:weight="UI_FONT_WEIGHT.SEMIBOLD"
-			:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+			:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 			class="base-chat-message-list__reply-sender">
-			{{ replyToSenderName || UI_CHAT_MESSAGE_PLACEHOLDER }}
+			{{ replyToSenderName || UI_CHAT_TEXT.MESSAGE_PLACEHOLDER }}
 		</BaseText>
-		<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-message-list__reply-text">
+		<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" class="base-chat-message-list__reply-text">
 			{{ replyToText }}
 		</BaseText>
 	</div>
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import { UI_CHAT_MESSAGE_PLACEHOLDER, UI_CHAT_SCALE_ICON, UI_FONT_WEIGHT } from '@constants'
+import { UI_CHAT_TEXT, UI_CHAT_SCALE, UI_FONT_WEIGHT } from '@constants'
 import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../model/ChatMessageReply.types'
 
 const props = defineProps<ChatMessageReplyProps>()

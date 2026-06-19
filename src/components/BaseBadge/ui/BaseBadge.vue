@@ -17,13 +17,14 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseBadge.style.scss'
-import type { BaseBadgeEmits, BaseBadgeProps } from '../model/BaseBadge.types'
+import type { BaseBadgeEmits, BaseBadgeProps, BaseBadgeSlots } from '../model/BaseBadge.types'
 
 const props = withDefaults(defineProps<BaseBadgeProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseBadgeEmits>()
+defineSlots<BaseBadgeSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-badge', props, ['root', 'text'])
 

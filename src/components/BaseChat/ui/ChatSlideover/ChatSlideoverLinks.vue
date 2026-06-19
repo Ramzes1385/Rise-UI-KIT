@@ -1,7 +1,7 @@
 <template>
 	<div v-if="links.length === 0" class="base-chat-slideover__empty">
-		<BaseIcon name="link" :size-scale="sizeScale * UI_CHAT_SCALE_AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
-		<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_MEMBER" class="base-chat-slideover__empty-text">{{ UI_CHAT_NO_LINKS }}</BaseText>
+		<BaseIcon name="link" :size-scale="sizeScale * UI_CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
+		<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER" class="base-chat-slideover__empty-text">{{ UI_CHAT_TEXT.NO_LINKS }}</BaseText>
 	</div>
 	<div v-else class="base-chat-slideover__links-list">
 		<div
@@ -14,7 +14,7 @@
 				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__link-url">
 					{{ link.url }}
 				</BaseText>
-				<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE_META" class="base-chat-slideover__link-date">
+				<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE.META" class="base-chat-slideover__link-date">
 					{{ link.publishedAt }}
 				</BaseText>
 			</div>
@@ -27,10 +27,8 @@ import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
-	UI_CHAT_NO_LINKS,
-	UI_CHAT_SCALE_AVATAR_LARGE,
-	UI_CHAT_SCALE_MEMBER,
-	UI_CHAT_SCALE_META,
+	UI_CHAT_SCALE,
+	UI_CHAT_TEXT,
 	UI_SCALE,
 } from '@constants'
 import type { ChatMessage } from '../../model/BaseChat.types'

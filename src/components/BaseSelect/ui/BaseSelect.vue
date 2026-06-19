@@ -157,11 +157,11 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { useSelect } from '@composables/useSelect'
 import '../styles/BaseSelect.style.scss'
-import { useSelect } from '../composables/useSelect'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
-import type { BaseSelectEmits, BaseSelectProps } from '../model/BaseSelect.types'
+import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model/BaseSelect.types'
 
 const props = withDefaults(defineProps<BaseSelectProps>(), {
 	modelValue: '',
@@ -205,6 +205,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 	])
 
 const emit = defineEmits<BaseSelectEmits>()
+defineSlots<BaseSelectSlots>()
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -234,6 +235,7 @@ const {
 })
 
 defineExpose({
+	rootRef: selectRef,
 	selectRef,
 	focus: () => selectRef.value?.focus(),
 	blur: () => selectRef.value?.blur(),

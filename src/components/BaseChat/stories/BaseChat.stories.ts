@@ -1,5 +1,6 @@
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import BaseChat from '../ui/BaseChat.vue'
 import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../model/BaseChat.types'
 import type { Args, Meta, StoryObj } from '@storybook/vue3'
@@ -163,6 +164,27 @@ const meta: Meta<typeof BaseChat> = {
 			template: '<div style="width: 100%; max-width: 600px; margin: 0 auto;"><story /></div>',
 		}),
 	],
+	argTypes: buildArgTypes({
+		props: {
+			messages: { table: { disable: true } },
+			title: { control: 'text' },
+			subtitle: { control: 'text' },
+			avatar: { control: 'text' },
+			height: { control: 'text' },
+			variant: { control: 'radio', options: ['bubble', 'flat', 'modern'] },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
+			isTyping: { control: 'boolean' },
+			isGroup: { control: 'boolean' },
+			members: { table: { disable: true } },
+			quickReplies: { control: 'object' },
+			commands: { table: { disable: true } },
+			pinnedMessages: { table: { disable: true } },
+			currentUserRole: { control: 'select', options: ['admin', 'member'] },
+			customClass: { control: 'object' },
+			onSend: { table: { disable: true } },
+			onAttach: { table: { disable: true } },
+		},
+	}),
 	args: {
 		messages: MOCK_MESSAGES,
 		title: 'Чат с Анной',

@@ -61,7 +61,7 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePopup } from '@composables/usePopup'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, MODAL_CLOSE_BUTTON_PADDING, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseModal.style.scss'
-import type { BaseModalEmits, BaseModalProps } from '../model/BaseModal.types'
+import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../model/BaseModal.types'
 
 const props = withDefaults(defineProps<BaseModalProps>(), {
 	isOpen: undefined,
@@ -75,6 +75,7 @@ const props = withDefaults(defineProps<BaseModalProps>(), {
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'])
 
 const emit = defineEmits<BaseModalEmits>()
+defineSlots<BaseModalSlots>()
 const slots = useSlots()
 
 const hasFooter = computed(() => Boolean(slots.footer))

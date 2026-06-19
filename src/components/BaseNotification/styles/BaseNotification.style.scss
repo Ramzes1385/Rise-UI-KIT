@@ -1,4 +1,4 @@
-.base-notification-container {
+.base-notification {
 	position: fixed;
 	top: sz(20px);
 	right: sz(20px);
@@ -82,7 +82,7 @@
 		width: 100%;
 		max-width: none;
 
-		&:not(.base-notification-container--contained) {
+		&:not(.base-notification--contained) {
 			left: 0;
 			right: 0;
 			transform: none;
@@ -97,7 +97,7 @@
 	width: 100%;
 }
 
-.base-notification {
+.base-notification-item {
 	pointer-events: auto;
 	box-sizing: border-box;
 	@include custom-bg(background-color, var(--color-white));
@@ -197,7 +197,7 @@
 		@include custom-bg(background-color, var(--color-primary-soft));
 		border-color: transparent;
 
-		.base-notification__title {
+		.base-notification-item__title {
 			@include custom-text(color, var(--color-primary));
 		}
 	}

@@ -60,25 +60,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed } from 'vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
-import { useClickOutside } from '@composables/useClickOutside'
-import {
-	UI_CONTEXT_MENU_DEFAULT_HEIGHT,
-	UI_CONTEXT_MENU_DEFAULT_WIDTH,
-	UI_HIGHLIGHT_DURATION_MS,
-	UI_SCALE,
-	SIZE_SCALE_DEFAULT,
-} from '@constants'
-import { copyTextToClipboard } from '@utils/clipboardUtils'
+import { useChatMessageActions } from '@composables/useChatMessageActions'
+import { SIZE_SCALE_DEFAULT, UI_SCALE } from '@constants'
 import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 import '../styles/ChatMessageList.style.scss'
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMessageList.types'
-import type { Ref } from 'vue'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -94,217 +85,42 @@ const props = withDefaults(defineProps<ChatMessageListProps>(), {
 
 const emit = defineEmits<ChatMessageListEmits>()
 
-const listRef = ref<HTMLElement | null>(null)
-const contextMenuRef = ref<InstanceType<typeof ChatMessageContextMenu> | null>(null)
-const highlightTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
-
-const contextMenu = ref({
-	isOpen: false,
-	x: 0,
-	y: 0,
-	message: null as ChatMessage | null,
+const {
+	listRef,
+	contextMenuRef,
+	contextMenu,
+	handleAvatarClick,
+	handleSelect,
+	handleReplyClick,
+	handleReplyAction,
+	handleDownload,
+	handleFileClick,
+	handleContextMenu,
+	closeContextMenu,
+	handleSelectReaction,
+	handleToggleReaction,
+	handleContextMenuReply,
+	handleContextMenuSelect,
+	handleContextMenuCopy,
+	handleContextMenuPin,
+	handleContextMenuDelete,
+	scrollToMessage,
+	handleMentionClick,
+	handleCommandClick,
+} = useChatMessageActions({
+	selectedMessageIds: computed(() => props.selectedMessageIds),
+	emit,
 })
 
-// Автопрокрутка к последнему сообщению
 useAutoScroll({
 	container: listRef,
 	enabled: () => true,
 	watchSource: () => props.messages.length + (props.isTyping ? 1 : 0),
 })
 
-// Закрытие контекстного меню по клику снаружи
-useClickOutside({
-	targets: [contextMenuRef as unknown as Ref<HTMLElement | null>],
-	callback: closeContextMenu,
-	isActive: () => contextMenu.value.isOpen,
-})
-
-/** Набор ID выбранных сообщений */
 const selectedSet = computed(() => new Set(props.selectedMessageIds))
-
-/** ID сообщения, для которого открыто контекстное меню */
 const activeContextMessageId = computed(() => contextMenu.value.message?.id ?? null)
-
-/** Проверка, активен ли режим выбора сообщений */
-const isSelectionMode = computed(() => {
-	return props.selectedMessageIds.length > 0
-})
-
-/** Обработка клика по аватару */
-function handleAvatarClick(message: ChatMessage): void {
-	/* istanbul ignore else — defensive: handleAvatarClick вызывается только из шаблона для sender === 'other' */
-	if (message.sender === 'other') {
-		/* istanbul ignore next — defensive: senderId/senderName опциональны для других чатов */
-		emit('avatar-click', message.senderId || message.senderName || '')
-	}
-}
-
-/** Обработка выбора сообщения */
-function handleSelect(messageId: string): void {
-	emit('message-select', messageId)
-}
-
-/** Обработка клика по цитируемому сообщению */
-function handleReplyClick(replyToId?: string): void {
-	/* istanbul ignore else — defensive: цитата рендерится только при наличии replyToId (v-if в шаблоне) */
-	if (replyToId) {
-		emit('reply-click', replyToId)
-	}
-}
-
-/** Обработка нажатия кнопки "Ответить" */
-function handleReplyAction(message: ChatMessage): void {
-	emit('message-reply', message)
-}
-
-/** Скачивание файла */
-function handleDownload(file: ChatMessageAttachment): void {
-	emit('download-file', file)
-}
-
-/** Клик по файлу для предпросмотра */
-function handleFileClick(file: ChatMessageAttachment): void {
-	emit('file-click', file)
-}
-
-/** Открытие контекстного меню */
-function handleContextMenu(event: MouseEvent, message: ChatMessage): void {
-	/* istanbul ignore next — defensive: contextmenu заблокирован в режиме выбора через CSS */
-	if (isSelectionMode.value) return
-	const menuWidth = UI_CONTEXT_MENU_DEFAULT_WIDTH
-	const menuHeight = UI_CONTEXT_MENU_DEFAULT_HEIGHT
-	const windowWidth = window.innerWidth
-	const windowHeight = window.innerHeight
-
-	let x = event.clientX
-	let y = event.clientY
-
-	/* istanbul ignore next — boundary: требует window > menuWidth, тривиальная гео-логика */
-	if (x + menuWidth > windowWidth) {
-		x = windowWidth - menuWidth - 16
-	}
-	/* istanbul ignore next — boundary: требует window > menuHeight, тривиальная гео-логика */
-	if (y + menuHeight > windowHeight) {
-		y = windowHeight - menuHeight - 16
-	}
-
-	contextMenu.value = {
-		isOpen: true,
-		x: Math.max(16, x),
-		y: Math.max(16, y),
-		message: message,
-	}
-}
-
-/** Закрытие контекстного меню */
-function closeContextMenu(): void {
-	contextMenu.value.isOpen = false
-	contextMenu.value.message = null
-}
-
-/** Выбор реакции из контекстного меню */
-function handleSelectReaction(emoji: string): void {
-	/* istanbul ignore next — defensive: меню открывается только при наличии message */
-	if (contextMenu.value.message) {
-		emit('message-reaction', {
-			messageId: contextMenu.value.message.id,
-			emoji,
-		})
-	}
-	closeContextMenu()
-}
-
-/** Переключение реакции по клику на бейдж */
-function handleToggleReaction(messageId: string, emoji: string): void {
-	emit('message-reaction', { messageId, emoji })
-}
-
-/** Действие "Ответить" из контекстного меню */
-function handleContextMenuReply(): void {
-	/* istanbul ignore next — defensive: меню открывается только при наличии message */
-	if (contextMenu.value.message) {
-		emit('message-reply', contextMenu.value.message)
-	}
-	closeContextMenu()
-}
-
-/** Действие "Выбрать" из контекстного меню */
-function handleContextMenuSelect(): void {
-	/* istanbul ignore next — defensive: меню открывается только при наличии message */
-	if (contextMenu.value.message) {
-		emit('message-select', contextMenu.value.message.id)
-	}
-	closeContextMenu()
-}
-
-/** Действие "Копировать" из контекстного меню */
-async function handleContextMenuCopy(): Promise<void> {
-	if (contextMenu.value.message?.text) {
-		await copyTextToClipboard(contextMenu.value.message.text).catch(() => {
-			/* clipboard write failure is non-critical */
-		})
-	}
-	closeContextMenu()
-}
-
-/** Действие "Закрепить" из контекстного меню */
-function handleContextMenuPin(): void {
-	/* istanbul ignore next — defensive: меню открывается только при наличии message */
-	if (contextMenu.value.message) {
-		emit('pin-message', contextMenu.value.message.id)
-	}
-	closeContextMenu()
-}
-
-/** Действие "Удалить" из контекстного меню */
-function handleContextMenuDelete(): void {
-	/* istanbul ignore next — defensive: меню открывается только при наличии message */
-	if (contextMenu.value.message) {
-		emit('delete-message', contextMenu.value.message.id)
-	}
-	closeContextMenu()
-}
-
-/**
- * Скроллит к сообщению с указанным id и подсвечивает его.
- * Поиск элемента выполняется локально внутри контейнера списка,
- * сохраняя инкапсуляцию DOM компонента.
- */
-function scrollToMessage(messageId: string): void {
-	const container = listRef.value
-	/* istanbul ignore next — defensive: ref может быть null при unmount */
-	if (!container) return
-	const element = container.querySelector<HTMLElement>(`#message-${messageId}`)
-	/* istanbul ignore next — defensive: сообщение могло быть удалено */
-	if (!element) return
-
-	if (highlightTimeoutId.value !== null) {
-		clearTimeout(highlightTimeoutId.value)
-	}
-
-	element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-	element.classList.add('base-chat-message-list__item--highlighted')
-	highlightTimeoutId.value = setTimeout(() => {
-		element.classList.remove('base-chat-message-list__item--highlighted')
-		highlightTimeoutId.value = null
-	}, UI_HIGHLIGHT_DURATION_MS)
-}
-
-onBeforeUnmount(() => {
-	if (highlightTimeoutId.value !== null) {
-		clearTimeout(highlightTimeoutId.value)
-	}
-})
+const isSelectionMode = computed(() => props.selectedMessageIds.length > 0)
 
 defineExpose({ scrollToMessage })
-
-/** Клик по @упоминанию в тексте сообщения */
-function handleMentionClick(mention: string): void {
-	emit('mention-click', mention)
-}
-
-/** Клик по /команде в тексте сообщения */
-function handleCommandClick(command: string): void {
-	emit('command-click', command)
-}
 </script>

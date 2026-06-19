@@ -5,6 +5,7 @@
 
 import { expect, fn, userEvent } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
 import BaseTextarea from '../ui/BaseTextarea.vue'
@@ -14,34 +15,36 @@ const meta: Meta<typeof BaseTextarea> = {
 	title: 'UI/BaseTextarea',
 	component: BaseTextarea,
 
-	argTypes: {
-		placeholder: { control: 'text' },
-		rows: { control: 'number' },
-		maxlength: { control: 'number' },
-		label: { control: 'text' },
-		error: { control: 'text' },
-		variant: {
-			control: 'radio',
-			options: TEXTAREA_VARIANTS,
+	argTypes: buildArgTypes({
+		props: {
+			placeholder: { control: 'text' },
+			rows: { control: 'number' },
+			maxlength: { control: 'number' },
+			label: { control: 'text' },
+			error: { control: 'text' },
+			variant: {
+				control: 'radio',
+				options: TEXTAREA_VARIANTS,
+			},
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			isDisabled: { control: 'boolean' },
+			isRequired: { control: 'boolean' },
+			isReadonly: { control: 'boolean' },
+			isAutosize: { control: 'boolean' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
+			name: { control: 'text' },
+			modelValue: { control: 'text' },
+			'onUpdate:modelValue': { table: { disable: true } },
+			onBlur: { table: { disable: true } },
+			onFocus: { table: { disable: true } },
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		isDisabled: { control: 'boolean' },
-		isRequired: { control: 'boolean' },
-		isReadonly: { control: 'boolean' },
-		isAutosize: { control: 'boolean' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		name: { control: 'text' },
-		modelValue: { control: 'text' },
-		'onUpdate:modelValue': { table: { disable: true } },
-		onBlur: { table: { disable: true } },
-		onFocus: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		placeholder: 'Введите текст...',

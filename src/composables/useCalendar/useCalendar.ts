@@ -5,7 +5,7 @@ import { useCalendarGrid } from './useCalendarGrid'
 import { useCalendarNavigation } from './useCalendarNavigation'
 import type { CalendarView, UseCalendarOptions } from './useCalendar.types'
 
-export function useCalendar(options: UseCalendarOptions) {
+function useCalendar(options: UseCalendarOptions) {
 	const currentMonth = ref(options.initialMonth?.() ?? new Date().getMonth())
 	const currentYear = ref(options.initialYear?.() ?? new Date().getFullYear())
 	const currentView = ref<CalendarView>('days')
@@ -152,3 +152,5 @@ export function useCalendar(options: UseCalendarOptions) {
 		isSameDay,
 	}
 }
+
+export { useCalendar }

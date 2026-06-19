@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Варианты отображения поиска */
 export const SEARCH_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
@@ -35,17 +34,11 @@ export interface SearchResult {
 /**
  * Пропсы компонента BaseSearch
  */
-export interface BaseSearchProps {
+export interface BaseSearchProps extends BaseComponentProps<SearchVariant> {
 	/** Значение */
 	modelValue?: string
 	/** Плейсхолдер */
 	placeholder?: string
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Вариант */
-	variant?: SearchVariant
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Режим отображения */
 	mode?: SearchMode
 	/** Результаты поиска */
@@ -68,8 +61,6 @@ export interface BaseSearchProps {
 	isDisabled?: boolean
 	/** Текст ошибки */
 	error?: string
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

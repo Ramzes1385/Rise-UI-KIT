@@ -16,6 +16,10 @@ interface UseImageZoomOptions {
 	getZoomImgEl?: () => HTMLElement | null
 	/** Изображение мини-карты (img) для расчёта viewport */
 	getMinimapImgEl?: () => HTMLElement | null
+	/** Callback при нажатии стрелки влево (навигация галереи) */
+	onArrowLeft?: () => void
+	/** Callback при нажатии стрелки вправо (навигация галереи) */
+	onArrowRight?: () => void
 }
 
 export type { UseImageZoomOptions }

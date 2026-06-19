@@ -5,6 +5,8 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
+import { PROGRESS_SHAPES, PROGRESS_ANIMATIONS } from '../model/BaseProgress.types'
 import BaseProgress from '../ui/BaseProgress.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -12,36 +14,19 @@ const meta: Meta<typeof BaseProgress> = {
 	title: 'UI/BaseProgress',
 	component: BaseProgress,
 
-	argTypes: {
-		value: {
-			control: { type: 'range', min: 0, max: 100 },
+	argTypes: buildArgTypes({
+		props: {
+			value: { control: { type: 'range', min: 0, max: 100 } },
+			max: { control: 'number' },
+			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
+			shape: { control: 'inline-radio', options: PROGRESS_SHAPES },
+			animation: { control: 'select', options: PROGRESS_ANIMATIONS },
+			hasLabel: { control: 'boolean' },
+			isIndeterminate: { control: 'boolean' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
+			customClass: { control: 'object' },
 		},
-		max: {
-			control: 'number',
-		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		shape: {
-			control: 'inline-radio',
-			options: ['line', 'circle'],
-		},
-		animation: {
-			control: 'select',
-			options: ['none', 'striped', 'pulse', 'glow'],
-		},
-		hasLabel: {
-			control: 'boolean',
-		},
-		isIndeterminate: {
-			control: 'boolean',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-	},
+	}),
 
 	args: {
 		value: 60,

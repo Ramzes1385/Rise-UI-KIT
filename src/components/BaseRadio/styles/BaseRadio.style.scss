@@ -1,4 +1,4 @@
-.base-radio-group {
+.base-radio {
 	display: flex;
 	flex-direction: column;
 	gap: sz(20px);
@@ -26,7 +26,7 @@
 	}
 
 	&--error {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			border-color: var(--color-error);
 		}
 	}
@@ -38,51 +38,51 @@
 
 	// Варианты
 	&--ghost {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			@include custom-bg(background-color, transparent);
 			border-color: transparent;
 			box-shadow: none;
 		}
 
-		.base-radio:hover:not(.base-radio--disabled) .base-radio__circle {
+		.base-radio-item:hover:not(.base-radio-item--disabled) .base-radio-item__circle {
 			@include custom-bg(background-color, var(--color-surface-muted));
 		}
 	}
 
 	&--outline {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			@include custom-bg(background-color, transparent);
 			border-width: 2px;
 		}
 	}
 
 	&--shadow {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			box-shadow: var(--shadow-lg);
 		}
 
-		.base-radio:hover:not(.base-radio--disabled) .base-radio__circle {
+		.base-radio-item:hover:not(.base-radio-item--disabled) .base-radio-item__circle {
 			box-shadow: var(--shadow-xl);
 		}
 	}
 
 	&--bordered {
-		.base-radio {
+		.base-radio-item {
 			border: 1px solid var(--color-border);
 			border-radius: var(--border-radius-lg);
 			padding: sz(10px 18px);
 			@include transition(border-color, background-color);
 		}
 
-		.base-radio--disabled {
+		.base-radio-item--disabled {
 			opacity: 0.5;
 		}
 
-		.base-radio--error {
+		.base-radio-item--error {
 			border-color: var(--color-error);
 		}
 
-		.base-radio__wrapper {
+		.base-radio-item__wrapper {
 			position: absolute;
 			width: 1px;
 			height: 1px;
@@ -91,33 +91,33 @@
 			white-space: nowrap;
 		}
 
-		.base-radio__option-label {
+		.base-radio-item__option-label {
 			cursor: pointer;
 		}
 
-		.base-radio:has(.base-radio__input:checked) {
+		.base-radio-item:has(.base-radio-item__input:checked) {
 			border-color: var(--color-accent);
 			@include custom-bg(background-color, var(--color-primary-soft));
 		}
 
-		.base-radio:has(.base-radio__input:checked) .base-radio__option-label {
+		.base-radio-item:has(.base-radio-item__input:checked) .base-radio-item__option-label {
 			@include custom-text(color, var(--color-primary));
 			font-weight: 600;
 		}
 
-		.base-radio:hover:not(.base-radio--disabled) {
+		.base-radio-item:hover:not(.base-radio-item--disabled) {
 			border-color: var(--color-text-muted);
 			@include custom-bg(background-color, var(--color-surface-muted));
 		}
 
-		.base-radio:hover:not(.base-radio--disabled):has(.base-radio__input:checked) {
+		.base-radio-item:hover:not(.base-radio-item--disabled):has(.base-radio-item__input:checked) {
 			border-color: var(--color-accent);
 			@include custom-bg(background-color, var(--color-primary-soft-hover));
 		}
 	}
 }
 
-.base-radio {
+.base-radio-item {
 	display: inline-flex;
 	align-items: center;
 	gap: sz(10px);
@@ -193,18 +193,18 @@
 	}
 
 	@include hover {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			border-color: var(--color-text-muted);
 			@include custom-bg(background-color, var(--color-surface-muted));
 		}
 
-		.base-radio__option-label {
+		.base-radio-item__option-label {
 			@include custom-text(color, var(--color-primary));
 		}
 	}
 
 	@include focus {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			box-shadow:
 				0 0 0 2px var(--color-bg),
 				0 0 0 4px var(--color-accent);
@@ -212,7 +212,7 @@
 	}
 
 	@include active {
-		.base-radio__circle {
+		.base-radio-item__circle {
 			transform: scale(0.9);
 			@include custom-bg(background-color, var(--color-surface-muted));
 		}
@@ -236,16 +236,16 @@
 }
 
 /* Каскад с уровня группы */
-.base-radio-group--hover .base-radio__circle {
+.base-radio--hover .base-radio-item__circle {
 	border-color: var(--color-text-muted);
 	background-color: var(--color-surface-muted);
 }
 
-.base-radio-group--hover .base-radio__option-label {
+.base-radio--hover .base-radio-item__option-label {
 	color: var(--color-primary);
 }
 
-.base-radio-group--focus .base-radio__circle {
+.base-radio--focus .base-radio-item__circle {
 	box-shadow:
 		0 0 0 2px var(--color-bg),
 		0 0 0 4px var(--color-accent);

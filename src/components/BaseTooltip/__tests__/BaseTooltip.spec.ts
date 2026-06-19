@@ -29,7 +29,7 @@ describe('BaseTooltip unit', () => {
 				...renderOptions,
 			})
 
-			expect(container.querySelector('.base-tooltip-wrapper')).toBeInTheDocument()
+			expect(container.querySelector('.base-tooltip')).toBeInTheDocument()
 		})
 
 		it('должен рендерить контент слота', () => {
@@ -63,7 +63,7 @@ describe('BaseTooltip unit', () => {
 				...renderOptions,
 			})
 
-			expect(container.querySelector('.base-tooltip')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-tooltip-popup')).not.toBeInTheDocument()
 		})
 	})
 
@@ -76,7 +76,7 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--top')).toBe(true)
+				expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--top')).toBe(true)
 			})
 		})
 
@@ -88,7 +88,7 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--bottom')).toBe(true)
+				expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--bottom')).toBe(true)
 			})
 		})
 
@@ -141,7 +141,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					const wrapper = container.querySelector('.base-tooltip-wrapper') as HTMLElement
+					const wrapper = container.querySelector('.base-tooltip') as HTMLElement
 					expect(wrapper.style.getPropertyValue('--size-scale')).toBe('')
 				})
 			})
@@ -154,7 +154,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					const wrapper = container.querySelector('.base-tooltip-wrapper') as HTMLElement
+					const wrapper = container.querySelector('.base-tooltip') as HTMLElement
 					expect(wrapper.style.getPropertyValue('--size-scale')).toBe('1.5')
 				})
 			})
@@ -169,7 +169,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--left')).toBe(true)
+					expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--left')).toBe(true)
 				})
 			})
 
@@ -181,7 +181,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--right')).toBe(true)
+					expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--right')).toBe(true)
 				})
 			})
 		})
@@ -238,7 +238,7 @@ describe('BaseTooltip unit', () => {
 				...renderOptions,
 			})
 
-			expect(container.querySelector('.base-tooltip-wrapper')?.classList.contains('custom-tooltip-root')).toBe(true)
+			expect(container.querySelector('.base-tooltip')?.classList.contains('custom-tooltip-root')).toBe(true)
 		})
 
 		it('должен распределять объект классов по внутренним элементам', async () => {
@@ -256,10 +256,10 @@ describe('BaseTooltip unit', () => {
 				...renderOptions,
 			})
 
-			expect(container.querySelector('.base-tooltip-wrapper')?.classList.contains('custom-root')).toBe(true)
+			expect(container.querySelector('.base-tooltip')?.classList.contains('custom-root')).toBe(true)
 
 			await waitFor(() => {
-				const tooltip = container.querySelector('.base-tooltip')
+				const tooltip = container.querySelector('.base-tooltip-popup')
 				expect(tooltip?.classList.contains('custom-tooltip')).toBe(true)
 				expect(tooltip?.querySelector('.base-text')?.classList.contains('custom-text')).toBe(true)
 			})

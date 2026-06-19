@@ -80,22 +80,22 @@
 				:is-open="deleteConfirm.isOpen"
 				:is-contained="true"
 				:size-scale="sizeScale"
-				:title="UI_CHAT_DELETE_CONFIRM"
+				:title="UI_CHAT_TEXT.DELETE_CONFIRM"
 				@update:is-open="handleCancelDelete">
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE_CONFIRM" class="base-chat__confirm-text">
+				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.CONFIRM" class="base-chat__confirm-text">
 					{{ deleteConfirmText }}
 				</BaseText>
 				<template #footer>
 					<div class="base-chat__confirm-actions">
 						<BaseButton variant="ghost" :size-scale="sizeScale" @click="handleCancelDelete">
-							{{ UI_CANCEL_TEXT }}
+							{{ UI_TEXT.CANCEL }}
 						</BaseButton>
 						<BaseButton
 							variant="default"
 							:size-scale="sizeScale"
 							class="base-chat__confirm-delete-btn"
 							@click="handleConfirmDelete">
-							{{ UI_DELETE_TEXT }}
+							{{ UI_TEXT.DELETE }}
 						</BaseButton>
 					</div>
 				</template>
@@ -131,18 +131,18 @@ import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_CANCEL_TEXT, UI_CHAT_DEFAULT_HEIGHT, UI_CHAT_DELETE_CONFIRM, UI_CHAT_SCALE_CONFIRM, UI_DELETE_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
-import { downloadFile } from '@utils/fileUtils'
+import { useChatActions } from '@composables/useChatActions'
+import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
+import { useChatState } from '@composables/useChatState'
+import { UI_TEXT, UI_SIZE, UI_CHAT_SCALE, UI_CHAT_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseChat.style.scss'
-import { ChatHeader } from '../ChatHeader'
-import { ChatInput } from '../ChatInput'
 import { ChatMessageList } from '../ChatMessageList'
-import { useChatDeleteConfirm } from '../composables/useChatDeleteConfirm'
-import { useChatState } from '../composables/useChatState'
+import { ChatHeader } from './ChatHeader'
+import { ChatInput } from './ChatInput'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
 import { ChatSlideover } from './ChatSlideover'
-import type { BaseChatEmits, BaseChatProps, ChatMessageAttachment } from '../model/BaseChat.types'
+import type { BaseChatEmits, BaseChatProps } from '../model/BaseChat.types'
 
 /** Публичные методы ChatMessageList, экспонированные через defineExpose */
 interface MessageListExposed {
@@ -151,7 +151,7 @@ interface MessageListExposed {
 
 const props = withDefaults(defineProps<BaseChatProps>(), {
 	variant: 'bubble',
-	height: UI_CHAT_DEFAULT_HEIGHT,
+	height: UI_SIZE.CHAT_DEFAULT_HEIGHT,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isTyping: false,
 	typingUsername: '',
@@ -168,7 +168,6 @@ const { variantClass, variantStyle, sizeScaleStyle, customColorStyle, classes } 
 
 const messageListRef = ref<MessageListExposed | null>(null)
 
-// Подключаем локальное состояние чата
 const {
 	searchQuery,
 	isSearching,
@@ -191,7 +190,6 @@ const {
 	scrollToMessage: messageId => messageListRef.value?.scrollToMessage(messageId),
 })
 
-// Логика подтверждения удаления
 const {
 	deleteConfirm,
 	deleteConfirmText,
@@ -207,93 +205,28 @@ const {
 	onForward: ids => emit('forward-messages', ids),
 })
 
-/**
- * Клик по аватару в шапке чата.
- * Аватар в ChatHeader рендерится только при наличии avatar (v-if), поэтому
- * на практике сюда всегда приходит непустая строка; ветка `|| ''` — защитная.
- */
-function handleHeaderAvatarClick(): void {
-	/* istanbul ignore next — defensive: ChatHeader рендерит аватар (и эмитит avatar-click) только при truthy avatar */
-	handleAvatarClick(props.avatar || '')
-}
-
-/** Обработка клика по цитируемому сообщению — делегируем скролл компоненту-владельцу списка */
-function handleReplyClick(replyToId: string): void {
-	messageListRef.value?.scrollToMessage(replyToId)
-}
-
-/** Обработка отправки сообщения */
-function handleSend(payload: { text: string; attachments?: ChatMessageAttachment[] }): void {
-	emit('send', {
-		...payload,
-		replyToId: replyingTo.value?.id || undefined,
-	})
-	handleCancelReply()
-}
-
-/** Обработка прикрепления файлов */
-function handleAttach(files: FileList): void {
-	emit('attach', files)
-}
-
-/** Обработка реакции на сообщение */
-function handleMessageReaction(payload: { messageId: string; emoji: string }): void {
-	emit('message-reaction', payload)
-}
-
-/** Обработка быстрого ответа */
-function handleQuickReply(text: string): void {
-	emit('quick-reply', text)
-}
-
-/** Обработка скачивания файла */
-function handleDownloadFile(file: ChatMessageAttachment): void {
-	try {
-		downloadFile(file.url, file.name)
-		emit('download-file', file)
-	} catch (e) {
-		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
-		emit('error', { type: 'download', message: `[BaseChat] Download failed: ${file.name}`, detail: e })
-	}
-}
-
-/** Закрепить сообщение */
-function handlePin(messageId: string): void {
-	emit('pin-message', messageId)
-}
-
-/** Открепить сообщение */
-function handleUnpin(messageId: string): void {
-	emit('unpin-message', messageId)
-}
-
-/** Написать сообщение пользователю (переход в личку) */
-function handleWriteMessage(memberId: string): void {
-	emit('avatar-click', memberId)
-}
-
-/** Исключить участника */
-function handleKickMember(memberId: string): void {
-	emit('kick-member', memberId)
-}
-
-/** Забанить участника */
-function handleBanMember(payload: { memberId: string; reason?: string; warningsCount?: number }): void {
-	emit('ban-member', payload)
-}
-
-/** Изменить роль участника */
-function handleUpdateMemberRole(payload: { memberId: string; role: string }): void {
-	emit('update-member-role', payload)
-}
-
-/** Клик по @упоминанию в тексте сообщения */
-function handleMentionClick(mention: string): void {
-	emit('mention-click', mention)
-}
-
-/** Клик по /команде в тексте сообщения */
-function handleCommandClick(command: string): void {
-	emit('command-click', command)
-}
+const {
+	handleHeaderAvatarClick,
+	handleReplyClick,
+	handleSend,
+	handleAttach,
+	handleMessageReaction,
+	handleQuickReply,
+	handleDownloadFile,
+	handlePin,
+	handleUnpin,
+	handleWriteMessage,
+	handleKickMember,
+	handleBanMember,
+	handleUpdateMemberRole,
+	handleMentionClick,
+	handleCommandClick,
+} = useChatActions({
+	emit,
+	replyingTo,
+	getAvatar: () => props.avatar,
+	messageListRef,
+	handleAvatarClick,
+	handleCancelReply,
+})
 </script>

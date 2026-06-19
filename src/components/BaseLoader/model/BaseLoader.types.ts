@@ -16,3 +16,15 @@ export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant> {
 	/** Оверлей поверх родительского контейнера */
 	isOverlay?: boolean
 }
+
+/**
+ * События компонента BaseLoader
+ */
+export type BaseLoaderEmits = Record<string, never>
+
+/**
+ * Слоты компонента BaseLoader
+ */
+export interface BaseLoaderSlots {
+	default?: () => unknown
+}

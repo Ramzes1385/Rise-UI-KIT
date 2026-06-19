@@ -95,3 +95,15 @@ export interface BaseInputEmits {
 	(event: 'focus', e: FocusEvent): void
 	(event: 'keydown', e: KeyboardEvent): void
 }
+
+/**
+ * Слоты компонента BaseInput
+ */
+export interface BaseInputSlots {
+	/** Кастомный префикс */
+	prefix?: () => unknown
+	/** Кастомный постфикс */
+	postfix?: () => unknown
+	/** Кастомный суффикс */
+	suffix?: () => unknown
+}

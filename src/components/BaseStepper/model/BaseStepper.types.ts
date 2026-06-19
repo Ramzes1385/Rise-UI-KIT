@@ -70,3 +70,16 @@ export interface BaseStepperEmits {
 	(event: 'update:modelValue', value: number): void
 	(event: 'change', value: number): void
 }
+
+/**
+ * Слоты компонента BaseStepper
+ */
+export interface BaseStepperSlots {
+	default?: () => unknown
+	/** Заголовок степпера */
+	header?: () => unknown
+	/** Кастомный рендер шага */
+	item?: (props: BaseStepperItemSlot) => unknown
+	/** Подвал степпера */
+	footer?: () => unknown
+}

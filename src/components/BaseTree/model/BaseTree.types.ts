@@ -1,5 +1,5 @@
 import type { BaseComponentProps } from '@/types/base.types'
-import type { ComputedRef, InjectionKey, Ref, VNode } from 'vue'
+import type { ComputedRef, InjectionKey, Ref } from 'vue'
 
 /** Режим выбора в дереве */
 export type TreeSelectionMode = 'none' | 'single' | 'multiple'
@@ -90,11 +90,11 @@ export interface BaseTreeEmits {
  */
 export interface BaseTreeSlots {
 	/** Кастомная иконка узла */
-	icon?: (props: { node: TreeNode }) => VNode[]
+	icon?: (props: { node: TreeNode }) => unknown
 	/** Кастомная стрелка раскрытия */
-	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => VNode[]
+	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => unknown
 	/** Кастомное содержимое метки узла */
-	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => VNode[]
+	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown
 	/** Действия справа от узла */
-	actions?: (props: { node: TreeNode }) => VNode[]
+	actions?: (props: { node: TreeNode }) => unknown
 }

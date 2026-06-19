@@ -1,24 +1,24 @@
 <template>
 	<aside
-		class="base-sidebar"
-		:class="[{ 'base-sidebar--collapsed': isCollapsedState }, variantClass, classes.root]"
+		class="base-side-bar"
+		:class="[{ 'base-side-bar--collapsed': isCollapsedState }, variantClass, classes.root]"
 		:style="[variantStyle, customColorStyle, sizeScaleStyle, widthStyle, collapsedWidthStyle, paddingStyle, gapStyle]"
 		role="complementary">
-		<div v-if="hasHeader" class="base-sidebar__header" :class="classes.header">
+		<div v-if="hasHeader" class="base-side-bar__header" :class="classes.header">
 			<template v-if="!isCollapsedState">
 				<slot name="header">
-					<BaseText v-if="title" tag="h3" :weight="UI_FONT_WEIGHT_BOLD" class="base-sidebar__title" :custom-class="classes.title">
+					<BaseText v-if="title" tag="h3" :weight="UI_FONT_WEIGHT.BOLD" class="base-side-bar__title" :custom-class="classes.title">
 						{{ title }}
 					</BaseText>
 				</slot>
 			</template>
 
-			<BaseTooltip v-if="isCollapsible && isCollapsedState" :text="UI_EXPAND_TEXT" position="right">
+			<BaseTooltip v-if="isCollapsible && isCollapsedState" :text="UI_TEXT.EXPAND" position="right">
 				<BaseButton
 					variant="ghost"
 					:aria-label="toggleLabel"
 					:padding="6"
-					class="base-sidebar__toggle"
+					class="base-side-bar__toggle"
 					:custom-class="classes.toggle"
 					@click="handleToggle">
 					<BaseIcon :name="toggleIcon" />
@@ -30,7 +30,7 @@
 				variant="ghost"
 				:aria-label="toggleLabel"
 				:padding="6"
-				class="base-sidebar__toggle"
+				class="base-side-bar__toggle"
 				:custom-class="classes.toggle"
 				@click="handleToggle">
 				<BaseIcon :name="toggleIcon" />
@@ -39,7 +39,7 @@
 
 		<div
 			v-if="hasNavigation && !isLoading && (!isCollapsedState || hasItems)"
-			class="base-sidebar__navigation"
+			class="base-side-bar__navigation"
 			:class="classes.navigation">
 			<slot v-if="!isCollapsedState && $slots.navigation" name="navigation" />
 
@@ -70,22 +70,22 @@
 			</BaseSideBarNavigation>
 		</div>
 
-		<div v-if="isLoading" class="base-sidebar__loading" :class="classes.loading">
+		<div v-if="isLoading" class="base-side-bar__loading" :class="classes.loading">
 			<BaseSkeleton shape="rect" :width="'100%'" :height="20" style="margin-bottom: 8px" />
 			<BaseSkeleton shape="rect" :width="'82%'" :height="20" style="margin-bottom: 8px" />
 			<BaseSkeleton shape="rect" :width="'64%'" :height="20" style="margin-bottom: 8px" />
 			<BaseSkeleton shape="rect" :width="'92%'" :height="20" />
 		</div>
 
-		<div v-if="hasBody && !isCollapsedState && !isLoading" class="base-sidebar__body" :class="classes.body">
+		<div v-if="hasBody && !isCollapsedState && !isLoading" class="base-side-bar__body" :class="classes.body">
 			<slot />
 		</div>
 
-		<div v-if="hasFooter && !isLoading" class="base-sidebar__footer" :class="classes.footer">
+		<div v-if="hasFooter && !isLoading" class="base-side-bar__footer" :class="classes.footer">
 			<slot name="footer" />
 		</div>
 
-		<div v-if="hasCollapsedContent && isCollapsedState" class="base-sidebar__collapsed" :class="classes.collapsed">
+		<div v-if="hasCollapsedContent && isCollapsedState" class="base-side-bar__collapsed" :class="classes.collapsed">
 			<slot name="collapsedContent" />
 		</div>
 	</aside>
@@ -101,7 +101,7 @@ import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { usePadding } from '@composables/usePadding'
-import { UI_COLLAPSE_TEXT, UI_EXPAND_TEXT, UI_FONT_WEIGHT_BOLD, UI_SIDEBAR_DEFAULT_WIDTH, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_TEXT, UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
 import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
@@ -111,7 +111,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<BaseSideBarProps>(), {
-	width: UI_SIDEBAR_DEFAULT_WIDTH,
+	width: UI_SIZE.SIDEBAR_DEFAULT_WIDTH,
 	collapsedWidth: 68,
 	padding: 12,
 	gap: 4,
@@ -126,7 +126,7 @@ const slots = defineSlots<BaseSideBarSlots>()
 
 const { wasPropPassed } = useExplicitPropDetection()
 
-const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-sidebar', props, ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'])
+const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-side-bar', props, ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'])
 
 const { paddingStyle } = usePadding({
 	getPadding: () => props.padding,
@@ -145,7 +145,7 @@ const isCollapsedState = computed(() => {
 })
 
 const toggleIcon = computed(() => 'menu')
-const toggleLabel = computed(() => (isCollapsedState.value ? UI_EXPAND_TEXT : UI_COLLAPSE_TEXT))
+const toggleLabel = computed(() => (isCollapsedState.value ? UI_TEXT.EXPAND : UI_TEXT.COLLAPSE))
 
 const widthStyle = computed(() => ({
 	'--sidebar-width': `${props.width}px`,

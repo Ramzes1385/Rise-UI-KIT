@@ -132,21 +132,21 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBaseComponent } from '@composables/useBaseComponent'
 import { useCalendar } from '@composables/useCalendar'
+import { useCalendarNavigation } from '@composables/useCalendarNavigation'
+import { useCalendarPopover } from '@composables/useCalendarPopover'
+import { useCalendarResolvedProps } from '@composables/useCalendarResolvedProps'
 import { UI_FONT_WEIGHT, UI_TEXT } from '@constants'
 import '../styles/BaseCalendar.style.scss'
-import { useCalendarPopover } from '../model/useCalendarPopover'
-import { useCalendarResolvedProps } from '../model/useCalendarResolvedProps'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
-import type { BaseCalendarEmits, BaseCalendarProps } from '../model/BaseCalendar.types'
+import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '../model/BaseCalendar.types'
 
 const props = defineProps<BaseCalendarProps>()
 const resolvedProps = useCalendarResolvedProps(props)
@@ -173,6 +173,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 })
 
 const emit = defineEmits<BaseCalendarEmits>()
+defineSlots<BaseCalendarSlots>()
 
 const isAm = defineModel<boolean>('isAm', { default: true })
 
@@ -224,15 +225,9 @@ const {
 	canNext,
 	prevMonth,
 	nextMonth,
-	goToToday,
 	switchView,
 	selectMonth,
 	selectYear,
-	setSingleValue,
-	setRangeStart,
-	setRangeEnd,
-	toggleMultipleDate,
-	buildDateWithTime,
 	isSameDay,
 } = calendar
 
@@ -255,102 +250,20 @@ const {
 	isOutOfRange,
 })
 
-watch(currentMonth, newMonth => {
-	emit('month-change', newMonth)
+const { handleDayClick, toggleAmPm, handleTimeChange, handleTodayClick } = useCalendarNavigation({
+	calendar,
+	popover: {
+		popoverDate,
+		popoverStyle,
+		popoverHighlights,
+		closePopover,
+		dayClasses,
+	},
+	getSelectionMode: () => resolvedProps.value.selectionMode,
+	getShowTime: () => resolvedProps.value.showTime,
+	getIsDisabled: () => resolvedProps.value.isDisabled,
+	getShowDatePopover: () => resolvedProps.value.showDatePopover,
+	isAm,
+	emit,
 })
-
-watch(currentYear, newYear => {
-	emit('year-change', newYear)
-})
-
-watch(currentView, newView => {
-	emit('view-change', newView)
-})
-
-function handleDayClick(date: Date): void {
-	if (isDayDisabled(date) || resolvedProps.value.isDisabled) return
-
-	emit('date-click', date)
-
-	if (resolvedProps.value.showDatePopover || getEvents(date).length > 0) {
-		popoverDate.value = popoverDate.value && isSameDay(popoverDate.value, date) ? null : date
-		popoverStyle.value = {
-			top: '100%',
-			left: '50%',
-			transform: 'translateX(-50%)',
-		}
-	}
-
-	if (resolvedProps.value.selectionMode === 'single') {
-		handleSingleClick(date)
-		return
-	}
-
-	if (resolvedProps.value.selectionMode === 'range') {
-		handleRangeClick(date)
-		return
-	}
-
-	handleMultipleClick(date)
-}
-
-function handleSingleClick(date: Date): void {
-	const result = resolvedProps.value.showTime ? buildDateWithTime(date) : date
-	setSingleValue(result)
-	emit('update:modelValue', result)
-}
-
-function handleRangeClick(date: Date): void {
-	const start = calendar.internalValue.value
-	const end = calendar.internalValueEnd.value
-
-	if (!start || (start && end)) {
-		setRangeStart(date)
-		setRangeEnd(null)
-		emit('update:modelValue', date)
-		emit('update:modelValueEnd', null)
-	} else {
-		if (date < start) {
-			setRangeStart(date)
-			setRangeEnd(start)
-			emit('update:modelValue', date)
-			emit('update:modelValueEnd', start)
-		} else {
-			setRangeEnd(date)
-			emit('update:modelValueEnd', date)
-		}
-		emit('range-select', calendar.internalValue.value!, calendar.internalValueEnd.value!)
-	}
-}
-
-function handleMultipleClick(date: Date): void {
-	toggleMultipleDate(date)
-	emit('update:selectedDates', [...calendar.internalSelectedDates.value])
-}
-
-function toggleAmPm(): void {
-	const currentHour = hours.value
-	if (isAm.value) {
-		hours.value = currentHour < 12 ? currentHour + 12 : currentHour
-	} else {
-		hours.value = currentHour >= 12 ? currentHour - 12 : currentHour
-	}
-	isAm.value = !isAm.value
-	handleTimeChange()
-}
-
-function handleTimeChange(): void {
-	if (!calendar.internalValue.value) return
-	const result = buildDateWithTime(calendar.internalValue.value)
-	setSingleValue(result)
-	emit('update:modelValue', result)
-}
-
-function handleTodayClick(): void {
-	goToToday()
-	const now = new Date()
-	setSingleValue(now)
-	emit('update:modelValue', now)
-	emit('date-click', now)
-}
 </script>

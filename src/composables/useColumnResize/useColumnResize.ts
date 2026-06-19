@@ -1,32 +1,11 @@
 import { onBeforeUnmount, ref } from 'vue'
 import { toHTMLElement } from '@utils/domUtils'
-
-interface ResizeColumn {
-	key: string
-	width?: string
-}
-
-interface ResizeState {
-	isResizing: boolean
-	columnKey: string
-	nextColumnKey: string
-	startX: number
-	startWidth: number
-	nextStartWidth: number
-}
-
-interface UseColumnResizeParams<TColumn extends ResizeColumn> {
-	columns: { value: TColumn[] }
-	visibleColumns: { value: TColumn[] }
-	minWidth: number
-	onColumnResize: (key: string, width: number) => void
-	onColumnsChange: (columns: TColumn[]) => void
-}
+import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './useColumnResize.types'
 
 /**
  * Composable для изменения ширины колонок таблицы через перетаскивание.
  */
-export function useColumnResize<TColumn extends ResizeColumn>({
+function useColumnResize<TColumn extends ResizeColumn>({
 	columns,
 	visibleColumns,
 	minWidth,
@@ -147,3 +126,5 @@ export function useColumnResize<TColumn extends ResizeColumn>({
 		startResize,
 	}
 }
+
+export { useColumnResize }

@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /**
  * Режим заполнения изображения
@@ -34,7 +33,7 @@ export interface ImageZoomConfig {
 /**
  * Пропсы компонента BaseImage
  */
-export interface BaseImageProps {
+export interface BaseImageProps extends BaseComponentProps {
 	/** URL изображения */
 	src: string
 	/** Альтернативный текст */
@@ -49,8 +48,6 @@ export interface BaseImageProps {
 	height?: number | string
 	/** Режим заполнения */
 	fit?: ImageFit
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Ленивая загрузка */
 	loading?: ImageLoading
 	/** Скругление (0–9999px) */
@@ -67,18 +64,6 @@ export interface BaseImageProps {
 	convertToWebp?: boolean
 	/** Галерея изображений для навигации в режиме зума */
 	gallery?: string[]
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `placeholder`, `error`, `img`, а также вложенные элементы зум-режима:
-	 * `zoomOutButton`/`zoomOutIcon`, `zoomScale` (BaseText), `zoomInButton`/`zoomInIcon`,
-	 * `zoomResetButton`/`zoomResetIcon`, `rotateLeftButton`/`rotateLeftIcon`,
-	 * `rotateRightButton`/`rotateRightIcon`, `zoomCloseButton`/`zoomCloseIcon`,
-	 * `galleryPrevButton`/`galleryPrevIcon`, `galleryNextButton`/`galleryNextIcon`,
-	 * `galleryCounter` (BaseText).
-	 */
-	customClass?: CustomClassProp
 	/** @deprecated Используйте zoomConfig.hasZoom */
 	hasZoom?: boolean
 	/** @deprecated Используйте zoomConfig.closeOnOverlay */

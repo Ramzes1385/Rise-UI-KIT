@@ -4,6 +4,7 @@
  */
 
 import { expect, within } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -11,24 +12,26 @@ const meta: Meta<typeof BaseSkeleton> = {
 	title: 'UI/BaseSkeleton',
 	component: BaseSkeleton,
 
-	argTypes: {
-		width: { control: 'text' },
-		height: { control: 'text' },
-		shape: {
-			control: 'inline-radio',
-			options: ['text', 'circle', 'rect'],
+	argTypes: buildArgTypes({
+		props: {
+			width: { control: 'text' },
+			height: { control: 'text' },
+			shape: {
+				control: 'inline-radio',
+				options: ['text', 'circle', 'rect'],
+			},
+			color: {
+				control: 'color',
+				description: 'Кастомный цвет фона',
+			},
+			isAnimated: { control: 'boolean' },
+			isPulse: { control: 'boolean' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
 		},
-		color: {
-			control: 'color',
-			description: 'Кастомный цвет фона',
-		},
-		isAnimated: { control: 'boolean' },
-		isPulse: { control: 'boolean' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-	},
+	}),
 
 	args: {
 		width: '100%',

@@ -27,3 +27,10 @@ export interface BasePaginationEmits {
 	(event: 'update:modelValue', value: number): void
 	(event: 'change', value: number): void
 }
+
+/**
+ * Слоты компонента BasePagination
+ */
+export interface BasePaginationSlots {
+	default?: () => unknown
+}

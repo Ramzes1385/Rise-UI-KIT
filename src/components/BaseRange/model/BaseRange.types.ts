@@ -63,3 +63,10 @@ export interface BaseRangeEmits {
 	(event: 'update:points', value: number[]): void
 	(event: 'change', value: number | [number, number] | number[]): void
 }
+
+/**
+ * Слоты компонента BaseRange
+ */
+export interface BaseRangeSlots {
+	default?: () => unknown
+}

@@ -18,3 +18,15 @@ export interface BaseFormFieldProps extends BaseComponentProps<(typeof FORM_FIEL
 	/** ID для связки label и input */
 	for?: string
 }
+
+/**
+ * События компонента BaseFormField
+ */
+export type BaseFormFieldEmits = Record<string, never>
+
+/**
+ * Слоты компонента BaseFormField
+ */
+export interface BaseFormFieldSlots {
+	default?: () => unknown
+}

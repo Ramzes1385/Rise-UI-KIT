@@ -5,7 +5,7 @@ import {
 	getFormatBlock,
 	isInsideList,
 	isInsideTags,
-} from '@utils/editorDomInspect'
+} from '@utils/editorDomUtils'
 import type { EditorActiveStates } from './useEditorToolbar.types'
 import type { Ref } from 'vue'
 

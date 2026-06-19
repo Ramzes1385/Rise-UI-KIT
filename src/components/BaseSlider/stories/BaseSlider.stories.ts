@@ -4,6 +4,7 @@
  */
 
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import BaseSlider from '../ui/BaseSlider.vue'
 import type { SliderItem } from '../model/BaseSlider.types'
@@ -38,46 +39,48 @@ const meta: Meta<typeof BaseSlider> = {
 	title: 'UI/BaseSlider',
 	component: BaseSlider,
 
-	argTypes: {
-		animation: {
-			control: 'inline-radio',
-			options: ['slide', 'fade', 'scale', 'flip'],
+	argTypes: buildArgTypes({
+		props: {
+			animation: {
+				control: 'inline-radio',
+				options: ['slide', 'fade', 'scale', 'flip'],
+			},
+			navigation: {
+				control: 'inline-radio',
+				options: ['dots', 'thumbnails', 'both', 'none'],
+			},
+			isAutoplay: { control: 'boolean' },
+			autoplayInterval: { control: 'number' },
+			hasArrows: { control: 'boolean' },
+			arrowsPosition: {
+				control: 'inline-radio',
+				options: ['center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],
+			},
+			isLoop: { control: 'boolean' },
+			isVertical: { control: 'boolean' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+			},
+			initialIndex: {
+				control: { type: 'number', min: 0 },
+			},
+			height: {
+				control: 'text',
+			},
+			spaceBetween: {
+				control: { type: 'number', min: 0, max: 60, step: 4 },
+			},
+			slidesPerView: {
+				control: { type: 'number', min: 1, max: 6, step: 1 },
+			},
+			slidesPerGroup: {
+				control: { type: 'number', min: 1, max: 6, step: 1 },
+			},
+			hasCaption: { control: 'boolean' },
+			isZoomable: { control: 'boolean' },
+			items: { control: 'object' },
 		},
-		navigation: {
-			control: 'inline-radio',
-			options: ['dots', 'thumbnails', 'both', 'none'],
-		},
-		isAutoplay: { control: 'boolean' },
-		autoplayInterval: { control: 'number' },
-		hasArrows: { control: 'boolean' },
-		arrowsPosition: {
-			control: 'inline-radio',
-			options: ['center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],
-		},
-		isLoop: { control: 'boolean' },
-		isVertical: { control: 'boolean' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-		},
-		initialIndex: {
-			control: { type: 'number', min: 0 },
-		},
-		height: {
-			control: 'text',
-		},
-		spaceBetween: {
-			control: { type: 'number', min: 0, max: 60, step: 4 },
-		},
-		slidesPerView: {
-			control: { type: 'number', min: 1, max: 6, step: 1 },
-		},
-		slidesPerGroup: {
-			control: { type: 'number', min: 1, max: 6, step: 1 },
-		},
-		hasCaption: { control: 'boolean' },
-		isZoomable: { control: 'boolean' },
-		items: { control: 'object' },
-	},
+	}),
 
 	args: {
 		items: ITEMS,

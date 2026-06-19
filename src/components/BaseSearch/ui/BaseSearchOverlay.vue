@@ -103,11 +103,9 @@ import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@components/BaseIcon'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
 import type { BaseSearchOverlayEmits, BaseSearchOverlayProps } from '../model/BaseSearchOverlay.types'
@@ -116,9 +114,7 @@ const props = defineProps<BaseSearchOverlayProps>()
 
 const emit = defineEmits<BaseSearchOverlayEmits>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-search', getVariant: () => props.variant })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle } = useStandardBaseComponent('base-search', props)
 
 const isOpen = ref(false)
 const inputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)

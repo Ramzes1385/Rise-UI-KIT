@@ -146,7 +146,7 @@ import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import '../styles/BaseBreadcrumbs.style.scss'
-import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
+import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 
 const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
 	separator: 'chevron',
@@ -174,6 +174,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 	])
 
 const emit = defineEmits<BaseBreadcrumbsEmits>()
+defineSlots<BaseBreadcrumbsSlots>()
 
 const isExpanded = ref(false)
 

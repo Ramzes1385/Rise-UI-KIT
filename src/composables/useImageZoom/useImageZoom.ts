@@ -1,5 +1,5 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { UI_FULL_ROTATION_DEG, UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH, UI_ROTATION_STEP_DEG } from '@constants'
+import { UI_SCALE, UI_SIZE } from '@constants'
 import { useZoomMinimap } from './useZoomMinimap'
 import type { UseImageZoomOptions } from './useImageZoom.types'
 
@@ -16,8 +16,8 @@ function useImageZoom(options: UseImageZoomOptions) {
 	const zoomContentW = ref(0)
 	const zoomContentH = ref(0)
 
-	const mmContentWidth = ref<number>(UI_MINIMAP_WIDTH)
-	const mmContentHeight = ref<number>(UI_MINIMAP_HEIGHT)
+	const mmContentWidth = ref<number>(UI_SIZE.MINIMAP_WIDTH)
+	const mmContentHeight = ref<number>(UI_SIZE.MINIMAP_HEIGHT)
 	const mmContentOffsetX = ref(0)
 	const mmContentOffsetY = ref(0)
 
@@ -91,7 +91,7 @@ function useImageZoom(options: UseImageZoomOptions) {
 		}
 
 		if (minimapImg && minimapImg instanceof HTMLImageElement && minimapImg.naturalWidth > 0) {
-			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, UI_MINIMAP_WIDTH, UI_MINIMAP_HEIGHT)
+			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, UI_SIZE.MINIMAP_WIDTH, UI_SIZE.MINIMAP_HEIGHT)
 			mmContentWidth.value = contained.width
 			mmContentHeight.value = contained.height
 			mmContentOffsetX.value = contained.offX
@@ -143,11 +143,11 @@ function useImageZoom(options: UseImageZoomOptions) {
 	}
 
 	function rotateLeft(): void {
-		rotation.value = (rotation.value - UI_ROTATION_STEP_DEG) % UI_FULL_ROTATION_DEG
+		rotation.value = (rotation.value - UI_SCALE.ROTATION_STEP_DEG) % UI_SCALE.FULL_ROTATION_DEG
 	}
 
 	function rotateRight(): void {
-		rotation.value = (rotation.value + UI_ROTATION_STEP_DEG) % UI_FULL_ROTATION_DEG
+		rotation.value = (rotation.value + UI_SCALE.ROTATION_STEP_DEG) % UI_SCALE.FULL_ROTATION_DEG
 	}
 
 	function handleWheel(event: WheelEvent): void {
@@ -165,6 +165,8 @@ function useImageZoom(options: UseImageZoomOptions) {
 		if (event.key === '+' || event.key === '=') zoomIn()
 		if (event.key === '-') zoomOut()
 		if (event.key === '0') resetZoom()
+		if (event.key === 'ArrowLeft') options.onArrowLeft?.()
+		if (event.key === 'ArrowRight') options.onArrowRight?.()
 	}
 
 	const minimap = useZoomMinimap({

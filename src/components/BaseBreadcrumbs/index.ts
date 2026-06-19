@@ -1,3 +1,4 @@
+export { BREADCRUMBS_VARIANTS } from './model/BaseBreadcrumbs.types'
 export type {
 	BaseBreadcrumbsEmits,
 	BaseBreadcrumbsProps,

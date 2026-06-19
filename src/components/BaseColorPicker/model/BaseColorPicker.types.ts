@@ -1,4 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Позиция всплывающей панели относительно триггера */
 export const COLOR_PICKER_POSITIONS = ['top', 'bottom', 'left', 'right'] as const
@@ -22,29 +22,10 @@ export const DEFAULT_COLOR_PRESETS = [
 ] as const
 
 /** Пропсы компонента BaseColorPicker */
-export interface BaseColorPickerProps {
-	/** Текущий цвет в формате HEX */
-	modelValue: string
-	/** Позиция всплывающей панели */
-	position?: ColorPickerPosition
-	/** Набор цветов-пресетов (HEX) */
-	presets?: readonly string[]
-	/** Скрыть поле ручного ввода HEX */
-	isHexHidden?: boolean
-	/** Скрыть набор пресетов */
-	isPresetsHidden?: boolean
-	/** Показать кнопку сброса цвета */
-	isResettable?: boolean
-	/** Подпись кнопки сброса */
-	resetLabel?: string
-	/** Не заливать swatch цветом значения (фон триггера задаётся снаружи или слотом) */
-	hasTransparentSwatch?: boolean
-	/** Заблокировать компонент */
-	isDisabled?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseColorPickerProps extends BaseComponentProps {
+	modelValue: string; position?: ColorPickerPosition; presets?: readonly string[];
+	isHexHidden?: boolean; isPresetsHidden?: boolean; isResettable?: boolean;
+	resetLabel?: string; hasTransparentSwatch?: boolean; isDisabled?: boolean;
 }
 
 /** События компонента BaseColorPicker */

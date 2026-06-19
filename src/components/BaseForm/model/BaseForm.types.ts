@@ -19,3 +19,10 @@ export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)
 export interface BaseFormEmits {
 	(event: 'submit', e: Event): void
 }
+
+/**
+ * Слоты компонента BaseForm
+ */
+export interface BaseFormSlots {
+	default?: () => unknown
+}

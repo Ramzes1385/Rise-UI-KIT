@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-form-field"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
@@ -33,12 +34,13 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseFormFieldProps } from '../model/BaseFormField.types'
+import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
 
 const props = withDefaults(defineProps<BaseFormFieldProps>(), {
 	isRequired: false,
@@ -46,6 +48,9 @@ const props = withDefaults(defineProps<BaseFormFieldProps>(), {
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'])
+defineSlots<BaseFormFieldSlots>()
+
+const rootRef = ref<HTMLElement | null>(null)
 
 const formField = useFormField({
 	value: () => undefined,
@@ -54,6 +59,9 @@ const formField = useFormField({
 })
 
 defineExpose({
+	rootRef,
+	focus: () => {},
+	blur: () => {},
 	validate: formField.validate,
 	reset: formField.reset,
 })

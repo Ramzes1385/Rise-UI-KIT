@@ -50,13 +50,13 @@ describe('BaseSideBar integration', () => {
 			},
 		})
 
-		const sidebar = container.querySelector('.base-sidebar')
+		const sidebar = container.querySelector('.base-side-bar')
 
-		expect(sidebar).not.toHaveClass('base-sidebar--collapsed')
+		expect(sidebar).not.toHaveClass('base-side-bar--collapsed')
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Свернуть' }))
 
-		expect(sidebar).toHaveClass('base-sidebar--collapsed')
+		expect(sidebar).toHaveClass('base-side-bar--collapsed')
 		expect(screen.getByRole('button', { name: 'Развернуть' })).toBeInTheDocument()
 	})
 
@@ -71,14 +71,14 @@ describe('BaseSideBar integration', () => {
 			},
 		})
 
-		const sidebar = container.querySelector('.base-sidebar')
+		const sidebar = container.querySelector('.base-side-bar')
 
-		expect(sidebar).not.toHaveClass('base-sidebar--collapsed')
+		expect(sidebar).not.toHaveClass('base-side-bar--collapsed')
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Свернуть' }))
 
 		expect(emitted()['update:isCollapsed']).toEqual([[true]])
-		expect(sidebar).not.toHaveClass('base-sidebar--collapsed')
+		expect(sidebar).not.toHaveClass('base-side-bar--collapsed')
 	})
 
 	it('обновляет aria-label при изменении isCollapsed извне', async () => {
@@ -161,7 +161,7 @@ describe('BaseSideBar integration', () => {
 			},
 		})
 
-		const navigationIcon = container.querySelector('.base-sidebar__navigation [data-testid="base-icon"]')
+		const navigationIcon = container.querySelector('.base-side-bar__navigation [data-testid="base-icon"]')
 
 		expect(screen.queryByText('Custom navigation')).not.toBeInTheDocument()
 		expect(navigationIcon).toHaveTextContent('home')

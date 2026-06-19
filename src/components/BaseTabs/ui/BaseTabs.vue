@@ -71,27 +71,26 @@ import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTabs.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseTabsEmits, BaseTabsProps } from '../model/BaseTabs.types'
+import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../model/BaseTabs.types'
 
 const props = withDefaults(defineProps<BaseTabsProps>(), {
 	isFullWidth: false,
 	isScrollable: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
+	variant: 'underline',
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-tabs',
-	getVariant: () => props.variant ?? 'underline',
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
+	'base-tabs',
+	props,
+	['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content'],
+)
 
 const emit = defineEmits<BaseTabsEmits>()
+defineSlots<BaseTabsSlots>()
 
 const listRef = ref<HTMLElement | null>(null)
 const canScrollLeft = ref(false)

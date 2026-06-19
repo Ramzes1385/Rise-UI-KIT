@@ -15,7 +15,7 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseText.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseTextProps } from '../model/BaseText.types'
+import type { BaseTextProps, BaseTextSlots } from '../model/BaseText.types'
 
 const props = withDefaults(defineProps<BaseTextProps>(), {
 	tag: 'p',
@@ -25,6 +25,7 @@ const props = withDefaults(defineProps<BaseTextProps>(), {
 	maxLines: 1,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
+defineSlots<BaseTextSlots>()
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

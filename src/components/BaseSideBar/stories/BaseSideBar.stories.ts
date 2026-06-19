@@ -1,5 +1,6 @@
 import { userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import type { SideBarItem } from '../model/BaseSideBar.types'
@@ -174,90 +175,31 @@ const meta: Meta = {
       template: '<div class="sidebar-story-canvas"><story /></div>',
     }),
   ],
-  argTypes: {
-    isCollapsed: {
-      control: 'boolean',
-      description: 'Свёрнутое состояние. Используется вместе с v-model:isCollapsed.',
+  argTypes: buildArgTypes({
+    props: {
+      isCollapsed: { control: 'boolean', description: 'Свёрнутое состояние. Используется вместе с v-model:isCollapsed.' },
+      title: { control: 'text', description: 'Заголовок сайдбара.' },
+      width: { control: { type: 'range', min: 220, max: 420, step: 20 }, description: 'Ширина раскрытой панели в px.' },
+      collapsedWidth: { control: { type: 'range', min: 56, max: 96, step: 4 }, description: 'Ширина свёрнутой панели в px.' },
+      isCollapsible: { control: 'boolean', description: 'Можно ли сворачивать сайдбар.' },
+      variant: { control: 'inline-radio', options: SIDEBAR_VARIANTS, description: 'Визуальный вариант сайдбара.' },
+      padding: { control: 'object', description: 'Внутренние отступы.' },
+      gap: { control: { type: 'range', min: 0, max: 16, step: 1 }, description: 'Отступ между пунктами навигации.' },
+      color: { control: 'object', description: 'Кастомный цвет компонента.' },
+      sizeScale: { control: { type: 'range', min: 80, max: 140, step: 10 }, description: 'Масштаб размера.' },
+      isLoading: { control: 'boolean', description: 'Состояние загрузки.' },
+      items: { control: 'object', description: 'Элементы навигации сайдбара.' },
+      activeKey: { control: 'text', description: 'Активный пункт по key.' },
+      activePath: { control: 'text', description: 'Активный путь.' },
+      activeMatch: { control: 'inline-radio', options: ['exact', 'startsWith'], description: 'Режим сравнения activePath и item.to.' },
+      linkComponent: { control: 'text', description: 'Компонент для ссылок.' },
+      customClass: { control: 'object', description: 'Кастомные классы.' },
+      'onUpdate:isCollapsed': { table: { disable: true } },
+      onCollapse: { table: { disable: true } },
+      onExpand: { table: { disable: true } },
+      onItemClick: { table: { disable: true } },
     },
-    title: {
-      control: 'text',
-      description: 'Заголовок сайдбара.',
-    },
-    width: {
-      control: { type: 'range', min: 220, max: 420, step: 20 },
-      description: 'Ширина раскрытой панели в px.',
-    },
-    collapsedWidth: {
-      control: { type: 'range', min: 56, max: 96, step: 4 },
-      description: 'Ширина свёрнутой панели в px.',
-    },
-    isCollapsible: {
-      control: 'boolean',
-      description: 'Можно ли сворачивать сайдбар.',
-    },
-    variant: {
-      control: 'inline-radio',
-      options: SIDEBAR_VARIANTS,
-      description: 'Визуальный вариант сайдбара.',
-    },
-    padding: {
-      control: 'object',
-      description: 'Внутренние отступы.',
-    },
-    gap: {
-      control: { type: 'range', min: 0, max: 16, step: 1 },
-      description: 'Отступ между пунктами навигации.',
-    },
-    color: {
-      control: 'object',
-      description: 'Кастомный цвет компонента.',
-    },
-    sizeScale: {
-      control: { type: 'range', min: 80, max: 140, step: 10 },
-      description: 'Масштаб размера.',
-    },
-    isLoading: {
-      control: 'boolean',
-      description: 'Состояние загрузки.',
-    },
-    items: {
-      control: 'object',
-      description: 'Элементы навигации сайдбара.',
-    },
-    activeKey: {
-      control: 'text',
-      description: 'Активный пункт по key.',
-    },
-    activePath: {
-      control: 'text',
-      description: 'Активный путь.',
-    },
-    activeMatch: {
-      control: 'inline-radio',
-      options: ['exact', 'startsWith'],
-      description: 'Режим сравнения activePath и item.to.',
-    },
-    linkComponent: {
-      control: 'text',
-      description: 'Компонент для ссылок.',
-    },
-    customClass: {
-      control: 'object',
-      description: 'Кастомные классы.',
-    },
-    'onUpdate:isCollapsed': {
-      table: { disable: true },
-    },
-    onCollapse: {
-      table: { disable: true },
-    },
-    onExpand: {
-      table: { disable: true },
-    },
-    onItemClick: {
-      table: { disable: true },
-    },
-  },
+  }),
   args: {
     title: 'Навигация',
     width: 280,
@@ -715,7 +657,7 @@ export const Loading: Story = {
   }),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
-      const loading = canvasElement.querySelector('.base-sidebar__loading')
+      const loading = canvasElement.querySelector('.base-side-bar__loading')
 
       if (!loading) {
         throw new Error('Loading state not rendered')

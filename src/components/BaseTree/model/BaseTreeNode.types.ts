@@ -1,5 +1,4 @@
 import type { TreeNode } from './BaseTree.types'
-import type { VNode } from 'vue'
 
 export interface BaseTreeNodeProps {
 	node: TreeNode
@@ -8,8 +7,8 @@ export interface BaseTreeNodeProps {
 }
 
 export interface BaseTreeNodeSlots {
-	icon?: (props: { node: TreeNode }) => VNode[]
-	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => VNode[]
-	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => VNode[]
-	actions?: (props: { node: TreeNode }) => VNode[]
+	icon?: (props: { node: TreeNode }) => unknown
+	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => unknown
+	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown
+	actions?: (props: { node: TreeNode }) => unknown
 }

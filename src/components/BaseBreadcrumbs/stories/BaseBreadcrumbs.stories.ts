@@ -6,6 +6,8 @@
 
 import { expect, userEvent, within } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
+import { buildArgTypes } from '@utils/storybookUtils'
+import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
 import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -22,37 +24,19 @@ const meta: Meta<typeof BaseBreadcrumbs> = {
 	title: 'UI/BaseBreadcrumbs',
 	component: BaseBreadcrumbs,
 
-	argTypes: {
-		separator: {
-			control: 'select',
-			options: ['slash', 'chevron', 'dot', 'arrow'],
+	argTypes: buildArgTypes({
+		props: {
+			separator: { control: 'select', options: ['slash', 'chevron', 'dot', 'arrow'] },
+			variant: { control: 'select', options: BREADCRUMBS_VARIANTS },
+			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
+			maxItems: { control: 'number' },
+			showHome: { control: 'boolean' },
+			homeIcon: { control: 'text' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
+			customClass: { control: 'object' },
+			items: { table: { disable: true } },
 		},
-		variant: {
-			control: 'select',
-			options: ['default', 'ghost', 'outline', 'shadow', 'soft'],
-		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		maxItems: {
-			control: 'number',
-		},
-		showHome: {
-			control: 'boolean',
-		},
-		homeIcon: {
-			control: 'text',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		class: { table: { disable: true } },
-		style: { table: { disable: true } },
-		key: { table: { disable: true } },
-		ref: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		items: ITEMS,

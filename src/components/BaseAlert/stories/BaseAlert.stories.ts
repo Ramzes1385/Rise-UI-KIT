@@ -4,7 +4,7 @@
  */
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
+import { BaseButton } from '@components/BaseButton'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
 import BaseAlert from '../ui/BaseAlert.vue'

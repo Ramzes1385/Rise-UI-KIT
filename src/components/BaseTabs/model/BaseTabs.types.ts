@@ -43,3 +43,10 @@ export interface BaseTabsEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'change', value: string): void
 }
+
+/**
+ * Слоты компонента BaseTabs
+ */
+export interface BaseTabsSlots {
+	default?: () => unknown
+}

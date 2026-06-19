@@ -1,45 +1,42 @@
-import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
-import { ref } from 'vue'
-import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import { INPUT_VARIANTS } from '../model/BaseInput.types'
-import BaseInput from '../ui/BaseInput.vue'
 /**
  * Stories для компонента BaseInput.
  * Демонстрирует все вариации, размеры, состояния, слоты и интерактивные состояния.
  */
+
+import { expect, fireEvent, fn, userEvent, waitFor, within } from 'storybook/test'
+import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
+import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { INPUT_VARIANTS } from '../model/BaseInput.types'
+import BaseInput from '../ui/BaseInput.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta: Meta<typeof BaseInput> = {
 	title: 'UI/BaseInput',
 	component: BaseInput,
 
-	argTypes: {
-		type: {
-			control: 'select',
-			options: ['text', 'email', 'tel', 'number', 'password'],
+	argTypes: buildArgTypes({
+		props: {
+			type: { control: 'select', options: ['text', 'email', 'tel', 'number', 'password'] },
+			variant: { control: 'select', options: INPUT_VARIANTS },
+			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
+			placeholder: { control: 'text' },
+			label: { control: 'text' },
+			error: { control: 'text' },
+			prefix: { control: 'text' },
+			postfix: { control: 'text' },
+			isDisabled: { control: 'boolean' },
+			isRequired: { control: 'boolean' },
+			isReadonly: { control: 'boolean' },
+			mask: { control: 'text', description: 'Маска ввода' },
+			allowedChars: { control: 'text', description: 'Регулярное выражение допустимых символов' },
+			passwordRules: { control: 'object', description: 'Правила валидации пароля' },
+			modelValue: { control: 'text' },
+			customClass: { control: 'object' },
+			'onUpdate:modelValue': { table: { disable: true } },
 		},
-		variant: {
-			control: 'select',
-			options: INPUT_VARIANTS,
-		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		placeholder: { control: 'text' },
-		label: { control: 'text' },
-		error: { control: 'text' },
-		prefix: { control: 'text' },
-		postfix: { control: 'text' },
-		isDisabled: { control: 'boolean' },
-		isRequired: { control: 'boolean' },
-		modelValue: { control: 'text' },
-		'onUpdate:modelValue': { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		type: 'text',

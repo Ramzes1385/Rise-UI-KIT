@@ -6,7 +6,9 @@
 
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { TABS_VARIANTS } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
 import type { TabItem } from '../model/BaseTabs.types'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -53,29 +55,20 @@ const meta: Meta<typeof BaseTabs> = {
 	title: 'UI/BaseTabs',
 	component: BaseTabs,
 
-	argTypes: {
-		variant: {
-			control: 'radio',
-			options: ['underline', 'pills', 'rounded', 'arc'],
+	argTypes: buildArgTypes({
+		props: {
+			variant: { control: 'radio', options: TABS_VARIANTS },
+			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
+			isFullWidth: { control: 'boolean' },
+			isScrollable: { control: 'boolean', description: 'Скролл табов с кнопками навигации' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
+			modelValue: { control: 'text' },
+			items: { control: 'object', description: 'Массив табов [{ id, label, icon?, isDisabled? }]' },
+			customClass: { control: 'object' },
+			'onUpdate:modelValue': { table: { disable: true } },
+			onChange: { table: { disable: true } },
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		isFullWidth: { control: 'boolean' },
-		isScrollable: { control: 'boolean', description: 'Скролл табов с кнопками навигации' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		modelValue: { table: { disable: true } },
-		items: {
-			control: 'object',
-			description: 'Массив табов [{ id, label, icon?, isDisabled? }]',
-		},
-		'onUpdate:modelValue': { table: { disable: true } },
-		onChange: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		items: TABS,

@@ -35,7 +35,7 @@ import BaseText from '@components/BaseText/ui/BaseText.vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseAvatar.style.scss'
-import type { BaseAvatarEmits, BaseAvatarProps } from '../model/BaseAvatar.types'
+import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
 
 const props = withDefaults(defineProps<BaseAvatarProps>(), {
 	alt: '',
@@ -45,6 +45,7 @@ const props = withDefaults(defineProps<BaseAvatarProps>(), {
 })
 
 const emit = defineEmits<BaseAvatarEmits>()
+defineSlots<BaseAvatarSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-avatar', props, ['root', 'content', 'img', 'initials', 'online'])
 

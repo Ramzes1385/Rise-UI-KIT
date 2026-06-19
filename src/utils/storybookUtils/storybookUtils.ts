@@ -1,3 +1,5 @@
+/** Утилиты: генерация ArgTypes и описание пропсов для Storybook */
+
 import type { BuildArgTypesOptions, PropMeta } from './storybookUtils.types'
 import type { ArgTypes } from '@storybook/vue3'
 

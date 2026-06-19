@@ -62,7 +62,7 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseAccordion.style.scss'
-import type { BaseAccordionEmits, BaseAccordionProps } from '../model/BaseAccordion.types'
+import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../model/BaseAccordion.types'
 
 const props = withDefaults(defineProps<BaseAccordionProps>(), {
 	isMultiple: false,
@@ -70,6 +70,7 @@ const props = withDefaults(defineProps<BaseAccordionProps>(), {
 })
 
 const emit = defineEmits<BaseAccordionEmits>()
+defineSlots<BaseAccordionSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-accordion', props, ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'])
 

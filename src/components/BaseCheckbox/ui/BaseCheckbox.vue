@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-checkbox"
 		:class="[
 			variantClass,
@@ -47,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -54,7 +56,7 @@ import { useFormField } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseCheckbox.style.scss'
-import type { BaseCheckboxEmits, BaseCheckboxProps } from '../model/BaseCheckbox.types'
+import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
 
 const props = withDefaults(defineProps<BaseCheckboxProps>(), {
 	modelValue: false,
@@ -64,6 +66,7 @@ const props = withDefaults(defineProps<BaseCheckboxProps>(), {
 })
 
 const emit = defineEmits<BaseCheckboxEmits>()
+defineSlots<BaseCheckboxSlots>()
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -71,6 +74,8 @@ const formField = useFormField({
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox', props, ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'])
+
+const rootRef = ref<HTMLElement | null>(null)
 
 function handleChange(e: Event): void {
 	const target = toHTMLInputElement(e.target)
@@ -80,6 +85,9 @@ function handleChange(e: Event): void {
 }
 
 defineExpose({
+	rootRef,
+	focus: () => rootRef.value?.querySelector('input')?.focus(),
+	blur: () => rootRef.value?.querySelector('input')?.blur(),
 	validate: formField.validate,
 	reset: formField.reset,
 })

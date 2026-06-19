@@ -15,9 +15,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useIcon } from '@composables/useIcon'
-import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseIcon.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { BaseIconProps } from '../model/BaseIcon.types'
@@ -30,11 +29,11 @@ const props = withDefaults(defineProps<BaseIconProps>(), {
 	ariaLabel: '',
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'svg'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const { sizeScaleStyle, classes } = useStandardBaseComponent(
+	'base-icon',
+	props,
+	['root', 'svg'],
+)
 
 const { getIconUrl } = useIcon()
 

@@ -1,9 +1,10 @@
 <template>
 	<div
-		class="base-radio-group"
+		ref="rootRef"
+		class="base-radio"
 		:class="[
 			{
-				'base-radio-group--error': formField.error,
+				'base-radio--error': formField.error,
 			},
 			variantClass,
 			classes.root,
@@ -14,61 +15,62 @@
 			tag="span"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-radio-group__label"
+			class-name="base-radio__label"
 			:custom-class="classes.label"
-			required-class-name="base-radio-group__required"
+			required-class-name="base-radio__required"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
 		<div
-			class="base-radio-group__options"
-			:class="[{ 'base-radio-group__options--vertical': isVertical }, classes.options]">
+			class="base-radio__options"
+			:class="[{ 'base-radio__options--vertical': isVertical }, classes.options]">
 			<label
 				v-for="option in options"
 				:key="option.value"
-				class="base-radio"
+				class="base-radio-item"
 				:class="[
 					{
-						'base-radio--disabled': option.isDisabled,
-						'base-radio--error': formField.error,
+						'base-radio-item--disabled': option.isDisabled,
+						'base-radio-item--error': formField.error,
 					},
 					classes.radio,
 				]">
 				<slot name="option" :option="option" :is-checked="modelValue === option.value">
-					<div class="base-radio__wrapper" :class="classes.wrapper">
+					<div class="base-radio-item__wrapper" :class="classes.wrapper">
 						<input
 							type="radio"
-							class="base-radio__input"
+							class="base-radio-item__input"
 							:class="classes.input"
 							:name="name"
 							:value="option.value"
 							:checked="modelValue === option.value"
 							:disabled="option.isDisabled"
 							@change="handleChange(option.value)" />
-						<div class="base-radio__circle" :class="classes.circle">
-							<div v-if="modelValue === option.value" class="base-radio__dot" :class="classes.dot"></div>
+						<div class="base-radio-item__circle" :class="classes.circle">
+							<div v-if="modelValue === option.value" class="base-radio-item__dot" :class="classes.dot"></div>
 						</div>
 					</div>
-					<span class="base-radio__option-label" :class="classes.optionLabel">{{ option.label }}</span>
+					<span class="base-radio-item__option-label" :class="classes.optionLabel">{{ option.label }}</span>
 				</slot>
 			</label>
 		</div>
 
 		<FormFieldError
 			:error="formField.error"
-			class-name="base-radio-group__error-text"
+			class-name="base-radio__error-text"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseRadioEmits, BaseRadioProps } from '../model/BaseRadio.types'
+import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
 
 const props = withDefaults(defineProps<BaseRadioProps>(), {
 	isVertical: false,
@@ -77,9 +79,12 @@ const props = withDefaults(defineProps<BaseRadioProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio-group', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])
+
+const rootRef = ref<HTMLElement | null>(null)
 
 const emit = defineEmits<BaseRadioEmits>()
+defineSlots<BaseRadioSlots>()
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -93,6 +98,9 @@ function handleChange(value: string | number): void {
 }
 
 defineExpose({
+	rootRef,
+	focus: () => rootRef.value?.querySelector('input')?.focus(),
+	blur: () => rootRef.value?.querySelector('input')?.blur(),
 	validate: formField.validate,
 	reset: formField.reset,
 })

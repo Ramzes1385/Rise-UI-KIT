@@ -1,5 +1,5 @@
 import { computed, ref, type Ref } from 'vue'
-import { UI_MINIMAP_HEIGHT, UI_MINIMAP_WIDTH } from '@constants'
+import { UI_SIZE } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
 
 interface UseZoomMinimapOptions {
@@ -41,8 +41,8 @@ function useZoomMinimap(options: UseZoomMinimapOptions) {
 	const minimapStartTranslateY = ref(0)
 
 	const minimapViewportStyle = computed((): Record<string, string> => {
-		const mmW = UI_MINIMAP_WIDTH
-		const mmH = UI_MINIMAP_HEIGHT
+		const mmW = UI_SIZE.MINIMAP_WIDTH
+		const mmH = UI_SIZE.MINIMAP_HEIGHT
 		const scale = currentScale.value
 		const baseW = zoomContentW.value
 		const baseH = zoomContentH.value

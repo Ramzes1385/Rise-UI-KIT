@@ -20,24 +20,14 @@ export const ANIMATION_MODES = ['out-in', 'in-out', 'default'] as const
 /** Тип имени анимации */
 export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 
-/**
- * Пропсы компонента BaseAnimation
- */
-export interface BaseAnimationProps {
-	/** Управление видимостью контента */
+export interface BaseAnimationProps extends BaseComponentProps {
 	show?: boolean
-	/** Имя анимации */
 	name?: TransitionName
-	/** Режим анимации (только для обычного Transition) */
 	mode?: (typeof ANIMATION_MODES)[number]
-	/** Использовать TransitionGroup для списков */
 	isGroup?: boolean
-	/** HTML-тег для TransitionGroup */
 	tag?: string
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

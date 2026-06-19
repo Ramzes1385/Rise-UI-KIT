@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-file-upload"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
@@ -38,7 +39,7 @@
 					formatHint
 				}}</BaseText>
 			<BaseText v-if="maxSize" tag="span" class="base-file-upload__hint" :custom-class="classes.hint"
-				>{{ UI_FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_FILE_MAX_SIZE_SUFFIX }}</BaseText
+				>{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</BaseText
 			>
 			</slot>
 		</div>
@@ -84,10 +85,10 @@
 						tag="span"
 						class="base-file-upload__status"
 						:class="[`base-file-upload__status--${item.status}`, classes.status]">
-						<template v-if="item.status === 'done'">{{ UI_FILE_STATUS_DONE }}</template>
+						<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
 						<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
-						<template v-else-if="item.status === 'error'">{{ UI_FILE_STATUS_ERROR }}</template>
-						<template v-else>{{ UI_FILE_STATUS_PENDING }}</template>
+						<template v-else-if="item.status === 'error'">{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
+						<template v-else>{{ UI_TEXT.FILE_STATUS_PENDING }}</template>
 					</BaseText>
 					<BaseProgress
 						v-if="item.status === 'uploading'"
@@ -102,7 +103,7 @@
 					variant="ghost"
 					class="base-file-upload__remove"
 					:custom-class="classes.remove"
-					:title="UI_DELETE_TEXT"
+					:title="UI_TEXT.DELETE"
 					:size-scale="sizeScale"
 					@click="handleRemove(item)">
 					<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" />
@@ -129,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon, calcIconScale } from '@components/BaseIcon'
@@ -137,12 +138,12 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFileUploadState } from '@composables/useFileUploadState'
 import { useFormField } from '@composables/useFormField'
-import { UI_DELETE_TEXT, UI_FILE_DROP_TEXT, UI_FILE_MAX_COUNT_PREFIX, UI_FILE_MAX_SIZE_PREFIX, UI_FILE_MAX_SIZE_SUFFIX, UI_FILE_SELECT_TEXT, UI_FILE_STATUS_DONE, UI_FILE_STATUS_ERROR, UI_FILE_STATUS_PENDING, UI_PROGRESS_INTERVAL_MS, UI_PROGRESS_STEP_MIN, UI_PROGRESS_STEP_RANGE, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
-import { createImagePreview, formatAcceptHint, formatFileSize, getExtension, validateFile } from '@utils/fileUtils'
-import { generateId } from '@utils/idUtils'
-import type { BaseFileUploadEmits, BaseFileUploadProps, UploadedFile } from '../model/BaseFileUpload.types'
+import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
+import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../model/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
 const props = withDefaults(defineProps<BaseFileUploadProps>(), {
@@ -153,10 +154,10 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	maxSize: 5,
 	maxCount: 10,
 	label: '',
-	buttonText: UI_FILE_SELECT_TEXT,
+	buttonText: UI_TEXT.FILE_SELECT,
 	previewSize: 64,
 	allowPreview: true,
-	emptyText: UI_FILE_DROP_TEXT,
+	emptyText: UI_TEXT.FILE_DROP,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	error: '',
 })
@@ -184,6 +185,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 	])
 
 const emit = defineEmits<BaseFileUploadEmits>()
+defineSlots<BaseFileUploadSlots>()
 
 const formField = useFormField({
 	value: () => undefined,
@@ -191,114 +193,35 @@ const formField = useFormField({
 })
 
 const fileInput = ref<HTMLInputElement | null>(null)
-const uploadedFiles = ref<UploadedFile[]>([])
-const isDragOver = ref(false)
-const internalErrors = ref<string[]>([])
+const rootRef = ref<HTMLElement | null>(null)
 
-/** Активные таймеры имитации прогресса — очищаются при размонтировании. */
-const progressIntervals = new Set<ReturnType<typeof setInterval>>()
+const {
+	uploadedFiles,
+	isDragOver,
+	displayErrors: uploadErrors,
+	addFiles,
+	handleRemove,
+	handleDragOver,
+	handleDragLeave,
+	handleDrop,
+} = useFileUploadState({
+	getMaxSize: () => props.maxSize,
+	getAccept: () => props.accept,
+	getMaxCount: () => props.maxCount,
+	onError: (message: string) => emit('error', message),
+	onChange: (files: File[]) => emit('change', files),
+	onRemove: (file) => emit('remove', file),
+})
 
-/** Отображаемые ошибки (проп + внутренние) */
-const displayErrors = computed(() => [...(formField.error ? [formField.error] : []), ...internalErrors.value])
-
-/** Есть ли хотя бы одна ошибка */
+const displayErrors = computed(() => [...(formField.error ? [formField.error] : []), ...uploadErrors.value])
 const hasError = computed(() => displayErrors.value.length > 0)
 
-/** Масштабированный размер превью */
 const scaledPreviewSize = computed(() => Math.round((props.previewSize * props.sizeScale) / 100))
 
-/** Подсказка по форматам */
 const formatHint = computed(() => formatAcceptHint(props.accept))
 
-/** Форматирование размера */
 function formatSize(bytes: number): string {
 	return formatFileSize(bytes)
-}
-
-/** Валидация файлов */
-function validateFiles(files: File[]): File[] {
-	const valid: File[] = []
-
-	for (const file of files) {
-		const result = validateFile(file, {
-			maxSize: props.maxSize,
-			accept: props.accept,
-		})
-		if (!result.isValid) {
-			for (const err of result.errors) {
-				internalErrors.value.push(err)
-				emit('error', err)
-			}
-			continue
-		}
-		valid.push(file)
-	}
-
-	return valid
-}
-
-async function addFiles(files: File[]): Promise<void> {
-	/* istanbul ignore next — defensive: пустой массив отсекается на уровне input change */
-	if (files.length === 0) return
-
-	const remaining = props.maxCount - uploadedFiles.value.length
-	if (remaining <= 0) {
-		const errorMessage = `${UI_FILE_MAX_COUNT_PREFIX} ${props.maxCount}`
-		internalErrors.value.push(errorMessage)
-		emit('error', errorMessage)
-		return
-	}
-
-	internalErrors.value = []
-	const toAdd = files.slice(0, remaining)
-	const valid = validateFiles(toAdd)
-
-	for (const file of valid) {
-		await createUploadItem(file)
-	}
-
-	emit(
-		'change',
-		uploadedFiles.value.map(uploadedFile => uploadedFile.file),
-	)
-}
-
-async function createUploadItem(file: File): Promise<void> {
-	const previewUrl = await createImagePreview(file)
-	uploadedFiles.value.push({
-		id: generateId(),
-		file,
-		name: file.name,
-		size: file.size,
-		type: file.type,
-		extension: getExtension(file.name),
-		previewUrl,
-		status: previewUrl ? 'uploading' : 'pending',
-		progress: 0,
-	})
-
-	if (previewUrl) {
-		simulateUploadProgress(uploadedFiles.value[uploadedFiles.value.length - 1].id)
-	}
-}
-
-function simulateUploadProgress(itemId: string): void {
-	const interval = setInterval(() => {
-		const item = uploadedFiles.value.find(f => f.id === itemId)
-		if (!item) {
-			clearInterval(interval)
-			progressIntervals.delete(interval)
-			return
-		}
-		item.progress = Math.min(item.progress + Math.floor(Math.random() * UI_PROGRESS_STEP_RANGE) + UI_PROGRESS_STEP_MIN, 100)
-		if (item.progress >= 100) {
-			item.status = 'done'
-			item.progress = 100
-			clearInterval(interval)
-			progressIntervals.delete(interval)
-		}
-	}, UI_PROGRESS_INTERVAL_MS)
-	progressIntervals.add(interval)
 }
 
 function triggerUpload(): void {
@@ -312,39 +235,10 @@ function handleFileChange(e: Event): void {
 	target.value = ''
 }
 
-function handleRemove(item: UploadedFile): void {
-	uploadedFiles.value = uploadedFiles.value.filter(uploadedFile => uploadedFile.id !== item.id)
-	/* istanbul ignore next — previewUrl присутствует только для image-файлов */
-	if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
-	emit('remove', item)
-	emit(
-		'change',
-		uploadedFiles.value.map(uploadedFile => uploadedFile.file),
-	)
-}
-
-function handleDragOver(): void {
-	isDragOver.value = true
-}
-
-function handleDragLeave(): void {
-	isDragOver.value = false
-}
-
-function handleDrop(e: DragEvent): void {
-	isDragOver.value = false
-	if (e.dataTransfer?.files) {
-		addFiles(Array.from(e.dataTransfer.files))
-	}
-}
-
-/** Очистка незавершённых таймеров прогресса при размонтировании. */
-onBeforeUnmount(() => {
-	progressIntervals.forEach(clearInterval)
-	progressIntervals.clear()
-})
-
 defineExpose({
+	rootRef,
+	focus: () => rootRef.value?.focus(),
+	blur: () => rootRef.value?.blur(),
 	validate: formField.validate,
 	reset: formField.reset,
 })

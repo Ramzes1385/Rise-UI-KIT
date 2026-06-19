@@ -111,7 +111,7 @@ import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
 import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseInput.style.scss'
-import type { BaseInputEmits, BaseInputProps, PasswordRuleResult } from '../model/BaseInput.types'
+import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../model/BaseInput.types'
 
 const props = withDefaults(defineProps<BaseInputProps>(), {
 	type: 'text',
@@ -132,6 +132,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 ])
 
 const emit = defineEmits<BaseInputEmits>()
+defineSlots<BaseInputSlots>()
 const inputRef = ref<HTMLInputElement | null>(null)
 
 const formField = useFormField({
@@ -180,6 +181,7 @@ function handleFocus(e: FocusEvent): void {
 }
 
 defineExpose({
+	rootRef: inputRef,
 	inputRef,
 	/* istanbul ignore next — defensive: optional chaining для public API на unmount */
 	focus: () => inputRef.value?.focus(),

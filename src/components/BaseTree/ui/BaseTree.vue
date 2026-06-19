@@ -14,13 +14,13 @@
 
 <script setup lang="ts">
 import { computed, provide, toRef } from 'vue'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useTreeState } from '@composables/useTreeState'
 import '../styles/BaseTree.style.scss'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import { useTreeState } from '../model/useTreeState'
 import BaseTreeNode from './BaseTreeNode.vue'
-import type { BaseTreeEmits, BaseTreeProps } from '../model/BaseTree.types'
+import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots } from '../model/BaseTree.types'
 
 const props = withDefaults(defineProps<BaseTreeProps>(), {
 	selectionMode: 'none',
@@ -30,15 +30,13 @@ const props = withDefaults(defineProps<BaseTreeProps>(), {
 })
 
 const emit = defineEmits<BaseTreeEmits>()
+defineSlots<BaseTreeSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-tree',
-	getVariant: () => props.variant,
-	getSizeScale: () => props.sizeScale,
-	getColor: () => props.color,
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children'],
-})
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
+	'base-tree',
+	props,
+	['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children'],
+)
 
 const { expandedIds, selectedIds, expandedSet, selectedSet, toggleNode, selectNode } = useTreeState({
 	items: toRef(props, 'items'),

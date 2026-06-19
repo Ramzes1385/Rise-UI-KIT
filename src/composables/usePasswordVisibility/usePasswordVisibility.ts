@@ -1,13 +1,10 @@
-import { computed, ref, type Ref } from 'vue'
-
-interface UsePasswordVisibilityOptions {
-	type: Ref<string>
-}
+import { computed, ref } from 'vue'
+import type { UsePasswordVisibilityOptions } from './usePasswordVisibility.types'
 
 /**
  * Composable для управления видимостью пароля в инпуте
  */
-export function usePasswordVisibility(options: UsePasswordVisibilityOptions) {
+function usePasswordVisibility(options: UsePasswordVisibilityOptions) {
 	const isPasswordVisible = ref(false)
 
 	const inputType = computed(() => {
@@ -27,3 +24,5 @@ export function usePasswordVisibility(options: UsePasswordVisibilityOptions) {
 		togglePasswordVisibility,
 	}
 }
+
+export { usePasswordVisibility }

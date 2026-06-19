@@ -55,3 +55,10 @@ export interface BaseSelectEmits {
 	(event: 'update:modelValue', value: string | number | (string | number)[]): void
 	(event: 'change', value: string | number | (string | number)[]): void
 }
+
+/**
+ * Слоты компонента BaseSelect
+ */
+export interface BaseSelectSlots {
+	default?: () => unknown
+}

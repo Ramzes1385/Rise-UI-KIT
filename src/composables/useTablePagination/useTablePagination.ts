@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import { TABLE_DEFAULT_PAGE_SIZE } from '@components/BaseTable/model/BaseTable.constants'
+import { TABLE_DEFAULT_PAGE_SIZE } from '@constants/table'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './useTablePagination.types'
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'

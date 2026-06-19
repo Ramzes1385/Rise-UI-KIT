@@ -18,7 +18,7 @@ for (const story of STORIES) {
 		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
 		await page.waitForLoadState('networkidle')
 		await page.evaluate(() => document.fonts.ready)
-		const root = page.locator('.base-tooltip-wrapper')
+		const root = page.locator('.base-tooltip')
 		const box = await root.boundingBox()
 		if (!box) throw new Error('BaseTooltip wrapper not found')
 		const PAD = 20

@@ -5,6 +5,7 @@
 
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '../model/BaseNotification.types'
 import BaseNotification from '../ui/BaseNotification.vue'
@@ -14,35 +15,37 @@ const meta: Meta<typeof BaseNotification> = {
 	title: 'UI/BaseNotification',
 	component: BaseNotification,
 
-	argTypes: {
-		title: { control: 'text' },
-		description: { control: 'text' },
-		type: {
-			control: 'inline-radio',
-			options: [...NOTIFICATION_TYPES],
+	argTypes: buildArgTypes({
+		props: {
+			title: { control: 'text' },
+			description: { control: 'text' },
+			type: {
+				control: 'inline-radio',
+				options: NOTIFICATION_TYPES,
+			},
+			variant: {
+				control: 'radio',
+				options: NOTIFICATION_VARIANTS,
+			},
+			position: {
+				control: 'select',
+				options: NOTIFICATION_POSITIONS,
+				description: 'Позиция контейнера на экране',
+			},
+			duration: { control: 'number' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
+			color: {
+				control: 'object',
+				description: 'Объект CustomColor',
+			},
+			isContained: { table: { disable: true } },
+			notificationKey: { table: { disable: true } },
+			onClose: { table: { disable: true } },
 		},
-		variant: {
-			control: 'radio',
-			options: [...NOTIFICATION_VARIANTS],
-		},
-		position: {
-			control: 'select',
-			options: [...NOTIFICATION_POSITIONS],
-			description: 'Позиция контейнера на экране',
-		},
-		duration: { control: 'number' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		color: {
-			control: 'object',
-			description: 'Объект CustomColor',
-		},
-		isContained: { table: { disable: true } },
-		notificationKey: { table: { disable: true } },
-		onClose: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		title: 'Уведомление',
@@ -63,7 +66,7 @@ export const Default: Story = {
 		await step('Фокусировка уведомления по Tab', async () => {
 			await userEvent.tab()
 		})
-		await playShiftTab(canvasElement, { selector: '.base-notification' })
+		await playShiftTab(canvasElement, { selector: '.base-notification-item' })
 	},
 }
 /** Все типы */
@@ -223,14 +226,14 @@ export const CloseByButton: Story = {
 		const addBtn = canvasElement.querySelector('.add-notification-btn') as HTMLButtonElement
 		await userEvent.click(addBtn)
 		await waitFor(() => {
-			const notification = canvasElement.querySelector('.base-notification')
+			const notification = canvasElement.querySelector('.base-notification-item')
 			expect(notification).toBeTruthy()
 		})
-		const closeBtn = canvasElement.querySelector('.base-notification__close') as HTMLButtonElement
+		const closeBtn = canvasElement.querySelector('.base-notification-item__close') as HTMLButtonElement
 		expect(closeBtn).toBeTruthy()
 		await userEvent.click(closeBtn)
 		await waitFor(() => {
-			const notification = canvasElement.querySelector('.base-notification')
+			const notification = canvasElement.querySelector('.base-notification-item')
 			expect(notification).toBeFalsy()
 		})
 	},
@@ -264,11 +267,11 @@ export const AutoCloseAfterDuration: Story = {
 		const addBtn = canvasElement.querySelector('.add-auto-btn') as HTMLButtonElement
 		await userEvent.click(addBtn)
 		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-notification')).toBeTruthy()
+			expect(canvasElement.querySelector('.base-notification-item')).toBeTruthy()
 		})
 		await waitFor(
 			() => {
-				expect(canvasElement.querySelector('.base-notification')).toBeFalsy()
+				expect(canvasElement.querySelector('.base-notification-item')).toBeFalsy()
 			},
 			{ timeout: 2000 },
 		)
@@ -298,7 +301,7 @@ export const AddWithoutTypeAndDuration: Story = {
 		const addBtn = canvasElement.querySelector('.add-no-type-btn') as HTMLButtonElement
 		await userEvent.click(addBtn)
 		await waitFor(() => {
-			const notification = canvasElement.querySelector('.base-notification--info')
+			const notification = canvasElement.querySelector('.base-notification-item--info')
 			expect(notification).toBeTruthy()
 		})
 	},
@@ -333,12 +336,12 @@ export const CloseOneOfMany: Story = {
 		const addBtn = canvasElement.querySelector('.add-many-btn') as HTMLButtonElement
 		await userEvent.click(addBtn)
 		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-notification').length).toBe(2)
+			expect(canvasElement.querySelectorAll('.base-notification-item').length).toBe(2)
 		})
-		const firstClose = canvasElement.querySelector('.base-notification__close') as HTMLButtonElement
+		const firstClose = canvasElement.querySelector('.base-notification-item__close') as HTMLButtonElement
 		await userEvent.click(firstClose)
 		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-notification').length).toBe(1)
+			expect(canvasElement.querySelectorAll('.base-notification-item').length).toBe(1)
 		})
 	}
 }
@@ -381,7 +384,7 @@ export const Positions: Story = {
 		const btn = canvasElement.querySelector('.position-btn') as HTMLButtonElement
 		await userEvent.click(btn)
 		await waitFor(() => {
-			const container = document.querySelector('.base-notification-container--top-left')
+			const container = document.querySelector('.base-notification--top-left')
 			expect(container).toBeTruthy()
 		})
 	},

@@ -6,7 +6,7 @@
 
 import '@testing-library/jest-dom/vitest'
 import { effectScope } from 'vue'
-import { resolvePlacement, useTourLogic } from '../model/useTourLogic'
+import { resolvePlacement, useTourLogic } from '@composables/useTourLogic'
 import type { BaseTourProps } from '../model/BaseTour.types'
 import type { EffectScope } from 'vue'
 

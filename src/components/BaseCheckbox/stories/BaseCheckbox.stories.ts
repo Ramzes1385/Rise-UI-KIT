@@ -5,6 +5,7 @@
 
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playFocusTest, playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
@@ -14,30 +15,20 @@ const meta: Meta<typeof BaseCheckbox> = {
 	title: 'UI/BaseCheckbox',
 	component: BaseCheckbox,
 
-	argTypes: {
-		label: { control: 'text' },
-		variant: {
-			control: 'radio',
-			options: CHECKBOX_VARIANTS,
+	argTypes: buildArgTypes({
+		props: {
+			label: { control: 'text' },
+			variant: { control: 'radio', options: CHECKBOX_VARIANTS },
+			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
+			isDisabled: { control: 'boolean' },
+			error: { control: 'text' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
+			modelValue: { control: 'boolean' },
+			customClass: { control: 'object' },
+			'onUpdate:modelValue': { table: { disable: true } },
+			onChange: { table: { disable: true } },
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		isDisabled: { control: 'boolean' },
-		error: { control: 'text' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		modelValue: { control: 'boolean' },
-		'onUpdate:modelValue': { table: { disable: true } },
-		onChange: { table: { disable: true } },
-		class: { table: { disable: true } },
-		style: { table: { disable: true } },
-		key: { table: { disable: true } },
-		ref: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		label: 'Согласен с условиями',

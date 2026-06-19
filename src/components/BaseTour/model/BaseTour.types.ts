@@ -1,4 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Сторона размещения карточки-подсказки относительно подсвеченного элемента */
 export const TOUR_PLACEMENTS = ['top', 'bottom', 'left', 'right', 'auto'] as const
@@ -59,7 +59,7 @@ export interface TourBehavior {
 /**
  * Пропсы компонента BaseTour
  */
-export interface BaseTourProps {
+export interface BaseTourProps extends BaseComponentProps {
 	/** Управление видимостью тура (v-model:isOpen) */
 	isOpen?: boolean
 	/** Список шагов тура */
@@ -82,13 +82,6 @@ export interface BaseTourProps {
 	showSkip?: boolean
 	/** Показывать индикатор прогресса (точки шагов) */
 	showProgress?: boolean
-	/**
-	 * Кастомные классы. Строка применяется к корню, либо объект с ключами элементов:
-	 * `root`, `overlay`, `spotlight`, `card`, `cardInner`, `title`, `closeButton`,
-	 * `closeIcon`, `content`, `footer`, `progress`, `dot`, `counter`, `actions`,
-	 * `prevButton`, `nextButton`, `finishButton`.
-	 */
-	customClass?: CustomClassProp
 	/** @deprecated Используйте behavior.closeOnOverlayClick */
 	closeOnOverlayClick?: boolean
 	/** @deprecated Используйте behavior.closeOnEscape */

@@ -119,5 +119,13 @@ onMounted(() => {
 	}
 })
 
-defineExpose({ textareaRef, adjustHeight, validate: formField.validate, reset: formField.reset })
+defineExpose({
+	rootRef: textareaRef,
+	textareaRef,
+	adjustHeight,
+	focus: () => textareaRef.value?.focus(),
+	blur: () => textareaRef.value?.blur(),
+	validate: formField.validate,
+	reset: formField.reset,
+})
 </script>

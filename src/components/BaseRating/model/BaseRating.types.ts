@@ -36,3 +36,10 @@ export interface BaseRatingEmits {
 	/** Выбор оценки пользователем */
 	(event: 'change', value: number): void
 }
+
+/**
+ * Слоты компонента BaseRating
+ */
+export interface BaseRatingSlots {
+	default?: () => unknown
+}

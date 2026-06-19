@@ -1,3 +1,5 @@
+/** Утилиты: проверка и обработка изображений */
+
 /** Проверить, является ли URL внешним (http/https), blob или data-url */
 function isExternalImage(src: string): boolean {
 	return src.startsWith('http://') || src.startsWith('https://') || src.startsWith('blob:') || src.startsWith('data:')

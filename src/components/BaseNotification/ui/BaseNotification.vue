@@ -1,10 +1,10 @@
 <template>
 	<Teleport to="body" :disabled="isContained">
 		<div
-			class="base-notification-container"
+			class="base-notification"
 			:class="[
-				`base-notification-container--${position}`,
-				{ 'base-notification-container--contained': isContained },
+				`base-notification--${position}`,
+				{ 'base-notification--contained': isContained },
 				classes.root,
 			]"
 			:style="sizeScaleStyle">
@@ -12,20 +12,20 @@
 				<div
 					v-for="notification in notifications"
 					:key="notification.id"
-					class="base-notification"
-					:class="[`base-notification--${notification.type || 'info'}`, variantClass, classes.notification]"
+					class="base-notification-item"
+					:class="[`base-notification-item--${notification.type || 'info'}`, variantClass, classes.notification]"
 					:style="[variantStyle, customColorStyle]">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
 						:size-scale="calcIconScale('md', sizeScale)"
-						class="base-notification__icon"
+						class="base-notification-item__icon"
 						:custom-class="classes.icon" />
-					<div class="base-notification__content" :class="classes.content">
+					<div class="base-notification-item__content" :class="classes.content">
 						<BaseText
 							tag="h4"
 							:size-scale="sizeScale"
 							:weight="UI_FONT_WEIGHT.SEMIBOLD"
-							class="base-notification__title"
+							class="base-notification-item__title"
 							:custom-class="classes.title">
 							{{ notification.title }}
 						</BaseText>
@@ -34,7 +34,7 @@
 							tag="p"
 							:size-scale="sizeScale"
 							:color="{ text: { base: 'var(--color-text-muted)' } }"
-							class="base-notification__description"
+							class="base-notification-item__description"
 							:custom-class="classes.description">
 							{{ notification.description }}
 						</BaseText>
@@ -42,14 +42,14 @@
 					<BaseButton
 						variant="ghost"
 						:padding="2"
-						class="base-notification__close"
+						class="base-notification-item__close"
 						:size-scale="sizeScale"
 						:custom-class="classes.close"
 						@click="remove(notification.id)">
 						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
 					</BaseButton>
 					<div
-						class="base-notification__progress"
+						class="base-notification-item__progress"
 						:class="classes.progress"
 						:style="{ animationDuration: `${notification.duration || UI_TIMING.NOTIFICATION_AUTO_CLOSE}ms` }"></div>
 				</div>
@@ -77,7 +77,7 @@ const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	isContained: false,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-notification', props, ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-notification-item', props, ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'])
 
 const typeIconMap: Record<string, string> = {
 	success: 'check-circle',

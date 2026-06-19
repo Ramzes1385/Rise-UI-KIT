@@ -4,6 +4,7 @@
  */
 
 import { expect, within } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
 import BaseLoader from '../ui/BaseLoader.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -11,28 +12,30 @@ const meta: Meta<typeof BaseLoader> = {
 	title: 'UI/BaseLoader',
 	component: BaseLoader,
 
-	argTypes: {
-		variant: {
-			control: 'inline-radio',
-			options: ['spinner', 'dots', 'pulse', 'bars'],
+	argTypes: buildArgTypes({
+		props: {
+			variant: {
+				control: 'inline-radio',
+				options: ['spinner', 'dots', 'pulse', 'bars'],
+			},
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			hasLabel: {
+				control: 'boolean',
+			},
+			label: {
+				control: 'text',
+			},
+			isOverlay: {
+				control: 'boolean',
+			},
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+			},
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		hasLabel: {
-			control: 'boolean',
-		},
-		label: {
-			control: 'text',
-		},
-		isOverlay: {
-			control: 'boolean',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-		},
-	},
+	}),
 
 	args: {
 		variant: 'spinner',

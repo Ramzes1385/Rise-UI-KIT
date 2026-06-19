@@ -66,7 +66,7 @@
 									<span
 										class="base-calendar__popover-highlight-dot"
 										:style="{ backgroundColor: hl.color || 'var(--color-accent)' }" />
-									<BaseText tag="span" :size-scale="sizeScale">{{ hl.label || UI_CALENDAR_EVENT_TEXT }}</BaseText>
+									<BaseText tag="span" :size-scale="sizeScale">{{ hl.label || UI_CALENDAR.EVENT_TEXT }}</BaseText>
 								</div>
 							</div>
 						</slot>
@@ -82,7 +82,7 @@ import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseText } from '@components/BaseText'
 import { useClickOutside } from '@composables/useClickOutside'
-import { UI_CALENDAR_EVENT_TEXT, UI_FONT_WEIGHT } from '@constants'
+import { UI_CALENDAR, UI_FONT_WEIGHT } from '@constants'
 import { formatPopoverDate } from '@utils/dateUtils'
 import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../model/BaseCalendarDays.types'
 

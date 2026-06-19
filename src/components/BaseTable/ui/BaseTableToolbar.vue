@@ -14,20 +14,20 @@
 			<BaseSelect
 				:model-value="filterColumn"
 				:options="filterColumnOptions"
-				:placeholder="UI_FILTER_COLUMN_TEXT"
+				:placeholder="UI_FILTER.COLUMN"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('update:filter-column', $event)" />
 			<span class="base-table__filter-sep"></span>
 			<BaseSelect
 				:model-value="filterOperator"
 				:options="filterOperatorOptions"
-				:placeholder="UI_FILTER_CONDITION_TEXT"
+				:placeholder="UI_FILTER.CONDITION"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('update:filter-operator', $event)" />
 			<span class="base-table__filter-sep"></span>
 			<BaseInput
 				:model-value="filterValue"
-				:placeholder="UI_FILTER_VALUE_PLACEHOLDER"
+				:placeholder="UI_FILTER.VALUE_PLACEHOLDER"
 				:size-scale="sizeScale - 20"
 				@update:model-value="emit('update:filter-value', $event)"
 				@keydown.enter="emit('add-filter')" />
@@ -88,9 +88,7 @@ import { BaseIcon, calcIconScale } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseSelect } from '@components/BaseSelect'
 import {
-	UI_FILTER_COLUMN_TEXT,
-	UI_FILTER_CONDITION_TEXT,
-	UI_FILTER_VALUE_PLACEHOLDER,
+	UI_FILTER,
 	UI_TEXT,
 } from '@constants'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../model/BaseTableToolbar.types'

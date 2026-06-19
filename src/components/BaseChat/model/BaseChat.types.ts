@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 export type ChatMessageSender = 'me' | 'other'
 export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read'
@@ -78,41 +77,12 @@ export interface ChatCommand {
 /**
  * Пропсы компонента BaseChat
  */
-export interface BaseChatProps {
-	/** Список сообщений */
-	messages: ChatMessage[]
-	/** Заголовок чата */
-	title: string
-	/** Подзаголовок чата */
-	subtitle?: string
-	/** Аватар собеседника или группы */
-	avatar?: string
-	/** Высота контейнера чата */
-	height?: string
-	/** Масштаб размера (50-200) */
-	sizeScale?: number
-	/** Вариант отображения */
-	variant?: 'bubble' | 'flat' | 'modern'
-	/** Кастомный цвет */
-	color?: CustomColor
-	/** Кастомные классы */
-	customClass?: CustomClassProp
-	/** Флаг, показывающий, что собеседник печатает */
-	isTyping?: boolean
-	/** Имя того, кто печатает (для групповых чатов) */
-	typingUsername?: string
-	/** Является ли чат групповым */
-	isGroup?: boolean
-	/** Список участников группового чата */
-	members?: ChatMember[]
-	/** Быстрые ответы */
-	quickReplies?: string[]
-	/** Список доступных команд чата (для автодополнения по "/" и кнопки команд) */
-	commands?: ChatCommand[]
-	/** Список закрепленных сообщений */
-	pinnedMessages?: ChatMessage[]
-	/** Роль текущего пользователя в чате */
-	currentUserRole?: 'admin' | 'member'
+export interface BaseChatProps extends BaseComponentProps<'bubble' | 'flat' | 'modern'> {
+	messages: ChatMessage[]; title: string; subtitle?: string; avatar?: string;
+	height?: string; isTyping?: boolean;
+	typingUsername?: string; isGroup?: boolean; members?: ChatMember[];
+	quickReplies?: string[]; commands?: ChatCommand[];
+	pinnedMessages?: ChatMessage[]; currentUserRole?: 'admin' | 'member'
 }
 
 /**
@@ -139,4 +109,11 @@ export interface BaseChatEmits {
 	(event: 'mention-click', mention: string): void
 	(event: 'command-click', command: string): void
 	(event: 'error', payload: { type: string; message: string; detail?: unknown }): void
+}
+
+/**
+ * Слоты компонента BaseChat
+ */
+export interface BaseChatSlots {
+	default?: () => unknown
 }

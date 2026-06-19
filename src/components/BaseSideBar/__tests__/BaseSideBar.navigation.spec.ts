@@ -69,10 +69,10 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Каталог').closest('.base-sidebar-nav__link')).toHaveClass(
-			'base-sidebar-nav__link--parent-active',
+		expect(screen.getByText('Каталог').closest('.base-side-bar-nav__link')).toHaveClass(
+			'base-side-bar-nav__link--parent-active',
 		)
-		expect(screen.getByText('Товары').closest('.base-sidebar-nav__link')).toHaveClass('base-sidebar-nav__link--current')
+		expect(screen.getByText('Товары').closest('.base-side-bar-nav__link')).toHaveClass('base-side-bar-nav__link--current')
 	})
 
 	it('подсвечивает активный пункт по activeKey', () => {
@@ -95,7 +95,7 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Заказы').closest('.base-sidebar-nav__link')).toHaveClass('base-sidebar-nav__link--current')
+		expect(screen.getByText('Заказы').closest('.base-side-bar-nav__link')).toHaveClass('base-side-bar-nav__link--current')
 	})
 
 	it('вызывает item.click и emit itemClick', async () => {
@@ -195,7 +195,7 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		const navigationIcon = container.querySelector('.base-sidebar__navigation [data-testid="base-icon"]')
+		const navigationIcon = container.querySelector('.base-side-bar__navigation [data-testid="base-icon"]')
 
 		expect(navigationIcon).toHaveTextContent('home')
 		expect(screen.queryByText('Главная')).not.toBeInTheDocument()
@@ -269,7 +269,7 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(container.querySelector('.base-sidebar-nav__divider')).toBeInTheDocument()
+		expect(container.querySelector('.base-side-bar-nav__divider')).toBeInTheDocument()
 	})
 
 	it('рендерит badge', () => {
@@ -318,9 +318,9 @@ describe('BaseSideBar navigation items', () => {
 
 		expect(screen.getByText('Каталог').closest('a')).toHaveAttribute('href', '/catalog')
 		expect(screen.getByText('Товары')).toBeInTheDocument()
-		expect(screen.getByText('Каталог').closest('.base-sidebar-nav__link')).not.toHaveAttribute('aria-expanded')
+		expect(screen.getByText('Каталог').closest('.base-side-bar-nav__link')).not.toHaveAttribute('aria-expanded')
 		expect(
-			screen.getByText('Каталог').closest('.base-sidebar-nav__link')?.querySelector('.base-sidebar-nav__chevron'),
+			screen.getByText('Каталог').closest('.base-side-bar-nav__link')?.querySelector('.base-side-bar-nav__chevron'),
 		).toBeNull()
 	})
 
@@ -484,7 +484,7 @@ describe('BaseSideBar navigation items', () => {
 
 		expect(screen.queryByText('Каталог')).not.toBeInTheDocument()
 		expect(screen.queryByText('Товары')).not.toBeInTheDocument()
-		expect(container.querySelector('.base-sidebar__navigation [data-testid="base-icon"]')).toHaveTextContent('folder')
+		expect(container.querySelector('.base-side-bar__navigation [data-testid="base-icon"]')).toHaveTextContent('folder')
 	})
 
 	it('сохраняет item.click и emit itemClick для disclosure group', async () => {
@@ -543,14 +543,14 @@ describe('BaseSideBar navigation items', () => {
 		})
 
 		const button = screen.getByRole('button', { name: 'Настройки' })
-		const chevron = container.querySelector('.base-sidebar-nav__chevron')
+		const chevron = container.querySelector('.base-side-bar-nav__chevron')
 
-		expect(chevron).not.toHaveClass('base-sidebar-nav__chevron--expanded')
+		expect(chevron).not.toHaveClass('base-side-bar-nav__chevron--expanded')
 
 		await fireEvent.click(button)
 
 		expect(screen.getByText('Профиль')).toBeInTheDocument()
-		expect(chevron).toHaveClass('base-sidebar-nav__chevron--expanded')
+		expect(chevron).toHaveClass('base-side-bar-nav__chevron--expanded')
 	})
 
 	it('сохраняет footer в разметке в collapsed mode', () => {
@@ -575,7 +575,7 @@ describe('BaseSideBar navigation items', () => {
 		})
 
 		expect(screen.getByTestId('sidebar-footer')).toBeInTheDocument()
-		expect(screen.getByTestId('sidebar-footer').closest('.base-sidebar__footer')).toBeInTheDocument()
+		expect(screen.getByTestId('sidebar-footer').closest('.base-side-bar__footer')).toBeInTheDocument()
 	})
 
 	it('подсвечивает item с isActive: true как current', () => {
@@ -594,8 +594,8 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Активный вручную').closest('.base-sidebar-nav__link')).toHaveClass(
-			'base-sidebar-nav__link--current',
+		expect(screen.getByText('Активный вручную').closest('.base-side-bar-nav__link')).toHaveClass(
+			'base-side-bar-nav__link--current',
 		)
 	})
 
@@ -803,8 +803,8 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Активный вручную').closest('.base-sidebar-nav__link')).toHaveClass(
-			'base-sidebar-nav__link--current',
+		expect(screen.getByText('Активный вручную').closest('.base-side-bar-nav__link')).toHaveClass(
+			'base-side-bar-nav__link--current',
 		)
 	})
 
@@ -1014,9 +1014,9 @@ describe('BaseSideBar navigation items', () => {
 
 		const link = screen.getByText('Простой пункт').closest('a')
 		expect(link).toBeInTheDocument()
-		expect(link?.querySelector('.base-sidebar-nav__icon')).not.toBeInTheDocument()
-		expect(link?.querySelector('.base-sidebar-nav__badge')).not.toBeInTheDocument()
-		expect(link?.querySelector('.base-sidebar-nav__chevron')).not.toBeInTheDocument()
+		expect(link?.querySelector('.base-side-bar-nav__icon')).not.toBeInTheDocument()
+		expect(link?.querySelector('.base-side-bar-nav__badge')).not.toBeInTheDocument()
+		expect(link?.querySelector('.base-side-bar-nav__chevron')).not.toBeInTheDocument()
 	})
 
 	it('рендерит nested children без slot forwarding', async () => {
@@ -1075,9 +1075,9 @@ describe('BaseSideBar navigation items', () => {
 
 		const link = screen.getByText('Простой пункт').closest('a')
 		expect(link).toBeInTheDocument()
-		expect(link?.querySelector('.base-sidebar-nav__icon')).not.toBeInTheDocument()
-		expect(link?.querySelector('.base-sidebar-nav__badge')).not.toBeInTheDocument()
-		expect(link?.querySelector('.base-sidebar-nav__chevron')).not.toBeInTheDocument()
+		expect(link?.querySelector('.base-side-bar-nav__icon')).not.toBeInTheDocument()
+		expect(link?.querySelector('.base-side-bar-nav__badge')).not.toBeInTheDocument()
+		expect(link?.querySelector('.base-side-bar-nav__chevron')).not.toBeInTheDocument()
 	})
 
 	it('рендерит nested children без slot forwarding', async () => {
@@ -1693,26 +1693,26 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		const links = container.querySelectorAll('.base-sidebar-nav__link')
+		const links = container.querySelectorAll('.base-side-bar-nav__link')
 		const currentLink = links[0]
 		const disclosureLink = links[1]
 		const noIconLink = links[2]
 
-		expect(currentLink).toHaveClass('base-sidebar-nav__link--active')
-		expect(currentLink).toHaveClass('base-sidebar-nav__link--current')
-		expect(currentLink).toHaveClass('base-sidebar-nav__link--collapsed')
+		expect(currentLink).toHaveClass('base-side-bar-nav__link--active')
+		expect(currentLink).toHaveClass('base-side-bar-nav__link--current')
+		expect(currentLink).toHaveClass('base-side-bar-nav__link--collapsed')
 
-		expect(disclosureLink).toHaveClass('base-sidebar-nav__link--active')
-		expect(disclosureLink).toHaveClass('base-sidebar-nav__link--parent-active')
-		expect(disclosureLink).toHaveClass('base-sidebar-nav__link--collapsed')
+		expect(disclosureLink).toHaveClass('base-side-bar-nav__link--active')
+		expect(disclosureLink).toHaveClass('base-side-bar-nav__link--parent-active')
+		expect(disclosureLink).toHaveClass('base-side-bar-nav__link--collapsed')
 
-		expect(noIconLink.querySelector('.base-sidebar-nav__icon')).toBeNull()
+		expect(noIconLink.querySelector('.base-side-bar-nav__icon')).toBeNull()
 
 		await fireEvent.click(disclosureLink)
 
 		expect(onItemClick).toHaveBeenCalledTimes(1)
 		expect(onItemClick.mock.calls[0][0].key).toBe('settings')
-		expect(container.querySelector('.base-sidebar-nav__children')).not.toBeInTheDocument()
+		expect(container.querySelector('.base-side-bar-nav__children')).not.toBeInTheDocument()
 	})
 	it('использует label как key когда key и to не заданы', () => {
 		render(BaseSideBar, {

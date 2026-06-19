@@ -116,19 +116,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useListNavigation } from '@composables/useListNavigation'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
-import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useSearchState } from '@composables/useSearchState'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import BaseSearchInput from './BaseSearchInput.vue'
 import '../styles/BaseSearch.style.scss'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
-import type { BaseSearchEmits, BaseSearchProps, SearchResult } from '../model/BaseSearch.types'
+import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../model/BaseSearch.types'
 
 const props = withDefaults(defineProps<BaseSearchProps>(), {
 	modelValue: '',
@@ -138,7 +135,7 @@ const props = withDefaults(defineProps<BaseSearchProps>(), {
 	mode: 'default',
 	results: () => [],
 	isInstant: true,
-	debounceMs: UI_TIMING.DEBOUNCE_DEFAULT,
+	debounceMs: 300,
 	isLoading: false,
 	hasClear: true,
 	hasIcon: true,
@@ -149,13 +146,12 @@ const props = withDefaults(defineProps<BaseSearchProps>(), {
 })
 
 const emit = defineEmits<BaseSearchEmits>()
+defineSlots<BaseSearchSlots>()
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { variantClass, variantStyle } = useVariant({ block: 'base-search', getVariant: () => props.variant })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: [
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
+	'base-search',
+	props,
+	[
 		'root',
 		'trigger',
 		'icon',
@@ -188,165 +184,50 @@ const { classes } = useCustomClass({
 		'dropdown',
 		'input',
 	],
-})
+)
 
 const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 const overlayRef = ref<InstanceType<typeof BaseSearchOverlay> | null>(null)
 const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_TEXT.SEARCH_PLACEHOLDER)
-const query = ref(props.modelValue)
-const isFocused = ref(false)
-const isSearchTriggered = ref(false)
 
-/** Видимые результаты (фильтрация по запросу) */
-const visibleResults = computed((): SearchResult[] => {
-	if (!query.value) return []
-	const lowerQuery = query.value.toLowerCase()
-	return props.results
-		.filter(item => {
-			const matchTitle = item.title.toLowerCase().includes(lowerQuery)
-			const matchDesc = item.description?.toLowerCase().includes(lowerQuery) ?? false
-			return matchTitle || matchDesc
-		})
-		.slice(0, props.maxResults)
-})
-
-/** Показывать ли результаты (учитывает isInstant) */
-const shouldShowResults = computed((): boolean => {
-	if (props.isInstant) return true
-	return isSearchTriggered.value
-})
-
-/** Открыт ли выпадающий список (default mode) */
-const isOpen = computed({
-	get: (): boolean => {
-		if (!isFocused.value || query.value.length === 0) return false
-		return shouldShowResults.value
-	},
-	set: () => {
-		isFocused.value = false
-		resetHighlight()
-	},
-})
-
-/** Таймер дебаунса поиска */
-let searchTimeout: ReturnType<typeof setTimeout> | null = null
-
-/** Отменить отложенный поиск */
-function cancelPendingSearch(): void {
-	if (searchTimeout) {
-		clearTimeout(searchTimeout)
-		searchTimeout = null
-	}
-}
-
-/** Дебаунс поиска (реактивный delay) */
-function debouncedSearch(value: string): void {
-	cancelPendingSearch()
-	searchTimeout = setTimeout(() => {
-		if (value) emit('search', value)
-	}, props.debounceMs)
-}
-
-/** Навигация по результатам клавишами */
-const {
-	highlightedIndex,
-	handleKeydown: handleListKeydown,
-	reset: resetHighlight,
-} = useListNavigation({
-	itemCount: () => visibleResults.value.length,
-	onSelect: index => handleSelect(visibleResults.value[index]),
-	onEscape: () => {
-		if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.close()
-	},
-})
-
-/** Обработка закрытия dropdown */
-function handleClose(): void {
-	isFocused.value = false
-	resetHighlight()
-}
-
-/** Обработка ввода */
-function handleInput(value: string): void {
-	query.value = value
-	emit('update:modelValue', value)
-	isSearchTriggered.value = false
-	if (props.isInstant) {
-		debouncedSearch(value)
-	}
-}
-
-/** Обработка фокуса */
-function handleFocus(): void {
-	isFocused.value = true
-}
-
-/** Обработка потери фокуса */
-function handleBlur(): void {
-	isFocused.value = false
-	resetHighlight()
-}
-
-/** Обработка клавиш */
-function handleKeydown(e: KeyboardEvent): void {
-	if (e.key === 'Enter' && highlightedIndex.value < 0 && query.value) {
-		e.preventDefault()
-		cancelPendingSearch()
-		isSearchTriggered.value = true
-		emit('search', query.value)
-		return
-	}
-	handleListKeydown(e)
-}
-
-/** Очистить поле */
-function handleClear(): void {
-	cancelPendingSearch()
-	query.value = ''
-	emit('update:modelValue', '')
-	emit('clear')
-	focusActiveInput()
-}
-
-/** Выбрать результат */
-function handleSelect(item: SearchResult): void {
-	cancelPendingSearch()
-	query.value = item.title
-	emit('select', item)
-	emit('update:modelValue', item.title)
-	isFocused.value = false
-	if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.close()
-}
-
-/** Обработка закрытия overlay (modal/sidebar) */
-function handleOverlayClose(): void {
-	resetHighlight()
-}
-
-/** Фокус на активный инпут */
 function focusActiveInput(): void {
 	if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.focus()
 	else baseInputRef.value?.focus()
 }
 
-/** Автофокус при монтировании (только default mode) */
-onMounted(() => {
-	if (props.isAutofocus && props.mode === 'default') {
-		nextTick(() => {
-			baseInputRef.value?.focus()
-		})
-	}
-})
+function closeOverlay(): void {
+	overlayRef.value?.close()
+}
 
-/** Очистка таймера при размонтировании */
-onBeforeUnmount(() => {
-	cancelPendingSearch()
-})
-
-watch(
-	() => props.modelValue,
-	newValue => {
-		if (newValue !== query.value) query.value = newValue
+const {
+	query,
+	isOpen,
+	visibleResults,
+	shouldShowResults,
+	highlightedIndex,
+	handleInput,
+	handleKeydown,
+	handleClear,
+	handleSelect,
+	handleFocus,
+	handleBlur,
+	handleClose,
+	handleOverlayClose,
+} = useSearchState({
+	modelValue: () => props.modelValue,
+	mode: () => props.mode,
+	results: () => props.results,
+	isInstant: () => props.isInstant,
+	debounceMs: () => props.debounceMs,
+	maxResults: () => props.maxResults,
+	isAutofocus: () => props.isAutofocus,
+	emit: {
+		search: value => emit('search', value),
+		select: item => emit('select', item),
+		updateModelValue: value => emit('update:modelValue', value),
+		clear: () => emit('clear'),
 	},
-)
+	focusActiveInput,
+	closeOverlay,
+})
 </script>

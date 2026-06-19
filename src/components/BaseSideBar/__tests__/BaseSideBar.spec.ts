@@ -15,7 +15,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect(container.querySelector('aside.base-sidebar')).toBeInTheDocument()
+    expect(container.querySelector('aside.base-side-bar')).toBeInTheDocument()
     expect(screen.getByRole('complementary')).toBeInTheDocument()
   })
 
@@ -107,7 +107,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect(container.querySelector('.base-sidebar')).toHaveClass('base-sidebar--collapsed')
+    expect(container.querySelector('.base-side-bar')).toHaveClass('base-side-bar--collapsed')
   })
 
   it('добавляет variant class', () => {
@@ -121,7 +121,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect(container.querySelector('.base-sidebar')).toHaveClass('base-sidebar--soft')
+    expect(container.querySelector('.base-side-bar')).toHaveClass('base-side-bar--soft')
   })
 
   it('устанавливает дефолтную CSS-переменную width', () => {
@@ -134,7 +134,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect((container.querySelector('.base-sidebar') as HTMLElement).style.getPropertyValue('--sidebar-width')).toBe(
+    expect((container.querySelector('.base-side-bar') as HTMLElement).style.getPropertyValue('--sidebar-width')).toBe(
       '280px',
     )
   })
@@ -150,7 +150,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect((container.querySelector('.base-sidebar') as HTMLElement).style.getPropertyValue('--sidebar-width')).toBe(
+    expect((container.querySelector('.base-side-bar') as HTMLElement).style.getPropertyValue('--sidebar-width')).toBe(
       '320px',
     )
   })
@@ -166,7 +166,7 @@ describe('BaseSideBar unit', () => {
     })
 
     expect(
-      (container.querySelector('.base-sidebar') as HTMLElement).style.getPropertyValue('--sidebar-collapsed-width'),
+      (container.querySelector('.base-side-bar') as HTMLElement).style.getPropertyValue('--sidebar-collapsed-width'),
     ).toBe('68px')
   })
 
@@ -182,7 +182,7 @@ describe('BaseSideBar unit', () => {
     })
 
     expect(
-      (container.querySelector('.base-sidebar') as HTMLElement).style.getPropertyValue('--sidebar-collapsed-width'),
+      (container.querySelector('.base-side-bar') as HTMLElement).style.getPropertyValue('--sidebar-collapsed-width'),
     ).toBe('80px')
   })
 
@@ -196,7 +196,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect((container.querySelector('.base-sidebar') as HTMLElement).style.getPropertyValue('--sidebar-gap')).toBe(
+    expect((container.querySelector('.base-side-bar') as HTMLElement).style.getPropertyValue('--sidebar-gap')).toBe(
       '4px',
     )
   })
@@ -212,7 +212,7 @@ describe('BaseSideBar unit', () => {
       },
     })
 
-    expect((container.querySelector('.base-sidebar') as HTMLElement).style.getPropertyValue('--sidebar-gap')).toBe(
+    expect((container.querySelector('.base-side-bar') as HTMLElement).style.getPropertyValue('--sidebar-gap')).toBe(
       '12px',
     )
   })

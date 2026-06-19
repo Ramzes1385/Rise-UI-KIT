@@ -1,5 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Семантические HTML-теги */
 export const TEXT_TAGS = [
@@ -21,21 +20,27 @@ export const TEXT_TAGS = [
 /**
  * Пропсы компонента BaseText
  */
-export interface BaseTextProps {
+export interface BaseTextProps extends BaseComponentProps {
 	/** Семантический HTML-тег */
 	tag?: (typeof TEXT_TAGS)[number]
 	/** Начертание (100–900) */
 	weight?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Текст с переносом или без */
 	nowrap?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
 	/** Обрезка текста с многоточием */
 	truncate?: boolean
 	/** Количество строк перед обрезкой (только с truncate) */
 	maxLines?: number
-	/** Кастомные классы (строка или объект) */
-	customClass?: CustomClassProp
+}
+
+/**
+ * События компонента BaseText
+ */
+export type BaseTextEmits = Record<string, never>
+
+/**
+ * Слоты компонента BaseText
+ */
+export interface BaseTextSlots {
+	default?: () => unknown
 }

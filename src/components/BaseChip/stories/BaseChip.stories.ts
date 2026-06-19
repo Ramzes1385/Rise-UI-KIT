@@ -4,6 +4,7 @@
  */
 
 import { expect, fn, userEvent, within } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { CHIP_VARIANTS } from '../model/BaseChip.types'
 import BaseChip from '../ui/BaseChip.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
@@ -12,33 +13,35 @@ const meta: Meta<typeof BaseChip> = {
 	title: 'UI/BaseChip',
 	component: BaseChip,
 
-	argTypes: {
-		content: { control: 'text' },
-		placement: {
-			control: 'inline-radio',
-			options: ['top-right', 'top-left', 'bottom-right', 'bottom-left'],
+	argTypes: buildArgTypes({
+		props: {
+			content: { control: 'text' },
+			placement: {
+				control: 'inline-radio',
+				options: ['top-right', 'top-left', 'bottom-right', 'bottom-left'],
+			},
+			variant: {
+				control: 'radio',
+				options: CHIP_VARIANTS,
+			},
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			isHiddenOnZero: { control: 'boolean' },
+			hasOverflow: { control: 'boolean' },
+			maxValue: { control: 'number' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
+			'onClick-badge': { table: { disable: true } },
+			default: {
+				control: 'text',
+				description: 'Контент (слот)',
+			},
 		},
-		variant: {
-			control: 'radio',
-			options: CHIP_VARIANTS,
-		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		isHiddenOnZero: { control: 'boolean' },
-		hasOverflow: { control: 'boolean' },
-		maxValue: { control: 'number' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		'onClick-badge': { table: { disable: true } },
-		default: {
-			control: 'text',
-			description: 'Контент (слот)',
-		},
-	},
+	}),
 
 	args: {
 		content: 5,

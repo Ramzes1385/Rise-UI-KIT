@@ -1,12 +1,14 @@
-import { expect, fn, userEvent, waitFor } from 'storybook/test'
-import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
-import { MENU_VARIANTS } from '../model/BaseMenu.types'
-import BaseMenu from '../ui/BaseMenu.vue'
-import type { BaseMenuItem } from '../model/BaseMenu.types'
 /**
  * Stories для компонента BaseMenu.
  * Демонстрирует все возможности и интерактивные состояния.
  */
+
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { buildArgTypes } from '@utils/storybookUtils'
+import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
+import { MENU_VARIANTS } from '../model/BaseMenu.types'
+import BaseMenu from '../ui/BaseMenu.vue'
+import type { BaseMenuItem } from '../model/BaseMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 const ITEMS: BaseMenuItem[][] = [
@@ -52,21 +54,23 @@ const meta: Meta<typeof BaseMenu> = {
 	title: 'UI/BaseMenu',
 	component: BaseMenu,
 
-	argTypes: {
-		variant: {
-			control: 'select',
-			options: MENU_VARIANTS,
+	argTypes: buildArgTypes({
+		props: {
+			variant: {
+				control: 'select',
+				options: MENU_VARIANTS,
+			},
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
+			items: { table: { disable: true } },
 		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-		items: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		items: ITEMS,

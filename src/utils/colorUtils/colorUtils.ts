@@ -1,3 +1,5 @@
+/** Утилиты: преобразование цветов между форматами HEX, RGB, HSV */
+
 import type { HsvColor, RgbColor } from './colorUtils.types'
 
 const HEX_SHORT_LENGTH = 3

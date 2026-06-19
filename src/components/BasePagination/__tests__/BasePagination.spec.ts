@@ -145,7 +145,7 @@ describe('BasePagination unit', () => {
 			expect(container.querySelector('.base-pagination > button:last-child')).toHaveClass('custom-next')
 			expect(container.querySelector('.base-pagination__pages')).toHaveClass('custom-pages')
 			expect(container.querySelector('.base-pagination__pages button')).toHaveClass('custom-button')
-			expect(container.querySelector('.base-notification-container, .base-pagination__ellipsis')).toHaveClass(
+			expect(container.querySelector('.base-notification, .base-pagination__ellipsis')).toHaveClass(
 				'custom-ellipsis',
 			)
 		})

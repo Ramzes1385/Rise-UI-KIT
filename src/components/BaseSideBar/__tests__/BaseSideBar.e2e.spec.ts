@@ -6,52 +6,52 @@ const STORY_PATH = '/iframe.html?id=ui-basesidebar'
 async function openStory(page: Page, storyId: string): Promise<void> {
 	await page.goto(`${STORY_PATH}--${storyId}`)
 	await page.setViewportSize({ width: 900, height: 640 })
-	await page.waitForSelector('.base-sidebar', { timeout: 25000 })
+	await page.waitForSelector('.base-side-bar', { timeout: 25000 })
 }
 
 test.describe('BaseSideBar e2e', () => {
 	test('сайдбар: сворачивает и разворачивает по клику на кнопку', async ({ page }) => {
 		await openStory(page, 'default')
 
-		const sidebar = page.locator('.base-sidebar')
-		const toggle = sidebar.locator('.base-sidebar__toggle')
+		const sidebar = page.locator('.base-side-bar')
+		const toggle = sidebar.locator('.base-side-bar__toggle')
 
-		await expect(sidebar).not.toHaveClass(/base-sidebar--collapsed/)
-
-		await toggle.click()
-
-		await expect(sidebar).toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
 
 		await toggle.click()
 
-		await expect(sidebar).not.toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebar).toHaveClass(/base-side-bar--collapsed/)
+
+		await toggle.click()
+
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
 	})
 
 	test('сайдбар: controlled v-model управляет состоянием через внешнюю кнопку', async ({ page }) => {
 		await openStory(page, 'controlled-v-model')
 
-		const sidebar = page.locator('.base-sidebar')
+		const sidebar = page.locator('.base-side-bar')
 		const externalToggle = page.getByRole('button', { name: 'Toggle outside' })
 
-		await expect(sidebar).not.toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
 		await expect(page.getByText('isCollapsed: false')).toBeVisible()
 
 		await externalToggle.click()
 
-		await expect(sidebar).toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebar).toHaveClass(/base-side-bar--collapsed/)
 		await expect(page.getByText('isCollapsed: true')).toBeVisible()
 
 		await externalToggle.click()
 
-		await expect(sidebar).not.toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
 		await expect(page.getByText('isCollapsed: false')).toBeVisible()
 	})
 
 	test('сайдбар: несворачиваемый сайдбар не имеет кнопки', async ({ page }) => {
 		await openStory(page, 'not-collapsible')
 
-		const sidebar = page.locator('.base-sidebar')
-		const toggle = sidebar.locator('.base-sidebar__toggle')
+		const sidebar = page.locator('.base-side-bar')
+		const toggle = sidebar.locator('.base-side-bar__toggle')
 
 		await expect(sidebar).toBeVisible()
 		await expect(toggle).toHaveCount(0)
@@ -60,7 +60,7 @@ test.describe('BaseSideBar e2e', () => {
 	test('сайдбар: items API рендерит пункты, children и badge', async ({ page }) => {
 		await openStory(page, 'with-items-api')
 
-		const sidebar = page.locator('.base-sidebar')
+		const sidebar = page.locator('.base-side-bar')
 
 		await expect(sidebar).toBeVisible()
 		await expect(sidebar.getByText('Главная')).toBeVisible()
@@ -75,13 +75,13 @@ test.describe('BaseSideBar e2e', () => {
 
 		const catalogLink = page
 			.getByText('Каталог')
-			.locator('xpath=ancestor::*[contains(@class, "base-sidebar-nav__link")]')
+			.locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
 		const productsLink = page
 			.getByText('Товары')
-			.locator('xpath=ancestor::*[contains(@class, "base-sidebar-nav__link")]')
+			.locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
 
-		await expect(catalogLink).toHaveClass(/base-sidebar-nav__link--parent-active/)
-		await expect(productsLink).toHaveClass(/base-sidebar-nav__link--current/)
+		await expect(catalogLink).toHaveClass(/base-side-bar-nav__link--parent-active/)
+		await expect(productsLink).toHaveClass(/base-side-bar-nav__link--current/)
 	})
 
 	test('сайдбар: disabled item недоступен', async ({ page }) => {
@@ -95,14 +95,14 @@ test.describe('BaseSideBar e2e', () => {
 	test('сайдбар: collapsed mode показывает иконки, скрывает labels и сохраняет footer', async ({ page }) => {
 		await openStory(page, 'collapsed-items')
 
-		const sidebar = page.locator('.base-sidebar')
+		const sidebar = page.locator('.base-side-bar')
 
-		await expect(sidebar).toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebar).toHaveClass(/base-side-bar--collapsed/)
 		await expect(sidebar.getByText('Главная')).toHaveCount(0)
 		await expect(sidebar.getByText('Товары')).toHaveCount(0)
 		await expect(sidebar.getByText('Категории')).toHaveCount(0)
-		await expect(sidebar.locator('.base-sidebar-nav__icon').first()).toBeVisible()
-		await expect(sidebar.locator('.base-sidebar__footer')).toBeVisible()
+		await expect(sidebar.locator('.base-side-bar-nav__icon').first()).toBeVisible()
+		await expect(sidebar.locator('.base-side-bar__footer')).toBeVisible()
 		await expect(sidebar.locator('.sidebar-story-profile__avatar')).toBeVisible()
 		await expect(sidebar.getByText('Roman Admin')).toHaveCount(1)
 	})
@@ -110,7 +110,7 @@ test.describe('BaseSideBar e2e', () => {
 	test('сайдбар: collapsed mode показывает tooltip при hover на item', async ({ page }) => {
 		await openStory(page, 'collapsed-items')
 
-		const firstItem = page.locator('.base-sidebar-nav__link').first()
+		const firstItem = page.locator('.base-side-bar-nav__link').first()
 
 		await firstItem.hover()
 
@@ -120,36 +120,36 @@ test.describe('BaseSideBar e2e', () => {
 	test('сайдбар: loading state показывает skeleton и скрывает навигацию', async ({ page }) => {
 		await openStory(page, 'loading')
 
-		const sidebar = page.locator('.base-sidebar')
+		const sidebar = page.locator('.base-side-bar')
 
-		await expect(sidebar.locator('.base-sidebar__loading')).toBeVisible()
-		await expect(sidebar.locator('.base-sidebar__navigation')).toHaveCount(0)
+		await expect(sidebar.locator('.base-side-bar__loading')).toBeVisible()
+		await expect(sidebar.locator('.base-side-bar__navigation')).toHaveCount(0)
 	})
 
 	test('сайдбар: dark theme применяет dark canvas и компонент остаётся видимым', async ({ page }) => {
 		await openStory(page, 'dark-theme')
 
 		await expect(page.locator('.sidebar-story-canvas--dark')).toBeVisible()
-		await expect(page.locator('.base-sidebar')).toBeVisible()
+		await expect(page.locator('.base-side-bar')).toBeVisible()
 	})
 
 	test('сайдбар: variant stories рендерят все варианты', async ({ page }) => {
 		await openStory(page, 'variants')
 
-		await expect(page.locator('.base-sidebar')).toHaveCount(5)
+		await expect(page.locator('.base-side-bar')).toHaveCount(5)
 
 		for (const variant of ['ghost', 'outline', 'shadow', 'soft']) {
-			await expect(page.locator(`.base-sidebar--${variant}`).first()).toBeVisible()
+			await expect(page.locator(`.base-side-bar--${variant}`).first()).toBeVisible()
 		}
 	})
 
 	test('сайдбар: collapsed variants рендерят свёрнутые варианты', async ({ page }) => {
 		await openStory(page, 'collapsed-variants')
 
-		const sidebars = page.locator('.base-sidebar')
+		const sidebars = page.locator('.base-side-bar')
 
 		await expect(sidebars.first()).toBeVisible()
-		await expect(sidebars.first()).toHaveClass(/base-sidebar--collapsed/)
+		await expect(sidebars.first()).toHaveClass(/base-side-bar--collapsed/)
 	})
 
 	test('сайдбар: custom item slot работает', async ({ page }) => {
@@ -169,7 +169,7 @@ test.describe('BaseSideBar e2e', () => {
 		await openStory(page, 'full-height-layout')
 
 		const wrapper = page.locator('.sidebar-story-full-height')
-		const sidebar = page.locator('.base-sidebar')
+		const sidebar = page.locator('.base-side-bar')
 
 		const wrapperBox = await wrapper.boundingBox()
 		const sidebarBox = await sidebar.boundingBox()

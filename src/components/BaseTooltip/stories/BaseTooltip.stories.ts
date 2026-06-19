@@ -6,6 +6,7 @@
 
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'
 import { TOOLTIP_VARIANTS } from '../model/BaseTooltip.types'
 import BaseTooltip from '../ui/BaseTooltip.vue'
@@ -15,26 +16,28 @@ const meta: Meta<typeof BaseTooltip> = {
 	title: 'UI/BaseTooltip',
 	component: BaseTooltip,
 
-	argTypes: {
-		text: { control: 'text' },
-		position: {
-			control: 'inline-radio',
-			options: ['top', 'bottom', 'left', 'right'],
+	argTypes: buildArgTypes({
+		props: {
+			text: { control: 'text' },
+			position: {
+				control: 'inline-radio',
+				options: ['top', 'bottom', 'left', 'right'],
+			},
+			variant: {
+				control: 'inline-radio',
+				options: TOOLTIP_VARIANTS,
+			},
+			color: {
+				control: 'object',
+				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+			},
+			isAlwaysVisible: { control: 'boolean' },
+			sizeScale: {
+				control: { type: 'range', min: 50, max: 200, step: 10 },
+				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+			},
 		},
-		variant: {
-			control: 'inline-radio',
-			options: TOOLTIP_VARIANTS,
-		},
-		color: {
-			control: 'object',
-			description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-		},
-		isAlwaysVisible: { control: 'boolean' },
-		sizeScale: {
-			control: { type: 'range', min: 50, max: 200, step: 10 },
-			description: 'Масштаб размера (50–200%, по умолчанию 100)',
-		},
-	},
+	}),
 
 	args: {
 		text: 'Подсказка',

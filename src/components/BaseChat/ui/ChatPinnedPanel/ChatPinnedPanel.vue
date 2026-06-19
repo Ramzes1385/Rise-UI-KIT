@@ -4,10 +4,10 @@
 			<BaseIcon name="pin" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<div class="base-chat-pinned-panel__text-wrapper">
 				<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-pinned-panel__title">
-					{{ UI_CHAT_PINNED_MESSAGE }}
-					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_PINNED_COUNTER} ${pinnedMessages.length})` : '' }}
+					{{ UI_CHAT_TEXT.PINNED_MESSAGE }}
+					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_TEXT.PINNED_COUNTER} ${pinnedMessages.length})` : '' }}
 				</BaseText>
-				<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE_ICON" class="base-chat-pinned-panel__preview">
+				<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" class="base-chat-pinned-panel__preview">
 					{{ currentMessageText }}
 				</BaseText>
 			</div>
@@ -18,23 +18,23 @@
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+					:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 					class="base-chat-pinned-panel__nav-btn"
-					:aria-label="UI_CHAT_PREV_PINNED_ARIA"
+					:aria-label="UI_CHAT_TEXT.PREV_PINNED_ARIA"
 					@click="handlePrev">
 					<template #left>
-						<BaseIcon name="chevron-up" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
+						<BaseIcon name="chevron-up" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
 					</template>
 				</BaseButton>
 				<BaseButton
 					variant="ghost"
 					:padding="1"
-					:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+					:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 					class="base-chat-pinned-panel__nav-btn"
-					:aria-label="UI_CHAT_NEXT_PINNED_ARIA"
+					:aria-label="UI_CHAT_TEXT.NEXT_PINNED_ARIA"
 					@click="handleNext">
 					<template #left>
-						<BaseIcon name="chevron-down" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
+						<BaseIcon name="chevron-down" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
 					</template>
 				</BaseButton>
 			</template>
@@ -43,12 +43,12 @@
 				v-if="currentUserRole === 'admin'"
 				variant="ghost"
 				:padding="1"
-				:size-scale="sizeScale * UI_CHAT_SCALE_ICON"
+				:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
 				class="base-chat-pinned-panel__unpin-btn"
-				:aria-label="UI_CHAT_UNPIN_ARIA"
+				:aria-label="UI_CHAT_TEXT.UNPIN_ARIA"
 				@click="handleUnpin">
 				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE_META" />
+					<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
 				</template>
 			</BaseButton>
 		</div>
@@ -61,15 +61,8 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import {
-	UI_CHAT_FILE,
-	UI_CHAT_NEXT_PINNED_ARIA,
-	UI_CHAT_PHOTO,
-	UI_CHAT_PINNED_COUNTER,
-	UI_CHAT_PINNED_MESSAGE,
-	UI_CHAT_PREV_PINNED_ARIA,
-	UI_CHAT_SCALE_ICON,
-	UI_CHAT_SCALE_META,
-	UI_CHAT_UNPIN_ARIA,
+	UI_CHAT_SCALE,
+	UI_CHAT_TEXT,
 	UI_FONT_WEIGHT,
 	UI_SCALE,
 	SIZE_SCALE_DEFAULT,
@@ -96,7 +89,7 @@ const currentMessageText = computed((): string => {
 	const text = currentMessage.value.text || ''
 	if (currentMessage.value.attachments && currentMessage.value.attachments.length > 0) {
 		const hasImage = currentMessage.value.attachments.some(attachment => attachment.type === 'image')
-		const prefix = hasImage ? `🖼️ ${UI_CHAT_PHOTO}` : `📎 ${UI_CHAT_FILE}`
+		const prefix = hasImage ? `🖼️ ${UI_CHAT_TEXT.PHOTO}` : `📎 ${UI_CHAT_TEXT.FILE}`
 		return text ? `${prefix}: ${text}` : prefix
 	}
 	return text

@@ -1,4 +1,4 @@
-import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseComponentProps } from '@/types/base.types'
 
 /** Формы прогресс-бара */
 export const PROGRESS_SHAPES = ['line', 'circle'] as const
@@ -19,15 +19,11 @@ export type ProgressAnimation = (typeof PROGRESS_ANIMATIONS)[number]
 /**
  * Пропсы компонента BaseProgress
  */
-import type { CustomClassProp } from '@composables/useCustomClass'
-
-export interface BaseProgressProps {
+export interface BaseProgressProps extends BaseComponentProps {
 	/** Значение (0–100) */
 	value: number
 	/** Максимальное значение */
 	max?: number
-	/** Кастомный цвет компонента */
-	color?: CustomColor
 	/** Форма */
 	shape?: ProgressShape
 	/** Анимация */
@@ -36,10 +32,6 @@ export interface BaseProgressProps {
 	hasLabel?: boolean
 	/** Неопределённый прогресс */
 	isIndeterminate?: boolean
-	/** Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%) */
-	sizeScale?: number
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

@@ -27,3 +27,10 @@ export interface BasePinEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'complete', value: string): void
 }
+
+/**
+ * Слоты компонента BasePin
+ */
+export interface BasePinSlots {
+	default?: () => unknown
+}

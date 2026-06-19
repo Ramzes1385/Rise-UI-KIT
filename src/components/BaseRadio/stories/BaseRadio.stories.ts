@@ -247,7 +247,7 @@ export const HoverState: Story = {
 		},
 		template: `
 			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseRadio v-model="value" :options="options" name="hover-radio" class="base-radio--hover" />
+				<BaseRadio v-model="value" :options="options" name="hover-radio" class="base-radio-item--hover" />
 			</div>
 		`,
 	}),
@@ -263,7 +263,7 @@ export const FocusState: Story = {
 		},
 		template: `
 			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseRadio v-model="value" :options="options" name="focus-radio" class="base-radio--focus" />
+				<BaseRadio v-model="value" :options="options" name="focus-radio" class="base-radio-item--focus" />
 			</div>
 		`,
 	}),
@@ -285,11 +285,11 @@ export const InteractiveStates: Story = {
 				</div>
 				<div>
 					<span style="font-size:12px;color:var(--color-text-muted);">Hover</span>
-					<BaseRadio v-model="value" :options="options" name="hover" class="base-radio--hover" />
+					<BaseRadio v-model="value" :options="options" name="hover" class="base-radio-item--hover" />
 				</div>
 				<div>
 					<span style="font-size:12px;color:var(--color-text-muted);">Focus</span>
-					<BaseRadio v-model="value" :options="options" name="focus" class="base-radio--focus" />
+					<BaseRadio v-model="value" :options="options" name="focus" class="base-radio-item--focus" />
 				</div>
 				<div>
 					<span style="font-size:12px;color:var(--color-text-muted);">Error</span>
@@ -363,7 +363,7 @@ export const Required: Story = {
 	}),
 	play: async ({ canvasElement }) => {
 		expect(canvasElement).toBeInTheDocument()
-		const required = canvasElement.querySelector('.base-radio-group__required')
+		const required = canvasElement.querySelector('.base-radio__required')
 		expect(required).toBeInTheDocument()
 	},
 }

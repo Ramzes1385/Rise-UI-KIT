@@ -1,4 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
 
 /**
@@ -9,9 +9,7 @@ export type SlideoverSide = 'left' | 'right'
 /**
  * Пропсы компонента BaseSlideover
  */
-export interface BaseSlideoverProps {
-	/** Кастомные классы */
-	customClass?: CustomClassProp
+export interface BaseSlideoverProps extends BaseComponentProps {
 	/** Состояние открытия */
 	isOpen: boolean
 	/** Заголовок */
@@ -51,4 +49,15 @@ export interface BaseSlideoverProps {
 export interface BaseSlideoverEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
+}
+
+/**
+ * Слоты компонента BaseSlideover
+ */
+export interface BaseSlideoverSlots {
+	default?: () => unknown
+	/** Заголовок панели */
+	header?: () => unknown
+	/** Подвал панели */
+	footer?: () => unknown
 }

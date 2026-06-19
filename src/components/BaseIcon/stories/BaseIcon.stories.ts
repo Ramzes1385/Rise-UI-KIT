@@ -3,6 +3,7 @@
  * Демонстрирует масштабирование, трансформации, цвета и использование с иконками из спрайта.
  */
 
+import { buildArgTypes } from '@utils/storybookUtils'
 import BaseIcon from '../ui/BaseIcon.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
@@ -38,25 +39,18 @@ const meta: Meta<typeof BaseIcon> = {
 	title: 'UI/BaseIcon',
 	component: BaseIcon,
 
-	argTypes: {
-		name: {
-			control: 'select',
-			options: ICON_NAMES,
+	argTypes: buildArgTypes({
+		props: {
+			name: { control: 'select', options: ICON_NAMES },
+			color: { control: 'text', description: 'CSS-значение цвета или переменная' },
+			rotate: { control: { type: 'range', min: 0, max: 360, step: 15 } },
+			isFlipX: { control: 'boolean' },
+			isFlipY: { control: 'boolean' },
+			ariaLabel: { control: 'text' },
+			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
+			customClass: { control: 'object' },
 		},
-		color: {
-			control: 'text',
-			description: 'CSS-значение цвета или переменная',
-		},
-		rotate: { control: { type: 'range', min: 0, max: 360, step: 15 } },
-		isFlipX: { control: 'boolean' },
-		isFlipY: { control: 'boolean' },
-		ariaLabel: { control: 'text' },
-		sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
-		class: { table: { disable: true } },
-		style: { table: { disable: true } },
-		key: { table: { disable: true } },
-		ref: { table: { disable: true } },
-	},
+	}),
 
 	args: {
 		name: 'close',

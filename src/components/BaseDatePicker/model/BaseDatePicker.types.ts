@@ -1,14 +1,13 @@
 import type { BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
+import type { BaseComponentProps } from '@/types/base.types'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { InputVariant } from '@components/BaseInput'
-import type { CustomClassProp } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
 import type { DateFormat } from '@utils/dateUtils'
 
 /**
  * Пропсы компонента BaseDatePicker
  */
-export interface BaseDatePickerProps extends BaseDatePickerCalendarProps {
+export interface BaseDatePickerProps extends BaseComponentProps, BaseDatePickerCalendarProps {
 	/** Выбранная дата */
 	modelValue?: Date | null
 	/** Конец диапазона (для range) */
@@ -27,10 +26,6 @@ export interface BaseDatePickerProps extends BaseDatePickerCalendarProps {
 	calendarVariant?: CalendarVariant
 	/** Общая конфигурация календаря */
 	calendarConfig?: BaseDatePickerCalendarProps
-	/** Кастомный цвет */
-	color?: CustomColor
-	/** Масштаб размера */
-	sizeScale?: number
 	/** Отключён */
 	isDisabled?: boolean
 	/** Только для чтения */
@@ -51,8 +46,6 @@ export interface BaseDatePickerProps extends BaseDatePickerCalendarProps {
 	gap?: number
 	/** Автоматически подстраивать количество месяцев под ширину поля */
 	isMultiMonth?: boolean
-	/** Кастомные классы */
-	customClass?: CustomClassProp
 }
 
 /**

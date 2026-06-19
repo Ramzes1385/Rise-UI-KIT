@@ -3,7 +3,7 @@
  * Проверяют calcIconScale и ICON_SCALE.
  */
 
-import { calcIconScale, ICON_SCALE } from '../model/BaseIcon.utils'
+import { calcIconScale, ICON_SCALE } from '@utils/iconUtils'
 
 describe('ICON_SCALE', () => {
 	it('должен содержать типовые размеры', () => {

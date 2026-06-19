@@ -123,7 +123,7 @@ import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
-import type { BaseMegaMenuEmits, BaseMegaMenuProps, MegaMenuItem } from '../model/BaseMegaMenu.types'
+import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../model/BaseMegaMenu.types'
 
 const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
 	trigger: 'click',
@@ -135,6 +135,7 @@ const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'])
 
 const emit = defineEmits<BaseMegaMenuEmits>()
+defineSlots<BaseMegaMenuSlots>()
 
 /** Реестр раскрытия дерева: гарантирует, что открыт только один узел на уровень */
 useMegaMenuTreeProvider()

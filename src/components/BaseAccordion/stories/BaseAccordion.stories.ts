@@ -4,7 +4,7 @@
  */
 
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
-import BaseBadge from '@components/BaseBadge/ui/BaseBadge.vue'
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseText } from '@components/BaseText'
 import { buildArgTypes } from '@utils/storybookUtils'
 import { playShiftTab } from '@utils/storybookUtils/a11yHelpers'

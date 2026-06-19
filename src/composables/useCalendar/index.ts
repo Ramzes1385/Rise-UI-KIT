@@ -1,3 +1,2 @@
-import { useCalendar } from './useCalendar'
-export * from './useCalendar.types'
-export { useCalendar }
+export { useCalendar } from './useCalendar'
+export type { CalendarSelectionMode, CalendarView, CalendarWeekday, CalendarEvent, CalendarHighlight, CalendarWeekends, UseCalendarOptions } from './useCalendar.types'

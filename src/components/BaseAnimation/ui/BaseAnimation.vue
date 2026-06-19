@@ -31,7 +31,7 @@ import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseAnimation.style.scss'
-import type { BaseAnimationEmits, BaseAnimationProps } from '../model/BaseAnimation.types'
+import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
 
 const props = withDefaults(defineProps<BaseAnimationProps>(), {
 	name: 'fade',
@@ -42,6 +42,7 @@ const props = withDefaults(defineProps<BaseAnimationProps>(), {
 const { wasPropPassed } = useExplicitPropDetection()
 
 const emit = defineEmits<BaseAnimationEmits>()
+defineSlots<BaseAnimationSlots>()
 
 const show = computed(() => (wasPropPassed('show') ? (props.show ?? true) : true))
 
