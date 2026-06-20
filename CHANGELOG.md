@@ -1,3 +1,9 @@
+## [1.2.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.3...v1.2.4) (2026-06-20)
+
+### Bug Fixes
+
+* return UI_TEXT from setup in BaseFormField Required story — template had no access to the constant ([3f5a38b](https://github.com/Ramzes1385/Rise-UI-KIT/commit/3f5a38bd0a4124074b5c6842c6ea17a6aa64d05f))
+
 ## [1.2.3](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.2...v1.2.3) (2026-06-20)
 
 ### Bug Fixes
