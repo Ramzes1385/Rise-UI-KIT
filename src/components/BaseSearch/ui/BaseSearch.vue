@@ -120,7 +120,7 @@
 import { computed, ref } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { useSearchState } from '@composables/useSearchState'
 import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import BaseSearchInput from './BaseSearchInput.vue'
@@ -240,7 +240,7 @@ const {
 	closeOverlay,
 })
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef,
 	focus: focusActiveInput,
 	blur: () => {

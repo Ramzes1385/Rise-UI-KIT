@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения радиокнопки */
 export const RADIO_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'bordered'] as const
@@ -43,4 +43,5 @@ export interface BaseRadioEmits {
  */
 export interface BaseRadioSlots {
 	default?: () => unknown
+	option?: (props: { option: BaseRadioOption; isChecked: boolean }) => unknown
 }

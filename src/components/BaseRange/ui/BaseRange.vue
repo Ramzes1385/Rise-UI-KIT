@@ -87,7 +87,7 @@ import { computed, ref, useSlots } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
 import { UI_FONT_WEIGHT } from '@constants'
@@ -168,7 +168,7 @@ const { handleThumbDown, handleTrackDown, handleThumbKeydown } = useRangeDrag({
 	emitChange,
 })
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef,
 	focus: () => rootRef.value?.querySelector<HTMLElement>('.base-range__thumb')?.focus(),
 	blur: () => rootRef.value?.querySelector<HTMLElement>('.base-range__thumb')?.blur(),

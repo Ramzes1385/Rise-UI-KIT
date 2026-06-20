@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения тултипа */
 export const TOOLTIP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

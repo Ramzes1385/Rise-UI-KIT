@@ -1,4 +1,4 @@
-import type { ChatMessage } from '../../model/BaseChat.types'
+import type { ChatMessage } from '../../../model/BaseChat.types'
 
 export interface ChatMessageContextMenuProps {
 	isOpen: boolean

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения пин-кода */
 export const PIN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

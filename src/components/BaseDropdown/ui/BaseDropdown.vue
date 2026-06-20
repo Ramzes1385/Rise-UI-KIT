@@ -30,7 +30,7 @@ import { usePadding } from '@composables/usePadding'
 import { UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
-import type { BaseDropdownEmits, BaseDropdownExpose, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
+import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
 
 const props = withDefaults(defineProps<BaseDropdownProps>(), {
 	isOpen: false,
@@ -120,5 +120,5 @@ function handlePanelFocusin(): void {
 	}
 }
 
-defineExpose<BaseDropdownExpose>({ updatePosition })
+defineExpose({ updatePosition })
 </script>

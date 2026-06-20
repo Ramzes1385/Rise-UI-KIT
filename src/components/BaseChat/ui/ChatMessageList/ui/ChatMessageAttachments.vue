@@ -87,7 +87,7 @@ import {
 	UI_SCALE,
 } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
-import type { ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatMessageAttachment } from '../../../model/BaseChat.types'
 import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../model/ChatMessageAttachments.types'
 
 const props = defineProps<ChatMessageAttachmentsProps>()

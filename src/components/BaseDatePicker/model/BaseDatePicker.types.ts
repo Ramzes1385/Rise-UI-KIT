@@ -1,5 +1,5 @@
+import type { BaseComponentProps } from '../../../types/base.types'
 import type { BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
-import type { BaseComponentProps } from '@/types/base.types'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { InputVariant } from '@components/BaseInput'
 import type { DateFormat } from '@utils/dateUtils'

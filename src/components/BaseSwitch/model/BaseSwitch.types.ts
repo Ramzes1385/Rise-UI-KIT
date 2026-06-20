@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения переключателя */
 export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const

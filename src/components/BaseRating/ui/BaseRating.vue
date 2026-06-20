@@ -30,7 +30,7 @@
 import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { UI_RATING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseRating.style.scss'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
@@ -121,7 +121,7 @@ function handleKeydown(event: KeyboardEvent): void {
 	}
 }
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef,
 	focus: () => rootRef.value?.focus(),
 	blur: () => rootRef.value?.blur(),

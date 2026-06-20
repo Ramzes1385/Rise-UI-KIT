@@ -75,7 +75,7 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { UI_COLOR_PICKER, UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
@@ -177,7 +177,7 @@ function handleReset(): void {
 	isOpen.value = false
 }
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef: swatchRef,
 	focus: () => swatchRef.value?.focus(),
 	blur: () => swatchRef.value?.blur(),

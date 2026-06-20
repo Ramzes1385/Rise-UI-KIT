@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения модального окна */
 export const MODAL_VARIANTS = ['default', 'ghost', 'shadow'] as const

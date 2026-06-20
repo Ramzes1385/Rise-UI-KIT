@@ -20,7 +20,7 @@ export const ANIMATION_MODES = ['out-in', 'in-out', 'default'] as const
 /** Тип имени анимации */
 export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 export interface BaseAnimationProps extends BaseComponentProps {
 	show?: boolean

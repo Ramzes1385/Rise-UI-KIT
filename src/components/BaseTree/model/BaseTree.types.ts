@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
 
 /** Режим выбора в дереве */

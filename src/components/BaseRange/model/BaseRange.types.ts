@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты range */
 export const RANGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -69,4 +69,5 @@ export interface BaseRangeEmits {
  */
 export interface BaseRangeSlots {
 	default?: () => unknown
+	thumb?: (props: { value: number; index: number }) => unknown
 }

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 export type ChatMessageSender = 'me' | 'other'
 export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read'

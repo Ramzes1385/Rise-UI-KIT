@@ -50,7 +50,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDatePickerState } from '@composables/useDatePickerState'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { useFormField, type FormFieldValidateExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { useSizeScale } from '@composables/useSizeScale'
 import { UI_TEXT, UI_SIZE } from '@constants'
 import '../styles/BaseDatePicker.style.scss'
@@ -130,7 +130,7 @@ const {
 	calendarConfig,
 })
 
-defineExpose<FormFieldValidateExpose>({
+defineExpose({
 	rootRef: wrapperRef,
 	validate: formField.validate,
 	reset: formField.reset,

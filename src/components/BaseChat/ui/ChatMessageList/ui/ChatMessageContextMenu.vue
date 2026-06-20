@@ -62,7 +62,7 @@ import {
 	UI_CHAT_TEXT,
 	UI_SCALE,
 } from '@constants'
-import type { ChatMessageContextMenuEmits, ChatMessageContextMenuExpose, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'
+import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'
 
 withDefaults(defineProps<ChatMessageContextMenuProps>(), {
 	popularEmojis: () => ['👍', '❤️', '🔥', '😂', '😮', '😢'],
@@ -96,7 +96,7 @@ function handleDelete(): void {
 	emit('delete')
 }
 
-defineExpose<ChatMessageContextMenuExpose>({
+defineExpose({
 	menuRef,
 })
 </script>

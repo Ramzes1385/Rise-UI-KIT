@@ -39,7 +39,7 @@
 import { computed, ref } from 'vue'
 import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BasePin.style.scss'
 import { toHTMLInputElement } from '@utils/domUtils'
@@ -142,7 +142,7 @@ function handlePaste(e: ClipboardEvent): void {
 	}
 }
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef,
 	focus: () => rootRef.value?.querySelector('input')?.focus(),
 	blur: () => rootRef.value?.querySelector('input')?.blur(),

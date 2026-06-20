@@ -106,7 +106,7 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
 import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
@@ -181,7 +181,7 @@ function handleFocus(e: FocusEvent): void {
 	emit('focus', e)
 }
 
-defineExpose<FormFieldExpose & { inputRef: HTMLInputElement | null }>({
+defineExpose({
 	rootRef: inputRef,
 	inputRef,
 	/* istanbul ignore next — defensive: optional chaining для public API на unmount */

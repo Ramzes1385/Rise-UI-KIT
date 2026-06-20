@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Типы оповещений */
 export type AlertType = 'info' | 'success' | 'warning' | 'error'

@@ -26,7 +26,7 @@ export type SliderAnimation = 'slide' | 'fade' | 'scale' | 'flip'
  */
 export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /**
  * Пропсы компонента BaseSlider

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import type { UseSideBarNavigationOptions } from './useSideBarNavigation.types'
 import type {
+	BaseSideBarItemSlotProps,
 	SideBarItem,
 	SideBarItemKey,
 	SideBarItemTo,
@@ -55,7 +56,7 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 			return 'button'
 		}
 
-		return props.linkComponent
+		return props.linkComponent ?? 'a'
 	}
 
 	function getItemProps(item: SideBarItem): Record<string, unknown> {
@@ -183,13 +184,13 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 		emit('itemClick', item, event)
 	}
 
-	function getSlotProps(item: SideBarItem) {
+	function getSlotProps(item: SideBarItem): BaseSideBarItemSlotProps {
 		return {
 			item,
-			level: props.level,
+			level: props.level ?? 0,
 			isActive: isItemActive(item),
 			isCurrent: isCurrentItemActive(item),
-			isCollapsed: props.isCollapsed,
+			isCollapsed: props.isCollapsed ?? false,
 			hasChildren: hasChildren(item),
 			onClick: (event: MouseEvent) => handleClick(item, event),
 		}

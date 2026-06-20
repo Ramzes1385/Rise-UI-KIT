@@ -139,7 +139,7 @@ import { BaseProgress } from '@components/BaseProgress'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFileUploadState } from '@composables/useFileUploadState'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
@@ -236,7 +236,7 @@ function handleFileChange(e: Event): void {
 	target.value = ''
 }
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef,
 	focus: () => rootRef.value?.focus(),
 	blur: () => rootRef.value?.blur(),

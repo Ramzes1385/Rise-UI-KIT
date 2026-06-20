@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения поиска */
 export const SEARCH_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
@@ -82,9 +82,9 @@ export interface BaseSearchSlots {
 	/** Полная замена списка результатов */
 	results?: (props: { results: SearchResult[]; query: string; isLoading: boolean }) => unknown
 	/** Контент перед списком результатов */
-	resultBefore?: (props: { results: SearchResult[]; query: string }) => unknown
+	'result-before'?: (props: { results: SearchResult[]; query: string }) => unknown
 	/** Контент после списка результатов */
-	resultAfter?: (props: { results: SearchResult[]; query: string }) => unknown
+	'result-after'?: (props: { results: SearchResult[]; query: string }) => unknown
 	/** Пустой результат */
 	empty?: () => unknown
 	/** Состояние загрузки */

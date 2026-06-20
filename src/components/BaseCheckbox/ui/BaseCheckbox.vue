@@ -52,7 +52,7 @@ import { ref } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { calcIconScale } from '@utils/iconUtils'
@@ -85,7 +85,7 @@ function handleChange(e: Event): void {
 	emit('change', target.checked)
 }
 
-defineExpose<FormFieldExpose>({
+defineExpose({
 	rootRef,
 	focus: () => rootRef.value?.querySelector('input')?.focus(),
 	blur: () => rootRef.value?.querySelector('input')?.blur(),

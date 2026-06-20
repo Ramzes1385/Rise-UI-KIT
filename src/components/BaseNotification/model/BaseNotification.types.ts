@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Типы уведомления */
 export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as const

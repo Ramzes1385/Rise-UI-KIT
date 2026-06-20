@@ -138,7 +138,7 @@ import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageReply from './ChatMessageReply.vue'
 import ChatMessageText from './ChatMessageText.vue'
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatMessage, ChatMessageAttachment } from '../../../model/BaseChat.types'
 import type { ChatMessageItemEmits, ChatMessageItemProps } from '../model/ChatMessageItem.types'
 
 const props = withDefaults(defineProps<ChatMessageItemProps>(), {

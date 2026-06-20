@@ -4,8 +4,8 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useVariant } from '@composables/useVariant'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import type { BaseComponentProps } from '../../types/base.types'
 import type { UseBaseComponentOptions } from './useBaseComponent.types'
-import type { BaseComponentProps } from '@/types/base.types'
 
 /**
  * Composable для базовой логики UI-компонента.
@@ -37,7 +37,7 @@ function useBaseComponent(options: UseBaseComponentOptions) {
  * @param props — реактивные пропсы компонента (BaseComponentProps)
  * @param elementKeys — ключи элементов для customClass
  */
-function useStandardBaseComponent<T extends BaseComponentProps>(
+function useStandardBaseComponent<T extends Omit<BaseComponentProps, 'color'> & { color?: unknown }>(
 	block: string,
 	props: T,
 	elementKeys?: string[],
@@ -46,7 +46,7 @@ function useStandardBaseComponent<T extends BaseComponentProps>(
 		block,
 		getVariant: () => props.variant,
 		getSizeScale: () => props.sizeScale ?? SIZE_SCALE_DEFAULT,
-		getColor: () => props.color,
+		getColor: () => props.color as import('@composables/useCustomColor').CustomColor | undefined,
 		getClass: () => props.customClass,
 		elementKeys,
 	})

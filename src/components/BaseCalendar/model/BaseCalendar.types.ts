@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения календаря */
 export const CALENDAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -169,7 +169,7 @@ export interface BaseCalendarSlots {
 	/** Кастомный заголовок */
 	header?: (props: { month: number; year: number }) => unknown
 	/** Кастомный popover для даты */
-	datePopover?: (props: { date: Date; close: () => void; highlights: CalendarHighlight[] }) => unknown
+	'date-popover'?: (props: { date: Date; close: () => void; highlights: CalendarHighlight[] }) => unknown
 	/** Кастомное событие */
 	event?: (props: { event: CalendarEvent }) => unknown
 	/** Кастомная навигация */

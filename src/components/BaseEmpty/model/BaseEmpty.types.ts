@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения пустого состояния */
 export type EmptyVariant = 'default' | 'ghost' | 'soft'

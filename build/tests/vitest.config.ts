@@ -1,5 +1,5 @@
 /**
- * Конфигурация Vitest для unit, integration и Storybook browser-тестов.
+ * Конфигурация Vitest для unit и integration тестов.
  * Alias и SCSS-настройки синхронизированы со структурой UI-библиотеки.
  */
 
@@ -10,8 +10,6 @@ import { fileURLToPath } from 'node:url'
 
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import { playwright } from '@vitest/browser-playwright'
-import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url))
 
@@ -54,41 +52,22 @@ function addGlobalImports(source: string, filename: string): string {
 /** Базовая зона покрытия для общего прогона Vitest. */
 const BASE_COVERAGE_INCLUDE = ['src/utils/**/*.ts', 'src/composables/**/*.ts', 'src/components/**/*.vue']
 
-/** Зона покрытия для storybook play-runner — только UI-компоненты.
- * Composables/utils покрываются в unit-проекте (jsdom), а в storybook их
- * статистика была бы false-zero — браузерный play-runner не вызывает их напрямую. */
-const STORYBOOK_COVERAGE_INCLUDE = ['src/components/**/*.vue']
-
 /** Зона покрытия для components-прогона — UI-компоненты.
  * Точечные include/exclude передаются поверх через CLI (--coverage.include). */
 const COMPONENT_COVERAGE_INCLUDE = ['src/components/**/*.vue']
 
 const COVERAGE_MODE = process.env.COVERAGE_MODE ?? ''
 
-// Storybook addon-vitest определяет режим по process.env.VITEST уже во время
-// построения конфига. В CLI этот env может быть ещё не выставлен, из-за чего
-// storybookTest() возвращает пустой массив плагинов и stories не превращаются в тесты.
-process.env.VITEST ??= 'true'
-
-/** Подавляет шумные логи трансформации storybookTest в консоли тестов. */
-const originalConsoleLog = console.log
-console.log = (...args: unknown[]) => {
-	if (typeof args[0] === 'string' && args[0].includes('[storybookTest transform]')) return
-	originalConsoleLog(...args)
-}
-
 function isCi(): boolean {
 	return process.env.CI === 'true'
 }
 
 function getCoverageDir(): string {
-	if (COVERAGE_MODE === 'storybook') return 'coverage/storybook'
 	if (COVERAGE_MODE === 'components') return 'coverage/components'
 	return 'coverage'
 }
 
 function getCoverageInclude(): string[] {
-	if (COVERAGE_MODE === 'storybook') return STORYBOOK_COVERAGE_INCLUDE
 	if (COVERAGE_MODE === 'components') return COMPONENT_COVERAGE_INCLUDE
 	if (COVERAGE_MODE === 'composables') return ['src/composables/**/*.ts']
 	if (COVERAGE_MODE === 'utils') return ['src/utils/**/*.ts']
@@ -106,10 +85,6 @@ function getCoverageThresholds() {
 }
 
 const coverageThresholds = getCoverageThresholds()
-const storybookPlugins = await storybookTest({
-	configDir: path.join(dirname, '../storybook'),
-	renderer: 'vue',
-})
 
 export default defineConfig({
 	root: ROOT,
@@ -118,7 +93,7 @@ export default defineConfig({
 		alias: ALIASES,
 	},
 	optimizeDeps: {
-		include: ['vue', 'storybook/test', '@storybook/vue3'],
+		include: ['vue'],
 	},
 	css: {
 		preprocessorOptions: {
@@ -150,9 +125,9 @@ export default defineConfig({
 				'**/*.e2e.spec.ts',
 				'**/*.stories.ts',
 				'**/*.types.ts',
-			'**/*.style.scss',
-			'**/index.ts',
-		],
+				'**/*.style.scss',
+				'**/index.ts',
+			],
 			...(coverageThresholds ? { thresholds: coverageThresholds } : {}),
 		},
 		projects: [
@@ -168,28 +143,6 @@ export default defineConfig({
 					exclude: ['src/**/*.visual.spec.ts', 'src/**/*.e2e.spec.ts'],
 				},
 			},
-		{
-			extends: true,
-			plugins: [...storybookPlugins],
-			test: {
-				name: 'storybook',
-				dir: ROOT,
-				exclude: ['**/*.spec.ts', '**/*.integration.spec.ts', '**/*.visual.spec.ts', '**/*.e2e.spec.ts'],
-				browser: {
-					enabled: true,
-					headless: true,
-					provider: playwright({}),
-					instances: [{ browser: 'chromium' }],
-					isolate: false,
-					api: {
-						port: 45000,
-					},
-				},
-				setupFiles: [path.resolve(dirname, 'setup-storybook.ts')],
-				testTimeout: 60_000,
-				hookTimeout: 60_000,
-			},
-		},
 		],
 	},
 })

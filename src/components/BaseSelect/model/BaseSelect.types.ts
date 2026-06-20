@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения селекта */
 export const SELECT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'underline'] as const
@@ -61,4 +61,11 @@ export interface BaseSelectEmits {
  */
 export interface BaseSelectSlots {
 	default?: () => unknown
+	trigger?: (props: { isOpen: boolean; selectedLabel: string; selectedLabels: string[] }) => unknown
+	tag?: (props: { labels: string[]; items: BaseSelectOption[]; remove: (value: string | number) => void }) => unknown
+	selected?: (props: { option: BaseSelectOption }) => unknown
+	header?: () => unknown
+	option?: (props: { option: BaseSelectOption; isSelected: boolean }) => unknown
+	empty?: () => unknown
+	footer?: () => unknown
 }

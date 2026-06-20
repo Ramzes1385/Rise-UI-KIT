@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
 
 /** Варианты отображения выпадающего списка */

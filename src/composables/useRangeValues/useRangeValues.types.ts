@@ -3,8 +3,10 @@ import type { ComputedRef } from 'vue'
 
 export type RangeMode = 'single' | 'range' | 'points'
 
+type RequiredRangeFields = Required<Pick<BaseRangeProps, 'min' | 'max' | 'step' | 'modelValue'>>
+
 export interface UseRangeValuesOptions {
-	props: BaseRangeProps
+	props: Omit<BaseRangeProps, 'min' | 'max' | 'step' | 'modelValue'> & RequiredRangeFields
 	emit: BaseRangeEmits
 }
 

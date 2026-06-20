@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Варианты отображения табов */
 export const TABS_VARIANTS = ['underline', 'pills', 'rounded', 'arc'] as const

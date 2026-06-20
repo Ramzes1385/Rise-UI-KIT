@@ -1,5 +1,6 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 import type { PaddingProp } from '@composables/usePadding'
+import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
 import type { InjectionKey } from 'vue'
 
 /** Варианты отображения таблицы */
@@ -267,11 +268,13 @@ export interface BaseTableSlots {
 	pagination?: (props: {
 		currentPage: number
 		totalPages: number
-		visiblePages: number[]
+		visiblePages: VisiblePageItem[]
 		pageSize: number
 		pageSizeOptions: number[]
 		paginationInfo: string
 		pageSizeSelectOptions: Array<{ value: string; label: string }>
 		handlePageSizeChange: (value: string | number) => void
 	}) => unknown
+	[key: `header-${string}`]: (props: { column: TableColumn }) => unknown
+	[key: `cell-${string}`]: (props: { column: TableColumn; row: TableRow }) => unknown
 }

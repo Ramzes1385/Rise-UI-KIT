@@ -1,4 +1,4 @@
-import type { BaseCalendarProps } from '@components/BaseCalendar/model/BaseCalendar.types'
+import type { BaseCalendarProps, CalendarWeekday } from '@components/BaseCalendar/model/BaseCalendar.types'
 
 export interface ResolvedCalendarProps {
 	modelValue: Date | null
@@ -8,7 +8,7 @@ export interface ResolvedCalendarProps {
 	minDate: Date | null
 	maxDate: Date | null
 	disabledDates: Date[]
-	disabledWeekdays: NonNullable<BaseCalendarProps['disabledWeekdays']>
+	disabledWeekdays: CalendarWeekday[]
 	disableFrom: Date | null
 	disableTo: Date | null
 	highlights: NonNullable<BaseCalendarProps['highlights']>

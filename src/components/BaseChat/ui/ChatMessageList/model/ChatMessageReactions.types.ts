@@ -1,4 +1,4 @@
-import type { ChatMessageReaction } from '../../model/BaseChat.types'
+import type { ChatMessageReaction } from '../../../model/BaseChat.types'
 
 export interface ChatMessageReactionsProps {
 	reactions: ChatMessageReaction[]

@@ -156,7 +156,7 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { useSelect } from '@composables/useSelect'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseSelect.style.scss'
@@ -235,7 +235,7 @@ const {
 	onBlur: formField.onBlur,
 })
 
-defineExpose<FormFieldExpose & { selectRef: HTMLDivElement | null }>({
+defineExpose({
 	rootRef: selectRef,
 	selectRef,
 	focus: () => selectRef.value?.focus(),

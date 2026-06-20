@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Формы прогресс-бара */
 export const PROGRESS_SHAPES = ['line', 'circle'] as const

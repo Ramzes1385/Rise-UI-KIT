@@ -48,7 +48,7 @@
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField, type FormFieldExpose } from '@composables/useFormField'
+import { useFormField } from '@composables/useFormField'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTextarea.style.scss'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
@@ -121,7 +121,7 @@ onMounted(() => {
 	}
 })
 
-defineExpose<FormFieldExpose & { textareaRef: HTMLTextAreaElement | null; adjustHeight: () => void }>({
+defineExpose({
 	rootRef: textareaRef,
 	textareaRef,
 	adjustHeight,

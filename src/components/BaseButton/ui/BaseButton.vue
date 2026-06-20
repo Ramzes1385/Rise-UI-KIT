@@ -33,7 +33,7 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
 import { SIZE_SCALE_DEFAULT, UI_SIZE } from '@constants'
 import '../styles/BaseButton.style.scss'
-import type { BaseButtonEmits, BaseButtonExpose, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
+import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
 
 
 const props = withDefaults(defineProps<BaseButtonProps>(), {
@@ -58,7 +58,7 @@ function handleClick(e: MouseEvent): void {
 	emit('click', e)
 }
 
-defineExpose<BaseButtonExpose>({
+defineExpose({
 	buttonRef,
 	focus: () => buttonRef.value?.focus(),
 	blur: () => buttonRef.value?.blur(),

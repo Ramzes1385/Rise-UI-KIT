@@ -92,6 +92,13 @@ export const Default: Story = {
 		},
 		template: '<BaseMenu :items="items" />',
 	}),
+	play: async ({ canvasElement }) => {
+		const firstItem = canvasElement.querySelector('.base-menu__item')
+		if (firstItem instanceof HTMLElement) {
+			await userEvent.tab()
+			await userEvent.keyboard('{Enter}')
+		}
+	},
 }
 export const WithCustomClass: Story = {
 	args: {

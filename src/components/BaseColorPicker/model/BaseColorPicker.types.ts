@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Позиция всплывающей панели относительно триггера */
 export const COLOR_PICKER_POSITIONS = ['top', 'bottom', 'left', 'right'] as const

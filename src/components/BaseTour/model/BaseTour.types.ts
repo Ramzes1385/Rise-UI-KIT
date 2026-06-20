@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '../../../types/base.types'
 
 /** Сторона размещения карточки-подсказки относительно подсвеченного элемента */
 export const TOUR_PLACEMENTS = ['top', 'bottom', 'left', 'right', 'auto'] as const

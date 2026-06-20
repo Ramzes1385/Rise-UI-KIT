@@ -108,7 +108,7 @@ import { useScrollLock } from '@composables/useScrollLock'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
-import type { BaseSearchOverlayEmits, BaseSearchOverlayExpose, BaseSearchOverlayProps, BaseSearchOverlaySlots } from '../model/BaseSearchOverlay.types'
+import type { BaseSearchOverlayEmits, BaseSearchOverlayProps, BaseSearchOverlaySlots } from '../model/BaseSearchOverlay.types'
 
 const props = defineProps<BaseSearchOverlayProps>()
 
@@ -158,5 +158,5 @@ function focus(): void {
 	inputRef.value?.focus()
 }
 
-defineExpose<BaseSearchOverlayExpose>({ focus, open, close })
+defineExpose({ focus, open, close })
 </script>

@@ -1,4 +1,4 @@
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
+import type { ChatMessage, ChatMessageAttachment } from '../../../model/BaseChat.types'
 
 export interface ChatMessageItemProps {
 	message: ChatMessage
