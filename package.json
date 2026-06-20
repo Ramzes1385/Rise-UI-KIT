@@ -1,6 +1,6 @@
 {
   "name": "@ramzes1385/rise-ui-kit",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Библиотека Vue 3 UI-компонентов с полной типизацией TypeScript, дизайн-системой на CSS-переменных, тёмной темой и многоуровневым тестированием.",
   "homepage": "https://ramzes1385.github.io/Rise-UI-KIT",
   "bugs": {

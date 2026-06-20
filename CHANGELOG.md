@@ -1,3 +1,9 @@
+## [1.2.3](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.2...v1.2.3) (2026-06-20)
+
+### Bug Fixes
+
+* increase timeout for BaseFormField visual test — CI flaky rendering ([34015ff](https://github.com/Ramzes1385/Rise-UI-KIT/commit/34015ff074b1c327ee26031c0ab4167678768c37))
+
 ## [1.2.2](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.1...v1.2.2) (2026-06-20)
 
 ### ⚠ BREAKING CHANGES
