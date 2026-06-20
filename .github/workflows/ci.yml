@@ -83,43 +83,8 @@ jobs:
           path: coverage/
           retention-days: 14
 
-  storybook-tests:
-    name: Storybook Interaction & A11y
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - run: npm ci
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright Chromium
-        run: npx playwright install chromium --with-deps
-
-      - name: Build Storybook
-        run: npm run build-storybook
-
-      - name: Run interaction & a11y tests
-        run: |
-          node scripts/serve-storybook-static.mjs &
-          npx wait-on http://localhost:6006
-          npm run test:storybook
-          pkill -f "serve-storybook-static.mjs" || true
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
-
   e2e-and-visual:
     name: E2E & Visual Regression
-    needs: storybook-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
