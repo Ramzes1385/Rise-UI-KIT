@@ -153,7 +153,7 @@ export const Required: Story = {
 	render: args => ({
 		components: { BaseFormField, BaseInput },
 		setup() {
-			return { args }
+			return { args, UI_TEXT }
 		},
 		template: `
 			<BaseFormField v-bind="args">
