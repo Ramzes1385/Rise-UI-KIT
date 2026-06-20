@@ -1,3 +1,9 @@
+## [1.2.5](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.4...v1.2.5) (2026-06-20)
+
+### Bug Fixes
+
+* **build:** resolve path aliases and strip broken scss imports from .d.ts files ([a97ec47](https://github.com/Ramzes1385/Rise-UI-KIT/commit/a97ec47f9c32ff31c1a7e97e935693ac0b608b96))
+
 ## [1.2.4](https://github.com/Ramzes1385/Rise-UI-KIT/compare/v1.2.3...v1.2.4) (2026-06-20)
 
 ### Bug Fixes
