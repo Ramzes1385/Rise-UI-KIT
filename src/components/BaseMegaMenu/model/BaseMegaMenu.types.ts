@@ -55,7 +55,7 @@ export type MegaMenuLayout = 'columns' | 'dropdown'
 /**
  * Пропсы компонента BaseMegaMenu
  */
-export interface BaseMegaMenuProps extends BaseComponentProps<(typeof MEGA_MENU_VARIANTS)[number]> {
+export interface BaseMegaMenuProps extends BaseComponentProps<(typeof MEGA_MENU_VARIANTS)[number], 'root' | 'container' | 'column' | 'title' | 'list' | 'nav' | 'navItem' | 'navLink' | 'dropdown'> {
 	/** Колонки меню (для layout=columns) */
 	columns?: MegaMenuColumn[]
 	/** Элементы навигации (для layout=dropdown) */

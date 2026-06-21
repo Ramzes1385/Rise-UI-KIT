@@ -6,7 +6,7 @@ export const FORM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] a
 /**
  * Пропсы компонента BaseForm
  */
-export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)[number]> {
+export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)[number], 'root' | 'overlay' | 'content'> {
 	/** Состояние загрузки */
 	isLoading?: boolean
 	/** Отключенное состояние */

@@ -11,7 +11,7 @@ export type PopoverPosition = 'top' | 'bottom' | 'left' | 'right'
 
 /** Пропсы компонента BasePopover */
 
-export interface BasePopoverProps extends BaseComponentProps<PopoverVariant> {
+export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'root' | 'trigger' | 'arrow' | 'inner' | 'panel'> {
 	/** Состояние открытия */
 	isOpen?: boolean
 	/** Позиция */

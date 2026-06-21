@@ -21,7 +21,7 @@ export type EditorHeading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p'
 /**
  * Пропсы компонента BaseEditor
  */
-export interface BaseEditorProps extends BaseComponentProps<(typeof EDITOR_VARIANTS)[number]> {
+export interface BaseEditorProps extends BaseComponentProps<(typeof EDITOR_VARIANTS)[number], 'root' | 'toolbar' | 'btn' | 'group' | 'colorPicker' | 'headingSelect' | 'fileInput' | 'content' | 'code'> {
 	/** HTML-содержимое */
 	modelValue?: string
 	/** Плейсхолдер */

@@ -6,7 +6,7 @@ export const BADGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] 
 /**
  * Пропсы компонента BaseBadge
  */
-export interface BaseBadgeProps extends BaseComponentProps<(typeof BADGE_VARIANTS)[number]> {
+export interface BaseBadgeProps extends BaseComponentProps<(typeof BADGE_VARIANTS)[number], 'root' | 'text'> {
 	/** Текст */
 	label?: string
 }

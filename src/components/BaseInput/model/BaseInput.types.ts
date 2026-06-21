@@ -38,7 +38,7 @@ export interface PasswordRuleResult {
 /**
  * Пропсы компонента BaseInput
  */
-export interface BaseInputProps extends BaseComponentProps<InputVariant> {
+export interface BaseInputProps extends BaseComponentProps<InputVariant, 'root' | 'label' | 'required' | 'wrapper' | 'prefix' | 'field' | 'passwordToggle' | 'passwordIcon' | 'postfix' | 'passwordRules' | 'passwordRule' | 'passwordRuleIcon' | 'errorText'> {
 	/** Значение поля (null трактуется как пустая строка) */
 	modelValue: string | number | null
 	/** Тип инпута */

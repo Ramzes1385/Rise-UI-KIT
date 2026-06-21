@@ -31,7 +31,7 @@ import type { BaseComponentProps } from '../../../types/base.types'
 /**
  * Пропсы компонента BaseSlider
  */
-export interface BaseSliderProps extends BaseComponentProps {
+export interface BaseSliderProps extends BaseComponentProps<string, 'root' | 'arrows' | 'arrow' | 'viewport' | 'track' | 'slide' | 'caption' | 'title' | 'desc' | 'navigation' | 'dots' | 'dot' | 'thumbs' | 'thumb'> {
 	/** Элементы слайдера */
 	items: SliderItem[]
 	/** Анимация переключения */

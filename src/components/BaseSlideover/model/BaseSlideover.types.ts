@@ -9,7 +9,7 @@ export type SlideoverSide = 'left' | 'right'
 /**
  * Пропсы компонента BaseSlideover
  */
-export interface BaseSlideoverProps extends BaseComponentProps {
+export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 'panel' | 'header' | 'title' | 'body' | 'footer'> {
 	/** Состояние открытия */
 	isOpen: boolean
 	/** Заголовок */

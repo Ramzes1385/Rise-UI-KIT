@@ -3,7 +3,7 @@ import type { BaseComponentProps } from '../../../types/base.types'
 /**
  * Пропсы компонента BaseSkeleton
  */
-export interface BaseSkeletonProps extends Omit<BaseComponentProps, 'color'> {
+export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
 	/** Ширина (px или %) */
 	width?: string | number
 	/** Высота (px или %) */

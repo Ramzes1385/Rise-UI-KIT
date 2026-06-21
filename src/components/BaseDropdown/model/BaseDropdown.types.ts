@@ -24,7 +24,7 @@ export type DropdownPosition =
 /**
  * Пропсы компонента BaseDropdown
  */
-export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number]> {
+export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number], 'root' | 'panel'> {
 	/** Открыт ли список */
 	isOpen?: boolean
 	/** Позиция относительно триггера */

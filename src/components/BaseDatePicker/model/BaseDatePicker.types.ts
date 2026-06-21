@@ -7,7 +7,7 @@ import type { DateFormat } from '@utils/dateUtils'
 /**
  * Пропсы компонента BaseDatePicker
  */
-export interface BaseDatePickerProps extends BaseComponentProps, BaseDatePickerCalendarProps {
+export interface BaseDatePickerProps extends BaseComponentProps<string, 'root' | 'field' | 'panel'>, BaseDatePickerCalendarProps {
 	/** Выбранная дата */
 	modelValue?: Date | null
 	/** Конец диапазона (для range) */

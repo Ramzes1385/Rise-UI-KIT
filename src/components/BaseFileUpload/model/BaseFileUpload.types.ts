@@ -30,7 +30,7 @@ export interface UploadedFile {
 /**
  * Пропсы компонента BaseFileUpload
  */
-export interface BaseFileUploadProps extends BaseComponentProps<(typeof FILE_UPLOAD_VARIANTS)[number]> {
+export interface BaseFileUploadProps extends BaseComponentProps<(typeof FILE_UPLOAD_VARIANTS)[number], 'root' | 'label' | 'dropzone' | 'text' | 'hint' | 'list' | 'item' | 'preview' | 'previewImg' | 'info' | 'name' | 'meta' | 'ext' | 'size' | 'status' | 'progress' | 'remove' | 'errors' | 'errorItem'> {
 	/** Принимаемые типы файлов (MIME или расширения) */
 	accept?: string
 	/** Множественный выбор */

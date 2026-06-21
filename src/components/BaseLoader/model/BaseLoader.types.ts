@@ -8,7 +8,7 @@ export type LoaderVariant = 'spinner' | 'dots' | 'pulse' | 'bars'
 /**
  * Пропсы компонента BaseLoader
  */
-export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant> {
+export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant, 'root' | 'animation' | 'spinner' | 'label'> {
 	/** Показывать текст */
 	hasLabel?: boolean
 	/** Текст загрузки */

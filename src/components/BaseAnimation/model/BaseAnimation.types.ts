@@ -22,7 +22,7 @@ export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
 import type { BaseComponentProps } from '../../../types/base.types'
 
-export interface BaseAnimationProps extends BaseComponentProps {
+export interface BaseAnimationProps extends BaseComponentProps<string, 'root'> {
 	show?: boolean
 	name?: TransitionName
 	mode?: (typeof ANIMATION_MODES)[number]

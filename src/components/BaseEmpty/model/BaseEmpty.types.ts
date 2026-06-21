@@ -6,7 +6,7 @@ export type EmptyVariant = 'default' | 'ghost' | 'soft'
 /**
  * Пропсы компонента BaseEmpty
  */
-export interface BaseEmptyProps extends BaseComponentProps<EmptyVariant> {
+export interface BaseEmptyProps extends BaseComponentProps<EmptyVariant, 'root' | 'iconWrapper' | 'icon' | 'content' | 'title' | 'description' | 'body' | 'actions'> {
 	/** Заголовок пустого состояния */
 	title?: string
 	/** Текст описания */

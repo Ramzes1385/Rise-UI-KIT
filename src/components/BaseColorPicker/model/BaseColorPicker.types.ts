@@ -22,7 +22,7 @@ export const DEFAULT_COLOR_PRESETS = [
 ] as const
 
 /** Пропсы компонента BaseColorPicker */
-export interface BaseColorPickerProps extends BaseComponentProps {
+export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' | 'swatch' | 'panel' | 'preset' | 'reset'> {
 	modelValue: string; position?: ColorPickerPosition; presets?: readonly string[];
 	isHexHidden?: boolean; isPresetsHidden?: boolean; isResettable?: boolean;
 	resetLabel?: string; hasTransparentSwatch?: boolean; isDisabled?: boolean;

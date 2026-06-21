@@ -6,7 +6,7 @@ export const CHIP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] a
 /**
  * Пропсы компонента BaseChip
  */
-export interface BaseChipProps extends BaseComponentProps<(typeof CHIP_VARIANTS)[number]> {
+export interface BaseChipProps extends BaseComponentProps<(typeof CHIP_VARIANTS)[number], 'root' | 'badge'> {
 	/** Содержимое индикатора (число или текст) */
 	content?: number | string
 	/** Позиция индикатора */

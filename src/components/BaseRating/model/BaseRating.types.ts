@@ -8,7 +8,7 @@ export type RatingVariant = (typeof RATING_VARIANTS)[number]
 /**
  * Пропсы компонента BaseRating
  */
-export interface BaseRatingProps extends BaseComponentProps<RatingVariant> {
+export interface BaseRatingProps extends BaseComponentProps<RatingVariant, 'root' | 'icon' | 'iconFilled'> {
 	/** Текущая оценка (v-model), допускает дробные значения */
 	modelValue?: number
 	/** Количество звёзд */

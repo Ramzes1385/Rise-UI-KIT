@@ -9,7 +9,7 @@ export const AVATAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
 /**
  * Пропсы компонента BaseAvatar
  */
-export interface BaseAvatarProps extends BaseComponentProps<(typeof AVATAR_VARIANTS)[number]> {
+export interface BaseAvatarProps extends BaseComponentProps<(typeof AVATAR_VARIANTS)[number], 'root' | 'content' | 'img' | 'initials' | 'online'> {
 	/** URL изображения или GIF */
 	src?: string
 	/** Альтернативный текст */

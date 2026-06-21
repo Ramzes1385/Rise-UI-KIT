@@ -34,7 +34,7 @@ export interface SearchResult {
 /**
  * Пропсы компонента BaseSearch
  */
-export interface BaseSearchProps extends BaseComponentProps<SearchVariant> {
+export interface BaseSearchProps extends BaseComponentProps<SearchVariant, 'root' | 'trigger' | 'icon' | 'modalOverlay' | 'modal' | 'modalHeader' | 'modalInput' | 'clear' | 'clearIcon' | 'loading' | 'modalClose' | 'modalCloseIcon' | 'modalResults' | 'result' | 'resultImage' | 'resultIcon' | 'resultContent' | 'resultTitle' | 'resultDesc' | 'resultCategory' | 'empty' | 'emptyText' | 'sidebarOverlay' | 'sidebar' | 'sidebarHeader' | 'sidebarInput' | 'sidebarClose' | 'sidebarCloseIcon' | 'sidebarResults' | 'dropdown' | 'input'> {
 	/** Значение */
 	modelValue?: string
 	/** Плейсхолдер */

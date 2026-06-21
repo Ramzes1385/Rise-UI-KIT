@@ -20,7 +20,7 @@ export const TEXT_TAGS = [
 /**
  * Пропсы компонента BaseText
  */
-export interface BaseTextProps extends BaseComponentProps {
+export interface BaseTextProps extends BaseComponentProps<string, 'root'> {
 	/** Семантический HTML-тег */
 	tag?: (typeof TEXT_TAGS)[number]
 	/** Начертание (100–900) */

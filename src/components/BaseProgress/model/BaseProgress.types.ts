@@ -19,7 +19,7 @@ export type ProgressAnimation = (typeof PROGRESS_ANIMATIONS)[number]
 /**
  * Пропсы компонента BaseProgress
  */
-export interface BaseProgressProps extends BaseComponentProps {
+export interface BaseProgressProps extends BaseComponentProps<string, 'root' | 'track' | 'fill' | 'tooltipTrigger' | 'tooltipAnchor' | 'svg' | 'trackCircle' | 'fillCircle' | 'circleLabel'> {
 	/** Значение (0–100) */
 	value: number
 	/** Максимальное значение */

@@ -27,7 +27,7 @@ export type BaseSelectVariant = (typeof SELECT_VARIANTS)[number]
 /**
  * Пропсы компонента BaseSelect
  */
-export interface BaseSelectProps extends BaseComponentProps<BaseSelectVariant> {
+export interface BaseSelectProps extends BaseComponentProps<BaseSelectVariant, 'root' | 'dropdown' | 'label' | 'required' | 'trigger' | 'values' | 'tag' | 'tagText' | 'tagClose' | 'placeholder' | 'icon' | 'valueText' | 'arrow' | 'errorText' | 'dropdownContent' | 'search' | 'searchInput' | 'options' | 'option' | 'checkbox' | 'optionIcon' | 'optionContent' | 'optionLabel' | 'optionDesc' | 'noResults'> {
 	/** Выбранное значение (или массив для мультивыбора) */
 	modelValue?: string | number | (string | number)[]
 	/** Список опций */

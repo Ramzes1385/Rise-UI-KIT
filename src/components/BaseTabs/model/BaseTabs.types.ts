@@ -25,7 +25,7 @@ export type TabsVariant = (typeof TABS_VARIANTS)[number]
 /**
  * Пропсы компонента BaseTabs
  */
-export interface BaseTabsProps extends BaseComponentProps<TabsVariant> {
+export interface BaseTabsProps extends BaseComponentProps<TabsVariant, 'root' | 'nav' | 'scrollBtn' | 'list' | 'tab' | 'icon' | 'label' | 'content'> {
 	/** Список табов */
 	items: TabItem[]
 	/** Активный таб (id) */

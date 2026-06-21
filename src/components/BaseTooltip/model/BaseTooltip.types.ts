@@ -6,7 +6,7 @@ export const TOOLTIP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'
 /**
  * Пропсы компонента BaseTooltip
  */
-export interface BaseTooltipProps extends BaseComponentProps<(typeof TOOLTIP_VARIANTS)[number]> {
+export interface BaseTooltipProps extends BaseComponentProps<(typeof TOOLTIP_VARIANTS)[number], 'root' | 'tooltip' | 'text'> {
 	/** Текст подсказки */
 	text: string
 	/** Позиция */

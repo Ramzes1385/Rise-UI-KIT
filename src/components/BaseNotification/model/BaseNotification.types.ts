@@ -23,7 +23,7 @@ export type NotificationPosition = (typeof NOTIFICATION_POSITIONS)[number]
  * Пропсы компонента BaseNotification
  */
 
-export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFICATION_VARIANTS)[number]> {
+export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFICATION_VARIANTS)[number], 'root' | 'notification' | 'icon' | 'content' | 'title' | 'description' | 'close' | 'progress'> {
 	/** Заголовок */
 	title?: string
 	/** Описание */

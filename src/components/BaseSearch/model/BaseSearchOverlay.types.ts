@@ -1,7 +1,7 @@
 import type { BaseComponentProps } from '../../../types/base.types'
 import type { SearchResult, SearchVariant } from './BaseSearch.types'
 
-export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant> {
+export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant, 'root'> {
 	panel: 'modal' | 'sidebar'
 	modelValue: string
 	searchPlaceholder: string

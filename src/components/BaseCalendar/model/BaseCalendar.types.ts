@@ -104,7 +104,7 @@ export interface CalendarDisplayConfig {
 /**
  * Пропсы компонента BaseCalendar
  */
-export interface BaseCalendarProps extends BaseComponentProps<CalendarVariant> {
+export interface BaseCalendarProps extends BaseComponentProps<CalendarVariant, 'root' | 'header' | 'weekdays' | 'grid' | 'dayWrapper' | 'day' | 'popover' | 'months' | 'years' | 'time' | 'footer'> {
 	/** Выбранная дата / начало диапазона */
 	modelValue?: Date | null
 	/** Конец диапазона (для range) */

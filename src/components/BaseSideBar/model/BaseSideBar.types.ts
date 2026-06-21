@@ -57,7 +57,7 @@ export interface SideBarItem {
 /**
  * Props, которые передаются в слоты item/icon/label/badge
  */
-export interface BaseSideBarItemSlotProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number]> {
+export interface BaseSideBarItemSlotProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number], 'root'> {
 	/** Элемент навигации */
 	item: SideBarItem
 
@@ -83,7 +83,7 @@ export interface BaseSideBarItemSlotProps extends BaseComponentProps<(typeof SID
 /**
  * Пропсы компонента BaseSideBar
  */
-export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number]> {
+export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number], 'root' | 'header' | 'title' | 'toggle' | 'navigation' | 'loading' | 'body' | 'footer' | 'collapsed'> {
 	/** v-model свёрнутого состояния (undefined = внутреннее управление) */
 	isCollapsed?: boolean
 
@@ -219,7 +219,7 @@ export interface BaseSideBarSlots {
 /**
  * Пропсы внутреннего компонента навигации BaseSideBarNavigation
  */
-export interface BaseSideBarNavigationProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number]> {
+export interface BaseSideBarNavigationProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number], 'root'> {
 	/** Элементы навигации */
 	items?: SideBarItem[]
 

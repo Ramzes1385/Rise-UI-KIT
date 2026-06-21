@@ -8,7 +8,7 @@ export type SeparatorOrientation = 'horizontal' | 'vertical'
 /**
  * Пропсы компонента BaseSeparator
  */
-export interface BaseSeparatorProps extends BaseComponentProps {
+export interface BaseSeparatorProps extends BaseComponentProps<string, 'root' | 'line' | 'content'> {
 	/** Ориентация */
 	orientation?: SeparatorOrientation
 	/** Текст метки между линиями */

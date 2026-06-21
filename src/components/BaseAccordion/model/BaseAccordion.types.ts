@@ -24,7 +24,7 @@ export interface BaseAccordionItem {
 /**
  * Пропсы компонента BaseAccordion
  */
-export interface BaseAccordionProps extends BaseComponentProps<(typeof ACCORDION_VARIANTS)[number]> {
+export interface BaseAccordionProps extends BaseComponentProps<(typeof ACCORDION_VARIANTS)[number], 'root' | 'item' | 'header' | 'icon' | 'label' | 'arrow' | 'arrowIcon' | 'collapse' | 'content' | 'contentText'> {
 	/** Список элементов */
 	items: BaseAccordionItem[]
 	/** Возможность открывать несколько элементов */

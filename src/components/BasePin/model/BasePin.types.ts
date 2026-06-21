@@ -7,7 +7,7 @@ export const PIN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as
  * Пропсы компонента BasePin
  */
 
-export interface BasePinProps extends BaseComponentProps<(typeof PIN_VARIANTS)[number]> {
+export interface BasePinProps extends BaseComponentProps<(typeof PIN_VARIANTS)[number], 'root' | 'cells' | 'input' | 'errorText'> {
 	/** Значение */
 	modelValue: string
 	/** Количество цифр */

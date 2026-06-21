@@ -1,8 +1,9 @@
 /**
  * Тип для пропса customClass.
  * Может быть строкой (для корневого элемента) или объектом с классами для внутренних элементов.
+ * @template K — union тип ключей элементов компонента (например 'root' | 'input' | 'label')
  */
-export type CustomClassProp = string | Record<string, string | boolean | undefined>
+export type CustomClassProp<K extends string = string> = string | Partial<Record<K, string>>
 
 /**
  * Параметры для composable useCustomClass

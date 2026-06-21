@@ -9,7 +9,7 @@ export type AlertVariant = 'default' | 'ghost' | 'outline' | 'shadow' | 'soft'
 /**
  * Пропсы компонента BaseAlert
  */
-export interface BaseAlertProps extends BaseComponentProps<AlertVariant> {
+export interface BaseAlertProps extends BaseComponentProps<AlertVariant, 'root' | 'iconWrapper' | 'icon' | 'content' | 'title' | 'description' | 'text' | 'actions' | 'close' | 'closeIcon'> {
 	/** Тип оповещения, определяющий иконку и цветовую гамму по умолчанию */
 	type?: AlertType
 	/** Заголовок оповещения */

@@ -1,8 +1,22 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFile, writeFile, access } from 'node:fs/promises'
 import { glob } from 'node:fs/promises'
 import { resolve, relative, dirname } from 'node:path'
 
 const DIST = resolve(process.cwd(), 'dist')
+
+// Create barrel .d.ts for each JS entry so export * from './components' resolves
+// to components/index.d.ts instead of components.js (which has no types)
+const barrels = ['components', 'composables', 'icons', 'plugins', 'utils']
+for (const name of barrels) {
+	const jsFile = resolve(DIST, `${name}.js`)
+	const dtsFile = resolve(DIST, `${name}.d.ts`)
+	try {
+		await access(jsFile)
+		await writeFile(dtsFile, `export * from './${name}/index';\n`)
+	} catch {
+		// JS file doesn't exist, skip
+	}
+}
 
 const aliases = [
 	{ prefix: '@components/', target: 'dist/components/' },

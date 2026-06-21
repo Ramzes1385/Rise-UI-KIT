@@ -3,7 +3,7 @@ import type { BaseComponentProps } from '../../../types/base.types'
 /**
  * Пропсы компонента BaseIcon
  */
-export interface BaseIconProps extends Omit<BaseComponentProps, 'color'> {
+export interface BaseIconProps extends Omit<BaseComponentProps<string, 'root' | 'svg'>, 'color'> {
 	/** Имя иконки (соответствует имени SVG-файла без расширения) */
 	name: string
 	/** Цвет (CSS-значение или переменная) */

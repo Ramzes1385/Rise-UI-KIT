@@ -6,7 +6,7 @@ export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
 /**
  * Пропсы компонента BaseSwitch
  */
-export interface BaseSwitchProps extends BaseComponentProps<(typeof SWITCH_VARIANTS)[number]> {
+export interface BaseSwitchProps extends BaseComponentProps<(typeof SWITCH_VARIANTS)[number], 'root' | 'row' | 'wrapper' | 'input' | 'slider' | 'handle' | 'content' | 'label' | 'required' | 'errorText'> {
 	/** Состояние */
 	modelValue?: boolean
 	/** Заголовок поля */

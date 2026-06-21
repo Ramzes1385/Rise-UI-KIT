@@ -59,7 +59,7 @@ export interface TourBehavior {
 /**
  * Пропсы компонента BaseTour
  */
-export interface BaseTourProps extends BaseComponentProps {
+export interface BaseTourProps extends BaseComponentProps<string, 'root' | 'overlay' | 'spotlight' | 'card' | 'cardInner' | 'title' | 'closeButton' | 'closeIcon' | 'content' | 'footer' | 'progress' | 'dot' | 'counter' | 'actions' | 'prevButton' | 'nextButton' | 'finishButton'> {
 	/** Управление видимостью тура (v-model:isOpen) */
 	isOpen?: boolean
 	/** Список шагов тура */

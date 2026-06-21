@@ -77,7 +77,7 @@ export interface ChatCommand {
 /**
  * Пропсы компонента BaseChat
  */
-export interface BaseChatProps extends BaseComponentProps<'bubble' | 'flat' | 'modern'> {
+export interface BaseChatProps extends BaseComponentProps<'bubble' | 'flat' | 'modern', 'root'> {
 	messages: ChatMessage[]; title: string; subtitle?: string; avatar?: string;
 	height?: string; isTyping?: boolean;
 	typingUsername?: string; isGroup?: boolean; members?: ChatMember[];

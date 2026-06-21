@@ -10,7 +10,7 @@ export const BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
 /**
  * Пропсы компонента BaseButton
  */
-export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIANTS)[number]> {
+export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIANTS)[number], 'root'> {
 	/** Тип кнопки */
 	type?: (typeof BUTTON_TYPES)[number]
 	/**

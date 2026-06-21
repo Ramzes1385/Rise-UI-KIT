@@ -24,7 +24,7 @@ export interface BaseMenuItem {
 /**
  * Пропсы компонента BaseMenu
  */
-export interface BaseMenuProps extends BaseComponentProps<(typeof MENU_VARIANTS)[number]> {
+export interface BaseMenuProps extends BaseComponentProps<(typeof MENU_VARIANTS)[number], 'root' | 'group' | 'item' | 'icon' | 'label' | 'divider'> {
 	/** Список элементов */
 	items: BaseMenuItem[][]
 }
