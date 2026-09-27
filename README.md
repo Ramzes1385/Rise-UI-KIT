@@ -469,13 +469,15 @@ src/
   index.ts         # главный публичный API
 
 build/
-  config/          # общие Vite-конфиги
-  plugins/         # Vite plugins
-  lib/             # npm library build
-  tests/           # Vitest config
-  release/         # semantic-release config
-  ci/              # CI/CD конфиги и env examples
-  commitlint/      # commitlint config
+  config/          # общие части Vite-конфигов: алиасы, SCSS, сборка библиотеки
+  plugins/         # Vite-плагины: Vue, SVG, спрайт иконок
+  utils/           # вспомогательные функции сборки
+  lib/             # сборка npm-библиотеки
+  storybook/       # конфигурация Storybook
+  tests/           # Vitest, Playwright
+  husky/           # git-хуки
+  release/         # semantic-release
+  commitlint/      # правила сообщений коммитов
 
 dist/              # результат сборки библиотеки
 ```

@@ -81,4 +81,3 @@ stats.html
 .env
 .env.*
 !.env.example
-!build/ci/env/*.example

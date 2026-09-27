@@ -316,6 +316,15 @@ v1.2.0 ── fix: ... ── feat: ... ── docs: ... ── HEAD
 
 Если все коммиты `docs:`, `test:`, `chore:` — релиз **не выпустится**.
 
+### Настройка репозитория
+
+Workflow `.github/workflows/release.yml` запускается при push в `main` и `develop`, но выпускает релиз, только если
+в GitHub задана переменная `ENABLE_RELEASE=true`: Settings → Secrets and variables → Actions → Variables.
+
+Публикация в npm — через npm Trusted Publisher (у workflow есть `id-token: write`, provenance включён): токен
+не нужен, а `GITHUB_TOKEN` GitHub создаёт сам. Без Trusted Publisher добавьте секрет `NPM_TOKEN`
+(Settings → Secrets and variables → Actions → Secrets). Реальные значения и `.env` в репозиторий не коммитятся.
+
 ### Автоматические действия при релизе
 
 semantic-release выполняет:
