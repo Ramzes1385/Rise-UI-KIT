@@ -165,6 +165,14 @@
 		margin: sz(-2px) sz(-4px) sz(-2px) 0;
 	}
 
+	// Кнопки действий под текстом: размер sm, отступ 12px от описания
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(8px);
+		margin-top: sz(12px);
+	}
+
 	// Полоса прогресса: сжимается за время показа. При prefers-reduced-motion — неподвижная полоса.
 	&__progress {
 		position: absolute;
@@ -237,4 +245,9 @@
 .base-notification-leave-active {
 	position: absolute;
 	width: 100%;
+}
+
+// Пауза: указатель над уведомлениями или фокус внутри — полоса прогресса останавливается вместе с таймером
+.base-notification--paused .base-notification-item__progress {
+	animation-play-state: paused;
 }

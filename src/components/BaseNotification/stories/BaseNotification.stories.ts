@@ -53,9 +53,12 @@ const meta = {
 				component: [
 					'Всплывающие уведомления (toast) о результате действия: сохранено, ошибка загрузки, предупреждение.',
 					'',
-					'- Одно уведомление — из props (`title`, `description`, `type`), список — методом `add()` через ref;',
-					'  `remove(id)` удаляет уведомление. Каждое закрывается кнопкой «Закрыть» и само — через `duration` мс',
-					'  (по умолчанию 3 секунды, полоса снизу показывает оставшееся время).',
+					'- В приложении уведомления показывает `useToast()` внутри `<BaseApp>` — отдельный BaseNotification не нужен.',
+					'- Сам компонент: одно уведомление — из props (`title`, `description`, `type`), список — методом `add()`',
+					'  через ref или управляемый `items` (закрытие — событие `remove(id)`). Каждое закрывается кнопкой',
+					'  «Закрыть» и само — через `duration` мс (по умолчанию 3 секунды, полоса снизу показывает оставшееся время).',
+					'- `isPersistent` — без автозакрытия (загрузка, нет сети); `actions` — кнопки вроде «Отменить».',
+					'- Пока указатель над уведомлениями или фокус внутри, они не закрываются (WCAG 2.2.1).',
 					'- `type` задаёт цвет иконки и полосы прогресса; `position` — угол или край экрана; `isContained` —',
 					'  список в потоке страницы, без телепорта.',
 					'- Доступность: контейнер — регион «Уведомления», ошибка объявляется сразу (`role="alert"`),',
@@ -68,12 +71,14 @@ const meta = {
 	},
 	argTypes: {
 		...baseArgTypes({ variants: NOTIFICATION_VARIANTS }),
-		...hiddenArgTypes('notificationKey', 'default'),
+		...hiddenArgTypes('notificationKey', 'default', 'items'),
 		title: { control: 'text', table: propGroup(ARG_GROUP.content) },
 		description: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		actions: { control: 'object', table: propGroup(ARG_GROUP.content) },
 		type: { control: 'inline-radio', options: NOTIFICATION_TYPES, table: propGroup(ARG_GROUP.appearance) },
 		position: { control: 'select', options: NOTIFICATION_POSITIONS, table: propGroup(ARG_GROUP.appearance) },
 		duration: { control: { type: 'number', min: 0, step: 1000 }, table: propGroup(ARG_GROUP.behavior) },
+		isPersistent: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	},
 	args: {
@@ -84,8 +89,10 @@ const meta = {
 		position: 'top-right',
 		duration: STORY_DURATION,
 		sizeScale: 100,
+		isPersistent: false,
 		isContained: true,
 		onClose: fn(),
+		onRemove: fn(),
 	},
 	// Уведомление из props создаётся при монтировании: смена args в Controls пересоздаёт компонент (key).
 	render: args => ({
@@ -213,7 +220,7 @@ export const Positions: Story = {
 		setup: () => {
 			const list = ref<BaseNotificationExpose | null>(null)
 			const key = computed(() => `${args.position}-${args.variant}`)
-			const showMore = () => list.value?.add({ type: 'info', title: 'Ещё одно уведомление' })
+			const showMore = () => list.value?.add({ type: 'info', title: 'Ещё одно уведомление', duration: 3000 })
 			return { props: useArgsWithoutSlots(args, []), key, list, showMore }
 		},
 		template: `
@@ -296,6 +303,72 @@ export const AutoClose: Story = {
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Скопировать ссылку' }))
 		await expect(await canvas.findByRole('status')).toHaveTextContent('Ссылка скопирована')
+		await waitFor(() => expect(canvas.queryByRole('status')).not.toBeInTheDocument(), { timeout: 4000 })
+		await expect(args.onClose).toHaveBeenCalledOnce()
+	},
+}
+
+/**
+ * Кнопки действий: `actions: [{ label, onClick }]` под текстом. Нажатие выполняет действие и закрывает уведомление
+ * (событие `remove`). Подпись называет действие: «Отменить», «Повторить», «Открыть». Сценарий с нажатием —
+ * в stories BaseApp (Actions).
+ */
+export const Actions: Story = {
+	args: {
+		type: 'info',
+		title: 'Файл перемещён в корзину',
+		description: '«Интервью, дубль 4.mov» можно восстановить в течение 30 дней.',
+		actions: [{ label: 'Отменить', onClick: fn() }, { label: 'Открыть корзину' }],
+	},
+	parameters: { controls: { include: ['actions', 'variant', 'sizeScale'] } },
+	play: async ({ canvas }) => {
+		const item = await canvas.findByRole('status')
+		const buttons = within(item).getAllByRole('button')
+		await expect(buttons.map(button => button.textContent?.trim() || button.getAttribute('aria-label'))).toEqual([
+			'Отменить',
+			'Открыть корзину',
+			'Закрыть',
+		])
+		const description = within(item).getByText(/можно восстановить/)
+		await expect(buttons[0].getBoundingClientRect().top).toBeGreaterThanOrEqual(description.getBoundingClientRect().bottom)
+	},
+}
+
+/**
+ * Без автозакрытия: `isPersistent` — для состояния, которое длится (загрузка, нет сети). Полосы прогресса нет,
+ * уведомление закрывает пользователь или код (`remove`, `update` с `isPersistent: false`).
+ */
+export const Persistent: Story = {
+	args: {
+		type: 'warning',
+		title: 'Нет подключения к интернету',
+		description: 'Изменения сохранятся на устройстве и отправятся, когда связь восстановится.',
+		isPersistent: true,
+	},
+	parameters: { controls: { include: ['isPersistent', 'variant', 'sizeScale'] } },
+	play: async ({ canvas }) => {
+		const item = await canvas.findByRole('status')
+		await expect(item.querySelector('.base-notification-item__progress')).toBeNull()
+	},
+}
+
+/**
+ * Пауза: пока указатель над уведомлениями или фокус на их кнопках, автозакрытие стоит и полоса прогресса
+ * замирает — есть время дочитать и нажать действие (WCAG 2.2.1). Здесь `duration` — 2 секунды.
+ */
+export const PauseOnHover: Story = {
+	args: { type: 'success', title: 'Ссылка скопирована', description: 'Отправьте её участникам проекта.', duration: 2000 },
+	parameters: { controls: { include: ['variant', 'sizeScale'] } },
+	play: async ({ canvas, userEvent, args }) => {
+		const item = await canvas.findByRole('status')
+		await userEvent.hover(item)
+		await new Promise(resolve => setTimeout(resolve, 2500))
+		await expect(item).toBeInTheDocument()
+		await expect(getComputedStyle(item.querySelector('.base-notification-item__progress') as HTMLElement).animationPlayState).toBe(
+			'paused',
+		)
+
+		await userEvent.unhover(item)
 		await waitFor(() => expect(canvas.queryByRole('status')).not.toBeInTheDocument(), { timeout: 4000 })
 		await expect(args.onClose).toHaveBeenCalledOnce()
 	},

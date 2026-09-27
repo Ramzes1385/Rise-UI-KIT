@@ -1,0 +1,12 @@
+// BaseConfirm — окно подтверждения на BaseModal: уже обычного окна (400px при sizeScale = 100),
+// пояснение 14/20 приглушённым цветом, кнопки «Отмена» и подтверждение справа в подвале.
+.base-modal__content.base-confirm {
+	max-width: sz(400px);
+}
+
+.base-confirm__description {
+	margin: 0;
+	@include text-size(sm);
+	color: var(--rise-text-muted);
+	overflow-wrap: anywhere;
+}

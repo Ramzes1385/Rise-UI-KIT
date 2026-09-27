@@ -38,6 +38,7 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseDatePicker', 'BaseEditor', 'BaseTree', 'BaseSideBar',
   'BaseSlideover', 'BasePagination', 'BaseStepper', 'BaseTable',
   'BaseCalendar', 'BaseNotification',
+  'BaseConfirm',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -81,6 +82,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
   'BaseNotification', 'BaseEditor', 'BaseChat', 'BaseCard',
   'BaseAlert', 'BaseBreadcrumbs', 'BaseChip', 'BaseFormField',
   'BaseText', 'BaseStepper',
+  'BaseConfirm',
 ])
 
 /** Обязательные story-состояния для интерактивных компонентов с Disabled */

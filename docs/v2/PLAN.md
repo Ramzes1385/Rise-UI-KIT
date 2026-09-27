@@ -40,16 +40,16 @@
 |---|---|---|---|---|
 | 0 | Подготовка | Коммит исправлений аудита и редизайна; скрипт `create:component`; проверка незаполненных заготовок; этот план | 30 мин | ✅ |
 
-### Этап 1. Фундамент (~12,5 ч)
+### Этап 1. Фундамент (~13 ч)
 
 | № | Порция | Состав | Время | Статус |
 |---|---|---|---|---|
 | 1.1 | Безопасность и stories в CI | Схемы ссылок в редакторе (EDT-5), `href` в BaseSideBar через `isSafeUrl` (SB-6), проп `sanitize` у BaseEditor (EDT-2). Прогон всех stories (рендер, play, axe, две темы) скриптом в `scripts/` и шагом CI (TST-2). Попутно: гонка курсора в BaseInput, шрифты до рендера stories, таймаут findBy 3 с | 1 ч | ✅ |
-| 1.2 | BaseApp и сервисы | `<BaseApp>`: контейнер уведомлений и оверлеев, провайдер настроек. `useToast()`, `useOverlay()`, `useConfirm()` и подтверждение у элемента (Popconfirm). Пауза автозакрытия уведомлений при наведении и фокусе (NTF-2) | 1,5 ч | ⬜ |
+| 1.2 | BaseApp и сервисы | `<BaseApp>`: контейнер уведомлений и оверлеев. `useToast()`, `useOverlay()`, `useConfirm()` и BaseConfirm. Пауза автозакрытия уведомлений при наведении и фокусе (NTF-2), `isPersistent`, кнопки действий, `duration` компонента для `add()`. Подтверждение у элемента (Popconfirm) перенесено в 1.6: ему нужно позиционирование и слой оверлеев | 1,5 ч | ✅ |
 | 1.3 | Тема и настройки | `data-theme="system"`, `useColorMode()`, переключатель темы. Значения по умолчанию для всего приложения (`createUiKitPlugin({ defaults })`). Замена иконок кита своими. BaseLink и `linkComponent` в плагине (BC-2, SB-6, TRE-6, часть MM-1) | 1,5 ч | ⬜ |
 | 1.4 | Локализация | Словари ru и en для 229 строк интерфейса, `locale` в BaseApp и плагине, `useLocale()`. Календарь без жёсткого `ru-RU`, числа, даты и множественное число через `Intl` | 1,5 ч | ⬜ |
 | 1.5 | Слой оверлеев | Стек слоёв: Escape и клик вне получает только верхний. Контейнер слоёв в BaseApp и перенос темы. Токены z-index. Переворот и сдвиг у края экрана в `useDropdownPosition` (CO-1, OVL-1, OVL-2, ESC-STACK, DP-1) | 2 ч | ⬜ |
-| 1.6 | Меню и тултипы | BaseDropdownMenu по паттерну APG menu button: пункты-флажки и переключатели, подменю, стрелки, поиск по первой букве. BaseContextMenu. Тултип по фокусу, закрытие по Escape, `aria-describedby` (TT-1). Слот `triggerProps` у Popover и Tooltip | 1,5 ч | ⬜ |
+| 1.6 | Меню и тултипы | BaseDropdownMenu по паттерну APG menu button: пункты-флажки и переключатели, подменю, стрелки, поиск по первой букве. BaseContextMenu. Тултип по фокусу, закрытие по Escape, `aria-describedby` (TT-1). Слот `triggerProps` у Popover и Tooltip. Подтверждение у элемента (Popconfirm, из 1.2) | 2 ч | ⬜ |
 | 1.7 | Выбор и дерево | BaseSelect и BaseSearch как APG combobox/listbox: `aria-activedescendant`, поиск по первой букве. BaseTree по APG: роли, roving tabindex, стрелки (SEL-2, SRCH-4, TRE-1, TRE-2) | 2 ч | ⬜ |
 | 1.8 | Формы | BaseFormField передаёт полям id, описание и ошибку. `ariaLabel` и `inputAttrs` у полей. `indeterminate` у чекбокса и BaseCheckboxGroup. Блокировка кастомных контролов в неактивной форме. Валидация BaseForm по схеме через Standard Schema (FRM-1, FRM-2, FFD-2, CHK-1, FORM-1, FORM-3) | 1,5 ч | ⬜ |
 

@@ -23,11 +23,22 @@ export const NOTIFICATION_POSITIONS = [
 /** Тип позиции уведомлений */
 export type NotificationPosition = (typeof NOTIFICATION_POSITIONS)[number]
 
+/** Идентификатор уведомления */
+export type NotificationId = string | number
+
+/** Кнопка действия в уведомлении */
+export interface NotificationAction {
+	/** Текст кнопки */
+	label: string
+	/** Обработчик нажатия. После него уведомление закрывается */
+	onClick?: () => void
+}
+
 /**
  * Пропсы компонента BaseNotification
  */
 
-export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFICATION_VARIANTS)[number], 'root' | 'notification' | 'icon' | 'content' | 'title' | 'description' | 'close' | 'progress'> {
+export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFICATION_VARIANTS)[number], 'root' | 'notification' | 'icon' | 'content' | 'title' | 'description' | 'actions' | 'close' | 'progress'> {
 	/** Заголовок */
 	title?: string
 	/** Описание */
@@ -43,6 +54,15 @@ export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFI
 	duration?: number
 	/** Отключить Teleport: список в потоке страницы (для Storybook / встроенного режима) */
 	isContained?: boolean
+	/** Не закрывать автоматически: уведомление закрывает пользователь (кнопкой или действием) */
+	isPersistent?: boolean
+	/** Кнопки действий под текстом, например «Отменить». Нажатие вызывает обработчик и закрывает уведомление */
+	actions?: NotificationAction[]
+	/**
+	 * Управляемый список уведомлений (так их показывает BaseApp для `useToast()`). Компонент не хранит свой список:
+	 * закрытие по таймеру, кнопке или действию приходит событием `remove` с id уведомления
+	 */
+	items?: NotificationItem[]
 	/** Ключ для принудительного добавления уведомления при изменении */
 	notificationKey?: string | number
 }
@@ -50,15 +70,18 @@ export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFI
 /**
  * Элемент списка уведомлений
  */
-export interface NotificationItem extends BaseNotificationProps {
-	id: number
+export interface NotificationItem extends Omit<BaseNotificationProps, 'items'> {
+	id: NotificationId
 }
 
 /**
  * События компонента BaseNotification
  */
 export interface BaseNotificationEmits {
+	/** Список опустел (только без `items`: управляемым списком распоряжается владелец) */
 	(event: 'close'): void
+	/** Уведомление закрыто таймером, кнопкой или действием */
+	(event: 'remove', id: NotificationId): void
 }
 
 /**
@@ -72,8 +95,8 @@ export interface BaseNotificationSlots {
  * Публичный API компонента BaseNotification
  */
 export interface BaseNotificationExpose {
-	/** Добавить уведомление программно. `variant` из аргумента задаёт оформление этого уведомления, иначе — проп компонента */
-	add: (notification: BaseNotificationProps) => void
+	/** Добавить уведомление программно и получить его id. `variant` из аргумента задаёт оформление этого уведомления, иначе — проп компонента */
+	add: (notification: BaseNotificationProps) => NotificationId
 	/** Удалить уведомление по id */
-	remove: (id: number) => void
+	remove: (id: NotificationId) => void
 }

@@ -32,6 +32,13 @@ export interface BaseModalProps extends BaseComponentProps<ModalVariant, 'root' 
 	isContained?: boolean
 	/** Показывать затемнение фона за модалом */
 	hasOverlay?: boolean
+	/**
+	 * Роль окна: `dialog` (по умолчанию) или `alertdialog` — подтверждение или предупреждение, которое требует ответа.
+	 * Скринридер объявляет alertdialog сразу вместе с описанием из `ariaDescribedby`
+	 */
+	dialogRole?: 'dialog' | 'alertdialog'
+	/** id элемента с описанием окна: скринридер читает его после заголовка */
+	ariaDescribedby?: string
 }
 
 /**
@@ -41,6 +48,8 @@ export interface BaseModalEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
 	(event: 'confirm'): void
+	/** Окно закрыто и анимация закрытия закончилась: его можно удалить из DOM */
+	(event: 'after-leave'): void
 }
 
 /**

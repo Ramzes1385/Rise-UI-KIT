@@ -20,6 +20,7 @@ export const UI_TEXT = {
 	DELETE: 'Удалить',
 	NO_COLOR: 'Без цвета',
 	CANCEL: 'Отмена',
+	CONFIRM: 'Подтвердить',
 	APPLY: 'Применить',
 	REQUIRED_FIELD: 'Обязательное поле',
 	SELECT_PLACEHOLDER: 'Выберите...',

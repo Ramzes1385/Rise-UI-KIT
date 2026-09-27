@@ -7,7 +7,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const STORIES = ['types', 'variants', 'custom-color', 'long-content', 'positions'] as const
+const STORIES = ['types', 'variants', 'custom-color', 'long-content', 'positions', 'actions', 'persistent'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseNotification · ${theme}`, () => {

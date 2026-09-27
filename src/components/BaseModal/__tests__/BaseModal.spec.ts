@@ -5,7 +5,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import BaseModal from '../ui/BaseModal.vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
@@ -68,6 +68,30 @@ describe('BaseModal unit', () => {
 			})
 
 			expect(screen.getByText('Контент')).toBeInTheDocument()
+		})
+	})
+
+	describe('роль, описание и after-leave', () => {
+		it('по умолчанию dialog; dialogRole и ariaDescribedby задают роль и описание', async () => {
+			const { rerender } = render(BaseModal, {
+				props: { isOpen: true, title: 'Удалить проект?' },
+				slots: { default: '<p id="modal-hint">Это действие нельзя отменить.</p>' },
+			})
+			expect(screen.getByRole('dialog', { name: 'Удалить проект?' })).not.toHaveAttribute('aria-describedby')
+
+			await rerender({ dialogRole: 'alertdialog', ariaDescribedby: 'modal-hint' })
+			expect(screen.getByRole('alertdialog', { name: 'Удалить проект?' })).toHaveAccessibleDescription('Это действие нельзя отменить.')
+		})
+
+		it('после анимации закрытия эмитит after-leave', async () => {
+			const { emitted, rerender } = render(BaseModal, {
+				props: { isOpen: true, title: 'Окно' },
+				global: { stubs: { transition: false } },
+			})
+			expect(emitted()).not.toHaveProperty('after-leave')
+
+			await rerender({ isOpen: false })
+			await waitFor(() => expect(emitted()['after-leave']).toHaveLength(1))
 		})
 	})
 

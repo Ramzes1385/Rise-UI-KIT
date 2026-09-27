@@ -6,6 +6,7 @@ import { defineAsyncComponent } from 'vue'
 import { BaseAccordion } from './components/BaseAccordion'
 import { BaseAlert } from './components/BaseAlert'
 import { BaseAnimation } from './components/BaseAnimation'
+import { BaseApp } from './components/BaseApp'
 import { BaseAvatar } from './components/BaseAvatar'
 import { BaseBadge } from './components/BaseBadge'
 import { BaseBreadcrumbs } from './components/BaseBreadcrumbs'
@@ -14,6 +15,7 @@ import { BaseCard } from './components/BaseCard'
 import { BaseCheckbox } from './components/BaseCheckbox'
 import { BaseChip } from './components/BaseChip'
 import { BaseColorPicker } from './components/BaseColorPicker'
+import { BaseConfirm } from './components/BaseConfirm'
 import { BaseDropdown } from './components/BaseDropdown'
 import { BaseEmpty } from './components/BaseEmpty'
 import { BaseForm } from './components/BaseForm'
@@ -73,6 +75,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseAccordion,
 	BaseAlert,
 	BaseAnimation,
+	BaseApp,
 	BaseAvatar,
 	BaseBadge,
 	BaseBreadcrumbs,
@@ -83,6 +86,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseCheckbox,
 	BaseChip,
 	BaseColorPicker,
+	BaseConfirm,
 	BaseDatePicker,
 	BaseDropdown,
 	BaseEditor,

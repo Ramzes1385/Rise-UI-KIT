@@ -1,6 +1,6 @@
 <template>
 	<teleport to="body" :disabled="isContained">
-		<transition name="base-modal">
+		<transition name="base-modal" @after-leave="emit('after-leave')">
 			<div
 				v-if="isOpen"
 				class="base-modal"
@@ -17,9 +17,10 @@
 					ref="contentRef"
 					class="base-modal__content"
 					:class="classes.content"
-					role="dialog"
+					:role="dialogRole"
 					:aria-modal="isModal ? 'true' : undefined"
-					:aria-labelledby="title ? titleId : undefined">
+					:aria-labelledby="title ? titleId : undefined"
+					:aria-describedby="ariaDescribedby">
 					<!-- Заголовок -->
 					<div v-if="title" class="base-modal__header" :class="classes.header">
 						<div class="base-modal__header-left" :class="classes.headerLeft">
@@ -83,6 +84,7 @@ const props = withDefaults(defineProps<BaseModalProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isContained: false,
 	hasOverlay: true,
+	dialogRole: 'dialog',
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'])

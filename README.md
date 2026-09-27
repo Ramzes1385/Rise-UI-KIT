@@ -48,6 +48,12 @@
 - `BaseSideBar`: пункт со строковым `to` небезопасной схемы показывается кнопкой без `href`, в консоль — предупреждение.
 - Новые утилиты: `sanitizeHtml`, `escapeHtml`, `normalizeLinkUrl`.
 
+**Уведомления и окна из кода**
+
+- Новый `BaseApp` — корень приложения: показывает уведомления `useToast()` и окна `useOverlay()` / `useConfirm()` (см. [«BaseApp: уведомления и окна из кода»](#baseapp-уведомления-и-окна-из-кода)). Новый компонент `BaseConfirm` — окно подтверждения с `role="alertdialog"`.
+- `BaseNotification`: автозакрытие останавливается, пока указатель над уведомлениями или фокус внутри, и продолжается с остатка времени (WCAG 2.2.1). Новые props `isPersistent` (без автозакрытия), `actions` (кнопки вроде «Отменить»), `items` (управляемый список) и событие `remove(id)`. `add()` возвращает id; уведомление из `add()` без своего `duration` берёт `duration` компонента; длительность больше 2³¹−1 мс ограничивается этим значением.
+- `BaseModal`: props `dialogRole` (`dialog` или `alertdialog`) и `ariaDescribedby`, событие `after-leave` после анимации закрытия.
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -229,6 +235,53 @@ app.mount('#app')
 
 ---
 
+### BaseApp: уведомления и окна из кода
+
+Оберните приложение в `BaseApp` один раз — обычно в корневом `App.vue`. Он не добавляет разметки: рендерит слот и поверх страницы — уведомления и окна, которые вызывают из кода.
+
+```vue
+<!-- App.vue -->
+<script setup lang="ts">
+import { BaseApp } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseApp :toaster="{ position: 'bottom-right', max: 3 }">
+		<RouterView />
+	</BaseApp>
+</template>
+```
+
+В любом компоненте внутри:
+
+```ts
+import { useConfirm, useOverlay, useToast } from '@ramzes1385/rise-ui-kit'
+
+const toast = useToast()
+const confirm = useConfirm()
+const overlay = useOverlay()
+
+// Уведомление; с тем же id — заменяет показанное
+const id = toast.add({ title: 'Готовим отчёт…', isPersistent: true })
+toast.update(id, { type: 'success', title: 'Отчёт готов', isPersistent: false })
+toast.add({ title: 'Комментарий удалён', actions: [{ label: 'Вернуть', onClick: restore }] })
+
+// Подтверждение: true — подтвердили, false — отменили (кнопкой, Escape, кликом по фону)
+if (await confirm({ title: 'Удалить проект?', description: 'Это необратимо.', confirmLabel: 'Удалить', isDanger: true })) {
+	await api.deleteProject(projectId)
+}
+
+// Своё окно: компонент получает props и isOpen, результат передаёт в emit('close', value)
+const rename = overlay.create(RenameProjectModal)
+const newName = await rename.open({ name: project.name })
+```
+
+- `toaster` — настройки уведомлений: `position`, `duration` (3000 мс), `max` (5 одновременно, старые закрываются), `variant`, `sizeScale`.
+- Окно для `useOverlay()` закрывается событием `close` (с результатом) или `update:isOpen` (без результата); если компонент шлёт оба, `close` должен идти первым. После анимации (`after-leave`) окно удаляется из DOM.
+- Вызовы вне дерева `BaseApp` (в сторе, роутере, обработчике запросов) идут в последний смонтированный `BaseApp`. Без `BaseApp` вызов пишет предупреждение в консоль и ничего не показывает; `confirm()` при этом отвечает `false`.
+
+---
+
 ### Прямой импорт компонентов
 
 Этот способ предпочтителен, если нужно контролировать используемые компоненты явно.
@@ -258,6 +311,8 @@ import '@ramzes1385/rise-ui-kit/styles'
 
 const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024)
 ```
+
+Исключение — сервисы `BaseApp`: `useToast`, `useOverlay` и `useConfirm` импортируются из корня пакета по имени, как компоненты.
 
 Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons`, `/plugins`, `/styles` (`/styles.css`), `/icons.svg`.
 
@@ -535,7 +590,42 @@ const isOpen = ref(false)
 </template>
 ```
 
-Открытием управляет `v-model:is-open`. Окно — модальный диалог: фокус переводится внутрь, Tab не выходит за его пределы, после закрытия фокус возвращается на элемент, с которого окно открыли (composable `useFocusTrap`).
+Открытием управляет `v-model:is-open`. Окно — модальный диалог: фокус переводится внутрь, Tab не выходит за его пределы, после закрытия фокус возвращается на элемент, с которого окно открыли (composable `useFocusTrap`). Для подтверждений есть готовый `BaseConfirm`; открыть окно из кода — `useOverlay()` (см. `BaseApp`).
+
+---
+
+## BaseConfirm
+
+Окно подтверждения: вопрос, последствия и две кнопки. Из кода — `useConfirm()` внутри `BaseApp` (см. [«BaseApp: уведомления и окна из кода»](#baseapp-уведомления-и-окна-из-кода)), в шаблоне — так:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseButton, BaseConfirm } from '@ramzes1385/rise-ui-kit'
+
+const isOpen = ref(false)
+</script>
+
+<template>
+	<BaseButton @click="isOpen = true">Удалить проект</BaseButton>
+
+	<BaseConfirm
+		v-model:is-open="isOpen"
+		title="Удалить проект?"
+		description="Задачи и файлы удалятся без возможности восстановления."
+		confirm-label="Удалить"
+		is-danger
+		@confirm="deleteProject" />
+</template>
+```
+
+`role="alertdialog"`: скринридер читает вопрос и описание вместе. `isDanger` красит кнопку подтверждения цветом ошибки и ставит фокус при открытии на «Отмену». События: `confirm`, `cancel`, `close(result)`.
+
+---
+
+## BaseApp
+
+Корень приложения для `useToast()`, `useOverlay()` и `useConfirm()`: рендерит слот без обёртки, а поверх страницы — уведомления и окна. Проп `toaster` настраивает уведомления. Пример — в разделе [«BaseApp: уведомления и окна из кода»](#baseapp-уведомления-и-окна-из-кода).
 
 ---
 
@@ -767,7 +857,7 @@ import { BaseAlert } from '@ramzes1385/rise-ui-kit'
 
 ## BaseNotification
 
-Уведомление.
+Всплывающее уведомление. В приложении их удобнее показывать через `useToast()` внутри `BaseApp`; сам компонент нужен для отдельного списка уведомлений.
 
 ```vue
 <script setup lang="ts">
@@ -778,6 +868,8 @@ import { BaseNotification } from '@ramzes1385/rise-ui-kit'
 	<BaseNotification title="Новое уведомление" description="Данные обновлены" />
 </template>
 ```
+
+Список — методом `add()` через ref (возвращает id) или управляемым `items` с событием `remove(id)`. Уведомление закрывается кнопкой и само через `duration` мс; пока указатель над уведомлениями или фокус внутри, таймер стоит. `isPersistent` — без автозакрытия, `actions` — кнопки под текстом: нажатие вызывает `onClick` и закрывает уведомление.
 
 ---
 
