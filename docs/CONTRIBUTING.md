@@ -151,7 +151,8 @@ npm run create:component -- InputNumber --group=Form --kind=form --long
 
 ### 3.3. Conventional Commits
 
-Каждый коммит должен следовать формату:
+Каждый коммит должен следовать формату (его проверяет commitlint в git-хуке `commit-msg`, правила —
+`build/commitlint/commitlint.config.cjs`; описание начинается со строчной буквы):
 
 ```
 тип(scope): описание
