@@ -120,27 +120,31 @@ class MockDataTransfer {
 	private itemsList: MockDataTransferItem[] = []
 	private strings: Map<string, string> = new Map()
 
-	readonly items = {
-		add: (data: File | string, type?: string): MockDataTransferItem => {
-			const item = new MockDataTransferItem(data, type)
-			this.itemsList.push(item)
-			return item
-		},
-		clear: (): void => {
-			this.itemsList = []
-		},
-		get length(): number {
-			return this.itemsList.length
-		},
-	}
+	/** Список элементов: в геттере length `this` — сам объект, поэтому экземпляр берётся из замыкания */
+	readonly items = (() => {
+		const owner = this
+		return {
+			add: (data: File | string, type?: string): MockDataTransferItem => {
+				const item = new MockDataTransferItem(data, type)
+				owner.itemsList.push(item)
+				return item
+			},
+			clear: (): void => {
+				owner.itemsList = []
+			},
+			get length(): number {
+				return owner.itemsList.length
+			},
+		}
+	})()
 
 	get files(): FileListLike {
 		const fileItems = this.itemsList.filter(item => item.kind === 'file' && item.file)
 		const files = fileItems.map(item => item.file!)
 		const list: FileListLike = {
+			...files,
 			length: files.length,
 			item: (index: number) => files[index] ?? null,
-			...files,
 		}
 		return list
 	}
@@ -196,7 +200,7 @@ globalThis.PointerEvent = class MockPointerEvent extends MouseEvent {
 		this.height = init.height ?? 1
 		this.isPrimary = init.isPrimary ?? true
 	}
-}
+} as unknown as typeof PointerEvent
 
 /** Мок DragEvent — отсутствует в jsdom, нужен для FileUpload story-тестов */
 interface MockDragEventInit extends DragEventInit {
@@ -211,7 +215,7 @@ globalThis.DragEvent = class MockDragEvent extends MouseEvent {
 		super(type, omitNullView(init))
 		this.dataTransfer = init.dataTransfer ?? null
 	}
-}
+} as unknown as typeof DragEvent
 
 /** Мок HTMLInputElement.files setter — принимает file-like список из mocked DataTransfer */
 const originalFilesDescriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'files')
@@ -295,7 +299,7 @@ globalThis.ClipboardEvent = class MockClipboardEvent extends Event implements Cl
 		super(type, init)
 		this.clipboardData = init?.clipboardData ?? null
 	}
-}
+} as unknown as typeof ClipboardEvent
 
 /** Мок scrollHeight для textarea — в jsdom всегда 0, ломает autosize story */
 Object.defineProperty(HTMLTextAreaElement.prototype, 'scrollHeight', {

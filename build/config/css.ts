@@ -3,7 +3,7 @@
  * Глобальные SCSS-модули (variables/mixins/functions) автоматически инжектятся
  * во все компонентные стили через prelude, кроме самих модулей-источников
  * (иначе Sass-ошибка «Module loop: this module is already being loaded»).
- * Sass: modern-compiler API. CSS-трансформ/минификация: Lightning CSS.
+ * Sass компилируется современным API (в Vite 8 другого нет). CSS-трансформ/минификация: Lightning CSS.
  */
 
 import type { CSSOptions } from 'vite'
@@ -32,7 +32,6 @@ function addGlobalImports(source: string, filename: string): string {
 /** Настройки Sass с глобальным prelude — общие для сборки библиотеки, Storybook и Vitest. */
 export function createScssOptions() {
 	return {
-		api: 'modern-compiler',
 		additionalData: addGlobalImports,
 		charset: false,
 	}

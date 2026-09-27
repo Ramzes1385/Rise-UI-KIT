@@ -26,5 +26,12 @@
   },
   "include": [
     "build/**/*.ts"
+  ],
+  /* Код для браузера и jsdom (превью Storybook, настройка Vitest) проверяется в tsconfig.app.json */
+  "exclude": [
+    "build/storybook/preview.ts",
+    "build/storybook/manager.ts",
+    "build/storybook/theme.ts",
+    "build/tests/setup-vitest.ts"
   ]
 }

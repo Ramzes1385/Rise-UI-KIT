@@ -65,6 +65,10 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "build/storybook/preview.ts",
+    "build/storybook/manager.ts",
+    "build/storybook/theme.ts",
+    "build/tests/setup-vitest.ts"
   ]
 }
