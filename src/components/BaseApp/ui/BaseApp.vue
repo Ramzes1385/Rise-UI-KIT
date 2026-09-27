@@ -24,6 +24,7 @@ import { onBeforeUnmount, provide, watch } from 'vue'
 import { setLocale } from '@/locales/state'
 import { BaseNotification } from '@components/BaseNotification'
 import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
+import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
 import type { BaseAppProps, BaseAppSlots } from '../model/BaseApp.types'
 
@@ -45,6 +46,9 @@ watch(
 	},
 	{ immediate: true },
 )
+
+// Цель телепорта для компонентов внутри BaseApp и его уведомлений. Задаётся при монтировании
+if (props.teleportTo) provide(TELEPORT_TARGET_KEY, props.teleportTo)
 
 provide(TOAST_STORE_KEY, toasts)
 provide(OVERLAY_STORE_KEY, overlays)

@@ -1,5 +1,5 @@
 <template>
-	<teleport to="body" :disabled="isContained">
+	<teleport :to="teleportTarget" :disabled="isContained">
 		<transition name="base-modal" @after-leave="emit('after-leave')">
 			<div
 				v-if="isOpen"
@@ -11,7 +11,7 @@
 					!hasOverlay && 'base-modal--no-overlay',
 					classes.root,
 				]"
-				:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+				:style="[sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
 				@click.self="handleOverlayClick">
 				<div
 					ref="contentRef"
@@ -72,11 +72,16 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFocusTrap } from '@composables/useFocusTrap'
+import { useLayerIndex } from '@composables/useLayerStack'
 import { usePopup } from '@composables/usePopup'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../model/BaseModal.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<BaseModalProps>(), kitDefaults('BaseModal', {
 	isOpen: undefined,
@@ -100,6 +105,9 @@ const fullScreenClass = computed(() => {
 	if (!props.fullScreen) return undefined
 	return `base-modal--fullscreen-${props.fullScreen}`
 })
+
+/** Место окна среди открытых слоёв: окно, открытое из поповера или другого окна, — над ними */
+const layerStyle = useLayerIndex(() => props.isOpen)
 
 const { handleOverlayClick, close: handleClose } = usePopup({
 	isOpen: () => props.isOpen,

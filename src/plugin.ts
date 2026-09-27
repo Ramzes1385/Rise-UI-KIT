@@ -55,10 +55,12 @@ import { BaseTree } from './components/BaseTree'
 import { DEFAULTS_KEY } from './composables/useDefaults/useDefaults'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
 import { LINK_COMPONENT_KEY } from './composables/useLink/useLink'
+import { TELEPORT_TARGET_KEY } from './composables/useTeleportTarget/useTeleportTarget'
 import { setLocale } from './locales/state'
 import type { UiKitDefaults } from './composables/useDefaults/useDefaults.types'
 import type { IconMap } from './composables/useIcon/useIcon.types'
 import type { LinkComponent } from './composables/useLink/useLink.types'
+import type { TeleportTarget } from './composables/useTeleportTarget/useTeleportTarget'
 import type { LocaleInput } from './locales/state'
 import type { App, Component, Plugin } from 'vue'
 
@@ -96,6 +98,11 @@ export interface UiKitPluginOptions {
 	 * формат дат и чисел, первый день недели в календаре. Язык один на страницу
 	 */
 	locale?: LocaleInput
+	/**
+	 * Куда телепортировать окна, выпадающие панели, тултипы и уведомления: CSS-селектор или элемент.
+	 * По умолчанию `body`. Свой контейнер нужен, например, в полноэкранном режиме
+	 */
+	teleportTo?: TeleportTarget
 }
 
 const UI_COMPONENTS: Record<string, Component> = {
@@ -176,6 +183,7 @@ export function createUiKitPlugin(options?: UiKitPluginOptions): Plugin {
 			if (options?.icons) app.provide(ICON_MAP_KEY, options.icons)
 			if (options?.linkComponent) app.provide(LINK_COMPONENT_KEY, options.linkComponent)
 			if (options?.locale) setLocale(options.locale)
+			if (options?.teleportTo) app.provide(TELEPORT_TARGET_KEY, options.teleportTo)
 		},
 	}
 }

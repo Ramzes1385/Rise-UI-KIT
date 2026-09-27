@@ -1,5 +1,6 @@
 /** Composable: зум изображений (панорамирование, вращение, масштабирование, миникарта) */
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
 import { UI_SCALE, UI_SIZE } from '@constants'
 import { useZoomMinimap } from './useZoomMinimap'
@@ -161,9 +162,11 @@ function useImageZoom(options: UseImageZoomOptions) {
 		if (options.closeOnOverlay()) closeZoom()
 	}
 
+	// Escape — через стек слоёв: зум, открытый из окна, закрывается первым, окно — следующим нажатием
+	useEscapeKey({ isActive: () => isZoomOpen.value, callback: () => closeZoom() })
+
 	function handleKeydown(event: KeyboardEvent): void {
 		if (!isZoomOpen.value) return
-		if (event.key === 'Escape') closeZoom()
 		if (event.key === '+' || event.key === '=') zoomIn()
 		if (event.key === '-') zoomOut()
 		if (event.key === '0') resetZoom()

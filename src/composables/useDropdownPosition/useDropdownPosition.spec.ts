@@ -1,654 +1,236 @@
 /**
- * Unit-тесты для useDropdownPosition.
- * Проверяют позиционирование выпадающей панели.
+ * useDropdownPosition: координаты панели у триггера, переворот на противоположную сторону, сдвиг у края окна,
+ * слушатели только у открытой панели. Окно jsdom — 1024 × 768.
  */
 
 import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
-import { useDropdownPosition } from './useDropdownPosition'
+import { useDropdownPosition, VIEWPORT_MARGIN } from './useDropdownPosition'
+import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
 
-/** Обёртка для вызова composable внутри Vue-контекста */
-function withSetup<T>(composable: () => T): T {
-	let result: T
-	mount({
-		setup() {
-			result = composable()
-			return () => null
-		},
-	})
-	return result!
+const GAP = 4
+
+function rect(top: number, left: number, width = 200, height = 40): DOMRect {
+	return { top, left, width, height, bottom: top + height, right: left + width, x: left, y: top, toJSON: () => ({}) } as DOMRect
 }
 
-/** Обёртка с доступом к wrapper для unmount */
-function withSetupFull<T>(composable: () => T): { result: T; wrapper: ReturnType<typeof mount> } {
-	let result: T
+/** Обёртка с триггером заданного положения */
+function createWrapper(triggerRect: DOMRect | null): HTMLElement {
+	const wrapper = document.createElement('div')
+	if (triggerRect) {
+		const trigger = document.createElement('button')
+		trigger.getBoundingClientRect = () => triggerRect
+		wrapper.append(trigger)
+	} else {
+		wrapper.getBoundingClientRect = () => rect(10, 20, 30, 10)
+	}
+	return wrapper
+}
+
+/** Панель заданного размера */
+function createPanel(width = 100, height = 50): HTMLElement {
+	const panel = document.createElement('div')
+	Object.defineProperty(panel, 'offsetWidth', { value: width })
+	Object.defineProperty(panel, 'offsetHeight', { value: height })
+	return panel
+}
+
+function setup(options: { position?: DropdownPosition; trigger?: DOMRect | null; panel?: HTMLElement | null; isOpen?: boolean; matchWidth?: boolean; wrapper?: HTMLElement | null } = {}) {
+	const position = ref<DropdownPosition>(options.position ?? 'bottom-start')
+	const isOpen = ref(options.isOpen ?? true)
+	const gap = ref(GAP)
+	const matchWidth = ref(options.matchWidth ?? false)
+	const wrapperRef = ref<HTMLElement | null>(options.wrapper === undefined ? createWrapper(options.trigger === undefined ? rect(300, 400) : options.trigger) : options.wrapper)
+	const dropdownRef = ref<HTMLElement | null>(options.panel === undefined ? createPanel() : options.panel)
+	let api!: ReturnType<typeof useDropdownPosition>
 	const wrapper = mount({
 		setup() {
-			result = composable()
+			api = useDropdownPosition({
+				wrapperRef,
+				dropdownRef,
+				position: () => position.value,
+				gap: () => gap.value,
+				matchWidth: () => matchWidth.value,
+				maxHeight: () => '320px',
+				isOpen: () => isOpen.value,
+			})
 			return () => null
 		},
 	})
-	return { result: result!, wrapper }
+	return { api, position, isOpen, gap, matchWidth, wrapperRef, dropdownRef, wrapper }
 }
 
-/** Создать мок-элемент с getBoundingClientRect */
-function createMockElement(rect: DOMRect): HTMLElement {
-	const el = document.createElement('div')
-	el.getBoundingClientRect = () => rect
-	return el
-}
-
-/** Создать мок DOMRect */
-function createRect(options: Partial<DOMRect> = {}): DOMRect {
-	return {
-		x: 0,
-		y: 0,
-		width: 200,
-		height: 40,
-		top: 100,
-		right: 200,
-		bottom: 140,
-		left: 0,
-		...options,
-	} as DOMRect
-}
+afterEach(() => {
+	vi.restoreAllMocks()
+})
 
 describe('useDropdownPosition', () => {
-	it('должен возвращать panelStyle и updatePosition', () => {
-		const wrapperRef = ref<HTMLElement | null>(document.createElement('div'))
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
+	it.each([
+		['bottom-start', 344, 400],
+		['bottom-end', 344, 500],
+		['bottom', 344, 450],
+		['top-start', 246, 400],
+		['top-end', 246, 500],
+		['top', 246, 450],
+		['left-start', 300, 296],
+		['left-end', 290, 296],
+		['left', 295, 296],
+		['right-start', 300, 604],
+		['right-end', 290, 604],
+		['right', 295, 604],
+	] as const)('%s: панель у триггера', (position, top, left) => {
+		const { api } = setup({ position })
 
-		const { panelStyle, updatePosition } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => false,
-			}),
+		expect(api.coords.value).toEqual({ top, left })
+		expect(api.placement.value).toBe(position)
+		expect(api.panelStyle.value).toEqual({ maxHeight: '320px', top: `${top}px`, left: `${left}px` })
+	})
+
+	it('снизу нет места — панель переворачивается наверх', () => {
+		const { api } = setup({ position: 'bottom-start', trigger: rect(700, 400) })
+
+		expect(api.placement.value).toBe('top-start')
+		expect(api.coords.value.top).toBe(700 - GAP - 50)
+	})
+
+	it('справа нет места — панель переворачивается влево', () => {
+		const { api } = setup({ position: 'right', trigger: rect(300, 900, 100) })
+
+		expect(api.placement.value).toBe('left')
+		expect(api.coords.value.left).toBe(900 - GAP - 100)
+	})
+
+	it('места нет с обеих сторон — сторона остаётся', () => {
+		const { api } = setup({ position: 'bottom-start', panel: createPanel(100, 800) })
+
+		expect(api.placement.value).toBe('bottom-start')
+	})
+
+	it('у края окна панель сдвигается вдоль него', () => {
+		expect(setup({ position: 'bottom-start', trigger: rect(300, 980, 40) }).api.coords.value.left).toBe(1024 - 100 - VIEWPORT_MARGIN)
+		expect(setup({ position: 'bottom-end', trigger: rect(300, 10, 40) }).api.coords.value.left).toBe(VIEWPORT_MARGIN)
+		expect(setup({ position: 'right-start', trigger: rect(740, 400) }).api.coords.value.top).toBe(768 - 50 - VIEWPORT_MARGIN)
+	})
+
+	it('размер окна — без полосы прокрутки (clientWidth), когда он известен', () => {
+		vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(1000)
+		vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(700)
+
+		expect(setup({ position: 'bottom-start', trigger: rect(300, 980, 40) }).api.coords.value.left).toBe(1000 - 100 - VIEWPORT_MARGIN)
+	})
+
+	it('до отрисовки панели (размер неизвестен) — без переворота и сдвига', () => {
+		const { api } = setup({ position: 'bottom-end', trigger: rect(700, 10, 40), panel: null })
+
+		expect(api.placement.value).toBe('bottom-end')
+		expect(api.coords.value).toEqual({ top: 744, left: 50 })
+	})
+
+	it('matchWidth — ширина триггера', () => {
+		const { api } = setup({ matchWidth: true })
+
+		expect(api.panelStyle.value.width).toBe('200px')
+	})
+
+	it('закрытая панель и обёртка без элемента не пересчитываются', () => {
+		const closed = setup({ isOpen: false })
+		closed.api.updatePosition()
+		expect(closed.api.coords.value).toEqual({ top: 0, left: 0 })
+
+		const detached = setup({ wrapper: null })
+		expect(detached.api.coords.value).toEqual({ top: 0, left: 0 })
+	})
+
+	it('без дочернего элемента берётся rect обёртки', () => {
+		const { api } = setup({ trigger: null, panel: null })
+
+		expect(api.coords.value).toEqual({ top: 20 + GAP, left: 20 })
+	})
+
+	it('при открытии пересчитывается и слушает прокрутку, размер окна и панели; при закрытии — перестаёт', async () => {
+		const observers: { callback: () => void; disconnect: ReturnType<typeof vi.fn> }[] = []
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				disconnect = vi.fn()
+				callback: () => void
+				constructor(callback: () => void) {
+					this.callback = callback
+					observers.push(this)
+				}
+				observe() {}
+			},
 		)
-
-		expect(panelStyle).toBeDefined()
-		expect(updatePosition).toBeTypeOf('function')
-	})
-
-	it('должен позиционировать bottom-start', () => {
-		const triggerRect = createRect({ top: 100, bottom: 140, left: 50 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle, updatePosition } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		updatePosition()
-		const style = panelStyle.value
-		expect(style.top).toBe('148px')
-		expect(style.left).toBe('50px')
-	})
-
-	it('должен позиционировать top-start', () => {
-		const triggerRect = createRect({ top: 200, bottom: 240, left: 50 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle, updatePosition } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'top-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		updatePosition()
-		const style = panelStyle.value
-		expect(style.bottom).toBeDefined()
-		expect(style.left).toBe('50px')
-	})
-
-	it('должен применять matchWidth', () => {
-		const triggerRect = createRect({ width: 250 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle, updatePosition } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => true,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		updatePosition()
-		expect(panelStyle.value.width).toBe('250px')
-	})
-
-	it('не должен обновлять позицию когда isOpen=false', () => {
-		const wrapperRef = ref<HTMLElement | null>(document.createElement('div'))
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle, updatePosition } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => false,
-			}),
-		)
-
-		updatePosition()
-		expect(panelStyle.value.top).toBe('0px')
-	})
-
-	it('должен учитывать gap при позиционировании', () => {
-		const triggerRect = createRect({ top: 100, bottom: 140, left: 0 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle, updatePosition } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 16,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		updatePosition()
-		expect(panelStyle.value.top).toBe('156px')
-	})
-
-	describe('позиции bottom', () => {
-		it('должен позиционировать bottom-end', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 50, right: 250 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'bottom-end',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.top).toBe('148px')
-			expect(panelStyle.value.right).toBeDefined()
-		})
-
-		it('должен позиционировать bottom (по центру)', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 50, width: 200 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'bottom',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.top).toBe('148px')
-			expect(panelStyle.value.left).toBe('150px')
-			expect(panelStyle.value.translate).toBe('-50% 0')
-		})
-	})
-
-	describe('позиции top', () => {
-		it('должен позиционировать top-end', () => {
-			const triggerRect = createRect({ top: 200, bottom: 240, left: 50, right: 250 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'top-end',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.bottom).toBeDefined()
-			expect(panelStyle.value.right).toBeDefined()
-		})
-
-		it('должен позиционировать top (по центру)', () => {
-			const triggerRect = createRect({ top: 200, bottom: 240, left: 50, width: 200 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'top',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.bottom).toBeDefined()
-			expect(panelStyle.value.left).toBe('150px')
-			expect(panelStyle.value.translate).toBe('-50% 0')
-		})
-	})
-
-	describe('позиции left', () => {
-		it('должен позиционировать left-start', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 200 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'left-start',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.top).toBe('100px')
-			expect(panelStyle.value.right).toBeDefined()
-		})
-
-		it('должен позиционировать left-end', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 200 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'left-end',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.bottom).toBeDefined()
-			expect(panelStyle.value.right).toBeDefined()
-		})
-
-		it('должен позиционировать left (по центру)', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 200, height: 40 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'left',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.top).toBe('120px')
-			expect(panelStyle.value.right).toBeDefined()
-			expect(panelStyle.value.translate).toBe('0 -50%')
-		})
-	})
-
-	describe('позиции right', () => {
-		it('должен позиционировать right-start', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 0, right: 200 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'right-start',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.top).toBe('100px')
-			expect(panelStyle.value.left).toBe('208px')
-		})
-
-		it('должен позиционировать right-end', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 0, right: 200 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'right-end',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.bottom).toBeDefined()
-			expect(panelStyle.value.left).toBe('208px')
-		})
-
-		it('должен позиционировать right (по центру)', () => {
-			const triggerRect = createRect({ top: 100, bottom: 140, left: 0, right: 200, height: 40 })
-			const wrapper = document.createElement('div')
-			const trigger = createMockElement(triggerRect)
-			wrapper.appendChild(trigger)
-			const wrapperRef = ref<HTMLElement | null>(wrapper)
-			const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-			const { panelStyle, updatePosition } = withSetup(() =>
-				useDropdownPosition({
-					wrapperRef,
-					dropdownRef,
-					position: () => 'right',
-					gap: () => 8,
-					matchWidth: () => false,
-					maxHeight: () => '300px',
-					isOpen: () => true,
-				}),
-			)
-
-			updatePosition()
-			expect(panelStyle.value.top).toBe('120px')
-			expect(panelStyle.value.left).toBe('208px')
-			expect(panelStyle.value.translate).toBe('0 -50%')
-		})
-	})
-
-	it('должен обновлять позицию при открытии через watch', async () => {
-		const isOpen = ref(false)
-		const triggerRect = createRect({ top: 100, bottom: 140, left: 50 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => isOpen.value,
-			}),
-		)
-
-		expect(panelStyle.value.top).toBe('0px')
+		const addSpy = vi.spyOn(window, 'addEventListener')
+		const removeSpy = vi.spyOn(window, 'removeEventListener')
+		const { api, isOpen, wrapperRef } = setup({ isOpen: false })
+		expect(addSpy).not.toHaveBeenCalledWith('scroll', expect.any(Function), true)
 
 		isOpen.value = true
 		await nextTick()
-		expect(panelStyle.value.top).toBe('148px')
+		await nextTick()
+		expect(api.coords.value).toEqual({ top: 344, left: 400 })
+		expect(addSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true)
+		expect(observers).toHaveLength(1)
+
+		// Триггер сдвинулся: прокрутка и изменение размера панели пересчитывают позицию
+		;(wrapperRef.value!.firstElementChild as HTMLElement).getBoundingClientRect = () => rect(100, 400)
+		window.dispatchEvent(new Event('scroll'))
+		expect(api.coords.value.top).toBe(144)
+		;(wrapperRef.value!.firstElementChild as HTMLElement).getBoundingClientRect = () => rect(200, 400)
+		observers[0].callback()
+		expect(api.coords.value.top).toBe(244)
 
 		isOpen.value = false
 		await nextTick()
-		// Не должно меняться
-		expect(panelStyle.value.top).toBe('148px')
+		expect(removeSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true)
+		expect(observers[0].disconnect).toHaveBeenCalled()
+		vi.unstubAllGlobals()
 	})
 
-	it('должен пересчитывать позицию при изменении gap', async () => {
-		const gap = ref(8)
-		const triggerRect = createRect({ top: 100, bottom: 140, left: 50 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
+	it('без панели наблюдатель размера не создаётся; повторное открытие не плодит наблюдателей', async () => {
+		const observe = vi.fn()
+		vi.stubGlobal('ResizeObserver', class { observe = observe; disconnect() {} })
+		const { isOpen, dropdownRef } = setup({ isOpen: false, panel: null })
 
-		const { panelStyle } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => gap.value,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		expect(panelStyle.value.top).toBe('148px')
-
-		gap.value = 16
+		isOpen.value = true
 		await nextTick()
-		expect(panelStyle.value.top).toBe('156px')
-	})
-
-	it('watch gap не вызывает updatePosition если isOpen=false', async () => {
-		const gap = ref(8)
-		const wrapperRef = ref<HTMLElement | null>(document.createElement('div'))
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => gap.value,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => false,
-			}),
-		)
-
-		gap.value = 16
 		await nextTick()
-		expect(panelStyle.value.top).toBe('0px')
+		expect(observe).not.toHaveBeenCalled()
+
+		dropdownRef.value = createPanel()
+		window.dispatchEvent(new Event('resize'))
+		isOpen.value = false
+		await nextTick()
+		isOpen.value = true
+		await nextTick()
+		await nextTick()
+		expect(observe).toHaveBeenCalledTimes(1)
+		vi.unstubAllGlobals()
 	})
 
-	it('должен обновлять позицию при скролле когда isOpen=true', () => {
-		const triggerRect = createRect({ top: 100, bottom: 140, left: 50 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		window.dispatchEvent(new Event('scroll', { bubbles: true }))
-		expect(panelStyle.value.top).toBe('148px')
-	})
-
-	it('должен устанавливать начальную позицию при монтировании если isOpen=true', () => {
-		const triggerRect = createRect({ top: 100, bottom: 140, left: 50 })
-		const wrapper = document.createElement('div')
-		const trigger = createMockElement(triggerRect)
-		wrapper.appendChild(trigger)
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { panelStyle } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		expect(panelStyle.value.top).toBe('148px')
-	})
-
-	it('должен удалять слушатели при размонтировании', () => {
+	it('открыта при монтировании; смена gap и position пересчитывает; размонтирование снимает слушатели', async () => {
 		const removeSpy = vi.spyOn(window, 'removeEventListener')
-		const wrapperRef = ref<HTMLElement | null>(document.createElement('div'))
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
+		const { api, gap, position, wrapper } = setup()
 
-		const { wrapper } = withSetupFull(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => false,
-			}),
-		)
+		gap.value = 10
+		await nextTick()
+		expect(api.coords.value.top).toBe(350)
+
+		position.value = 'top-start'
+		await nextTick()
+		expect(api.placement.value).toBe('top-start')
 
 		wrapper.unmount()
-		expect(removeSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true)
 		expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function))
-		removeSpy.mockRestore()
 	})
 
-	it('должен возвращать null если wrapperRef не установлен', () => {
-		const wrapperRef = ref<HTMLElement | null>(null)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
+	it('пересчёт с тем же углом оставляет прежний объект coords: панель и её содержимое не перерисовываются', async () => {
+		const { api } = setup()
+		await nextTick()
+		const before = api.coords.value
 
-		const { updatePosition, coords } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		updatePosition()
-		expect(coords.value.top).toBe(0)
-	})
-
-	it('должен использовать getBoundingClientRect самого wrapperRef если нет дочерних элементов', () => {
-		const wrapper = document.createElement('div')
-		const rect = createRect({ top: 100, bottom: 140, left: 50 })
-		wrapper.getBoundingClientRect = () => rect
-		const wrapperRef = ref<HTMLElement | null>(wrapper)
-		const dropdownRef = ref<HTMLElement | null>(document.createElement('div'))
-
-		const { updatePosition, panelStyle } = withSetup(() =>
-			useDropdownPosition({
-				wrapperRef,
-				dropdownRef,
-				position: () => 'bottom-start',
-				gap: () => 8,
-				matchWidth: () => false,
-				maxHeight: () => '300px',
-				isOpen: () => true,
-			}),
-		)
-
-		updatePosition()
-		expect(panelStyle.value.top).toBe('148px')
+		api.updatePosition()
+		expect(api.coords.value).toBe(before)
 	})
 })

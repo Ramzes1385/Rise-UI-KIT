@@ -2,7 +2,7 @@
  * BaseDropdown — stories.
  *
  * Разделы: Default (песочница: меню действий, isOpen синхронизирован с Controls) → внешний вид (варианты, кастомный цвет) →
- * состояния (пустая панель, длинный список) → сценарии (позиции, поле ввода в панели) → клавиатура.
+ * состояния (пустая панель, длинный список) → сценарии (позиции, у края окна, тёмный блок, поле ввода в панели) → клавиатура.
  * Открытые панели телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
@@ -90,8 +90,12 @@ const meta = {
 					'',
 					'- Триггер — слот по умолчанию, содержимое панели — слот `dropdown`. Открытием управляет родитель:',
 					'  `v-model:is-open` и обработчик клика на триггере. Панель закрывается кликом снаружи и по Escape.',
-					'- Панель телепортируется в body и позиционируется по триггеру (`position`, `gap`); `matchWidth` — ширина',
-					'  как у триггера, `maxHeight` — высота, после которой содержимое прокручивается.',
+					'- Панель телепортируется в body (или в контейнер `teleportTo` из плагина и BaseApp) и позиционируется по',
+					'  триггеру (`position`, `gap`). Если на выбранной стороне не хватает места, панель открывается с противоположной,',
+					'  а вдоль края окна сдвигается, оставляя 8px. `matchWidth` — ширина как у триггера, `maxHeight` — высота,',
+					'  после которой содержимое прокручивается. Тема панели — `data-theme` ближайшего предка триггера.',
+					'- Escape и клик снаружи закрывают только верхнюю панель: список внутри окна или поповера закрывается первым,',
+					'  клик в панели вложенного списка не закрывает внешнюю.',
 					'- Фокус остаётся на триггере (`preventMousedown`); поля ввода в панели получают фокус, а при закрытии он',
 					'  возвращается на триггер.',
 					'',
@@ -317,6 +321,74 @@ export const Positions: Story = {
 			</div>
 		`,
 	}),
+}
+
+/**
+ * У края окна: снизу места не хватает — панель открывается над триггером; справа не хватает — сдвигается влево
+ * и оставляет 8px до края окна. Позиция в пропе остаётся `bottom-start`.
+ */
+export const ViewportEdge: Story = {
+	tags: ['!autodocs'],
+	parameters: { layout: 'fullscreen', controls: { include: ['gap', 'variant'] } },
+	render: args => ({
+		components: { BaseDropdown, BaseButton, BaseIcon, BaseMenu },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'position', 'onUpdate:isOpen']), isOpen: ref(false), actions: FILE_ACTIONS }),
+		template: `
+			<div style="box-sizing: border-box; display: flex; align-items: flex-end; justify-content: flex-end; min-height: 100vh; padding: 16px;">
+				<BaseDropdown v-bind="props" v-model:is-open="isOpen" position="bottom-start">
+					<BaseButton variant="outline" @click="isOpen = !isOpen">
+						Действия
+						<template #right><BaseIcon name="chevron-down" :size-scale="80" /></template>
+					</BaseButton>
+					<template #dropdown>
+						<BaseMenu variant="ghost" :items="actions" @select="isOpen = false" />
+					</template>
+				</BaseDropdown>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Действия' })
+		await userEvent.click(trigger)
+		const panel = (await screen.findByText('Скачать')).closest('.base-dropdown__panel') as HTMLElement
+
+		await waitFor(() => {
+			const panelRect = panel.getBoundingClientRect()
+			expect(panelRect.bottom).toBeLessThanOrEqual(trigger.getBoundingClientRect().top)
+			expect(panelRect.right).toBeLessThanOrEqual(document.documentElement.clientWidth - 8)
+		})
+	},
+}
+
+/**
+ * Тёмный блок на светлой странице: панель телепортирована в body, но берёт `data-theme` ближайшего предка
+ * триггера — её цвета совпадают с блоком, а не со страницей.
+ */
+export const InDarkBlock: Story = {
+	parameters: { controls: { include: ['variant'] }, docs: docsFrame(240) },
+	render: args => ({
+		components: { BaseDropdown, BaseButton, BaseIcon, BaseMenu, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'onUpdate:isOpen']), isOpen: ref(false), actions: FILE_ACTIONS }),
+		template: `
+			<div data-theme="dark" class="story-stack" style="padding: 16px; border-radius: var(--rise-radius-md); background: var(--rise-bg); color: var(--rise-text);">
+				<BaseText>Плеер: тёмная панель на светлой странице</BaseText>
+				<BaseDropdown v-bind="props" v-model:is-open="isOpen">
+					<BaseButton variant="outline" @click="isOpen = !isOpen">
+						Действия
+						<template #right><BaseIcon name="chevron-down" :size-scale="80" /></template>
+					</BaseButton>
+					<template #dropdown>
+						<BaseMenu variant="ghost" :items="actions" @select="isOpen = false" />
+					</template>
+				</BaseDropdown>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Действия' }))
+		const panel = (await screen.findByText('Скачать')).closest('.base-dropdown__panel')
+		await expect(panel).toHaveAttribute('data-theme', 'dark')
+	},
 }
 
 /**

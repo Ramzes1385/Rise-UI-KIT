@@ -5,7 +5,7 @@
 .base-tour {
 	position: fixed;
 	inset: 0;
-	z-index: 1000;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 }
 
 // Прозрачный слой на весь экран: клик по нему пропускает тур (behavior.closeOnOverlayClick).

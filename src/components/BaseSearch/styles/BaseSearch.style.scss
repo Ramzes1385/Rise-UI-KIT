@@ -159,7 +159,7 @@
 	&__sidebar-overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 1000;
+		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 		background-color: var(--rise-overlay);
 	}
 

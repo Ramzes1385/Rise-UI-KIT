@@ -25,12 +25,13 @@
 			</template>
 		</BaseInput>
 	</div>
-	<Teleport to="body">
+	<Teleport :to="teleportTarget">
 		<Transition :name="`base-search-${panel}`">
 			<!-- Подложка --rise-overlay, окно — как модальное (BaseModal); клик по подложке и Escape закрывают -->
 			<div
 				v-if="isOpen"
 				:class="[overlayClass, classes[`${prefix}Overlay`]]"
+				:style="layerStyle"
 				@click.self="close">
 				<div :class="panelClass" :style="sizeScaleStyle" role="dialog" :aria-label="UI_ARIA.SEARCH">
 					<div :class="headerClass">
@@ -103,12 +104,17 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { useLayerIndex } from '@composables/useLayerStack'
 import { useScrollLock } from '@composables/useScrollLock'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
 import type { BaseSearchOverlayEmits, BaseSearchOverlayProps, BaseSearchOverlaySlots } from '../model/BaseSearchOverlay.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = defineProps<BaseSearchOverlayProps>()
 
@@ -119,6 +125,8 @@ defineSlots<BaseSearchOverlaySlots>()
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle } = useStandardBaseComponent('base-search', props)
 
 const isOpen = ref(false)
+/** Место окна поиска среди открытых слоёв */
+const layerStyle = useLayerIndex(() => isOpen.value)
 const inputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 
 const { lock: lockScroll, unlock: unlockScroll } = useScrollLock()

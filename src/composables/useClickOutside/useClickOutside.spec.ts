@@ -1,272 +1,128 @@
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-import { defineComponent, h, shallowRef } from 'vue'
+import { defineComponent, h, nextTick, ref, shallowRef } from 'vue'
 import { useClickOutside } from './useClickOutside'
-import type { Ref } from 'vue'
+import type { ComponentPublicInstance, Ref } from 'vue'
 
-/** Создать тестовый компонент с useClickOutside */
-function createTestComponent(options: {
-	targets: Ref<HTMLElement | null>[]
-	callback: () => void
-	isActive?: () => boolean
-	isCapture?: boolean
-}) {
+type Target = HTMLElement | ComponentPublicInstance | (HTMLElement | null)[] | null
+
+/** Тестовый компонент с useClickOutside */
+function createTestComponent(options: { targets: Ref<Target>[]; callback: () => void; isActive?: () => boolean; isCapture?: boolean }) {
 	return defineComponent({
 		setup() {
-			useClickOutside({
-				targets: options.targets,
-				callback: options.callback,
-				isActive: options.isActive,
-				isCapture: options.isCapture,
-			})
+			useClickOutside(options)
 			return () => h('div')
 		},
 	})
 }
 
-/** Извлечь обработчик mousedown, зарегистрированный на document */
-function extractHandler(spy: ReturnType<typeof vi.spyOn>): ((e: MouseEvent) => void) | undefined {
-	const call = spy.mock.calls.find((c: unknown[]) => c[0] === 'mousedown')
-	return call?.[1] as ((e: MouseEvent) => void) | undefined
+function pressAt(target: EventTarget): void {
+	target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+}
+
+/** Элемент в документе: нажатие по нему доходит до слушателей document */
+function attached(): HTMLElement {
+	const element = document.createElement('div')
+	document.body.append(element)
+	return element
 }
 
 describe('useClickOutside', () => {
 	const callback = vi.fn<() => void>()
-	let targetRef: Ref<HTMLElement | null>
 
 	beforeEach(() => {
 		callback.mockClear()
-		targetRef = shallowRef<HTMLElement | null>(null)
 	})
 
-	it('должен вызвать callback при клике вне элемента', () => {
-		const targetEl = document.createElement('div')
-		targetRef.value = targetEl
+	it('вызывает callback при нажатии вне элемента и не вызывает внутри', () => {
+		const target = attached()
+		render(createTestComponent({ targets: [shallowRef<Target>(target)], callback }))
 
-		render(
-			createTestComponent({
-				targets: [targetRef],
-				callback,
-			}),
-		)
+		pressAt(target)
+		expect(callback).not.toHaveBeenCalled()
 
-		document.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-
+		pressAt(document.body)
 		expect(callback).toHaveBeenCalledTimes(1)
 	})
 
-	it('не должен вызвать callback при клике внутри элемента', () => {
-		const targetEl = document.createElement('div')
-		targetRef.value = targetEl
+	it('цель без элемента — любое нажатие вне', () => {
+		render(createTestComponent({ targets: [shallowRef<Target>(null)], callback }))
 
-		const addSpy = vi.spyOn(document, 'addEventListener')
+		pressAt(document.body)
+		expect(callback).toHaveBeenCalledTimes(1)
+	})
+
+	it('isActive: закрытый слой нажатия не получает', () => {
+		const isOpen = ref(false)
+		render(createTestComponent({ targets: [shallowRef<Target>(attached())], callback, isActive: () => isOpen.value }))
+
+		pressAt(document.body)
+		expect(callback).not.toHaveBeenCalled()
+
+		isOpen.value = true
+		pressAt(document.body)
+		expect(callback).toHaveBeenCalledTimes(1)
+	})
+
+	it('массив элементов и корень компонента', () => {
+		const first = attached()
+		const second = attached()
+		const instanceRoot = attached()
 		render(
 			createTestComponent({
-				targets: [targetRef],
+				targets: [shallowRef<Target>([first, null, second]), shallowRef<Target>({ $el: instanceRoot } as unknown as ComponentPublicInstance)],
 				callback,
 			}),
 		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
 
-		handler!({ target: targetEl } as unknown as MouseEvent)
-
+		pressAt(second)
+		pressAt(instanceRoot)
 		expect(callback).not.toHaveBeenCalled()
 	})
 
-	it('не должен вызвать callback когда isActive возвращает false', () => {
-		const targetEl = document.createElement('div')
-		targetRef.value = targetEl
+	it('корень компонента без элемента (текстовый узел) не считается целью', () => {
+		render(createTestComponent({ targets: [shallowRef<Target>({ $el: document.createTextNode('') } as unknown as ComponentPublicInstance)], callback }))
 
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		render(
-			createTestComponent({
-				targets: [targetRef],
-				callback,
-				isActive: () => false,
-			}),
-		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
+		pressAt(document.body)
+		expect(callback).toHaveBeenCalledTimes(1)
+	})
 
-		handler!({ target: document.body } as unknown as MouseEvent)
+	it('isCapture: срабатывает, даже если элемент остановил всплытие', () => {
+		const stopper = attached()
+		stopper.addEventListener('mousedown', event => event.stopPropagation())
+		const bubbleCallback = vi.fn()
+		render(createTestComponent({ targets: [shallowRef<Target>(attached())], callback, isCapture: true }))
+		render(createTestComponent({ targets: [shallowRef<Target>(attached())], callback: bubbleCallback }))
 
+		pressAt(stopper)
+
+		expect(callback).toHaveBeenCalledTimes(1)
+		expect(bubbleCallback).not.toHaveBeenCalled()
+	})
+
+	it('вложенный слой, открытый позже, не закрывает родителя нажатием внутри себя', async () => {
+		const parentPanel = attached()
+		const childPanel = attached()
+		const isChildOpen = ref(false)
+		const childCallback = vi.fn()
+		render(createTestComponent({ targets: [shallowRef<Target>(parentPanel)], callback }))
+		render(createTestComponent({ targets: [shallowRef<Target>(childPanel)], callback: childCallback, isActive: () => isChildOpen.value }))
+
+		isChildOpen.value = true
+		await nextTick()
+		pressAt(childPanel)
+		expect(callback).not.toHaveBeenCalled()
+
+		pressAt(parentPanel)
+		expect(childCallback).toHaveBeenCalledTimes(1)
 		expect(callback).not.toHaveBeenCalled()
 	})
 
-	it('должен отписаться от слушателя при размонтировании', () => {
-		const targetEl = document.createElement('div')
-		targetRef.value = targetEl
-
-		const { unmount } = render(
-			createTestComponent({
-				targets: [targetRef],
-				callback,
-			}),
-		)
-
+	it('после размонтирования нажатия не отслеживаются', () => {
+		const { unmount } = render(createTestComponent({ targets: [shallowRef<Target>(attached())], callback }))
 		unmount()
 
-		document.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-
+		pressAt(document.body)
 		expect(callback).not.toHaveBeenCalled()
-	})
-
-	it('должен работать с несколькими targets — клик внутри второго', () => {
-		const targetEl1 = document.createElement('div')
-		const targetEl2 = document.createElement('div')
-		const ref1: Ref<HTMLElement | null> = shallowRef(targetEl1)
-		const ref2: Ref<HTMLElement | null> = shallowRef(targetEl2)
-
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		render(
-			createTestComponent({
-				targets: [ref1, ref2],
-				callback,
-			}),
-		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
-
-		handler!({ target: targetEl2 } as unknown as MouseEvent)
-
-		expect(callback).not.toHaveBeenCalled()
-	})
-
-	it('должен вызвать callback при клике вне когда несколько targets', () => {
-		const targetEl1 = document.createElement('div')
-		const targetEl2 = document.createElement('div')
-		const ref1: Ref<HTMLElement | null> = shallowRef(targetEl1)
-		const ref2: Ref<HTMLElement | null> = shallowRef(targetEl2)
-
-		render(
-			createTestComponent({
-				targets: [ref1, ref2],
-				callback,
-			}),
-		)
-
-		document.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-
-		expect(callback).toHaveBeenCalledTimes(1)
-	})
-
-	it('должен вызвать callback когда targetRef равен null', () => {
-		targetRef.value = null
-
-		render(
-			createTestComponent({
-				targets: [targetRef],
-				callback,
-			}),
-		)
-
-		document.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-
-		expect(callback).toHaveBeenCalledTimes(1)
-	})
-
-	it('должен вызвать callback когда isActive возвращает true', () => {
-		const targetEl = document.createElement('div')
-		targetRef.value = targetEl
-
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		render(
-			createTestComponent({
-				targets: [targetRef],
-				callback,
-				isActive: () => true,
-			}),
-		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
-
-		handler!({ target: document.body } as unknown as MouseEvent)
-
-		expect(callback).toHaveBeenCalledTimes(1)
-	})
-
-	it('должен корректно обрабатывать массив элементов в ref', () => {
-		const targetEl1 = document.createElement('div')
-		const targetEl2 = document.createElement('div')
-		const arrayRef: Ref<HTMLElement[] | null> = shallowRef([targetEl1, targetEl2])
-
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		render(
-			createTestComponent({
-				targets: [arrayRef as unknown as Ref<HTMLElement | null>],
-				callback,
-			}),
-		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
-
-		// Клик внутри второго элемента массива — callback НЕ должен вызваться
-		handler!({ target: targetEl2 } as unknown as MouseEvent)
-		expect(callback).not.toHaveBeenCalled()
-	})
-
-	it('должен корректно обрабатывать массив с null-элементами', () => {
-		const targetEl = document.createElement('div')
-		const arrayRef: Ref<(HTMLElement | null)[] | null> = shallowRef([null, targetEl, null])
-
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		render(
-			createTestComponent({
-				targets: [arrayRef as unknown as Ref<HTMLElement | null>],
-				callback,
-			}),
-		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
-
-		// Клик внутри второго (не-null) элемента — callback не вызовется
-		handler!({ target: targetEl } as unknown as MouseEvent)
-		expect(callback).not.toHaveBeenCalled()
-	})
-
-	it('должен поддерживать Vue-инстанс с $el', () => {
-		const targetEl = document.createElement('div')
-		// Имитируем Vue-инстанс: объект с $el (как у компонентов через ref)
-		const componentInstance = { $el: targetEl }
-		const compRef: Ref<{ $el: HTMLElement } | null> = shallowRef(componentInstance)
-
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		render(
-			createTestComponent({
-				targets: [compRef as unknown as Ref<HTMLElement | null>],
-				callback,
-			}),
-		)
-		const handler = extractHandler(addSpy)
-		addSpy.mockRestore()
-
-		// Клик внутри $el инстанса — callback НЕ должен вызваться
-		handler!({ target: targetEl } as unknown as MouseEvent)
-		expect(callback).not.toHaveBeenCalled()
-	})
-
-	it('должен использовать capture-фазу когда isCapture=true', () => {
-		const targetEl = document.createElement('div')
-		targetRef.value = targetEl
-		const addSpy = vi.spyOn(document, 'addEventListener')
-		const removeSpy = vi.spyOn(document, 'removeEventListener')
-
-		const { unmount } = render(
-			createTestComponent({
-				targets: [targetRef],
-				callback,
-				isCapture: true,
-			}),
-		)
-
-		expect(addSpy).toHaveBeenCalledWith('mousedown', expect.any(Function), true)
-
-		unmount()
-
-		expect(removeSpy).toHaveBeenCalledWith('mousedown', expect.any(Function), true)
-
-		addSpy.mockRestore()
-		removeSpy.mockRestore()
 	})
 })

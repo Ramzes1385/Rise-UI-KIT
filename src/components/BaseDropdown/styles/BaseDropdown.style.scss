@@ -17,7 +17,7 @@
 		--dd-border: var(--rise-border);
 
 		position: fixed;
-		z-index: 1100;
+		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 		box-sizing: border-box;
 		min-width: sz(128px);
 		padding: sz(var(--dd-pad-top)) sz(var(--dd-pad-right)) sz(var(--dd-pad-bottom)) sz(var(--dd-pad-left));

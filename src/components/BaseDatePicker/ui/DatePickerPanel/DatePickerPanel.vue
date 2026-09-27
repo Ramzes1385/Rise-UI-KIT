@@ -1,5 +1,5 @@
 <template>
-	<Teleport to="body">
+	<Teleport :to="teleportTarget">
 		<Transition name="date-picker-panel">
 			<!-- data-theme копируется с ближайшего контейнера поля: панель в body иначе взяла бы токены темы страницы -->
 			<div
@@ -9,7 +9,7 @@
 				:aria-label="UI_TEXT.SELECT_DATE"
 				class="date-picker-panel"
 				:class="[{ 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
-				:style="resolvedProps.panelStyle"
+				:style="[resolvedProps.panelStyle, layerStyle]"
 				:data-theme="resolvedProps.theme">
 				<!-- Общая навигация: год и месяц(ы) для всех календарей панели -->
 				<div class="date-picker-panel__header">
@@ -105,19 +105,24 @@
 </template>
 
 <script setup lang="ts">
-import './DatePickerPanel.style.scss'
 import { computed, ref } from 'vue'
+import './DatePickerPanel.style.scss'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon } from '@components/BaseIcon'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useDatePickerPanelNavigation } from '@composables/useDatePickerPanelNavigation'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { useLayerIndex } from '@composables/useLayerStack'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_ARIA, UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { pickDatePickerCalendarConfig, toBaseCalendarProps, withoutTimeBlock } from '../../model/BaseDatePickerCalendar.types'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
 import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../model/DatePickerPanel.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = defineProps<DatePickerPanelProps>()
 const { resolveBooleanPropDefault } = useExplicitPropDetection()
@@ -134,6 +139,9 @@ const resolvedProps = computed(() => ({
 }))
 
 const emit = defineEmits<DatePickerPanelEmits>()
+
+/** Место панели среди открытых слоёв: календарь в окне — над окном */
+const layerStyle = useLayerIndex(() => resolvedProps.value.isOpen)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

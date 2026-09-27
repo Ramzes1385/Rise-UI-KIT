@@ -16,7 +16,7 @@
 	--tooltip-offset: #{sz(2px)};
 
 	position: fixed;
-	z-index: 9999;
+	z-index: var(--rise-z-tooltip);
 	display: flex;
 	box-sizing: border-box;
 	max-width: sz(280px);

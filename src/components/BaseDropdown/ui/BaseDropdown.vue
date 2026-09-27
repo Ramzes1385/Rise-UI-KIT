@@ -2,14 +2,15 @@
 	<div ref="wrapperRef" class="base-dropdown" :class="classes.root">
 		<slot />
 
-		<Teleport to="body">
+		<Teleport :to="teleportTarget">
 			<Transition name="base-dropdown">
 				<div
 					v-if="isOpen"
 					ref="dropdownRef"
 					class="base-dropdown__panel"
 					:class="[panelClass, variantClass, classes.panel]"
-					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
+					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
+					:data-theme="inheritedTheme"
 					@mousedown="handlePanelMousedown"
 					@focusin="handlePanelFocusin">
 					<slot name="dropdown" />
@@ -27,11 +28,16 @@ import { kitDefaults } from '@composables/useDefaults'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { useLayerIndex } from '@composables/useLayerStack'
 import { usePadding } from '@composables/usePadding'
+import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE } from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<BaseDropdownProps>(), kitDefaults('BaseDropdown', {
 	variant: DEFAULT_VARIANT,
@@ -63,6 +69,10 @@ const emit = defineEmits<BaseDropdownEmits>()
 defineSlots<BaseDropdownSlots>()
 
 const wrapperRef = ref<HTMLElement | null>(null)
+/** Тема блока, в котором стоит триггер: панель в body иначе взяла бы тему страницы */
+const inheritedTheme = useInheritedTheme(() => wrapperRef.value, () => props.isOpen)
+/** Место панели среди открытых слоёв: список в окне — над окном, окно из поповера — над поповером */
+const layerStyle = useLayerIndex(() => props.isOpen)
 const dropdownRef = ref<HTMLElement | null>(null)
 
 /** Элемент с фокусом до открытия панели */

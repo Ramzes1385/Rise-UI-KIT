@@ -9,7 +9,7 @@
 		@focusout="handleLeave">
 		<slot />
 
-		<Teleport to="body">
+		<Teleport :to="teleportTarget">
 			<Transition name="base-tooltip">
 				<!-- Подсказка в body не наследует стили обёртки: вариант, масштаб и цвет задаются на ней самой -->
 				<div
@@ -18,6 +18,7 @@
 					class="base-tooltip-popup"
 					:class="[`base-tooltip-popup--${position}`, variantClass, classes.tooltip]"
 					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]"
+					:data-theme="inheritedTheme"
 					role="tooltip">
 					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
@@ -32,10 +33,14 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE, UI_TIMING } from '@constants'
 import { calcTooltipPosition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<BaseTooltipProps>(), kitDefaults('BaseTooltip', {
 	variant: DEFAULT_VARIANT,
@@ -53,6 +58,8 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 
 const isVisible = ref(false)
 const wrapperRef = ref<HTMLElement | null>(null)
+/** Тема блока, в котором стоит триггер: подсказка в body иначе взяла бы тему страницы */
+const inheritedTheme = useInheritedTheme(() => wrapperRef.value, () => isVisible.value)
 const tooltipId = useId()
 let showTimer: ReturnType<typeof setTimeout> | null = null
 let hideTimer: ReturnType<typeof setTimeout> | null = null

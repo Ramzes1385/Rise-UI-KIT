@@ -1,9 +1,10 @@
 <template>
-	<Teleport to="body">
+	<Teleport :to="teleportTarget">
 		<div
 			v-if="isOpen && currentStep"
 			class="base-tour"
 			:class="classes.root"
+			:style="layerStyle"
 			role="dialog"
 			aria-modal="true"
 			:aria-label="currentStep.title || UI_TOUR.TITLE">
@@ -101,7 +102,9 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useFocusTrap } from '@composables/useFocusTrap'
+import { useLayerIndex } from '@composables/useLayerStack'
 import { useScrollLock } from '@composables/useScrollLock'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useTourCoordination } from '@composables/useTourCoordination'
 import { useTourLogic } from '@composables/useTourLogic'
 import {
@@ -110,6 +113,9 @@ import {
 } from '@constants'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseTour.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<BaseTourProps>(), kitDefaults('BaseTour', {
 	isOpen: false,
@@ -121,6 +127,9 @@ const props = withDefaults(defineProps<BaseTourProps>(), kitDefaults('BaseTour',
 
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()
+
+/** Место тура среди открытых слоёв: тур, запущенный из окна, — над ним */
+const layerStyle = useLayerIndex(() => props.isOpen)
 
 const internalIndex = ref(props.step)
 const activeIndex = computed((): number => internalIndex.value)

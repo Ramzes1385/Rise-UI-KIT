@@ -82,7 +82,7 @@
 			@focus="handleFocus"
 			@blur="handleBlur" />
 
-		<Teleport to="body">
+		<Teleport :to="teleportTarget">
 			<!-- Меню размера медиа (правый клик по изображению или видео). В body масштаб не наследуется — задаём его сами -->
 			<div
 				v-if="contextMenu.isVisible"
@@ -90,7 +90,8 @@
 				class="base-editor__context-menu"
 				role="dialog"
 				:aria-label="UI_EDITOR.MEDIA_MENU_LABEL"
-				:style="[sizeScaleStyle, { left: contextMenu.x + 'px', top: contextMenu.y + 'px' }]">
+				:style="[sizeScaleStyle, { left: contextMenu.x + 'px', top: contextMenu.y + 'px' }, layerStyle]"
+				:data-theme="inheritedTheme">
 				<div class="base-editor__context-menu-row" @keydown.enter.prevent="applyMediaSize">
 					<BaseInput
 						:model-value="contextMenu.width"
@@ -118,9 +119,9 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { BaseButton } from '@components/BaseButton'
 import '../styles/BaseEditor.style.scss'
 
-import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -128,12 +129,17 @@ import { kitDefaults } from '@composables/useDefaults'
 import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { useLayerIndex } from '@composables/useLayerStack'
+import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import { escapeHtml, sanitizeHtml } from '@utils/htmlUtils'
 import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../model/BaseEditor.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<BaseEditorProps>(), kitDefaults('BaseEditor', {
 	modelValue: '',
@@ -298,6 +304,11 @@ function handleBlur(): void {
 	isFocused.value = false
 	emit('blur')
 }
+
+/** Тема блока, в котором стоит редактор: меню в body иначе взяло бы тему страницы */
+const inheritedTheme = useInheritedTheme(() => editorRef.value, () => contextMenu.isVisible)
+/** Место меню среди открытых слоёв: меню редактора в окне — над окном */
+const layerStyle = useLayerIndex(() => contextMenu.isVisible)
 
 // Escape закрывает меню медиа (фокус возвращает watch ниже)
 useEscapeKey({

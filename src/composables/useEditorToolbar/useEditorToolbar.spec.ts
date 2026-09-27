@@ -1053,17 +1053,23 @@ describe('useEditorToolbar', () => {
 		expect(contextMenu.isVisible).toBe(true)
 	})
 
-	it('удаляет слушатель при размонтировании', () => {
-		const removeSpy = vi.spyOn(document, 'removeEventListener')
+	it('нажатие вне меню медиа закрывает его, пока компонент смонтирован; после размонтирования слой снят', () => {
 		const { editorRef, codeTextareaRef, onInput } = createOptions()
+		let api!: ReturnType<typeof useEditorToolbar>
 		const wrapper = mount({
 			setup() {
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput })
+				api = useEditorToolbar({ editorRef, codeTextareaRef, onInput })
 				return () => null
 			},
 		})
+		api.contextMenu.isVisible = true
+		document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+		expect(api.contextMenu.isVisible).toBe(false)
+
+		api.contextMenu.isVisible = true
 		wrapper.unmount()
-		expect(removeSpy).toHaveBeenCalledWith('mousedown', expect.any(Function), false)
+		document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+		expect(api.contextMenu.isVisible).toBe(true)
 	})
 
 	it('closeContextMenu вызывается при клике вне меню', () => {
@@ -1113,11 +1119,11 @@ describe('useEditorToolbar', () => {
 		handleContextMenu(event)
 		expect(contextMenu.isVisible).toBe(true)
 
-		// Эмулируем клик внутри
-		const clickEvent = new MouseEvent('mousedown', { bubbles: true })
-		Object.defineProperty(clickEvent, 'target', { value: menuDiv })
-		document.dispatchEvent(clickEvent)
+		// Нажатие внутри меню: событие всплывает от пункта меню до document
+		document.body.append(menuDiv)
+		menuDiv.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
 		expect(contextMenu.isVisible).toBe(true)
+		menuDiv.remove()
 	})
 
 	describe('Дополнительные покрытия веток', () => {

@@ -11,7 +11,7 @@
 					!hasOverlay && 'base-slideover--no-overlay',
 					classes.root,
 				]"
-				:style="[widthStyle, sizeScaleStyle, customColorStyle]"
+				:style="[widthStyle, sizeScaleStyle, customColorStyle, layerStyle]"
 				@click.self="handleOverlayClick">
 				<div
 					ref="panelRef"
@@ -66,9 +66,11 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFocusTrap } from '@composables/useFocusTrap'
+import { useLayerIndex } from '@composables/useLayerStack'
 import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
@@ -103,8 +105,9 @@ const widthStyle = computed(() => {
 /** Режим ограничения активен: явный isContained или передан container */
 const isContainedMode = computed(() => props.isContained || !!props.container)
 
-/** Цель teleport: переданный контейнер или body по умолчанию */
-const teleportTarget = computed<string | HTMLElement>(() => props.container ?? 'body')
+/** Цель телепорта: проп container, иначе контейнер из плагина и BaseApp (teleportTo), иначе body */
+const appTeleportTarget = useTeleportTarget()
+const teleportTarget = computed<string | HTMLElement>(() => props.container ?? appTeleportTarget)
 
 /** Отключить teleport только когда нет контейнера и явно contained */
 const isTeleportDisabled = computed(() => !props.container && props.isContained)
@@ -130,6 +133,9 @@ const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title))
 const hasFooter = computed(() => Boolean(slots.footer))
 
 /** Popup-паттерн: оверлей, Escape, блокировка скролла */
+/** Место панели среди открытых слоёв: панель, открытая из окна, — над ним */
+const layerStyle = useLayerIndex(() => props.isOpen)
+
 const { handleOverlayClick, close: handleClose } = usePopup({
 	isOpen: () => props.isOpen,
 	closeOnOverlay: () => props.closeOnOverlay,

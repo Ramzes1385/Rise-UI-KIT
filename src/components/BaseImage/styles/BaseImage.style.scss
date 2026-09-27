@@ -149,7 +149,7 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 .base-image__zoom {
 	position: fixed;
 	inset: 0;
-	z-index: 9999;
+	z-index: var(--rise-z-max);
 	display: flex;
 	align-items: center;
 	justify-content: center;

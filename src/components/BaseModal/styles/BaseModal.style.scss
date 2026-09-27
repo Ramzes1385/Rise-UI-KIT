@@ -5,7 +5,7 @@
 .base-modal {
 	position: fixed;
 	inset: 0;
-	z-index: 1000;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 	display: flex;
 	align-items: center;
 	justify-content: center;

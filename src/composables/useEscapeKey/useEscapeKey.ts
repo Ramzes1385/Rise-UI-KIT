@@ -1,10 +1,11 @@
 /** Composable: закрытие по клавише Escape */
-import { onBeforeUnmount, onMounted } from 'vue'
+import { useLayer } from '@composables/useLayerStack'
 import type { UseEscapeKeyOptions } from './useEscapeKey.types'
 
 /**
- * Composable для закрытия по клавише Escape.
- * Автоматически подписывается/отписывается на lifecycle-хуки.
+ * Composable для закрытия по клавише Escape. Компонент становится слоем (`useLayer`):
+ * Escape получает только верхний открытый слой — из окна с открытым списком первое нажатие
+ * закрывает список, второе — окно.
  *
  * @example
  * ```ts
@@ -15,22 +16,7 @@ import type { UseEscapeKeyOptions } from './useEscapeKey.types'
  * ```
  */
 function useEscapeKey(options: UseEscapeKeyOptions): void {
-	const { isActive, callback } = options
-
-	function handleKeydown(event: KeyboardEvent): void {
-		if (!isActive()) return
-		if (event.key === 'Escape') {
-			callback()
-		}
-	}
-
-	onMounted(() => {
-		document.addEventListener('keydown', handleKeydown)
-	})
-
-	onBeforeUnmount(() => {
-		document.removeEventListener('keydown', handleKeydown)
-	})
+	useLayer({ isActive: options.isActive, onEscape: options.callback })
 }
 
 export { useEscapeKey }

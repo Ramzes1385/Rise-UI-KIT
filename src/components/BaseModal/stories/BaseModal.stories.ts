@@ -3,7 +3,7 @@
  *
  * Разделы: Default (песочница: окно открывается кнопкой, isOpen синхронизирован с Controls) → внешний вид
  * (варианты, размеры, кастомный цвет — окна открыты внутри рамок через isContained) → открытое окно и длинный текст →
- * сценарии (окно в блоке, запрет закрытия по подложке, на весь экран) → клавиатура.
+ * сценарии (окно в блоке, запрет закрытия по подложке, на весь экран, список в окне) → клавиатура.
  * Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу.
  */
 
@@ -12,6 +12,7 @@ import { computed, ref } from 'vue'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
+import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
 import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import BaseModal from '../ui/BaseModal.vue'
@@ -373,6 +374,53 @@ export const FullScreen: Story = {
 		const viewport = document.documentElement
 		await expect(box.width).toBeCloseTo(viewport.clientWidth - 32, 0)
 		await expect(box.height).toBeCloseTo(viewport.clientHeight - 32, 0)
+	},
+}
+
+/**
+ * Список в окне: Escape сначала закрывает открытый список, следующее нажатие — окно. Список телепортирован в body,
+ * и выбор пункта не считается кликом по подложке.
+ */
+export const WithList: Story = {
+	tags: ['!autodocs'],
+	render: args => ({
+		components: { BaseModal, BaseButton, BaseSelect },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'isOpen', 'title', 'onUpdate:isOpen']),
+			isOpen: ref(true),
+			language: ref('ru'),
+			languages: [
+				{ value: 'ru', label: 'Русский' },
+				{ value: 'en', label: 'Английский' },
+				{ value: 'ja', label: 'Японский' },
+			],
+		}),
+		template: `
+			<BaseButton variant="outline" @click="isOpen = true">Настройки субтитров</BaseButton>
+			<BaseModal v-bind="props" v-model:is-open="isOpen" title="Субтитры серии">
+				<BaseSelect v-model="language" label="Язык субтитров" :options="languages" />
+				<template #footer>
+					<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
+					<BaseButton @click="isOpen = false">Сохранить</BaseButton>
+				</template>
+			</BaseModal>
+		`,
+	}),
+	play: async ({ userEvent }) => {
+		const dialog = await screen.findByRole('dialog', { name: 'Субтитры серии' })
+		await userEvent.click(within(dialog).getByRole('combobox', { name: 'Язык субтитров' }))
+		await userEvent.click(await screen.findByRole('option', { name: 'Японский' }))
+		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
+		await expect(within(dialog).getByRole('combobox', { name: 'Язык субтитров' })).toHaveTextContent('Японский')
+
+		await userEvent.click(within(dialog).getByRole('combobox', { name: 'Язык субтитров' }))
+		await screen.findByRole('listbox')
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
+		await expect(screen.getByRole('dialog', { name: 'Субтитры серии' })).toBeInTheDocument()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 	},
 }
 

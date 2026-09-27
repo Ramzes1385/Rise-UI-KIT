@@ -98,7 +98,7 @@
 	// Каскадная flyout-панель (dropdown на десктопе). Координаты (position: fixed; top/left) задаёт
 	// useFlyoutPosition inline-стилем, с переносом влево при нехватке места справа.
 	&__sub-list--flyout {
-		z-index: 1000;
+		z-index: var(--rise-z-overlay);
 		min-width: sz(220px);
 		margin: 0;
 		padding: sz(4px);

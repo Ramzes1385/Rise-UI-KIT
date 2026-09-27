@@ -1,5 +1,5 @@
 <template>
-	<Teleport to="body" :disabled="isContained">
+	<Teleport :to="teleportTarget" :disabled="isContained">
 		<!-- Пока указатель над уведомлениями или фокус внутри, они не закрываются и прогресс стоит (WCAG 2.2.1) -->
 		<div
 			ref="containerRef"
@@ -87,6 +87,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, UI_ARIA, UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseNotification.style.scss'
@@ -98,6 +99,9 @@ import type {
 	NotificationId,
 	NotificationItem,
 } from '../model/BaseNotification.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<BaseNotificationProps>(), kitDefaults('BaseNotification', {
 	title: '',

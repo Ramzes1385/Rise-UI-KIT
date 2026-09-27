@@ -1,5 +1,6 @@
 import type { LocaleInput } from '@/locales/state'
 import type { NOTIFICATION_VARIANTS, NotificationPosition } from '@components/BaseNotification/model/BaseNotification.types'
+import type { TeleportTarget } from '@composables/useTeleportTarget'
 
 /** Настройки уведомлений `useToast()` */
 export interface BaseAppToasterOptions {
@@ -26,6 +27,11 @@ export interface BaseAppProps {
 	 * во всём приложении (язык один на страницу). Без пропа язык не меняется
 	 */
 	locale?: LocaleInput
+	/**
+	 * Куда телепортировать окна, выпадающие панели, тултипы и уведомления внутри приложения: CSS-селектор
+	 * или элемент. По умолчанию — из `createUiKitPlugin({ teleportTo })` или `body`. Читается при монтировании
+	 */
+	teleportTo?: TeleportTarget
 }
 
 /**

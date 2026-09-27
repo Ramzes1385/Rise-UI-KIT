@@ -62,8 +62,10 @@ function selectEmoji(emoji: string): void {
 	isEmojiOpen.value = false
 }
 
-function handleEscape(): void {
+/** Escape закрывает панель; preventDefault — чтобы слой ниже (окно, панель с чатом) не закрылся тем же нажатием */
+function handleEscape(event: KeyboardEvent): void {
 	if (!isEmojiOpen.value) return
+	event.preventDefault()
 	isEmojiOpen.value = false
 	triggerRef.value?.focus()
 }

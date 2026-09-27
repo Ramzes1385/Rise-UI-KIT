@@ -1,5 +1,5 @@
 <template>
-	<teleport to="body">
+	<teleport :to="teleportTarget">
 		<!-- Модальный диалог: фокус переходит на «Закрыть», Tab обходит только элементы просмотра, после закрытия фокус возвращается -->
 		<div
 			ref="dialogRef"
@@ -141,8 +141,12 @@ import { formatMessage } from '@/locales'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useFocusTrap } from '@composables/useFocusTrap'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_ARIA } from '@constants'
 import type { BaseImageZoomProps } from '../model/BaseImageZoom.types'
+
+/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
+const teleportTarget = useTeleportTarget()
 
 const props = defineProps<BaseImageZoomProps>()
 

@@ -276,10 +276,13 @@ describe('BaseModal unit', () => {
 	})
 
 	describe('пропс sizeScale', () => {
-		it('не должен устанавливать style когда sizeScale=100', () => {
+		it('не должен устанавливать --size-scale когда sizeScale=100', () => {
 			render(BaseModal, { props: { isOpen: true } })
 
-			expect(document.querySelector('.base-modal')?.getAttribute('style')).toBeNull()
+			// В style остаётся только место окна среди открытых слоёв
+			const modal = document.querySelector('.base-modal') as HTMLElement
+			expect(modal.style.getPropertyValue('--size-scale')).toBe('')
+			expect(modal.getAttribute('style')).toBe('--rise-layer-index: 1;')
 		})
 
 		it('должен устанавливать --size-scale когда sizeScale=150', () => {
