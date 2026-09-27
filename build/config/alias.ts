@@ -4,8 +4,10 @@
  */
 
 import type { AliasOptions } from 'vite'
-import { SOURCE_DIR } from '../constants'
 import { resolveFromRoot } from '../utils/helpers'
+
+/** Каталог исходников библиотеки */
+const SOURCE_DIR = 'src'
 
 /** Создаёт карту alias для resolve.alias в Vite. */
 export function createAliasConfig(): AliasOptions {

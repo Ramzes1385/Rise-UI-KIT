@@ -2663,19 +2663,15 @@ createApp(App).use(createIconPlugin({ spritePath: '/icons.svg' })).mount('#app')
 npm install
 ```
 
-## Запуск dev-режима
-
-```bash
-npm run dev
-```
-
-## Storybook
+## Storybook — среда разработки
 
 ```bash
 npm run storybook
 ```
 
-- **Разделы:** Introduction, Foundations (цвета, типографика, радиусы и тени, размеры, темы), Element, Form, Data, Navigation, Overlay, Chat, Editor.
+Отдельного демо-приложения нет: компоненты разрабатываются и проверяются в Storybook (порт 6006).
+
+- **Разделы:** Introduction, Foundations (цвета, типографика, радиусы и тени, размеры, темы), Element, Form, Data, Navigation, Layout, Overlay, Chat, Editor.
 - **Тема** переключается кнопкой «Тема» на панели инструментов; для ссылок и скриншотов — параметр `&globals=theme:dark`.
 - **Stories каждого компонента** устроены одинаково: `Default` (песочница с рабочим v-model) → варианты, размеры, кастомный цвет → состояния → сценарии → `Keyboard`. Правила — [docs/design/STORIES_GUIDE.md](docs/design/STORIES_GUIDE.md).
 - Описания props из JSDoc попадают во вкладку Docs: в `build/storybook/main.ts` плагин `vite:vue` подключается раньше docgen-плагина Storybook (при обратном порядке описания молча терялись).
@@ -2719,12 +2715,6 @@ dist/index.d.ts
 dist/plugin.d.ts
 dist/styles.css
 dist/icons.svg
-```
-
-## App/demo сборка
-
-```bash
-npm run build:app
 ```
 
 ---

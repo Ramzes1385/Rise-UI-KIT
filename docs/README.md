@@ -26,10 +26,7 @@
 # Установка зависимостей
 npm install
 
-# Локальная разработка
-npm run dev
-
-# Storybook
+# Разработка: Storybook (отдельного демо-приложения нет)
 npm run storybook
 
 # Тесты

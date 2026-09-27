@@ -49,10 +49,6 @@
 		"../../src/utils/**/*.ts"
 	],
 	"exclude": [
-		"../../src/main.ts",
-		"../../src/App.vue",
-		"../../src/playground/**",
-
 		"../../src/**/*.test.ts",
 		"../../src/**/*.spec.ts",
 		"../../src/**/*.stories.ts",

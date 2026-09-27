@@ -1,50 +1,19 @@
 /**
- * Агрегатор плагинов.
- * Собирает все плагины в единый массив.
+ * Агрегатор плагинов сборки библиотеки: Vue, SVG-компоненты, спрайт иконок.
+ * `--analyze` добавляет отчёт о размере бандла (stats.html).
  */
 
 import { visualizer } from 'rollup-plugin-visualizer'
 import type { PluginOption } from 'vite'
-import { isProductionMode } from '../utils/helpers'
-import { createCompressionPlugins } from './compression'
-import { createImagePlugin } from './images'
 import { createSpritePlugin } from './sprite'
 import { createSvgPlugin } from './svg'
 import { createVuePlugin } from './vue'
 
-type BuildTarget = 'app' | 'lib'
+/** Создаёт массив плагинов для режима сборки. */
+export function createPlugins(mode: string): PluginOption[] {
+	const plugins: PluginOption[] = [createVuePlugin(mode), createSvgPlugin(), createSpritePlugin()]
 
-interface CreatePluginsOptions {
-	target?: BuildTarget
-}
-
-/**
- * Создаёт массив плагинов в зависимости от режима сборки.
- *
- * app — dev/playground/demo/storybook-like сборка
- * lib — npm package сборка без app-only артефактов
- */
-export function createPlugins(
-	mode: string,
-	options: CreatePluginsOptions = {},
-): PluginOption[] {
-	const target = options.target ?? 'app'
-	const isProduction = isProductionMode(mode)
-	const isLib = target === 'lib'
-
-	const plugins: PluginOption[] = [
-		createVuePlugin(mode),
-		createSvgPlugin(),
-		createSpritePlugin(),
-	]
-
-	if (isProduction && !isLib) {
-		plugins.push(createImagePlugin(), ...createCompressionPlugins())
-	}
-
-	const isAnalyze = process.argv.includes('--analyze')
-
-	if (isAnalyze) {
+	if (process.argv.includes('--analyze')) {
 		plugins.push(
 			visualizer({
 				filename: 'stats.html',

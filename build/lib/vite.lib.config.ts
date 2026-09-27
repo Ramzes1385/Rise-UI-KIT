@@ -1,6 +1,6 @@
 /**
- * Конфигурация Vite для npm library build.
- * Не используется для dev/storybook/playground.
+ * Конфигурация Vite для сборки npm-библиотеки (`npm run build:lib`).
+ * Storybook и Vitest настроены отдельно: build/storybook/main.ts и build/tests/vitest.config.ts.
  */
 
 import { defineConfig } from 'vite'
@@ -12,6 +12,8 @@ import { createPlugins } from '../plugins'
 export default defineConfig(({ mode }) => ({
 	resolve: createResolveConfig(),
 	css: createCssConfig(mode),
-	plugins: createPlugins(mode, { target: 'lib' }),
+	plugins: createPlugins(mode),
 	build: createLibBuildConfig(),
+	// Каталога public/ у библиотеки нет: в dist попадает только собранный код, стили и спрайт
+	publicDir: false,
 }))
