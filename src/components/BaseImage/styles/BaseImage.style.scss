@@ -1,12 +1,45 @@
+// BaseImage. Изображение со скруглением md (--rise-radius-md; проп borderRadius задаёт своё inline-стилем), без рамки.
+// Загрузка — плейсхолдер --rise-bg-elevated, шиммер только без prefers-reduced-motion. Ошибка — иконка --rise-text-dimmed
+// и подпись 12/16 --rise-text-toned на --rise-bg-elevated; в маленьких контейнерах (миниатюры) остаётся только иконка.
+// С зумом изображение — кнопка (курсор zoom-in, кольцо фокуса внутри), по клику открывается просмотр: тёмная медиа-подложка,
+// полупрозрачные круглые кнопки с белыми иконками, миниатюры галереи и мини-карта.
+
+// Цвета просмотра — не тема, а фон для фотографии: снимки смотрят на тёмной подложке и в светлой, и в тёмной теме,
+// поэтому здесь чёрный и белый с прозрачностью, а не семантические токены.
+$media-backdrop: color-mix(in srgb, black 88%, transparent);
+$media-surface: color-mix(in srgb, black 60%, transparent);
+$media-surface-hover: color-mix(in srgb, black 80%, transparent);
+$media-control-hover: color-mix(in srgb, white 16%, transparent);
+$media-control-active: color-mix(in srgb, white 24%, transparent);
+$media-border: color-mix(in srgb, white 20%, transparent);
+$media-text: white;
+$media-text-muted: color-mix(in srgb, white 72%, transparent);
+
 .base-image {
 	position: relative;
 	display: inline-block;
 	overflow: hidden;
-	@include custom-bg(background-color, var(--color-surface-muted));
-	border: sz(1px) solid var(--color-border);
-	@include interactive;
+	border-radius: sz(var(--rise-radius-md));
+	// Фон под изображением виден при fit="contain" и у прозрачных изображений; задаётся пропом color.bg
+	@include custom-bg(background-color, transparent);
 
-	&--zoomable {
+	// Обёртка изображения. С зумом это кнопка: без собственного оформления, скругление как у изображения,
+	// кольцо фокуса внутри — снаружи его обрезал бы overflow корня (и viewport слайдера).
+	&__frame {
+		display: block;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: inherit;
+		background: none;
+		color: inherit;
+		font: inherit;
+		@include focus-ring(-2px);
+	}
+
+	&--zoomable &__frame {
 		cursor: zoom-in;
 	}
 
@@ -15,14 +48,15 @@
 		width: 100%;
 		height: 100%;
 		opacity: 0;
-		@include transition(opacity, transform);
+		@include transition(opacity);
 	}
 
 	&--loaded &__img {
 		opacity: 1;
 	}
 
-	/* Режимы заполнения */
+	// ─── Режимы заполнения ───────────────────────────────────────────────────────
+
 	&--cover &__img {
 		object-fit: cover;
 	}
@@ -39,30 +73,39 @@
 		object-fit: none;
 	}
 
-	/* Плейсхолдер */
+	// ─── Загрузка ────────────────────────────────────────────────────────────────
+
+	// Обёртки слотов placeholder и error: цвет изображения (color) не перекрашивает вложенные компоненты
 	&__placeholder {
 		position: absolute;
 		inset: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: var(--color-surface-muted);
+		overflow: hidden;
+		background-color: var(--rise-bg-elevated);
+		@include reset-custom-color;
 	}
 
+	// Шиммер — полоса --rise-bg-accented: в светлой теме чуть темнее фона, в тёмной — светлее (как у BaseSkeleton)
 	&__shimmer {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			90deg,
-			var(--color-surface-muted) 25%,
-			rgba(228, 228, 231, 0.4) 50%,
-			var(--color-surface-muted) 75%
-		);
-		background-size: 200% 100%;
-		animation: base-image-shimmer 1.5s ease-in-out infinite;
+
+		@include motion-safe {
+			background-image: linear-gradient(
+				90deg,
+				transparent 25%,
+				color-mix(in srgb, var(--rise-bg-accented) 80%, transparent) 50%,
+				transparent 75%
+			);
+			background-size: 200% 100%;
+			animation: base-image-shimmer 1.5s ease-in-out infinite;
+		}
 	}
 
-	/* Ошибка */
+	// ─── Ошибка ──────────────────────────────────────────────────────────────────
+
 	&__error {
 		position: absolute;
 		inset: 0;
@@ -70,44 +113,39 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: sz(8px);
-		background-color: var(--color-surface-muted);
-	}
-
-	&__error-icon {
-		font-size: sz(24px);
-		opacity: 0.35;
+		gap: sz(4px);
+		padding: sz(8px);
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-dimmed);
+		text-align: center;
+		// Контейнер для запроса ниже: в миниатюрах подпись не помещается и скрывается
+		container-type: inline-size;
+		@include reset-custom-color;
 	}
 
 	&__error-text {
-		font-size: sz(11px);
-		color: var(--color-text-muted);
-		opacity: 0.6;
-	}
-}
+		@include text-size(xs);
+		color: var(--rise-text-toned);
 
-:root[data-theme='dark'] .base-image__shimmer {
-	background: linear-gradient(
-		90deg,
-		var(--color-surface-muted) 25%,
-		rgba(39, 39, 42, 0.6) 50%,
-		var(--color-surface-muted) 75%
-	);
-	background-size: 200% 100%;
-	animation: base-image-shimmer 1.5s ease-in-out infinite;
+		@container (max-width: 96px) {
+			display: none;
+		}
+	}
 }
 
 @keyframes base-image-shimmer {
-	0% {
+	from {
 		background-position: 200% 0;
 	}
 
-	100% {
+	to {
 		background-position: -200% 0;
 	}
 }
 
-/* ===== Зум ===== */
+// ─── Просмотр (зум) ──────────────────────────────────────────────────────────
+// Телепортирован в body: --size-scale изображения сюда не наследуется, размеры — базовые.
+
 .base-image__zoom {
 	position: fixed;
 	inset: 0;
@@ -115,184 +153,202 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: rgba(0, 0, 0, 0.85);
+	background-color: $media-backdrop;
+	color: $media-text;
+	font-family: var(--rise-font-sans);
 
+	// Панель инструментов: полупрозрачная «пилюля» над изображением
 	&-toolbar {
 		position: absolute;
 		top: sz(16px);
 		left: 50%;
-		transform: translateX(-50%);
-		z-index: 10;
+		z-index: 1;
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
-		padding: sz(8px 16px);
-		border-radius: var(--border-radius-full);
-		background-color: rgba(0, 0, 0, 0.6);
+		gap: sz(4px);
+		padding: sz(4px);
+		border-radius: var(--rise-radius-full);
+		background-color: $media-surface;
 		backdrop-filter: blur(8px);
+		transform: translateX(-50%);
 	}
 
-	&-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: sz(36px);
-		height: sz(36px);
-		border: none;
-		border-radius: var(--border-radius-full);
-		background-color: rgba(255, 255, 255, 0.15);
-		color: var(--color-text-inverse);
-		cursor: pointer;
-		@include transition(background-color, transform, opacity);
+	// Кнопки просмотра — ghost BaseButton, перекрашенные переменными --custom-*: BaseButton читает их для фона и цвета.
+	// Круглые 32×32 (иконка 20px + отступы 5px), белая иконка, подсветка белым при наведении и нажатии.
+	&-btn.base-button,
+	&-nav.base-button {
+		--custom-bg: transparent;
+		--custom-bg-hover: #{$media-control-hover};
+		--custom-bg-active: #{$media-control-active};
+		--custom-text: #{$media-text};
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
 
-		&:hover:not(:disabled) {
-			background-color: rgba(255, 255, 255, 0.3);
-			transform: scale(1.05);
-		}
-
-		&:active:not(:disabled) {
-			transform: scale(0.95);
-		}
-
-		&:disabled {
-			opacity: 0.3;
-			cursor: not-allowed;
-		}
-
-		&--close {
-			margin-left: sz(8px);
-			background-color: rgba(255, 255, 255, 0.1);
-		}
+		flex: none;
+		border-radius: var(--rise-radius-full);
 	}
 
 	&-scale {
 		min-width: sz(48px);
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		font-variant-numeric: tabular-nums;
 		text-align: center;
-		color: var(--color-text-inverse);
-		font-size: sz(13px);
-		font-weight: 500;
 		user-select: none;
 	}
 
+	&-divider {
+		width: 1px;
+		height: sz(20px);
+		margin: 0 sz(4px);
+		background-color: $media-border;
+	}
+
+	// Стрелки галереи — отдельные круглые кнопки 40×40 у краёв: тёмный фон и тонкая светлая обводка,
+	// чтобы читались и поверх светлого снимка, и на подложке
+	&-nav.base-button {
+		--custom-bg: #{$media-surface};
+		--custom-bg-hover: #{$media-surface-hover};
+		--custom-bg-active: #{$media-surface-hover};
+		--btn-pad-top: 9px;
+		--btn-pad-right: 9px;
+		--btn-pad-bottom: 9px;
+		--btn-pad-left: 9px;
+
+		position: absolute;
+		top: 50%;
+		z-index: 1;
+		box-shadow: inset 0 0 0 1px $media-border;
+		transform: translateY(-50%);
+	}
+
+	&-nav--prev.base-button {
+		left: sz(16px);
+	}
+
+	&-nav--next.base-button {
+		right: sz(16px);
+	}
+
+	// Поле под изображение: сверху место под панель, по бокам — под стрелки, снизу — под ленту миниатюр.
+	// Увеличенное изображение выходит в эти поля: overflow обрезает его только по краю экрана.
 	&-container {
+		box-sizing: border-box;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 100%;
 		height: 100%;
+		padding: sz(72px) sz(64px);
 		overflow: hidden;
 		user-select: none;
 	}
 
+	&--gallery &-container {
+		padding-bottom: sz(112px);
+	}
+
 	&-img {
-		max-width: 90%;
-		max-height: 85%;
+		max-width: 100%;
+		max-height: 100%;
 		object-fit: contain;
 		transform-origin: center center;
 		will-change: transform;
-		pointer-events: none;
 	}
 
-	/* Навигация по галерее */
-	&-nav {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 10;
-		color: var(--color-text-inverse);
-		width: sz(44px);
-		height: sz(44px);
-		border-radius: sz(var(--border-radius-full));
-		background-color: rgba(0, 0, 0, 0.4);
-		@include transition(background-color, transform);
+	// ─── Галерея ─────────────────────────────────────────────────────────────────
 
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.6);
-		}
-
-		&--prev {
-			left: sz(16px);
-		}
-
-		&--next {
-			right: sz(16px);
-		}
-	}
-
-	/* Полоса миниатюр */
 	&-gallery {
 		position: absolute;
 		bottom: sz(16px);
 		left: 50%;
-		transform: translateX(-50%);
-		z-index: 10;
+		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: sz(8px);
+		transform: translateX(-50%);
 	}
 
 	&-gallery-track {
 		display: flex;
 		gap: sz(6px);
-		padding: sz(6px 10px);
-		border-radius: sz(var(--border-radius-lg));
-		background-color: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(8px);
-		overflow-x: auto;
 		max-width: 80vw;
+		padding: sz(6px);
+		overflow-x: auto;
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: $media-surface;
+		backdrop-filter: blur(8px);
 		scrollbar-width: none;
-
-		&::-webkit-scrollbar {
-			display: none;
-		}
 	}
 
+	// Миниатюра — кнопка 48×48 с радиусом md; неактивные приглушены, у активной — кольцо основного цвета
 	&-thumb {
+		position: relative;
+		flex: none;
 		width: sz(48px);
 		height: sz(48px);
-		flex-shrink: 0;
-		border-radius: sz(6px);
+		padding: 0;
+		border: 0;
+		border-radius: sz(var(--rise-radius-md));
 		overflow: hidden;
+		background: none;
 		cursor: pointer;
-		border: sz(2px) solid transparent;
-		@include transition(border-color, opacity);
 		opacity: 0.6;
+		@include transition-colors;
+		@include focus-ring;
 
-		&:hover {
-			opacity: 0.9;
+		// Кольцо поверх снимка: inset-тень самой кнопки закрыло бы изображение
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			box-shadow: inset 0 0 0 1px $media-border;
+		}
+
+		@include hover {
+			opacity: 1;
 		}
 
 		&--active {
-			border-color: var(--color-accent);
 			opacity: 1;
+
+			&::after {
+				box-shadow: inset 0 0 0 2px var(--rise-primary);
+			}
 		}
 	}
 
 	&-thumb-img {
+		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
 
 	&-counter {
-		color: rgba(255, 255, 255, 0.7);
-		font-size: sz(12px);
+		@include text-size(xs);
+		color: $media-text-muted;
+		font-variant-numeric: tabular-nums;
 	}
 }
 
-/* ===== Мини-карта ===== */
+// ─── Мини-карта ──────────────────────────────────────────────────────────────
+
 .base-image__minimap {
 	position: absolute;
 	bottom: sz(16px);
 	left: sz(16px);
+	z-index: 1;
 	width: sz(200px);
 	height: sz(150px);
-	border: sz(2px) solid rgba(255, 255, 255, 0.3);
-	border-radius: var(--border-radius-base);
 	overflow: hidden;
-	background-color: rgba(0, 0, 0, 0.4);
-	z-index: 10;
+	border: 1px solid $media-border;
+	border-radius: sz(var(--rise-radius-md));
+	background-color: $media-surface;
 	cursor: pointer;
 }
 
@@ -303,24 +359,14 @@
 	opacity: 0.7;
 }
 
+// Видимая область — рамка основного цвета с лёгкой заливкой
 .base-image__minimap-viewport {
 	position: absolute;
-	left: 0;
 	top: 0;
-	border: sz(2px) solid var(--color-accent);
-	background-color: rgba(249, 115, 22, 0.15);
-	border-radius: 2px;
+	left: 0;
+	border: 2px solid var(--rise-primary);
+	border-radius: sz(var(--rise-radius-xs));
+	background-color: color-mix(in srgb, var(--rise-primary) 15%, transparent);
 	pointer-events: none;
 	will-change: transform;
-}
-
-/* ===== Анимация зума ===== */
-.image-zoom-fade-enter-active,
-.image-zoom-fade-leave-active {
-	transition: opacity var(--transition-slow);
-}
-
-.image-zoom-fade-enter-from,
-.image-zoom-fade-leave-to {
-	opacity: 0;
 }

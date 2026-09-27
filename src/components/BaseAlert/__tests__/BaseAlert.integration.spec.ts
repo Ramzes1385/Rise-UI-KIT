@@ -99,10 +99,38 @@ describe('BaseAlert integration', () => {
 	})
 
 	describe('доступность', () => {
-		it('должен иметь role="alert" для озвучивания скринридером', () => {
+		it('должен иметь role="status" для информационного оповещения (тип по умолчанию)', () => {
 			render(BaseAlert, { props: { title: 'Сообщение' } })
 
-			expect(screen.getByRole('alert')).toBeInTheDocument()
+			expect(screen.getByRole('status')).toHaveTextContent('Сообщение')
+			expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+		})
+
+		it.each(['error', 'warning'] as const)('должен иметь role="alert" для срочного типа %s', type => {
+			render(BaseAlert, { props: { type, title: 'Сбой' } })
+
+			expect(screen.getByRole('alert')).toHaveTextContent('Сбой')
+		})
+
+		it('должен иметь role="status" для типа success', () => {
+			render(BaseAlert, { props: { type: 'success', title: 'Сохранено' } })
+
+			expect(screen.getByRole('status')).toHaveTextContent('Сохранено')
+		})
+
+		it('не должен переопределять неявную вежливость роли явным aria-live', () => {
+			render(BaseAlert, { props: { type: 'error', title: 'Сбой' } })
+
+			expect(screen.getByRole('alert')).not.toHaveAttribute('aria-live')
+		})
+
+		it('кнопка закрытия должна иметь доступное имя', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseAlert, { props: { title: 'Сообщение', isClosable: true } })
+
+			await user.click(screen.getByRole('button', { name: 'Закрыть' }))
+
+			expect(emitted()).toHaveProperty('close')
 		})
 	})
 })

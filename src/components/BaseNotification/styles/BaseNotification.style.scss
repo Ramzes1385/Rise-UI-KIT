@@ -1,156 +1,137 @@
+// BaseNotification. Всплывающие уведомления (toast): карточка — фон страницы, тонкая рамка, радиус lg, тень lg, отступ 16px.
+// Цвет типа (success, error, warning, info) — у иконки и у полосы прогресса снизу; заголовок и текст нейтральные.
+// Варианты: default — карточка с тенью; soft — мягкий фон цвета типа; outline — рамка цвета типа без тени;
+// shadow — только тень xl; ghost — без фона, рамки и тени.
+
+// ─── Контейнер ─────────────────────────────────────────────────────────────────
+// Отступ 16px от края экрана — внутренний: в нём помещается тень карточек, которую иначе обрезала бы прокрутка списка.
+
 .base-notification {
 	position: fixed;
-	top: sz(20px);
-	right: sz(20px);
 	z-index: 2000;
 	box-sizing: border-box;
-	width: calc(100% - #{sz(40px)});
-	max-width: sz(360px);
-	max-height: calc(100vh - #{sz(40px)});
+	width: calc(#{sz(360px)} + #{sz(32px)});
+	max-width: 100%;
+	max-height: 100%;
+	padding: sz(16px);
 	overflow-x: hidden;
 	overflow-y: auto;
-	scrollbar-gutter: stable both-edges;
+	// Пустые участки контейнера не перехватывают клики по странице; карточки — перехватывают.
 	pointer-events: none;
-	padding: 0 sz(4px);
+	@include scrollbar-thin;
 
-	/* Позиционирование */
 	&--top-left {
-		top: sz(20px);
-		bottom: auto;
-		left: sz(20px);
-		right: auto;
+		top: 0;
+		left: 0;
 	}
 
 	&--top-right {
-		top: sz(20px);
-		bottom: auto;
-		left: auto;
-		right: sz(20px);
+		top: 0;
+		right: 0;
 	}
 
 	&--top-center {
-		top: sz(20px);
-		bottom: auto;
+		top: 0;
 		left: 50%;
-		right: auto;
-		transform: translateX(-50%);
+		translate: -50% 0;
 	}
 
 	&--bottom-left {
-		top: auto;
-		bottom: sz(20px);
-		left: sz(20px);
-		right: auto;
+		bottom: 0;
+		left: 0;
 	}
 
 	&--bottom-right {
-		top: auto;
-		bottom: sz(20px);
-		left: auto;
-		right: sz(20px);
+		right: 0;
+		bottom: 0;
 	}
 
 	&--bottom-center {
-		top: auto;
-		bottom: sz(20px);
+		bottom: 0;
 		left: 50%;
-		right: auto;
-		transform: translateX(-50%);
+		translate: -50% 0;
 	}
 
+	// Внутри страницы (Storybook, встроенный режим): в потоке, без отступов и прокрутки.
 	&--contained {
 		position: relative;
 		inset: auto;
-		transform: none;
 		z-index: auto;
-	}
-
-	&::-webkit-scrollbar {
-		width: sz(4px);
-	}
-
-	&::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background-color: var(--color-border);
-		border-radius: sz(4px);
-	}
-
-	@include respond-below('mobile') {
 		width: 100%;
-		max-width: none;
+		max-width: sz(360px);
+		max-height: none;
+		padding: 0;
+		overflow: visible;
+		translate: none;
+	}
 
+	// На телефоне уведомления во всю ширину экрана.
+	@include respond-below('mobile') {
 		&:not(.base-notification--contained) {
-			left: 0;
 			right: 0;
-			transform: none;
+			left: 0;
+			width: 100%;
+			translate: none;
 		}
 	}
 }
 
 .base-notification-list {
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	gap: sz(10px);
-	width: 100%;
+	gap: sz(8px);
 }
 
+// ─── Уведомление ───────────────────────────────────────────────────────────────
+
 .base-notification-item {
-	pointer-events: auto;
-	box-sizing: border-box;
-	@include custom-bg(background-color, var(--color-white));
-	border: 1px solid var(--color-border);
-	border-radius: sz(8px);
-	padding: sz(14px) sz(16px);
-	width: 100%;
-	display: flex;
-	gap: sz(12px);
-	align-items: flex-start;
+	// Цвета типа: основной (иконка, прогресс), мягкий фон, текст на мягком фоне, рамка. По умолчанию — info.
+	--notification-color: var(--rise-info);
+	--notification-soft: var(--rise-info-soft);
+	--notification-text: var(--rise-info-text);
+	--notification-border: var(--rise-info-border);
+
 	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: sz(12px);
+	box-sizing: border-box;
+	width: 100%;
+	padding: sz(16px);
 	overflow: hidden;
-	margin-bottom: sz(8px);
-	@include interactive;
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+	@include text-size(sm);
+	box-shadow: var(--rise-shadow-lg);
+	pointer-events: auto;
 
-	&::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: sz(4px);
+	&--success {
+		--notification-color: var(--rise-success);
+		--notification-soft: var(--rise-success-soft);
+		--notification-text: var(--rise-success-text);
+		--notification-border: var(--rise-success-border);
 	}
 
-	&--success::before {
-		background-color: var(--color-success);
+	&--error {
+		--notification-color: var(--rise-error);
+		--notification-soft: var(--rise-error-soft);
+		--notification-text: var(--rise-error-text);
+		--notification-border: var(--rise-error-border);
 	}
-	&--error::before {
-		background-color: var(--color-error);
-	}
-	&--warning::before {
-		background-color: var(--color-warning);
-	}
-	&--info::before {
-		background-color: var(--color-info);
+
+	&--warning {
+		--notification-color: var(--rise-warning);
+		--notification-soft: var(--rise-warning-soft);
+		--notification-text: var(--rise-warning-text);
+		--notification-border: var(--rise-warning-border);
 	}
 
 	&__icon {
-		flex-shrink: 0;
-		margin-top: sz(2px);
-	}
-
-	&--success &__icon {
-		color: var(--color-success);
-	}
-	&--error &__icon {
-		color: var(--color-error);
-	}
-	&--warning &__icon {
-		color: var(--color-warning);
-	}
-	&--info &__icon {
-		color: var(--color-info);
+		flex: none;
+		color: var(--notification-color);
 	}
 
 	&__content {
@@ -158,88 +139,102 @@
 		min-width: 0;
 	}
 
-	&__title {
+	// Заголовок и текст — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
+	&__title.base-text {
 		margin: 0;
-		font-size: sz(14px);
-		font-weight: 700;
-		@include custom-text(color, var(--color-primary));
-	}
-
-	&__description {
-		margin: sz(4px) 0 0;
-		font-size: sz(13px);
-		@include custom-text(color, var(--color-text));
-		opacity: 0.8;
+		@include text-size(sm);
+		@include custom-text(color, var(--rise-text-highlighted));
 		overflow-wrap: anywhere;
 	}
 
-	// Варианты
-	&--ghost {
-		@include custom-bg(background-color, transparent);
-		border-color: transparent;
-		box-shadow: none;
+	&__description.base-text {
+		margin: sz(4px) 0 0;
+		@include text-size(sm);
+		@include custom-text(color, var(--rise-text-muted));
+		overflow-wrap: anywhere;
+	}
 
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
+	// Кнопка закрытия — квадратная ghost-кнопка 24×24; отрицательные отступы выравнивают иконку по строке заголовка.
+	&__close.base-button {
+		--btn-pad-top: 3px;
+		--btn-pad-right: 3px;
+		--btn-pad-bottom: 3px;
+		--btn-pad-left: 3px;
+
+		flex: none;
+		margin: sz(-2px) sz(-4px) sz(-2px) 0;
+	}
+
+	// Полоса прогресса: сжимается за время показа. При prefers-reduced-motion — неподвижная полоса.
+	&__progress {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: sz(3px);
+		background-color: var(--notification-color);
+		transform-origin: left;
+
+		@include motion-safe {
+			animation: base-notification-progress linear forwards;
 		}
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--notification-soft));
+	}
+
+	&--soft &__title.base-text,
+	&--soft &__description.base-text {
+		@include custom-text(color, var(--notification-text));
 	}
 
 	&--outline {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
+		border-color: var(--notification-border);
+		box-shadow: none;
 	}
 
 	&--shadow {
-		box-shadow: var(--shadow-lg);
-	}
-
-	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
 		border-color: transparent;
-
-		.base-notification-item__title {
-			@include custom-text(color, var(--color-primary));
-		}
+		box-shadow: var(--rise-shadow-xl);
 	}
 
-	&__close {
-		background: none;
-		border: none;
-		font-size: 18px;
-		cursor: pointer;
-		color: var(--color-text);
-		opacity: 0.5;
-		line-height: 1;
-		@include transition(opacity, transform);
-
-		&:hover {
-			opacity: 1;
-			transform: scale(1.1);
-		}
-
-		&:active {
-			transform: scale(0.9);
-		}
-	}
-
-	&__progress {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		height: 3px;
-		background-color: currentColor;
-		opacity: 0.3;
-		width: 100%;
-		transform-origin: left;
-		animation: progress-shrink linear forwards;
+	&--ghost {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+		box-shadow: none;
 	}
 }
 
-@keyframes progress-shrink {
+@keyframes base-notification-progress {
 	from {
 		transform: scaleX(1);
 	}
+
 	to {
 		transform: scaleX(0);
 	}
+}
+
+// ─── Появление и удаление: карточки проявляются, остальные плавно сдвигаются ───
+
+.base-notification-move,
+.base-notification-enter-active,
+.base-notification-leave-active {
+	@include transition(opacity, transform);
+}
+
+.base-notification-enter-from,
+.base-notification-leave-to {
+	opacity: 0;
+	transform: scale(0.96);
+}
+
+// Удаляемая карточка выходит из потока, чтобы соседние сдвигались сразу (move-переход).
+.base-notification-leave-active {
+	position: absolute;
+	width: 100%;
 }

@@ -66,6 +66,59 @@ describe('BaseMenu integration', () => {
 		})
 	})
 
+	describe('клавиатура и семантика', () => {
+		it('пункты доступны вспомогательным технологиям как кнопки с именем', () => {
+			render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			expect(screen.getByRole('button', { name: 'Профиль' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Действие' })).toBeInTheDocument()
+		})
+
+		it('должен активировать пункт по Enter', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			await user.tab()
+			await user.keyboard('{Enter}')
+
+			expect(emitted().select).toEqual([[ITEMS[0][0]]])
+		})
+
+		it('должен активировать пункт по Space и вызывать item.click', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			const item = screen.getByText('Действие').closest('.base-menu__item') as HTMLElement
+			item.focus()
+			await user.keyboard(' ')
+
+			expect(clickHandler).toHaveBeenCalledTimes(1)
+			expect(emitted().select).toEqual([[ITEMS[0][1]]])
+		})
+
+		it('отключённый пункт помечен aria-disabled и не активируется с клавиатуры', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			const disabledItem = screen.getByRole('button', { name: 'Выход' })
+			expect(disabledItem).toHaveAttribute('aria-disabled', 'true')
+
+			disabledItem.focus()
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+
+			expect(emitted()).not.toHaveProperty('select')
+		})
+	})
+
 	describe('отключённый элемент', () => {
 		it('не должен эмитить select при клике на отключённый', async () => {
 			const { emitted } = render(BaseMenu, {

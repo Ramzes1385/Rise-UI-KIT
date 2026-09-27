@@ -1,151 +1,125 @@
+// BaseTextarea. Многострочное поле в стиле BaseInput: коробка поля (field-box), отступы и шрифт контрола.
+// При sizeScale = 100 и rows = 1 высота 32px, как у инпута и кнопки; каждая следующая строка добавляет 20px.
+// Варианты: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
+// ghost — без фона и рамки до наведения; shadow — как default с тенью. Фокус — кольцо основного цвета (ошибка — цвет ошибки).
+// Раскладка — сетка: подпись и поле на всю ширину, под полем ошибка слева и счётчик символов (при maxlength) справа.
 .base-textarea {
-	display: flex;
-	flex-direction: column;
-	gap: sz(6px);
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	// Лишняя высота корня (если её задало приложение) остаётся снизу, строки сетки не растягиваются.
+	align-content: start;
+	gap: sz(6px 12px);
 	width: 100%;
-	@include transition(opacity);
+	@include custom-text(color, var(--rise-text-highlighted));
 
-	@include custom-text(color, var(--color-text));
-
-	&--error {
-		.base-textarea__field {
-			border-color: var(--color-error);
-
-			&:hover {
-				border-color: var(--color-error);
-				background-color: var(--color-surface-muted);
-			}
-
-			&:focus {
-				border-color: var(--color-error);
-				box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-			}
-		}
-	}
-
-	&--disabled {
-		opacity: 0.5;
-		pointer-events: none;
+	&--has-counter {
+		grid-template-columns: minmax(0, 1fr) auto;
 	}
 
 	&__label {
-		font-size: sz(13px);
-		font-weight: 600;
-		color: var(--color-text);
+		grid-column: 1 / -1;
+		@include field-label;
 	}
 
 	&__required {
-		color: var(--color-error);
-		margin-left: sz(2px);
+		@include field-required;
 	}
+
+	// ─── Коробка поля: рамка, фон, фокус ─────────────────────────────────────────
 
 	&__field {
+		grid-column: 1 / -1;
+		display: block;
+		box-sizing: border-box;
 		width: 100%;
-		padding: sz(10px) sz(14px);
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
-		@include custom-bg(background-color, var(--color-surface));
-		font-size: sz(14px);
-		@include custom-text(color, var(--color-text));
+		min-width: 0;
+		margin: 0;
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		color: inherit;
+		font: inherit;
+		@include control-text;
 		resize: vertical;
-		box-shadow: var(--shadow-sm);
 		outline: none;
-		@include interactive;
+		@include field-box;
 
 		&::placeholder {
-			color: var(--color-text-muted);
-		}
-
-		@include hover {
-			border-color: var(--color-text-muted);
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-
-		@include focus {
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface));
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
-
-		@include active {
-			@include custom-bg(background-color, var(--color-surface-muted));
+			color: var(--rise-text-dimmed);
+			opacity: 1;
 		}
 	}
 
+	// Autosize: высоту задаёт компонент по тексту, ручное изменение размера и прокрутка не нужны.
 	&--autosize &__field {
 		resize: none;
 		overflow: hidden;
 	}
 
-	&--disabled &__field {
-		background-color: var(--color-surface-muted);
-		cursor: not-allowed;
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--outline &__field {
+		@include custom-bg(background-color, transparent);
 	}
 
-	&__error-text {
-		font-size: sz(12px);
-		color: var(--color-error);
-		font-weight: 500;
-	}
+	&--soft &__field {
+		border-color: transparent;
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 
-	// ============================================================
-	// Варианты
-	// ============================================================
+		@include hover {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
+	}
 
 	&--ghost &__field {
 		border-color: transparent;
 		@include custom-bg(background-color, transparent);
 
 		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
+			@include custom-bg(background-color, var(--rise-bg-elevated));
 		}
 	}
 
-	&--outline &__field {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
+	// Фокус в поле без рамки (soft, ghost): фон как при наведении, плюс кольцо.
+	&--soft &__field:focus,
+	&--ghost &__field:focus {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--shadow &__field {
-		box-shadow: var(--shadow-lg);
-
-		@include hover {
-			box-shadow: var(--shadow-xl);
-		}
+		box-shadow: var(--rise-shadow-xs);
 	}
 
-	&--soft &__field {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
-		border-color: transparent;
+	// ─── Состояния ───────────────────────────────────────────────────────────────
 
-		@include hover {
-			@include custom-bg(background-color, var(--color-primary-soft-hover));
-		}
+	&--error &__field {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
 	}
 
-	// ============================================================
-	// Ошибка для вариантов
-	// ============================================================
-
-	&--outline.base-textarea--error &__field {
-		border-color: var(--color-error);
-		border-width: 2px;
+	&--readonly &__field {
+		@include custom-bg(background-color, var(--rise-bg-muted));
+		cursor: default;
 	}
 
-	&--ghost.base-textarea--error &__field {
-		border-color: var(--color-error);
+	&--disabled &__field {
+		@include disabled-state;
+		resize: none;
 	}
 
-	&--soft.base-textarea--error &__field {
-		border-color: var(--color-error);
-		background-color: rgba(239, 68, 68, 0.06);
+	// Ошибка и счётчик выровнены по базовой линии первой строки: кегль у них разный (14 и 12).
+	&__error-text {
+		grid-column: 1;
+		align-self: baseline;
+		@include field-error;
 	}
 
-	&--shadow.base-textarea--error &__field {
-		border-color: var(--color-error);
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+	// Счётчик «введено/максимум»: 12/16, приглушённый, цифры одной ширины — строка не прыгает при вводе.
+	&__counter {
+		grid-column: 2;
+		align-self: baseline;
+		justify-self: end;
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
 	}
 }

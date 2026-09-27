@@ -40,6 +40,14 @@ describe('BaseInput unit', () => {
 
 			expect(container.querySelector('.base-input__label')).not.toBeInTheDocument()
 		})
+
+		it('связывает label с полем: поле находится по тексту метки и получает её как доступное имя', () => {
+			render(BaseInput, { props: { modelValue: '', label: 'Email' } })
+
+			const field = screen.getByLabelText('Email')
+			expect(field.tagName).toBe('INPUT')
+			expect(field).toHaveAccessibleName('Email')
+		})
 	})
 
 	describe('пропс variant', () => {
@@ -96,6 +104,22 @@ describe('BaseInput unit', () => {
 			})
 
 			expect(container.firstElementChild?.classList.contains('base-input--error')).toBe(true)
+		})
+
+		it('помечает поле aria-invalid и связывает с текстом ошибки через aria-describedby', () => {
+			render(BaseInput, { props: { modelValue: '', label: 'Email', error: 'Неверный адрес' } })
+
+			const field = screen.getByLabelText('Email')
+			expect(field).toHaveAttribute('aria-invalid', 'true')
+			expect(field).toHaveAccessibleDescription('Неверный адрес')
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BaseInput, { props: { modelValue: '', label: 'Email' } })
+
+			const field = screen.getByLabelText('Email')
+			expect(field).not.toHaveAttribute('aria-invalid')
+			expect(field).not.toHaveAttribute('aria-describedby')
 		})
 	})
 

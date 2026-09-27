@@ -4,7 +4,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSlider from '../ui/BaseSlider.vue'
 import type { SliderItem } from '../model/BaseSlider.types'
 
@@ -397,6 +397,189 @@ describe('BaseSlider unit', () => {
 		})
 	})
 
+	describe('доступность навигации', () => {
+		const FOUR_ITEMS: SliderItem[] = [
+			{ src: 'slide1.jpg', alt: 'Горы' },
+			{ src: 'slide2.jpg', alt: 'Лес' },
+			{ src: 'slide3.jpg', alt: 'Река' },
+			{ src: 'slide4.jpg', alt: 'Озеро' },
+		]
+
+		it('стрелки, точки и миниатюры названы, у текущих — aria-current', async () => {
+			render(BaseSlider, { props: { items: FOUR_ITEMS, navigation: 'both' } })
+
+			expect(screen.getByRole('button', { name: 'Предыдущий слайд' })).toBeInTheDocument()
+			const [firstDot, firstThumb] = screen.getAllByRole('button', { name: 'Слайд 1 из 4' })
+			expect(firstDot).toHaveAttribute('aria-current', 'true')
+			expect(firstThumb).toHaveAttribute('aria-current', 'true')
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Следующий слайд' }))
+
+			expect(firstDot).not.toHaveAttribute('aria-current')
+			for (const nav of screen.getAllByRole('button', { name: 'Слайд 2 из 4' })) {
+				expect(nav).toHaveAttribute('aria-current', 'true')
+			}
+		})
+
+		it('точка при slidesPerGroup > 1 называет первый слайд своей страницы', () => {
+			render(BaseSlider, { props: { items: FOUR_ITEMS, slidesPerGroup: 2 } })
+
+			expect(screen.getByRole('button', { name: 'Слайд 1 из 4' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Слайд 3 из 4' })).toBeInTheDocument()
+		})
+
+		it('миниатюра видео без постера называется номером слайда, а не текстом «Video thumbnail»', () => {
+			render(BaseSlider, { props: { items: [...VIDEO_ITEMS, { src: 'slide2.jpg' }], navigation: 'thumbnails' } })
+
+			expect(screen.getByRole('button', { name: 'Слайд 1 из 2' })).toBeInTheDocument()
+			expect(screen.queryByAltText('Video thumbnail')).not.toBeInTheDocument()
+		})
+
+		it('с одним слайдом стрелки и навигация не выводятся: листать нечего', () => {
+			const { container } = render(BaseSlider, { props: { items: [FOUR_ITEMS[0]!], navigation: 'both' } })
+
+			expect(screen.queryAllByRole('button')).toHaveLength(0)
+			expect(container.querySelector('.base-slider__navigation')).not.toBeInTheDocument()
+		})
+
+		it('без слайдов стрелки и навигация не выводятся', () => {
+			render(BaseSlider, { props: { items: [] } })
+
+			expect(screen.queryAllByRole('button')).toHaveLength(0)
+		})
+
+		it('невидимые слайды inert: в режиме slide видно slidesPerView слайдов начиная с текущего', async () => {
+			const { container } = render(BaseSlider, { props: { items: FOUR_ITEMS, slidesPerView: 2 } })
+			const slides = container.querySelectorAll('.base-slider__slide')
+
+			expect(slides[0]).not.toHaveAttribute('inert')
+			expect(slides[1]).not.toHaveAttribute('inert')
+			expect(slides[2]).toHaveAttribute('inert')
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Следующий слайд' }))
+
+			expect(slides[0]).toHaveAttribute('inert')
+			expect(slides[2]).not.toHaveAttribute('inert')
+		})
+
+		it('в режиме fade inert все слайды, кроме текущего', () => {
+			const { container } = render(BaseSlider, { props: { items: FOUR_ITEMS, animation: 'fade', slidesPerView: 2 } })
+			const slides = container.querySelectorAll('.base-slider__slide')
+
+			expect(slides[0]).not.toHaveAttribute('inert')
+			expect(slides[1]).toHaveAttribute('inert')
+		})
+	})
+
+	describe('удержание стрелки', () => {
+		afterEach(() => {
+			vi.useRealTimers()
+		})
+
+		it('листает с интервалом, пока стрелка зажата, и останавливается, когда её отпустили', async () => {
+			vi.useFakeTimers()
+			const items: SliderItem[] = [1, 2, 3, 4, 5].map(n => ({ src: `slide${n}.jpg`, alt: `Слайд ${n}` }))
+			const { emitted } = render(BaseSlider, { props: { items, isLoop: false } })
+			const next = screen.getByRole('button', { name: 'Следующий слайд' })
+
+			await fireEvent.mouseDown(next)
+			await vi.advanceTimersByTimeAsync(3 * 150)
+			await fireEvent.mouseUp(next)
+			await vi.advanceTimersByTimeAsync(3 * 150)
+
+			expect(emitted().change).toEqual([[1], [2], [3]])
+		})
+	})
+
+	describe('пауза автопрокрутки', () => {
+		const AUTOPLAY_PROPS = { items: ITEMS, isAutoplay: true, autoplayInterval: 1000 }
+
+		afterEach(() => {
+			vi.useRealTimers()
+			vi.unstubAllGlobals()
+		})
+
+		it('не должен листать, пока фокус внутри слайдера', () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
+
+			container.querySelector<HTMLButtonElement>('.base-slider__arrow--next')!.focus()
+			vi.advanceTimersByTime(3000)
+
+			expect(emitted().change).toBeUndefined()
+		})
+
+		it('должен возобновлять автопрокрутку, когда фокус покидает слайдер', () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
+			const outside = document.createElement('button')
+			document.body.appendChild(outside)
+
+			container.querySelector<HTMLButtonElement>('.base-slider__arrow--next')!.focus()
+			outside.focus()
+			vi.advanceTimersByTime(1000)
+
+			expect(emitted().change).toEqual([[1]])
+			outside.remove()
+		})
+
+		it('не должен возобновлять автопрокрутку при переходе фокуса между элементами слайдера', () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
+
+			container.querySelector<HTMLButtonElement>('.base-slider__arrow--next')!.focus()
+			container.querySelector<HTMLButtonElement>('.base-slider__arrow--prev')!.focus()
+			vi.advanceTimersByTime(3000)
+
+			expect(emitted().change).toBeUndefined()
+		})
+
+		it('не должен возобновлять автопрокрутку при уходе мыши, пока фокус внутри', async () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
+			const root = container.querySelector('.base-slider')!
+
+			await fireEvent.mouseEnter(root)
+			container.querySelector<HTMLButtonElement>('.base-slider__arrow--next')!.focus()
+			await fireEvent.mouseLeave(root)
+			vi.advanceTimersByTime(3000)
+
+			expect(emitted().change).toBeUndefined()
+		})
+
+		it('должен ставить на паузу при наведении и возобновлять после ухода мыши', async () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
+			const root = container.querySelector('.base-slider')!
+
+			await fireEvent.mouseEnter(root)
+			vi.advanceTimersByTime(3000)
+			expect(emitted().change).toBeUndefined()
+
+			await fireEvent.mouseLeave(root)
+			vi.advanceTimersByTime(1000)
+			expect(emitted().change).toEqual([[1]])
+		})
+
+		it('не должен запускать автопрокрутку при prefers-reduced-motion: reduce', () => {
+			vi.useFakeTimers()
+			vi.stubGlobal(
+				'matchMedia',
+				vi.fn((query: string) => ({
+					matches: query === '(prefers-reduced-motion: reduce)',
+					media: query,
+					addEventListener: vi.fn(),
+					removeEventListener: vi.fn(),
+				})),
+			)
+			const { emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
+
+			vi.advanceTimersByTime(3000)
+
+			expect(emitted().change).toBeUndefined()
+		})
+	})
+
 	describe('пропс customClass', () => {
 		const STUBS = {
 			BaseButton: {
@@ -418,8 +601,10 @@ describe('BaseSlider unit', () => {
 		})
 
 		it('должен распределять объект классов по внутренним элементам', () => {
+			// Два слайда: с одним листать нечего, и стрелки с навигацией не выводятся
 			const itemsWithCaption: SliderItem[] = [
 				{ src: 'slide1.jpg', alt: 'Слайд 1', type: 'image', title: 'Заголовок', description: 'Описание' },
+				{ src: 'slide2.jpg', alt: 'Слайд 2', type: 'image' },
 			]
 			const { container } = render(BaseSlider, {
 				props: {

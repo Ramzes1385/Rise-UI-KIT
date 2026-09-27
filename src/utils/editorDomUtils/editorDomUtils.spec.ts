@@ -9,6 +9,7 @@ import {
 	getFormatBlock,
 	isInsideList,
 	isInsideTags,
+	matchTypedInlineTag,
 	toHTMLElement,
 } from './editorDomUtils'
 
@@ -590,6 +591,25 @@ describe('editorDomUtils', () => {
 			expect(INLINE_FORMAT_TAGS.has('B')).toBe(true)
 			expect(INLINE_FORMAT_TAGS.has('STRONG')).toBe(true)
 			expect(INLINE_FORMAT_TAGS.has('SPAN')).toBe(true)
+		})
+	})
+
+	describe('matchTypedInlineTag', () => {
+		it('находит пару разрешённого тега в конце текста и возвращает содержимое как текст', () => {
+			expect(matchTypedInlineTag('до <B>&lt;img src=x&gt;</b>')).toEqual({ tag: 'b', content: '&lt;img src=x&gt;', start: 3 })
+		})
+
+		it.each([
+			['пара не в конце текста', 'до <b>x</b> после'],
+			['тег с атрибутами', 'x <b onclick="alert(1)">y</b>'],
+			['тег вне списка разрешённых', 'x <img>y</img>'],
+			['одиночный закрывающий тег', 'Закройте тегом </div>'],
+			['вложенная разметка', '<b><img src=x onerror=1></b>'],
+			['незакрытый тег', '<img src=x onerror=alert(1)>'],
+			['разные открывающий и закрывающий теги', '<b>x</i>'],
+			['пустое содержимое', '<b></b>'],
+		])('не считает совпадением: %s', (_label, text) => {
+			expect(matchTypedInlineTag(text)).toBeNull()
 		})
 	})
 })

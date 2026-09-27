@@ -20,24 +20,30 @@ export type ProgressAnimation = (typeof PROGRESS_ANIMATIONS)[number]
  * Пропсы компонента BaseProgress
  */
 export interface BaseProgressProps extends BaseComponentProps<string, 'root' | 'track' | 'fill' | 'tooltipTrigger' | 'tooltipAnchor' | 'svg' | 'trackCircle' | 'fillCircle' | 'circleLabel'> {
-	/** Значение (0–100) */
+	/** Значение от 0 до `max`. Значения за пределами шкалы ограничиваются. */
 	value: number
-	/** Максимальное значение */
+	/** Максимальное значение: процент считается как `value / max`. */
 	max?: number
-	/** Форма */
+	/** Форма: `line` — полоса, `circle` — кольцо. */
 	shape?: ProgressShape
-	/** Анимация */
+	/** Оформление заливки: `striped` — полосы, `pulse` — мерцание, `glow` — свечение (движение — только без prefers-reduced-motion). */
 	animation?: ProgressAnimation
-	/** Показывать значение */
+	/** Показывать подпись с процентом: над полосой у линии, в центре у круга. В неопределённом режиме не показывается. */
 	hasLabel?: boolean
-	/** Неопределённый прогресс */
+	/** Неопределённый режим: значение неизвестно, индикатор показывает, что работа идёт; `aria-valuenow` не выставляется. */
 	isIndeterminate?: boolean
+	/**
+	 * Доступное имя индикатора для скринридеров (например «Загрузка файла»).
+	 * По умолчанию — «Прогресс»; внешний aria-labelledby имеет приоритет.
+	 */
+	ariaLabel?: string
 }
 
 /**
  * События компонента BaseProgress
  */
 export interface BaseProgressEmits {
+	/** Прогресс достиг 100%. */
 	(event: 'complete'): void
 }
 
@@ -45,5 +51,6 @@ export interface BaseProgressEmits {
  * Слоты компонента BaseProgress
  */
 export interface BaseProgressSlots {
+	/** Содержимое подписи при `hasLabel` (по умолчанию «N%»): `value` — значение, `percent` — процент 0–100. */
 	default?: (props: { value: number; percent: number }) => unknown
 }

@@ -168,7 +168,8 @@ describe('BaseFileUpload unit', () => {
 			})
 
 			expect(container.querySelector('.base-file-upload__error-item')).toBeInTheDocument()
-			expect(screen.getByText('1. Ошибка загрузки')).toBeInTheDocument()
+			// Ошибки выводятся строками списка без нумерации «1.»
+			expect(screen.getByText('Ошибка загрузки')).toBeInTheDocument()
 		})
 
 		it('должен добавлять класс --error когда error передан', () => {
@@ -218,7 +219,7 @@ describe('BaseFileUpload unit', () => {
 		it('должен эмитить error при превышении maxCount', async () => {
 			const first = new File(['a'], 'a.pdf', { type: 'application/pdf' })
 			const second = new File(['b'], 'b.pdf', { type: 'application/pdf' })
-			const { container, emitted } = render(BaseFileUpload, { props: { maxCount: 1 } })
+			const { container, emitted } = render(BaseFileUpload, { props: { maxCount: 1, isMultiple: true } })
 
 			const input = container.querySelector<HTMLInputElement>('input[type="file"]')!
 			Object.defineProperty(input, 'files', { value: [first], configurable: true })
@@ -231,7 +232,7 @@ describe('BaseFileUpload unit', () => {
 			await fireEvent.change(input)
 
 			expect(emitted().error?.at(-1)).toEqual(['Максимум файлов: 1'])
-			expect(screen.getByText('1. Максимум файлов: 1')).toBeInTheDocument()
+			expect(screen.getByText('Максимум файлов: 1')).toBeInTheDocument()
 		})
 	})
 

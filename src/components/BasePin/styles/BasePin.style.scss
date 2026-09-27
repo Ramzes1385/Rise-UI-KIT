@@ -1,37 +1,34 @@
+// BasePin. Ряд ячеек-полей 32×32 при sizeScale = 100 (коробка поля field-box) с зазором 6px, символ по центру 14/20 medium.
+// Фокус — рамка и кольцо основного цвета (field-focus), ошибка — цвет ошибки. Текст ошибки под ячейками.
+// Варианты, как у BaseInput: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
+// ghost — без фона и рамки до наведения; shadow — как default с тенью.
 .base-pin {
-	display: flex;
+	display: inline-flex;
 	flex-direction: column;
-	align-items: center;
-	gap: sz(8px);
-
-	&--disabled {
-		opacity: 0.6;
-		pointer-events: none;
-	}
+	gap: sz(6px);
+	max-width: 100%;
+	@include custom-text(color, var(--rise-text-highlighted));
 
 	&__cells {
 		display: flex;
-		gap: sz(12px);
-		justify-content: center;
-	}
-
-	&__error-text {
-		color: var(--color-error);
+		gap: sz(6px);
 	}
 
 	&__input {
-		width: sz(48px);
-		height: sz(56px);
+		box-sizing: border-box;
+		width: sz(32px);
+		height: sz(32px);
+		margin: 0;
+		padding: 0;
+		color: inherit;
+		font: inherit;
+		@include control-text;
+		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
-		font-size: sz(24px);
-		font-weight: 700;
-		border: 2px solid var(--color-border);
-		border-radius: sz(8px);
-		@include custom-bg(background-color, var(--color-white));
-		@include custom-text(color, var(--color-primary));
-		@include interactive;
+		outline: none;
+		@include field-box;
 
-		// Скрываем стрелки у type="number"
+		// Без стрелок у type="number": ячейка вмещает один символ.
 		&::-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
 			-webkit-appearance: none;
@@ -40,63 +37,57 @@
 
 		&[type='number'] {
 			-moz-appearance: textfield;
-		}
-
-		@include hover {
-			border-color: var(--color-text-muted);
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-
-		@include focus {
-			outline: none;
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface));
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
-
-		@include active {
-			transform: scale(0.95);
-			@include custom-bg(background-color, var(--color-surface-muted));
+			appearance: textfield;
 		}
 	}
 
-	&--error &__input {
-		border-color: var(--color-error);
-	}
-
-	// Варианты — плоский БЭМ (без вложенности)
-	&--ghost &__input {
-		@include custom-bg(background-color, transparent);
-		border-color: transparent;
-		box-shadow: none;
-	}
-
-	&--ghost &__input:hover {
-		@include custom-bg(background-color, var(--color-surface-muted));
-	}
+	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--outline &__input {
 		@include custom-bg(background-color, transparent);
-		border-width: 2px;
-	}
-
-	&--shadow &__input {
-		box-shadow: var(--shadow-lg);
-	}
-
-	&--shadow &__input:hover {
-		box-shadow: var(--shadow-xl);
 	}
 
 	&--soft &__input {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
 		border-color: transparent;
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+
+		@include hover {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
 	}
 
-	&--soft &__input:hover {
-		@include custom-bg(background-color, var(--color-primary-soft-hover));
+	&--ghost &__input {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+
+		@include hover {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
+	}
+
+	// Фокус в ячейке без рамки (soft, ghost): фон как при наведении, плюс кольцо.
+	&--soft &__input:focus,
+	&--ghost &__input:focus {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--shadow &__input {
+		box-shadow: var(--rise-shadow-xs);
+	}
+
+	// ─── Состояния ───────────────────────────────────────────────────────────────
+
+	&--error &__input {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--disabled &__input {
+		@include disabled-state;
+	}
+
+	// Двойной селектор: текст ошибки — BaseText, его собственный цвет не должен перебивать цвет ошибки.
+	& &__error-text {
+		@include field-error;
 	}
 }

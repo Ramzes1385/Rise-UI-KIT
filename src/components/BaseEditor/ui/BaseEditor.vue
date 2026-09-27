@@ -42,12 +42,18 @@
 			</template>
 		</BaseEditorToolbar>
 
+		<!-- Область редактирования: role="textbox" + aria-multiline — так её озвучивают как многострочное поле -->
 		<div
 			v-if="!isCodeMode"
 			ref="editorRef"
 			class="base-editor__content"
 			:class="[{ 'base-editor__content--empty': isEmpty }, classes.content]"
 			:contenteditable="!isReadonly"
+			role="textbox"
+			aria-multiline="true"
+			:aria-label="UI_EDITOR.CONTENT_LABEL"
+			:aria-readonly="isReadonly ? 'true' : undefined"
+			:aria-placeholder="placeholder || undefined"
 			:data-placeholder="placeholder"
 			@input="handleInput"
 			@focus="handleFocus"
@@ -57,11 +63,14 @@
 			@keydown="handleKeyDown"
 			@contextmenu="handleContextMenu"></div>
 
+		<!-- Режим кода: подпись поля скрыта визуально, но задаёт доступное имя; высота растёт по тексту до --editor-max-height -->
 		<BaseTextarea
 			v-if="isCodeMode"
 			ref="codeTextareaRef"
 			class="base-editor__code"
 			:custom-class="classes.code"
+			:label="UI_EDITOR.CODE_LABEL"
+			is-autosize
 			:model-value="codeContent"
 			:placeholder="placeholder"
 			:size-scale="sizeScale"
@@ -70,28 +79,33 @@
 			@blur="handleBlur" />
 
 		<Teleport to="body">
+			<!-- Меню размера медиа (правый клик по изображению или видео). В body масштаб не наследуется — задаём его сами -->
 			<div
 				v-if="contextMenu.isVisible"
 				ref="contextMenuRef"
 				class="base-editor__context-menu"
-				:style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }">
-				<div class="base-editor__context-menu-row">
+				role="dialog"
+				:aria-label="UI_EDITOR.MEDIA_MENU_LABEL"
+				:style="[sizeScaleStyle, { left: contextMenu.x + 'px', top: contextMenu.y + 'px' }]">
+				<div class="base-editor__context-menu-row" @keydown.enter.prevent="applyMediaSize">
 					<BaseInput
 						:model-value="contextMenu.width"
 						type="number"
-						:placeholder="UI_EDITOR.WIDTH"
-						:size-scale="80"
+						:label="UI_EDITOR.WIDTH"
+						postfix="px"
+						:size-scale="menuControlScale"
 						@update:model-value="contextMenu.width = String($event)" />
 					<BaseInput
 						:model-value="contextMenu.height"
 						type="number"
-						:placeholder="UI_EDITOR.HEIGHT"
-						:size-scale="80"
+						:label="UI_EDITOR.HEIGHT"
+						postfix="px"
+						:size-scale="menuControlScale"
 						@update:model-value="contextMenu.height = String($event)" />
 				</div>
 				<div class="base-editor__context-menu-actions">
-					<BaseButton :size-scale="80" @click="applyMediaSize">{{ UI_EDITOR.APPLY }}</BaseButton>
-					<BaseButton variant="ghost" :size-scale="80" @click="removeMedia">{{ UI_EDITOR.DELETE }}</BaseButton>
+					<BaseButton variant="ghost" :size-scale="menuControlScale" @click="removeMedia">{{ UI_EDITOR.DELETE }}</BaseButton>
+					<BaseButton :size-scale="menuControlScale" @click="applyMediaSize">{{ UI_EDITOR.APPLY }}</BaseButton>
 				</div>
 			</div>
 		</Teleport>
@@ -99,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import '../styles/BaseEditor.style.scss'
 
 import { BaseButton } from '@components/BaseButton'
@@ -108,7 +122,9 @@ import { BaseTextarea } from '@components/BaseTextarea'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
-import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { useEscapeKey } from '@composables/useEscapeKey'
+import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
+import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../model/BaseEditor.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
@@ -131,6 +147,9 @@ defineSlots<BaseEditorSlots>()
 const editorRef = ref<HTMLDivElement | null>(null)
 const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
 
+/** Поля и кнопки меню медиа — размер sm (28px при sizeScale = 100): меню компактнее основных контролов */
+const menuControlScale = computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO)
+
 const headingOptions: BaseSelectOption[] = [
 	{ value: 'p', label: UI_EDITOR.PARAGRAPH },
 	{ value: 'h1', label: `${UI_EDITOR.HEADING_PREFIX} 1` },
@@ -149,6 +168,7 @@ const {
 	activeStates,
 	contextMenu,
 	contextMenuRef,
+	closeContextMenu,
 	isCodeMode,
 	codeContent,
 	applyFormat,
@@ -177,6 +197,7 @@ const {
 	codeTextareaRef,
 	onInput: () => handleInput(),
 	promptForUrl: () => prompt(UI_EDITOR.URL_PROMPT),
+	isReadonly: () => props.isReadonly,
 })
 
 const {
@@ -222,6 +243,35 @@ function handleBlur(): void {
 	isFocused.value = false
 	emit('blur')
 }
+
+// Escape закрывает меню медиа (фокус возвращает watch ниже)
+useEscapeKey({
+	isActive: () => contextMenu.isVisible,
+	callback: closeContextMenu,
+})
+
+// Меню медиа доступно с клавиатуры: при открытии фокус переходит в поле «Ширина»;
+// если меню закрылось, пока фокус был внутри (кнопка, Enter, Escape), фокус возвращается в текст
+watch(
+	() => contextMenu.isVisible,
+	isVisible => {
+		if (isVisible) {
+			nextTick(() => contextMenuRef.value?.querySelector('input')?.focus())
+			return
+		}
+		if (contextMenuRef.value?.contains(document.activeElement)) editorRef.value?.focus()
+	},
+)
+
+// В режиме чтения тулбара нет: из режима кода было бы не выйти, а меню медиа не должно менять документ
+watch(
+	() => props.isReadonly,
+	isReadonly => {
+		if (!isReadonly) return
+		if (isCodeMode.value) toggleCodeMode()
+		closeContextMenu()
+	},
+)
 
 watch(
 	() => props.modelValue,

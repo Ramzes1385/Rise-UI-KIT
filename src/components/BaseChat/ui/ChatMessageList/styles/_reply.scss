@@ -1,32 +1,33 @@
-@use "@styles/functions" as *;
+// Цитата сообщения, на которое ответили: линия --rise-primary слева, фон --chat-quote-bg (bg поверх пузыря),
+// имя 12/16 medium цветом primary-text, текст 12/16 toned в одну строку. Кнопка: клик ведёт к оригиналу.
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+@use '../../../styles/chat' as *;
 
 .base-chat-message-list {
 	&__reply-quote {
+		@include chat-button-reset;
 		display: flex;
 		flex-direction: column;
-		gap: sz(2px);
-		padding: sz(4px) sz(10px);
-		border-left: sz(3px) solid;
-		border-radius: sz(4px);
-		margin-bottom: sz(8px);
-		cursor: pointer;
-		transition: opacity var(--transition-slow);
-
-		&:hover {
-			opacity: 0.85;
-		}
+		align-self: stretch;
+		min-width: 0;
+		max-width: sz(320px);
+		padding: sz(4px) sz(8px);
+		border-left: sz(2px) solid var(--rise-primary);
+		border-radius: 0 sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) 0;
+		background-color: var(--chat-quote-bg);
+		@include text-size(xs);
+		@include focus-ring;
 	}
 
 	&__reply-sender {
-		font-size: sz(12px);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-primary-text);
+		@include truncate;
 	}
 
 	&__reply-text {
-		margin: 0;
-		font-size: sz(12px);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: sz(240px);
+		color: var(--rise-text-toned);
+		@include truncate;
 	}
 }

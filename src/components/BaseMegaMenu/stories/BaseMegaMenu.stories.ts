@@ -1,116 +1,113 @@
-﻿/**
- * Stories для компонента BaseMegaMenu.
- * Демонстрирует рекурсивную вложенность без ограничения глубины,
- * раскладки columns/dropdown и триггеры click/hover.
+/**
+ * BaseMegaMenu — stories.
+ *
+ * Разделы: Default (песочница, раскладка columns) → внешний вид (варианты, размеры, цвет) →
+ * состояния (отключённые пункты, пусто, длинные тексты) → сценарии (выпадающее меню, наведение, глубокая вложенность) →
+ * клавиатура.
  */
 
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { expect, fn, waitFor } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import { MEGA_MENU_VARIANTS } from '../model/BaseMegaMenu.types'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { MegaMenuColumn, MegaMenuItem } from '../model/BaseMegaMenu.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const COLUMNS = [
+const COLUMNS: MegaMenuColumn[] = [
 	{
-		title: 'Каталог',
+		title: 'Продукты',
 		icon: 'folder',
 		items: [
-			{ label: 'Кованые изделия', icon: 'star', description: 'Ручная ковка' },
-			{ label: 'Ворота и ограды', icon: 'home', to: '/gates' },
-			{ label: 'Лестницы', icon: 'list-number', to: '/stairs', description: 'Винтовые и маршевые' },
+			{ label: 'Аналитика', icon: 'star', description: 'Отчёты и дашборды', to: '/analytics' },
+			{ label: 'Документы', icon: 'file', description: 'Договоры, счета и акты', to: '/docs' },
+			{ label: 'Календарь', icon: 'calendar', description: 'Планирование задач', to: '/calendar' },
 		],
 	},
 	{
-		title: 'О компании',
+		title: 'Ресурсы',
 		icon: 'info',
 		items: [
-			{ label: 'Наша история', icon: 'file' },
-			{ label: 'Команда мастеров', icon: 'smile' },
-			{ label: 'Сертификаты', icon: 'check-circle' },
+			{ label: 'Справочный центр', icon: 'search', to: '/help' },
+			{ label: 'Блог', icon: 'list-bullet', to: '/blog' },
+			{
+				label: 'Интеграции',
+				icon: 'link',
+				children: [
+					{ label: 'Почта', to: '/integrations/mail' },
+					{ label: 'Мессенджеры', to: '/integrations/messengers' },
+				],
+			},
 		],
 	},
 	{
-		title: 'Услуги',
-		icon: 'code',
+		title: 'Компания',
+		icon: 'home',
 		items: [
-			{
-				label: 'Художественная ковка',
-				icon: 'star',
-				children: [
-					{ label: 'Ворота', icon: 'home' },
-					{ label: 'Перила', icon: 'list-bullet' },
-					{ label: 'Балкон', icon: 'image' },
-				],
-			},
-			{ label: 'Сварочные работы', icon: 'code' },
-			{ label: 'Монтаж', icon: 'pin' },
+			{ label: 'О нас', to: '/about' },
+			{ label: 'Вакансии', to: '/careers' },
+			{ label: 'Контакты', to: '/contacts' },
 		],
 	},
 ]
 
-const DROPDOWN_ITEMS = [
+const DROPDOWN_ITEMS: MegaMenuItem[] = [
 	{
-		label: 'Каталог',
+		label: 'Продукты',
 		icon: 'folder',
 		children: [
 			{
-				label: 'Кованые изделия',
+				label: 'Аналитика',
 				icon: 'star',
-				description: 'Ручная ковка',
+				description: 'Отчёты и дашборды',
 				children: [
-					{ label: 'Ворота', icon: 'home' },
-					{ label: 'Перила', icon: 'list-bullet' },
-					{ label: 'Балконы', icon: 'image' },
+					{ label: 'Продажи', to: '/analytics/sales' },
+					{ label: 'Склад', to: '/analytics/stock' },
 				],
 			},
-			{
-				label: 'Ворота и ограды',
-				icon: 'home',
-				children: [
-					{ label: 'Распашные', icon: 'arrow-left' },
-					{ label: 'Откатные', icon: 'arrow-right' },
-				],
-			},
-			{ label: 'Лестницы', icon: 'list-number', to: '/stairs' },
+			{ label: 'Документы', icon: 'file', description: 'Договоры, счета и акты', to: '/docs' },
+			{ label: 'Календарь', icon: 'calendar', to: '/calendar' },
 		],
 	},
 	{
-		label: 'Услуги',
-		icon: 'code',
+		label: 'Ресурсы',
+		icon: 'info',
 		children: [
-			{ label: 'Художественная ковка', icon: 'star' },
-			{ label: 'Сварочные работы', icon: 'code' },
-			{ label: 'Монтаж', icon: 'pin' },
+			{ label: 'Справочный центр', icon: 'search', to: '/help' },
+			{ label: 'Блог', icon: 'list-bullet', to: '/blog' },
 		],
 	},
-	{ label: 'О компании', icon: 'info', to: '/about' },
-	{ label: 'Контакты', icon: 'send', href: 'https://example.com', target: '_blank' as const },
+	{ label: 'Цены', to: '/pricing' },
+	{ label: 'Контакты', to: '/contacts' },
 ]
 
-/** Глубокое дерево для демонстрации неограниченной вложенности */
-const DEEP_TREE = [
+const DISABLED_ITEMS: MegaMenuItem[] = [
+	{
+		label: 'Продукты',
+		icon: 'folder',
+		children: [
+			{ label: 'Аналитика', icon: 'star', to: '/analytics' },
+			{ label: 'Прогнозы (скоро)', icon: 'calendar', isDisabled: true },
+			{ label: 'Документы', icon: 'file', to: '/docs' },
+		],
+	},
+	{ label: 'Маркетплейс', isDisabled: true },
+	{ label: 'Контакты', to: '/contacts' },
+]
+
+const DEEP_COLUMNS: MegaMenuColumn[] = [
 	{
 		title: 'Каталог',
 		icon: 'folder',
 		items: [
 			{
-				label: 'Уровень 1',
-				icon: 'star',
+				label: 'Электроника',
 				children: [
 					{
-						label: 'Уровень 2',
-						icon: 'folder',
+						label: 'Компьютеры',
 						children: [
 							{
-								label: 'Уровень 3',
-								icon: 'folder',
-								children: [
-									{
-										label: 'Уровень 4',
-										icon: 'folder',
-										children: [{ label: 'Уровень 5', icon: 'check', to: '/deep' }],
-									},
-								],
+								label: 'Ноутбуки',
+								children: [{ label: 'Ультрабуки', to: '/catalog/electronics/computers/laptops/ultrabooks' }],
 							},
 						],
 					},
@@ -120,428 +117,252 @@ const DEEP_TREE = [
 	},
 ]
 
-const meta: Meta<typeof BaseMegaMenu> = {
-	title: 'UI/BaseMegaMenu',
+const LONG_COLUMNS: MegaMenuColumn[] = [
+	{
+		title: 'Услуги для корпоративных клиентов и государственных учреждений',
+		items: [
+			{
+				label: 'Комплексное сопровождение закупок по 44-ФЗ и 223-ФЗ',
+				description: 'Подготовка документации, участие в торгах и контроль исполнения контрактов',
+				to: '/services/procurement',
+			},
+			{ label: 'Аудит информационной безопасности', to: '/services/audit' },
+		],
+	},
+]
+
+/** Выпадающие панели лежат поверх страницы: контейнер оставляет им место в области примера. */
+const DROPDOWN_FRAME = '<div style="min-height: 320px;">'
+
+const meta = {
+	title: 'Navigation/BaseMegaMenu',
 	component: BaseMegaMenu,
-	argTypes: buildArgTypes({
-		props: {
-			trigger: { control: 'select', options: ['click', 'hover'] },
-			layout: { control: 'select', options: ['columns', 'dropdown'] },
-			variant: { control: 'select', options: MEGA_MENU_VARIANTS },
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Многоуровневое меню сайта: панель с колонками ссылок (`layout="columns"`) или горизонтальная навигация',
+					'с выпадающими панелями (`layout="dropdown"`). Вложенность узлов не ограничена.',
+					'',
+					'- Узлы с `children` раскрываются по клику (`trigger="click"`) или наведению (`trigger="hover"`); в columns —',
+					'  вниз, в dropdown — каскадом вбок. На узком экране меню становится аккордеоном.',
+					'- Клик по листу эмитит `navigate(url)` (для `to` — маршрут открывает приложение), `item-click` — клик по любому узлу.',
+					'- Узлы — кнопки (`role="button"`, Enter/Space, `aria-expanded` у узлов с детьми), пункты навигации — `BaseButton`.',
+					'  Закрытия по Escape и клику вне меню пока нет.',
+				].join('\n'),
 			},
-			hoverDelay: { control: 'number' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
+	},
+	argTypes: {
+		...baseArgTypes({ variants: MEGA_MENU_VARIANTS }),
+		columns: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		items: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		layout: { control: 'inline-radio', options: ['columns', 'dropdown'], table: propGroup(ARG_GROUP.appearance) },
+		trigger: { control: 'inline-radio', options: ['click', 'hover'], table: propGroup(ARG_GROUP.behavior) },
+		hoverDelay: { control: { type: 'number', min: 0, step: 50 }, table: propGroup(ARG_GROUP.behavior) },
+		'column-title': { control: false },
+		'nav-item': { control: false },
+		item: { control: false },
+	},
 	args: {
 		columns: COLUMNS,
-		trigger: 'click',
+		items: DROPDOWN_ITEMS,
 		layout: 'columns',
-		variant: 'default',
-		hoverDelay: 200,
-		sizeScale: 100,
-	},
-}
-
-export default meta
-type Story = StoryObj<typeof BaseMegaMenu>
-
-/** Базовое состояние — раскладка колонок */
-export const Default: Story = {
-	play: async ({ canvasElement }) => {
-		await userEvent.tab()
-		const title = canvasElement.querySelector('.base-mega-menu__title') as HTMLElement | null
-		if (title) {
-			await waitFor(() => {
-				const active = document.activeElement
-				expect(active === title || title.contains(active) || title.matches(':focus, :focus-within')).toBeTruthy()
-			})
-			await playShiftTab(canvasElement, { selector: '.base-mega-menu__title' })
-			await userEvent.keyboard('{Enter}')
-		}
-	},
-}
-
-/** Клики по заголовкам и узлам колонок */
-export const ColumnsInteractions: Story = {
-	args: {
-		'onColumn-click': fn(),
-		'onItem-click': fn(),
-		onNavigate: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const titleBtns = canvasElement.querySelectorAll('.base-mega-menu__title')
-		expect(titleBtns.length).toBeGreaterThanOrEqual(3)
-
-		await userEvent.click(titleBtns[0] as HTMLElement)
-		await waitFor(() => expect(args['onColumn-click']).toHaveBeenCalled())
-
-		const headers = canvasElement.querySelectorAll('.base-mega-menu__node-header')
-		await userEvent.click(headers[1] as HTMLElement)
-		await waitFor(() => expect(args['onItem-click']).toHaveBeenCalled())
-
-		await userEvent.click(titleBtns[2] as HTMLElement)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__node-header').length).toBeGreaterThan(0)
-		})
-
-		const serviceHeaders = canvasElement.querySelectorAll('.base-mega-menu__node-header')
-		await userEvent.click(serviceHeaders[serviceHeaders.length - 3] as HTMLElement)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__sub-list').length).toBeGreaterThan(0)
-		})
-	},
-}
-
-/** Открытие колонок по наведению (trigger=hover) */
-export const ColumnsHoverTrigger: Story = {
-	args: { trigger: 'hover', hoverDelay: 50, 'onColumn-click': fn() },
-	play: async ({ canvasElement }) => {
-		const columns = canvasElement.querySelectorAll('.base-mega-menu__column')
-		expect(columns.length).toBeGreaterThan(0)
-
-		await userEvent.hover(columns[0] as HTMLElement)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__list').length).toBeGreaterThan(0)
-		})
-
-		const nodeWithChildren = columns[2]?.querySelector('.base-mega-menu__node--has-children')
-		if (nodeWithChildren instanceof HTMLElement) {
-			await userEvent.hover(nodeWithChildren)
-			await userEvent.unhover(nodeWithChildren)
-		}
-
-		await userEvent.unhover(columns[0] as HTMLElement)
-		await new Promise(resolve => setTimeout(resolve, 120))
-	},
-}
-
-/** Неограниченная вложенность — 5 уровней */
-export const DeepNesting: Story = {
-	args: { columns: DEEP_TREE, trigger: 'click', onNavigate: fn() },
-	play: async ({ args, canvasElement }) => {
-		const labels = ['Уровень 1', 'Уровень 2', 'Уровень 3', 'Уровень 4']
-		for (const label of labels) {
-			await waitFor(() => {
-				const node = within(canvasElement).queryByText(label)
-				expect(node).toBeTruthy()
-			})
-			await userEvent.click(within(canvasElement).getByText(label))
-		}
-
-		await waitFor(() => expect(within(canvasElement).getByText('Уровень 5')).toBeInTheDocument())
-		await userEvent.click(within(canvasElement).getByText('Уровень 5'))
-		await waitFor(() => expect(args.onNavigate).toHaveBeenCalledWith('/deep'))
-	},
-}
-
-/** Взаимодействие с выпадающим меню (click) */
-export const DropdownInteractions: Story = {
-	args: {
-		layout: 'dropdown',
-		items: DROPDOWN_ITEMS,
 		trigger: 'click',
-		'onItem-click': fn(),
+		hoverDelay: 200,
+		variant: 'default',
+		sizeScale: 100,
 		onNavigate: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const navLinks = canvasElement.querySelectorAll('.base-mega-menu__nav-link')
-		expect(navLinks.length).toBeGreaterThan(0)
-
-		await userEvent.click(navLinks[0] as HTMLElement)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__dropdown').length).toBeGreaterThan(0)
-		})
-
-		const groupHeaders = canvasElement.querySelectorAll('.base-mega-menu__dropdown .base-mega-menu__node-header')
-		await userEvent.click(groupHeaders[0] as HTMLElement)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__sub-list').length).toBeGreaterThan(0)
-		})
-
-		const subHeaders = canvasElement.querySelectorAll('.base-mega-menu__sub-list .base-mega-menu__node-header')
-		await userEvent.click(subHeaders[0] as HTMLElement)
-
-		await userEvent.click(navLinks[3] as HTMLElement)
-		await waitFor(() => {
-			expect(args['onItem-click']).toHaveBeenCalled()
-			expect(args.onNavigate).toHaveBeenCalled()
-		})
-	},
-}
-
-/** Выпадающее меню по наведению */
-export const DropdownHoverInteractions: Story = {
-	args: {
-		layout: 'dropdown',
-		items: DROPDOWN_ITEMS,
-		trigger: 'hover',
-		hoverDelay: 50,
 		'onItem-click': fn(),
-		onNavigate: fn(),
+		'onColumn-click': fn(),
 	},
-	play: async ({ canvasElement }) => {
-		const navItems = canvasElement.querySelectorAll('.base-mega-menu__nav-item')
-		expect(navItems.length).toBeGreaterThan(0)
-
-		await userEvent.hover(navItems[0] as HTMLElement)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__dropdown').length).toBeGreaterThan(0)
-		})
-
-		const node = canvasElement.querySelector('.base-mega-menu__dropdown .base-mega-menu__node--has-children')
-		if (node instanceof HTMLElement) {
-			await userEvent.hover(node)
-			await waitFor(() => {
-				expect(canvasElement.querySelectorAll('.base-mega-menu__sub-list').length).toBeGreaterThan(0)
-			})
-			await userEvent.unhover(node)
-		}
-
-		await userEvent.unhover(navItems[0] as HTMLElement)
-		await new Promise(resolve => setTimeout(resolve, 70))
-	},
-}
-
-/** Навигация по href с target='_self' */
-export const NavigateSelfTarget: Story = {
-	args: {
-		columns: [
-			{
-				title: 'Ссылки',
-				items: [{ label: 'Внутренний переход', href: '#mega-menu-self-target', target: '_self' as const }],
-			},
-		],
-		onNavigate: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const titleBtn = canvasElement.querySelector('.base-mega-menu__title')
-		if (titleBtn instanceof HTMLElement) await userEvent.click(titleBtn)
-
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__node-header').length).toBeGreaterThan(0)
-		})
-		const header = canvasElement.querySelector('.base-mega-menu__node-header')
-		if (header instanceof HTMLElement) await userEvent.click(header)
-
-		await waitFor(() => expect(args.onNavigate).toHaveBeenCalled())
-	},
-}
-
-/** Колонки с отключёнными пунктами */
-export const ColumnsDisabled: Story = {
-	args: {
-		columns: [
-			{
-				title: 'Меню',
-				items: [
-					{ label: 'Доступно', to: '/ok' },
-					{ label: 'Недоступно', isDisabled: true },
-					{
-						label: 'С подменю',
-						children: [{ label: 'Подпункт 1' }, { label: 'Отключён', isDisabled: true }],
-					},
-				],
-			},
-		],
-		'onItem-click': fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const titleBtn = canvasElement.querySelector('.base-mega-menu__title') as HTMLElement
-		await userEvent.click(titleBtn)
-
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-mega-menu__node').length).toBeGreaterThanOrEqual(3)
-		})
-
-		const disabled = canvasElement.querySelector('.base-mega-menu__node--disabled .base-mega-menu__node-header')
-		if (disabled instanceof HTMLElement) disabled.click()
-
-		const withChildren = canvasElement.querySelector('.base-mega-menu__node--has-children .base-mega-menu__node-header')
-		if (withChildren instanceof HTMLElement) await userEvent.click(withChildren)
-	},
-}
-
-/** С кастомными классами */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: {
-			root: 'mega-menu-root',
-			container: 'mega-menu-container',
-			column: 'mega-menu-column',
-			title: 'mega-menu-title',
-			list: 'mega-menu-list',
-			nav: 'mega-menu-nav',
-			navItem: 'mega-menu-navItem',
-			navLink: 'mega-menu-navLink',
-			dropdown: 'mega-menu-dropdown',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.mega-menu-root')).toBeTruthy()
-	},
-}
-
-/** Все визуальные варианты */
-export const Variants: Story = {
 	render: args => ({
 		components: { BaseMegaMenu },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args, ['column-title', 'nav-item', 'item']) }),
+		template: `${DROPDOWN_FRAME}<BaseMegaMenu v-bind="props" /></div>`,
+	}),
+} satisfies Meta<typeof BaseMegaMenu>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: раскладка columns. Клик по ссылке эмитит `navigate` с её адресом, по узлу «Интеграции» — раскрывает его. */
+export const Default: Story = {
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Документы' }))
+		await expect(args.onNavigate).toHaveBeenCalledWith('/docs')
+
+		const integrations = canvas.getByRole('button', { name: 'Интеграции' })
+		await userEvent.click(integrations)
+		await expect(integrations).toHaveAttribute('aria-expanded', 'true')
+		await expect(canvas.getByRole('button', { name: 'Почта' })).toBeVisible()
+	},
+}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Варианты панели columns: `default` — плавающая панель; `ghost` — без фона и рамки (меню внутри другой поверхности);
+ * `outline` — выразительная рамка; `shadow` — крупная тень; `soft` — мягкий нейтральный фон.
+ */
+export const Variants: Story = {
+	argTypes: { variant: { control: false } },
+	parameters: {
+		docs: { source: { code: MEGA_MENU_VARIANTS.map(variant => `<BaseMegaMenu :columns="columns" variant="${variant}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseMegaMenu },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['column-title', 'nav-item', 'item']), variants: MEGA_MENU_VARIANTS, columns: COLUMNS.slice(0, 2) }),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:40px;">
-				<div v-for="v in ['default','ghost','outline','shadow','soft']" :key="v">
-					<p style="margin-bottom:8px;font-size:12px;color:var(--color-text-muted);">Variant: {{ v }}</p>
-					<BaseMegaMenu v-bind="args" :variant="v" />
+			<div class="story-stack">
+				<div v-for="variant in variants" :key="variant" class="story-col">
+					<span class="story-label">{{ variant }}</span>
+					<BaseMegaMenu v-bind="props" :columns="columns" layout="columns" :variant="variant" />
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelectorAll('.base-mega-menu').length).toBe(5)
-	},
 }
 
-/** С вложенными элементами */
-export const WithChildren: Story = {
+/** Размеры через `sizeScale` (здесь — навигация dropdown): пункты 24–40px, текст и иконки масштабируются пропорционально. */
+export const Sizes: Story = {
+	args: { layout: 'dropdown' },
+	argTypes: { sizeScale: { control: false } },
+	parameters: {
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseMegaMenu layout="dropdown" :items="items" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseMegaMenu },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['column-title', 'nav-item', 'item']), presets: SIZE_PRESETS, sizeLabel }),
+		template: `
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-col">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseMegaMenu v-bind="props" :size-scale="preset.sizeScale" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Кастомный цвет через `color`: `bg.base` — фон панелей, `text.base` — текст пунктов, заголовков и описаний,
+ * `bg.hover` и `text.hover` — пункт под курсором и раскрытый узел.
+ */
+export const CustomColor: Story = {
 	args: {
-		columns: [
-			{
-				title: 'Продукция',
-				items: [
-					{
-						label: 'Кованые ворота',
-						description: 'Элитные кованые ворота',
-						children: [{ label: 'Распашные' }, { label: 'Откатные' }, { label: 'Автоматические' }],
-					},
-					{
-						label: 'Кованые перила',
-						children: [{ label: 'Для лестниц' }, { label: 'Для балконов' }],
-					},
-					{ label: 'Мебель' },
-				],
-			},
-			{
-				title: 'Галерея',
-				items: [{ label: 'Ворота' }, { label: 'Перила' }, { label: 'Лестницы' }, { label: 'Мангалы' }],
-			},
-		],
+		columns: COLUMNS.slice(0, 2),
+		color: {
+			bg: { base: '#eff6ff', hover: '#dbeafe' },
+			text: { base: '#1e3a8a', hover: '#172554' },
+		},
+	},
+	play: async ({ canvas }) => {
+		const link = canvas.getByRole('button', { name: 'Документы' })
+		await expect(getComputedStyle(link).color).toBe('rgb(30, 58, 138)')
+		await expect(getComputedStyle(link.closest('.base-mega-menu') as HTMLElement).backgroundColor).toBe('rgb(239, 246, 255)')
 	},
 }
 
-/** Открытие по наведению */
-export const HoverTrigger: Story = {
-	args: { trigger: 'hover', hoverDelay: 300 },
-}
+// ─── Состояния ─────────────────────────────────────────────────────────────────
 
-/** Раскладка выпадающего меню */
-export const DropdownLayout: Story = {
-	args: { layout: 'dropdown', items: DROPDOWN_ITEMS, trigger: 'click' },
-}
-
-/** Выпадающее меню по наведению */
-export const DropdownHover: Story = {
-	args: { layout: 'dropdown', items: DROPDOWN_ITEMS, trigger: 'hover', hoverDelay: 250 },
-}
-
-/** С отключёнными элементами */
-export const WithDisabled: Story = {
-	args: {
-		layout: 'dropdown',
-		items: [
-			{
-				label: 'Каталог',
-				children: [
-					{ label: 'Ворота', to: '/gates' },
-					{ label: 'Перила (скоро)', isDisabled: true },
-					{ label: 'Лестницы', to: '/stairs' },
-				],
-			},
-			{ label: 'Архив (недоступно)', isDisabled: true },
-			{ label: 'Контакты', to: '/contacts' },
-		],
+/** Отключённые пункты приглушены и помечены `aria-disabled`: не раскрываются и не выполняют переход. */
+export const Disabled: Story = {
+	args: { layout: 'dropdown', items: DISABLED_ITEMS },
+	play: async ({ canvas, userEvent }) => {
+		await expect(canvas.getByRole('button', { name: 'Маркетплейс' })).toBeDisabled()
+		await userEvent.click(canvas.getByRole('button', { name: 'Продукты' }))
+		await expect(canvas.getByRole('button', { name: 'Прогнозы (скоро)' })).toHaveAttribute('aria-disabled', 'true')
 	},
 }
 
-/** Со ссылками */
-export const WithLinks: Story = {
-	args: {
-		layout: 'dropdown',
-		items: [
-			{ label: 'Главная', to: '/' },
-			{ label: 'Внешний сайт', href: 'https://example.com', target: '_blank' },
-			{ label: 'О нас', to: '/about' },
-			{
-				label: 'Документация',
-				children: [
-					{ label: 'API', href: 'https://docs.example.com/api', target: '_blank' },
-					{ label: 'Гайд', to: '/guide' },
-				],
-			},
-		],
-	},
-}
-
-/** Минимальная конфигурация */
-export const Minimal: Story = {
-	args: {
-		columns: [{ title: 'Меню', items: [{ label: 'Главная' }, { label: 'О нас' }, { label: 'Контакты' }] }],
-	},
-}
-
-/** Много колонок */
-export const ManyColumns: Story = {
-	args: {
-		columns: [
-			{ title: 'Каталог', items: [{ label: 'Ворота' }, { label: 'Перила' }, { label: 'Лестницы' }] },
-			{ title: 'Услуги', items: [{ label: 'Ковка' }, { label: 'Сварка' }, { label: 'Монтаж' }] },
-			{ title: 'Компания', items: [{ label: 'О нас' }, { label: 'Команда' }] },
-			{ title: 'Поддержка', items: [{ label: 'FAQ' }, { label: 'Контакты' }] },
-		],
-	},
-}
-
-/** Отображение в тёмной теме */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	args: { layout: 'dropdown', items: DROPDOWN_ITEMS, trigger: 'hover' },
-}
-
-/** Мега-меню без элементов */
+/** Без колонок и пунктов меню пустое. */
 export const Empty: Story = {
 	args: { columns: [] },
+	play: async ({ canvas }) => {
+		await expect(canvas.queryAllByRole('button')).toHaveLength(0)
+	},
 }
 
-/** Мега-меню с длинными текстами */
+/** Длинные заголовки, названия и описания переносятся по словам внутри колонки. */
 export const LongContent: Story = {
-	args: {
-		columns: [
-			{
-				title: 'Художественная ковка и металлообработка',
-				items: [
-					{
-						label: 'Кованые ворота премиум-класса',
-						description: 'Элитные кованые ворота с художественной резьбой и патинированием',
-					},
-					{
-						label: 'Лестницы винтовые и маршевые',
-						description: 'Проектирование и изготовление лестничных конструкций',
-					},
-					{ label: 'Балконные ограждения и перила' },
-				],
-			},
-		],
+	args: { columns: LONG_COLUMNS },
+	render: args => ({
+		components: { BaseMegaMenu },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['column-title', 'nav-item', 'item']) }),
+		template: '<div class="story-narrow"><BaseMegaMenu v-bind="props" /></div>',
+	}),
+	play: async ({ canvas }) => {
+		const link = canvas.getByRole('button', { name: /Комплексное сопровождение/ })
+		await expect(link.scrollWidth).toBeLessThanOrEqual(link.clientWidth)
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * `layout="dropdown"`: пункт с `children` открывает плавающую панель, вложенные уровни раскрываются каскадом вбок
+ * (панель переносится влево, если справа нет места).
+ */
+export const Dropdown: Story = {
+	args: { layout: 'dropdown' },
+	play: async ({ canvas, userEvent }) => {
+		const products = canvas.getByRole('button', { name: 'Продукты' })
+		await userEvent.click(products)
+		await expect(products).toHaveAttribute('aria-expanded', 'true')
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Аналитика' }))
+		await expect(await canvas.findByRole('button', { name: 'Продажи' })).toBeVisible()
+	},
+}
+
+/** `trigger="hover"`: панели открываются при наведении и закрываются через `hoverDelay` после ухода курсора. */
+export const HoverTrigger: Story = {
+	args: { layout: 'dropdown', trigger: 'hover', hoverDelay: 100 },
+	play: async ({ canvas, userEvent }) => {
+		const products = canvas.getByRole('button', { name: 'Продукты' })
+		await userEvent.hover(products)
+		await expect(products).toHaveAttribute('aria-expanded', 'true')
+
+		await userEvent.unhover(products)
+		await waitFor(() => expect(products).toHaveAttribute('aria-expanded', 'false'))
+	},
+}
+
+/** Вложенность не ограничена: в раскладке columns уровни раскрываются вниз, каждый с линией слева. */
+export const DeepNesting: Story = {
+	args: { columns: DEEP_COLUMNS },
+	play: async ({ canvas, userEvent, args }) => {
+		for (const label of ['Электроника', 'Компьютеры', 'Ноутбуки']) {
+			await userEvent.click(await canvas.findByRole('button', { name: label }))
+		}
+		await userEvent.click(await canvas.findByRole('button', { name: 'Ультрабуки' }))
+		await expect(args.onNavigate).toHaveBeenCalledWith('/catalog/electronics/computers/laptops/ultrabooks')
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab переводит фокус на пункт навигации, Enter открывает панель; следующий Tab — на узел панели,
+ * Enter раскрывает его вложенный уровень. Закрытия по Escape пока нет.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { layout: 'dropdown' },
+	play: async ({ canvas, userEvent }) => {
+		const products = canvas.getByRole('button', { name: 'Продукты' })
+		await tabTo(products, userEvent)
+		await expect(getComputedStyle(products).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(products).toHaveAttribute('aria-expanded', 'true')
+
+		await userEvent.tab()
+		const analytics = canvas.getByRole('button', { name: 'Аналитика' })
+		await expect(analytics).toHaveFocus()
+		await userEvent.keyboard('{Enter}')
+		await expect(analytics).toHaveAttribute('aria-expanded', 'true')
 	},
 }

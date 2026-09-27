@@ -429,9 +429,20 @@ describe('BaseDropdown unit', () => {
 	})
 
 	describe('пропс padding', () => {
-		it('должен устанавливать CSS-переменные padding по умолчанию (8)', () => {
+		it('без пропа не задаёт inline-переменные: отступ 4px берётся из стилей', () => {
 			render(BaseDropdown, {
 				props: { isOpen: true },
+				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
+			})
+
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			expect(panel.style.getPropertyValue('--dd-pad-top')).toBe('')
+			expect(panel.style.getPropertyValue('--dd-pad-left')).toBe('')
+		})
+
+		it('должен устанавливать CSS-переменные padding при padding=8', () => {
+			render(BaseDropdown, {
+				props: { isOpen: true, padding: 8 },
 				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
 			})
 

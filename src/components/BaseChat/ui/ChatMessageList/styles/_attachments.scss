@@ -1,29 +1,31 @@
-@use "@styles/functions" as *;
+// Вложения в пузыре. Изображения — коллаж до 4 превью с радиусом md; кнопка «Скачать» (outline 24px) появляется
+// при наведении и фокусе. Файлы — карточки: фон --rise-bg, рамка --rise-border, радиус md, иконка в плашке bg-elevated,
+// имя 14/20 medium, размер 12/16 muted; справа — ghost-кнопка «Скачать» 24px.
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+@use '../../../styles/chat' as *;
 
 .base-chat-message-list {
 	&__attachments {
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
-		margin-bottom: sz(6px);
+		gap: sz(6px);
+		min-width: 0;
 	}
+
+	// ─── Коллаж изображений ──────────────────────────────────────────────────────
 
 	&__collage {
 		display: grid;
-		gap: sz(4px);
-		border-radius: sz(12px);
+		gap: sz(2px);
+		width: sz(320px);
+		max-width: 100%;
 		overflow: hidden;
-		max-width: sz(320px);
-		width: 100%;
-		box-shadow: 0 sz(2px) sz(8px) rgba(0, 0, 0, 0.08);
+		border-radius: sz(var(--rise-radius-md));
 
 		&--count-1 {
 			grid-template-columns: 1fr;
-
-			.base-chat-message-list__attached-image {
-				max-height: sz(240px);
-				height: auto;
-			}
+			height: sz(200px);
 		}
 
 		&--count-2 {
@@ -32,7 +34,7 @@
 		}
 
 		&--count-3 {
-			grid-template-columns: 1.8fr 1.2fr;
+			grid-template-columns: 1.6fr 1fr;
 			grid-template-rows: 1fr 1fr;
 			height: sz(200px);
 
@@ -50,131 +52,122 @@
 
 	&__collage-item {
 		position: relative;
-		width: 100%;
-		height: 100%;
+		min-width: 0;
+		min-height: 0;
 		overflow: hidden;
-
-		&:hover {
-			.base-chat-message-list__download-btn {
-				opacity: 1;
-				visibility: visible;
-			}
-		}
-	}
-
-	&__collage-overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		pointer-events: none;
-		z-index: 2;
-	}
-
-	&__collage-overlay-text {
-		color: #ffffff !important;
 	}
 
 	&__attached-image {
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
-		cursor: pointer;
-		transition: transform var(--transition-slow);
+	}
 
-		&:hover {
-			transform: scale(1.05);
+	// «+N» поверх четвёртого превью: затемнение цветом инвертированного фона.
+	&__collage-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: color-mix(in srgb, var(--rise-bg-inverted) 55%, transparent);
+		pointer-events: none;
+	}
+
+	&__collage-overlay-text {
+		@include text-size(lg);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-inverted);
+	}
+
+	&__collage-item &__download-btn {
+		position: absolute;
+		top: sz(6px);
+		right: sz(6px);
+		opacity: 0;
+		@include transition(opacity);
+	}
+
+	&__collage-item:focus-within &__download-btn {
+		opacity: 1;
+	}
+
+	@media (hover: hover) {
+		&__collage-item:hover &__download-btn {
+			opacity: 1;
 		}
 	}
 
+	// ─── Файлы ───────────────────────────────────────────────────────────────────
+
+	&__files-list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		min-width: 0;
+	}
+
 	&__attached-file {
-		position: relative;
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
-		padding: sz(8px) sz(12px);
-		background: rgba(0, 0, 0, 0.03);
-		border: sz(1px) solid rgba(0, 0, 0, 0.05);
-		border-radius: sz(var(--border-radius-md));
-		width: 100%;
-		min-width: sz(240px);
+		gap: sz(4px);
+		width: sz(280px);
 		max-width: 100%;
-		box-sizing: border-box;
-		cursor: pointer;
-		transition: all var(--transition-slow);
+		padding: sz(4px) sz(4px) sz(4px) sz(4px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		color: var(--rise-text);
+	}
 
-		&:hover {
-			background: rgba(0, 0, 0, 0.06);
-			border-color: rgba(0, 0, 0, 0.1);
+	&__attached-file-main {
+		@include chat-button-reset;
+		display: flex;
+		flex: 1;
+		align-items: center;
+		gap: sz(8px);
+		min-width: 0;
+		padding: sz(2px);
+		border-radius: sz(var(--rise-radius-sm));
+		@include focus-ring(0);
 
-			.base-chat-message-list__download-btn {
-				opacity: 1;
-				visibility: visible;
+		@include hover {
+			.base-chat-message-list__attached-file-name {
+				text-decoration: underline;
 			}
 		}
 	}
 
 	&__file-icon {
-		flex-shrink: 0;
-		color: var(--color-text-muted);
+		display: flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-toned);
 	}
 
 	&__attached-file-info {
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
-		flex: 1;
 		min-width: 0;
 	}
 
 	&__attached-file-name {
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text-highlighted);
+		@include truncate;
 	}
 
 	&__attached-file-size {
-		opacity: 0.7;
+		@include text-size(xs);
+		color: var(--rise-text-muted);
 	}
 
 	&__download-btn {
-		position: absolute;
-		right: sz(8px);
-		top: 50%;
-		transform: translateY(-50%);
-		opacity: 0;
-		visibility: hidden;
-		transition:
-			opacity var(--transition-slow),
-			visibility var(--transition-slow),
-			transform var(--transition-slow);
-		background: var(--color-surface);
-		border-radius: 50%;
-		box-shadow: 0 sz(2px) sz(6px) rgba(0, 0, 0, 0.1);
-		border: sz(1px) solid var(--color-border);
-		color: var(--color-text);
-
-		&:hover {
-			color: var(--color-accent);
-			background: var(--color-surface-hover);
-			transform: translateY(-50%) scale(1.1);
-		}
-	}
-
-	&__attached-image-container {
-		.base-chat-message-list__download-btn {
-			top: sz(8px);
-			right: sz(8px);
-			transform: none;
-
-			&:hover {
-				transform: scale(1.1);
-			}
-		}
+		@include chat-icon-button(3px);
 	}
 }

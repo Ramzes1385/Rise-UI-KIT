@@ -33,4 +33,6 @@ export interface UseEditorToolbarOptions {
 	codeTextareaRef: Ref<HTMLTextAreaElement | { textareaRef: HTMLTextAreaElement | null } | null>
 	onInput: () => void
 	promptForUrl?: () => string | null
+	/** Режим только для чтения: контекстное меню медиа не открывается и не меняет содержимое */
+	isReadonly?: () => boolean
 }

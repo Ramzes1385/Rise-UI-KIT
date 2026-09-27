@@ -1,78 +1,61 @@
+// BaseSeparator. Линия толщиной 1px (проп thickness) цвета --rise-border, пунктир — isDashed.
+// Подпись или слот между двумя линиями: 12/16 medium --rise-text-muted, отступы 0 12px (у вертикального — 12px 0).
+// Проп color: color.bg — цвет линии, color.text — цвет подписи.
 .base-separator {
 	display: flex;
+	align-items: center;
 
-	@include custom-text(color, var(--color-text));
-
-	/* Горизонтальный */
 	&--horizontal {
 		flex-direction: row;
-		align-items: center;
 		width: 100%;
 	}
 
-	/* Вертикальный */
+	// В ряду flex вертикальный разделитель тянется на высоту ряда.
 	&--vertical {
 		flex-direction: column;
-		align-items: center;
+		align-self: stretch;
 		height: 100%;
-		min-height: 24px;
+		min-height: sz(20px);
 	}
 
-	/* Линия */
+	// Линия — рамка элемента: пунктир и толщина работают одинаково в обеих ориентациях.
 	&__line {
-		flex: 1;
-		@include custom-bg(background-color, var(--color-border));
-		@include transition(background-color);
+		flex: 1 1 0;
+		border: 0 solid;
+		@include custom-bg(border-color, var(--rise-border));
 	}
 
 	&--horizontal &__line {
-		height: var(--sep-thickness, 1px);
 		min-width: 0;
+		border-top-width: var(--sep-thickness, 1px);
 	}
 
 	&--vertical &__line {
-		width: var(--sep-thickness, 1px);
 		min-height: 0;
+		border-left-width: var(--sep-thickness, 1px);
 	}
 
-	/* Пунктир — горизонтальный */
-	&--dashed.base-separator--horizontal &__line {
-		background: repeating-linear-gradient(
-			90deg,
-			var(--color-border) 0,
-			var(--color-border) 8px,
-			transparent 8px,
-			transparent 14px
-		);
-		background-color: transparent;
+	&--dashed &__line {
+		border-style: dashed;
 	}
 
-	/* Пунктир — вертикальный */
-	&--dashed.base-separator--vertical &__line {
-		background: repeating-linear-gradient(
-			180deg,
-			var(--color-border) 0,
-			var(--color-border) 8px,
-			transparent 8px,
-			transparent 14px
-		);
-		background-color: transparent;
-	}
-
-	/* Контент между линиями */
+	// Отступы подписи по умолчанию; проп spacing переопределяет их inline-переменными на этом элементе.
 	&__content {
-		padding: var(--sep-pad-y, 10px) var(--sep-pad-x, 20px);
-		font-size: sz(13px);
-		font-weight: 500;
-		@include custom-text(color, var(--color-text-muted));
-		white-space: nowrap;
+		--sep-pad-y: 0px;
+		--sep-pad-x: 12px;
+
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		flex-shrink: 0;
+		padding: sz(var(--sep-pad-y)) sz(var(--sep-pad-x));
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		@include custom-text(color, var(--rise-text-muted));
+		white-space: nowrap;
 	}
 
 	&--vertical &__content {
-		padding: var(--sep-pad-x, 20px) var(--sep-pad-y, 10px);
+		padding: sz(var(--sep-pad-x)) sz(var(--sep-pad-y));
 	}
 }

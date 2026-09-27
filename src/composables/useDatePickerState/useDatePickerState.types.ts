@@ -45,6 +45,8 @@ export interface UseDatePickerStateOptions {
 			showSeconds: boolean
 			is24Hour: boolean
 			locale: string
+			/** Номера недель: колонка расширяет календарь, это учитывается при подсчёте месяцев в панели */
+			showWeekNumber?: boolean
 		}
 	}
 }

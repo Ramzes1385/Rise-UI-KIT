@@ -75,6 +75,43 @@ describe('BaseCheckbox unit', () => {
 			expect(screen.getByText('Обязательное поле')).toBeInTheDocument()
 		})
 
+		it('помечает чекбокс aria-invalid и связывает с текстом ошибки через aria-describedby', () => {
+			render(BaseCheckbox, {
+				props: { modelValue: false, label: 'Согласен', error: 'Нужно согласие' },
+			})
+
+			const checkbox = screen.getByRole('checkbox', { name: 'Согласен' })
+			expect(checkbox).toHaveAttribute('aria-invalid', 'true')
+			expect(checkbox).toHaveAccessibleDescription('Нужно согласие')
+		})
+
+		it('с кастомной ошибкой в слоте error описывает чекбокс разметкой слота', () => {
+			render(BaseCheckbox, {
+				props: { modelValue: false, label: 'Согласен', error: 'Нужно согласие' },
+				slots: { error: '<span>Прочитайте условия</span>' },
+			})
+
+			const checkbox = screen.getByRole('checkbox', { name: 'Согласен' })
+			expect(checkbox).toHaveAttribute('aria-invalid', 'true')
+			expect(checkbox).toHaveAccessibleDescription('Прочитайте условия')
+			expect(screen.queryByText('Нужно согласие')).not.toBeInTheDocument()
+		})
+
+		it('без ошибки обёртка ошибки пуста и не описывает чекбокс', () => {
+			const { container } = render(BaseCheckbox, { props: { modelValue: false, label: 'Согласен' } })
+
+			expect(container.querySelector('.base-checkbox__error')?.textContent).toBe('')
+			expect(screen.getByRole('checkbox', { name: 'Согласен' })).not.toHaveAttribute('aria-describedby')
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BaseCheckbox, { props: { modelValue: false, label: 'Согласен' } })
+
+			const checkbox = screen.getByRole('checkbox', { name: 'Согласен' })
+			expect(checkbox).not.toHaveAttribute('aria-invalid')
+			expect(checkbox).not.toHaveAttribute('aria-describedby')
+		})
+
 		it('не должен добавлять класс --error когда error пустая строка', () => {
 			const { container } = render(BaseCheckbox, {
 				props: { modelValue: false, error: '' },

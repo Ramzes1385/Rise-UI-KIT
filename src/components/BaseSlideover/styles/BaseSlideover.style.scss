@@ -1,122 +1,142 @@
+// BaseSlideover. Панель у края экрана: подложка --rise-overlay, панель — фон страницы, тонкая рамка и тень xl,
+// радиус lg только со стороны экрана (у края экрана углы прямые). Ширина 420px × width/100, на телефоне — весь экран.
+// Шапка, тело и подвал разделены линией --rise-border, отступы 16/20 (проп padding). Заголовок 16/24 semibold.
+
 .base-slideover {
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
+	inset: 0;
 	z-index: 1000;
-	backdrop-filter: blur(4px);
+	background-color: var(--rise-overlay);
 
-	/* Режим ограничения внутри контейнера */
+	// Внутри контейнера: подложка и панель ограничены родителем (position: relative), а не экраном.
 	&--contained {
 		position: absolute;
-		backdrop-filter: none;
 	}
 
-	/* Без затемнения фона */
+	// Без затемнения подложка прозрачная, но по-прежнему перехватывает клики: панель остаётся модальной.
 	&--no-overlay {
 		background-color: transparent;
-		backdrop-filter: none;
 	}
 
-	&--full {
-		.base-slideover__panel {
-			width: 100%;
-			border-radius: 0;
-		}
-	}
+	// ─── Панель ──────────────────────────────────────────────────────────────────
 
 	&__panel {
+		// Отступы секций по умолчанию. Проп padding переопределяет их inline-переменными --slideover-pad-*.
+		--slideover-pad-top: 16px;
+		--slideover-pad-right: 20px;
+		--slideover-pad-bottom: 16px;
+		--slideover-pad-left: 20px;
+
 		position: absolute;
 		top: 0;
-		height: 100%;
-		width: calc(420px * var(--slideover-width-scale, 1));
-		background-color: var(--color-surface);
-		box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-		border: 1px solid var(--color-border);
+		bottom: 0;
 		display: flex;
 		flex-direction: column;
+		box-sizing: border-box;
+		width: calc(#{sz(420px)} * var(--slideover-width-scale, 1));
+		max-width: 100%;
 		overflow: hidden;
+		border: 1px solid var(--rise-border);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text));
+		@include text-size(sm);
+		box-shadow: var(--rise-shadow-xl);
+		// Без фокусируемых элементов ловушка фокуса ставит фокус на саму панель — рамка фокуса ей не нужна.
+		outline: none;
 
-		/* Сторона появления */
 		&--right {
 			right: 0;
-			border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+			border-radius: sz(var(--rise-radius-lg)) 0 0 sz(var(--rise-radius-lg));
 		}
 
 		&--left {
 			left: 0;
-			border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+			border-radius: 0 sz(var(--rise-radius-lg)) sz(var(--rise-radius-lg)) 0;
 		}
 
 		&--full {
 			width: 100%;
 			border-radius: 0;
 		}
+
+		// На телефоне панель занимает весь экран.
+		@include respond-below('mobile') {
+			width: 100%;
+			border-radius: 0;
+		}
 	}
+
+	// ─── Шапка ───────────────────────────────────────────────────────────────────
 
 	&__header {
 		display: flex;
+		flex: none;
 		align-items: center;
-		justify-content: space-between;
-		padding: var(--slideover-pad-top, 16px) var(--slideover-pad-right, 24px) var(--slideover-pad-bottom, 16px)
-			var(--slideover-pad-left, 24px);
-		border-bottom: 1px solid var(--color-border);
-		background-color: var(--color-surface-muted);
+		gap: sz(12px);
+		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
+		border-bottom: 1px solid var(--rise-border);
 	}
 
-	&__title {
+	// Заголовок — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
+	&__title.base-text {
+		flex: 1;
+		min-width: 0;
 		margin: 0;
-		font-size: 18px;
-		font-weight: 700;
-		color: var(--color-primary);
+		@include text-size(base);
+		@include custom-text(color, var(--rise-text-highlighted));
+		overflow-wrap: anywhere;
 	}
+
+	// Кнопка закрытия — квадратная ghost-кнопка 32×32 у правого края шапки (и после содержимого слота header).
+	&__close.base-button {
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
+
+		flex: none;
+		margin-left: auto;
+	}
+
+	// ─── Тело и подвал ───────────────────────────────────────────────────────────
 
 	&__body {
-		flex: 1;
-		padding: var(--slideover-pad-top, 0) var(--slideover-pad-right, 24px) var(--slideover-pad-bottom, 24px)
-			var(--slideover-pad-left, 24px);
+		flex: 1 1 auto;
+		min-height: 0;
+		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
 		overflow-y: auto;
-		color: var(--color-text);
+		@include scrollbar-thin;
+		// Тело с прокруткой фокусируется с клавиатуры (tabindex): кольцо внутри, панель обрезает всё снаружи.
+		@include focus-ring(-2px);
+		@include reset-custom-color;
 	}
 
 	&__footer {
 		display: flex;
+		flex: none;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: flex-end;
-		gap: 12px;
-		padding: var(--slideover-pad-top, 16px) var(--slideover-pad-right, 24px) var(--slideover-pad-bottom, 16px)
-			var(--slideover-pad-left, 24px);
-		border-top: 1px solid var(--color-border);
-		background-color: var(--color-surface-muted);
+		gap: sz(8px);
+		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
+		border-top: 1px solid var(--rise-border);
+		@include reset-custom-color;
 	}
 }
 
-/* Адаптивность — на мобильных панель на всю ширину */
-@include respond-below('mobile') {
-	.base-slideover__panel:not(.base-slideover__panel--full) {
-		width: 100% !important;
-		border-radius: 0;
+// ─── Появление: подложка проявляется, панель выезжает от своего края ──────────
+
+.base-slideover-enter-active,
+.base-slideover-leave-active {
+	@include transition(opacity);
+
+	.base-slideover__panel {
+		@include transition(transform);
 	}
 }
 
-/* Анимация */
-.slideover-enter-active,
-.slideover-leave-active {
-	transition: opacity var(--transition-base);
-
-	.base-slideover__panel--right {
-		transition: transform var(--transition-base);
-	}
-
-	.base-slideover__panel--left {
-		transition: transform var(--transition-base);
-	}
-}
-
-.slideover-enter-from,
-.slideover-leave-to {
+.base-slideover-enter-from,
+.base-slideover-leave-to {
 	opacity: 0;
 
 	.base-slideover__panel--right {

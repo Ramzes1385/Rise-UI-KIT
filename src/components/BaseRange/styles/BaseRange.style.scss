@@ -1,3 +1,9 @@
+// BaseRange. Трек 6px (радиус full) цвета --rise-bg-accented, заполнение --rise-primary; бегунок 16px — фон страницы,
+// кольцо 2px основного цвета и тень sm, фокус с клавиатуры — кольцо focus-ring. Область нажатия вокруг трека — 20px.
+// Подсказки значений (hasTooltip) — BaseTooltip (инвертированный фон); подпись (hasLabel) — минимум и максимум 12/16
+// --rise-text-muted, значение 14/20 --rise-text-highlighted; деления — линии --rise-border-accented, подписи 12/16 muted.
+// Варианты: default — трек bg-accented; soft — трек мягкого основного цвета; outline — трек-контур;
+// ghost — без трека, видно только заполнение; shadow — бегунок с тенью md.
 .base-range {
 	display: flex;
 	flex-direction: column;
@@ -5,117 +11,35 @@
 	width: 100%;
 	user-select: none;
 
-	&--disabled {
-		opacity: 0.45;
-		pointer-events: none;
+	// Приглушается только трек с ползунками, как коробка поля у BaseInput: подписи и деления остаются читаемыми.
+	&--disabled &__track-wrapper {
+		@include disabled-state;
 	}
 
-	&--vertical {
-		display: inline-flex;
-		flex-direction: column;
-		align-items: center;
-		width: auto;
-		height: sz(200px);
+	// ─── Подпись: минимум, значение, максимум ────────────────────────────────────
 
-		.base-range__label {
-			flex-direction: column;
-			gap: sz(2px);
-			align-items: center;
-		}
-
-		.base-range__body {
-			flex-direction: row;
-			height: 100%;
-		}
-
-		.base-range__track-wrapper {
-			position: relative;
-			height: 100%;
-			width: sz(20px);
-			flex-shrink: 0;
-		}
-
-		.base-range__track {
-			top: 0;
-			bottom: 0;
-			left: 50%;
-			transform: translateX(-50%);
-			width: sz(6px);
-			height: auto;
-		}
-
-		.base-range__fill {
-			top: auto;
-			left: 0;
-			width: 100%;
-		}
-
-		.base-range__thumb-container {
-			top: auto;
-			left: 50%;
-			transform: translate(-50%, 50%);
-		}
-
-		.base-range__marks {
-			position: relative;
-			flex-direction: row;
-			width: auto;
-			height: 100%;
-			left: auto;
-			top: auto;
-			padding: 0;
-			padding-left: sz(8px);
-		}
-
-		.base-range__mark {
-			transform: translateY(50%);
-			flex-direction: row;
-
-			&--major .base-range__mark-tick {
-				width: sz(12px);
-				height: sz(2px);
-			}
-
-			&--minor .base-range__mark-tick {
-				width: sz(8px);
-				height: sz(2px);
-			}
-
-			&--sub .base-range__mark-tick {
-				width: sz(4px);
-				height: sz(1px);
-			}
-		}
-
-		.base-range__mark-tick {
-			width: sz(2px);
-			height: auto;
-		}
-
-		.base-range__mark-text {
-			padding-top: 0;
-			padding-left: sz(4px);
-		}
-	}
-
-	/* Метка */
 	&__label {
 		display: flex;
+		align-items: baseline;
 		justify-content: space-between;
-		align-items: center;
-		color: var(--color-text-muted);
+		gap: sz(8px);
 	}
 
-	&__label-min,
-	&__label-max {
-		font-size: sz(12px);
+	// Двойные классы перекрывают кегль и цвет BaseText по умолчанию независимо от порядка CSS.
+	&__label &__label-min,
+	&__label &__label-max {
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		font-variant-numeric: tabular-nums;
 	}
 
-	&__label-value {
-		font-size: sz(14px);
+	&__label &__label-value {
+		@include custom-text(color, var(--rise-text-highlighted));
+		font-variant-numeric: tabular-nums;
 	}
 
-	/* Обёртка body (трек + деления) */
+	// ─── Трек и заполнение ───────────────────────────────────────────────────────
+
 	&__body {
 		position: relative;
 		display: flex;
@@ -124,208 +48,211 @@
 		width: 100%;
 	}
 
-	/* Обёртка трека */
 	&__track-wrapper {
 		position: relative;
-		height: sz(20px);
 		width: 100%;
+		height: sz(20px);
 		cursor: pointer;
 	}
 
-	/* Трек */
+	&--disabled &__track-wrapper,
+	&--disabled &__thumb-container {
+		cursor: not-allowed;
+	}
+
 	&__track {
 		position: absolute;
 		top: 50%;
-		transform: translateY(-50%);
+		box-sizing: border-box;
 		width: 100%;
 		height: sz(6px);
-		background-color: var(--color-border);
-		border-radius: sz(3px);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-accented);
+		transform: translateY(-50%);
 	}
 
-	/* Заливка (по умолчанию — accent через CSS-переменную) */
 	&__fill {
 		position: absolute;
 		top: 0;
 		height: 100%;
-		border-radius: sz(3px);
-		@include custom-bg(background-color, var(--color-accent));
-		@include transition(background-color);
+		border-radius: var(--rise-radius-full);
+		@include custom-bg(background-color, var(--rise-primary));
 	}
 
-	/* Контейнер ползунка — позиционирование */
+	// ─── Бегунок ─────────────────────────────────────────────────────────────────
+
 	&__thumb-container {
 		position: absolute;
 		top: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 2;
+		z-index: 1;
+		display: flex;
 		cursor: grab;
+		transform: translate(-50%, -50%);
 
 		&:active {
 			cursor: grabbing;
 		}
-
-		&.base-tooltip {
-			display: inline-block;
-		}
 	}
 
-	/* Ползунок */
 	&__thumb {
-		position: static;
-		transform: none;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: sz(18px);
-		height: sz(18px);
-		padding: 0;
-		border-radius: 50%;
-		@include custom-bg(background-color, var(--color-white));
-		border: 2px solid var(--color-accent);
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 2px solid;
+		border-radius: var(--rise-radius-full);
+		@include custom-bg(border-color, var(--rise-primary));
+		background-color: var(--rise-bg);
+		box-shadow: var(--rise-shadow-sm);
 		cursor: inherit;
-		outline: none;
-		box-shadow: none;
-		font-size: 0;
-		line-height: 0;
-		overflow: visible;
-
-		@include hover {
-			box-shadow: 0 0 0 sz(6px) rgba(249, 115, 22, 0.12);
-			filter: none;
-		}
-
-		@include active {
-			transform: scale(1.15);
-			filter: none;
-		}
-
-		@include focus {
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
+		@include transition-colors;
+		@include focus-ring;
 	}
 
-	/* Точка ползунка по умолчанию */
+	// Центр бегунка (фон внутри кольца); ключ customClass.thumbDot красит его.
 	&__thumb-dot {
-		width: sz(6px);
-		height: sz(6px);
-		border-radius: 50%;
-		background-color: currentColor;
+		width: 100%;
+		height: 100%;
+		border-radius: inherit;
+		background-color: inherit;
 	}
 
-	/* Кастомный ползунок — сброс дефолтных стилей */
+	// Свой бегунок из слота thumb: без кольца и фона, фокус — то же кольцо focus-ring.
+	// Содержимое слота — пользовательское: цвет слайдера (color) на вложенные компоненты не переходит.
 	&__thumb--custom {
 		width: auto;
 		height: auto;
-		min-width: sz(18px);
-		min-height: sz(18px);
+		min-width: sz(16px);
+		min-height: sz(16px);
 		border: none;
 		background: none;
-		font-size: inherit;
-		line-height: inherit;
-
-		@include hover {
-			box-shadow: none;
-		}
-
-		@include active {
-			transform: none;
-		}
-
-		@include focus {
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
+		box-shadow: none;
+		@include reset-custom-color;
 	}
 
-	// ============================================================
-	// Варианты отображения (визуальные поверхности)
-	// ============================================================
+	// ─── Деления ─────────────────────────────────────────────────────────────────
+
+	// Высота: линия major 8px + отступ 4px + подпись 16px (деления и подписи позиционированы абсолютно).
+	&__marks {
+		position: relative;
+		width: 100%;
+		height: sz(28px);
+	}
+
+	&__mark {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(4px);
+		transform: translateX(-50%);
+	}
+
+	&__mark-tick {
+		width: 1px;
+		height: sz(8px);
+		background-color: var(--rise-border-accented);
+	}
+
+	&__mark--minor &__mark-tick {
+		height: sz(6px);
+	}
+
+	&__mark--sub &__mark-tick {
+		height: sz(4px);
+	}
+
+	&__mark &__mark-text {
+		color: var(--rise-text-muted);
+		white-space: nowrap;
+		@include text-size(xs);
+	}
+
+	// ─── Вертикальный ────────────────────────────────────────────────────────────
+
+	&--vertical {
+		display: inline-flex;
+		align-items: center;
+		width: auto;
+		height: sz(200px);
+	}
+
+	&--vertical &__body {
+		flex: 1;
+		flex-direction: row;
+		gap: sz(4px);
+		min-height: 0;
+	}
+
+	&--vertical &__track-wrapper {
+		flex-shrink: 0;
+		width: sz(20px);
+		height: 100%;
+	}
+
+	&--vertical &__track {
+		top: 0;
+		left: 50%;
+		width: sz(6px);
+		height: 100%;
+		transform: translateX(-50%);
+	}
+
+	&--vertical &__fill {
+		top: auto;
+		left: 0;
+		width: 100%;
+	}
+
+	&--vertical &__thumb-container {
+		top: auto;
+		left: 50%;
+		transform: translate(-50%, 50%);
+	}
+
+	&--vertical &__marks {
+		width: sz(40px);
+		height: 100%;
+	}
+
+	&--vertical &__mark {
+		flex-direction: row;
+		transform: translateY(50%);
+	}
+
+	&--vertical &__mark-tick {
+		width: sz(8px);
+		height: 1px;
+	}
+
+	&--vertical &__mark--minor &__mark-tick {
+		width: sz(6px);
+		height: 1px;
+	}
+
+	&--vertical &__mark--sub &__mark-tick {
+		width: sz(4px);
+		height: 1px;
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--soft &__track {
+		background-color: var(--rise-primary-soft);
+	}
+
+	&--outline &__track {
+		border: 1px solid var(--rise-border-accented);
+		background-color: transparent;
+	}
 
 	&--ghost &__track {
 		background-color: transparent;
 	}
 
-	&--ghost &__thumb {
-		box-shadow: none;
-	}
-
-	&--outline &__track {
-		background-color: transparent;
-		border: sz(1px) solid var(--color-border);
-		box-sizing: border-box;
-	}
-
-	&--outline &__thumb {
-		border-width: sz(3px);
-	}
-
-	&--shadow &__thumb {
-		box-shadow: var(--shadow-lg);
-
-		@include hover {
-			box-shadow: var(--shadow-xl);
-		}
-	}
-
-	&--soft &__track {
-		@include custom-bg(background-color, var(--color-primary-soft));
-	}
-
-	&--soft &__fill {
-		@include custom-bg(background-color, var(--color-primary-soft-hover));
-	}
-
-	&--soft &__thumb {
-		@include custom-bg(background-color, var(--color-primary-soft));
-	}
-
-	/* Деления шкалы */
-	&__marks {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		height: sz(20px);
-	}
-
-	&__mark {
-		position: absolute;
-		transform: translateX(-50%);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0;
-
-		&--major .base-range__mark-tick {
-			height: sz(12px);
-			width: sz(2px);
-		}
-
-		&--minor .base-range__mark-tick {
-			height: sz(8px);
-			width: sz(2px);
-		}
-
-		&--sub .base-range__mark-tick {
-			height: sz(4px);
-			width: sz(1px);
-		}
-	}
-
-	&__mark-tick {
-		background-color: var(--color-border);
-		border-radius: sz(1px);
-		@include transition(background-color);
-	}
-
-	&__mark-text {
-		font-size: sz(10px);
-		color: var(--color-text-muted);
-		white-space: nowrap;
-		padding-top: sz(2px);
+	&--shadow &__thumb:not(.base-range__thumb--custom) {
+		box-shadow: var(--rise-shadow-md);
 	}
 }

@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import { mount } from '@vue/test-utils'
 import { createApp } from 'vue'
+import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 import { createIconPlugin } from './iconPlugin'
 
 describe('createIconPlugin', () => {
@@ -46,5 +48,23 @@ describe('createIconPlugin', () => {
 		const registered = app.component('BaseIcon')
 
 		expect(registered).toBeDefined()
+	})
+
+	it('BaseIcon ссылается на спрайт по пути из опции spritePath', () => {
+		const wrapper = mount(BaseIcon, {
+			props: { name: 'close' },
+			global: { plugins: [createIconPlugin({ spritePath: '/assets/icons.svg' })] },
+		})
+
+		expect(wrapper.find('use').attributes('href')).toBe('/assets/icons.svg#close')
+	})
+
+	it('без spritePath сохраняет прежний относительный путь icons.svg', () => {
+		const wrapper = mount(BaseIcon, {
+			props: { name: 'close' },
+			global: { plugins: [createIconPlugin()] },
+		})
+
+		expect(wrapper.find('use').attributes('href')).toBe('icons.svg#close')
 	})
 })

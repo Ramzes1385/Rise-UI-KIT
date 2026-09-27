@@ -1,6 +1,7 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpen"
+		class="base-select__dropdown"
 		position="bottom-start"
 		:match-width="true"
 		:size-scale="sizeScale"
@@ -16,38 +17,53 @@
 					'base-select--disabled': isDisabled,
 					'base-select--error': formField.error,
 					'base-select--multiple': isMultiple,
+					'base-select--has-tags': hasTags,
 				},
 				classes.root,
 			]"
 			:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<FormFieldLabel
-			v-if="label"
-			:label="label"
-			:is-required="isRequired"
-			class-name="base-select__label"
-			:custom-class="classes.label"
-			required-class-name="base-select__required"
-			:required-custom-class="classes.required"
-			:size-scale="sizeScale" />
+			<!-- Подпись — имя триггера (aria-labelledby); клик по ней ставит фокус на триггер, как у нативного select -->
+			<FormFieldLabel
+				v-if="label"
+				:id="labelId"
+				tag="span"
+				:label="label"
+				:is-required="isRequired"
+				class-name="base-select__label"
+				:custom-class="classes.label"
+				required-class-name="base-select__required"
+				:required-custom-class="classes.required"
+				:size-scale="sizeScale"
+				@click="focusTrigger" />
 
-		<div
-			ref="selectRef"
-			class="base-select__trigger"
-			:class="classes.trigger"
-			:tabindex="isDisabled ? -1 : 0"
+			<!-- Триггер — combobox по шаблону APG «select-only»: фокус остаётся на нём, активная опция — aria-activedescendant -->
+			<div
+				ref="selectRef"
+				class="base-select__trigger"
+				:class="classes.trigger"
+				role="combobox"
+				:tabindex="isDisabled ? undefined : 0"
+				aria-haspopup="listbox"
+				:aria-expanded="isOpen ? 'true' : 'false'"
+				:aria-controls="isOpen ? listboxId : undefined"
+				:aria-activedescendant="isOpen && activeIndex >= 0 ? getOptionId(activeIndex) : undefined"
+				:aria-labelledby="label ? labelId : undefined"
+				:aria-label="label ? undefined : placeholder"
+				:aria-required="isRequired ? 'true' : undefined"
+				:aria-invalid="formField.error ? 'true' : undefined"
+				:aria-describedby="formField.error ? errorId : undefined"
+				:aria-disabled="isDisabled ? 'true' : undefined"
 				@click="toggleDropdown"
-				@keydown.enter.prevent="toggleDropdown"
-				@keydown.space.prevent="toggleDropdown">
+				@keydown="handleTriggerKeydown">
 				<slot name="trigger" :is-open="isOpen" :selected-label="selectedLabel" :selected-labels="selectedLabels">
 					<div class="base-select__values" :class="classes.values">
-						<template v-if="isMultiple && Array.isArray(modelValue) && modelValue.length > 0">
-							<template v-if="$slots.tag">
-								<slot name="tag" :labels="selectedLabels" :items="selectedItems" :remove="removeValue" />
-							</template>
+						<template v-if="hasTags">
+							<slot v-if="$slots.tag" name="tag" :labels="selectedLabels" :items="selectedItems" :remove="removeValue" />
 							<template v-else>
 								<BaseBadge
 									v-for="item in selectedItems"
 									:key="item.value"
+									variant="soft"
 									class="base-select__tag"
 									:custom-class="classes.tag"
 									:size-scale="sizeScale">
@@ -58,23 +74,19 @@
 										:size-scale="sizeScale"
 										>{{ item.label }}</BaseText
 									>
-									<BaseIcon
+									<!-- Мышью убирает значение; с клавиатуры то же делает повторный выбор опции в списке -->
+									<button
+										v-if="!isDisabled"
+										type="button"
 										class="base-select__tag-close"
-										:custom-class="classes.tagClose"
-										name="x-mark"
-										:size-scale="calcIconScale('xs', sizeScale)"
-										@click.stop="removeValue(item.value)" />
+										:class="classes.tagClose"
+										tabindex="-1"
+										:aria-label="`${UI_TEXT.DELETE} ${item.label}`"
+										@click.stop="removeValue(item.value)">
+										<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
+									</button>
 								</BaseBadge>
 							</template>
-						</template>
-						<template v-else-if="isMultiple && (!Array.isArray(modelValue) || modelValue.length === 0)">
-							<BaseText
-								tag="span"
-								class="base-select__placeholder"
-								:custom-class="classes.placeholder"
-								:size-scale="sizeScale"
-								>{{ placeholder }}</BaseText
-							>
 						</template>
 						<template v-else-if="!isMultiple && selectedOption">
 							<slot name="selected" :option="selectedOption">
@@ -95,15 +107,14 @@
 								>
 							</slot>
 						</template>
-						<template v-else>
-							<BaseText
-								tag="span"
-								class="base-select__placeholder"
-								:custom-class="classes.placeholder"
-								:size-scale="sizeScale"
-								>{{ placeholder }}</BaseText
-							>
-						</template>
+						<BaseText
+							v-else
+							tag="span"
+							class="base-select__placeholder"
+							:custom-class="classes.placeholder"
+							:size-scale="sizeScale"
+							>{{ placeholder }}</BaseText
+						>
 					</div>
 				</slot>
 				<BaseIcon
@@ -113,11 +124,12 @@
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</div>
 
-		<FormFieldError
-			:error="formField.error"
-			class-name="base-select__error-text"
-			:custom-class="classes.errorText"
-			:size-scale="sizeScale" />
+			<FormFieldError
+				:id="errorId"
+				:error="formField.error"
+				class-name="base-select__error-text"
+				:custom-class="classes.errorText"
+				:size-scale="sizeScale" />
 		</div>
 
 		<template #dropdown>
@@ -130,8 +142,15 @@
 				:is-selected="isSelected"
 				:classes="classes"
 				:size-scale-style="sizeScaleStyle"
-				@select="handleSelect">
-				<template #header>
+				:listbox-id="listboxId"
+				:labelledby="label ? labelId : undefined"
+				:listbox-label="placeholder"
+				:active-index="activeIndex"
+				:get-option-id="getOptionId"
+				@select="handleSelect"
+				@activate="setActive"
+				@search-keydown="handleSearchKeydown">
+				<template v-if="$slots.header" #header>
 					<slot name="header" />
 				</template>
 				<template #option="slotProps">
@@ -140,7 +159,7 @@
 				<template #empty>
 					<slot name="empty" />
 				</template>
-				<template #footer>
+				<template v-if="$slots.footer" #footer>
 					<slot name="footer" />
 				</template>
 			</BaseSelectDropdown>
@@ -149,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
@@ -158,7 +177,7 @@ import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { useSelect } from '@composables/useSelect'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import '../styles/BaseSelect.style.scss'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
@@ -178,35 +197,46 @@ const props = withDefaults(defineProps<BaseSelectProps>(), {
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
-		'root',
-		'dropdown',
-		'label',
-		'required',
-		'trigger',
-		'values',
-		'tag',
-		'tagText',
-		'tagClose',
-		'placeholder',
-		'icon',
-		'valueText',
-		'arrow',
-		'errorText',
-		'dropdownContent',
-		'search',
-		'searchInput',
-		'options',
-		'option',
-		'checkbox',
-		'optionIcon',
-		'optionContent',
-		'optionLabel',
-		'optionDesc',
-		'noResults',
-	])
+	'root',
+	'dropdown',
+	'label',
+	'required',
+	'trigger',
+	'values',
+	'tag',
+	'tagText',
+	'tagClose',
+	'placeholder',
+	'icon',
+	'valueText',
+	'arrow',
+	'errorText',
+	'dropdownContent',
+	'search',
+	'searchInput',
+	'options',
+	'option',
+	'checkbox',
+	'optionIcon',
+	'optionContent',
+	'optionLabel',
+	'optionDesc',
+	'noResults',
+])
 
 const emit = defineEmits<BaseSelectEmits>()
 defineSlots<BaseSelectSlots>()
+
+/** id подписи, ошибки и списка: подпись — имя триггера, ошибка — его описание, список — его popup (aria-controls) */
+const baseId = useId()
+const labelId = `${baseId}-label`
+const errorId = `${baseId}-error`
+const listboxId = `${baseId}-listbox`
+
+/** id опции по индексу в отфильтрованном списке — для aria-activedescendant */
+function getOptionId(index: number): string {
+	return `${listboxId}-option-${index}`
+}
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -219,21 +249,88 @@ const selectRef = ref<HTMLDivElement | null>(null)
 const {
 	isOpen,
 	searchQuery,
+	activeIndex,
 	selectedOption,
 	selectedLabel,
 	selectedItems,
 	selectedLabels,
 	filteredOptions,
+	openDropdown,
 	toggleDropdown,
 	handleClose,
 	isSelected,
 	handleSelect,
+	selectActive,
+	moveActive,
+	setActiveEdge,
+	setActive,
 	removeValue,
 } = useSelect({
 	props,
 	emit,
 	onBlur: formField.onBlur,
 })
+
+/** В мультивыборе есть выбранные значения — они показаны бейджами */
+const hasTags = computed(() => props.isMultiple && Array.isArray(props.modelValue) && props.modelValue.length > 0)
+
+function focusTrigger(): void {
+	if (!props.isDisabled) selectRef.value?.focus()
+}
+
+/**
+ * Клавиатура на триггере: Enter/Space открывают список или выбирают активную опцию, стрелки открывают список
+ * и двигают активную опцию, Home/End — к первой/последней, Tab закрывает список. Escape закрывает BaseDropdown.
+ */
+function handleTriggerKeydown(event: KeyboardEvent): void {
+	if (props.isDisabled) return
+	switch (event.key) {
+		case 'Enter':
+		case ' ':
+			event.preventDefault()
+			if (isOpen.value && activeIndex.value >= 0) selectActive()
+			else toggleDropdown()
+			break
+		case 'ArrowDown':
+		case 'ArrowUp':
+			event.preventDefault()
+			if (isOpen.value) moveActive(event.key === 'ArrowDown' ? 1 : -1)
+			else openDropdown()
+			break
+		case 'Home':
+		case 'End':
+			if (!isOpen.value) return
+			event.preventDefault()
+			setActiveEdge(event.key === 'Home' ? 'first' : 'last')
+			break
+		case 'Tab':
+			if (isOpen.value) closeDropdown()
+			break
+	}
+}
+
+/**
+ * Клавиши в поле поиска панели: стрелки двигают активную опцию, Enter выбирает её, Tab закрывает список
+ * (фокус возвращается на триггер); остальное — ввод текста.
+ */
+function handleSearchKeydown(event: KeyboardEvent): void {
+	if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+		event.preventDefault()
+		moveActive(event.key === 'ArrowDown' ? 1 : -1)
+	} else if (event.key === 'Enter') {
+		event.preventDefault()
+		selectActive()
+	} else if (event.key === 'Tab') {
+		event.preventDefault()
+		closeDropdown()
+	}
+}
+
+/** Закрытие с клавиатуры: как закрытие кликом снаружи — сброс поиска и проверка обязательности */
+function closeDropdown(): void {
+	isOpen.value = false
+	handleClose()
+}
 
 defineExpose({
 	rootRef: selectRef,

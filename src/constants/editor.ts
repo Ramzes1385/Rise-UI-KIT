@@ -11,9 +11,9 @@ export const UI_EDITOR = {
 	UNDERLINE: 'Подчёркнутый',
 	STRIKETHROUGH: 'Зачёркнутый',
 	TEXT_COLOR: 'Цвет текста',
-	TEXT_COLOR_RESET: 'Сбросить цвет текста',
+	TEXT_COLOR_RESET: 'Сбросить цвет',
 	BG_COLOR: 'Цвет фона',
-	BG_COLOR_RESET: 'Сбросить цвет фона',
+	BG_COLOR_RESET: 'Сбросить фон',
 	ALIGN_LEFT: 'По левому краю',
 	ALIGN_CENTER: 'По центру',
 	ALIGN_RIGHT: 'По правому краю',
@@ -37,6 +37,14 @@ export const UI_EDITOR = {
 	APPLY: UI_TEXT.APPLY,
 	DELETE: UI_TEXT.DELETE,
 	URL_PROMPT: 'Введите URL ссылки:',
+	/** Доступное имя области редактирования (role="textbox") */
+	CONTENT_LABEL: 'Текстовый редактор',
+	/** Доступное имя панели инструментов (role="toolbar") */
+	TOOLBAR_LABEL: 'Форматирование',
+	/** Подпись поля HTML-кода в режиме кода (скрыта визуально, озвучивается скринридером) */
+	CODE_LABEL: 'HTML-код',
+	/** Доступное имя меню размера медиа */
+	MEDIA_MENU_LABEL: 'Размер медиа',
 	DEFAULT_TEXT_COLOR: '#000000',
 	DEFAULT_BG_COLOR: '#ffff00',
 } as const

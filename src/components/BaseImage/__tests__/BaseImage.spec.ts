@@ -4,8 +4,42 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
+import { UI_TIMING } from '@constants'
 import BaseImage from '../ui/BaseImage.vue'
+
+/** Управляемая замена IntersectionObserver: в jsdom его нет, а тесту нужно «прокрутить» страницу к изображению */
+class FakeIntersectionObserver {
+	static instances: FakeIntersectionObserver[] = []
+	readonly callback: IntersectionObserverCallback
+	target: Element | null = null
+
+	constructor(callback: IntersectionObserverCallback) {
+		this.callback = callback
+		FakeIntersectionObserver.instances.push(this)
+	}
+
+	observe(target: Element): void {
+		this.target = target
+	}
+
+	unobserve(): void {}
+
+	disconnect(): void {
+		this.target = null
+	}
+
+	takeRecords(): IntersectionObserverEntry[] {
+		return []
+	}
+
+	/** Сообщить, что наблюдаемое изображение попало в зону видимости */
+	enterViewport(): void {
+		if (!this.target) return
+		const entry = { isIntersecting: true, target: this.target } as IntersectionObserverEntry
+		this.callback([entry], this as unknown as IntersectionObserver)
+	}
+}
 
 describe('BaseImage unit', () => {
 	describe('рендер', () => {
@@ -56,14 +90,13 @@ describe('BaseImage unit', () => {
 	})
 
 	describe('пропс borderRadius', () => {
-		it('должен применять border-radius с calc по умолчанию', () => {
+		// Радиус по умолчанию — md темы из стилей (--rise-radius-md): inline-стиль пишется только при явном пропе
+		it('не пишет inline border-radius без пропа borderRadius', () => {
 			const { container } = render(BaseImage, {
 				props: { src: 'test.jpg', alt: 'Тест' },
 			})
 
-			expect(container.querySelector('.base-image')?.getAttribute('style')).toContain(
-				'border-radius: calc(12px * var(--size-scale, 1))',
-			)
+			expect(container.querySelector('.base-image')?.getAttribute('style')).not.toContain('border-radius')
 		})
 
 		it('должен применять border-radius: 0 когда borderRadius=0', () => {
@@ -206,9 +239,9 @@ describe('BaseImage unit', () => {
 			expect(webpSource).toBeInTheDocument()
 		})
 
-		it('должен генерировать avif source для локальных изображений', () => {
+		it('должен генерировать avif source для локальных изображений при convertToAvif', () => {
 			const { container } = render(BaseImage, {
-				props: { src: 'test.jpg', alt: 'Тест' },
+				props: { src: 'test.jpg', alt: 'Тест', convertToAvif: true },
 			})
 
 			const avifSource = container.querySelector('source[type="image/avif"]')
@@ -384,6 +417,120 @@ describe('BaseImage unit', () => {
 			expect(root?.classList.contains('my-image-root')).toBe(true)
 			expect(placeholder?.classList.contains('my-image-placeholder')).toBe(true)
 			expect(img?.classList.contains('my-image-img')).toBe(true)
+		})
+	})
+
+	describe('таймаут загрузки', () => {
+		const src = 'https://cdn.example.com/photo.jpg'
+
+		afterEach(() => {
+			vi.useRealTimers()
+			vi.unstubAllGlobals()
+			FakeIntersectionObserver.instances = []
+		})
+
+		it('не переводит lazy-изображение в ошибку, пока браузер не начал его загрузку', async () => {
+			vi.useFakeTimers()
+			const { container } = render(BaseImage, { props: { src, alt: 'Фото' } })
+
+			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT * 2)
+
+			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
+			const img = screen.getByRole('img', { name: 'Фото' })
+			await fireEvent.load(img)
+			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
+			expect(screen.getByRole('img', { name: 'Фото' })).toBe(img)
+		})
+
+		it('отсчитывает таймаут lazy-изображения с момента попадания в зону видимости', async () => {
+			vi.useFakeTimers()
+			vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver)
+			const { container } = render(BaseImage, { props: { src, alt: 'Фото' } })
+
+			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT * 2)
+			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
+
+			FakeIntersectionObserver.instances.at(-1)?.enterViewport()
+			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT - 1)
+			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
+
+			await vi.advanceTimersByTimeAsync(1)
+			expect(container.querySelector('.base-image__error')).toBeInTheDocument()
+		})
+
+		it('eager-изображение по-прежнему переводится в ошибку по истечении таймаута', async () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseImage, { props: { src, alt: 'Фото', loading: 'eager' } })
+
+			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT)
+
+			expect(container.querySelector('.base-image__error')).toBeInTheDocument()
+			expect(emitted()).toHaveProperty('error')
+		})
+
+		it('timeout=0 отключает таймаут: долгая загрузка не переводит изображение в ошибку', async () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseImage, { props: { src, alt: 'Фото', loading: 'eager', timeout: 0 } })
+
+			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT * 2)
+
+			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
+			expect(emitted()).not.toHaveProperty('error')
+		})
+	})
+
+	describe('производные источники AVIF/WebP', () => {
+		it('не добавляет <source> AVIF/WebP для локального src без явного запроса форматов', () => {
+			const { container } = render(BaseImage, { props: { src: '/images/photo.jpg', alt: 'Фото' } })
+
+			expect(container.querySelectorAll('picture source')).toHaveLength(0)
+			expect(screen.getByRole('img', { name: 'Фото' })).toHaveAttribute('src', '/images/photo.jpg')
+		})
+
+		it('добавляет AVIF-источник по явному convertToAvif', () => {
+			const { container } = render(BaseImage, {
+				props: { src: '/images/photo.jpg', alt: 'Фото', convertToAvif: true },
+			})
+
+			expect(container.querySelector('source[type="image/avif"]')).toHaveAttribute('srcset', '/images/photo.avif')
+		})
+
+		it('не строит производные источники для data: URI даже при convertToWebp и convertToAvif', () => {
+			const src = 'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E'
+			const { container } = render(BaseImage, {
+				props: { src, alt: 'Иллюстрация', convertToWebp: true, convertToAvif: true },
+			})
+
+			expect(container.querySelector('source')).not.toBeInTheDocument()
+			expect(screen.getByRole('img', { name: 'Иллюстрация' })).toHaveAttribute('src', src)
+		})
+
+		it('не строит производный источник, если в пути нет расширения файла', () => {
+			const { container } = render(BaseImage, {
+				props: { src: 'https://placehold.co/400x300?text=WebP', alt: 'Фото', convertToWebp: true },
+			})
+
+			expect(container.querySelector('source')).not.toBeInTheDocument()
+		})
+
+		it('показывает fallbackSrc, даже если включены производные источники и srcset', async () => {
+			const { container } = render(BaseImage, {
+				props: {
+					src: '/images/photo.jpg',
+					alt: 'Фото',
+					fallbackSrc: '/images/fallback.jpg',
+					srcWidth: 400,
+					convertToWebp: true,
+					convertToAvif: true,
+				},
+			})
+
+			await fireEvent.error(screen.getByRole('img', { name: 'Фото' }))
+
+			const img = screen.getByRole('img', { name: 'Фото' })
+			expect(container.querySelectorAll('picture source')).toHaveLength(0)
+			expect(img).not.toHaveAttribute('srcset')
+			expect(img).toHaveAttribute('src', '/images/fallback.jpg')
 		})
 	})
 })

@@ -22,6 +22,20 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		nextStartWidth: 0,
 	})
 
+	/** Стили body до начала перетаскивания: после него возвращаем их, а не затираем пустой строкой */
+	let savedBodyStyles: { cursor: string; userSelect: string } | null = null
+
+	/** Снять слушатели перетаскивания и вернуть стили body */
+	function releaseDrag(): void {
+		document.removeEventListener('mousemove', handleMouseMove)
+		document.removeEventListener('mouseup', stopResize)
+		if (savedBodyStyles) {
+			document.body.style.cursor = savedBodyStyles.cursor
+			document.body.style.userSelect = savedBodyStyles.userSelect
+			savedBodyStyles = null
+		}
+	}
+
 	function findSiblingKey(columnKey: string): string {
 		const visibleKeys = visibleColumns.value.map(column => column.key)
 		const visibleIndex = visibleKeys.indexOf(columnKey)
@@ -72,10 +86,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		if (!resizeState.value.isResizing) return
 
 		resizeState.value.isResizing = false
-		document.removeEventListener('mousemove', handleMouseMove)
-		document.removeEventListener('mouseup', stopResize)
-		document.body.style.cursor = ''
-		document.body.style.userSelect = ''
+		releaseDrag()
 
 		const column = columns.value.find(item => item.key === resizeState.value.columnKey)
 		/* istanbul ignore else -- Колонка существует для пользовательского resize. */
@@ -114,13 +125,19 @@ function useColumnResize<TColumn extends ResizeColumn>({
 
 		document.addEventListener('mousemove', handleMouseMove)
 		document.addEventListener('mouseup', stopResize)
+		// Повторный старт без mouseup (потерян за пределами окна) не должен перезаписать исходные стили
+		if (!savedBodyStyles) {
+			savedBodyStyles = { cursor: document.body.style.cursor, userSelect: document.body.style.userSelect }
+		}
 		document.body.style.cursor = 'col-resize'
 		document.body.style.userSelect = 'none'
 	}
 
+	// Размонтирование посреди перетаскивания: mouseup уже не дойдёт до stopResize, поэтому
+	// освобождаем здесь — иначе выделение текста и курсор останутся сломанными во всём приложении
 	onBeforeUnmount(() => {
-		document.removeEventListener('mousemove', handleMouseMove)
-		document.removeEventListener('mouseup', stopResize)
+		resizeState.value.isResizing = false
+		releaseDrag()
 	})
 
 	return {

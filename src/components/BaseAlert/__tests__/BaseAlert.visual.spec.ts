@@ -1,16 +1,19 @@
 /**
- * Visual regression тесты для BaseAlert.
+ * Visual regression BaseAlert: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basealert'
-const STORIES = ['default', 'all-types', 'variants', 'closable', 'with-slots', 'size-scale', 'dark-theme']
+const STORIES = ['types', 'variants', 'sizes', 'with-actions', 'long-content'] as const
 
-for (const story of STORIES) {
-	test(`BaseAlert - ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-alert--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseAlert · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-basealert--${story}`, { theme, height: 480 })
+				await expectStoryScreenshot(page, `base-alert-${story}-${theme}.png`)
+			})
+		}
 	})
 }

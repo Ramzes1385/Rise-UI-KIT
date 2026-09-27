@@ -2,19 +2,23 @@
 	<div
 		ref="wrapperRef"
 		class="base-tooltip"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		:class="classes.root"
 		@mouseenter="handleEnter"
-		@mouseleave="handleLeave">
+		@mouseleave="handleLeave"
+		@focusin="handleEnter"
+		@focusout="handleLeave">
 		<slot />
 
 		<Teleport to="body">
-			<Transition :name="transitionName" :duration="UI_TIMING.TRANSITION_DURATION">
+			<Transition name="base-tooltip">
+				<!-- Подсказка в body не наследует стили обёртки: вариант, масштаб и цвет задаются на ней самой -->
 				<div
 					v-if="isVisible"
+					:id="tooltipId"
 					class="base-tooltip-popup"
-					:class="[[`base-tooltip-popup--${position}`], classes.tooltip]"
-					:style="tooltipStyle">
+					:class="[`base-tooltip-popup--${position}`, variantClass, classes.tooltip]"
+					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]"
+					role="tooltip">
 					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
 			</Transition>
@@ -23,11 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_TIMING, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
+import { useEscapeKey } from '@composables/useEscapeKey'
+import { UI_TIMING, UI_SIZE, SIZE_SCALE_DEFAULT } from '@constants'
+import { calcTooltipPosition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
 
@@ -38,17 +43,20 @@ const props = withDefaults(defineProps<BaseTooltipProps>(), {
 })
 defineSlots<BaseTooltipSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip', props, ['root', 'tooltip', 'text'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip-popup', props, [
+	'root',
+	'tooltip',
+	'text',
+])
 
 const isVisible = ref(false)
 const wrapperRef = ref<HTMLElement | null>(null)
+const tooltipId = useId()
 let showTimer: ReturnType<typeof setTimeout> | null = null
 let hideTimer: ReturnType<typeof setTimeout> | null = null
 let rafId: number | null = null
 
 const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
-
-const transitionName = computed(() => getTooltipTransition(props.position))
 
 function updateCoords(): void {
 	/* istanbul ignore next -- defensive guard: wrapperRef всегда доступен после onMounted */
@@ -83,6 +91,7 @@ const tooltipStyle = computed((): Record<string, string> => {
 	})
 })
 
+/** Наведение или фокус на триггере: подсказка появляется после короткой задержки */
 function handleEnter(): void {
 	if (props.isAlwaysVisible) return
 
@@ -99,6 +108,7 @@ function handleEnter(): void {
 	}, UI_TIMING.TOOLTIP_SHOW_DELAY)
 }
 
+/** Уход курсора или фокуса: подсказка скрывается с задержкой, чтобы не мигать при переходе между элементами */
 function handleLeave(): void {
 	if (props.isAlwaysVisible) return
 
@@ -113,6 +123,21 @@ function handleLeave(): void {
 		stopUpdateLoop()
 	}, UI_TIMING.TOOLTIP_HIDE_DELAY)
 }
+
+/** Escape скрывает подсказку сразу (WCAG 1.4.13): она не должна мешать, пока фокус остаётся на триггере */
+function hideNow(): void {
+	if (showTimer) clearTimeout(showTimer)
+	if (hideTimer) clearTimeout(hideTimer)
+	showTimer = null
+	hideTimer = null
+	isVisible.value = false
+	stopUpdateLoop()
+}
+
+useEscapeKey({
+	isActive: () => isVisible.value && !props.isAlwaysVisible,
+	callback: hideNow,
+})
 
 onMounted(() => {
 	if (props.isAlwaysVisible) {

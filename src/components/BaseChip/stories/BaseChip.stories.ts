@@ -1,394 +1,321 @@
 /**
- * Stories для компонента BaseChip.
- * Демонстрирует все вариации, размеры, позиции и интерактивные состояния.
+ * BaseChip — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (варианты, размеры, расположение, кастомный цвет) →
+ * состояния (переполнение, скрытие нуля, длинный текст) → сценарий «счётчик корзины».
  */
 
-import { expect, fn, userEvent, within } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { expect, fn } from 'storybook/test'
+import { ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
 import { CHIP_VARIANTS } from '../model/BaseChip.types'
 import BaseChip from '../ui/BaseChip.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseChip> = {
-	title: 'UI/BaseChip',
+const PLACEMENTS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'] as const
+
+/** Квадратная кнопка-иконка 32 × 32, над которой стоит индикатор */
+const ICON_BUTTON = `
+	<BaseButton variant="outline" aria-label="Уведомления" :padding="{ x: 5, y: 5 }">
+		<BaseIcon name="inbox" />
+	</BaseButton>
+`
+
+const meta = {
+	title: 'Element/BaseChip',
 	component: BaseChip,
-
-	argTypes: buildArgTypes({
-		props: {
-			content: { control: 'text' },
-			placement: {
-				control: 'inline-radio',
-				options: ['top-right', 'top-left', 'bottom-right', 'bottom-left'],
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Индикатор в углу элемента: число непрочитанных у кнопки, метка «Новое» у пункта, статус у аватара.',
+					'Оборачивает элемент (слот по умолчанию) и ставит над его углом пилюлю с `content`.',
+					'',
+					'- `placement` — угол; `hasOverflow` + `maxValue` показывают «99+»; `isHiddenOnZero` прячет индикатор при нуле.',
+					'- Варианты как у кнопки: `default` — заливка основным цветом, `soft` — мягкий фон, `outline`, `ghost`, `shadow` — нейтральные.',
+					'  Красный счётчик — проп `color` с токенами роли error.',
+					'- Индикатор не получает фокус: если число важно, продублируйте его в доступном имени элемента.',
+				].join('\n'),
 			},
-			variant: {
-				control: 'radio',
-				options: CHIP_VARIANTS,
-			},
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			isHiddenOnZero: { control: 'boolean' },
-			hasOverflow: { control: 'boolean' },
-			maxValue: { control: 'number' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			'onClick-badge': { table: { disable: true } },
-			default: {
-				control: 'text',
-				description: 'Контент (слот)',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: CHIP_VARIANTS }),
+		content: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		placement: { control: 'inline-radio', options: PLACEMENTS, table: propGroup(ARG_GROUP.appearance) },
+		hasOverflow: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		maxValue: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+		isHiddenOnZero: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		default: { control: false },
+	},
 	args: {
 		content: 5,
 		placement: 'top-right',
 		variant: 'default',
-		isHiddenOnZero: false,
 		hasOverflow: false,
+		maxValue: 99,
+		isHiddenOnZero: false,
 		sizeScale: 100,
+		'onClick-badge': fn(),
+	},
+	// Отступ вокруг примера: индикатор выходит за угол элемента на половину своей высоты.
+	render: args => ({
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: `<div style="padding: 12px;"><BaseChip v-bind="props">${ICON_BUTTON}</BaseChip></div>`,
+	}),
+} satisfies Meta<typeof BaseChip>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: меняйте props в панели Controls. Клик по индикатору вызывает событие `click-badge`. */
+export const Default: Story = {
+	play: async ({ canvas, userEvent, args }) => {
+		const badge = canvas.getByText('5')
+		await expect(badge.getBoundingClientRect().height).toBe(18)
+		await userEvent.click(badge)
+		await expect(args['onClick-badge']).toHaveBeenCalledOnce()
 	},
 }
 
-export default meta
-type Story = StoryObj<typeof BaseChip>
-/** Базовый чип */
-export const Default: Story = {
-	render: args => ({
-		components: { BaseChip },
-		setup() {
-			return { args }
-		},
-		template: '<BaseChip v-bind="args">{{ args.default }}</BaseChip>',
-	}),
-	args: {
-		default: 'Уведомления',
-		'onClick-badge': fn(),
-	},
-	play: async ({ canvasElement, args }) => {
-		const badge = canvasElement.querySelector('.base-chip__badge') as HTMLElement
-		await userEvent.click(badge)
-		expect(args['onClick-badge']).toHaveBeenCalled()
-	},
-}
-/** Все варианты */
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Пять вариантов оформления индикатора. Размер и расположение из Controls применяются ко всем примерам. */
 export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'placement'] },
+		docs: { source: { code: ['default', 'soft', 'outline', 'ghost', 'shadow'].map(variant => `<BaseChip variant="${variant}" :content="3">…</BaseChip>`).join('\n') } },
+	},
 	render: args => ({
-		components: { BaseChip },
-		setup() {
-			return { args }
-		},
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args), variants: ['default', 'soft', 'outline', 'ghost', 'shadow'] }),
 		template: `
-			<div style="display:flex;gap:16px;align-items:center;">
-				<BaseChip v-for="v in ['default','ghost','outline','shadow','soft']"
-					:key="v"
-					v-bind="args"
-					:variant="v"
-					:content="3"
-				>
-					{{ v }}
-				</BaseChip>
+			<div class="story-row" style="gap: 32px; padding: 12px;">
+				<div v-for="variant in variants" :key="variant" class="story-col" style="align-items: center;">
+					<BaseChip v-bind="props" :variant="variant" :content="3">${ICON_BUTTON}</BaseChip>
+					<span class="story-label" style="min-width: 0;">{{ variant }}</span>
+				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('default')).toBeInTheDocument()
-		expect(canvas.getByText('ghost')).toBeInTheDocument()
-		expect(canvas.getByText('outline')).toBeInTheDocument()
-	},
 }
-/** Масштабирование размера */
-export const SizeScale: Story = {
+
+/** Размеры через `sizeScale`: при 100 индикатор высотой 18px. Кнопка здесь того же размера. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant', 'placement'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseChip :size-scale="${preset.sizeScale}" :content="3">…</BaseChip>`).join('\n') } },
+	},
 	render: args => ({
-		components: { BaseChip },
-		setup() {
-			return { args }
-		},
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div style="display:flex;gap:16px;align-items:center;">
-				<BaseChip v-bind="args" :size-scale="75" :content="3">75%</BaseChip>
-				<BaseChip v-bind="args" :size-scale="100" :content="3">100%</BaseChip>
-				<BaseChip v-bind="args" :size-scale="150" :content="3">150%</BaseChip>
+			<div class="story-row" style="align-items: flex-end; gap: 32px; padding: 12px;">
+				<div v-for="preset in presets" :key="preset.name" class="story-col" style="align-items: center;">
+					<BaseChip v-bind="props" :size-scale="preset.sizeScale" :content="3">
+						<BaseButton variant="outline" aria-label="Уведомления" :size-scale="preset.sizeScale" :padding="{ x: 5, y: 5 }">
+							<BaseIcon name="inbox" />
+						</BaseButton>
+					</BaseChip>
+					<span class="story-label" style="min-width: 0;">{{ sizeLabel(preset) }}</span>
+				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('75%')).toBeInTheDocument()
-		expect(canvas.getByText('150%')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const heights = canvas.getAllByText('3').map(badge => badge.getBoundingClientRect().height)
+		await expect(heights[2]).toBe(18)
+		await expect(heights[0]).toBeLessThan(heights[4])
 	},
 }
-/** Все позиции */
+
+/** Расположение `placement`: центр индикатора стоит на выбранном углу элемента. */
 export const Placements: Story = {
-	render: () => ({
-		components: { BaseChip },
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: { source: { code: PLACEMENTS.map(placement => `<BaseChip placement="${placement}" :content="7">…</BaseChip>`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args), placements: PLACEMENTS }),
 		template: `
-			<div style="display:flex;gap:24px;align-items:center;">
-				<BaseChip v-for="p in ['top-right','top-left','bottom-right','bottom-left']"
-					:key="p"
-					:placement="p"
-					:content="7"
-				>
-					{{ p }}
-				</BaseChip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('top-right')).toBeInTheDocument()
-		expect(canvas.getByText('bottom-left')).toBeInTheDocument()
-	},
-}
-/** Текстовый контент */
-export const TextContent: Story = {
-	args: {
-		content: 'New',
-		default: 'Сообщения',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('New')).toBeInTheDocument()
-	},
-}
-/** С maxValue */
-export const WithMaxValue: Story = {
-	render: () => ({
-		components: { BaseChip },
-		template: `
-			<div style="display:flex;gap:16px;align-items:center;">
-				<BaseChip :content="50" :max-value="9" has-overflow>max 9</BaseChip>
-				<BaseChip :content="150" :max-value="99" has-overflow>max 99</BaseChip>
-				<BaseChip :content="999" :max-value="999" has-overflow>max 999</BaseChip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('9+')).toBeInTheDocument()
-		expect(canvas.getByText('99+')).toBeInTheDocument()
-		expect(canvas.getByText('999')).toBeInTheDocument()
-	},
-}
-/** Скрытие при нулевом значении */
-export const HiddenOnZero: Story = {
-	args: {
-		content: 0,
-		isHiddenOnZero: true,
-		default: 'Скрыто при 0',
-	},
-	play: async ({ canvasElement }) => {
-		// При isHiddenOnZero и content=0 бейдж не отображается
-		const badge = canvasElement.querySelector('.base-chip__badge')
-		expect(badge).toBeNull()
-	},
-}
-/** Без контента (только слот) */
-export const NoBadge: Story = {
-	args: {
-		default: 'Без бейджа',
-		content: undefined,
-	},
-	play: async ({ canvasElement }) => {
-		// Без content бейдж не отображается
-		const badge = canvasElement.querySelector('.base-chip__badge')
-		expect(badge).toBeNull()
-	},
-}
-/** Все интерактивные состояния рядом */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseChip },
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Normal</span>
-					<BaseChip content="5" variant="default">default</BaseChip>
-					<BaseChip content="5" variant="soft">soft</BaseChip>
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Hover</span>
-					<BaseChip content="5" variant="default" class="base-chip--hover">default</BaseChip>
-					<BaseChip content="5" variant="soft" class="base-chip--hover">soft</BaseChip>
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Focus</span>
-					<BaseChip content="5" variant="default" class="base-chip--focus">default</BaseChip>
-					<BaseChip content="5" variant="soft" class="base-chip--focus">soft</BaseChip>
+			<div class="story-row" style="gap: 40px; padding: 12px;">
+				<div v-for="placement in placements" :key="placement" class="story-col" style="align-items: center; gap: 16px;">
+					<BaseChip v-bind="props" :placement="placement" :content="7">${ICON_BUTTON}</BaseChip>
+					<span class="story-label" style="min-width: 0;">{{ placement }}</span>
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Normal')).toBeInTheDocument()
-		expect(canvas.getByText('Hover')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const [topRight, , , bottomLeft] = canvas.getAllByText('7')
+		const [button] = canvas.getAllByRole('button')
+		const buttonRect = button.getBoundingClientRect()
+		const badgeRect = topRight.getBoundingClientRect()
+		await expect(badgeRect.top + badgeRect.height / 2).toBeCloseTo(buttonRect.top, 0)
+		await expect(badgeRect.left + badgeRect.width / 2).toBeCloseTo(buttonRect.right, 0)
+		await expect(bottomLeft).toHaveClass('base-chip__badge--bottom-left')
 	},
 }
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: () => ({
-		components: { BaseChip },
-		template: `
-			<div style="display:flex;gap:16px;align-items:center;">
-				<BaseChip v-for="v in ['default','ghost','outline','shadow','soft']"
-					:key="v"
-					:variant="v"
-					:content="3"
-				>
-					{{ v }}
-				</BaseChip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('default')).toBeInTheDocument()
-	},
-}
-/** Строка-число как content — покрывает ветку Number.isNaN(parsed) === false */
-export const StringNumberContent: Story = {
-	args: {
-		content: '10',
-		default: 'Уведомления',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('10')).toBeInTheDocument()
-	},
-}
-/** Пустая строка как content — покрывает ветку content === '' */
-export const EmptyStringContent: Story = {
-	args: {
-		content: '',
-		default: 'Без контента',
-	},
-	play: async ({ canvasElement }) => {
-		const badge = canvasElement.querySelector('.base-chip__badge')
-		expect(badge).toBeNull()
-	},
-}
-/** Нечисловая строка — покрывает Number.isNaN(parsed) === true (numericValue = null) */
-export const NonNumericStringContent: Story = {
-	args: {
-		content: 'abc',
-		default: 'Не число',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('abc')).toBeInTheDocument()
-	},
-}
-/** Нечисловая строка с hasOverflow — покрывает displayContent с numericValue===null и hasOverflow */
-export const NonNumericOverflow: Story = {
-	args: {
-		content: 'xyz',
-		hasOverflow: true,
-		maxValue: 99,
-		default: 'Не число+overflow',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('xyz')).toBeInTheDocument()
-	},
-}
-/** Кастомный цвет — покрывает useCustomColor с переданным color */
+
+/**
+ * Кастомный цвет через `color`. Привычный красный счётчик — токены роли error:
+ * `{ bg: { base: 'var(--rise-error)' }, text: { base: 'var(--rise-on-error)' } }`, они меняются вместе с темой.
+ * Цвет применяется только к индикатору — кнопка в слоте остаётся своего цвета.
+ */
 export const CustomColor: Story = {
-	args: {
-		content: 5,
-		default: 'Кастомный цвет',
-		color: {
-			bg: { base: '#ff0000', hover: '#cc0000' },
-			text: { base: '#ffffff' },
+	parameters: {
+		controls: { include: ['sizeScale', 'placement'] },
+		docs: {
+			source: {
+				code: `<BaseChip :content="5" :color="{ bg: { base: 'var(--rise-error)' }, text: { base: 'var(--rise-on-error)' } }">…</BaseChip>`,
+			},
 		},
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('5')).toBeInTheDocument()
-		const chip = canvasElement.querySelector('.base-chip') as HTMLElement
-		expect(chip.style.getPropertyValue('--custom-bg')).toBe('#ff0000')
+	render: args => ({
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'color']) }),
+		template: `
+			<div class="story-row" style="gap: 32px; padding: 12px;">
+				<BaseChip v-bind="props" :content="5">${ICON_BUTTON}</BaseChip>
+				<BaseChip v-bind="props" :content="12" :color="{ bg: { base: 'var(--rise-error)' }, text: { base: 'var(--rise-on-error)' } }">
+					${ICON_BUTTON}
+				</BaseChip>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const primary = canvas.getByText('5')
+		const error = canvas.getByText('12')
+		await expect(error.style.getPropertyValue('--custom-bg')).toBe('var(--rise-error)')
+		await expect(getComputedStyle(error).backgroundColor).not.toBe(getComputedStyle(primary).backgroundColor)
+		const [plainButton, coloredButton] = canvas.getAllByRole('button')
+		await expect(getComputedStyle(coloredButton).backgroundColor).toBe(getComputedStyle(plainButton).backgroundColor)
 	},
 }
-/** Покрывает: isHiddenOnZero=true с ненулевым контентом (isVisible → true) */
-export const HiddenOnZeroWithContent: Story = {
-	args: {
-		content: 5,
-		isHiddenOnZero: true,
-		default: 'Не скрыто',
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Переполнение: с `hasOverflow` число больше `maxValue` показывается как «99+» (или «9+» при `maxValue` = 9). */
+export const Overflow: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseChip :content="8" has-overflow>…</BaseChip>',
+					'<BaseChip :content="120" has-overflow>…</BaseChip>',
+					'<BaseChip :content="12" has-overflow :max-value="9">…</BaseChip>',
+				].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('5')).toBeInTheDocument()
-	},
-}
-/** Покрывает: isHiddenOnZero=true с content=undefined (isVisible → false) */
-export const HiddenOnZeroUndefined: Story = {
-	args: {
-		content: undefined,
-		isHiddenOnZero: true,
-		default: 'Скрыто',
-	},
-	play: async ({ canvasElement }) => {
-		const badge = canvasElement.querySelector('.base-chip__badge')
-		expect(badge).toBeNull()
-	},
-}
-/** Покрывает: content как число с hasOverflow, но не превышает maxValue */
-export const OverflowNotExceeded: Story = {
-	args: {
-		content: 50,
-		hasOverflow: true,
-		maxValue: 99,
-		default: 'Не превышено',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('50')).toBeInTheDocument()
+	render: args => ({
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'content', 'hasOverflow', 'maxValue']) }),
+		template: `
+			<div class="story-row" style="gap: 32px; padding: 12px;">
+				<BaseChip v-bind="props" :content="8" has-overflow>${ICON_BUTTON}</BaseChip>
+				<BaseChip v-bind="props" :content="120" has-overflow>${ICON_BUTTON}</BaseChip>
+				<BaseChip v-bind="props" :content="12" has-overflow :max-value="9">${ICON_BUTTON}</BaseChip>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText('8')).toBeVisible()
+		await expect(canvas.getByText('99+')).toBeVisible()
+		await expect(canvas.getByText('9+')).toBeVisible()
 	},
 }
-/** Покрывает: числовая строка с hasOverflow и значение > maxValue → "99+" */
-export const StringNumberOverflow: Story = {
-	args: {
-		content: '150',
-		hasOverflow: true,
-		maxValue: 99,
-		default: 'Строка-число overflow',
+
+/** Ноль: по умолчанию «0» виден, с `isHiddenOnZero` индикатор скрыт (слева — без флага, справа — с флагом). */
+export const HiddenOnZero: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: ['<BaseChip :content="0">…</BaseChip>', '<BaseChip :content="0" is-hidden-on-zero>…</BaseChip>'].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('99+')).toBeInTheDocument()
+	render: args => ({
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'content', 'isHiddenOnZero']) }),
+		template: `
+			<div class="story-row" style="gap: 32px; padding: 12px;">
+				<BaseChip v-bind="props" :content="0">${ICON_BUTTON}</BaseChip>
+				<BaseChip v-bind="props" :content="0" is-hidden-on-zero>${ICON_BUTTON}</BaseChip>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, canvasElement }) => {
+		await expect(canvas.getByText('0')).toBeVisible()
+		await expect(canvasElement.querySelectorAll('.base-chip__badge')).toHaveLength(1)
 	},
 }
-/** Длинный контент — проверка a11y-дерева с длинным лейблом */
+
+/** Текст вместо числа: индикатор растягивается по ширине текста и не переносит его на вторую строку. */
 export const LongContent: Story = {
-	args: {
-		content: 5,
-		default:
-			'Очень длинный текст лейбла чипа который превышает сто символов для проверки корректности обработки длинного контента в a11y-дереве',
-	},
-	play: async ({ canvasElement }) => {
-		const chip = canvasElement.querySelector('.base-chip')
-		expect(chip).toBeInTheDocument()
-		expect(chip?.textContent?.length).toBeGreaterThan(100)
+	args: { content: 'Новое обновление' },
+	render: args => ({
+		components: { BaseChip, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: `
+			<div style="padding: 12px 64px 12px 12px;">
+				<BaseChip v-bind="props"><BaseButton variant="outline">Журнал изменений</BaseButton></BaseChip>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const badge = canvas.getByText('Новое обновление')
+		const { width, height } = badge.getBoundingClientRect()
+		await expect(height).toBe(18)
+		await expect(width).toBeGreaterThan(height)
 	},
 }
-/** Кастомные CSS-классы через customClass */
-export const WithCustomClass: Story = {
-	args: {
-		content: 3,
-		customClass: { root: 'chip-root', badge: 'chip-badge' },
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Счётчик корзины: число растёт по клику, пустая корзина без индикатора (`isHiddenOnZero`),
+ * больше 9 товаров — «9+». Количество продублировано в доступном имени кнопки.
+ */
+export const Counter: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale', 'placement'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseChip :content="count" is-hidden-on-zero has-overflow :max-value="9">',
+					'  <BaseButton variant="outline" :aria-label="`Корзина, товаров: ${count}`" @click="count++">…</BaseButton>',
+					'</BaseChip>',
+				].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.chip-root')).toBeTruthy()
+	render: args => ({
+		components: { BaseChip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'content', 'isHiddenOnZero', 'hasOverflow', 'maxValue']), count: ref(0) }),
+		template: `
+			<div style="padding: 12px;">
+				<BaseChip v-bind="props" :content="count" is-hidden-on-zero has-overflow :max-value="9">
+					<BaseButton variant="outline" :aria-label="'Корзина, товаров: ' + count" :padding="{ x: 5, y: 5 }" @click="count++">
+						<BaseIcon name="plus" />
+					</BaseButton>
+				</BaseChip>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, canvasElement, userEvent }) => {
+		await expect(canvasElement.querySelector('.base-chip__badge')).toBeNull()
+		const button = canvas.getByRole('button', { name: 'Корзина, товаров: 0' })
+		await userEvent.click(button)
+		await expect(canvas.getByText('1')).toBeVisible()
+		await expect(button).toHaveAccessibleName('Корзина, товаров: 1')
 	},
 }

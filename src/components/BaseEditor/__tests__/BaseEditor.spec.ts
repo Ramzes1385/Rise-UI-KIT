@@ -5,7 +5,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
+import { nextTick } from 'vue'
 import BaseEditor from '../ui/BaseEditor.vue'
 
 /** Стабаем дочерние компоненты для изоляции */
@@ -359,6 +360,158 @@ describe('BaseEditor unit', () => {
 			await fireEvent.input(editable)
 
 			expect(container.querySelector('.base-editor__content--empty')).toBeInTheDocument()
+		})
+	})
+
+	describe('v-model и автофокус', () => {
+		it('программная смена modelValue заменяет содержимое области текста и снимает признак пустоты', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, { props: { modelValue: '' }, global: globalConfig })
+			const content = wrapper.find('[role="textbox"]')
+			expect(content.classes()).toContain('base-editor__content--empty')
+
+			await wrapper.setProps({ modelValue: '<p>Обновлённый текст</p>' })
+
+			expect(content.element.innerHTML).toBe('<p>Обновлённый текст</p>')
+			expect(content.classes()).not.toContain('base-editor__content--empty')
+			wrapper.unmount()
+		})
+
+		it('isAutofocus ставит фокус в область текста при монтировании', () => {
+			const focus = vi.spyOn(HTMLElement.prototype, 'focus')
+			render(BaseEditor, { props: { isAutofocus: true, modelValue: '<p>Текст</p>' }, global: globalConfig })
+
+			expect(focus.mock.contexts).toContain(screen.getByRole('textbox', { name: 'Текстовый редактор' }))
+			focus.mockRestore()
+		})
+	})
+
+	describe('доступность', () => {
+		it('область текста — многострочное поле с именем и плейсхолдером', () => {
+			render(BaseEditor, { props: { placeholder: 'Опишите задачу' }, global: globalConfig })
+
+			const textbox = screen.getByRole('textbox', { name: 'Текстовый редактор' })
+			expect(textbox).toHaveAttribute('aria-multiline', 'true')
+			expect(textbox).toHaveAttribute('aria-placeholder', 'Опишите задачу')
+			expect(textbox).not.toHaveAttribute('aria-readonly')
+		})
+
+		it('в режиме чтения область текста помечена aria-readonly, пустой плейсхолдер не озвучивается', () => {
+			render(BaseEditor, { props: { isReadonly: true }, global: globalConfig })
+
+			const textbox = screen.getByRole('textbox', { name: 'Текстовый редактор' })
+			expect(textbox).toHaveAttribute('aria-readonly', 'true')
+			expect(textbox).not.toHaveAttribute('aria-placeholder')
+		})
+
+		it('тулбар — role="toolbar" с именем, кнопки-иконки названы и сообщают состояние через aria-pressed', () => {
+			render(BaseEditor, { global: globalConfig })
+
+			const toolbar = screen.getByRole('toolbar', { name: 'Форматирование' })
+			expect(within(toolbar).getByRole('button', { name: 'Жирный' })).toHaveAttribute('aria-pressed', 'false')
+			expect(within(toolbar).getByRole('button', { name: 'Цитата' })).toHaveAttribute('aria-pressed', 'false')
+			expect(within(toolbar).getByRole('button', { name: 'Ссылка' })).not.toHaveAttribute('aria-pressed')
+			// Поля загрузки файлов доступны с клавиатуры и названы
+			expect(within(toolbar).getByLabelText('Изображение')).toHaveAttribute('type', 'file')
+			expect(within(toolbar).getByLabelText('Видео')).toHaveAttribute('type', 'file')
+			// Пикеры цвета сгруппированы с именем: кнопка пикера озвучивает только выбранный цвет
+			expect(within(toolbar).getByRole('group', { name: 'Цвет текста' })).toBeInTheDocument()
+			expect(within(toolbar).getByRole('group', { name: 'Цвет фона' })).toBeInTheDocument()
+		})
+
+		it('кнопка «Режим кода» нажата в режиме кода, поле HTML-кода подписано', async () => {
+			render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global: globalConfig })
+			const toggle = screen.getByRole('button', { name: 'Режим кода' })
+
+			await fireEvent.click(toggle)
+
+			expect(toggle).toHaveAttribute('aria-pressed', 'true')
+			expect(screen.getByRole('textbox', { name: 'HTML-код' })).toHaveValue('<p>Текст</p>')
+		})
+	})
+
+	describe('режим только для чтения во время работы', () => {
+		it('включение isReadonly в режиме кода возвращает визуальный режим: без тулбара из режима кода не выйти', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global: globalConfig })
+			await wrapper.find('button[aria-label="Режим кода"]').trigger('click')
+			expect(wrapper.find('textarea').exists()).toBe(true)
+
+			await wrapper.setProps({ isReadonly: true })
+			await nextTick()
+
+			expect(wrapper.find('textarea').exists()).toBe(false)
+			expect(wrapper.find('[role="textbox"]').attributes('aria-readonly')).toBe('true')
+			expect(wrapper.find('[role="textbox"]').element.innerHTML).toBe('<p>Текст</p>')
+			wrapper.unmount()
+		})
+
+		it('включение isReadonly закрывает открытое меню размера медиа', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, {
+				props: { modelValue: '<p><img src="data:," alt="Схема"></p>' },
+				global: globalConfig,
+				attachTo: document.body,
+			})
+			await wrapper.find('img').trigger('contextmenu')
+			expect(screen.getByRole('dialog', { name: 'Размер медиа' })).toBeInTheDocument()
+
+			await wrapper.setProps({ isReadonly: true })
+
+			expect(screen.queryByRole('dialog', { name: 'Размер медиа' })).toBeNull()
+			wrapper.unmount()
+		})
+	})
+
+	describe('меню размера медиа', () => {
+		async function openMediaMenu() {
+			const utils = render(BaseEditor, {
+				props: { modelValue: '<p><img src="data:," alt="Схема"></p>' },
+				global: globalConfig,
+			})
+			const image = utils.container.querySelector('.base-editor__content img') as HTMLImageElement
+			await fireEvent.contextMenu(image)
+			const menu = await screen.findByRole('dialog', { name: 'Размер медиа' })
+			const width = within(menu).getByLabelText('Ширина')
+			await waitFor(() => expect(width).toHaveFocus())
+			return { ...utils, image, menu, width, content: screen.getByRole('textbox', { name: 'Текстовый редактор' }) }
+		}
+
+		it('открывается с подписанными полями «Ширина» и «Высота», фокус переходит в «Ширину»', async () => {
+			const { menu } = await openMediaMenu()
+
+			expect(within(menu).getByLabelText('Высота')).toHaveAttribute('type', 'number')
+			expect(within(menu).getByRole('button', { name: 'Применить' })).toBeInTheDocument()
+		})
+
+		it('Escape закрывает меню и возвращает фокус в текст', async () => {
+			const { content, emitted } = await openMediaMenu()
+
+			await fireEvent.keyDown(document, { key: 'Escape' })
+
+			expect(screen.queryByRole('dialog', { name: 'Размер медиа' })).toBeNull()
+			expect(content).toHaveFocus()
+			expect(emitted()['update:modelValue']).toBeUndefined()
+		})
+
+		it('Enter в поле размера применяет размер, закрывает меню и возвращает фокус в текст', async () => {
+			const { width, image, content } = await openMediaMenu()
+
+			await fireEvent.update(width, '240')
+			await fireEvent.keyDown(width, { key: 'Enter' })
+
+			expect(image.style.width).toBe('240px')
+			expect(screen.queryByRole('dialog', { name: 'Размер медиа' })).toBeNull()
+			expect(content).toHaveFocus()
+		})
+
+		it('«Удалить» убирает медиа из текста и возвращает фокус в текст', async () => {
+			const { menu, content } = await openMediaMenu()
+
+			await fireEvent.click(within(menu).getByRole('button', { name: 'Удалить' }))
+
+			expect(content.querySelector('img')).toBeNull()
+			expect(content).toHaveFocus()
 		})
 	})
 

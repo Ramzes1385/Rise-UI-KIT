@@ -160,8 +160,15 @@ describe('BaseSlideover unit', () => {
 	})
 
 	describe('пропс padding', () => {
-		it('должен задавать горизонтальные отступы 24px при padding=24 (по умолчанию)', () => {
+		it('без пропа не задаёт inline-переменные: отступы 16/20 берутся из стилей', () => {
 			render(BaseSlideover, { props: { isOpen: true } })
+
+			const panel = document.querySelector('.base-slideover__panel') as HTMLElement
+			expect(panel.getAttribute('style')).toBeNull()
+		})
+
+		it('должен задавать горизонтальные отступы 24px при padding=24', () => {
+			render(BaseSlideover, { props: { isOpen: true, padding: 24 } })
 
 			const panel = document.querySelector('.base-slideover__panel') as HTMLElement
 			expect(panel.style.getPropertyValue('--slideover-pad-left')).toBe('24px')
@@ -193,6 +200,23 @@ describe('BaseSlideover unit', () => {
 			expect(panel.style.getPropertyValue('--slideover-pad-left')).toBe('20px')
 			expect(panel.style.getPropertyValue('--slideover-pad-top')).toBe('8px')
 			expect(panel.style.getPropertyValue('--slideover-pad-bottom')).toBe('12px')
+		})
+	})
+
+	describe('пропсы sizeScale и color', () => {
+		it('sizeScale задаёт --size-scale на корне: панель и её содержимое масштабируются', () => {
+			render(BaseSlideover, { props: { isOpen: true, sizeScale: 125 } })
+
+			const root = document.querySelector('.base-slideover') as HTMLElement
+			expect(root.style.getPropertyValue('--size-scale')).toBe('1.25')
+		})
+
+		it('color задаёт --custom-bg и --custom-text на корне', () => {
+			render(BaseSlideover, { props: { isOpen: true, color: { bg: { base: '#f5f3ff' }, text: { base: '#4c1d95' } } } })
+
+			const root = document.querySelector('.base-slideover') as HTMLElement
+			expect(root.style.getPropertyValue('--custom-bg')).toBe('#f5f3ff')
+			expect(root.style.getPropertyValue('--custom-text')).toBe('#4c1d95')
 		})
 	})
 

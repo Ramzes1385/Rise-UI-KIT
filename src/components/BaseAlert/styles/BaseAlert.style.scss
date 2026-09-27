@@ -1,94 +1,107 @@
+// BaseAlert. Отступ 12/16, радиус lg, текст 14/20, иконка 20px на уровне первой строки.
+// Цвет задаёт тип (роль info/success/warning/error), вариант выбирает, как роль применяется:
+// default — заливка роли; soft — мягкий фон роли; outline — рамка роли; ghost — только текст роли;
+// shadow — нейтральная карточка с тенью, цвет роли только у иконки.
 .base-alert {
-	--alert-bg: var(--color-surface);
-	--alert-border: var(--color-border);
-	--alert-text: var(--color-text);
-	--alert-icon-color: var(--color-info-icon);
+	// Токены роли по типу. info — по умолчанию (и для неизвестного типа, как и иконка).
+	--alert-role: var(--rise-info);
+	--alert-on-role: var(--rise-on-info);
+	--alert-soft: var(--rise-info-soft);
+	--alert-role-text: var(--rise-info-text);
+	--alert-role-border: var(--rise-info-border);
+	// Цвет иконки и кольца фокуса кнопок. На заливке роли — цвет текста: основное кольцо может слиться с фоном.
+	--alert-icon: currentColor;
+	--alert-ring: currentColor;
 
 	display: flex;
 	align-items: flex-start;
-	gap: 0.75rem;
-	padding: 1rem;
-	border-radius: 0.5rem;
-	border: 1px solid var(--alert-border);
-	background-color: var(--alert-bg);
-	color: var(--alert-text);
-	transition: all var(--transition-base);
+	gap: sz(10px);
+	padding: sz(12px) sz(16px);
+	border: 1px solid transparent;
+	border-radius: sz(var(--rise-radius-lg));
+	@include text-size(sm);
+	@include custom-bg(background-color, var(--alert-role));
+	@include custom-text(color, var(--alert-on-role));
 
-	// Стили по умолчанию для разных типов
-	&--info {
-		--alert-bg: var(--color-info-bg);
-		--alert-border: var(--color-info-border);
-		--alert-text: var(--color-info-text);
-		--alert-icon-color: var(--color-info-icon);
+	@each $role in (success, warning, error) {
+		&--#{$role} {
+			--alert-role: var(--rise-#{$role});
+			--alert-on-role: var(--rise-on-#{$role});
+			--alert-soft: var(--rise-#{$role}-soft);
+			--alert-role-text: var(--rise-#{$role}-text);
+			--alert-role-border: var(--rise-#{$role}-border);
+		}
 	}
 
-	&--success {
-		--alert-bg: var(--color-success-bg);
-		--alert-border: var(--color-success-border);
-		--alert-text: var(--color-success-text);
-		--alert-icon-color: var(--color-success-icon);
-	}
+	// ─── Варианты ────────────────────────────────────────────────────────────────
 
-	&--warning {
-		--alert-bg: var(--color-warning-bg);
-		--alert-border: var(--color-warning-border);
-		--alert-text: var(--color-warning-text);
-		--alert-icon-color: var(--color-warning-icon);
-	}
-
-	&--error {
-		--alert-bg: var(--color-error-bg);
-		--alert-border: var(--color-error-border);
-		--alert-text: var(--color-error-text);
-		--alert-icon-color: var(--color-error-icon);
-	}
-
-	// Варианты отображения
-	&--ghost {
-		background-color: transparent;
-		border-color: transparent;
-	}
-
-	&--outline {
-		background-color: transparent;
-	}
-
+	&--soft,
+	&--outline,
+	&--ghost,
 	&--shadow {
-		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.1),
-			0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		--alert-icon: var(--alert-role);
+		--alert-ring: var(--rise-focus-ring);
 	}
 
 	&--soft {
-		border-color: transparent;
+		@include custom-bg(background-color, var(--alert-soft));
+		@include custom-text(color, var(--alert-role-text));
 	}
+
+	&--outline {
+		border-color: var(--alert-role-border);
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--alert-role-text));
+	}
+
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--alert-role-text));
+	}
+
+	&--shadow {
+		border-color: var(--rise-border);
+		box-shadow: var(--rise-shadow-sm);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text));
+	}
+
+	// ─── Элементы ────────────────────────────────────────────────────────────────
 
 	&__icon-wrapper {
 		display: flex;
-		align-items: center;
-		justify-content: center;
 		flex-shrink: 0;
-		color: var(--alert-icon-color);
+		@include custom-text(color, var(--alert-icon));
 	}
 
 	&__content {
-		flex-grow: 1;
 		display: flex;
+		flex: 1;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: sz(4px);
+		min-width: 0;
+		overflow-wrap: break-word;
 	}
 
-	&__title {
-		margin: 0;
+	// Заголовок и описание — BaseText со своим цветом по умолчанию: здесь они берут цвет алерта.
+	& &__title,
+	& &__text {
 		color: inherit;
-		line-height: 1.25;
+	}
+
+	&--shadow &__title {
+		@include custom-text(color, var(--rise-text-highlighted));
+	}
+
+	&--shadow &__description {
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__description {
-		margin: 0;
-		color: inherit;
-		opacity: 0.9;
-		line-height: 1.4;
+		// Пустое описание (нет description и слота) не добавляет отступ под заголовком.
+		&:empty {
+			display: none;
+		}
 
 		p {
 			margin: 0;
@@ -98,26 +111,30 @@
 	&__actions {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin-left: auto;
 		flex-shrink: 0;
+		gap: sz(8px);
 	}
 
-	&__close {
-		color: inherit;
-		opacity: 0.6;
-		transition: opacity var(--transition-base);
-		padding: 0.25rem;
-		border-radius: 0.25rem;
+	& &__actions :focus-visible {
+		outline-color: var(--alert-ring);
+	}
 
-		&:hover {
-			opacity: 1;
-			background-color: rgba(0, 0, 0, 0.05);
-		}
+	// Кнопка закрытия — ghost-кнопка цвета текста алерта: наведение — полупрозрачная подложка того же цвета.
+	// Кнопка 24px (иконка 16px + отступы 3px + рамка) занимает по высоте строку заголовка (20px),
+	// а иконка стоит на линии правого отступа алерта. max-width: none — иначе отрицательный отступ сужает кнопку.
+	& &__close {
+		--custom-text: currentColor;
+		--custom-bg: transparent;
+		--custom-bg-hover: color-mix(in srgb, currentColor 12%, transparent);
+		--custom-bg-active: color-mix(in srgb, currentColor 18%, transparent);
 
-		&:focus-visible {
-			outline: 2px solid currentColor;
-			outline-offset: 2px;
-		}
+		max-width: none;
+		margin: sz(-2px) sz(-4px) sz(-2px) 0;
+	}
+
+	// Размер иконки — от масштаба кнопки (он же масштаб алерта), без собственного sizeScale.
+	&__close .base-icon__svg {
+		width: sz(16px);
+		height: sz(16px);
 	}
 }

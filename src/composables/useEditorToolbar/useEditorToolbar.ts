@@ -11,7 +11,7 @@ function useEditorToolbar(options: UseEditorToolbarOptions) {
 
 	const selection = useToolbarSelection({ editorRef })
 	const codeMode = useToolbarCodeMode({ editorRef, codeTextareaRef, onInput })
-	const mediaMenu = useToolbarMediaMenu({ onInput })
+	const mediaMenu = useToolbarMediaMenu({ onInput, isReadonly: options.isReadonly })
 	const commands = useToolbarCommands({
 		editorRef,
 		onInput,

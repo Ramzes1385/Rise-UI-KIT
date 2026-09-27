@@ -1,39 +1,20 @@
 /**
- * Visual regression тесты для BaseDropdown.
- * Триггер содержит текст — sub-pixel метрики шрифта отличаются между
- * Windows (GDI ClearType) и Linux (FreeType) на 1-2px, из-за чего
- * bounding box локатора даёт разные размеры скриншота. Чтобы тест был
- * кроссплатформенным, берём фиксированный clip, отцентрированный на
- * элементе, с размерами, округлёнными вверх до 10px — это поглощает
- * дрейф и даёт идентичные размеры скриншота на всех OS.
+ * Visual regression BaseDropdown: ключевые stories в светлой и тёмной теме.
+ * Панели телепортируются в body, поэтому снимается вся страница.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basedropdown'
-const STORIES = ['default']
+const STORIES = ['variants', 'custom-color', 'empty', 'long-content', 'positions'] as const
 
-for (const story of STORIES) {
-	test(`BaseDropdown — ${story}`, async ({ page }) => {
-		await page.setViewportSize({ width: 800, height: 400 })
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		await page.waitForLoadState('networkidle')
-		await page.evaluate(() => document.fonts.ready)
-		const root = page.locator('.base-dropdown')
-		const box = await root.boundingBox()
-		if (!box) throw new Error('BaseDropdown root not found')
-		const PAD = 20
-		const clip = {
-			x: Math.max(0, Math.round(box.x - PAD)),
-			y: Math.max(0, Math.round(box.y - PAD)),
-			width: Math.floor((box.width + PAD * 2) / 20) * 20,
-			height: Math.floor((box.height + PAD * 2) / 20) * 20,
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseDropdown · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `overlay-basedropdown--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-dropdown-${story}-${theme}.png`, 'page')
+			})
 		}
-		await expect(page).toHaveScreenshot(`base-dropdown--${story}.png`, {
-			clip,
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
 	})
 }

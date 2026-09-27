@@ -1,172 +1,86 @@
+// BasePopover. Подсказка с содержимым у элемента. Панель — панель BaseDropdown (floating-surface и варианты оттуда),
+// плюс стрелка к триггеру и отступы содержимого 12/16, ширина до 320px.
+// Обёртка строчная и равна триггеру: панель и стрелка центрируются по триггеру, а не по всей строке.
 .base-popover {
-	@include custom-text(color, var(--color-text));
+	display: inline-flex;
+	vertical-align: middle;
 
+	// flex убирает строку вокруг кнопки в слоте: размеры триггера — это размеры кнопки, без межстрочного зазора.
 	&__trigger {
+		display: flex;
 		cursor: pointer;
-		@include interactive;
-
-		@include hover {
-			opacity: 0.85;
-		}
 	}
 
-	/* Панель — стили для panelClass в BaseDropdown */
-	&__panel {
-		min-width: sz(200px);
+	// Панель — это .base-dropdown__panel: двойной класс перекрывает его стили независимо от порядка CSS.
+	// Стрелка выходит за край панели, поэтому прокручивается не панель (overflow: visible), а содержимое.
+	&__panel.base-dropdown__panel {
+		display: flex;
+		flex-direction: column;
 		max-width: sz(320px);
 		overflow: visible;
-		background-color: transparent;
-		border: none;
-		border-radius: 0;
-		box-shadow: none;
-		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-
-		// Варианты
-		&--default {
-			.base-popover__inner {
-				@include custom-bg(background-color, var(--color-surface));
-				border: 1px solid var(--color-border);
-			}
-
-			.base-popover__arrow {
-				&--bottom {
-					@include custom-bg(border-bottom-color, var(--color-surface));
-				}
-
-				&--top {
-					@include custom-bg(border-top-color, var(--color-surface));
-				}
-
-				&--left {
-					@include custom-bg(border-left-color, var(--color-surface));
-				}
-
-				&--right {
-					@include custom-bg(border-right-color, var(--color-surface));
-				}
-			}
-		}
-
-		&--ghost {
-			.base-popover__inner {
-				@include custom-bg(background-color, transparent);
-				border-color: transparent;
-			}
-
-			.base-popover__arrow {
-				display: none;
-			}
-		}
-
-		&--outline {
-			.base-popover__inner {
-				@include custom-bg(background-color, transparent);
-				border: 2px solid var(--color-border);
-			}
-
-			.base-popover__arrow {
-				&--bottom {
-					border-bottom-color: var(--color-border);
-				}
-
-				&--top {
-					border-top-color: var(--color-border);
-				}
-
-				&--left {
-					border-left-color: var(--color-border);
-				}
-
-				&--right {
-					border-right-color: var(--color-border);
-				}
-			}
-		}
-
-		&--shadow {
-			.base-popover__inner {
-				box-shadow: var(--shadow-lg);
-			}
-		}
-
-		&--soft {
-			.base-popover__inner {
-				@include custom-bg(background-color, var(--color-primary-soft));
-				@include custom-text(color, var(--color-primary));
-				border-color: transparent;
-			}
-
-			.base-popover__arrow {
-				&--bottom {
-					@include custom-bg(border-bottom-color, var(--color-primary-soft));
-				}
-
-				&--top {
-					@include custom-bg(border-top-color, var(--color-primary-soft));
-				}
-
-				&--left {
-					@include custom-bg(border-left-color, var(--color-primary-soft));
-				}
-
-				&--right {
-					@include custom-bg(border-right-color, var(--color-primary-soft));
-				}
-			}
-		}
-	}
-
-	/* Стрелка */
-	&__arrow {
-		position: absolute;
-		width: 0;
-		height: 0;
-		border: sz(6px) solid transparent;
-
-		&--bottom {
-			top: sz(-12px);
-			left: 50%;
-			transform: translateX(-50%);
-			@include custom-bg(border-bottom-color, var(--color-surface));
-		}
-
-		&--top {
-			bottom: sz(-12px);
-			left: 50%;
-			transform: translateX(-50%);
-			@include custom-bg(border-top-color, var(--color-surface));
-		}
-
-		&--left {
-			right: sz(-12px);
-			top: 50%;
-			transform: translateY(-50%);
-			@include custom-bg(border-left-color, var(--color-surface));
-		}
-
-		&--right {
-			left: sz(-12px);
-			top: 50%;
-			transform: translateY(-50%);
-			@include custom-bg(border-right-color, var(--color-surface));
-		}
 	}
 
 	&__inner {
+		min-height: 0;
 		padding: sz(12px) sz(16px);
-		border-radius: var(--border-radius-base);
-		font-size: sz(14px);
-		line-height: 1.5;
+		overflow-y: auto;
+		overflow-wrap: anywhere;
+		@include scrollbar-thin;
 
-		h4 {
-			margin: 0 0 sz(6px);
-			font-size: sz(14px);
-			font-weight: 700;
+		// Внешние отступы первого и последнего блока (абзацы, заголовки) не складываются с отступами панели.
+		> :first-child {
+			margin-top: 0;
 		}
 
-		p {
-			margin: 0;
-			font-size: sz(13px);
+		> :last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	// Стрелка — повёрнутый квадрат цвета панели (--dd-bg, --dd-border из BaseDropdown): видны две стороны рамки,
+	// обращённые к триггеру, а фон перекрывает рамку панели под стрелкой.
+	&__arrow {
+		position: absolute;
+		box-sizing: border-box;
+		width: sz(8px);
+		height: sz(8px);
+		border: 1px solid var(--dd-border);
+		background-color: var(--dd-bg);
+
+		// Панель под триггером — стрелка на верхнем крае
+		&--bottom {
+			top: 0;
+			left: 50%;
+			border-right-color: transparent;
+			border-bottom-color: transparent;
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+
+		// Панель над триггером — стрелка на нижнем крае
+		&--top {
+			bottom: 0;
+			left: 50%;
+			border-top-color: transparent;
+			border-left-color: transparent;
+			transform: translate(-50%, 50%) rotate(45deg);
+		}
+
+		// Панель слева от триггера — стрелка на правом крае
+		&--left {
+			top: 50%;
+			right: 0;
+			border-bottom-color: transparent;
+			border-left-color: transparent;
+			transform: translate(50%, -50%) rotate(45deg);
+		}
+
+		// Панель справа от триггера — стрелка на левом крае
+		&--right {
+			top: 50%;
+			left: 0;
+			border-top-color: transparent;
+			border-right-color: transparent;
+			transform: translate(-50%, -50%) rotate(45deg);
 		}
 	}
 }

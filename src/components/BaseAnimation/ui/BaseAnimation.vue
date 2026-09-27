@@ -1,5 +1,4 @@
 <template>
-	<!-- Одиночная анимация -->
 	<Transition
 		v-if="!isGroup"
 		:name="name"
@@ -12,39 +11,35 @@
 		</div>
 	</Transition>
 
-	<!-- Групповая анимация -->
+	<!-- Список: дочерние элементы (с key) — прямые потомки тега tag, каждый анимируется отдельно -->
 	<TransitionGroup
 		v-else
 		:name="name"
 		:tag="tag"
 		appear
+		class="base-animation base-animation--group"
+		:class="classes.root"
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
-		<div v-if="show" :class="classes.root">
-			<slot />
-		</div>
+		<slot v-if="show" />
 	</TransitionGroup>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
 
 const props = withDefaults(defineProps<BaseAnimationProps>(), {
+	show: true,
 	name: 'fade',
 	mode: 'out-in',
 	isGroup: false,
 	tag: 'div',
 })
-const { wasPropPassed } = useExplicitPropDetection()
 
 const emit = defineEmits<BaseAnimationEmits>()
 defineSlots<BaseAnimationSlots>()
-
-const show = computed(() => (wasPropPassed('show') ? (props.show ?? true) : true))
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

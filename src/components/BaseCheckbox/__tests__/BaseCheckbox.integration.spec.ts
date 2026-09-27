@@ -54,6 +54,19 @@ describe('BaseCheckbox integration', () => {
 		})
 	})
 
+	describe('клавиатура', () => {
+		it('должен переключаться клавишей Space', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseCheckbox, { props: { modelValue: false, label: 'Согласен' } })
+
+			screen.getByRole('checkbox', { name: 'Согласен' }).focus()
+			await user.keyboard(' ')
+
+			const events = emitted()['update:modelValue'] as boolean[][]
+			expect(events.at(-1)?.[0]).toBe(true)
+		})
+	})
+
 	describe('отключённый чекбокс', () => {
 		it('не должен эмитить update:modelValue при клике на отключённый', async () => {
 			const user = userEvent.setup()

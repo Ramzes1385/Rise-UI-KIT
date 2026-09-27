@@ -1,398 +1,273 @@
-﻿/**
- * Stories для компонента BaseSwitch.
- * Демонстрирует все вариации, состояния, слоты и CSS-состояния.
+/**
+ * BaseSwitch — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
+ * состояния (disabled, ошибка, длинная подпись) → сценарии (подпись слева, слоты) → клавиатура.
  */
 
-import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { SWITCH_VARIANTS } from '../model/BaseSwitch.types'
 import BaseSwitch from '../ui/BaseSwitch.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseSwitch> = {
-	title: 'UI/BaseSwitch',
+const meta = {
+	title: 'Form/BaseSwitch',
 	component: BaseSwitch,
-	argTypes: buildArgTypes({
-		props: {
-			label: { control: 'text' },
-			error: { control: 'text' },
-			isRequired: { control: 'boolean' },
-			isDisabled: { control: 'boolean' },
-			reverse: { control: 'boolean' },
-			variant: {
-				control: 'select',
-				options: SWITCH_VARIANTS,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Переключатель — включает и выключает настройку, которая применяется сразу: уведомления, тёмная тема, автопродление.',
+					'',
+					'- Нативный checkbox с `role="switch"`: скринридер озвучивает «переключатель, включён/выключен», Space переключает.',
+					'- Подпись (`label` или слот `label`) — имя переключателя; клик по ней тоже переключает.',
+					'- Ошибка (`error`) помечает переключатель `aria-invalid` и связана с ним через `aria-describedby`.',
+					'- `reverse` ставит подпись слева, а трек — у правого края: так выглядят списки настроек.',
+					'',
+					'Если значение применяется только после отправки формы, используйте `BaseCheckbox`.',
+				].join('\n'),
 			},
-			color: {
-				control: 'object',
-				description: 'Объект CustomColor: bg (фоновый цвет), text (цвет текста) и их состояния hover/active/focus',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			modelValue: { control: 'boolean' },
-			'onUpdate:modelValue': { table: { disable: true } },
-			onChange: { table: { disable: true } },
-			customClass: { control: 'object' },
 		},
-	}),
-	args: {
-		label: 'Уведомления',
-		variant: 'default',
-		isDisabled: false,
-		isRequired: false,
-		reverse: false,
-		sizeScale: 100,
 	},
-}
+	argTypes: {
+		...baseArgTypes({ variants: SWITCH_VARIANTS }),
+		modelValue: { control: 'boolean', table: propGroup(ARG_GROUP.content) },
+		label: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		reverse: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+		isRequired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		default: { control: false },
+	},
+	args: {
+		modelValue: false,
+		label: 'Уведомления по email',
+		variant: 'default',
+		sizeScale: 100,
+		reverse: false,
+		error: '',
+		isRequired: false,
+		isDisabled: false,
+		'onUpdate:modelValue': fn(),
+		onChange: fn(),
+	},
+	// Значение хранится в args: переключение обновляет Controls, а изменение в Controls — переключатель.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseSwitch },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<BaseSwitch v-bind="props" @update:model-value="onUpdate" />',
+		}
+	},
+} satisfies Meta<typeof BaseSwitch>
 
 export default meta
-type Story = StoryObj<typeof BaseSwitch>
-/** Базовый переключатель */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: кликните по переключателю или меняйте props в Controls — значение синхронизировано. */
 export const Default: Story = {
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-	args: {
-		onChange: fn(),
-		'onUpdate:modelValue': fn(),
-	},
-	play: async ({ canvasElement, args, step }) => {
-		const input = canvasElement.querySelector('input[type="checkbox"]') as HTMLInputElement
-
-		await step('Фокусировка по клавише Tab', async () => {
-			await userEvent.tab()
-			expect(input).toHaveFocus()
-		})
-
-		await step('Переключение состояния по клавише Space', async () => {
-			await userEvent.keyboard('[Space]')
-			await waitFor(() => {
-				expect(input).toBeChecked()
-				expect(args.onChange).toHaveBeenCalledWith(true)
-				expect(args['onUpdate:modelValue']).toHaveBeenCalledWith(true)
-			})
-		})
-
-		await step('Повторное переключение по клавише Space', async () => {
-			await userEvent.keyboard('[Space]')
-			await waitFor(() => {
-				expect(input).not.toBeChecked()
-				expect(args.onChange).toHaveBeenCalledWith(false)
-			})
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: 'input[type="checkbox"]' })
-		})
+	play: async ({ canvas, userEvent, args }) => {
+		const toggle = canvas.getByRole('switch', { name: 'Уведомления по email' })
+		await userEvent.click(toggle)
+		await expect(toggle).toBeChecked()
+		await expect(args.onChange).toHaveBeenCalledWith(true)
 	},
 }
-/** Включенный */
-export const Checked: Story = {
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(true)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-}
-/** все варианты */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Три варианта в двух состояниях: `default`, `outline` — прозрачный выключенный трек с рамкой, `shadow` — с тенью. */
 export const Variants: Story = {
 	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSwitch v-for="v in ['default', 'outline', 'shadow']" :key="v" :variant="v" :label="'Variant: ' + v" />`,
-			},
-		},
+		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
+		docs: { source: { code: SWITCH_VARIANTS.map(variant => `<BaseSwitch v-model="enabled" variant="${variant}" label="${variant}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			const variants = SWITCH_VARIANTS
-			return { args, value, variants }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'variant', 'onUpdate:modelValue']),
+			variants: SWITCH_VARIANTS,
+			values: ref(Object.fromEntries(SWITCH_VARIANTS.map(variant => [variant, { off: false, on: true }]))),
+		}),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseSwitch v-for="v in variants" :key="v" v-model="value" v-bind="args" :variant="v" :label="'Variant: ' + v" />
-			</div>
-		`,
-	}),
-}
-/** Масштабирование sizeScale */
-export const SizeScale: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSwitch v-for="scale in [75, 100, 150]" :key="scale" :size-scale="scale" label="Уведомления" />`,
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const scales = [75, 100, 150]
-			return { args, scales }
-		},
-		template: `
-			<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
-				<div v-for="scale in scales" :key="scale">
-					<p style="margin-bottom:8px;font-size:13px;color:var(--color-text-muted);">{{ scale }}%</p>
-					<BaseSwitch v-bind="args" :size-scale="scale" label="Уведомления" />
+			<div class="story-col">
+				<div v-for="variant in variants" :key="variant" class="story-row">
+					<span class="story-label">{{ variant }}</span>
+					<BaseSwitch v-bind="props" v-model="values[variant].off" :variant="variant" label="Выключен" />
+					<BaseSwitch v-bind="props" v-model="values[variant].on" :variant="variant" label="Включён" />
 				</div>
 			</div>
 		`,
 	}),
 }
-/** Обязательное поле */
-export const Required: Story = {
-	args: {
-		isRequired: true,
+
+/** Размеры через `sizeScale`: трек 27×15, 31.5×17.5, 36×20, 40.5×22.5 и 45×25px, подпись масштабируется вместе с ним. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSwitch v-model="enabled" :size-scale="${p.sizeScale}" label="${p.name}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, true]))),
+		}),
+		template: `
+			<div class="story-col">
+				<BaseSwitch
+					v-for="preset in presets"
+					:key="preset.name"
+					v-bind="props"
+					v-model="values[preset.name]"
+					:size-scale="preset.sizeScale"
+					:label="sizeLabel(preset)" />
+			</div>
+		`,
 	}),
 }
-/** С ошибкой */
+
+/** Кастомный цвет через `color`: `bg` — цвет трека включённого переключателя. */
+export const CustomColor: Story = {
+	args: {
+		label: 'Автопродление подписки',
+		modelValue: true,
+		color: { bg: { base: '#15803d', hover: '#166534' } },
+	},
+	play: async ({ canvasElement }) => {
+		const track = canvasElement.querySelector('.base-switch__slider') as HTMLElement
+		await expect(getComputedStyle(track).backgroundColor).toBe('rgb(21, 128, 61)')
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Отключённый переключатель — в обоих состояниях: приглушён, не получает фокус, клик не меняет значение. */
+export const Disabled: Story = {
+	parameters: { controls: { include: ['variant', 'sizeScale', 'reverse'] } },
+	render: args => ({
+		components: { BaseSwitch },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'isDisabled', 'onUpdate:modelValue']), off: ref(false), on: ref(true) }),
+		template: `
+			<div class="story-col">
+				<BaseSwitch v-bind="props" v-model="off" label="Резервное копирование (недоступно на тарифе)" is-disabled />
+				<BaseSwitch v-bind="props" v-model="on" label="Двухфакторный вход (включено администратором)" is-disabled />
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const toggle = canvas.getByRole('switch', { name: 'Резервное копирование (недоступно на тарифе)' })
+		await expect(toggle).toBeDisabled()
+		await userEvent.click(canvas.getByText('Резервное копирование (недоступно на тарифе)'))
+		await expect(toggle).not.toBeChecked()
+	},
+}
+
+/** Ошибка: красная обводка трека и текст под подписью; переключатель помечен `aria-invalid` и описан текстом ошибки. */
 export const WithError: Story = {
 	args: {
-		error: 'Необходимо включить уведомления',
+		label: 'Согласие на обработку данных',
+		isRequired: true,
+		error: 'Без согласия мы не сможем создать аккаунт',
 	},
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-}
-/** Обратный порядок */
-export const Reverse: Story = {
-	args: {
-		reverse: true,
-	},
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-}
-/** Отключенный */
-export const Disabled: Story = {
-	args: {
-		isDisabled: true,
-	},
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-}
-/** Отключенный включенный */
-export const DisabledChecked: Story = {
-	args: {
-		isDisabled: true,
-	},
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(true)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-}
-/** Hover-состояние */
-export const HoverState: Story = {
-	render: () => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { value }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseSwitch v-model="value" label="Hover (off)" class="base-switch--hover" />
-				<BaseSwitch v-model="value" label="Hover (on)" class="base-switch--hover" :model-value="true" />
-			</div>
-		`,
-	}),
-}
-/** Focus-состояние */
-export const FocusState: Story = {
-	render: () => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { value }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseSwitch v-model="value" label="Focus (off)" class="base-switch--focus" />
-				<BaseSwitch v-model="value" label="Focus (on)" class="base-switch--focus" :model-value="true" />
-			</div>
-		`,
-	}),
-}
-/** все интерактивные состояния рядом */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { value }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Normal</span>
-					<BaseSwitch v-model="value" label="Default" />
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Hover</span>
-					<BaseSwitch v-model="value" label="Hover" class="base-switch--hover" />
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Focus</span>
-					<BaseSwitch v-model="value" label="Focus" class="base-switch--focus" />
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Checked</span>
-					<BaseSwitch label="Checked" :model-value="true" />
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Error</span>
-					<BaseSwitch v-model="value" label="Error" error="Ошибка" />
-				</div>
-				<div style="display:flex;gap:16px;align-items:center;">
-					<span style="width:60px;font-size:12px;color:var(--color-text-muted);">Disabled</span>
-					<BaseSwitch label="Disabled" is-disabled />
-				</div>
-			</div>
-		`,
-	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 24px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: () => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { value }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseSwitch v-model="value" label="Тёмная тема" />
-				<BaseSwitch label="Отключен" is-disabled />
-				<BaseSwitch label="С ошибкой" error="Ошибка" />
-			</div>
-		`,
-	}),
-}
-/** Интерактивный */
-export const Interactive: Story = {
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: `
-			<div>
-				<BaseSwitch v-model="value" v-bind="args" />
-				<p style="margin-top:8px;color:var(--color-text-muted);">Значение: {{ value }}</p>
-			</div>
-		`,
-	}),
-	args: {
-		onChange: fn(),
+	play: async ({ canvas }) => {
+		const toggle = canvas.getByRole('switch', { name: /Согласие на обработку данных/ })
+		await expect(toggle).toHaveAttribute('aria-invalid', 'true')
+		await expect(toggle).toHaveAttribute('aria-required', 'true')
+		await expect(toggle).toHaveAccessibleDescription('Без согласия мы не сможем создать аккаунт')
 	},
 }
-/** Слоты error, label и default — покрывает альтернативные слоты */
-export const CustomSlots: Story = {
-	render: () => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { value }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseSwitch v-model="value" label="С кастомной ошибкой">
-					<template #error><span style="color:red;">Кастомная ошибка</span></template>
-				</BaseSwitch>
-				<BaseSwitch v-model="value">
-					<template #label><strong>Кастомный лейбл</strong></template>
-					Кастомный контент
-				</BaseSwitch>
-			</div>
-		`,
-	}),
-}
-/** Switch с длинным текстом подписи */
+
+/** Длинная подпись переносится по словам, трек остаётся у первой строки (ширина контейнера 360px). */
 export const LongContent: Story = {
 	args: {
 		modelValue: true,
-		label: 'Активировать автоматическое продление подписки на сервис с ежемесячным списанием средств',
+		label: 'Автоматически продлевать подписку в конце периода и списывать оплату с сохранённой карты',
 	},
-	render: args => ({
-		components: { BaseSwitch },
-		setup() {
-			const value = ref(true)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка по клавише Tab', async () => {
-			await playFocusTest(canvasElement, { selector: 'input[type="checkbox"]' })
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: 'input[type="checkbox"]' })
-		})
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseSwitch },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<div class="story-narrow"><BaseSwitch v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+	play: async ({ canvasElement }) => {
+		const track = canvasElement.querySelector('.base-switch__slider') as HTMLElement
+		const content = canvasElement.querySelector('.base-switch__content') as HTMLElement
+		await expect(content.getBoundingClientRect().height).toBeGreaterThan(20)
+		// Трек высотой в строку подписи (20px) стоит вровень с её первой строкой
+		await expect(Math.round(track.getBoundingClientRect().top)).toBe(Math.round(content.getBoundingClientRect().top))
 	},
 }
-/** Кастомные CSS-классы */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'sw-root', row: 'sw-row', wrapper: 'sw-wrapper', input: 'sw-input', slider: 'sw-slider', handle: 'sw-handle', content: 'sw-content', label: 'sw-label', required: 'sw-required', errorText: 'sw-errorText' },
-	},
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** Список настроек: `reverse` ставит подпись слева, трек прижимается к правому краю контейнера. */
+export const Reverse: Story = {
+	parameters: { controls: { include: ['variant', 'sizeScale', 'isDisabled'] } },
 	render: args => ({
 		components: { BaseSwitch },
-		setup() {
-			const value = ref(false)
-			return { args, value }
-		},
-		template: '<BaseSwitch v-model="value" v-bind="args" />',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'reverse', 'onUpdate:modelValue']),
+			settings: ref({ email: true, push: false, digest: true }),
+		}),
+		template: `
+			<div class="story-stack story-narrow">
+				<BaseSwitch v-bind="props" v-model="settings.email" reverse label="Письма о заказах" />
+				<BaseSwitch v-bind="props" v-model="settings.push" reverse label="Push-уведомления" />
+				<BaseSwitch v-bind="props" v-model="settings.digest" reverse label="Еженедельная подборка" />
+			</div>
+		`,
 	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.sw-root')).toBeTruthy()
+	play: async ({ canvas }) => {
+		const toggle = canvas.getByRole('switch', { name: 'Письма о заказах' })
+		const label = canvas.getByText('Письма о заказах')
+		await expect(toggle.getBoundingClientRect().left).toBeGreaterThan(label.getBoundingClientRect().right)
+	},
+}
+
+/** Слот `label` заменяет подпись своей разметкой, слот `default` добавляет текст после подписи. */
+export const Slots: Story = {
+	parameters: { controls: { include: ['variant', 'sizeScale'] } },
+	render: args => ({
+		components: { BaseSwitch },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'onUpdate:modelValue']), isDark: ref(false) }),
+		template: `
+			<BaseSwitch v-bind="props" v-model="isDark">
+				<template #label><strong>Тёмная тема</strong></template>
+				<span style="display: block; color: var(--rise-text-muted);">Применится ко всем устройствам аккаунта</span>
+			</BaseSwitch>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const toggle = canvas.getByRole('switch', { name: /Тёмная тема/ })
+		await userEvent.click(canvas.getByText('Тёмная тема'))
+		await expect(toggle).toBeChecked()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/** Клавиатура: Tab ставит фокус (видно кольцо вокруг трека), Space включает и выключает. */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, canvasElement, userEvent, args }) => {
+		const toggle = canvas.getByRole('switch', { name: 'Уведомления по email' })
+		await tabTo(toggle, userEvent)
+		const track = canvasElement.querySelector('.base-switch__slider') as HTMLElement
+		await expect(getComputedStyle(track).outlineStyle).toBe('solid')
+		await userEvent.keyboard(' ')
+		await expect(toggle).toBeChecked()
+		await userEvent.keyboard(' ')
+		await expect(toggle).not.toBeChecked()
+		await expect(args.onChange).toHaveBeenLastCalledWith(false)
 	},
 }

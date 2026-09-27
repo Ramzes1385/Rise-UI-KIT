@@ -1,182 +1,151 @@
+// BaseTooltip. Короткая подсказка к элементу: инвертированный фон, текст 12/16, отступ 4/8, радиус sm, стрелка того же цвета.
+// Подсказка телепортируется в body, поэтому вариант, масштаб и кастомный цвет задаются на ней самой, а не на обёртке.
+// Варианты: default — инвертированный фон; soft — мягкий фон основного цвета с рамкой; outline — фон страницы с рамкой;
+// shadow — фон страницы с рамкой и тенью; ghost — приподнятый нейтральный фон без стрелки.
+
 .base-tooltip {
 	position: relative;
 	display: inline-block;
 }
 
 .base-tooltip-popup {
-	position: fixed;
-	@include custom-bg(background-color, var(--color-primary));
-	@include custom-text(color, var(--color-white));
-	padding: sz(6px) sz(12px);
-	border-radius: sz(4px);
-	white-space: pre-wrap;
-	max-width: sz(280px);
-	overflow-wrap: break-word;
-	z-index: 9999;
-	pointer-events: none;
-	will-change: transform, opacity;
-  display: flex;
+	// Фон и рамка — переменные: варианты перекрашивают через них подсказку, а стрелка повторяет её цвета.
+	@include custom-bg(--tooltip-bg, var(--rise-bg-inverted));
+	--tooltip-border: transparent;
+	// Зазор между стрелкой и триггером сверх отступа позиционирования (8px).
+	--tooltip-offset: #{sz(2px)};
 
-	/* BaseText внутри тултипа наследует цвет и размер */
+	position: fixed;
+	z-index: 9999;
+	display: flex;
+	box-sizing: border-box;
+	max-width: sz(280px);
+	padding: sz(4px) sz(8px);
+	border-radius: sz(var(--rise-radius-sm));
+	background-color: var(--tooltip-bg);
+	// Рамка вариантов — внутренней тенью: подсказки с рамкой и без неё одной высоты (24px).
+	box-shadow: inset 0 0 0 1px var(--tooltip-border);
+	@include custom-text(color, var(--rise-text-inverted));
+	@include text-size(xs);
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+	pointer-events: none;
+
+	// Текст — BaseText: наследует цвет и кегль подсказки.
 	.base-text {
 		color: inherit;
-		font-size: sz(12px);
+		font-size: inherit;
+		line-height: inherit;
 	}
 
-	/* Финальные трансформы по позициям */
-	&--top {
-		transform: translate(-50%, -120%);
-	}
-
-	&--bottom {
-		transform: translate(-50%, 20%);
-	}
-
-	&--left {
-		transform: translate(-100%, -50%);
-	}
-
-	&--right {
-		transform: translate(0%, -50%);
-	}
-
-	/* Стрелка */
+	// Стрелка — повёрнутый квадрат цвета подсказки: видны две стороны рамки, обращённые к триггеру.
+	// z-index: -1 внутри контекста наложения подсказки: стрелка поверх фона, но под текстом.
 	&::after {
 		content: '';
 		position: absolute;
-		border: sz(5px) solid transparent;
+		z-index: -1;
+		box-sizing: border-box;
+		width: sz(8px);
+		height: sz(8px);
+		border: 1px solid var(--tooltip-border);
+		background-color: var(--tooltip-bg);
 	}
 
-	/* Стрелка сверху (тултип снизу) */
-	&--bottom::after {
-		bottom: calc(100% - 1px * var(--size-scale, 1));
-		left: 50%;
-		transform: translateX(-50%);
-		@include custom-bg(border-bottom-color, var(--color-primary));
-	}
-
-	/* Стрелка снизу (тултип сверху) */
-	&--top::after {
-		top: calc(100% - 1px * var(--size-scale, 1));
-		left: 50%;
-		transform: translateX(-50%);
-		@include custom-bg(border-top-color, var(--color-primary));
-	}
-
-	/* Стрелка справа (тултип слева) */
-	&--left::after {
-		left: calc(100% - 1px * var(--size-scale, 1));
-		top: 50%;
-		transform: translateY(-50%);
-		@include custom-bg(border-left-color, var(--color-primary));
-	}
-
-	/* Стрелка слева (тултип справа) */
-	&--right::after {
-		right: calc(100% - 1px * var(--size-scale, 1));
-		top: 50%;
-		transform: translateY(-50%);
-		@include custom-bg(border-right-color, var(--color-primary));
-	}
-
-	// Варианты
-	&--ghost {
-		@include custom-bg(background-color, var(--color-surface-muted));
-		@include custom-text(color, var(--color-text));
+	// Позиция: координаты задают точку у триггера, translate ставит подсказку по нужную сторону от неё.
+	&--top {
+		translate: -50% calc(-100% - var(--tooltip-offset));
 
 		&::after {
-			display: none;
+			top: 100%;
+			left: 50%;
+			border-top-color: transparent;
+			border-left-color: transparent;
+			transform: translate(-50%, -50%) rotate(45deg);
 		}
+	}
+
+	&--bottom {
+		translate: -50% var(--tooltip-offset);
+
+		&::after {
+			bottom: 100%;
+			left: 50%;
+			border-right-color: transparent;
+			border-bottom-color: transparent;
+			transform: translate(-50%, 50%) rotate(45deg);
+		}
+	}
+
+	&--left {
+		translate: calc(-100% - var(--tooltip-offset)) -50%;
+
+		&::after {
+			top: 50%;
+			left: 100%;
+			border-bottom-color: transparent;
+			border-left-color: transparent;
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+	}
+
+	&--right {
+		translate: var(--tooltip-offset) -50%;
+
+		&::after {
+			top: 50%;
+			right: 100%;
+			border-top-color: transparent;
+			border-right-color: transparent;
+			transform: translate(50%, -50%) rotate(45deg);
+		}
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--soft {
+		@include custom-bg(--tooltip-bg, var(--rise-primary-soft));
+		--tooltip-border: var(--rise-primary-border);
+
+		@include custom-text(color, var(--rise-primary-text));
 	}
 
 	&--outline {
-		@include custom-bg(background-color, var(--color-bg));
-		@include custom-text(color, var(--color-text));
-		border: 1px solid var(--color-border);
+		@include custom-bg(--tooltip-bg, var(--rise-bg));
+		--tooltip-border: var(--rise-border-accented);
+
+		@include custom-text(color, var(--rise-text));
+	}
+
+	&--shadow {
+		@include custom-bg(--tooltip-bg, var(--rise-bg));
+		--tooltip-border: var(--rise-border);
+
+		@include custom-text(color, var(--rise-text));
+		box-shadow:
+			inset 0 0 0 1px var(--tooltip-border),
+			var(--rise-shadow-md);
+	}
+
+	&--ghost {
+		@include custom-bg(--tooltip-bg, var(--rise-bg-elevated));
+		@include custom-text(color, var(--rise-text));
 
 		&::after {
 			display: none;
 		}
 	}
-
-	&--shadow {
-		box-shadow: var(--shadow-lg);
-	}
-
-	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
-
-		&.base-tooltip-popup--bottom::after {
-			@include custom-bg(border-bottom-color, var(--color-primary-soft));
-		}
-
-		&.base-tooltip-popup--top::after {
-			@include custom-bg(border-top-color, var(--color-primary-soft));
-		}
-
-		&.base-tooltip-popup--left::after {
-			@include custom-bg(border-left-color, var(--color-primary-soft));
-		}
-
-		&.base-tooltip-popup--right::after {
-			@include custom-bg(border-right-color, var(--color-primary-soft));
-		}
-	}
 }
 
-/* === Vue Transition: tooltip-top === */
-.tooltip-top-enter-active,
-.tooltip-top-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
+// ─── Появление: короткое проявление ────────────────────────────────────────────
+
+.base-tooltip-enter-active,
+.base-tooltip-leave-active {
+	transition-property: opacity;
+	transition-duration: var(--rise-duration-fast);
+	transition-timing-function: var(--rise-ease-out);
 }
 
-.tooltip-top-enter-from,
-.tooltip-top-leave-to {
+.base-tooltip-enter-from,
+.base-tooltip-leave-to {
 	opacity: 0;
-	transform: translate(-50%, calc(-100% + 4px));
-}
-
-/* === Vue Transition: tooltip-bottom === */
-.tooltip-bottom-enter-active,
-.tooltip-bottom-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-bottom-enter-from,
-.tooltip-bottom-leave-to {
-	opacity: 0;
-	transform: translateX(-50%) translateY(-4px);
-}
-
-/* === Vue Transition: tooltip-left === */
-.tooltip-left-enter-active,
-.tooltip-left-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-left-enter-from,
-.tooltip-left-leave-to {
-	opacity: 0;
-	transform: translate(calc(-100% + 4px), -50%);
-}
-
-/* === Vue Transition: tooltip-right === */
-.tooltip-right-enter-active,
-.tooltip-right-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-right-enter-from,
-.tooltip-right-leave-to {
-	opacity: 0;
-	transform: translateX(-4px) translateY(-50%);
 }

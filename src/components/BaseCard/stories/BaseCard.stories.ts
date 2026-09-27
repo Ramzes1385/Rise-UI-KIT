@@ -1,375 +1,462 @@
 /**
- * Stories для компонента BaseCard.
- * Демонстрирует все вариации, размеры и слоты.
+ * BaseCard — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет, отступы) →
+ * содержимое (действия в шапке, подвал, своя шапка, длинный текст) → высота (прокрутка и обрезка) →
+ * сценарий «интерактивные карточки» с клавиатурой.
  */
 
-import { expect, within } from 'storybook/test'
-import { UI_TEXT } from '@constants'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { expect } from 'storybook/test'
+import { ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, STORY_USERS, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
 import { CARD_VARIANTS } from '../model/BaseCard.types'
 import BaseCard from '../ui/BaseCard.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseCard> = {
-	title: 'UI/BaseCard',
+const BODY = 'Выручка выросла на 12% к апрелю, средний чек — на 4%. Больше всего заказов пришло из мобильного приложения.'
+
+const LONG_BODY = [
+	'Команда закрыла 48 задач из 52 запланированных. Перенесены задачи по интеграции с платёжным сервисом:',
+	'партнёр обновляет API и обещает стабильную версию к концу месяца. Дизайн новой главной страницы согласован,',
+	'вёрстка начнётся на следующей неделе. Отдел поддержки отметил рост обращений по доставке — нужна отдельная',
+	'статья в справочном центре. Бюджет спринта израсходован на 91%, резерв остаётся на тестирование.',
+].join(' ')
+
+const PROJECTS = [
+	{ id: 1, title: 'Ребрендинг', subtitle: '12 задач · до 30 мая' },
+	{ id: 2, title: 'Мобильное приложение', subtitle: '28 задач · до 15 июня' },
+	{ id: 3, title: 'Справочный центр', subtitle: '5 задач · до 1 июня' },
+]
+
+const meta = {
+	title: 'Element/BaseCard',
 	component: BaseCard,
-
-	argTypes: buildArgTypes({
-		props: {
-			title: { control: 'text' },
-			subtitle: { control: 'text' },
-			isHoverable: { control: 'boolean' },
-			variant: {
-				control: 'select',
-				options: CARD_VARIANTS,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Поверхность для группы контента: сводка, настройки, превью объекта.',
+					'',
+					'- Шапка — `title` и `subtitle` (или слот `header`) и слот `actions` справа; тело — слот по умолчанию; подвал — слот `footer`.',
+					'- Варианты: `default` — рамка, `outline` — рамка темнее, `soft` — мягкий фон, `ghost` — без фона и рамки, `shadow` — рамка и тень.',
+					'- Отступы секций — 16px 20px; проп `padding` меняет их (например, `0` для картинки во всю ширину).',
+					'- `height` + `scroll` — тело прокручивается, шапка и подвал на месте; `height` без `scroll` обрезает текст до трёх строк.',
+					'- `isHoverable` — для кликабельных карточек: рамка и тень при наведении, кольцо фокуса. Фокус и клавиатуру',
+					'  (`tabindex="0"`, Enter) добавляет приложение.',
+				].join('\n'),
 			},
-			padding: {
-				control: 'object',
-				description:
-					'Отступы. Число (px): Y = значение, X = значение × 2. Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси. По умолчанию 24 → 24px 48px',
-			},
-			height: { control: 'text' },
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%)',
-			},
-			scroll: { control: 'boolean' },
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: CARD_VARIANTS }),
+		title: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		subtitle: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		padding: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		scroll: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isHoverable: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		default: slotArgType('Содержимое карточки'),
+		header: { control: false },
+		actions: { control: false },
+		footer: { control: false },
+	},
 	args: {
-		title: 'Карточка',
-		subtitle: 'Описание карточки',
-		isHoverable: false,
+		title: 'Отчёт за май',
+		subtitle: 'Обновлён 15 мая',
+		default: BODY,
 		variant: 'default',
-		padding: 24,
-		sizeScale: 100,
+		isHoverable: false,
 		scroll: false,
+		sizeScale: 100,
 	},
-}
-
-export default meta
-type Story = StoryObj<typeof BaseCard>
-/** Базовая карточка */
-export const Default: Story = {
-	args: {
-		default: 'Содержимое карточки',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Содержимое карточки')).toBeInTheDocument()
-	},
-}
-/** Все варианты */
-export const Variants: Story = {
 	render: args => ({
 		components: { BaseCard },
-		setup() {
-			return { args, CARD_VARIANTS }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), args }),
+		template: '<div class="story-medium"><BaseCard v-bind="props">{{ args.default }}</BaseCard></div>',
+	}),
+} satisfies Meta<typeof BaseCard>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: меняйте props в панели Controls. Отступы секций по умолчанию — 16px 20px. */
+export const Default: Story = {
+	play: async ({ canvas }) => {
+		const title = canvas.getByRole('heading', { level: 3, name: 'Отчёт за май' })
+		await expect(getComputedStyle(title).fontSize).toBe('16px')
+		const header = title.closest('.base-card__header') as HTMLElement
+		await expect(getComputedStyle(header).padding).toBe('16px 20px')
+	},
+}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Пять вариантов оформления. `soft` и `ghost` — для карточек внутри других поверхностей. */
+export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'isHoverable'] },
+		docs: { source: { code: ['default', 'outline', 'soft', 'ghost', 'shadow'].map(variant => `<BaseCard variant="${variant}" title="${variant}">…</BaseCard>`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseCard },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), variants: ['default', 'outline', 'soft', 'ghost', 'shadow'] }),
 		template: `
-			<div style="display:flex;gap:16px;flex-wrap:wrap;">
-				<BaseCard v-for="v in CARD_VARIANTS"
-					:key="v"
-					v-bind="args"
-					:variant="v"
-					:title="v"
-					style="width:240px;"
-				>
-					Содержимое
+			<div class="story-grid" style="--story-grid-min: 240px;">
+				<BaseCard v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :title="variant" subtitle="Обновлён 15 мая">
+					Выручка выросла на 12% к апрелю.
+				</BaseCard>
+			</div>
+		`,
+	}),
+}
+
+/** Размеры через `sizeScale`: отступы, текст и радиус масштабируются вместе. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseCard :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseCard>`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseCard },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), presets: SIZE_PRESETS, sizeLabel }),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
+				<BaseCard v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :title="sizeLabel(preset)" subtitle="Обновлён 15 мая">
+					Выручка выросла на 12%.
+				</BaseCard>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const title = canvas.getByRole('heading', { name: 'xl · 125' })
+		await expect(getComputedStyle(title).fontSize).toBe('20px')
+		await expect(getComputedStyle(title.closest('.base-card__header') as HTMLElement).padding).toBe('20px 25px')
+	},
+}
+
+/**
+ * Кастомный цвет через `color`: фон и текст карточки, заголовок и подзаголовок берут цвет текста.
+ * Вложенные компоненты (кнопка в подвале) цвет карточки не наследуют — у них свои цвета.
+ */
+export const CustomColor: Story = {
+	args: {
+		title: 'Тариф «Команда»',
+		subtitle: 'До 20 участников',
+		color: { bg: { base: '#6d28d9' }, text: { base: '#ffffff' } },
+	},
+	render: args => ({
+		components: { BaseCard, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: `
+			<div class="story-narrow">
+				<BaseCard v-bind="props">
+					Общий календарь, отчёты и приоритетная поддержка.
+					<template #footer>
+						<BaseButton variant="shadow">Подключить</BaseButton>
+					</template>
+				</BaseCard>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const title = canvas.getByRole('heading', { name: 'Тариф «Команда»' })
+		const card = title.closest('.base-card') as HTMLElement
+		await expect(getComputedStyle(card).backgroundColor).toBe('rgb(109, 40, 217)')
+		await expect(getComputedStyle(title).color).toBe('rgb(255, 255, 255)')
+		// Цвет карточки не наследуется кнопкой в подвале: у неё собственный фон варианта shadow
+		const button = canvas.getByRole('button', { name: 'Подключить' })
+		await expect(getComputedStyle(button).backgroundColor).not.toBe('rgb(109, 40, 217)')
+	},
+}
+
+/**
+ * Отступы `padding`: без пропа — 16px 20px из стилей; число — Y = n, X = 2n;
+ * объект `{ x, y, top, right, bottom, left }` задаёт стороны напрямую; `0` — картинка во всю ширину.
+ */
+export const Padding: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseCard title="Из стилей">…</BaseCard>',
+					'<BaseCard :padding="8" title="8 → 8px 16px">…</BaseCard>',
+					'<BaseCard :padding="{ x: 24, y: 12 }" title="x: 24, y: 12">…</BaseCard>',
+					'<BaseCard :padding="0"><img :src="cover" alt="…" /></BaseCard>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseCard },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), cover: placeholderImage({ width: 480, height: 240, hue: 200 }) }),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
+				<BaseCard v-bind="props" title="Из стилей">16px 20px</BaseCard>
+				<BaseCard v-bind="props" :padding="8" title="8 → 8px 16px">Компактная карточка</BaseCard>
+				<BaseCard v-bind="props" :padding="{ x: 24, y: 12 }" title="x: 24, y: 12">Отступы по осям</BaseCard>
+				<BaseCard v-bind="props" :padding="0">
+					<img :src="cover" alt="Горы в тумане" style="display: block; width: 100%;" />
 				</BaseCard>
 			</div>
 		`,
 	}),
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('default')).toBeInTheDocument()
-		expect(canvas.getByText('outline')).toBeInTheDocument()
+		const [themed, numeric, , edgeToEdge] = canvasElement.querySelectorAll<HTMLElement>('.base-card')
+		await expect(themed.style.getPropertyValue('--card-pad-top')).toBe('')
+		await expect(numeric.style.getPropertyValue('--card-pad-left')).toBe('16px')
+		await expect(getComputedStyle(edgeToEdge.querySelector('.base-card__body') as HTMLElement).padding).toBe('0px')
 	},
 }
-/** Интерактивная (с hover) */
-export const Hoverable: Story = {
-	args: {
-		isHoverable: true,
-		default: 'Наведите курсор',
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Слот `actions` — кнопки справа в шапке. Кнопки высотой 32px стоят на строке заголовка и не увеличивают шапку. */
+export const WithActions: Story = {
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseCard title="Отчёт за май" subtitle="Обновлён 15 мая">',
+					'  <template #actions>',
+					'    <BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Скачать</BaseButton>',
+					'    <BaseButton variant="ghost" aria-label="Ещё" :padding="{ x: 5, y: 5 }"><BaseIcon name="menu" /></BaseButton>',
+					'  </template>',
+					'  …',
+					'</BaseCard>',
+				].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		const card = canvasElement.querySelector('.base-card')
-		expect(card?.classList.contains('base-card--hoverable')).toBe(true)
-	},
-}
-/** С прокруткой и фиксированной высотой */
-export const Scrollable: Story = {
-	args: {
-		title: 'Длинный контент',
-		subtitle: 'Карточка с прокруткой',
-		height: '300px',
-		scroll: true,
-		default: `
-			<div style="height: 600px; background: linear-gradient(to bottom, var(--color-primary-soft), var(--color-accent)); padding: 20px; border-radius: 8px; color: white;">
-				Очень длинный контент для проверки прокрутки...
-				<br><br>
-				Scroll me!
+	render: args => ({
+		components: { BaseCard, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args), args }),
+		template: `
+			<div class="story-medium">
+				<BaseCard v-bind="props">
+					<template #actions>
+						<BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Скачать</BaseButton>
+						<BaseButton variant="ghost" aria-label="Ещё" :padding="{ x: 5, y: 5 }"><BaseIcon name="menu" /></BaseButton>
+					</template>
+					{{ args.default }}
+				</BaseCard>
 			</div>
 		`,
-	},
-	play: async ({ canvasElement }) => {
-		const card = canvasElement.querySelector('.base-card')
-		expect(card?.classList.contains('base-card--scroll')).toBe(true)
-	},
-}
-/** С кастомным padding */
-export const CustomPadding: Story = {
-	args: {
-		title: 'Маленькие отступы',
-		padding: 8,
-		default: 'Контент с padding: 8px (Y) и 16px (X)',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Маленькие отступы')).toBeInTheDocument()
-	},
-}
-/** Объектный padding: оси x/y и точечные стороны переопределяют оси */
-export const ObjectPadding: Story = {
-	args: {
-		title: 'Объектный padding',
-		padding: { x: 32, y: 12, top: 4 },
-		default: 'padding: { x: 32, y: 12, top: 4 }',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const root = canvas.getByText('Объектный padding').closest('.base-card')
-		if (!(root instanceof HTMLElement)) throw new Error('Карточка не найдена')
-		expect(root.style.getPropertyValue('--card-pad-top')).toBe('4px')
-		expect(root.style.getPropertyValue('--card-pad-bottom')).toBe('12px')
-		expect(root.style.getPropertyValue('--card-pad-left')).toBe('32px')
-	},
-}
-/** С действиями в заголовке */
-export const WithActions: Story = {
-	render: args => ({
-		components: { BaseCard },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseCard v-bind="args" title="Заголовок" subtitle="Подзаголовок">
-				<template #actions>
-					<button style="background:none;border:none;cursor:pointer;font-size:18px;" title="Меню">⋮</button>
-				</template>
-				Контент карточки с действиями
-			</BaseCard>
-		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Заголовок')).toBeInTheDocument()
-		expect(canvas.getByTitle('Меню')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const download = canvas.getByRole('button', { name: 'Скачать' })
+		const header = download.closest('.base-card__header') as HTMLElement
+		await expect(header.getBoundingClientRect().height).toBe(81)
+		await expect(canvas.getByRole('button', { name: 'Ещё' })).toBeVisible()
 	},
 }
-/** С футером */
+
+/** Слот `footer` — подвал с действиями, отделён линией. */
 export const WithFooter: Story = {
-	render: args => ({
-		components: { BaseCard },
-		setup() {
-			return { args }
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseCard title="Уведомления">',
+					'  …',
+					'  <template #footer>',
+					'    <BaseButton variant="outline">Отмена</BaseButton>',
+					'    <BaseButton>Сохранить</BaseButton>',
+					'  </template>',
+					'</BaseCard>',
+				].join('\n'),
+			},
 		},
-		template: `
-			<BaseCard v-bind="args" title="Карточка с футером">
-				Основное содержимое
-				<template #footer>
-					<div style="display:flex;justify-content:flex-end;gap:8px;">
-						<button style="padding:6px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">${UI_TEXT.CANCEL}</button>
-						<button style="padding:6px 16px;background:var(--color-accent);color:white;border:none;border-radius:var(--border-radius-base);cursor:pointer;">ОК</button>
-					</div>
-				</template>
-			</BaseCard>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Карточка с футером')).toBeInTheDocument()
-		expect(canvas.getByText(UI_TEXT.CANCEL)).toBeInTheDocument()
-		expect(canvas.getByText('ОК')).toBeInTheDocument()
 	},
-}
-/** Масштабирование sizeScale */
-export const SizeScale: Story = {
+	args: { title: 'Уведомления', subtitle: 'Письма о задачах и комментариях', default: 'Присылать сводку раз в день, в 9:00 по московскому времени.' },
 	render: args => ({
-		components: { BaseCard },
-		setup() {
-			return { args }
-		},
+		components: { BaseCard, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args), args }),
 		template: `
-			<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
-				<BaseCard v-for="scale in [75, 100, 150]" :key="scale"
-					v-bind="args"
-					:size-scale="scale"
-					:title="scale + '%'"
-					subtitle="Масштабирование"
-					style="width:260px;"
-				>
-					<template #default="{ sizeScale }">
-						<p>sizeScale: {{ sizeScale }}</p>
-						<div :style="{ fontSize: (16 * sizeScale / 100) + 'px' }">
-							Этот текст тоже масштабируется через проп
+			<div class="story-medium">
+				<BaseCard v-bind="props">
+					{{ args.default }}
+					<template #footer>
+						<div class="story-row" style="justify-content: flex-end; gap: 8px;">
+							<BaseButton variant="outline">Отмена</BaseButton>
+							<BaseButton>Сохранить</BaseButton>
 						</div>
 					</template>
 				</BaseCard>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('75%')).toBeInTheDocument()
-		expect(canvas.getByText('150%')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const save = canvas.getByRole('button', { name: 'Сохранить' })
+		const footer = save.closest<HTMLElement>('.base-card__footer')
+		await expect(footer).not.toBeNull()
+		// Подвал — не ориентир contentinfo: несколько карточек на странице не дают дублей ориентиров
+		await expect(footer?.tagName).toBe('DIV')
 	},
 }
-/** С усечением (высота без скролла) */
-export const Truncated: Story = {
-	args: {
-		title: 'Усеченная карточка',
-		subtitle: 'Фиксированная высота без скролла',
-		height: '150px',
-		scroll: false,
-		default: 'Контент усеченной карточки',
-	},
-	play: async ({ canvasElement }) => {
-		const card = canvasElement.querySelector('.base-card')
-		expect(card?.classList.contains('base-card--truncate')).toBe(true)
-	},
-}
-/** С кастомным слотом header */
+
+/** Слот `header` заменяет заголовок и подзаголовок: например, автор записи с аватаром. */
 export const CustomHeader: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseCard>',
+					'  <template #header>',
+					'    <img :src="user.avatar" alt="" class="avatar" />',
+					'    <div>{{ user.name }} · {{ user.role }}</div>',
+					'  </template>',
+					'  …',
+					'</BaseCard>',
+				].join('\n'),
+			},
+		},
+	},
 	render: args => ({
 		components: { BaseCard },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), user: STORY_USERS[0] }),
 		template: `
-			<BaseCard v-bind="args">
-				<template #header>
-					<div class="custom-header" style="background: var(--color-primary-soft); padding: 12px; border-radius: 4px; width: 100%;">
-						Кастомный заголовок из слота
-					</div>
-				</template>
-				Контент карточки с кастомным заголовком
-			</BaseCard>
+			<div class="story-medium">
+				<BaseCard v-bind="props">
+					<template #header>
+						<div class="story-row" style="gap: 12px;">
+							<img :src="user.avatar" alt="" width="40" height="40" style="border-radius: var(--rise-radius-full);" />
+							<div>
+								<div style="color: var(--rise-text-highlighted); font-weight: var(--rise-font-weight-medium);">{{ user.name }}</div>
+								<div style="color: var(--rise-text-muted);">{{ user.role }}</div>
+							</div>
+						</div>
+					</template>
+					Подготовила макеты главной страницы. Жду комментариев до пятницы.
+				</BaseCard>
+			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Кастомный заголовок из слота')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText('Анна Смирнова')).toBeVisible()
+		await expect(canvas.queryByRole('heading')).toBeNull()
 	},
 }
-/** Без заголовка (без шапки) */
-export const NoHeader: Story = {
-	args: {
-		title: '',
-		subtitle: '',
-		default: 'Карточка без шапки',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Карточка без шапки')).toBeInTheDocument()
-		const header = canvasElement.querySelector('.base-card__header')
-		expect(header).not.toBeInTheDocument()
-	},
-}
-/** Кастомный цвет */
-export const CustomColor: Story = {
-	args: {
-		title: 'Кастомный цвет',
-		default: 'Карточка с кастомным цветом',
-		color: {
-			bg: {
-				base: '#ff0000',
-				hover: '#cc0000',
-				active: '#990000',
-				focus: '#ff0000',
-			},
-			text: {
-				base: '#ffffff',
-				hover: '#ffffff',
-				active: '#ffffff',
-				focus: '#ffffff',
-			},
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Кастомный цвет')).toBeInTheDocument()
-	},
-}
-/** Длинный контент — проверка a11y-дерева с длинным текстом */
+
+/** Длинные заголовок, подзаголовок и текст переносятся по словам и не выходят за ширину карточки (здесь — 360px). */
 export const LongContent: Story = {
 	args: {
-		title:
-			'Очень длинный заголовок карточки который превышает двести символов для проверки того что a11y-дерево корректно обрабатывает длинный контент без усечения и без потери семантики при переполнении контента внутри компонента карточки',
-		subtitle:
-			'Очень длинное описание карточки которое превышает триста символов и предназначено для проверки того что компонент корректно обрабатывает длинный контент без потери семантики и доступности в a11y-дереве а также что текст не обрезается и остаётся полностью доступным для вспомогательных технологий и скринридеров при чтении длинных сообщений внутри карточки',
-		default: 'Содержимое карточки с очень длинным контентом для проверки доступности',
+		title: 'Итоги квартала по всем проектам отдела маркетинга и продаж',
+		subtitle: 'Сводка обновляется автоматически каждый понедельник в 9:00 по московскому времени',
+		default: LONG_BODY,
 	},
-	play: async ({ canvasElement }) => {
-		const title = canvasElement.querySelector('.base-card__title')
-		expect(title).toBeInTheDocument()
-		expect(title?.textContent?.length).toBeGreaterThan(200)
-		const subtitle = canvasElement.querySelector('.base-card__subtitle')
-		expect(subtitle?.textContent?.length).toBeGreaterThan(300)
-	},
-}
-/** Только заголовок — покрывает ложные ветки `v-if="subtitle"` и `v-if="$slots.actions"` */
-export const TitleOnly: Story = {
-	args: {
-		title: 'Только заголовок',
-		subtitle: '',
-		default: 'Контент без подзаголовка и без действий',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Только заголовок')).toBeInTheDocument()
-		const subtitle = canvasElement.querySelector('.base-card__subtitle')
-		expect(subtitle).not.toBeInTheDocument()
-		const actions = canvasElement.querySelector('.base-card__actions')
-		expect(actions).not.toBeInTheDocument()
+	render: args => ({
+		components: { BaseCard },
+		setup: () => ({ props: useArgsWithoutSlots(args), args }),
+		template: '<div class="story-narrow"><BaseCard v-bind="props">{{ args.default }}</BaseCard></div>',
+	}),
+	play: async ({ canvas }) => {
+		const title = canvas.getByRole('heading', { level: 3 })
+		const card = title.closest('.base-card') as HTMLElement
+		await expect(card.getBoundingClientRect().width).toBeLessThanOrEqual(360)
+		await expect(card.scrollWidth).toBeLessThanOrEqual(card.clientWidth)
+		await expect(title.getBoundingClientRect().height).toBeGreaterThan(24)
 	},
 }
-/** Только подзаголовок — покрывает ложную ветку `v-if="title"` (title пустой, header рендерится из-за subtitle) */
-export const SubtitleOnly: Story = {
-	args: {
-		title: '',
-		subtitle: 'Только подзаголовок без заголовка',
-		default: 'Контент без заголовка',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Только подзаголовок без заголовка')).toBeInTheDocument()
-		const title = canvasElement.querySelector('.base-card__title')
-		expect(title).not.toBeInTheDocument()
-		const header = canvasElement.querySelector('.base-card__header')
-		expect(header).toBeInTheDocument()
-	},
-}
-/** Кастомные CSS-классы через customClass */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: {
-			root: 'crd-root',
-			header: 'crd-header',
-			title: 'crd-title',
-			subtitle: 'crd-subtitle',
-			actions: 'crd-actions',
-			body: 'crd-body',
-			footer: 'crd-footer',
+
+// ─── Высота ────────────────────────────────────────────────────────────────────
+
+/**
+ * Фиксированная высота `height`. Слева — со `scroll`: тело прокручивается, шапка на месте; тело получает фокус
+ * по Tab, чтобы его можно было прокрутить стрелками. Справа — без `scroll`: текст тела обрезается до трёх строк.
+ */
+export const FixedHeight: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: ['<BaseCard title="Со scroll" height="240px" scroll>…</BaseCard>', '<BaseCard title="Без scroll" height="240px">…</BaseCard>'].join('\n'),
+			},
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.crd-root')).toBeTruthy()
+	render: args => ({
+		components: { BaseCard },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle', 'height', 'scroll']), text: LONG_BODY }),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 260px; align-items: start;">
+				<BaseCard v-bind="props" title="Со scroll" subtitle="Тело прокручивается" height="240px" scroll>{{ text }}</BaseCard>
+				<BaseCard v-bind="props" title="Без scroll" subtitle="Текст — три строки" height="240px">{{ text }}</BaseCard>
+			</div>
+		`,
+	}),
+	play: async ({ canvasElement, userEvent }) => {
+		const [scrolled, truncated] = canvasElement.querySelectorAll<HTMLElement>('.base-card')
+		await expect(scrolled.getBoundingClientRect().height).toBe(240)
+		const scrolledBody = scrolled.querySelector('.base-card__body') as HTMLElement
+		await expect(scrolledBody.scrollHeight).toBeGreaterThan(scrolledBody.clientHeight)
+		await tabTo(scrolledBody, userEvent)
+		await expect(getComputedStyle(truncated.querySelector('.base-card__body') as HTMLElement).webkitLineClamp).toBe('3')
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Интерактивные карточки: `isHoverable` даёт курсор, рамку и тень при наведении и кольцо фокуса.
+ * Фокус и клавиатуру добавляет приложение: `tabindex="0"`, `role="link"`, обработчики click и Enter.
+ */
+export const Hoverable: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseCard',
+					'  v-for="project in projects"',
+					'  :key="project.id"',
+					'  is-hoverable',
+					'  tabindex="0"',
+					'  role="link"',
+					'  :title="project.title"',
+					'  :subtitle="project.subtitle"',
+					'  @click="open(project)"',
+					'  @keydown.enter="open(project)" />',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseCard },
+		setup: () => {
+			const opened = ref('')
+			return { props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle', 'isHoverable']), projects: PROJECTS, opened }
+		},
+		template: `
+			<div class="story-stack">
+				<div class="story-grid" style="--story-grid-min: 220px;">
+					<BaseCard
+						v-for="project in projects"
+						:key="project.id"
+						v-bind="props"
+						is-hoverable
+						tabindex="0"
+						role="link"
+						:title="project.title"
+						:subtitle="project.subtitle"
+						@click="opened = project.title"
+						@keydown.enter="opened = project.title" />
+				</div>
+				<p class="story-label" role="status">{{ opened ? 'Открыт проект «' + opened + '»' : 'Проект не выбран' }}</p>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const [first, second] = canvas.getAllByRole('link')
+		await tabTo(first, userEvent)
+		await expect(getComputedStyle(first).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(canvas.getByRole('status')).toHaveTextContent('Открыт проект «Ребрендинг»')
+		await userEvent.click(second)
+		await expect(canvas.getByRole('status')).toHaveTextContent('Открыт проект «Мобильное приложение»')
 	},
 }

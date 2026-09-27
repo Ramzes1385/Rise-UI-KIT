@@ -1,45 +1,29 @@
 /**
- * Visual regression тесты для BaseImage.
- * BaseImage рендерит <img src="https://placehold.co/..."> — без networkidle скриншот
- * захватывается до загрузки удалённой картинки, и baseline остаётся 1248x20 пустым.
+ * Visual regression BaseImage: ключевые stories в светлой и тёмной теме.
+ * Изображения — SVG data URI из фикстур stories: снимки не зависят от сети. Галерея снимается с открытым
+ * просмотром (телепорт в body), поэтому для неё — вся страница.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baseimage'
-const STORIES = ['default', 'fits', 'border-radii', 'dark-theme']
+const STORIES = ['fits', 'border-radius', 'custom-color', 'with-error'] as const
+const PAGE_STORIES = ['gallery'] as const
 
-for (const story of STORIES) {
-	test(`BaseImage — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`, {
-			waitUntil: 'domcontentloaded',
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseImage · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseimage--${story}`, { theme, height: 300 })
+				await expectStoryScreenshot(page, `base-image-${story}-${theme}.png`)
+			})
+		}
 
-		const root = page.locator('#storybook-root')
-
-		await expect(root).toBeVisible()
-
-		await page.evaluate(async () => {
-			await document.fonts.ready
-
-			const images = Array.from(document.images)
-
-			await Promise.all(
-				images.map(
-					image =>
-						new Promise<void>(resolve => {
-							if (image.complete) {
-								resolve()
-								return
-							}
-
-							image.onload = () => resolve()
-							image.onerror = () => resolve()
-						}),
-				),
-			)
-		})
-
-		await expect(root).toHaveScreenshot(`base-image--${story}.png`)
+		for (const story of PAGE_STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseimage--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-image-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

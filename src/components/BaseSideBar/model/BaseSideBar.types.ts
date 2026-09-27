@@ -108,7 +108,8 @@ export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VAR
 	 * (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам);
 	 * стороны переопределяют оси.
 	 *
-	 * По умолчанию 12 → 12px 24px
+	 * Отступы применяются к шапке, навигации, телу и подвалу панели.
+	 * По умолчанию — из стилей: 8px сверху/снизу, 12px по бокам (inline-переменные не пишутся).
 	 */
 	padding?: PaddingProp
 

@@ -3,8 +3,28 @@ import { nextTick } from 'vue'
 import {
 	FORMAT_CONFIG,
 	isInsideList,
+	matchTypedInlineTag,
 } from '@utils/editorDomUtils'
 import type { UseToolbarCommandsOptions } from './useToolbarCommands.types'
+
+/**
+ * Горячие клавиши форматирования: Ctrl (⌘ на macOS) + клавиша. Ключ — физическая клавиша (`event.code`),
+ * поэтому сочетания работают в любой раскладке, в том числе в русской.
+ */
+const FORMAT_HOTKEYS: Readonly<Record<string, string | undefined>> = {
+	KeyB: 'bold',
+	KeyI: 'italic',
+	KeyU: 'underline',
+}
+
+/** keyCode, который браузер ставит клавишам во время набора через IME */
+const IME_KEY_CODE = 229
+
+/** Команда форматирования для сочетания клавиш или undefined, если это не горячая клавиша редактора */
+function getHotkeyCommand(event: KeyboardEvent): string | undefined {
+	if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey) return undefined
+	return FORMAT_HOTKEYS[event.code]
+}
 
 /**
  * Composable для выполнения команд редактора: форматирование, блоки, цвет, медиа.
@@ -201,6 +221,15 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 	}
 
 	function handleKeyDown(event: KeyboardEvent): void {
+		// Набор через IME (китайский, японский, корейский): Enter подтверждает вариант, а не переносит строку
+		if (event.isComposing || event.keyCode === IME_KEY_CODE) return
+		const hotkeyCommand = getHotkeyCommand(event)
+		if (hotkeyCommand) {
+			// Браузер сам переключает начертание по Ctrl+B/I/U: без preventDefault команда выполнилась бы дважды
+			event.preventDefault()
+			applyFormat(hotkeyCommand)
+			return
+		}
 		if (event.key !== 'Enter' || event.shiftKey) return
 		const sel = window.getSelection()
 		const node = sel?.anchorNode ?? null
@@ -223,7 +252,10 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 			return
 		}
 		restoreSelection()
-		document.execCommand('insertImage', false, url)
+		// Не insertImage: он не задаёт alt, и скринридер читает вместо изображения адрес blob:…
+		// Изображение без описания помечается как оформление (alt=""), как и в режиме кода; описание автор добавит в HTML.
+		// url — адрес blob:, созданный браузером, кавычек в нём нет.
+		document.execCommand('insertHTML', false, `<img src="${url}" alt="">`)
 		saveSelection()
 		event.target.value = ''
 		onInput()
@@ -247,6 +279,12 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 		onInput()
 	}
 
+	/**
+	 * Превращает только что набранную пару `<b>текст</b>` в элемент форматирования.
+	 * Узлы собираются через DOM API (createElement + textContent), а не через innerHTML:
+	 * текст абзаца мог прийти из modelValue в экранированном виде (`&lt;img onerror…&gt;`)
+	 * или из буфера обмена, и разбор его как HTML исполнил бы чужую разметку.
+	 */
 	function convertInlineHtml(): void {
 		const root = editorRef.value
 		if (!root) return
@@ -258,28 +296,27 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 		if (!node || !(node instanceof Text) || !root.contains(node)) return
 
 		const text = node.textContent ?? ''
+		// Ищем пару только прямо перед кареткой: ввод в любом другом месте абзаца
+		// не должен менять ранее сохранённый текст, где теги записаны буквально
+		const caret = Math.min(sel.anchorOffset, text.length)
+		const typed = matchTypedInlineTag(text.slice(0, caret))
+		if (!typed) return
 
-		if (!/<\/[a-zA-Z][a-zA-Z0-9]*\s*>/.test(text)) return
-
-		const temp = document.createElement('div')
-		temp.innerHTML = text
-
-		/* istanbul ignore next — edge-case innerHTML-парсинга: текст проходит regex `</tag>`, но браузер парсит как одиночный Text-узел; достижимо только при специфической нестандартной разметке */
-		if (temp.childNodes.length === 1 && temp.firstChild instanceof Text && temp.firstChild.textContent === text) return
-
-		const parent = node.parentNode
-		if (!parent) return
-
+		const element = document.createElement(typed.tag)
+		element.textContent = typed.content
 		const fragment = document.createDocumentFragment()
-		while (temp.firstChild) {
-			fragment.appendChild(temp.firstChild)
-		}
+		const textBefore = text.slice(0, typed.start)
+		const textAfter = text.slice(caret)
+		if (textBefore) fragment.appendChild(document.createTextNode(textBefore))
+		fragment.appendChild(element)
+		if (textAfter) fragment.appendChild(document.createTextNode(textAfter))
 
-		parent.replaceChild(fragment, node)
+		// Узел лежит внутри root (проверено выше), поэтому родитель у него есть — replaceWith заменяет его на месте
+		node.replaceWith(fragment)
 
 		const range = document.createRange()
-		range.selectNodeContents(parent)
-		range.collapse(false)
+		range.setStartAfter(element)
+		range.collapse(true)
 		sel.removeAllRanges()
 		sel.addRange(range)
 

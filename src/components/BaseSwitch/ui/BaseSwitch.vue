@@ -14,15 +14,22 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<label class="base-switch__row" :class="classes.row" :for="inputId">
 			<span class="base-switch__wrapper" :class="classes.wrapper">
+				<!-- role="switch" допустим на checkbox (ARIA in HTML); состояние aria-checked браузер берёт из нативного checked,
+					поэтому явный aria-checked не дублируем — он мог бы разойтись с checked.
+					Нативный input лежит поверх трека: он получает клик, фокус и клавиатуру, трек только рисует состояние -->
 				<input
 					:id="inputId"
 					type="checkbox"
+					role="switch"
 					class="base-switch__input"
 					:class="classes.input"
 					:checked="modelValue"
 					:disabled="isDisabled"
+					:aria-required="isRequired ? 'true' : undefined"
+					:aria-invalid="formField.error ? 'true' : undefined"
+					:aria-describedby="formField.error ? errorId : undefined"
 					@change="handleChange" />
-				<span class="base-switch__slider" :class="classes.slider">
+				<span class="base-switch__slider" :class="classes.slider" aria-hidden="true">
 					<span class="base-switch__handle" :class="classes.handle"></span>
 				</span>
 			</span>
@@ -47,13 +54,17 @@
 				<slot />
 			</span>
 		</label>
-		<slot name="error">
-			<FormFieldError
-				:error="formField.error"
-				class-name="base-switch__error-text"
-				:custom-class="classes.errorText"
-				:size-scale="sizeScale" />
-		</slot>
+		<!-- Ошибка — текст или разметка слота error — лежит в обёртке с id: переключатель описан ею через aria-describedby
+			в обоих случаях. Без ошибки обёртка пуста и скрыта (:empty), лишнего отступа нет -->
+		<div :id="errorId" class="base-switch__error">
+			<slot name="error">
+				<FormFieldError
+					:error="formField.error"
+					class-name="base-switch__error-text"
+					:custom-class="classes.errorText"
+					:size-scale="sizeScale" />
+			</slot>
+		</div>
 	</div>
 </template>
 
@@ -76,7 +87,9 @@ const props = withDefaults(defineProps<BaseSwitchProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
+/** id переключателя и обёртки ошибки: подпись связана через for, ошибка (текст error или слот error) — через aria-describedby */
 const inputId = useId()
+const errorId = `${inputId}-error`
 const rootRef = ref<HTMLElement | null>(null)
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'])
 

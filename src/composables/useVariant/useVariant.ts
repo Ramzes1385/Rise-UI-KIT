@@ -1,5 +1,6 @@
 /** Composable: управление вариантом отображения компонента (БЭМ-модификатор, CSS-переменная) */
 import { computed } from 'vue'
+import { DEFAULT_VARIANT } from '@constants'
 import type { UseVariantOptions } from './useVariant.types'
 
 /**
@@ -11,7 +12,7 @@ import type { UseVariantOptions } from './useVariant.types'
  * @example
  * ```vue
  * <script setup>
- * const props = withDefaults(defineProps<{ variant?: string }>(), { variant: 'default' })
+ * const props = withDefaults(defineProps<{ variant?: string }>(), { variant: DEFAULT_VARIANT })
  * const { variantClass, variantStyle } = useVariant({
  *   block: 'base-accordion',
  *   getVariant: () => props.variant,
@@ -24,17 +25,17 @@ import type { UseVariantOptions } from './useVariant.types'
  * ```
  */
 function useVariant(options: UseVariantOptions) {
-	/** БЭМ-модификатор варианта (например 'base-accordion--ghost') */
+	/** БЭМ-модификатор варианта (например 'base-accordion--ghost'); вариант по умолчанию модификатора не даёт */
 	const variantClass = computed(() => {
 		const variant = options.getVariant()
-		if (!variant || variant === 'default') return undefined
+		if (!variant || variant === DEFAULT_VARIANT) return undefined
 		return `${options.block}--${variant}`
 	})
 
 	/** CSS-переменная --variant для каскадного наследования */
 	const variantStyle = computed(() => {
 		const variant = options.getVariant()
-		if (!variant || variant === 'default') return undefined
+		if (!variant || variant === DEFAULT_VARIANT) return undefined
 		return { '--variant': variant }
 	})
 

@@ -3,7 +3,11 @@ import type { BaseComponentProps } from '../../../types/base.types'
 /** Типы уведомления */
 export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as const
 
-/** Варианты отображения уведомления */
+/**
+ * Варианты отображения уведомления:
+ * default — карточка с тенью; soft — мягкий фон цвета типа; outline — рамка цвета типа без тени;
+ * shadow — только тень, крупнее; ghost — без фона, рамки и тени.
+ */
 export const NOTIFICATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 /** Позиция контейнера уведомлений на экране */
@@ -32,9 +36,12 @@ export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFI
 	type?: (typeof NOTIFICATION_TYPES)[number]
 	/** Позиция контейнера на экране */
 	position?: NotificationPosition
-	/** Длительность (мс) */
+	/**
+	 * Длительность показа уведомления из props, мс (по умолчанию 3000). Ноль, отрицательное или бесконечное значение
+	 * заменяется значением по умолчанию. Уведомлению из `add()` длительность задаётся в его аргументе.
+	 */
 	duration?: number
-	/** Отключить Teleport (для Storybook / встроенного режима) */
+	/** Отключить Teleport: список в потоке страницы (для Storybook / встроенного режима) */
 	isContained?: boolean
 	/** Ключ для принудительного добавления уведомления при изменении */
 	notificationKey?: string | number
@@ -65,7 +72,7 @@ export interface BaseNotificationSlots {
  * Публичный API компонента BaseNotification
  */
 export interface BaseNotificationExpose {
-	/** Добавить уведомление программно */
+	/** Добавить уведомление программно. `variant` из аргумента задаёт оформление этого уведомления, иначе — проп компонента */
 	add: (notification: BaseNotificationProps) => void
 	/** Удалить уведомление по id */
 	remove: (id: number) => void

@@ -61,4 +61,48 @@ describe('BaseStepper integration', () => {
 			expect(emitted()).not.toHaveProperty('update:modelValue')
 		})
 	})
+	describe('клавиатура и семантика', () => {
+		it('шаг — кнопка в порядке Tab, текущий помечен aria-current="step"', () => {
+			render(BaseStepper, { props: { modelValue: 2, items: ITEMS } })
+
+			const [first, second, third] = screen.getAllByRole('button')
+			expect(first).toHaveAttribute('tabindex', '0')
+			expect(first).not.toHaveAttribute('aria-current')
+			expect(second).toHaveAttribute('aria-current', 'step')
+			expect(third).toHaveAttribute('aria-disabled', 'true')
+			expect(third).toHaveAttribute('tabindex', '-1')
+		})
+
+		it('Enter и Space на шаге делают его текущим, как клик', async () => {
+			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: ITEMS } })
+
+			const [first, second] = screen.getAllByRole('button')
+			await fireEvent.keyDown(second, { key: 'Enter' })
+			await fireEvent.keyDown(first, { key: ' ' })
+
+			expect(emitted()['update:modelValue']).toEqual([[2], [1]])
+			expect(emitted().change).toEqual([[2], [1]])
+		})
+
+		it('отключённый шаг не реагирует на Enter', async () => {
+			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: ITEMS } })
+
+			await fireEvent.keyDown(screen.getAllByRole('button')[2], { key: 'Enter' })
+
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+		})
+	})
+
+	describe('иконка шага', () => {
+		it('icon заменяет номер в индикаторе, у пройденного шага остаётся галочка', () => {
+			const { container } = render(BaseStepper, {
+				props: { modelValue: 2, items: [{ label: 'Документы', icon: 'file' }, { label: 'Проверка', icon: 'search' }] },
+			})
+
+			const [completed, current] = container.querySelectorAll('.base-stepper__indicator')
+			expect(completed.querySelector('use')?.getAttribute('href')).toBe('icons.svg#check')
+			expect(current.querySelector('use')?.getAttribute('href')).toBe('icons.svg#search')
+			expect(current).not.toHaveTextContent('2')
+		})
+	})
 })

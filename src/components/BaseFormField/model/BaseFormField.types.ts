@@ -13,9 +13,12 @@ export interface BaseFormFieldProps extends BaseComponentProps<(typeof FORM_FIEL
 	description?: string
 	/** Текст ошибки */
 	error?: string
-	/** Обязательное поле */
+	/** Обязательное поле: показывает звёздочку; пустоту значения проверяет вложенный контрол (у обёртки нет значения) */
 	isRequired?: boolean
-	/** ID для связки label и input */
+	/**
+	 * id поля внутри обёртки: подпись связывается с ним атрибутом `for` (клик по подписи фокусирует поле, подпись — имя поля).
+	 * Без `for` содержимое помечается группой (`role="group"`) с именем из подписи и описанием из `description`/`error`.
+	 */
 	for?: string
 }
 

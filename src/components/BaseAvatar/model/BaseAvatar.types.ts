@@ -10,15 +10,15 @@ export const AVATAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
  * Пропсы компонента BaseAvatar
  */
 export interface BaseAvatarProps extends BaseComponentProps<(typeof AVATAR_VARIANTS)[number], 'root' | 'content' | 'img' | 'initials' | 'online'> {
-	/** URL изображения или GIF */
+	/** URL изображения или GIF. Если изображение не загрузилось, показываются инициалы из `name`. */
 	src?: string
-	/** Альтернативный текст */
+	/** Альтернативный текст изображения. Пустой (по умолчанию) — изображение декоративное, например когда имя написано рядом. */
 	alt?: string
-	/** Текст для генерации инициалов */
+	/** Имя, из которого берутся инициалы (до двух букв). Без имени показывается «?». */
 	name?: string
-	/** Форма */
+	/** Форма: `circle` — круг, `square` — квадрат со скруглением. */
 	shape?: (typeof AVATAR_SHAPES)[number]
-	/** Онлайн-статус */
+	/** Показывать точку статуса «в сети» в правом нижнем углу. */
 	isOnline?: boolean
 }
 

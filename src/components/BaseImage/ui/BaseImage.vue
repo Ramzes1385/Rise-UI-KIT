@@ -11,38 +11,47 @@
 			},
 			classes.root,
 		]"
-		:style="[containerStyle, borderRadiusStyle, sizeScaleStyle, customColorStyle]">
+		:style="[containerStyle, radiusStyle, sizeScaleStyle, customColorStyle]">
 		<div v-if="hasPlaceholder && !isLoaded && !hasError" class="base-image__placeholder" :class="classes.placeholder">
 			<slot name="placeholder">
 				<div class="base-image__shimmer"></div>
 			</slot>
 		</div>
 
+		<!-- Ошибка загрузки: <img> удалён, поэтому alt переходит к иконке — скринридер по-прежнему слышит, что здесь было -->
 		<div v-if="hasError" class="base-image__error" :class="classes.error">
 			<slot name="error">
-				<span class="base-image__error-icon">🖼️</span>
+				<BaseIcon name="image" class="base-image__error-icon" :aria-label="alt" />
 				<span class="base-image__error-text">{{ UI_TEXT.IMAGE_ERROR }}</span>
 			</slot>
 		</div>
 
-		<picture v-if="!hasError">
-			<source v-if="avifSrc" :srcset="avifSrc" type="image/avif" />
-			<source v-if="webpSrc" :srcset="webpSrc" type="image/webp" />
-			<img
-				:src="currentSrc"
-				:srcset="srcsetValue"
-				:sizes="sizesValue"
-				:alt="alt"
-				:width="width"
-				:height="height"
-				:loading="loading"
-				decoding="async"
-				class="base-image__img"
-				:class="classes.img"
-				@click="handleImageClick"
-				@load="handleLoad"
-				@error="handleError" />
-		</picture>
+		<!-- С зумом изображение обёрнуто в кнопку: открывается мышью, Enter и Space; имя кнопки — alt изображения -->
+		<component
+			:is="resolvedHasZoom ? 'button' : 'div'"
+			v-if="!hasError"
+			class="base-image__frame"
+			v-bind="zoomTriggerAttrs"
+			@click="handleImageClick">
+			<picture>
+				<source v-if="avifSrc" :srcset="avifSrc" type="image/avif" />
+				<source v-if="webpSrc" :srcset="webpSrc" type="image/webp" />
+				<img
+					ref="imgRef"
+					:src="currentSrc"
+					:srcset="srcsetValue"
+					:sizes="sizesValue"
+					:alt="alt"
+					:width="width"
+					:height="height"
+					:loading="loading"
+					decoding="async"
+					class="base-image__img"
+					:class="classes.img"
+					@load="handleLoad"
+					@error="handleError" />
+			</picture>
+		</component>
 
 		<BaseImageZoom
 			v-if="zoom.isZoomOpen.value"
@@ -60,13 +69,14 @@
 import { computed, ref } from 'vue'
 import '../styles/BaseImage.style.scss'
 
+import { BaseIcon } from '@components/BaseIcon'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useImageGallery } from '@composables/useImageGallery'
 import { useImageState } from '@composables/useImageState'
 import { useImageZoom } from '@composables/useImageZoom'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_ARIA, UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import BaseImageZoom from './BaseImageZoom.vue'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../model/BaseImage.types'
 
@@ -76,9 +86,11 @@ const props = withDefaults(defineProps<BaseImageProps>(), {
 	timeout: UI_TIMING.IMAGE_LOAD_TIMEOUT,
 	fit: 'cover',
 	loading: 'lazy',
-	borderRadius: 12,
+	// Без пропа радиус берётся из темы (--rise-radius-md в стилях): inline-стиль пишется только при явном значении
+	borderRadius: undefined,
 	hasPlaceholder: true,
 	convertToWebp: false,
+	convertToAvif: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
@@ -110,12 +122,8 @@ const { classes } = useCustomClass({
 	],
 })
 
-const { sizeScaleStyle: baseSizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const sizeScaleStyle = computed((): Record<string, string> | undefined => {
-	return baseSizeScaleStyle.value as Record<string, string> | undefined
-})
 
 const emit = defineEmits<BaseImageEmits>()
 defineSlots<BaseImageSlots>()
@@ -123,7 +131,21 @@ defineSlots<BaseImageSlots>()
 const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? false)
 const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? true)
 
+/**
+ * Атрибуты кнопки-обёртки зума. Имя кнопки даёт alt изображения внутри; у декоративного изображения (alt="")
+ * имени нет — тогда кнопка называется «Просмотр изображения».
+ */
+const zoomTriggerAttrs = computed(() => {
+	if (!resolvedHasZoom.value) return undefined
+	return {
+		type: 'button',
+		'aria-haspopup': 'dialog',
+		'aria-label': props.alt ? undefined : UI_ARIA.IMAGE_VIEWER,
+	}
+})
+
 const zoomRef = ref<InstanceType<typeof BaseImageZoom> | null>(null)
+const imgRef = ref<HTMLImageElement | null>(null)
 
 const gallery = useImageGallery({
 	gallery: () => props.gallery,
@@ -166,9 +188,15 @@ const {
 	borderRadius: () => props.borderRadius,
 	srcWidth: () => props.srcWidth,
 	convertToWebp: () => props.convertToWebp,
+	convertToAvif: () => props.convertToAvif,
+	loading: () => props.loading,
+	imgRef,
 	onLoad: () => emit('load'),
 	onError: () => emit('error'),
 })
+
+/** Радиус из пропа borderRadius (в px, масштабируется); без пропа — радиус md из стилей. */
+const radiusStyle = computed(() => (props.borderRadius === undefined ? undefined : borderRadiusStyle.value))
 
 function handleImageClick(): void {
 	if (!resolvedHasZoom.value) return

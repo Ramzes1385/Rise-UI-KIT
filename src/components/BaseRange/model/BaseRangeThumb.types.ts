@@ -10,6 +10,12 @@ export interface BaseRangeThumbProps {
 	boundMin: number
 	/** Верхняя граница ползунка (для aria-valuemax) */
 	boundMax: number
+	/** Доступное имя ползунка (aria-label) */
+	label: string
+	/** Отключён: вне порядка Tab, aria-disabled */
+	isDisabled?: boolean
+	/** Вертикальная ориентация (aria-orientation) */
+	isVertical?: boolean
 	/** Использовать кастомный слот */
 	hasCustom?: boolean
 	/** CSS-класс для thumb (из customClass) */

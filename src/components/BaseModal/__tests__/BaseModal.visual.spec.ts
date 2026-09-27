@@ -1,16 +1,20 @@
 /**
- * Visual regression тесты для BaseModal.
+ * Visual regression BaseModal: ключевые stories в светлой и тёмной теме.
+ * Окно телепортируется в body, поэтому снимается вся страница.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basemodal'
-const STORIES = ['default', 'dark-theme']
+const STORIES = ['variants', 'custom-color', 'opened', 'long-content', 'full-screen'] as const
 
-for (const story of STORIES) {
-	test(`BaseModal — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-modal--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseModal · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `overlay-basemodal--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-modal-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

@@ -1,148 +1,152 @@
+// BaseLoader. Индикатор 32×32px при sizeScale = 100 цвета --rise-primary; color.text перекрашивает все виды.
+// Виды: spinner — дуга на треке, крутится всегда (в том числе при prefers-reduced-motion: иначе загрузка выглядит
+// как зависание); dots, pulse, bars — декоративная пульсация только без prefers-reduced-motion, иначе статичная фигура.
+// Подпись — 14/20 --rise-text-muted под индикатором. isOverlay — подложка на весь позиционированный контейнер.
 .base-loader {
+	// Цвет индикатора читают все части: так color.text одинаково перекрашивает любой вид.
+	@include custom-text('--loader-color', var(--rise-primary));
+
 	display: inline-flex;
 	flex-direction: column;
 	align-items: center;
-	gap: sz(12px);
-
-	@include custom-text('--loader-color', var(--color-accent));
+	gap: sz(8px);
 
 	&__animation {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: sz(36px);
-		height: sz(36px);
+		width: sz(32px);
+		height: sz(32px);
 	}
 
 	&__label {
-		font-size: sz(14px);
-		color: var(--color-text-muted);
-		font-weight: 500;
+		@include text-size(sm);
+		color: var(--rise-text-muted);
 	}
 
-	// ── Spinner ──
+	// ─── Spinner ─────────────────────────────────────────────────────────────────
 
 	&__spinner {
 		width: 100%;
 		height: 100%;
-		animation: base-loader-rotate 1.4s linear infinite;
+		animation: base-loader-spin 0.8s linear infinite;
 	}
 
 	&__spinner-track {
-		stroke: var(--color-border);
+		stroke: var(--rise-bg-accented);
 	}
 
+	// Дуга в четверть окружности (длина окружности r=20 — 125.7 единиц viewBox).
 	&__spinner-fill {
 		stroke: var(--loader-color);
-		@include custom-text(stroke, var(--loader-color));
-		stroke-dasharray: 80, 200;
-		stroke-dashoffset: 0;
+		stroke-dasharray: 31.4px 125.7px;
 		stroke-linecap: round;
-		animation: base-loader-dash 1.4s ease-in-out infinite;
 	}
 
-	// ── Dots ──
+	// ─── Dots ────────────────────────────────────────────────────────────────────
 
-	&--dots {
-		.base-loader__animation {
-			gap: sz(6px);
-		}
+	&--dots &__animation {
+		gap: sz(4px);
 	}
 
 	&__dot {
 		width: sz(8px);
 		height: sz(8px);
-		border-radius: 50%;
+		border-radius: var(--rise-radius-full);
 		background-color: var(--loader-color);
-		@include custom-bg(background-color, var(--loader-color));
-		animation: base-loader-dot 1.4s ease-in-out infinite both;
-
-		&:nth-child(1) {
-			animation-delay: -0.32s;
-		}
-
-		&:nth-child(2) {
-			animation-delay: -0.16s;
-		}
 	}
 
-	// ── Pulse ──
+	// ─── Pulse ───────────────────────────────────────────────────────────────────
 
+	// Точка в центре; расходящееся кольцо (::before) — только без prefers-reduced-motion.
 	&__pulse {
-		width: sz(36px);
-		height: sz(36px);
-		border-radius: 50%;
+		position: relative;
+		width: sz(12px);
+		height: sz(12px);
+		border-radius: var(--rise-radius-full);
 		background-color: var(--loader-color);
-		@include custom-bg(background-color, var(--loader-color));
-		animation: base-loader-pulse 1.4s ease-in-out infinite both;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			background-color: inherit;
+			opacity: 0;
+		}
 	}
 
-	// ── Bars ──
+	// ─── Bars ────────────────────────────────────────────────────────────────────
 
-	&--bars {
-		.base-loader__animation {
-			gap: sz(4px);
-			align-items: flex-end;
-		}
+	&--bars &__animation {
+		gap: sz(4px);
 	}
 
 	&__bar {
-		width: sz(5px);
-		height: sz(28px);
-		border-radius: sz(2px);
+		width: sz(4px);
+		height: sz(24px);
+		border-radius: var(--rise-radius-full);
 		background-color: var(--loader-color);
-		@include custom-bg(background-color, var(--loader-color));
-		animation: base-loader-bar 1.2s ease-in-out infinite both;
+		transform: scaleY(0.5);
+	}
 
-		&:nth-child(1) {
-			animation-delay: -0.36s;
+	// ─── Анимации видов dots, pulse, bars ────────────────────────────────────────
+
+	@include motion-safe {
+		&__dot {
+			animation: base-loader-dot 1.2s var(--rise-ease) infinite both;
+
+			&:nth-child(1) {
+				animation-delay: -0.32s;
+			}
+
+			&:nth-child(2) {
+				animation-delay: -0.16s;
+			}
 		}
 
-		&:nth-child(2) {
-			animation-delay: -0.24s;
+		&__pulse::before {
+			animation: base-loader-ping 1.2s var(--rise-ease-out) infinite;
 		}
 
-		&:nth-child(3) {
-			animation-delay: -0.12s;
+		&__bar {
+			animation: base-loader-bar 1.2s var(--rise-ease) infinite both;
+
+			&:nth-child(1) {
+				animation-delay: -0.36s;
+			}
+
+			&:nth-child(2) {
+				animation-delay: -0.24s;
+			}
+
+			&:nth-child(3) {
+				animation-delay: -0.12s;
+			}
 		}
 	}
 
-	// ── Overlay ──
+	// ─── Оверлей ─────────────────────────────────────────────────────────────────
 
+	// Требует позиционированного родителя (position: relative). Подложка — фон страницы 80%: содержимое под ней
+	// остаётся различимым, но не спорит с индикатором.
 	&--overlay {
 		position: absolute;
 		inset: 0;
 		z-index: 9999;
-		display: flex;
-		align-items: center;
 		justify-content: center;
-		background-color: rgba(0, 0, 0, 0.3);
-		backdrop-filter: blur(2px);
+		background-color: color-mix(in srgb, var(--rise-bg) 80%, transparent);
+	}
+
+	// Сквозь подложку просвечивает содержимое, поэтому подпись контрастнее обычной.
+	&--overlay &__label {
+		color: var(--rise-text-toned);
 	}
 }
 
-// ── Keyframes ──
-
-@keyframes base-loader-rotate {
-	100% {
+@keyframes base-loader-spin {
+	to {
 		transform: rotate(360deg);
-	}
-}
-
-@keyframes base-loader-dash {
-	0% {
-		stroke-dasharray: 1, 200;
-		stroke-dashoffset: 0;
-	}
-
-	50% {
-		stroke-dasharray: 90, 200;
-		stroke-dashoffset: -35;
-	}
-
-	100% {
-		stroke-dasharray: 90, 200;
-		stroke-dashoffset: -124;
 	}
 }
 
@@ -150,28 +154,26 @@
 	0%,
 	80%,
 	100% {
-		transform: scale(0);
+		transform: scale(0.5);
+		opacity: 0.4;
 	}
 
 	40% {
 		transform: scale(1);
+		opacity: 1;
 	}
 }
 
-@keyframes base-loader-pulse {
+@keyframes base-loader-ping {
 	0% {
-		transform: scale(0.8);
-		opacity: 1;
+		transform: scale(1);
+		opacity: 0.6;
 	}
 
-	50% {
-		transform: scale(1.2);
-		opacity: 0.5;
-	}
-
+	80%,
 	100% {
-		transform: scale(0.8);
-		opacity: 1;
+		transform: scale(2.6);
+		opacity: 0;
 	}
 }
 

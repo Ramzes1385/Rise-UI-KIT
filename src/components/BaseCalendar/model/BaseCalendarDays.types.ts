@@ -1,20 +1,16 @@
-import type { CalendarHighlight, CalendarView } from './BaseCalendar.types'
+import type { CalendarHighlight } from './BaseCalendar.types'
 
 /** Props компонента BaseCalendarDays */
 export interface BaseCalendarDaysProps {
-	/** Текущий вид календаря (дни / месяцы / годы) */
-	currentView: CalendarView
 	/** Показывать номера недель */
 	showWeekNumber: boolean
 	/** Упорядоченные названия дней недели */
 	orderedWeekdays: string[]
 	/** Массив дат для отображения в сетке календаря */
 	calendarDays: Date[]
-	/** Масштаб размера (базовая единица sizeScale) */
-	sizeScale: number
 	/** Отключён ли весь календарь */
 	isDisabled: boolean
-	/** Локаль для форматирования дат */
+	/** Локаль для форматирования дат (доступные имена дней, popover) */
 	locale: string
 	/** Объект CSS-классов для кастомизации элементов календаря */
 	classes: Record<string, string | undefined>
@@ -28,8 +24,8 @@ export interface BaseCalendarDaysProps {
 	isWeekend: (date: Date) => boolean
 	/** Проверка, входит ли дата в выбранный диапазон */
 	isInRange: (date: Date) => boolean
-	/** Получение выделения (цвет точки) для даты */
-	getHighlight: (date: Date) => { color?: string } | undefined
+	/** Выделение даты: цвет точки и подпись (подпись попадает в доступное имя дня) */
+	getHighlight: (date: Date) => CalendarHighlight | undefined
 	/** Получение номера недели для строки сетки */
 	getRowWeekNumber: (index: number) => number
 	/** Проверка, совпадают ли две даты (один и тот же день) */
@@ -38,8 +34,6 @@ export interface BaseCalendarDaysProps {
 	dayClasses: (date: Date, isCustomSlot: boolean) => Record<string, boolean>
 	/** Дата, для которой открыт popover (null — закрыт) */
 	popoverDate: Date | null
-	/** CSS-стили позиционирования popover */
-	popoverStyle: Record<string, string>
 	/** Выделения (подсветки) для popover */
 	popoverHighlights: CalendarHighlight[]
 	/** Функция закрытия popover */
@@ -53,7 +47,7 @@ export interface BaseCalendarDaysEmits {
 
 /** Slots компонента BaseCalendarDays */
 export interface BaseCalendarDaysSlots {
-	day(props: {
+	day?(props: {
 		date: Date
 		isToday: boolean
 		isSelected: boolean
@@ -61,5 +55,5 @@ export interface BaseCalendarDaysSlots {
 		isWeekend: boolean
 		isInRange: boolean
 	}): unknown
-	'date-popover'(props: { date: Date; close: () => void; highlights: CalendarHighlight[] }): unknown
+	'date-popover'?(props: { date: Date; close: () => void; highlights: CalendarHighlight[] }): unknown
 }

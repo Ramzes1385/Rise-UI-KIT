@@ -4,7 +4,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
+import { render, screen } from '@testing-library/vue'
 import BasePin from '../ui/BasePin.vue'
 
 describe('BasePin unit', () => {
@@ -102,6 +102,40 @@ describe('BasePin unit', () => {
 
 			expect(container.querySelector('.base-pin')?.classList.contains('base-pin--error')).toBe(false)
 			expect(container.querySelector('.base-pin__error-text')).toBeNull()
+		})
+	})
+
+	describe('доступность', () => {
+		it('подписывает каждую ячейку позицией в коде', () => {
+			render(BasePin, { props: { modelValue: '', length: 6 } })
+
+			expect(screen.getAllByRole('textbox')).toHaveLength(6)
+			expect(screen.getByRole('textbox', { name: 'Символ 1 из 6' })).toBeInTheDocument()
+			expect(screen.getByRole('textbox', { name: 'Символ 6 из 6' })).toBeInTheDocument()
+		})
+
+		it('объединяет ячейки в группу, которой aria-label на компоненте даёт имя', () => {
+			render(BasePin, { props: { modelValue: '' }, attrs: { 'aria-label': 'Код из СМС' } })
+
+			const group = screen.getByRole('group', { name: 'Код из СМС' })
+			expect(group).toContainElement(screen.getByRole('textbox', { name: 'Символ 1 из 4' }))
+		})
+
+		it('помечает ячейки aria-invalid и связывает их с текстом ошибки', () => {
+			render(BasePin, { props: { modelValue: '1234', error: 'Неверный код' } })
+
+			for (const cell of screen.getAllByRole('textbox')) {
+				expect(cell).toHaveAttribute('aria-invalid', 'true')
+				expect(cell).toHaveAccessibleDescription('Неверный код')
+			}
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BasePin, { props: { modelValue: '' } })
+
+			const cell = screen.getByRole('textbox', { name: 'Символ 1 из 4' })
+			expect(cell).not.toHaveAttribute('aria-invalid')
+			expect(cell).not.toHaveAttribute('aria-describedby')
 		})
 	})
 

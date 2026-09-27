@@ -3,11 +3,56 @@
  * Проверяют рендер, пропсы, слоты и кастомные стили.
  */
 
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseEmpty from '../ui/BaseEmpty.vue'
 
+/** Исходник стилей компонента: jsdom не вычисляет calc()/var(), формулы считаются в тесте */
+// Путь строится через node:path: в jsdom-окружении глобальный URL — реализация jsdom, и fs не принимает такой объект
+const STYLES = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../styles/BaseEmpty.style.scss'), 'utf-8')
+
+/**
+ * Значения в px из объявления `sz(32px 24px)` так же, как их считает браузер: sz() из src/styles/_functions.scss
+ * раскрывает каждое значение в calc(X * var(--size-scale, 1)), а --size-scale — коэффициент (1.5 = 150%),
+ * который компонент выставил на корне. Пустая строка — переменная не задана, действует fallback 1.
+ */
+function resolvePx(declaration: string, sizeScale: string): number[] {
+	const values = declaration.match(/^sz\(([^)]+)\)$/)?.[1]
+	if (!values) throw new Error(`Ожидалось значение через sz(): ${declaration}`)
+	const factor = sizeScale === '' ? 1 : Number(sizeScale)
+	return values.trim().split(/\s+/).map(value => Number.parseFloat(value) * factor)
+}
+
+/** Объявление свойства в корневом блоке .base-empty (строки с одним отступом табуляцией, без вложенных блоков) */
+function rootDeclaration(property: string): string {
+	const match = STYLES.match(new RegExp(`\\n\\t${property}:\\s*([^;]+);`))
+	if (!match?.[1]) throw new Error(`Свойство ${property} не найдено в корне .base-empty`)
+	return match[1]
+}
+
 describe('BaseEmpty unit', () => {
+	describe('масштабирование отступов (sizeScale)', () => {
+		function renderedSizeScale(sizeScale: number): string {
+			const { container } = render(BaseEmpty, { props: { sizeScale, title: 'Пусто' } })
+			return (container.querySelector('.base-empty') as HTMLElement).style.getPropertyValue('--size-scale')
+		}
+
+		it('должен пропорционально увеличивать внутренний отступ при sizeScale=150', () => {
+			expect(resolvePx(rootDeclaration('padding'), renderedSizeScale(150))).toEqual([48, 36])
+		})
+
+		it('должен пропорционально уменьшать промежутки между иконкой, текстом и действиями при sizeScale=75', () => {
+			expect(resolvePx(rootDeclaration('gap'), renderedSizeScale(75))).toEqual([12])
+		})
+
+		it('должен сохранять базовый отступ 32px 24px при sizeScale=100', () => {
+			expect(resolvePx(rootDeclaration('padding'), renderedSizeScale(100))).toEqual([32, 24])
+		})
+	})
+
 	describe('рендер', () => {
 		it('должен рендерить пустое состояние', () => {
 			const { container } = render(BaseEmpty)
@@ -25,6 +70,20 @@ describe('BaseEmpty unit', () => {
 
 			expect(screen.getByText('Нет данных')).toBeInTheDocument()
 			expect(screen.getByText('Попробуйте изменить параметры фильтрации')).toBeInTheDocument()
+		})
+	})
+
+	describe('пропс icon', () => {
+		it('должен показывать иконку inbox по умолчанию', () => {
+			const { container } = render(BaseEmpty, { props: { title: 'Пусто' } })
+
+			expect(container.querySelector('use')?.getAttribute('href')).toBe('icons.svg#inbox')
+		})
+
+		it('должен показывать иконку из пропа icon', () => {
+			const { container } = render(BaseEmpty, { props: { title: 'Ничего не найдено', icon: 'search' } })
+
+			expect(container.querySelector('use')?.getAttribute('href')).toBe('icons.svg#search')
 		})
 	})
 

@@ -106,6 +106,64 @@ describe('useColumnResize', () => {
 		wrapper.unmount()
 	})
 
+	// Регрессия TBL-12: размонтирование посреди перетаскивания
+	it('при размонтировании во время ресайза снимает слушатели и возвращает стили body', () => {
+		const { result, wrapper } = withSetup(() =>
+			useColumnResize({
+				columns,
+				visibleColumns,
+				minWidth: 50,
+				onColumnResize: mockOnColumnResize,
+				onColumnsChange: mockOnColumnsChange,
+			}),
+		)
+
+		const mockTh = document.createElement('th')
+		Object.defineProperty(mockTh, 'offsetWidth', { value: 100 })
+		const mockTarget = document.createElement('div')
+		vi.spyOn(mockTarget, 'closest').mockReturnValue(mockTh)
+
+		result.startResize({ target: mockTarget, pageX: 500 } as unknown as MouseEvent, 'col1')
+		expect(document.body.style.userSelect).toBe('none')
+
+		wrapper.unmount()
+
+		expect(document.body.style.userSelect).toBe('')
+		expect(document.body.style.cursor).toBe('')
+
+		// Слушатели сняты: поздние события не меняют ширину и не эмитят результат
+		document.dispatchEvent(new MouseEvent('mousemove'))
+		document.dispatchEvent(new MouseEvent('mouseup'))
+		expect(columns.value[0].width).toBe('100px')
+		expect(mockOnColumnResize).not.toHaveBeenCalled()
+	})
+
+	it('после ресайза возвращает стили body, которые были до его начала', () => {
+		document.body.style.cursor = 'progress'
+		document.body.style.userSelect = 'text'
+		const { result, wrapper } = withSetup(() =>
+			useColumnResize({
+				columns,
+				visibleColumns,
+				minWidth: 50,
+				onColumnResize: mockOnColumnResize,
+				onColumnsChange: mockOnColumnsChange,
+			}),
+		)
+
+		const mockTh = document.createElement('th')
+		Object.defineProperty(mockTh, 'offsetWidth', { value: 100 })
+		const mockTarget = document.createElement('div')
+		vi.spyOn(mockTarget, 'closest').mockReturnValue(mockTh)
+
+		result.startResize({ target: mockTarget, pageX: 500 } as unknown as MouseEvent, 'col1')
+		document.dispatchEvent(new MouseEvent('mouseup'))
+
+		expect(document.body.style.cursor).toBe('progress')
+		expect(document.body.style.userSelect).toBe('text')
+		wrapper.unmount()
+	})
+
 	it('должен игнорировать mouseup, если ресайз не активен', () => {
 		const { wrapper } = withSetup(() =>
 			useColumnResize({

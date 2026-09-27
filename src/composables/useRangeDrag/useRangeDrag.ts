@@ -11,6 +11,8 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 		min,
 		max,
 		isVertical,
+		thumbMin,
+		thumbMax,
 		snapToStepValue,
 		setPointValue,
 		emitChange,
@@ -108,8 +110,19 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 		if (!isIncrease && !isDecrease) return
 		event.preventDefault()
 
+		const current = pointValues.value[index]
 		const delta = isIncrease ? options.step() : -options.step()
-		setPointValue(index, snapToStepValue(pointValues.value[index] + delta))
+		const target = snapToStepValue(current + delta)
+		setPointValue(index, target)
+
+		// Клавиатурный шаг — завершённое изменение, как отпускание ползунка, поэтому эмитим change.
+		// Props родителя обновятся только после ре-рендера — значения после шага (с тем же
+		// ограничением соседями, что в setPointValue) передаём явно; упор в границу change не даёт.
+		const next = Math.max(thumbMin(index), Math.min(thumbMax(index), target))
+		if (next === current) return
+		const values = pointValues.value.slice()
+		values[index] = next
+		emitChange(values)
 	}
 
 	onBeforeUnmount(() => {

@@ -1,6 +1,10 @@
 import type { BaseComponentProps } from '../../../types/base.types'
 
-/** Варианты отображения поповера */
+/**
+ * Варианты отображения поповера (те же, что у панели BaseDropdown):
+ * default — рамка и тень; outline — рамка заметнее, без тени; shadow — только тень, крупнее;
+ * soft — мягкий нейтральный фон без рамки; ghost — без фона, рамки, тени и стрелки (оформление даёт содержимое).
+ */
 export const POPOVER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 /** Вариант popover */

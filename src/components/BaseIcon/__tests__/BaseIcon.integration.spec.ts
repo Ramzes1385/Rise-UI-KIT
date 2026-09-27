@@ -5,6 +5,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
+import { mount } from '@vue/test-utils'
+import { createUiKitPlugin } from '@/plugin'
 import BaseIcon from '../ui/BaseIcon.vue'
 
 describe('BaseIcon integration', () => {
@@ -72,5 +74,14 @@ describe('BaseIcon integration', () => {
 		const svg = container.querySelector('.base-icon__svg')
 		expect(svg?.getAttribute('aria-hidden')).toBeNull()
 		expect(svg?.getAttribute('aria-label')).toBe('Закрыть')
+	})
+
+	it('должен ссылаться на спрайт по пути из createUiKitPlugin({ iconSpritePath })', () => {
+		const wrapper = mount(BaseIcon, {
+			props: { name: 'search' },
+			global: { plugins: [createUiKitPlugin({ iconSpritePath: '/static/sprite.svg' })] },
+		})
+
+		expect(wrapper.find('use').attributes('href')).toBe('/static/sprite.svg#search')
 	})
 })

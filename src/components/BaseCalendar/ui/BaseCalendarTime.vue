@@ -1,58 +1,65 @@
 <template>
-	<div class="base-calendar__time" :class="classes.time">
-		<div class="base-calendar__time-field">
+	<!-- Группа «Время»: у каждого поля своё доступное имя (подпись скрыта визуально), разделители — декоративные -->
+	<div class="base-calendar__time" :class="classes.time" role="group" :aria-labelledby="captionId">
+		<span :id="captionId" class="base-calendar__time-caption">{{ UI_CALENDAR.TIME }}</span>
+		<div class="base-calendar__time-fields">
 			<BaseInput
 				v-model="hoursModel"
 				class="base-calendar__time-input"
 				type="number"
-				variant="outline"
+				:label="UI_CALENDAR.HOURS"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
-				@change="emit('timeChange')" />
-			<BaseText tag="span" class="base-calendar__time-sep" :size-scale="sizeScale">:</BaseText>
+				@change="commitTime"
+				@blur="resetDrafts" />
+			<span class="base-calendar__time-sep" aria-hidden="true">:</span>
 			<BaseInput
 				v-model="minutesModel"
 				class="base-calendar__time-input"
 				type="number"
-				variant="outline"
+				:label="UI_CALENDAR.MINUTES"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
-				@change="emit('timeChange')" />
+				@change="commitTime"
+				@blur="resetDrafts" />
 			<template v-if="showSeconds">
-				<BaseText tag="span" class="base-calendar__time-sep" :size-scale="sizeScale">:</BaseText>
+				<span class="base-calendar__time-sep" aria-hidden="true">:</span>
 				<BaseInput
 					v-model="secondsModel"
 					class="base-calendar__time-input"
 					type="number"
-					variant="outline"
+					:label="UI_CALENDAR.SECONDS"
 					:size-scale="sizeScale"
 					:is-disabled="isDisabled"
-					@change="emit('timeChange')" />
+					@change="commitTime"
+					@blur="resetDrafts" />
 			</template>
-			<template v-if="!is24Hour">
-				<BaseButton
-					variant="outline"
-					class="base-calendar__time-ampm"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled"
-					@click="emit('toggleAmPm')">
-					<BaseText tag="span" :size-scale="sizeScale">{{ isAm ? 'AM' : 'PM' }}</BaseText>
-				</BaseButton>
-			</template>
+			<BaseButton
+				v-if="!is24Hour"
+				variant="outline"
+				class="base-calendar__time-ampm"
+				:size-scale="sizeScale"
+				:is-disabled="isDisabled"
+				@click="emit('toggleAmPm')">
+				{{ isAm ? 'AM' : 'PM' }}
+			</BaseButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
-import { BaseText } from '@components/BaseText'
+import { UI_CALENDAR } from '@constants'
 import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../model/BaseCalendarTime.types'
 
 const props = defineProps<BaseCalendarTimeProps>()
 
 const emit = defineEmits<BaseCalendarTimeEmits>()
+
+/** id подписи «Время»: группа полей называется по ней */
+const captionId = useId()
 
 function to12h(h: number): number {
 	if (h === 0) return 12
@@ -65,25 +72,65 @@ function from12h(h: number, am: boolean): number {
 	return h === 12 ? 12 : h + 12
 }
 
+/**
+ * Разобрать ввод поля времени и ограничить его диапазоном.
+ * Без ограничения buildDateWithTime переносит «лишнее» на соседние часы/сутки (99 ч → +4 дня).
+ * Пустое или нечисловое значение → null: время не меняется, пока не введена цифра.
+ */
+function parseTimeField(value: string, min: number, max: number): number | null {
+	const parsed = parseInt(value, 10)
+	if (Number.isNaN(parsed)) return null
+	return Math.min(Math.max(parsed, min), max)
+}
+
+/**
+ * Черновики ввода: пока поле редактируется, в нём остаётся набранный текст, а не нормализованное значение.
+ * Иначе очистка поля сразу подставляла «0»/«12», и следующая цифра дописывалась к нему («12» + «3» → 123 ч).
+ */
+const hoursDraft = ref<string | null>(null)
+const minutesDraft = ref<string | null>(null)
+const secondsDraft = ref<string | null>(null)
+
 const hoursModel = computed({
-	get: (): string => String(props.is24Hour ? props.hours : to12h(props.hours)),
+	get: (): string => hoursDraft.value ?? String(props.is24Hour ? props.hours : to12h(props.hours)),
 	set: (val: string): void => {
-		const parsed = parseInt(val, 10) || 0
+		hoursDraft.value = val
+		const parsed = props.is24Hour ? parseTimeField(val, 0, 23) : parseTimeField(val, 1, 12)
+		if (parsed === null) return
 		emit('update:hours', props.is24Hour ? parsed : from12h(parsed, props.isAm))
 	},
 })
 
 const minutesModel = computed({
-	get: (): string => String(props.minutes),
+	get: (): string => minutesDraft.value ?? String(props.minutes),
 	set: (val: string): void => {
-		emit('update:minutes', parseInt(val, 10) || 0)
+		minutesDraft.value = val
+		const parsed = parseTimeField(val, 0, 59)
+		if (parsed === null) return
+		emit('update:minutes', parsed)
 	},
 })
 
 const secondsModel = computed({
-	get: (): string => String(props.seconds),
+	get: (): string => secondsDraft.value ?? String(props.seconds),
 	set: (val: string): void => {
-		emit('update:seconds', parseInt(val, 10) || 0)
+		secondsDraft.value = val
+		const parsed = parseTimeField(val, 0, 59)
+		if (parsed === null) return
+		emit('update:seconds', parsed)
 	},
 })
+
+/** Сбросить черновики: поля снова показывают нормализованное значение (например, «99» → «23») */
+function resetDrafts(): void {
+	hoursDraft.value = null
+	minutesDraft.value = null
+	secondsDraft.value = null
+}
+
+/** Завершение ввода (change): нормализовать отображение и применить время к выбранной дате */
+function commitTime(): void {
+	resetDrafts()
+	emit('timeChange')
+}
 </script>

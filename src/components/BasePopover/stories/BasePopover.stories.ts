@@ -1,530 +1,344 @@
-﻿/**
- * Stories для компонента BasePopover.
- * Демонстрирует все позиции, варианты и интерактивные состояния.
+/**
+ * BasePopover — stories.
+ *
+ * Разделы: Default (песочница: клик по кнопке открывает поповер, isOpen синхронизирован с Controls) → внешний вид
+ * (варианты, позиции, размеры, кастомный цвет) → длинный текст → сценарии (форма в поповере) → клавиатура.
+ * Открытые поповеры телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
+import { BaseInput } from '@components/BaseInput'
+import { BaseText } from '@components/BaseText'
 import { POPOVER_VARIANTS } from '../model/BasePopover.types'
 import BasePopover from '../ui/BasePopover.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BasePopover> = {
-	title: 'UI/BasePopover',
+/** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */
+const SHOWCASE_OWN_ARGS = ['isOpen', 'onUpdate:isOpen'] as const
+
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}
+
+/** Открытые поповеры телепортируются в body и перекрыли бы страницу Docs — там пример показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Overlay/BasePopover',
 	component: BasePopover,
-
-	argTypes: buildArgTypes({
-		props: {
-			isOpen: { control: 'boolean' },
-			position: {
-				control: 'inline-radio',
-				options: ['top', 'bottom', 'left', 'right'],
+	// Поповер по центру триггера: пример в центре холста, чтобы панель не выходила за край (сдвига у края экрана нет).
+	parameters: {
+		layout: 'centered',
+		docs: {
+			description: {
+				component: [
+					'Поповер — панель со стрелкой у элемента: пояснение, небольшая форма, дополнительные действия.',
+					'',
+					'- Триггер — слот `trigger`: клик по нему открывает и закрывает поповер (`v-model:is-open`). Поповер закрывается',
+					'  кликом снаружи и по Escape.',
+					'- `position` — сторона (`top`, `bottom`, `left`, `right`); панель и стрелка центрируются по триггеру.',
+					'- Панель — это панель `BaseDropdown`: те же варианты оформления, телепорт в body и возврат фокуса на триггер',
+					'  при закрытии. Поля в поповере получают фокус и ввод.',
+					'',
+					'Короткая подсказка при наведении — `BaseTooltip`, меню действий — `BaseDropdown` с `BaseMenu`.',
+				].join('\n'),
 			},
-			variant: { control: 'radio', options: POPOVER_VARIANTS },
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-		hidden: ['onClose', 'onUpdate:isOpen'],
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: POPOVER_VARIANTS }),
+		position: { control: 'inline-radio', options: ['top', 'bottom', 'left', 'right'], table: propGroup(ARG_GROUP.appearance) },
+		isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		trigger: { control: false },
+		default: { control: false },
+	},
 	args: {
 		isOpen: false,
 		position: 'bottom',
 		variant: 'default',
 		sizeScale: 100,
+		onClose: fn(),
+		'onUpdate:isOpen': fn(),
 	},
-}
+	// isOpen хранится в args: клик по триггеру и закрытие поповера обновляют Controls, а переключатель в Controls — поповер.
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BasePopover, BaseButton, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: `
+				<BasePopover v-bind="props" @update:is-open="onUpdate">
+					<template #trigger>
+						<BaseButton variant="outline">Автосохранение</BaseButton>
+					</template>
+					<BaseText>Изменения сохраняются каждые 30 секунд. История правок хранится 30 дней.</BaseText>
+				</BasePopover>
+			`,
+		}
+	},
+} satisfies Meta<typeof BasePopover>
 
 export default meta
-type Story = StoryObj<typeof BasePopover>
-/** Базовый popover */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: клик по кнопке открывает поповер под ней, повторный клик, клик снаружи или Escape — закрывают. */
 export const Default: Story = {
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Автосохранение' })
+		await userEvent.click(trigger)
+		await expect(await screen.findByText(/Изменения сохраняются/)).toBeInTheDocument()
+
+		await userEvent.click(trigger)
+		await waitFor(() => expect(screen.queryByText(/Изменения сохраняются/)).not.toBeInTheDocument())
+	},
+}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Пять вариантов — те же, что у панели `BaseDropdown`. `default` — рамка и тень; `outline` — рамка заметнее, без тени;
+ * `shadow` — только тень; `soft` — мягкий нейтральный фон; `ghost` — без фона, рамки и стрелки.
+ */
+export const Variants: Story = {
+	args: { position: 'right' },
+	parameters: {
+		controls: { include: ['sizeScale'] },
+		docs: {
+			...docsFrame(340),
+			source: {
+				code: POPOVER_VARIANTS.map(variant => `<BasePopover v-model:is-open="isOpen" variant="${variant}">…</BasePopover>`).join('\n'),
+			},
 		},
+	},
+	render: args => ({
+		components: { BasePopover, BaseButton, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS, 'variant']), variants: POPOVER_VARIANTS }),
 		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
+			<div class="story-col" style="gap: 24px;">
+				<BasePopover v-for="variant in variants" :key="variant" v-bind="props" :is-open="true" :variant="variant">
 					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-							Открыть popover
-						</button>
+						<BaseButton variant="outline">{{ variant }}</BaseButton>
 					</template>
-					<div style="padding:12px;">Содержимое popover</div>
+					<BaseText>Поповер {{ variant }}</BaseText>
 				</BasePopover>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка триггера по Tab', async () => {
-			await userEvent.tab()
-			const trigger = canvasElement.querySelector('button')
-			expect(trigger).toHaveFocus()
-		})
+}
 
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: 'button' })
-		})
-
-		await step('Открытие popover по Enter', async () => {
-			await userEvent.keyboard('{Enter}')
-			await waitFor(() => {
-				expect(document.querySelector('.base-popover__panel')).toBeInTheDocument()
-			})
-		})
-
-		await step('Закрытие popover по Escape', async () => {
-			await userEvent.keyboard('{Escape}')
-			await waitFor(() => {
-				expect(document.querySelector('.base-popover__panel')).not.toBeInTheDocument()
-			})
+/** Сторона `position`: поповер и стрелка центрируются по триггеру. */
+export const Positions: Story = {
+	parameters: {
+		layout: 'padded',
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: { ...docsFrame(300), source: { code: '<BasePopover v-model:is-open="isOpen" position="left">…</BasePopover>' } },
+	},
+	render: args => ({
+		components: { BasePopover, BaseButton, BaseText },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS, 'position']),
+			// Отступы ячеек оставляют место для поповера с нужной стороны от кнопки
+			cells: [
+				{ position: 'top', text: 'Сверху', padding: '64px 0 0 64px' },
+				{ position: 'bottom', text: 'Снизу', padding: '0 0 64px 64px' },
+				{ position: 'left', text: 'Слева', padding: '16px 0 16px 180px' },
+				{ position: 'right', text: 'Справа', padding: '16px 0 16px 16px' },
+			] as const,
+		}),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 320px;">
+				<div v-for="cell in cells" :key="cell.position" :style="{ padding: cell.padding }">
+					<BasePopover v-bind="props" :is-open="true" :position="cell.position">
+						<template #trigger>
+							<BaseButton variant="outline">{{ cell.position }}</BaseButton>
+						</template>
+						<BaseText>{{ cell.text }}</BaseText>
+					</BasePopover>
+				</div>
+			</div>
+		`,
+	}),
+	play: async () => {
+		// Стрелка поповера сверху смотрит вниз, на центр кнопки
+		const button = screen.getByRole('button', { name: 'top' })
+		const arrow = (await screen.findByText('Сверху')).closest('.base-dropdown__panel')?.querySelector('.base-popover__arrow') as HTMLElement
+		await waitFor(() => {
+			const buttonBox = button.getBoundingClientRect()
+			const arrowBox = arrow.getBoundingClientRect()
+			expect(Math.abs(arrowBox.left + arrowBox.width / 2 - (buttonBox.left + buttonBox.width / 2))).toBeLessThan(1)
 		})
 	},
 }
-/** Отключённый popover */
-export const Disabled: Story = {
-	render: () => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(false)
-			return { isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-model:is-open="isOpen">
-					<template #trigger>
-						<button disabled style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:not-allowed;opacity:0.5;">
-							Отключён
-						</button>
-					</template>
-					<div style="padding:12px;">Контент</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Все варианты */
-export const Variants: Story = {
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const variants = [...POPOVER_VARIANTS]
-			const openMap = ref<Record<string, boolean>>({})
-			function toggle(v: string) {
-				openMap.value[v] = !openMap.value[v]
-			}
-			return { args, toggle, openMap, variants }
-		},
-		template: `
-			<div style="padding:80px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
-				<BasePopover v-for="v in variants" :key="v"
-					v-bind="args"
-					:variant="v"
-					v-model:is-open="openMap[v]">
-					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;" @click="toggle(v)">
-							{{ v }}
-						</button>
-					</template>
-					<div style="padding:12px;">Вариант {{ v }}</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Все позиции */
-export const Positions: Story = {
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const openTop = ref(false)
-			const openBottom = ref(false)
-			const openLeft = ref(false)
-			const openRight = ref(false)
-			return { args, openTop, openBottom, openLeft, openRight }
-		},
-		template: `
-			<div style="padding:100px;display:flex;gap:24px;justify-content:center;align-items:center;">
-				<BasePopover v-bind="args" position="top" v-model:is-open="openTop">
-					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">top</button>
-					</template>
-					<div style="padding:12px;">Позиция top</div>
-				</BasePopover>
 
-				<BasePopover v-bind="args" position="bottom" v-model:is-open="openBottom">
-					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">bottom</button>
-					</template>
-					<div style="padding:12px;">Позиция bottom</div>
-				</BasePopover>
-
-				<BasePopover v-bind="args" position="left" v-model:is-open="openLeft">
-					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">left</button>
-					</template>
-					<div style="padding:12px;">Позиция left</div>
-				</BasePopover>
-
-				<BasePopover v-bind="args" position="right" v-model:is-open="openRight">
-					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">right</button>
-					</template>
-					<div style="padding:12px;">Позиция right</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Popover с контентом */
-export const WithContent: Story = {
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
+/** Размеры через `sizeScale`: пропорционально меняются отступы, кегль, стрелка и ширина панели (до 320px при 100). */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: {
+			...docsFrame(180),
+			source: { code: SIZE_PRESETS.map(preset => `<BasePopover :size-scale="${preset.sizeScale}">…</BasePopover>`).join('\n') },
 		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-							Информация
-						</button>
-					</template>
-					<div style="padding:16px;min-width:200px;">
-						<h4 style="margin:0 0 8px;">Заголовок</h4>
-						<p style="margin:0;color:var(--color-text-muted);font-size:14px;">Подробное описание содержимого popover с дополнительной информацией.</p>
-					</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Интерактивный */
-export const Interactive: Story = {
+	},
 	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
+		components: { BasePopover, BaseButton, BaseText },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS, 'sizeScale']),
+			presets: SIZE_PRESETS.filter(preset => ['sm', 'md', 'lg'].includes(preset.name)),
+			sizeLabel,
+		}),
 		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
+			<div class="story-row" style="gap: 96px;">
+				<BasePopover v-for="preset in presets" :key="preset.name" v-bind="props" :is-open="true" :size-scale="preset.sizeScale">
 					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-							Переключить
-						</button>
+						<BaseButton variant="outline" :size-scale="preset.sizeScale">{{ sizeLabel(preset) }}</BaseButton>
 					</template>
-					<div style="padding:12px;">Контент</div>
+					<BaseText>Текст поповера</BaseText>
 				</BasePopover>
 			</div>
 		`,
 	}),
 }
-/** Кастомный цвет */
+
+/**
+ * Кастомный цвет через `color`: фон и текст панели, стрелка того же цвета. Подойдёт любой CSS-цвет; токены `var(--rise-…)`
+ * сохраняют контраст в обеих темах. Содержимое `color` не наследует — кнопка «Включить» сохраняет свой цвет.
+ */
 export const CustomColor: Story = {
 	args: {
 		isOpen: true,
-		color: { bg: { base: '#fef3c7' }, text: { base: '#92400e' } },
+		color: { bg: { base: 'var(--rise-primary-soft)' }, text: { base: 'var(--rise-primary-text)' } },
 	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Кастомный цвет</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Тёмный popover</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Внешнее изменение isOpen — покрывает watch синхронизацию */
-export const ExternalOpenChange: Story = {
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Открыт</button></template>
-					<div style="padding:12px;">Контент</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-	args: { isOpen: true },
-}
-/** Внешнее изменение isOpen с false на true — покрывает watch callback */
-export const ExternalOpenFromFalse: Story = {
-	args: {
-		isOpen: false,
-		onClose: fn(),
-		'onUpdate:isOpen': fn(),
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(false)
-			// Меняем на true через 50ms — триггерит watch
-			setTimeout(() => {
-				isOpen.value = true
-			}, 50)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Контент</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Закрытие через BaseDropdown — покрывает handleClose и emit close */
-export const CloseViaDropdown: Story = {
-	args: {
-		isOpen: true,
-		onClose: fn(),
-		'onUpdate:isOpen': fn(),
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Контент</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, args }) => {
-		// Закрытие через Escape — BaseDropdown слушает Escape
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-		await new Promise(r => setTimeout(r, 100))
-		expect(args.onClose).toHaveBeenCalled()
-	},
-}
-/** Масштаб размера */
-export const SizeScale: Story = {
-	args: {
-		isOpen: true,
-		sizeScale: 150,
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">150%</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Закрытие через handleClose — покрывает emit update:isOpen(false) и emit close */
-export const HandleClose: Story = {
-	args: {
-		isOpen: true,
-		onClose: fn(),
-		'onUpdate:isOpen': fn(),
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Контент</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-	play: async ({ args, canvasElement }) => {
-		// Клик снаружи popover — через mousedown на document (useClickOutside)
-		await new Promise(r => setTimeout(r, 100))
-		document.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-		await new Promise(r => setTimeout(r, 100))
-		expect(args.onClose).toHaveBeenCalled()
-		expect(args['onUpdate:isOpen']).toHaveBeenCalledWith(false)
-	},
-}
-/** Позиция top + вариант ghost — покрывает panelClasses с нестандартным variant */
-export const TopGhost: Story = {
-	args: {
-		isOpen: true,
-		position: 'top' as const,
-		variant: 'ghost' as const,
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Top + Ghost</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Позиция left — покрывает все 4 позиции */
-export const LeftPosition: Story = {
-	args: {
-		isOpen: true,
-		position: 'left' as const,
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Left</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Вариант shadow — покрывает panelClasses */
-export const ShadowVariant: Story = {
-	args: {
-		isOpen: true,
-		variant: 'shadow' as const,
-	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Shadow</div>
-				</BasePopover>
-			</div>
-		`,
-	}),
-}
-/** Popover с длинным содержимым */
-export const LongContent: Story = {
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
+	parameters: { controls: { include: ['color', 'position'] }, docs: docsFrame(200) },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BasePopover, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: `
+				<BasePopover v-bind="props" @update:is-open="onUpdate">
 					<template #trigger>
-						<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-							Подробная информация
-						</button>
+						<BaseButton variant="outline">Новое в редакторе</BaseButton>
 					</template>
-					<div style="padding:16px;max-width:320px;">
-						<h4 style="margin:0 0 8px;">Подробное описание услуги</h4>
-						<p style="margin:0 0 8px;color:var(--color-text-muted);font-size:14px;">
-							Художественная ковка — это древнейший ремесленный процесс обработки металла, который позволяет создавать уникальные декоративные элементы для интерьера и экстерьера.
-						</p>
-						<p style="margin:0;color:var(--color-text-muted);font-size:14px;">
-							Наши мастера используют традиционные техники ручной ковки, сочетая их с современными методами обработки металла для достижения наилучшего результата.
-						</p>
+					<div class="story-col">
+						Субтитры теперь можно сдвигать горячими клавишами.
+						<BaseButton>Включить</BaseButton>
 					</div>
 				</BasePopover>
-			</div>
-		`,
-	}),
-}
-export const WithCustomClass: Story = {
-	args: {
-		isOpen: true,
-		customClass: { root: 'pop-root', trigger: 'pop-trigger', arrow: 'pop-arrow', inner: 'pop-inner', panel: 'pop-panel' },
+			`,
+		}
 	},
-	render: args => ({
-		components: { BasePopover },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BasePopover v-bind="args" v-model:is-open="isOpen">
-					<template #trigger><button>Триггер</button></template>
-					<div style="padding:12px;">Контент</div>
+	play: async () => {
+		const action = await screen.findByRole('button', { name: 'Включить' })
+		const panel = action.closest('.base-dropdown__panel') as HTMLElement
+		const arrow = panel.querySelector('.base-popover__arrow') as HTMLElement
+		await expect(getComputedStyle(panel).backgroundColor).toBe(resolveColor('var(--rise-primary-soft)'))
+		await expect(getComputedStyle(arrow).backgroundColor).toBe(resolveColor('var(--rise-primary-soft)'))
+		await expect(getComputedStyle(panel).color).toBe(resolveColor('var(--rise-primary-text)'))
+		await expect(getComputedStyle(action).backgroundColor).toBe(resolveColor('var(--rise-primary)'))
+	},
+}
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Длинный текст переносится по словам: ширина поповера не больше 320px. */
+export const LongContent: Story = {
+	args: { isOpen: true },
+	parameters: { controls: { include: ['position', 'variant', 'sizeScale'] }, docs: docsFrame(260) },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BasePopover, BaseButton, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: `
+				<BasePopover v-bind="props" @update:is-open="onUpdate">
+					<template #trigger>
+						<BaseButton variant="outline">Как считается стоимость</BaseButton>
+					</template>
+					<div class="story-col" style="gap: 4px;">
+						<BaseText :color="{ text: { base: 'var(--rise-text-highlighted)' } }" :weight="600">Стоимость озвучки</BaseText>
+						<BaseText :color="{ text: { base: 'var(--rise-text-muted)' } }">
+							Стоимость зависит от длительности серии, числа ролей и срочности. Минута с одним голосом — базовый тариф,
+							каждая следующая роль добавляет 30%, срочная сдача в течение суток — ещё 50%.
+						</BaseText>
+					</div>
 				</BasePopover>
-			</div>
+			`,
+		}
+	},
+	play: async () => {
+		const title = await screen.findByText('Стоимость озвучки')
+		const panel = title.closest('.base-dropdown__panel') as HTMLElement
+		await expect(panel.getBoundingClientRect().width).toBeLessThanOrEqual(320)
+		await expect(panel.getBoundingClientRect().height).toBeGreaterThan(title.getBoundingClientRect().height * 3)
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Форма в поповере: поле получает фокус и ввод, кнопка отправляет форму и закрывает поповер.
+ * После закрытия фокус возвращается на кнопку-триггер.
+ */
+export const WithForm: Story = {
+	parameters: { controls: { include: ['position', 'variant'] } },
+	render: args => ({
+		components: { BasePopover, BaseButton, BaseInput },
+		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]), isOpen: ref(false), email: ref('') }),
+		template: `
+			<BasePopover v-bind="props" v-model:is-open="isOpen">
+				<template #trigger>
+					<BaseButton variant="outline">Пригласить</BaseButton>
+				</template>
+				<form class="story-col" aria-label="Приглашение" @submit.prevent="isOpen = false">
+					<BaseInput v-model="email" type="email" label="Почта участника" placeholder="name@example.com" />
+					<BaseButton type="submit">Отправить приглашение</BaseButton>
+				</form>
+			</BasePopover>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.pop-root')).toBeTruthy()
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Пригласить' })
+		await userEvent.click(trigger)
+		const field = await screen.findByLabelText('Почта участника')
+
+		await userEvent.click(field)
+		await expect(field).toHaveFocus()
+		await userEvent.keyboard('ivan@example.com')
+		await expect(field).toHaveValue('ivan@example.com')
+
+		await userEvent.click(within(screen.getByRole('form', { name: 'Приглашение' })).getByRole('button', { name: 'Отправить приглашение' }))
+		await waitFor(() => expect(screen.queryByLabelText('Почта участника')).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/** Клавиатура: Tab ставит фокус на кнопку-триггер, Enter открывает поповер, Escape закрывает его (событие `close`). */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Автосохранение' })
+		await tabTo(trigger, userEvent)
+
+		await userEvent.keyboard('{Enter}')
+		await expect(await screen.findByText(/Изменения сохраняются/)).toBeInTheDocument()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByText(/Изменения сохраняются/)).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
 	},
 }

@@ -1,65 +1,82 @@
+// BaseSlider (карусель). Область слайдов — радиус lg, фон --rise-bg-elevated виден, пока слайдов нет или снимок грузится.
+// Стрелки — круглые кнопки 32px: поверх слайдов (center) — BaseButton shadow, снаружи в углах — outline.
+// Точки 8px --rise-bg-accented, активная — «пилюля» 24px --rise-primary; миниатюры 64×48 с радиусом md,
+// у активной — кольцо --rise-primary. Подпись — белый текст на затемнении снизу слайда.
+// Слайды сменяются за --rise-duration-slow; при prefers-reduced-motion переходы мгновенные (токены длительности).
+
+// Затемнение под подписью и значком «видео» — фон для текста поверх фотографии, одинаковый в обеих темах,
+// поэтому чёрный с прозрачностью, а не токен темы.
+$media-scrim: color-mix(in srgb, black 64%, transparent);
+$media-scrim-light: color-mix(in srgb, black 32%, transparent);
+$media-text: white;
+$media-text-muted: color-mix(in srgb, white 85%, transparent);
+
 .base-slider {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	overflow: visible;
 
 	&--vertical {
 		flex-direction: row;
 	}
 
-	/* Режим с отступами — border-radius на слайдах, а не на viewport */
-	&--gapped &__viewport {
-		border-radius: 0;
-	}
+	// ─── Сцена и область слайдов ─────────────────────────────────────────────────
 
-	&--gapped &__slide {
-		border-radius: var(--border-radius-lg);
-	}
-
-	&--dragging {
-		user-select: none;
-
-		.base-slider__viewport {
-			cursor: grabbing;
-		}
+	&__stage {
+		position: relative;
+		display: flex;
+		flex: 1;
+		min-width: 0;
+		min-height: 0;
 	}
 
 	&__viewport {
 		position: relative;
 		flex: 1;
-		overflow: hidden;
-		border-radius: var(--border-radius-lg);
-		cursor: grab;
+		min-width: 0;
 		min-height: 0;
+		overflow: hidden;
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-bg-elevated);
+		cursor: grab;
+	}
 
-		.base-slider--vertical & {
-			flex: 1;
-			min-height: 0;
-		}
+	&--dragging {
+		user-select: none;
+	}
+
+	&--dragging &__viewport {
+		cursor: grabbing;
+	}
+
+	// С отступами между слайдами скругляется каждый слайд, а промежутки прозрачные
+	&--gapped &__viewport {
+		border-radius: 0;
+		background-color: transparent;
+	}
+
+	&--gapped &__slide {
+		border-radius: sz(var(--rise-radius-lg));
 	}
 
 	&__track {
 		display: flex;
 		height: 100%;
-		@include transition(transform);
+		transition: transform var(--rise-duration-slow) var(--rise-ease);
+	}
 
-		.base-slider--vertical & {
-			flex-direction: column;
-		}
+	&--vertical &__track {
+		flex-direction: column;
+	}
 
-		.base-slider--fade & {
-			position: relative;
-		}
+	&--fade &__track,
+	&--scale &__track,
+	&--flip &__track {
+		position: relative;
+	}
 
-		.base-slider--scale & {
-			position: relative;
-		}
-
-		.base-slider--flip & {
-			position: relative;
-			perspective: sz(1000px);
-		}
+	&--flip &__track {
+		perspective: sz(1000px);
 	}
 
 	&__slide {
@@ -68,292 +85,296 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-
-		.base-slider--vertical & {
-			flex: 0 0 100%;
-			width: 100%;
-			height: 100%;
-		}
-
-		.base-slider--fade & {
-			position: absolute;
-			inset: 0;
-			opacity: 0;
-			@include transition(opacity);
-
-			&--active {
-				opacity: 1;
-			}
-		}
-
-		.base-slider--scale & {
-			position: absolute;
-			inset: 0;
-			opacity: 0;
-			transform: scale(0.85);
-			@include transition(opacity, transform);
-
-			&--active {
-				opacity: 1;
-				transform: scale(1);
-			}
-		}
-
-		.base-slider--flip & {
-			position: absolute;
-			inset: 0;
-			opacity: 0;
-			transform: rotateY(90deg);
-			@include transition(opacity, transform);
-
-			&--active {
-				opacity: 1;
-				transform: rotateY(0deg);
-			}
-		}
 	}
 
-	&__image,
+	// fade/scale/flip: слайды лежат друг на друге. Неактивные не только прозрачные, но и скрыты (visibility)
+	// и не ловят клики — иначе клик по видимому слайду получал последний невидимый (видео, ссылки, зум).
+	&--fade &__slide,
+	&--scale &__slide,
+	&--flip &__slide {
+		position: absolute;
+		inset: 0;
+		visibility: hidden;
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			opacity var(--rise-duration-slow) var(--rise-ease),
+			transform var(--rise-duration-slow) var(--rise-ease),
+			visibility 0s linear var(--rise-duration-slow);
+	}
+
+	&--fade &__slide--active,
+	&--scale &__slide--active,
+	&--flip &__slide--active {
+		visibility: visible;
+		opacity: 1;
+		pointer-events: auto;
+		transition-delay: 0s;
+	}
+
+	&--scale &__slide {
+		transform: scale(0.92);
+	}
+
+	&--scale &__slide--active {
+		transform: none;
+	}
+
+	&--flip &__slide {
+		transform: rotateY(90deg);
+	}
+
+	&--flip &__slide--active {
+		transform: none;
+	}
+
+	// Изображение и видео заполняют слайд целиком: скругление даёт область слайдов
+	&__image.base-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
 	&__video {
+		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
 
+	// ─── Подпись ─────────────────────────────────────────────────────────────────
+
+	// Обёртка слота caption: цвет компонента (color) не перекрашивает вложенные компоненты
 	&__caption {
 		position: absolute;
+		right: 0;
 		bottom: 0;
 		left: 0;
-		right: 0;
-		padding: sz(24px) sz(16px) sz(16px);
-		background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-		color: var(--color-text-inverse);
+		padding: sz(32px 16px 16px);
+		background-image: linear-gradient(to top, $media-scrim, transparent);
+		color: $media-text;
+		pointer-events: none;
+		@include reset-custom-color;
+	}
+
+	// Заголовок и описание — до двух строк: длинная подпись не закрывает снимок
+	&__title,
+	&__desc {
+		display: -webkit-box;
+		margin: 0;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow-wrap: anywhere;
 	}
 
 	&__title {
-		margin: 0 0 sz(4px);
-		font-size: sz(18px);
-		font-weight: 700;
-		color: var(--color-text-inverse);
+		@include text-size(base);
+		font-weight: var(--rise-font-weight-semibold);
+		color: $media-text;
 	}
 
 	&__desc {
-		margin: 0;
-		font-size: sz(14px);
-		opacity: 0.85;
-		color: var(--color-text-inverse);
+		margin-top: sz(2px);
+		@include text-size(sm);
+		color: $media-text-muted;
 	}
 
-	/* Стрелки */
+	// ─── Стрелки ─────────────────────────────────────────────────────────────────
+
+	// Контейнер не перехватывает указатель: перетаскивание слайдов работает и под ним
 	&__arrows {
 		position: absolute;
-		z-index: 2;
+		z-index: 1;
 		display: flex;
 		gap: sz(8px);
 		pointer-events: none;
 	}
 
-	&__arrow {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: sz(40px);
-		height: sz(40px);
-		border: none;
-		border-radius: var(--border-radius-full);
-		background-color: rgba(255, 255, 255, 0.9);
-		color: var(--color-primary);
-		font-size: sz(24px);
-		cursor: pointer;
+	// Круглая кнопка 32×32: иконка 20px и отступы 5px
+	&__arrow.base-button {
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
+
+		flex: none;
+		border-radius: var(--rise-radius-full);
 		pointer-events: auto;
-		@include transition(background-color, transform, opacity);
-		box-shadow: var(--shadow-md);
-
-		&:hover {
-			background-color: var(--color-text-inverse);
-			transform: scale(1.1);
-		}
-
-		&:active {
-			transform: scale(0.95);
-		}
-
-		&:disabled {
-			opacity: 0.4;
-			cursor: not-allowed;
-		}
 	}
 
-	/* Позиционирование стрелок — center */
+	// center — по бокам области слайдов, по центру её высоты (в вертикальном режиме — сверху и снизу)
 	&--arrows-center &__arrows {
-		top: 50%;
-		left: sz(12px);
-		right: sz(12px);
-		transform: translateY(-50%);
+		inset: 0 sz(12px);
+		align-items: center;
 		justify-content: space-between;
 	}
 
-	/* Corner-позиции — стрелки за пределами слайдера */
-	&--arrows-top-left &__arrows {
-		top: sz(-48px);
-		left: 0;
-	}
-
-	&--arrows-top-right &__arrows {
-		top: sz(-48px);
-		right: 0;
-	}
-
-	&--arrows-bottom-left &__arrows {
-		bottom: sz(-48px);
-		left: 0;
-	}
-
-	&--arrows-bottom-right &__arrows {
-		bottom: sz(-48px);
-		right: 0;
-	}
-
-	/* Вертикальный режим — стрелки center */
 	&--vertical.base-slider--arrows-center &__arrows {
-		top: sz(12px);
-		bottom: sz(12px);
-		left: 50%;
-		right: auto;
-		transform: translateX(-50%);
+		inset: sz(12px) 0;
 		flex-direction: column;
-		justify-content: space-between;
-
-		.base-slider__arrow {
-			&:hover {
-				transform: scale(1.1);
-			}
-			&:active {
-				transform: scale(0.95);
-			}
-		}
 	}
 
-	/* Точки */
-	&__dots {
-		display: flex;
-		justify-content: center;
-		gap: sz(6px);
-		padding: sz(12px) 0;
+	// Угловые позиции — снаружи области слайдов, над ней или под ней: оставьте для них место
+	&--arrows-top-left &__arrows,
+	&--arrows-top-right &__arrows {
+		bottom: calc(100% + #{sz(8px)});
 	}
 
-	&__dot.base-button {
-		width: sz(6px);
-		height: sz(6px);
-		min-width: sz(6px);
-		padding: 0;
-		border: none;
-		border-radius: var(--border-radius-full);
-		background-color: var(--color-border);
-		cursor: pointer;
-		@include transition(background-color, transform);
-
-		&.base-slider__dot--active {
-			background-color: var(--color-accent);
-			transform: scale(1.3);
-		}
-
-		&:hover:not(&.base-slider__dot--active) {
-			background-color: var(--color-text-muted);
-		}
+	&--arrows-bottom-left &__arrows,
+	&--arrows-bottom-right &__arrows {
+		top: calc(100% + #{sz(8px)});
 	}
 
-	/* Вертикальный режим — точки */
-	&--vertical &__dots {
-		flex-direction: column;
-		padding: sz(12px) 0;
-		gap: sz(6px);
+	&--arrows-top-left &__arrows,
+	&--arrows-bottom-left &__arrows {
+		left: 0;
 	}
 
-	/* Миниатюры */
-	&__thumbs {
-		display: flex;
-		gap: sz(8px);
-		padding: sz(12px);
-		overflow-x: auto;
+	&--arrows-top-right &__arrows,
+	&--arrows-bottom-right &__arrows {
+		right: 0;
 	}
 
-	&__thumb {
-		flex: 0 0 auto;
-		width: sz(64px);
-		height: sz(48px);
-		border: sz(2px) solid transparent;
-		border-radius: var(--border-radius-base);
-		overflow: hidden;
-		cursor: pointer;
-		@include transition(border-color, transform);
-		padding: 0;
-		background: none;
+	// ─── Навигация: точки и миниатюры ────────────────────────────────────────────
 
-		&--active {
-			border-color: var(--color-accent);
-			transform: scale(1.05);
-		}
-
-		&:hover:not(&--active) {
-			border-color: var(--color-text-muted);
-		}
-
-		position: relative;
-
-		.base-image {
-			width: 100%;
-			height: 100%;
-		}
-	}
-
-	/* Вертикальный режим — миниатюры */
-	&--vertical &__thumbs {
-		flex-direction: column;
-		overflow-y: auto;
-		overflow-x: hidden;
-		max-height: 100%;
-	}
-
-	/* Режим both — уменьшить отступ между dots и thumbs */
-	&__dots + &__thumbs {
-		padding-top: sz(4px);
-	}
-
-	/* Вертикальный режим + both */
-	&--vertical &__dots + &__thumbs {
-		padding-top: sz(4px);
-	}
-
-	/* Обёртка навигации */
 	&__navigation {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		gap: sz(8px);
+		padding-top: sz(12px);
+	}
 
-		.base-slider--vertical & {
-			flex-direction: column;
+	&--vertical &__navigation {
+		flex-direction: row;
+		padding-top: 0;
+		padding-left: sz(12px);
+	}
+
+	&__dots {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: sz(8px);
+		min-height: sz(12px);
+	}
+
+	&--vertical &__dots {
+		flex-direction: column;
+	}
+
+	&__dot {
+		position: relative;
+		flex: none;
+		width: sz(8px);
+		height: sz(8px);
+		padding: 0;
+		border: 0;
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-accented);
+		cursor: pointer;
+		@include transition(width, height, background-color);
+		@include focus-ring;
+
+		// Зона нажатия шире самой точки
+		&::after {
+			content: '';
+			position: absolute;
+			inset: sz(-4px);
+		}
+
+		@include hover {
+			background-color: var(--rise-text-dimmed);
+		}
+
+		&--active {
+			width: sz(24px);
+			background-color: var(--rise-primary);
+
+			@include hover {
+				background-color: var(--rise-primary);
+			}
 		}
 	}
 
-	/* Слот header */
-	&__header {
-		padding: sz(8px) sz(16px);
+	&--vertical &__dot--active {
+		width: sz(8px);
+		height: sz(24px);
 	}
 
-	/* Слот footer */
-	&__footer {
-		padding: sz(8px) sz(16px);
+	// Лента миниатюр прокручивается, если не помещается. Поля по 4px сбоку — место для кольца фокуса,
+	// отрицательный отступ выравнивает ленту по краю области слайдов.
+	&__thumbs {
+		display: flex;
+		justify-content: safe center;
+		gap: sz(8px);
+		margin: 0 sz(-4px);
+		padding: 0 sz(4px) sz(4px);
+		overflow-x: auto;
+		@include scrollbar-thin;
 	}
 
+	&--vertical &__thumbs {
+		flex-direction: column;
+		justify-content: flex-start;
+		margin: sz(-4px) 0;
+		padding: sz(4px) sz(4px) sz(4px) 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	&__thumb {
+		position: relative;
+		flex: none;
+		width: sz(64px);
+		height: sz(48px);
+		padding: 0;
+		border: 0;
+		border-radius: sz(var(--rise-radius-md));
+		overflow: hidden;
+		background-color: var(--rise-bg-elevated);
+		cursor: pointer;
+		opacity: 0.6;
+		@include transition-colors;
+		@include focus-ring;
+
+		// Кольцо поверх снимка: inset-тень самой кнопки закрыло бы изображение
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			pointer-events: none;
+		}
+
+		@include hover {
+			opacity: 1;
+		}
+
+		&--active {
+			opacity: 1;
+
+			&::after {
+				box-shadow: inset 0 0 0 2px var(--rise-primary);
+			}
+		}
+	}
+
+	&__thumb-image.base-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	// Значок «видео» на миниатюре: белая иконка на лёгком затемнении
 	&__thumb-play {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		color: var(--color-text-inverse);
-		font-size: sz(16px);
-		text-shadow: 0 sz(1px) sz(3px) rgba(0, 0, 0, 0.5);
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: $media-scrim-light;
+		color: $media-text;
 		pointer-events: none;
 	}
 }

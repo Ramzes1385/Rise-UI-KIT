@@ -4,6 +4,7 @@
 			class="base-tree__header"
 			:class="treeContext.classes.value.header"
 			tabindex="0"
+			:aria-disabled="node.isDisabled ? 'true' : undefined"
 			@click="handleHeaderClick"
 			@keydown.enter="handleHeaderClick">
 			<span
@@ -12,14 +13,16 @@
 				:class="[{ 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
 				@click.stop="handleArrowClick">
 				<slot name="arrow" :node="node" :is-expanded="isExpanded">
-					<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
+					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 				</slot>
 			</span>
 			<BaseCheckbox
 				v-if="treeContext.selectionMode.value === 'multiple'"
 				class="base-tree__checkbox"
-				:custom-class="treeContext.classes.value.checkbox"
+				:custom-class="checkboxClasses"
 				:model-value="isSelected"
+				:label="node.label"
+				:is-disabled="node.isDisabled"
 				:size-scale="sizeScale"
 				@click.stop
 				@update:model-value="handleCheckboxChange" />
@@ -31,18 +34,18 @@
 					:custom-class="treeContext.classes.value.icon"
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</slot>
-			<BaseText tag="span" :size-scale="sizeScale" class="base-tree__label" :class="treeContext.classes.value.label">
+			<span class="base-tree__label" :class="treeContext.classes.value.label">
 				<slot name="label" :node="node" :depth="depth" :is-selected="isSelected" :is-expanded="isExpanded">
 					{{ node.label }}
 				</slot>
-			</BaseText>
+			</span>
 			<span
 				v-if="treeContext.arrowPosition.value === 'right'"
 				class="base-tree__arrow base-tree__arrow--right"
 				:class="[{ 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
 				@click.stop="handleArrowClick">
 				<slot name="arrow" :node="node" :is-expanded="isExpanded">
-					<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
+					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 				</slot>
 			</span>
 			<div class="base-tree__actions" :class="treeContext.classes.value.actions">
@@ -81,7 +84,6 @@
 import { computed, inject, ref, watch } from 'vue'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeChildren from './BaseTreeChildren.vue'
@@ -119,6 +121,14 @@ const isExpanded = computed(function getIsExpanded() {
 
 const isSelected = computed(function getIsSelected() {
 	return treeContext.selectedSet.value.has(props.node.id)
+})
+
+/**
+ * Классы чекбокса: пользовательский класс checkbox — на корень, подпись скрыта визуально.
+ * Подпись (label узла) — доступное имя чекбокса: рядом видна та же метка узла.
+ */
+const checkboxClasses = computed(function getCheckboxClasses() {
+	return { root: treeContext.classes.value.checkbox, label: 'base-tree__visually-hidden' }
 })
 
 /** Узел был раскрыт хотя бы раз — для ленивого рендеринга детей */

@@ -1,29 +1,29 @@
-@use "@styles/functions" as *;
+// Шапка чата: аватар 32px, название 14/20 semibold, статус 12/16 muted («печатает» — цветом primary),
+// справа — квадратные ghost-кнопки 32px (поиск, информация). В режиме поиска вместо названия — поле 32px.
+@use '../../styles/chat' as *;
 
 .base-chat-header {
 	display: flex;
+	flex: none;
 	align-items: center;
-	justify-content: space-between;
-	padding: sz(12px) sz(16px);
-	background: var(--color-surface);
-	border-bottom: sz(1px) solid var(--color-border);
 	gap: sz(12px);
+	min-height: sz(56px);
+	padding: sz(12px) sz(12px) sz(12px) sz(16px);
+	@include chat-section-border(bottom);
 
 	&__info {
 		display: flex;
+		flex: 1;
 		align-items: center;
 		gap: sz(12px);
-		flex: 1;
 		min-width: 0;
 	}
 
-	&__avatar {
-		cursor: pointer;
-		transition: opacity var(--transition-base);
-
-		&:hover {
-			opacity: 0.85;
-		}
+	&__avatar-button {
+		@include chat-button-reset;
+		flex: none;
+		border-radius: var(--rise-radius-full);
+		@include focus-ring;
 	}
 
 	&__text {
@@ -33,36 +33,34 @@
 	}
 
 	&__title {
-		color: var(--color-text);
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--chat-title-color, var(--rise-text-highlighted));
+		@include truncate;
+	}
+
+	&__subtitle,
+	&__typing {
+		@include text-size(xs);
+		@include truncate;
 	}
 
 	&__subtitle {
-		color: var(--color-text-muted);
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
-
-	&__status {
-		display: flex;
-		align-items: center;
-		min-width: 0;
+		color: var(--rise-text-muted);
 	}
 
 	&__typing {
-		color: var(--color-accent);
-		font-weight: 500;
-		display: flex;
-		align-items: center;
+		color: var(--rise-primary);
 	}
 
+	// Многоточие «печатает…» мерцает; при prefers-reduced-motion — статично.
 	&__dots {
-		display: inline-block;
-		animation: typing-dots 1.4s infinite both;
+		@include motion-safe {
+			animation: base-chat-header-typing 1.4s ease-in-out infinite;
+		}
 	}
+
+	// ─── Поиск ───────────────────────────────────────────────────────────────────
 
 	&__search-container {
 		flex: 1;
@@ -70,40 +68,60 @@
 	}
 
 	&__search-input {
-		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		padding: 0 sz(var(--rise-control-padding-x));
+		@include field-box;
 	}
+
+	&__search-icon {
+		color: var(--rise-text-muted);
+	}
+
+	&__search-field {
+		flex: 1;
+		min-width: 0;
+		padding: sz(var(--rise-control-padding-y)) 0;
+		border: none;
+		outline: none;
+		background: transparent;
+		color: var(--rise-text-highlighted);
+		font: inherit;
+		@include control-text;
+
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
+		}
+
+		// Крестик очистки браузера не нужен: поиск закрывает кнопка справа и Escape.
+		&::-webkit-search-cancel-button {
+			appearance: none;
+		}
+	}
+
+	// ─── Действия ────────────────────────────────────────────────────────────────
 
 	&__actions {
 		display: flex;
+		flex: none;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(2px);
 	}
 
 	&__action-btn {
-		color: var(--color-text-muted);
-		transition:
-			color var(--transition-base),
-			transform var(--transition-base);
-
-		&:hover {
-			color: var(--color-accent);
-			transform: scale(1.05);
-		}
-
-		&:active {
-			transform: scale(0.95);
-		}
+		@include chat-icon-button(5px);
 	}
 }
 
-@keyframes typing-dots {
-	0% {
-		opacity: 0.2;
-	}
-	20% {
-		opacity: 1;
-	}
+@keyframes base-chat-header-typing {
+	0%,
 	100% {
-		opacity: 0.2;
+		opacity: 0.3;
+	}
+
+	50% {
+		opacity: 1;
 	}
 }

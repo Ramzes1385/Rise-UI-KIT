@@ -12,6 +12,8 @@ function useSearchState(options: UseSearchStateOptions) {
 
 	const visibleResults = computed((): SearchResult[] => {
 		if (!query.value) return []
+		// Сервер ищет не только по подстроке (транслит, опечатки, другие поля) — повторная фильтрация скрыла бы его ответ
+		if (options.isRemote?.()) return options.results().slice(0, options.maxResults())
 		const lowerQuery = query.value.toLowerCase()
 		return options.results()
 			.filter(item => {
@@ -60,11 +62,28 @@ function useSearchState(options: UseSearchStateOptions) {
 		reset: resetHighlight,
 	} = useListNavigation({
 		itemCount: () => visibleResults.value.length,
-		onSelect: index => handleSelect(visibleResults.value[index]),
+		onSelect: index => {
+			// Защита на случай, если список изменился между пересчётом и нажатием Enter
+			const item = visibleResults.value[index]
+			if (item) handleSelect(item)
+		},
 		onEscape: () => {
 			if (options.mode() === 'modal' || options.mode() === 'sidebar') options.closeOverlay()
 		},
 	})
+
+	/**
+	 * Подсветка хранится индексом: при смене набора результатов (новый запрос, ответ сервера)
+	 * он указывает на другой или уже отсутствующий элемент — сбрасываем, чтобы Enter
+	 * не выбрал то, что пользователь не подсвечивал, и не упал на несуществующем индексе.
+	 */
+	watch(
+		() => visibleResults.value.map(item => item.id),
+		(ids, previousIds) => {
+			const isSameList = ids.length === previousIds.length && ids.every((id, index) => id === previousIds[index])
+			if (!isSameList) resetHighlight()
+		},
+	)
 
 	function handleClose(): void {
 		isFocused.value = false
@@ -75,6 +94,8 @@ function useSearchState(options: UseSearchStateOptions) {
 		query.value = value
 		options.emit.updateModelValue(value)
 		isSearchTriggered.value = false
+		// Новый запрос — прежняя подсветка не относится к нему; сразу, не дожидаясь пересчёта списка
+		resetHighlight()
 		if (options.isInstant()) {
 			debouncedSearch(value)
 		}

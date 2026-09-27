@@ -45,7 +45,7 @@ describe('BaseAvatar unit', () => {
 				props: { src: '/avatar.jpg', alt: 'Аватар', name: 'Иван Петров' },
 			})
 
-			await fireEvent.error(getElement('.base-image__img', container))
+			await fireEvent.error(getElement('.base-avatar__img', container))
 
 			expect(screen.getByText('ИП')).toBeInTheDocument()
 
@@ -123,6 +123,12 @@ describe('BaseAvatar unit', () => {
 			const { container } = render(BaseAvatar, { props: { isOnline: true } })
 
 			expect(container.querySelector('.base-avatar__online')).toBeInTheDocument()
+		})
+
+		it('должен давать точке статуса доступное имя «в сети» (статус передаётся не только цветом)', () => {
+			render(BaseAvatar, { props: { name: 'Иван Петров', isOnline: true } })
+
+			expect(screen.getByRole('img', { name: 'в сети' })).toHaveClass('base-avatar__online')
 		})
 
 		it('не должен рендерить индикатор онлайн когда isOnline=false', () => {

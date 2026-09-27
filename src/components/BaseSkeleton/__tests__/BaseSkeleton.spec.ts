@@ -14,6 +14,12 @@ describe('BaseSkeleton unit', () => {
 
 			expect(container.querySelector('.base-skeleton')).toBeInTheDocument()
 		})
+
+		it('должен скрывать декоративную заглушку от вспомогательных технологий', () => {
+			const { container } = render(BaseSkeleton)
+
+			expect(container.querySelector('.base-skeleton')).toHaveAttribute('aria-hidden', 'true')
+		})
 	})
 
 	describe('пропс shape', () => {
@@ -77,6 +83,14 @@ describe('BaseSkeleton unit', () => {
 
 			const el = container.querySelector('.base-skeleton') as HTMLElement
 			expect(el.style.height).toBe('16px')
+		})
+
+		it('не должен задавать inline-размеры без пропсов width/height (размер задают стили формы)', () => {
+			const { container } = render(BaseSkeleton, { props: { shape: 'circle' } })
+
+			const el = container.querySelector('.base-skeleton') as HTMLElement
+			expect(el.style.width).toBe('')
+			expect(el.style.height).toBe('')
 		})
 
 		it('должен устанавливать ширину как строку когда передана строка', () => {

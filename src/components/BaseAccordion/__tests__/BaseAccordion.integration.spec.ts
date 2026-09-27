@@ -128,6 +128,89 @@ describe('BaseAccordion integration', () => {
 		})
 	})
 
+	describe('доступность (APG Accordion)', () => {
+		it('заголовок — кнопка, aria-expanded отражает состояние панели', async () => {
+			const user = userEvent.setup()
+			render(BaseAccordion, { props: { items: ITEMS } })
+
+			await user.click(screen.getByRole('button', { name: 'Материалы', expanded: false }))
+
+			expect(screen.getByRole('button', { name: 'Материалы', expanded: true })).toBeInTheDocument()
+		})
+
+		it('заголовок управляет панелью через aria-controls, панель подписана заголовком', async () => {
+			const user = userEvent.setup()
+			render(BaseAccordion, { props: { items: ITEMS } })
+
+			const header = screen.getByRole('button', { name: 'Материалы' })
+			await user.click(header)
+
+			const region = screen.getByRole('region', { name: 'Материалы' })
+			expect(header).toHaveAttribute('aria-controls', region.id)
+			expect(region).toHaveTextContent('Работаем с металлом')
+		})
+
+		it('должен открывать элемент по Space на заголовке', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseAccordion, { props: { items: ITEMS } })
+
+			const headerEl = screen.getByText('Материалы').closest('.base-accordion__header') as HTMLElement
+			headerEl.focus()
+			await user.keyboard(' ')
+
+			expect(emitted().toggle).toEqual([[0, true]])
+		})
+
+		it('содержимое закрытой панели скрыто от AT и находится в inert-поддереве (вне порядка фокуса)', async () => {
+			const user = userEvent.setup()
+			const items: BaseAccordionItem[] = [{ label: 'Контакты', slot: 'contacts' }]
+			render(BaseAccordion, {
+				props: { items },
+				slots: { contacts: '<a href="#phone">Позвонить</a>' },
+			})
+
+			// jsdom не реализует inert, поэтому фокусную часть проверяем по DOM, а доступность — через дерево ролей
+			expect(screen.queryByRole('link', { name: 'Позвонить' })).toBeNull()
+			expect(screen.getByText('Позвонить').closest('[inert]')).not.toBeNull()
+
+			await user.click(screen.getByText('Контакты'))
+
+			expect(screen.getByRole('link', { name: 'Позвонить' })).toBeInTheDocument()
+			expect(screen.getByText('Позвонить').closest('[inert]')).toBeNull()
+		})
+
+		it('должен снова скрывать содержимое после закрытия панели', async () => {
+			const user = userEvent.setup()
+			const items: BaseAccordionItem[] = [{ label: 'Контакты', slot: 'contacts', defaultOpen: true }]
+			render(BaseAccordion, {
+				props: { items },
+				slots: { contacts: '<a href="#phone">Позвонить</a>' },
+			})
+
+			await waitFor(() => {
+				expect(screen.getByRole('link', { name: 'Позвонить' })).toBeInTheDocument()
+			})
+
+			await user.click(screen.getByRole('button', { name: 'Контакты' }))
+
+			expect(screen.queryByRole('link', { name: 'Позвонить' })).toBeNull()
+		})
+
+		it('отключённый элемент помечен aria-disabled и не раскрывается с клавиатуры', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseAccordion, { props: { items: ITEMS } })
+
+			const disabledHeader = screen.getByRole('button', { name: 'Гарантия' })
+			expect(disabledHeader).toHaveAttribute('aria-disabled', 'true')
+
+			disabledHeader.focus()
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+
+			expect(emitted()).not.toHaveProperty('toggle')
+		})
+	})
+
 	describe('слоты', () => {
 		it('должен рендерить именованный слот вместо контента', () => {
 			const items: BaseAccordionItem[] = [{ label: 'Галерея', slot: 'gallery' }]

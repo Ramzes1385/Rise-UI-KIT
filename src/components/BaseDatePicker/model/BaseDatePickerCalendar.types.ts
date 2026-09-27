@@ -1,4 +1,4 @@
-import type { CalendarHighlight, CalendarWeekday, CalendarWeekends } from '@components/BaseCalendar'
+import type { BaseCalendarProps, CalendarHighlight, CalendarWeekday, CalendarWeekends } from '@components/BaseCalendar'
 
 /**
  * Общие календарные пропсы для BaseDatePicker и внутренних панелей.
@@ -88,6 +88,69 @@ export function resolveDatePickerCalendarConfig(
 	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showWeekNumber')
 
 	return pickDatePickerCalendarConfig(merged)
+}
+
+/**
+ * Параметры отображения календаря внутри панели date picker (зависят от количества месяцев).
+ */
+export interface DatePickerCalendarDisplay {
+	/** Показывать год в заголовке месяца */
+	showYear: boolean
+	/** Показывать кнопку «Сегодня» */
+	showTodayButton: boolean
+}
+
+/**
+ * Props BaseCalendar, которые формирует панель date picker.
+ */
+export type DatePickerCalendarBindings = Required<
+	Pick<BaseCalendarProps, 'constraints' | 'displayConfig' | 'firstDayOfWeek' | 'highlights' | 'locale' | 'timeConfig' | 'weekends'>
+>
+
+/**
+ * Преобразует плоскую конфигурацию date picker в props BaseCalendar.
+ * С 1.2.2 BaseCalendar принимает ограничения, время и отображение только группами
+ * (constraints/timeConfig/displayConfig): плоские ключи уходили бы в $attrs и молча игнорировались.
+ * Навигация и смена вида календаря отключены — их выполняет шапка панели.
+ */
+export function toBaseCalendarProps(
+	config: BaseDatePickerCalendarConfig,
+	display: DatePickerCalendarDisplay,
+): DatePickerCalendarBindings {
+	return {
+		constraints: {
+			minDate: config.minDate,
+			maxDate: config.maxDate,
+			disabledDates: config.disabledDates,
+			disabledWeekdays: config.disabledWeekdays,
+			disableFrom: config.disableFrom,
+			disableTo: config.disableTo,
+		},
+		timeConfig: {
+			showTime: config.showTime,
+			showSeconds: config.showSeconds,
+			is24Hour: config.is24Hour,
+		},
+		displayConfig: {
+			showNavigation: false,
+			canSwitchView: false,
+			showYear: display.showYear,
+			showTodayButton: display.showTodayButton,
+			showWeekNumber: config.showWeekNumber,
+		},
+		highlights: config.highlights,
+		weekends: config.weekends,
+		firstDayOfWeek: config.firstDayOfWeek,
+		locale: config.locale,
+	}
+}
+
+/**
+ * Props календаря без блока времени. Время относится к выбранному значению, а не к месяцу:
+ * при нескольких месяцах блок показывается только под первым календарём — иначе N копий правят одно значение.
+ */
+export function withoutTimeBlock(bindings: DatePickerCalendarBindings): DatePickerCalendarBindings {
+	return { ...bindings, timeConfig: { ...bindings.timeConfig, showTime: false } }
 }
 
 /**

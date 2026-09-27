@@ -1,5 +1,5 @@
 /** Composable: действия над сообщениями чата */
-import { onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import {
 	UI_SIZE,
@@ -8,16 +8,60 @@ import {
 import { copyTextToClipboard } from '@utils/clipboardUtils'
 import type { UseChatMessageActionsOptions } from './useChatMessageActions.types'
 import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
-import type { Ref } from 'vue'
+import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/model/ChatMessageContextMenu.types'
+
+/**
+ * На сколько пикселей нужно прокрутить ленту, чтобы открытое меню закрылось. Мелкие сдвиги не в счёт: фокус кнопки
+ * «Другие действия» у края ленты подкручивает её на несколько пикселей — меню не должно закрываться сразу после открытия.
+ */
+const SCROLL_CLOSE_THRESHOLD = 16
+
+/** Код символа «-»: влияет на экранирование цифры второй позицией идентификатора */
+const HYPHEN_CODE = 0x2d
+
+/**
+ * Экранировать строку как CSS-идентификатор (алгоритм CSSOM «serialize an identifier»).
+ * id сообщений приходят из данных приложения и могут содержать `.`, `:`, `$`, пробелы
+ * (Matrix, Firebase, составные ключи): без экранирования querySelector бросает SyntaxError
+ * или находит не тот элемент. CSS.escape есть не во всех средах (jsdom, SSR, старые WebView),
+ * поэтому ниже — запасная реализация того же алгоритма.
+ */
+function escapeCssIdentifier(value: string): string {
+	if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') return CSS.escape(value)
+	let result = ''
+	for (let index = 0; index < value.length; index++) {
+		const char = value.charAt(index)
+		const code = value.charCodeAt(index)
+		const isDigit = code >= 0x30 && code <= 0x39
+		const isControl = (code >= 0x01 && code <= 0x1f) || code === 0x7f
+		const isLeadingDigit = isDigit && (index === 0 || (index === 1 && value.charCodeAt(0) === HYPHEN_CODE))
+		if (code === 0) {
+			result += '\uFFFD'
+		} else if (isControl || isLeadingDigit) {
+			result += `\\${code.toString(16)} `
+		} else if (index === 0 && value.length === 1 && code === HYPHEN_CODE) {
+			result += `\\${char}`
+		} else if (code >= 0x80 || code === HYPHEN_CODE || char === '_' || /[\dA-Za-z]/.test(char)) {
+			result += char
+		} else {
+			result += `\\${char}`
+		}
+	}
+	return result
+}
 
 /** Описание: управляет действиями над сообщениями чата — контекстное меню, реакции, ответ, копирование, пин, удаление и скролл к сообщению */
 function useChatMessageActions(options: UseChatMessageActionsOptions) {
 	const { selectedMessageIds, emit } = options
 
 	const listRef = ref<HTMLElement | null>(null)
-	const contextMenuRef = ref<{ $el: HTMLElement } | null>(null)
+	const contextMenuRef = ref<ChatMessageContextMenuExpose | null>(null)
 	const highlightTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
 
+	/** Элемент с фокусом до открытия меню (кнопка «Другие действия»): после закрытия из меню фокус возвращается на него */
+	let returnFocusTarget: HTMLElement | null = null
+	/** Прокрутка ленты в момент открытия меню */
+	let scrollTopAtOpen = 0
 	const contextMenu = ref({
 		isOpen: false,
 		x: 0,
@@ -25,8 +69,15 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		message: null as ChatMessage | null,
 	})
 
+	/**
+	 * Корень ChatMessageContextMenu — <Teleport>, поэтому `$el` экземпляра — это плейсхолдер-узел,
+	 * а не меню: клик по пункту считался кликом «снаружи» и закрывал меню ещё на mousedown, до click.
+	 * Сравниваем с реальным DOM-элементом меню, который компонент отдаёт через defineExpose.
+	 */
+	const contextMenuElement = computed(() => contextMenuRef.value?.menuRef ?? null)
+
 	useClickOutside({
-		targets: [contextMenuRef as unknown as Ref<HTMLElement | null>],
+		targets: [contextMenuElement],
 		callback: closeContextMenu,
 		isActive: () => contextMenu.value.isOpen,
 	})
@@ -65,6 +116,8 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 	function handleContextMenu(event: MouseEvent, message: ChatMessage): void {
 		/* istanbul ignore next — defensive */
 		if (selectedMessageIds.value.length > 0) return
+		returnFocusTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null
+		scrollTopAtOpen = listRef.value?.scrollTop ?? 0
 		const menuWidth = UI_SIZE.CONTEXT_MENU_WIDTH
 		const menuHeight = UI_SIZE.CONTEXT_MENU_HEIGHT
 		const windowWidth = window.innerWidth
@@ -90,9 +143,23 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		}
 	}
 
+	/**
+	 * Закрывает меню. Если фокус был внутри меню (выбор пункта, Escape, Tab), он возвращается на элемент,
+	 * с которого меню открыли: иначе после удаления меню из DOM фокус упал бы на body.
+	 */
 	function closeContextMenu(): void {
+		const hadFocus = Boolean(contextMenuElement.value?.contains(document.activeElement))
 		contextMenu.value.isOpen = false
 		contextMenu.value.message = null
+		if (hadFocus && returnFocusTarget?.isConnected) returnFocusTarget.focus()
+		returnFocusTarget = null
+	}
+
+	/** Прокрутка ленты закрывает меню (оно стоит на месте, а сообщение уезжает), если сдвиг заметный */
+	function handleListScroll(): void {
+		if (!contextMenu.value.isOpen) return
+		const scrollTop = listRef.value?.scrollTop ?? 0
+		if (Math.abs(scrollTop - scrollTopAtOpen) > SCROLL_CLOSE_THRESHOLD) closeContextMenu()
 	}
 
 	function handleSelectReaction(emoji: string): void {
@@ -155,7 +222,7 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		const container = listRef.value
 		/* istanbul ignore next — defensive */
 		if (!container) return
-		const element = container.querySelector<HTMLElement>(`#message-${messageId}`)
+		const element = container.querySelector<HTMLElement>(`#${escapeCssIdentifier(`message-${messageId}`)}`)
 		/* istanbul ignore next — defensive */
 		if (!element) return
 
@@ -197,6 +264,7 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		handleFileClick,
 		handleContextMenu,
 		closeContextMenu,
+		handleListScroll,
 		handleSelectReaction,
 		handleToggleReaction,
 		handleContextMenuReply,

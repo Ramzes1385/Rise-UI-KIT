@@ -31,6 +31,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # vue-tsc по tsconfig.app.json: исходники вместе с тестами и stories.
+      # Сборка ниже проверяет только tsconfig.lib.json (без *.spec.ts), поэтому ошибки типов в тестах туда не попадают.
+      - name: Type check (app + tests)
+        run: npm run typecheck
+
       - name: Type check & build
         run: npm run build
 
@@ -52,6 +57,10 @@ jobs:
 
       - name: Check missing play/keyboard a11y
         run: node scripts/check-a11y-coverage.mjs
+
+      # Пары «текст/фон» дизайн-токенов обеих тем — не ниже WCAG AA (docs/design/contrast.md)
+      - name: Check design token contrast
+        run: npm run test:contrast
 
   unit-tests:
     name: Unit & Integration
@@ -86,8 +95,18 @@ jobs:
   e2e-and-visual:
     name: E2E & Visual Regression
     runs-on: ubuntu-latest
+    # contents: write нужен только шагу auto-commit обновлённых baseline (он запускается лишь по метке, см. ниже)
+    permissions:
+      contents: write
+    env:
+      # Обновление baseline — осознанное действие: только PR из этого репозитория с меткой visual:update-baselines.
+      # Без метки упавший visual-тест остаётся падением, а не превращается в автокоммит новых скриншотов.
+      UPDATE_VISUAL_BASELINES: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.labels.*.name, 'visual:update-baselines') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # git-auto-commit-action не может запушить из merge-коммита PR (detached HEAD) — для обновления baseline нужна ветка PR
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
 
       - uses: actions/setup-node@v4
         with:
@@ -120,10 +139,11 @@ jobs:
       # === Cross-platform baseline regeneration ===
       # Без `if: always()` этот шаг skipped бы по дефолту, когда visual-тесты
       # упали на platform-различиях (как раз та ситуация, ради которой шаг
-      # и нужен). Только на pull_request: никогда не на main, и head.repo.full_name
-      # == github.repository защищает от форков.
+      # и нужен). Только на pull_request с меткой visual:update-baselines: никогда не на main,
+      # head.repo.full_name == github.repository защищает от форков, а метка — от автоматического
+      # «лечения» настоящей визуальной регрессии коммитом новых скриншотов.
       - name: Regenerate visual baselines on Linux
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && env.UPDATE_VISUAL_BASELINES == 'true'
         run: |
           node scripts/serve-storybook-static.mjs &
           npx wait-on http://localhost:6006
@@ -132,7 +152,7 @@ jobs:
           PLAYWRIGHT_REUSE_SERVER: "true"
 
       - name: Commit updated baselines to PR
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && env.UPDATE_VISUAL_BASELINES == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(visual): regenerate baselines for Linux CI (auto)"

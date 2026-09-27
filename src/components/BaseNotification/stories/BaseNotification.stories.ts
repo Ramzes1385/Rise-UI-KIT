@@ -1,399 +1,318 @@
-﻿/**
- * Stories для компонента BaseNotification.
- * Демонстрирует все типы, варианты и масштабирование уведомлений.
+/**
+ * BaseNotification — stories.
+ *
+ * Разделы: Default (песочница: одно уведомление из props) → внешний вид (типы, варианты, кастомный цвет) →
+ * длинный текст → сценарии (позиция на экране, вызов из кода, автозакрытие) → клавиатура.
+ * Большинство примеров — в режиме isContained: список уведомлений в потоке страницы, без телепорта.
  */
 
-import { expect, userEvent, waitFor } from 'storybook/test'
-import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { computed, onMounted, ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
 import { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '../model/BaseNotification.types'
 import BaseNotification from '../ui/BaseNotification.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { BaseNotificationExpose, BaseNotificationProps } from '../model/BaseNotification.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseNotification> = {
-	title: 'UI/BaseNotification',
+/** Показ «надолго» для примеров: уведомление не исчезает, пока его смотрят (по умолчанию — 3 секунды). */
+const STORY_DURATION = 600_000
+
+/** Уведомления каждого типа — в том порядке, в котором они показываются сверху вниз. */
+const TYPE_EXAMPLES: BaseNotificationProps[] = [
+	{ type: 'success', title: 'Серия опубликована', description: 'Серия 3 доступна подписчикам сообщества.' },
+	{ type: 'error', title: 'Не удалось загрузить видео', description: 'Файл больше 4 ГБ. Сожмите его или загрузите по частям.' },
+	{ type: 'warning', title: 'Заканчивается место', description: 'Занято 4,6 из 5 ГБ хранилища.' },
+	{ type: 'info', title: 'Доступно обновление', description: 'Новая версия редактора субтитров вышла сегодня.' },
+]
+
+/** Подписи кнопок в примере вызова из кода. */
+const TYPE_LABELS: Record<(typeof NOTIFICATION_TYPES)[number], string> = {
+	success: 'Успех',
+	error: 'Ошибка',
+	warning: 'Предупреждение',
+	info: 'Информация',
+}
+
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}
+
+const meta = {
+	title: 'Overlay/BaseNotification',
 	component: BaseNotification,
-
-	argTypes: buildArgTypes({
-		props: {
-			title: { control: 'text' },
-			description: { control: 'text' },
-			type: {
-				control: 'inline-radio',
-				options: NOTIFICATION_TYPES,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Всплывающие уведомления (toast) о результате действия: сохранено, ошибка загрузки, предупреждение.',
+					'',
+					'- Одно уведомление — из props (`title`, `description`, `type`), список — методом `add()` через ref;',
+					'  `remove(id)` удаляет уведомление. Каждое закрывается кнопкой «Закрыть» и само — через `duration` мс',
+					'  (по умолчанию 3 секунды, полоса снизу показывает оставшееся время).',
+					'- `type` задаёт цвет иконки и полосы прогресса; `position` — угол или край экрана; `isContained` —',
+					'  список в потоке страницы, без телепорта.',
+					'- Доступность: контейнер — регион «Уведомления», ошибка объявляется сразу (`role="alert"`),',
+					'  остальные типы — вежливо (`role="status"`).',
+					'',
+					'Сообщение, которое остаётся на странице, — `BaseAlert`.',
+				].join('\n'),
 			},
-			variant: {
-				control: 'radio',
-				options: NOTIFICATION_VARIANTS,
-			},
-			position: {
-				control: 'select',
-				options: NOTIFICATION_POSITIONS,
-				description: 'Позиция контейнера на экране',
-			},
-			duration: { control: 'number' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			color: {
-				control: 'object',
-				description: 'Объект CustomColor',
-			},
-			isContained: { table: { disable: true } },
-			notificationKey: { table: { disable: true } },
-			onClose: { table: { disable: true } },
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: NOTIFICATION_VARIANTS }),
+		...hiddenArgTypes('notificationKey', 'default'),
+		title: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		description: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		type: { control: 'inline-radio', options: NOTIFICATION_TYPES, table: propGroup(ARG_GROUP.appearance) },
+		position: { control: 'select', options: NOTIFICATION_POSITIONS, table: propGroup(ARG_GROUP.appearance) },
+		duration: { control: { type: 'number', min: 0, step: 1000 }, table: propGroup(ARG_GROUP.behavior) },
+		isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	},
 	args: {
-		title: 'Уведомление',
-		description: 'Описание уведомления',
-		type: 'info',
+		title: 'Изменения сохранены',
+		description: 'Проект «Сайт студии» обновлён.',
+		type: 'success',
 		variant: 'default',
-		duration: 0,
+		position: 'top-right',
+		duration: STORY_DURATION,
 		sizeScale: 100,
 		isContained: true,
+		onClose: fn(),
 	},
-}
+	// Уведомление из props создаётся при монтировании: смена args в Controls пересоздаёт компонент (key).
+	render: args => ({
+		components: { BaseNotification },
+		setup: () => {
+			const props = useArgsWithoutSlots(args, [])
+			const key = computed(() => JSON.stringify(Object.entries(args).filter(([, value]) => typeof value !== 'function')))
+			return { props, key }
+		},
+		template: '<BaseNotification :key="key" v-bind="props" />',
+	}),
+} satisfies Meta<typeof BaseNotification>
 
 export default meta
-type Story = StoryObj<typeof BaseNotification>
-/** Базовое уведомление */
-export const Default: Story = {
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка уведомления по Tab', async () => {
-			await userEvent.tab()
-		})
-		await playShiftTab(canvasElement, { selector: '.base-notification-item' })
-	},
+type Story = StoryObj<typeof meta>
+
+/** Пример со списком: уведомления добавляются методом add() после монтирования. */
+function listRender(items: BaseNotificationProps[]): Story['render'] {
+	return args => ({
+		components: { BaseNotification },
+		setup: () => {
+			const list = ref<BaseNotificationExpose | null>(null)
+			// add() показывает новое уведомление сверху — добавляем с конца, чтобы порядок совпал с массивом
+			onMounted(() => [...items].reverse().forEach(item => list.value?.add({ duration: STORY_DURATION, ...item })))
+			return { props: useArgsWithoutSlots(args, ['title', 'description', 'type']), list }
+		},
+		template: '<BaseNotification ref="list" v-bind="props" />',
+	})
 }
-/** Все типы */
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/**
+ * Песочница: уведомление из props. Здесь `duration` — 10 минут, чтобы уведомление не исчезало, и `isContained`,
+ * чтобы оно было в потоке страницы. Без play-функции: story открывают e2e-тесты.
+ */
+export const Default: Story = {}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Четыре типа: цвет иконки и полосы прогресса. Ошибка объявляется скринридером сразу (`alert`), остальные — `status`. */
 export const Types: Story = {
-	render: args => ({
-		components: { BaseNotification },
-		setup() {
-			return { args, types: NOTIFICATION_TYPES }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;max-width:400px;">
-				<BaseNotification v-for="t in types"
-					:key="t"
-					v-bind="args"
-					:type="t"
-					:title="t"
-				/>
-			</div>
-		`,
-	}),
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: { source: { code: NOTIFICATION_TYPES.map(type => `notifications.value.add({ type: '${type}', title: '…' })`).join('\n') } },
+	},
+	render: listRender(TYPE_EXAMPLES),
+	play: async ({ canvas }) => {
+		await expect(await canvas.findByRole('alert')).toHaveTextContent('Не удалось загрузить видео')
+		await expect(canvas.getAllByRole('status')).toHaveLength(3)
+	},
 }
-/** Все варианты */
+
+/**
+ * Пять вариантов. `default` — карточка с тенью; `soft` — мягкий фон цвета типа; `outline` — рамка цвета типа без тени;
+ * `shadow` — только тень; `ghost` — без фона и рамки. Вариант задаётся пропом или для отдельного уведомления в `add()`.
+ */
 export const Variants: Story = {
-	render: args => ({
-		components: { BaseNotification },
-		setup() {
-			return { args, variants: NOTIFICATION_VARIANTS }
+	parameters: {
+		controls: { include: ['sizeScale'] },
+		docs: {
+			source: { code: NOTIFICATION_VARIANTS.map(variant => `notifications.value.add({ variant: '${variant}', title: '…' })`).join('\n') },
 		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;max-width:400px;">
-				<BaseNotification v-for="v in variants"
-					:key="v"
-					v-bind="args"
-					:variant="v"
-					:title="v"
-				/>
-			</div>
-		`,
-	}),
-}
-/** Масштабирование */
-export const SizeScale: Story = {
-	render: args => ({
-		components: { BaseNotification },
-		setup() {
-			return { args, scales: [75, 100, 150] }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:500px;">
-				<BaseNotification v-for="s in scales" :key="s"
-					v-bind="args"
-					:size-scale="s"
-					:title="s + '%'"
-				/>
-			</div>
-		`,
-	}),
-}
-/** Только заголовок */
-export const TitleOnly: Story = {
-	args: {
-		title: 'Сохранено',
-		description: '',
-		type: 'success',
-		duration: 0,
 	},
+	render: listRender(
+		NOTIFICATION_VARIANTS.map(variant => ({ type: 'success', variant, title: `Вариант ${variant}`, description: 'Изменения сохранены.' })),
+	),
 }
-/** С описанием */
-export const WithDescription: Story = {
-	args: {
-		title: 'Ошибка',
-		description: 'Не удалось сохранить изменения. Попробуйте позже.',
-		type: 'error',
-		duration: 0,
-	},
-}
-/** Интерактивное управление с кнопками вызова */
-export const Interactive: Story = {
-	args: {
-		duration: 3000,
-	},
-	render: args => ({
-		components: { BaseNotification },
-		setup() {
-			const refNotification = ref<InstanceType<typeof BaseNotification> | null>(null)
-			let keyCounter = 0
 
-			function handleAdd(type: string) {
-				keyCounter++
-				refNotification.value?.add({
-					title: args.title || type,
-					description: args.description,
-					type: type as (typeof NOTIFICATION_TYPES)[number],
-					variant: args.variant,
-					duration: args.duration,
-					sizeScale: args.sizeScale,
-					color: args.color,
-					notificationKey: keyCounter,
-				})
-			}
-
-			return { args, refNotification, handleAdd, types: NOTIFICATION_TYPES }
-		},
-		template: `
-			<div>
-				<div style="display:flex;gap:8px;margin-bottom:16px;">
-					<button v-for="t in types" :key="t"
-						@click="handleAdd(t)"
-						style="padding:8px 16px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#f5f5f5;">
-						{{ t }}
-					</button>
-				</div>
-				<BaseNotification
-					ref="refNotification"
-					v-bind="args"
-				/>
-			</div>
-		`,
-	}),
+/**
+ * Кастомный цвет через `color`: фон и текст уведомления. Подойдёт любой CSS-цвет; токены `var(--rise-…)` сохраняют
+ * контраст в обеих темах. Иконка и полоса прогресса сохраняют цвет типа.
+ */
+export const CustomColor: Story = {
+	args: {
+		type: 'info',
+		title: 'Новый участник',
+		description: 'Мария Кузнецова присоединилась к проекту.',
+		color: { bg: { base: 'var(--rise-primary-soft)', hover: 'var(--rise-primary-soft-hover)' }, text: { base: 'var(--rise-primary-text)' } },
+	},
+	parameters: { controls: { include: ['color', 'type', 'sizeScale'] } },
+	play: async ({ canvas }) => {
+		const item = await canvas.findByRole('status')
+		await expect(getComputedStyle(item).backgroundColor).toBe(resolveColor('var(--rise-primary-soft)'))
+		await expect(getComputedStyle(within(item).getByText('Новый участник')).color).toBe(resolveColor('var(--rise-primary-text)'))
+	},
 }
-/** Уведомление с длинным текстом сообщения */
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Длинный текст переносится по словам: ширина уведомления не больше 360px, кнопка закрытия остаётся справа. */
 export const LongContent: Story = {
 	args: {
-		title: 'Внимание',
-		description:
-			'Это очень длинное описание уведомления, которое должно корректно переноситься на новые строки и не выходить за границы контейнера. Текст содержит более двухсот символов для проверки того, как компонент справляется с переполнением контента и обеспечивает читаемость даже при значительном объёме информации.',
 		type: 'warning',
-		duration: 0,
+		title: 'Серия отправлена на согласование с замечаниями по синхронизации',
+		description:
+			'В репликах 12–15 и 40–44 голос опережает видео на 0,3–0,5 секунды. Согласование продолжится, но перед публикацией ' +
+			'эти фрагменты нужно перезаписать или сдвинуть в таймлайне.',
+	},
+	play: async ({ canvas }) => {
+		const item = await canvas.findByRole('status')
+		await expect(item.getBoundingClientRect().width).toBeLessThanOrEqual(360)
+		const close = within(item).getByRole('button', { name: 'Закрыть' })
+		await expect(close.getBoundingClientRect().right).toBeLessThanOrEqual(item.getBoundingClientRect().right)
 	},
 }
-/** Закрытие уведомления по клику на кнопку закрытия */
-export const CloseByButton: Story = {
-	render: () => ({
-		components: { BaseNotification },
-		setup() {
-			const refNotification = ref<InstanceType<typeof BaseNotification> | null>(null)
-			function handleAdd(): void {
-				refNotification.value?.add({
-					title: 'Закрой меня',
-					description: 'Жмём крестик',
-					type: 'info',
-					duration: 60000,
-				})
-			}
-			return { refNotification, handleAdd }
-		},
-		template: `
-			<div>
-				<button class="add-notification-btn" type="button" @click="handleAdd" style="padding:8px 16px;">
-					Показать уведомление
-				</button>
-				<BaseNotification ref="refNotification" :is-contained="true" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const addBtn = canvasElement.querySelector('.add-notification-btn') as HTMLButtonElement
-		await userEvent.click(addBtn)
-		await waitFor(() => {
-			const notification = canvasElement.querySelector('.base-notification-item')
-			expect(notification).toBeTruthy()
-		})
-		const closeBtn = canvasElement.querySelector('.base-notification-item__close') as HTMLButtonElement
-		expect(closeBtn).toBeTruthy()
-		await userEvent.click(closeBtn)
-		await waitFor(() => {
-			const notification = canvasElement.querySelector('.base-notification-item')
-			expect(notification).toBeFalsy()
-		})
-	},
-}
-/** Автозакрытие по таймауту — покрывает setTimeout → remove → emit('close') */
-export const AutoCloseAfterDuration: Story = {
-	render: () => ({
-		components: { BaseNotification },
-		setup() {
-			const refNotification = ref<InstanceType<typeof BaseNotification> | null>(null)
-			function handleAdd(): void {
-				refNotification.value?.add({
-					title: 'Авто-закрытие',
-					description: 'Закроется через 50мс',
-					type: 'success',
-					duration: 50,
-				})
-			}
-			return { refNotification, handleAdd }
-		},
-		template: `
-			<div>
-				<button class="add-auto-btn" type="button" @click="handleAdd" style="padding:8px 16px;">
-					Показать
-				</button>
-				<BaseNotification ref="refNotification" :is-contained="true" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const addBtn = canvasElement.querySelector('.add-auto-btn') as HTMLButtonElement
-		await userEvent.click(addBtn)
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-notification-item')).toBeTruthy()
-		})
-		await waitFor(
-			() => {
-				expect(canvasElement.querySelector('.base-notification-item')).toBeFalsy()
-			},
-			{ timeout: 2000 },
-		)
-	},
-}
-/** Добавление без явного type и duration — покрывает дефолтные ветки `|| 'info'` и `|| 3000` */
-export const AddWithoutTypeAndDuration: Story = {
-	render: () => ({
-		components: { BaseNotification },
-		setup() {
-			const refNotification = ref<InstanceType<typeof BaseNotification> | null>(null)
-			function handleAdd(): void {
-				refNotification.value?.add({ title: 'Без типа' })
-			}
-			return { refNotification, handleAdd }
-		},
-		template: `
-			<div>
-				<button class="add-no-type-btn" type="button" @click="handleAdd" style="padding:8px 16px;">
-					Показать
-				</button>
-				<BaseNotification ref="refNotification" :is-contained="true" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const addBtn = canvasElement.querySelector('.add-no-type-btn') as HTMLButtonElement
-		await userEvent.click(addBtn)
-		await waitFor(() => {
-			const notification = canvasElement.querySelector('.base-notification-item--info')
-			expect(notification).toBeTruthy()
-		})
-	},
-}
-/** Закрытие одного из нескольких уведомлений — покрывает false-ветку if (notifications.value.length === 0) в remove (стр. 109). */
-export const CloseOneOfMany: Story = {
-    args: {
-        position: "bottom-center"
-    },
 
-    render: () => ({
-		components: { BaseNotification },
-		setup() {
-			const refNotification = ref<InstanceType<typeof BaseNotification> | null>(null)
-			function handleAddMany(): void {
-				refNotification.value?.add({ title: 'Первое', type: 'info', duration: 60000 })
-				refNotification.value?.add({ title: 'Второе', type: 'info', duration: 60000 })
-			}
-			return { refNotification, handleAddMany }
-		},
-		template: `
-			<div>
-				<button class="add-many-btn" type="button" @click="handleAddMany" style="padding:8px 16px;">
-					Показать два
-				</button>
-				<BaseNotification ref="refNotification" :is-contained="true" />
-			</div>
-		`,
-	}),
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
 
-    play: async ({ canvasElement }) => {
-		const addBtn = canvasElement.querySelector('.add-many-btn') as HTMLButtonElement
-		await userEvent.click(addBtn)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-notification-item').length).toBe(2)
-		})
-		const firstClose = canvasElement.querySelector('.base-notification-item__close') as HTMLButtonElement
-		await userEvent.click(firstClose)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-notification-item').length).toBe(1)
-		})
-	}
-}
-/** Позиционирование на экране (fixed-режим). Кнопки переключают позицию контейнера. */
+/**
+ * Позиция на экране — `position` (без `isContained`): контейнер закреплён в углу или у края экрана с отступом 16px.
+ * Меняйте значение в Controls; «Показать ещё» добавляет уведомление в стопку (исчезает через 3 секунды).
+ */
 export const Positions: Story = {
-	render: () => ({
-		components: { BaseNotification },
-		setup() {
-			const refNotification = ref<InstanceType<typeof BaseNotification> | null>(null)
-			const position = ref<(typeof NOTIFICATION_POSITIONS)[number]>('top-right')
-
-			function show(pos: (typeof NOTIFICATION_POSITIONS)[number]): void {
-				position.value = pos
-				refNotification.value?.add({
-					title: pos,
-					description: 'Позиция контейнера',
-					type: 'info',
-					duration: 60000,
-				})
-			}
-
-			return { refNotification, position, positions: NOTIFICATION_POSITIONS, show }
+	args: { isContained: false, position: 'top-right' },
+	parameters: {
+		controls: { include: ['position', 'variant'] },
+		docs: {
+			story: { inline: false, height: '240px' },
+			source: { code: '<BaseNotification position="top-right" type="success" title="Изменения сохранены" />' },
+		},
+	},
+	render: args => ({
+		components: { BaseNotification, BaseButton },
+		setup: () => {
+			const list = ref<BaseNotificationExpose | null>(null)
+			const key = computed(() => `${args.position}-${args.variant}`)
+			const showMore = () => list.value?.add({ type: 'info', title: 'Ещё одно уведомление' })
+			return { props: useArgsWithoutSlots(args, []), key, list, showMore }
 		},
 		template: `
-			<div>
-				<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-					<button v-for="p in positions" :key="p"
-						class="position-btn"
-						type="button"
-						@click="show(p)"
-						style="padding:8px 12px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#f5f5f5;">
-						{{ p }}
-					</button>
+			<BaseButton variant="outline" @click="showMore">Показать ещё</BaseButton>
+			<BaseNotification ref="list" :key="key" v-bind="props" />
+		`,
+	}),
+	play: async () => {
+		const item = await screen.findByRole('status')
+		await waitFor(() => expect(item.getBoundingClientRect().right).toBeCloseTo(document.documentElement.clientWidth - 16, 0))
+		await expect(item.getBoundingClientRect().top).toBeCloseTo(16, 0)
+	},
+}
+
+/**
+ * Вызов из кода: `ref.add({ type, title, description, duration })` показывает уведомление, новое — сверху.
+ * Уведомления закрываются кнопкой или сами через 3 секунды. Без play-функции: story открывают e2e-тесты.
+ */
+export const ShowFromCode: Story = {
+	parameters: {
+		controls: { include: ['variant', 'position', 'isContained'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseButton @click="notifications.add({ type: \'success\', title: \'Сохранено\' })">Показать</BaseButton>',
+					'<BaseNotification ref="notifications" />',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseNotification, BaseButton },
+		setup: () => {
+			const list = ref<BaseNotificationExpose | null>(null)
+			const show = (item: BaseNotificationProps) => list.value?.add(item)
+			return { props: useArgsWithoutSlots(args, ['title', 'description', 'type', 'duration']), list, show, examples: TYPE_EXAMPLES, labels: TYPE_LABELS }
+		},
+		template: `
+			<div class="story-stack">
+				<div class="story-row">
+					<BaseButton v-for="item in examples" :key="item.type" variant="outline" @click="show(item)">
+						{{ labels[item.type] }}
+					</BaseButton>
 				</div>
-				<BaseNotification ref="refNotification" :position="position" />
+				<BaseNotification ref="list" v-bind="props" />
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const btn = canvasElement.querySelector('.position-btn') as HTMLButtonElement
-		await userEvent.click(btn)
-		await waitFor(() => {
-			const container = document.querySelector('.base-notification--top-left')
-			expect(container).toBeTruthy()
-		})
+}
+
+/** Автозакрытие: уведомление исчезает через `duration` (здесь 1,5 с), после последнего — событие `close`. */
+export const AutoClose: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseButton @click="notifications.add({ type: \'success\', title: \'Ссылка скопирована\', duration: 1500 })">',
+					'\tСкопировать ссылку',
+					'</BaseButton>',
+					'<BaseNotification ref="notifications" @close="onAllClosed" />',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseNotification, BaseButton },
+		setup: () => {
+			const list = ref<BaseNotificationExpose | null>(null)
+			const show = () => list.value?.add({ type: 'success', title: 'Ссылка скопирована', duration: 1500 })
+			return { props: useArgsWithoutSlots(args, ['title', 'description', 'type', 'duration']), list, show }
+		},
+		template: `
+			<div class="story-stack">
+				<div><BaseButton variant="outline" @click="show">Скопировать ссылку</BaseButton></div>
+				<BaseNotification ref="list" v-bind="props" />
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Скопировать ссылку' }))
+		await expect(await canvas.findByRole('status')).toHaveTextContent('Ссылка скопирована')
+		await waitFor(() => expect(canvas.queryByRole('status')).not.toBeInTheDocument(), { timeout: 4000 })
+		await expect(args.onClose).toHaveBeenCalledOnce()
 	},
 }
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'ntf-root', notification: 'ntf-notification', icon: 'ntf-icon', content: 'ntf-content', title: 'ntf-title', description: 'ntf-description', close: 'ntf-close', progress: 'ntf-progress' },
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.ntf-root')).toBeTruthy()
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/** Клавиатура: Tab ставит фокус на кнопку «Закрыть» (видно кольцо фокуса), Enter закрывает уведомление. */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent }) => {
+		const item = await canvas.findByRole('status')
+		const close = within(item).getByRole('button', { name: 'Закрыть' })
+		await tabTo(close, userEvent)
+		await expect(getComputedStyle(close).outlineStyle).toBe('solid')
+
+		await userEvent.keyboard('{Enter}')
+		await waitFor(() => expect(canvas.queryByRole('status')).not.toBeInTheDocument())
 	},
 }

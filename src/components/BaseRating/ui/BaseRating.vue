@@ -2,14 +2,17 @@
 	<div
 		ref="rootRef"
 		class="base-rating"
-		:class="[variantClass, classes.root, { 'base-rating--readonly': isInteractive === false }]"
+		:class="[
+			variantClass,
+			classes.root,
+			{
+				'base-rating--interactive': isInteractive,
+				'base-rating--readonly': isReadonly,
+				'base-rating--disabled': isDisabled,
+			},
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		role="slider"
-		:aria-label="`${UI_RATING.ARIA_PREFIX} ${max}`"
-		:aria-valuemin="0"
-		:aria-valuemax="max"
-		:aria-valuenow="modelValue"
-		:tabindex="isInteractive ? 0 : -1"
+		v-bind="ariaAttrs"
 		@mouseleave="clearHover"
 		@keydown="handleKeydown">
 		<span
@@ -64,7 +67,30 @@ const hoverValue = ref(0)
 
 const isInteractive = computed((): boolean => !props.isReadonly && !props.isDisabled)
 const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : props.modelValue))
-const filledIcon = computed((): string => props.iconFilled || props.icon)
+/** Заполненная иконка: явный iconFilled; для звезды по умолчанию — сплошная звезда (форма, а не только цвет), иначе та же icon. */
+const filledIcon = computed((): string => props.iconFilled || (props.icon === 'star' ? 'star-filled' : props.icon))
+
+/**
+ * ARIA корня. Интерактивный и отключённый рейтинг — slider: значение, границы и текст «3 из 5»; отключённый —
+ * aria-disabled и без tabindex (не получает фокус ни с клавиатуры, ни кликом). Только чтение — изображение
+ * с оценкой в имени («Оценка 4.5 из 5»): менять его нельзя.
+ */
+const ariaAttrs = computed(() => {
+	const valueText = `${props.modelValue} ${UI_RATING.OF} ${props.max}`
+	if (props.isReadonly && !props.isDisabled) {
+		return { role: 'img', 'aria-label': `${UI_RATING.LABEL} ${valueText}` }
+	}
+	return {
+		role: 'slider',
+		tabindex: props.isDisabled ? undefined : 0,
+		'aria-label': `${UI_RATING.ARIA_PREFIX} ${props.max}`,
+		'aria-valuemin': 0,
+		'aria-valuemax': props.max,
+		'aria-valuenow': props.modelValue,
+		'aria-valuetext': valueText,
+		'aria-disabled': props.isDisabled ? ('true' as const) : undefined,
+	}
+})
 
 function fillPercent(star: number): number {
 	return starFillPercent(star, displayValue.value)
@@ -79,25 +105,36 @@ function pointerRatio(event: MouseEvent, target: EventTarget | null): number {
 	return (event.clientX - rect.left) / rect.width
 }
 
-/** Рассчитать оценку по позиции указателя в звезде (точечно при isHoverSmooth) */
-function valueAt(event: MouseEvent, star: number): number {
+/** Рассчитать оценку по позиции указателя в звезде с привязкой к step */
+function steppedValueAt(event: MouseEvent, star: number): number {
 	const ratio = pointerRatio(event, event.currentTarget)
-	return props.isHoverSmooth
-		? rawValueFromPointer(star, ratio, props.max)
-		: valueFromPointer({ star, ratio, step: props.step, max: props.max })
+	return valueFromPointer({ star, ratio, step: props.step, max: props.max })
 }
 
-/** Выбор оценки по клику — фиксирует ровно то, что показывает предпросмотр */
-function handleClick(event: MouseEvent, star: number): void {
-	if (!isInteractive.value) return
-	const value = valueAt(event, star)
+/** Значение предпросмотра: при isHoverSmooth заливка следует за курсором попиксельно, иначе — по step */
+function previewValueAt(event: MouseEvent, star: number): number {
+	if (!props.isHoverSmooth) return steppedValueAt(event, star)
+	return rawValueFromPointer(star, pointerRatio(event, event.currentTarget), props.max)
+}
+
+/** Выбранная пользователем оценка: v-model и change */
+function commit(value: number): void {
 	emit('update:modelValue', value)
 	emit('change', value)
 }
 
+/** Выбор оценки по клику — всегда с привязкой к step: isHoverSmooth влияет только на предпросмотр */
+function handleClick(event: MouseEvent, star: number): void {
+	if (!isInteractive.value) return
+	const value = steppedValueAt(event, star)
+	// Сразу показываем зафиксированную оценку, иначе до движения курсора видна плавная заливка предпросмотра
+	hoverValue.value = value
+	commit(value)
+}
+
 function handleHover(event: MouseEvent, star: number): void {
 	if (!isInteractive.value) return
-	hoverValue.value = valueAt(event, star)
+	hoverValue.value = previewValueAt(event, star)
 }
 
 function clearHover(): void {
@@ -105,20 +142,25 @@ function clearHover(): void {
 }
 
 function changeBy(direction: number): void {
-	const next = snapRating(props.modelValue + direction * props.step, props.step, props.max)
-	emit('update:modelValue', next)
-	emit('change', next)
+	commit(snapRating(props.modelValue + direction * props.step, props.step, props.max))
+}
+
+/** Клавиши слайдера: стрелки — шаг step (вправо/вверх — больше), Home — 0, End — максимум */
+const KEY_ACTIONS: Record<string, () => void> = {
+	ArrowRight: () => changeBy(1),
+	ArrowUp: () => changeBy(1),
+	ArrowLeft: () => changeBy(-1),
+	ArrowDown: () => changeBy(-1),
+	Home: () => commit(0),
+	End: () => commit(props.max),
 }
 
 function handleKeydown(event: KeyboardEvent): void {
 	if (!isInteractive.value) return
-	if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
-		event.preventDefault()
-		changeBy(1)
-	} else if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
-		event.preventDefault()
-		changeBy(-1)
-	}
+	const action = KEY_ACTIONS[event.key]
+	if (!action) return
+	event.preventDefault()
+	action()
 }
 
 defineExpose({

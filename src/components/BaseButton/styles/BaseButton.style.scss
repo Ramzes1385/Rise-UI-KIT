@@ -1,107 +1,86 @@
+// BaseButton. Размер при sizeScale = 100: высота 32px (рамка 1px + отступ 5px + строка 20px), текст 14px.
+// Варианты: default — заливка основным цветом; soft — мягкий фон основного цвета; outline — нейтральная с рамкой;
+// ghost — нейтральная без фона; shadow — нейтральная приподнятая с тенью.
 .base-button {
+	// Отступы по умолчанию — из токенов контрола. Проп padding переопределяет их inline-переменными --btn-pad-*.
+	--btn-pad-top: var(--rise-control-padding-y);
+	--btn-pad-right: var(--rise-control-padding-x);
+	--btn-pad-bottom: var(--rise-control-padding-y);
+	--btn-pad-left: var(--rise-control-padding-x);
+
 	position: relative;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	--btn-pad-top: 10px;
-	--btn-pad-right: 20px;
-	--btn-pad-bottom: 10px;
-	--btn-pad-left: 20px;
+	max-width: 100%;
 	padding: sz(var(--btn-pad-top)) sz(var(--btn-pad-right)) sz(var(--btn-pad-bottom)) sz(var(--btn-pad-left));
 	border: 1px solid transparent;
-	border-radius: var(--border-radius-base);
-	@include custom-bg(background-color, var(--color-accent));
-	@include custom-text(color, #ffffff);
-	font-size: sz(14px);
-	font-weight: 600;
-	cursor: pointer;
+	border-radius: sz(var(--rise-control-radius));
+	font-family: inherit;
+	@include control-text;
+	font-weight: var(--rise-font-weight-medium);
 	white-space: nowrap;
-	outline: none;
-	max-width: 100%;
+	cursor: pointer;
 	overflow: hidden;
-	box-shadow: var(--shadow-sm);
-	@include interactive;
+	@include transition-colors;
+	@include focus-ring;
+	@include custom-bg-all(background-color, var(--rise-primary), var(--rise-primary-hover), var(--rise-primary-hover));
+	@include custom-text(color, var(--rise-on-primary));
 
-	@include hover {
-		filter: brightness(1.1);
-		box-shadow: var(--shadow-md);
-	}
-
-	@include active {
-		filter: brightness(0.9);
-		box-shadow: none;
-	}
-
-	@include focus {
-		box-shadow:
-			0 0 0 2px var(--color-bg),
-			0 0 0 4px var(--color-accent);
-	}
-
-	&--ghost {
-		@include custom-bg(background-color, transparent);
-		@include custom-text(color, var(--color-text-muted));
-		box-shadow: none;
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
-			@include custom-text(color, var(--color-text));
-			box-shadow: none;
-		}
+	&--soft {
+		@include custom-bg-all(background-color, var(--rise-primary-soft), var(--rise-primary-soft-hover), var(--rise-primary-soft-hover));
+		@include custom-text(color, var(--rise-primary-text));
 	}
 
 	&--outline {
-		@include custom-bg(background-color, transparent);
-		border-color: var(--color-border);
-		@include custom-text(color, var(--color-text));
-		box-shadow: none;
+		border-color: var(--rise-border-accented);
+		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-elevated), var(--rise-bg-elevated));
+		@include custom-text(color, var(--rise-text));
+	}
 
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
-			border-color: var(--color-text-muted);
-			box-shadow: none;
-		}
+	&--ghost {
+		@include custom-bg-all(background-color, transparent, var(--rise-bg-elevated), var(--rise-bg-elevated));
+		@include custom-text(color, var(--rise-text));
 	}
 
 	&--shadow {
-		@include custom-bg(background-color, var(--color-white));
-		@include custom-text(color, var(--color-text));
-		box-shadow: var(--shadow-lg);
+		border-color: var(--rise-border);
+		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-muted), var(--rise-bg-muted));
+		@include custom-text(color, var(--rise-text-highlighted));
+		box-shadow: var(--rise-shadow-sm);
 
 		@include hover {
-			box-shadow: var(--shadow-xl);
-		}
-	}
-
-	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
-		box-shadow: none;
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-primary-soft-hover));
-			box-shadow: none;
+			box-shadow: var(--rise-shadow-md);
 		}
 	}
 
 	&--disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
+		@include disabled-state;
 	}
 
 	&--loading {
+		cursor: progress;
+
+		// Текст скрыт только визуально (opacity): доступное имя кнопки сохраняется для скринридеров.
 		.base-button__content {
 			opacity: 0;
 		}
 	}
 
 	&__content {
-		height: 100%;
-		width: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: sz(6px);
+		gap: sz(var(--rise-control-gap));
+		width: 100%;
+		height: 100%;
+		min-width: 0;
+	}
+
+	// Длинный текст обрезается многоточием, кнопка не выходит за ширину контейнера.
+	&__label {
+		min-width: 0;
+		@include truncate;
 	}
 
 	&__slot-left,
@@ -113,20 +92,17 @@
 
 	&__loader {
 		position: absolute;
-		width: sz(18px);
-		height: sz(18px);
+		width: sz(var(--rise-control-icon-size));
+		height: sz(var(--rise-control-icon-size));
 		border: sz(2px) solid currentColor;
 		border-bottom-color: transparent;
-		border-radius: var(--border-radius-full);
-		animation: rotation 0.8s linear infinite;
+		border-radius: var(--rise-radius-full);
+		animation: base-button-spin 0.8s linear infinite;
 	}
 }
 
-@keyframes rotation {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
+@keyframes base-button-spin {
+	to {
 		transform: rotate(360deg);
 	}
 }

@@ -53,7 +53,10 @@ function applyMask(value: string, mask: string): string {
 	let result = ''
 	let valueIndex = 0
 	let i = 0
-	const maxIterations = cleanValue.length * 2
+	// Каждая итерация сдвигает позицию в маске или в значении, поэтому mask.length + cleanValue.length —
+	// точная верхняя граница. Лимит от длины значения (cleanValue.length * 2) обрывал вывод на масках
+	// с несколькими литералами подряд: '+7 (###)…' при вводе первой цифры показывала только '+7'.
+	const maxIterations = mask.length + cleanValue.length
 	let iterations = 0
 
 	while (i < mask.length && valueIndex < cleanValue.length && iterations < maxIterations) {

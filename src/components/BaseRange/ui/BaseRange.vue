@@ -14,7 +14,7 @@
 		<!-- Метка значения -->
 		<div v-if="hasLabel" class="base-range__label" :class="classes.label">
 			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ min }}</BaseText>
-			<BaseText tag="span" class="base-range__label-value" :weight="UI_FONT_WEIGHT.BOLD" :custom-class="classes.labelValue">{{
+			<BaseText tag="span" class="base-range__label-value" :weight="UI_FONT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
 				labelText
 			}}</BaseText>
 			<BaseText tag="span" class="base-range__label-max" :custom-class="classes.labelMax">{{ max }}</BaseText>
@@ -49,6 +49,9 @@
 							:index="index"
 							:bound-min="thumbMin(index)"
 							:bound-max="thumbMax(index)"
+							:label="thumbLabel(index)"
+							:is-disabled="isDisabled"
+							:is-vertical="isVertical"
 							:has-custom="hasThumbSlot"
 							:thumb-class="classes.thumb"
 							:dot-class="classes.thumbDot"
@@ -65,6 +68,9 @@
 						:index="index"
 						:bound-min="thumbMin(index)"
 						:bound-max="thumbMax(index)"
+						:label="thumbLabel(index)"
+						:is-disabled="isDisabled"
+						:is-vertical="isVertical"
 						:has-custom="hasThumbSlot"
 						:thumb-class="classes.thumb"
 						:dot-class="classes.thumbDot"
@@ -90,7 +96,7 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
-import { UI_FONT_WEIGHT } from '@constants'
+import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import BaseRangeMarks from './BaseRangeMarks.vue'
 import { BaseRangeThumb } from './BaseRangeThumb'
 import '../styles/BaseRange.style.scss'
@@ -140,6 +146,7 @@ const formField = useFormField({
 })
 
 const {
+	mode,
 	pointValues,
 	labelText,
 	tooltipPosition,
@@ -152,6 +159,17 @@ const {
 	setPointValue,
 	emitChange,
 } = useRangeValues({ props, emit })
+
+/**
+ * Доступное имя ползунка: ariaLabel (или «Значение») у одиночного; у диапазона и точек — с ролью ползунка,
+ * чтобы скринридер различал их: «Цена: минимум», «Точка 2».
+ */
+function thumbLabel(index: number): string {
+	if (mode.value === 'single') return props.ariaLabel || UI_ARIA.RANGE_VALUE
+	let role: string = `${UI_ARIA.RANGE_POINT} ${index + 1}`
+	if (mode.value === 'range') role = index === 0 ? UI_ARIA.RANGE_MIN : UI_ARIA.RANGE_MAX
+	return props.ariaLabel ? `${props.ariaLabel}: ${role.toLowerCase()}` : role
+}
 
 const { handleThumbDown, handleTrackDown, handleThumbKeydown } = useRangeDrag({
 	trackRef,

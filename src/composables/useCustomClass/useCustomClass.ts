@@ -7,7 +7,12 @@ type ClassResultInternal = string | Record<string, string | boolean | undefined>
 
 /**
  * Composable для вычисления CSS-классов компонента.
- * Поддерживает customClass в виде строки, объекта или массива с element-level ключами.
+ * Поддерживает customClass (тип CustomClassProp):
+ * - строка — классы корневого элемента (`root`);
+ * - объект с element-level ключами (`{ root, input, label }`) — строки классов по элементам;
+ * - объект без известных ключей — целиком на `root` как объект классов Vue (`{ 'is-active': true }`).
+ * Массивы не поддерживаются и игнорируются: тип CustomClassProp их не допускает, а смешанный
+ * массив нельзя однозначно разложить по элементам (поведение закреплено тестом).
  */
 function useCustomClass(options: UseCustomClassOptions) {
 	const keys = options.elementKeys || ['root']

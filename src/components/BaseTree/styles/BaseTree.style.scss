@@ -1,68 +1,82 @@
+// BaseTree — дерево в духе Nuxt UI Tree. Узел — строка 32px как пункт меню (menu-item: отступ 6/8, радиус md, текст 14/20),
+// шеврон 16px --rise-text-muted поворачивается при раскрытии, иконки папок и файлов — --rise-text-muted.
+// Уровень вложенности — отступ 20px и направляющая линия --rise-border под шевроном родителя.
+// Наведение — фон bg-elevated; выбранный узел — фон primary-soft и текст primary-text; отключённый — приглушён
+// (только его строка, не поддерево). Фокус с клавиатуры — кольцо внутри строки. Действия (слот actions) видны
+// при наведении и при фокусе на узле.
+// Варианты: default — без контейнера, отступ 4px; ghost — без отступа (дерево внутри другой панели);
+// outline — рамка и радиус lg; shadow — рамка и тень; soft — мягкий фон без рамки.
+// Кастомный цвет: bg.base — фон дерева, bg.hover — строка под курсором, text.base / text.hover — текст узлов.
+// Чекбоксы, подписи и действия из слотов цвет дерева не наследуют.
 .base-tree {
 	display: flex;
 	flex-direction: column;
-	padding: sz(4px);
 	min-width: sz(200px);
+	padding: sz(4px);
+	font-family: var(--rise-font-sans);
+	@include text-size(sm);
+	@include custom-bg(background-color, transparent);
+	@include custom-text(color, var(--rise-text));
 
-	// --- Варианты ---
+	// ─── Варианты ────────────────────────────────────────────────────────────────
 
-	&--outline {
-		outline: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
+	&--ghost {
+		padding: 0;
+	}
+
+	&--outline,
+	&--shadow {
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-lg));
+		@include custom-bg(background-color, var(--rise-bg));
 	}
 
 	&--shadow {
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-		border-radius: var(--border-radius-base);
+		box-shadow: var(--rise-shadow-sm);
 	}
 
 	&--soft {
-		background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
-		backdrop-filter: blur(4px);
-		border-radius: var(--border-radius-base);
+		border-radius: sz(var(--rise-radius-lg));
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 	}
 
-	// --- Элементы ---
+	// ─── Узел ────────────────────────────────────────────────────────────────────
 
 	&__node {
 		display: flex;
 		flex-direction: column;
-
-		&--selected > .base-tree__header {
-			background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
-			color: var(--color-accent);
-
-			.base-tree__label {
-				font-weight: 500;
-			}
-		}
-
-		&--disabled {
-			opacity: 0.5;
-			pointer-events: none;
-		}
 	}
 
 	&__header {
-		display: flex;
-		align-items: center;
-		gap: sz(6px);
-		border-radius: var(--border-radius-sm);
-		cursor: pointer;
-		outline: none;
-		user-select: none;
-		min-height: sz(32px);
-		@include interactive;
+		@include menu-item;
+		@include custom-text(color, var(--rise-text));
+		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--color-surface-muted);
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+		}
+	}
+
+	// Выбранный узел: мягкий фон основного цвета, шеврон и иконка — цвета текста.
+	&__node--selected > &__header {
+		background-color: var(--rise-primary-soft);
+		color: var(--rise-primary-text);
+
+		@include hover {
+			background-color: var(--rise-primary-soft-hover);
+			color: var(--rise-primary-text);
 		}
 
-		@include focus {
-			background-color: var(--color-surface-muted);
-			outline: 2px solid var(--color-accent);
-			outline-offset: -2px;
+		.base-tree__arrow,
+		.base-tree__icon {
+			color: inherit;
 		}
+	}
+
+	// Отключённый узел: приглушена только его строка; aria-disabled исключает её из проверки контраста.
+	&__node--disabled > &__header {
+		@include disabled-state;
 	}
 
 	&__arrow {
@@ -70,88 +84,86 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		width: sz(20px);
-		height: sz(20px);
-		color: var(--color-text-muted);
-		will-change: transform;
-		@include interactive;
+		width: sz(16px);
+		height: sz(16px);
+		color: var(--rise-text-muted);
+		@include transition(transform);
 
 		&--expanded {
 			transform: rotate(90deg);
-			color: var(--color-text);
-		}
-
-		&--right {
-			order: 1;
-			margin-left: auto;
-
-			&.base-tree__arrow--expanded {
-				transform: rotate(-90deg);
-			}
-		}
-
-		// Скрыть стрелку для листовых узлов, но сохранить место
-		.base-tree__node--leaf & {
-			visibility: hidden;
 		}
 	}
 
+	// У листа шеврона нет, но место под него сохраняется: подписи соседних узлов на одной линии.
+	&__node--leaf > &__header &__arrow {
+		visibility: hidden;
+	}
+
 	&__checkbox {
+		@include reset-custom-color;
 		flex-shrink: 0;
 	}
 
 	&__icon {
 		flex-shrink: 0;
-		color: var(--color-text-muted);
+		color: var(--rise-text-muted);
 	}
 
 	&__label {
+		@include reset-custom-color;
 		flex: 1;
-		color: var(--color-text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		font-size: sz(14px);
-		line-height: 1.4;
+		min-width: 0;
+		@include truncate;
 	}
 
+	// Действия: отрицательные поля — кнопки до 28px не увеличивают высоту строки 32px.
 	&__actions {
+		@include reset-custom-color;
 		display: flex;
 		align-items: center;
 		gap: sz(4px);
 		flex-shrink: 0;
+		margin: sz(-4px) 0;
 		opacity: 0;
-		@include interactive;
-		order: 2;
+		@include transition(opacity);
 
-		.base-tree__header:hover & {
-			opacity: 1;
+		&:empty {
+			display: none;
 		}
 	}
 
+	&__header:hover &__actions,
+	&__header:focus-within &__actions {
+		opacity: 1;
+	}
+
+	// Подпись чекбокса — только для скринридера. Двойной класс: подпись — BaseText внутри BaseCheckbox.
+	&__visually-hidden,
+	&__visually-hidden.base-text {
+		@include visually-hidden;
+	}
+
+	// ─── Дочерние узлы ───────────────────────────────────────────────────────────
+
+	// Уровень: отступ 20px = 15px до линии + линия 1px + 4px. Линия стоит под центром шеврона родителя.
+	// Сворачивание — через grid 0fr → 1fr: высота анимируется без измерений в JS.
 	&__children {
 		display: grid;
 		grid-template-rows: 0fr;
-		@include interactive;
-		margin-left: sz(10px);
-		padding-left: sz(12px);
-		border-left: 1px solid var(--color-border);
-		will-change: grid-template-rows;
-	}
+		margin-left: sz(15px);
+		padding-left: sz(4px);
+		border-left: 1px solid var(--rise-border);
+		@include transition(grid-template-rows);
 
-	&__children--open {
-		grid-template-rows: 1fr;
+		&--open {
+			grid-template-rows: 1fr;
+		}
 	}
 
 	&__children-inner {
-		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-	}
-
-	// --- Переопределения для вариантов ---
-
-	&--outline &__header:focus-visible {
-		outline-offset: 0;
+		min-height: 0;
+		overflow: hidden;
 	}
 }

@@ -1,185 +1,208 @@
+// BaseTour. Пошаговый тур: цель подсвечена кольцом --rise-primary, остальная страница — под подложкой --rise-overlay;
+// рядом с целью — карточка-поповер: фон страницы, тонкая рамка, радиус lg, тень lg, отступ 16px.
+// Заголовок 14/20 semibold, текст 14/20 приглушённый; в подвале — прогресс (точки или полоса), счётчик и кнопки.
+
 .base-tour {
 	position: fixed;
 	inset: 0;
 	z-index: 1000;
 }
 
+// Прозрачный слой на весь экран: клик по нему пропускает тур (behavior.closeOnOverlayClick).
 .base-tour__overlay {
 	position: fixed;
 	inset: 0;
 	cursor: pointer;
 }
 
+// Подсветка цели: кольцо 2px основного цвета и подложка на всю страницу вокруг — огромная тень.
 .base-tour__spotlight {
 	position: fixed;
 	box-sizing: border-box;
 	pointer-events: none;
-	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
-	border: 2px solid var(--color-accent);
-	border-radius: var(--border-radius-base);
-	transition: var(--transition-base);
+	box-shadow:
+		0 0 0 2px var(--rise-primary),
+		0 0 0 9999px var(--rise-overlay);
+	@include transition(top, left, width, height, border-radius);
 }
 
+// При открытии подсветка съезжается с экрана на цель. Длительность — как задержка показа карточки
+// в useTourCoordination (UI_TIMING.TOUR_FOCUS_DURATION = 450 мс = 1.5 × --rise-duration-slow); при reduced motion — 0.
 .base-tour__spotlight--focusing {
-	transition:
-		top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-		left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-		width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-		height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-		border-radius 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+	transition-duration: calc(var(--rise-duration-slow) * 1.5);
+	transition-timing-function: var(--rise-ease-out);
 }
+
+// ─── Карточка ────────────────────────────────────────────────────────────────
 
 .base-tour__card {
 	position: fixed;
 	z-index: 1;
-	width: 300px;
-	max-width: calc(100vw - 32px);
-}
+	width: sz(320px);
+	max-width: calc(100vw - #{sz(32px)});
 
-.base-tour__card .base-card__header {
-	padding: 12px 16px 8px;
-	border-bottom: none;
-}
+	&--top {
+		transform: translate(-50%, -100%);
+		transform-origin: bottom center;
+	}
 
-.base-tour__card .base-card__body {
-	padding: 0 16px 8px;
-}
+	&--bottom {
+		transform: translate(-50%, 0);
+		transform-origin: top center;
+	}
 
-.base-tour__card .base-card__footer {
-	padding: 8px 16px 12px;
-	border-top: none;
-	background-color: transparent;
-}
+	&--left {
+		transform: translate(-100%, -50%);
+		transform-origin: right center;
+	}
 
-.base-tour__card--top {
-	transform: translate(-50%, -100%);
-	transform-origin: bottom center;
-}
+	&--right {
+		transform: translate(0, -50%);
+		transform-origin: left center;
+	}
 
-.base-tour__card--bottom {
-	transform: translate(-50%, 0);
-	transform-origin: top center;
-}
-
-.base-tour__card--left {
-	transform: translate(-100%, -50%);
-	transform-origin: right center;
-}
-
-.base-tour__card--right {
-	transform: translate(0, -50%);
-	transform-origin: left center;
-}
-
-.base-tour__card--mobile {
-	top: auto;
-	right: 12px;
-	bottom: 12px;
-	left: 12px;
-	width: auto;
-	max-width: none;
-	transform: none;
-	transform-origin: bottom center;
-}
-
-@media (max-width: 640px) {
-	.base-tour__card {
-		right: 12px;
-		left: 12px;
+	// На телефоне карточка — внизу экрана во всю ширину.
+	&--mobile {
+		top: auto;
+		right: sz(12px);
+		bottom: sz(12px);
+		left: sz(12px);
 		width: auto;
 		max-width: none;
+		transform: none;
+		transform-origin: bottom center;
 	}
 }
 
-.base-tour-card-enter-active {
-	transition:
-		opacity 0.3s ease,
-		scale 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+.base-tour__panel {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: sz(16px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	background-color: var(--rise-bg);
+	color: var(--rise-text);
+	@include text-size(sm);
+	box-shadow: var(--rise-shadow-lg);
 }
 
-.base-tour-card-leave-active {
-	transition:
-		opacity 0.18s ease,
-		scale 0.18s ease;
+.base-tour__header {
+	display: flex;
+	align-items: flex-start;
+	gap: sz(8px);
+	margin-bottom: sz(4px);
 }
 
-.base-tour-card-enter-from,
-.base-tour-card-leave-to {
-	opacity: 0;
-	scale: 0.92;
+// Заголовок и текст — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
+.base-tour__title.base-text {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	@include text-size(sm);
+	color: var(--rise-text-highlighted);
+	overflow-wrap: anywhere;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.base-tour__spotlight--focusing,
-	.base-tour-card-enter-active,
-	.base-tour-card-leave-active {
-		transition: none;
-	}
-
-	.base-tour-card-enter-from,
-	.base-tour-card-leave-to {
-		scale: 1;
-	}
+.base-tour__content.base-text {
+	margin: 0;
+	@include text-size(sm);
+	color: var(--rise-text-muted);
+	overflow-wrap: anywhere;
 }
+
+// «Пропустить тур» — квадратная ghost-кнопка 24×24 в углу карточки; отрицательные отступы выравнивают иконку по тексту.
+.base-tour__close.base-button {
+	--btn-pad-top: 3px;
+	--btn-pad-right: 3px;
+	--btn-pad-bottom: 3px;
+	--btn-pad-left: 3px;
+
+	flex: none;
+	margin: sz(-2px) sz(-4px) sz(-2px) auto;
+	color: var(--rise-text-muted);
+}
+
+// ─── Подвал: прогресс, счётчик, кнопки ─────────────────────────────────────────
 
 .base-tour__footer {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	width: 100%;
+	gap: sz(8px);
 	min-width: 0;
+	margin-top: sz(16px);
 }
 
 .base-tour__progress {
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
+	gap: sz(4px);
 	min-width: 0;
 	overflow: hidden;
 }
 
 .base-tour__dot {
 	flex: none;
-	width: 6px;
-	height: 6px;
-	border-radius: var(--border-radius-full);
-	background: var(--color-border);
-	transition: var(--transition-base);
+	width: sz(6px);
+	height: sz(6px);
+	border-radius: var(--rise-radius-full);
+	background-color: var(--rise-bg-accented);
+	@include transition(width, background-color);
+
+	&--active {
+		width: sz(18px);
+		background-color: var(--rise-primary);
+	}
 }
 
-.base-tour__dot--active {
-	width: 18px;
-	border-radius: var(--border-radius-base);
-	background: var(--color-accent);
-}
-
+// Полоса прогресса — вместо точек, когда шагов больше восьми.
 .base-tour__progress-bar {
 	flex: 1 1 auto;
-	min-width: 40px;
-	max-width: 120px;
-	height: 4px;
-	border-radius: var(--border-radius-full);
-	background: var(--color-border);
+	min-width: sz(40px);
+	max-width: sz(120px);
+	height: sz(4px);
 	overflow: hidden;
+	border-radius: var(--rise-radius-full);
+	background-color: var(--rise-bg-accented);
 }
 
 .base-tour__progress-bar-fill {
 	display: block;
 	height: 100%;
 	border-radius: inherit;
-	background: var(--color-accent);
-	transition: width var(--transition-base);
+	background-color: var(--rise-primary);
+	@include transition(width);
 }
 
-.base-tour__counter {
+.base-tour__counter.base-text {
 	flex: none;
-	font-size: 0.75rem;
+	@include text-size(xs);
+	color: var(--rise-text-muted);
 	white-space: nowrap;
 }
 
 .base-tour__actions {
 	display: inline-flex;
 	flex: none;
-	gap: 8px;
+	gap: sz(8px);
 	margin-left: auto;
+}
+
+// ─── Появление карточки: проявление из 92% ─────────────────────────────────────
+
+.base-tour-card-enter-active,
+.base-tour-card-leave-active {
+	transition-property: opacity, scale;
+	transition-duration: var(--rise-duration-slow);
+	transition-timing-function: var(--rise-ease-out);
+}
+
+.base-tour-card-leave-active {
+	transition-duration: var(--rise-duration-fast);
+}
+
+.base-tour-card-enter-from,
+.base-tour-card-leave-to {
+	opacity: 0;
+	scale: 0.92;
 }

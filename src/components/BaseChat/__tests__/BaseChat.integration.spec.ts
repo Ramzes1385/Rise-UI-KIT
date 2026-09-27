@@ -116,6 +116,24 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(screen.getByLabelText('Закрыть поиск'))
 			expect(container.querySelector('.base-chat-header__search-input')).toBeNull()
 		})
+
+		it('должен возвращать полную ленту и очищать запрос при закрытии поиска', async () => {
+			const user = userEvent.setup()
+			const { container } = renderChat()
+
+			await fireEvent.click(screen.getByLabelText('Поиск по сообщениям'))
+			await user.type(container.querySelector('.base-chat-header__search-input input') as HTMLInputElement, 'Привет')
+			expect(container.querySelectorAll('.base-chat-message-list__item')).toHaveLength(1)
+
+			await fireEvent.click(screen.getByLabelText('Закрыть поиск'))
+
+			expect(container.querySelectorAll('.base-chat-message-list__item')).toHaveLength(2)
+			expect(screen.getByText('Здравствуйте')).toBeInTheDocument()
+			expect(container.querySelector('.base-chat-message-list__highlight')).toBeNull()
+
+			await fireEvent.click(screen.getByLabelText('Поиск по сообщениям'))
+			expect(container.querySelector('.base-chat-header__search-input input')).toHaveValue('')
+		})
 	})
 
 	describe('навигация по закреплённым сообщениям', () => {
@@ -254,8 +272,32 @@ describe('BaseChat integration', () => {
 
 			await enterSelection()
 
-			expect(screen.queryByPlaceholderText('Напишите сообщение...')).toBeNull()
+			// Панель ввода скрыта (display: none), но остаётся смонтированной, чтобы не терять черновик
+			expect(screen.getByPlaceholderText('Напишите сообщение...')).not.toBeVisible()
 			expect(screen.getByText('Отмена')).toBeInTheDocument()
+		})
+
+		it('должен сохранять черновик и вложения после входа в режим выделения и отмены', async () => {
+			vi.stubGlobal('URL', { ...URL, createObjectURL: vi.fn(() => 'blob:draft'), revokeObjectURL: vi.fn() })
+			try {
+				const user = userEvent.setup()
+				const { container } = renderChat()
+
+				await user.type(screen.getByPlaceholderText('Напишите сообщение...'), 'Черновик ответа')
+				const fileInput = container.querySelector('.base-chat-input__file-input') as HTMLInputElement
+				const file = new File(['x'], 'plan.pdf', { type: 'application/pdf' })
+				Object.defineProperty(fileInput, 'files', { value: [file], configurable: true })
+				await fireEvent.change(fileInput)
+
+				await enterSelection()
+				await fireEvent.click(screen.getByText('Отмена'))
+
+				expect(screen.getByPlaceholderText('Напишите сообщение...')).toBeVisible()
+				expect(screen.getByPlaceholderText('Напишите сообщение...')).toHaveValue('Черновик ответа')
+				expect(screen.getByText('plan.pdf')).toBeInTheDocument()
+			} finally {
+				vi.unstubAllGlobals()
+			}
 		})
 
 		it('должен эмитить forward-messages при пересылке выделенных', async () => {
@@ -442,11 +484,22 @@ describe('BaseChat integration', () => {
 
 			await openInfo()
 			await fireEvent.click(screen.getByText('Файлы'))
-			const fileItem = container.querySelector('.base-chat-slideover__file-item') as HTMLElement
-			await fireEvent.click(fileItem)
+			// Карточка файла — кнопка с именем файла; кнопка «Скачать файл …» рядом
+			const fileButton = container.querySelector('.base-chat-slideover__file-main') as HTMLElement
+			await fireEvent.click(fileButton)
 
 			// file-click внутри слайдовера пробрасывается наружу как download-file
 			expect(emitted()['download-file']).toBeTruthy()
+		})
+
+		it('должен показывать в панели только описание из props, без демо-данных', async () => {
+			const { container } = renderChat({ isGroup: true, members: GROUP_MEMBERS, description: 'Чат команды поддержки' })
+
+			await openInfo()
+
+			const panel = container.querySelector('.base-chat-slideover') as HTMLElement
+			expect(panel).toHaveTextContent('Чат команды поддержки')
+			expect(panel.textContent).not.toMatch(/Металл-Арт|\+7 \(999\) 123-45-67|info@metal-art\.ru/)
 		})
 	})
 })

@@ -28,6 +28,33 @@ describe('BaseLoader unit', () => {
 		})
 	})
 
+	describe('доступное имя', () => {
+		it('должен брать имя статуса из пропса label (без завершающего многоточия)', () => {
+			render(BaseLoader, { props: { label: 'Сохранение...' } })
+
+			expect(screen.getByRole('status', { name: 'Сохранение' })).toBeInTheDocument()
+		})
+
+		it('имя должно совпадать с видимой подписью при hasLabel=true', () => {
+			render(BaseLoader, { props: { hasLabel: true, label: 'Подождите…' } })
+
+			const status = screen.getByRole('status', { name: 'Подождите' })
+			expect(status).toHaveTextContent('Подождите…')
+		})
+
+		it('должен использовать имя по умолчанию, если label пустой', () => {
+			render(BaseLoader, { props: { label: '' } })
+
+			expect(screen.getByRole('status', { name: 'Загрузка' })).toBeInTheDocument()
+		})
+
+		it('должен скрывать декоративную анимацию от вспомогательных технологий', () => {
+			const { container } = render(BaseLoader)
+
+			expect(container.querySelector('.base-loader__animation')).toHaveAttribute('aria-hidden', 'true')
+		})
+	})
+
 	describe('пропс variant', () => {
 		it('должен применять модификатор --spinner по умолчанию', () => {
 			const { container } = render(BaseLoader)

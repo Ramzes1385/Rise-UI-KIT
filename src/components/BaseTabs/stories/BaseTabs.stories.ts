@@ -1,495 +1,348 @@
-﻿/**
- * Stories для компонента BaseTabs.
- * Демонстрирует все варианты, состояния и интерактивные состояния.
- * Каждая story содержит play-функцию для 100% coverage.
+/**
+ * BaseTabs — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, на всю ширину, цвет) →
+ * состояния (отключённая вкладка, пусто, длинные названия) → содержимое (иконки, панель) →
+ * сценарии (прокрутка) → клавиатура (стрелки, Home/End, roving tabindex).
  */
 
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { TABS_VARIANTS } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
 import type { TabItem } from '../model/BaseTabs.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const TABS: TabItem[] = [
-	{ id: 'info', label: 'Информация' },
+	{ id: 'overview', label: 'Обзор' },
+	{ id: 'specs', label: 'Характеристики' },
+	{ id: 'reviews', label: 'Отзывы' },
+	{ id: 'delivery', label: 'Доставка' },
+]
+
+const TABS_WITH_DISABLED: TabItem[] = [
+	{ id: 'overview', label: 'Обзор' },
 	{ id: 'specs', label: 'Характеристики' },
 	{ id: 'reviews', label: 'Отзывы' },
 	{ id: 'delivery', label: 'Доставка', isDisabled: true },
 ]
 
+/** Иконки вкладок — доверенная SVG-разметка (поле `icon` выводится через v-html). */
+const SVG_ATTRS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"'
 const ICON_TABS: TabItem[] = [
-	{ id: 'home', label: 'Главная', icon: '🏠' },
-	{ id: 'catalog', label: 'Каталог', icon: '📂' },
-	{ id: 'cart', label: 'Корзина', icon: '🛒' },
-	{ id: 'profile', label: 'Профиль', icon: '👤' },
+	{ id: 'profile', label: 'Профиль', icon: `<svg ${SVG_ATTRS}><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>` },
+	{ id: 'security', label: 'Безопасность', icon: `<svg ${SVG_ATTRS}><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>` },
+	{ id: 'notifications', label: 'Уведомления', icon: `<svg ${SVG_ATTRS}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg>` },
 ]
 
 const MANY_TABS: TabItem[] = [
-	{ id: 'tab1', label: 'Обзор' },
-	{ id: 'tab2', label: 'Характеристики' },
-	{ id: 'tab3', label: 'Отзывы' },
-	{ id: 'tab4', label: 'Доставка' },
-	{ id: 'tab5', label: 'Оплата' },
-	{ id: 'tab6', label: 'Гарантия' },
-	{ id: 'tab7', label: 'Аналоги' },
-	{ id: 'tab8', label: 'Рекомендации' },
-	{ id: 'tab9', label: 'История' },
-	{ id: 'tab10', label: 'FAQ' },
+	{ id: 'overview', label: 'Обзор' },
+	{ id: 'specs', label: 'Характеристики' },
+	{ id: 'reviews', label: 'Отзывы' },
+	{ id: 'delivery', label: 'Доставка' },
+	{ id: 'payment', label: 'Оплата' },
+	{ id: 'warranty', label: 'Гарантия' },
+	{ id: 'similar', label: 'Похожие товары' },
+	{ id: 'questions', label: 'Вопросы и ответы' },
 ]
 
-const SETTINGS_TABS: TabItem[] = [
-	{ id: 'profile', label: 'Профиль', icon: '👤' },
-	{ id: 'security', label: 'Безопасность', icon: '🔒' },
-	{ id: 'notifications', label: 'Уведомления', icon: '🔔' },
-	{ id: 'appearance', label: 'Оформление', icon: '🎨' },
-	{ id: 'language', label: 'Язык', icon: '🌐' },
-	{ id: 'integrations', label: 'Интеграции', icon: '🔗' },
-	{ id: 'billing', label: 'Оплата', icon: '💳' },
-	{ id: 'api', label: 'API', icon: '⚙️' },
+const LONG_TABS: TabItem[] = [
+	{ id: 'contract', label: 'Условия договора поставки оборудования' },
+	{ id: 'schedule', label: 'График отгрузок по регионам' },
+	{ id: 'documents', label: 'Сопроводительные документы' },
 ]
 
-const meta: Meta<typeof BaseTabs> = {
-	title: 'UI/BaseTabs',
+const PANELS: Record<string, string> = {
+	overview: 'Лёгкий ноутбук с экраном 13 дюймов и автономностью до 18 часов.',
+	specs: 'Процессор 8 ядер, 16 ГБ памяти, накопитель 512 ГБ, вес 1,2 кг.',
+	reviews: 'Средняя оценка 4,8 по 126 отзывам покупателей.',
+	delivery: 'Доставка курьером за 1–2 дня или самовывоз из пункта выдачи.',
+}
+
+/** Ключи args, которые витрины задают сами (у каждого экземпляра своя активная вкладка). */
+const MODEL_KEYS = ['modelValue', 'onUpdate:modelValue']
+
+const meta = {
+	title: 'Navigation/BaseTabs',
 	component: BaseTabs,
-
-	argTypes: buildArgTypes({
-		props: {
-			variant: { control: 'radio', options: TABS_VARIANTS },
-			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
-			isFullWidth: { control: 'boolean' },
-			isScrollable: { control: 'boolean', description: 'Скролл табов с кнопками навигации' },
-			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
-			modelValue: { control: 'text' },
-			items: { control: 'object', description: 'Массив табов [{ id, label, icon?, isDisabled? }]' },
-			customClass: { control: 'object' },
-			'onUpdate:modelValue': { table: { disable: true } },
-			onChange: { table: { disable: true } },
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Вкладки переключают разделы одной области без перехода на другую страницу.',
+					'',
+					'- `v-model` хранит `id` активной вкладки; содержимое панели передаётся в слот по умолчанию.',
+					'- Варианты: `underline` (по умолчанию) — линия под активной вкладкой; `pills` и `rounded` — вкладки в контейнере;',
+					'  `arc` — вкладки со скруглением сверху.',
+					'- Клавиатура по APG Tabs: в порядке Tab только выбранная вкладка, стрелки ←/→ с зацикливанием, Home/End;',
+					'  отключённые вкладки пропускаются. Выбор следует за фокусом.',
+					'- `isScrollable` добавляет кнопки прокрутки при переполнении; список можно тянуть мышью.',
+				].join('\n'),
+			},
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: TABS_VARIANTS }),
+		modelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		items: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		isFullWidth: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		isScrollable: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		default: { control: false },
+	},
 	args: {
+		modelValue: 'overview',
 		items: TABS,
 		variant: 'underline',
 		isFullWidth: false,
+		isScrollable: false,
 		sizeScale: 100,
+		'onUpdate:modelValue': fn(),
+		onChange: fn(),
 	},
-}
+	// Активная вкладка хранится в args: клик меняет Controls, а изменение в Controls — вкладки.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseTabs },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<BaseTabs v-bind="props" @update:model-value="onUpdate" />',
+		}
+	},
+} satisfies Meta<typeof BaseTabs>
 
 export default meta
-type Story = StoryObj<typeof BaseTabs>
-/** Базовые табы (underline по умолчанию) */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: клик по вкладке эмитит `update:modelValue` и `change` с её `id`. */
 export const Default: Story = {
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	args: {
-		onChange: fn(),
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('tab', { name: 'Характеристики' }))
+		await expect(args.onChange).toHaveBeenCalledWith('specs')
+		// Значение живёт в args: aria-selected переходит на вкладку, когда id вернулся в v-model
+		await waitFor(() => expect(canvas.getByRole('tab', { name: 'Характеристики' })).toHaveAttribute('aria-selected', 'true'))
+		await expect(canvas.getByRole('tab', { name: 'Обзор' })).toHaveAttribute('aria-selected', 'false')
 	},
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка табов по Tab', async () => {
-			await userEvent.tab()
-		})
+}
 
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-tabs__tab' })
-		})
-	},
-}
-/** Вариант underline — клик по табу и проверка эмита */
-export const Underline: Story = {
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	args: {
-		onChange: fn(),
-	},
-}
-// play удалён: дублирует "должен эмитить change при переключении" в *.integration.spec.ts
-/** Вид вкладок «pills» */
-export const Pills: Story = {
-	args: {
-		variant: 'pills',
-		onChange: fn(),
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Четыре варианта. `underline` — навигация по разделам страницы; `pills` и `rounded` — переключатели режимов
+ * (компактные сегменты); `arc` — вкладки над панелью с содержимым.
+ */
+export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'isFullWidth'] },
+		docs: { source: { code: TABS_VARIANTS.map(variant => `<BaseTabs v-model="tab" :items="items" variant="${variant}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-}
-// play удалён: дублирует "должен эмитить change при переключении" в *.integration.spec.ts
-/** Скруглённый вид вкладок */
-export const Rounded: Story = {
-	args: {
-		variant: 'rounded',
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-}
-// play удалён: дублирует "должен эмитить change при переключении" в *.integration.spec.ts
-/** Вид вкладок «arc» */
-export const Arc: Story = {
-	args: {
-		variant: 'arc',
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-}
-// play удалён: дублирует "должен эмитить change при переключении" в *.integration.spec.ts
-/** Вкладки на всю ширину */
-export const FullWidth: Story = {
-	args: {
-		isFullWidth: true,
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-}
-// play удалён: дублирует "должен эмитить change при переключении" в *.integration.spec.ts
-/** С отключёнными элементами */
-export const WithDisabled: Story = {
-	args: {
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-}
-// play удалён: дублирует "должен эмитить корректный id таба" в *.integration.spec.ts
-/** Отображение в тёмной теме */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...MODEL_KEYS, 'variant', 'default']),
+			variants: TABS_VARIANTS,
+			tabs: ref<Record<string, string>>(Object.fromEntries(TABS_VARIANTS.map(variant => [variant, 'specs']))),
 		}),
-	],
-	args: {
-		onChange: fn(),
-	},
-	render: () => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			const items = TABS
-			const onChange = fn()
-			return { tab, items, onChange }
-		},
 		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;">
-				<BaseTabs v-model="tab" :items="items" variant="underline" :onChange="onChange" />
-				<BaseTabs v-model="tab" :items="items" variant="pills" :onChange="onChange" />
-				<BaseTabs v-model="tab" :items="items" variant="rounded" :onChange="onChange" />
-				<BaseTabs v-model="tab" :items="items" variant="arc" :onChange="onChange" />
+			<div class="story-stack">
+				<div v-for="variant in variants" :key="variant" class="story-col">
+					<span class="story-label">{{ variant }}</span>
+					<BaseTabs v-bind="props" v-model="tabs[variant]" :variant="variant" />
+				</div>
 			</div>
 		`,
 	}),
 }
-/** Табы с контентом — переключение табов показывает разный контент */
-export const WithContent: Story = {
-	render: () => ({
+
+/** Размеры через `sizeScale`: высота вкладки 24, 28, 32, 36 и 40px — как у кнопки того же размера. */
+export const Sizes: Story = {
+	args: { variant: 'pills' },
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseTabs v-model="tab" :items="items" variant="pills" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
 		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			const items = TABS
-			return { tab, items }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...MODEL_KEYS, 'sizeScale', 'default']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			tabs: ref<Record<string, string>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 'overview']))),
+		}),
 		template: `
-			<BaseTabs v-model="tab" :items="items">
-				<div v-if="tab === 'info'" style="padding:16px;">
-					<h3 style="margin:0 0 8px;">Информация</h3>
-					<p style="margin:0;color:var(--color-text-muted);">Подробное описание товара</p>
-				</div>
-				<div v-if="tab === 'specs'" style="padding:16px;">
-					<h3 style="margin:0 0 8px;">Характеристики</h3>
-					<p style="margin:0;color:var(--color-text-muted);">Материал: Бронза, Высота: 45 см</p>
-				</div>
-				<div v-if="tab === 'reviews'" style="padding:16px;color:var(--color-text-muted);">
-					Отзывы временно недоступны
-				</div>
-			</BaseTabs>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		// Переключаем на specs — должен появиться контент с характеристиками
-		const specsTab = canvas.getByRole('tab', { name: 'Характеристики' })
-		await userEvent.click(specsTab)
-		expect(canvas.getByText('Материал: Бронза, Высота: 45 см')).toBeInTheDocument()
-
-		// Переключаем на reviews
-		const reviewsTab = canvas.getByRole('tab', { name: 'Отзывы' })
-		await userEvent.click(reviewsTab)
-		expect(canvas.getByText('Отзывы временно недоступны')).toBeInTheDocument()
-	},
-}
-/** setupObserver с isScrollable=false (else ветка) */
-export const NotScrollableObserver: Story = {
-	args: { items: TABS, isScrollable: false, onChange: fn() },
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-tabs__scroll-btn')).toBeNull()
-	},
-}
-/** handleListScroll (ручной скролл списка) */
-export const ListScroll: Story = {
-	args: { items: MANY_TABS, isScrollable: true, onChange: fn() },
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('tab1')
-			return { args, tab }
-		},
-		template: '<div style="max-width:240px;"><BaseTabs v-model="tab" v-bind="args" /></div>',
-	}),
-	play: async ({ canvasElement }) => {
-		const list = canvasElement.querySelector('.base-tabs__list') as HTMLElement
-		if (list) {
-			list.scrollLeft = 50
-			list.dispatchEvent(new Event('scroll', { bubbles: true }))
-		}
-	},
-}
-/** Кнопки скролла влево/вправо — покрывает handleScrollLeft/Right (стр. 112-122) и шаблонные #left (стр. 18) */
-export const ScrollButtons: Story = {
-	args: { items: MANY_TABS, isScrollable: true, onChange: fn() },
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('tab1')
-			return { args, tab }
-		},
-		template: '<div style="max-width:200px;"><BaseTabs v-model="tab" v-bind="args" /></div>',
-	}),
-	play: async ({ canvasElement }) => {
-		const list = canvasElement.querySelector<HTMLElement>('.base-tabs__list')
-		if (!list) return
-
-		Object.defineProperty(list, 'scrollWidth', { value: 1000, configurable: true })
-		Object.defineProperty(list, 'clientWidth', { value: 200, configurable: true })
-
-		list.scrollLeft = 100
-		list.scrollBy = function scrollBy() {}
-		list.dispatchEvent(new Event('scroll', { bubbles: true }))
-
-		await new Promise(resolve => setTimeout(resolve, 50))
-
-		const leftBtn = canvasElement.querySelector<HTMLButtonElement>('.base-tabs__scroll-btn--left')
-		const rightBtn = canvasElement.querySelector<HTMLButtonElement>('.base-tabs__scroll-btn--right')
-
-		if (leftBtn) await userEvent.click(leftBtn)
-		if (rightBtn) await userEvent.click(rightBtn)
-	},
-}
-/** Переключение isScrollable во время жизни компонента — покрывает watch (стр. 144-149) */
-export const ToggleScrollable: Story = {
-	args: { items: MANY_TABS, onChange: fn() },
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('tab1')
-			const scrollable = ref(false)
-			function toggleScrollable(): void {
-				scrollable.value = !scrollable.value
-			}
-			return { args, tab, scrollable, toggleScrollable }
-		},
-		template: `
-			<div>
-				<button data-testid="toggle-scrollable" @click="toggleScrollable">Toggle</button>
-				<div style="max-width:200px;">
-					<BaseTabs v-model="tab" v-bind="args" :is-scrollable="scrollable" />
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-col">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseTabs v-bind="props" v-model="tabs[preset.name]" :size-scale="preset.sizeScale" />
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const toggle = canvasElement.querySelector<HTMLButtonElement>('[data-testid="toggle-scrollable"]')
-		if (toggle) {
-			await userEvent.click(toggle)
-			await new Promise(resolve => setTimeout(resolve, 30))
-			await userEvent.click(toggle)
-		}
+}
+
+/** `isFullWidth` растягивает вкладки на всю ширину контейнера поровну. */
+export const FullWidth: Story = {
+	args: { variant: 'pills', isFullWidth: true, items: TABS.slice(0, 3) },
+	play: async ({ canvas }) => {
+		const [first, second] = canvas.getAllByRole('tab')
+		await expect(Math.round(first.getBoundingClientRect().width)).toBe(Math.round(second.getBoundingClientRect().width))
 	},
 }
-/** Табы без элементов */
-export const Empty: Story = {
-	tags: ['!a11y'],
+
+/**
+ * Кастомный цвет через `color`: `text.base` — неактивные вкладки, `text.active` — активная,
+ * `bg.active` — линия (underline, arc) или «пилюля» (pills, rounded) активной вкладки, `bg.base` — фон контейнера.
+ */
+export const CustomColor: Story = {
 	args: {
-		items: [],
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-	},
-}
-/** Табы с иконками — покрывает v-if="item.icon" (строка 37) */
-export const WithIcons: Story = {
-	args: {
-		items: ICON_TABS,
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('home')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const icons = canvasElement.querySelectorAll('.base-tabs__icon')
-		expect(icons.length).toBe(ICON_TABS.length)
-	},
-}
-/** Клик по disabled табу — покрывает if (tab?.isDisabled) return (строка 94) */
-export const ClickDisabledTab: Story = {
-	args: {
-		items: TABS,
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, args }) => {
-		const disabledTab = canvasElement.querySelector<HTMLButtonElement>('.base-tabs__tab.base-button--disabled')
-		if (disabledTab instanceof HTMLButtonElement) {
-			disabledTab.click()
-		}
-		expect(args.onChange).not.toHaveBeenCalled()
-	},
-}
-/** Табы с длинными заголовками */
-export const LongContent: Story = {
-	args: {
-		items: [
-			{ id: 'long1', label: 'Очень длинное название вкладки которое не помещается в одну строку' },
-			{ id: 'long2', label: 'Ещё одно длинное название вкладки для проверки адаптивности' },
-			{ id: 'long3', label: 'Кратко' },
-			{ id: 'long4', label: 'Сверхдлинное название вкладки для тестирования переполнения текста' },
-		],
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('long1')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-	},
-}
-/** Табы с customClass — покрытие всех elementKeys из useCustomClass */
-export const WithCustomClass: Story = {
-	args: {
-		items: TABS,
-		customClass: {
-			root: 'tabs-root',
-			nav: 'tabs-nav',
-			scrollBtn: 'tabs-scroll-btn',
-			list: 'tabs-list',
-			tab: 'tabs-tab',
-			icon: 'tabs-icon',
-			label: 'tabs-label',
-			content: 'tabs-content',
-		},
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
-		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.tabs-root')).toBeTruthy()
-	},
-}
-/** Табы с customColor — покрытие customColorStyle */
-export const WithCustomColor: Story = {
-	args: {
-		items: TABS,
+		modelValue: 'specs',
+		variant: 'pills',
 		color: {
-			bg: { base: '#fafafa', hover: '#f0f0f0' },
-			text: { base: '#222222', hover: '#000000' },
+			bg: { base: '#eff6ff', active: '#2563eb' },
+			text: { base: '#1e40af', active: '#ffffff' },
 		},
-		onChange: fn(),
 	},
-	render: args => ({
-		components: { BaseTabs },
-		setup() {
-			const tab = ref('info')
-			return { args, tab }
+	play: async ({ canvas }) => {
+		const active = canvas.getByRole('tab', { name: 'Характеристики' })
+		await expect(getComputedStyle(active).backgroundColor).toBe('rgb(37, 99, 235)')
+		await expect(getComputedStyle(active).color).toBe('rgb(255, 255, 255)')
+		await expect(getComputedStyle(canvas.getByRole('tab', { name: 'Обзор' })).color).toBe('rgb(30, 64, 175)')
+		await expect(getComputedStyle(canvas.getByRole('tablist')).backgroundColor).toBe('rgb(239, 246, 255)')
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Отключённая вкладка приглушена, не выбирается кликом и пропускается стрелками. */
+export const Disabled: Story = {
+	args: { items: TABS_WITH_DISABLED },
+	play: async ({ canvas, userEvent, args }) => {
+		const disabled = canvas.getByRole('tab', { name: 'Доставка' })
+		await expect(disabled).toBeDisabled()
+		await userEvent.click(disabled)
+		await expect(args.onChange).not.toHaveBeenCalled()
+		await expect(disabled).toHaveAttribute('aria-selected', 'false')
+	},
+}
+
+/** Без вкладок: пустой список `tablist`, панели нет. */
+export const Empty: Story = {
+	args: { items: [], modelValue: '' },
+	play: async ({ canvas }) => {
+		await expect(within(canvas.getByRole('tablist')).queryAllByRole('tab')).toHaveLength(0)
+		await expect(canvas.queryByRole('tabpanel')).toBeNull()
+	},
+}
+
+/** Длинные названия не переносятся: список прокручивается по горизонтали и не растягивает контейнер (здесь — 360px). */
+export const LongContent: Story = {
+	args: { items: LONG_TABS, modelValue: 'contract' },
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseTabs },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<div class="story-narrow"><BaseTabs v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+	play: async ({ canvas }) => {
+		const list = canvas.getByRole('tablist')
+		await expect(list.scrollWidth).toBeGreaterThan(list.clientWidth)
+		await expect(list.getBoundingClientRect().width).toBeLessThanOrEqual(360)
+	},
+}
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Иконка вкладки — поле `icon` с доверенной SVG-разметкой (выводится через v-html, не передавайте данные пользователей). */
+export const WithIcons: Story = {
+	args: { items: ICON_TABS, modelValue: 'profile', variant: 'pills' },
+}
+
+/**
+ * Содержимое панели — слот по умолчанию. Панель получает `role="tabpanel"`, подписана активной вкладкой и
+ * доступна по Tab, чтобы с клавиатуры можно было перейти к её содержимому.
+ */
+export const WithContent: Story = {
+	args: { variant: 'arc' },
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseTabs v-model="tab" :items="items" variant="arc">',
+					'  <div>{{ panels[tab] }}</div>',
+					'</BaseTabs>',
+				].join('\n'),
+			},
 		},
-		template: '<BaseTabs v-model="tab" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
+	},
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseTabs },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate, panels: PANELS }),
+			template: `
+				<BaseTabs v-bind="props" @update:model-value="onUpdate">
+					<div>{{ panels[props.modelValue] }}</div>
+				</BaseTabs>
+			`,
+		}
+	},
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('tab', { name: 'Отзывы' }))
+		await waitFor(() => expect(canvas.getByRole('tabpanel', { name: 'Отзывы' })).toHaveTextContent('Средняя оценка 4,8'))
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * `isScrollable`: при переполнении по краям появляются кнопки прокрутки, список можно тянуть мышью
+ * (перетаскивание не переключает вкладку).
+ */
+export const Scrollable: Story = {
+	args: { items: MANY_TABS, isScrollable: true },
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseTabs },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<div style="max-width: 320px;"><BaseTabs v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+	// Состояние прокрутки не меняем: story используют e2e-тесты перетаскивания (BaseTabs.e2e.spec.ts)
+	play: async ({ canvas }) => {
+		await expect(await canvas.findByRole('button', { name: 'Прокрутить вкладки вправо' })).toBeVisible()
+		await expect(canvas.queryByRole('button', { name: 'Прокрутить вкладки влево' })).toBeNull()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура (APG Tabs): Tab попадает только на выбранную вкладку, → переносит фокус и выбор на следующую,
+ * End — на последнюю доступную (отключённая «Доставка» пропускается), Home — на первую.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { items: TABS_WITH_DISABLED },
+	play: async ({ canvas, userEvent, args }) => {
+		const overview = canvas.getByRole('tab', { name: 'Обзор' })
+		await tabTo(overview, userEvent)
+		await expect(getComputedStyle(overview).outlineStyle).toBe('solid')
+		await expect(canvas.getByRole('tab', { name: 'Характеристики' })).toHaveAttribute('tabindex', '-1')
+
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(canvas.getByRole('tab', { name: 'Характеристики' })).toHaveFocus()
+		await expect(args.onChange).toHaveBeenLastCalledWith('specs')
+
+		await userEvent.keyboard('{End}')
+		await expect(canvas.getByRole('tab', { name: 'Отзывы' })).toHaveFocus()
+
+		await userEvent.keyboard('{Home}')
+		await expect(overview).toHaveFocus()
+		await waitFor(() => expect(overview).toHaveAttribute('aria-selected', 'true'))
 	},
 }

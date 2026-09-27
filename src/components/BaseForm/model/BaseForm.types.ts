@@ -7,9 +7,9 @@ export const FORM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] a
  * Пропсы компонента BaseForm
  */
 export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)[number], 'root' | 'overlay' | 'content'> {
-	/** Состояние загрузки */
+	/** Состояние загрузки: submit не эмитится, поля формы отключены, у формы aria-busy */
 	isLoading?: boolean
-	/** Отключенное состояние */
+	/** Отключенное состояние: submit не эмитится, поля формы отключены (в том числе для клавиатуры) */
 	isDisabled?: boolean
 }
 

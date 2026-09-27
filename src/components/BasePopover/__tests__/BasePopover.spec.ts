@@ -273,6 +273,28 @@ describe('BasePopover unit', () => {
 		})
 	})
 
+	describe('корень', () => {
+		it('обёртка получает класс base-popover: строчная, по размеру триггера (панель центрируется по нему)', () => {
+			const { container } = render(BasePopover, {
+				props: { isOpen: false },
+				slots: SLOTS,
+			})
+
+			expect(container.querySelector('.base-dropdown')).toHaveClass('base-popover')
+		})
+
+		it('класс base-popover сохраняется вместе с customClass.root', () => {
+			const { container } = render(BasePopover, {
+				props: { isOpen: false, customClass: { root: 'custom-root' } },
+				slots: SLOTS,
+			})
+
+			const root = container.querySelector('.base-dropdown')
+			expect(root).toHaveClass('base-popover')
+			expect(root).toHaveClass('custom-root')
+		})
+	})
+
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу', () => {
 			const { container } = render(BasePopover, {

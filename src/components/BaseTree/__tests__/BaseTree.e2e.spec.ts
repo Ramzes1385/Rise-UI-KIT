@@ -6,7 +6,7 @@
 import { expect, test } from '@playwright/test'
 
 test('дерево: отключённый узел не раскрывается', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetree--with-disabled')
+	await page.goto('/iframe.html?id=data-basetree--disabled')
 	await page.waitForSelector('.base-tree', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -25,7 +25,7 @@ test('дерево: отключённый узел не раскрываетс�
 })
 
 test('дерево: выбирает узел в режиме single', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetree--selection-modes')
+	await page.goto('/iframe.html?id=data-basetree--selection-modes')
 	await page.waitForSelector('.base-tree', { timeout: 25000 })
 	await page.setViewportSize({ width: 1200, height: 500 })
 

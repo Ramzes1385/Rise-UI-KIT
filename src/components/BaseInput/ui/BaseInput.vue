@@ -16,6 +16,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<FormFieldLabel
 			v-if="label"
+			:for-id="inputId"
 			:label="label"
 			:is-required="isRequired"
 			class-name="base-input__label"
@@ -36,6 +37,7 @@
 				>
 			</slot>
 			<input
+				:id="inputId"
 				ref="inputRef"
 				class="base-input__field"
 				:class="classes.field"
@@ -44,6 +46,9 @@
 				:placeholder="placeholder"
 				:disabled="isDisabled"
 				:readonly="isReadonly"
+				:aria-invalid="formField.error ? 'true' : undefined"
+				:aria-required="isRequired ? 'true' : undefined"
+				:aria-describedby="formField.error ? errorId : undefined"
 				@input="masked.handleInput"
 				@keydown="masked.handleKeydown"
 				@blur="handleBlur"
@@ -92,6 +97,7 @@
 		</div>
 
 		<FormFieldError
+			:id="errorId"
 			:error="formField.error"
 			class-name="base-input__error-text"
 			:custom-class="classes.errorText"
@@ -100,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRef } from 'vue'
+import { computed, ref, toRef, useId } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
@@ -135,6 +141,9 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 const emit = defineEmits<BaseInputEmits>()
 defineSlots<BaseInputSlots>()
 const inputRef = ref<HTMLInputElement | null>(null)
+/** id поля и текста ошибки: метка связана с полем через for, ошибка — через aria-describedby */
+const inputId = useId()
+const errorId = `${inputId}-error`
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -144,8 +153,10 @@ const formField = useFormField({
 
 const masked = useMaskedInputHandlers({
 	getMask: () => props.mask,
+	getAllowedChars: () => props.allowedChars,
 	getValue: () => props.modelValue,
 	isPassword: () => props.type === 'password',
+	isReadonly: () => props.isReadonly || props.isDisabled,
 	emit: (event, value) => emit(event, value),
 	onKeydown: (e) => emit('keydown', e),
 	inputRef,

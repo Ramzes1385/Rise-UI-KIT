@@ -7,7 +7,9 @@ import type { PaddingProp } from '@composables/usePadding'
 export type SlideoverSide = 'left' | 'right'
 
 /**
- * Пропсы компонента BaseSlideover
+ * Пропсы компонента BaseSlideover.
+ * Из общих props действуют `sizeScale` (отступы, кегль, ширина панели) и `color` (фон и текст панели);
+ * `variant` не используется — у панели одно оформление.
  */
 export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 'panel' | 'header' | 'title' | 'body' | 'footer'> {
 	/** Состояние открытия */
@@ -24,7 +26,11 @@ export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 
 	closeOnOverlay?: boolean
 	/** Закрытие по Escape */
 	closeOnEscape?: boolean
-	/** Режим ограничения внутри контейнера. Компонент рендерится на месте (без teleport), родитель должен иметь position: relative и overflow: hidden */
+	/**
+	 * Панель внутри контейнера: рендерится на месте (без teleport) и перекрывает ближайшего родителя с position: relative
+	 * (overflow: hidden у родителя прячет панель во время выезда). Такой диалог немодальный: без aria-modal, ловушки фокуса
+	 * и блокировки прокрутки страницы.
+	 */
 	isContained?: boolean
 	/**
 	 * Целевой контейнер для открытия панели — CSS-селектор или HTMLElement.
@@ -36,9 +42,9 @@ export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 
 	/** Показывать затемнение фона за панелью */
 	hasOverlay?: boolean
 	/**
-	 * Внутренние отступы контента. Число (px) задаёт горизонтальные отступы
+	 * Внутренние отступы шапки, тела и подвала. Число (px) задаёт горизонтальные отступы
 	 * (вертикальные остаются базовыми). Либо объект { x, y, top, right, bottom, left }
-	 * для точечного управления. По умолчанию 24
+	 * для точечного управления. По умолчанию — из стилей: 16px по вертикали и 20px по горизонтали.
 	 */
 	padding?: PaddingProp
 }

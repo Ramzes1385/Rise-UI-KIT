@@ -1,6 +1,10 @@
 import type { BaseComponentProps } from '../../../types/base.types'
 
-/** Варианты отображения бейджа */
+/**
+ * Варианты отображения бейджа (как у кнопки):
+ * default — заливка основным цветом, soft — мягкий фон основного цвета,
+ * outline — нейтральный с рамкой, ghost — нейтральный без фона, shadow — нейтральный с тенью.
+ */
 export const BADGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 /**

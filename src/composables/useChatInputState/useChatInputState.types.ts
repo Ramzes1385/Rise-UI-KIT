@@ -11,6 +11,7 @@ export interface UseChatInputStateOptions {
 	}
 }
 
+/** Поле ввода чата: однострочное поле (BaseInput) или textarea с авто-высотой */
 export interface BaseInputExposed {
-	inputRef: HTMLInputElement | null
+	inputRef: HTMLInputElement | HTMLTextAreaElement | null
 }

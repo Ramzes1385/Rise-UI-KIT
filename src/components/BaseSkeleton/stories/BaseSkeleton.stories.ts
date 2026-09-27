@@ -1,178 +1,217 @@
 /**
- * Stories для компонента BaseSkeleton.
- * Демонстрирует все формы, анимации и кастомный цвет фона.
+ * BaseSkeleton — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (формы, анимации, размеры, свой цвет фона) →
+ * сценарии (заглушка карточки профиля).
  */
 
-import { expect, within } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { expect } from 'storybook/test'
+import { ARG_GROUP, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseSkeleton> = {
-	title: 'UI/BaseSkeleton',
+const SKELETON_SHAPES = ['text', 'rect', 'circle'] as const
+
+const meta = {
+	title: 'Element/BaseSkeleton',
 	component: BaseSkeleton,
-
-	argTypes: buildArgTypes({
-		props: {
-			width: { control: 'text' },
-			height: { control: 'text' },
-			shape: {
-				control: 'inline-radio',
-				options: ['text', 'circle', 'rect'],
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Заглушка на месте содержимого, которое загружается: повторяет его форму, чтобы страница не прыгала.',
+					'Если форма содержимого неизвестна — `BaseLoader`.',
+					'',
+					'- Формы: `text` — строка 16px, `rect` — блок (изображение, карточка), `circle` — аватар. Размеры — `width`/`height`.',
+					'- Шиммер (`isAnimated`, по умолчанию) и мерцание (`isPulse`) отключаются при системной настройке «уменьшить движение».',
+					'- Скелетон скрыт от скринридеров (`aria-hidden`): о загрузке сообщает контейнер — `aria-busy="true"` и подпись.',
+				].join('\n'),
 			},
-			color: {
-				control: 'color',
-				description: 'Кастомный цвет фона',
-			},
-			isAnimated: { control: 'boolean' },
-			isPulse: { control: 'boolean' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	decorators: [() => ({ template: '<div class="story-medium"><story /></div>' })],
+	argTypes: {
+		...hiddenArgTypes('variant', 'default'),
+		shape: { control: 'inline-radio', options: SKELETON_SHAPES, table: propGroup(ARG_GROUP.appearance) },
+		width: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		color: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		sizeScale: { control: { type: 'range', min: 50, max: 200, step: 12.5 }, table: propGroup(ARG_GROUP.appearance) },
+		customClass: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		isAnimated: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isPulse: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	},
 	args: {
-		width: '100%',
-		height: '20px',
 		shape: 'text',
+		width: '60%',
 		isAnimated: true,
 		isPulse: false,
 		sizeScale: 100,
 	},
-}
+} satisfies Meta<typeof BaseSkeleton>
 
 export default meta
-type Story = StoryObj<typeof BaseSkeleton>
-// play удалён: дублирует "должен рендерить скелетон с числовыми размерами" в *.integration.spec.ts
-/** Базовое состояние компонента */
-export const Default: Story = {}
-// play удалён: дублирует "должен рендерить скелетон с числовыми размерами" в *.integration.spec.ts
-/** Различные формы */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: меняйте props в панели Controls. Скелетон декоративный и скрыт от скринридеров. */
+export const Default: Story = {
+	play: async ({ canvasElement }) => {
+		const skeleton = canvasElement.querySelector('.base-skeleton') as HTMLElement
+		await expect(skeleton).toHaveAttribute('aria-hidden', 'true')
+		await expect(skeleton.getBoundingClientRect().height).toBe(16)
+	},
+}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Три формы: строки текста (`text`), блок (`rect`) — изображение или карточка, круг (`circle`) — аватар. */
 export const Shapes: Story = {
+	parameters: {
+		controls: { include: ['isAnimated', 'isPulse', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseSkeleton shape="text" width="80%" />',
+					'<BaseSkeleton shape="rect" width="100%" :height="120" />',
+					'<BaseSkeleton shape="circle" :width="40" :height="40" />',
+				].join('\n'),
+			},
+		},
+	},
 	render: args => ({
 		components: { BaseSkeleton },
-		setup() {
-			return { args }
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height']) }),
+		template: `
+			<div class="story-stack">
+				<div class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">text</span>
+					<BaseSkeleton v-bind="props" shape="text" width="80%" />
+				</div>
+				<div class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">rect</span>
+					<BaseSkeleton v-bind="props" shape="rect" width="100%" :height="120" />
+				</div>
+				<div class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">circle</span>
+					<BaseSkeleton v-bind="props" shape="circle" :width="40" :height="40" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/** Движение: шиммер (`isAnimated`, по умолчанию), мерцание (`isPulse`) или статичная заглушка. */
+export const Animations: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'color'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseSkeleton width="100%" :height="32" />',
+					'<BaseSkeleton width="100%" :height="32" :is-animated="false" is-pulse />',
+					'<BaseSkeleton width="100%" :height="32" :is-animated="false" />',
+				].join('\n'),
+			},
 		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:320px;">
-				<BaseSkeleton v-bind="args" shape="text" width="100%" height="16px" />
-				<BaseSkeleton v-bind="args" shape="rect" width="100%" height="120px" />
-				<BaseSkeleton v-bind="args" shape="circle" width="64px" height="64px" />
-			</div>
-		`,
-	}),
-}
-// play удалён: дублирует "должен рендерить скелетон с числовыми размерами" в *.integration.spec.ts
-/** Анимация pulse */
-export const Pulse: Story = {
-	args: {
-		isPulse: true,
 	},
-}
-// play удалён: дублирует "должен рендерить скелетон с числовыми размерами" в *.integration.spec.ts
-/** Без анимации */
-export const NoAnimation: Story = {
-	args: {
-		isAnimated: false,
-	},
-}
-// play удалён: дублирует "должен рендерить скелетон с числовыми размерами" в *.integration.spec.ts
-/** Размеры текстовых заглушек */
-export const TextSizes: Story = {
-	render: () => ({
+	render: args => ({
 		components: { BaseSkeleton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height', 'isAnimated', 'isPulse']) }),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:8px;max-width:320px;">
-				<BaseSkeleton shape="text" width="100%" height="12px" />
-				<BaseSkeleton shape="text" width="90%" height="14px" />
-				<BaseSkeleton shape="text" width="80%" height="16px" />
-				<BaseSkeleton shape="text" width="70%" height="20px" />
-				<BaseSkeleton shape="text" width="60%" height="24px" />
+			<div class="story-stack">
+				<div class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">Шиммер</span>
+					<BaseSkeleton v-bind="props" width="100%" :height="32" />
+				</div>
+				<div class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">Мерцание</span>
+					<BaseSkeleton v-bind="props" width="100%" :height="32" :is-animated="false" is-pulse />
+				</div>
+				<div class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">Без движения</span>
+					<BaseSkeleton v-bind="props" width="100%" :height="32" :is-animated="false" />
+				</div>
 			</div>
 		`,
 	}),
 }
-// play удалён: дублирует "должен рендерить скелетон с числовыми размерами" в *.integration.spec.ts
-/** Отображение в тёмной теме */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: () => ({
+
+/** Размеры задаются `sizeScale`: он масштабирует `width`/`height`, высоту строки `text` и скругления. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['isAnimated', 'isPulse'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseSkeleton shape="text" :width="160" :size-scale="${preset.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
 		components: { BaseSkeleton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height', 'sizeScale']), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div style="max-width:320px;display:flex;flex-direction:column;gap:12px;">
-				<BaseSkeleton shape="rect" width="100%" height="180px" />
-				<BaseSkeleton shape="text" width="80%" height="20px" />
-				<BaseSkeleton shape="text" width="60%" height="16px" />
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-row" style="flex-wrap: nowrap;">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseSkeleton v-bind="props" shape="circle" :width="32" :height="32" :size-scale="preset.sizeScale" />
+					<BaseSkeleton v-bind="props" shape="text" :width="160" :size-scale="preset.sizeScale" />
+				</div>
 			</div>
 		`,
 	}),
 }
-/** Кастомный цвет фона + sizeScale ≠ 100 — покрывает строки 61 и 66 */
-export const ColorAndScale: Story = {
-	args: {
-		shape: 'rect',
-		width: '200px',
-		height: '40px',
-		color: '#ff0000',
-		sizeScale: 150,
-	},
+
+/** Свой цвет фона `color` (строка CSS) — например, заглушка на цветной карточке. Здесь — токен мягкого основного цвета. */
+export const CustomColor: Story = {
+	args: { shape: 'rect', width: '100%', height: 64, color: 'var(--rise-primary-soft)' },
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const skeleton = await canvas.findByRole('status', { hidden: true }).catch(() => null)
-		const root = skeleton ?? canvasElement.querySelector<HTMLElement>('.base-skeleton')
-		expect(root).not.toBeNull()
-		if (root instanceof HTMLElement) {
-			expect(root.style.backgroundColor).toBeTruthy()
-			expect(root.style.getPropertyValue('--size-scale')).toBe('1.5')
-		}
+		const skeleton = canvasElement.querySelector('.base-skeleton') as HTMLElement
+		await expect(skeleton.style.backgroundColor).toBe('var(--rise-primary-soft)')
 	},
 }
-/** Числовые размеры — покрывает typeof === 'number' (строки 44, 53) */
-export const NumericSize: Story = {
-	args: {
-		shape: 'rect',
-		width: 240,
-		height: 80,
-		sizeScale: 100,
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Заглушка карточки профиля: скелетоны повторяют аватар, имя, должность и описание. Контейнер помечен
+ * `aria-busy="true"` и назван «Загрузка профиля» — так скринридер знает, что содержимое ещё грузится.
+ */
+export const CardPlaceholder: Story = {
+	parameters: {
+		controls: { include: ['isAnimated', 'isPulse', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<div aria-busy="true" aria-label="Загрузка профиля" role="group">',
+					'  <BaseSkeleton shape="circle" :width="40" :height="40" />',
+					'  <BaseSkeleton shape="text" width="40%" />',
+					'  <BaseSkeleton shape="text" width="25%" :height="12" />',
+					'  <BaseSkeleton shape="rect" width="100%" :height="72" />',
+					'</div>',
+				].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		const root = canvasElement.querySelector<HTMLElement>('.base-skeleton')
-		expect(root).not.toBeNull()
-		if (root instanceof HTMLElement) {
-			expect(root.style.width).toBe('240px')
-			expect(root.style.height).toBe('80px')
+	render: args => ({
+		components: { BaseSkeleton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height']) }),
+		template: `
+			<div class="story-frame" role="group" aria-busy="true" aria-label="Загрузка профиля">
+				<div class="story-stack">
+					<div class="story-row" style="flex-wrap: nowrap;">
+						<BaseSkeleton v-bind="props" shape="circle" :width="40" :height="40" />
+						<div class="story-stack" style="gap: 8px;">
+							<BaseSkeleton v-bind="props" shape="text" width="40%" />
+							<BaseSkeleton v-bind="props" shape="text" width="25%" :height="12" />
+						</div>
+					</div>
+					<BaseSkeleton v-bind="props" shape="rect" width="100%" :height="72" />
+				</div>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, canvasElement }) => {
+		await expect(canvas.getByRole('group', { name: 'Загрузка профиля' })).toHaveAttribute('aria-busy', 'true')
+		for (const skeleton of canvasElement.querySelectorAll('.base-skeleton')) {
+			await expect(skeleton).toHaveAttribute('aria-hidden', 'true')
 		}
-	},
-}
-/** Без размеров — покрывает false-ветку if (props.width) и if (props.height) (строки 42, 51) */
-export const WithoutDimensions: Story = {
-	args: {
-		shape: 'circle',
-		width: undefined,
-		height: undefined,
-	},
-	play: async ({ canvasElement }) => {
-		const root = canvasElement.querySelector<HTMLElement>('.base-skeleton')
-		expect(root).not.toBeNull()
-		if (root instanceof HTMLElement) {
-			expect(root.style.width).toBe('')
-			expect(root.style.height).toBe('')
-		}
-	},
-}
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'skl-root' },
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.skl-root')).toBeTruthy()
 	},
 }

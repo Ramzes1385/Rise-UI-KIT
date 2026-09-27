@@ -6,7 +6,15 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
+import { BaseCalendar } from '@components/BaseCalendar'
 import DatePickerPanel from '../ui/DatePickerPanel/DatePickerPanel.vue'
+
+/**
+ * Имена props реального BaseCalendar. Stub обязан повторять настоящий контракт:
+ * прежний stub объявлял удалённые в 1.2.2 плоские props (minDate, showTime, showNavigation…)
+ * и тем самым скрывал, что панель передаёт их в пустоту.
+ */
+const BASE_CALENDAR_PROP_NAMES = Object.keys((BaseCalendar as unknown as { props: Record<string, unknown> }).props)
 
 /** Стабы для UI Kit компонентов */
 const GLOBAL_STUBS = {
@@ -17,7 +25,16 @@ const GLOBAL_STUBS = {
 	},
 	BaseCalendar: {
 		template: `
-			<div class="base-calendar" :data-month="initialMonth" :data-year="initialYear" :data-locale="locale">
+			<div
+				class="base-calendar"
+				:data-month="initialMonth"
+				:data-year="initialYear"
+				:data-locale="locale"
+				:data-min-date="constraints?.minDate?.getDate()"
+				:data-show-time="String(timeConfig?.showTime)"
+				:data-show-navigation="String(displayConfig?.showNavigation)"
+				:data-show-week-number="String(displayConfig?.showWeekNumber)"
+				:data-unknown-attrs="Object.keys($attrs).filter(name => name !== 'class' && !name.startsWith('on')).join(',')">
 				<button class="emit-model-value" @click="$emit('update:modelValue', new Date())" />
 				<button class="emit-model-end" @click="$emit('update:modelValueEnd', new Date())" />
 				<button class="emit-selected" @click="$emit('update:selectedDates', [])" />
@@ -26,34 +43,7 @@ const GLOBAL_STUBS = {
 				<button class="emit-year-change" @click="$emit('year-change', 2028)" />
 			</div>
 		`,
-		props: [
-			'showNavigation',
-			'canSwitchView',
-			'showYear',
-			'showTodayButton',
-			'modelValue',
-			'modelValueEnd',
-			'selectedDates',
-			'selectionMode',
-			'variant',
-			'minDate',
-			'maxDate',
-			'disabledDates',
-			'disabledWeekdays',
-			'disableFrom',
-			'disableTo',
-			'highlights',
-			'weekends',
-			'firstDayOfWeek',
-			'showTime',
-			'showSeconds',
-			'is24Hour',
-			'showWeekNumber',
-			'locale',
-			'sizeScale',
-			'initialMonth',
-			'initialYear',
-		],
+		props: BASE_CALENDAR_PROP_NAMES,
 		emits: [
 			'update:modelValue',
 			'update:modelValueEnd',
@@ -185,6 +175,48 @@ describe('DatePickerPanel', () => {
 			})
 
 			expect(container.querySelector('.base-calendar')).toBeInTheDocument()
+		})
+	})
+
+	describe('контракт с BaseCalendar', () => {
+		const CONFIG_WITH_CONSTRAINTS = {
+			...DEFAULT_PROPS,
+			minDate: new Date(2026, 0, 20),
+			showTime: true,
+			showWeekNumber: true,
+		}
+
+		it.each(['single', 'range'] as const)('%s: передаёт только объявленные props BaseCalendar (ничего не уходит в $attrs)', mode => {
+			const { container } = render(DatePickerPanel, {
+				props: { ...CONFIG_WITH_CONSTRAINTS, selectionMode: mode },
+				global: { stubs: STUBS },
+			})
+
+			expect(container.querySelector('.base-calendar')).toHaveAttribute('data-unknown-attrs', '')
+		})
+
+		it.each(['single', 'range'] as const)('%s: ограничения, время и номера недель доходят сгруппированными props', mode => {
+			const { container } = render(DatePickerPanel, {
+				props: { ...CONFIG_WITH_CONSTRAINTS, selectionMode: mode },
+				global: { stubs: STUBS },
+			})
+
+			const calendar = container.querySelector('.base-calendar')!
+			expect(calendar).toHaveAttribute('data-min-date', '20')
+			expect(calendar).toHaveAttribute('data-show-time', 'true')
+			expect(calendar).toHaveAttribute('data-show-week-number', 'true')
+			// Навигацию выполняет шапка панели — собственная навигация календаря скрыта
+			expect(calendar).toHaveAttribute('data-show-navigation', 'false')
+		})
+
+		it('при нескольких месяцах блок времени получает только первый календарь', () => {
+			const { container } = render(DatePickerPanel, {
+				props: { ...CONFIG_WITH_CONSTRAINTS, monthsCount: 3 },
+				global: { stubs: STUBS },
+			})
+
+			const flags = Array.from(container.querySelectorAll('.base-calendar')).map(calendar => calendar.getAttribute('data-show-time'))
+			expect(flags).toEqual(['true', 'false', 'false'])
 		})
 	})
 

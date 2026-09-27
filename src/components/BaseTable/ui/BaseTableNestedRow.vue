@@ -9,10 +9,8 @@
 				@leave="transitionCallbacks.onCollapseLeave"
 				@after-leave="transitionCallbacks.onCollapseAfterLeave">
 				<div v-if="isExpanded(row)" class="base-table__nested-wrapper">
-					<BaseText v-if="nestedConfig.title" tag="h4" class="base-table__nested-title">
-						{{ nestedConfig.title }}
-					</BaseText>
-					<BaseTable :columns="nestedConfig.columns" :rows="row.children" variant="bordered" :size-scale="sizeScale" />
+					<h4 v-if="nestedConfig.title" class="base-table__nested-title">{{ nestedConfig.title }}</h4>
+					<BaseTable :columns="nestedConfig.columns" :rows="row.children" :size-scale="sizeScale" />
 				</div>
 			</Transition>
 		</td>
@@ -27,7 +25,12 @@
 				v-for="column in columns"
 				:key="`child-${column.key}`"
 				class="base-table__td"
-				:class="[`base-table__td--${column.align || 'left'}`, column.cellClass, tdClass]"
+				:class="[
+					`base-table__td--${column.align || 'left'}`,
+					column.isSticky ? `base-table__td--sticky-${column.isSticky}` : '',
+					column.cellClass,
+					tdClass,
+				]"
 				:style="getColumnStyle(column)">
 				<slot :name="`cell-${column.key}`" :row="child" :value="child.data[column.key]" :column="column">
 					{{ formatCellValue(column, child) }}
@@ -39,7 +42,6 @@
 
 <script setup lang="ts">
 import { inject } from 'vue'
-import { BaseText } from '@components/BaseText'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTable from './BaseTable.vue'
 import type { BaseTableNestedRowProps, BaseTableNestedRowSlots } from '../model/BaseTableNestedRow.types'

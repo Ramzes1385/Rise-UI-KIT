@@ -7,6 +7,7 @@
 import '@testing-library/jest-dom/vitest'
 import {
 	createImagePreview,
+	downloadFile,
 	formatAcceptHint,
 	formatFileSize,
 	getExtension,
@@ -241,6 +242,32 @@ describe('fileUtils', () => {
 			const result = await createImagePreview(file)
 			expect(result).toBeNull()
 			vi.stubGlobal('FileReader', OriginalFileReader)
+		})
+	})
+	// ── downloadFile ──
+	describe('downloadFile', () => {
+		it('кликает по временной ссылке с download для безопасного URL и удаляет её', () => {
+			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+				expect(this.getAttribute('href')).toBe('https://cdn.example.com/report.pdf')
+				expect(this.download).toBe('report.pdf')
+			})
+			downloadFile('https://cdn.example.com/report.pdf', 'report.pdf')
+			expect(clickSpy).toHaveBeenCalledOnce()
+			expect(document.querySelector('a[download]')).toBeNull()
+		})
+
+		it('разрешает blob: URL локально созданного файла', () => {
+			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+			downloadFile('blob:http://localhost:3000/5f1c', 'photo.png')
+			expect(clickSpy).toHaveBeenCalledOnce()
+		})
+
+		it('не переходит по javascript: URL из данных вложения', () => {
+			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			downloadFile('javascript:alert(document.cookie)', 'x.txt')
+			expect(clickSpy).not.toHaveBeenCalled()
+			expect(warnSpy).toHaveBeenCalledOnce()
 		})
 	})
 })

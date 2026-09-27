@@ -1,62 +1,21 @@
 /**
  * Конфигурация Storybook для Vue 3 + Vite.
- * Использует aliases и SCSS-модули структуры UI-библиотеки.
+ *
+ * Где что лежит:
+ * - src/stories/            — вводная страница, Foundations (токены, типографика, размеры, темы) и общие хелперы stories;
+ * - src/components/<X>/stories/<X>.stories.ts — stories компонентов;
+ * - build/storybook/preview.ts  — глобальные параметры, тема (toolbar «Тема»), a11y;
+ * - build/storybook/manager.ts  — оформление интерфейса Storybook.
  */
 
-import { cpSync, existsSync, mkdirSync } from 'node:fs'
 import type { StorybookConfig } from '@storybook/vue3-vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
-import type { Plugin } from 'vite'
 import { mergeConfig } from 'vite'
-import { resolvePathInStorybookCache } from 'storybook/internal/common'
 import svgLoader from 'vite-svg-loader'
 import { createSpritePlugin } from '../plugins/sprite.ts'
 
 const PROJECT_ROOT = resolve(process.cwd())
-const COVERAGE_DIR = resolve(PROJECT_ROOT, 'coverage')
-const ADDON_VITEST_CACHE = resolvePathInStorybookCache('coverage')
-
-type StaticDir = { from: string; to: string }
-
-/**
- * Отдаёт /coverage из проектной папки coverage/.
- *
- * Addon-vitest при нажатии «Run tests» пишет HTML-отчёт в свой внутренний кеш
- * (node_modules/.cache/storybook/.../coverage/), а не в coverage/.
- * Vite-миддлвар syncCoverageFromCache синхронизирует кеш → coverage/
- * при первом запросе /coverage/, чтобы /coverage/index.html всегда был доступен.
- *
- * CLI-прогоны (test:storybook:coverage, test:coverage:merged) пишут напрямую
- * в coverage/, миддлвар для них — no-op.
- */
-function serveProjectCoverage(staticDirs: StaticDir[]): StaticDir[] {
-	mkdirSync(COVERAGE_DIR, { recursive: true })
-	const others = staticDirs.filter(dir => dir.to !== '/coverage')
-	return [{ from: COVERAGE_DIR, to: '/coverage' }, ...others]
-}
-
-/**
- * Vite-плагин: при запросе /coverage/ синхронизирует отчёт из кеша
- * addon-vitest в coverage/, если в coverage/ ещё нет index.html.
- */
-function syncCoverageFromCache(): Plugin {
-	return {
-		name: 'sync-coverage-from-cache',
-		configureServer(server) {
-			server.middlewares.use((req, _res, next) => {
-				const url = req.url ?? ''
-				if (!url.startsWith('/coverage')) return next()
-
-				if (!existsSync(resolve(COVERAGE_DIR, 'index.html')) && existsSync(resolve(ADDON_VITEST_CACHE, 'index.html'))) {
-					cpSync(ADDON_VITEST_CACHE, COVERAGE_DIR, { recursive: true, force: true })
-				}
-
-				next()
-			})
-		},
-	}
-}
 
 /** Alias проекта, продублированные из build/config/alias.ts. */
 const ALIASES: Record<string, string> = {
@@ -80,7 +39,7 @@ const GLOBAL_SCSS_PRELUDE = [
 ].join('\n')
 
 // Глобальные SCSS-файлы не импортируют сами себя — иначе зацикливание.
-const GLOBAL_SCSS_FILES = ['_variables.scss', '_mixins.scss', '_functions.scss']
+const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
 
 function shouldSkipImport(filename: string): boolean {
 	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))
@@ -92,19 +51,20 @@ function addGlobalImports(source: string, filename: string): string {
 }
 
 const config: StorybookConfig = {
-	stories: ['../../src/components/**/*.stories.ts'],
+	stories: ['../../src/stories/**/*.mdx', '../../src/stories/**/*.stories.ts', '../../src/components/**/*.stories.ts'],
 
-	addons: ['@storybook/addon-a11y', '@storybook/addon-docs', '@storybook/addon-onboarding', '@storybook/addon-vitest'],
+	addons: ['@storybook/addon-a11y', '@storybook/addon-docs'],
 
 	framework: {
 		name: '@storybook/vue3-vite',
 		options: {},
 	},
 
-	staticDirs: (dirs = []) => serveProjectCoverage(dirs as StaticDir[]),
+	core: {
+		disableTelemetry: true,
+	},
 
-		viteFinal(config) {
-		const isVitest = !!process.env.VITEST
+	viteFinal(config) {
 		const merged = mergeConfig(config, {
 			root: PROJECT_ROOT,
 			server: {
@@ -126,9 +86,10 @@ const config: StorybookConfig = {
 				},
 			},
 		})
-		const plugins = [...[config.plugins], svgLoader({ defaultImport: 'component', svgo: true })]
-		if (!isVitest) plugins.push(vue(), syncCoverageFromCache(), createSpritePlugin())
-		merged.plugins = plugins
+		// vite:vue должен идти раньше storybook:vue-docgen-plugin из config.plugins: docgen дописывает
+		// `_sfc_main.__docgenInfo = …` к уже скомпилированному JS. Если vue() стоит после него, docgen дописывается
+		// к исходнику SFC и молча теряется (в Docs нет описаний props), а JSDoc с HTML-тегами ломает сборку.
+		merged.plugins = [vue(), ...[config.plugins], svgLoader({ defaultImport: 'component', svgo: true }), createSpritePlugin()]
 		return merged
 	},
 }

@@ -1,134 +1,150 @@
+// BaseCard — поверхность для группы контента: фон --rise-bg, рамка --rise-border, радиус lg, текст 14/20.
+// Шапка (заголовок 16/24 semibold, подзаголовок 14/20 muted), тело и подвал разделены линией --rise-border.
+// Отступы секций по умолчанию 16px 20px; проп padding переопределяет их inline-переменными --card-pad-*.
+// Варианты: default — рамка; outline — рамка accented; soft — фон bg-elevated 50% без рамки;
+// ghost — без фона и рамки; shadow — рамка и тень. isHoverable — рамка accented и тень при наведении.
 .base-card {
-	@include custom-bg(background-color, var(--color-white));
-	border-radius: var(--border-radius-base);
-	border: 1px solid var(--color-border);
-	overflow: hidden;
+	--card-pad-top: 16px;
+	--card-pad-right: 20px;
+	--card-pad-bottom: 16px;
+	--card-pad-left: 20px;
+
 	display: flex;
 	flex-direction: column;
-	outline: none;
+	box-sizing: border-box;
 	height: var(--card-height, auto);
-	font-size: sz(16px);
-	@include interactive;
+	overflow: hidden;
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include text-size(sm);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+	@include transition-colors;
 
-	&--hoverable {
-		cursor: pointer;
-
-		@include hover {
-			transform: translateY(sz(-4px));
-			box-shadow: var(--shadow-lg);
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-
-		@include focus {
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface));
-			box-shadow:
-				0 0 0 sz(2px) var(--color-bg),
-				0 0 0 sz(4px) var(--color-accent);
-		}
-
-		@include active {
-			transform: translateY(sz(-2px)) scale(0.99);
-			@include custom-bg(background-color, var(--color-border));
-		}
-	}
-
-	&--scroll {
-		.base-card__body {
-			overflow-y: auto;
-		}
-	}
-
-	&--truncate {
-		.base-card__body {
-			display: -webkit-box;
-			-webkit-line-clamp: 3;
-			-webkit-box-orient: vertical;
-			overflow: hidden;
-		}
-	}
-
-	// Варианты
-	&--default {
-		@include custom-bg(background-color, var(--color-white));
-	}
-
-	&--ghost {
-		@include custom-bg(background-color, transparent);
-		border-color: transparent;
-		box-shadow: none;
-	}
+	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--outline {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-lg);
-
-		@include hover {
-			box-shadow: var(--shadow-xl);
-		}
+		border-color: var(--rise-border-accented);
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
 		border-color: transparent;
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+	}
 
-		.base-card__title {
-			@include custom-text(color, var(--color-primary));
+	&--ghost {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--shadow {
+		box-shadow: var(--rise-shadow-sm);
+	}
+
+	// ─── Интерактивная карточка ──────────────────────────────────────────────────
+
+	&--hoverable {
+		cursor: pointer;
+		@include focus-ring;
+
+		@include hover {
+			border-color: var(--rise-border-accented);
+			box-shadow: var(--rise-shadow-sm);
 		}
 	}
 
+	&--shadow#{&}--hoverable {
+		@include hover {
+			box-shadow: var(--rise-shadow-md);
+		}
+	}
+
+	// ─── Секции ──────────────────────────────────────────────────────────────────
+
 	&__header {
-		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
-		border-bottom: sz(1px) solid var(--color-border);
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: sz(12px);
 		flex-shrink: 0;
+		gap: sz(12px);
+		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		border-bottom: 1px solid var(--rise-border);
 	}
 
 	&__header-text {
+		display: flex;
 		flex: 1;
+		flex-direction: column;
+		gap: sz(4px);
 		min-width: 0;
+		overflow-wrap: break-word;
 	}
 
-	&__title {
-		margin: 0;
-		font-size: sz(18px);
-		font-weight: 700;
-		@include custom-text(color, var(--color-primary));
+	// Заголовок и подзаголовок — BaseText (по умолчанию 14/20 --rise-text): здесь свой кегль и цвет.
+	& &__title {
+		@include text-size(base);
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
-	&__subtitle {
-		margin: sz(4px) 0 0;
-		font-size: sz(14px);
-		@include custom-text(color, var(--color-text));
-		opacity: 0.7;
+	& &__subtitle {
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
+	// Кнопки высотой 32px стоят по центру строки заголовка (24px) и не увеличивают высоту шапки.
+	// Слоты actions, body и footer — пользовательское содержимое: проп color красит карточку, но не вложенные кнопки и поля.
 	&__actions {
+		@include reset-custom-color;
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
 		flex-shrink: 0;
+		gap: sz(8px);
+		margin-block: sz(-4px);
 	}
 
 	&__body {
-		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		@include reset-custom-color;
 		flex: 1;
-		min-height: 0; // Важно для scroll внутри flex-контейнера
+		min-height: 0;
+		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		overflow-wrap: break-word;
+
+		// Карточка только с шапкой (например, карточка-ссылка): пустое тело не оставляет пустую полосу.
+		&:empty {
+			display: none;
+		}
+	}
+
+	&__header:has(+ .base-card__body:empty) {
+		border-bottom: 0;
 	}
 
 	&__footer {
-		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
-		background-color: var(--color-bg);
-		border-top: sz(1px) solid var(--color-border);
-		margin-top: auto;
+		@include reset-custom-color;
 		flex-shrink: 0;
+		margin-top: auto;
+		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		border-top: 1px solid var(--rise-border);
+	}
+
+	// ─── Высота ──────────────────────────────────────────────────────────────────
+
+	// height + scroll: тело прокручивается, шапка и подвал остаются на месте.
+	// Тело фокусируемо (tabindex) — кольцо фокуса внутри, карточка обрезает всё, что снаружи.
+	&--scroll &__body {
+		overflow-y: auto;
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+	}
+
+	// height без scroll: текст тела обрезается до трёх строк. Тело не растягивается на всю высоту, а нижний отступ —
+	// margin: overflow обрезает по краю padding, и строки после многоточия иначе видны в растянутом блоке или в отступе.
+	&--truncate &__body {
+		display: -webkit-box;
+		flex: 0 1 auto;
+		margin-bottom: sz(var(--card-pad-bottom));
+		padding-bottom: 0;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 }

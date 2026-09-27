@@ -1,6 +1,6 @@
 <template>
 	<teleport to="body" :disabled="isContained">
-		<transition name="modal-fade">
+		<transition name="base-modal">
 			<div
 				v-if="isOpen"
 				class="base-modal"
@@ -13,11 +13,18 @@
 				]"
 				:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 				@click.self="handleOverlayClick">
-				<div class="base-modal__content" :class="classes.content">
+				<div
+					ref="contentRef"
+					class="base-modal__content"
+					:class="classes.content"
+					role="dialog"
+					:aria-modal="isModal ? 'true' : undefined"
+					:aria-labelledby="title ? titleId : undefined">
 					<!-- Заголовок -->
 					<div v-if="title" class="base-modal__header" :class="classes.header">
 						<div class="base-modal__header-left" :class="classes.headerLeft">
 							<BaseText
+								:id="titleId"
 								tag="h3"
 								:size-scale="sizeScale"
 								:weight="UI_FONT_WEIGHT.SEMIBOLD"
@@ -28,17 +35,21 @@
 						</div>
 						<BaseButton
 							variant="ghost"
-							:padding="MODAL_CLOSE_BUTTON_PADDING"
 							:size-scale="sizeScale"
 							class="base-modal__close"
 							:custom-class="classes.close"
+							:aria-label="UI_ARIA.CLOSE"
 							@click="handleClose">
 							<BaseIcon name="close" :size-scale="sizeScale" />
 						</BaseButton>
 					</div>
 
-					<!-- Тело -->
-					<div class="base-modal__body" :class="classes.body">
+					<!-- Тело: с прокруткой получает tabindex, чтобы его можно было прокрутить с клавиатуры -->
+					<div
+						ref="bodyRef"
+						class="base-modal__body"
+						:class="classes.body"
+						:tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>
 
@@ -53,13 +64,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import { computed, ref, useId, useSlots } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFocusTrap } from '@composables/useFocusTrap'
 import { usePopup } from '@composables/usePopup'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, MODAL_CLOSE_BUTTON_PADDING, DEFAULT_VARIANT} from '@constants'
+import { useScrollableRegion } from '@composables/useScrollableRegion'
+import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../model/BaseModal.types'
 
@@ -94,5 +107,27 @@ const { handleOverlayClick, close: handleClose } = usePopup({
 		emit('update:isOpen', false)
 		emit('close')
 	},
+})
+
+const contentRef = ref<HTMLElement | null>(null)
+const bodyRef = ref<HTMLElement | null>(null)
+const titleId = useId()
+
+/**
+ * Тело с прокруткой получает tabindex="0": если в нём нет полей и кнопок, иначе его не прокрутить с клавиатуры.
+ * Короткое тело в порядок Tab не попадает.
+ */
+const { isScrollable: isBodyScrollable } = useScrollableRegion({ elementRef: bodyRef })
+
+/**
+ * Модальный режим: оверлей на весь экран перехватывает клики (в том числе прозрачный при hasOverlay=false)
+ * и блокирует прокрутку. В isContained окно перекрывает только свой контейнер, остальная страница
+ * доступна — диалог немодальный: без aria-modal и без ловушки фокуса.
+ */
+const isModal = computed(() => !props.isContained)
+
+useFocusTrap({
+	containerRef: contentRef,
+	isActive: () => Boolean(props.isOpen) && isModal.value,
 })
 </script>

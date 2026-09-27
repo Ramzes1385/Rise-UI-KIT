@@ -2,7 +2,8 @@
 	<div
 		v-if="children.length && wasExpanded"
 		class="base-tree__children"
-		:class="[{ 'base-tree__children--open': isExpanded }, treeContext.classes.value.children]">
+		:class="[{ 'base-tree__children--open': isExpanded }, treeContext.classes.value.children]"
+		:style="isExpanded ? undefined : COLLAPSED_STYLE">
 		<div class="base-tree__children-inner">
 			<BaseTreeNode v-for="child in children" :key="child.id" :node="child" :depth="depth" :size-scale="sizeScale">
 				<template #icon="slotProps">
@@ -36,6 +37,13 @@ import '../styles/BaseTree.style.scss'
 
 defineProps<BaseTreeChildrenProps>()
 defineSlots<BaseTreeChildrenSlots>()
+
+/**
+ * Свёрнутая ветка остаётся в DOM (ленивый рендер + сворачивание через grid 0fr), поэтому её узлы
+ * были бы доступны по Tab и скринридеру. visibility:hidden убирает их из порядка фокуса и дерева
+ * доступности, не меняя раскладку (высота контейнера и так нулевая).
+ */
+const COLLAPSED_STYLE = { visibility: 'hidden' } as const
 
 const treeContext = inject(TREE_CONTEXT_KEY, undefined)
 /* istanbul ignore if -- defensive: BaseTreeChildren всегда рендерится внутри BaseTree, контекст предоставляется родителем */

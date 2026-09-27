@@ -48,6 +48,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		getColumnStyle,
 		toggleColumnVisibility,
 		formatCellValue,
+		snapshotColumns,
 	} = useTableColumns({
 		columns,
 		rows,
@@ -90,8 +91,10 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		onPageSizeChange: (size: number) => emit('page-size-change', size),
 	})
 
+	// «Выбрать все» действует на строки, прошедшие поиск и фильтры, а не на все переданные rows
 	const { isAllSelected, isSelected, toggleRow: toggleRowSelection, toggleAll: toggleAllRows } = useTableSelection({
 		rows,
+		filteredRows: processedRows,
 		onSelect: selectedRows => emit('select', selectedRows),
 	})
 
@@ -180,7 +183,8 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		visibleColumns,
 		minWidth: TABLE.MIN_COL_WIDTH,
 		onColumnResize: (key, width) => emit('column-resize', key, width),
-		onColumnsChange: columns => emit('columns-change', columns),
+		// Копия, а не внутренний массив: если родитель вернёт payload в props, таблица не должна мутировать его объекты
+		onColumnsChange: () => emit('columns-change', snapshotColumns()),
 	})
 
 	function startResize(event: MouseEvent, column: TableColumn): void {

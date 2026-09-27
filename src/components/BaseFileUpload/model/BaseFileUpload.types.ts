@@ -45,7 +45,10 @@ export interface BaseFileUploadProps extends BaseComponentProps<(typeof FILE_UPL
 	label?: string
 	/** Текст кнопки */
 	buttonText?: string
-	/** Размер превью в пикселях */
+	/**
+	 * Размер превью (и иконки файла) в строке списка, px; масштабируется `sizeScale`.
+	 * Без пропа — 40px из стилей.
+	 */
 	previewSize?: number
 	/** Разрешить предпросмотр (изображения) */
 	allowPreview?: boolean

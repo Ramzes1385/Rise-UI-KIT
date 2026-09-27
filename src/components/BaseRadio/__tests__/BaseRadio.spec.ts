@@ -73,6 +73,42 @@ describe('BaseRadio unit', () => {
 		})
 	})
 
+	describe('доступность группы', () => {
+		it('объявляет radiogroup с именем из заголовка', () => {
+			render(BaseRadio, {
+				props: { modelValue: '', options: OPTIONS, name: 'test', label: 'Материал' },
+				...GLOBAL_COMPONENTS,
+			})
+
+			const group = screen.getByRole('radiogroup', { name: 'Материал' })
+			expect(group).toContainElement(screen.getByRole('radio', { name: 'Металл' }))
+		})
+
+		it('помечает группу aria-required и aria-invalid и связывает её с текстом ошибки', () => {
+			render(BaseRadio, {
+				props: { modelValue: '', options: OPTIONS, name: 'test', label: 'Материал', isRequired: true, error: 'Выберите материал' },
+				...GLOBAL_COMPONENTS,
+			})
+
+			const group = screen.getByRole('radiogroup')
+			expect(group).toHaveAttribute('aria-required', 'true')
+			expect(group).toHaveAttribute('aria-invalid', 'true')
+			expect(group).toHaveAccessibleDescription('Выберите материал')
+		})
+
+		it('без заголовка и ошибки не ставит aria-labelledby, aria-invalid и aria-describedby', () => {
+			render(BaseRadio, {
+				props: { modelValue: '', options: OPTIONS, name: 'test' },
+				...GLOBAL_COMPONENTS,
+			})
+
+			const group = screen.getByRole('radiogroup')
+			expect(group).not.toHaveAttribute('aria-labelledby')
+			expect(group).not.toHaveAttribute('aria-invalid')
+			expect(group).not.toHaveAttribute('aria-describedby')
+		})
+	})
+
 	describe('пропс name', () => {
 		it('должен устанавливать name на все input', () => {
 			const { container } = render(BaseRadio, {

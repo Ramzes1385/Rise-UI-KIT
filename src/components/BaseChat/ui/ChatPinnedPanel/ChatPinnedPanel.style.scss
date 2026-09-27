@@ -1,80 +1,70 @@
-@use "@styles/functions" as *;
+// Панель закреплённого сообщения под шапкой: фон --rise-bg-muted, слева — линия --rise-primary.
+// Подпись 12/16 medium цветом primary, превью 14/20 в одну строку; справа — ghost-кнопки 24px
+// (предыдущий/следующий закреп, открепить).
+@use '../../styles/chat' as *;
 
 .base-chat-pinned-panel {
 	display: flex;
+	flex: none;
 	align-items: center;
-	justify-content: space-between;
-	padding: sz(8px) sz(16px);
-	background: var(--color-surface);
-	border-bottom: sz(1px) solid var(--color-border);
-	gap: sz(12px);
-	animation: slideDown 0.2s ease;
-	z-index: 5;
+	gap: sz(8px);
+	padding: sz(8px) sz(12px) sz(8px) sz(16px);
+	background-color: var(--rise-bg-muted);
+	@include chat-section-border(bottom);
 
 	&__content {
+		@include chat-button-reset;
 		display: flex;
-		align-items: center;
-		gap: sz(10px);
 		flex: 1;
+		align-items: center;
+		gap: sz(8px);
 		min-width: 0;
-		cursor: pointer;
-		transition: opacity var(--transition-base);
+		padding: sz(2px) sz(8px);
+		border-left: sz(2px) solid var(--rise-primary);
+		border-radius: 0 sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) 0;
+		@include focus-ring;
 
-		&:hover {
-			opacity: 0.85;
+		@include hover {
+			.base-chat-pinned-panel__preview {
+				color: var(--rise-text-highlighted);
+			}
 		}
 	}
 
 	&__pin-icon {
-		color: var(--color-accent);
-		flex-shrink: 0;
+		color: var(--rise-primary);
 	}
 
 	&__text-wrapper {
 		display: flex;
+		flex: 1;
 		flex-direction: column;
 		min-width: 0;
-		flex: 1;
 	}
 
 	&__title {
-		color: var(--color-accent);
-		font-size: sz(12px);
-		line-height: 1.2;
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-primary);
+		@include truncate;
 	}
 
 	&__preview {
-		margin: 0;
-		color: var(--color-text-muted);
-		font-size: sz(12px);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		line-height: 1.3;
+		@include text-size(sm);
+		color: var(--rise-text);
+		@include truncate;
+		@include transition-colors;
 	}
 
 	&__actions {
 		display: flex;
+		flex: none;
 		align-items: center;
-		gap: sz(4px);
-		flex-shrink: 0;
+		gap: sz(2px);
 	}
 
-	&__nav-btn {
-		color: var(--color-text-muted);
-		transition: color var(--transition-base);
-
-		&:hover {
-			color: var(--color-accent);
-		}
-	}
-
+	&__nav-btn,
 	&__unpin-btn {
-		color: var(--color-text-muted);
-		transition: color var(--transition-base);
-
-		&:hover {
-			color: var(--color-danger);
-		}
+		@include chat-icon-button(3px);
 	}
 }

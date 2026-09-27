@@ -1,126 +1,192 @@
+// BaseColorPicker. Триггер — образец цвета 32×32 в коробке поля (рамка accented, радиус md), фокус — кольцо focus-ring.
+// Панель — BasePopover (floating-surface): область насыщенности и яркости (радиус md), слайдер тона (радиус full),
+// поле HEX (коробка поля, моноширинный шрифт) и пресеты — сетка образцов 20px (радиус sm, внутренняя рамка);
+// выбранный пресет — кольцо основного цвета. Бегунки — белое кольцо 2px с тенью sm: видны на любом цвете.
+// Белый, чёрный и спектр тона — сама модель цвета, а не тема, поэтому заданы явно и не меняются в тёмной теме.
+
 .base-color-picker {
 	display: inline-flex;
-}
 
-.base-color-picker__swatch {
-	width: 32px;
-	height: 32px;
-	padding: 0;
-	border: 1px solid var(--color-border);
-	border-radius: var(--border-radius-base);
-	cursor: pointer;
-	transition: var(--transition-base);
-	box-shadow: var(--shadow-sm);
-}
+	// ─── Триггер ─────────────────────────────────────────────────────────────────
 
-.base-color-picker__swatch:hover {
-	border-color: var(--color-accent);
-}
+	// Образец — коробка поля (рамка accented, радиус md, фон bg), залитая выбранным цветом (inline-стиль).
+	// Фокус — кольцо focus-ring, как у кнопок: триггер-кнопку тулбара (BaseEditor) оформляют поверх этих стилей.
+	&__swatch {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: sz(32px);
+		height: sz(32px);
+		padding: 0;
+		border: 1px solid var(--rise-border-accented);
+		border-radius: sz(var(--rise-control-radius));
+		background-color: var(--rise-bg);
+		color: var(--rise-text);
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
 
-.base-color-picker__swatch:disabled {
-	cursor: not-allowed;
-	opacity: 0.5;
-}
+		&:disabled {
+			@include disabled-state;
+		}
+	}
 
-.base-color-picker__panel {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	width: 220px;
-	padding: 12px;
-	background: var(--color-surface);
-}
+	// ─── Панель ──────────────────────────────────────────────────────────────────
+	// Содержимое панели BasePopover (телепорт в body): отступы 12/16 даёт поповер.
 
-.base-color-picker__area {
-	position: relative;
-	width: 100%;
-	height: 140px;
-	border-radius: var(--border-radius-base);
-	cursor: crosshair;
-	touch-action: none;
-	background-image: linear-gradient(to right, #fff, transparent), linear-gradient(to top, #000, transparent);
-}
+	&__panel {
+		// Цвета модели цвета и бегунков — одинаковы в обеих темах.
+		--picker-white: white;
+		--picker-black: black;
+		--picker-hue: linear-gradient(
+			to right,
+			hsl(0deg 100% 50%),
+			hsl(60deg 100% 50%),
+			hsl(120deg 100% 50%),
+			hsl(180deg 100% 50%),
+			hsl(240deg 100% 50%),
+			hsl(300deg 100% 50%),
+			hsl(360deg 100% 50%)
+		);
 
-.base-color-picker__marker {
-	position: absolute;
-	width: 12px;
-	height: 12px;
-	border: 2px solid var(--color-white);
-	border-radius: var(--border-radius-full);
-	box-shadow: var(--shadow-md);
-	transform: translate(-50%, -50%);
-	pointer-events: none;
-}
+		display: flex;
+		flex-direction: column;
+		gap: sz(12px);
+		// Ширина по сетке пресетов: 6 образцов по 20px и 5 зазоров по 10px.
+		width: sz(170px);
+	}
 
-.base-color-picker__hue {
-	width: 100%;
-	height: 12px;
-	margin: 0;
-	border-radius: var(--border-radius-full);
-	appearance: none;
-	cursor: pointer;
-	background: linear-gradient(
-		to right,
-		#f00 0%,
-		#ff0 17%,
-		#0f0 33%,
-		#0ff 50%,
-		#00f 67%,
-		#f0f 83%,
-		#f00 100%
-	);
-}
+	// Насыщенность растёт слева направо (белый → цвет тона), яркость — снизу вверх (чёрный поверх).
+	&__area {
+		position: relative;
+		height: sz(128px);
+		border-radius: sz(var(--rise-radius-md));
+		background-image:
+			linear-gradient(to top, var(--picker-black), transparent),
+			linear-gradient(to right, var(--picker-white), transparent);
+		cursor: crosshair;
+		touch-action: none;
+		@include focus-ring;
+	}
 
-.base-color-picker__hex {
-	width: 100%;
-	padding: 6px 8px;
-	border: 1px solid var(--color-border);
-	border-radius: var(--border-radius-sm);
-	background: var(--color-surface);
-	color: var(--color-text);
-	font-family: var(--font-family-mono);
-	font-size: 0.875rem;
-	text-transform: uppercase;
-}
+	&__marker {
+		position: absolute;
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 2px solid var(--picker-white);
+		border-radius: var(--rise-radius-full);
+		box-shadow: var(--rise-shadow-sm);
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+	}
 
-.base-color-picker__hex:focus {
-	outline: none;
-	border-color: var(--color-accent);
-}
+	// Слайдер тона — нативный range: трек-спектр 12px (радиус full), бегунок 16px — белое кольцо с тенью.
+	&__hue {
+		display: block;
+		width: 100%;
+		height: sz(12px);
+		margin: 0;
+		border-radius: var(--rise-radius-full);
+		background: var(--picker-hue);
+		cursor: pointer;
+		appearance: none;
+		@include focus-ring;
 
-.base-color-picker__presets {
-	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	gap: 6px;
-}
+		&::-webkit-slider-thumb {
+			box-sizing: border-box;
+			width: sz(16px);
+			height: sz(16px);
+			border: 2px solid var(--picker-white);
+			border-radius: var(--rise-radius-full);
+			background-color: transparent;
+			box-shadow: var(--rise-shadow-sm);
+			appearance: none;
+		}
 
-.base-color-picker__preset {
-	width: 100%;
-	aspect-ratio: 1;
-	padding: 0;
-	border: 1px solid var(--color-border);
-	border-radius: var(--border-radius-sm);
-	cursor: pointer;
-	transition: var(--transition-base);
-}
+		&::-moz-range-thumb {
+			box-sizing: border-box;
+			width: sz(16px);
+			height: sz(16px);
+			border: 2px solid var(--picker-white);
+			border-radius: var(--rise-radius-full);
+			background-color: transparent;
+			box-shadow: var(--rise-shadow-sm);
+		}
+	}
 
-.base-color-picker__preset:hover {
-	transform: scale(1.1);
-}
+	// Поле HEX — коробка поля 32px: моноширинный шрифт, заглавные буквы.
+	&__hex {
+		box-sizing: border-box;
+		width: 100%;
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		outline: none;
+		color: var(--rise-text-highlighted);
+		font-family: var(--rise-font-mono);
+		text-transform: uppercase;
+		@include control-text;
+		@include field-box;
+	}
 
-.base-color-picker__reset {
-	width: 100%;
-	padding: 6px 8px;
-	border: 1px solid var(--color-border);
-	border-radius: var(--border-radius-sm);
-	background: var(--color-surface);
-	color: var(--color-text);
-	font-size: 0.8125rem;
-	cursor: pointer;
-	transition: var(--transition-base);
-}
+	// ─── Пресеты ─────────────────────────────────────────────────────────────────
 
-.base-color-picker__reset:hover {
-	border-color: var(--color-accent);
-	color: var(--color-accent);
+	&__presets {
+		display: grid;
+		grid-template-columns: repeat(6, sz(20px));
+		gap: sz(10px);
+	}
+
+	// Образец 20px: внутренняя рамка отделяет светлые цвета от фона панели.
+	&__preset {
+		box-sizing: border-box;
+		width: sz(20px);
+		height: sz(20px);
+		padding: 0;
+		border: none;
+		border-radius: sz(var(--rise-radius-sm));
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rise-text-highlighted) 12%, transparent);
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring(4px);
+
+		// Наведение — тонкое нейтральное кольцо через зазор (у выбранного кольцо своё).
+		&:not(.base-color-picker__preset--selected) {
+			@include hover {
+				box-shadow:
+					inset 0 0 0 1px color-mix(in srgb, var(--rise-text-highlighted) 12%, transparent),
+					0 0 0 2px var(--rise-bg),
+					0 0 0 3px var(--rise-border-accented);
+			}
+		}
+
+		// Выбранный — кольцо основного цвета через зазор цвета фона: видно и на оранжевом образце.
+		&--selected {
+			box-shadow:
+				inset 0 0 0 1px color-mix(in srgb, var(--rise-text-highlighted) 12%, transparent),
+				0 0 0 2px var(--rise-bg),
+				0 0 0 4px var(--rise-primary);
+		}
+	}
+
+	// Сброс — нейтральная кнопка на всю ширину: как BaseButton outline, 32px.
+	&__reset {
+		box-sizing: border-box;
+		width: 100%;
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		border: 1px solid var(--rise-border-accented);
+		border-radius: sz(var(--rise-control-radius));
+		background-color: var(--rise-bg);
+		color: var(--rise-text);
+		font-family: inherit;
+		font-weight: var(--rise-font-weight-medium);
+		cursor: pointer;
+		@include control-text;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+	}
 }

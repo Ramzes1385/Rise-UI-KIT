@@ -8,5 +8,8 @@ export {
 	INLINE_FORMAT_TAGS,
 	isInsideList,
 	isInsideTags,
+	matchTypedInlineTag,
 	toHTMLElement,
+	TYPED_INLINE_TAGS,
 } from './editorDomUtils'
+export type { TypedInlineTagMatch } from './editorDomUtils.types'

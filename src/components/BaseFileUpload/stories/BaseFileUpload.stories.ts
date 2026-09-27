@@ -1,478 +1,314 @@
-﻿/**
- * Stories для компонента BaseFileUpload.
- * Демонстрирует все вариации, состояния и интерактивные состояния.
- * Каждая story содержит play-функцию для 100% coverage.
+/**
+ * BaseFileUpload — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (варианты, размеры, цвет) → состояния (пусто, ошибка, disabled, загрузка) →
+ * сценарии (несколько файлов, только изображения, перетаскивание) → клавиатура.
  */
 
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { UI_TEXT } from '@constants'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { expect, fireEvent, fn, waitFor } from 'storybook/test'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	placeholderImage,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	STORY_WAIT_TIMEOUT,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { FILE_UPLOAD_VARIANTS } from '../model/BaseFileUpload.types'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Создать тестовый File */
-function createTestFile(name: string, size: number, type: string): File {
-	return new File([new ArrayBuffer(size)], name, { type })
+/** Изображение для загрузки: SVG-иллюстрация из фикстур stories (детерминированная, без сети). */
+function imageFile(name: string, hue = 200): File {
+	const svg = decodeURIComponent(placeholderImage({ width: 400, height: 250, hue }).split(',')[1]!)
+	return new File([svg], name, { type: 'image/svg+xml' })
 }
 
-const meta: Meta<typeof BaseFileUpload> = {
-	title: 'UI/BaseFileUpload',
+/** Документ заданного размера (КБ): содержимое не важно, важны имя, тип и размер. */
+function documentFile(name: string, sizeKb: number, type = 'application/pdf'): File {
+	return new File([new Uint8Array(sizeKb * 1024)], name, { type })
+}
+
+/**
+ * Данные перетаскивания для fireEvent: браузер принимает в DragEvent только настоящий DataTransfer, а fireEvent
+ * пересобирает его из собственных свойств объекта — поэтому files делаем собственным свойством.
+ */
+function dropData(files: File[]): DataTransfer {
+	const data = new DataTransfer()
+	for (const file of files) data.items.add(file)
+	Object.defineProperty(data, 'files', { value: data.files })
+	return data
+}
+
+/** Имитация прогресса (FU-2) занимает до ~4 с: ждём статус «Загружено» с запасом. */
+const UPLOAD_TIMEOUT = 6000
+
+const meta = {
+	title: 'Form/BaseFileUpload',
 	component: BaseFileUpload,
-
-	argTypes: buildArgTypes({
-		props: {
-			accept: { control: 'text' },
-			variant: { control: 'radio', options: FILE_UPLOAD_VARIANTS },
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Загрузка файлов: зона, куда файлы перетаскивают или где их выбирают, и список выбранных файлов.',
+					'',
+					'- Зона — кнопка: клик, Enter и Space открывают системный выбор файла; подпись `label` связана с полем.',
+					'- `accept` и `maxSize` (МБ) проверяют файл при выборе; ошибки проверки и проп `error` выводятся под зоной',
+					'  и связаны с ней через `aria-describedby`.',
+					'- Без `isMultiple` новый файл заменяет выбранный (`change` отдаёт один файл); с `isMultiple` — до `maxCount` файлов.',
+					'- В строке файла — превью изображения (по клику открывается просмотр) или иконка типа, размер и статус.',
+					'  Прогресс загрузки пока имитируется компонентом (аудит FU-2).',
+					'',
+					'Для полей, которые валидирует форма, используйте `BaseForm` + `BaseFormField`.',
+				].join('\n'),
 			},
-			isMultiple: { control: 'boolean' },
-			isDisabled: { control: 'boolean' },
-			maxSize: { control: 'number' },
-			maxCount: { control: 'number' },
-			label: { control: 'text' },
-			buttonText: { control: 'text' },
-			previewSize: { control: 'number' },
-			allowPreview: { control: 'boolean' },
-			emptyText: { control: 'text' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-		hidden: ['onChange', 'onError', 'onRemove'],
-	}),
-
+	},
+	// Ширина примера — 560px; витрины с несколькими зонами задают parameters.maxWidth
+	decorators: [
+		(_, { parameters }) => ({ template: `<div style="width: 100%; max-width: ${parameters.maxWidth ?? 560}px;"><story /></div>` }),
+	],
+	argTypes: {
+		...baseArgTypes({ variants: FILE_UPLOAD_VARIANTS }),
+		// emptyText и слот default компонент не выводит (аудит FU-10)
+		...hiddenArgTypes('emptyText', 'default'),
+		label: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		buttonText: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		previewSize: { control: 'number', table: propGroup(ARG_GROUP.appearance) },
+		error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		accept: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+		isMultiple: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		maxSize: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+		maxCount: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+		allowPreview: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		trigger: { control: false },
+	},
 	args: {
-		accept: 'image/*',
+		label: 'Вложения',
+		accept: '.pdf,.docx,image/*',
+		maxSize: 10,
 		variant: 'default',
 		isMultiple: false,
 		isDisabled: false,
-		maxSize: 10,
-		label: 'Загрузите файл',
-		buttonText: 'Выбрать файл',
-		previewSize: 48,
 		allowPreview: true,
-		emptyText: 'Перетащите файл сюда',
 		sizeScale: 100,
+		onChange: fn(),
+		onError: fn(),
+		onRemove: fn(),
 	},
-}
+} satisfies Meta<typeof BaseFileUpload>
 
 export default meta
-type Story = StoryObj<typeof BaseFileUpload>
-/** Базовая загрузка — клик по dropzone + загрузка файла */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: выберите файл кликом по зоне или перетащите его. Выбранный файл появляется в списке, `change` отдаёт его. */
 export const Default: Story = {
-	args: {
-		onChange: fn(),
-		onError: fn(),
-		onRemove: fn(),
-	},
-	play: async ({ args, canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		await step('Фокусировка dropzone по Tab', async () => {
-			await userEvent.tab()
-			await waitFor(() => {
-				const dropzone = canvasElement.querySelector('.base-file-upload__dropzone')
-				expect(dropzone).toHaveFocus()
-			})
-		})
-
-		await step('Shift+Tab — обратная фокусировка', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-file-upload__dropzone' })
-		})
-
-		// Клик по dropzone — покрывает triggerUpload
-		const dropzone = canvasElement.querySelector('.base-file-upload__dropzone') as HTMLElement
-		await userEvent.click(dropzone)
-
-		// Загружаем файл через input
-		const input = canvasElement.querySelector('input[type="file"]') as HTMLInputElement
-		const file = createTestFile('test.png', 1024, 'image/png')
-		const dt = new DataTransfer()
-		dt.items.add(file)
-		Object.defineProperty(input, 'files', { value: dt.files })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
+	play: async ({ canvas, userEvent, args }) => {
+		// Подпись связана с полем выбора файла
+		await userEvent.upload(canvas.getByLabelText('Вложения'), documentFile('Отчёт за май.pdf', 248))
+		await expect(await canvas.findByText('Отчёт за май.pdf')).toBeVisible()
+		await expect(canvas.getByText('248.0 КБ')).toBeVisible()
+		await expect(args.onChange).toHaveBeenCalledOnce()
 	},
 }
-/** Ошибка валидации — файл слишком большой */
-export const FileTooBig: Story = {
-	args: {
-		maxSize: 1,
-		accept: '.pdf',
-		onError: fn(),
-		onChange: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const input = canvasElement.querySelector('input[type="file"]') as HTMLInputElement
-		// Файл больше лимита + неправильный формат
-		const file = createTestFile('big.png', 3 * 1024 * 1024, 'image/png')
-		const dt = new DataTransfer()
-		dt.items.add(file)
-		Object.defineProperty(input, 'files', { value: dt.files })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
 
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload--error')).toBeInTheDocument()
-		})
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Варианты зоны: `default` — пунктир; `outline` — сплошная рамка на прозрачном фоне; `soft` — мягкий фон без рамки;
+ * `ghost` — без рамки и фона (для плотных интерфейсов); `shadow` — приподнятая с тенью.
+ */
+export const Variants: Story = {
+	parameters: {
+		maxWidth: 760,
+		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
+		docs: { source: { code: FILE_UPLOAD_VARIANTS.map(variant => `<BaseFileUpload variant="${variant}" label="${variant}" />`).join('\n') } },
 	},
-}
-// play удалён: дублирует "должен вызывать click на file input при клике на dropzone" в *.integration.spec.ts
-/** Множественный выбор */
-export const Multiple: Story = {
-	args: {
-		isMultiple: true,
-		maxCount: 5,
-		onChange: fn(),
-	},
-}
-/** Только изображения */
-export const ImagesOnly: Story = {
-	args: {
-		accept: 'image/png,image/jpeg,image/webp',
-		buttonText: 'Выбрать изображение',
-	},
-}
-/** Отключенная */
-export const Disabled: Story = {
-	args: {
-		isDisabled: true,
-	},
-}
-/** Состояние ошибки */
-export const Error: Story = {
-	render: () => ({
+	render: args => ({
 		components: { BaseFileUpload },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['variant', 'label']), variants: FILE_UPLOAD_VARIANTS }),
 		template: `
-			<div>
-				<span style="font-size:12px;color:var(--color-text-muted);">Error</span>
-				<BaseFileUpload class="base-file-upload--error" />
+			<div class="story-grid" style="--story-grid-min: 220px;">
+				<BaseFileUpload v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :label="variant" />
 			</div>
 		`,
 	}),
 }
-/** Без лейбла */
-export const WithoutLabel: Story = {
-	args: {
-		label: '',
+
+/** Размеры через `sizeScale`: отступы, шрифт и иконки зоны и строк файлов масштабируются вместе. */
+export const Sizes: Story = {
+	parameters: {
+		maxWidth: 760,
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseFileUpload :size-scale="${preset.sizeScale}" />`).join('\n') } },
 	},
-}
-/** С ограничением размера */
-export const WithMaxSize: Story = {
-	args: {
-		maxSize: 2,
-		buttonText: 'Выбрать файл (до 2 МБ)',
-	},
-}
-/** Документы */
-export const DocumentsOnly: Story = {
-	args: {
-		accept: '.pdf,.doc,.docx,.xls,.xlsx',
-		buttonText: 'Выбрать документ',
-		label: 'Документы',
-	},
-}
-/** Состояние при наведении (hover) */
-export const HoverState: Story = {
-	render: () => ({
+	render: args => ({
 		components: { BaseFileUpload },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'label']), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div>
-				<span style="font-size:12px;color:var(--color-text-muted);">Hover</span>
-				<BaseFileUpload class="base-file-upload--hover" />
+			<div class="story-grid" style="--story-grid-min: 280px; align-items: end;">
+				<BaseFileUpload v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" />
 			</div>
 		`,
 	}),
 }
-/** Активное состояние (нажатие) */
-export const ActiveState: Story = {
-	render: () => ({
-		components: { BaseFileUpload },
-		template: `
-			<div>
-				<span style="font-size:12px;color:var(--color-text-muted);">Active</span>
-				<BaseFileUpload class="base-file-upload--active" />
-			</div>
-		`,
-	}),
-}
-/** Состояние фокуса (клавиатура) */
-export const FocusState: Story = {
-	render: () => ({
-		components: { BaseFileUpload },
-		template: `
-			<div>
-				<span style="font-size:12px;color:var(--color-text-muted);">Focus</span>
-				<BaseFileUpload class="base-file-upload--focus" />
-			</div>
-		`,
-	}),
-}
-/** Все интерактивные состояния рядом (normal/hover/active/focus) */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseFileUpload },
-		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;">
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Normal</span>
-					<BaseFileUpload />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Hover</span>
-					<BaseFileUpload class="base-file-upload--hover" />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Active</span>
-					<BaseFileUpload class="base-file-upload--active" />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Focus</span>
-					<BaseFileUpload class="base-file-upload--focus" />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Disabled</span>
-					<BaseFileUpload is-disabled />
-				</div>
-			</div>
-		`,
-	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: () => ({
-		components: { BaseFileUpload },
-		template: '<BaseFileUpload label="Загрузите файл" />',
-	}),
-}
-/** Загрузка файлов в процессе */
-export const Loading: Story = {
+
+/**
+ * Кастомный цвет зоны через `color`: фон (с наведением) и цвет заголовка — например, под брендовую форму.
+ * Строки файлов и их кнопки цветом компонента не перекрашиваются.
+ */
+export const CustomColor: Story = {
 	args: {
-		isDisabled: true,
-		label: UI_TEXT.LOADING,
+		label: 'Логотип компании',
+		accept: 'image/*',
+		color: { bg: { base: '#f5f3ff', hover: '#ede9fe' }, text: { base: '#6d28d9' } },
+	},
+	play: async ({ canvas, userEvent }) => {
+		const dropzone = canvas.getByRole('button', { name: /Выберите файлы/ })
+		await expect(getComputedStyle(dropzone).backgroundColor).toBe('rgb(245, 243, 255)')
+		await expect(getComputedStyle(canvas.getByText('Выберите файлы')).color).toBe('rgb(109, 40, 217)')
+		// Подпись поля — вне зоны: цвет компонента её не перекрашивает
+		await expect(getComputedStyle(canvas.getByText('Логотип компании')).color).not.toBe('rgb(109, 40, 217)')
+
+		await userEvent.upload(canvas.getByLabelText('Логотип компании'), imageFile('Логотип.svg', 270))
+		const remove = await canvas.findByRole('button', { name: 'Удалить Логотип.svg' })
+		await expect(getComputedStyle(remove).color).not.toBe('rgb(109, 40, 217)')
+		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
 	},
 }
-/** Нет загруженных файлов */
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Файлы ещё не выбраны: только зона загрузки с подсказкой о форматах и размере, списка нет. */
 export const Empty: Story = {
-	args: {
-		emptyText: 'Файлы не загружены',
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText('.PDF, .DOCX, IMAGE/*')).toBeVisible()
+		await expect(canvas.getByText('до 10 МБ')).toBeVisible()
+		await expect(canvas.queryByRole('list')).not.toBeInTheDocument()
 	},
 }
-/** Drag&Drop файла — покрывает handleDragOver/handleDragLeave/handleDrop (стр. 321-333) */
+
+/** Ошибка: рамка зоны цвета ошибки, текст под ней; зона описана текстом ошибки (`aria-describedby`). */
+export const WithError: Story = {
+	args: { error: 'Прикрепите хотя бы один документ' },
+	play: async ({ canvas }) => {
+		await waitFor(() => expect(canvas.getByText('Прикрепите хотя бы один документ')).toBeVisible())
+		await expect(canvas.getByRole('button', { name: /Выберите файлы/ })).toHaveAccessibleDescription('Прикрепите хотя бы один документ')
+	},
+}
+
+/** Отключённая зона: приглушена, не получает фокус, не открывает выбор файла и не принимает перетаскивание. */
+export const Disabled: Story = {
+	args: { isDisabled: true },
+	play: async ({ canvas, userEvent, args }) => {
+		const dropzone = canvas.getByRole('button', { name: /Выберите файлы/ })
+		await expect(dropzone).toHaveAttribute('aria-disabled', 'true')
+		await expect(canvas.getByLabelText('Вложения')).toBeDisabled()
+
+		await userEvent.tab()
+		await expect(dropzone).not.toHaveFocus()
+		await fireEvent.drop(dropzone, { dataTransfer: dropData([documentFile('Отчёт.pdf', 12)]) })
+		await expect(args.onChange).not.toHaveBeenCalled()
+	},
+}
+
+/**
+ * Загрузка: пока файл отправляется, в строке — процент и полоса `BaseProgress` с именем файла, после — «Загружено».
+ * Сейчас прогресс имитируется компонентом (аудит FU-2), для документов статус остаётся «Ожидание».
+ */
+export const Loading: Story = {
+	args: { label: 'Обложка', accept: 'image/*' },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.upload(canvas.getByLabelText('Обложка'), imageFile('Обложка.svg', 24))
+		await expect(await canvas.findByRole('progressbar', { name: 'Обложка.svg' })).toBeVisible()
+		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
+		await expect(canvas.queryByRole('progressbar')).not.toBeInTheDocument()
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Несколько файлов (`isMultiple`, до `maxCount`): новые файлы добавляются в список, крестик удаляет файл
+ * (`remove`, затем `change` с оставшимися). Длинное имя обрезается многоточием, полное — в подсказке.
+ */
+export const Multiple: Story = {
+	args: { isMultiple: true, maxCount: 5, label: 'Документы по сделке' },
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.upload(canvas.getByLabelText('Документы по сделке'), [
+			documentFile('Договор аренды офиса на 2025 год — финальная версия с правками юриста.pdf', 1840),
+			documentFile('Смета.docx', 36, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
+			imageFile('План этажа.svg', 150),
+		])
+		await waitFor(() => expect(canvas.getAllByRole('listitem')).toHaveLength(3))
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Удалить Смета.docx' }))
+		await expect(args.onRemove).toHaveBeenCalledOnce()
+		await expect(canvas.getAllByRole('listitem')).toHaveLength(2)
+		await expect(args.onChange).toHaveBeenLastCalledWith([expect.any(File), expect.any(File)])
+		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
+	},
+}
+
+/**
+ * Только изображения (`accept`): файл другого типа не принимается — под зоной ошибка. Выбранное изображение
+ * показывается превью; клик по превью открывает просмотр (`allowPreview`). Новый файл заменяет прежний.
+ */
+export const ImagesOnly: Story = {
+	args: { label: 'Фото товара', accept: '.png,.jpg,.jpeg,.svg', buttonText: 'Выберите изображение', maxSize: 5 },
+	play: async ({ canvas, userEvent, args }) => {
+		const dropzone = canvas.getByRole('button', { name: /Выберите изображение/ })
+		await fireEvent.drop(dropzone, { dataTransfer: dropData([documentFile('Счёт.pdf', 90)]) })
+		const error = await canvas.findByText(/Формат файла "Счёт\.pdf" не поддерживается/)
+		await waitFor(() => expect(error).toBeVisible())
+		await expect(args.onError).toHaveBeenCalledOnce()
+
+		await userEvent.upload(canvas.getByLabelText('Фото товара'), imageFile('Товар.svg', 340))
+		await expect(await canvas.findByRole('button', { name: 'Товар.svg' })).toBeVisible()
+		await expect(canvas.queryByText(/не поддерживается/)).not.toBeInTheDocument()
+		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
+	},
+}
+
+/** Перетаскивание: над зоной файл подсвечивает её (фон и рамка основного цвета), после отпускания файл попадает в список. */
 export const DragAndDrop: Story = {
-	args: {
-		onChange: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const dropzone = canvasElement.querySelector('.base-file-upload__dropzone') as HTMLElement
-		expect(dropzone).toBeTruthy()
+	play: async ({ canvas, args }) => {
+		const dropzone = canvas.getByRole('button', { name: /Выберите файлы/ })
+		const idleBorder = getComputedStyle(dropzone).borderTopColor
+		const dataTransfer = dropData([documentFile('Акт сверки.pdf', 64)])
 
-		const file = createTestFile('drag.png', 1024, 'image/png')
-		const dt = new DataTransfer()
-		dt.items.add(file)
+		await fireEvent.dragOver(dropzone, { dataTransfer })
+		await waitFor(() => expect(getComputedStyle(dropzone).borderTopColor).not.toBe(idleBorder))
+		await fireEvent.dragLeave(dropzone, { dataTransfer })
+		await waitFor(() => expect(getComputedStyle(dropzone).borderTopColor).toBe(idleBorder))
 
-		const dragOver = new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt })
-		dropzone.dispatchEvent(dragOver)
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload__dropzone--active')).toBeTruthy()
-		})
-
-		const dragLeave = new DragEvent('dragleave', { bubbles: true, cancelable: true, dataTransfer: dt })
-		dropzone.dispatchEvent(dragLeave)
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload__dropzone--active')).toBeFalsy()
-		})
-
-		const dropEvent = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt })
-		dropzone.dispatchEvent(dropEvent)
-
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload__item')).toBeTruthy()
-		})
+		await fireEvent.drop(dropzone, { dataTransfer })
+		await expect(await canvas.findByText('Акт сверки.pdf')).toBeVisible()
+		await expect(args.onChange).toHaveBeenCalledOnce()
 	},
 }
-/** Удаление загруженного файла — покрывает handleRemove (стр. 107, 312-318) */
-export const RemoveUploadedFile: Story = {
-	args: {
-		onChange: fn(),
-		onRemove: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('input[type="file"]') as HTMLInputElement
-		const file = createTestFile('remove-me.png', 1024, 'image/png')
-		const dt = new DataTransfer()
-		dt.items.add(file)
-		Object.defineProperty(input, 'files', { value: dt.files, configurable: true })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
 
-		let removeBtn: HTMLButtonElement | null = null
-		await waitFor(() => {
-			removeBtn = canvasElement.querySelector<HTMLButtonElement>('.base-file-upload__remove')
-			expect(removeBtn).toBeTruthy()
-		})
+// ─── Доступность ───────────────────────────────────────────────────────────────
 
-		if (removeBtn) {
-			await userEvent.click(removeBtn)
-			await waitFor(() => {
-				expect(canvasElement.querySelector('.base-file-upload__item')).toBeFalsy()
-			})
-		}
-	},
-}
-/** Превышение maxCount — покрывает блок "Максимум файлов" (стр. 250-253) */
-export const MaxCountExceeded: Story = {
-	args: {
-		isMultiple: true,
-		maxCount: 1,
-		onError: fn(),
-		onChange: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('input[type="file"]') as HTMLInputElement
+/** Клавиатура: Tab до зоны (кольцо фокуса), Enter и Space открывают системный выбор файла. */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent }) => {
+		const dropzone = canvas.getByRole('button', { name: /Выберите файлы/ })
+		const openPicker = fn()
+		canvas.getByLabelText('Вложения').addEventListener('click', openPicker)
 
-		const firstDt = new DataTransfer()
-		firstDt.items.add(createTestFile('first.png', 1024, 'image/png'))
-		Object.defineProperty(input, 'files', { value: firstDt.files, configurable: true })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
-
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload__item')).toBeTruthy()
-		})
-
-		const secondDt = new DataTransfer()
-		secondDt.items.add(createTestFile('second.png', 1024, 'image/png'))
-		Object.defineProperty(input, 'files', { value: secondDt.files, configurable: true })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
-
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload--error')).toBeTruthy()
-		})
-	},
-}
-/** Проп error — покрывает displayErrors с непустым props.error */
-export const WithErrorProp: Story = {
-	args: {
-		error: 'Внешняя ошибка валидации',
-	},
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload--error')).toBeTruthy()
-		})
-	},
-}
-/** Файл без preview (не image) — ветка status='pending' */
-export const NonImageFile: Story = {
-	args: {
-		accept: '.txt,.pdf',
-		onChange: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('input[type="file"]')
-		if (!(input instanceof HTMLInputElement)) return
-		const file = createTestFile('doc.txt', 1024, 'text/plain')
-		const dt = new DataTransfer()
-		dt.items.add(file)
-		Object.defineProperty(input, 'files', { value: dt.files, configurable: true })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload__item--pending')).toBeTruthy()
-		})
-	},
-}
-/** Drop без dataTransfer — покрывает ветку e.dataTransfer falsy */
-export const DropWithoutData: Story = {
-	args: {
-		onChange: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const dropzone = canvasElement.querySelector('.base-file-upload__dropzone')
-		if (!(dropzone instanceof HTMLElement)) return
-		const dropEvent = new Event('drop', { bubbles: true, cancelable: true })
-		dropzone.dispatchEvent(dropEvent)
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload__dropzone')).toBeTruthy()
-		})
-	},
-}
-/** Change без файлов — покрывает ветку target.files falsy */
-export const ChangeNoFiles: Story = {
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('input[type="file"]')
-		if (!(input instanceof HTMLInputElement)) return
-		Object.defineProperty(input, 'files', { value: null, configurable: true })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-file-upload')).toBeTruthy()
-		})
-	},
-}
-/** customClass — покрывает elementKeys */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: {
-			root: 'file-upload-root',
-			label: 'file-upload-label',
-			dropzone: 'file-upload-dropzone',
-			text: 'file-upload-text',
-			hint: 'file-upload-hint',
-			list: 'file-upload-list',
-			item: 'file-upload-item',
-			preview: 'file-upload-preview',
-			previewImg: 'file-upload-previewImg',
-			info: 'file-upload-info',
-			name: 'file-upload-name',
-			meta: 'file-upload-meta',
-			ext: 'file-upload-ext',
-			size: 'file-upload-size',
-			status: 'file-upload-status',
-			progress: 'file-upload-progress',
-			remove: 'file-upload-remove',
-			errors: 'file-upload-errors',
-			errorItem: 'file-upload-errorItem',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.file-upload-root')).toBeTruthy()
-		})
-		expect(canvasElement.querySelector('.file-upload-dropzone')).toBeTruthy()
-	},
-}
-/** Удаление одного из нескольких файлов — покрывает arrow `.map` (стр. 317) */
-export const RemoveOneOfMany: Story = {
-	args: {
-		isMultiple: true,
-		onChange: fn(),
-		onRemove: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const input = canvasElement.querySelector('input[type="file"]')
-		if (!(input instanceof HTMLInputElement)) return
-		const dt = new DataTransfer()
-		dt.items.add(createTestFile('one.png', 1024, 'image/png'))
-		dt.items.add(createTestFile('two.png', 1024, 'image/png'))
-		Object.defineProperty(input, 'files', { value: dt.files, configurable: true })
-		input.dispatchEvent(new Event('change', { bubbles: true }))
-		await waitFor(() => {
-			const items = canvasElement.querySelectorAll('.base-file-upload__item')
-			expect(items.length).toBe(2)
-		})
-		const removeBtn = canvasElement.querySelector('.base-file-upload__remove')
-		if (!(removeBtn instanceof HTMLButtonElement)) return
-		await userEvent.click(removeBtn)
-		await waitFor(() => {
-			const items = canvasElement.querySelectorAll('.base-file-upload__item')
-			expect(items.length).toBe(1)
-		})
-		expect(args.onChange).toHaveBeenCalled()
+		await tabTo(dropzone, userEvent)
+		await expect(getComputedStyle(dropzone).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await userEvent.keyboard(' ')
+		await waitFor(() => expect(openPicker).toHaveBeenCalledTimes(2), { timeout: STORY_WAIT_TIMEOUT })
 	},
 }

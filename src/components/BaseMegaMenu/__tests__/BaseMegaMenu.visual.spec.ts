@@ -1,16 +1,20 @@
 /**
- * Visual regression тесты для BaseMegaMenu.
+ * Visual regression BaseMegaMenu: ключевые stories в светлой и тёмной теме.
+ * Dropdown снимается после play: открыта панель «Продукты» и каскадный уровень «Аналитика».
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basemegamenu'
-const STORIES = ['default', 'deep-nesting', 'dark-theme']
+const STORIES = ['variants', 'sizes', 'long-content', 'dropdown'] as const
 
-for (const story of STORIES) {
-	test(`BaseMegaMenu — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-mega-menu')
-		await expect(root).toHaveScreenshot(`base-mega-menu--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseMegaMenu · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basemegamenu--${story}`, { theme, width: 1000, height: 600 })
+				await expectStoryScreenshot(page, `base-mega-menu-${story}-${theme}.png`)
+			})
+		}
 	})
 }

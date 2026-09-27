@@ -1,53 +1,53 @@
-@use "@styles/functions" as *;
+// Реакции — пилюли 24px: фон bg-elevated, эмодзи и счётчик 12/16 medium. Своя реакция (aria-pressed) —
+// фон primary-soft, рамка primary-border, текст primary-text.
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+@use '../../../styles/chat' as *;
 
 .base-chat-message-list {
 	&__reactions-display {
 		display: flex;
 		flex-wrap: wrap;
 		gap: sz(4px);
-		margin-top: sz(6px);
 
 		&--me {
 			justify-content: flex-end;
 		}
-
-		&--other {
-			justify-content: flex-start;
-		}
 	}
 
 	&__reaction-badge {
-		display: flex;
+		@include chat-button-reset;
+		display: inline-flex;
 		align-items: center;
 		gap: sz(4px);
-		padding: sz(2px) sz(6px);
-		background: rgba(0, 0, 0, 0.04);
-		border: sz(1px) solid transparent;
-		border-radius: sz(12px);
-		cursor: pointer;
-		transition: all var(--transition-slow);
+		height: sz(24px);
+		padding: 0 sz(8px);
+		border: 1px solid transparent;
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-elevated);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text);
 		user-select: none;
+		@include transition-colors;
+		@include focus-ring;
 
-		&:hover {
-			background: rgba(0, 0, 0, 0.08);
-			transform: scale(1.05);
+		@include hover {
+			background-color: var(--rise-bg-accented);
 		}
 
 		&--active {
-			background: rgba(var(--color-accent-rgb, 99, 102, 241), 0.15) !important;
-			border-color: var(--color-accent) !important;
-			color: var(--color-accent) !important;
-			transform: scale(1.03);
-			box-shadow: 0 sz(2px) sz(6px) rgba(var(--color-accent-rgb, 99, 102, 241), 0.1);
+			border-color: var(--rise-primary-border);
+			background-color: var(--rise-primary-soft);
+			color: var(--rise-primary-text);
+
+			@include hover {
+				background-color: var(--rise-primary-soft-hover);
+			}
 		}
 	}
 
 	&__reaction-emoji {
-		font-size: sz(14px);
-	}
-
-	&__reaction-count {
-		font-size: sz(11px);
-		font-weight: 600;
+		@include text-size(sm);
 	}
 }

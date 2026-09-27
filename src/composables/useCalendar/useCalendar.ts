@@ -39,13 +39,16 @@ function useCalendar(options: UseCalendarOptions) {
 		newValue => {
 			const date = newValue ? new Date(newValue) : null
 			internalValue.value = date
-			if (date && options.initialMonth?.() === undefined) {
-				currentMonth.value = date.getMonth()
-				currentYear.value = date.getFullYear()
-				hours.value = date.getHours()
-				minutes.value = date.getMinutes()
-				seconds.value = date.getSeconds()
-			}
+			if (!date) return
+			// Время всегда берётся из значения: initialMonth управляет только отображаемым месяцем.
+			// Иначе при заданном initialMonth (панель date picker передаёт его всегда) поля времени
+			// оставались 00:00 и следующий клик по дню затирал время значения.
+			hours.value = date.getHours()
+			minutes.value = date.getMinutes()
+			seconds.value = date.getSeconds()
+			if (options.initialMonth?.() !== undefined) return
+			currentMonth.value = date.getMonth()
+			currentYear.value = date.getFullYear()
 		},
 		{ immediate: true },
 	)

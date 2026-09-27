@@ -1,5 +1,5 @@
 <template>
-	<div class="base-icon" :class="classes.root" :style="sizeScaleStyle">
+	<span class="base-icon" :class="classes.root" :style="sizeScaleStyle">
 		<svg
 			class="base-icon__svg"
 			:class="classes.svg"
@@ -10,7 +10,7 @@
 			focusable="false">
 			<use :href="iconUrl" />
 		</svg>
-	</div>
+	</span>
 </template>
 
 <script setup lang="ts">

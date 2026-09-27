@@ -1,5 +1,7 @@
 /** Утилиты: инспекция DOM для contenteditable-редактора */
 
+import type { TypedInlineTagMatch } from './editorDomUtils.types'
+
 /** Блочные теги для определения родительского блока */
 const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DIV', 'BLOCKQUOTE', 'PRE', 'ADDRESS', 'LI'])
 
@@ -23,6 +25,30 @@ const ALIGN_MAP: Record<string, string> = {
 	justifyCenter: 'center',
 	justifyRight: 'right',
 	justifyFull: 'justify',
+}
+
+/**
+ * Inline-теги, которые можно «набрать» текстом в визуальном режиме (`<b>жирный</b>`).
+ * Только оформление и без атрибутов: ссылки, медиа и произвольная разметка вставляются
+ * через тулбар или режим кода, а не распознаются из текста.
+ */
+const TYPED_INLINE_TAGS = new Set(['b', 'strong', 'i', 'em', 'u', 's', 'strike', 'del', 'code'])
+
+/** Пара `<тег>текст</тег>` без атрибутов и вложенной разметки, стоящая в самом конце строки */
+const TYPED_INLINE_PAIR_RE = /<([a-z]+)>([^<>]+)<\/\1>$/i
+
+/**
+ * Найти пару разрешённого inline-тега, которую пользователь только что закрыл: пара должна
+ * заканчиваться ровно в конце переданного текста (текста до каретки).
+ * Строка не разбирается как HTML: содержимое пары возвращается как обычный текст, а атрибуты,
+ * `<img …>`, одиночные `</div>` и вложенная разметка совпадением не считаются.
+ */
+function matchTypedInlineTag(textBeforeCaret: string): TypedInlineTagMatch | null {
+	const match = TYPED_INLINE_PAIR_RE.exec(textBeforeCaret)
+	if (!match) return null
+	const tag = match[1].toLowerCase()
+	if (!TYPED_INLINE_TAGS.has(tag)) return null
+	return { tag, content: match[2], start: match.index }
 }
 
 /** Получить HTMLElement из узла */
@@ -106,5 +132,7 @@ export {
 	INLINE_FORMAT_TAGS,
 	isInsideList,
 	isInsideTags,
+	matchTypedInlineTag,
 	toHTMLElement,
+	TYPED_INLINE_TAGS,
 }

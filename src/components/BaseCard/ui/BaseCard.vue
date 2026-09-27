@@ -23,11 +23,10 @@
 						:custom-class="classes.title"
 						>{{ title }}</BaseText
 					>
-				<BaseText
-					v-if="subtitle"
-					tag="p"
-					:size-scale="sizeScale"
-					:color="{ text: { base: 'var(--color-text-muted)' } }"
+					<BaseText
+						v-if="subtitle"
+						tag="p"
+						:size-scale="sizeScale"
 						class="base-card__subtitle"
 						:custom-class="classes.subtitle"
 						>{{ subtitle }}</BaseText
@@ -39,13 +38,15 @@
 			</div>
 		</div>
 
-		<div class="base-card__body" :class="classes.body">
+		<!-- Прокручиваемое тело фокусируемо: его можно прокрутить с клавиатуры (WCAG 2.1.1) -->
+		<div class="base-card__body" :class="classes.body" :tabindex="scroll ? 0 : undefined">
 			<slot :size-scale="sizeScale" />
 		</div>
 
-		<footer v-if="$slots.footer" class="base-card__footer" :class="classes.footer">
+		<!-- div, а не footer: <footer> вне main/article/section — ориентир contentinfo, и несколько карточек дают дубли ориентиров -->
+		<div v-if="$slots.footer" class="base-card__footer" :class="classes.footer">
 			<slot name="footer" :size-scale="sizeScale" />
-		</footer>
+		</div>
 	</div>
 </template>
 
@@ -54,14 +55,13 @@ import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePadding } from '@composables/usePadding'
-import { UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseCard.style.scss'
-
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
 
 const props = withDefaults(defineProps<BaseCardProps>(), {
 	isHoverable: false,
-	padding: 24,
+	padding: undefined,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	scroll: false,
 })
@@ -71,7 +71,9 @@ defineSlots<BaseCardSlots>()
 const height = computed(() => props.height)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-card', props, ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad', defaultPadding: UI_SIZE.PADDING.XL })
+const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad' })
+/** Без пропа padding отступы секций берутся из стилей (16px 20px), inline-переменные не пишутся. */
+const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
 
 const cardStyle = computed(() => ({
 	...paddingStyle.value,

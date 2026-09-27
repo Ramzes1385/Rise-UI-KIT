@@ -22,8 +22,8 @@ const COMMANDS: ChatCommand[] = [
 	{ name: 'mute', description: 'Включить/выключить уведомления' },
 ]
 
-function getInput(): HTMLInputElement {
-	return screen.getByPlaceholderText('Напишите сообщение...') as HTMLInputElement
+function getInput(): HTMLTextAreaElement {
+	return screen.getByPlaceholderText('Напишите сообщение...') as HTMLTextAreaElement
 }
 
 describe('ChatInput unit', () => {
@@ -188,6 +188,25 @@ describe('ChatInput unit', () => {
 
 			const sendEvents = emitted().send as Array<[{ text: string }]>
 			expect(sendEvents[0][0].text).toBe('@Анна')
+		})
+
+		it('должен закрывать список упоминаний клавишей Escape (keydown и keyup) и связывать поле со списком', async () => {
+			const user = userEvent.setup()
+			render(ChatInput, { props: { isGroup: true, members: MEMBERS } })
+
+			const input = getInput()
+			await user.type(input, '@')
+			const listbox = await screen.findByRole('listbox', { name: 'Участники для упоминания' })
+			const firstOption = screen.getAllByRole('option')[0]
+			expect(input).toHaveAttribute('aria-controls', listbox.id)
+			expect(input).toHaveAttribute('aria-activedescendant', firstOption.id)
+			expect(firstOption).toHaveAttribute('aria-selected', 'true')
+
+			// Реальное нажатие: keydown закрывает список, keyup не должен открыть его снова
+			await user.keyboard('{Escape}')
+
+			expect(screen.queryByRole('listbox')).toBeNull()
+			expect(input).not.toHaveAttribute('aria-activedescendant')
 		})
 
 		it('должен закрывать список упоминаний по Escape', async () => {
@@ -367,6 +386,40 @@ describe('ChatInput unit', () => {
 			await fireEvent.keyDown(getInput(), { key: 'Enter' })
 
 			expect(emitted().send).toBeUndefined()
+		})
+
+		it('поле — многострочное с доступным именем: Shift+Enter переносит строку, а не отправляет', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(ChatInput)
+
+			const field = screen.getByRole('textbox', { name: 'Сообщение' })
+			expect(field.tagName).toBe('TEXTAREA')
+			await user.type(field, 'Первая{Shift>}{Enter}{/Shift}Вторая')
+
+			expect(field).toHaveValue('Первая\nВторая')
+			expect(emitted().send).toBeUndefined()
+		})
+
+		it('не должен отправлять сообщение по Enter во время IME-композиции', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(ChatInput)
+
+			await user.type(getInput(), 'にほん')
+			await fireEvent.keyDown(getInput(), { key: 'Enter', isComposing: true })
+			expect(emitted().send).toBeUndefined()
+
+			await fireEvent.keyDown(getInput(), { key: 'Enter' })
+			expect((emitted().send as Array<[{ text: string }]>)[0][0].text).toBe('にほん')
+		})
+
+		it('кнопка «Отправить» отключена (disabled), пока нет текста и вложений', async () => {
+			const user = userEvent.setup()
+			render(ChatInput)
+
+			const send = screen.getByRole('button', { name: 'Отправить сообщение' })
+			expect(send).toBeDisabled()
+			await user.type(getInput(), 'Текст')
+			expect(send).toBeEnabled()
 		})
 	})
 

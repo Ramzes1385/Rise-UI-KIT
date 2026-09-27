@@ -15,7 +15,7 @@ async function loadSlider(page: import('@playwright/test').Page, storyId: string
 }
 
 test('слайдер: переключает слайды по стрелкам', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--default')
+	await loadSlider(page, 'data-baseslider--default')
 
 	const nextBtn = page.locator('.base-slider__arrow--next')
 	await nextBtn.click()
@@ -25,7 +25,7 @@ test('слайдер: переключает слайды по стрелкам'
 })
 
 test('слайдер: навигация по точкам', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--default')
+	await loadSlider(page, 'data-baseslider--default')
 
 	const dots = page.locator('.base-slider__dot')
 	if ((await dots.count()) > 1) {
@@ -36,7 +36,7 @@ test('слайдер: навигация по точкам', async ({ page }) =>
 })
 
 test('слайдер: autoplay переключает слайды', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--autoplay')
+	await loadSlider(page, 'data-baseslider--autoplay')
 
 	const dots = page.locator('.base-slider__dot')
 	await expect(dots.first()).toHaveClass(/--active/)
@@ -47,7 +47,7 @@ test('слайдер: autoplay переключает слайды', async ({ pa
 })
 
 test('слайдер: анимация fade', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--fade')
+	await loadSlider(page, 'data-baseslider--fade')
 
 	const slider = page.locator('.base-slider')
 	await expect(slider).toBeVisible()

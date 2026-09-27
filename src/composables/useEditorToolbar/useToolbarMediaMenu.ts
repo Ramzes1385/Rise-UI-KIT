@@ -8,7 +8,7 @@ import type { UseToolbarMediaMenuOptions } from './useToolbarMediaMenu.types'
  * Composable для контекстного меню медиа в редакторе: изменение размера изображений/видео, скрытие/удаление.
  */
 function useToolbarMediaMenu(options: UseToolbarMediaMenuOptions) {
-	const { onInput } = options
+	const { onInput, isReadonly } = options
 
 	const contextMenu = reactive<MediaContextMenuState>({
 		isVisible: false,
@@ -21,6 +21,8 @@ function useToolbarMediaMenu(options: UseToolbarMediaMenuOptions) {
 	const contextMenuRef = ref<HTMLElement | null>(null)
 
 	function handleContextMenu(event: MouseEvent): void {
+		// В режиме чтения медиа менять нельзя: собственное меню не открываем и оставляем нативное меню браузера
+		if (isReadonly?.()) return
 		const target = event.target
 		if (!(target instanceof HTMLElement)) return
 		if (target.tagName !== 'IMG' && target.tagName !== 'VIDEO') return
@@ -34,8 +36,16 @@ function useToolbarMediaMenu(options: UseToolbarMediaMenuOptions) {
 		contextMenu.height = String(Math.round(rect.height))
 	}
 
+	/** Меню могло остаться открытым, если режим чтения включили уже после его открытия */
+	function closeIfReadonly(): boolean {
+		if (!isReadonly?.()) return false
+		closeContextMenu()
+		return true
+	}
+
 	function applyMediaSize(): void {
 		if (!contextMenu.element) return
+		if (closeIfReadonly()) return
 		const el = contextMenu.element
 		if (contextMenu.width) el.style.width = contextMenu.width + 'px'
 		if (contextMenu.height) el.style.height = contextMenu.height + 'px'
@@ -45,6 +55,7 @@ function useToolbarMediaMenu(options: UseToolbarMediaMenuOptions) {
 
 	function removeMedia(): void {
 		if (!contextMenu.element) return
+		if (closeIfReadonly()) return
 		contextMenu.element.remove()
 		closeContextMenu()
 		onInput()

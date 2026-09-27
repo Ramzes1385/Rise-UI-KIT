@@ -38,6 +38,13 @@ describe('BaseIcon', () => {
 		expect(svg?.tagName).toBe('svg')
 	})
 
+	it('должен рендерить корень как span: иконку можно вкладывать в кнопки, ссылки и абзацы', () => {
+		render(BaseIcon, { props: { name: 'close' } })
+
+		// <div> внутри <button>/<p> — невалидная разметка (ломает гидратацию при SSR)
+		expect(getIconRoot()?.tagName).toBe('SPAN')
+	})
+
 	it('должен рендерить <use> с правильным href', () => {
 		render(BaseIcon, { props: { name: 'close' } })
 

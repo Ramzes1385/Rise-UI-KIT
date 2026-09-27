@@ -50,7 +50,10 @@ export interface BaseImageProps extends BaseComponentProps<string, 'root' | 'pla
 	fit?: ImageFit
 	/** Ленивая загрузка */
 	loading?: ImageLoading
-	/** Скругление (0–9999px) */
+	/**
+	 * Скругление в px (0–9999, масштабируется `sizeScale`; 9999 — круг).
+	 * Без пропа — радиус md темы (`--rise-radius-md`), его меняет токен `--rise-radius`.
+	 */
 	borderRadius?: number
 	/** Показывать плейсхолдер при загрузке */
 	hasPlaceholder?: boolean
@@ -60,8 +63,17 @@ export interface BaseImageProps extends BaseComponentProps<string, 'root' | 'pla
 	srcWidth?: number
 	/** Группа: конфигурация зума */
 	zoomConfig?: ImageZoomConfig
-	/** Конвертировать в WebP формат */
+	/**
+	 * Добавить <source type="image/webp"> с тем же именем файла и расширением .webp.
+	 * Включайте, только если рядом с изображением на сервере лежит .webp-копия: браузер выберет этот источник
+	 * и при 404 не вернётся к src.
+	 */
 	convertToWebp?: boolean
+	/**
+	 * Добавить <source type="image/avif"> с тем же именем файла и расширением .avif.
+	 * Включайте, только если рядом с изображением на сервере лежит .avif-копия.
+	 */
+	convertToAvif?: boolean
 	/** Галерея изображений для навигации в режиме зума */
 	gallery?: string[]
 }

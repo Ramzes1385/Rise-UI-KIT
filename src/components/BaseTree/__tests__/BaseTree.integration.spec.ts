@@ -56,6 +56,14 @@ const DISABLED_ITEMS: TreeNode[] = [
 /** Слот для рендера текста узлов */
 const DEFAULT_SLOT = `<template #label="{ node }">{{ node.label }}</template>`
 
+/**
+ * Видимая метка узла. В режиме multiple та же подпись есть у чекбокса (скрыта визуально, это его доступное имя),
+ * поэтому поиск по тексту уточняется классом метки.
+ */
+function nodeLabel(text: string): HTMLElement {
+	return screen.getByText(text, { selector: '.base-tree__label' })
+}
+
 describe('BaseTree integration', () => {
 	describe('раскрытие/сворачивание', () => {
 		it('должен раскрывать узел по клику на заголовок', async () => {
@@ -143,8 +151,8 @@ describe('BaseTree integration', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			await user.click(screen.getByText('Металл'))
-			await user.click(screen.getByText('Дерево'))
+			await user.click(nodeLabel('Металл'))
+			await user.click(nodeLabel('Дерево'))
 
 			const selectedNodes = container.querySelectorAll('.base-tree__node--selected')
 			expect(selectedNodes.length).toBeGreaterThanOrEqual(2)
@@ -200,7 +208,7 @@ describe('BaseTree integration', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			await user.click(screen.getByText('Корень'))
+			await user.click(nodeLabel('Корень'))
 
 			const events = emitted()['update:selectedIds'] as unknown[]
 			expect(events).toBeTruthy()
@@ -219,14 +227,14 @@ describe('BaseTree integration', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			await user.click(screen.getByText('Корень'))
+			await user.click(nodeLabel('Корень'))
 
 			const afterSelect = emitted()['update:selectedIds'] as unknown[]
 			const selectedIds = (afterSelect[afterSelect.length - 1] as unknown[])[0] as string[]
 			expect(selectedIds).toContain('root')
 			expect(selectedIds).toContain('child-a')
 
-			await user.click(screen.getByText('Корень'))
+			await user.click(nodeLabel('Корень'))
 
 			const afterDeselect = emitted()['update:selectedIds'] as unknown[]
 			const deselectedIds = (afterDeselect[afterDeselect.length - 1] as unknown[])[0] as string[]
@@ -348,6 +356,60 @@ describe('BaseTree integration', () => {
 			expect(events).toBeTruthy()
 			const lastValue = (events[events.length - 1] as unknown[])[0] as string[]
 			expect(lastValue).toContain('wood')
+		})
+	})
+
+	// Регрессия TRE-3: свёрнутая ветка остаётся в DOM (ленивый рендер), но не должна быть достижима по Tab
+	describe('свёрнутые ветки', () => {
+		it('заголовки свёрнутой после раскрытия ветки не достижимы по Tab', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, {
+				props: { items: NESTED_ITEMS },
+				slots: { label: DEFAULT_SLOT },
+			})
+			const metallHeader = screen.getByText('Металл').closest('.base-tree__header') as HTMLElement
+
+			await user.click(metallHeader)
+			await user.click(metallHeader)
+			metallHeader.focus()
+			await user.tab()
+
+			expect(document.activeElement).toBe(screen.getByText('Дерево').closest('.base-tree__header'))
+		})
+
+		it('чекбоксы свёрнутой ветки в режиме multiple не достижимы по Tab', async () => {
+			const user = userEvent.setup()
+			const { container } = render(BaseTree, {
+				props: { items: NESTED_ITEMS, selectionMode: 'multiple' },
+				slots: { label: DEFAULT_SLOT },
+			})
+			const metallNode = nodeLabel('Металл').closest('.base-tree__node') as HTMLElement
+			const metallArrow = metallNode.querySelector('.base-tree__arrow') as HTMLElement
+
+			await user.click(metallArrow)
+			await user.click(metallArrow)
+			const metallCheckbox = metallNode.querySelector('.base-tree__checkbox input') as HTMLElement
+			metallCheckbox.focus()
+			await user.tab()
+
+			const woodHeader = nodeLabel('Дерево').closest('.base-tree__header')
+			expect(document.activeElement).toBe(woodHeader)
+			expect(container.querySelector('.base-tree__children')).toBeInTheDocument()
+		})
+
+		it('раскрытая ветка остаётся достижимой по Tab', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, {
+				props: { items: NESTED_ITEMS },
+				slots: { label: DEFAULT_SLOT },
+			})
+			const metallHeader = screen.getByText('Металл').closest('.base-tree__header') as HTMLElement
+
+			await user.click(metallHeader)
+			metallHeader.focus()
+			await user.tab()
+
+			expect(document.activeElement).toBe(screen.getByText('Сталь').closest('.base-tree__header'))
 		})
 	})
 

@@ -1,376 +1,218 @@
-﻿/**
- * Stories для компонента BasePagination.
- * Демонстрирует все варианты, многоточия и состояния.
+/**
+ * BasePagination — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
+ * состояния (нет страниц, страница вне диапазона) → сценарии (много страниц, без последней страницы) → клавиатура.
  */
 
-import { expect, fn, userEvent } from 'storybook/test'
+import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { PAGINATION_VARIANTS } from '../model/BasePagination.types'
 import BasePagination from '../ui/BasePagination.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BasePagination> = {
-	title: 'UI/BasePagination',
+/** Ключи args, которые витрины задают сами (у каждого экземпляра своя страница). */
+const MODEL_KEYS = ['modelValue', 'onUpdate:modelValue']
+
+const meta = {
+	title: 'Navigation/BasePagination',
 	component: BasePagination,
-
-	argTypes: buildArgTypes({
-		props: {
-			total: { control: 'number' },
-			pageSize: { control: 'number' },
-			maxVisible: { control: 'number' },
-			showLastPage: { control: 'boolean' },
-			variant: {
-				control: 'radio',
-				options: PAGINATION_VARIANTS,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Пагинация переключает страницы списка или таблицы: стрелки «назад»/«вперёд», первая и последняя страницы,',
+					'соседние с текущей и многоточия между разрывами.',
+					'',
+					'- `v-model` — номер текущей страницы (с 1); `total` и `pageSize` задают число страниц.',
+					'- Кнопки — `BaseButton` высотой 32px. `variant` задаёт вид стрелок и номеров (при `default` — ghost),',
+					'  текущая страница всегда залита основным цветом и помечена `aria-current="page"`.',
+					'- Стрелки блокируются на краях и когда страниц нет; со страницы вне диапазона «назад» ведёт на последнюю.',
+				].join('\n'),
 			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-			},
-			modelValue: { table: { disable: true } },
-			'onUpdate:modelValue': { table: { disable: true } },
-			onChange: { table: { disable: true } },
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: PAGINATION_VARIANTS }),
+		modelValue: { control: { type: 'number', min: 1 }, table: propGroup(ARG_GROUP.content) },
+		total: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.content) },
+		pageSize: { control: { type: 'number', min: 1 }, table: propGroup(ARG_GROUP.content) },
+		maxVisible: { control: { type: 'number', min: 3, max: 15 }, table: propGroup(ARG_GROUP.behavior) },
+		showLastPage: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	},
 	args: {
-		total: 100,
+		modelValue: 1,
+		total: 120,
 		pageSize: 10,
 		maxVisible: 7,
 		showLastPage: true,
 		variant: 'default',
 		sizeScale: 100,
-	},
-}
-
-export default meta
-type Story = StoryObj<typeof BasePagination>
-/** Базовая пагинация с многоточиями */
-export const Default: Story = {
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-	args: {
+		'onUpdate:modelValue': fn(),
 		onChange: fn(),
 	},
-	play: async ({ args, canvasElement, step }) => {
-		await step('Фокусировка пагинации по Tab', async () => {
-			await userEvent.tab()
-		})
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-pagination' })
-		})
-
-		await step('Клик по странице номер 3 (стр. 19, 80-82)', async () => {
-			const pageButtons = canvasElement.querySelectorAll<HTMLButtonElement>('.base-pagination__pages button')
-			const targetButton = Array.from(pageButtons).find(btn => btn.textContent?.trim() === '3')
-			if (targetButton) await userEvent.click(targetButton)
-		})
-
-		await step('Клик по кнопке "Вперёд" (стр. 33)', async () => {
-			const buttons = canvasElement.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
-			const nextBtn = buttons[buttons.length - 1]
-			if (nextBtn && !nextBtn.disabled) await userEvent.click(nextBtn)
-		})
-
-		await step('Клик по кнопке "Назад" (стр. 8)', async () => {
-			const buttons = canvasElement.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
-			const prevBtn = buttons[0]
-			if (prevBtn && !prevBtn.disabled) await userEvent.click(prevBtn)
-		})
-	},
-}
-/** Вариант ghost */
-export const Ghost: Story = {
-	args: {
-		variant: 'ghost',
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Вариант outline */
-export const Outline: Story = {
-	args: {
-		variant: 'outline',
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Мало страниц — без многоточий */
-export const FewPages: Story = {
-	args: {
-		total: 25,
-		pageSize: 10,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Много страниц — видны многоточия */
-export const ManyPages: Story = {
-	args: {
-		total: 500,
-		pageSize: 10,
-		maxVisible: 7,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(25)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Без последней страницы */
-export const WithoutLastPage: Story = {
-	args: {
-		total: 200,
-		pageSize: 10,
-		showLastPage: false,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(10)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Интерактивная */
-export const Interactive: Story = {
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: `
-			<div>
-				<BasePagination v-model="page" v-bind="args" />
-				<p style="margin-top:8px;color:var(--color-text-muted);">Страница: {{ page }}</p>
-			</div>
-		`,
-	}),
-	args: {
-		onChange: fn(),
-	},
-	play: async ({ args, canvasElement, step }) => {
-		await step('переход на страницу 3 эмитит change', async () => {
-			const pageButtons = canvasElement.querySelectorAll<HTMLButtonElement>('.base-pagination__pages button')
-			const targetButton = Array.from(pageButtons).find(btn => btn.textContent?.trim() === '3')
-			if (targetButton) await userEvent.click(targetButton)
-			expect(args.onChange).toHaveBeenCalledWith(3)
-		})
-
-		await step('отображается обновлённый номер страницы', async () => {
-			expect(canvasElement.textContent).toContain('Страница: 3')
-		})
-	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: '<BasePagination v-model="page" :total="100" :page-size="10" />',
-			},
-		},
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: `
-			<div data-theme="dark" style="padding: 16px; background: var(--color-bg); border-radius: var(--border-radius-base);">
-				<BasePagination v-model="page" v-bind="args" />
-			</div>
-		`,
-	}),
-}
-/** Страница 1 из 20 — покрывает левое многоточие (start > 2) */
-export const FirstPageMany: Story = {
-	args: {
-		total: 200,
-		pageSize: 10,
-		maxVisible: 7,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Последняя страница — покрывает прижим к концу */
-export const LastPageMany: Story = {
-	args: {
-		total: 200,
-		pageSize: 10,
-		maxVisible: 7,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(20)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Без последней страницы, много страниц — покрывает showLastPage=false + правое многоточие */
-export const WithoutLastManyPages: Story = {
-	args: {
-		total: 200,
-		pageSize: 10,
-		showLastPage: false,
-		maxVisible: 7,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(5)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Нулевой total — покрывает total <= 0 */
-export const ZeroTotal: Story = {
-	args: {
-		total: 0,
-		pageSize: 10,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Кастомный maxVisible — покрывает нестандартный maxVisible */
-export const CustomMaxVisible: Story = {
-	args: {
-		total: 500,
-		pageSize: 10,
-		maxVisible: 5,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(10)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Кастомный цвет */
-export const CustomColor: Story = {
-	args: {
-		total: 100,
-		pageSize: 10,
-		color: {
-			bg: { base: '#e0f2fe', hover: '#bae6fd' },
-			text: { base: '#0369a1', hover: '#0c4a6e' },
-		},
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Масштаб размера */
-export const SizeScaleLarge: Story = {
-	args: {
-		total: 100,
-		pageSize: 10,
-		sizeScale: 150,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Пагинация с 0 элементами — покрывает пустое состояние */
-export const Empty: Story = {
-	args: {
-		total: 0,
-		pageSize: 10,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-}
-/** Клик по «Вперёд» при отсутствии страниц — покрывает false-ветку if (page >= 1 && page <= totalPages.value) в changePage (стр. 80). При total=0 totalPages=0, modelValue=1 → кнопка next активна (modelValue !== totalPages), клик передаёт page=2, что > 0. */
-export const OutOfRangePage: Story = {
-	args: {
-		total: 0,
-		pageSize: 10,
-	},
-	render: args => ({
-		components: { BasePagination },
-		setup() {
-			const page = ref(1)
-			return { args, page }
-		},
-		template: '<BasePagination v-model="page" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const buttons = canvasElement.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
-		const nextBtn = buttons[buttons.length - 1]
-		if (nextBtn instanceof HTMLButtonElement && !nextBtn.disabled) {
-			await userEvent.click(nextBtn)
+	// Страница хранится в args: клик по странице обновляет Controls, а изменение в Controls — пагинацию.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BasePagination },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<BasePagination v-bind="props" @update:model-value="onUpdate" />',
 		}
 	},
-}
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'pgn-root', prev: 'pgn-prev', next: 'pgn-next', pages: 'pgn-pages', button: 'pgn-button', ellipsis: 'pgn-ellipsis' },
+} satisfies Meta<typeof BasePagination>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: клик по номеру или стрелке меняет страницу — значение синхронизировано с Controls. */
+export const Default: Story = {
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByRole('button', { name: 'Предыдущая страница' })).toBeDisabled()
+
+		await userEvent.click(canvas.getByRole('button', { name: '3' }))
+		await expect(args.onChange).toHaveBeenCalledWith(3)
+		// Страница живёт в args: aria-current переходит на «3», когда значение вернулось в v-model
+		await waitFor(() => expect(canvas.getByRole('button', { name: '3' })).toHaveAttribute('aria-current', 'page'))
+
+		await userEvent.click(canvas.getByRole('button', { name: 'Следующая страница' }))
+		await expect(args.onChange).toHaveBeenLastCalledWith(4)
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.pgn-root')).toBeTruthy()
+}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Варианты задают вид стрелок и неактивных страниц: `default` — ghost, остальные — одноимённый вариант BaseButton.
+ * Текущая страница всегда залита основным цветом.
+ */
+export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'total', 'pageSize'] },
+		docs: { source: { code: PAGINATION_VARIANTS.map(variant => `<BasePagination v-model="page" :total="120" variant="${variant}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BasePagination },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...MODEL_KEYS, 'variant']),
+			variants: PAGINATION_VARIANTS,
+			pages: ref<Record<string, number>>(Object.fromEntries(PAGINATION_VARIANTS.map(variant => [variant, 5]))),
+		}),
+		template: `
+			<div class="story-stack">
+				<div v-for="variant in variants" :key="variant" class="story-col">
+					<span class="story-label">{{ variant }}</span>
+					<BasePagination v-bind="props" v-model="pages[variant]" :variant="variant" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/** Размеры через `sizeScale`: кнопки 24, 28, 32, 36 и 40px — как у BaseButton того же размера. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BasePagination v-model="page" :total="120" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BasePagination },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...MODEL_KEYS, 'sizeScale']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			pages: ref<Record<string, number>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 5]))),
+		}),
+		template: `
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-col">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BasePagination v-bind="props" v-model="pages[preset.name]" :size-scale="preset.sizeScale" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Кастомный цвет через `color`: `bg`/`text` c ключами `base` и `hover` красят стрелки и номера страниц,
+ * `active` — текущую страницу.
+ */
+export const CustomColor: Story = {
+	args: {
+		modelValue: 4,
+		color: {
+			bg: { base: '#eff6ff', hover: '#dbeafe', active: '#1d4ed8' },
+			text: { base: '#1e3a8a', active: '#ffffff' },
+		},
+	},
+	play: async ({ canvas }) => {
+		await expect(getComputedStyle(canvas.getByRole('button', { name: '4' })).backgroundColor).toBe('rgb(29, 78, 216)')
+		await expect(getComputedStyle(canvas.getByRole('button', { name: '3' })).color).toBe('rgb(30, 58, 138)')
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Нет данных (`total` = 0): номеров нет, обе стрелки заблокированы. */
+export const Empty: Story = {
+	args: { total: 0 },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: 'Предыдущая страница' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Следующая страница' })).toBeDisabled()
+		await expect(canvas.queryByRole('button', { current: 'page' })).toBeNull()
+	},
+}
+
+/**
+ * Текущая страница вне диапазона (например, после фильтрации их стало меньше): «вперёд» заблокирована,
+ * «назад» ведёт на последнюю существующую страницу.
+ */
+export const OutOfRange: Story = {
+	args: { modelValue: 7, total: 30 },
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByRole('button', { name: 'Следующая страница' })).toBeDisabled()
+		await userEvent.click(canvas.getByRole('button', { name: 'Предыдущая страница' }))
+		await expect(args.onChange).toHaveBeenCalledWith(3)
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** Много страниц: вокруг текущей — соседние номера, по краям — первая и последняя, разрывы заменяет «…». */
+export const ManyPages: Story = {
+	args: { modelValue: 25, total: 500 },
+	play: async ({ canvas }) => {
+		await expect(canvas.getAllByText('…')).toHaveLength(2)
+		await expect(canvas.getByRole('button', { name: '50' })).toBeVisible()
+	},
+}
+
+/** `showLastPage: false` — последняя страница не показывается: удобно, когда общее число страниц неизвестно или огромно. */
+export const WithoutLastPage: Story = {
+	args: { modelValue: 3, total: 500, showLastPage: false },
+	play: async ({ canvas }) => {
+		await expect(canvas.queryByRole('button', { name: '50' })).toBeNull()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: кнопки страниц и стрелки достижимы по Tab (заблокированная стрелка пропускается), Enter переключает
+ * страницу. Кольцо фокуса видно только при навигации с клавиатуры.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent, args }) => {
+		const second = canvas.getByRole('button', { name: '2' })
+		await tabTo(second, userEvent)
+		await expect(getComputedStyle(second).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onChange).toHaveBeenCalledWith(2)
+		await waitFor(() => expect(canvas.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page'))
 	},
 }

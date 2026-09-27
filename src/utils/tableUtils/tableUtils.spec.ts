@@ -1,10 +1,11 @@
 /**
  * Unit-тесты для tableUtils.
- * Покрывают: calcRowNumber, getColumnStyle, calcTotalColumns, calcColumnWidths.
+ * Покрывают: calcRowNumber, getColumnStyle, calcTotalColumns, calcColumnWidths, toSortKey, compareSortKeys.
  */
 
 import '@testing-library/jest-dom/vitest'
-import { calcColumnWidths, calcRowNumber, calcTotalColumns, getColumnStyle } from './tableUtils'
+import { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey } from './tableUtils'
+import type { SortType } from '@components/BaseTable/model/BaseTable.types'
 
 describe('tableUtils', () => {
 	// ── calcRowNumber ──
@@ -157,5 +158,79 @@ describe('tableUtils', () => {
 			expect(result[2]).toBe('25%')
 		})
 
+	})
+
+	// ── toSortKey / compareSortKeys ──
+
+	describe('toSortKey', () => {
+		it('пустые значения получают ранг 2 для любого типа', () => {
+			for (const sortType of ['string', 'number', 'date'] as SortType[]) {
+				expect(toSortKey(null, sortType).rank).toBe(2)
+				expect(toSortKey(undefined, sortType).rank).toBe(2)
+				expect(toSortKey('   ', sortType).rank).toBe(2)
+			}
+		})
+
+		it('number: числа, числовые строки, bigint и Date распознаются, остальное — ранг 1', () => {
+			expect(toSortKey(42, 'number')).toEqual({ rank: 0, value: 42 })
+			expect(toSortKey(' 7.5 ', 'number')).toEqual({ rank: 0, value: 7.5 })
+			expect(toSortKey(BigInt(3), 'number')).toEqual({ rank: 0, value: 3 })
+			expect(toSortKey(new Date(Date.UTC(2024, 0, 1)), 'number')).toEqual({ rank: 0, value: Date.UTC(2024, 0, 1) })
+			expect(toSortKey(Number.NaN, 'number').rank).toBe(1)
+			expect(toSortKey('1 000', 'number').rank).toBe(1)
+			expect(toSortKey(true, 'number').rank).toBe(1)
+		})
+
+		it('date: ISO-даты, Date и timestamp распознаются, неоднозначные форматы — нет', () => {
+			expect(toSortKey('2024-01-15', 'date')).toEqual({ rank: 0, value: Date.UTC(2024, 0, 15) })
+			expect(toSortKey('2024-01-15T10:30:00Z', 'date')).toEqual({ rank: 0, value: Date.UTC(2024, 0, 15, 10, 30) })
+			expect(toSortKey('2024-01-15T10:30:00+03:00', 'date')).toEqual({ rank: 0, value: Date.UTC(2024, 0, 15, 7, 30) })
+			expect(toSortKey('2024-01-15 10:30:15.5', 'date')).toEqual({ rank: 0, value: Date.UTC(2024, 0, 15, 10, 30, 15, 500) })
+			expect(toSortKey(Date.UTC(2020, 5, 1), 'date')).toEqual({ rank: 0, value: Date.UTC(2020, 5, 1) })
+			expect(toSortKey(new Date('invalid'), 'date').rank).toBe(1)
+			expect(toSortKey('01.02.2024', 'date').rank).toBe(1)
+			expect(toSortKey('2024-02-30', 'date').rank).toBe(1)
+			expect(toSortKey('2024-01-15T24:00', 'date').rank).toBe(1)
+		})
+
+		it('date: годы 0–99 не превращаются в 1900-е', () => {
+			const key = toSortKey('0050-06-01', 'date')
+			expect(key.rank).toBe(0)
+			expect(new Date(key.value).getUTCFullYear()).toBe(50)
+		})
+
+		it('string: любое непустое значение — строка ранга 0', () => {
+			expect(toSortKey(15, 'string')).toEqual({ rank: 0, value: '15' })
+			expect(toSortKey('Роза')).toEqual({ rank: 0, value: 'Роза' })
+		})
+	})
+
+	describe('compareSortKeys', () => {
+		it('ранг важнее направления: пустые и нераспознанные значения в конце и при desc', () => {
+			const valid = toSortKey(1, 'number')
+			const invalid = toSortKey('—', 'number')
+			const empty = toSortKey(null, 'number')
+
+			for (const direction of ['asc', 'desc'] as const) {
+				expect(compareSortKeys(valid, invalid, direction)).toBeLessThan(0)
+				expect(compareSortKeys(invalid, empty, direction)).toBeLessThan(0)
+				expect(compareSortKeys(empty, valid, direction)).toBeGreaterThan(0)
+			}
+			expect(compareSortKeys(empty, toSortKey(undefined), 'asc')).toBe(0)
+		})
+
+		it('направление меняет порядок внутри ранга, строки сравниваются с numeric-коллацией', () => {
+			expect(compareSortKeys(toSortKey(1, 'number'), toSortKey(2, 'number'), 'asc')).toBeLessThan(0)
+			expect(compareSortKeys(toSortKey(1, 'number'), toSortKey(2, 'number'), 'desc')).toBeGreaterThan(0)
+			expect(compareSortKeys(toSortKey('Item 2'), toSortKey('Item 10'), 'asc')).toBeLessThan(0)
+		})
+
+		it('даёт транзитивный порядок для смеси значений (Array.sort получает корректный компаратор)', () => {
+			// Значения обёрнуты в объекты, как строки таблицы: «голые» undefined Array.sort уносит в конец без компаратора
+			const cells = [30, undefined, 10, '—', 20, null, 'abc', 5].map(value => ({ value }))
+			const sorted = [...cells].sort((a, b) => compareSortKeys(toSortKey(a.value, 'number'), toSortKey(b.value, 'number'), 'asc'))
+
+			expect(sorted.map(cell => cell.value)).toEqual([5, 10, 20, 30, '—', 'abc', undefined, null])
+		})
 	})
 })

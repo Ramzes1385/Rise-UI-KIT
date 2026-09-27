@@ -4,6 +4,8 @@ export interface UseSearchStateOptions {
 	modelValue: () => string
 	mode: () => SearchMode
 	results: () => SearchResult[]
+	/** Результаты уже отфильтрованы сервером — не фильтровать их по подстроке на клиенте */
+	isRemote?: () => boolean
 	isInstant: () => boolean
 	debounceMs: () => number
 	maxResults: () => number

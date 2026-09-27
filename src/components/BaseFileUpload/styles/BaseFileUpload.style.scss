@@ -1,322 +1,249 @@
+// BaseFileUpload. Сверху вниз: подпись (field-label) → зона загрузки → список файлов → ошибки (field-error), промежутки 8px.
+// Зона: пунктир 1px --rise-border-accented, радиус lg, фон --rise-bg; иконка 20px --rise-text-dimmed, заголовок 14/20 medium
+// --rise-text-highlighted, подсказка 12/16 --rise-text-muted. Наведение и перетаскивание — фон --rise-bg-elevated и рамка
+// --rise-primary, фокус — кольцо, ошибка — рамка --rise-error. Варианты зоны: outline — сплошная рамка и прозрачный фон;
+// soft — без рамки, фон bg-elevated 50%; ghost — без рамки и фона; shadow — сплошная рамка --rise-border и тень sm.
+// Файл — строка-карточка: рамка --rise-border, радиус md, превью или иконка типа 40px, имя 14/20 medium, расширение,
+// размер и статус 12/16 (статус — цветом роли), полоса BaseProgress во время загрузки, ghost-кнопка удаления 28px.
+
 .base-file-upload {
 	display: flex;
 	flex-direction: column;
-	gap: sz(12px);
-	@include transition(opacity);
-
-	@include custom-text(color, var(--color-text));
-
-	&--error {
-		.base-file-upload__dropzone {
-			border-color: var(--color-error);
-
-			&:hover {
-				border-color: var(--color-error);
-				background-color: var(--color-surface-muted);
-			}
-		}
-	}
-
-	&--disabled {
-		opacity: 0.6;
-		pointer-events: none;
-	}
-
-	&__label {
-		font-size: sz(13px);
-		font-weight: 600;
-		color: var(--color-text);
-	}
+	gap: sz(8px);
 
 	&__input {
 		display: none;
 	}
+
+	// Подпись вне зоны: цвет компонента (color.text) красит заголовок зоны, но не подпись
+	&__label {
+		@include field-label;
+		@include reset-custom-color;
+	}
+
+	// ─── Зона загрузки ───────────────────────────────────────────────────────────
 
 	&__dropzone {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: sz(8px);
-		padding: sz(32px) sz(16px);
-		border: 2px dashed var(--color-border);
-		border-radius: var(--border-radius-lg);
-		@include custom-bg(background-color, var(--color-surface));
+		gap: sz(4px);
+		padding: sz(24px 16px);
+		border: 1px dashed var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-lg));
+		text-align: center;
 		cursor: pointer;
-		@include interactive;
+		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-elevated), var(--rise-bg-elevated));
+		@include transition-colors;
+		@include focus-ring;
 
 		@include hover {
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, rgba(249, 115, 22, 0.04));
-			transform: scale(1.01);
-		}
+			border-color: var(--rise-primary);
 
-		&--active {
-			border-color: var(--color-accent);
-			background-color: rgba(249, 115, 22, 0.08);
-			transform: scale(1.02);
-			animation: pulse 1s ease-in-out infinite;
+			// На bg-elevated вторичный текст — toned: у muted там контраст 4.40:1
+			.base-file-upload__hint {
+				@include custom-text(color, var(--rise-text-toned));
+			}
 		}
+	}
+
+	// Отключённая зона приглушена; подпись остаётся читаемой, кнопки удаления файлов отключены сами
+	&--disabled &__dropzone {
+		@include disabled-state;
+	}
+
+	// Иконка, заголовок и подсказка зоны перекрашиваются color.text — под свой фон зоны (color.bg)
+	&__icon {
+		margin-bottom: sz(4px);
+		@include custom-text(color, var(--rise-text-dimmed));
 	}
 
 	&__text {
-		font-size: sz(15px);
-		font-weight: 600;
-		color: var(--color-text);
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
+	// Подсказка — форматы и предельный размер через точку-разделитель
 	&__hint {
-		font-size: sz(12px);
-		color: var(--color-text-muted);
-		text-align: center;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0 sz(6px);
+		@include text-size(xs);
+		@include custom-text(color, var(--rise-text-muted));
+
+		> span + span::before {
+			content: '·';
+			margin-right: sz(6px);
+		}
 	}
 
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--outline &__dropzone {
+		border-style: solid;
+		@include custom-bg-all(background-color, transparent, var(--rise-bg-elevated), var(--rise-bg-elevated));
+	}
+
+	&--soft &__dropzone {
+		border-color: transparent;
+		@include custom-bg-all(
+			background-color,
+			color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)),
+			var(--rise-bg-elevated),
+			var(--rise-bg-elevated)
+		);
+	}
+
+	&--ghost &__dropzone {
+		border-color: transparent;
+		@include custom-bg-all(background-color, transparent, var(--rise-bg-elevated), var(--rise-bg-elevated));
+	}
+
+	&--shadow &__dropzone {
+		border-style: solid;
+		border-color: var(--rise-border);
+		box-shadow: var(--rise-shadow-sm);
+	}
+
+	// ─── Состояния зоны ──────────────────────────────────────────────────────────
+
+	// Перетаскивание файла над зоной — как наведение, во всех вариантах
+	&--dragover &__dropzone {
+		border-color: var(--rise-primary);
+		background-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-bg-elevated)));
+	}
+
+	&--dragover &__hint {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	// Ошибка: рамка цвета ошибки, в том числе при наведении и у вариантов без рамки
+	&--error &__dropzone {
+		border-color: var(--rise-error);
+
+		@include hover {
+			border-color: var(--rise-error);
+		}
+	}
+
+	// ─── Список файлов ───────────────────────────────────────────────────────────
+
+	// Обёртка вложенных компонентов (превью, прогресс, кнопки): цвет компонента (color) их не перекрашивает
 	&__list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
 		display: flex;
 		flex-direction: column;
 		gap: sz(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		@include reset-custom-color;
 	}
 
 	&__item {
 		display: flex;
 		align-items: center;
 		gap: sz(12px);
-		padding: sz(12px) sz(14px);
-		@include custom-bg(background-color, var(--color-surface));
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
-		@include interactive;
-		animation: slideIn 0.3s ease-out;
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
-			border-color: var(--color-text-muted);
-			box-shadow: var(--shadow-sm);
-		}
-
-		&--done {
-			border-left: 3px solid var(--color-success, #22c55e);
-		}
-
-		&--uploading {
-			border-left: 3px solid var(--color-accent);
-		}
-
-		&--error {
-			border-left: 3px solid var(--color-error);
-		}
+		padding: sz(8px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
 	}
 
+	// Превью изображения или иконка типа файла — плитка 40px (проп previewSize задаёт свой размер)
 	&__preview {
-		border-radius: sz(8px);
+		@include flex-center;
+		flex: none;
+		width: sz(40px);
+		height: sz(40px);
 		overflow: hidden;
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		@include interactive;
-
-		@include hover {
-			transform: scale(1.05);
-			box-shadow: var(--shadow-md);
-		}
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-toned);
 	}
 
-	&__preview-img {
+	&__preview-img.base-image {
+		display: block;
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
 	}
 
 	&__info {
-		flex: 1;
-		min-width: 0;
 		display: flex;
+		flex: 1;
 		flex-direction: column;
-		gap: sz(4px);
+		gap: sz(2px);
+		min-width: 0;
 	}
 
 	&__name {
-		font-size: sz(14px);
-		font-weight: 500;
-		color: var(--color-text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text-highlighted);
+		@include truncate;
 	}
 
+	// Расширение, размер и статус — через точку-разделитель
 	&__meta {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(8px);
+		gap: 0 sz(6px);
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+
+		> span + span::before {
+			content: '·';
+			margin-right: sz(6px);
+			color: var(--rise-text-muted);
+		}
 	}
 
 	&__ext {
-		font-size: sz(11px);
-		font-weight: 700;
-		color: var(--color-accent);
-		background-color: rgba(249, 115, 22, 0.1);
-		padding: sz(2px) sz(6px);
-		border-radius: sz(4px);
-		text-transform: uppercase;
+		font-weight: var(--rise-font-weight-medium);
 	}
 
-	&__size {
-		font-size: sz(12px);
-		color: var(--color-text-muted);
+	&__status--uploading {
+		color: var(--rise-primary);
 	}
 
-	&__status {
-		font-size: sz(12px);
-		color: var(--color-text-muted);
+	&__status--done {
+		color: var(--rise-success);
+	}
 
-		&--done {
-			color: var(--color-success);
-		}
-
-		&--uploading {
-			color: var(--color-accent);
-		}
-
-		&--error {
-			color: var(--color-error);
-		}
+	&__status--error {
+		color: var(--rise-error);
 	}
 
 	&__progress {
 		margin-top: sz(4px);
 	}
 
-	&__remove {
-		flex-shrink: 0;
-		width: sz(32px);
-		height: sz(32px);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border: none;
-		background-color: transparent;
-		color: var(--color-text-muted);
-		font-size: sz(14px);
-		cursor: pointer;
-		border-radius: sz(6px);
-		opacity: 0.5;
-		@include transition(color, background-color, opacity);
+	// Удаление — ghost-кнопка 28×28 (иконка 16px + отступы 5px), иконка приглушённая
+	&__remove.base-button {
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
+		--custom-text: var(--rise-text-muted);
 
-		&:hover {
-			opacity: 1;
-			color: var(--color-error);
-			background-color: rgba(239, 68, 68, 0.1);
-		}
+		flex: none;
 	}
 
+	// ─── Ошибки ──────────────────────────────────────────────────────────────────
+
 	&__errors {
-		list-style: none;
-		margin: 0;
-		padding: 0;
 		display: flex;
 		flex-direction: column;
 		gap: sz(4px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
 	&__error-item {
-		font-size: sz(12px);
-		color: var(--color-error);
-		font-weight: 500;
-	}
-
-	// ============================================================
-	// Ошибка для вариантов
-	// ============================================================
-
-	&--outline.base-file-upload--error &__dropzone {
-		border-color: var(--color-error);
-		border-width: 2px;
-	}
-
-	&--ghost.base-file-upload--error &__dropzone {
-		border-color: var(--color-error);
-	}
-
-	&--soft.base-file-upload--error &__dropzone {
-		border-color: var(--color-error);
-		background-color: rgba(239, 68, 68, 0.06);
-	}
-
-	&--shadow.base-file-upload--error &__dropzone {
-		border-color: var(--color-error);
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-	}
-
-	// Варианты
-	&--ghost {
-		.base-file-upload__dropzone {
-			@include custom-bg(background-color, transparent);
-			border-color: transparent;
-		}
-
-		@include hover {
-			.base-file-upload__dropzone {
-				@include custom-bg(background-color, var(--color-surface-muted));
-			}
-		}
-	}
-
-	&--outline {
-		.base-file-upload__dropzone {
-			@include custom-bg(background-color, transparent);
-			border-style: solid;
-		}
-	}
-
-	&--shadow {
-		.base-file-upload__dropzone {
-			box-shadow: var(--shadow-lg);
-		}
-
-		@include hover {
-			.base-file-upload__dropzone {
-				box-shadow: var(--shadow-xl);
-			}
-		}
-	}
-
-	&--soft {
-		.base-file-upload__dropzone {
-			@include custom-bg(background-color, var(--color-primary-soft));
-			border-color: transparent;
-		}
-
-		@include hover {
-			.base-file-upload__dropzone {
-				@include custom-bg(background-color, var(--color-primary-soft-hover));
-			}
-		}
-	}
-
-	/* Анимации */
-	@keyframes pulse {
-		0%,
-		100% {
-			border-color: var(--color-accent);
-		}
-		50% {
-			border-color: rgba(249, 115, 22, 0.5);
-		}
-	}
-
-	@keyframes slideIn {
-		from {
-			opacity: 0;
-			transform: translateY(-10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+		@include field-error;
 	}
 }

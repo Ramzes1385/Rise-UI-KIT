@@ -1,5 +1,5 @@
 /** Composable: обработка кликов по дням календаря, переключение AM/PM и кнопки «Сегодня» */
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import type { UseCalendarInteractionOptions } from './useCalendarInteraction.types'
 
 /** Описание: обрабатывает клики по дням календаря, переключение AM/PM и кнопки «Сегодня», возвращает обработчики */
@@ -30,6 +30,27 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 	watch(calendar.currentView, newView => {
 		emit('view-change', newView)
 	})
+
+	/** AM/PM выводится из часов — единственного источника истины о времени */
+	const isAmResolved = computed((): boolean => hours.value < 12)
+
+	// v-model:is-am следует за часами. Раньше isAm хранился отдельно (по умолчанию true):
+	// 14:30 отображалось как «2:30 AM», а введённый час попадал не в ту половину суток
+	watch(
+		isAmResolved,
+		value => {
+			isAm.value = value
+		},
+		{ immediate: true },
+	)
+
+	// Внешнее изменение v-model:is-am работает как нажатие переключателя AM/PM
+	watch(
+		() => isAm.value,
+		value => {
+			if (value !== isAmResolved.value) toggleAmPm()
+		},
+	)
 
 	function handleDayClick(date: Date): void {
 		if (isDayDisabled(date) || getIsDisabled()) return
@@ -93,13 +114,7 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 	}
 
 	function toggleAmPm(): void {
-		const currentHour = hours.value
-		if (isAm.value) {
-			hours.value = currentHour < 12 ? currentHour + 12 : currentHour
-		} else {
-			hours.value = currentHour >= 12 ? currentHour - 12 : currentHour
-		}
-		isAm.value = !isAm.value
+		hours.value = hours.value >= 12 ? hours.value - 12 : hours.value + 12
 		handleTimeChange()
 	}
 
@@ -119,6 +134,7 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 	}
 
 	return {
+		isAmResolved,
 		handleDayClick,
 		toggleAmPm,
 		handleTimeChange,

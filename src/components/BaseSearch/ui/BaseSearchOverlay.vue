@@ -1,23 +1,23 @@
 <template>
 	<div
 		class="base-search"
-		:class="[variantClass, { 'base-search--disabled': isDisabled }, classes.root]"
+		:class="[variantClass, `base-search--${panel}`, { 'base-search--disabled': isDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseInput
 			:model-value="modelValue"
+			:label="triggerPlaceholder"
 			:placeholder="triggerPlaceholder"
 			:variant="variant"
 			:size-scale="sizeScale"
 			:is-disabled="isDisabled"
 			:error="error"
-			class="base-search__trigger"
+			class="base-search__trigger base-search__field"
 			:custom-class="classes.trigger"
 			readonly
 			type="text"
 			@focus="open">
-			<template #prefix>
+			<template v-if="hasIcon" #prefix>
 				<BaseIcon
-					v-if="hasIcon"
 					name="search"
 					class="base-search__icon"
 					:custom-class="classes.icon"
@@ -27,11 +27,12 @@
 	</div>
 	<Teleport to="body">
 		<Transition :name="`base-search-${panel}`">
+			<!-- Подложка --rise-overlay, окно — как модальное (BaseModal); клик по подложке и Escape закрывают -->
 			<div
 				v-if="isOpen"
-				:class="overlayClass"
+				:class="[overlayClass, classes[`${prefix}Overlay`]]"
 				@click.self="close">
-				<div :class="panelClass" :style="sizeScaleStyle">
+				<div :class="panelClass" :style="sizeScaleStyle" role="dialog" :aria-label="UI_ARIA.SEARCH">
 					<div :class="headerClass">
 						<BaseSearchInput
 							ref="inputRef"
@@ -54,11 +55,9 @@
 							:class="closeBtnClass"
 							:custom-class="closeBtnCustomClass"
 							:size-scale="sizeScale"
+							:aria-label="UI_ARIA.CLOSE"
 							@click="close">
-							<BaseIcon
-								name="close"
-								:custom-class="closeIconCustomClass"
-								:size-scale="calcIconScale('sm', sizeScale)" />
+							<BaseIcon name="close" :custom-class="closeIconCustomClass" :size-scale="sizeScale" />
 						</BaseButton>
 					</div>
 					<div v-if="shouldShowResults && modelValue" :class="resultsClass">
@@ -105,6 +104,7 @@ import { BaseInput } from '@components/BaseInput'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
+import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'

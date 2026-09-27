@@ -48,6 +48,28 @@ describe('useMaskedInputHandlers', () => {
 			expect(emitted).toEqual([{ event: 'update:modelValue', value: 'abc' }])
 		})
 
+		it.each([
+			['digits', 'a1b2-3', '123'],
+			['letters', 'Ab1 вГ-2', 'AbвГ'],
+			['alphanumeric', 'a1 б2-!', 'a1б2'],
+		] as const)('allowedChars=%s отбрасывает недопустимые символы в поле и в модели', (filter, typed, expected) => {
+			const { opts, emitted } = createOptions({ mask: '' })
+			const handlers = useMaskedInputHandlers({ ...opts, getAllowedChars: () => filter })
+			const input = createInput(typed)
+
+			handlers.handleInput({ target: input } as unknown as Event)
+			expect(input.value).toBe(expected)
+			expect(emitted).toEqual([{ event: 'update:modelValue', value: expected }])
+		})
+
+		it('без allowedChars значение не фильтруется', () => {
+			const { opts, emitted } = createOptions({ mask: '' })
+			const handlers = useMaskedInputHandlers({ ...opts, getAllowedChars: () => undefined })
+
+			handlers.handleInput({ target: createInput('a1 !') } as unknown as Event)
+			expect(emitted).toEqual([{ event: 'update:modelValue', value: 'a1 !' }])
+		})
+
 		it('не обрабатывает не-HTMLInputElement target', () => {
 			const { opts, emitted } = createOptions()
 			const handlers = useMaskedInputHandlers(opts)
@@ -92,6 +114,57 @@ describe('useMaskedInputHandlers', () => {
 
 			handlers.handleKeydown(event)
 			expect(emitted).toEqual([])
+		})
+	})
+
+	describe('isReadonly (readonly/disabled поле)', () => {
+		it('Backspace не меняет значение, не отменяет нативное поведение и пробрасывает keydown', () => {
+			const { opts, emitted, keydownEvents } = createOptions({ mask: '###-###', value: '123456' })
+			const handlers = useMaskedInputHandlers({ ...opts, isReadonly: () => true })
+			const input = createInput('123-456')
+			Object.defineProperty(input, 'selectionStart', { value: 7 })
+
+			const event = new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true })
+			Object.defineProperty(event, 'target', { value: input })
+
+			handlers.handleKeydown(event)
+			expect(emitted).toEqual([])
+			expect(event.defaultPrevented).toBe(false)
+			expect(keydownEvents).toEqual([event])
+		})
+
+		it('Delete не меняет значение', () => {
+			const { opts, emitted } = createOptions({ mask: '###-###', value: '123456' })
+			const handlers = useMaskedInputHandlers({ ...opts, isReadonly: () => true })
+			const input = createInput('123-456')
+			Object.defineProperty(input, 'selectionStart', { value: 0 })
+
+			const event = new KeyboardEvent('keydown', { key: 'Delete', cancelable: true })
+			Object.defineProperty(event, 'target', { value: input })
+
+			handlers.handleKeydown(event)
+			expect(emitted).toEqual([])
+			expect(event.defaultPrevented).toBe(false)
+		})
+
+		it('input-событие не эмитит значение и возвращает в поле отображение текущей модели', () => {
+			const { opts, emitted } = createOptions({ mask: '###-###', value: '123456' })
+			const handlers = useMaskedInputHandlers({ ...opts, isReadonly: () => true })
+			const input = createInput('99')
+
+			handlers.handleInput({ target: input } as unknown as Event)
+			expect(emitted).toEqual([])
+			expect(input.value).toBe('123-456')
+		})
+
+		it('без маски input-событие тоже не эмитит значение и восстанавливает исходный текст', () => {
+			const { opts, emitted } = createOptions({ mask: '', value: 'abc' })
+			const handlers = useMaskedInputHandlers({ ...opts, isReadonly: () => true })
+			const input = createInput('abcd')
+
+			handlers.handleInput({ target: input } as unknown as Event)
+			expect(emitted).toEqual([])
+			expect(input.value).toBe('abc')
 		})
 	})
 

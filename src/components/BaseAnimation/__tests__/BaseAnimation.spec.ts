@@ -46,6 +46,16 @@ describe('BaseAnimation unit', () => {
 
 			expect(container.querySelector('.base-animation')).toBeInTheDocument()
 		})
+
+		it('должен реагировать на show, переданный после монтирования', async () => {
+			const { container, rerender } = render(BaseAnimation, {
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			await rerender({ show: false })
+
+			expect(container.querySelector('.base-animation')).not.toBeInTheDocument()
+		})
 	})
 
 	describe('пропс name', () => {
@@ -65,7 +75,7 @@ describe('BaseAnimation unit', () => {
 		it('должен рендерить TransitionGroup когда isGroup=true', () => {
 			const { container } = render(BaseAnimation, {
 				props: { show: true, isGroup: true, tag: 'ul' },
-				slots: { default: '<li>Элемент</li>' },
+				slots: { default: '<li key="1">Элемент</li>' },
 				global: {
 					stubs: {
 						TransitionGroup: false,
@@ -75,6 +85,29 @@ describe('BaseAnimation unit', () => {
 
 			const list = container.querySelector('ul')
 			expect(list).toBeInTheDocument()
+		})
+
+		it('должен рендерить элементы списка прямыми потомками tag, без обёртки (иначе ul > div > li)', () => {
+			const { container } = render(BaseAnimation, {
+				props: { isGroup: true, tag: 'ul', name: 'list', customClass: 'custom-list' },
+				slots: { default: '<li key="1">Первый</li><li key="2">Второй</li>' },
+				global: { stubs: { TransitionGroup: false } },
+			})
+
+			const list = container.querySelector('ul') as HTMLElement
+			expect(list.querySelectorAll(':scope > li')).toHaveLength(2)
+			expect(list).toHaveClass('base-animation--group', 'custom-list')
+		})
+
+		it('должен убирать элементы списка когда show=false', () => {
+			const { container } = render(BaseAnimation, {
+				props: { isGroup: true, tag: 'ul', show: false },
+				slots: { default: '<li key="1">Первый</li>' },
+				global: { stubs: { TransitionGroup: false } },
+			})
+
+			expect(container.querySelector('ul')).toBeInTheDocument()
+			expect(container.querySelector('li')).not.toBeInTheDocument()
 		})
 
 		it('должен использовать isGroup=false по умолчанию', () => {

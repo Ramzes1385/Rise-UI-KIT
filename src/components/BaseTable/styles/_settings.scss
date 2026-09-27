@@ -1,27 +1,30 @@
-@use "@styles/variables" as *;
-@use "@styles/mixins" as *;
-@use "@styles/functions" as *;
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
 
 .base-table {
+	// Кнопка «Колонки» — справа в тулбаре.
 	&__settings {
-		position: relative;
-		margin-left: auto;
 		display: flex;
 		align-items: center;
+		margin-left: auto;
 	}
 
+	// Панель BaseDropdown (телепортирована в body): список чекбоксов колонок.
 	&__settings-panel {
-		min-width: sz(180px);
-		width: max-content;
-		max-width: calc(100vw - 24px);
+		min-width: sz(200px);
 	}
 
-	&__settings-item {
-		padding: sz(3px) sz(4px);
-		border-radius: var(--border-radius-sm);
+	&__settings-list {
+		display: flex;
+		flex-direction: column;
+	}
 
-		@include hover {
-			background-color: var(--color-surface-muted);
-		}
+	// Строка чекбокса — пункт меню на всю ширину панели (menu-item): кликабельна вся строка, подсветка при наведении.
+	// Двойной селектор перекрывает раскладку подписи BaseCheckbox.
+	&__settings-item &__settings-option {
+		@include menu-item;
+		box-sizing: border-box;
+		width: 100%;
 	}
 }

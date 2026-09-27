@@ -29,9 +29,12 @@ function usePopup(options: UsePopupOptions): {
 	const shouldLockScroll = () => lockScroll?.() ?? true
 	const { lock, unlock } = useScrollLock()
 
-	/** Закрыть popup */
+	/**
+	 * Закрыть popup. Блокировку скролла здесь не снимаем: родитель может не закрыть окно
+	 * (isOpen останется true), и страница прокручивалась бы под открытым оверлеем.
+	 * Разблокировка происходит в watch, когда isOpen действительно станет false.
+	 */
 	function close(): void {
-		if (shouldLockScroll()) unlock()
 		onClose()
 	}
 
@@ -48,12 +51,15 @@ function usePopup(options: UsePopupOptions): {
 		callback: close,
 	})
 
-	/** Блокировка скролла при открытии/закрытии */
+	/**
+	 * Блокировка скролла следует фактическому состоянию: открыт и нужна блокировка → lock, иначе → unlock.
+	 * unlock идемпотентен, поэтому вызывается без проверки lockScroll: смена lockScroll
+	 * при открытом окне (например, переход в isContained) не оставит body заблокированным.
+	 */
 	watch(
-		isOpen,
-		value => {
-			if (!shouldLockScroll()) return
-			if (value) {
+		() => Boolean(isOpen()) && shouldLockScroll(),
+		shouldLock => {
+			if (shouldLock) {
 				lock()
 			} else {
 				unlock()
@@ -62,9 +68,7 @@ function usePopup(options: UsePopupOptions): {
 		{ immediate: true },
 	)
 
-	onUnmounted(() => {
-		if (shouldLockScroll()) unlock()
-	})
+	onUnmounted(unlock)
 
 	return { handleOverlayClick, close }
 }

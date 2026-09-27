@@ -6,7 +6,7 @@
 import { expect, test } from '@playwright/test'
 
 test('селект: открывает дропдаун и выбирает опцию', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseselect--default')
+	await page.goto('/iframe.html?id=form-baseselect--default')
 	await page.waitForSelector('.base-select', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -23,7 +23,7 @@ test('селект: открывает дропдаун и выбирает оп
 })
 
 test('селект: закрывается по Escape', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseselect--default')
+	await page.goto('/iframe.html?id=form-baseselect--default')
 	await page.waitForSelector('.base-select', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -39,7 +39,7 @@ test('селект: закрывается по Escape', async ({ page }) => {
 })
 
 test('селект: не открывается если disabled', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseselect--disabled')
+	await page.goto('/iframe.html?id=form-baseselect--disabled')
 	await page.waitForSelector('.base-select', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 

@@ -1,16 +1,19 @@
 /**
- * Visual regression тесты для BaseTabs.
+ * Visual regression BaseTabs: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basetabs'
-const STORIES = ['underline', 'pills', 'rounded', 'arc', 'full-width', 'with-disabled', 'dark-theme']
+const STORIES = ['variants', 'sizes', 'disabled', 'with-icons', 'scrollable'] as const
 
-for (const story of STORIES) {
-	test(`BaseTabs — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-tabs--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseTabs · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basetabs--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-tabs-${story}-${theme}.png`)
+			})
+		}
 	})
 }

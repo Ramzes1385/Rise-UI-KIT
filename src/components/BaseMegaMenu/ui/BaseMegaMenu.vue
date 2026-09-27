@@ -20,18 +20,15 @@
 				@mouseenter="handleColumnEnter(column.title)"
 				@mouseleave="handleColumnLeave">
 				<slot name="column-title" :column="column">
-					<BaseText
-						tag="h4"
+					<h4
 						tabindex="0"
-						:size-scale="sizeScale"
-						:weight="UI_FONT_WEIGHT.SEMIBOLD"
 						class="base-mega-menu__title"
 						:class="[{ 'base-mega-menu__title--open': isColumnOpen(column.title) }, classes.title]"
 						@click="toggleColumn(column.title)">
 						<BaseIcon v-if="column.icon" :name="column.icon" :size-scale="iconScale" class="base-mega-menu__title-icon" />
-						{{ column.title }}
+						<span class="base-mega-menu__title-text">{{ column.title }}</span>
 						<BaseIcon class="base-mega-menu__title-arrow" name="chevron-down" :size-scale="iconScale" />
-					</BaseText>
+					</h4>
 				</slot>
 
 				<ul v-if="isColumnOpen(column.title)" class="base-mega-menu__list" :class="classes.list">
@@ -78,9 +75,10 @@
 						:is-disabled="item.isDisabled"
 						:size-scale="sizeScale"
 						:custom-class="classes.navLink"
+						:aria-expanded="hasChildren(item) ? isNavOpen(item.label) : undefined"
 						@click="handleNavClick(item)">
 						<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__nav-icon" />
-						<BaseText tag="span" :size-scale="sizeScale">{{ item.label }}</BaseText>
+						<span class="base-mega-menu__nav-label">{{ item.label }}</span>
 						<BaseIcon v-if="hasChildren(item)" name="chevron-down" :size-scale="iconScale" class="base-mega-menu__nav-arrow" />
 					</BaseButton>
 				</slot>
@@ -115,11 +113,10 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'

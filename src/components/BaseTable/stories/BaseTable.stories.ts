@@ -1,2345 +1,878 @@
-﻿/**
- * Stories для компонента BaseTable.
- * Демонстрирует все варианты, размеры, сортировку, выбор, поиск и состояния.
+/**
+ * BaseTable — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (варианты, размеры, цвет, отступы) → состояния (пусто, загрузка,
+ * длинный текст) → сценарии (сортировка, выбор строк, тулбар, пагинация, подгрузка, раскрытие строк, вложенная таблица,
+ * закреплённые шапка и колонки, ресайз, свои ячейки) → клавиатура.
  */
 
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { ARG_GROUP, avatarImage, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_WAIT_TIMEOUT, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseButton } from '@components/BaseButton'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
-import { BaseSwitch } from '@components/BaseSwitch'
-import { BaseText } from '@components/BaseText'
-import { UI_TEXT } from '@constants'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
 import { TABLE_VARIANTS } from '../model/BaseTable.types'
 import BaseTable from '../ui/BaseTable.vue'
-import type { TableColumn, TableRow } from '../model/BaseTable.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+
+// ─── Данные ────────────────────────────────────────────────────────────────────
+
+/** Сумма в рублях: «12 490 ₽». Перед знаком рубля — неразрывный пробел: сумма не переносится по строкам */
+function formatRub(value: unknown): string {
+	return `${new Intl.NumberFormat('ru-RU').format(Number(value))}\u00A0₽`
+}
+
+/** Дата ISO (ГГГГ-ММ-ДД) → ДД.ММ.ГГГГ. Без Date: результат не зависит от часового пояса машины */
+function formatDate(value: unknown): string {
+	const [year, month, day] = String(value).split('-')
+	return `${day}.${month}.${year}`
+}
+
+const ORDERS = [
+	{ id: 1, number: 'З-1041', customer: 'Анна Смирнова', city: 'Москва', status: 'Доставлен', date: '2025-05-14', total: 12490, progress: 100 },
+	{ id: 2, number: 'З-1042', customer: 'Иван Петров', city: 'Казань', status: 'В пути', date: '2025-05-14', total: 3150, progress: 70 },
+	{ id: 3, number: 'З-1043', customer: 'Мария Кузнецова', city: 'Санкт-Петербург', status: 'Оплачен', date: '2025-05-13', total: 28700, progress: 30 },
+	{ id: 4, number: 'З-1044', customer: 'Олег Соколов', city: 'Новосибирск', status: 'Отменён', date: '2025-05-12', total: 990, progress: 0 },
+	{ id: 5, number: 'З-1045', customer: 'Екатерина Волкова', city: 'Екатеринбург', status: 'Доставлен', date: '2025-05-11', total: 7640, progress: 100 },
+	{ id: 6, number: 'З-1046', customer: 'Дмитрий Орлов', city: 'Москва', status: 'В пути', date: '2025-05-10', total: 15300, progress: 60 },
+	{ id: 7, number: 'З-1047', customer: 'Ольга Лебедева', city: 'Самара', status: 'Оплачен', date: '2025-05-09', total: 4380, progress: 20 },
+	{ id: 8, number: 'З-1048', customer: 'Сергей Новиков', city: 'Казань', status: 'Доставлен', date: '2025-05-08', total: 21900, progress: 100 },
+	{ id: 9, number: 'З-1049', customer: 'Наталья Морозова', city: 'Москва', status: 'Оплачен', date: '2025-05-07', total: 5870, progress: 40 },
+	{ id: 10, number: 'З-1050', customer: 'Алексей Фёдоров', city: 'Пермь', status: 'Доставлен', date: '2025-05-06', total: 9990, progress: 100 },
+	{ id: 11, number: 'З-1051', customer: 'Татьяна Козлова', city: 'Уфа', status: 'В пути', date: '2025-05-05', total: 13200, progress: 80 },
+	{ id: 12, number: 'З-1052', customer: 'Павел Никитин', city: 'Воронеж', status: 'Отменён', date: '2025-05-04', total: 2400, progress: 0 },
+]
+
+type Order = (typeof ORDERS)[number]
+
+/** Строки таблицы из заказов: id строки — id заказа, в data — все поля */
+function toRows(orders: readonly Order[], extra: Partial<TableRow> = {}): TableRow[] {
+	return orders.map(order => ({ id: order.id, data: { ...order }, ...extra }))
+}
+
+const ROWS = toRows(ORDERS.slice(0, 5))
+const ALL_ROWS = toRows(ORDERS)
 
 const COLUMNS: TableColumn[] = [
-	{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
-	{ key: 'name', label: 'Название', sortType: 'string', isSortable: true },
-	{ key: 'material', label: 'Материал', sortType: 'string', isSortable: true },
-	{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
+	{ key: 'number', label: 'Заказ' },
+	{ key: 'customer', label: 'Покупатель', isSortable: true, sortType: 'string' },
+	{ key: 'city', label: 'Город', isSortable: true, sortType: 'string' },
+	{ key: 'status', label: 'Статус' },
+	{ key: 'date', label: 'Дата', isSortable: true, sortType: 'date', formatter: formatDate },
+	{ key: 'total', label: 'Сумма', isSortable: true, sortType: 'number', align: 'right', formatter: formatRub },
 ]
 
-const ROWS: TableRow[] = [
-	{ id: 1, data: { id: 1, name: 'Роза', material: 'Сталь', price: 15000 } },
-	{ id: 2, data: { id: 2, name: 'Орёл', material: 'Бронза', price: 35000 } },
-	{ id: 3, data: { id: 3, name: 'Дерево', material: 'Железо', price: 8000 } },
-	{ id: 4, data: { id: 4, name: 'Лев', material: 'Медь', price: 22000 } },
-	{ id: 5, data: { id: 5, name: 'Волк', material: 'Сталь', price: 18000 } },
-]
+/** Четыре колонки для витрин, где таблиц несколько */
+const COMPACT_COLUMNS: TableColumn[] = [COLUMNS[0], COLUMNS[1], COLUMNS[3], COLUMNS[5]]
 
-const EXTENDED_COLUMNS: TableColumn[] = [
-	{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
-	{ key: 'name', label: 'Название', sortType: 'string', isSortable: true },
-	{ key: 'material', label: 'Материал', sortType: 'string', isSortable: true },
-	{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-	{ key: 'status', label: 'Статус', width: '120px' },
-	{ key: 'date', label: 'Дата', width: '120px', sortType: 'date', isSortable: true },
-]
+/** Цвета бейджей статусов: роль → мягкий фон и текст роли */
+const STATUS_COLORS: Record<string, { bg: { base: string }; text: { base: string } }> = {
+	Доставлен: { bg: { base: 'var(--rise-success-soft)' }, text: { base: 'var(--rise-success-text)' } },
+	'В пути': { bg: { base: 'var(--rise-info-soft)' }, text: { base: 'var(--rise-info-text)' } },
+	Оплачен: { bg: { base: 'var(--rise-primary-soft)' }, text: { base: 'var(--rise-primary-text)' } },
+	Отменён: { bg: { base: 'var(--rise-error-soft)' }, text: { base: 'var(--rise-error-text)' } },
+}
 
-const EXTENDED_ROWS: TableRow[] = [
-	{
-		id: 1,
-		data: {
-			id: 1,
-			name: 'Роза',
-			material: 'Сталь',
-			price: 15000,
-			status: 'В наличии',
-			date: '2024-01-15',
-		},
-	},
-	{
-		id: 2,
-		data: {
-			id: 2,
-			name: 'Орёл',
-			material: 'Бронза',
-			price: 35000,
-			status: 'Под заказ',
-			date: '2024-03-20',
-		},
-	},
-	{
-		id: 3,
-		data: {
-			id: 3,
-			name: 'Дерево',
-			material: 'Железо',
-			price: 8000,
-			status: 'В наличии',
-			date: '2024-02-10',
-		},
-	},
-	{
-		id: 4,
-		data: { id: 4, name: 'Лев', material: 'Медь', price: 22000, status: 'Продано', date: '2024-04-05' },
-	},
-	{
-		id: 5,
-		data: {
-			id: 5,
-			name: 'Волк',
-			material: 'Сталь',
-			price: 18000,
-			status: 'В наличии',
-			date: '2024-01-28',
-		},
-	},
-	{
-		id: 6,
-		data: {
-			id: 6,
-			name: 'Кот',
-			material: 'Бронза',
-			price: 12000,
-			status: 'Под заказ',
-			date: '2024-05-12',
-		},
-	},
-	{
-		id: 7,
-		data: {
-			id: 7,
-			name: 'Ворон',
-			material: 'Железо',
-			price: 9500,
-			status: 'В наличии',
-			date: '2024-06-01',
-		},
-	},
-	{
-		id: 8,
-		data: { id: 8, name: 'Конь', material: 'Медь', price: 42000, status: 'Продано', date: '2024-02-22' },
-	},
-]
+/** Текст строк таблицы (без шапки) — для проверки порядка и состава */
+function bodyRows(table: HTMLElement): HTMLElement[] {
+	return within(table).getAllByRole('row').slice(1)
+}
 
-const meta: Meta<typeof BaseTable> = {
-	title: 'UI/BaseTable',
+const meta = {
+	title: 'Data/BaseTable',
 	component: BaseTable,
-
-	argTypes: buildArgTypes({
-		props: {
-			variant: {
-				control: 'inline-radio',
-				options: TABLE_VARIANTS,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Таблица данных в духе Nuxt UI Table: сортировка, поиск и фильтры, выбор строк, пагинация или подгрузка,',
+					'раскрытие строк и вложенные таблицы, закреплённые шапка и колонки, ресайз и видимость колонок. Всё считается на клиенте.',
+					'',
+					'- Данные: `columns` (ключ, подпись, ширина, тип сортировки, форматтер) и `rows` (`{ id, data }`). Ячейку и заголовок',
+					'  переопределяют слоты `cell-<key>` и `header-<key>`, над и под таблицей — `header`, `footer`, `toolbar-prepend/append`.',
+					'- Функции включаются объектами `features` (search, filters, columnSettings, rowNumber, pageSizeSelector)',
+					'  и `behavior` (selectable, multiSort, resizable); размер страницы — `pageSize`, режим — `loadMode`.',
+					'- Варианты: `default` — линии между строками, `bordered` — сетка, `striped` — чередование фона строк.',
+					'- Доступность: сортируемый заголовок — кнопка с `aria-sort` на `th`, у чекбоксов и кнопок раскрытия есть имена,',
+					'  «Выбрать все» действует только на найденные строки. Прокручиваемая область получает фокус с клавиатуры.',
+					'- Пустое состояние — `BaseEmpty` (`emptyText` или слот `empty`), загрузка — скелетон или подложка со спиннером.',
+				].join('\n'),
 			},
-			color: {
-				control: 'object',
-				description: 'Объект CustomColor: bg (фон), text (текст) и их состояния hover/active/focus',
-			},
-			isLoading: { control: 'boolean' },
-			emptyText: { control: 'text' },
-			height: { control: 'text', description: 'Высота таблицы для sticky header и скролла' },
-			features: { control: 'object', description: 'Конфигурация функций (search, filters, columnSettings, rowNumber, pageSizeSelector)' },
-			behavior: { control: 'object', description: 'Конфигурация поведения (selectable, multiSort, resizable)' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			padding: {
-				control: 'object',
-				description:
-					'Отступы ячеек. Число (px): Y = значение, X = значение × 2. Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси. По умолчанию 10 → 10px 20px',
-			},
-			pageSize: { control: 'number' },
-			searchDebounce: { control: 'number' },
-			columns: {
-				control: 'object',
-				description: 'Массив определений колонок (TableColumn[])',
-			},
-			rows: {
-				control: 'object',
-				description: 'Массив строк данных (TableRow[])',
-			},
-			pageSizeOptions: {
-				control: 'object',
-				description: 'Варианты размера страницы для селектора',
-			},
-			loadMode: {
-				control: 'inline-radio',
-				options: ['pagination', 'infinite', 'button'],
-			},
-			nestedConfig: {
-				control: 'object',
-				description: 'Конфиг вложенной таблицы: { columns, childrenKey, title? }',
-			},
-			onSort: { table: { disable: true } },
-			onFilter: { table: { disable: true } },
-			onSearch: { table: { disable: true } },
-			onSelect: { table: { disable: true } },
-			onExpand: { table: { disable: true } },
-			'onPage-change': { table: { disable: true } },
-			'onPage-size-change': { table: { disable: true } },
-			'onRow-click': { table: { disable: true } },
-			'onColumn-resize': { table: { disable: true } },
-			'onColumns-change': { table: { disable: true } },
-			'onLoad-more': { table: { disable: true } },
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: TABLE_VARIANTS }),
+		columns: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		rows: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		emptyText: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		nestedConfig: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		padding: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		features: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+		behavior: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+		pageSize: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
+		pageSizeOptions: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+		loadMode: { control: 'inline-radio', options: ['pagination', 'button', 'infinite'], table: propGroup(ARG_GROUP.behavior) },
+		searchDebounce: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
+		// Слот default объявлен в типах, но таблица его не выводит
+		...hiddenArgTypes('default'),
+	},
 	args: {
 		columns: COLUMNS,
 		rows: ROWS,
 		variant: 'default',
-		color: undefined,
-		isLoading: false,
+		sizeScale: 100,
 		emptyText: 'Нет данных',
+		isLoading: false,
 		height: '',
+		features: {},
+		behavior: {},
 		pageSize: 0,
 		pageSizeOptions: [],
 		loadMode: 'pagination',
 		searchDebounce: 300,
-		nestedConfig: undefined,
-		sizeScale: 100,
-		padding: 10,
+		onSort: fn(),
+		onFilter: fn(),
+		onSearch: fn(),
+		onSelect: fn(),
+		onExpand: fn(),
+		'onRow-click': fn(),
+		'onPage-change': fn(),
+		'onPage-size-change': fn(),
+		'onLoad-more': fn(),
+		'onColumn-resize': fn(),
+		'onColumns-change': fn(),
 	},
-}
+} satisfies Meta<typeof BaseTable>
 
 export default meta
-type Story = StoryObj<typeof BaseTable>
-/** Базовая таблица */
-export const Default: Story = {
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка таблицы по Tab', async () => {
-			await userEvent.tab()
-		})
+type Story = StoryObj<typeof meta>
 
-		await step('Возврат фокуса по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-table' })
-		})
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/**
+ * Песочница: меняйте props в Controls — например, включите `features.search` или `behavior.selectable`.
+ * Заголовки «Покупатель», «Город», «Дата» и «Сумма» сортируют строки. Story открывают e2e-тесты, поэтому play
+ * только проверяет начальное состояние.
+ */
+export const Default: Story = {
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('columnheader', { name: 'Покупатель' })).toHaveAttribute('aria-sort', 'none')
+		await expect(canvas.getByRole('columnheader', { name: 'Заказ' })).not.toHaveAttribute('aria-sort')
+		await expect(bodyRows(canvas.getByRole('table'))).toHaveLength(5)
 	},
 }
-/** Все варианты */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Три варианта: `default` — линии между строками, `bordered` — ещё и между колонками (плотные данные, сравнение значений),
+ * `striped` — чётные строки на фоне `bg-muted` вместо линий (длинные строки легче вести глазом).
+ */
 export const Variants: Story = {
 	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable v-for="v in ['default', 'bordered', 'striped']" :key="v" :variant="v" :columns="columns" :rows="rows" />`,
-			},
-		},
+		controls: { include: ['sizeScale', 'features', 'behavior'] },
+		docs: { source: { code: TABLE_VARIANTS.map(variant => `<BaseTable :columns="columns" :rows="rows" variant="${variant}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseTable },
-		setup() {
-			return { args, variants: TABLE_VARIANTS }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), variants: TABLE_VARIANTS, columns: COMPACT_COLUMNS, rows: toRows(ORDERS.slice(0, 4)) }),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;">
-				<div v-for="v in variants" :key="v">
-					<BaseTable v-bind="args" :variant="v" />
+			<div class="story-stack">
+				<div v-for="variant in variants" :key="variant" class="story-stack" style="gap: 8px;">
+					<span class="story-label">{{ variant }}</span>
+					<BaseTable v-bind="props" :variant="variant" :columns="columns" :rows="rows" />
 				</div>
 			</div>
 		`,
 	}),
 }
-/** Масштабирование sizeScale */
-export const SizeScale: Story = {
+
+/**
+ * Размер задаёт `sizeScale`: кегль, отступы ячеек, чекбоксы и поля тулбара масштабируются вместе.
+ * При 100 строка — 44px, поля и кнопки тулбара — 32px, как остальные контролы библиотеки.
+ */
+export const Sizes: Story = {
+	args: { behavior: { selectable: true } },
+	parameters: {
+		controls: { include: ['variant', 'behavior'] },
+		docs: { source: { code: ['xs', 'md', 'xl'].map(name => `<BaseTable :columns="columns" :rows="rows" :size-scale="${SIZE_PRESETS.find(p => p.name === name)?.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseTable },
+		setup: () => ({
+			props: useArgsWithoutSlots(args),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+			columns: COMPACT_COLUMNS,
+			rows: toRows(ORDERS.slice(0, 3)),
+		}),
+		template: `
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-stack" style="gap: 8px;">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseTable v-bind="props" :size-scale="preset.sizeScale" :columns="columns" :rows="rows" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Кастомный цвет через `color`: `bg.base` — фон таблицы, `bg.hover` — строка под курсором, `text.base` — текст шапки
+ * и ячеек. Кнопки, бейджи и поля внутри таблицы цвет не наследуют.
+ */
+export const CustomColor: Story = {
+	args: {
+		columns: [...COMPACT_COLUMNS, { key: 'actions', label: 'Действия', align: 'right' }],
+		rows: toRows(ORDERS.slice(0, 3)),
+		color: { bg: { base: '#f5f3ff', hover: '#ede9fe' }, text: { base: '#4c1d95' } },
+	},
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseTable v-for="scale in [75, 100, 150]" :key="scale" :size-scale="scale" :columns="columns" :rows="rows" />`,
+				code: [
+					`<BaseTable :columns="columns" :rows="rows" :color="{ bg: { base: '#f5f3ff', hover: '#ede9fe' }, text: { base: '#4c1d95' } }">`,
+					'  <template #cell-actions><BaseButton variant="outline">Открыть</BaseButton></template>',
+					'</BaseTable>',
+				].join('\n'),
 			},
 		},
 	},
 	render: args => ({
-		components: { BaseTable },
-		setup() {
-			return { args }
-		},
+		components: { BaseTable, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
 		template: `
-			<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
-				<div v-for="scale in [75, 100, 150]" :key="scale" style="flex: 1; min-width: 300px;">
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">{{ scale }}%</p>
-					<BaseTable v-bind="args" :size-scale="scale" />
-				</div>
+			<BaseTable v-bind="props">
+				<template #cell-actions="{ row }">
+					<BaseButton variant="outline" :aria-label="'Открыть заказ ' + row.data.number" @click.stop>Открыть</BaseButton>
+				</template>
+			</BaseTable>
+		`,
+	}),
+	play: async ({ canvasElement, canvas }) => {
+		const body = canvasElement.querySelector('.base-table__body') as HTMLElement
+		await expect(getComputedStyle(body).backgroundColor).toBe('rgb(245, 243, 255)')
+		const button = canvas.getByRole('button', { name: 'Открыть заказ З-1041' })
+		// Переменные цвета сброшены внутри таблицы: кнопка остаётся в цветах своего варианта
+		await expect(getComputedStyle(button).getPropertyValue('--custom-bg')).toBe('')
+		await expect(getComputedStyle(button).backgroundColor).not.toBe('rgb(245, 243, 255)')
+	},
+}
+
+/**
+ * Отступы ячеек `padding`: число — Y = n, X = 2n (6 → 6px 12px, плотная таблица); объект `{ x, y }` задаёт оси напрямую.
+ * Без `padding` отступы 12px 16px из стилей. Отступы шапки и служебных колонок меняются вместе с ячейками.
+ */
+export const Padding: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: { source: { code: ['<BaseTable :columns="columns" :rows="rows" :padding="6" />', '<BaseTable :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />'].join('\n') } },
+	},
+	render: args => ({
+		components: { BaseTable },
+		setup: () => ({ props: useArgsWithoutSlots(args), columns: COMPACT_COLUMNS, rows: toRows(ORDERS.slice(0, 3)) }),
+		template: `
+			<div class="story-stack">
+				<span class="story-label">padding: 6 → 6px 12px</span>
+				<BaseTable v-bind="props" :columns="columns" :rows="rows" :padding="6" :behavior="{ selectable: true }" />
+				<span class="story-label">padding: { x: 24, y: 16 }</span>
+				<BaseTable v-bind="props" :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />
 			</div>
 		`,
 	}),
+	play: async ({ canvasElement }) => {
+		const [compact, spacious] = canvasElement.querySelectorAll<HTMLElement>('.base-table')
+		await expect(compact.style.getPropertyValue('--tbl-pad-top')).toBe('6px')
+		await expect(compact.style.getPropertyValue('--tbl-pad-left')).toBe('12px')
+		await expect(spacious.style.getPropertyValue('--tbl-pad-left')).toBe('24px')
+	},
 }
-/** Без данных */
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/**
+ * Пустая таблица показывает `BaseEmpty` с текстом `emptyText`. Слот `empty` заменяет его своим содержимым —
+ * например, пустым состоянием поиска с кнопкой сброса.
+ */
 export const Empty: Story = {
-	args: {
-		rows: [],
+	args: { rows: [], emptyText: 'Заказов пока нет' },
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseTable :columns="columns" :rows="[]" empty-text="Заказов пока нет" />',
+					'<BaseTable :columns="columns" :rows="[]">',
+					'  <template #empty>',
+					'    <BaseEmpty variant="ghost" icon="search" title="Ничего не найдено" description="Измените условия поиска">',
+					'      <template #actions><BaseButton variant="outline">Сбросить фильтры</BaseButton></template>',
+					'    </BaseEmpty>',
+					'  </template>',
+					'</BaseTable>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseTable, BaseEmpty, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: `
+			<div class="story-stack">
+				<BaseTable v-bind="props" />
+				<BaseTable v-bind="props">
+					<template #empty>
+						<BaseEmpty variant="ghost" icon="search" title="Ничего не найдено" description="Измените условия поиска">
+							<template #actions><BaseButton variant="outline">Сбросить фильтры</BaseButton></template>
+						</BaseEmpty>
+					</template>
+				</BaseTable>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('heading', { name: 'Заказов пока нет' })).toBeVisible()
+		await expect(canvas.getByRole('heading', { name: 'Ничего не найдено' })).toBeVisible()
+		await expect(canvas.getByRole('button', { name: 'Сбросить фильтры' })).toBeVisible()
 	},
 }
-/** С текстом пустого состояния */
-export const EmptyCustom: Story = {
-	args: {
-		rows: [],
-		emptyText: 'Список изделий пуст. Добавьте первое изделие.',
-	},
-}
-/** Загрузка (скелетон) */
+
+/**
+ * Загрузка: без данных — строки-скелетоны (их число — `pageSize` или 5), с данными — подложка со спиннером поверх строк,
+ * строки недоступны для клика. Таблица помечена `aria-busy`.
+ */
 export const Loading: Story = {
-	args: {
-		isLoading: true,
-		rows: [],
-	},
-}
-/** Загрузка поверх данных */
-export const LoadingOverlay: Story = {
-	args: {
-		isLoading: true,
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-	},
-}
-/** Sticky header при скролле */
-export const StickyHeader: Story = {
+	args: { isLoading: true },
 	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" height="250px" />`,
-			},
-		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		height: '250px',
-	},
-}
-/** С поиском */
-export const WithSearch: Story = {
-	args: {
-		features: { search: true },
-	},
-}
-/** С выбором строк */
-export const Selectable: Story = {
-	args: {
-		behavior: { selectable: true },
-	},
-}
-/** Расширенная таблица */
-export const Extended: Story = {
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-	},
-}
-/** Полный набор: фильтры + пагинация + выбор + поиск */
-export const FullToolbar: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable
-	:columns="columns"
-	:rows="rows"
-	:features="{ search: true, filters: true, columnSettings: true, rowNumber: true, pageSizeSelector: true }"
-	:behavior="{ selectable: true }"
-	:page-size="5"
-	:page-size-options="[3, 5, 8]"
-	load-mode="pagination"
-	variant="bordered"
-/>`,
-			},
-		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		features: { search: true, filters: true, columnSettings: true, rowNumber: true, pageSizeSelector: true },
-		behavior: { selectable: true },
-		pageSize: 5,
-		pageSizeOptions: [3, 5, 8],
-		loadMode: 'pagination',
-		variant: 'bordered',
-	},
-}
-/** С toolbar slots */
-export const WithToolbarSlots: Story = {
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		features: { search: true, filters: true, columnSettings: true },
-	},
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" :features="{ search: true, filters: true, columnSettings: true }">
-	<template #toolbar-prepend>
-		<BaseText tag="span">Быстрые действия</BaseText>
-	</template>
-	<template #toolbar-append>
-		<BaseButton variant="ghost">Экспорт</BaseButton>
-	</template>
-</BaseTable>`,
-			},
-		},
+		controls: { include: ['variant', 'sizeScale', 'behavior', 'features'] },
+		docs: { source: { code: ['<BaseTable :columns="columns" :rows="[]" is-loading />', '<BaseTable :columns="columns" :rows="rows" is-loading />'].join('\n') } },
 	},
 	render: args => ({
-		components: { BaseButton, BaseTable, BaseText },
-		setup() {
-			return { args }
-		},
+		components: { BaseTable },
+		setup: () => ({ props: useArgsWithoutSlots(args), rows: toRows(ORDERS.slice(0, 3)) }),
 		template: `
-			<BaseTable v-bind="args">
-				<template #toolbar-prepend>
-					<BaseText tag="span" style="font-size:12px;color:var(--color-text-muted);">Быстрые действия</BaseText>
-				</template>
-				<template #toolbar-append>
-					<BaseButton variant="ghost" :size-scale="90">Экспорт</BaseButton>
-				</template>
-			</BaseTable>
+			<div class="story-stack">
+				<span class="story-label">Первая загрузка — скелетон</span>
+				<BaseTable v-bind="props" :rows="[]" :page-size="3" />
+				<span class="story-label">Обновление — подложка поверх данных</span>
+				<BaseTable v-bind="props" :rows="rows" />
+			</div>
 		`,
 	}),
-}
-/** С пагинацией (BasePagination) */
-export const WithPagination: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" :page-size="3" load-mode="pagination" />`,
-			},
-		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		pageSize: 3,
-		loadMode: 'pagination',
+	play: async ({ canvas }) => {
+		for (const table of canvas.getAllByRole('table')) {
+			await expect(table).toHaveAttribute('aria-busy', 'true')
+		}
+		await expect(canvas.getByRole('status', { name: 'Загрузка' })).toBeVisible()
 	},
 }
-/** С настройками колонок (BaseDropdown) */
-export const WithColumnSettings: Story = {
+
+/**
+ * Длинный текст: в обычной раскладке ячейка переносит строки и растёт по высоте; если у колонок задана ширина
+ * (`width`), раскладка фиксированная и текст обрезается многоточием в одну строку.
+ */
+export const LongContent: Story = {
 	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		features: { columnSettings: true },
-	},
-}
-/** С номерами строк */
-export const WithRowNumbers: Story = {
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		features: { rowNumber: true },
-	},
-}
-/** С бесконечной подгрузкой */
-export const WithInfiniteScroll: Story = {
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		height: '300px',
-		loadMode: 'infinite',
-	},
-}
-/** С кнопкой «Загрузить ещё» */
-export const WithLoadMore: Story = {
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		loadMode: 'button',
-	},
-}
-/** С кастомным слотом pagination */
-export const WithPaginationSlot: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" :page-size="3" load-mode="pagination">
-	<template #pagination="{ currentPage, totalPages, paginationInfo }">
-		<div>Страница {{ currentPage }} из {{ totalPages }} — {{ paginationInfo }}</div>
-	</template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		pageSize: 3,
-		loadMode: 'pagination',
-	},
-	render: args => ({
-		components: { BaseTable, BaseButton, BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #pagination="{ currentPage, totalPages, paginationInfo, visiblePages }">
-					<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--color-border);background-color:var(--color-surface-muted);">
-						<BaseText tag="span" style="font-size:12px;color:var(--color-text-muted);">{{ paginationInfo }}</BaseText>
-						<div style="display:flex;gap:4px;">
-							<BaseText tag="span" style="font-size:12px;color:var(--color-text-muted);">Страница {{ currentPage }} из {{ totalPages }}</BaseText>
-						</div>
-					</div>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** С вложенными таблицами (плавное раскрытие) */
-export const Nested: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" :nested-config="nestedConfig" variant="bordered" />`,
-			},
-		},
-	},
-	args: {
-		columns: COLUMNS,
+		columns: [
+			{ key: 'number', label: 'Заказ' },
+			{ key: 'comment', label: 'Комментарий покупателя' },
+			{ key: 'total', label: 'Сумма', align: 'right', formatter: formatRub },
+		],
 		rows: [
 			{
 				id: 1,
-				data: { id: 1, name: 'Роза', material: 'Сталь', price: 15000 },
-				children: [
-					{ id: 101, data: { id: 101, name: 'Роза мини', material: 'Сталь', price: 5000 } },
-					{ id: 102, data: { id: 102, name: 'Роза большая', material: 'Сталь', price: 10000 } },
-				],
+				data: {
+					number: 'З-1041',
+					comment: 'Позвонить за час до доставки, домофон не работает: подъезд со стороны двора, третий этаж, дверь направо от лифта',
+					total: 12490,
+				},
 			},
-			{
-				id: 2,
-				data: { id: 2, name: 'Орёл', material: 'Бронза', price: 35000 },
-				children: [
-					{ id: 201, data: { id: 201, name: 'Орёл малый', material: 'Бронза', price: 15000 } },
-					{ id: 202, data: { id: 202, name: 'Орёл средний', material: 'Бронза', price: 20000 } },
-				],
-			},
-			{ id: 3, data: { id: 3, name: 'Дерево', material: 'Железо', price: 8000 } },
+			{ id: 2, data: { number: 'З-1042', comment: 'Оставить у двери', total: 3150 } },
 		],
-		nestedConfig: {
-			columns: COLUMNS,
-			childrenKey: 'children',
-			title: 'Составные части',
-		},
-		variant: 'bordered',
 	},
-}
-/** С кастомным footer-слотом */
-export const WithFooterSlot: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-	<template #footer>
-		<div>Кастомный footer</div>
-	</template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-	},
+	parameters: { controls: { include: ['variant', 'sizeScale'] } },
 	render: args => ({
 		components: { BaseTable },
-		setup() {
-			return { args }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args),
+			fixedColumns: [
+				{ key: 'number', label: 'Заказ', width: '120px' },
+				{ key: 'comment', label: 'Комментарий покупателя', width: '320px' },
+				{ key: 'total', label: 'Сумма', width: '120px', align: 'right', formatter: formatRub },
+			],
+		}),
 		template: `
-			<BaseTable v-bind="args">
-				<template #footer>
-					<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;">
-						<span style="font-size:12px;color:var(--color-text-muted);">Кастомный footer</span>
-						<span style="font-size:12px;color:var(--color-text-muted);">Всего записей</span>
-					</div>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** С кастомным empty-слотом */
-export const WithEmptySlot: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="[]">
-	<template #empty>
-		<div>Данных нет</div>
-	</template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: [],
-	},
-	render: args => ({
-		components: { BaseTable },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #empty>
-					<div style="padding:24px;text-align:center;">
-						<p style="margin:0 0 8px;font-size:16px;font-weight:600;color:var(--color-text-muted);">Данных нет</p>
-						<p style="margin:0;font-size:13px;color:var(--color-text-muted);">Добавьте первую запись</p>
-					</div>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** Интерактивные состояния */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseTable },
-		setup() {
-			return { columns: COLUMNS, rows: ROWS }
-		},
-		template: `
-			<div style="display: flex; flex-direction: column; gap: 16px;">
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">Normal</p>
-					<BaseTable :columns="columns" :rows="rows" />
-				</div>
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">Hover</p>
-					<BaseTable :columns="columns" :rows="rows" class="base-table--hover" />
-				</div>
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">Focus</p>
-					<BaseTable :columns="columns" :rows="rows" class="base-table--focus" />
+			<div class="story-stack">
+				<span class="story-label">Ширина по содержимому — перенос строк</span>
+				<BaseTable v-bind="props" />
+				<span class="story-label">Заданы ширины колонок — многоточие</span>
+				<div style="max-width: 560px;">
+					<BaseTable v-bind="props" :columns="fixedColumns" />
 				</div>
 			</div>
 		`,
 	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	args: {
-		variant: 'bordered',
+	play: async ({ canvas }) => {
+		const [, fixedTable] = canvas.getAllByRole('table')
+		const cell = within(fixedTable).getByRole('cell', { name: /Позвонить за час/ })
+		await expect(cell.scrollWidth).toBeGreaterThan(cell.clientWidth)
 	},
 }
-/** Со статусами в виде BaseBadge */
-export const WithBadges: Story = {
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Сортировка: клик по заголовку — по возрастанию, повторный — по убыванию, третий — сброс. С `behavior.multiSort`
+ * колонки добавляются к сортировке по очереди, номер у иконки — приоритет (озвучивается как описание кнопки).
+ * Пустые значения всегда в конце, числа и даты сравниваются как числа и даты.
+ */
+export const Sorting: Story = {
+	args: { rows: toRows(ORDERS.slice(0, 8)), behavior: { multiSort: true } },
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Город' }))
+		await userEvent.click(canvas.getByRole('button', { name: 'Сумма' }))
+		await expect(canvas.getByRole('columnheader', { name: 'Город' })).toHaveAttribute('aria-sort', 'ascending')
+		await expect(canvas.getByRole('columnheader', { name: 'Сумма' })).toHaveAttribute('aria-sort', 'ascending')
+		await expect(canvas.getByRole('button', { name: 'Сумма' })).toHaveAccessibleDescription('Приоритет сортировки: 2')
+		await expect(args.onSort).toHaveBeenLastCalledWith([
+			{ key: 'city', direction: 'asc' },
+			{ key: 'total', direction: 'asc' },
+		])
+		// Екатеринбург, затем два заказа из Казани — по возрастанию суммы
+		const [first, second, third] = bodyRows(canvas.getByRole('table'))
+		await expect(first).toHaveTextContent('Екатерина Волкова')
+		await expect(second).toHaveTextContent('Иван Петров')
+		await expect(third).toHaveTextContent('Сергей Новиков')
+	},
+}
+
+/**
+ * Выбор строк (`behavior.selectable`): чекбоксы в строках и «Выбрать все» в шапке, выбранная строка подсвечена.
+ * Отключённую строку (`isDisabled`) выбрать нельзя. При поиске «Выбрать все» отмечает только найденные строки,
+ * а событие `select` получает выбранные строки целиком.
+ */
+export const Selection: Story = {
+	args: {
+		rows: toRows(ORDERS.slice(0, 8)).map(row => (row.id === 4 ? { ...row, isDisabled: true } : row)),
+		behavior: { selectable: true },
+		features: { search: true },
+		searchDebounce: 0,
+	},
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByRole('checkbox', { name: 'Выбрать строку 4' })).toBeDisabled()
+		await userEvent.type(canvas.getByLabelText('Поиск по таблице'), 'Казань')
+		await waitFor(() => expect(bodyRows(canvas.getByRole('table'))).toHaveLength(2))
+		const selectAll = canvas.getByRole('checkbox', { name: 'Выбрать все строки' })
+		await userEvent.click(selectAll)
+		await expect(selectAll).toBeChecked()
+		// Выбраны только две найденные строки из Казани
+		await expect(args.onSelect).toHaveBeenLastCalledWith([expect.objectContaining({ id: 2 }), expect.objectContaining({ id: 8 })])
+	},
+}
+
+/**
+ * Тулбар: поиск по всем полям (`features.search`), фильтр «колонка — условие — значение» (`features.filters`),
+ * видимость колонок (`features.columnSettings`) и свои элементы в слотах `toolbar-prepend` / `toolbar-append`.
+ * Поля и кнопки — 32px в один ряд. Панель «Колонки» ставит фокус на первый чекбокс, Escape возвращает его на кнопку.
+ */
+export const Toolbar: Story = {
+	args: {
+		rows: toRows(ORDERS.slice(0, 6)),
+		features: { search: true, filters: true, columnSettings: true },
+		searchDebounce: 0,
+	},
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-		<template #cell-status="{ value }">
-			 <BaseBadge variant="soft" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-		</template>
-</BaseTable>`,
+				code: [
+					'<BaseTable :columns="columns" :rows="rows" :features="{ search: true, filters: true, columnSettings: true }">',
+					'  <template #toolbar-append>',
+					'    <BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Экспорт</BaseButton>',
+					'  </template>',
+					'</BaseTable>',
+				].join('\n'),
 			},
 		},
-	},
-	args: {
-		columns: EXTENDED_COLUMNS,
-		rows: EXTENDED_ROWS,
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseBadge },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-					<template #cell-status="{ value }">
-						<BaseBadge
-							variant="soft"
-							:color="value === 'В наличии' ? { bg: { base: '#dcfce7' }, text: { base: '#16a34a' } } : value === 'Под заказ' ? { bg: { base: '#fef9c3' }, text: { base: '#ca8a04' } } : { bg: { base: '#fee2e2' }, text: { base: '#dc2626' } }"
-							:size-scale="80">
-							{{ value }}
-						</BaseBadge>
-					</template>
-				</BaseTable>
-		`,
-	}),
-}
-/** С прогрессом выполнения (BaseProgress) */
-export const WithProgress: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-progress="{ value }">
-    <BaseProgress :value="value" :size-scale="80" />
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
-			{ key: 'task', label: 'Задача', sortType: 'string', isSortable: true },
-			{ key: 'progress', label: 'Прогресс', width: '160px' },
-			{ key: 'assignee', label: 'Исполнитель', sortType: 'string', isSortable: true },
-		] as TableColumn[],
-		rows: [
-			{ id: 1, data: { id: 1, task: 'Литьё формы', progress: 85, assignee: 'Иванов А.' } },
-			{ id: 2, data: { id: 2, task: 'Сварка каркаса', progress: 42, assignee: 'Петров Б.' } },
-			{
-				id: 3,
-				data: { id: 3, task: 'Покраска изделия', progress: 100, assignee: 'Сидоров В.' },
-			},
-			{ id: 4, data: { id: 4, task: 'Сборка деталей', progress: 15, assignee: 'Козлов Д.' } },
-			{
-				id: 5,
-				data: {
-					id: 5,
-					task: 'Полировка поверхности',
-					progress: 67,
-					assignee: 'Новиков Е.',
-				},
-			},
-			{ id: 6, data: { id: 6, task: 'Упаковка', progress: 0, assignee: 'Морозов Ж.' } },
-		] as TableRow[],
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseProgress, BaseBadge },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-progress="{ value }">
-					<div style="display:flex;align-items:center;gap:8px;">
-						<BaseProgress :value="value" :size-scale="80" style="flex:1;" />
-						<span style="font-size:11px;color:var(--color-text-muted);min-width:32px;text-align:right;">{{ value }}%</span>
-					</div>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** С кнопками действий (BaseButton) */
-export const WithActions: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-actions="{ row }">
-    <BaseButton size="xs" variant="ghost">Открыть</BaseButton>
-    <BaseButton size="xs" variant="ghost">Удалить</BaseButton>
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
-			{ key: 'name', label: 'Название', sortType: 'string', isSortable: true },
-			{ key: 'material', label: 'Материал', sortType: 'string', isSortable: true },
-			{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-			{ key: 'actions', label: '', width: '140px', align: 'center' },
-		] as TableColumn[],
-		rows: EXTENDED_ROWS,
-		variant: 'bordered',
 	},
 	render: args => ({
 		components: { BaseTable, BaseButton, BaseIcon },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
 		template: `
-			<BaseTable v-bind="args">
-				<template #cell-actions="{ row }">
-					<div style="display:flex;gap:4px;justify-content:center;">
-						<BaseButton size="xs" variant="ghost">
-							<BaseIcon name="search" :size-scale="60" />
-						</BaseButton>
-						<BaseButton size="xs" variant="ghost">
-							<BaseIcon name="close" :size-scale="60" />
-						</BaseButton>
-					</div>
+			<BaseTable v-bind="props">
+				<template #toolbar-append>
+					<BaseButton variant="outline">
+						<template #left><BaseIcon name="download" :size-scale="80" /></template>
+						Экспорт
+					</BaseButton>
 				</template>
 			</BaseTable>
 		`,
 	}),
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.type(canvas.getByLabelText('Поиск по таблице'), 'Москва')
+		await waitFor(() => expect(bodyRows(canvas.getByRole('table'))).toHaveLength(2))
+		await waitFor(() => expect(args.onSearch).toHaveBeenLastCalledWith('Москва'))
+
+		const columnsButton = canvas.getByRole('button', { name: 'Колонки' })
+		await userEvent.click(columnsButton)
+		await expect(columnsButton).toHaveAttribute('aria-expanded', 'true')
+		const cityOption = await screen.findByRole('checkbox', { name: 'Город' }, { timeout: STORY_WAIT_TIMEOUT })
+		await userEvent.click(cityOption)
+		await expect(canvas.queryByRole('columnheader', { name: 'Город' })).not.toBeInTheDocument()
+		await userEvent.keyboard('{Escape}')
+		await expect(columnsButton).toHaveFocus()
+		await expect(columnsButton).toHaveAttribute('aria-expanded', 'false')
+	},
 }
-/** С аватарами (BaseAvatar) */
-export const WithAvatars: Story = {
+
+/**
+ * Пагинация: `pageSize` строк на странице, под таблицей — «1–3 из 8» и `BasePagination`. `features.pageSizeSelector`
+ * с `pageSizeOptions` добавляет выбор размера страницы. Смена страницы вызывает `page-change`.
+ */
+export const Pagination: Story = {
+	args: {
+		rows: toRows(ORDERS.slice(0, 8)),
+		pageSize: 3,
+		pageSizeOptions: [3, 5, 8],
+		features: { pageSizeSelector: true },
+	},
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByText('1–3 из 8')).toBeVisible()
+		await userEvent.click(canvas.getByRole('button', { name: '2' }))
+		await expect(canvas.getByText('4–6 из 8')).toBeVisible()
+		await expect(bodyRows(canvas.getByRole('table'))[0]).toHaveTextContent('З-1044')
+		await expect(args['onPage-change']).toHaveBeenLastCalledWith(2)
+		// Возврат на первую страницу стрелкой: e2e-тест пагинации начинает с первой страницы
+		await userEvent.click(canvas.getByRole('button', { name: 'Предыдущая страница' }))
+		await expect(canvas.getByText('1–3 из 8')).toBeVisible()
+	},
+}
+
+/**
+ * Подгрузка вместо страниц: `loadMode="button"` — кнопка «Загрузить еще» под таблицей, `loadMode="infinite"` —
+ * следующая порция при прокрутке до конца (нужна высота `height`). Каждая порция — `pageSize` строк, событие `load-more`.
+ */
+export const LoadMore: Story = {
+	args: { rows: ALL_ROWS, pageSize: 4 },
 	parameters: {
+		controls: { include: ['variant', 'sizeScale', 'pageSize'] },
 		docs: {
 			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-user="{ row }">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <BaseAvatar size="xs" :alt="row.data.user" />
-      <span>{{ row.data.user }}</span>
-    </div>
-  </template>
-</BaseTable>`,
+				code: ['<BaseTable :columns="columns" :rows="rows" :page-size="4" load-mode="button" />', '<BaseTable :columns="columns" :rows="rows" :page-size="4" load-mode="infinite" height="180px" />'].join('\n'),
 			},
 		},
 	},
+	render: args => ({
+		components: { BaseTable },
+		setup: () => ({ props: useArgsWithoutSlots(args), columns: COMPACT_COLUMNS }),
+		template: `
+			<div class="story-stack">
+				<span class="story-label">loadMode: button</span>
+				<BaseTable v-bind="props" :columns="columns" load-mode="button" />
+				<span class="story-label">loadMode: infinite, height: 180px</span>
+				<BaseTable v-bind="props" :columns="columns" load-mode="infinite" height="180px" />
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent, args }) => {
+		const [buttonTable, infiniteTable] = canvas.getAllByRole('table')
+		await expect(bodyRows(buttonTable)).toHaveLength(4)
+		await userEvent.click(canvas.getByRole('button', { name: 'Загрузить еще' }))
+		await expect(bodyRows(buttonTable)).toHaveLength(8)
+		await expect(args['onLoad-more']).toHaveBeenCalledOnce()
+
+		// Прокрутка до конца области подгружает следующую порцию
+		const scroller = infiniteTable.parentElement as HTMLElement
+		await expect(bodyRows(infiniteTable)).toHaveLength(4)
+		scroller.scrollTop = scroller.scrollHeight
+		await waitFor(() => expect(bodyRows(infiniteTable)).toHaveLength(8))
+	},
+}
+
+/**
+ * Раскрытие строк: строка с `isExpandable` показывает под собой слот `expanded-content`, строка с `children` —
+ * дочерние строки с отступом. Кнопка раскрытия сообщает состояние через `aria-expanded`, событие — `expand`.
+ */
+export const ExpandableRows: Story = {
 	args: {
-		columns: [
-			{ key: 'user', label: 'Пользователь', sortType: 'string', isSortable: true },
-			{ key: 'role', label: 'Роль', sortType: 'string', isSortable: true },
-			{ key: 'status', label: 'Статус', width: '120px' },
-			{ key: 'lastLogin', label: 'Последний вход', width: '140px', sortType: 'date', isSortable: true },
-		] as TableColumn[],
+		rows: [
+			...toRows(ORDERS.slice(0, 2), { isExpandable: true }),
+			{
+				id: 'bundle',
+				data: { number: 'З-1040', customer: 'ООО «Вектор»', city: 'Москва', status: 'В пути', date: '2025-05-15', total: 45200 },
+				children: [
+					{ id: 'bundle-1', data: { number: 'З-1040/1', customer: 'Склад на Складской', city: 'Москва', status: 'Доставлен', date: '2025-05-15', total: 30100 } },
+					{ id: 'bundle-2', data: { number: 'З-1040/2', customer: 'Офис на Тверской', city: 'Москва', status: 'В пути', date: '2025-05-15', total: 15100 } },
+				],
+			},
+		],
+	},
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseTable :columns="columns" :rows="rows">',
+					'  <template #expanded-content="{ row }">Состав заказа {{ row.data.number }}…</template>',
+					'</BaseTable>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseTable },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: `
+			<BaseTable v-bind="props">
+				<template #expanded-content="{ row }">
+					<p style="margin: 0;">Заказ {{ row.data.number }}: 3 позиции, доставка курьером, оплата картой онлайн.</p>
+				</template>
+			</BaseTable>
+		`,
+	}),
+	play: async ({ canvas, userEvent, args }) => {
+		const [expandFirst] = canvas.getAllByRole('button', { name: 'Развернуть строку' })
+		await userEvent.click(expandFirst)
+		await expect(expandFirst).toHaveAttribute('aria-expanded', 'true')
+		await expect(expandFirst).toHaveAccessibleName('Свернуть строку')
+		await waitFor(() => expect(canvas.getByText(/Заказ З-1041: 3 позиции/)).toBeVisible())
+		await expect(args.onExpand).toHaveBeenLastCalledWith(expect.objectContaining({ id: 1, isExpanded: true }))
+	},
+}
+
+const NESTED_CONFIG: NestedTableConfig = {
+	title: 'Состав заказа',
+	childrenKey: 'children',
+	columns: [
+		{ key: 'product', label: 'Товар' },
+		{ key: 'quantity', label: 'Кол-во', align: 'right' },
+		{ key: 'price', label: 'Цена', align: 'right', formatter: formatRub },
+	],
+}
+
+/**
+ * Вложенная таблица: с `nestedConfig` дочерние строки (`children`) показываются отдельной таблицей со своими колонками
+ * и заголовком `title`. Строка с `isExpanded` раскрыта сразу.
+ */
+export const NestedTable: Story = {
+	args: {
+		columns: COMPACT_COLUMNS,
+		nestedConfig: NESTED_CONFIG,
 		rows: [
 			{
-				id: 1,
-				data: {
-					user: 'Иванов Алексей',
-					role: 'Администратор',
-					status: 'Онлайн',
-					lastLogin: '2024-06-15',
-				},
+				...toRows([ORDERS[0]])[0],
+				isExpanded: true,
+				children: [
+					{ id: 'p1', data: { product: 'Кофеварка капельная', quantity: 1, price: 8990 } },
+					{ id: 'p2', data: { product: 'Фильтры бумажные, 100 шт.', quantity: 2, price: 1750 } },
+				],
 			},
 			{
-				id: 2,
-				data: {
-					user: 'Петрова Мария',
-					role: 'Мастер',
-					status: 'Офлайн',
-					lastLogin: '2024-06-14',
-				},
+				...toRows([ORDERS[1]])[0],
+				children: [{ id: 'p3', data: { product: 'Кружка керамическая', quantity: 3, price: 1050 } }],
 			},
-			{
-				id: 3,
-				data: {
-					user: 'Сидоров Дмитрий',
-					role: 'Оператор',
-					status: 'Онлайн',
-					lastLogin: '2024-06-15',
-				},
-			},
-			{
-				id: 4,
-				data: {
-					user: 'Козлова Анна',
-					role: 'Мастер',
-					status: 'Перерыв',
-					lastLogin: '2024-06-15',
-				},
-			},
-			{
-				id: 5,
-				data: {
-					user: 'Новиков Сергей',
-					role: 'Оператор',
-					status: 'Офлайн',
-					lastLogin: '2024-06-10',
-				},
-			},
-		] as TableRow[],
-		variant: 'bordered',
+		],
+	},
+	play: async ({ canvas, userEvent }) => {
+		await expect(canvas.getAllByRole('table')).toHaveLength(2)
+		await userEvent.click(canvas.getByRole('button', { name: 'Развернуть строку' }))
+		await waitFor(() => expect(canvas.getAllByRole('table')).toHaveLength(3))
+		// Содержимое проявляется анимацией высоты и прозрачности
+		await waitFor(() => expect(canvas.getByRole('cell', { name: 'Кружка керамическая' })).toBeVisible())
+	},
+}
+
+/**
+ * Закреплённые шапка и колонки: `height` ограничивает высоту — строки прокручиваются под шапкой; `isSticky: 'left'`
+ * и `'right'` закрепляют колонки при горизонтальной прокрутке широкой таблицы. Прокручиваемая область получает
+ * фокус с клавиатуры (Tab), её можно прокрутить стрелками.
+ */
+export const StickyHeader: Story = {
+	args: {
+		height: '260px',
+		rows: ALL_ROWS,
+		columns: [
+			{ key: 'customer', label: 'Покупатель', width: '180px', isSticky: 'left' },
+			{ key: 'number', label: 'Заказ', width: '120px' },
+			{ key: 'city', label: 'Город', width: '180px' },
+			{ key: 'status', label: 'Статус', width: '140px' },
+			{ key: 'date', label: 'Дата', width: '140px', formatter: formatDate },
+			{ key: 'progress', label: 'Сборка, %', width: '140px', align: 'right' },
+			{ key: 'total', label: 'Сумма', width: '140px', align: 'right', formatter: formatRub, isSticky: 'right' },
+		],
 	},
 	render: args => ({
-		components: { BaseTable, BaseAvatar, BaseBadge },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-user="{ row }">
-					<div style="display:flex;align-items:center;gap:8px;">
-						<BaseAvatar :size-scale="80" :alt="String(row.data.user)" />
-						<span>{{ row.data.user }}</span>
-					</div>
-				</template>
-				<template #cell-status="{ value }">
-						<BaseBadge
-							variant="soft"
-							:color="value === 'Онлайн' ? { bg: { base: '#dcfce7' }, text: { base: '#16a34a' } } : value === 'Перерыв' ? { bg: { base: '#fef9c3' }, text: { base: '#ca8a04' } } : { bg: { base: '#fee2e2' }, text: { base: '#dc2626' } }"
-							:size-scale="80">
-							{{ value }}
-						</BaseBadge>
-					</template>
-			</BaseTable>
-		`,
+		components: { BaseTable },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: '<div style="max-width: 720px;"><BaseTable v-bind="props" /></div>',
 	}),
-}
-/** Дашборд заказов — комплексная таблица */
-export const OrdersDashboard: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" variant="bordered" :features="{ search: true, filters: true, rowNumber: true }" :behavior="{ selectable: true }" page-size="5" load-mode="pagination">
-  <template #cell-status="{ value }">
-    <BaseBadge :variant="..." :size-scale="80">{{ value }}</BaseBadge>
-  </template>
-  <template #cell-progress="{ value }">
-    <BaseProgress :value="value" :size-scale="80" />
-  </template>
-</BaseTable>`,
-			},
-		},
+	play: async ({ canvas }) => {
+		const table = canvas.getByRole('table')
+		const scroller = table.parentElement as HTMLElement
+		await waitFor(() => expect(scroller).toHaveAttribute('tabindex', '0'))
+		scroller.scrollTop = 120
+		const header = canvas.getByRole('columnheader', { name: 'Заказ' })
+		await waitFor(() => expect(Math.round(header.getBoundingClientRect().top)).toBe(Math.round(scroller.getBoundingClientRect().top)))
 	},
+}
+
+/**
+ * Ресайз колонок: с `behavior.resizable` (или `isResizable` у колонки) ширину меняют перетаскиванием ручки у правого
+ * края заголовка. Событие `column-resize` получает ключ и новую ширину в px, `columns-change` — копию колонок.
+ */
+export const ResizableColumns: Story = {
+	args: { behavior: { resizable: true } },
+	play: async ({ canvas, userEvent, args }) => {
+		const header = canvas.getByRole('columnheader', { name: 'Заказ' })
+		const handle = header.querySelector('.base-table__resizer') as HTMLElement
+		const start = handle.getBoundingClientRect()
+		const x = start.left + start.width / 2
+		const y = start.top + start.height / 2
+		const widthBefore = header.getBoundingClientRect().width
+		// Таблица читает pageX: координаты задаются и для клиента, и для страницы
+		await userEvent.pointer([
+			{ keys: '[MouseLeft>]', target: handle, coords: { clientX: x, clientY: y, pageX: x, pageY: y } },
+			{ target: handle, coords: { clientX: x + 60, clientY: y, pageX: x + 60, pageY: y } },
+			{ keys: '[/MouseLeft]', target: handle },
+		])
+		await expect(args['onColumn-resize']).toHaveBeenCalledWith('number', expect.any(Number))
+		await expect(header.getBoundingClientRect().width).toBeGreaterThan(widthBefore)
+	},
+}
+
+/**
+ * Свои ячейки и секции: слоты `cell-<key>` (аватар, бейдж статуса, прогресс, кнопка действия) и `header-<key>`,
+ * а также `header` и `footer` над и под таблицей. Кнопка в ячейке не должна запускать клик по строке — `@click.stop`.
+ */
+export const CustomCells: Story = {
 	args: {
 		columns: [
-			{ key: 'order', label: 'Заказ', width: '80px', sortType: 'number', isSortable: true },
-			{ key: 'client', label: 'Клиент', sortType: 'string', isSortable: true },
-			{ key: 'product', label: 'Изделие', sortType: 'string', isSortable: true },
-			{ key: 'status', label: 'Статус', width: '120px' },
-			{ key: 'progress', label: 'Готовность', width: '150px' },
-			{ key: 'price', label: 'Сумма', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-		] as TableColumn[],
-		rows: [
-			{
-				id: 1,
-				data: {
-					order: 1001,
-					client: 'Галерея «Арт»',
-					product: 'Роза стальная',
-					status: 'В работе',
-					progress: 65,
-					price: 15000,
-				},
-			},
-			{
-				id: 2,
-				data: {
-					order: 1002,
-					client: 'Иванов А.П.',
-					product: 'Орёл бронзовый',
-					status: 'Завершён',
-					progress: 100,
-					price: 35000,
-				},
-			},
-			{
-				id: 3,
-				data: {
-					order: 1003,
-					client: 'Музей «Металл»',
-					product: 'Дерево жизни',
-					status: 'Ожидание',
-					progress: 10,
-					price: 80000,
-				},
-			},
-			{
-				id: 4,
-				data: {
-					order: 1004,
-					client: 'Козлова М.И.',
-					product: 'Лев медный',
-					status: 'В работе',
-					progress: 42,
-					price: 22000,
-				},
-			},
-			{
-				id: 5,
-				data: {
-					order: 1005,
-					client: 'ООО «Прометей»',
-					product: 'Волк стальной',
-					status: 'Завершён',
-					progress: 100,
-					price: 18000,
-				},
-			},
-			{
-				id: 6,
-				data: {
-					order: 1006,
-					client: 'Петров С.В.',
-					product: 'Кот бронзовый',
-					status: 'Отменён',
-					progress: 0,
-					price: 12000,
-				},
-			},
-			{
-				id: 7,
-				data: {
-					order: 1007,
-					client: 'Галерея «Модерн»',
-					product: 'Ворон железный',
-					status: 'В работе',
-					progress: 78,
-					price: 9500,
-				},
-			},
-			{
-				id: 8,
-				data: {
-					order: 1008,
-					client: 'Сидоров К.Л.',
-					product: 'Конь медный',
-					status: 'Ожидание',
-					progress: 5,
-					price: 42000,
-				},
-			},
-			{
-				id: 9,
-				data: {
-					order: 1009,
-					client: 'АО «Кованый мир»',
-					product: 'Роза мини',
-					status: 'Завершён',
-					progress: 100,
-					price: 5000,
-				},
-			},
-			{
-				id: 10,
-				data: {
-					order: 1010,
-					client: 'Николаев Д.А.',
-					product: 'Дракон стальной',
-					status: 'В работе',
-					progress: 33,
-					price: 55000,
-				},
-			},
-		] as TableRow[],
-		variant: 'bordered',
-		features: { search: true, filters: true, rowNumber: true },
-		behavior: { selectable: true },
-		pageSize: 5,
-		pageSizeOptions: [5, 10],
-		loadMode: 'pagination',
+			{ key: 'customer', label: 'Покупатель' },
+			{ key: 'status', label: 'Статус' },
+			{ key: 'progress', label: 'Сборка' },
+			{ key: 'total', label: 'Сумма', align: 'right', formatter: formatRub },
+			{ key: 'actions', label: 'Действия', align: 'right' },
+		],
 	},
-	render: args => ({
-		components: { BaseTable, BaseBadge, BaseProgress },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-status="{ value }">
-						<BaseBadge
-							variant="soft"
-							:color="value === 'Завершён' ? { bg: { base: '#dcfce7' }, text: { base: '#16a34a' } } : value === 'В работе' ? { bg: { base: '#fef9c3' }, text: { base: '#ca8a04' } } : value === 'Ожидание' ? { bg: { base: '#dbeafe' }, text: { base: '#2563eb' } } : { bg: { base: '#fee2e2' }, text: { base: '#dc2626' } }"
-							:size-scale="80">
-							{{ value }}
-						</BaseBadge>
-					</template>
-				<template #cell-progress="{ value }">
-					<div style="display:flex;align-items:center;gap:8px;">
-						<BaseProgress :value="value" :size-scale="80" style="flex:1;" />
-						<span style="font-size:11px;color:var(--color-text-muted);min-width:32px;text-align:right;">{{ value }}%</span>
-					</div>
-				</template>
-				<template #cell-price="{ value }">
-					{{ value.toLocaleString('ru-RU') }} ₽
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** С кастомными слотами header и footer */
-export const WithHeaderFooterSlots: Story = {
 	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #header>
-    <div>Заголовок таблицы</div>
-  </template>
-  <template #footer>
-    <div>Итого: ...</div>
-  </template>
-</BaseTable>`,
+				code: [
+					'<BaseTable :columns="columns" :rows="rows">',
+					'  <template #header>Заказы за май</template>',
+					'  <template #cell-customer="{ row }"><BaseAvatar :src="row.data.avatar" :name="row.data.customer" /> …</template>',
+					'  <template #cell-status="{ value }"><BaseBadge :label="value" :color="statusColors[value]" /></template>',
+					'  <template #cell-progress="{ value }"><BaseProgress :value="value" /></template>',
+					'  <template #cell-actions="{ row }">',
+					'    <BaseButton variant="ghost" aria-label="Удалить заказ" @click.stop="remove(row)"><BaseIcon name="trash" /></BaseButton>',
+					'  </template>',
+					'  <template #footer>Итого …</template>',
+					'</BaseTable>',
+				].join('\n'),
 			},
 		},
 	},
-	args: {
-		columns: [
-			{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
-			{ key: 'name', label: 'Название', sortType: 'string', isSortable: true },
-			{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-		] as TableColumn[],
-		rows: EXTENDED_ROWS,
-		variant: 'bordered',
-	},
 	render: args => ({
-		components: { BaseTable, BaseText, BaseBadge },
-		setup() {
-			return { args }
+		components: { BaseTable, BaseAvatar, BaseBadge, BaseButton, BaseIcon, BaseProgress },
+		setup: () => {
+			const rows = ref<TableRow[]>(toRows(ORDERS.slice(0, 4)).map((row, index) => ({ ...row, data: { ...row.data, avatar: avatarImage(24 + index * 70) } })))
+			const total = () => formatRub(rows.value.reduce((sum, row) => sum + Number(row.data.total), 0))
+			const remove = (id: string | number) => {
+				rows.value = rows.value.filter(row => row.id !== id)
+			}
+			return { props: useArgsWithoutSlots(args, ['rows']), rows, total, remove, statusColors: STATUS_COLORS }
 		},
 		template: `
-			<BaseTable v-bind="args">
+			<BaseTable v-bind="props" :rows="rows">
 				<template #header>
-					<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
-						<div style="display:flex;align-items:center;gap:8px;">
-							<BaseText tag="h3" style="margin:0;font-size:15px;font-weight:600;">Каталог изделий</BaseText>
-							<BaseBadge variant="soft" :size-scale="80">8 позиций</BaseBadge>
+					<div style="display: flex; flex-direction: column; gap: 2px;">
+						<strong style="color: var(--rise-text-highlighted);">Заказы за май</strong>
+						<span style="color: var(--rise-text-muted);">Последние заказы интернет-магазина</span>
+					</div>
+				</template>
+				<template #header-total>Сумма, ₽</template>
+				<template #cell-customer="{ row }">
+					<div style="display: flex; align-items: center; gap: 12px;">
+						<BaseAvatar :src="row.data.avatar" :alt="row.data.customer" :name="row.data.customer" />
+						<div style="display: flex; flex-direction: column;">
+							<span style="color: var(--rise-text-highlighted); font-weight: var(--rise-font-weight-medium);">{{ row.data.customer }}</span>
+							<span style="color: var(--rise-text-muted);">{{ row.data.number }} · {{ row.data.city }}</span>
 						</div>
 					</div>
 				</template>
-				<template #cell-price="{ value }">
-					{{ value.toLocaleString('ru-RU') }} ₽
+				<template #cell-status="{ value }">
+					<BaseBadge :label="value" :color="statusColors[value]" />
+				</template>
+				<template #cell-progress="{ value }">
+					<div style="min-width: 120px;">
+						<BaseProgress :value="value" :aria-label="'Сборка заказа: ' + value + '%'" />
+					</div>
+				</template>
+				<template #cell-actions="{ row }">
+					<BaseButton variant="ghost" :padding="{ x: 5, y: 5 }" :aria-label="'Удалить заказ ' + row.data.number" @click.stop="remove(row.id)">
+						<BaseIcon name="trash" />
+					</BaseButton>
 				</template>
 				<template #footer>
-					<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;">
-						<BaseText tag="span" style="font-size:12px;color:var(--color-text-muted);">Обновлено 15.06.2024</BaseText>
-						<BaseText tag="span" style="font-size:12px;color:var(--color-text-muted);">Показано 8 из 8</BaseText>
-					</div>
+					<span>Заказов: {{ rows.length }} · на сумму {{ total() }}</span>
 				</template>
 			</BaseTable>
 		`,
 	}),
-}
-/** С ресайзимыми колонками */
-export const Resizable: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" :behavior="{ resizable: true }" />`,
-			},
-		},
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByText('Заказов: 4', { exact: false })).toBeVisible()
+		await userEvent.click(canvas.getByRole('button', { name: 'Удалить заказ З-1042' }))
+		await expect(canvas.queryByText('Иван Петров')).not.toBeInTheDocument()
+		await expect(canvas.getByText('Заказов: 3', { exact: false })).toBeVisible()
+		// Клик по кнопке в ячейке не всплыл до строки
+		await expect(args['onRow-click']).not.toHaveBeenCalled()
 	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab переводит фокус на кнопку сортировки (кольцо фокуса), Enter и Space меняют направление (`aria-sort`);
+ * Space отмечает чекбокс строки; Enter на кнопке раскрытия показывает содержимое строки.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
 	args: {
-		columns: [
-			{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true },
-			{ key: 'name', label: 'Название', sortType: 'string', isSortable: true },
-			{ key: 'material', label: 'Материал', sortType: 'string', isSortable: true },
-			{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-		] as TableColumn[],
-		rows: EXTENDED_ROWS,
-		behavior: { resizable: true },
-		variant: 'bordered',
-	},
-}
-/** С изображениями изделий (BaseImage) */
-export const WithImages: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-image="{ value }">
-    <BaseImage :src="value" alt="" width="48" height="48" :border-radius="4" fit="cover" :size-scale="80" />
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'image', label: 'Фото', width: '150px', align: 'center' },
-			{ key: 'name', label: 'Название', sortType: 'string', isSortable: true },
-			{ key: 'material', label: 'Материал', sortType: 'string', isSortable: true },
-			{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-		] as TableColumn[],
-		rows: [
-			{
-				id: 1,
-				data: {
-					image: 'https://i.pinimg.com/originals/15/f6/a3/15f6a3aac562ee0fadbbad3d4cdf47bc.jpg?nii=t',
-					name: 'Роза',
-					material: 'Сталь',
-					price: 15000,
-				},
-			},
-			{
-				id: 2,
-				data: {
-					image:
-						'https://avatars.mds.yandex.net/i?id=7ea916047f73e82ac673d2828271b629c468d4b8-4069527-images-thumbs&n=13',
-					name: 'Орёл',
-					material: 'Бронза',
-					price: 35000,
-				},
-			},
-			{
-				id: 3,
-				data: {
-					image:
-						'https://avatars.mds.yandex.net/i?id=d5ddd265fa718298bf72ad1b1b78847f79a9d41a-3719127-images-thumbs&n=13',
-					name: 'Дерево',
-					material: 'Железо',
-					price: 8000,
-				},
-			},
-			{ id: 4, data: { image: '/api/paintings/lion.jpg', name: 'Лев', material: 'Медь', price: 22000 } },
-			{ id: 5, data: { image: '/api/paintings/wolf.jpg', name: 'Волк', material: 'Сталь', price: 18000 } },
-		] as TableRow[],
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseImage },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-image="{ value }">
-					<BaseImage :src="value" alt="" :has-zoom="true" width="100%" height="100%" :border-radius="4" fit="cover" :size-scale="80" />
-				</template>
-				<template #cell-price="{ value }">
-					{{ value.toLocaleString('ru-RU') }} ₽
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** Все варианты BaseBadge в ячейках */
-export const WithBadgeVariants: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-status="{ value }">
-    <BaseBadge :variant="badgeVariant(value)" :size-scale="80">{{ value }}</BaseBadge>
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'name', label: 'Изделие', sortType: 'string', isSortable: true },
-			{ key: 'statusDefault', label: 'Default', width: '110px', align: 'center' },
-			{ key: 'statusGhost', label: 'Ghost', width: '110px', align: 'center' },
-			{ key: 'statusOutline', label: 'Outline', width: '110px', align: 'center' },
-			{ key: 'statusShadow', label: 'Shadow', width: '110px', align: 'center' },
-			{ key: 'statusSoft', label: 'Soft', width: '110px', align: 'center' },
-		] as TableColumn[],
-		rows: [
-			{
-				id: 1,
-				data: {
-					name: 'Роза',
-					statusDefault: 'В наличии',
-					statusGhost: 'В наличии',
-					statusOutline: 'В наличии',
-					statusShadow: 'В наличии',
-					statusSoft: 'В наличии',
-				},
-			},
-			{
-				id: 2,
-				data: {
-					name: 'Орёл',
-					statusDefault: 'Под заказ',
-					statusGhost: 'Под заказ',
-					statusOutline: 'Под заказ',
-					statusShadow: 'Под заказ',
-					statusSoft: 'Под заказ',
-				},
-			},
-			{
-				id: 3,
-				data: {
-					name: 'Дерево',
-					statusDefault: 'Продано',
-					statusGhost: 'Продано',
-					statusOutline: 'Продано',
-					statusShadow: 'Продано',
-					statusSoft: 'Продано',
-				},
-			},
-			{
-				id: 4,
-				data: {
-					name: 'Лев',
-					statusDefault: 'В работе',
-					statusGhost: 'В работе',
-					statusOutline: 'В работе',
-					statusShadow: 'В работе',
-					statusSoft: 'В работе',
-				},
-			},
-			{
-				id: 5,
-				data: {
-					name: 'Волк',
-					statusDefault: 'Ожидание',
-					statusGhost: 'Ожидание',
-					statusOutline: 'Ожидание',
-					statusShadow: 'Ожидание',
-					statusSoft: 'Ожидание',
-				},
-			},
-		] as TableRow[],
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseBadge },
-		setup() {
-			const statusColor = (value: string) => {
-				const map: Record<string, { bg: { base: string }; text: { base: string } }> = {
-					'В наличии': { bg: { base: '#dcfce7' }, text: { base: '#16a34a' } },
-					'Под заказ': { bg: { base: '#fef9c3' }, text: { base: '#ca8a04' } },
-					Продано: { bg: { base: '#fee2e2' }, text: { base: '#dc2626' } },
-					'В работе': { bg: { base: '#dbeafe' }, text: { base: '#2563eb' } },
-					Ожидание: { bg: { base: '#f3e8ff' }, text: { base: '#9333ea' } },
-				}
-				return map[value] ?? { bg: { base: '#f1f5f9' }, text: { base: '#64748b' } }
-			}
-			return { args, statusColor }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-statusDefault="{ value }">
-					<BaseBadge variant="default" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-				<template #cell-statusGhost="{ value }">
-					<BaseBadge variant="ghost" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-				<template #cell-statusOutline="{ value }">
-					<BaseBadge variant="outline" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-				<template #cell-statusShadow="{ value }">
-					<BaseBadge variant="shadow" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-				<template #cell-statusSoft="{ value }">
-					<BaseBadge variant="soft" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** Все варианты BaseAvatar в ячейках */
-export const WithAvatarVariants: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-user="{ row }">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <BaseAvatar :name="row.data.user" variant="soft" shape="circle" :is-online="row.data.isOnline" :size-scale="80" />
-      <span>{{ row.data.user }}</span>
-    </div>
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'userCircle', label: 'Circle', width: '160px' },
-			{ key: 'userSquare', label: 'Square', width: '160px' },
-			{ key: 'role', label: 'Роль', sortType: 'string', isSortable: true },
-			{ key: 'variant', label: 'Вариант', width: '100px', align: 'center' },
-		] as TableColumn[],
-		rows: [
-			{
-				id: 1,
-				data: {
-					userCircle: 'Иванов А.',
-					userSquare: 'Иванов А.',
-					role: 'Администратор',
-					variant: 'default',
-					isOnline: true,
-				},
-			},
-			{
-				id: 2,
-				data: {
-					userCircle: 'Петрова М.',
-					userSquare: 'Петрова М.',
-					role: 'Мастер',
-					variant: 'ghost',
-					isOnline: false,
-				},
-			},
-			{
-				id: 3,
-				data: {
-					userCircle: 'Сидоров Д.',
-					userSquare: 'Сидоров Д.',
-					role: 'Оператор',
-					variant: 'outline',
-					isOnline: true,
-				},
-			},
-			{
-				id: 4,
-				data: {
-					userCircle: 'Козлова А.',
-					userSquare: 'Козлова А.',
-					role: 'Мастер',
-					variant: 'shadow',
-					isOnline: false,
-				},
-			},
-			{
-				id: 5,
-				data: {
-					userCircle: 'Новиков С.',
-					userSquare: 'Новиков С.',
-					role: 'Оператор',
-					variant: 'soft',
-					isOnline: true,
-				},
-			},
-		] as TableRow[],
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseAvatar, BaseBadge },
-		setup() {
-			const variants = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
-			return { args, variants }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-userCircle="{ row }">
-					<div style="display:flex;align-items:center;gap:8px;">
-						<BaseAvatar :name="row.data.userCircle" :variant="row.data.variant" shape="circle" :is-online="row.data.isOnline" :size-scale="80" />
-						<span>{{ row.data.userCircle }}</span>
-					</div>
-				</template>
-				<template #cell-userSquare="{ row }">
-					<div style="display:flex;align-items:center;gap:8px;">
-						<BaseAvatar :name="row.data.userSquare" :variant="row.data.variant" shape="square" :is-online="row.data.isOnline" :size-scale="80" />
-						<span>{{ row.data.userSquare }}</span>
-					</div>
-				</template>
-				<template #cell-variant="{ row }">
-					<BaseBadge variant="soft" :size-scale="80">{{ row.data.variant }}</BaseBadge>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** С переключателями BaseSwitch (нередактируемые) */
-export const WithSwitch: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows">
-  <template #cell-enabled="{ value }">
-    <BaseSwitch :model-value="value" is-disabled :size-scale="80" />
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'name', label: 'Параметр', sortType: 'string', isSortable: true },
-			{ key: 'enabled', label: 'Включён', width: '100px', align: 'center' },
-			{ key: 'variant', label: 'Вариант', width: '100px', align: 'center' },
-			{ key: 'description', label: 'Описание' },
-		] as TableColumn[],
-		rows: [
-			{
-				id: 1,
-				data: {
-					name: 'Уведомления',
-					enabled: true,
-					variant: 'default',
-					description: 'Email и push-уведомления',
-				},
-			},
-			{
-				id: 2,
-				data: {
-					name: 'Автосохранение',
-					enabled: true,
-					variant: 'outline',
-					description: 'Сохранение черновиков',
-				},
-			},
-			{
-				id: 3,
-				data: {
-					name: 'Тёмная тема',
-					enabled: false,
-					variant: 'shadow',
-					description: 'Переключение темы',
-				},
-			},
-			{
-				id: 4,
-				data: {
-					name: 'Двухфакторная аутентификация',
-					enabled: true,
-					variant: 'default',
-					description: 'SMS-подтверждение входа',
-				},
-			},
-			{
-				id: 5,
-				data: {
-					name: 'Публичный профиль',
-					enabled: false,
-					variant: 'outline',
-					description: 'Видимость профиля для всех',
-				},
-			},
-			{
-				id: 6,
-				data: {
-					name: 'Аналитика',
-					enabled: true,
-					variant: 'shadow',
-					description: 'Сбор статистики посещений',
-				},
-			},
-		] as TableRow[],
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseSwitch, BaseBadge },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-enabled="{ value }">
-					<BaseSwitch :model-value="value" is-disabled :size-scale="80" />
-				</template>
-				<template #cell-variant="{ value }">
-					<BaseBadge variant="soft" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** Комплексная таблица: Image + Avatar + Badge + Switch */
-export const RichContent: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :columns="columns" :rows="rows" variant="bordered">
-  <template #cell-image="{ value }">
-    <BaseImage :src="value" alt="" width="40" height="40" :border-radius="4" fit="cover" :size-scale="80" />
-  </template>
-  <template #cell-author="{ row }">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <BaseAvatar :name="row.data.author" variant="soft" :is-online="row.data.isOnline" :size-scale="80" />
-      <span>{{ row.data.author }}</span>
-    </div>
-  </template>
-  <template #cell-status="{ value }">
-    <BaseBadge variant="soft" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-  </template>
-  <template #cell-published="{ value }">
-    <BaseSwitch :model-value="value" is-disabled :size-scale="80" />
-  </template>
-</BaseTable>`,
-			},
-		},
-	},
-	args: {
-		columns: [
-			{ key: 'image', label: '', width: '60px', align: 'center' },
-			{ key: 'title', label: 'Изделие', sortType: 'string', isSortable: true },
-			{ key: 'author', label: 'Автор', sortType: 'string', isSortable: true },
-			{ key: 'status', label: 'Статус', width: '120px', align: 'center' },
-			{ key: 'published', label: 'Опубликован', width: '110px', align: 'center' },
-			{ key: 'price', label: 'Цена', width: '100px', sortType: 'number', isSortable: true, align: 'right' },
-		] as TableColumn[],
-		rows: [
-			{
-				id: 1,
-				data: {
-					image: '/api/paintings/rose.jpg',
-					title: 'Роза стальная',
-					author: 'Иванов А.',
-					status: 'В наличии',
-					published: true,
-					price: 15000,
-					isOnline: true,
-				},
-			},
-			{
-				id: 2,
-				data: {
-					image: '/api/paintings/eagle.jpg',
-					title: 'Орёл бронзовый',
-					author: 'Петрова М.',
-					status: 'Под заказ',
-					published: true,
-					price: 35000,
-					isOnline: false,
-				},
-			},
-			{
-				id: 3,
-				data: {
-					image: '/api/paintings/tree.jpg',
-					title: 'Дерево жизни',
-					author: 'Сидоров Д.',
-					status: 'Продано',
-					published: false,
-					price: 80000,
-					isOnline: true,
-				},
-			},
-			{
-				id: 4,
-				data: {
-					image: '/api/paintings/lion.jpg',
-					title: 'Лев медный',
-					author: 'Козлова А.',
-					status: 'В работе',
-					published: false,
-					price: 22000,
-					isOnline: false,
-				},
-			},
-			{
-				id: 5,
-				data: {
-					image: '/api/paintings/wolf.jpg',
-					title: 'Волк стальной',
-					author: 'Новиков С.',
-					status: 'В наличии',
-					published: true,
-					price: 18000,
-					isOnline: true,
-				},
-			},
-			{
-				id: 6,
-				data: {
-					image: '/api/paintings/cat.jpg',
-					title: 'Кот бронзовый',
-					author: 'Морозов Ж.',
-					status: 'Ожидание',
-					published: false,
-					price: 12000,
-					isOnline: false,
-				},
-			},
-		] as TableRow[],
-		variant: 'bordered',
-	},
-	render: args => ({
-		components: { BaseTable, BaseImage, BaseAvatar, BaseBadge, BaseSwitch },
-		setup() {
-			const statusColor = (value: string) => {
-				const map: Record<string, { bg: { base: string }; text: { base: string } }> = {
-					'В наличии': { bg: { base: '#dcfce7' }, text: { base: '#16a34a' } },
-					'Под заказ': { bg: { base: '#fef9c3' }, text: { base: '#ca8a04' } },
-					Продано: { bg: { base: '#fee2e2' }, text: { base: '#dc2626' } },
-					'В работе': { bg: { base: '#dbeafe' }, text: { base: '#2563eb' } },
-					Ожидание: { bg: { base: '#f3e8ff' }, text: { base: '#9333ea' } },
-				}
-				return map[value] ?? { bg: { base: '#f1f5f9' }, text: { base: '#64748b' } }
-			}
-			return { args, statusColor }
-		},
-		template: `
-			<BaseTable v-bind="args">
-				<template #cell-image="{ value }">
-					<BaseImage :src="value" alt="" width="40" height="40" :border-radius="4" fit="cover" :size-scale="80" />
-				</template>
-				<template #cell-author="{ row }">
-					<div style="display:flex;align-items:center;gap:8px;">
-						<BaseAvatar :name="row.data.author" variant="soft" :is-online="row.data.isOnline" :size-scale="80" />
-						<span>{{ row.data.author }}</span>
-					</div>
-				</template>
-				<template #cell-status="{ value }">
-					<BaseBadge variant="soft" :color="statusColor(value)" :size-scale="80">{{ value }}</BaseBadge>
-				</template>
-				<template #cell-published="{ value }">
-					<BaseSwitch :model-value="value" is-disabled :size-scale="80" />
-				</template>
-				<template #cell-price="{ value }">
-					{{ value.toLocaleString('ru-RU') }} ₽
-				</template>
-			</BaseTable>
-		`,
-	}),
-}
-/** Настройка padding ячеек */
-export const Paddings: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :padding="4">...</BaseButton>\n<BaseTable :padding="10">...</BaseButton>\n<BaseTable :padding="18">...</BaseButton>`,
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseTable },
-		setup() {
-			const paddings = [4, 8, 10, 14, 18]
-			return { args, paddings }
-		},
-		template: `
-			<div style="display: flex; flex-direction: column; gap: 24px;">
-				<div v-for="p in paddings" :key="p">
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">padding="{{ p }}" → {{ p }}px {{ p * 2 }}px</p>
-					<BaseTable v-bind="args" :padding="p" />
-				</div>
-			</div>
-		`,
-	}),
-}
-/** Объектный padding ячеек: оси x/y и точечные стороны */
-export const ObjectPadding: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseTable :padding="{ x: 24, y: 6 }" />\n<BaseTable :padding="{ x: 12, top: 4, bottom: 16 }" />`,
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseTable },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display: flex; flex-direction: column; gap: 24px;">
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">padding="{ x: 24, y: 6 }"</p>
-					<BaseTable v-bind="args" :padding="{ x: 24, y: 6 }" />
-				</div>
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">padding="{ x: 12, top: 4, bottom: 16 }"</p>
-					<BaseTable v-bind="args" :padding="{ x: 12, top: 4, bottom: 16 }" />
-				</div>
-			</div>
-		`,
-	}),
-}
-
-const NESTED_COLUMNS: TableColumn[] = [
-	{ key: 'part', label: 'Деталь', width: '120px' },
-	{ key: 'count', label: 'Кол-во', width: '80px', align: 'right' },
-]
-
-const COVERAGE_COLUMNS: TableColumn[] = [
-	{ key: 'id', label: 'ID', width: '60px', sortType: 'number', isSortable: true, isSticky: 'left' },
-	{
-		key: 'name',
-		label: 'Название',
-		minWidth: '120px',
-		sortType: 'string',
-		isSortable: true,
-		isResizable: true,
-	},
-	{ key: 'material', label: 'Материал', sortType: 'string', isSortable: true, isFilterable: true },
-	{
-		key: 'price',
-		label: 'Цена',
-		width: '120px',
-		sortType: 'number',
-		isSortable: true,
-		align: 'right',
-		formatter(value) {
-			return `${String(value)} ₽`
-		},
-	},
-	{ key: 'created', label: 'Дата', width: '120px', sortType: 'date', isSortable: true, align: 'center' },
-	{
-		key: 'note',
-		label: 'Комментарий',
-		maxWidth: '160px',
-		cellClass: 'base-table__td--muted',
-		isSticky: 'right',
-	},
-]
-
-function buildCoverageRows(): TableRow[] {
-	return [
-		{
-			id: 1,
-			isSelected: true,
-			rowClass: 'base-table__tr--coverage',
-			data: { id: 1, name: 'Роза', material: 'Сталь', price: 15000, created: '2024-01-15', note: null },
-		},
-		{
-			id: 2,
-			isDisabled: true,
-			data: {
-				id: 2,
-				name: 'Орёл',
-				material: 'Бронза',
-				price: 35000,
-				created: '2024-03-20',
-				note: 'disabled',
-			},
-		},
-		{
-			id: 3,
-			isExpandable: true,
-			data: {
-				id: 3,
-				name: 'Дерево',
-				material: 'Железо',
-				price: 8000,
-				created: '2024-02-10',
-				note: 'expand',
-			},
-		},
-		{
-			id: 4,
-			data: { id: 4, name: 'Лев', material: 'Медь', price: 22000, created: '2024-04-05', note: 'nested' },
-			children: [
-				{
-					id: '4-1',
-					data: {
-						part: 'Каркас',
-						count: 2,
-						id: '4-1',
-						name: 'Каркас',
-						material: 'Сталь',
-						price: 5000,
-						created: '2024-04-06',
-						note: 'child',
-					},
-				},
-			],
-		},
-		{
-			id: 5,
-			data: { id: 5, name: 'Волк', material: 'Сталь', price: 18000, created: '2024-01-28', note: 'regular' },
-		},
-		{
-			id: 6,
-			data: { id: 6, name: 'Кот', material: 'Бронза', price: 12000, created: '2024-05-12', note: 'regular' },
-		},
-	]
-}
-
-function findElement(root: ParentNode, selector: string, text: string): HTMLElement | null {
-	const elements = Array.from(root.querySelectorAll<HTMLElement>(selector))
-	return elements.find(item => item.textContent?.includes(text)) ?? null
-}
-
-async function clickText(root: ParentNode, selector: string, text: string): Promise<void> {
-	const element = findElement(root, selector, text)
-	if (!element) throw new Error(`Не найден элемент: ${text}`)
-	await userEvent.click(element)
-}
-
-async function clickSelector(root: ParentNode, selector: string): Promise<void> {
-	const element = root.querySelector<HTMLElement>(selector)
-	if (!element) throw new Error(`Не найден селектор: ${selector}`)
-	await userEvent.click(element)
-}
-
-async function typeSelector(root: ParentNode, selector: string, value: string): Promise<void> {
-	const input = root.querySelector<HTMLInputElement>(selector)
-	if (!input) throw new Error(`Не найден input: ${selector}`)
-	await userEvent.clear(input)
-	await userEvent.type(input, value)
-}
-
-async function chooseOption(root: ParentNode, index: number, text: string): Promise<void> {
-	const triggers = root.querySelectorAll<HTMLElement>('.base-select__trigger')
-	if (index >= triggers.length) throw new Error(`Не найден select: ${index}`)
-	await userEvent.click(triggers.item(index))
-	await waitFor(() => expect(findElement(document.body, '.base-select__option', text)).toBeTruthy())
-	const option = findElement(document.body, '.base-select__option', text)
-	if (!option) throw new Error(`Не найдена опция: ${text}`)
-	await userEvent.click(option)
-}
-
-function setScrollMetrics(wrapper: HTMLElement): void {
-	Object.defineProperties(wrapper, {
-		scrollTop: { value: 260, configurable: true },
-		scrollHeight: { value: 400, configurable: true },
-		clientHeight: { value: 120, configurable: true },
-	})
-}
-
-async function scrollTable(root: ParentNode): Promise<void> {
-	const wrapper = root.querySelector<HTMLElement>('.base-table__wrapper')
-	if (!wrapper) throw new Error('Не найдена обёртка таблицы')
-	setScrollMetrics(wrapper)
-	wrapper.dispatchEvent(new Event('scroll', { bubbles: true }))
-	await waitFor(() => expect(wrapper).toBeInTheDocument())
-}
-
-async function dragResizer(root: ParentNode, index: number): Promise<void> {
-	const resizers = root.querySelectorAll<HTMLElement>('.base-table__resizer')
-	const currentIndex = index < 0 ? resizers.length + index : index
-	if (currentIndex < 0 || currentIndex >= resizers.length) throw new Error('Не найден resizer')
-	const resizer = resizers.item(currentIndex)
-	const th = resizer.closest('th')
-	if (!(th instanceof HTMLElement)) throw new Error('Не найден th')
-	mockWidth(th, 120)
-	mockSiblingWidth(th, currentIndex === resizers.length - 1)
-	resizer.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 100 }))
-	document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 145 }))
-	document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
-}
-
-function mockWidth(element: HTMLElement, width: number): void {
-	Object.defineProperty(element, 'offsetWidth', { value: width, configurable: true })
-}
-
-function mockSiblingWidth(th: HTMLElement, isLast: boolean): void {
-	const sibling = isLast ? th.previousElementSibling : th.nextElementSibling
-	if (sibling instanceof HTMLElement) mockWidth(sibling, 160)
-}
-
-async function finishTransition(root: ParentNode, selector: string): Promise<void> {
-	await waitFor(() => expect(root.querySelector(selector)).toBeTruthy())
-	const element = root.querySelector<HTMLElement>(selector)
-	if (element) element.dispatchEvent(new Event('transitionend'))
-}
-
-async function closeTransition(root: ParentNode, selector: string, trigger: HTMLElement): Promise<void> {
-	const element = root.querySelector<HTMLElement>(selector)
-	if (!element) throw new Error(`Не найден transition: ${selector}`)
-	await userEvent.click(trigger)
-	element.dispatchEvent(new Event('transitionend'))
-	await waitFor(() => expect(root.querySelector(selector)).toBeFalsy())
-}
-
-function setFarScrollMetrics(wrapper: HTMLElement): void {
-	Object.defineProperties(wrapper, {
-		scrollTop: { value: 0, configurable: true },
-		scrollHeight: { value: 400, configurable: true },
-		clientHeight: { value: 120, configurable: true },
-	})
-}
-
-async function scrollTableFar(root: ParentNode): Promise<void> {
-	const wrapper = root.querySelector<HTMLElement>('.base-table__wrapper')
-	if (!wrapper) throw new Error('Не найдена обёртка таблицы')
-	setFarScrollMetrics(wrapper)
-	wrapper.dispatchEvent(new Event('scroll', { bubbles: true }))
-	await waitFor(() => expect(wrapper).toBeInTheDocument())
-}
-
-async function clickPaginationPage(root: ParentNode, text: string): Promise<void> {
-	await clickText(root, '.base-pagination__pages button', text)
-}
-
-function dispatchClickSelector(root: ParentNode, selector: string): void {
-	const element = root.querySelector<HTMLElement>(selector)
-	if (!element) throw new Error(`Не найден селектор: ${selector}`)
-	element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-}
-/** Интерактивная */
-export const Interactive: Story = {
-	args: {
-		columns: COVERAGE_COLUMNS,
-		rows: buildCoverageRows(),
-		color: { bg: { base: '#ffffff' }, text: { base: '#111827' } },
-		features: { search: true, filters: true, columnSettings: true, rowNumber: true, pageSizeSelector: true },
-		behavior: { selectable: true, resizable: true, multiSort: true },
-		pageSize: 6,
-		pageSizeOptions: [2, 3, 6],
-		searchDebounce: 0,
-		height: '220px',
-		nestedConfig: { columns: NESTED_COLUMNS, childrenKey: 'children', title: 'Состав изделия' },
-	},
-	render(args) {
-		return {
-			components: { BaseTable, BaseText },
-			setup() {
-				return { args }
-			},
-			template: `
-				<BaseTable v-bind="args">
-					<template #header><BaseText tag="strong">Каталог изделий</BaseText></template>
-					<template #toolbar-prepend><span class="coverage-toolbar-prepend">До</span></template>
-					<template #toolbar-append><span class="coverage-toolbar-append">После</span></template>
-					<template #header-name="{ column }"><span class="coverage-header">{{ column.label }}</span></template>
-					<template #cell-price="{ value }"><span class="coverage-price">{{ value }} ₽</span></template>
-					<template #expanded-content="{ row }"><span class="coverage-expanded">Раскрыто: {{ row.data.name }}</span></template>
-					<template #footer><span class="coverage-footer">Итого</span></template>
-				</BaseTable>
-			`,
-		}
-	},
-	async play({ canvasElement }) {
-		await clickText(canvasElement, '.base-table__th', 'ID')
-		await clickText(canvasElement, '.base-table__th', 'Цена')
-		await clickText(canvasElement, '.base-table__th', 'Дата')
-		await clickText(canvasElement, '.base-table__th', 'Комментарий')
-		await clickSelector(canvasElement, '.base-table__table input[type="checkbox"]')
-		await clickSelector(canvasElement, 'tbody .base-table__tr')
-		const buttons = canvasElement.querySelectorAll<HTMLElement>('.base-table__expand-btn')
-		await userEvent.click(buttons.item(0))
-		await finishTransition(canvasElement, '.base-table__expanded-wrapper')
-		await closeTransition(canvasElement, '.base-table__expanded-wrapper', buttons.item(0))
-		await userEvent.click(buttons.item(1))
-		await finishTransition(canvasElement, '.base-table__nested-wrapper')
-		await clickSelector(canvasElement, '.base-table__resizer')
-		await dragResizer(canvasElement, 0)
-		await dragResizer(canvasElement, -1)
-		await clickSelector(canvasElement, '.base-table__settings-btn')
-		await waitFor(() => expect(document.body.querySelector('.base-table__settings-item')).toBeTruthy())
-		await clickSelector(document.body, '.base-table__settings-item input[type="checkbox"]')
-		await clickSelector(canvasElement, '.base-table__filter-add-btn')
-		await chooseOption(canvasElement, 0, 'Материал')
-		await chooseOption(canvasElement, 1, '=')
-		await typeSelector(canvasElement, '.base-table__filters .base-input__field', 'Сталь')
-		await clickSelector(canvasElement, '.base-table__filter-add-btn')
-		await waitFor(() => expect(canvasElement.querySelector('.base-table__filter-tag')).toBeTruthy())
-		await clickSelector(canvasElement, '.base-table__filter-tag')
-		await chooseOption(canvasElement, 2, '3')
-		await typeSelector(canvasElement, '.base-table__search .base-input__field', 'Роза')
-		await waitFor(() => expect(canvasElement.textContent).toContain('Роза'))
-		await scrollTable(canvasElement)
-	},
-}
-/** Сортировка по колонке */
-export const SortByColumn: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows() },
-	async play({ canvasElement }) {
-		await clickText(canvasElement, '.base-table__th', 'ID')
-		await clickText(canvasElement, '.base-table__th', 'ID')
-		await clickText(canvasElement, '.base-table__th', 'ID')
-	},
-}
-/** Выбор строк */
-export const SelectRow: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), behavior: { selectable: true } },
-	async play({ canvasElement }) {
-		const inputs = canvasElement.querySelectorAll<HTMLInputElement>('.base-table__table input[type="checkbox"]')
-		await userEvent.click(inputs.item(1))
-	},
-}
-/** Поиск по таблице */
-export const SearchTable: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), features: { search: true }, searchDebounce: 0 },
-	async play({ canvasElement }) {
-		await typeSelector(canvasElement, '.base-table__search .base-input__field', 'Роза')
-		await waitFor(() => expect(canvasElement.textContent).toContain('Роза'))
-	},
-}
-/** Пустое состояние таблицы */
-export const EmptyTable: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: [] },
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-table__empty-text')).toBeTruthy()
-	},
-}
-/** С поиском и фильтрами */
-export const WithSearchAndFilters: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), features: { search: true, filters: true } },
-	async play({ canvasElement }) {
-		expect(canvasElement.querySelector('.base-table__search')).toBeTruthy()
-		expect(canvasElement.querySelector('.base-table__filters')).toBeTruthy()
-		await chooseOption(canvasElement, 0, 'Название')
-		await typeSelector(canvasElement, '.base-table__filters .base-input__field', 'Роза')
-		await clickSelector(canvasElement, '.base-table__filter-add-btn')
-	},
-}
-/** Загрузка */
-export const LoadingState: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), isLoading: true },
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-table__loading-overlay')).toBeTruthy()
-	},
-}
-/** Загрузка со скелетоном */
-export const LoadingSkeletonFull: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: [], isLoading: true, behavior: { selectable: true }, features: { rowNumber: true }, pageSize: 3 },
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-table__td--check')).toBeTruthy()
-		expect(canvasElement.querySelector('.base-table__td--number')).toBeTruthy()
-	},
-}
-/** Sticky колонки */
-export const StickyColumns: Story = {
-	args: {
-		columns: [
-			{ key: 'id', label: 'ID', width: '60px', isSticky: 'left' },
-			{ key: 'name', label: 'Название', isSortable: true },
-			{ key: 'material', label: 'Материал' },
-			{ key: 'price', label: 'Цена', isSticky: 'right' },
-		],
-		rows: buildCoverageRows(),
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-table__th--sticky-left')).toBeTruthy()
-		expect(canvasElement.querySelector('.base-table__td--sticky-right')).toBeTruthy()
-	},
-}
-/** Button loadMode */
-export const ButtonLoadMode: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), loadMode: 'button', pageSize: 2 },
-	async play({ canvasElement }) {
-		await clickSelector(canvasElement, '.base-table__load-more button')
-	},
-}
-/** Режим догрузки по кнопке — состояние загрузки */
-export const ButtonLoadModeLoading: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), loadMode: 'button', pageSize: 2, isLoading: true },
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.textContent).toContain(UI_TEXT.LOADING)
-	},
-}
-/** Режим догрузки по кнопке — всё загружено */
-export const ButtonLoadModeDone: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), loadMode: 'button', pageSize: 20 },
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-table__load-more')).toBeNull()
-	},
-}
-/** Infinite loadMode */
-export const InfiniteLoadMode: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), loadMode: 'infinite', pageSize: 2, height: '120px' },
-	async play({ canvasElement }) {
-		await scrollTable(canvasElement)
-	},
-}
-/** Multi-sort */
-export const MultiSortTable: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), behavior: { multiSort: true } },
-	async play({ canvasElement }) {
-		await clickText(canvasElement, '.base-table__th', 'ID')
-		await clickText(canvasElement, '.base-table__th', 'Название')
-		await clickText(canvasElement, '.base-table__th', 'Название')
-		await clickText(canvasElement, '.base-table__th', 'Название')
-	},
-}
-
-// ── Состояния ──
-
-const LONG_COLUMNS: TableColumn[] = [
-	{ key: 'id', label: 'ID', width: '60px' },
-	{ key: 'description', label: 'Описание' },
-	{ key: 'details', label: 'Детали' },
-]
-
-const LONG_ROWS: TableRow[] = [
-	{
-		id: 1,
-		data: {
-			id: 1,
-			description:
-				'Очень длинное описание изделия из металла которое выходит за пределы одной строки и проверяет как таблица обрабатывает переполнение контента в ячейках',
-			details:
-				'Подробные технические характеристики материала и процесса изготовления включая все этапы обработки и финальной отделки поверхности',
-		},
-	},
-	{
-		id: 2,
-		data: {
-			id: 2,
-			description:
-				'Ещё одно длинное описание с множеством деталей о художественном произведении из металла созданном вручную мастером',
-			details:
-				'Дополнительные сведения о габаритах весе способе крепления и рекомендациях по уходу за изделием из металла',
-		},
-	},
-]
-/** Длинный текст в ячейках */
-export const LongContent: Story = {
-	args: { columns: LONG_COLUMNS, rows: LONG_ROWS },
-}
-/** Раскрытие строки с обычными дочерними строками (без nestedConfig) */
-export const ExpandableChildren: Story = {
-	args: {
-		columns: COVERAGE_COLUMNS,
-		rows: [
-			{
-				id: 100,
-				isExpanded: true,
-				data: { id: 100, name: 'Родитель', material: 'Сталь', price: 50000, created: '2024-07-01', note: 'parent' },
-				children: [
-					{
-						id: '100-1',
-						data: {
-							id: '100-1',
-							name: 'Часть А',
-							material: 'Бронза',
-							price: 10000,
-							created: '2024-07-02',
-							note: 'child-a',
-						},
-					},
-					{
-						id: '100-2',
-						data: {
-							id: '100-2',
-							name: 'Часть Б',
-							material: 'Медь',
-							price: 15000,
-							created: '2024-07-03',
-							note: 'child-b',
-						},
-					},
-				],
-			},
-		],
+		rows: toRows(ORDERS.slice(0, 3), { isExpandable: true }),
 		behavior: { selectable: true },
-		features: { rowNumber: true },
 	},
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-table__tr--child').length).toBeGreaterThan(0)
-		})
-	},
-}
-/** Клик по строке с children — toggleExpand */
-export const RowClickToggleExpand: Story = {
-	args: {
-		columns: COVERAGE_COLUMNS,
-		rows: [
-			{
-				id: 200,
-				data: { id: 200, name: 'Главный', material: 'Сталь', price: 30000, created: '2024-08-01', note: 'main' },
-				children: [
-					{
-						id: '200-1',
-						data: {
-							id: '200-1',
-							name: 'Деталь',
-							material: 'Медь',
-							price: 5000,
-							created: '2024-08-02',
-							note: 'detail',
-						},
-					},
-				],
-			},
-		],
-	},
-	play: async ({ canvasElement }) => {
-		const tr = canvasElement.querySelector<HTMLElement>('tbody .base-table__tr')
-		if (!tr) throw new Error('Не найдена строка')
-		await userEvent.click(tr)
-		await waitFor(() => {
-			expect(canvasElement.querySelectorAll('.base-table__tr--child').length).toBeGreaterThan(0)
-		})
-	},
-}
-/** Динамическое изменение колонок — watcher props.columns с новой колонкой */
-export const DynamicColumns: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows() },
-	render: args => ({
-		components: { BaseTable, BaseButton },
-		setup() {
-			const localColumns = ref<TableColumn[]>([...COVERAGE_COLUMNS])
-			function handleAddColumn(): void {
-				localColumns.value = [...localColumns.value, { key: 'extra', label: 'Доп.', width: '80px' }]
-			}
-			return { args, localColumns, handleAddColumn }
-		},
-		template: `
-			<div>
-				<button class="add-col-btn" type="button" @click="handleAddColumn" style="margin-bottom:8px;padding:6px 12px;">
-					Добавить колонку
-				</button>
-				<BaseTable v-bind="args" :columns="localColumns" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const btn = canvasElement.querySelector<HTMLButtonElement>('.add-col-btn')
-		if (!btn) throw new Error('Не найдена кнопка')
-		await userEvent.click(btn)
-		await waitFor(() => {
-			expect(canvasElement.textContent).toContain('Доп.')
-		})
-	},
-}
-/** Пагинация — клик на страницу триггерит watch currentPage */
-export const PaginationChange: Story = {
-	args: {
-		columns: COVERAGE_COLUMNS,
-		rows: buildCoverageRows(),
-		loadMode: 'pagination',
-		pageSize: 2,
-	},
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-pagination')).toBeTruthy()
-		})
-		const pageButtons = canvasElement.querySelectorAll<HTMLButtonElement>('.base-pagination__pages button')
-		if (pageButtons.length < 2) throw new Error('Недостаточно страниц')
-		await userEvent.click(pageButtons.item(1))
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-pagination')).toBeTruthy()
-		})
-	},
-}
-/** Ресайз единственной колонки — findSiblingCol возвращает пустой результат */
-export const ResizeSingleColumn: Story = {
-	args: {
-		columns: [{ key: 'name', label: 'Только название', isResizable: true }],
-		rows: [{ id: 1, data: { name: 'Один' } }],
-		behavior: { resizable: true },
-	},
-	play: async ({ canvasElement }) => {
-		await dragResizer(canvasElement, 0)
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-table')).toBeTruthy()
-		})
-	},
-}
-/** Динамическое изменение rows — сброс страницы (watcher props.rows) */
-export const DynamicRows: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows() },
 	render: args => ({
 		components: { BaseTable },
-		setup() {
-			const localRows = ref<TableRow[]>(buildCoverageRows())
-			function handleReplaceRows(): void {
-				localRows.value = [
-					{
-						id: 999,
-						data: { id: 999, name: 'Новая', material: 'Титан', price: 99999, created: '2025-01-01', note: 'new' },
-					},
-				]
-			}
-			return { args, localRows, handleReplaceRows }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
 		template: `
-			<div>
-				<button class="replace-rows-btn" type="button" @click="handleReplaceRows" style="margin-bottom:8px;padding:6px 12px;">
-					Заменить строки
-				</button>
-				<BaseTable v-bind="args" :rows="localRows" />
-			</div>
+			<BaseTable v-bind="props">
+				<template #expanded-content="{ row }">Доставка заказа {{ row.data.number }}: курьером до двери.</template>
+			</BaseTable>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const btn = canvasElement.querySelector<HTMLButtonElement>('.replace-rows-btn')
-		if (!btn) throw new Error('Не найдена кнопка')
-		await userEvent.click(btn)
-		await waitFor(() => {
-			expect(canvasElement.textContent).toContain('Новая')
-		})
-	},
-}
-/** Скролл далеко от низа — покрывает ветку (scrollHeight - scrollTop - clientHeight >= 50) на стр. 809 */
-export const InfiniteScrollFar: Story = {
-	args: { columns: COVERAGE_COLUMNS, rows: buildCoverageRows(), loadMode: 'infinite', pageSize: 2, height: '120px' },
-	async play({ canvasElement }) {
-		await scrollTableFar(canvasElement)
-	},
-}
-/** Ресайз без mousemove — col.width остаётся undefined и срабатывает fallback '0' на стр. 915 */
-export const ResizeNoMove: Story = {
-	args: {
-		columns: [
-			{ key: 'name', label: 'Название', isResizable: true },
-			{ key: 'material', label: 'Материал', isResizable: true },
-		],
-		rows: [
-			{ id: 1, data: { name: 'A', material: 'Сталь' } },
-			{ id: 2, data: { name: 'B', material: 'Медь' } },
-		],
-		behavior: { resizable: true },
-	},
-	play: async ({ canvasElement }) => {
-		const resizer = canvasElement.querySelector<HTMLElement>('.base-table__resizer')
-		if (!resizer) throw new Error('Не найден resizer')
-		const th = resizer.closest('th')
-		if (th instanceof HTMLElement) {
-			mockWidth(th, 120)
-			mockSiblingWidth(th, false)
-		}
-		resizer.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 100 }))
-		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-table')).toBeTruthy()
-		})
-	},
-}
-/** Кастомные CSS-классы */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'tbl-root', body: 'tbl-body', header: 'tbl-header', toolbar: 'tbl-toolbar', search: 'tbl-search', filters: 'tbl-filters', settings: 'tbl-settings', activeFilters: 'tbl-activeFilters', wrapper: 'tbl-wrapper', loadingOverlay: 'tbl-loadingOverlay', table: 'tbl-table', thead: 'tbl-thead', tr: 'tbl-tr', th: 'tbl-th', tbody: 'tbl-tbody', td: 'tbl-td', loadMore: 'tbl-loadMore', footerBar: 'tbl-footerBar', pageSize: 'tbl-pageSize', paginationInfo: 'tbl-paginationInfo', footer: 'tbl-footer' },
-		columns: COLUMNS,
-		rows: ROWS,
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.tbl-root')).toBeTruthy()
+	play: async ({ canvas, userEvent }) => {
+		const sortButton = canvas.getByRole('button', { name: 'Покупатель' })
+		const header = canvas.getByRole('columnheader', { name: 'Покупатель' })
+		await tabTo(sortButton, userEvent)
+		await expect(getComputedStyle(sortButton).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(header).toHaveAttribute('aria-sort', 'ascending')
+		await userEvent.keyboard(' ')
+		await expect(header).toHaveAttribute('aria-sort', 'descending')
+
+		const rowCheckbox = canvas.getByRole('checkbox', { name: 'Выбрать строку 1' })
+		await tabTo(rowCheckbox, userEvent)
+		await userEvent.keyboard(' ')
+		await expect(rowCheckbox).toBeChecked()
+
+		const [expandButton] = canvas.getAllByRole('button', { name: 'Развернуть строку' })
+		await tabTo(expandButton, userEvent)
+		await userEvent.keyboard('{Enter}')
+		await expect(expandButton).toHaveAttribute('aria-expanded', 'true')
 	},
 }

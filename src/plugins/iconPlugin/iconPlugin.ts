@@ -4,6 +4,7 @@
  */
 
 import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
+import { ICON_SPRITE_PATH_KEY } from '@composables/useIcon/useIcon'
 import type { IconPluginOptions } from './iconPlugin.types'
 import type { App, Plugin } from 'vue'
 
@@ -13,6 +14,7 @@ function createIconPlugin(options?: IconPluginOptions): Plugin {
 	return {
 		install(app: App): void {
 			app.component(name, BaseIcon)
+			if (options?.spritePath) app.provide(ICON_SPRITE_PATH_KEY, options.spritePath)
 		},
 	}
 }

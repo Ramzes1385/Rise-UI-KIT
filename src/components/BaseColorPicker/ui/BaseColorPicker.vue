@@ -13,21 +13,28 @@
 				:class="classes.swatch"
 				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor }"
 				:disabled="isDisabled"
+				:aria-expanded="isOpen ? 'true' : 'false'"
 				:aria-label="`${UI_COLOR_PICKER.SELECTED_COLOR} ${swatchColor}`">
 				<slot name="trigger" />
 			</button>
 		</template>
 
 		<div class="base-color-picker__panel" :class="classes.panel">
+			<!-- Область насыщенности (по горизонтали) и яркости (по вертикали): мышью и стрелками, Shift — шаг 10 -->
 			<div
 				ref="areaRef"
 				class="base-color-picker__area"
 				:style="{ backgroundColor: picker.hueColor.value }"
 				role="slider"
+				tabindex="0"
 				:aria-label="UI_COLOR_PICKER.SATURATION_BRIGHTNESS"
+				aria-valuemin="0"
+				aria-valuemax="100"
+				:aria-valuenow="picker.hsv.value.s"
 				:aria-valuetext="picker.hex.value"
-				@pointerdown="handleAreaPointerDown">
-				<span class="base-color-picker__marker" :style="picker.markerStyle.value" />
+				@pointerdown="handleAreaPointerDown"
+				@keydown="handleAreaKeydown">
+				<span class="base-color-picker__marker" :style="[picker.markerStyle.value, { backgroundColor: picker.hex.value }]" />
 			</div>
 
 			<input
@@ -43,6 +50,8 @@
 				v-if="!isHexHidden"
 				class="base-color-picker__hex"
 				type="text"
+				spellcheck="false"
+				autocomplete="off"
 				:aria-label="UI_COLOR_PICKER.HEX_VALUE"
 				:value="swatchColor"
 				@change="handleHexChange" />
@@ -53,8 +62,10 @@
 					:key="preset"
 					type="button"
 					class="base-color-picker__preset"
+					:class="[{ 'base-color-picker__preset--selected': isPresetSelected(preset) }, classes.preset]"
 					:style="{ backgroundColor: preset }"
 					:aria-label="`${UI_COLOR_PICKER.PRESET} ${preset}`"
+					:aria-pressed="isPresetSelected(preset) ? 'true' : 'false'"
 					@click="handlePresetClick(preset)" />
 			</div>
 
@@ -108,6 +119,10 @@ const areaRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
 let stopAreaDrag: (() => void) | null = null
 
+/** Шаг стрелок в SV-области: 1% насыщенности или яркости, с Shift — 10% */
+const AREA_STEP = 0.01
+const AREA_STEP_LARGE = 0.1
+
 const formField = useFormField({
 	value: () => props.modelValue,
 })
@@ -122,6 +137,11 @@ const picker = useColorPicker({
 
 /** Цвет swatch и поля HEX — нормализованное значение модели (источник истины) */
 const swatchColor = computed(() => normalizeHex(props.modelValue) ?? picker.hex.value)
+
+/** Пресет совпадает с текущим цветом (сравнение нормализованных HEX: #FFF и #ffffff — один цвет) */
+function isPresetSelected(preset: string): boolean {
+	return normalizeHex(preset) === swatchColor.value
+}
 
 /** Установить saturation/value по координатам указателя в области */
 function applyAreaPoint(clientX: number, clientY: number): void {
@@ -150,6 +170,22 @@ function handleAreaPointerDown(event: PointerEvent): void {
 }
 
 onBeforeUnmount(() => stopAreaDrag?.())
+
+/** Стрелки в SV-области: влево/вправо — насыщенность, вверх/вниз — яркость; Shift — крупный шаг */
+function handleAreaKeydown(event: KeyboardEvent): void {
+	const step = event.shiftKey ? AREA_STEP_LARGE : AREA_STEP
+	const offsets: Record<string, [number, number]> = {
+		ArrowLeft: [-step, 0],
+		ArrowRight: [step, 0],
+		ArrowUp: [0, -step],
+		ArrowDown: [0, step],
+	}
+	const offset = offsets[event.key]
+	if (!offset) return
+	event.preventDefault()
+	const { s, v } = picker.hsv.value
+	picker.setSaturationValue({ x: s / 100 + offset[0], y: 1 - v / 100 + offset[1] })
+}
 
 /** Изменение тона через слайдер */
 function handleHueInput(event: Event): void {

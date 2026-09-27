@@ -13,13 +13,15 @@ import type { UploadedFile } from '@components/BaseFileUpload/model/BaseFileUplo
 
 /** Описание: управляет состоянием загрузки файлов — валидация, добавление, удаление, drag-and-drop и симуляция прогресса загрузки */
 function useFileUploadState(options: UseFileUploadStateOptions) {
-	const { getMaxSize, getAccept, getMaxCount, onError, onChange, onRemove } = options
+	const { getMaxSize, getAccept, getMaxCount, getIsMultiple, onError, onChange, onRemove } = options
 
 	const uploadedFiles = ref<UploadedFile[]>([])
 	const isDragOver = ref(false)
 	const internalErrors = ref<string[]>([])
 
 	const progressIntervals = new Set<ReturnType<typeof setInterval>>()
+	/** Номер последнего выбора в одиночном режиме: результат устаревшего чтения превью отбрасывается */
+	let singleSelectionId = 0
 
 	const displayErrors = computed(() => internalErrors.value)
 	const hasError = computed(() => displayErrors.value.length > 0)
@@ -49,6 +51,11 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 		/* istanbul ignore next — defensive: пустой массив отсекается на уровне input change */
 		if (files.length === 0) return
 
+		if (!(getIsMultiple?.() ?? true)) {
+			await replaceFile(files)
+			return
+		}
+
 		const maxCount = getMaxCount()
 		const remaining = maxCount - uploadedFiles.value.length
 		if (remaining <= 0) {
@@ -71,9 +78,30 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 		)
 	}
 
-	async function createUploadItem(file: File): Promise<void> {
+	/**
+	 * Одиночный режим: новый валидный файл заменяет выбранный, как у нативного input без multiple.
+	 * Раньше файлы копились до maxCount, и потребитель, читающий files[0] из change, получал старый файл.
+	 * maxCount здесь не применяется; невалидный файл выбранный не вытесняет.
+	 */
+	async function replaceFile(files: File[]): Promise<void> {
+		internalErrors.value = []
+		const [file] = validateFiles(files)
+		if (!file) return
+
+		const selectionId = ++singleSelectionId
+		const replacedItems = uploadedFiles.value
+		uploadedFiles.value = []
+		replacedItems.forEach(releaseItem)
+
+		const item = await buildUploadItem(file)
+		if (selectionId !== singleSelectionId) return
+		commitUploadItem(item)
+		onChange([file])
+	}
+
+	async function buildUploadItem(file: File): Promise<UploadedFile> {
 		const previewUrl = await createImagePreview(file)
-		uploadedFiles.value.push({
+		return {
 			id: generateId(),
 			file,
 			name: file.name,
@@ -83,11 +111,18 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 			previewUrl,
 			status: previewUrl ? 'uploading' : 'pending',
 			progress: 0,
-		})
-
-		if (previewUrl) {
-			simulateUploadProgress(uploadedFiles.value[uploadedFiles.value.length - 1].id)
 		}
+	}
+
+	function commitUploadItem(item: UploadedFile): void {
+		uploadedFiles.value.push(item)
+		if (item.previewUrl) {
+			simulateUploadProgress(item.id)
+		}
+	}
+
+	async function createUploadItem(file: File): Promise<void> {
+		commitUploadItem(await buildUploadItem(file))
 	}
 
 	function simulateUploadProgress(itemId: string): void {
@@ -109,11 +144,16 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 		progressIntervals.add(interval)
 	}
 
-	function handleRemove(item: UploadedFile): void {
-		uploadedFiles.value = uploadedFiles.value.filter(uploadedFile => uploadedFile.id !== item.id)
+	/** Освобождает превью и сообщает потребителю, что файл больше не выбран */
+	function releaseItem(item: UploadedFile): void {
 		/* istanbul ignore next — previewUrl присутствует только для image-файлов */
 		if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
 		onRemove(item)
+	}
+
+	function handleRemove(item: UploadedFile): void {
+		uploadedFiles.value = uploadedFiles.value.filter(uploadedFile => uploadedFile.id !== item.id)
+		releaseItem(item)
 		onChange(
 			uploadedFiles.value.map(uploadedFile => uploadedFile.file),
 		)

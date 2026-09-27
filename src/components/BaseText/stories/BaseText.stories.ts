@@ -1,303 +1,313 @@
 /**
- * Stories для компонента BaseText.
- * Демонстрирует все начертания, цвета, теги и комбинации.
+ * BaseText — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (размеры, начертания, цвет) → семантика тегов →
+ * длинный текст (перенос, обрезка в одну и несколько строк, nowrap) → сценарий «иерархия текста».
  */
 
-import { expect, within } from 'storybook/test'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { expect } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
+import { UI_FONT_WEIGHT } from '@constants'
 import { TEXT_TAGS } from '../model/BaseText.types'
 import BaseText from '../ui/BaseText.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseText> = {
-	title: 'UI/BaseText',
+const LONG_TEXT =
+	'Проект «Ребрендинг» объединяет задачи дизайна, разработки и маркетинга. Участники видят сроки, ответственных и статус каждой задачи, а менеджер получает сводку по неделям и отчёт о загрузке команды.'
+
+const meta = {
+	title: 'Element/BaseText',
 	component: BaseText,
-
-	argTypes: buildArgTypes({
-		props: {
-			tag: {
-				control: 'select',
-				options: TEXT_TAGS,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Текстовый примитив библиотеки: абзацы, подписи, заголовки внутри компонентов.',
+					'',
+					'- По умолчанию — `<p>`, кегль 14/20, цвет `--rise-text`.',
+					'- `tag` задаёт только семантику: заголовок — это нужный тег (`h1`…`h6`) плюс `sizeScale` и `weight`.',
+					'- `sizeScale` масштабирует кегль вместе с интерлиньяжем, `color` перекрашивает текст (лучше токенами `var(--rise-…)`).',
+					'- Длинный текст переносится; `truncate` обрезает его многоточием в одну строку или в `maxLines` строк, `nowrap` запрещает перенос.',
+				].join('\n'),
 			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (100 = 100%, 150 = 150%, 75 = 75%)',
-			},
-			weight: {
-				control: { type: 'range', min: 100, max: 900, step: 100 },
-				description: 'Начертание (100–900)',
-			},
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { text: { base, hover... } }',
-			},
-			nowrap: { control: 'boolean' },
-			truncate: { control: 'boolean' },
-			maxLines: {
-				control: { type: 'range', min: 1, max: 10, step: 1 },
-				description: 'Количество строк перед обрезкой (только с truncate)',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes(),
+		...hiddenArgTypes('variant'),
+		tag: { control: 'select', options: TEXT_TAGS, table: propGroup(ARG_GROUP.content) },
+		weight: { control: 'inline-radio', options: Object.values(UI_FONT_WEIGHT), table: propGroup(ARG_GROUP.appearance) },
+		nowrap: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		truncate: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		maxLines: { control: { type: 'number', min: 1, max: 10 }, table: propGroup(ARG_GROUP.behavior) },
+		default: slotArgType('Текст'),
+	},
 	args: {
+		default: 'Сохраните изменения, чтобы их увидели участники проекта.',
 		tag: 'p',
+		weight: UI_FONT_WEIGHT.REGULAR,
 		sizeScale: 100,
-		weight: 400,
 		nowrap: false,
 		truncate: false,
 		maxLines: 1,
 	},
-}
+} satisfies Meta<typeof BaseText>
 
 export default meta
-type Story = StoryObj<typeof BaseText>
-// play удалён: дублирует "должен применять инлайн-стиль -webkit-line-clamp когда maxLines > 1" в *.integration.spec.ts
-/** Базовое состояние компонента */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: меняйте props в панели Controls. По умолчанию — абзац 14/20. */
 export const Default: Story = {
-	render: args => ({
-		components: { BaseText },
-		setup() {
-			return { args }
-		},
-		template: '<BaseText v-bind="args">Текст компонента BaseText</BaseText>',
-	}),
+	play: async ({ canvas }) => {
+		const text = canvas.getByText('Сохраните изменения, чтобы их увидели участники проекта.')
+		await expect(text.tagName).toBe('P')
+		await expect(getComputedStyle(text).fontSize).toBe('14px')
+		await expect(getComputedStyle(text).lineHeight).toBe('20px')
+	},
 }
-// play удалён: дублирует "должен применять инлайн-стиль -webkit-line-clamp когда maxLines > 1" в *.integration.spec.ts
-/** Масштабирование размера через sizeScale */
-export const SizeScale: Story = {
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Размер задаёт `sizeScale`: кегль и интерлиньяж масштабируются вместе (100 — 14/20px). */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['weight', 'color'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseText :size-scale="${preset.sizeScale}">${preset.name}</BaseText>`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseText },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:8px;">
-				<BaseText v-for="s in [50, 75, 100, 125, 150, 175, 200]"
-					:key="s"
-					v-bind="args"
-					:size-scale="s"
-				>
-					SizeScale: {{ s }}%
-				</BaseText>
+			<div class="story-col">
+				<div v-for="preset in presets" :key="preset.name" class="story-row">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseText v-bind="props" :size-scale="preset.sizeScale">Отчёт за май готов</BaseText>
+				</div>
 			</div>
 		`,
 	}),
+	play: async ({ canvas }) => {
+		const [xs, , md, , xl] = canvas.getAllByText('Отчёт за май готов')
+		await expect(getComputedStyle(xs).fontSize).toBe('10.5px')
+		await expect(getComputedStyle(md).fontSize).toBe('14px')
+		await expect(getComputedStyle(xl).lineHeight).toBe('25px')
+	},
 }
-// play удалён: дублирует "должен применять инлайн-стиль -webkit-line-clamp когда maxLines > 1" в *.integration.spec.ts
-/** Различные начертания шрифта */
+
+/** Начертания из `UI_FONT_WEIGHT`: 400 — текст, 500 — подписи и кнопки, 600 — заголовки, 700 — акценты. */
 export const Weights: Story = {
-	render: args => ({
-		components: { BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:8px;">
-				<BaseText v-for="w in [100, 200, 300, 400, 500, 600, 700, 800, 900]"
-					:key="w"
-					v-bind="args"
-					:weight="w"
-				>
-					Weight: {{ w }}
-				</BaseText>
-			</div>
-		`,
-	}),
-}
-/** Кастомные цвета */
-export const CustomColors: Story = {
-	render: () => ({
-		components: { BaseText },
-		template: `
-			<div style="display:flex;flex-direction:column;gap:8px;">
-				<BaseText :color="{ text: { base: '#ff4500' } }">Оранжевый текст</BaseText>
-				<BaseText :color="{ text: { base: '#2563eb' } }">Синий текст</BaseText>
-				<BaseText :color="{ text: { base: '#16a34a' } }">Зелёный текст</BaseText>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Оранжевый текст')).toBeInTheDocument()
-		expect(canvas.getByText('Синий текст')).toBeInTheDocument()
-		expect(canvas.getByText('Зелёный текст')).toBeInTheDocument()
-	},
-}
-/** Семантические теги */
-export const Tags: Story = {
-	render: args => ({
-		components: { BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:8px;">
-				<BaseText v-bind="args" tag="h1" :size-scale="188" :weight="700">Заголовок H1</BaseText>
-				<BaseText v-bind="args" tag="h2" :size-scale="150" :weight="600">Заголовок H2</BaseText>
-				<BaseText v-bind="args" tag="h3" :size-scale="125" :weight="500">Заголовок H3</BaseText>
-				<BaseText v-bind="args" tag="h4" :size-scale="113" :weight="500">Заголовок H4</BaseText>
-				<BaseText v-bind="args" tag="p">Параграф текста</BaseText>
-				<BaseText v-bind="args" tag="small" :size-scale="75">Мелкий текст</BaseText>
-				<BaseText v-bind="args" tag="strong" :weight="700">Жирный текст</BaseText>
-				<BaseText v-bind="args" tag="em">Курсивный текст</BaseText>
-				<BaseText v-bind="args" tag="label" :size-scale="75">Лейбл</BaseText>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Заголовок H1').tagName).toBe('H1')
-		expect(canvas.getByText('Заголовок H2').tagName).toBe('H2')
-		expect(canvas.getByText('Параграф текста').tagName).toBe('P')
-		expect(canvas.getByText('Жирный текст').tagName).toBe('STRONG')
-	},
-}
-// play удалён: дублирует "должен применять инлайн-стиль -webkit-line-clamp когда maxLines > 1" в *.integration.spec.ts
-/** Текст без переноса строк */
-export const Nowrap: Story = {
-	args: {
-		nowrap: true,
+	parameters: {
+		controls: { include: ['sizeScale', 'color'] },
+		docs: { source: { code: Object.values(UI_FONT_WEIGHT).map(weight => `<BaseText :weight="${weight}">${weight}</BaseText>`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseText },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), weights: Object.entries(UI_FONT_WEIGHT) }),
 		template: `
-			<div style="max-width:200px;border:1px dashed var(--color-border);padding:8px;">
-				<BaseText v-bind="args">Очень длинный текст без переноса на новую строку, который должен выходить за пределы контейнера</BaseText>
+			<div class="story-col">
+				<div v-for="[name, weight] in weights" :key="name" class="story-row">
+					<span class="story-label">{{ weight }} · {{ name }}</span>
+					<BaseText v-bind="props" :weight="weight">Отчёт за май готов</BaseText>
+				</div>
 			</div>
 		`,
 	}),
-}
-/** Многострочный текст */
-export const Multiline: Story = {
-	render: () => ({
-		components: { BaseText },
-		template: `
-			<div style="max-width:400px;">
-				<BaseText :size-scale="100">
-					Металлическая роза — уникальное изделие ручной ковки. Каждый лепесток выкован отдельно
-					и собран в единую композицию. Высота изделия 45 см, вес — 1.2 кг. Покрытие — патина
-					и защитный лак.
-				</BaseText>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText(/Металлическая роза/)).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const [regular, , , bold] = canvas.getAllByText('Отчёт за май готов')
+		await expect(getComputedStyle(regular).fontWeight).toBe('400')
+		await expect(getComputedStyle(bold).fontWeight).toBe('700')
 	},
 }
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
+
+/**
+ * Цвет через `color: { text: { base } }`. Берите токены темы — тогда цвет меняется вместе с темой:
+ * `--rise-text-highlighted` для заголовков, `--rise-text-muted` для подписей, цвет роли для статусов.
+ */
+export const CustomColor: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'weight'] },
+		docs: {
+			source: {
+				code: [
+					`<BaseText :color="{ text: { base: 'var(--rise-text-highlighted)' } }">Заголовок</BaseText>`,
+					`<BaseText :color="{ text: { base: 'var(--rise-text-muted)' } }">Подпись</BaseText>`,
+					`<BaseText :color="{ text: { base: 'var(--rise-success)' } }">Оплачено</BaseText>`,
+					`<BaseText :color="{ text: { base: 'var(--rise-error)' } }">Просрочено</BaseText>`,
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseText },
+		setup: () => ({
+			props: useArgsWithoutSlots(args),
+			samples: [
+				{ token: '--rise-text-highlighted', label: 'Заголовок' },
+				{ token: '--rise-text', label: 'Основной текст' },
+				{ token: '--rise-text-muted', label: 'Подпись' },
+				{ token: '--rise-primary', label: 'Акцент' },
+				{ token: '--rise-success', label: 'Оплачено' },
+				{ token: '--rise-error', label: 'Просрочено' },
+			],
 		}),
-	],
-	render: () => ({
-		components: { BaseText },
 		template: `
-			<div style="display:flex;flex-direction:column;gap:8px;">
-				<BaseText>Обычный текст</BaseText>
-				<BaseText :weight="600">Полужирный текст</BaseText>
-				<BaseText :size-scale="75">Мелкий текст</BaseText>
+			<div class="story-col">
+				<div v-for="sample in samples" :key="sample.token" class="story-row">
+					<span class="story-label">{{ sample.token }}</span>
+					<BaseText v-bind="props" :color="{ text: { base: 'var(' + sample.token + ')' } }">{{ sample.label }}</BaseText>
+				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Обычный текст')).toBeInTheDocument()
-		expect(canvas.getByText('Полужирный текст')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const overdue = canvas.getByText('Просрочено')
+		await expect(overdue.style.getPropertyValue('--custom-text')).toBe('var(--rise-error)')
+		await expect(getComputedStyle(overdue).color).not.toBe(getComputedStyle(canvas.getByText('Основной текст')).color)
 	},
 }
-/** Многострочная обрезка через truncate + maxLines > 1 */
-export const TruncateMultiline: Story = {
-	args: {
-		truncate: true,
-		maxLines: 3,
+
+// ─── Семантика ─────────────────────────────────────────────────────────────────
+
+/**
+ * `tag` меняет только семантику: `h2` озвучивается как заголовок второго уровня, но выглядит как обычный текст.
+ * Размер и начертание заголовка задаются `sizeScale` и `weight` — даже `strong` без `weight` остаётся 400.
+ */
+export const Tags: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'weight'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseText tag="h2" :size-scale="125" :weight="600">Заголовок раздела</BaseText>',
+					'<BaseText tag="p">Абзац текста</BaseText>',
+					'<BaseText tag="small" :size-scale="87.5">Примечание</BaseText>',
+				].join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseText },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'tag']), tags: TEXT_TAGS }),
 		template: `
-			<div style="max-width:240px;border:1px dashed var(--color-border);padding:8px;">
-				<BaseText v-bind="args">
-					Это длинный текст для проверки многострочной обрезки через инлайн-стиль -webkit-line-clamp.
-					Текст должен обрываться после третьей строки и не выходить за пределы контейнера.
-					Дополнительная порция текста, чтобы гарантированно превысить лимит строк.
-				</BaseText>
+			<div class="story-col">
+				<div v-for="tag in tags" :key="tag" class="story-row">
+					<span class="story-label">&lt;{{ tag }}&gt;</span>
+					<BaseText v-bind="props" :tag="tag">Итоги квартала</BaseText>
+				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const el = canvasElement.querySelector('.base-text') as HTMLElement
-		expect(el).toBeTruthy()
-		expect(el.style.display).toBe('-webkit-box')
-		expect(el.style.webkitLineClamp).toBe('3')
-		expect(el.style.webkitBoxOrient).toBe('vertical')
-		expect(el.style.overflow).toBe('hidden')
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('heading', { level: 2, name: 'Итоги квартала' })).toBeVisible()
+		const [paragraph] = canvas.getAllByText('Итоги квартала')
+		const heading = canvas.getByRole('heading', { level: 1 })
+		await expect(getComputedStyle(heading).fontSize).toBe(getComputedStyle(paragraph).fontSize)
 	},
 }
-/** Однострочная обрезка через truncate + maxLines = 1 (без webkit-line-clamp) */
-export const TruncateSingleLine: Story = {
-	args: {
-		truncate: true,
-		maxLines: 1,
-		nowrap: false,
-	},
-	render: args => ({
-		components: { BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="max-width:240px;border:1px dashed var(--color-border);padding:8px;">
-				<BaseText v-bind="args">
-					Очень длинный текст в одну строку, который должен обрезаться через text-overflow ellipsis без -webkit-line-clamp.
-				</BaseText>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const el = canvasElement.querySelector('.base-text') as HTMLElement
-		expect(el).toBeTruthy()
-		expect(el.style.display).not.toBe('-webkit-box')
-		expect(el.classList.contains('base-text--truncate')).toBe(true)
-	},
-}
-/** Длинный контент — проверка отображения объёмного текста */
+
+// ─── Длинный текст ─────────────────────────────────────────────────────────────
+
+/** Длинный текст переносится по словам и не выходит за ширину контейнера (здесь — 360px). */
 export const LongContent: Story = {
+	args: { default: LONG_TEXT },
+	render: args => ({
+		components: { BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args), text: args.default }),
+		template: '<div class="story-narrow"><BaseText v-bind="props">{{ text }}</BaseText></div>',
+	}),
+	play: async ({ canvas }) => {
+		const text = canvas.getByText(/Ребрендинг/)
+		await expect(text.getBoundingClientRect().width).toBeLessThanOrEqual(360)
+		await expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
+		await expect(text.getBoundingClientRect().height).toBeGreaterThan(20)
+	},
+}
+
+/** `truncate`: текст в одну строку с многоточием, полный текст остаётся в DOM и доступен скринридеру. */
+export const Truncate: Story = {
+	args: { default: LONG_TEXT, truncate: true },
+	render: args => ({
+		components: { BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args), text: args.default }),
+		template: '<div class="story-narrow"><BaseText v-bind="props">{{ text }}</BaseText></div>',
+	}),
+	play: async ({ canvas }) => {
+		const text = canvas.getByText(/Ребрендинг/)
+		await expect(getComputedStyle(text).textOverflow).toBe('ellipsis')
+		await expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
+		await expect(text.getBoundingClientRect().height).toBe(20)
+	},
+}
+
+/** `truncate` + `maxLines`: не больше указанного числа строк (здесь — 2), дальше многоточие. */
+export const MaxLines: Story = {
+	args: { default: LONG_TEXT, truncate: true, maxLines: 2 },
+	render: args => ({
+		components: { BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args), text: args.default }),
+		template: '<div class="story-narrow"><BaseText v-bind="props">{{ text }}</BaseText></div>',
+	}),
+	play: async ({ canvas }) => {
+		const text = canvas.getByText(/Ребрендинг/)
+		await expect(text.getBoundingClientRect().height).toBe(40)
+		await expect(text.scrollHeight).toBeGreaterThan(text.clientHeight)
+	},
+}
+
+/**
+ * `nowrap` запрещает перенос: строка остаётся одной, даже если шире контейнера. Многоточия нет —
+ * лишнее обрезает контейнер (здесь `overflow: hidden`). Нужно многоточие — используйте `truncate`.
+ */
+export const Nowrap: Story = {
+	args: { default: LONG_TEXT, nowrap: true },
+	render: args => ({
+		components: { BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args), text: args.default }),
+		template: '<div class="story-narrow" style="overflow: hidden;"><BaseText v-bind="props">{{ text }}</BaseText></div>',
+	}),
+	play: async ({ canvas }) => {
+		const text = canvas.getByText(/Ребрендинг/)
+		await expect(text.getBoundingClientRect().height).toBe(20)
+		await expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** Иерархия текста в блоке: заголовок (`h3`, sizeScale 125, 600), основной текст и подпись (`--rise-text-muted`). */
+export const Hierarchy: Story = {
+	parameters: {
+		controls: { disable: true },
+		docs: {
+			source: {
+				code: [
+					`<BaseText tag="h3" :size-scale="125" :weight="600" :color="{ text: { base: 'var(--rise-text-highlighted)' } }">`,
+					'  Ребрендинг',
+					'</BaseText>',
+					'<BaseText>Новый логотип, палитра и шаблоны презентаций для всех отделов.</BaseText>',
+					`<BaseText tag="small" :size-scale="87.5" :color="{ text: { base: 'var(--rise-text-muted)' } }">Обновлено 15 мая</BaseText>`,
+				].join('\n'),
+			},
+		},
+	},
 	render: () => ({
 		components: { BaseText },
+		setup: () => ({ UI_FONT_WEIGHT }),
 		template: `
-			<div style="max-width:600px;">
-				<BaseText>
-					Металлическое искусство — это уникальное направление художественного творчества, сочетающее вековые традиции кузнечного мастерства с современными дизайнерскими решениями. Каждое изделие создаётся вручную опытными мастерами, что гарантирует его неповторимость и высокое качество исполнения. Наши скульптуры из бронзы и чугуна украшают парки, скверы и частные коллекции по всей стране. Мы используем только сертифицированные материалы и современные технологии обработки металла, включая патинирование, гальваническое покрытие и защитный лак, обеспечивающий долговечность каждого произведения искусства.
+			<div class="story-col story-narrow" style="gap: 4px;">
+				<BaseText tag="h3" :size-scale="125" :weight="UI_FONT_WEIGHT.SEMIBOLD" :color="{ text: { base: 'var(--rise-text-highlighted)' } }">
+					Ребрендинг
 				</BaseText>
+				<BaseText>Новый логотип, палитра и шаблоны презентаций для всех отделов.</BaseText>
+				<BaseText tag="small" :size-scale="87.5" :color="{ text: { base: 'var(--rise-text-muted)' } }">Обновлено 15 мая</BaseText>
 			</div>
 		`,
 	}),
-	tags: ['!a11y'],
-}
-/** Кастомные CSS-классы */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'txt-root' },
-	},
-	render: args => ({
-		components: { BaseText },
-		setup() {
-			return { args }
-		},
-		template: '<BaseText v-bind="args">Текст с кастомным классом</BaseText>',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.txt-root')).toBeTruthy()
+	play: async ({ canvas }) => {
+		const heading = canvas.getByRole('heading', { level: 3, name: 'Ребрендинг' })
+		await expect(getComputedStyle(heading).fontSize).toBe('17.5px')
+		await expect(getComputedStyle(heading).fontWeight).toBe('600')
 	},
 }

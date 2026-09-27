@@ -43,6 +43,11 @@ export interface BaseSearchProps extends BaseComponentProps<SearchVariant, 'root
 	mode?: SearchMode
 	/** Результаты поиска */
 	results?: SearchResult[]
+	/**
+	 * Удалённый поиск: results уже отфильтрованы сервером (транслит, опечатки, поиск по другим полям)
+	 * и показываются как есть — без клиентской фильтрации по подстроке (maxResults применяется)
+	 */
+	isRemote?: boolean
 	/** Автопоиск при вводе */
 	isInstant?: boolean
 	/** Задержка автопоиска (мс) */

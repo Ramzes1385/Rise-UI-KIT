@@ -7,14 +7,18 @@
 				{ 'base-notification--contained': isContained },
 				classes.root,
 			]"
-			:style="sizeScaleStyle">
-			<TransitionGroup name="list" tag="div" class="base-notification-list">
+			:style="sizeScaleStyle"
+			role="region"
+			:aria-label="UI_ARIA.NOTIFICATIONS">
+			<TransitionGroup name="base-notification" tag="div" class="base-notification-list">
+				<!-- Ошибка объявляется скринридером сразу (alert), остальное — вежливо, без прерывания (status) -->
 				<div
 					v-for="notification in notifications"
 					:key="notification.id"
 					class="base-notification-item"
-					:class="[`base-notification-item--${notification.type || 'info'}`, variantClass, classes.notification]"
-					:style="[variantStyle, customColorStyle]">
+					:class="[`base-notification-item--${notification.type || 'info'}`, getVariantClass(notification), classes.notification]"
+					:style="[variantStyle, customColorStyle]"
+					:role="notification.type === 'error' ? 'alert' : 'status'">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
 						:size-scale="calcIconScale('md', sizeScale)"
@@ -33,7 +37,6 @@
 							v-if="notification.description"
 							tag="p"
 							:size-scale="sizeScale"
-							:color="{ text: { base: 'var(--color-text-muted)' } }"
 							class="base-notification-item__description"
 							:custom-class="classes.description">
 							{{ notification.description }}
@@ -41,17 +44,17 @@
 					</div>
 					<BaseButton
 						variant="ghost"
-						:padding="2"
 						class="base-notification-item__close"
 						:size-scale="sizeScale"
 						:custom-class="classes.close"
+						:aria-label="UI_ARIA.CLOSE"
 						@click="remove(notification.id)">
 						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
 					</BaseButton>
 					<div
 						class="base-notification-item__progress"
 						:class="classes.progress"
-						:style="{ animationDuration: `${notification.duration || UI_TIMING.NOTIFICATION_AUTO_CLOSE}ms` }"></div>
+						:style="{ animationDuration: `${notification.duration}ms` }"></div>
 				</div>
 			</TransitionGroup>
 		</div>
@@ -64,7 +67,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { DEFAULT_VARIANT, UI_ARIA, UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots, NotificationItem } from '../model/BaseNotification.types'
@@ -78,7 +81,7 @@ const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	isContained: false,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-notification-item', props, ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'])
+const { sizeScaleStyle, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-notification-item', props, ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'])
 
 const typeIconMap: Record<string, string> = {
 	success: 'check-circle',
@@ -97,11 +100,32 @@ let nextId = 0
 /** Таймеры авто-закрытия по id уведомления — очищаются при размонтировании. */
 const autoCloseTimers = new Map<number, ReturnType<typeof setTimeout>>()
 
+/**
+ * Длительность показа (мс): положительное конечное число, иначе значение по умолчанию.
+ * Единая точка для таймера и прогресс-бара: 0, NaN, отрицательные и Infinity (переполнение setTimeout)
+ * иначе удаляли бы уведомление сразу, пока прогресс-бар показывает 3 секунды.
+ */
+function resolveDuration(duration: number | undefined): number {
+	if (duration !== undefined && Number.isFinite(duration) && duration > 0) return duration
+	return UI_TIMING.NOTIFICATION_AUTO_CLOSE
+}
+
+/**
+ * Класс варианта уведомления: вариант, переданный в add(), иначе — проп variant компонента.
+ * Так в одном контейнере можно показать уведомления разного оформления.
+ */
+function getVariantClass(notification: NotificationItem): string | undefined {
+	const variant = notification.variant ?? props.variant
+	if (!variant || variant === DEFAULT_VARIANT) return undefined
+	return `base-notification-item--${variant}`
+}
+
 function add(notification: BaseNotificationProps) {
 	const id = nextId++
-	notifications.value.unshift({ ...notification, id })
+	const duration = resolveDuration(notification.duration)
+	notifications.value.unshift({ ...notification, id, duration })
 
-	const timer = setTimeout(() => remove(id), notification.duration ?? UI_TIMING.NOTIFICATION_AUTO_CLOSE)
+	const timer = setTimeout(() => remove(id), duration)
 	autoCloseTimers.set(id, timer)
 }
 
@@ -124,7 +148,8 @@ onBeforeUnmount(() => {
 /** Декларативное использование (через v-if) */
 onMounted(() => {
 	if (props.title) {
-		add({ ...props, title: props.title, type: props.type, position: props.position, duration: props.duration })
+		// variant не копируется: уведомление из props следует за текущим значением пропа variant
+		add({ ...props, variant: undefined, title: props.title, type: props.type, position: props.position, duration: props.duration })
 	}
 })
 

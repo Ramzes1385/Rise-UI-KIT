@@ -1,10 +1,27 @@
 import '@testing-library/jest-dom/vitest'
-import { useIcon } from './useIcon'
+import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
 
 describe('useIcon', () => {
 	it('возвращает spritePath', () => {
 		const { spritePath } = useIcon()
 		expect(spritePath).toBe('icons.svg')
+	})
+
+	it('внутри компонента использует путь к спрайту, переданный через provide', () => {
+		let icon: ReturnType<typeof useIcon> | undefined
+		const Probe = defineComponent({
+			setup() {
+				icon = useIcon()
+				return () => h('span')
+			},
+		})
+
+		mount(Probe, { global: { provide: { [ICON_SPRITE_PATH_KEY as symbol]: '/static/icons.svg' } } })
+
+		expect(icon?.spritePath).toBe('/static/icons.svg')
+		expect(icon?.getIconUrl('close')).toBe('/static/icons.svg#close')
 	})
 
 	describe('getIconUrl', () => {

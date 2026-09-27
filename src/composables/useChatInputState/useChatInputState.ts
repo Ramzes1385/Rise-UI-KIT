@@ -21,7 +21,7 @@ function useChatInputState(options: UseChatInputStateOptions) {
 	const commandQuery = ref('')
 	const activeSuggestionIndex = ref(0)
 
-	function getInputElement(): HTMLInputElement | null {
+	function getInputElement(): HTMLInputElement | HTMLTextAreaElement | null {
 		return inputComponentRef.value?.inputRef ?? null
 	}
 
@@ -186,6 +186,8 @@ function useChatInputState(options: UseChatInputStateOptions) {
 	}
 
 	function handleKeyDown(event: KeyboardEvent): void {
+		// Enter во время IME-композиции (японский, китайский, корейский) подтверждает ввод, а не отправляет сообщение
+		if (event.isComposing || event.keyCode === 229) return
 		if (showMentions.value && handleSuggestionNavigation(event, filteredMembers.value, '@', showMentions)) return
 		if (showCommands.value && handleSuggestionNavigation(event, filteredCommands.value, '/', showCommands)) return
 

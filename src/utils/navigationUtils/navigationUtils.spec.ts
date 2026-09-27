@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { openExternalUrl, resolveNavigation } from './navigationUtils'
+import { navigateAndEmit, openExternalUrl, resolveNavigation } from './navigationUtils'
 
 describe('navigationUtils', () => {
 	describe('openExternalUrl', () => {
@@ -68,6 +68,71 @@ describe('navigationUtils', () => {
 
 		it('возвращает none когда и href и to пустые строки', () => {
 			expect(resolveNavigation({ href: '', to: '' })).toEqual({ type: 'none', url: '' })
+		})
+	})
+	describe('защита от небезопасных URL', () => {
+		const PAYLOAD = 'javascript:alert(document.domain)'
+
+		it('openExternalUrl не открывает javascript: URL', () => {
+			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			openExternalUrl(PAYLOAD)
+			expect(openSpy).not.toHaveBeenCalled()
+			expect(warnSpy).toHaveBeenCalledOnce()
+		})
+
+		it('navigateAndEmit не исполняет javascript: href с target _self и не эмитит его', () => {
+			const hrefBefore = window.location.href
+			const emitNavigate = vi.fn()
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			navigateAndEmit({ href: PAYLOAD, target: '_self' }, emitNavigate)
+			expect(window.location.href).toBe(hrefBefore)
+			expect(emitNavigate).not.toHaveBeenCalled()
+			expect(warnSpy).toHaveBeenCalledOnce()
+		})
+
+		it('navigateAndEmit не открывает javascript: href в новом окне', () => {
+			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+			vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const emitNavigate = vi.fn()
+			navigateAndEmit({ href: ' JavaScript:alert(1)' }, emitNavigate)
+			expect(openSpy).not.toHaveBeenCalled()
+			expect(emitNavigate).not.toHaveBeenCalled()
+		})
+
+		it('navigateAndEmit открывает безопасный внешний href и эмитит его', () => {
+			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+			const emitNavigate = vi.fn()
+			navigateAndEmit({ href: 'https://example.com' }, emitNavigate)
+			expect(openSpy).toHaveBeenCalledWith('https://example.com', '_blank', 'noopener')
+			expect(emitNavigate).toHaveBeenCalledWith('https://example.com')
+		})
+
+		it('navigateAndEmit эмитит внутренний маршрут без открытия окна', () => {
+			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+			const emitNavigate = vi.fn()
+			navigateAndEmit({ to: '/catalog' }, emitNavigate)
+			expect(openSpy).not.toHaveBeenCalled()
+			expect(emitNavigate).toHaveBeenCalledWith('/catalog')
+		})
+
+		it('navigateAndEmit с target _self переходит по безопасному href в текущей вкладке и эмитит его', () => {
+			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+			const emitNavigate = vi.fn()
+			// Якорь — переход внутри документа: jsdom выполняет его без «navigation to another Document»
+			navigateAndEmit({ href: '#catalog', target: '_self' }, emitNavigate)
+			expect(window.location.hash).toBe('#catalog')
+			expect(openSpy).not.toHaveBeenCalled()
+			expect(emitNavigate).toHaveBeenCalledWith('#catalog')
+			window.location.hash = ''
+		})
+
+		it('navigateAndEmit без href и to ничего не открывает и не эмитит', () => {
+			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+			const emitNavigate = vi.fn()
+			navigateAndEmit({}, emitNavigate)
+			expect(openSpy).not.toHaveBeenCalled()
+			expect(emitNavigate).not.toHaveBeenCalled()
 		})
 	})
 })

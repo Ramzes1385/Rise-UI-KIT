@@ -1,381 +1,370 @@
-.base-select {
-	position: relative;
+// BaseSelect. Триггер — коробка поля как у BaseInput: 32px при sizeScale = 100 (рамка 1px + отступ 5px + строка 20px),
+// значение --rise-text-highlighted, плейсхолдер и шеврон справа — --rise-text-muted.
+// Варианты триггера: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
+// ghost — без фона и рамки до наведения; shadow — как default с тенью xs; underline — только нижняя линия.
+// Панель — BaseDropdown (floating-surface): поиск без рамки над списком, опции — пункты меню (menu-item),
+// выбранная опция — текст highlighted и галочка primary; в мультивыборе — квадрат-чекбокс и бейджи soft в триггере.
+// Обёртка BaseDropdown вокруг селекта (корень компонента) — на всю ширину, как поле ввода.
+.base-select__dropdown {
 	width: 100%;
+}
+
+.base-select {
 	display: flex;
 	flex-direction: column;
 	gap: sz(6px);
-	@include transition(opacity);
-
-	@include custom-text(color, var(--color-text));
-
-	&--disabled {
-		opacity: 0.5;
-		pointer-events: none;
-	}
+	width: 100%;
+	@include custom-text(color, var(--rise-text-highlighted));
 
 	&__label {
-		font-size: sz(13px);
-		font-weight: 600;
-		color: var(--color-text);
+		@include field-label;
 	}
 
 	&__required {
-		color: var(--color-error);
-		margin-left: sz(2px);
+		@include field-required;
 	}
 
 	&__error-text {
-		font-size: sz(12px);
-		color: var(--color-error);
-		font-weight: 500;
+		@include field-error;
 	}
+
+	// ─── Триггер: коробка поля ───────────────────────────────────────────────────
 
 	&__trigger {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		padding: sz(7px) sz(12px);
-		padding-right: sz(32px);
-		@include custom-bg(background-color, var(--color-surface));
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
-		cursor: pointer;
+		gap: sz(var(--rise-control-gap));
 		box-sizing: border-box;
-		max-height: sz(60px);
-		overflow: hidden;
-		box-shadow: var(--shadow-sm);
+		width: 100%;
+		min-width: 0;
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
 		outline: none;
-		position: relative;
-		@include interactive;
-
-		@include hover {
-			border-color: var(--color-text-muted);
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-
-		@include focus {
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface));
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
-
-		@include active {
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
+		cursor: pointer;
+		@include control-text;
+		@include field-box;
 	}
 
-	&--multiple &__trigger {
-		max-height: sz(60px);
-	}
-
-	// Варианты
-	&--default &__trigger {
-		@include custom-bg(background-color, var(--color-surface));
-	}
-
-	&--ghost &__trigger {
-		@include custom-bg(background-color, transparent);
-		border-color: transparent;
-		box-shadow: none;
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-	}
-
-	&--outline &__trigger {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
-	}
-
-	&--shadow &__trigger {
-		box-shadow: var(--shadow-lg);
-
-		@include hover {
-			box-shadow: var(--shadow-xl);
-		}
-	}
-
-	&--soft &__trigger {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		border-color: transparent;
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-primary-soft-hover));
-		}
-	}
-
-	&--underline &__trigger {
-		border-radius: 0;
-		border-top: none;
-		border-left: none;
-		border-right: none;
-		background-color: transparent;
-		box-shadow: none;
-		padding-left: 0;
-		padding-right: sz(32px);
-	}
-
+	// Открытый список держит рамку и кольцо фокуса, даже когда фокус ушёл в поле поиска панели.
 	&--open &__trigger {
-		border-color: var(--color-accent);
-		box-shadow: 0 0 0 2px var(--color-accent-alpha-10, rgba(249, 115, 22, 0.1));
+		border-color: var(--rise-primary);
+		box-shadow: 0 0 0 1px var(--rise-primary);
 	}
 
-	&--error &__trigger {
-		border-color: var(--color-error);
-
-		&:hover {
-			border-color: var(--color-error);
-			background-color: var(--color-surface-muted);
-		}
-
-		&:focus {
-			border-color: var(--color-error);
-			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-		}
-	}
-
+	// Значения: текст, бейджи и слоты selected/tag. Цвет селекта (color) красит триггер, но не вложенные компоненты
+	// (бейджи, иконки из слотов): текст значения берёт цвет через color: inherit.
 	&__values {
 		display: flex;
-		flex-wrap: wrap;
-		align-content: flex-start;
-		gap: sz(4px);
-		font-size: sz(13px);
-		color: var(--color-text);
-		overflow: hidden;
 		flex: 1;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px);
 		min-width: 0;
-		line-height: 1.25;
-		max-height: sz(40px);
+		@include reset-custom-color;
 	}
 
-	&--multiple &__values {
-		overflow-y: auto;
-		align-content: flex-start;
-
-		&::-webkit-scrollbar {
-			width: sz(4px);
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background-color: var(--color-border);
-			border-radius: sz(2px);
-		}
+	// Двойной класс: цвет значения и плейсхолдера перекрывает цвет BaseText по умолчанию независимо от порядка CSS.
+	&__values &__value-text {
+		min-width: 0;
+		color: inherit;
+		@include truncate;
 	}
 
-	&__value-text {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: 100%;
+	// Плейсхолдер — обычный текст (не ::placeholder), поэтому muted: dimmed не проходит контраст 4.5:1.
+	&__values &__placeholder {
+		min-width: 0;
+		color: var(--rise-text-muted);
+		@include truncate;
 	}
 
-	&__placeholder {
-		color: var(--color-text-muted);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	&__tag {
+	// Иконка-символ (₽, €, эмодзи) — в ячейке 16px по центру: подписи опций с разными символами стоят ровно.
+	&__values &__icon,
+	&__option-icon {
 		display: inline-flex;
-		align-items: center;
-		gap: sz(3px);
-		padding: sz(1px) sz(6px);
-		@include custom-bg(background-color, var(--color-surface-muted));
-		border: 1px solid var(--color-border);
-		border-radius: sz(4px);
-		font-size: sz(11px);
-		font-weight: 600;
-		@include custom-text(color, var(--color-text));
-		max-width: 100%;
-		line-height: 1.2;
-	}
-
-	&__tag-text {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	&__tag-close {
-		cursor: pointer;
-		color: var(--color-text-muted);
+		justify-content: center;
 		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-
-		&:hover {
-			color: var(--color-error);
-		}
+		min-width: sz(16px);
+		color: inherit;
 	}
 
 	&__arrow {
-		position: absolute;
-		right: sz(10px);
-		top: 50%;
-		transform: translateY(-50%);
-		color: var(--color-text-muted);
 		flex-shrink: 0;
+		margin-left: auto;
+		color: var(--rise-text-muted);
 		@include transition(transform);
 	}
 
 	&--open &__arrow {
-		transform: translateY(-50%) rotate(180deg);
+		transform: rotate(180deg);
 	}
 
+	// ─── Мультивыбор: значения — бейджи soft ─────────────────────────────────────
+
+	// Слева отступ как сверху: бейдж 20px стоит в поле 32px с равными полями.
+	&--has-tags &__trigger {
+		padding-left: sz(var(--rise-control-padding-y));
+	}
+
+	&__tag {
+		max-width: 100%;
+	}
+
+	&__tag &__tag-text {
+		min-width: 0;
+		color: inherit;
+		font: inherit;
+		@include truncate;
+	}
+
+	// Крестик бейджа: квадрат 16px, наведение — фон мягкого основного цвета темнее.
+	&__tag-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(16px);
+		height: sz(16px);
+		margin-right: sz(-4px);
+		padding: 0;
+		border: none;
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: transparent;
+		color: inherit;
+		cursor: pointer;
+		@include transition-colors;
+
+		@include hover {
+			background-color: var(--rise-primary-soft-hover);
+		}
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--outline &__trigger {
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--soft &__trigger {
+		border-color: transparent;
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+
+		@include hover {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
+	}
+
+	&--ghost &__trigger {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+
+		@include hover {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
+	}
+
+	// Фокус и открытый список в вариантах без рамки: фон как при наведении, плюс кольцо.
+	&--soft &__trigger:focus-within,
+	&--ghost &__trigger:focus-within,
+	&--soft.base-select--open &__trigger,
+	&--ghost.base-select--open &__trigger {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--shadow &__trigger {
+		box-shadow: var(--rise-shadow-xs);
+	}
+
+	&--underline &__trigger {
+		padding-right: 0;
+		padding-left: 0;
+		border-width: 0 0 1px;
+		border-radius: 0;
+		@include custom-bg(background-color, transparent);
+
+		&:focus-within {
+			box-shadow: 0 1px 0 0 var(--rise-primary);
+		}
+	}
+
+	&--underline.base-select--open &__trigger {
+		box-shadow: 0 1px 0 0 var(--rise-primary);
+	}
+
+	// ─── Состояния ───────────────────────────────────────────────────────────────
+
+	&--error &__trigger {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--error.base-select--open &__trigger {
+		border-color: var(--rise-error);
+		box-shadow: 0 0 0 1px var(--rise-error);
+	}
+
+	&--error.base-select--underline &__trigger:focus-within,
+	&--error.base-select--underline.base-select--open &__trigger {
+		box-shadow: 0 1px 0 0 var(--rise-error);
+	}
+
+	&--disabled &__trigger {
+		@include disabled-state;
+	}
+
+	// ─── Панель ──────────────────────────────────────────────────────────────────
+	// Содержимое панели BaseDropdown (телепорт в body): отступы задаёт сам селект, у панели padding 0 —
+	// так линия под поиском доходит до краёв панели.
+
+	&__dropdown-content {
+		display: flex;
+		flex-direction: column;
+		@include text-size(sm);
+	}
+
+	// Поиск: поле без рамки и фона (ghost) с иконкой, линия снизу; в фокусе линия — основного цвета.
 	&__search {
-		padding: sz(6px);
-		border-bottom: sz(1px) solid var(--color-border);
-		background-color: var(--color-surface-muted);
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		padding: 0 sz(10px);
+		border-bottom: 1px solid var(--rise-border);
+		color: var(--rise-text-muted);
+		@include transition-colors;
+
+		&:focus-within {
+			border-bottom-color: var(--rise-primary);
+		}
 	}
 
 	&__search-input {
-		width: 100%;
-		padding: sz(6px) sz(10px);
-		@include custom-bg(background-color, var(--color-surface));
-		border: 1px solid var(--color-border);
-		border-radius: sz(4px);
-		font-size: sz(13px);
-		@include custom-text(color, var(--color-text));
+		flex: 1;
+		min-width: 0;
+		padding: sz(var(--rise-control-padding-y)) 0;
+		border: none;
+		outline: none;
+		background-color: transparent;
+		color: var(--rise-text-highlighted);
+		font: inherit;
+		@include control-text;
 
-		&:focus {
-			outline: none;
-			border-color: var(--color-accent);
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
 		}
+	}
+
+	&__header,
+	&__footer {
+		padding: sz(4px);
+	}
+
+	&__header {
+		border-bottom: 1px solid var(--rise-border);
+	}
+
+	&__footer {
+		border-top: 1px solid var(--rise-border);
 	}
 
 	&__options {
-		list-style: none;
-		margin: 0;
-		padding: sz(4px) 0;
-		width: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
 		max-height: sz(240px);
+		margin: 0;
+		padding: sz(4px);
 		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+
+		// Пустой список остаётся в DOM (на него ссылается aria-controls), но места не занимает.
+		&--empty {
+			padding: 0;
+		}
 	}
 
+	// Опция — пункт меню: 6/8, радиус md, наведение и активная (клавиатура) — фон bg-elevated.
 	&__option {
-		padding: sz(8px) sz(14px);
-		font-size: sz(13px);
-		@include custom-text(color, var(--color-text));
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: sz(8px);
-		@include interactive;
+		@include menu-item;
 
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
+		&--active {
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text-highlighted);
 		}
 
 		&--selected {
-			@include custom-bg(background-color, var(--color-accent-alpha-10, rgba(249, 115, 22, 0.1)));
-			@include custom-text(color, var(--color-accent));
-			font-weight: 600;
+			color: var(--rise-text-highlighted);
 		}
 
 		&--disabled {
-			opacity: 0.4;
-			cursor: not-allowed;
-		}
-
-		&--with-desc {
-			padding: sz(7px) sz(14px);
+			@include disabled-state;
 		}
 	}
 
 	&__option-content {
 		display: flex;
-		flex-direction: column;
-		gap: sz(2px);
-		min-width: 0;
 		flex: 1;
+		flex-direction: column;
+		min-width: 0;
 	}
 
-	&__option-label {
-		line-height: 1.3;
+	&__option-content &__option-label {
+		color: inherit;
+		font: inherit;
+		overflow-wrap: anywhere;
 	}
 
-	&__option-desc {
-		font-size: sz(12px);
-		color: var(--color-text-muted);
-		font-weight: 400;
-		line-height: 1.3;
+	// Описание приглушено; на фоне bg-elevated (наведение, активная опция) — toned для контраста 4.5:1.
+	&__option-content &__option-desc {
+		color: var(--rise-text-muted);
+		@include text-size(xs);
 	}
 
-	&__option--selected &__option-desc {
-		color: var(--color-accent);
-		opacity: 0.7;
+	&__option--active &__option-desc {
+		color: var(--rise-text-toned);
 	}
 
-	&__option-icon {
-		font-size: sz(16px);
+	@media (hover: hover) {
+		&__option:not(.base-select__option--disabled):hover &__option-desc {
+			color: var(--rise-text-toned);
+		}
+	}
+
+	// Галочка выбранной опции справа — основного цвета.
+	&__check {
 		flex-shrink: 0;
-		line-height: 1;
+		margin-left: auto;
+		color: var(--rise-primary);
 	}
 
-	&__icon {
-		font-size: sz(16px);
-		flex-shrink: 0;
-		line-height: 1;
-	}
-
+	// Чекбокс мультивыбора — как BaseCheckbox: квадрат 16px, радиус sm; отмечен — заливка primary.
 	&__checkbox {
-		width: sz(16px);
-		height: sz(16px);
-		border: sz(1px) solid var(--color-border);
-		border-radius: sz(3px);
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		font-size: sz(10px);
-		@include custom-bg(background-color, var(--color-surface));
 		flex-shrink: 0;
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 1px solid var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg);
+		color: var(--rise-on-primary);
+		@include transition-colors;
 	}
 
 	&__option--selected &__checkbox {
-		background-color: var(--color-accent);
-		border-color: var(--color-accent);
-		color: var(--color-white);
+		border-color: var(--rise-primary);
+		background-color: var(--rise-primary);
 	}
 
 	&__no-results {
-		padding: sz(16px);
+		padding: sz(12px 8px);
+		color: var(--rise-text-muted);
 		text-align: center;
-		font-size: sz(14px);
-		color: var(--color-text-muted);
-	}
+		@include text-size(sm);
 
-	// ============================================================
-	// Ошибка для вариантов
-	// ============================================================
-
-	&--outline.base-select--error &__trigger {
-		border-color: var(--color-error);
-		border-width: 2px;
-	}
-
-	&--ghost.base-select--error &__trigger {
-		border-color: var(--color-error);
-	}
-
-	&--soft.base-select--error &__trigger {
-		border-color: var(--color-error);
-		background-color: rgba(239, 68, 68, 0.06);
-	}
-
-	&--shadow.base-select--error &__trigger {
-		border-color: var(--color-error);
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-	}
-
-	&--underline.base-select--error &__trigger {
-		border-bottom-color: var(--color-error);
+		.base-text {
+			color: inherit;
+		}
 	}
 }

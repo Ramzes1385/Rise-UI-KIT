@@ -26,6 +26,14 @@ describe('BaseAlert unit', () => {
 			expect(screen.getByText('Тестовый заголовок')).toBeInTheDocument()
 			expect(screen.getByText('Тестовое описание')).toBeInTheDocument()
 		})
+
+		it('не должен рендерить заголовок и текст описания без title и description', () => {
+			const { container } = render(BaseAlert)
+
+			expect(container.querySelector('.base-alert__title')).not.toBeInTheDocument()
+			// Пустой блок описания скрывают стили (:empty), поэтому в нём не должно быть элементов
+			expect(container.querySelector('.base-alert__description')?.children).toHaveLength(0)
+		})
 	})
 
 	describe('пропс type', () => {
@@ -104,6 +112,18 @@ describe('BaseAlert unit', () => {
 			const { container } = render(BaseAlert, { props: { isClosable: true } })
 
 			expect(container.querySelector('.base-alert__close')).toBeInTheDocument()
+		})
+
+		it('должен рендерить кнопку закрытия квадратной ghost-кнопкой в масштабе алерта', () => {
+			const { container } = render(BaseAlert, { props: { isClosable: true, sizeScale: 125 } })
+
+			const closeButton = container.querySelector('.base-alert__close') as HTMLElement
+			expect(closeButton).toHaveClass('base-button--ghost')
+			expect(closeButton.style.getPropertyValue('--btn-pad-top')).toBe('3px')
+			expect(closeButton.style.getPropertyValue('--btn-pad-left')).toBe('3px')
+			expect(closeButton.style.getPropertyValue('--size-scale')).toBe('1.25')
+			// Иконка без своего sizeScale наследует масштаб кнопки (calcIconScale('sm', 125) = 100 не выставил бы переменную)
+			expect((closeButton.querySelector('.base-icon') as HTMLElement).style.getPropertyValue('--size-scale')).toBe('')
 		})
 
 		it('должен эмитить close при клике на кнопку закрытия', async () => {

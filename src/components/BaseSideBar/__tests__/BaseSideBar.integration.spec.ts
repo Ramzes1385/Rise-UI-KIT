@@ -186,4 +186,43 @@ describe('BaseSideBar integration', () => {
 		expect(screen.queryByText('Body content')).not.toBeInTheDocument()
 		expect(screen.queryByText('Footer content')).not.toBeInTheDocument()
 	})
+	it('кнопка сворачивания не пересоздаётся: после сворачивания фокус остаётся на ней', async () => {
+		render(BaseSideBar, {
+			props: { title: 'Навигация' },
+			global: { stubs: BASE_SIDEBAR_STUBS },
+		})
+
+		const toggle = screen.getByRole('button', { name: 'Свернуть' })
+		toggle.focus()
+		await fireEvent.click(toggle)
+
+		expect(screen.getByRole('button', { name: 'Развернуть' })).toBe(toggle)
+		expect(toggle).toHaveFocus()
+	})
+
+	it('в свёрнутой панели пункт навигации сохраняет доступное имя', () => {
+		render(BaseSideBar, {
+			props: {
+				title: 'Навигация',
+				isCollapsed: true,
+				items: [{ key: 'home', label: 'Главная', icon: 'home', to: '/' }],
+			},
+			global: { stubs: BASE_SIDEBAR_STUBS },
+		})
+
+		expect(screen.getByRole('link', { name: 'Главная' })).toHaveAttribute('href', '/')
+	})
+
+	it('без пропа padding не пишет inline-переменные отступов, с пропом — пишет', async () => {
+		const { container, rerender } = render(BaseSideBar, {
+			props: { title: 'Навигация' },
+			global: { stubs: BASE_SIDEBAR_STUBS },
+		})
+		const root = container.querySelector('.base-side-bar') as HTMLElement
+		expect(root.style.getPropertyValue('--sidebar-pad-left')).toBe('')
+
+		await rerender({ title: 'Навигация', padding: { x: 20, y: 10 } })
+		expect(root.style.getPropertyValue('--sidebar-pad-left')).toBe('20px')
+		expect(root.style.getPropertyValue('--sidebar-pad-top')).toBe('10px')
+	})
 })

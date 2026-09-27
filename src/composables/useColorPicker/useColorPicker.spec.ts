@@ -119,6 +119,19 @@ describe('useColorPicker', () => {
 			expect(api.hex.value).toBe('#000000')
 			expect(changes).toHaveLength(0)
 		})
+
+		it('эмитит введённый HEX без искажения через округлённый HSV', () => {
+			const { api, changes } = mountPicker('#000000')
+			api.setHex('#123456')
+			expect(changes).toEqual(['#123456'])
+			expect(api.hex.value).toBe('#123456')
+		})
+
+		it('эмитит нормализованную запись введённого HEX', () => {
+			const { api, changes } = mountPicker('#000000')
+			api.setHex(' #ABC ')
+			expect(changes).toEqual(['#aabbcc'])
+		})
 	})
 
 	describe('внешняя синхронизация value', () => {
@@ -142,6 +155,13 @@ describe('useColorPicker', () => {
 			value.value = '#ff0000'
 			await nextTick()
 			expect(api.hsv.value).toBe(before)
+		})
+
+		it('сохраняет точный внешний HEX, который не переживает round-trip через HSV', async () => {
+			const { api, value } = mountPicker('#000000')
+			value.value = '#abcdef'
+			await nextTick()
+			expect(api.hex.value).toBe('#abcdef')
 		})
 	})
 })

@@ -43,6 +43,8 @@ export interface DatePickerFieldEmits {
 	(event: 'field-click'): void
 	(event: 'clear-click'): void
 	(event: 'icon-click'): void
+	/** Запрос открытия панели с клавиатуры (Enter / ↓ в поле) */
+	(event: 'keyboard-open'): void
 }
 
 /**

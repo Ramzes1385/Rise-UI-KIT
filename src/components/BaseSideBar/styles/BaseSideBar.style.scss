@@ -1,3 +1,16 @@
+// BaseSideBar. Нейтральная боковая панель в духе Nuxt Dashboard: фон bg, рамка border справа, без тени и скругления.
+// Шапка 56px: заголовок 16/24 semibold (text-highlighted) и ghost-кнопка сворачивания 32×32.
+// Пункт навигации 32px (14/20 medium, отступы 6/8, иконка 20px): текст text-muted, при наведении — фон bg-elevated
+// и text-highlighted; текущий пункт — фон bg-elevated, text-highlighted и иконка primary; его родитель — text-highlighted.
+// Вложенные уровни — с отступом и линией border слева. Бейдж — мягкий фон основного цвета (primary-soft, primary-text).
+// Подвал отделён линией border. Свёрнутая панель — квадратные пункты 32×32 с иконкой и подсказкой.
+// Варианты: default — фон bg и рамка справа; ghost — без фона и рамки; outline — отдельная панель в рамке с радиусом lg;
+// shadow — отдельная панель с рамкой, радиусом lg и тенью; soft — фон bg-muted и рамка справа.
+// Отступы панели — переменные --sidebar-pad-* (по умолчанию 8px 12px); проп padding задаёт их inline.
+// Ширина (width, collapsedWidth) и отступ между пунктами (gap) приходят inline в px и масштабируются вместе с sizeScale.
+// Кастомный цвет: bg.base — фон панели, text.base — заголовок и пункты, bg.hover / text.hover — пункт под курсором
+// и текущий пункт.
+
 .base-side-bar,
 .base-side-bar *,
 .base-side-bar *::before,
@@ -9,201 +22,86 @@
 	--sidebar-width: 280px;
 	--sidebar-collapsed-width: 68px;
 	--sidebar-gap: 4px;
-	--sidebar-bg: var(--color-sidebar-bg);
-	--sidebar-border: var(--color-sidebar-border);
-	--sidebar-text: var(--color-sidebar-text);
-	--sidebar-muted: var(--color-sidebar-muted);
-	--sidebar-subtle: var(--color-sidebar-subtle);
-	--sidebar-hover-bg: var(--color-sidebar-hover-bg);
-	--sidebar-current-bg: var(--color-sidebar-current-bg);
-	--sidebar-current-border: var(--color-sidebar-current-border);
-	--sidebar-current-text: var(--color-sidebar-current-text);
-	--sidebar-badge-bg: var(--color-sidebar-badge-bg);
-	--sidebar-badge-text: var(--color-sidebar-badge-text);
-	--sidebar-footer-bg: var(--color-sidebar-footer-bg);
-	--sidebar-children-line: var(--color-sidebar-children-line);
-	--sidebar-shadow: 0 10px 34px rgba(124, 45, 18, 0.08);
-	--sidebar-radius: 18px;
-	--sidebar-item-radius: 11px;
+	--sidebar-pad-top: 8px;
+	--sidebar-pad-right: 12px;
+	--sidebar-pad-bottom: 8px;
+	--sidebar-pad-left: 12px;
 
 	display: flex;
 	flex-direction: column;
-	width: var(--sidebar-width);
-	min-width: var(--sidebar-width);
+	width: sz(var(--sidebar-width));
+	min-width: sz(var(--sidebar-width));
 	height: 100%;
-	border: 1px solid var(--sidebar-border);
-	border-radius: var(--sidebar-radius);
-	background: var(--sidebar-bg);
-	color: var(--sidebar-text);
-	box-shadow: var(--sidebar-shadow);
-	@include transition(width, min-width, border-color, box-shadow, background-color);
+	overflow: hidden;
+	border-right: 1px solid var(--rise-border);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+	@include transition(width, min-width, background-color, border-color);
 
-	&--collapsed {
-		width: var(--sidebar-collapsed-width);
-		min-width: var(--sidebar-collapsed-width);
-
-		.base-side-bar__header {
-			justify-content: center;
-			padding: 14px 10px 10px;
-		}
-
-		.base-side-bar__title {
-			display: none;
-		}
-
-		.base-side-bar__navigation {
-			align-items: center;
-			padding: 8px 10px 10px;
-		}
-
-		.base-side-bar__footer {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: calc(var(--sidebar-collapsed-width) - 20px);
-			min-height: 42px;
-			margin: auto auto 10px;
-			padding: 8px 6px;
-			text-align: center;
-		}
-
-		.base-side-bar__footer > * {
-			min-width: 0;
-			max-width: 100%;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-
-		.base-side-bar__body,
-		.base-side-bar__loading {
-			display: none;
-		}
-
-		.base-side-bar__collapsed {
-			display: flex;
-		}
-
-		.base-side-bar-nav {
-			align-items: center;
-		}
-
-		.base-side-bar-nav__item {
-			align-items: center;
-			width: 100%;
-		}
-
-		.base-side-bar-nav__tooltip-trigger {
-			display: flex;
-			justify-content: center;
-			width: 100%;
-		}
-
-		.base-side-bar-nav__link {
-			justify-content: center;
-			gap: 0;
-			width: 42px;
-			min-width: 42px;
-			max-width: 42px;
-			min-height: 42px;
-			margin: 0 auto;
-			padding: 0;
-			border-radius: 13px;
-
-			&::before {
-				top: 10px;
-				bottom: 10px;
-				left: 4px;
-			}
-		}
-
-		.base-side-bar-nav__icon {
-			width: 20px;
-			height: 20px;
-		}
-	}
-
-	&--ghost {
-		border-color: transparent;
-		background: transparent;
-		box-shadow: none;
-	}
-
-	&--outline {
-		box-shadow: none;
-	}
-
-	&--shadow {
-		border-color: transparent;
-		box-shadow:
-			0 12px 28px rgba(124, 45, 18, 0.1),
-			0 24px 64px rgba(124, 45, 18, 0.14);
-	}
-
-	&--soft {
-		--sidebar-bg: var(--color-sidebar-soft-bg);
-		--sidebar-border: var(--color-sidebar-soft-border);
-		--sidebar-footer-bg: var(--color-sidebar-soft-footer-bg);
-	}
+	// ─── Шапка ───────────────────────────────────────────────────────────────────
 
 	&__header {
 		display: flex;
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: space-between;
-		gap: 12px;
-		padding: 18px 16px 12px;
+		gap: sz(8px);
+		min-height: sz(56px);
+		padding: 0 sz(var(--sidebar-pad-right)) 0 calc(#{sz(var(--sidebar-pad-left))} + #{sz(8px)});
 	}
 
 	&__title {
 		min-width: 0;
 		margin: 0;
-		overflow: hidden;
-		color: var(--sidebar-text);
-		font-size: 15px;
-		font-weight: 700;
-		line-height: 1.25;
-		letter-spacing: -0.01em;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		@include text-size(base);
+		font-weight: var(--rise-font-weight-semibold);
+		@include custom-text(color, var(--rise-text-highlighted));
+		@include truncate;
 	}
 
-	&__toggle {
+	&__toggle-tooltip {
 		flex-shrink: 0;
-		width: 32px;
-		height: 32px;
-		border-radius: 10px;
-		color: var(--sidebar-muted);
+		margin-left: auto;
+	}
 
-		&:hover {
-			background: var(--sidebar-hover-bg);
-			color: var(--sidebar-text);
+	// Кнопка сворачивания — квадратная ghost-кнопка 32×32 с иконкой 20px.
+	&__toggle.base-button {
+		--btn-pad-left: var(--rise-control-padding-y);
+		--btn-pad-right: var(--rise-control-padding-y);
+
+		@include custom-text(color, var(--rise-text-muted));
+
+		@include hover {
+			color: var(--rise-text-highlighted);
 		}
 	}
+
+	// ─── Навигация, тело, подвал ─────────────────────────────────────────────────
 
 	&__navigation {
 		display: flex;
 		flex: 1 1 auto;
 		flex-direction: column;
 		min-height: 0;
-		padding: 8px 10px 10px;
+		padding: sz(var(--sidebar-pad-top)) sz(var(--sidebar-pad-right)) sz(var(--sidebar-pad-bottom)) sz(var(--sidebar-pad-left));
+		overflow-y: auto;
+		@include scrollbar-thin;
 	}
 
 	&__body {
-		padding: 10px 16px 14px;
-		color: var(--sidebar-muted);
-		font-size: 13px;
-		line-height: 1.45;
+		padding: sz(var(--sidebar-pad-top)) sz(var(--sidebar-pad-right)) sz(var(--sidebar-pad-bottom))
+			calc(#{sz(var(--sidebar-pad-left))} + #{sz(8px)});
+		@include text-size(sm);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__footer {
 		flex-shrink: 0;
-		margin: auto 10px 10px;
-		padding: 10px 12px;
-		border-radius: 12px;
-		background: var(--sidebar-footer-bg);
-		color: var(--sidebar-muted);
-		font-size: 12px;
-		line-height: 1.35;
+		margin-top: auto;
+		padding: sz(var(--sidebar-pad-top)) sz(var(--sidebar-pad-right)) sz(var(--sidebar-pad-bottom)) sz(var(--sidebar-pad-left));
+		border-top: 1px solid var(--rise-border);
+		@include text-size(sm);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__collapsed {
@@ -211,31 +109,99 @@
 		flex-shrink: 0;
 		flex-direction: column;
 		align-items: center;
-		gap: 8px;
-		padding: 8px 8px 10px;
+		gap: sz(8px);
+		padding: sz(8px);
 	}
 
 	&__loading {
+		display: flex;
 		flex-shrink: 0;
-		padding: 10px 12px;
+		flex-direction: column;
+		gap: sz(12px);
+		padding: sz(var(--sidebar-pad-top)) sz(var(--sidebar-pad-right)) sz(var(--sidebar-pad-bottom))
+			calc(#{sz(var(--sidebar-pad-left))} + #{sz(8px)});
+	}
+
+	// ─── Свёрнутая панель ────────────────────────────────────────────────────────
+
+	&--collapsed {
+		width: sz(var(--sidebar-collapsed-width));
+		min-width: sz(var(--sidebar-collapsed-width));
+	}
+
+	&--collapsed &__header {
+		justify-content: center;
+		padding: 0;
+	}
+
+	&--collapsed &__toggle-tooltip {
+		margin-left: 0;
+	}
+
+	&--collapsed &__navigation {
+		align-items: center;
+		padding-right: sz(8px);
+		padding-left: sz(8px);
+	}
+
+	&--collapsed &__footer {
+		display: flex;
+		justify-content: center;
+		padding: sz(8px);
+		text-align: center;
+
+		& > * {
+			min-width: 0;
+			max-width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	&--collapsed &__body,
+	&--collapsed &__loading {
+		display: none;
+	}
+
+	&--collapsed &__collapsed {
+		display: flex;
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--ghost {
+		border-right-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--outline,
+	&--shadow {
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-lg));
+	}
+
+	&--shadow {
+		box-shadow: var(--rise-shadow-md);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
 }
 
-:where(.dark, [data-theme='dark']) .base-side-bar {
-	--sidebar-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
-}
+// ─── Навигация (BaseSideBarNavigation) ─────────────────────────────────────────
 
 .base-side-bar-nav {
 	display: flex;
 	flex-direction: column;
-	gap: var(--sidebar-gap);
+	gap: sz(var(--sidebar-gap));
 	width: 100%;
 	margin: 0;
 	padding: 0;
 	list-style: none;
 
 	&--nested {
-		gap: 1px;
+		gap: sz(2px);
 	}
 
 	&__item {
@@ -244,6 +210,8 @@
 		min-width: 0;
 	}
 
+	// В свёрнутой панели пункт обёрнут подсказкой: центрируем его по ширине панели.
+	&__item > .base-tooltip,
 	&__tooltip-trigger {
 		display: flex;
 		justify-content: center;
@@ -254,65 +222,58 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: sz(8px);
 		width: 100%;
 		min-width: 0;
-		min-height: 36px;
-		padding: 8px 10px;
-		border: 1px solid transparent;
-		border-radius: var(--sidebar-item-radius);
-		background: transparent;
-		color: var(--sidebar-muted);
+		margin: 0;
+		padding: sz(6px 8px);
+		border: none;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: transparent;
+		@include custom-text(color, var(--rise-text-muted));
 		font: inherit;
-		line-height: 1.2;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
 		text-align: left;
 		text-decoration: none;
 		cursor: pointer;
-		@include transition(background-color, border-color, color, box-shadow);
+		@include transition-colors;
+		@include focus-ring;
 
-		&:hover {
-			background: var(--sidebar-hover-bg);
-			color: var(--sidebar-text);
-		}
-
-		&:focus-visible {
-			outline: 2px solid rgba(249, 115, 22, 0.28);
-			outline-offset: 2px;
-		}
-
-		&--parent-active {
-			background: transparent;
-			color: var(--sidebar-current-text);
-			font-weight: 600;
+		@include hover {
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			color: var(--custom-text-hover, var(--rise-text-highlighted));
 
 			.base-side-bar-nav__icon,
 			.base-side-bar-nav__chevron {
-				color: var(--sidebar-current-text);
+				color: inherit;
 			}
+		}
+
+		&--parent-active {
+			color: var(--custom-text-hover, var(--rise-text-highlighted));
 		}
 
 		&--current {
-			border-color: var(--sidebar-current-border);
-			background: var(--sidebar-current-bg);
-			color: var(--sidebar-current-text);
-			font-weight: 600;
-			box-shadow: 0 1px 2px rgba(124, 45, 18, 0.04);
-
-			&::before {
-				position: absolute;
-				top: 9px;
-				bottom: 9px;
-				left: 5px;
-				width: 2px;
-				border-radius: 999px;
-				background: var(--sidebar-current-text);
-				content: '';
-			}
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			color: var(--custom-text-hover, var(--rise-text-highlighted));
 
 			.base-side-bar-nav__icon {
-				color: var(--sidebar-current-text);
+				color: var(--rise-primary);
 			}
 		}
+
+		// Свёрнутая панель: квадратный пункт 32×32 с иконкой 20px.
+		&--collapsed {
+			justify-content: center;
+			width: sz(32px);
+			height: sz(32px);
+			padding: 0;
+		}
+	}
+
+	&__item--disabled &__link {
+		@include disabled-state;
 	}
 
 	&__icon {
@@ -320,120 +281,59 @@
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		width: 18px;
-		height: 18px;
-		color: var(--sidebar-subtle);
+		width: sz(20px);
+		height: sz(20px);
+		color: var(--rise-text-dimmed);
+		@include transition-colors;
 	}
 
 	&__label {
+		flex: 1;
 		min-width: 0;
-		overflow: hidden;
 		color: inherit;
-		font-size: 14px;
-		font-weight: 500;
-		letter-spacing: -0.005em;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		@include truncate;
 	}
 
+	// Бейдж — мягкий фон основного цвета. Двойной класс перекрывает оформление BaseBadge независимо от порядка CSS.
 	&__badge.base-badge {
-		display: inline-flex;
 		flex-shrink: 0;
-		align-items: center;
-		justify-content: center;
-		min-width: 20px;
-		height: 20px;
-		margin-left: auto;
-		padding: 0 7px;
-		border-radius: 999px;
-		background: var(--sidebar-badge-bg);
-		color: var(--sidebar-badge-text);
-		font-size: 11px;
-		font-weight: 700;
-		line-height: 1;
-	}
-
-	&__badge.base-badge .base-badge__text {
-		color: inherit;
-		font-size: inherit;
-		font-weight: inherit;
-		line-height: inherit;
+		min-width: sz(20px);
+		height: sz(20px);
+		padding: 0 sz(6px);
+		border: none;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-primary-soft);
+		color: var(--rise-primary-text);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
 	}
 
 	&__chevron {
-		margin-left: auto;
-		color: var(--sidebar-subtle);
-		font-size: 18px;
-		line-height: 1;
-		transform: rotate(0deg);
+		display: inline-flex;
+		flex-shrink: 0;
+		color: var(--rise-text-dimmed);
 		@include transition(transform);
+
+		.base-icon__svg {
+			width: sz(16px);
+			height: sz(16px);
+		}
 
 		&--expanded {
 			transform: rotate(90deg);
 		}
 	}
 
+	// Вложенный уровень: линия под центром иконки родителя (отступ пункта 8px + половина иконки 10px).
 	&__children {
-		position: relative;
-		margin: 2px 0 4px 17px;
-		padding-left: 13px;
-
-		&::before {
-			position: absolute;
-			top: 4px;
-			bottom: 4px;
-			left: 0;
-			width: 1px;
-			border-radius: 999px;
-			background: var(--sidebar-children-line);
-			content: '';
-		}
-
-		.base-side-bar-nav__link {
-			min-height: 34px;
-			padding: 7px 10px;
-			border-radius: 9px;
-			font-size: 13px;
-		}
-
-		.base-side-bar-nav__link--current {
-			border-color: transparent;
-			background: var(--sidebar-current-bg);
-			box-shadow: none;
-
-			&::before {
-				top: 9px;
-				bottom: 9px;
-				left: -14px;
-				width: 2px;
-			}
-		}
-
-		.base-side-bar-nav__label {
-			font-size: 13px;
-			font-weight: 500;
-		}
-
-		.base-side-bar-nav__badge.base-badge {
-			height: 18px;
-			min-width: 18px;
-			padding: 0 6px;
-			font-size: 10px;
-		}
+		margin: sz(2px) 0 0 sz(18px);
+		padding-left: sz(8px);
+		border-left: 1px solid var(--rise-border);
 	}
 
 	&__divider {
 		height: 1px;
-		margin: 8px 10px;
-		background: var(--sidebar-children-line);
-	}
-
-	&__item--disabled {
-		opacity: 0.42;
-
-		.base-side-bar-nav__link {
-			cursor: not-allowed;
-			pointer-events: none;
-		}
+		margin: sz(8px) 0;
+		background-color: var(--rise-border);
 	}
 }

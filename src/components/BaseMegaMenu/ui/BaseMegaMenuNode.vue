@@ -9,7 +9,17 @@
 		@mouseenter="handleEnter"
 		@mouseleave="handleLeave">
 		<slot name="item" :item="item" :level="level">
-			<div ref="anchorRef" class="base-mega-menu__node-header" @click.stop="handleClick">
+			<!-- Заголовок узла — кнопка: раскрывает вложенный уровень или выполняет переход (Enter/Space — как клик) -->
+			<div
+				ref="anchorRef"
+				class="base-mega-menu__node-header"
+				role="button"
+				:tabindex="item.isDisabled ? -1 : 0"
+				:aria-expanded="hasChildren ? isOpen : undefined"
+				:aria-disabled="item.isDisabled || undefined"
+				@click.stop="handleClick"
+				@keydown.enter.prevent="handleClick"
+				@keydown.space.prevent="handleClick">
 				<BaseIcon
 					v-if="item.icon"
 					:name="item.icon"
@@ -24,14 +34,7 @@
 			</div>
 		</slot>
 
-		<BaseText
-			v-if="item.description"
-			tag="p"
-			:size-scale="sizeScale"
-			:color="{ text: { base: 'var(--color-text-muted)' } }"
-			class="base-mega-menu__node-desc">
-			{{ item.description }}
-		</BaseText>
+		<p v-if="item.description" class="base-mega-menu__node-desc">{{ item.description }}</p>
 
 		<ul
 			v-if="hasChildren && isOpen"
@@ -66,7 +69,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
 import { calcIconScale } from '@utils/iconUtils'

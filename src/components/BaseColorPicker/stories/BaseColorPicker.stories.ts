@@ -1,223 +1,290 @@
 /**
- * Stories для компонента BaseColorPicker.
- * Демонстрирует выбор цвета, ввод HEX, пресеты, позиции и состояния.
+ * BaseColorPicker — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (размеры) → состояния (disabled) →
+ * содержимое (свои пресеты, минимальная панель, свой триггер) → сценарии (ввод HEX, сброс цвета) → клавиатура.
+ * Панель телепортируется в body, поэтому в Docs примеры с открытой панелью показываются в отдельном фрейме.
  */
 
-import { expect, fireEvent, fn, waitFor } from 'storybook/test'
+import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { ARG_GROUP, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseIcon } from '@components/BaseIcon'
 import { COLOR_PICKER_POSITIONS } from '../model/BaseColorPicker.types'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseColorPicker> = {
-	title: 'UI/BaseColorPicker',
+/** Фирменная палитра студии для примера своих пресетов. */
+const BRAND_PRESETS = ['#0f172a', '#1d4ed8', '#0891b2', '#15803d', '#ca8a04', '#c2410c', '#be123c', '#7e22ce', '#f8fafc', '#cbd5e1', '#64748b', '#334155']
+
+/**
+ * Образец — по центру примера: панель открывается под ним по центру и не выходит за левый край холста
+ * (BaseDropdown не сдвигает панель от края экрана).
+ */
+const CENTERED = 'display: flex; justify-content: center;'
+
+/** Панель телепортируется в body и перекрыла бы страницу Docs — пример с открытой панелью показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Form/BaseColorPicker',
 	component: BaseColorPicker,
-
-	argTypes: buildArgTypes({
-		props: {
-			modelValue: { control: 'color' },
-			position: { control: 'inline-radio', options: COLOR_PICKER_POSITIONS },
-			presets: { control: 'object', description: 'Массив HEX-цветов пресетов' },
-			isHexHidden: { control: 'boolean' },
-			isPresetsHidden: { control: 'boolean' },
-			isDisabled: { control: 'boolean' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Выбор цвета: образец-триггер открывает панель с областью насыщенности и яркости, слайдером тона,',
+					'полем HEX и пресетами.',
+					'',
+					'- `v-model` — цвет в HEX. Пресет и введённый HEX попадают в модель как есть, без пересчёта через HSV.',
+					'- Выбор пресета и сброс (`isResettable`) закрывают панель; область, тон и HEX — нет, можно подбирать дальше.',
+					'- Клавиатура: Enter на образце открывает панель, Tab переходит по её элементам, стрелки меняют',
+					'  насыщенность и яркость (Shift — шаг 10%) и тон, Escape закрывает панель и возвращает фокус на образец.',
+					'',
+					'Проп `color` компонент не использует: цвет образца — это выбранное значение.',
+				].join('\n'),
 			},
-			customClass: { control: 'object' },
 		},
-		hidden: ['onUpdate:modelValue', 'onChange'],
-	}),
-
+	},
+	argTypes: {
+		modelValue: { control: 'color', table: propGroup(ARG_GROUP.content) },
+		presets: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		resetLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		position: { control: 'inline-radio', options: COLOR_PICKER_POSITIONS, table: propGroup(ARG_GROUP.appearance) },
+		sizeScale: { control: { type: 'range', min: 50, max: 200, step: 12.5 }, table: propGroup(ARG_GROUP.appearance) },
+		isHexHidden: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		isPresetsHidden: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		hasTransparentSwatch: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		customClass: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		isResettable: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		variant: { table: { disable: true } },
+		color: { table: { disable: true } },
+	},
 	args: {
 		modelValue: '#f97316',
 		position: 'bottom',
+		sizeScale: 100,
 		isHexHidden: false,
 		isPresetsHidden: false,
+		isResettable: false,
+		hasTransparentSwatch: false,
 		isDisabled: false,
-		sizeScale: 100,
+		'onUpdate:modelValue': fn(),
+		onChange: fn(),
+		onReset: fn(),
 	},
-}
+	// Цвет хранится в args: выбор в панели обновляет Controls, а изменение в Controls — образец.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseColorPicker },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate, centered: CENTERED }),
+			template: '<div :style="centered"><BaseColorPicker v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+} satisfies Meta<typeof BaseColorPicker>
 
 export default meta
-type Story = StoryObj<typeof BaseColorPicker>
+type Story = StoryObj<typeof meta>
 
-function cleanPanels(): void {
-	document.body.querySelectorAll('.base-dropdown__panel').forEach(element => element.remove())
-}
+// ─── Default ───────────────────────────────────────────────────────────────────
 
-function getSwatch(root: ParentNode): HTMLElement {
-	const swatch = root.querySelector<HTMLElement>('.base-color-picker__swatch')
-	if (!swatch) throw new Error('Swatch не найден')
-	return swatch
-}
-
-async function openPanel(root: ParentNode): Promise<HTMLElement> {
-	cleanPanels()
-	await fireEvent.click(getSwatch(root))
-	await waitFor(() => expect(document.body.querySelector('.base-color-picker__panel')).toBeTruthy())
-	const panels = document.body.querySelectorAll<HTMLElement>('.base-color-picker__panel')
-	return panels[panels.length - 1]
-}
-
-const renderWithModel: Story['render'] = args => ({
-	components: { BaseColorPicker },
-	setup() {
-		const value = ref<string>(args.modelValue ?? '#f97316')
-		return { args, value }
-	},
-	template: '<BaseColorPicker v-bind="args" v-model="value" />',
-})
-/** Базовый выбор цвета */
+/** Песочница: нажмите на образец, выберите цвет в панели или меняйте props в Controls. */
 export const Default: Story = {
-	render: renderWithModel,
-	args: { 'onUpdate:modelValue': fn() },
-	play: async ({ canvasElement }) => {
-		const swatch = getSwatch(canvasElement)
-		expect(swatch.style.backgroundColor).toBe('rgb(249, 115, 22)')
+	play: async ({ canvas }) => {
+		const swatch = canvas.getByRole('button', { name: 'Выбранный цвет #f97316' })
+		await expect(swatch).toHaveAttribute('aria-expanded', 'false')
+		await expect(swatch.style.backgroundColor).toBe('rgb(249, 115, 22)')
 	},
 }
-/** Открытие панели и выбор тона */
-export const PickHue: Story = {
-	render: renderWithModel,
-	play: async ({ canvasElement }) => {
-		const panel = await openPanel(canvasElement)
-		const hue = panel.querySelector('.base-color-picker__hue') as HTMLInputElement
-		if (!hue) throw new Error('Слайдер тона не найден')
-		hue.value = '200'
-		await fireEvent.input(hue)
-		await waitFor(() => expect(getSwatch(canvasElement).style.backgroundColor).not.toBe('rgb(249, 115, 22)'))
-		cleanPanels()
-	},
-}
-/** Ручной ввод HEX */
-export const HexInput: Story = {
-	render: renderWithModel,
-	play: async ({ canvasElement }) => {
-		const panel = await openPanel(canvasElement)
-		const hex = panel.querySelector('.base-color-picker__hex') as HTMLInputElement
-		hex.value = '#0000ff'
-		await fireEvent.change(hex)
-		await waitFor(() => expect(getSwatch(canvasElement).style.backgroundColor).toBe('rgb(0, 0, 255)'))
-		cleanPanels()
-	},
-}
-/** Выбор насыщенности и яркости перетаскиванием в SV-области */
-export const PickArea: Story = {
-	render: renderWithModel,
-	play: async ({ canvasElement }) => {
-		const panel = await openPanel(canvasElement)
-		const area = panel.querySelector<HTMLElement>('.base-color-picker__area')
-		if (!area) throw new Error('SV-область не найдена')
 
-		const rect = area.getBoundingClientRect()
-		const midX = rect.left + rect.width / 2
-		const midY = rect.top + rect.height / 2
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
 
-		await fireEvent.pointerDown(area, { clientX: midX, clientY: midY })
-		window.dispatchEvent(
-			Object.assign(new Event('pointermove'), { clientX: rect.left + rect.width * 0.75, clientY: rect.top + rect.height * 0.25 }),
-		)
-		window.dispatchEvent(new Event('pointerup'))
+/** Размеры через `sizeScale`: образец 24, 28, 32, 36 и 40px — как поле того же размера; панель масштабируется вместе с ним. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['modelValue'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseColorPicker v-model="color" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseColorPicker },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'sizeScale', 'onUpdate:modelValue']), presets: SIZE_PRESETS, sizeLabel, colors: ref<Record<string, string>>({}) }),
+		template: `
+			<div class="story-row">
+				<div v-for="preset in presets" :key="preset.name" class="story-col" style="align-items: center; gap: 6px;">
+					<BaseColorPicker v-bind="props" :model-value="colors[preset.name] ?? '#1d4ed8'" :size-scale="preset.sizeScale" @update:model-value="colors[preset.name] = $event" />
+					<span class="story-label" style="min-width: 0;">{{ sizeLabel(preset) }}</span>
+				</div>
+			</div>
+		`,
+	}),
+}
 
-		await waitFor(() => expect(getSwatch(canvasElement)).toBeInTheDocument())
-		cleanPanels()
-	},
-}
-/** Невалидное значение модели — swatch использует цвет палитры */
-export const InvalidValue: Story = {
-	render: renderWithModel,
-	args: { modelValue: 'not-a-color' },
-	play: async ({ canvasElement }) => {
-		const swatch = getSwatch(canvasElement)
-		await expect(swatch.style.backgroundColor).toBe('rgb(0, 0, 0)')
-	},
-}
-/** Кнопка сброса цвета */
-export const Resettable: Story = {
-	render: renderWithModel,
-	args: { isResettable: true, resetLabel: 'Без цвета', 'onReset': fn() },
-	play: async ({ canvasElement, args }) => {
-		const panel = await openPanel(canvasElement)
-		const reset = panel.querySelector<HTMLButtonElement>('.base-color-picker__reset')
-		if (!reset) throw new Error('Кнопка сброса не найдена')
-		await expect(reset).toHaveTextContent('Без цвета')
+// ─── Состояния ─────────────────────────────────────────────────────────────────
 
-		await fireEvent.click(reset)
-		await expect(args.onReset).toHaveBeenCalled()
-		await waitFor(() => expect(document.body.querySelector('.base-color-picker__panel')).toBeNull())
-		cleanPanels()
-	},
-}
-/** Выбор пресета */
-export const PickPreset: Story = {
-	render: renderWithModel,
-	play: async ({ canvasElement }) => {
-		const panel = await openPanel(canvasElement)
-		const presets = panel.querySelectorAll('.base-color-picker__preset')
-		await fireEvent.click(presets[5])
-		await waitFor(() => expect(document.body.querySelector('.base-color-picker__panel')).toBeTruthy())
-		cleanPanels()
-	},
-}
-/** Без поля HEX и без пресетов */
-export const PaletteOnly: Story = {
-	render: renderWithModel,
-	args: { isHexHidden: true, isPresetsHidden: true },
-	play: async ({ canvasElement }) => {
-		const panel = await openPanel(canvasElement)
-		expect(panel.querySelector('.base-color-picker__hex')).toBeNull()
-		expect(panel.querySelector('.base-color-picker__presets')).toBeNull()
-		cleanPanels()
-	},
-}
-/** Кастомный набор пресетов */
-export const CustomPresets: Story = {
-	render: renderWithModel,
-	args: {
-		presets: ['#0f172a', '#1e293b', '#334155', '#475569', '#64748b', '#94a3b8'],
-	},
-	play: async ({ canvasElement }) => {
-		const panel = await openPanel(canvasElement)
-		expect(panel.querySelectorAll('.base-color-picker__preset')).toHaveLength(6)
-		cleanPanels()
-	},
-}
-/** Заблокированное состояние */
+/** Отключённый выбор цвета: образец приглушён и не открывает панель. */
 export const Disabled: Story = {
-	render: renderWithModel,
 	args: { isDisabled: true },
-	play: async ({ canvasElement }) => {
-		expect(getSwatch(canvasElement)).toBeDisabled()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: /Выбранный цвет/ })).toBeDisabled()
 	},
 }
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 32px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: renderWithModel,
-	play: async ({ canvasElement }) => {
-		expect(getSwatch(canvasElement)).toBeInTheDocument()
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/**
+ * Свои пресеты (`presets`) — например, фирменная палитра. Выбор пресета записывает его HEX в модель как есть
+ * и закрывает панель; выбранный пресет отмечен кольцом основного цвета.
+ */
+export const Presets: Story = {
+	args: { presets: BRAND_PRESETS, modelValue: '#0f172a' },
+	parameters: { docs: docsFrame(380) },
+	play: async ({ canvas, userEvent }) => {
+		const swatch = canvas.getByRole('button', { name: /Выбранный цвет/ })
+		await userEvent.click(swatch)
+		await userEvent.click(await screen.findByRole('button', { name: 'Пресет #1d4ed8' }))
+		// Точный HEX пресета: раньше значение искажалось округлённым HSV
+		await waitFor(() => expect(swatch.style.backgroundColor).toBe('rgb(29, 78, 216)'))
+		await waitFor(() => expect(screen.queryByRole('slider', { name: 'Насыщенность и яркость' })).not.toBeInTheDocument())
+
+		await userEvent.click(swatch)
+		await expect(await screen.findByRole('button', { name: 'Пресет #1d4ed8' })).toHaveAttribute('aria-pressed', 'true')
 	},
 }
-/** Кастомные CSS-классы через customClass */
-export const WithCustomClass: Story = {
-	render: renderWithModel,
-	args: {
-		customClass: {
-			root: 'cp-root',
-			swatch: 'cp-swatch',
-			panel: 'cp-panel',
-			preset: 'cp-preset',
-			reset: 'cp-reset',
+
+/** Минимальная панель: без поля HEX (`isHexHidden`) и пресетов (`isPresetsHidden`) — только область и тон. */
+export const Minimal: Story = {
+	args: { isHexHidden: true, isPresetsHidden: true, modelValue: '#0891b2' },
+	parameters: { docs: docsFrame(260) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: /Выбранный цвет/ }))
+		await expect(await screen.findByRole('slider', { name: 'Насыщенность и яркость' })).toBeInTheDocument()
+		await expect(screen.queryByRole('textbox', { name: 'HEX-значение' })).not.toBeInTheDocument()
+		await expect(screen.queryByRole('button', { name: /Пресет/ })).not.toBeInTheDocument()
+	},
+}
+
+/**
+ * Свой триггер: `hasTransparentSwatch` не заливает образец цветом, а слот `trigger` показывает иконку —
+ * так выглядит кнопка цвета текста в тулбаре редактора.
+ */
+export const TriggerSlot: Story = {
+	args: { hasTransparentSwatch: true, modelValue: '#be123c' },
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseColorPicker v-model="textColor" has-transparent-swatch>',
+					'  <template #trigger><BaseIcon name="color-picker" :color="textColor" /></template>',
+					'</BaseColorPicker>',
+				].join('\n'),
+			},
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.cp-root')).toBeTruthy()
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseColorPicker, BaseIcon },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate, centered: CENTERED }),
+			template: `
+				<div :style="centered">
+					<BaseColorPicker v-bind="props" @update:model-value="onUpdate">
+						<template #trigger>
+							<BaseIcon name="color-picker" :color="props.modelValue" :size-scale="80" />
+						</template>
+					</BaseColorPicker>
+				</div>
+			`,
+		}
+	},
+	play: async ({ canvas }) => {
+		// Образец не залит цветом — цвет показывает иконка из слота; имя кнопки по-прежнему называет цвет
+		await expect(canvas.getByRole('button', { name: 'Выбранный цвет #be123c' }).style.backgroundColor).toBe('')
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** Ввод HEX: значение применяется после Enter или ухода из поля и попадает в модель без искажений. */
+export const HexInput: Story = {
+	parameters: { docs: docsFrame(380) },
+	play: async ({ canvas, userEvent }) => {
+		const swatch = canvas.getByRole('button', { name: /Выбранный цвет/ })
+		await userEvent.click(swatch)
+		const hex = await screen.findByRole('textbox', { name: 'HEX-значение' })
+		await userEvent.clear(hex)
+		await userEvent.type(hex, '#123456')
+		await userEvent.tab()
+		// #123456 не переживает пересчёт через округлённый HSV (стал бы #123457) — в модели точное значение
+		await waitFor(() => expect(swatch.style.backgroundColor).toBe('rgb(18, 52, 86)'))
+		await expect(hex).toHaveValue('#123456')
+	},
+}
+
+/** Сброс цвета (`isResettable`): кнопка «Без цвета» эмитит `reset` и закрывает панель; здесь сброс убирает заливку образца. */
+export const Resettable: Story = {
+	args: { isResettable: true, modelValue: '#15803d' },
+	parameters: { docs: docsFrame(380) },
+	render: args => ({
+		components: { BaseColorPicker, BaseIcon },
+		setup: () => {
+			const color = ref(String(args.modelValue))
+			const isNone = ref(false)
+			return { props: useArgsWithoutSlots(args, ['modelValue', 'onUpdate:modelValue']), color, isNone, centered: CENTERED }
+		},
+		template: `
+			<div :style="centered">
+				<BaseColorPicker
+					v-bind="props"
+					v-model="color"
+					:has-transparent-swatch="isNone"
+					@update:model-value="isNone = false"
+					@reset="isNone = true">
+					<template #trigger>
+						<BaseIcon v-if="isNone" name="minus" :size-scale="80" />
+					</template>
+				</BaseColorPicker>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent, args }) => {
+		const swatch = canvas.getByRole('button', { name: /Выбранный цвет/ })
+		await userEvent.click(swatch)
+		await userEvent.click(await screen.findByRole('button', { name: 'Без цвета' }))
+		await expect(args.onReset).toHaveBeenCalledOnce()
+		await waitFor(() => expect(swatch.style.backgroundColor).toBe(''))
+		await waitFor(() => expect(screen.queryByRole('button', { name: 'Без цвета' })).not.toBeInTheDocument())
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Enter на образце открывает панель, Tab ведёт в область выбора, стрелки меняют насыщенность
+ * (Shift — шаг 10%), Escape закрывает панель и возвращает фокус на образец.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { modelValue: '#808080' },
+	play: async ({ canvas, userEvent }) => {
+		const swatch = canvas.getByRole('button', { name: /Выбранный цвет/ })
+		await tabTo(swatch, userEvent)
+		await userEvent.keyboard('{Enter}')
+		await expect(swatch).toHaveAttribute('aria-expanded', 'true')
+
+		const area = await screen.findByRole('slider', { name: 'Насыщенность и яркость' })
+		await tabTo(area, userEvent)
+		await expect(area).toHaveAttribute('aria-valuenow', '0')
+		await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+		await expect(area).toHaveAttribute('aria-valuenow', '10')
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(area).toHaveAttribute('aria-valuenow', '11')
+
+		await userEvent.keyboard('{Escape}')
+		await expect(swatch).toHaveAttribute('aria-expanded', 'false')
+		await expect(swatch).toHaveFocus()
 	},
 }

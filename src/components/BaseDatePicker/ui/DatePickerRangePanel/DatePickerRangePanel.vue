@@ -3,11 +3,7 @@
 		v-for="(item, index) in monthItems"
 		:key="item.key"
 		class="date-picker-panel__calendar"
-		v-bind="calendarConfig"
-		:show-navigation="false"
-		:can-switch-view="false"
-		:show-year="monthItems.length === 1"
-		:show-today-button="monthItems.length === 1"
+		v-bind="index === 0 ? calendarBindings : secondaryCalendarBindings"
 		:model-value="modelValue"
 		:model-value-end="modelValueEnd"
 		:selected-dates="selectedDates"
@@ -25,12 +21,25 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseCalendar } from '@components/BaseCalendar'
+import { toBaseCalendarProps, withoutTimeBlock } from '../../model/BaseDatePickerCalendar.types'
 import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from '../../model/DatePickerRangePanel.types'
 
-defineProps<DatePickerRangePanelProps>()
+const props = defineProps<DatePickerRangePanelProps>()
 
 const emit = defineEmits<DatePickerRangePanelEmits>()
+
+/** Props BaseCalendar: год и «Сегодня» — только в одиночном месяце */
+const calendarBindings = computed(() =>
+	toBaseCalendarProps(props.calendarConfig, {
+		showYear: props.monthItems.length === 1,
+		showTodayButton: props.monthItems.length === 1,
+	}),
+)
+
+/** Календари после первого — без блока времени: он один на всё значение */
+const secondaryCalendarBindings = computed(() => withoutTimeBlock(calendarBindings.value))
 
 function handleModelUpdate(value: Date | null): void {
 	emit('model-update', value)

@@ -1,8 +1,15 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render } from '@testing-library/vue'
+import { BaseCalendar } from '@components/BaseCalendar'
 import DatePickerRangePanel from '../ui/DatePickerRangePanel/DatePickerRangePanel.vue'
 import type { DatePickerRangePanelProps } from '../model/DatePickerRangePanel.types'
+
+/**
+ * Имена props реального BaseCalendar: stub повторяет настоящий контракт
+ * (прежний список с showYear/showTodayButton/showNavigation скрывал, что эти props не существуют).
+ */
+const BASE_CALENDAR_PROP_NAMES = Object.keys((BaseCalendar as unknown as { props: Record<string, unknown> }).props)
 
 const DEFAULT_PROPS: DatePickerRangePanelProps = {
 	modelValue: new Date(2026, 0, 15),
@@ -40,8 +47,10 @@ const STUBS = {
 				:data-month="initialMonth"
 				:data-year="initialYear"
 				:data-selection-mode="selectionMode"
-				:data-show-year="String(showYear)"
-				:data-show-today-button="String(showTodayButton)">
+				:data-show-year="String(displayConfig?.showYear)"
+				:data-show-today-button="String(displayConfig?.showTodayButton)"
+				:data-show-time="String(timeConfig?.showTime)"
+				:data-unknown-attrs="Object.keys($attrs).filter(name => name !== 'class' && !name.startsWith('on')).join(',')">
 				<button class="emit-model-value" @click="$emit('update:modelValue', new Date(2026, 0, 1))" />
 				<button class="emit-model-end" @click="$emit('update:modelValueEnd', new Date(2026, 0, 2))" />
 				<button class="emit-selected" @click="$emit('update:selectedDates', [new Date(2026, 0, 3)])" />
@@ -50,20 +59,7 @@ const STUBS = {
 				<button class="emit-year-change" @click="$emit('year-change', 2028)" />
 			</div>
 		`,
-		props: [
-			'showNavigation',
-			'canSwitchView',
-			'showYear',
-			'showTodayButton',
-			'modelValue',
-			'modelValueEnd',
-			'selectedDates',
-			'selectionMode',
-			'variant',
-			'sizeScale',
-			'initialMonth',
-			'initialYear',
-		],
+		props: BASE_CALENDAR_PROP_NAMES,
 		emits: [
 			'update:modelValue',
 			'update:modelValueEnd',
@@ -99,6 +95,26 @@ describe('DatePickerRangePanel', () => {
 		expect(calendar).toHaveAttribute('data-show-today-button', 'true')
 	})
 
+	it('скрывает year/today в нескольких месяцах', () => {
+		const { container } = render(DatePickerRangePanel, {
+			props: DEFAULT_PROPS,
+			global: { stubs: STUBS },
+		})
+
+		const calendar = container.querySelector('.base-calendar')!
+		expect(calendar).toHaveAttribute('data-show-year', 'false')
+		expect(calendar).toHaveAttribute('data-show-today-button', 'false')
+	})
+
+	it('передаёт только объявленные props BaseCalendar (ничего не уходит в $attrs)', () => {
+		const { container } = render(DatePickerRangePanel, {
+			props: DEFAULT_PROPS,
+			global: { stubs: STUBS },
+		})
+
+		expect(container.querySelector('.base-calendar')).toHaveAttribute('data-unknown-attrs', '')
+	})
+
 	it('проксирует события выбора дат', async () => {
 		const user = userEvent.setup()
 		const { container, emitted } = render(DatePickerRangePanel, {
@@ -130,5 +146,15 @@ describe('DatePickerRangePanel', () => {
 
 		expect(emitted()['month-change'][0]).toEqual([5, 1])
 		expect(emitted()['year-change'][0]).toEqual([2028, 1])
+	})
+
+	it('блок времени получает только первый календарь диапазона', () => {
+		const { container } = render(DatePickerRangePanel, {
+			props: { ...DEFAULT_PROPS, calendarConfig: { ...DEFAULT_PROPS.calendarConfig, showTime: true } },
+			global: { stubs: STUBS },
+		})
+
+		const flags = Array.from(container.querySelectorAll('.base-calendar')).map(calendar => calendar.getAttribute('data-show-time'))
+		expect(flags).toEqual(['true', 'false'])
 	})
 })

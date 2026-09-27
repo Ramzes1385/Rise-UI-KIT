@@ -1,27 +1,33 @@
+// BaseChip — индикатор в углу элемента (кнопка, аватар, иконка): счётчик или короткая метка.
+// Индикатор — пилюля высотой 18px при sizeScale = 100: текст 12/16 medium, радиус full; кольцо 2px цвета фона
+// отделяет его от содержимого под ним. Центр индикатора стоит на углу элемента (placement).
+// Варианты — как у кнопки: default — заливка основным цветом; soft — мягкий фон основного цвета;
+// outline — нейтральный с рамкой; ghost — нейтральный без рамки; shadow — нейтральный с тенью.
 .base-chip {
 	position: relative;
 	display: inline-flex;
 
 	&__badge {
 		position: absolute;
+		z-index: 1;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: sz(20px);
-		height: sz(20px);
+		box-sizing: border-box;
+		min-width: sz(18px);
+		height: sz(18px);
 		padding: 0 sz(5px);
-		font-weight: 700;
-		font-size: sz(11px);
+		border: 1px solid transparent;
+		border-radius: var(--rise-radius-full);
+		box-shadow: 0 0 0 2px var(--rise-bg);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
-		border-radius: var(--border-radius-full);
-		border: 2px solid var(--color-bg);
-		z-index: 1;
 		cursor: pointer;
-		@include interactive;
-		@include custom-bg(background-color, var(--color-error));
-		@include custom-text(color, #ffffff);
+		@include custom-bg(background-color, var(--rise-primary));
+		@include custom-text(color, var(--rise-on-primary));
 
-		/* Позиции */
 		&--top-right {
 			top: 0;
 			right: 0;
@@ -47,43 +53,30 @@
 		}
 	}
 
-	/* Вариант default — стили в базовом __badge (useVariant пропускает 'default') */
+	// ─── Варианты ────────────────────────────────────────────────────────────────
 
-	&--ghost {
-		.base-chip__badge {
-			@include custom-bg(background-color, transparent);
-			@include custom-text(color, var(--color-text));
-			border-color: var(--color-border);
-
-			@include hover {
-				@include custom-bg(background-color, var(--color-surface-muted));
-			}
-		}
+	&--soft &__badge {
+		@include custom-bg(background-color, var(--rise-primary-soft));
+		@include custom-text(color, var(--rise-primary-text));
 	}
 
-	&--outline {
-		.base-chip__badge {
-			@include custom-bg(background-color, transparent);
-			@include custom-text(color, var(--color-error));
-			border-color: var(--color-error);
-		}
+	&--outline &__badge {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text));
 	}
 
-	&--shadow {
-		.base-chip__badge {
-			box-shadow: var(--shadow-sm);
-
-			@include hover {
-				box-shadow: var(--shadow-md);
-			}
-		}
+	&--ghost &__badge {
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text));
 	}
 
-	&--soft {
-		.base-chip__badge {
-			@include custom-bg(background-color, var(--color-primary-soft));
-			@include custom-text(color, var(--color-primary));
-			border-color: transparent;
-		}
+	&--shadow &__badge {
+		border-color: var(--rise-border);
+		box-shadow:
+			0 0 0 2px var(--rise-bg),
+			var(--rise-shadow-sm);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 }

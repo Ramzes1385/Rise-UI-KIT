@@ -7,6 +7,8 @@ export interface ChatSlideoverProps {
 	title: string
 	subtitle?: string
 	avatar?: string
+	/** Описание чата или собеседника во вкладке «Инфо»; без него блок описания не выводится */
+	description?: string
 	isGroup?: boolean
 	members?: ChatMember[]
 	messages: ChatMessage[]

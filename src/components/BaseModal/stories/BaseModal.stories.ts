@@ -1,758 +1,425 @@
-﻿/**
- * Stories для компонента BaseModal.
- * Демонстрирует варианты, размеры через sizeScale, состояния и закрытие.
+/**
+ * BaseModal — stories.
+ *
+ * Разделы: Default (песочница: окно открывается кнопкой, isOpen синхронизирован с Controls) → внешний вид
+ * (варианты, размеры, кастомный цвет — окна открыты внутри рамок через isContained) → открытое окно и длинный текст →
+ * сценарии (окно в блоке, запрет закрытия по подложке, на весь экран) → клавиатура.
+ * Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу.
  */
 
-import { expect, userEvent, waitFor } from 'storybook/test'
-import { ref } from 'vue'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { computed, ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { BaseInput } from '@components/BaseInput'
+import { BaseText } from '@components/BaseText'
 import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import BaseModal from '../ui/BaseModal.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseModal> = {
-	title: 'UI/BaseModal',
-	component: BaseModal,
+/** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */
+const SHOWCASE_OWN_ARGS = ['default', 'isOpen', 'title', 'isContained', 'onUpdate:isOpen'] as const
 
-	argTypes: buildArgTypes({
-		props: {
-			isOpen: { control: 'boolean' },
-			title: { control: 'text' },
-			variant: {
-				control: 'radio',
-				options: MODAL_VARIANTS,
-			},
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			closeOnOverlay: { control: 'boolean' },
-			fullScreen: {
-				control: 'inline-radio',
-				options: ['width', 'height', 'both'],
-				description: 'Режим fullScreen: width — на всю ширину, height — на всю высоту, both — полноэкранный',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (100 = 500px ширина)',
-			},
-			isContained: { control: 'boolean' },
-			hasOverlay: { control: 'boolean' },
-			onClose: { table: { disable: true } },
-			onConfirm: { table: { disable: true } },
-			'onUpdate:isOpen': { table: { disable: true } },
-			customClass: { control: 'object' },
-		},
-	}),
-
-	args: {
-		isOpen: false,
-		title: 'Модальное окно',
-		variant: 'default',
-		closeOnOverlay: true,
-		sizeScale: 100,
-	},
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
 }
 
-export default meta
-type Story = StoryObj<typeof BaseModal>
-/** Базовое модальное окно */
-export const Default: Story = {
-	render: args => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
+/** Абзацы для примера с длинным текстом. */
+const TERMS = [
+	'Сервис предоставляет доступ к облачному хранилищу проектов, редактору субтитров и инструментам совместной работы.',
+	'Учётная запись создаётся для одного человека. Передавать доступ третьим лицам нельзя, для команды есть общие проекты.',
+	'Загруженные файлы остаются вашими: мы используем их только для работы сервиса и не передаём другим пользователям.',
+	'Резервные копии проектов хранятся 30 дней. После удаления проекта восстановить его можно только из резервной копии.',
+	'Бесплатный тариф ограничен тремя проектами и 5 ГБ хранилища. Лимиты платных тарифов указаны на странице цен.',
+	'Оплата списывается в начале каждого периода. Отменить подписку можно в любой момент в настройках аккаунта.',
+	'При нарушении правил доступ к проекту может быть ограничен. Мы сообщим о причине и сроках на почту аккаунта.',
+	'О плановых работах мы предупреждаем за сутки. Во время работ проекты доступны только для чтения.',
+	'Вопросы и претензии принимаются через форму обратной связи. Мы отвечаем в течение двух рабочих дней.',
+	'Условия могут меняться. О существенных изменениях мы сообщим заранее, продолжение работы означает согласие.',
+	'Вы можете выгрузить все данные аккаунта одним архивом: проекты, субтитры, комментарии и историю правок.',
+	'Удаление аккаунта необратимо. Перед удалением мы отправим письмо с подтверждением на почту аккаунта.',
+] as const
+
+/** Строки субтитров для примера окна на весь экран. */
+const SUBTITLES = [
+	{ time: '00:00:01', text: 'Добро пожаловать в студию.' },
+	{ time: '00:00:04', text: 'Сегодня мы запишем первую серию.' },
+	{ time: '00:00:08', text: 'Проверьте микрофоны и наушники.' },
+	{ time: '00:00:12', text: 'Начинаем по моему сигналу.' },
+] as const
+
+const meta = {
+	title: 'Overlay/BaseModal',
+	component: BaseModal,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Модальное окно — диалог поверх страницы: подтверждение действия, короткая форма, детали записи.',
+					'',
+					'- Открытие и закрытие — `v-model:is-open`. Окно закрывают кнопка «Закрыть» в шапке (есть при `title`),',
+					'  Escape и клик по подложке (`closeOnOverlay`).',
+					'- Доступность: `role="dialog"`, `aria-modal`, имя из `title`. При открытии фокус переходит в окно, Tab не выходит',
+					'  за его пределы, после закрытия фокус возвращается на кнопку, которая открыла окно. Прокрутка страницы блокируется.',
+					'- `isContained` — окно внутри блока (без телепорта, немодальное); `fullScreen` — на всю ширину, высоту или экран.',
+					'- `color` красит окно; компоненты в теле и подвале сохраняют свои цвета.',
+					'',
+					'Панель у края экрана — `BaseSlideover`, подсказка с содержимым у элемента — `BasePopover`.',
+				].join('\n'),
+			},
 		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Открыть</BaseButton>
-				<BaseModal v-bind="args" v-model:is-open="isOpen">
-					<p>Содержимое модального окна</p>
+	},
+	argTypes: {
+		...baseArgTypes({ variants: MODAL_VARIANTS }),
+		title: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		fullScreen: { control: 'select', options: ['width', 'height', 'both'], table: propGroup(ARG_GROUP.appearance) },
+		hasOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		closeOnOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		default: slotArgType('Текст в теле окна'),
+		footer: { control: false },
+	},
+	args: {
+		isOpen: false,
+		title: 'Удалить проект?',
+		default: 'Проект «Сайт студии» и все его файлы будут удалены. Это действие нельзя отменить.',
+		variant: 'default',
+		sizeScale: 100,
+		hasOverlay: true,
+		closeOnOverlay: true,
+		isContained: false,
+		onClose: fn(),
+		'onUpdate:isOpen': fn(),
+	},
+	// isOpen хранится в args: кнопка открывает окно, закрытие окна обновляет Controls, а переключатель в Controls — окно.
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseModal, BaseButton, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args), text: computed(() => args.default), onUpdate }),
+			template: `
+				<BaseButton variant="outline" @click="onUpdate(true)">Открыть окно</BaseButton>
+				<BaseModal v-bind="props" @update:is-open="onUpdate">
+					<BaseText>{{ text }}</BaseText>
+					<template #footer>
+						<BaseButton variant="outline" @click="onUpdate(false)">Отмена</BaseButton>
+						<BaseButton @click="onUpdate(false)">Удалить</BaseButton>
+					</template>
 				</BaseModal>
+			`,
+		}
+	},
+} satisfies Meta<typeof BaseModal>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/**
+ * Песочница: кнопка открывает окно, `isOpen` синхронизирован с Controls. Окно закрывают «Закрыть» в шапке,
+ * Escape и клик по подложке; «Отмена» и «Удалить» в подвале закрывают его из кода примера.
+ * Без play-функции: story открывают e2e-тесты, и автоматические клики мешали бы им (сценарии проверяют Opened и Keyboard).
+ */
+export const Default: Story = {}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Три варианта. `default` — рамка и тень; `shadow` — только тень; `ghost` — без фона, рамки и тени,
+ * когда оформление даёт содержимое (изображение, своя карточка). Окна открыты внутри рамок (`isContained`).
+ */
+export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'hasOverlay'] },
+		docs: {
+			source: {
+				code: MODAL_VARIANTS.map(variant => `<BaseModal v-model:is-open="isOpen" variant="${variant}" title="${variant}">…</BaseModal>`).join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseModal, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS, 'variant']), variants: MODAL_VARIANTS }),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 240px;">
+				<div v-for="variant in variants" :key="variant" class="story-frame" style="height: 240px;">
+					<BaseModal v-bind="props" :is-open="true" is-contained :variant="variant" :title="variant">
+						<BaseText>Окно открыто внутри рамки и не выходит за её границы.</BaseText>
+					</BaseModal>
+				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка кнопки открытия по Tab', async () => {
-			await userEvent.tab()
-			const button = canvasElement.querySelector('button')
-			expect(button).toHaveFocus()
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { role: 'button', name: 'Открыть' })
-		})
-
-		await step('Открытие модала по Enter', async () => {
-			await userEvent.keyboard('{Enter}')
-			await waitFor(() => {
-				expect(document.querySelector('.base-modal')).toBeInTheDocument()
-			})
-		})
-
-		await step('Закрытие модала по Escape', async () => {
-			await userEvent.keyboard('{Escape}')
-			await waitFor(() => {
-				expect(document.querySelector('.base-modal')).not.toBeInTheDocument()
-			})
-		})
-	},
 }
-/** Отключённое состояние — контент недоступен */
-export const Disabled: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
+
+/**
+ * Размеры задаются `sizeScale`: пропорционально меняются ширина окна (500px при 100), отступы, кегль,
+ * кнопка закрытия и кнопки в подвале, если у них нет своего `sizeScale`.
+ */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseModal v-model:is-open="isOpen" :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseModal>`).join(
+					'\n',
+				),
+			},
 		},
+	},
+	render: args => ({
+		components: { BaseModal, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS, 'sizeScale']), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div>
-				<BaseModal v-model:is-open="isOpen" title="Недоступное окно">
-					<p style="opacity:0.5;pointer-events:none;">Контент заблокирован</p>
+			<div class="story-grid" style="--story-grid-min: 300px;">
+				<div v-for="preset in presets" :key="preset.name" class="story-frame" style="height: 200px;">
+					<BaseModal v-bind="props" :is-open="true" is-contained :size-scale="preset.sizeScale" :title="sizeLabel(preset)">
+						<BaseText>Текст в теле окна.</BaseText>
+					</BaseModal>
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Кастомный цвет через `color`: фон и текст окна, фон кнопки закрытия при наведении (`bg.hover`). Подойдёт любой CSS-цвет;
+ * токены `var(--rise-…)` сохраняют контраст в обеих темах. Компоненты в теле и подвале `color` не наследуют —
+ * кнопка «Оформить» сохраняет свой цвет.
+ */
+export const CustomColor: Story = {
+	args: {
+		title: 'Годовая подписка',
+		color: {
+			bg: { base: 'var(--rise-primary-soft)', hover: 'var(--rise-primary-soft-hover)' },
+			text: { base: 'var(--rise-primary-text)' },
+		},
+	},
+	parameters: { controls: { include: ['color', 'variant', 'sizeScale'] } },
+	render: args => ({
+		components: { BaseModal, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]) }),
+		template: `
+			<div class="story-frame story-medium" style="height: 280px;">
+				<BaseModal v-bind="props" :is-open="true" is-contained title="Годовая подписка">
+					Два месяца в подарок при оплате за год. Подписку можно отменить в любой момент.
 					<template #footer>
-						<BaseButton is-disabled>Подтвердить</BaseButton>
+						<BaseButton>Оформить</BaseButton>
 					</template>
 				</BaseModal>
 			</div>
 		`,
 	}),
+	play: async ({ canvas }) => {
+		const dialog = canvas.getByRole('dialog', { name: 'Годовая подписка' })
+		await expect(getComputedStyle(dialog).backgroundColor).toBe(resolveColor('var(--rise-primary-soft)'))
+		await expect(getComputedStyle(dialog).color).toBe(resolveColor('var(--rise-primary-text)'))
+		const action = within(dialog).getByRole('button', { name: 'Оформить' })
+		await expect(getComputedStyle(action).backgroundColor).toBe(resolveColor('var(--rise-primary)'))
+	},
 }
-/** Размеры через sizeScale */
-export const SizeScale: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const scale = ref(50)
-			const isOpen = ref(false)
-			const scales = [50, 75, 100, 150, 200]
-			return { scale, isOpen, scales }
-		},
-		template: `
-			<div style="display:flex;gap:8px;">
-				<BaseButton v-for="s in scales" :key="s" @click="scale = s; isOpen = true">
-					{{ s }}%
-				</BaseButton>
-				<BaseModal :is-open="isOpen" :size-scale="scale" title="Размер" @update:is-open="isOpen = $event" @close="isOpen = false">
-					<p>Масштаб: {{ scale }}% ({{ Math.round(500 * scale / 100) }}px)</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-}
-/** Все варианты */
-export const Variants: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpenDefault = ref(false)
-			const isOpenGhost = ref(false)
-			const isOpenShadow = ref(false)
-			return { isOpenDefault, isOpenGhost, isOpenShadow }
-		},
-		template: `
-			<div style="display:flex;gap:8px;flex-wrap:wrap;">
-				<BaseButton @click="isOpenDefault = true">default</BaseButton>
-				<BaseButton @click="isOpenGhost = true">ghost</BaseButton>
-				<BaseButton @click="isOpenShadow = true">shadow</BaseButton>
 
-				<BaseModal v-model:is-open="isOpenDefault" variant="default" title="Default">
-					<p>Стандартное модальное окно</p>
-				</BaseModal>
-				<BaseModal v-model:is-open="isOpenGhost" variant="ghost" title="Ghost">
-					<p>Призрачное модальное окно</p>
-				</BaseModal>
-				<BaseModal v-model:is-open="isOpenShadow" variant="shadow" title="Shadow">
-					<p>Модальное окно с тенью</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-}
-/** Без закрытия по оверлею */
-export const NoOverlayClose: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { isOpen }
-		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Открыть</BaseButton>
-				<BaseModal v-model:is-open="isOpen" title="Без закрытия по оверлею" :close-on-overlay="false">
-					<p>Клик по оверлею не закроет окно. Используйте кнопку закрытия.</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-}
-/** Полноэкранное по ширине */
-export const FullScreenWidth: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { isOpen }
-		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Full Width</BaseButton>
-				<BaseModal v-model:is-open="isOpen" full-screen="width" title="На всю ширину">
-					<p>Модальное окно растянуто на всю ширину экрана</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const button = canvasElement.querySelector('button')
-		if (!(button instanceof HTMLElement)) return
-		await userEvent.click(button)
-		await waitFor(() => {
-			const modal = document.querySelector('.base-modal--fullscreen-width')
-			expect(modal).toBeTruthy()
-		})
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/**
+ * Открытое окно поверх страницы: шапка с заголовком и кнопкой «Закрыть», тело, подвал с действиями
+ * (главное — последним). Фокус сразу переходит в окно — на кнопку «Закрыть».
+ */
+export const Opened: Story = {
+	tags: ['!autodocs'],
+	args: { isOpen: true },
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Удалить проект?' })
+		await waitFor(() => expect(within(dialog).getByRole('button', { name: 'Закрыть' })).toHaveFocus())
+		await expect(document.body.style.overflow).toBe('hidden')
 	},
 }
-/** Полноэкранное по высоте */
-export const FullScreenHeight: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { isOpen }
-		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Full Height</BaseButton>
-				<BaseModal v-model:is-open="isOpen" full-screen="height" title="На всю высоту">
-					<p>Модальное окно растянуто на всю высоту экрана</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const button = canvasElement.querySelector('button')
-		if (!(button instanceof HTMLElement)) return
-		await userEvent.click(button)
-		await waitFor(() => {
-			const modal = document.querySelector('.base-modal--fullscreen-height')
-			expect(modal).toBeTruthy()
-		})
-	},
-}
-/** Полноэкранное */
-export const FullScreenBoth: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { isOpen }
-		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Full</BaseButton>
-				<BaseModal v-model:is-open="isOpen" full-screen="both" title="Полноэкранное">
-					<p>Полноэкранное модальное окно</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const button = canvasElement.querySelector('button')
-		if (!(button instanceof HTMLElement)) return
-		await userEvent.click(button)
-		await waitFor(() => {
-			const modal = document.querySelector('.base-modal--fullscreen-both')
-			expect(modal).toBeTruthy()
-		})
-	},
-}
-/** Позиционирование внутри контейнера */
-export const Contained: Story = {
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { isOpen }
-		},
-		template: `
-			<div style="position: relative; width: 100%; height: 400px; border: 2px dashed var(--color-border); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-surface-muted);">
-				<div style="padding: 16px;">
-					<BaseButton @click="isOpen = true">Открыть внутри блока</BaseButton>
-					<p style="margin-top: 8px; color: var(--color-text-muted);">Модал не выйдет за пределы этого контейнера</p>
-				</div>
-				<BaseModal v-model:is-open="isOpen" title="Внутри блока" is-contained>
-					<p>Модал ограничен контейнером</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `
-<div style="position: relative; height: 400px; overflow: hidden;">
-	<BaseButton @click="isOpen = true">Открыть</BaseButton>
-	<BaseModal v-model:is-open="isOpen" is-contained title="Внутри блока">
-		<p>Модал ограничен контейнером</p>
-	</BaseModal>
-</div>
-				`,
-			},
-		},
-	},
-}
-/** Без затемнения фона */
-export const WithoutOverlay: Story = {
-	args: {
-		hasOverlay: false,
-	},
-	render: args => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Без оверлея</BaseButton>
-				<BaseModal v-bind="args" v-model:is-open="isOpen" title="Без оверлея">
-					<p>Модал без затемнения фона</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: args => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Открыть</BaseButton>
-				<BaseModal v-bind="args" v-model:is-open="isOpen">
-					<p>Тёмная тема</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-}
-/** Модал с длинным содержимым */
+
+/** Длинный текст прокручивается внутри тела окна: шапка и подвал с действиями остаются на экране. */
 export const LongContent: Story = {
+	tags: ['!autodocs'],
+	args: { isOpen: true, title: 'Условия использования' },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseModal, BaseButton, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args), terms: TERMS, onUpdate }),
+			template: `
+				<BaseButton variant="outline" @click="onUpdate(true)">Открыть условия</BaseButton>
+				<BaseModal v-bind="props" @update:is-open="onUpdate">
+					<div class="story-stack">
+						<BaseText v-for="(term, index) in terms" :key="index">{{ index + 1 }}. {{ term }}</BaseText>
+					</div>
+					<template #footer>
+						<BaseButton @click="onUpdate(false)">Понятно</BaseButton>
+					</template>
+				</BaseModal>
+			`,
+		}
+	},
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Условия использования' })
+		const accept = within(dialog).getByRole('button', { name: 'Понятно' })
+		const body = within(dialog).getByText(/^1\. /).closest('.base-modal__body') as HTMLElement
+		await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight)
+		await expect(accept.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight)
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Окно внутри блока (`isContained`): рендерится на месте, перекрывает только родителя с `position: relative`
+ * и не выходит за его границы. Диалог немодальный — остальная страница доступна, прокрутка не блокируется.
+ */
+export const Contained: Story = {
+	parameters: { controls: { include: ['variant', 'sizeScale', 'closeOnOverlay'] } },
 	render: args => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
+		components: { BaseModal, BaseButton, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]), isOpen: ref(false) }),
 		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Открыть</BaseButton>
-				<BaseModal v-bind="args" v-model:is-open="isOpen" title="Длинное содержимое">
-					<p>Каждое изделие проходит многоэтапный контроль качества. Сначала мастер проверяет заготовку, затем после ковки — форму и пропорции, после шлифовки — поверхность, и финальная проверка перед упаковкой. Мы гарантируем высочайшее качество каждого изделия, созданного в нашей мастерской.</p>
-					<p>Доставка осуществляется по всей России транспортными компаниями. Сроки доставки составляют от 3 до 14 рабочих дней в зависимости от региона. Стоимость доставки рассчитывается индивидуально при оформлении заказа и зависит от габаритов и веса изделия.</p>
-					<p>Гарантия на все изделия составляет 2 года с момента покупки. В течение гарантийного срока мы бесплатно устраняем любые дефекты, возникшие по нашей вине. Для обращения по гарантии свяжитесь с нами через форму обратной связи или по телефону.</p>
+			<div class="story-frame story-medium" style="height: 220px;">
+				<BaseButton variant="outline" @click="isOpen = true">Открыть в блоке</BaseButton>
+				<BaseModal v-bind="props" v-model:is-open="isOpen" is-contained title="Окно в блоке">
+					<BaseText>Окно перекрывает только этот блок. Кнопки и поля за его пределами доступны.</BaseText>
 				</BaseModal>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Открыть в блоке' }))
+		const dialog = await canvas.findByRole('dialog', { name: 'Окно в блоке' })
+		await expect(dialog).not.toHaveAttribute('aria-modal')
+		await expect(document.body.style.overflow).toBe('')
+
+		// Окно появляется из 95%: границы проверяются после окончания анимации
+		const frame = (dialog.closest('.story-frame') as HTMLElement).getBoundingClientRect()
+		await waitFor(() => expect(getComputedStyle(dialog).transform).toBe('none'))
+		const box = dialog.getBoundingClientRect()
+		await expect(box.top).toBeGreaterThanOrEqual(frame.top)
+		await expect(box.bottom).toBeLessThanOrEqual(frame.bottom)
 	},
 }
-/** Интерактивное */
-export const Interactive: Story = {
+
+/**
+ * Подтверждение, которое нельзя закрыть случайным кликом: `closeOnOverlay: false`. Клик по подложке окно не закрывает,
+ * Escape и кнопка «Закрыть» — закрывают.
+ */
+export const NoOverlayClose: Story = {
+	args: { closeOnOverlay: false, title: 'Отправить на согласование?' },
+	parameters: { controls: { include: ['closeOnOverlay', 'hasOverlay'] } },
 	render: args => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
+		components: { BaseModal, BaseButton, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'isOpen', 'onUpdate:isOpen']), isOpen: ref(false) }),
 		template: `
-			<div>
-				<BaseButton @click="isOpen = true">Открыть</BaseButton>
-				<BaseModal v-bind="args" v-model:is-open="isOpen">
-					<p>Контент</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('модалка закрыта до взаимодействия', async () => {
-			expect(document.querySelector('.base-modal')).not.toBeInTheDocument()
-		})
-
-		await step('клик по кнопке открывает модалку', async () => {
-			const trigger = canvasElement.querySelector('button')
-			if (trigger) await userEvent.click(trigger)
-			await waitFor(() => {
-				expect(document.querySelector('.base-modal')).toBeInTheDocument()
-			})
-		})
-
-		await step('закрытие по Escape', async () => {
-			await userEvent.keyboard('{Escape}')
-			await waitFor(() => {
-				expect(document.querySelector('.base-modal')).not.toBeInTheDocument()
-			})
-		})
-	},
-}
-/** Закрытие по клику по оверлею (покрытие handleOverlayClick) */
-export const OverlayClickClose: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Overlay click">
-				<p>Контент</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-		const overlay = document.querySelector('.base-modal')
-		if (overlay instanceof HTMLElement) {
-			await userEvent.click(overlay)
-		}
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).not.toBeInTheDocument()
-		})
-	},
-}
-/** Клик по оверлею с closeOnOverlay=false (покрытие ветки closeOnOverlay) */
-export const OverlayClickBlocked: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" :close-on-overlay="false" title="No overlay close">
-				<p>Контент</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-		const overlay = document.querySelector('.base-modal')
-		if (overlay instanceof HTMLElement) {
-			await userEvent.click(overlay)
-		}
-		expect(document.querySelector('.base-modal')).toBeInTheDocument()
-	},
-}
-/** FullScreen=undefined — покрытие ветки fullScreenClass=undefined */
-export const FullScreenUnset: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Без fullscreen">
-				<p>fullScreenClass = undefined</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-		const modal = document.querySelector('.base-modal')
-		expect(modal?.className).not.toContain('fullscreen')
-	},
-}
-/** Модал без title — ветка v-if="title" false */
-export const WithoutTitle: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen">
-				<p>Без заголовка</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-		expect(document.querySelector('.base-modal__header')).toBeNull()
-	},
-}
-/** Модал с footer-слотом — покрывает ветку hasFooter=true */
-export const WithFooter: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="С футером">
-				<p>Контент</p>
+			<BaseButton variant="outline" @click="isOpen = true">Отправить на согласование</BaseButton>
+			<BaseModal v-bind="props" v-model:is-open="isOpen">
+				<BaseText>После отправки редактировать документ нельзя, пока согласование не завершится.</BaseText>
 				<template #footer>
-					<BaseButton>OK</BaseButton>
+					<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
+					<BaseButton @click="isOpen = false">Отправить</BaseButton>
 				</template>
 			</BaseModal>
 		`,
 	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal__footer')).toBeInTheDocument()
-		})
-	},
-}
-/** Модал с customClass — покрытие всех elementKeys */
-export const WithCustomClass: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal, BaseButton },
-		setup() {
-			const isOpen = ref(true)
-			const customClass = {
-				root: 'custom-root',
-				content: 'custom-content',
-				header: 'custom-header',
-				headerLeft: 'custom-header-left',
-				title: 'custom-title',
-				close: 'custom-close',
-				body: 'custom-body',
-				footer: 'custom-footer',
-			}
-			return { isOpen, customClass }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Custom" :custom-class="customClass">
-				<p>Контент</p>
-				<template #footer>
-					<BaseButton>OK</BaseButton>
-				</template>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.custom-root')).toBeInTheDocument()
-		})
-		expect(document.querySelector('.custom-content')).toBeInTheDocument()
-		expect(document.querySelector('.custom-header')).toBeInTheDocument()
-		expect(document.querySelector('.custom-body')).toBeInTheDocument()
-		expect(document.querySelector('.custom-footer')).toBeInTheDocument()
-	},
-}
-/** Модал с customColor — покрытие customColorStyle */
-export const WithCustomColor: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			const color = {
-				bg: { base: '#fafafa', hover: '#f0f0f0' },
-				text: { base: '#222', hover: '#000' },
-			}
-			return { isOpen, color }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Color" :color="color">
-				<p>customColor</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-	},
-}
-/** Модал isContained с кликом по оверлею — покрывает закрытие при isContained */
-export const ContainedOverlayClose: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<div style="position:relative;width:400px;height:300px;">
-				<BaseModal v-model:is-open="isOpen" title="Contained" is-contained>
-					<p>Контент</p>
-				</BaseModal>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-modal--contained')).toBeInTheDocument()
-		})
-		const overlay = canvasElement.querySelector('.base-modal--contained')
-		if (overlay instanceof HTMLElement) {
-			await userEvent.click(overlay)
-		}
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-modal')).toBeNull()
-		})
-	},
-}
-/** Клик внутри content — overlay click не срабатывает (ветка self) */
-export const ContentClickNoClose: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Content click">
-				<p class="inner-content">Клик по контенту</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-		const content = document.querySelector('.inner-content')
-		if (content instanceof HTMLElement) {
-			await userEvent.click(content)
-		}
-		expect(document.querySelector('.base-modal')).toBeInTheDocument()
-	},
-}
-/** Клик по кнопке закрытия в шапке — покрывает handleClose */
-export const HeaderCloseClick: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Закрытие">
-				<p>Контент</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal__close')).toBeInTheDocument()
-		})
-		const closeBtn = document.querySelector('.base-modal__close')
-		if (closeBtn instanceof HTMLElement) {
-			await userEvent.click(closeBtn)
-		}
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeNull()
-		})
-	},
-}
-/** hasOverlay=false, модал открыт сразу — покрывает шаблонную ветку `!hasOverlay && 'base-modal--no-overlay'` (стр. 10). */
-export const NoOverlayOpen: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Без оверлея" :has-overlay="false">
-				<p>Без затемнения</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal--no-overlay')).toBeInTheDocument()
-		})
-	},
-}
-/** closeOnOverlay явно undefined — покрывает ветку `?? true` в usePopup (стр. 117 BaseModal.vue). */
-export const CloseOnOverlayUndefined: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			const overlayFlag: boolean | undefined = undefined
-			return { isOpen, overlayFlag }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="undefined overlay" :close-on-overlay="overlayFlag">
-				<p>Контент</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
-		const overlay = document.querySelector('.base-modal')
-		if (overlay instanceof HTMLElement) {
-			await userEvent.click(overlay)
-		}
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).not.toBeInTheDocument()
-		})
-	},
-}
-/** Escape закрывает модал — закрепляет ветку closeOnEscape для дополнительного прогона handleClose и isOpen-watcher. */
-export const EscapeClose: Story = {
-	tags: ['!autodocs'],
-	render: () => ({
-		components: { BaseModal },
-		setup() {
-			const isOpen = ref(true)
-			return { isOpen }
-		},
-		template: `
-			<BaseModal v-model:is-open="isOpen" title="Escape">
-				<p>Контент</p>
-			</BaseModal>
-		`,
-	}),
-	play: async () => {
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).toBeInTheDocument()
-		})
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Отправить на согласование' }))
+		const dialog = await screen.findByRole('dialog', { name: 'Отправить на согласование?' })
+
+		await userEvent.click(dialog.parentElement as HTMLElement)
+		await expect(dialog).toBeInTheDocument()
+
 		await userEvent.keyboard('{Escape}')
-		await waitFor(() => {
-			expect(document.querySelector('.base-modal')).not.toBeInTheDocument()
-		})
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+	},
+}
+
+/** На весь экран: `fullScreen="both"` (или `width`, `height`) растягивает окно с отступом 16px от краёв. */
+export const FullScreen: Story = {
+	tags: ['!autodocs'],
+	args: { isOpen: true, fullScreen: 'both', title: 'Предпросмотр субтитров' },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseModal, BaseButton, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args), lines: SUBTITLES, onUpdate }),
+			template: `
+				<BaseButton variant="outline" @click="onUpdate(true)">Предпросмотр</BaseButton>
+				<BaseModal v-bind="props" @update:is-open="onUpdate">
+					<div class="story-stack">
+						<BaseText v-for="line in lines" :key="line.time">{{ line.time }} — {{ line.text }}</BaseText>
+					</div>
+					<template #footer>
+						<BaseButton variant="outline" @click="onUpdate(false)">Закрыть</BaseButton>
+						<BaseButton @click="onUpdate(false)">Экспортировать</BaseButton>
+					</template>
+				</BaseModal>
+			`,
+		}
+	},
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Предпросмотр субтитров' })
+		// Окно появляется из 95%: размеры проверяются после окончания анимации
+		await waitFor(() => expect(getComputedStyle(dialog).transform).toBe('none'))
+		const box = dialog.getBoundingClientRect()
+		const viewport = document.documentElement
+		await expect(box.width).toBeCloseTo(viewport.clientWidth - 32, 0)
+		await expect(box.height).toBeCloseTo(viewport.clientHeight - 32, 0)
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Enter на кнопке открывает окно и переводит фокус внутрь, Tab и Shift+Tab обходят элементы окна
+ * по кругу и не уходят на страницу, Escape закрывает окно и возвращает фокус на кнопку.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	render: args => ({
+		components: { BaseModal, BaseButton, BaseInput },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'isOpen', 'title', 'onUpdate:isOpen']), isOpen: ref(false), name: ref('Сайт студии') }),
+		template: `
+			<BaseButton variant="outline" @click="isOpen = true">Переименовать</BaseButton>
+			<BaseModal v-bind="props" v-model:is-open="isOpen" title="Переименовать проект">
+				<BaseInput v-model="name" label="Название" />
+				<template #footer>
+					<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
+					<BaseButton @click="isOpen = false">Сохранить</BaseButton>
+				</template>
+			</BaseModal>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Переименовать' })
+		await tabTo(trigger, userEvent)
+		await userEvent.keyboard('{Enter}')
+
+		const dialog = await screen.findByRole('dialog', { name: 'Переименовать проект' })
+		const close = within(dialog).getByRole('button', { name: 'Закрыть' })
+		await waitFor(() => expect(close).toHaveFocus())
+
+		await userEvent.tab()
+		await expect(within(dialog).getByLabelText('Название')).toHaveFocus()
+		await userEvent.tab()
+		await userEvent.tab()
+		await expect(within(dialog).getByRole('button', { name: 'Сохранить' })).toHaveFocus()
+		// С последнего элемента Tab возвращается на первый, а не на страницу под подложкой
+		await userEvent.tab()
+		await expect(close).toHaveFocus()
+		await userEvent.tab({ shift: true })
+		await expect(within(dialog).getByRole('button', { name: 'Сохранить' })).toHaveFocus()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
 	},
 }

@@ -1,68 +1,91 @@
+// BaseRating. Ряд звёзд 20px при sizeScale = 100 (BaseIcon) с зазором 2px. Пустые звёзды — --rise-border-accented,
+// заполненные — --rise-primary: дробная оценка — слой заливки, обрезанный по ширине звезды. Предпросмотр под курсором —
+// --rise-primary-hover. Фокус с клавиатуры — кольцо focus-ring вокруг ряда. Отключённый — disabled-state.
+// Варианты: default — только звёзды; outline — ряд в коробке поля (рамка accented, радиус md, высота 32px, как BaseInput);
+// soft — мягкий нейтральный фон без рамки; ghost — фон появляется при наведении; shadow — коробка поля с тенью xs.
+// Кастомный цвет: color.text — заполненные звёзды (text.hover — предпросмотр), color.bg — фон ряда.
 .base-rating {
+	// Цвета звёзд. Состояния переопределяют только эти переменные.
+	--rating-empty: var(--rise-border-accented);
+	@include custom-text(--rating-fill, var(--rise-primary));
+	--rating-fill-hover: var(--custom-text-hover, var(--custom-text, var(--rise-primary-hover)));
+
 	display: inline-flex;
 	align-items: center;
 	gap: sz(2px);
-	border-radius: var(--border-radius-sm);
-	@include transition(box-shadow);
-
-	@include focus {
-		box-shadow:
-			0 0 0 2px var(--color-bg),
-			0 0 0 4px var(--color-accent);
-	}
-
-	&--readonly {
-		pointer-events: none;
-	}
+	vertical-align: middle;
+	border-radius: sz(var(--rise-radius-sm));
+	@include custom-bg(background-color, transparent);
+	@include transition-colors;
+	@include focus-ring;
 
 	&__star {
 		position: relative;
 		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		box-sizing: border-box;
-		cursor: pointer;
-		color: var(--color-border);
-		@include transition(transform);
-
-		@include hover {
-			transform: scale(1.15);
-		}
-
-		@include active {
-			transform: scale(0.92);
-		}
+		flex-shrink: 0;
+		color: var(--rating-empty);
 	}
 
+	// Слой заливки поверх пустой звезды: ширина в процентах — доля оценки в этой звезде.
 	&__star-fill {
 		position: absolute;
 		top: 0;
-		left: 0;
 		bottom: 0;
+		left: 0;
 		display: inline-flex;
 		align-items: center;
-		box-sizing: border-box;
 		overflow: hidden;
+		color: var(--rating-fill);
 		white-space: nowrap;
 		pointer-events: none;
-		@include custom-text(color, var(--color-accent));
-		@include transition(width);
+		@include transition(width, color);
 	}
 
-	&--ghost &__star {
-		opacity: 0.85;
+	// ─── Состояния ───────────────────────────────────────────────────────────────
+
+	&--interactive &__star {
+		cursor: pointer;
 	}
 
-	&--outline &__star {
-		border: sz(1px) solid var(--color-border);
-		border-radius: var(--border-radius-sm);
+	// Предпросмотр под курсором — цвет наведения основного цвета.
+	&--interactive {
+		@include hover {
+			--rating-fill: var(--rating-fill-hover);
+		}
 	}
 
-	&--shadow &__star-fill {
-		filter: drop-shadow(var(--shadow-sm));
+	&--disabled {
+		@include disabled-state;
 	}
 
-	&--soft &__star-fill {
-		@include custom-text(color, var(--color-primary));
+	// ─── Варианты с коробкой: 32px, как поле (рамка 1px + отступ 5px + звезда 20px + отступ 5px + рамка 1px) ─────
+
+	&--outline,
+	&--soft,
+	&--ghost,
+	&--shadow {
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-control-radius));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+	}
+
+	&--shadow {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, var(--rise-bg));
+		box-shadow: var(--rise-shadow-xs);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+	}
+
+	// Наведение на интерактивный рейтинг без рамки — фон bg-elevated, как у полей soft и ghost.
+	&--soft.base-rating--interactive,
+	&--ghost.base-rating--interactive {
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
 	}
 }

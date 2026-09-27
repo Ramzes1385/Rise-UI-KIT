@@ -1,79 +1,88 @@
+// BaseMenu. Панель пунктов-действий, как выпадающее меню: фон bg, рамка border, радиус md, тень lg, отступ 4px.
+// Пункт — menu-item: 14/20, отступы 6/8, фон bg-elevated при наведении и при фокусе с клавиатуры; иконка приглушена.
+// Варианты: default — плавающая панель; ghost — без фона, рамки и тени (меню внутри другой поверхности);
+// outline — выразительная рамка без тени; shadow — крупная тень; soft — мягкий нейтральный фон без рамки и тени.
+// Кастомный цвет: bg.base — фон панели, bg.hover — фон пункта под курсором, text.base / text.hover — текст пунктов.
 .base-menu {
-	@include custom-bg(background-color, var(--color-white));
-	border: 1px solid var(--color-border);
-	border-radius: var(--border-radius-base);
-	box-shadow: var(--shadow-md);
+	display: flex;
+	flex-direction: column;
+	min-width: sz(180px);
 	padding: sz(4px);
-	min-width: sz(160px);
-	@include interactive;
+	@include floating-surface;
+	@include custom-bg(background-color, var(--rise-bg));
+	@include transition-colors;
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+	}
 
 	&__item {
-		display: flex;
-		align-items: center;
-		gap: sz(10px);
-		padding: sz(8px) sz(12px);
-		font-size: sz(14px);
-		cursor: pointer;
-		border-radius: sz(4px);
-		outline: none;
-		@include interactive;
+		@include menu-item;
+		@include custom-text(color, var(--rise-text));
+		@include focus-ring(-2px);
 
 		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+
+			.base-menu__icon {
+				color: inherit;
+			}
 		}
 
-		@include focus {
-			@include custom-bg(background-color, var(--color-surface-muted));
-			box-shadow: inset 0 0 0 1px var(--color-accent);
+		&:focus-visible {
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
 		}
 
 		@include active {
-			@include custom-bg(background-color, var(--color-border));
+			background-color: var(--rise-bg-accented);
 		}
 
 		&--disabled {
-			opacity: 0.4;
-			cursor: not-allowed;
+			@include disabled-state;
 		}
 	}
 
 	&__icon {
-		font-size: 16px;
-		opacity: 0.7;
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+		@include transition-colors;
 	}
 
 	&__label {
-		@include custom-text(color, var(--color-text));
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 
-	&__divider {
-		height: 1px;
-		background-color: var(--color-border);
-		margin: sz(4px) 0;
+	// Разделитель на всю ширину панели: компенсирует её внутренний отступ.
+	// Двойной класс перекрывает ширину BaseSeparator (100%) независимо от порядка CSS.
+	&__divider.base-separator {
+		width: auto;
+		margin: sz(4px) sz(-4px);
 	}
 
-	// Варианты
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
 	&--ghost {
-		@include custom-bg(background-color, transparent);
 		border-color: transparent;
 		box-shadow: none;
+		@include custom-bg(background-color, transparent);
 	}
 
 	&--outline {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
+		border-color: var(--rise-border-accented);
+		box-shadow: none;
 	}
 
 	&--shadow {
-		box-shadow: var(--shadow-lg);
+		box-shadow: var(--rise-shadow-xl);
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
 		border-color: transparent;
-
-		.base-menu__label {
-			@include custom-text(color, var(--color-primary));
-		}
+		box-shadow: none;
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 	}
 }

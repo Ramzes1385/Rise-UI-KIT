@@ -95,6 +95,13 @@ describe('BaseBreadcrumbs unit', () => {
 			expect(dots?.length).toBeGreaterThanOrEqual(3)
 		})
 
+		it('должен рендерить стрелку arrow-right для separator="arrow" (а не chevron)', () => {
+			const { container } = render(BaseBreadcrumbs, {
+				props: { items: ITEMS, separator: 'arrow' },
+			})
+			expect(container.querySelector('.base-breadcrumbs__sep use')?.getAttribute('href')).toBe('icons.svg#arrow-right')
+		})
+
 		it('должен рендерить chevron-разделитель для неизвестного типа разделителя', () => {
 			const { container } = render(BaseBreadcrumbs, {
 				props: { items: ITEMS, separator: 'unknown' as any },

@@ -1,15 +1,30 @@
-@use "@styles/variables" as *;
-@use "@styles/mixins" as *;
-@use "@styles/functions" as *;
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
 
 .base-table {
+	// separate + spacing 0: рамки принадлежат ячейкам и двигаются вместе с закреплёнными шапкой и колонками.
 	&__table {
 		width: 100%;
-		border-collapse: collapse;
+		border-collapse: separate;
+		border-spacing: 0;
 		table-layout: auto;
 
 		&--fixed {
 			table-layout: fixed;
 		}
+	}
+
+	// Служебные колонки: отступ слева как у ячеек, справа — без отступа; ширина = отступ + содержимое.
+	&__col--check {
+		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(16px)});
+	}
+
+	&__col--number {
+		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(32px)});
+	}
+
+	&__col--expand {
+		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(24px)});
 	}
 }

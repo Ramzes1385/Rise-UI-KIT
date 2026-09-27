@@ -6,6 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { h } from 'vue'
 import { BaseText } from '@components/BaseText'
 import BaseRadio from '../ui/BaseRadio.vue'
 import type { BaseRadioOption } from '../model/BaseRadio.types'
@@ -87,6 +88,53 @@ describe('BaseRadio integration', () => {
 			await user.keyboard(' ')
 
 			expect(emitted()).toHaveProperty('update:modelValue')
+		})
+	})
+
+	describe('слот option', () => {
+		/** Кастомная подпись опции: отмечает выбранную опцию галочкой */
+		const OPTION_SLOT = {
+			option: ({ option, isChecked }: { option: BaseRadioOption; isChecked: boolean }) =>
+				h('span', { class: 'custom-option' }, `${option.label}${isChecked ? ' ✓' : ''}`),
+		}
+
+		function renderWithSlot() {
+			return render(BaseRadio, {
+				props: { modelValue: 'metal', options: OPTIONS, name: 'slot-group' },
+				slots: OPTION_SLOT,
+				...GLOBAL_COMPONENTS,
+			})
+		}
+
+		it('сохраняет нативные radio с именами из кастомной подписи и их состояние', () => {
+			renderWithSlot()
+
+			expect(screen.getAllByRole('radio')).toHaveLength(OPTIONS.length)
+			expect(screen.getByRole('radio', { name: 'Металл ✓' })).toBeChecked()
+			expect(screen.getByRole('radio', { name: 'Дерево' })).not.toBeChecked()
+			expect(screen.getByRole('radio', { name: 'Стекло' })).toBeDisabled()
+		})
+
+		it('выбирает опцию кликом по кастомной подписи', async () => {
+			const user = userEvent.setup()
+			const { emitted } = renderWithSlot()
+
+			await user.click(screen.getByText('Дерево'))
+
+			const events = emitted()['update:modelValue'] as (string | number)[][] | undefined
+			expect(events?.at(-1)?.[0]).toBe('wood')
+		})
+
+		it('переключает опцию стрелкой вниз с клавиатуры', async () => {
+			const user = userEvent.setup()
+			const { emitted } = renderWithSlot()
+
+			screen.getByRole('radio', { name: 'Металл ✓' }).focus()
+			await user.keyboard('{ArrowDown}')
+
+			const events = emitted()['update:modelValue'] as (string | number)[][] | undefined
+			expect(events?.at(-1)?.[0]).toBe('wood')
+			expect(screen.getByRole('radio', { name: 'Дерево' })).toHaveFocus()
 		})
 	})
 })

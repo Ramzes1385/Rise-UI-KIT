@@ -12,88 +12,89 @@
 			variantClass,
 			classes.root,
 		]">
+		<!-- Скрытый input открывается только программно: единственная точка входа с клавиатуры — зона загрузки -->
 		<input
+			:id="inputId"
 			ref="fileInput"
 			type="file"
 			class="base-file-upload__input"
+			tabindex="-1"
 			:accept="accept"
 			:multiple="isMultiple"
 			:disabled="isDisabled"
 			@change="handleFileChange" />
 
-		<BaseText v-if="label" tag="label" class="base-file-upload__label" :custom-class="classes.label">{{
-			label
-		}}</BaseText>
+		<FormFieldLabel
+			v-if="label"
+			:for-id="inputId"
+			:label="label"
+			class-name="base-file-upload__label"
+			:custom-class="classes.label"
+			:size-scale="sizeScale" />
 
+		<!-- Зона загрузки — кнопка: клик, Enter и Space открывают выбор файла; ошибки связаны через aria-describedby -->
 		<div
 			class="base-file-upload__dropzone"
-			tabindex="0"
+			role="button"
+			:tabindex="isDisabled ? -1 : 0"
+			:aria-disabled="isDisabled || undefined"
+			:aria-describedby="hasError ? errorsId : undefined"
 			:class="[{ 'base-file-upload__dropzone--active': isDragOver }, classes.dropzone]"
 			@click="triggerUpload"
-			@dragover.prevent="handleDragOver"
+			@keydown.enter.self.prevent="triggerUpload"
+			@keydown.space.self.prevent="triggerUpload"
+			@dragover.prevent="handleZoneDragOver"
 			@dragleave="handleDragLeave"
-			@drop.prevent="handleDrop">
+			@drop.prevent="handleZoneDrop">
 			<slot name="trigger">
-				<BaseText tag="span" class="base-file-upload__text" :custom-class="classes.text">{{ buttonText }}</BaseText>
-				<BaseText v-if="accept" tag="span" class="base-file-upload__hint" :custom-class="classes.hint">{{
-					formatHint
-				}}</BaseText>
-			<BaseText v-if="maxSize" tag="span" class="base-file-upload__hint" :custom-class="classes.hint"
-				>{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</BaseText
-			>
+				<BaseIcon name="upload" class="base-file-upload__icon" />
+				<span class="base-file-upload__text" :class="classes.text">{{ buttonText }}</span>
+				<span v-if="accept || maxSize" class="base-file-upload__hint" :class="classes.hint">
+					<span v-if="accept">{{ formatHint }}</span>
+					<span v-if="maxSize">{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</span>
+				</span>
 			</slot>
 		</div>
 
+		<!-- Список файлов: строки-карточки; цвет компонента (color) их не перекрашивает -->
 		<ul v-if="uploadedFiles.length > 0" class="base-file-upload__list" :class="classes.list">
 			<li
 				v-for="item in uploadedFiles"
 				:key="item.id"
 				class="base-file-upload__item"
 				:class="[`base-file-upload__item--${item.status}`, classes.item]">
-				<div
-					v-if="item.previewUrl"
-					class="base-file-upload__preview"
-					:class="classes.preview"
-					:style="{ width: `${scaledPreviewSize}px`, height: `${scaledPreviewSize}px` }">
+				<div class="base-file-upload__preview" :class="classes.preview" :style="previewStyle">
 					<BaseImage
+						v-if="item.previewUrl"
 						:src="item.previewUrl"
 						:alt="item.name"
 						class="base-file-upload__preview-img"
 						:custom-class="classes.previewImg"
-						fit="contain"
+						fit="cover"
+						:border-radius="0"
 						:zoom-config="{ hasZoom: allowPreview }" />
+					<BaseIcon v-else :name="fileIconName(item)" class="base-file-upload__file-icon" />
 				</div>
 
 				<div class="base-file-upload__info" :class="classes.info">
-					<BaseText
-						tag="span"
-						class="base-file-upload__name"
-						:custom-class="classes.name"
-						:title="item.name"
-						truncate
-						>{{ item.name }}</BaseText
-					>
+					<span class="base-file-upload__name" :class="classes.name" :title="item.name">{{ item.name }}</span>
 					<div class="base-file-upload__meta" :class="classes.meta">
-						<BaseText tag="span" class="base-file-upload__ext" :custom-class="classes.ext">{{
+						<span v-if="item.extension" class="base-file-upload__ext" :class="classes.ext">{{
 							item.extension.toUpperCase()
-						}}</BaseText>
-						<BaseText tag="span" class="base-file-upload__size" :custom-class="classes.size">{{
-							formatSize(item.size)
-						}}</BaseText>
+						}}</span>
+						<span class="base-file-upload__size" :class="classes.size">{{ formatSize(item.size) }}</span>
+						<span class="base-file-upload__status" :class="[`base-file-upload__status--${item.status}`, classes.status]">
+							<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
+							<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
+							<template v-else-if="item.status === 'error'">{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
+							<template v-else>{{ UI_TEXT.FILE_STATUS_PENDING }}</template>
+						</span>
 					</div>
-					<BaseText
-						tag="span"
-						class="base-file-upload__status"
-						:class="[`base-file-upload__status--${item.status}`, classes.status]">
-						<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
-						<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
-						<template v-else-if="item.status === 'error'">{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
-						<template v-else>{{ UI_TEXT.FILE_STATUS_PENDING }}</template>
-					</BaseText>
 					<BaseProgress
 						v-if="item.status === 'uploading'"
 						:value="item.progress"
 						shape="line"
+						:aria-label="item.name"
 						:size-scale="sizeScale"
 						:custom-class="classes.progress"
 						class="base-file-upload__progress" />
@@ -103,48 +104,46 @@
 					variant="ghost"
 					class="base-file-upload__remove"
 					:custom-class="classes.remove"
-					:title="UI_TEXT.DELETE"
+					:aria-label="`${UI_TEXT.DELETE} ${item.name}`"
+					:is-disabled="isDisabled"
 					:size-scale="sizeScale"
 					@click="handleRemove(item)">
-					<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" />
+					<template #left><BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" /></template>
 				</BaseButton>
 			</li>
 		</ul>
 
 		<BaseAnimation
 			v-if="hasError"
+			:id="errorsId"
 			name="fade"
 			is-group
 			tag="ul"
 			:custom-class="classes.errors"
 			class="base-file-upload__errors">
-			<li
-				v-for="(err, index) in displayErrors"
-				:key="err + index"
-				class="base-file-upload__error-item"
-				:class="classes.errorItem">
-				<BaseText tag="span" :size-scale="sizeScale">{{ index + 1 }}. {{ err }}</BaseText>
+			<li v-for="(err, index) in displayErrors" :key="err + index" class="base-file-upload__error-item" :class="classes.errorItem">
+				{{ err }}
 			</li>
 		</BaseAnimation>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { BaseButton } from '@components/BaseButton'
+import { FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFileUploadState } from '@composables/useFileUploadState'
 import { useFormField } from '@composables/useFormField'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
+import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
 import { calcIconScale } from '@utils/iconUtils'
-import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../model/BaseFileUpload.types'
+import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots, UploadedFile } from '../model/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
 const props = withDefaults(defineProps<BaseFileUploadProps>(), {
@@ -156,7 +155,8 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	maxCount: 10,
 	label: '',
 	buttonText: UI_TEXT.FILE_SELECT,
-	previewSize: 64,
+	// Без пропа размер превью берётся из стилей (40px, масштабируется sizeScale): inline-размер — только при явном значении
+	previewSize: undefined,
 	allowPreview: true,
 	emptyText: UI_TEXT.FILE_DROP,
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -164,26 +164,26 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 })
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-file-upload', props, [
-		'root',
-		'label',
-		'dropzone',
-		'text',
-		'hint',
-		'list',
-		'item',
-		'preview',
-		'previewImg',
-		'info',
-		'name',
-		'meta',
-		'ext',
-		'size',
-		'status',
-		'progress',
-		'remove',
-		'errors',
-		'errorItem',
-	])
+	'root',
+	'label',
+	'dropzone',
+	'text',
+	'hint',
+	'list',
+	'item',
+	'preview',
+	'previewImg',
+	'info',
+	'name',
+	'meta',
+	'ext',
+	'size',
+	'status',
+	'progress',
+	'remove',
+	'errors',
+	'errorItem',
+])
 
 const emit = defineEmits<BaseFileUploadEmits>()
 defineSlots<BaseFileUploadSlots>()
@@ -195,6 +195,8 @@ const formField = useFormField({
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const rootRef = ref<HTMLElement | null>(null)
+const inputId = useId()
+const errorsId = useId()
 
 const {
 	uploadedFiles,
@@ -209,15 +211,21 @@ const {
 	getMaxSize: () => props.maxSize,
 	getAccept: () => props.accept,
 	getMaxCount: () => props.maxCount,
+	getIsMultiple: () => props.isMultiple,
 	onError: (message: string) => emit('error', message),
 	onChange: (files: File[]) => emit('change', files),
-	onRemove: (file) => emit('remove', file),
+	onRemove: file => emit('remove', file),
 })
 
 const displayErrors = computed(() => [...(formField.error ? [formField.error] : []), ...uploadErrors.value])
 const hasError = computed(() => displayErrors.value.length > 0)
 
-const scaledPreviewSize = computed(() => Math.round((props.previewSize * props.sizeScale) / 100))
+/** Явный previewSize (px) масштабируется вместе с компонентом; без пропа размер задают стили. */
+const previewStyle = computed(() => {
+	if (props.previewSize === undefined) return undefined
+	const size = `${Math.round((props.previewSize * props.sizeScale) / 100)}px`
+	return { width: size, height: size }
+})
 
 const formatHint = computed(() => formatAcceptHint(props.accept))
 
@@ -225,8 +233,27 @@ function formatSize(bytes: number): string {
 	return formatFileSize(bytes)
 }
 
+/** Иконка файла без превью: по MIME-типу — изображение, видео или документ. */
+function fileIconName(item: UploadedFile): string {
+	if (item.type.startsWith('image/')) return 'image'
+	if (item.type.startsWith('video/')) return 'video'
+	return 'file'
+}
+
 function triggerUpload(): void {
+	if (props.isDisabled) return
 	fileInput.value?.click()
+}
+
+// Отключённое состояние не может полагаться только на CSS pointer-events: drop и клавиатура его обходят
+function handleZoneDragOver(): void {
+	if (props.isDisabled) return
+	handleDragOver()
+}
+
+function handleZoneDrop(e: DragEvent): void {
+	if (props.isDisabled) return
+	handleDrop(e)
 }
 
 function handleFileChange(e: Event): void {

@@ -1,37 +1,37 @@
+// BaseStepper. Шаги с индикатором 28px и подписью: под индикатором (horizontal) или справа от него (vertical).
+// Индикатор: пройденный шаг — заливка primary и галочка on-primary; текущий — кольцо primary (рамка 2px);
+// будущий — фон bg-elevated и номер text-toned. Линия — border-accented, пройденная часть — primary.
+// Подпись 14/20 medium (у текущего шага — text-highlighted), описание 12/16 text-muted.
+// Формы индикатора: circle, square (радиус md), diamond (повёрнутый квадрат), empty (без индикатора, только линия).
+// Вариант animated плавно заполняет линию при смене шага.
+// Кастомный цвет: bg.base (и bg.hover) — пройденные шаги, кольцо текущего и линия прогресса; text.base — галочка на заливке.
 .base-stepper {
+	--stepper-size: #{sz(28px)};
+	--stepper-line: #{sz(2px)};
+	--stepper-accent: var(--custom-bg, var(--rise-primary));
+	--stepper-on-accent: var(--custom-text, var(--rise-on-primary));
+
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	position: relative;
 
-	// ── Ориентация ──
-	&--horizontal {
-		align-items: stretch;
-	}
-
-	&--vertical {
-		align-items: stretch;
-	}
-
-	// ── Шапка ──
 	&__header {
 		display: flex;
 		width: 100%;
 		margin-bottom: sz(24px);
 	}
 
-	// ── Подвал ──
 	&__footer {
 		display: flex;
 		width: 100%;
 		margin-top: sz(24px);
 	}
 
-	// ── Контейнер шагов ──
 	&__items {
+		position: relative;
 		display: flex;
 		width: 100%;
-		position: relative;
 	}
 
 	&--horizontal &__items {
@@ -42,26 +42,29 @@
 		flex-direction: column;
 	}
 
-	// ── Шаг ──
-	&__step {
-		display: flex;
-		cursor: pointer;
-		position: relative;
-		outline: none;
-		z-index: 2;
-		@include transition(transform);
+	// ─── Шаг ─────────────────────────────────────────────────────────────────────
 
-		&--disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+	&__step {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		min-width: 0;
+		border-radius: sz(var(--rise-radius-md));
+		cursor: pointer;
+		@include focus-ring;
+
+		@include hover {
+			.base-stepper__indicator {
+				background-color: var(--rise-bg-accented);
+			}
 		}
 	}
 
 	&--horizontal &__step {
+		flex: 1 1 0;
 		flex-direction: column;
 		align-items: center;
-		flex: 1;
-		gap: sz(4px);
+		gap: sz(8px);
 	}
 
 	&--vertical &__step {
@@ -70,213 +73,194 @@
 		gap: sz(12px);
 	}
 
-	// ── Галочка ──
-	&__check {
-		display: flex;
-		justify-content: center;
-		align-items: center;
+	// Отключённый шаг: приглушены номер и подпись, фон индикатора остаётся непрозрачным — линия под ним не просвечивает.
+	&__step--disabled {
+		cursor: not-allowed;
 	}
 
-	// ── Обёртка индикатора ──
+	&__step--disabled &__content,
+	&__step--disabled &__indicator > * {
+		opacity: var(--rise-disabled-opacity);
+	}
+
+	// ─── Индикатор ───────────────────────────────────────────────────────────────
+
 	&__indicator-wrapper {
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-
-		&:hover:not(.base-stepper__step--disabled) {
-			.base-stepper__indicator {
-				border-color: var(--color-accent);
-				background-color: var(--color-surface-muted);
-			}
-		}
-
-		&:focus-visible {
-			.base-stepper__indicator {
-				box-shadow: 0 0 0 sz(4px) rgba(249, 115, 22, 0.2);
-			}
-		}
-
-		&:active:not(.base-stepper__step--disabled) {
-			transform: scale(0.98);
-		}
+		width: var(--stepper-size);
+		height: var(--stepper-size);
 	}
 
-	// ── Индикатор ──
 	&__indicator {
-		width: sz(32px);
-		height: sz(32px);
-		border-radius: 50%;
-		border: sz(2px) solid var(--color-border);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: sz(14px);
-		font-weight: 700;
-		background-color: var(--color-surface);
-		position: relative;
-		z-index: 2;
-		flex-shrink: 0;
-		@include transition(border-color, background-color, color);
+		width: 100%;
+		height: 100%;
+		border: var(--stepper-line) solid transparent;
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+		font-variant-numeric: tabular-nums;
+		@include transition-colors;
 
 		& > span {
 			display: flex;
-			height: 100%;
-			width: 100%;
 			align-items: center;
 			justify-content: center;
 		}
 	}
 
+	// Номер текущего шага — text-highlighted: цвет роли в кольце, а текст контрастен при любом кастомном цвете.
 	&__step--active &__indicator {
-		border-color: var(--color-accent);
-		color: var(--color-accent);
+		border-color: var(--stepper-accent);
+		background-color: var(--rise-bg);
+		color: var(--rise-text-highlighted);
+	}
+
+	&__step--active {
+		@include hover {
+			.base-stepper__indicator {
+				background-color: var(--rise-bg);
+			}
+		}
 	}
 
 	&__step--completed &__indicator {
-		background-color: var(--color-accent);
-		border-color: var(--color-accent);
-		color: #ffffff;
+		border-color: var(--stepper-accent);
+		background-color: var(--stepper-accent);
+		color: var(--stepper-on-accent);
 	}
 
-	&__step--completed:hover:not(&__step--disabled) &__indicator {
-		background-color: var(--color-accent-hover);
-		border-color: var(--color-accent-hover);
+	&__step--completed {
+		@include hover {
+			.base-stepper__indicator {
+				border-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
+				background-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
+			}
+		}
 	}
 
-	// ── Контент ──
+	// ─── Подпись ─────────────────────────────────────────────────────────────────
+
 	&__content {
 		display: flex;
 		flex-direction: column;
-		position: relative;
-		z-index: 2;
+		gap: sz(2px);
+		min-width: 0;
 	}
 
 	&--horizontal &__content {
 		align-items: center;
+		padding: 0 sz(8px);
 		text-align: center;
-		padding-top: sz(8px);
 	}
 
+	// По центру индикатора: (28 − 20) / 2 = 4px сверху; снизу — отступ до следующего шага.
 	&--vertical &__content {
-		padding-bottom: sz(16px);
+		padding: sz(4px) 0 sz(20px);
 	}
 
 	&__label {
-		font-size: sz(14px);
-		font-weight: 600;
-		color: var(--color-text);
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text);
+		overflow-wrap: anywhere;
+	}
+
+	&__step--active &__label {
+		color: var(--rise-text-highlighted);
 	}
 
 	&__description {
-		font-size: sz(12px);
-		opacity: 0.6;
 		margin: 0;
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+		overflow-wrap: anywhere;
 	}
 
-	// ── Линия: фон (::before) и прогресс (::after) на __items ──
-	&--horizontal &__items::before {
-		content: '';
-		position: absolute;
-		top: sz(15px);
-		height: sz(2px);
-		left: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
-		right: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
-		background-color: var(--color-border);
-		z-index: 1;
-	}
+	// ─── Линия: горизонтальная — общая полоса с заполнением (--stepper-progress-scale задаёт компонент) ─────────
 
+	&--horizontal &__items::before,
 	&--horizontal &__items::after {
 		content: '';
 		position: absolute;
-		top: sz(15px);
-		height: sz(2px);
-		left: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
-		width: calc((100% - 2 * var(--stepper-line-offset, 0%) - #{sz(32px)}) * var(--stepper-progress-scale, 0));
-		background-color: var(--color-accent);
-		z-index: 1;
+		z-index: 0;
+		top: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
+		left: calc(var(--stepper-line-offset, 0%) + var(--stepper-size) / 2);
+		height: var(--stepper-line);
+		border-radius: var(--rise-radius-full);
 	}
 
-	// Вертикальная линия
-	&--vertical &__items::before {
+	&--horizontal &__items::before {
+		right: calc(var(--stepper-line-offset, 0%) + var(--stepper-size) / 2);
+		background-color: var(--rise-border-accented);
+	}
+
+	// Заполнение ограничено длиной линии: modelValue вне диапазона не выводит его за последний шаг.
+	&--horizontal &__items::after {
+		width: calc((100% - 2 * var(--stepper-line-offset, 0%) - var(--stepper-size)) * clamp(0, var(--stepper-progress-scale, 0), 1));
+		background-color: var(--stepper-accent);
+	}
+
+	// ─── Линия: вертикальная — отрезок под каждым шагом, кроме последнего ─────────────────────────────────────────
+
+	&--vertical &__step:not(:last-child)::after {
 		content: '';
 		position: absolute;
-		left: sz(15px);
-		width: sz(2px);
-		top: sz(16px);
-		bottom: sz(16px);
-		background-color: var(--color-border);
-		z-index: 1;
+		z-index: 0;
+		top: calc(var(--stepper-size) + #{sz(4px)});
+		bottom: sz(4px);
+		left: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
+		width: var(--stepper-line);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-border-accented);
 	}
 
-	&--vertical &__items::after {
-		content: '';
-		position: absolute;
-		left: sz(15px);
-		width: sz(2px);
-		top: sz(16px);
-		height: calc((100% - #{sz(32px)}) * var(--stepper-progress-scale, 0));
-		background-color: var(--color-accent);
-		z-index: 1;
+	&--vertical &__step--completed:not(:last-child)::after {
+		background-color: var(--stepper-accent);
 	}
 
-	// ── Форма: circle (по умолчанию) ──
-	&--circle &__indicator {
-		border-radius: 50%;
-	}
+	// ─── Формы индикатора ────────────────────────────────────────────────────────
 
-	// ── Форма: square ──
 	&--square &__indicator {
-		border-radius: sz(4px);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
-	// ── Форма: diamond ──
+	// Ромб: квадрат со стороной 70% повёрнут на 45° — его диагональ равна размеру индикатора.
 	&--diamond &__indicator {
-		border-radius: sz(4px);
+		width: 70%;
+		height: 70%;
+		border-radius: sz(var(--rise-radius-xs));
 		transform: rotate(45deg);
-		font-size: sz(12px);
 
 		& > span {
 			transform: rotate(-45deg);
 		}
 	}
 
-	&--diamond &__step--active &__indicator,
-	&--diamond &__step--completed &__indicator {
-		transform: rotate(45deg);
+	// empty: без индикатора — остаётся линия прогресса над подписями.
+	&--empty {
+		--stepper-size: #{sz(8px)};
 	}
 
-	&--diamond &__step--active &__indicator > span,
-	&--diamond &__step--completed &__indicator > span {
-		transform: rotate(-45deg);
-	}
-
-	// ── Форма: empty — без индикатора ──
-	&--empty &__step {
-		gap: sz(30px);
-	}
-
-	&--empty &__content {
-		padding-top: sz(20px);
-	}
-
-	&--empty &__label {
-		font-weight: 700;
-	}
-
-	&--empty &__step--active &__label {
-		color: var(--color-accent);
-	}
-
+	&--empty &__step--active &__label,
 	&--empty &__step--completed &__label {
-		color: var(--color-accent);
+		color: var(--rise-text-highlighted);
 	}
 
-	// ── Вариант: animated — анимация заполнения линии ──
-	&--animated &__items::after {
-		transition: width 0.4s ease;
+	// ─── Вариант animated ────────────────────────────────────────────────────────
+
+	&--animated.base-stepper--horizontal &__items::after {
+		transition: width var(--rise-duration-slow) var(--rise-ease);
 	}
 
-	&--animated.base-stepper--vertical &__items::after {
-		transition: height 0.4s ease;
+	&--animated.base-stepper--vertical &__step::after {
+		transition: background-color var(--rise-duration-slow) var(--rise-ease);
 	}
 }

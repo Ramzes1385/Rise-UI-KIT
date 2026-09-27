@@ -10,7 +10,7 @@
 		:panel-class="panelClasses"
 		:padding="0"
 		:size-scale="sizeScale"
-		:custom-class="{ root: classes.root, panel: classes.panel }"
+		:custom-class="{ root: rootClass, panel: classes.panel }"
 		@close="handleClose">
 		<div class="base-popover__trigger" :class="classes.trigger" @click="toggle">
 			<slot name="trigger" />
@@ -56,6 +56,12 @@ watch(
 		isOpenLocal.value = isOpen
 	},
 )
+
+/**
+ * Корень — обёртка BaseDropdown с классом base-popover: строчная, по размеру триггера.
+ * Поэтому панель и стрелка центрируются по триггеру, а не по всей строке.
+ */
+const rootClass = computed((): string => ['base-popover', classes.value.root].filter(Boolean).join(' '))
 
 const panelClasses = computed((): string => {
 	return `base-popover__panel base-popover__panel--${props.variant}`

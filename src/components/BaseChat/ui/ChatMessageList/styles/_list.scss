@@ -1,215 +1,227 @@
-@use "@styles/functions" as *;
+// Лента сообщений: чужие — слева с аватаром 32px и именем 12/16 medium, свои — справа.
+// Оформление пузыря задают переменные --chat-bubble-* (варианты BaseChat переопределяют их в BaseChat.style.scss).
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+@use '../../../styles/chat' as *;
 
 .base-chat-message-list {
-	display: flex;
-	flex-direction: column;
-	gap: sz(16px);
-	padding: sz(20px);
-	overflow-y: auto;
-	flex: 1;
-	position: relative;
-	transition: padding var(--transition-slow);
+	// Вариант bubble (по умолчанию): свои — primary-soft, чужие — bg-elevated, радиус lg.
+	--chat-bubble-padding-y: 8px;
+	--chat-bubble-padding-x: 12px;
+	--chat-bubble-radius: var(--rise-radius-lg);
+	--chat-bubble-other-bg: var(--rise-bg-elevated);
+	--chat-bubble-other-border: transparent;
+	--chat-bubble-me-bg: var(--rise-primary-soft);
+	--chat-bubble-me-border: transparent;
+	--chat-bubble-shadow: none;
+	--chat-content-max-width: 80%;
+	--chat-list-gap: 4px;
+	--chat-item-padding-y: 4px;
+	--chat-item-radius: var(--rise-radius-md);
+	--chat-item-separator: none;
+	--chat-quote-bg: var(--rise-bg);
 
-	&--selection-mode {
-		.base-chat-message-list__item {
-			cursor: pointer;
+	position: relative;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: sz(var(--chat-list-gap));
+	min-height: 0;
+	padding: sz(12px) sz(8px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	@include scrollbar-thin;
+
+	// ─── Сообщение ───────────────────────────────────────────────────────────────
+
+	// Строка на всю ширину: фон выделения и подсветки занимает её целиком, содержимое прижато к своей стороне.
+	&__item {
+		position: relative;
+		display: flex;
+		flex: none;
+		align-items: flex-start;
+		gap: sz(8px);
+		padding: sz(var(--chat-item-padding-y)) sz(8px);
+		border-radius: sz(var(--chat-item-radius));
+		@include transition-colors(var(--rise-duration-slow));
+
+		// Фон выделения отличается и от своих (primary-soft), и от чужих (bg-elevated) пузырей.
+		&--selected {
+			background-color: var(--rise-primary-soft-hover);
+		}
+
+		// Сообщение с открытым контекстным меню и подсветка после перехода по цитате или закрепу
+		&--context-active,
+		&--highlighted {
+			background-color: var(--rise-bg-muted);
 		}
 	}
 
-	&__item {
-		display: flex;
-		align-items: flex-end;
-		gap: sz(12px);
-		max-width: 85%;
-		transition:
-			transform var(--transition-slow),
-			background-color var(--transition-slow);
-		position: relative;
-		border-radius: sz(8px);
-		padding: sz(4px) sz(8px);
+	// Вариант flat: сообщения разделены линией.
+	&__item + &__item {
+		border-top: var(--chat-item-separator);
+	}
 
-		&--me {
-			align-self: flex-end;
-			flex-direction: row-reverse;
+	&--selection-mode &__item {
+		cursor: pointer;
 
-			.base-chat-message-list__bubble {
-				background: var(--color-accent);
-				color: var(--color-white);
-				border-bottom-right-radius: sz(4px);
-			}
-
-			.base-chat-message-list__reply-quote {
-				border-left-color: rgba(255, 255, 255, 0.4);
-				background: rgba(255, 255, 255, 0.1);
-			}
-
-			.base-chat-message-list__reply-sender {
-				color: rgba(255, 255, 255, 0.9);
-			}
-
-			.base-chat-message-list__reply-text {
-				color: rgba(255, 255, 255, 0.8);
-			}
-
-			.base-chat-message-list__actions {
-				left: auto;
-				right: 100%;
-				margin-right: sz(8px);
-			}
-
-			.base-chat-message-list__highlight {
-				background-color: rgba(255, 255, 255, 0.25);
-				color: var(--color-white);
-				box-shadow: 0 0 0 sz(1px) rgba(255, 255, 255, 0.4);
-			}
-
-			.base-chat-message-list__mention,
-			.base-chat-message-list__command {
-				background: rgba(255, 255, 255, 0.2);
-				color: var(--color-white);
-
-				&:hover {
-					background: rgba(255, 255, 255, 0.32);
-				}
-			}
-
-			.base-chat-message-list__link {
-				color: var(--color-white);
-			}
+		@include hover {
+			background-color: var(--rise-bg-muted);
 		}
+	}
 
-		&--other {
-			align-self: flex-start;
-
-			.base-chat-message-list__bubble {
-				background: var(--color-surface-muted);
-				color: var(--color-text);
-				border-bottom-left-radius: sz(4px);
-			}
-
-			.base-chat-message-list__reply-quote {
-				border-left-color: var(--color-accent);
-				background: rgba(0, 0, 0, 0.03);
-			}
-
-			.base-chat-message-list__reply-sender {
-				color: var(--color-accent);
-			}
-
-			.base-chat-message-list__reply-text {
-				color: var(--color-text-muted);
-			}
-
-			.base-chat-message-list__actions {
-				right: auto;
-				left: 100%;
-				margin-left: sz(8px);
-			}
+	&--selection-mode &__item--selected {
+		@include hover {
+			background-color: var(--rise-primary-soft-hover);
 		}
+	}
 
-		&--selected {
-			background-color: rgba(var(--color-accent-rgb, 99, 102, 241), 0.08);
-			transform: scale(0.99);
-		}
-
-		&--context-active {
-			background-color: rgba(var(--color-accent-rgb, 99, 102, 241), 0.16);
-			box-shadow: 0 0 0 sz(2px) var(--color-accent);
-
-			.base-chat-message-list__bubble {
-				box-shadow: 0 sz(4px) sz(14px) rgba(var(--color-accent-rgb, 99, 102, 241), 0.25);
-			}
-		}
-
-		&--highlighted {
-			animation: message-highlight 1.5s ease-in-out;
-		}
-
-		&:hover {
-			.base-chat-message-list__actions {
-				opacity: 1;
-				visibility: visible;
-			}
-		}
+	// На фоне выделения время и статус — toned: у muted там контраст ниже 4.5:1.
+	&__item--selected .base-chat-message-list__meta {
+		color: var(--rise-text-toned);
 	}
 
 	&__checkbox-wrapper {
 		display: flex;
+		flex: none;
 		align-items: center;
-		justify-content: center;
-		padding-bottom: sz(8px);
-		animation: fadeIn 0.2s ease;
+		min-height: sz(32px);
+	}
+
+	// Подпись чекбокса нужна только скринридеру: визуально выбор показывает сам квадрат.
+	&__checkbox .base-checkbox__label {
+		@include visually-hidden;
+	}
+
+	&__avatar-button {
+		@include chat-button-reset;
+		flex: none;
+		border-radius: var(--rise-radius-full);
+		@include focus-ring;
 	}
 
 	&__avatar {
-		cursor: pointer;
-		flex-shrink: 0;
-		transition: transform var(--transition-slow);
-
-		&:hover {
-			transform: scale(1.05);
-		}
+		flex: none;
 	}
 
+	// Колонка сообщения: имя, пузырь, реакции и время.
 	&__bubble-wrapper {
 		display: flex;
 		flex-direction: column;
-		position: relative;
-		max-width: 100%;
-	}
-
-	&__bubble {
-		display: flex;
-		flex-direction: column;
-		padding: sz(10px) sz(14px);
-		border-radius: sz(16px);
-		box-shadow: 0 sz(2px) sz(8px) rgba(0, 0, 0, 0.05);
-		position: relative;
-		transition:
-			background-color var(--transition-slow),
-			box-shadow var(--transition-slow);
-
-		&--typing {
-			padding: sz(12px) sz(16px);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-	}
-
-	&__actions {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		display: flex;
+		align-items: flex-start;
 		gap: sz(4px);
-		opacity: 0;
-		visibility: hidden;
-		transition:
-			opacity var(--transition-slow),
-			visibility var(--transition-slow);
-		z-index: 10;
-		background: var(--color-surface);
-		border-radius: sz(20px);
-		padding: sz(2px);
-		box-shadow: 0 sz(2px) sz(6px) rgba(0, 0, 0, 0.1);
-		border: sz(1px) solid var(--color-border);
+		min-width: 0;
+		max-width: var(--chat-content-max-width);
 	}
 
-	&__action-btn {
-		color: var(--color-text-muted);
-		transition:
-			color var(--transition-slow),
-			background-color var(--transition-slow);
-
-		&:hover {
-			color: var(--color-accent);
-			background-color: var(--color-surface-hover);
-		}
+	&__item--me &__bubble-wrapper {
+		align-items: flex-end;
+		margin-inline-start: auto;
 	}
 
 	&__sender-name {
-		color: var(--color-text-muted);
-		margin-bottom: sz(4px);
+		@include chat-button-reset;
+		max-width: 100%;
+		border-radius: sz(var(--rise-radius-sm));
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text);
+		@include truncate;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__bubble {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		max-width: 100%;
+		padding: sz(var(--chat-bubble-padding-y)) sz(var(--chat-bubble-padding-x));
+		border: 1px solid transparent;
+		border-radius: sz(var(--chat-bubble-radius));
+		box-shadow: var(--chat-bubble-shadow);
+		color: var(--rise-text);
+		@include text-size(sm);
+	}
+
+	&__item--other &__bubble {
+		border-color: var(--chat-bubble-other-border);
+		background-color: var(--chat-bubble-other-bg);
+	}
+
+	&__item--me &__bubble {
+		border-color: var(--chat-bubble-me-border);
+		background-color: var(--chat-bubble-me-bg);
+	}
+
+	// Индикатор «печатает»: пузырь с тремя точками.
+	&__bubble--typing {
+		justify-content: center;
+		min-height: sz(36px);
+	}
+
+	// ─── Действия при наведении ──────────────────────────────────────────────────
+
+	// Панель на верхней кромке пузыря. Видна при наведении и при фокусе внутри сообщения (клавиатура):
+	// кнопки всегда в порядке Tab, скрыта только их отрисовка. На сенсорных экранах панель не перехватывает касания.
+	&__actions {
+		position: absolute;
+		top: sz(-16px);
+		inset-inline-end: sz(8px);
+		z-index: 1;
+		display: flex;
+		gap: sz(2px);
+		padding: sz(2px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		box-shadow: var(--rise-shadow-sm);
+		opacity: 0;
+		pointer-events: none;
+		@include transition(opacity);
+	}
+
+	@media (hover: hover) {
+		&__actions {
+			pointer-events: auto;
+		}
+
+		&__item:hover &__actions {
+			opacity: 1;
+		}
+	}
+
+	&__item:focus-within &__actions {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	&__action-btn {
+		@include chat-icon-button(3px);
+	}
+
+	// ─── Реакции и время под пузырём ─────────────────────────────────────────────
+
+	&__footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		max-width: 100%;
+	}
+
+	&__item--me &__footer {
+		justify-content: flex-end;
+	}
+
+	// ─── Пустая лента ────────────────────────────────────────────────────────────
+
+	&__empty {
+		margin: auto;
 	}
 }

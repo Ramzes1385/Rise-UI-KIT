@@ -1,66 +1,28 @@
 /**
- * Visual Regression тесты для BaseSelect.
- * Снимают baseline-скриншоты ключевых состояний через Storybook.
+ * Visual regression BaseSelect: ключевые stories в светлой и тёмной теме.
+ * Stories с открытым списком снимаются целой страницей: панель телепортируется в body.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-/** Базовый путь к stories BaseSelect в Storybook */
-const STORY_PATH = '/iframe.html?id=ui-baseselect'
+const STORIES = ['variants', 'sizes', 'with-error', 'custom-color'] as const
+const OPEN_STORIES = ['with-icons', 'multiple'] as const
 
-test.describe('BaseSelect visual regression', () => {
-	test('Default: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--default`)
-		await page.setViewportSize({ width: 800, height: 200 })
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSelect · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baseselect--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-select-${story}-${theme}.png`)
+			})
+		}
 
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-select-default.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+		for (const story of OPEN_STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baseselect--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-select-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
-
-	test('Variants: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--variants`)
-		await page.setViewportSize({ width: 800, height: 400 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-select-variants.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('WithError: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--with-error`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-select-error.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('Disabled: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--disabled`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-select-disabled.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('DarkTheme: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--dark-theme`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-select-dark.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-})
+}

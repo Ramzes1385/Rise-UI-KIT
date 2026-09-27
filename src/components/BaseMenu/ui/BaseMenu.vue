@@ -4,26 +4,41 @@
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div v-for="(group, gIndex) in items" :key="gIndex" class="base-menu__group" :class="classes.group">
-			<div
-				v-for="(item, iIndex) in group"
-				:key="iIndex"
-				class="base-menu__item"
-				tabindex="0"
-				:class="[
-					{
-						'base-menu__item--disabled': item.isDisabled,
-					},
-					classes.item,
-				]"
-				@click="handleItemClick(item)">
-				<BaseIcon
-					v-if="item.icon"
-					class="base-menu__icon"
-					:class="classes.icon"
-					:name="item.icon"
-					:size-scale="calcIconScale('sm', sizeScale)" />
-				<BaseText class="base-menu__label" :class="classes.label" :size-scale="sizeScale">{{ item.label }}</BaseText>
-			</div>
+			<template v-for="(item, iIndex) in group" :key="iIndex">
+				<!--
+					Пункт — действие (select / item.click), поэтому role="button" с Enter/Space.
+					role="menu/menuitem" не используется: он обещает стрелочную навигацию APG Menu,
+					которой здесь нет, и неверен, когда BaseMenu служит навигационным списком.
+				-->
+				<div
+					class="base-menu__item"
+					role="button"
+					tabindex="0"
+					:aria-disabled="item.isDisabled || undefined"
+					:class="[
+						{
+							'base-menu__item--disabled': item.isDisabled,
+						},
+						classes.item,
+					]"
+					@click="handleItemClick(item)"
+					@keydown.enter.prevent="handleItemClick(item)"
+					@keydown.space.prevent="handleItemClick(item)">
+					<BaseIcon
+						v-if="item.icon"
+						class="base-menu__icon"
+						:class="classes.icon"
+						:name="item.icon"
+						:size-scale="calcIconScale('sm', sizeScale)" />
+					<span class="base-menu__label" :class="classes.label">{{ item.label }}</span>
+				</div>
+				<!-- Разделитель после пункта. После последнего пункта группы линию уже рисует разделитель групп -->
+				<BaseSeparator
+					v-if="item.hasDivider && iIndex < group.length - 1"
+					class="base-menu__divider"
+					:class="classes.divider"
+					:size-scale="sizeScale" />
+			</template>
 			<BaseSeparator
 				v-if="gIndex < items.length - 1"
 				class="base-menu__divider"
@@ -36,7 +51,6 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseMenu.style.scss'

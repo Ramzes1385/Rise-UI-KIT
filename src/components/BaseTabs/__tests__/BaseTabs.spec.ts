@@ -181,6 +181,36 @@ describe('BaseTabs unit', () => {
 		})
 	})
 
+	describe('кнопки прокрутки', () => {
+		it('должны иметь доступные имена', async () => {
+			const metrics = { scrollLeft: 10, scrollWidth: 100, clientWidth: 50 }
+			const originals = Object.fromEntries(
+				Object.keys(metrics).map(key => [key, Object.getOwnPropertyDescriptor(HTMLElement.prototype, key)]),
+			)
+
+			// jsdom не считает layout: подменяем метрики, чтобы обе кнопки прокрутки отрендерились
+			for (const [key, value] of Object.entries(metrics)) {
+				Object.defineProperty(HTMLElement.prototype, key, { configurable: true, get: () => value })
+			}
+
+			try {
+				render(BaseTabs, {
+					props: { modelValue: 'info', items: TABS, isScrollable: true },
+				})
+				await nextTick()
+				await nextTick()
+
+				expect(screen.getByRole('button', { name: 'Прокрутить вкладки влево' })).toBeInTheDocument()
+				expect(screen.getByRole('button', { name: 'Прокрутить вкладки вправо' })).toBeInTheDocument()
+			} finally {
+				for (const [key, descriptor] of Object.entries(originals)) {
+					if (descriptor) Object.defineProperty(HTMLElement.prototype, key, descriptor)
+					else delete (HTMLElement.prototype as unknown as Record<string, unknown>)[key]
+				}
+			}
+		})
+	})
+
 	describe('пропс sizeScale', () => {
 		it('не должен устанавливать --size-scale когда sizeScale=100', () => {
 			const { container } = render(BaseTabs, {

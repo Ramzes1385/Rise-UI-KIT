@@ -110,8 +110,30 @@ describe('BaseButton unit', () => {
 	})
 
 	describe('пропс isLoading', () => {
-		it('должен быть disabled когда isLoading=true', () => {
+		it('должен быть недоступен для активации (aria-disabled), оставаясь фокусируемым, когда isLoading=true', () => {
 			render(BaseButton, { props: { isLoading: true }, slots: { default: 'Кнопка' } })
+
+			const button = screen.getByRole('button')
+			expect(button).toHaveAttribute('aria-disabled', 'true')
+			expect(button).not.toBeDisabled()
+		})
+
+		it('должен сообщать aria-busy=true когда isLoading=true', () => {
+			render(BaseButton, { props: { isLoading: true }, slots: { default: 'Кнопка' } })
+
+			expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true')
+		})
+
+		it('не должен выставлять aria-busy и aria-disabled без загрузки', () => {
+			render(BaseButton, { slots: { default: 'Кнопка' } })
+
+			const button = screen.getByRole('button')
+			expect(button).not.toHaveAttribute('aria-busy')
+			expect(button).not.toHaveAttribute('aria-disabled')
+		})
+
+		it('должен оставаться нативно disabled когда isDisabled=true и isLoading=true', () => {
+			render(BaseButton, { props: { isDisabled: true, isLoading: true }, slots: { default: 'Кнопка' } })
 
 			expect(screen.getByRole('button')).toBeDisabled()
 		})
@@ -148,7 +170,7 @@ describe('BaseButton unit', () => {
 				slots: { default: 'Кнопка' },
 			})
 
-			expect(container.firstElementChild?.getAttribute('style')).not.toContain('--size-scale')
+			expect((container.firstElementChild as HTMLElement).style.getPropertyValue('--size-scale')).toBe('')
 		})
 
 		it('должен устанавливать --size-scale когда sizeScale=150', () => {
@@ -207,16 +229,15 @@ describe('BaseButton unit', () => {
 	})
 
 	describe('пропс padding', () => {
-		it('должен устанавливать CSS-переменные padding по умолчанию (10)', () => {
+		it('без пропа padding не задаёт inline-переменные: отступы берутся из токенов темы', () => {
 			const { container } = render(BaseButton, {
 				slots: { default: 'Кнопка' },
 			})
 
 			const btn = container.firstElementChild as HTMLElement
-			expect(btn.style.getPropertyValue('--btn-pad-top')).toBe('10px')
-			expect(btn.style.getPropertyValue('--btn-pad-bottom')).toBe('10px')
-			expect(btn.style.getPropertyValue('--btn-pad-left')).toBe('20px')
-			expect(btn.style.getPropertyValue('--btn-pad-right')).toBe('20px')
+			for (const side of ['top', 'right', 'bottom', 'left']) {
+				expect(btn.style.getPropertyValue(`--btn-pad-${side}`)).toBe('')
+			}
 		})
 
 		it('должен устанавливать CSS-переменные padding при padding=6', () => {

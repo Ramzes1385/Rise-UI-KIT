@@ -1,1193 +1,445 @@
-﻿/**
- * Stories для компонента BaseSearch.
- * Демонстрирует все варианты и режимы с готовыми данными.
- * Каждая story содержит play-функцию для 100% coverage.
+/**
+ * BaseSearch — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
+ * состояния (загрузка, ошибка, disabled, ничего не найдено, длинные результаты) → содержимое (изображения, слоты) →
+ * сценарии (серверный поиск, поиск по Enter, режимы modal и sidebar) → клавиатура.
+ * Панель результатов и окна modal/sidebar телепортируются в body, поэтому в Docs такие примеры — в отдельном фрейме.
  */
 
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
 import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
 import BaseSearch from '../ui/BaseSearch.vue'
 import type { SearchResult } from '../model/BaseSearch.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Демо-данные для результатов поиска (с иконками) */
-const MOCK_RESULTS: SearchResult[] = [
-	{ id: 1, title: 'Закат в горах', description: 'Масло, холст, 80Г—60 см', icon: 'search', category: 'Пейзаж' },
-	{ id: 2, title: 'Весенний сад', description: 'Акварель, 50Г—40 см', icon: 'search', category: 'Пейзаж' },
-	{ id: 3, title: 'Портрет дамы', description: 'Масло, холст, 70Г—90 см', icon: 'search', category: 'Портрет' },
-	{
-		id: 4,
-		title: 'Абстрактная композиция',
-		description: 'Акрил, 100Г—80 см',
-		icon: 'search',
-		category: 'Абстракция',
-	},
-	{
-		id: 5,
-		title: 'Натюрморт с фруктами',
-		description: 'Масло, доска, 40Г—50 см',
-		icon: 'search',
-		category: 'Натюрморт',
-	},
-	{ id: 6, title: 'Городской пейзаж', description: 'Графика, 30Г—40 см', icon: 'search', category: 'Графика' },
-	{ id: 7, title: 'Морской берег', description: 'Масло, холст, 120Г—80 см', icon: 'search', category: 'Пейзаж' },
-	{ id: 8, title: 'Зимний лес', description: 'Акварель, 60Г—45 см', icon: 'search', category: 'Пейзаж' },
+/** Материалы проекта студии: иконка — тип файла, категория — справа. */
+const FILES: SearchResult[] = [
+	{ id: 1, title: 'Закат в горах', description: 'Документальный фильм · 52 мин', icon: 'video', category: 'Видео' },
+	{ id: 2, title: 'Запись голоса — сцена 12', description: 'WAV · 3 мин 40 с', icon: 'mic', category: 'Аудио' },
+	{ id: 3, title: 'Сценарий «Лисья тропа»', description: 'Серия 3 · 24 страницы', icon: 'file', category: 'Документ' },
+	{ id: 4, title: 'Раскадровка «Лисья тропа»', description: 'PNG · 18 кадров', icon: 'image', category: 'Изображение' },
+	{ id: 5, title: 'Субтитры «Северный ветер»', description: 'SRT · серия 1', icon: 'file', category: 'Документ' },
+	{ id: 6, title: 'Архив озвучки 2024', description: '128 файлов', icon: 'folder', category: 'Папка' },
+	{ id: 7, title: 'Календарь записей', description: 'Май 2025', icon: 'calendar', category: 'План' },
 ]
 
-/** Демо-данные с изображениями */
-const MOCK_IMAGE_RESULTS: SearchResult[] = [
+/** Картины с превью: изображения генерируются локально, без сети. */
+const ARTWORKS: SearchResult[] = [
+	{ id: 1, title: 'Закат в горах', description: 'Масло, холст · 80×60 см', image: placeholderImage({ width: 80, height: 80, hue: 24 }), category: 'Пейзаж' },
+	{ id: 2, title: 'Горы в тумане', description: 'Масло, холст · 70×50 см', image: placeholderImage({ width: 80, height: 80, hue: 200 }), category: 'Пейзаж' },
+	{ id: 3, title: 'Зелёная долина', description: 'Акрил, холст · 100×80 см', image: placeholderImage({ width: 80, height: 80, hue: 150 }), category: 'Пейзаж' },
+	{ id: 4, title: 'Горы в сумерках', description: 'Масло, холст · 60×40 см', image: placeholderImage({ width: 80, height: 80, hue: 270 }), category: 'Пейзаж' },
+]
+
+/** Результаты с длинными названиями и описаниями. */
+const LONG_RESULTS: SearchResult[] = [
 	{
 		id: 1,
-		title: 'Закат в горах',
-		description: 'Масло, холст, 80Г—60 см',
-		image: 'https://picsum.photos/seed/sunset/80/80',
-		category: 'Пейзаж',
+		title: 'Сериал «Северный ветер», сезон 2, серии 1–12 — финальный монтаж с русским дубляжом и субтитрами',
+		description: 'Обновлено вчера · 48 файлов, 312 ГБ · ответственный — звукорежиссёр проекта',
+		icon: 'folder',
+		category: 'Папка',
 	},
 	{
 		id: 2,
-		title: 'Весенний сад',
-		description: 'Акварель, 50Г—40 см',
-		image: 'https://picsum.photos/seed/garden/80/80',
-		category: 'Пейзаж',
-	},
-	{
-		id: 3,
-		title: 'Портрет дамы',
-		description: 'Масло, холст, 70Г—90 см',
-		image: 'https://picsum.photos/seed/portrait/80/80',
-		category: 'Портрет',
-	},
-	{
-		id: 4,
-		title: 'Абстрактная композиция',
-		description: 'Акрил, 100Г—80 см',
-		image: 'https://picsum.photos/seed/abstract/80/80',
-		category: 'Абстракция',
-	},
-	{
-		id: 5,
-		title: 'Натюрморт с фруктами',
-		description: 'Масло, доска, 40Г—50 см',
-		image: 'https://picsum.photos/seed/still/80/80',
-		category: 'Натюрморт',
+		title: 'Сериал «Северный ветер» — сводная таблица реплик и таймкодов для всех актёров озвучки',
+		description: 'Таблица · 1 840 строк · последнее изменение 12 мая',
+		icon: 'file',
+		category: 'Документ',
 	},
 ]
 
-const MIXED_RESULTS: SearchResult[] = [
-	{
-		id: 'image',
-		title: 'Общий образ',
-		description: 'Изображение результата',
-		image: 'https://picsum.photos/seed/search-image/80/80',
-		category: 'Галерея',
-	},
-	{
-		id: 'icon',
-		title: 'Общий значок',
-		description: 'Иконка результата',
-		icon: 'search',
-		category: 'Иконка',
-	},
-	{ id: 'plain', title: 'Общий простой' },
+/** Ответ сервера на запрос латиницей «zakat»: второй результат не содержит подстроки запроса. */
+const REMOTE_RESULTS: SearchResult[] = [
+	{ id: 1, title: 'Закат в горах', description: 'Найдено по транслиту', icon: 'video' },
+	{ id: 2, title: 'Вечер у моря', description: 'Совпадение по тегу «закаты»', icon: 'image', category: 'Закаты' },
 ]
 
-const PLAIN_RESULTS: SearchResult[] = [{ id: 'plain', title: 'Простой результат' }]
+/**
+ * Args stories — props и события BaseSearch без слотов. Тип Storybook по умолчанию объединяет props со слотами,
+ * а слот `results` совпадает по имени с пропом `results` (массив): пересечение их типов не принимает массив.
+ */
+type SearchArgs = InstanceType<typeof BaseSearch>['$props']
 
-const DESCRIPTION_RESULTS: SearchResult[] = [
-	{ id: 'desc', title: 'Без совпадения', description: 'Особый запрос', icon: 'search' },
-]
+/** Элементы результатов без роли (div с обработчиками мыши) — ищем по классу. */
+function resultTitles(): string[] {
+	return Array.from(document.querySelectorAll('.base-search__result-title')).map(el => el.textContent?.trim() ?? '')
+}
 
-const meta: Meta<typeof BaseSearch> = {
-	title: 'UI/BaseSearch',
+/**
+ * Render с запросом в локальном ref, а не в args. Обновление args перерисовывает story, и Storybook при этом
+ * сбрасывает шпионы событий (onSelect, onSearch) — stories, которые проверяют вызов события после ввода, используют его.
+ */
+function renderWithLocalQuery(args: SearchArgs) {
+	return {
+		components: { BaseSearch },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'onUpdate:modelValue']), query: ref(String(args.modelValue ?? '')) }),
+		template: '<div class="story-narrow"><BaseSearch v-bind="props" v-model="query" /></div>',
+	}
+}
+
+/** Панель результатов и окна поиска телепортируются в body — в Docs пример показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Form/BaseSearch',
 	component: BaseSearch,
-
-	argTypes: buildArgTypes({
-		props: {
-			placeholder: { control: 'text' },
-			variant: { control: 'radio', options: SEARCH_VARIANTS },
-			mode: { control: 'inline-radio', options: ['default', 'modal', 'sidebar'] },
-			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
-			isDisabled: { control: 'boolean' },
-			isLoading: { control: 'boolean' },
-			hasIcon: { control: 'boolean' },
-			hasClear: { control: 'boolean' },
-			isInstant: { control: 'boolean' },
-			isAutofocus: { control: 'boolean' },
-			debounceMs: { control: 'number' },
-			maxResults: { control: 'number' },
-			error: { control: 'text' },
-			customClass: { control: 'object' },
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Поле поиска с подсказками: результаты фильтруются по названию и описанию, совпадения выделены.',
+					'',
+					'- Режимы (`mode`): `default` — список под полем; `modal` — окно поиска по центру экрана;',
+					'  `sidebar` — панель справа. В modal и sidebar поле на странице только открывает окно.',
+					'- `isInstant` — искать при вводе (событие `search` с задержкой `debounceMs`), иначе — по Enter.',
+					'- `isRemote` — результаты уже отфильтрованы сервером и показываются как есть (транслит, опечатки).',
+					'- Клавиатура: стрелки подсвечивают результат, Enter выбирает его (или запускает поиск), Escape закрывает окно.',
+					'',
+					'Для выбора из фиксированного списка используйте `BaseSelect` с `isSearchable`.',
+				].join('\n'),
+			},
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: SEARCH_VARIANTS }),
+		modelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		results: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		placeholder: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		maxResults: { control: 'number', table: propGroup(ARG_GROUP.content) },
+		hasIcon: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		hasClear: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		mode: { control: 'inline-radio', options: ['default', 'modal', 'sidebar'], table: propGroup(ARG_GROUP.behavior) },
+		isInstant: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isRemote: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		debounceMs: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+		isAutofocus: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+	},
 	args: {
-		placeholder: 'Поиск картин...',
+		modelValue: '',
+		results: FILES,
+		placeholder: 'Поиск по проекту',
 		variant: 'default',
 		mode: 'default',
 		sizeScale: 100,
-		isDisabled: false,
-		isLoading: false,
+		maxResults: 10,
 		hasIcon: true,
 		hasClear: true,
 		isInstant: true,
-		isAutofocus: false,
+		isRemote: false,
 		debounceMs: 300,
-		maxResults: 10,
-		error: '',
-		results: MOCK_RESULTS as never,
+		isAutofocus: false,
+		isLoading: false,
+		isDisabled: false,
+		'onUpdate:modelValue': fn(),
+		onSearch: fn(),
+		onSelect: fn(),
+		onClear: fn(),
 	},
-}
+	// Запрос хранится в args: ввод в поле обновляет Controls, а изменение в Controls — поле.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseSearch },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: '<div class="story-narrow"><BaseSearch v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+} satisfies Meta<SearchArgs>
 
 export default meta
-type Story = StoryObj<typeof BaseSearch>
+type Story = StoryObj<SearchArgs>
 
-function getInput(root: ParentNode, selector: string): HTMLInputElement {
-	const input = root.querySelector<HTMLInputElement>(selector)
-	if (!input) throw new Error('Поле поиска не найдено')
-	return input
-}
+// ─── Default ───────────────────────────────────────────────────────────────────
 
-function getEl(root: ParentNode, selector: string): HTMLElement {
-	const element = root.querySelector<HTMLElement>(selector)
-	if (!element) throw new Error('Элемент поиска не найден')
-	return element
-}
+/** Песочница: введите «лис» или «запись» — появятся подсказки; props меняются в Controls. */
+export const Default: Story = {}
 
-function getLastEl(root: ParentNode, selector: string): HTMLElement {
-	const elements = Array.from(root.querySelectorAll<HTMLElement>(selector))
-	const element = elements.at(-1)
-	if (!element) throw new Error('Элемент поиска не найден')
-	return element
-}
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
 
-function closeSearch(): void {
-	document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-}
-/** Базовый поиск с результатами */
-export const Default: Story = {
-	args: {
-		onSearch: fn(),
-		onSelect: fn(),
-		onClear: fn(),
-		'onUpdate:modelValue': fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		// Фокус и ввод текста
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		expect(input).toBeTruthy()
-
-		await userEvent.click(input)
-		await userEvent.type(input, 'Закат')
-
-		// Ждём debounce
-		await waitFor(
-			() => {
-				expect(args.onSearch).toHaveBeenCalled()
-			},
-			{ timeout: 3000 },
-		)
-
-		// Клик по результату → handleSelect
-		// Результаты в BaseDropdown (Teleport to="body") — ищем в document.body
-		await waitFor(
-			() => {
-				const results = document.body.querySelectorAll('.base-search__result')
-				expect(results.length).toBeGreaterThan(0)
-			},
-			{ timeout: 3000 },
-		)
-		const firstResult = document.body.querySelector('.base-search__result') as HTMLElement
-		await userEvent.click(firstResult)
-
-		await waitFor(
-			() => {
-				expect(args.onSelect).toHaveBeenCalled()
-			},
-			{ timeout: 3000 },
-		)
-
-		// Shift+Tab — обратная фокусировка
-		await playShiftTab(canvasElement, { selector: '.base-input__field' })
-	},
-}
-/** Все варианты */
+/** Семь вариантов поля — как у `BaseInput`: `default`, `outline`, `soft`, `ghost`, `filled`, `underline`, `shadow`. */
 export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'isDisabled', 'hasIcon'] },
+		docs: { source: { code: SEARCH_VARIANTS.map(variant => `<BaseSearch v-model="query" :results="results" variant="${variant}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseSearch },
-		setup() {
-			return { args, SEARCH_VARIANTS }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'variant', 'placeholder', 'onUpdate:modelValue']),
+			variants: SEARCH_VARIANTS,
+			values: ref<Record<string, string>>({ default: 'Лисья тропа' }),
+		}),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:400px;">
-				<BaseSearch v-for="v in SEARCH_VARIANTS" :key="v" v-bind="args" :variant="v" :placeholder="v" />
+			<div class="story-grid" style="--story-grid-min: 240px;">
+				<BaseSearch
+					v-for="variant in variants"
+					:key="variant"
+					v-bind="props"
+					v-model="values[variant]"
+					:variant="variant"
+					:placeholder="variant" />
 			</div>
 		`,
 	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSearch v-for="v in SEARCH_VARIANTS" :key="v" :variant="v" :placeholder="v" />`,
-			},
-		},
-	},
 }
-/** Масштаб размера */
-export const SizeScale: Story = {
+
+/** Размеры через `sizeScale`: высота поля 24, 28, 32, 36 и 40px; иконка, кнопка очистки и список масштабируются вместе. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSearch v-model="query" :results="results" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseSearch },
-		setup() {
-			return { args }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'sizeScale', 'placeholder', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref<Record<string, string>>({ md: 'Лисья тропа' }),
+		}),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:400px;">
-				<BaseSearch v-bind="args" :size-scale="75" placeholder="75%" />
-				<BaseSearch v-bind="args" :size-scale="100" placeholder="100%" />
-				<BaseSearch v-bind="args" :size-scale="150" placeholder="150%" />
+			<div class="story-col story-narrow">
+				<BaseSearch
+					v-for="preset in presets"
+					:key="preset.name"
+					v-bind="props"
+					v-model="values[preset.name]"
+					:size-scale="preset.sizeScale"
+					:placeholder="sizeLabel(preset)" />
 			</div>
 		`,
 	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSearch :size-scale="75" />\n<BaseSearch :size-scale="100" />\n<BaseSearch :size-scale="150" />`,
-			},
-		},
+}
+
+/**
+ * Кастомный цвет фона и текста поля через `color`. Кнопка очистки внутри поля — вложенный компонент: цвет поиска
+ * она не наследует.
+ */
+export const CustomColor: Story = {
+	args: { modelValue: 'Лисья тропа', color: { bg: { base: '#eff6ff' }, text: { base: '#1e3a8a' } } },
+	play: async ({ canvas }) => {
+		const field = canvas.getByPlaceholderText('Поиск по проекту')
+		await expect(getComputedStyle(field.closest('.base-input__wrapper') as HTMLElement).backgroundColor).toBe('rgb(239, 246, 255)')
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Очистить' })).backgroundColor).toBe('rgba(0, 0, 0, 0)')
 	},
 }
-/** Отключенный */
-export const Disabled: Story = {
-	args: {
-		isDisabled: true,
-	},
-}
-/** В состоянии загрузки */
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/**
+ * Загрузка (`isLoading`): спиннер в поле; пока ответа нет, в панели — строка «Загрузка...» (заменяется слотом `loading`).
+ * Здесь — серверный поиск, ответ ещё не пришёл.
+ */
 export const Loading: Story = {
-	args: {
-		isLoading: true,
-		modelValue: 'Картина',
+	args: { modelValue: 'Лисья', results: [], isRemote: true, isLoading: true },
+	parameters: { docs: docsFrame(200) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
+		const status = await screen.findByText('Загрузка...')
+		await waitFor(() => expect(status).toBeVisible())
+		await expect(screen.getAllByRole('status').length).toBeGreaterThan(0)
 	},
 }
-/** С ошибкой */
+
+/** Ошибка: красная рамка и текст под полем; поле помечено `aria-invalid` и описано текстом ошибки. */
 export const WithError: Story = {
-	args: {
-		error: 'Введите минимум 3 символа',
+	args: { modelValue: 'Лис', error: 'Сервис поиска недоступен, попробуйте позже' },
+	play: async ({ canvas }) => {
+		const field = canvas.getByPlaceholderText('Поиск по проекту')
+		await expect(field).toHaveAttribute('aria-invalid', 'true')
+		await expect(field).toHaveAccessibleDescription('Сервис поиска недоступен, попробуйте позже')
 	},
 }
-/** Без автопоиска (по Enter) */
-export const NotInstant: Story = {
-	args: {
-		isInstant: false,
-		onSearch: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
 
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		expect(input).toBeTruthy()
+/** Отключённый поиск: поле приглушено и недоступно для ввода. */
+export const Disabled: Story = {
+	args: { modelValue: 'Лисья тропа', isDisabled: true },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByPlaceholderText('Поиск по проекту')).toBeDisabled()
+	},
+}
 
-		await userEvent.type(input, 'Закат')
-
-		// В не-instant режиме поиск по Enter
-		await userEvent.keyboard('{Enter}')
-		await waitFor(() => {
-			expect(args.onSearch).toHaveBeenCalled()
-		})
-	},
-}
-/** Модальный режим */
-export const ModalMode: Story = {
-	args: {
-		mode: 'modal',
-		onSearch: fn(),
-		onSelect: fn(),
-		onClear: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-
-		// Фокус открывает модальное окно
-		const trigger = canvasElement.querySelector('.base-search__trigger input') as HTMLInputElement
-		expect(trigger).toBeTruthy()
-		await userEvent.click(trigger)
-
-		await waitFor(() => {
-			const modal = document.querySelector('.base-search__modal-overlay')
-			expect(modal).toBeTruthy()
-		})
-
-		// Ввод в модальном окне
-		const modalInput = document.querySelector('.base-search__modal .base-input__field') as HTMLInputElement
-		if (modalInput) {
-			await userEvent.type(modalInput, 'Закат')
-		}
-
-		await waitFor(() => {
-			expect(args.onSearch).toHaveBeenCalled()
-		})
-
-		// Кнопка очистки
-		await waitFor(() => {
-			const clearBtns = document.querySelectorAll('.base-search__clear')
-			expect(clearBtns.length).toBeGreaterThan(0)
-		})
-		const clearBtn = document.querySelector('.base-search__clear') as HTMLElement
-		await userEvent.click(clearBtn)
-		await waitFor(() => {
-			expect(args.onClear).toHaveBeenCalled()
-		})
-
-		// Закрытие по оверлею
-		const modal = document.querySelector('.base-search__modal-overlay') as HTMLElement
-		await userEvent.click(modal)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__modal-overlay')).toBeNull()
-		})
-	},
-}
-/** Режим боковой панели */
-export const SidebarMode: Story = {
-	args: {
-		mode: 'sidebar',
-		onSearch: fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-
-		// Фокус открывает sidebar
-		const trigger = canvasElement.querySelector('.base-search__trigger input') as HTMLInputElement
-		expect(trigger).toBeTruthy()
-		await userEvent.click(trigger)
-
-		await waitFor(() => {
-			const sidebar = document.querySelector('.base-search__sidebar-overlay')
-			expect(sidebar).toBeTruthy()
-		})
-
-		// Ввод в sidebar
-		const sidebarInput = document.querySelector('.base-search__sidebar .base-input__field') as HTMLInputElement
-		if (sidebarInput) {
-			await userEvent.type(sidebarInput, 'картин')
-		}
-
-		// Закрытие по оверлею
-		const sidebar = document.querySelector('.base-search__sidebar-overlay') as HTMLElement
-		await userEvent.click(sidebar)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__sidebar-overlay')).toBeNull()
-		})
-	},
-}
-/** Все режимы */
-export const AllModes: Story = {
-	render: args => ({
-		components: { BaseSearch },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:400px;">
-				<h4 style="margin:0;">default</h4>
-				<BaseSearch v-bind="args" mode="default" />
-				<h4 style="margin:0;">modal</h4>
-				<BaseSearch v-bind="args" mode="modal" />
-				<h4 style="margin:0;">sidebar</h4>
-				<BaseSearch v-bind="args" mode="sidebar" />
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSearch mode="default" />\n<BaseSearch mode="modal" />\n<BaseSearch mode="sidebar" />`,
-			},
-		},
-	},
-}
-/** Результаты с изображениями */
-export const WithImages: Story = {
-	args: {
-		results: MOCK_IMAGE_RESULTS as never,
-	},
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSearch :results="results" />`,
-			},
-		},
-	},
-}
-/** Кастомные слоты (result-before, result-after) */
-export const WithSlotContent: Story = {
-	render: args => ({
-		components: { BaseSearch },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseSearch v-bind="args">
-				<template #result-before="{ results }">
-					<div style="padding: 8px 14px; font-size: 12px; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border);">
-						Найдено: {{ results.length }}
-					</div>
-				</template>
-				<template #result-after>
-					<div style="padding: 8px 14px; font-size: 12px; color: var(--color-text-muted); border-top: 1px solid var(--color-border);">
-						Нажмите Enter для полного поиска
-					</div>
-				</template>
-			</BaseSearch>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSearch v-bind="args">\n  <template #result-before="{ results }">\n    Найдено: {{ results.length }}\n  </template>\n  <template #result-after>\n    Нажмите Enter для полного поиска\n  </template>\n</BaseSearch>`,
-			},
-		},
-	},
-}
-/** Полная замена списка через слот results */
-export const CustomResultsList: Story = {
-	render: args => ({
-		components: { BaseSearch },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseSearch v-bind="args">
-				<template #results="{ results, query }">
-					<div style="padding: 12px 14px;">
-						<div style="font-weight: 600; margin-bottom: 8px;">Результаты для В«{{ query }}В»</div>
-						<div v-for="item in results" :key="item.id" style="padding: 6px 0; border-bottom: 1px solid var(--color-border);">
-							{{ item.title }} — {{ item.description }}
-						</div>
-					</div>
-				</template>
-			</BaseSearch>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseSearch v-bind="args">\n  <template #results="{ results, query }">\n    <div v-for="item in results" :key="item.id">\n      {{ item.title }}\n    </div>\n  </template>\n</BaseSearch>`,
-			},
-		},
-	},
-}
-/** Hover-состояние */
-export const HoverState: Story = {
-	decorators: [
-		() => ({
-			template: '<div class="base-search--hover"><story /></div>',
-		}),
-	],
-}
-/** Active-состояние */
-export const ActiveState: Story = {
-	decorators: [
-		() => ({
-			template: '<div class="base-search--active"><story /></div>',
-		}),
-	],
-}
-/** Focus-состояние */
-export const FocusState: Story = {
-	decorators: [
-		() => ({
-			template: '<div class="base-search--focus"><story /></div>',
-		}),
-	],
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-}
-/** Интерактивный */
-export const Interactive: Story = {
-	args: {
-		onSearch: fn(),
-		onSelect: fn(),
-		onClear: fn(),
-		'onUpdate:modelValue': fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		// Ввод → debounced search → результаты
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		await userEvent.click(input)
-		await userEvent.type(input, 'Закат')
-
-		// Результаты в BaseDropdown (Teleport to="body") — ищем в document.body
-		await waitFor(
-			() => {
-				const results = document.body.querySelectorAll('.base-search__result')
-				expect(results.length).toBeGreaterThan(0)
-			},
-			{ timeout: 3000 },
-		)
-
-		// handleKeydown Enter когда нет подсветки
-		await userEvent.keyboard('{Enter}')
-
-		// handleKeydown ArrowDown для навигации
-		await userEvent.keyboard('{ArrowDown}')
-
-		// handleKeydown Enter с подсветкой (select)
-		await userEvent.keyboard('{Enter}')
-
-		await waitFor(
-			() => {
-				expect(args.onSelect).toHaveBeenCalled()
-			},
-			{ timeout: 3000 },
-		)
-	},
-}
-/** С изображениями в результатах */
-export const WithImageResults: Story = {
-	args: { results: MOCK_IMAGE_RESULTS as never, onSearch: fn(), onSelect: fn() },
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.type(input, 'Закат')
-		}
-		// Результаты в BaseDropdown (Teleport to="body") — ищем в document.body
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-search__result-image')).toBeTruthy()
-			},
-			{ timeout: 3000 },
-		)
-	},
-}
-/** С очисткой (hasClear + query) */
-export const WithClearButton: Story = {
-	args: { onClear: fn(), onSearch: fn() },
-	play: async ({ args, canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.type(input, 'Закат')
-		}
-		await waitFor(() => {
-			const clearBtn = canvasElement.querySelector('.base-search__clear')
-			if (clearBtn) {
-				userEvent.click(clearBtn as HTMLElement)
-			}
-		})
-	},
-}
-/** Загрузка (isLoading) — BaseLoader в suffix без класса .base-search__loading, ищем по spinner */
-export const LoadingState: Story = {
-	args: { isLoading: true, modelValue: 'Закат', onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-loader')).toBeTruthy()
-		})
-	},
-}
-/** Пустой результат */
-export const EmptyResult: Story = {
-	args: { results: [], onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.type(input, 'zzz')
-		}
-		// Пустой результат в BaseDropdown (Teleport to="body") — ищем в document.body
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-search__empty')).toBeTruthy()
-			},
-			{ timeout: 3000 },
-		)
-	},
-}
-/** Отключенный модальный режим (openModal early return) */
-export const DisabledModal: Story = {
-	args: { mode: 'modal', isDisabled: true },
-	play: async ({ canvasElement }) => {
-		const before = document.querySelectorAll('.base-search__modal-overlay').length
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		trigger.dispatchEvent(new FocusEvent('focus', { bubbles: true }))
-		expect(document.querySelectorAll('.base-search__modal-overlay').length).toBe(before)
-	},
-}
-/** Отключенный sidebar (openSidebar early return) */
-export const DisabledSidebar: Story = {
-	args: { mode: 'sidebar', isDisabled: true },
-	play: async ({ canvasElement }) => {
-		const before = document.querySelectorAll('.base-search__sidebar-overlay').length
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		trigger.dispatchEvent(new FocusEvent('focus', { bubbles: true }))
-		expect(document.querySelectorAll('.base-search__sidebar-overlay').length).toBe(before)
-	},
-}
-/** Фокус пустого поиска */
-export const EmptyFocus: Story = {
-	args: { onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const before = document.body.querySelectorAll('.base-dropdown__panel').length
-		const input = getInput(canvasElement, '.base-input__field')
-		await userEvent.click(input)
-		expect(document.body.querySelectorAll('.base-dropdown__panel').length).toBe(before)
-	},
-}
-/** Закрытие default dropdown */
-export const DefaultClose: Story = {
-	args: { onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = getInput(canvasElement, '.base-input__field')
-		await userEvent.click(input)
-		await userEvent.type(input, 'Закат')
-		const panel = getLastEl(document.body, '.base-dropdown__panel')
-		document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
-		await waitFor(() => expect(panel.isConnected).toBe(false))
-	},
-}
-/** Загрузка в default dropdown */
-export const DefaultLoadingSlot: Story = {
-	args: { isLoading: true, modelValue: 'Закат', onSearch: fn() },
-	render: args => ({
-		components: { BaseSearch },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseSearch v-bind="args">
-				<template #loading>
-					<div class="base-search__test-loading">Загрузка</div>
-				</template>
-			</BaseSearch>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const input = getInput(canvasElement, '.base-input__field')
-		input.dispatchEvent(new FocusEvent('focus', { bubbles: true }))
-		await waitFor(() => expect(document.body.querySelector('.base-search__test-loading')).toBeTruthy())
-		closeSearch()
-	},
-}
-/** Навигация по пустому запросу */
-export const EmptyQueryNavigation: Story = {
-	args: { onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = getInput(canvasElement, '.base-input__field')
-		input.dispatchEvent(new FocusEvent('focus', { bubbles: true }))
-		input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
-		expect(input.value).toBe('')
-	},
-}
-/** Escape в default списке */
-export const DefaultListEscape: Story = {
-	args: { onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = getInput(canvasElement, '.base-input__field')
-		await userEvent.click(input)
-		await userEvent.type(input, 'Закат')
-		const panel = getLastEl(document.body, '.base-dropdown__panel')
-		await userEvent.keyboard('{Escape}')
-		await waitFor(() => expect(panel.isConnected).toBe(false))
-	},
-}
-/** Выбор результата в sidebar-режиме */
-export const SidebarSelect: Story = {
-	args: { mode: 'sidebar', onSearch: fn(), onSelect: fn() },
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-
-		const trigger = canvasElement.querySelector('.base-search__trigger input') as HTMLInputElement
-		await userEvent.click(trigger)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__sidebar-overlay')).toBeTruthy()
-		})
-
-		const sidebarInput = document.querySelector('.base-search__sidebar .base-input__field') as HTMLInputElement
-		if (sidebarInput) {
-			await userEvent.type(sidebarInput, 'Закат')
-		}
-
-		// Выбираем результат
-		await waitFor(() => {
-			const result = document.querySelector('.base-search__sidebar .base-search__result') as HTMLElement
-			expect(result).toBeTruthy()
-		})
-		const result = document.querySelector('.base-search__sidebar .base-search__result') as HTMLElement
-		await userEvent.click(result)
-
-		await waitFor(() => {
-			expect(args.onSelect).toHaveBeenCalled()
-		})
-	},
-}
-/** Закрытие sidebar по Escape */
-export const SidebarEscape: Story = {
-	args: { mode: 'sidebar', onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const overlay = getLastEl(document, '.base-search__sidebar-overlay')
-		const sidebar = getLastEl(document, '.base-search__sidebar')
-		const input = getInput(sidebar, '.base-input__field')
-		await userEvent.click(input)
-		await userEvent.keyboard('{Escape}')
-		await waitFor(() => expect(overlay.isConnected).toBe(false))
-	},
-}
-/** Синхронизация modelValue извне */
-export const ModelValueSync: Story = {
-	args: {
-		modelValue: 'начальное',
-		onSearch: fn(),
-		'onUpdate:modelValue': fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		// При изменении modelValue извне — поле должно обновиться
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		expect(input?.value).toBe('начальное')
-
-		// Очистка поля
-		const clearBtn = canvasElement.querySelector('.base-search__clear') as HTMLElement
-		if (clearBtn) {
-			await userEvent.click(clearBtn)
-			await waitFor(() => {
-				expect(args['onUpdate:modelValue']).toHaveBeenCalledWith('')
-			})
-		}
-	},
-}
-/** Дебаунс с пустым значением (не должен вызывать search) */
-export const DebounceEmptyValue: Story = {
-	args: { onSearch: fn() },
-	play: async ({ args, canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.type(input, 'а')
-			await userEvent.clear(input)
-		}
-		// После очистки не должен быть emit search с пустым значением
-		// debouncedSearch проверяет if (value) перед emit
-		await new Promise(r => setTimeout(r, 400))
-		// onSearch не должен вызываться с пустой строкой
-		const calls = (args.onSearch as ReturnType<typeof fn>).mock?.calls || []
-		const hasEmptyCall = calls.some((c: string[]) => c[0] === '')
-		expect(hasEmptyCall).toBe(false)
-	},
-}
-/** handleBlur — потеря фокуса */
-export const BlurHandling: Story = {
-	args: { onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.click(input)
-			await userEvent.type(input, 'тест')
-		}
-		// Убираем фокус
-		await userEvent.click(document.body)
-		// Дропдаун должен закрыться
-		await waitFor(() => {
-			const dropdown = canvasElement.querySelector('.base-dropdown__content')
-			expect(dropdown).toBeNull()
-		})
-	},
-}
-/** isOpen computed setter (закрытие дропдауна) */
-export const DropdownClose: Story = {
-	args: { onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.click(input)
-			await userEvent.type(input, 'Закат')
-		}
-		// Дропдаун должен открыться с результатами (Teleport to="body")
-		await waitFor(
-			() => {
-				const results = document.body.querySelectorAll('.base-search__result')
-				expect(results.length).toBeGreaterThan(0)
-			},
-			{ timeout: 3000 },
-		)
-	},
-}
-/** handleClear в модальном режиме (focusActiveInput modal) */
-export const ModalClear: Story = {
-	args: { mode: 'modal', onSearch: fn(), onClear: fn() },
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-
-		const trigger = canvasElement.querySelector('.base-search__trigger input') as HTMLInputElement
-		await userEvent.click(trigger)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__modal-overlay')).toBeTruthy()
-		})
-
-		const modalInput = document.querySelector('.base-search__modal .base-input__field') as HTMLInputElement
-		if (modalInput) {
-			await userEvent.type(modalInput, 'тест')
-		}
-
-		await waitFor(() => {
-			const clearBtn = document.querySelector('.base-search__modal .base-search__clear') as HTMLElement
-			expect(clearBtn).toBeTruthy()
-		})
-
-		const clearBtn = document.querySelector('.base-search__modal .base-search__clear') as HTMLElement
-		await userEvent.click(clearBtn)
-
-		await waitFor(() => {
-			expect(args.onClear).toHaveBeenCalled()
-		})
-	},
-}
-/** handleClear в sidebar режиме (focusActiveInput sidebar) */
-export const SidebarClear: Story = {
-	args: { mode: 'sidebar', onSearch: fn(), onClear: fn() },
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-
-		const trigger = canvasElement.querySelector('.base-search__trigger input') as HTMLInputElement
-		await userEvent.click(trigger)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__sidebar-overlay')).toBeTruthy()
-		})
-
-		const sidebarInput = document.querySelector('.base-search__sidebar .base-input__field') as HTMLInputElement
-		if (sidebarInput) {
-			await userEvent.type(sidebarInput, 'тест')
-		}
-
-		await waitFor(() => {
-			const clearBtn = document.querySelector('.base-search__sidebar .base-search__clear') as HTMLElement
-			expect(clearBtn).toBeTruthy()
-		})
-
-		const clearBtn = document.querySelector('.base-search__sidebar .base-search__clear') as HTMLElement
-		await userEvent.click(clearBtn)
-
-		await waitFor(() => {
-			expect(args.onClear).toHaveBeenCalled()
-		})
-	},
-}
-/** Модальное окно — закрытие по кнопке close */
-export const ModalCloseButton: Story = {
-	args: { mode: 'modal', onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-
-		const trigger = canvasElement.querySelector('.base-search__trigger input') as HTMLInputElement
-		await userEvent.click(trigger)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__modal-overlay')).toBeTruthy()
-		})
-
-		// Закрытие через кнопку
-		const closeBtn = document.querySelector('.base-search__modal-close') as HTMLElement
-		await userEvent.click(closeBtn)
-
-		await waitFor(() => {
-			expect(document.querySelector('.base-search__modal-overlay')).toBeNull()
-		})
-	},
-}
-/** maxResults ограничение */
-export const MaxResultsLimit: Story = {
-	args: { maxResults: 2, onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.click(input)
-			// 'пейзаж' встречается в 4+ результатах
-			await userEvent.type(input, 'пейзаж')
-		}
-		await waitFor(() => {
-			const results = canvasElement.querySelectorAll('.base-search__result')
-			expect(results.length).toBeLessThanOrEqual(2)
-		})
-	},
-}
-/** hasIcon = false (без иконки) */
-export const NoIcon: Story = {
-	args: { hasIcon: false, onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-search__icon')).toBeNull()
-	},
-}
-/** hasClear = false (без кнопки очистки) */
-export const NoClear: Story = {
-	args: { hasClear: false, onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-		if (input) {
-			await userEvent.type(input, 'тест')
-		}
-		// Кнопка очистки не должна появиться
-		await waitFor(() => {
-			expect(canvasElement.querySelector('.base-search__clear')).toBeNull()
-		})
-	},
-}
-/** Результат без опциональных полей */
-export const PlainResult: Story = {
-	args: { results: PLAIN_RESULTS as never, onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = getInput(canvasElement, '.base-input__field')
-		await userEvent.click(input)
-		await userEvent.type(input, 'Простой')
-		await waitFor(() => expect(document.body.querySelector('.base-search__result')).toBeTruthy())
-	},
-}
-/** Поиск по описанию */
-export const DescriptionResult: Story = {
-	args: { results: DESCRIPTION_RESULTS as never, onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const input = getInput(canvasElement, '.base-input__field')
-		await userEvent.click(input)
-		await userEvent.type(input, 'особый')
-		await waitFor(() => expect(document.body.querySelector('.base-search__result')).toBeTruthy())
-	},
-}
-/** Модальный выбор результата */
-export const ModalMixedResults: Story = {
-	args: { mode: 'modal', results: MIXED_RESULTS as never, onSearch: fn(), onSelect: fn() },
-	play: async ({ args, canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const modal = getLastEl(document, '.base-search__modal')
-		const input = getInput(modal, '.base-input__field')
-		await userEvent.type(input, 'Общий')
-		await waitFor(() => expect(modal.querySelector('.base-search__result')).toBeTruthy())
-		const result = getEl(modal, '.base-search__result')
-		await userEvent.hover(result)
-		await userEvent.click(result)
-		await waitFor(() => expect(args.onSelect).toHaveBeenCalled())
-	},
-}
-/** Модальные состояния без иконки и очистки */
-export const ModalStaticStates: Story = {
-	args: { mode: 'modal', modelValue: 'ожидание', hasIcon: false, hasClear: false, isLoading: true, results: [] },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const modal = getLastEl(document, '.base-search__modal')
-		await waitFor(() => expect(modal.querySelector('.base-loader')).toBeTruthy())
-		expect(modal.querySelector('.base-search__icon')).toBeNull()
-		expect(modal.querySelector('.base-search__clear')).toBeNull()
-		closeSearch()
-	},
-}
-/** Пустой результат в модальном режиме */
-export const ModalEmptyResult: Story = {
-	args: { mode: 'modal', results: [], onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const modal = getLastEl(document, '.base-search__modal')
-		const input = getInput(modal, '.base-input__field')
-		await userEvent.type(input, 'ничего')
-		await waitFor(() => expect(modal.querySelector('.base-search__empty')).toBeTruthy())
-		closeSearch()
-	},
-}
-/** Закрытие модального режима по Escape */
-export const ModalEscapePaths: Story = {
-	args: { mode: 'modal' },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		let overlay = getLastEl(document, '.base-search__modal-overlay')
-		closeSearch()
-		await waitFor(() => expect(overlay.isConnected).toBe(false))
-		await userEvent.click(trigger)
-		overlay = getLastEl(document, '.base-search__modal-overlay')
-		const modal = getLastEl(document, '.base-search__modal')
-		getInput(modal, '.base-input__field').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-		await waitFor(() => expect(overlay.isConnected).toBe(false))
-	},
-}
-/** Выбор результата в sidebar с разными типами */
-export const SidebarMixedResults: Story = {
-	args: { mode: 'sidebar', results: MIXED_RESULTS as never, onSearch: fn(), onSelect: fn() },
-	play: async ({ args, canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const sidebar = getLastEl(document, '.base-search__sidebar')
-		const input = getInput(sidebar, '.base-input__field')
-		await userEvent.type(input, 'Общий')
-		await waitFor(() => expect(sidebar.querySelector('.base-search__result')).toBeTruthy())
-		const result = getEl(sidebar, '.base-search__result')
-		await userEvent.hover(result)
-		await userEvent.click(result)
-		await waitFor(() => expect(args.onSelect).toHaveBeenCalled())
-	},
-}
-/** Sidebar состояния без иконки и очистки */
-export const SidebarStaticStates: Story = {
-	args: { mode: 'sidebar', modelValue: 'ожидание', hasIcon: false, hasClear: false, isLoading: true, results: [] },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const sidebar = getLastEl(document, '.base-search__sidebar')
-		await waitFor(() => expect(sidebar.querySelector('.base-loader')).toBeTruthy())
-		expect(sidebar.querySelector('.base-search__icon')).toBeNull()
-		expect(sidebar.querySelector('.base-search__clear')).toBeNull()
-		closeSearch()
-	},
-}
-/** Пустой результат в sidebar режиме */
-export const SidebarEmptyResult: Story = {
-	args: { mode: 'sidebar', results: [], onSearch: fn() },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const sidebar = getLastEl(document, '.base-search__sidebar')
-		const input = getInput(sidebar, '.base-input__field')
-		await userEvent.type(input, 'ничего')
-		await waitFor(() => expect(sidebar.querySelector('.base-search__empty')).toBeTruthy())
-		closeSearch()
-	},
-}
-/** Закрытие sidebar через document Escape */
-export const SidebarDocumentEscape: Story = {
-	args: { mode: 'sidebar' },
-	play: async ({ canvasElement }) => {
-		const trigger = getInput(canvasElement, '.base-search__trigger input')
-		await userEvent.click(trigger)
-		const overlay = getLastEl(document, '.base-search__sidebar-overlay')
-		closeSearch()
-		await waitFor(() => expect(overlay.isConnected).toBe(false))
-	},
-}
-/** Обновление modelValue извне */
-export const ExternalModelUpdate: Story = {
-	render: args => ({
-		components: { BaseSearch },
-		setup() {
-			const model = ref('начальное')
-
-			function handleUpdate(value: string): void {
-				model.value = value
-			}
-
-			function handleChange(): void {
-				model.value = 'обновлено'
-			}
-
-			return { args, handleChange, handleUpdate, model }
-		},
-		template: `
-			<div>
-				<BaseSearch v-bind="args" :model-value="model" @update:model-value="handleUpdate" />
-				<button data-testid="change-model" @click="handleChange">Обновить</button>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const input = getInput(canvasElement, '.base-input__field')
-		await userEvent.click(canvas.getByTestId('change-model'))
-		await waitFor(() => expect(input.value).toBe('обновлено'))
-		await userEvent.type(input, '!')
-		await waitFor(() => expect(input.value).toBe('обновлено!'))
-	},
-}
-/** Пустой результат поиска */
+/** Ничего не найдено: в панели — текст из слота `empty` (по умолчанию «Ничего не найдено»). */
 export const Empty: Story = {
-	args: {
-		modelValue: 'несуществующий запрос',
-		results: [],
+	args: { modelValue: 'Трейлер' },
+	parameters: { docs: docsFrame(200) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
+		const empty = await screen.findByText('Ничего не найдено')
+		await waitFor(() => expect(empty).toBeVisible())
 	},
 }
-/** Автофокус в default-режиме — покрывает onMounted + nextTick + baseInputRef.focus() */
-export const Autofocus: Story = {
-	args: {
-		mode: 'default',
-		isAutofocus: true,
-		results: MOCK_RESULTS as never,
-	},
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			const input = canvasElement.querySelector('.base-input__field') as HTMLInputElement
-			expect(input).toBeTruthy()
-			expect(document.activeElement === input).toBe(true)
-		})
-	},
-}
-/** Длинный текст в результатах */
+
+/** Длинные названия и описания обрезаются многоточием в одну строку и не растягивают панель. */
 export const LongContent: Story = {
-	args: {
-		modelValue: 'длинный',
-		results: [
-			{
-				id: 1,
-				title:
-					'Очень длинное название картины которое не помещается в одну строку и требует переноса на несколько строк для корректного отображения',
-				description:
-					'Масло, холст, очень большой размер 200×150 см, авторская работа известного художника из Санкт-Петербурга, созданная в 2023 году',
-				icon: 'search',
-				category: 'Пейзаж',
-			},
-			{
-				id: 2,
-				title:
-					'Абстрактная композиция с элементами сюрреализма и постмодернизма в стиле великих мастеров двадцатого века',
-				description: 'Смешанная техника, картон, 300×200 см, коллекционная работа из серии «Бесконечность»',
-				icon: 'search',
-				category: 'Абстракция',
-			},
-		] as never,
+	args: { modelValue: 'Северный ветер', results: LONG_RESULTS },
+	parameters: { docs: docsFrame(240) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
+		await waitFor(() => expect(resultTitles()).toHaveLength(2))
+		const title = document.querySelector('.base-search__result-title') as HTMLElement
+		await expect(title.scrollWidth).toBeGreaterThan(title.clientWidth)
 	},
 }
-/** Кастомные классы для элементов */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: {
-			root: 'srch-root',
-			trigger: 'srch-trigger',
-			icon: 'srch-icon',
-			modal: 'srch-modal',
-			modalOverlay: 'srch-modalOverlay',
-			modalHeader: 'srch-modal-header',
-			modalInput: 'srch-modal-input',
-			clear: 'srch-clear',
-			clearIcon: 'srch-clearIcon',
-			loading: 'srch-loading',
-			modalClose: 'srch-modal-close',
-			modalCloseIcon: 'srch-modalCloseIcon',
-			modalResults: 'srch-modal-results',
-			result: 'srch-result',
-			resultContent: 'srch-result-content',
-			resultTitle: 'srch-result-title',
-			resultImage: 'srch-resultImage',
-			resultIcon: 'srch-resultIcon',
-			resultDesc: 'srch-resultDesc',
-			resultCategory: 'srch-resultCategory',
-			empty: 'srch-empty',
-			emptyText: 'srch-emptyText',
-			dropdown: 'srch-dropdown',
-			input: 'srch-input',
-			sidebarOverlay: 'srch-sidebarOverlay',
-			sidebar: 'srch-sidebar',
-			sidebarHeader: 'srch-sidebarHeader',
-			sidebarInput: 'srch-sidebarInput',
-			sidebarClose: 'srch-sidebarClose',
-			sidebarCloseIcon: 'srch-sidebarCloseIcon',
-			sidebarResults: 'srch-sidebarResults',
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Превью (`image`) вместо иконки; совпадения с запросом выделены и в описании. */
+export const WithImages: Story = {
+	args: { modelValue: 'холст', results: ARTWORKS, placeholder: 'Поиск картин' },
+	parameters: { docs: docsFrame(320) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск картин'))
+		await waitFor(() => expect(resultTitles()).toHaveLength(4))
+		const preview = screen.getByRole('img', { name: 'Закат в горах' })
+		await waitFor(() => expect(preview).toBeVisible())
+		const marks = Array.from(document.querySelectorAll('.base-search__result mark')).map(mark => mark.textContent)
+		await expect(marks).toEqual(['холст', 'холст', 'холст', 'холст'])
+	},
+}
+
+/**
+ * Слоты `result-before` и `result-after` — заголовок группы и действие под списком; `result` заменяет разметку
+ * одного результата, `results` — весь список, `empty` и `loading` — состояния.
+ */
+export const Slots: Story = {
+	args: { modelValue: 'Лис' },
+	parameters: {
+		docs: {
+			...docsFrame(280),
+			source: {
+				code: [
+					'<BaseSearch v-model="query" :results="results">',
+					'  <template #result-before>Файлы проекта</template>',
+					'  <template #result-after="{ query }"><BaseButton variant="ghost">Все результаты по запросу «{{ query }}»</BaseButton></template>',
+					'</BaseSearch>',
+				].join('\n'),
+			},
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.srch-root')).toBeTruthy()
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseSearch, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: `
+				<div class="story-narrow">
+					<BaseSearch v-bind="props" @update:model-value="onUpdate">
+						<template #result-before>
+							<div class="story-label" style="padding: 6px 8px 2px;">Файлы проекта</div>
+						</template>
+						<template #result-after="{ query }">
+							<BaseButton variant="ghost" style="width: 100%;">Все результаты по запросу «{{ query }}»</BaseButton>
+						</template>
+					</BaseSearch>
+				</div>
+			`,
+		}
+	},
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
+		const action = await screen.findByRole('button', { name: 'Все результаты по запросу «Лис»' })
+		await waitFor(() => expect(action).toBeVisible())
+		await expect(screen.getByText('Файлы проекта')).toBeVisible()
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Серверный поиск (`isRemote`): результаты показываются как есть, без фильтрации по подстроке.
+ * «Вечер у моря» не содержит «zakat» — без `isRemote` этот ответ сервера был бы скрыт.
+ */
+export const RemoteResults: Story = {
+	args: { isRemote: true, modelValue: 'zakat', results: REMOTE_RESULTS },
+	parameters: { docs: docsFrame(220) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
+		await waitFor(() => expect(resultTitles()).toEqual(['Закат в горах', 'Вечер у моря']))
+	},
+}
+
+/** Поиск по Enter (`isInstant: false`): подсказки и событие `search` появляются только после нажатия Enter. */
+export const SearchOnEnter: Story = {
+	args: { isInstant: false },
+	parameters: { docs: docsFrame(240) },
+	render: renderWithLocalQuery,
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.type(canvas.getByPlaceholderText('Поиск по проекту'), 'Лис')
+		await expect(resultTitles()).toHaveLength(0)
+		await expect(args.onSearch).not.toHaveBeenCalled()
+
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onSearch).toHaveBeenCalledWith('Лис')
+		await waitFor(() => expect(resultTitles()).toEqual(['Сценарий «Лисья тропа»', 'Раскадровка «Лисья тропа»']))
+	},
+}
+
+/**
+ * Режим `modal`: поле на странице открывает окно поиска по центру. Окно закрывают Escape, клик по подложке и кнопка
+ * «Закрыть»; запрос сохраняется до следующего открытия.
+ */
+export const ModalMode: Story = {
+	args: { mode: 'modal', modelValue: 'Лис' },
+	parameters: { docs: docsFrame(420) },
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByPlaceholderText('Поиск по проекту')
+		await userEvent.click(trigger)
+		const dialog = await screen.findByRole('dialog', { name: 'Поиск' })
+		await waitFor(() => expect(dialog).toBeVisible())
+		await expect(screen.getByRole('button', { name: 'Закрыть' })).toBeInTheDocument()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+		await userEvent.click(trigger)
+		await waitFor(() => expect(resultTitles()).toEqual(['Сценарий «Лисья тропа»', 'Раскадровка «Лисья тропа»']))
+	},
+}
+
+/** Режим `sidebar`: окно поиска — панель у правого края экрана во всю высоту. */
+export const SidebarMode: Story = {
+	args: { mode: 'sidebar', modelValue: 'запис' },
+	parameters: { docs: docsFrame(420) },
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
+		const dialog = await screen.findByRole('dialog', { name: 'Поиск' })
+		await waitFor(() => expect(dialog).toBeVisible())
+		await expect(resultTitles()).toEqual(['Запись голоса — сцена 12', 'Календарь записей'])
+		await expect(args.onSelect).not.toHaveBeenCalled()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab ставит фокус в поле, ввод показывает подсказки, стрелки подсвечивают результат,
+ * Enter выбирает его — запрос заменяется названием результата.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	render: renderWithLocalQuery,
+	play: async ({ canvas, userEvent, args }) => {
+		const field = canvas.getByPlaceholderText('Поиск по проекту')
+		await tabTo(field, userEvent)
+		await userEvent.keyboard('Лис')
+		await waitFor(() => expect(resultTitles()).toHaveLength(2))
+
+		await userEvent.keyboard('{ArrowDown}{ArrowDown}')
+		await expect(document.querySelector('.base-search__result--highlighted')).toHaveTextContent('Раскадровка «Лисья тропа»')
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: 4 }))
+		await expect(field).toHaveValue('Раскадровка «Лисья тропа»')
+		await waitFor(() => expect(resultTitles()).toHaveLength(0))
 	},
 }

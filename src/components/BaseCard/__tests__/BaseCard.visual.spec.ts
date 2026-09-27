@@ -1,16 +1,19 @@
 /**
- * Visual regression тесты для BaseCard.
+ * Visual regression BaseCard: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basecard'
-const STORIES = ['default', 'hoverable']
+const STORIES = ['variants', 'sizes', 'padding', 'with-actions', 'with-footer', 'fixed-height'] as const
 
-for (const story of STORIES) {
-	test(`BaseCard — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-card')
-		await expect(root).toHaveScreenshot(`base-card--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseCard · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-basecard--${story}`, { theme, height: 480 })
+				await expectStoryScreenshot(page, `base-card-${story}-${theme}.png`)
+			})
+		}
 	})
 }

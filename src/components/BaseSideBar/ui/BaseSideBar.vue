@@ -7,34 +7,24 @@
 		<div v-if="hasHeader" class="base-side-bar__header" :class="classes.header">
 			<template v-if="!isCollapsedState">
 				<slot name="header">
-					<BaseText v-if="title" tag="h3" :weight="UI_FONT_WEIGHT.BOLD" class="base-side-bar__title" :custom-class="classes.title">
-						{{ title }}
-					</BaseText>
+					<h3 v-if="title" class="base-side-bar__title" :class="classes.title">{{ title }}</h3>
 				</slot>
 			</template>
 
-			<BaseTooltip v-if="isCollapsible && isCollapsedState" :text="UI_TEXT.EXPAND" position="right">
+			<!--
+				Одна кнопка в обоих состояниях: при сворачивании она не пересоздаётся, и фокус клавиатуры остаётся на ней.
+				Подсказка повторяет её имя: «Свернуть» / «Развернуть».
+			-->
+			<BaseTooltip v-if="isCollapsible" :text="toggleLabel" position="right" class="base-side-bar__toggle-tooltip">
 				<BaseButton
 					variant="ghost"
 					:aria-label="toggleLabel"
-					:padding="6"
 					class="base-side-bar__toggle"
 					:custom-class="classes.toggle"
 					@click="handleToggle">
 					<BaseIcon :name="toggleIcon" />
 				</BaseButton>
 			</BaseTooltip>
-
-			<BaseButton
-				v-else-if="isCollapsible"
-				variant="ghost"
-				:aria-label="toggleLabel"
-				:padding="6"
-				class="base-side-bar__toggle"
-				:custom-class="classes.toggle"
-				@click="handleToggle">
-				<BaseIcon :name="toggleIcon" />
-			</BaseButton>
 		</div>
 
 		<div
@@ -71,9 +61,9 @@
 		</div>
 
 		<div v-if="isLoading" class="base-side-bar__loading" :class="classes.loading">
-			<BaseSkeleton shape="rect" :width="'100%'" :height="20" style="margin-bottom: 8px" />
-			<BaseSkeleton shape="rect" :width="'82%'" :height="20" style="margin-bottom: 8px" />
-			<BaseSkeleton shape="rect" :width="'64%'" :height="20" style="margin-bottom: 8px" />
+			<BaseSkeleton shape="rect" :width="'100%'" :height="20" />
+			<BaseSkeleton shape="rect" :width="'82%'" :height="20" />
+			<BaseSkeleton shape="rect" :width="'64%'" :height="20" />
 			<BaseSkeleton shape="rect" :width="'92%'" :height="20" />
 		</div>
 
@@ -96,12 +86,11 @@ import { computed, ref, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSkeleton } from '@components/BaseSkeleton'
-import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { usePadding } from '@composables/usePadding'
-import { UI_TEXT, UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_TEXT, UI_SIZE, SIZE_SCALE_DEFAULT } from '@constants'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
 import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
@@ -113,7 +102,7 @@ defineOptions({
 const props = withDefaults(defineProps<BaseSideBarProps>(), {
 	width: UI_SIZE.SIDEBAR_DEFAULT_WIDTH,
 	collapsedWidth: 68,
-	padding: UI_SIZE.PADDING.LG,
+	padding: undefined,
 	gap: UI_SIZE.GAP.SM,
 	activeMatch: 'exact',
 	linkComponent: 'a',
@@ -128,11 +117,9 @@ const { wasPropPassed } = useExplicitPropDetection()
 
 const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-side-bar', props, ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'])
 
-const { paddingStyle } = usePadding({
-	getPadding: () => props.padding,
-	prefix: '--sidebar-pad',
-	defaultPadding: UI_SIZE.PADDING.LG,
-})
+const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--sidebar-pad' })
+/** Без пропа padding отступы берутся из стилей (8px 12px): inline-переменные --sidebar-pad-* пишутся только для явного значения. */
+const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
 
 const internalCollapsed = ref(false)
 const isCollapsedControlled = computed(() => wasPropPassed('isCollapsed'))

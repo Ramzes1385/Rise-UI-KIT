@@ -1,31 +1,27 @@
 <template>
 	<div class="base-chat-selection-toolbar">
-		<div class="base-chat-selection-toolbar__info">
-			<BaseText :size-scale="sizeScale" :weight="UI_FONT_WEIGHT.SEMIBOLD"> {{ UI_CHAT_TEXT.SELECTED_PREFIX }} {{ selectedCount }} </BaseText>
-		</div>
-		<div class="base-chat-selection-toolbar__actions">
-			<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('forward')">
-				<template #left>
-					<BaseIcon name="reply" :size-scale="sizeScale" />
-				</template>
-				{{ UI_CHAT_TEXT.FORWARD }}
-			</BaseButton>
-			<BaseButton
-				variant="ghost"
-				:size-scale="sizeScale"
-				class="base-chat-selection-toolbar__btn--danger"
-				@click="emit('delete')">
-				<template #left>
-					<BaseIcon name="x-circle" :size-scale="sizeScale" />
-				</template>
-				{{ UI_CHAT_TEXT.DELETE }}
-			</BaseButton>
-			<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('cancel')">
-				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale" />
-				</template>
-				{{ UI_CHAT_TEXT.CANCEL }}
-			</BaseButton>
+		<div class="base-chat-selection-toolbar__surface" role="group" :aria-label="UI_CHAT_TEXT.SELECTION_TOOLBAR">
+			<span class="base-chat-selection-toolbar__info" aria-live="polite">{{ UI_CHAT_TEXT.SELECTED_PREFIX }} {{ selectedCount }}</span>
+			<div class="base-chat-selection-toolbar__actions">
+				<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('forward')">
+					<template #left>
+						<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					</template>
+					{{ UI_CHAT_TEXT.FORWARD }}
+				</BaseButton>
+				<BaseButton variant="ghost" :size-scale="sizeScale" class="base-chat-selection-toolbar__btn--danger" @click="emit('delete')">
+					<template #left>
+						<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					</template>
+					{{ UI_CHAT_TEXT.DELETE }}
+				</BaseButton>
+				<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('cancel')">
+					<template #left>
+						<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					</template>
+					{{ UI_CHAT_TEXT.CANCEL }}
+				</BaseButton>
+			</div>
 		</div>
 	</div>
 </template>
@@ -33,12 +29,7 @@
 <script setup lang="ts">
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import {
-	UI_CHAT_TEXT,
-	UI_FONT_WEIGHT,
-	SIZE_SCALE_DEFAULT,
-} from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import './ChatSelectionToolbar.style.scss'
 
 import type { ChatSelectionToolbarEmits, ChatSelectionToolbarProps } from '../../model/ChatSelectionToolbar.types'

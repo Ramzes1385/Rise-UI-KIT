@@ -1,6 +1,7 @@
 <template>
 	<BaseText
 		v-if="error"
+		:id="id"
 		tag="span"
 		:class="className"
 		:custom-class="customClass"

@@ -5,8 +5,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { describe, expect, it } from 'vitest'
 import ChatSlideover from '../ui/ChatSlideover/ChatSlideover.vue'
 import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 
@@ -24,6 +24,9 @@ const MESSAGES_WITH_LINKS: ChatMessage[] = [
 	{ id: '5', text: '', sender: 'me', time: '10:04' },
 ]
 
+/** Демо-данные, которые раньше были зашиты в компонент и показывались в любом чате */
+const DEMO_DATA_PATTERN = /Металл-Арт|ведущий скульптор|\+7 \(999\) 123-45-67|info@metal-art\.ru/
+
 function baseProps(overrides: Record<string, unknown> = {}) {
 	return {
 		isOpen: true,
@@ -38,10 +41,15 @@ function baseProps(overrides: Record<string, unknown> = {}) {
 
 describe('ChatSlideover unit', () => {
 	describe('заголовок и открытие', () => {
-		it('должен применять класс open когда isOpen=true', () => {
-			const { container } = render(ChatSlideover, { props: baseProps() })
+		it('должен показывать панель-диалог «Информация» только когда isOpen=true', async () => {
+			const { rerender } = render(ChatSlideover, { props: baseProps() })
 
-			expect(container.querySelector('.base-chat-slideover--open')).toBeInTheDocument()
+			// Панель — BaseSlideover внутри окна чата: немодальный диалог, закрытая панель не остаётся в DOM и в порядке Tab
+			const dialog = screen.getByRole('dialog', { name: 'Информация' })
+			expect(dialog).not.toHaveAttribute('aria-modal')
+
+			await rerender(baseProps({ isOpen: false }))
+			await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
 		})
 
 		it('должен показывать заголовок "Информация" для вкладки info', () => {
@@ -59,7 +67,7 @@ describe('ChatSlideover unit', () => {
 		it('должен эмитить update:isOpen=false при клике на крестик', async () => {
 			const { emitted } = render(ChatSlideover, { props: baseProps() })
 
-			await fireEvent.click(screen.getByLabelText('Закрыть панель информации'))
+			await fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }))
 
 			const events = emitted()['update:isOpen'] as Array<[boolean]>
 			expect(events[0][0]).toBe(false)
@@ -67,11 +75,18 @@ describe('ChatSlideover unit', () => {
 	})
 
 	describe('вкладка инфо — личный чат', () => {
-		it('должен показывать подзаголовок и блок контактов для личного чата', () => {
-			const { container } = render(ChatSlideover, { props: baseProps({ isGroup: false }) })
+		it('должен показывать подзаголовок и не показывать захардкоженные демо-контакты и описание', () => {
+			const { container } = render(ChatSlideover, { props: baseProps({ isGroup: false, subtitle: 'был(а) недавно' }) })
 
-			expect(container.querySelector('.base-chat-slideover__info-details')).toBeInTheDocument()
-			expect(screen.getByText('+7 (999) 123-45-67')).toBeInTheDocument()
+			expect(screen.getByText('был(а) недавно')).toBeInTheDocument()
+			expect(container.querySelector('.base-chat-slideover__info-details')).toBeNull()
+			expect(container.textContent).not.toMatch(DEMO_DATA_PATTERN)
+		})
+
+		it('должен показывать описание из prop description', () => {
+			render(ChatSlideover, { props: baseProps({ isGroup: false, description: 'Менеджер по доставке' }) })
+
+			expect(screen.getByText('Менеджер по доставке')).toBeInTheDocument()
 		})
 
 		it('должен показывать запасной статус "в сети" когда подзаголовок пуст', () => {
@@ -87,6 +102,18 @@ describe('ChatSlideover unit', () => {
 
 			expect(screen.getByText('3 участников')).toBeInTheDocument()
 			expect(screen.getByText('Участники группы')).toBeInTheDocument()
+		})
+
+		it('не должен показывать захардкоженное демо-описание группы', () => {
+			const { container } = render(ChatSlideover, { props: baseProps({ isGroup: true, members: MEMBERS }) })
+
+			expect(container.textContent).not.toMatch(DEMO_DATA_PATTERN)
+		})
+
+		it('должен показывать описание группы из prop description', () => {
+			render(ChatSlideover, { props: baseProps({ isGroup: true, members: MEMBERS, description: 'Обсуждение релизов' }) })
+
+			expect(screen.getByText('Обсуждение релизов')).toBeInTheDocument()
 		})
 
 		it('должен эмитить переход в профиль при клике по участнику', async () => {
@@ -120,6 +147,21 @@ describe('ChatSlideover unit', () => {
 
 			await fireEvent.click(adminBtn)
 			expect(container.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
+		})
+
+		it('Escape в меню участника закрывает только меню, панель остаётся открытой', async () => {
+			const { container, emitted } = render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
+			})
+
+			const trigger = screen.getByRole('button', { name: 'Действия с участником Анна' })
+			await fireEvent.click(trigger)
+			expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+			await fireEvent.keyDown(screen.getByRole('menuitem', { name: 'Разжаловать' }), { key: 'Escape' })
+
+			expect(container.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
+			expect(emitted()['update:isOpen']).toBeUndefined()
 		})
 
 		it('должен эмитить update-member-role при смене роли (разжаловать админа)', async () => {
@@ -284,6 +326,22 @@ describe('ChatSlideover unit', () => {
 			expect(events[0][0]).toBe('files')
 		})
 
+		it('вкладки — tablist: выбранная вкладка aria-selected, стрелки переключают по кругу', async () => {
+			const { emitted } = render(ChatSlideover, { props: baseProps({ activeTab: 'links' }) })
+
+			const tablist = screen.getByRole('tablist', { name: 'Разделы информации' })
+			const selected = screen.getByRole('tab', { selected: true })
+			expect(selected).toHaveTextContent('Ссылки')
+			expect(selected).toHaveAttribute('tabindex', '0')
+			expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', selected.id)
+
+			await fireEvent.keyDown(tablist, { key: 'ArrowRight' })
+			await fireEvent.keyDown(tablist, { key: 'Home' })
+
+			const events = emitted()['update:activeTab'] as Array<[string]>
+			expect(events.map(([tab]) => tab)).toEqual(['info', 'info'])
+		})
+
 		it('должен называть первую вкладку "Участники" в групповом чате', () => {
 			render(ChatSlideover, { props: baseProps({ activeTab: 'media', isGroup: true }) })
 
@@ -374,7 +432,7 @@ describe('ChatSlideover unit', () => {
 		it('должен эмитить file-click при клике по файлу', async () => {
 			const { container, emitted } = render(ChatSlideover, { props: baseProps({ activeTab: 'files', messages: fileMessages }) })
 
-			const fileItem = container.querySelector('.base-chat-slideover__file-item') as HTMLElement
+			const fileItem = container.querySelector('.base-chat-slideover__file-main') as HTMLElement
 			await fireEvent.click(fileItem)
 
 			expect(emitted()['file-click']).toBeTruthy()
@@ -423,14 +481,13 @@ describe('ChatSlideover unit', () => {
 			expect(screen.getByText('http://test.ru')).toBeInTheDocument()
 		})
 
-		it('должен открывать ссылку в новой вкладке при клике', async () => {
-			const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
-			const { container } = render(ChatSlideover, { props: baseProps({ activeTab: 'links', messages: MESSAGES_WITH_LINKS }) })
+		it('должен показывать ссылку настоящей ссылкой, открывающейся в новой вкладке', () => {
+			render(ChatSlideover, { props: baseProps({ activeTab: 'links', messages: MESSAGES_WITH_LINKS }) })
 
-			const linkItem = container.querySelector('.base-chat-slideover__link-item') as HTMLElement
-			await fireEvent.click(linkItem)
-
-			expect(openSpy).toHaveBeenCalledWith('https://example.com', '_blank', 'noopener,noreferrer')
+			const link = screen.getByRole('link', { name: /https:\/\/example\.com/ })
+			expect(link).toHaveAttribute('href', 'https://example.com')
+			expect(link).toHaveAttribute('target', '_blank')
+			expect(link).toHaveAttribute('rel', 'noopener noreferrer')
 		})
 
 		it('должен показывать дату публикации рядом со ссылкой', () => {

@@ -8,6 +8,10 @@
 		</div>
 
 		<div class="base-stepper__items" :class="classes.items">
+			<!--
+				Шаг — кнопка перехода к нему: Enter и Space работают как клик, отключённый шаг выведен из порядка Tab.
+				Текущий шаг помечен aria-current="step".
+			-->
 			<div
 				v-for="(step, index) in items"
 				:key="index"
@@ -20,7 +24,13 @@
 					},
 					classes.step,
 				]"
-				@click="handleStepClick(index + 1)">
+				role="button"
+				:tabindex="step.isDisabled ? -1 : 0"
+				:aria-disabled="step.isDisabled || undefined"
+				:aria-current="modelValue === index + 1 ? 'step' : undefined"
+				@click="handleStepClick(index + 1)"
+				@keydown.enter.prevent="handleStepClick(index + 1)"
+				@keydown.space.prevent="handleStepClick(index + 1)">
 				<slot
 					name="item"
 					:item="step"
@@ -34,26 +44,17 @@
 							<span v-if="modelValue > index + 1" class="base-stepper__check" :class="classes.check">
 								<BaseIcon name="check" :size-scale="calcIconScale('sm', sizeScale)" />
 							</span>
+							<span v-else-if="step.icon" class="base-stepper__icon">
+								<BaseIcon :name="step.icon" :size-scale="calcIconScale('sm', sizeScale)" />
+							</span>
 							<span v-else>{{ index + 1 }}</span>
 						</div>
 					</div>
 					<div class="base-stepper__content" :class="classes.content">
-						<BaseText
-							tag="span"
-							:size-scale="sizeScale"
-							:weight="UI_FONT_WEIGHT.MEDIUM"
-							class="base-stepper__label"
-							:custom-class="classes.label"
-							>{{ step.label }}</BaseText
-						>
-						<BaseText
-							v-if="step.description"
-							tag="p"
-							:size-scale="sizeScale"
-							class="base-stepper__description"
-							:custom-class="classes.description">
+						<span class="base-stepper__label" :class="classes.label">{{ step.label }}</span>
+						<p v-if="step.description" class="base-stepper__description" :class="classes.description">
 							{{ step.description }}
-						</BaseText>
+						</p>
 					</div>
 				</slot>
 			</div>
@@ -68,9 +69,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'

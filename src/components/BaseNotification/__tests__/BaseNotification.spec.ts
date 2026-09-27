@@ -4,7 +4,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, waitFor } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import { vi } from 'vitest'
 import BaseNotification from '../ui/BaseNotification.vue'
 
@@ -148,6 +148,33 @@ describe('BaseNotification unit', () => {
 		})
 	})
 
+	describe('вариант оформления', () => {
+		it('проп variant задаёт класс уведомления', async () => {
+			render(BaseNotification, { props: { title: 'Сохранено', variant: 'soft', duration: 0 } })
+
+			await waitFor(() => {
+				expect(getNotification()).toHaveClass('base-notification-item--soft')
+			})
+		})
+
+		it('variant из add() оформляет только это уведомление, остальные берут проп компонента', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseNotification, { props: { variant: 'outline' } })
+
+			wrapper.vm.add({ title: 'Обычное', duration: 60000 })
+			wrapper.vm.add({ title: 'Мягкое', variant: 'soft', duration: 60000 })
+
+			await waitFor(() => {
+				expect(document.querySelectorAll('.base-notification-item')).toHaveLength(2)
+			})
+			const [soft, regular] = Array.from(document.querySelectorAll('.base-notification-item'))
+			expect(soft).toHaveClass('base-notification-item--soft')
+			expect(soft).not.toHaveClass('base-notification-item--outline')
+			expect(regular).toHaveClass('base-notification-item--outline')
+			wrapper.unmount()
+		})
+	})
+
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу (контейнеру)', () => {
 			render(BaseNotification, {
@@ -188,6 +215,83 @@ describe('BaseNotification unit', () => {
 				expect(document.querySelector('.base-notification-item__close')).toHaveClass('custom-close')
 				expect(document.querySelector('.base-notification-item__progress')).toHaveClass('custom-progress')
 			})
+		})
+	})
+
+	describe('доступность', () => {
+		it('контейнер — регион «Уведомления», ошибка объявляется как alert', async () => {
+			render(BaseNotification, { props: { title: 'Не удалось воспроизвести видео', type: 'error' } })
+
+			expect(await screen.findByRole('alert')).toHaveTextContent('Не удалось воспроизвести видео')
+			expect(screen.getByRole('region', { name: 'Уведомления' })).toBeInTheDocument()
+			expect(screen.queryByRole('status')).not.toBeInTheDocument()
+		})
+
+		it('остальные типы объявляются вежливо как status', async () => {
+			render(BaseNotification, { props: { title: 'Сохранено', type: 'success' } })
+
+			expect(await screen.findByRole('status')).toHaveTextContent('Сохранено')
+			expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+		})
+
+		it('кнопка закрытия имеет доступное имя', async () => {
+			render(BaseNotification, { props: { title: 'Сохранено' } })
+
+			expect(await screen.findByRole('button', { name: 'Закрыть' })).toBeInTheDocument()
+		})
+	})
+
+	describe('длительность показа: единая семантика для таймера и прогресс-бара', () => {
+		afterEach(() => {
+			vi.useRealTimers()
+		})
+
+		it('duration=0 заменяется значением по умолчанию: через 100 мс уведомление на месте, через 3000 мс удалено', async () => {
+			vi.useFakeTimers()
+			const { emitted } = render(BaseNotification, { props: { title: 'Тест', duration: 0 } })
+
+			await vi.advanceTimersByTimeAsync(100)
+			expect(getNotification()).toBeInTheDocument()
+			expect(emitted()).not.toHaveProperty('close')
+			const progress = document.querySelector('.base-notification-item__progress') as HTMLElement
+			expect(progress.style.animationDuration).toBe('3000ms')
+
+			await vi.advanceTimersByTimeAsync(2900)
+			expect(emitted()).toHaveProperty('close')
+			await waitFor(() => {
+				expect(getNotification()).not.toBeInTheDocument()
+			})
+		})
+
+		it.each([Number.POSITIVE_INFINITY, -500, Number.NaN])(
+			'некорректная длительность %s заменяется значением по умолчанию',
+			async duration => {
+				vi.useFakeTimers()
+				const { emitted } = render(BaseNotification, { props: { title: 'Тест', duration } })
+
+				await vi.advanceTimersByTimeAsync(100)
+				expect(emitted()).not.toHaveProperty('close')
+				expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe(
+					'3000ms',
+				)
+
+				await vi.advanceTimersByTimeAsync(2900)
+				expect(emitted()).toHaveProperty('close')
+			},
+		)
+
+		it('положительная длительность одинаково задаёт таймер и прогресс-бар', async () => {
+			vi.useFakeTimers()
+			const { emitted } = render(BaseNotification, { props: { title: 'Тест', duration: 5000 } })
+
+			await vi.advanceTimersByTimeAsync(100)
+			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe(
+				'5000ms',
+			)
+			await vi.advanceTimersByTimeAsync(4800)
+			expect(emitted()).not.toHaveProperty('close')
+			await vi.advanceTimersByTimeAsync(100)
+			expect(emitted()).toHaveProperty('close')
 		})
 	})
 
@@ -240,6 +344,8 @@ describe('BaseNotification unit', () => {
 			})
 
 			expect(wrapper.emitted()).not.toHaveProperty('close')
+			// Телепортированный контейнер не должен оставаться в body для следующих тестов
+			wrapper.unmount()
 		})
 
 		it('должен корректно отрабатывать remove для id без активного таймера', async () => {
@@ -257,6 +363,7 @@ describe('BaseNotification unit', () => {
 
 			expect(() => wrapper.vm.remove(999)).not.toThrow()
 			expect(document.querySelector('.base-notification-item')).toBeInTheDocument()
+			wrapper.unmount()
 		})
 	})
 })

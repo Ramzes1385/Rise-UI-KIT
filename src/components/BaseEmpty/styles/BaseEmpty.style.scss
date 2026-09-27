@@ -1,64 +1,66 @@
+// BaseEmpty — пустое состояние списка, таблицы, поиска. Всё по центру: иконка --rise-text-dimmed,
+// заголовок 14/20 medium --rise-text-highlighted, описание 14/20 --rise-text-muted, под ними действия.
+// Отступ 32px 24px, радиус lg; все длины масштабируются sizeScale (sz).
+// Варианты: default — пунктирная рамка; soft — мягкий фон без рамки;
+// ghost — без фона, рамки и отступов (внутри карточки, таблицы, выпадающего списка).
 .base-empty {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	text-align: center;
-	padding: calc(2rem * var(--size-scale, 100) / 100);
-	border-radius: 8px;
-	width: 100%;
+	gap: sz(16px);
 	box-sizing: border-box;
-
-	// default-вариант (базовые стили)
-	background-color: transparent;
-	border: 1px dashed var(--color-border);
-
-	&--ghost {
-		background-color: transparent;
-		border: none;
-		padding: 0;
-	}
+	width: 100%;
+	padding: sz(32px 24px);
+	border: 1px dashed var(--rise-border-accented);
+	border-radius: sz(var(--rise-radius-lg));
+	text-align: center;
+	@include text-size(sm);
+	@include custom-bg(background-color, transparent);
+	@include custom-text(color, var(--rise-text-muted));
 
 	&--soft {
-		background-color: var(--color-bg-soft);
-		border: none;
+		border-color: transparent;
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+	}
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
 	}
 
 	&__icon-wrapper {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: calc(1rem * var(--size-scale, 100) / 100);
-		color: var(--color-text-muted);
+		@include custom-text(color, var(--rise-text-dimmed));
 	}
 
 	&__content {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: calc(0.5rem * var(--size-scale, 100) / 100);
-		max-width: 400px;
+		gap: sz(4px);
+		max-width: sz(384px);
+		overflow-wrap: break-word;
 	}
 
-	&__title {
-		margin: 0;
-		color: var(--color-text);
+	// Заголовок и описание — BaseText (по умолчанию --rise-text): здесь свои цвета.
+	& &__title {
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
-	&__description {
-		margin: 0;
-		color: var(--color-text-muted);
+	& &__description {
+		color: inherit;
 	}
 
+	// Дополнительный текст из слота — под описанием, чуть дальше, чем описание от заголовка.
 	&__body {
-		margin-top: calc(0.75rem * var(--size-scale, 100) / 100);
+		margin-top: sz(4px);
 	}
 
 	&__actions {
 		display: flex;
-		align-items: center;
+		flex-wrap: wrap;
 		justify-content: center;
-		gap: calc(0.75rem * var(--size-scale, 100) / 100);
-		margin-top: calc(1.5rem * var(--size-scale, 100) / 100);
+		gap: sz(8px);
 	}
 }

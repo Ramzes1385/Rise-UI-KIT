@@ -18,7 +18,7 @@ const GLOBAL_SCSS_PRELUDE = [
 ].join('\n')
 
 /** Глобальные SCSS-файлы — не должны импортировать сами себя (защита от module loop). */
-const GLOBAL_SCSS_FILES = ['_variables.scss', '_mixins.scss', '_functions.scss']
+const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
 
 function shouldSkipImport(filename: string): boolean {
 	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))

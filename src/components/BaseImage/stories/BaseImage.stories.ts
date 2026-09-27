@@ -1,635 +1,373 @@
 /**
- * Stories для компонента BaseImage.
- * Демонстрирует все режимы и варианты.
+ * BaseImage — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (заполнение, скругление, цвет фона) → состояния (ошибка, резервное
+ * изображение) → просмотр (зум, галерея) → клавиатура.
  */
 
-import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { ref } from 'vue'
-import { UI_TIMING } from '@constants'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { expect, fn, screen, waitFor } from 'storybook/test'
+import {
+	ARG_GROUP,
+	BROKEN_IMAGE_SRC,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	STORY_IMAGES,
+	STORY_WAIT_TIMEOUT,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import BaseImage from '../ui/BaseImage.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseImage> = {
-	title: 'UI/BaseImage',
-	component: BaseImage,
-
-	argTypes: buildArgTypes({
-		props: {
-			src: { control: 'text' },
-			alt: { control: 'text' },
-			fallbackSrc: { control: 'text', description: 'URL резервного изображения при ошибке загрузки' },
-			timeout: { control: 'number', description: 'Таймаут загрузки (мс)' },
-			width: { control: 'text' },
-			height: { control: 'text' },
-			fit: { control: 'inline-radio', options: ['cover', 'contain', 'fill', 'none'] },
-			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
-			loading: { control: 'inline-radio', options: ['lazy', 'eager'] },
-			borderRadius: { control: { type: 'range', min: 0, max: 9999, step: 1 }, description: 'Скругление в px (0–9999)' },
-			hasPlaceholder: { control: 'boolean' },
-			aspectRatio: { control: 'text' },
-			srcWidth: { control: 'number' },
-			zoomConfig: { control: 'object', description: 'Конфигурация зума { hasZoom, closeOnOverlay, initialScale, zoomStep, minScale, maxScale, showMinimap }' },
-			convertToWebp: { control: 'boolean' },
-			gallery: { control: 'object', description: 'Массив URL изображений для навигации в режиме зума' },
-			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
-			customClass: { control: 'object' },
-			onLoad: { table: { disable: true } },
-			onError: { table: { disable: true } },
-			onZoom: { table: { disable: true } },
-		},
-	}),
-
-	args: {
-		src: 'https://placehold.co/400x300/f97316/ffffff?text=Metal+Art',
-		alt: 'Превью',
-		fit: 'cover',
-		loading: 'lazy',
-		borderRadius: 12,
-		hasPlaceholder: true,
-		sizeScale: 100,
-	},
+/** Изображения для выбора в Controls: имя → data URI. */
+const IMAGE_OPTIONS: Record<string, string> = {
+	...Object.fromEntries(STORY_IMAGES.map(image => [image.alt, image.src])),
+	'Битая ссылка': BROKEN_IMAGE_SRC,
 }
+
+const [SUNRISE, FOG, VALLEY] = STORY_IMAGES
+const GALLERY = STORY_IMAGES.slice(0, 5)
+const GALLERY_SRCS = GALLERY.map(image => image.src)
+
+/** Ждёт, пока все изображения примера загрузятся и станут видимыми (проявление — переход opacity). */
+async function expectImagesVisible(root: HTMLElement, count: number): Promise<void> {
+	await waitFor(
+		() => {
+			const images = Array.from(root.querySelectorAll<HTMLImageElement>('.base-image__img'))
+			expect(images).toHaveLength(count)
+			for (const image of images) {
+				expect(image.naturalWidth).toBeGreaterThan(0)
+				expect(getComputedStyle(image).opacity).toBe('1')
+			}
+		},
+		{ timeout: STORY_WAIT_TIMEOUT },
+	)
+}
+
+const meta = {
+	title: 'Element/BaseImage',
+	component: BaseImage,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Изображение с плейсхолдером загрузки, состоянием ошибки, резервным `fallbackSrc` и просмотром (зумом) с галереей.',
+					'',
+					'- Размер — `width`/`height` (px или CSS-значение, масштабируются `sizeScale`) или `aspectRatio`; заполнение — `fit`.',
+					'- Скругление по умолчанию — md из темы; `borderRadius` задаёт своё в px (9999 — круг).',
+					'- `loading="lazy"`: таймаут `timeout` отсчитывается с момента, когда изображение попало в зону видимости.',
+					'- `convertToWebp`/`convertToAvif` добавляют `<source>` с тем же именем и расширением .webp/.avif — только если такие',
+					'  копии лежат рядом на сервере. Для `data:`/`blob:` и путей без расширения источники не строятся.',
+					'- С `zoomConfig.hasZoom` изображение становится кнопкой (мышь, Enter, Space) и открывает модальный просмотр:',
+					'  масштаб, поворот, мини-карта, галерея `gallery`. Фокус переходит в просмотр и возвращается после закрытия.',
+				].join('\n'),
+			},
+		},
+	},
+	argTypes: {
+		...baseArgTypes(),
+		...hiddenArgTypes('variant'),
+		src: {
+			control: 'select',
+			options: Object.keys(IMAGE_OPTIONS),
+			mapping: IMAGE_OPTIONS,
+			table: propGroup(ARG_GROUP.content),
+		},
+		alt: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		fallbackSrc: { control: false, table: propGroup(ARG_GROUP.content) },
+		gallery: { control: false, table: propGroup(ARG_GROUP.content) },
+		width: { control: 'number', table: propGroup(ARG_GROUP.appearance) },
+		height: { control: 'number', table: propGroup(ARG_GROUP.appearance) },
+		aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		fit: { control: 'inline-radio', options: ['cover', 'contain', 'fill', 'none'], table: propGroup(ARG_GROUP.appearance) },
+		borderRadius: { control: { type: 'number', min: 0, max: 9999 }, table: propGroup(ARG_GROUP.appearance) },
+		hasPlaceholder: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		loading: { control: 'inline-radio', options: ['lazy', 'eager'], table: propGroup(ARG_GROUP.behavior) },
+		timeout: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+		zoomConfig: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+		srcWidth: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+		convertToWebp: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		convertToAvif: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		placeholder: { control: false },
+		error: { control: false },
+	},
+	args: {
+		src: SUNRISE.alt,
+		alt: SUNRISE.alt,
+		width: 320,
+		height: 200,
+		fit: 'cover',
+		hasPlaceholder: true,
+		loading: 'lazy',
+		timeout: 5000,
+		sizeScale: 100,
+		onLoad: fn(),
+		onError: fn(),
+		onZoom: fn(),
+	},
+} satisfies Meta<typeof BaseImage>
 
 export default meta
-type Story = StoryObj<typeof BaseImage>
+type Story = StoryObj<typeof meta>
 
-function getImg(root: ParentNode): HTMLImageElement {
-	const img = root.querySelector<HTMLImageElement>('.base-image__img')
-	if (!img) throw new Error('Изображение не найдено')
-	return img
-}
+// ─── Default ───────────────────────────────────────────────────────────────────
 
-function getImage(root: ParentNode, selector: string): HTMLImageElement {
-	const img = root.querySelector<HTMLImageElement>(selector)
-	if (!img) throw new Error('Изображение не найдено')
-	return img
-}
-
-function getEl(root: ParentNode, selector: string): HTMLElement {
-	const element = root.querySelector<HTMLElement>(selector)
-	if (!element) throw new Error('Элемент изображения не найден')
-	return element
-}
-
-function getLastEl(root: ParentNode, selector: string): HTMLElement {
-	const elements = Array.from(root.querySelectorAll<HTMLElement>(selector))
-	const element = elements.at(-1)
-	if (!element) throw new Error('Элемент изображения не найден')
-	return element
-}
-
-function getAllEls(root: ParentNode, selector: string): HTMLElement[] {
-	return Array.from(root.querySelectorAll<HTMLElement>(selector))
-}
-
-function getItem(items: HTMLElement[], index: number): HTMLElement {
-	const item = items[index]
-	if (!item) throw new Error('Элемент изображения не найден')
-	return item
-}
-
-function dispatchLoad(img: HTMLImageElement): void {
-	img.dispatchEvent(new Event('load'))
-}
-
-function dispatchError(img: HTMLImageElement): void {
-	img.dispatchEvent(new Event('error'))
-}
-
-function defineImageSize(img: HTMLImageElement): void {
-	Object.defineProperty(img, 'naturalWidth', { configurable: true, value: 800 })
-	Object.defineProperty(img, 'naturalHeight', { configurable: true, value: 600 })
-	Object.defineProperty(img, 'offsetWidth', { configurable: true, value: 800 })
-	Object.defineProperty(img, 'offsetHeight', { configurable: true, value: 600 })
-}
-
-function defineMinimapRect(minimap: HTMLElement): void {
-	Object.defineProperty(minimap, 'getBoundingClientRect', {
-		configurable: true,
-		value: () => new DOMRect(0, 0, 200, 150),
-	})
-}
-
-function closeZoom(): void {
-	const zoom = document.body.querySelector<HTMLElement>('.base-image__zoom')
-	if (!zoom) return
-	zoom.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-}
-
-function cleanZoom(): void {
-	document.body.querySelectorAll('.base-image__zoom').forEach(element => element.remove())
-}
-
-async function openZoom(root: ParentNode): Promise<HTMLElement> {
-	cleanZoom()
-	await userEvent.click(getImg(root))
-	await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeTruthy())
-	return getLastEl(document, '.base-image__zoom')
-}
-/** Базовое изображение */
+/**
+ * Песочница: выберите изображение и меняйте props в Controls. Пока изображение грузится, виден плейсхолдер;
+ * после загрузки оно плавно проявляется и вызывается событие `load`.
+ */
 export const Default: Story = {
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Изображение отображается', async () => {
-			const img = canvas.getByRole('img')
-			expect(img).toBeInTheDocument()
-			expect(img).toHaveAttribute('alt', 'Превью')
-			expect(canvasElement.querySelector('.base-image__placeholder')).toBeTruthy()
-			dispatchLoad(getImg(canvasElement))
-			await waitFor(() => expect(canvasElement.querySelector('.base-image--loaded')).toBeTruthy())
-			expect(canvasElement.querySelector('.base-image__placeholder')).toBeFalsy()
-		})
+	play: async ({ canvas, canvasElement, args }) => {
+		const image = canvas.getByRole('img', { name: 'Горы на рассвете' })
+		await expectImagesVisible(canvasElement, 1)
+		await expect(args.onLoad).toHaveBeenCalledOnce()
+		// data URI: производные <source> AVIF/WebP не строятся даже при convertTo*, браузер берёт src
+		await expect(image.closest('picture')?.querySelector('source')).toBeNull()
 	},
 }
-/** Сетка изображений */
-export const ImageGrid: Story = {
-	render: args => ({
-		components: { BaseImage },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:640px;">
-				<BaseImage v-for="i in 6" :key="i" v-bind="args" :src="'https://placehold.co/400x300/' + ['f97316','3b82f6','22c55e','a855f7','ef4444','06b6d4'][i-1] + '/ffffff?text=Photo+' + i" :width="200" :height="150" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('6 изображений в сетке', async () => {
-			const images = canvas.getAllByRole('img')
-			expect(images).toHaveLength(6)
-		})
-	},
-}
-/** Все режимы заполнения */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Режимы заполнения `fit` на вертикальной рамке 120 × 160 (фон рамки — `color.bg`, чтобы были видны её границы):
+ * `cover` обрезает, `contain` вписывает целиком, `none` показывает в исходном размере.
+ * `fill` растягивает растровое изображение без сохранения пропорций; SVG с `preserveAspectRatio` по умолчанию
+ * (как иллюстрации в этих примерах) при `fill` выглядит как `contain`.
+ */
 export const Fits: Story = {
+	parameters: {
+		controls: { include: ['src', 'borderRadius', 'sizeScale'] },
+		docs: { source: { code: ['cover', 'contain', 'none'].map(fit => `<BaseImage src="…" alt="…" fit="${fit}" :width="120" :height="160" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseImage },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;gap:16px;flex-wrap:wrap;">
-				<div v-for="f in ['cover','contain','fill','none']" :key="f" style="width:200px;">
-					<p style="margin-bottom:4px;font-size:12px;color:var(--color-text-muted);">{{ f }}</p>
-					<BaseImage v-bind="args" :fit="f" :width="200" :height="150" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Все режимы fit', async () => {
-			expect(canvas.getByText('cover')).toBeInTheDocument()
-			expect(canvas.getByText('contain')).toBeInTheDocument()
-			expect(canvas.getByText('fill')).toBeInTheDocument()
-			expect(canvas.getByText('none')).toBeInTheDocument()
-		})
-	},
-}
-/** Скругления */
-export const BorderRadii: Story = {
-	render: args => ({
-		components: { BaseImage },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;gap:16px;flex-wrap:wrap;">
-				<div v-for="r in [0, 4, 8, 12, 16, 24, 9999]" :key="r" style="width:120px;">
-					<p style="margin-bottom:4px;font-size:12px;color:var(--color-text-muted);">{{ r }}px</p>
-					<BaseImage v-bind="args" :border-radius="r" :width="120" :height="120" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Все скругления', async () => {
-			expect(canvas.getByText('0px')).toBeInTheDocument()
-			expect(canvas.getByText('9999px')).toBeInTheDocument()
-		})
-	},
-}
-/** С аспектным соотношением */
-export const AspectRatio: Story = {
-	args: {
-		aspectRatio: '16/9',
-		width: '100%',
-	},
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Изображение с аспектным соотношением', async () => {
-			expect(canvas.getByRole('img')).toBeInTheDocument()
-		})
-	},
-}
-/** С зумом по клику */
-export const WithZoom: Story = {
-	args: {
-		zoomConfig: { hasZoom: true },
-		src: 'https://placehold.co/800x600/f97316/ffffff?text=Metal+Art+Zoom',
-	},
-	play: async ({ canvasElement, step }) => {
-		await step('Открытие зума по клику', async () => {
-			const zoom = await openZoom(canvasElement)
-			expect(zoom).toBeInTheDocument()
-			closeZoom()
-			await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
-		})
-	},
-}
-/** Зум с мини-картой и поворотом */
-export const ZoomWithMinimap: Story = {
-	args: {
-		zoomConfig: { hasZoom: true, showMinimap: true },
-		src: 'https://placehold.co/800x600/f97316/ffffff?text=Metal+Art+Zoom',
-	},
-	play: async ({ canvasElement, step }) => {
-		await step('Открытие зума с мини-картой', async () => {
-			const zoom = await openZoom(canvasElement)
-			const zoomImg = getImage(zoom, '.base-image__zoom-img')
-			defineImageSize(zoomImg)
-			dispatchLoad(zoomImg)
-
-			const buttons = getAllEls(zoom, '.base-image__zoom-btn')
-			await userEvent.click(getItem(buttons, 1))
-			await userEvent.click(getItem(buttons, 3))
-			await userEvent.click(getItem(buttons, 4))
-			await userEvent.click(getItem(buttons, 2))
-			await userEvent.click(getItem(buttons, 1))
-			zoom.dispatchEvent(new WheelEvent('wheel', { bubbles: true, deltaY: -1 }))
-
-			await waitFor(() => expect(document.body.querySelector('.base-image__minimap')).toBeTruthy())
-			const minimap = getLastEl(document, '.base-image__minimap')
-			defineMinimapRect(minimap)
-			const minimapImg = getImage(minimap, '.base-image__minimap-img')
-			defineImageSize(minimapImg)
-			dispatchLoad(minimapImg)
-			await userEvent.click(minimap)
-			minimap.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 20, clientY: 20 }))
-			document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 40, clientY: 45 }))
-			document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
-			zoom.dispatchEvent(new WheelEvent('wheel', { bubbles: true, deltaY: 1 }))
-			await userEvent.click(getItem(buttons, 0))
-			await userEvent.click(getItem(buttons, 5))
-		})
-	},
-}
-/** Зум с галереей изображений */
-export const ZoomWithGallery: Story = {
-	args: {
-		zoomConfig: { hasZoom: true },
-		src: 'https://placehold.co/800x600/f97316/ffffff?text=Image+1',
-		gallery: [
-			'https://placehold.co/800x600/f97316/ffffff?text=Image+1',
-			'https://placehold.co/800x600/3b82f6/ffffff?text=Image+2',
-			'https://placehold.co/800x600/22c55e/ffffff?text=Image+3',
-		],
-	},
-	play: async ({ canvasElement, step }) => {
-		await step('Открытие зума с галереей', async () => {
-			const zoom = await openZoom(canvasElement)
-			expect(getEl(zoom, '.base-image__zoom-gallery')).toBeInTheDocument()
-			closeZoom()
-		})
-	},
-}
-/** Зум с большой галереей */
-export const ZoomWithLargeGallery: Story = {
-	args: {
-		zoomConfig: { hasZoom: true },
-		src: 'https://placehold.co/800x600/f97316/ffffff?text=Photo+1',
-		gallery: [
-			'https://placehold.co/800x600/f97316/ffffff?text=Photo+1',
-			'https://placehold.co/800x600/3b82f6/ffffff?text=Photo+2',
-			'https://placehold.co/800x600/22c55e/ffffff?text=Photo+3',
-			'https://placehold.co/800x600/a855f7/ffffff?text=Photo+4',
-			'https://placehold.co/800x600/ef4444/ffffff?text=Photo+5',
-			'https://placehold.co/800x600/06b6d4/ffffff?text=Photo+6',
-			'https://placehold.co/800x600/84cc16/ffffff?text=Photo+7',
-			'https://placehold.co/800x600/f59e0b/ffffff?text=Photo+8',
-		],
-	},
-	play: async ({ canvasElement, step }) => {
-		await step('Открытие большой галереи', async () => {
-			const zoom = await openZoom(canvasElement)
-			expect(getAllEls(zoom, '.base-image__zoom-thumb')).toHaveLength(8)
-			closeZoom()
-		})
-	},
-}
-/** Конвертация в WebP */
-export const WebpConversion: Story = {
-	args: {
-		convertToWebp: true,
-		src: 'https://placehold.co/400x300/f97316/ffffff?text=WebP',
-	},
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('WebP конвертация активна', async () => {
-			expect(canvas.getByRole('img')).toBeInTheDocument()
-		})
-	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['fit', 'width', 'height']),
+			fits: ['cover', 'contain', 'none'],
+			frame: { bg: { base: 'var(--rise-bg-elevated)' } },
 		}),
-	],
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Тёмная тема', async () => {
-			expect(canvas.getByRole('img')).toBeInTheDocument()
-		})
-	},
-}
-/** Разные размеры */
-export const DifferentSizes: Story = {
-	render: args => ({
-		components: { BaseImage },
-		setup() {
-			return { args }
-		},
 		template: `
-			<div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
-				<div v-for="size in [80, 120, 200, 300]" :key="size">
-					<p style="margin-bottom:4px;font-size:12px;color:var(--color-text-muted);">{{ size }}px</p>
-					<BaseImage v-bind="args" :width="size" :height="size" />
+			<div class="story-row" style="align-items: flex-start;">
+				<div v-for="fit in fits" :key="fit" class="story-col" style="gap: 8px;">
+					<span class="story-label">{{ fit }}</span>
+					<BaseImage v-bind="props" :fit="fit" :width="120" :height="160" :color="frame" />
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Разные размеры', async () => {
-			expect(canvas.getByText('80px')).toBeInTheDocument()
-			expect(canvas.getByText('300px')).toBeInTheDocument()
-		})
+	play: async ({ canvasElement }) => {
+		await expectImagesVisible(canvasElement, 3)
 	},
 }
-/** Галерея: навигация prev/next */
-export const GalleryNavigation: Story = {
-	args: {
-		zoomConfig: { hasZoom: true },
-		src: 'https://placehold.co/800x600/f97316/ffffff?text=1',
-		gallery: [
-			'https://placehold.co/800x600/f97316/ffffff?text=1',
-			'https://placehold.co/800x600/3b82f6/ffffff?text=2',
-			'https://placehold.co/800x600/22c55e/ffffff?text=3',
-		],
-	},
-	play: async ({ canvasElement }) => {
-		const zoom = await openZoom(canvasElement)
-		zoom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
-		zoom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
-		await waitFor(() => expect(getEl(zoom, '.base-image__zoom-counter')).toHaveTextContent('2 / 3'))
-		zoom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
-		await waitFor(() => expect(getEl(zoom, '.base-image__zoom-counter')).toHaveTextContent('3 / 3'))
-		zoom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
 
-		const prevBtn = getLastEl(document, '.base-image__zoom-nav--prev')
-		await userEvent.click(prevBtn)
-		await waitFor(() => expect(getEl(zoom, '.base-image__zoom-counter')).toHaveTextContent('2 / 3'))
-
-		const thumbs = getAllEls(zoom, '.base-image__zoom-thumb')
-		await userEvent.click(getItem(thumbs, 0))
-		await waitFor(() => expect(getEl(zoom, '.base-image__zoom-counter')).toHaveTextContent('1 / 3'))
-		const nextBtn = getLastEl(document, '.base-image__zoom-nav--next')
-		await userEvent.click(nextBtn)
-		closeZoom()
-	},
-}
-/** Без плейсхолдера */
-export const NoPlaceholder: Story = {
-	args: { hasPlaceholder: false },
-}
-/** Ошибка загрузки */
-export const ErrorState: Story = {
-	args: { src: 'https://invalid.example/404.jpg' },
-	play: async ({ canvasElement }) => {
-		expect(within(canvasElement).getByRole('img')).toBeInTheDocument()
-		dispatchError(getImg(canvasElement))
-		await waitFor(() => expect(canvasElement.querySelector('.base-image__error')).toBeTruthy())
-		expect(canvasElement.querySelector('picture')).toBeFalsy()
-	},
-}
-/** С width/height без aspectRatio */
-export const ExplicitSize: Story = {
-	args: { width: 300, height: 200 },
-}
-/** AVIF+WebP для локального src */
-export const LocalSrcFormats: Story = {
-	args: { src: '/images/photo.png', convertToWebp: true, srcWidth: 800 },
-	play: async ({ canvasElement }) => {
-		const img = within(canvasElement).getByRole('img')
-		expect(img).toBeInTheDocument()
-		expect(img).toHaveAttribute('srcset')
-		expect(img).toHaveAttribute('sizes', '100vw')
-		expect(canvasElement.querySelector('source[type="image/avif"]')).toBeTruthy()
-		expect(canvasElement.querySelector('source[type="image/webp"]')).toBeTruthy()
-	},
-}
-/** Локальное изображение без явной WebP-конвертации */
-export const LocalSrcDefaultWebp: Story = {
-	args: { src: '/images/photo.png', convertToWebp: false, width: '100%' },
-	play: async ({ canvasElement }) => {
-		expect(within(canvasElement).getByRole('img')).toBeInTheDocument()
-		expect(canvasElement.querySelector('source[type="image/webp"]')).toBeTruthy()
-	},
-}
-/** Плейсхолдер виден до загрузки (класс base-image--placeholder) */
-export const PlaceholderVisible: Story = {
-	args: { hasPlaceholder: true, src: 'https://placehold.co/400x300/f97316/ffffff?text=Placeholder' },
-	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			const root = canvasElement.querySelector('.base-image')
-			expect(root).toBeTruthy()
-			expect(root?.classList.contains('base-image--placeholder')).toBe(true)
-		})
-	},
-}
-/** Резервное изображение подменяется при ошибке (currentSrc → fallbackSrc) */
-export const FallbackOnError: Story = {
-	args: {
-		src: 'https://invalid.example/primary.jpg',
-		fallbackSrc: 'https://placehold.co/400x300/22c55e/ffffff?text=Fallback',
-	},
-	play: async ({ canvasElement }) => {
-		const img = getImg(canvasElement)
-		dispatchError(img)
-		await waitFor(() => {
-			const currentImg = canvasElement.querySelector<HTMLImageElement>('.base-image__img')
-			expect(currentImg?.src).toContain('Fallback')
-		})
-	},
-}
-/** Таймаут загрузки переводит в состояние ошибки */
-export const LoadingTimeout: Story = {
-  args: {
-    src: 'https://placehold.co/400x300/f97316/ffffff?text=Timeout',
-    timeout: UI_TIMING.IMAGE_LOAD_TIMEOUT,
-  },
-  play: async ({ canvasElement }) => {
-    const img = await within(canvasElement).findByRole('img')
-    img.dispatchEvent(new Event('error'))
-    await waitFor(() => {
-      expect(canvasElement.querySelector('.base-image__error')).toBeTruthy()
-    })
-  },
-}
-/** Escape закрывает зум */
-export const EscapeClosesZoom: Story = {
-	args: {
-		zoomConfig: { hasZoom: true },
-		src: 'https://placehold.co/800x600/f97316/ffffff?text=Escape+Zoom',
-	},
-	play: async ({ canvasElement }) => {
-		cleanZoom()
-		const zoom = await openZoom(canvasElement)
-		expect(zoom).toBeInTheDocument()
-		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-		await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
-	},
-}
-/** Клик по оверлею закрывает зум (closeOnOverlay=true) — покрывает handleOverlayClick */
-export const OverlayClickClosesZoom: Story = {
-	args: {
-		zoomConfig: { hasZoom: true, closeOnOverlay: true },
-		src: 'https://placehold.co/800x600/22c55e/ffffff?text=Overlay+Close',
-	},
-	play: async ({ canvasElement }) => {
-		cleanZoom()
-		const zoom = await openZoom(canvasElement)
-		expect(zoom).toBeInTheDocument()
-		zoom.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-		await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
-	},
-}
-/** Клик по оверлею при closeOnOverlay=false не закрывает зум */
-export const OverlayClickKeepsZoom: Story = {
-	args: {
-		zoomConfig: { hasZoom: true, closeOnOverlay: false },
-		src: 'https://placehold.co/800x600/ef4444/ffffff?text=Overlay+Keep',
-	},
-	play: async ({ canvasElement }) => {
-		cleanZoom()
-		const zoom = await openZoom(canvasElement)
-		zoom.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-		expect(document.body.querySelector('.base-image__zoom')).toBeTruthy()
-		closeZoom()
-		await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
-	},
-}
-/** Клик по изображению без зума — покрывает if (!resolvedHasZoom) return */
-export const ClickWithoutZoom: Story = {
-	args: {
-		zoomConfig: { hasZoom: false },
-		src: 'https://placehold.co/400x300/64748b/ffffff?text=No+Zoom',
-	},
-	play: async ({ canvasElement }) => {
-		cleanZoom()
-		await userEvent.click(getImg(canvasElement))
-		expect(document.body.querySelector('.base-image__zoom')).toBeFalsy()
-	},
-}
-/** Нулевой таймаут — покрывает short-circuit props.timeout && props.timeout > 0 (стр. 309) */
-export const ZeroTimeout: Story = {
-	args: {
-		src: 'https://placehold.co/400x300/14b8a6/ffffff?text=Zero+Timeout',
-		timeout: 0,
-	},
-	play: async ({ canvasElement }) => {
-		await waitFor(() => expect(canvasElement.querySelector('.base-image__img')).toBeTruthy())
-		expect(canvasElement.querySelector('.base-image__error')).toBeFalsy()
-	},
-}
-/** Игнорируемая клавиша при открытом зуме — покрывает false-ветку event.key === 'Escape' */
-export const IgnoredKeyInZoom: Story = {
-	args: {
-		zoomConfig: { hasZoom: true },
-		src: 'https://placehold.co/800x600/0ea5e9/ffffff?text=Ignored+Key',
-	},
-	play: async ({ canvasElement }) => {
-		cleanZoom()
-		const zoom = await openZoom(canvasElement)
-		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
-		expect(zoom).toBeInTheDocument()
-		closeZoom()
-		await waitFor(() => expect(document.body.querySelector('.base-image__zoom')).toBeFalsy())
-	},
-}
-/** customClass — покрывает elementKeys */
-export const WithCustomClass: Story = {
-	args: {
-		src: 'https://placehold.co/400x300/f97316/ffffff?text=CustomClass',
-		customClass: {
-			root: 'image-root',
-			placeholder: 'image-placeholder',
-			error: 'image-error',
-			img: 'image-img',
-			zoomOutButton: 'image-zoomOutButton',
-			zoomOutIcon: 'image-zoomOutIcon',
-			zoomScale: 'image-zoomScale',
-			zoomInButton: 'image-zoomInButton',
-			zoomInIcon: 'image-zoomInIcon',
-			zoomResetButton: 'image-zoomResetButton',
-			zoomResetIcon: 'image-zoomResetIcon',
-			rotateLeftButton: 'image-rotateLeftButton',
-			rotateLeftIcon: 'image-rotateLeftIcon',
-			rotateRightButton: 'image-rotateRightButton',
-			rotateRightIcon: 'image-rotateRightIcon',
-			zoomCloseButton: 'image-zoomCloseButton',
-			zoomCloseIcon: 'image-zoomCloseIcon',
-			galleryPrevButton: 'image-galleryPrevButton',
-			galleryPrevIcon: 'image-galleryPrevIcon',
-			galleryNextButton: 'image-galleryNextButton',
-			galleryNextIcon: 'image-galleryNextIcon',
-			galleryCounter: 'image-galleryCounter',
+/** Скругление: по умолчанию md из темы, `borderRadius` задаёт своё в px (масштабируется `sizeScale`), 9999 — круг. */
+export const BorderRadius: Story = {
+	parameters: {
+		controls: { include: ['src', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseImage src="…" alt="…" />',
+					'<BaseImage src="…" alt="…" :border-radius="0" />',
+					'<BaseImage src="…" alt="…" :border-radius="16" />',
+					'<BaseImage src="…" alt="…" :border-radius="9999" />',
+				].join('\n'),
+			},
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.image-root')).toBeTruthy()
-	},
-}
-/** Сокращение галереи при открытом зуме — покрывает fallback galleryList[idx] ?? props.src (стр. 351) */
-export const GalleryShrinkFallback: Story = {
-	render: () => ({
+	render: args => ({
 		components: { BaseImage },
-		setup() {
-			const items = ref<string[]>([
-				'https://placehold.co/800x600/f97316/ffffff?text=A',
-				'https://placehold.co/800x600/3b82f6/ffffff?text=B',
-				'https://placehold.co/800x600/22c55e/ffffff?text=C',
-			])
-			function shrinkGallery(): void {
-				items.value = items.value.slice(0, 2)
-			}
-			return { items, shrinkGallery }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['borderRadius', 'width', 'height']),
+			radii: [
+				{ label: 'по умолчанию (md)', value: undefined },
+				{ label: '0', value: 0 },
+				{ label: '16', value: 16 },
+				{ label: '9999 — круг', value: 9999 },
+			],
+		}),
 		template: `
-			<div>
-				<button type="button" class="story-shrink" @click="shrinkGallery">Shrink</button>
-				<BaseImage :zoom-config="{ hasZoom: true }" alt="Превью" :src="items[0]" :gallery="items" />
+			<div class="story-row" style="align-items: flex-start;">
+				<div v-for="radius in radii" :key="radius.label" class="story-col" style="gap: 8px;">
+					<span class="story-label">{{ radius.label }}</span>
+					<BaseImage v-bind="props" :border-radius="radius.value" :width="120" :height="120" />
+				</div>
 			</div>
 		`,
 	}),
 	play: async ({ canvasElement }) => {
-		cleanZoom()
-		const zoom = await openZoom(canvasElement)
-		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
-		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
-		await waitFor(() => expect(getEl(zoom, '.base-image__zoom-counter')).toHaveTextContent('3 / 3'))
-		const shrinkBtn = getEl(canvasElement, '.story-shrink')
-		await userEvent.click(shrinkBtn)
-		await waitFor(() => {
-			const zoomImg = document.body.querySelector<HTMLImageElement>('.base-image__zoom-img')
-			expect(zoomImg?.src).toContain('text=A')
-		})
-		closeZoom()
+		await expectImagesVisible(canvasElement, 4)
+		const [themed, square] = Array.from(canvasElement.querySelectorAll<HTMLElement>('.base-image'))
+		// Без пропа inline-радиуса нет: скругление даёт тема (md = 6px)
+		await expect(themed?.style.borderRadius).toBe('')
+		await expect(getComputedStyle(themed!).borderTopLeftRadius).toBe('6px')
+		await expect(getComputedStyle(square!).borderTopLeftRadius).toBe('0px')
+	},
+}
+
+/**
+ * Фон под изображением — `color.bg`: виден при `fit="contain"` и у прозрачных изображений (логотипы, иконки),
+ * например чтобы вписать снимок в брендовую плашку.
+ */
+export const CustomColor: Story = {
+	args: {
+		src: FOG.alt,
+		alt: FOG.alt,
+		fit: 'contain',
+		width: 200,
+		height: 200,
+		color: { bg: { base: '#fef3c7' } },
+	},
+	play: async ({ canvas, canvasElement }) => {
+		await expectImagesVisible(canvasElement, 1)
+		const root = canvas.getByRole('img', { name: 'Горы в тумане' }).closest('.base-image') as HTMLElement
+		await expect(getComputedStyle(root).backgroundColor).toBe('rgb(254, 243, 199)')
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/**
+ * Изображение не загрузилось: иконка и подпись «Ошибка загрузки» на приглушённом фоне, событие `error`.
+ * Текст `alt` не теряется — его получает иконка, скринридер озвучивает, что здесь было.
+ * Свой вид ошибки — слот `error`.
+ */
+export const WithError: Story = {
+	args: { src: 'Битая ссылка', alt: 'Фото профиля' },
+	play: async ({ canvas, args }) => {
+		await expect(await canvas.findByText('Ошибка загрузки', {}, { timeout: STORY_WAIT_TIMEOUT })).toBeVisible()
+		await expect(canvas.getByRole('img', { name: 'Фото профиля' })).toBeVisible()
+		await expect(args.onError).toHaveBeenCalledOnce()
+	},
+}
+
+/** Резервное изображение: если `src` не загрузился, показывается `fallbackSrc` — ошибка не выводится. */
+export const Fallback: Story = {
+	args: { src: 'Битая ссылка', fallbackSrc: VALLEY.src, alt: 'Обложка статьи' },
+	play: async ({ canvas, canvasElement, args }) => {
+		const image = canvas.getByRole('img', { name: 'Обложка статьи' }) as HTMLImageElement
+		await waitFor(() => expect(image.getAttribute('src')).toBe(VALLEY.src), { timeout: STORY_WAIT_TIMEOUT })
+		await expectImagesVisible(canvasElement, 1)
+		await expect(args.onError).not.toHaveBeenCalled()
+	},
+}
+
+// ─── Просмотр ──────────────────────────────────────────────────────────────────
+
+/**
+ * Просмотр по клику: изображение становится кнопкой и открывает модальный диалог. Кнопки и колесо мыши меняют
+ * масштаб, при масштабе больше 100% появляется мини-карта (клик и перетаскивание в ней двигают видимую область).
+ * Закрыть — кнопка, Esc или клик по фону вокруг изображения (`closeOnOverlay`).
+ */
+export const WithZoom: Story = {
+	args: { zoomConfig: { hasZoom: true } },
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Горы на рассвете' }))
+
+		const dialog = await screen.findByRole('dialog', { name: 'Просмотр изображения: Горы на рассвете' })
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Закрыть' })).toHaveFocus())
+
+		await userEvent.click(screen.getByRole('button', { name: 'Увеличить' }))
+		await expect(dialog).toHaveTextContent('125%')
+		await expect(args.onZoom).toHaveBeenLastCalledWith(1.25)
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+	},
+}
+
+/**
+ * Галерея: у каждого изображения тот же `gallery` — просмотр открывается на выбранном снимке, стрелки, миниатюры
+ * и клавиши ← → листают галерею, счётчик показывает позицию. Пример оставляет просмотр открытым на третьем снимке.
+ */
+export const Gallery: Story = {
+	parameters: {
+		controls: { include: ['fit', 'borderRadius', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseImage',
+					'  v-for="photo in photos"',
+					'  :key="photo.src"',
+					'  :src="photo.src"',
+					'  :alt="photo.alt"',
+					'  :gallery="photos.map(p => p.src)"',
+					'  :zoom-config="{ hasZoom: true }"',
+					'  :width="140"',
+					'  :height="96" />',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseImage },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['src', 'alt', 'width', 'height', 'gallery', 'zoomConfig']),
+			photos: GALLERY,
+			gallery: GALLERY_SRCS,
+		}),
+		template: `
+			<div class="story-row">
+				<BaseImage
+					v-for="photo in photos"
+					:key="photo.src"
+					v-bind="props"
+					:src="photo.src"
+					:alt="photo.alt"
+					:gallery="gallery"
+					:zoom-config="{ hasZoom: true }"
+					:width="140"
+					:height="96" />
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Горы в тумане' }))
+		const dialog = await screen.findByRole('dialog', { name: 'Просмотр изображения: Горы в тумане' })
+		await expect(dialog).toHaveTextContent('2 / 5')
+
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(dialog).toHaveTextContent('3 / 5')
+		await expect(screen.getByRole('button', { name: 'Изображение 3 из 5' })).toHaveAttribute('aria-current', 'true')
+
+		await userEvent.click(screen.getByRole('button', { name: 'Изображение 1 из 5' }))
+		await expect(dialog).toHaveTextContent('1 / 5')
+		await expect(screen.queryByRole('button', { name: 'Предыдущее изображение' })).not.toBeInTheDocument()
+
+		await userEvent.click(screen.getByRole('button', { name: 'Следующее изображение' }))
+		await userEvent.click(screen.getByRole('button', { name: 'Следующее изображение' }))
+		await expect(dialog).toHaveTextContent('3 / 5')
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab до изображения (кольцо фокуса), Enter открывает просмотр с фокусом на «Закрыть»,
+ * Tab не выходит за пределы просмотра, Esc закрывает его и возвращает фокус на изображение.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { zoomConfig: { hasZoom: true }, gallery: GALLERY_SRCS },
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Горы на рассвете' })
+		await tabTo(trigger, userEvent)
+		await expect(getComputedStyle(trigger).outlineStyle).toBe('solid')
+
+		await userEvent.keyboard('{Enter}')
+		const dialog = await screen.findByRole('dialog')
+		const close = screen.getByRole('button', { name: 'Закрыть' })
+		await waitFor(() => expect(close).toHaveFocus())
+
+		// Закрыть — последняя кнопка панели: дальше Tab идёт по кнопкам просмотра, а не по странице под ним
+		await userEvent.tab()
+		await expect(dialog).toContainElement(document.activeElement as HTMLElement)
+		await userEvent.tab({ shift: true })
+		await expect(close).toHaveFocus()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
 	},
 }

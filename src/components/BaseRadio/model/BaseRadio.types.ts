@@ -43,5 +43,6 @@ export interface BaseRadioEmits {
  */
 export interface BaseRadioSlots {
 	default?: () => unknown
+	/** Кастомная подпись опции. Нативный radio и индикатор рендерит компонент, поэтому выбор, клавиатура и роль radio сохраняются */
 	option?: (props: { option: BaseRadioOption; isChecked: boolean }) => unknown
 }

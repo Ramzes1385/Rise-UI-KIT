@@ -5,9 +5,11 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, ref } from 'vue'
+import { UI_COLOR_PICKER } from '@constants'
+import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
 
 const Host = defineComponent({
@@ -40,6 +42,17 @@ describe('BaseColorPicker — integration', () => {
 		if (!preset) throw new Error('Пресет не найден')
 		await fireEvent.click(preset)
 		expect(getByTestId('value').textContent).not.toBe('#ff0000')
+	})
+
+	it('записывает в модель родителя точный HEX выбранного пресета', async () => {
+		const { container, getByTestId } = render(Host)
+		await fireEvent.click(container.querySelector('.base-color-picker__swatch')!)
+		const [preset] = DEFAULT_COLOR_PRESETS
+		await fireEvent.click(screen.getByRole('button', { name: `${UI_COLOR_PICKER.PRESET} ${preset}` }))
+		expect(getByTestId('value').textContent).toBe(preset)
+		expect(container.querySelector<HTMLElement>('.base-color-picker__swatch')?.style.backgroundColor).toBe(
+			'rgb(249, 115, 22)',
+		)
 	})
 
 	it('отражает внешнее изменение модели на swatch', async () => {

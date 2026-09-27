@@ -1,56 +1,89 @@
 /**
- * Stories для компонента BaseTour.
- * Демонстрирует пошаговый онбординг-тур: подсветку элементов, навигацию и кастомизацию.
+ * BaseTour — stories.
+ *
+ * Разделы: Default (песочница: тур запускается кнопкой, isOpen и step синхронизированы с Controls) → открытый тур
+ * (первый и последний шаг, полоса прогресса, минимальная карточка, размещение) → свои заголовок и текст → клавиатура.
+ * Открытый тур закрывает всю страницу, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { ARG_GROUP, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseText } from '@components/BaseText'
 import { TOUR_PLACEMENTS } from '../model/BaseTour.types'
 import BaseTour from '../ui/BaseTour.vue'
 import type { TourStep } from '../model/BaseTour.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
+/** Шаги тура по панели инструментов из DEMO_TOOLBAR. */
 const STEPS: TourStep[] = [
-	{ target: '#tour-logo', title: 'Логотип', content: 'Здесь находится логотип приложения.' },
-	{ target: '#tour-search', title: 'Поиск', content: 'Используйте поиск для быстрого доступа.' },
-	{ target: '#tour-profile', title: 'Профиль', content: 'Откройте меню профиля здесь.' },
+	{ target: '#tour-create', title: 'Новый проект', content: 'Создайте проект, чтобы загрузить серии и распределить роли.' },
+	{ target: '#tour-import', title: 'Импорт', content: 'Загрузите видео и субтитры из файла или по ссылке.' },
+	{ target: '#tour-settings', title: 'Настройки', content: 'Здесь меняются язык озвучки, голоса и формат экспорта.' },
 ]
 
-const DEMO_LAYOUT = `
-	<div style="min-height:320px;padding:24px;">
-		<header style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
-			<div id="tour-logo" style="padding:8px 12px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">LOGO</div>
-			<div id="tour-search" style="flex:1;max-width:320px;padding:8px 12px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Поиск…</div>
-			<div id="tour-profile" style="padding:8px 12px;border:1px solid var(--color-border);border-radius:var(--border-radius-full);">👤</div>
-		</header>
-		<button
-			data-testid="start-tour"
-			style="margin-top:24px;padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;"
-			@click="isOpen = true">
-			Запустить тур
-		</button>
+/** Десять шагов: больше восьми — вместо точек прогресса показывается полоса. */
+const MANY_STEPS: TourStep[] = Array.from({ length: 10 }, (_, index) => ({
+	...STEPS[index % STEPS.length]!,
+	title: `Шаг ${index + 1}. ${STEPS[index % STEPS.length]!.title}`,
+}))
+
+/** Панель инструментов, по которой идёт тур: цели шагов находятся по id. */
+const DEMO_TOOLBAR = `
+	<div class="story-row">
+		<BaseButton id="tour-create">Создать проект</BaseButton>
+		<BaseButton id="tour-import" variant="outline">Импорт</BaseButton>
+		<BaseButton id="tour-settings" variant="ghost">Настройки</BaseButton>
 	</div>
 `
 
-const meta: Meta<typeof BaseTour> = {
-	title: 'UI/BaseTour',
+/** Открытый тур закрывает страницу и блокирует прокрутку — в Docs пример показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Overlay/BaseTour',
 	component: BaseTour,
-
-	argTypes: buildArgTypes({
-		props: {
-			isOpen: { control: 'boolean' },
-			step: { control: { type: 'number', min: 0 } },
-			placement: { control: 'inline-radio', options: TOUR_PLACEMENTS },
-			gap: { control: { type: 'number', min: 0, max: 40 } },
-			padding: { control: { type: 'number', min: 0, max: 40 } },
-			showSkip: { control: 'boolean' },
-			showProgress: { control: 'boolean' },
-			customClass: { control: 'object' },
+	parameters: {
+		// Панель инструментов в центре холста: карточке хватает места с любой стороны от цели (у края экрана она не сдвигается).
+		layout: 'centered',
+		docs: {
+			description: {
+				component: [
+					'Пошаговый тур по интерфейсу: подсвечивает элемент и показывает рядом карточку с пояснением.',
+					'',
+					'- Шаги — `steps`: CSS-селектор цели, заголовок, текст и сторона карточки. `v-model:is-open` запускает и закрывает',
+					'  тур, `v-model:step` — текущий шаг.',
+					'- Цель подсвечена кольцом основного цвета, остальная страница — под подложкой; прокрутка блокируется.',
+					'- Карточка — модальный диалог: фокус переходит на «Далее», Tab не уходит на страницу, Escape и клик по подложке',
+					'  пропускают тур, после закрытия фокус возвращается на кнопку запуска.',
+					'- Прогресс — точки (до восьми шагов) или полоса. Подписи кнопок — `labels`, поведение — `behavior`.',
+					'- Слоты `title` и `content` меняют заголовок и текст, слот по умолчанию — всю карточку.',
+				].join('\n'),
+			},
 		},
-		hidden: ['onClose', 'onFinish', 'onSkip', 'onNext', 'onPrev', 'onChange', 'onUpdate:isOpen', 'onUpdate:step'],
-	}),
-
+	},
+	argTypes: {
+		...hiddenArgTypes('variant', 'sizeScale', 'color'),
+		steps: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		labels: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		placement: { control: 'inline-radio', options: TOUR_PLACEMENTS, table: propGroup(ARG_GROUP.appearance) },
+		gap: { control: { type: 'number', min: 0, max: 40 }, table: propGroup(ARG_GROUP.appearance) },
+		padding: { control: { type: 'number', min: 0, max: 40 }, table: propGroup(ARG_GROUP.appearance) },
+		radius: { control: { type: 'number', min: 0, max: 40 }, table: propGroup(ARG_GROUP.appearance) },
+		showProgress: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		showSkip: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		customClass: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		step: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.state) },
+		behavior: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+		default: { control: false },
+		title: { control: false },
+		content: { control: false },
+	},
 	args: {
 		isOpen: false,
 		step: 0,
@@ -58,299 +91,216 @@ const meta: Meta<typeof BaseTour> = {
 		placement: 'auto',
 		showSkip: true,
 		showProgress: true,
-	},
-}
-
-export default meta
-type Story = StoryObj<typeof BaseTour>
-
-/** Базовый тур: запускается по кнопке, не открывается автоматически в docs */
-export const Default: Story = {
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.querySelector('.base-tour')).toBeInTheDocument()
-		})
-		await waitFor(() => {
-			expect(document.body).toHaveTextContent('Логотип')
-		})
-	},
-}
-
-/** Навигация по шагам через кнопку «Далее» */
-export const Navigation: Story = {
-	args: {
-		onNext: fn(),
-		'onUpdate:step': fn(),
-	},
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.body).toHaveTextContent('Логотип')
-		})
-		const next = within(document.body).getByText('Далее')
-		await userEvent.click(next)
-		await waitFor(() => {
-			expect(document.body).toHaveTextContent('Поиск')
-		})
-		expect(args.onNext).toHaveBeenCalled()
-	},
-}
-
-/** Завершение тура на последнем шаге */
-export const Finish: Story = {
-	args: {
-		step: 2,
+		onSkip: fn(),
 		onFinish: fn(),
 		onClose: fn(),
+		'onUpdate:isOpen': fn(),
+		'onUpdate:step': fn(),
 	},
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(2)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.body).toHaveTextContent('Профиль')
-		})
-		const finish = within(document.body).getByText('Завершить')
-		await userEvent.click(finish)
-		expect(args.onFinish).toHaveBeenCalled()
-		expect(args.onClose).toHaveBeenCalled()
+	// isOpen и step хранятся в args: кнопка запускает тур, переходы и закрытие обновляют Controls.
+	render: args => {
+		const onOpen = useModelArg('isOpen')
+		const onStep = useModelArg('step')
+		return {
+			components: { BaseTour, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onOpen, onStep }),
+			template: `
+				<div class="story-stack">
+					${DEMO_TOOLBAR}
+					<div>
+						<BaseButton variant="soft" @click="onOpen(true)">Запустить тур</BaseButton>
+					</div>
+				</div>
+				<BaseTour v-bind="props" @update:is-open="onOpen" @update:step="onStep" />
+			`,
+		}
+	},
+} satisfies Meta<typeof BaseTour>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/**
+ * Песочница: кнопка запускает тур по панели инструментов; «Далее» переходит к следующему шагу, Escape и клик
+ * по подложке пропускают тур (события `skip` и `close`). Сценарий с клавиатуры проверяет story Keyboard.
+ */
+export const Default: Story = {}
+
+// ─── Открытый тур ──────────────────────────────────────────────────────────────
+
+/**
+ * Первый шаг: цель подсвечена кольцом, карточка — рядом (сторона `auto` — где больше места). Точки показывают прогресс,
+ * фокус стоит на «Далее».
+ */
+export const Opened: Story = {
+	args: { isOpen: true },
+	parameters: { docs: docsFrame(320) },
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Новый проект' })
+		const next = await within(dialog).findByRole('button', { name: 'Далее' })
+		await waitFor(() => expect(next).toHaveFocus())
+		await expect(within(dialog).getByText('1 / 3')).toBeInTheDocument()
 	},
 }
 
-/** Пропуск тура по кнопке закрытия */
-export const Skip: Story = {
-	args: {
-		onSkip: fn(),
-	},
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		const close = await waitFor(() => {
-			const button = document.querySelector<HTMLButtonElement>('.base-tour [aria-label="Пропустить тур"]')
-			expect(button).not.toBeNull()
-			return button as HTMLButtonElement
-		})
-		await userEvent.click(close)
-		expect(args.onSkip).toHaveBeenCalled()
+/** Последний шаг: «Назад» и «Завершить». «Завершить» закрывает тур с событием `finish`. */
+export const LastStep: Story = {
+	args: { isOpen: true, step: 2 },
+	parameters: { docs: docsFrame(320) },
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Настройки' })
+		await expect(await within(dialog).findByRole('button', { name: 'Завершить' })).toBeInTheDocument()
+		await expect(within(dialog).getByRole('button', { name: 'Назад' })).toBeInTheDocument()
+		await expect(within(dialog).getByText('3 / 3')).toBeInTheDocument()
 	},
 }
 
-/** Без индикатора прогресса и без кнопки пропуска */
+/** Больше восьми шагов: вместо точек — полоса прогресса. */
+export const ProgressBar: Story = {
+	args: { isOpen: true, steps: MANY_STEPS, step: 4 },
+	parameters: { docs: docsFrame(320) },
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Шаг 5. Импорт' })
+		await expect(await within(dialog).findByText('5 / 10')).toBeInTheDocument()
+	},
+}
+
+/** Минимальная карточка: без прогресса (`showProgress: false`) и без кнопки пропуска (`showSkip: false`). */
 export const Minimal: Story = {
-	args: {
-		showProgress: false,
-		showSkip: false,
-	},
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.querySelector('.base-tour__card')).toBeInTheDocument()
-		})
-	},
-}
-
-/** Кастомное содержимое карточки через default-слот */
-export const CustomContent: Story = {
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step">
-					<template #default="{ step, index, total, next, skip, isLast, finish }">
-						<div style="padding:16px;background:var(--color-surface);border-radius:var(--border-radius-lg);box-shadow:var(--shadow-xl);width:280px;">
-							<strong>{{ step.title }}</strong>
-							<p style="color:var(--color-text-muted);font-size:14px;">{{ step.content }}</p>
-							<div style="display:flex;justify-content:space-between;">
-								<button @click="skip">Закрыть</button>
-								<button v-if="!isLast" @click="next">Шаг {{ index + 2 }} из {{ total }}</button>
-								<button v-else @click="finish">Готово</button>
-							</div>
-						</div>
-					</template>
-				</BaseTour>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.querySelector('.base-tour__card')).toBeInTheDocument()
-		})
+	args: { isOpen: true, showProgress: false, showSkip: false },
+	parameters: { docs: docsFrame(320) },
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Новый проект' })
+		await within(dialog).findByRole('button', { name: 'Далее' })
+		await expect(within(dialog).queryByRole('button', { name: 'Пропустить тур' })).not.toBeInTheDocument()
 	},
 }
 
 /**
- * Размещение карточки. Управляется контролом `placement` (top/bottom/left/right/auto).
- * Мишень в центре экрана — видно как карточка встаёт с выбранной стороны.
+ * Сторона карточки `placement`: `top`, `bottom`, `left`, `right` или `auto` (где больше места). Шаг может задать
+ * свою сторону полем `placement`. Меняйте значение в Controls.
  */
 export const Placements: Story = {
 	args: {
-		placement: 'top',
-		steps: [{ target: '#tour-center', title: 'Размещение', content: 'Меняйте контрол placement, чтобы увидеть сторону.' }],
-		showProgress: false,
-	},
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div style="min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
-				<div id="tour-center" style="padding:12px 20px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">
-					Целевой элемент
-				</div>
-				<button
-					data-testid="start-tour"
-					style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;"
-					@click="isOpen = true">
-					Запустить тур
-				</button>
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.querySelector('.base-tour__card')).toBeInTheDocument()
-		})
-	},
-}
-/** Кастомные CSS-классы */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'tour-root', overlay: 'tour-overlay', spotlight: 'tour-spotlight', card: 'tour-card', cardInner: 'tour-cardInner', title: 'tour-title', closeButton: 'tour-closeButton', closeIcon: 'tour-closeIcon', content: 'tour-content', footer: 'tour-footer', progress: 'tour-progress', dot: 'tour-dot', counter: 'tour-counter', actions: 'tour-actions', prevButton: 'tour-prevButton', nextButton: 'tour-nextButton', finishButton: 'tour-finishButton' },
 		isOpen: true,
-		step: 0,
+		placement: 'right',
+		showProgress: false,
+		steps: [{ target: '#tour-target', title: 'Сторона карточки', content: 'Меняйте placement в Controls.' }],
 	},
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(true)
-			const step = ref(0)
-			return { args, isOpen, step }
-		},
-		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		expect(document.querySelector('.tour-root')).toBeTruthy()
+	parameters: { controls: { include: ['placement', 'gap', 'padding', 'radius'] }, docs: docsFrame(320) },
+	render: args => {
+		const onOpen = useModelArg('isOpen')
+		return {
+			components: { BaseTour, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onOpen }),
+			template: `
+				<BaseButton id="tour-target" variant="outline" @click="onOpen(true)">Цель тура</BaseButton>
+				<BaseTour v-bind="props" @update:is-open="onOpen" />
+			`,
+		}
+	},
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Сторона карточки' })
+		await within(dialog).findByRole('button', { name: 'Завершить' })
+		const card = dialog.querySelector('.base-tour__card') as HTMLElement
+		const target = document.getElementById('tour-target') as HTMLElement
+		await waitFor(() => expect(card.getBoundingClientRect().left).toBeGreaterThan(target.getBoundingClientRect().right))
 	},
 }
 
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: args => ({
-		components: { BaseTour },
-		setup() {
-			const isOpen = ref(false)
-			const step = ref(0)
-			return { args, isOpen, step }
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/**
+ * Свои заголовок и текст — слоты `title` и `content` (получают `step` и `index`). Слот по умолчанию заменяет всю
+ * карточку и получает ещё `next`, `prev`, `skip`, `finish`.
+ */
+export const CustomContent: Story = {
+	args: { isOpen: true },
+	parameters: {
+		docs: {
+			...docsFrame(320),
+			source: {
+				code: [
+					'<BaseTour v-model:is-open="isOpen" :steps="steps">',
+					'  <template #title="{ step }">…</template>',
+					'  <template #content="{ step, index }">…</template>',
+					'</BaseTour>',
+				].join('\n'),
+			},
 		},
+	},
+	render: args => {
+		const onOpen = useModelArg('isOpen')
+		const onStep = useModelArg('step')
+		return {
+			components: { BaseTour, BaseButton, BaseIcon, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onOpen, onStep }),
+			template: `
+				<div class="story-stack">${DEMO_TOOLBAR}</div>
+				<BaseTour v-bind="props" @update:is-open="onOpen" @update:step="onStep">
+					<template #title="{ step }">
+						<div class="story-row" style="gap: 6px;">
+							<BaseIcon name="info" :size-scale="80" />
+							<BaseText :color="{ text: { base: 'var(--rise-text-highlighted)' } }" :weight="600">{{ step.title }}</BaseText>
+						</div>
+					</template>
+					<template #content="{ step, index }">
+						<BaseText :color="{ text: { base: 'var(--rise-text-muted)' } }">{{ step.content }} Шаг {{ index + 1 }} из 3.</BaseText>
+					</template>
+				</BaseTour>
+			`,
+		}
+	},
+	play: async () => {
+		const dialog = await screen.findByRole('dialog', { name: 'Новый проект' })
+		await expect(await within(dialog).findByText(/Шаг 1 из 3/)).toBeInTheDocument()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Enter на кнопке запускает тур, фокус переходит на «Далее»; Tab обходит кнопки карточки по кругу,
+ * Enter переходит к следующему шагу, Escape пропускает тур и возвращает фокус на кнопку запуска.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	// Состояние тура — в самом примере, а не в args: обновление args перерисовывало бы story во время проверок.
+	render: args => ({
+		components: { BaseTour, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'step', 'onUpdate:isOpen', 'onUpdate:step']), isOpen: ref(false), step: ref(0) }),
 		template: `
-			<div>
-				${DEMO_LAYOUT}
-				<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
+			<div class="story-stack">
+				${DEMO_TOOLBAR}
+				<div>
+					<BaseButton variant="soft" @click="isOpen = true">Запустить тур</BaseButton>
+				</div>
 			</div>
+			<BaseTour v-bind="props" v-model:is-open="isOpen" v-model:step="step" />
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		await userEvent.click(canvas.getByTestId('start-tour'))
-		await waitFor(() => {
-			expect(document.querySelector('.base-tour__card')).toBeInTheDocument()
-		})
+	play: async ({ canvas, userEvent }) => {
+		const start = canvas.getByRole('button', { name: 'Запустить тур' })
+		await tabTo(start, userEvent)
+		await userEvent.keyboard('{Enter}')
+
+		const dialog = await screen.findByRole('dialog', { name: 'Новый проект' })
+		const next = await within(dialog).findByRole('button', { name: 'Далее' })
+		await waitFor(() => expect(next).toHaveFocus())
+
+		// С последней кнопки карточки Tab возвращается на первую, а не на страницу под затемнением
+		await userEvent.tab()
+		await expect(within(dialog).getByRole('button', { name: 'Пропустить тур' })).toHaveFocus()
+		await userEvent.tab()
+		await expect(next).toHaveFocus()
+
+		await userEvent.keyboard('{Enter}')
+		await expect(await screen.findByRole('dialog', { name: 'Импорт' })).toBeInTheDocument()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+		await expect(start).toHaveFocus()
 	},
 }

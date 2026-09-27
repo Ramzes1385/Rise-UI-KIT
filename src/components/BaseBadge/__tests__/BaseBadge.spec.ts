@@ -80,7 +80,7 @@ describe('BaseBadge unit', () => {
 			expect(screen.queryByText('Текст пропса')).not.toBeInTheDocument()
 		})
 
-		it('не должен рендерить BaseText когда передан слот', () => {
+		it('не должен рендерить текст label когда передан слот', () => {
 			const { container } = render(BaseBadge, {
 				slots: { default: '<span>Слот</span>' },
 			})

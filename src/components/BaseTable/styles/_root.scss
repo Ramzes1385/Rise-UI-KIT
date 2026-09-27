@@ -1,45 +1,84 @@
-@use "@styles/variables" as *;
-@use "@styles/mixins" as *;
-@use "@styles/functions" as *;
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
 
+// BaseTable — таблица в духе Nuxt UI Table. Контейнер: рамка --rise-border, радиус lg, фон --rise-bg.
+// Шапка 14/20 semibold --rise-text-highlighted с нижней линией border-accented; ячейки 14/20 --rise-text, отступ 12/16;
+// строки разделены линией --rise-border, наведение — bg-muted, выбранная строка — primary-soft.
+// Варианты: default — линии между строками; bordered — ещё и между колонками; striped — чётные строки bg-muted без линий.
+// Кастомный цвет: color.bg.base — фон таблицы, color.bg.hover — фон строки при наведении, color.text.base — текст шапки
+// и ячеек. Цвета вычисляются на корне, а внутри таблицы --custom-* сбрасываются: проп color не перекрашивает
+// кнопки, поля и чекбоксы внутри таблицы.
 .base-table {
+	// Отступы ячеек по умолчанию. Проп padding переопределяет их inline-переменными --tbl-pad-*.
+	--tbl-pad-top: 12px;
+	--tbl-pad-right: 16px;
+	--tbl-pad-bottom: 12px;
+	--tbl-pad-left: 16px;
+	@include custom-bg(--tbl-bg, var(--rise-bg));
+	// Без fallback: если color.bg.hover не задан, переменная недействительна и строки берут цвет наведения из токенов.
+	--tbl-hover: var(--custom-bg-hover);
+	@include custom-text(--tbl-text, var(--rise-text));
+	@include custom-text(--tbl-head-text, var(--rise-text-highlighted));
+
 	width: 100%;
-	--tbl-pad-top: 10px;
-	--tbl-pad-right: 20px;
-	--tbl-pad-bottom: 10px;
-	--tbl-pad-left: 20px;
-	@include custom-text(color, var(--color-text));
+	font-family: var(--rise-font-sans);
+	@include text-size(sm);
+	color: var(--tbl-text);
 
 	&__body {
+		@include reset-custom-color;
+
+		box-sizing: border-box;
 		width: 100%;
-		outline: 1px solid var(--color-border);
-		outline-offset: -1px;
-		@include custom-bg(background-color, var(--color-surface));
-		border-radius: var(--border-radius-lg);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--tbl-bg);
 		overflow: hidden;
 	}
 
+	// Слоты header и footer — секции контейнера с отступами ячеек, отделённые линией.
 	&__header {
-		@include custom-bg(background-color, var(--color-surface-muted));
-		box-shadow: inset 0 -1px 0 0 var(--color-border);
+		padding: sz(12px 16px);
+		border-bottom: 1px solid var(--rise-border);
 	}
 
 	&__footer {
-		@include custom-bg(background-color, var(--color-surface-muted));
-		box-shadow: inset 0 1px 0 0 var(--color-border);
+		padding: sz(12px 16px);
+		border-top: 1px solid var(--rise-border);
+		background-color: var(--rise-bg-muted);
 	}
 
+	// Текст только для скринридера: подписи чекбоксов и полей тулбара, заголовок колонки раскрытия.
+	// Двойной класс: подписи — BaseText внутри BaseCheckbox/BaseInput, их собственные стили не должны вернуть видимость.
+	&__visually-hidden,
+	&__visually-hidden.base-text {
+		@include visually-hidden;
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	// bordered — сетка: вертикальные линии между колонками в шапке и строках.
 	&--bordered {
-		.base-table__td,
-		.base-table__th {
-			outline: 1px solid var(--color-border);
-			outline-offset: -1px;
+		.base-table__th + .base-table__th,
+		.base-table__td + .base-table__td {
+			border-left: 1px solid var(--rise-border);
 		}
 	}
 
+	// striped — чётные строки на bg-muted вместо линий между строками. Чётность считает шаблон (--even), а не
+	// :nth-child: служебные строки раскрытия не сбивают чередование.
 	&--striped {
-		.base-table__tr:nth-child(even):not(.base-table__tr--child) {
-			@include custom-bg(background-color, var(--color-surface-muted));
+		.base-table__tr {
+			--tbl-row-hover: var(--tbl-hover, color-mix(in srgb, var(--rise-bg-accented) 60%, var(--rise-bg-muted)));
+		}
+
+		.base-table__tr--even {
+			--tbl-row-bg: var(--rise-bg-muted);
+		}
+
+		.base-table__td {
+			border-top-color: transparent;
 		}
 	}
 }

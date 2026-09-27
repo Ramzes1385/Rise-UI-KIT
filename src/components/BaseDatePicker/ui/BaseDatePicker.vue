@@ -16,6 +16,7 @@
 			:size-scale="resolvedProps.sizeScale"
 			:custom-class="classes.field"
 			@field-click="handleFieldClick"
+			@keyboard-open="handleKeyboardOpen"
 			@clear-click="handleClear"
 			@icon-click="handleFieldClick">
 			<template #icon>
@@ -70,8 +71,8 @@ const resolvedProps = computed(() => ({
 	selectionMode: props.selectionMode ?? 'single',
 	placeholder: props.placeholder ?? UI_TEXT.SELECT_DATE,
 	dateFormat: props.dateFormat ?? 'dd.MM.yyyy',
-	inputVariant: props.inputVariant ?? 'outline',
-	calendarVariant: props.calendarVariant ?? 'default',
+	inputVariant: props.inputVariant ?? 'default',
+	calendarVariant: props.calendarVariant ?? 'ghost',
 	sizeScale: props.sizeScale ?? 100,
 	isDisabled: props.isDisabled ?? false,
 	isReadonly: resolveBooleanPropDefault('isReadonly', props.isReadonly, true),
@@ -118,6 +119,7 @@ const {
 	hasValue,
 	displayValue,
 	handleFieldClick,
+	handleKeyboardOpen,
 	handleClear,
 	handleModelUpdate,
 	handleModelEndUpdate,

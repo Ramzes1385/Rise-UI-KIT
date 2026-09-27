@@ -1,45 +1,34 @@
 <template>
-	<div v-if="files.length === 0" class="base-chat-slideover__empty">
-		<BaseIcon name="file" :size-scale="sizeScale * UI_CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
-		<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER" class="base-chat-slideover__empty-text">{{ UI_CHAT_TEXT.NO_FILES }}</BaseText>
-	</div>
-	<div v-else class="base-chat-slideover__files-list">
-		<div
-			v-for="file in files"
-			:key="file.id"
-			class="base-chat-slideover__file-item"
-			@click="emit('file-click', file)">
-			<BaseIcon
-				:name="getFileIconName(file.name)"
-				:size-scale="sizeScale * UI_CHAT_SCALE.FILE_ICON"
-				class="base-chat-slideover__file-icon" />
-			<div class="base-chat-slideover__file-info">
-				<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__file-name">
-					{{ file.name }}
-				</BaseText>
-				<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" class="base-chat-slideover__file-meta">
-					<template v-if="file.size">{{ file.size }} · </template>{{ file.publishedAt }}
-				</BaseText>
-			</div>
-			<BaseIcon
-				name="download"
-				:size-scale="sizeScale * UI_SCALE.SMALL"
+	<BaseEmpty v-if="files.length === 0" variant="ghost" icon="file" :title="UI_CHAT_TEXT.NO_FILES" :size-scale="sizeScale" class="base-chat-slideover__empty" />
+	<ul v-else class="base-chat-slideover__files-list">
+		<li v-for="file in files" :key="file.id" class="base-chat-slideover__file-item">
+			<button type="button" class="base-chat-slideover__file-main" @click="emit('file-click', file)">
+				<span class="base-chat-slideover__file-icon" aria-hidden="true">
+					<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale" />
+				</span>
+				<span class="base-chat-slideover__file-info">
+					<span class="base-chat-slideover__file-name">{{ file.name }}</span>
+					<span class="base-chat-slideover__file-meta"><template v-if="file.size">{{ file.size }} · </template>{{ file.publishedAt }}</span>
+				</span>
+			</button>
+			<BaseButton
+				variant="ghost"
+				:size-scale="sizeScale"
 				class="base-chat-slideover__file-download"
-				@click.stop="emit('download-file', file)" />
-		</div>
-	</div>
+				:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
+				@click="emit('download-file', file)">
+				<BaseIcon name="download" :size-scale="sizeScale * UI_SCALE.SMALL" />
+			</BaseButton>
+		</li>
+	</ul>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { BaseButton } from '@components/BaseButton'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import {
-	UI_CHAT_SCALE,
-	UI_CHAT_TEXT,
-	UI_FONT_WEIGHT,
-	UI_SCALE,
-} from '@constants'
+import { UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../model/ChatSlideoverFiles.types'

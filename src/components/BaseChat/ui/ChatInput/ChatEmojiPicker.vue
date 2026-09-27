@@ -1,29 +1,29 @@
 <template>
-	<div ref="emojiWrapperRef" class="base-chat-input__emoji-wrapper">
+	<div ref="emojiWrapperRef" class="base-chat-input__emoji-wrapper" @keydown.esc="handleEscape">
 		<BaseButton
+			ref="triggerRef"
 			variant="ghost"
-			:padding="2"
 			:size-scale="sizeScale"
 			class="base-chat-input__emoji-btn"
 			:aria-label="UI_CHAT_TEXT.EMOJI_ARIA"
+			aria-haspopup="dialog"
+			:aria-expanded="isEmojiOpen ? 'true' : 'false'"
 			@click="toggleEmoji">
-			<template #left>
-				<BaseIcon name="smile" :size-scale="sizeScale" />
-			</template>
+			<BaseIcon name="smile" :size-scale="sizeScale" />
 		</BaseButton>
 
-		<div v-if="isEmojiOpen" ref="emojiPopoverRef" class="base-chat-input__emoji-popover">
+		<!-- Немодальная панель: Tab переходит от кнопки к эмодзи, Escape закрывает и возвращает фокус на кнопку -->
+		<div v-if="isEmojiOpen" class="base-chat-input__emoji-popover" role="dialog" :aria-label="UI_CHAT_TEXT.EMOJI_LIST">
 			<div class="base-chat-input__emoji-list">
-				<BaseButton
+				<button
 					v-for="emoji in popularEmojis"
 					:key="emoji"
-					variant="ghost"
-					:padding="{ x: 4, y: 4 }"
-					custom-class="base-chat-input__emoji-item"
+					type="button"
+					class="base-chat-input__emoji-item"
 					:aria-label="`${UI_CHAT_TEXT.INSERT_EMOJI} ${emoji}`"
 					@click="selectEmoji(emoji)">
 					{{ emoji }}
-				</BaseButton>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -43,6 +43,7 @@ const emit = defineEmits<ChatEmojiPickerEmits>()
 
 const isEmojiOpen = ref(false)
 const emojiWrapperRef = ref<HTMLElement | null>(null)
+const triggerRef = ref<{ focus: () => void } | null>(null)
 
 useClickOutside({
 	targets: [emojiWrapperRef],
@@ -59,6 +60,12 @@ function toggleEmoji(): void {
 function selectEmoji(emoji: string): void {
 	emit('select', emoji)
 	isEmojiOpen.value = false
+}
+
+function handleEscape(): void {
+	if (!isEmojiOpen.value) return
+	isEmojiOpen.value = false
+	triggerRef.value?.focus()
 }
 
 const popularEmojis = [

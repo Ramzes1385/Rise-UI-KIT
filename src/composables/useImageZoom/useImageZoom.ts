@@ -1,5 +1,6 @@
 /** Composable: зум изображений (панорамирование, вращение, масштабирование, миникарта) */
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useScrollLock } from '@composables/useScrollLock'
 import { UI_SCALE, UI_SIZE } from '@constants'
 import { useZoomMinimap } from './useZoomMinimap'
 import type { UseImageZoomOptions } from './useImageZoom.types'
@@ -184,10 +185,17 @@ function useImageZoom(options: UseImageZoomOptions) {
 		clampPosition,
 	})
 
+	/** Общий счётчик блокировок: закрытие зума не должно снимать блокировку открытой под ним модалки */
+	const { lock, unlock } = useScrollLock()
+
 	watch(
 		() => isZoomOpen.value,
 		(opened: boolean) => {
-			document.body.style.overflow = opened ? 'hidden' : ''
+			if (opened) {
+				lock()
+			} else {
+				unlock()
+			}
 		},
 	)
 
@@ -200,7 +208,7 @@ function useImageZoom(options: UseImageZoomOptions) {
 		document.removeEventListener('keydown', handleKeydown)
 		window.removeEventListener('resize', syncSizes)
 		minimap.cleanupDragListeners()
-		document.body.style.overflow = ''
+		unlock()
 	})
 
 	return {

@@ -5,9 +5,11 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
+import { UI_COLOR_PICKER } from '@constants'
+import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
 
 /** Мок размеров SV-области (200×140 в начале координат) */
@@ -91,6 +93,23 @@ describe('BaseColorPicker — unit', () => {
 		if (!preset) throw new Error('Пресет не найден')
 		await fireEvent.click(preset)
 		expect(emitted()).toHaveProperty('update:modelValue')
+	})
+
+	it.each(DEFAULT_COLOR_PRESETS)('эмитит точный HEX пресета %s без искажения через HSV', async preset => {
+		const { container, emitted } = render(BaseColorPicker, { props: { modelValue: '#000000' } })
+		await openPanel(container)
+		await fireEvent.click(screen.getByRole('button', { name: `${UI_COLOR_PICKER.PRESET} ${preset}` }))
+		expect(emitted()['update:modelValue']).toEqual([[preset]])
+		expect(emitted().change).toEqual([[preset]])
+	})
+
+	it('эмитит введённый HEX без искажения через HSV', async () => {
+		const { container, emitted } = render(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+		await openPanel(container)
+		const hex = screen.getByRole<HTMLInputElement>('textbox', { name: UI_COLOR_PICKER.HEX_VALUE })
+		hex.value = '#123456'
+		await fireEvent.change(hex)
+		expect(emitted()['update:modelValue']).toEqual([['#123456']])
 	})
 
 	it('выбирает saturation/value кликом по SV-области', async () => {
@@ -177,6 +196,57 @@ describe('BaseColorPicker — unit', () => {
 		expect(emitted()).toHaveProperty('reset')
 	})
 
+	describe('доступность', () => {
+		it('образец сообщает, открыта ли панель (aria-expanded)', async () => {
+			const { container } = render(BaseColorPicker, { props: { modelValue: '#ff0000' } })
+			const swatch = screen.getByRole('button', { name: `${UI_COLOR_PICKER.SELECTED_COLOR} #ff0000` })
+
+			expect(swatch).toHaveAttribute('aria-expanded', 'false')
+			await openPanel(container)
+			expect(swatch).toHaveAttribute('aria-expanded', 'true')
+		})
+
+		it('SV-область — слайдер в порядке Tab со значением насыщенности', async () => {
+			const { container } = render(BaseColorPicker, { props: { modelValue: '#808080' } })
+			await openPanel(container)
+			const area = screen.getByRole('slider', { name: UI_COLOR_PICKER.SATURATION_BRIGHTNESS })
+
+			expect(area).toHaveAttribute('tabindex', '0')
+			expect(area).toHaveAttribute('aria-valuenow', '0')
+			expect(area).toHaveAttribute('aria-valuetext', '#808080')
+		})
+
+		it('стрелки в SV-области меняют насыщенность и яркость, Shift — шаг 10%', async () => {
+			const { container, emitted } = render(BaseColorPicker, { props: { modelValue: '#808080' } })
+			await openPanel(container)
+			const area = screen.getByRole('slider', { name: UI_COLOR_PICKER.SATURATION_BRIGHTNESS })
+
+			await fireEvent.keyDown(area, { key: 'ArrowRight', shiftKey: true })
+			expect(area).toHaveAttribute('aria-valuenow', '10')
+			await fireEvent.keyDown(area, { key: 'ArrowLeft' })
+			expect(area).toHaveAttribute('aria-valuenow', '9')
+			// #808080: яркость 50% → стрелка вверх 51%, вниз с Shift — 41%
+			await fireEvent.keyDown(area, { key: 'ArrowUp' })
+			await fireEvent.keyDown(area, { key: 'ArrowDown', shiftKey: true })
+			await fireEvent.keyDown(area, { key: 'Enter' })
+			const updates = emitted()['update:modelValue'] as string[][]
+			expect(updates).toHaveLength(4)
+			expect(area.querySelector('.base-color-picker__marker')).toHaveStyle({ left: '9%', top: '59%' })
+		})
+
+		it('выбранный пресет отмечен aria-pressed и классом, класс пресета из customClass', async () => {
+			const { container } = render(BaseColorPicker, {
+				props: { modelValue: '#EF4444', customClass: { preset: 'custom-preset' } },
+			})
+			await openPanel(container)
+
+			const selected = screen.getByRole('button', { name: `${UI_COLOR_PICKER.PRESET} #ef4444` })
+			expect(selected).toHaveAttribute('aria-pressed', 'true')
+			expect(selected).toHaveClass('base-color-picker__preset--selected', 'custom-preset')
+			expect(screen.getByRole('button', { name: `${UI_COLOR_PICKER.PRESET} #f97316` })).toHaveAttribute('aria-pressed', 'false')
+		})
+	})
+
 	describe('defineExpose (FormFieldExpose)', () => {
 		it('должен экспонировать rootRef指向 swatch-кнопку', async () => {
 			const { mount } = await import('@vue/test-utils')
@@ -191,7 +261,7 @@ describe('BaseColorPicker — unit', () => {
 		it('должен вызывать focus на swatch через exposed.focus()', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
-			const swatch = wrapper.find('.base-color-picker__swatch').element
+			const swatch = wrapper.find('.base-color-picker__swatch').element as HTMLElement
 			const focusSpy = vi.spyOn(swatch, 'focus')
 
 			const exposed = wrapper.vm as unknown as { focus: () => void }
@@ -204,7 +274,7 @@ describe('BaseColorPicker — unit', () => {
 		it('должен вызывать blur на swatch через exposed.blur()', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const wrapper = mount(BaseColorPicker, { props: { modelValue: '#ff0000' } })
-			const swatch = wrapper.find('.base-color-picker__swatch').element
+			const swatch = wrapper.find('.base-color-picker__swatch').element as HTMLElement
 			const blurSpy = vi.spyOn(swatch, 'blur')
 
 			const exposed = wrapper.vm as unknown as { blur: () => void }

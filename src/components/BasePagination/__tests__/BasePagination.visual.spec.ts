@@ -1,16 +1,19 @@
 /**
- * Visual regression тесты для BasePagination.
+ * Visual regression BasePagination: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basepagination'
-const STORIES = ['default', 'many-pages', 'dark-theme']
+const STORIES = ['variants', 'sizes', 'many-pages', 'empty'] as const
 
-for (const story of STORIES) {
-	test(`BasePagination — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-pagination')
-		await expect(root).toHaveScreenshot(`base-pagination--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BasePagination · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basepagination--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-pagination-${story}-${theme}.png`)
+			})
+		}
 	})
 }

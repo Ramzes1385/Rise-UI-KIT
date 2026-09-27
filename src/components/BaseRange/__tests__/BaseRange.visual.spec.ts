@@ -1,16 +1,25 @@
 /**
- * Visual regression тесты для BaseRange.
+ * Visual regression BaseRange: ключевые stories в светлой и тёмной теме.
+ * Подсказка значения телепортируется в body, поэтому story с ней снимается целой страницей.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baserange'
-const STORIES = ['default', 'disabled', 'dark-theme']
+const STORIES = ['variants', 'sizes', 'range', 'with-marks', 'vertical'] as const
 
-for (const story of STORIES) {
-	test(`BaseRange — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-range')
-		await expect(root).toHaveScreenshot(`base-range--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseRange · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baserange--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-range-${story}-${theme}.png`)
+			})
+		}
+
+		test('with-tooltip', async ({ page }) => {
+			await openStory(page, 'form-baserange--with-tooltip', { theme })
+			await expectStoryScreenshot(page, `base-range-with-tooltip-${theme}.png`, 'page')
+		})
 	})
 }

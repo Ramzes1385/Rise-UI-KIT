@@ -22,6 +22,7 @@
 									hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
 								'base-side-bar-nav__link--collapsed': isCollapsed,
 							}"
+							:aria-label="item.label"
 							:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 							:aria-disabled="item.isDisabled || undefined"
 							:aria-expanded="getItemAriaExpanded(item)"
@@ -80,8 +81,7 @@
 							v-if="item.badge"
 							class="base-side-bar-nav__badge"
 							:label="String(item.badge)"
-							variant="soft"
-							:size-scale="85">
+							variant="soft">
 						<slot
 							name="badge"
 							v-bind="getSlotProps(item)">
@@ -94,7 +94,7 @@
 							class="base-side-bar-nav__chevron"
 							:class="{ 'base-side-bar-nav__chevron--expanded': isItemExpanded(item) }"
 							aria-hidden="true">
-							›
+							<BaseIcon name="chevron-right" />
 						</span>
 					</slot>
 				</component>

@@ -18,85 +18,73 @@
 			<Transition name="base-tour-card">
 				<div
 					v-if="cardStyle && slotContext && geometry && !isFocusing"
+					ref="cardRef"
 					class="base-tour__card"
 					:class="[isMobile ? 'base-tour__card--mobile' : `base-tour__card--${geometry.placement}`, classes.card]"
 					:style="cardStyle">
 					<slot v-bind="slotContext">
-					<BaseCard variant="shadow" :padding="8" :custom-class="classes.cardInner">
-						<template v-if="hasHeader" #header>
-							<slot name="title" :step="currentStep" :index="activeIndex">
-								<BaseText v-if="currentStep.title" tag="h3" :weight="UI_FONT_WEIGHT.SEMIBOLD" :custom-class="classes.title">{{
-									currentStep.title
+						<div class="base-tour__panel" :class="classes.cardInner">
+							<div v-if="hasHeader || showSkip" class="base-tour__header">
+								<slot v-if="hasHeader" name="title" :step="currentStep" :index="activeIndex">
+									<BaseText
+										v-if="currentStep.title"
+										tag="h3"
+										:weight="UI_FONT_WEIGHT.SEMIBOLD"
+										class="base-tour__title"
+										:custom-class="classes.title"
+										>{{ currentStep.title }}</BaseText
+									>
+								</slot>
+								<BaseButton
+									v-if="showSkip"
+									variant="ghost"
+									class="base-tour__close"
+									:aria-label="UI_TOUR.SKIP"
+									:custom-class="classes.closeButton"
+									@click="handleSkip">
+									<BaseIcon name="close" :size-scale="80" :custom-class="classes.closeIcon" />
+								</BaseButton>
+							</div>
+
+							<slot name="content" :step="currentStep" :index="activeIndex">
+								<BaseText v-if="currentStep.content" tag="p" class="base-tour__content" :custom-class="classes.content">{{
+									currentStep.content
 								}}</BaseText>
 							</slot>
-						</template>
 
-						<template v-if="showSkip" #actions>
-							<BaseButton
-								variant="ghost"
-								:padding="4"
-								:aria-label="UI_TOUR.SKIP"
-								:custom-class="classes.closeButton"
-								@click="handleSkip">
-								<BaseIcon name="close" :custom-class="classes.closeIcon" />
-							</BaseButton>
-						</template>
-
-						<slot name="content" :step="currentStep" :index="activeIndex">
-							<BaseText v-if="currentStep.content" tag="p" :color="contentColor" :custom-class="classes.content">{{
-								currentStep.content
-							}}</BaseText>
-						</slot>
-
-						<template #footer>
 							<div class="base-tour__footer" :class="classes.footer">
-								<div
-									v-if="showProgress && useDots"
-									class="base-tour__progress"
-									:class="classes.progress"
-									aria-hidden="true">
+								<div v-if="showProgress && useDots" class="base-tour__progress" :class="classes.progress" aria-hidden="true">
 									<span
 										v-for="(_, dotIndex) in total"
 										:key="dotIndex"
 										class="base-tour__dot"
 										:class="[{ 'base-tour__dot--active': dotIndex === activeIndex }, classes.dot]" />
 								</div>
-								<div
-									v-else-if="showProgress"
-									class="base-tour__progress-bar"
-									:class="classes.progress"
-									aria-hidden="true">
+								<div v-else-if="showProgress" class="base-tour__progress-bar" :class="classes.progress" aria-hidden="true">
 									<span class="base-tour__progress-bar-fill" :style="{ width: `${progressPercent}%` }" />
 								</div>
-								<BaseText tag="span" :color="contentColor" class="base-tour__counter" :custom-class="classes.counter">
+								<BaseText tag="span" class="base-tour__counter" :custom-class="classes.counter">
 									{{ activeIndex + 1 }} / {{ total }}
 								</BaseText>
 
 								<div class="base-tour__actions" :class="classes.actions">
+									<BaseButton v-if="!isFirst" variant="ghost" :custom-class="classes.prevButton" @click="goPrev">{{
+										resolvedPrevLabel
+									}}</BaseButton>
+									<!--
+										Одна кнопка для «Далее» и «Завершить»: на последнем шаге меняются подпись и действие,
+										а элемент остаётся тем же — фокус с клавиатуры не теряется. autofocus — начальный фокус карточки.
+									-->
 									<BaseButton
-										v-if="!isFirst"
-										:padding="6"
-										variant="ghost"
-										:custom-class="classes.prevButton"
-									@click="goPrev"
-									>{{ resolvedPrevLabel }}</BaseButton
+										autofocus
+										:custom-class="isLast ? classes.finishButton : classes.nextButton"
+										@click="isLast ? handleFinish() : goNext()"
+										>{{ isLast ? resolvedFinishLabel : resolvedNextLabel }}</BaseButton
 									>
-									<BaseButton
-										v-if="!isLast"
-										:padding="6"
-										variant="default"
-										:custom-class="classes.nextButton"
-									@click="goNext"
-									>{{ resolvedNextLabel }}</BaseButton
-									>
-								<BaseButton v-else :padding="6" variant="default" :custom-class="classes.finishButton" @click="handleFinish">{{
-									resolvedFinishLabel
-								}}</BaseButton>
 								</div>
 							</div>
-						</template>
-					</BaseCard>
-				</slot>
+						</div>
+					</slot>
 				</div>
 			</Transition>
 		</div>
@@ -106,12 +94,12 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { useFocusTrap } from '@composables/useFocusTrap'
 import { useScrollLock } from '@composables/useScrollLock'
 import { useTourCoordination } from '@composables/useTourCoordination'
 import { useTourLogic } from '@composables/useTourLogic'
@@ -121,7 +109,6 @@ import {
 } from '@constants'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseTour.types'
-import type { CustomColor } from '@composables/useCustomColor'
 
 const props = withDefaults(defineProps<BaseTourProps>(), {
 	isOpen: false,
@@ -136,7 +123,6 @@ defineSlots<BaseTourSlots>()
 
 const internalIndex = ref(props.step)
 const activeIndex = computed((): number => internalIndex.value)
-const contentColor: CustomColor = { text: { base: 'var(--color-text-muted)' } }
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
@@ -208,6 +194,18 @@ useEscapeKey({
 	callback: handleSkip,
 })
 
+/** Карточка шага (появляется после анимации подсветки) */
+const cardRef = ref<HTMLElement | null>(null)
+
+/**
+ * Тур — модальный диалог: когда карточка появилась, фокус переходит в неё (на кнопку «Далее» с autofocus),
+ * Tab не уходит на страницу под затемнением, после закрытия фокус возвращается на кнопку, которая запустила тур.
+ */
+useFocusTrap({
+	containerRef: cardRef,
+	isActive: () => props.isOpen && cardRef.value !== null,
+})
+
 watch(
 	() => props.step,
 	value => {
@@ -232,7 +230,9 @@ watch(
 	{ immediate: true },
 )
 
+/** Размонтирование открытого тура (смена маршрута, v-if) не проходит через watch isOpen — снимаем блокировку явно */
 onBeforeUnmount(() => {
 	stopFocus()
+	unlock()
 })
 </script>

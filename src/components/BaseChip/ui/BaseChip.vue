@@ -2,27 +2,25 @@
 	<div
 		class="base-chip"
 		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		:style="[sizeScaleStyle, variantStyle]">
 		<slot />
-		<BaseText
+		<!-- Кастомный цвет — только на индикаторе: с корня --custom-* унаследовало бы содержимое слота (кнопка, аватар) -->
+		<span
 			v-if="isVisible"
-			tag="span"
 			class="base-chip__badge"
-			:class="[`base-chip__badge--${placement}`]"
-			:custom-class="classes.badge"
-			:size-scale="sizeScale"
+			:class="[`base-chip__badge--${placement}`, classes.badge]"
+			:style="customColorStyle"
 			@click="handleBadgeClick">
 			{{ displayContent }}
-		</BaseText>
+		</span>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import '../styles/BaseChip.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
+import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../model/BaseChip.types'
 
 const props = withDefaults(defineProps<BaseChipProps>(), {

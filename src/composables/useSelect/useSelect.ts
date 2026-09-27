@@ -1,16 +1,19 @@
 /** Composable: логика выбора и фильтрации для BaseSelect */
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { UseSelectOptions } from './useSelect.types'
 import type { BaseSelectOption } from '@components/BaseSelect/model/BaseSelect.types'
 
 /**
  * Логика выбора/фильтрации для BaseSelect.
  * Инкапсулирует состояние дропдауна, поиск, вычисление выбранных опций,
- * выбор/снятие значений (включая multi-select) и удаление тегов.
+ * выбор/снятие значений (включая multi-select), удаление тегов
+ * и активную (подсвеченную) опцию для управления с клавиатуры.
  */
 function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 	const isOpen = ref(false)
 	const searchQuery = ref('')
+	/** Индекс активной опции в filteredOptions: её выбирает Enter, на неё указывает aria-activedescendant; -1 — нет */
+	const activeIndex = ref(-1)
 
 	const selectedOption = computed(() => {
 		return props.options.find(opt => opt.value === props.modelValue) ?? null
@@ -38,6 +41,62 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 		})
 	})
 
+	function isSelected(value: string | number): boolean {
+		if (props.isMultiple) {
+			return Array.isArray(props.modelValue) && props.modelValue.includes(value)
+		}
+		return props.modelValue === value
+	}
+
+	/** Ближайшая доступная опция от индекса from (включительно) в направлении step; -1 — таких нет */
+	function findEnabledIndex(from: number, step: 1 | -1): number {
+		const options = filteredOptions.value
+		for (let index = from; index >= 0 && index < options.length; index += step) {
+			const option = options[index]
+			if (option && !option.isDisabled) return index
+		}
+		return -1
+	}
+
+	/** Активная опция при открытии: выбранная (если доступна), иначе первая доступная */
+	function initialActiveIndex(): number {
+		const selectedIndex = filteredOptions.value.findIndex(opt => isSelected(opt.value) && !opt.isDisabled)
+		return selectedIndex === -1 ? findEnabledIndex(0, 1) : selectedIndex
+	}
+
+	/** Сдвиг активной опции стрелками: без зацикливания, отключённые опции пропускаются */
+	function moveActive(step: 1 | -1): void {
+		const start = activeIndex.value === -1 ? (step === 1 ? 0 : filteredOptions.value.length - 1) : activeIndex.value + step
+		const next = findEnabledIndex(start, step)
+		if (next !== -1) activeIndex.value = next
+	}
+
+	/** Первая (Home) или последняя (End) доступная опция */
+	function setActiveEdge(edge: 'first' | 'last'): void {
+		const next = edge === 'first' ? findEnabledIndex(0, 1) : findEnabledIndex(filteredOptions.value.length - 1, -1)
+		if (next !== -1) activeIndex.value = next
+	}
+
+	/** Подсветка опции указателем мыши: клавиатура продолжит с неё */
+	function setActive(index: number): void {
+		const option = filteredOptions.value[index]
+		if (option && !option.isDisabled) activeIndex.value = index
+	}
+
+	// Открытие ставит активной выбранную опцию, закрытие снимает подсветку
+	watch(isOpen, value => {
+		activeIndex.value = value ? initialActiveIndex() : -1
+	})
+
+	// Новый поисковый запрос — активной становится первая подходящая опция
+	watch(filteredOptions, () => {
+		if (isOpen.value) activeIndex.value = findEnabledIndex(0, 1)
+	})
+
+	function openDropdown(): void {
+		if (!props.isDisabled) isOpen.value = true
+	}
+
 	function toggleDropdown(): void {
 		if (!props.isDisabled) {
 			isOpen.value = !isOpen.value
@@ -50,13 +109,6 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 	function handleClose(): void {
 		searchQuery.value = ''
 		onBlur()
-	}
-
-	function isSelected(value: string | number): boolean {
-		if (props.isMultiple) {
-			return Array.isArray(props.modelValue) && props.modelValue.includes(value)
-		}
-		return props.modelValue === value
 	}
 
 	function handleSelect(option: BaseSelectOption): void {
@@ -81,6 +133,12 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 		}
 	}
 
+	/** Выбор активной опции (Enter/Space); без активной опции ничего не происходит */
+	function selectActive(): void {
+		const option = filteredOptions.value[activeIndex.value]
+		if (option) handleSelect(option)
+	}
+
 	function removeValue(value: string | number): void {
 		if (!Array.isArray(props.modelValue)) return
 		const targetValue = resolveOptionValue(value)
@@ -98,15 +156,21 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 	return {
 		isOpen,
 		searchQuery,
+		activeIndex,
 		selectedOption,
 		selectedLabel,
 		selectedItems,
 		selectedLabels,
 		filteredOptions,
+		openDropdown,
 		toggleDropdown,
 		handleClose,
 		isSelected,
 		handleSelect,
+		selectActive,
+		moveActive,
+		setActiveEdge,
+		setActive,
 		removeValue,
 	}
 }

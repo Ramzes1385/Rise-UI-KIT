@@ -67,6 +67,88 @@ describe('BaseCard unit', () => {
 		})
 	})
 
+	describe('пропс padding', () => {
+		it('не должен выставлять inline-переменные без пропа: отступы берутся из стилей (16px 20px)', () => {
+			const { container } = render(BaseCard, { props: { title: 'Отчёт' } })
+
+			const card = container.querySelector('.base-card') as HTMLElement
+			expect(card.style.getPropertyValue('--card-pad-top')).toBe('')
+			expect(card.style.getPropertyValue('--card-pad-left')).toBe('')
+		})
+
+		it('должен выставлять отступы из числа: по вертикали n, по горизонтали 2n', () => {
+			const { container } = render(BaseCard, { props: { padding: 8 } })
+
+			const card = container.querySelector('.base-card') as HTMLElement
+			expect(card.style.getPropertyValue('--card-pad-top')).toBe('8px')
+			expect(card.style.getPropertyValue('--card-pad-left')).toBe('16px')
+		})
+
+		it('должен выставлять нулевые отступы при padding=0', () => {
+			const { container } = render(BaseCard, { props: { padding: 0 } })
+
+			const card = container.querySelector('.base-card') as HTMLElement
+			expect(card.style.getPropertyValue('--card-pad-top')).toBe('0px')
+			expect(card.style.getPropertyValue('--card-pad-right')).toBe('0px')
+		})
+
+		it('должен выставлять отступы из объекта: оси напрямую, стороны переопределяют оси', () => {
+			const { container } = render(BaseCard, { props: { padding: { x: 32, y: 12, top: 4 } } })
+
+			const card = container.querySelector('.base-card') as HTMLElement
+			expect(card.style.getPropertyValue('--card-pad-top')).toBe('4px')
+			expect(card.style.getPropertyValue('--card-pad-bottom')).toBe('12px')
+			expect(card.style.getPropertyValue('--card-pad-left')).toBe('32px')
+		})
+	})
+
+	describe('шапка', () => {
+		it('не должен рендерить шапку без title, subtitle и слотов header/actions', () => {
+			const { container } = render(BaseCard, { slots: { default: 'Контент' } })
+
+			expect(container.querySelector('.base-card__header')).not.toBeInTheDocument()
+		})
+
+		it('должен рендерить шапку только с подзаголовком', () => {
+			const { container } = render(BaseCard, { props: { subtitle: 'Обновлён 15 мая' } })
+
+			expect(container.querySelector('.base-card__header')).toBeInTheDocument()
+			expect(container.querySelector('.base-card__title')).not.toBeInTheDocument()
+		})
+	})
+
+	describe('пропс height', () => {
+		it('должен обрезать тело (модификатор --truncate) при height без scroll', () => {
+			const { container } = render(BaseCard, { props: { height: '160px' } })
+
+			const card = container.querySelector('.base-card') as HTMLElement
+			expect(card).toHaveClass('base-card--truncate')
+			expect(card.style.getPropertyValue('--card-height')).toBe('160px')
+		})
+
+		it('должен прокручивать тело (модификатор --scroll) вместо обрезки при scroll', () => {
+			const { container } = render(BaseCard, { props: { height: '160px', scroll: true } })
+
+			const card = container.querySelector('.base-card') as HTMLElement
+			expect(card).toHaveClass('base-card--scroll')
+			expect(card).not.toHaveClass('base-card--truncate')
+		})
+	})
+
+	describe('пропс scroll', () => {
+		it('должен делать прокручиваемое тело фокусируемым, чтобы его можно было прокрутить с клавиатуры', () => {
+			const { container } = render(BaseCard, { props: { height: '200px', scroll: true } })
+
+			expect(container.querySelector('.base-card__body')).toHaveAttribute('tabindex', '0')
+		})
+
+		it('не должен добавлять тело в порядок Tab без scroll', () => {
+			const { container } = render(BaseCard, { props: { height: '200px' } })
+
+			expect(container.querySelector('.base-card__body')).not.toHaveAttribute('tabindex')
+		})
+	})
+
 	describe('пропс isHoverable', () => {
 		it('должен добавлять класс --hoverable когда isHoverable=true', () => {
 			const { container } = render(BaseCard, { props: { isHoverable: true } })
@@ -89,6 +171,15 @@ describe('BaseCard unit', () => {
 
 			expect(container.querySelector('.base-card__footer')).toBeInTheDocument()
 			expect(screen.getByText('Действие')).toBeInTheDocument()
+		})
+
+		it('подвал — не ориентир contentinfo: несколько карточек на странице не дают дублей ориентиров', () => {
+			const { container } = render(BaseCard, {
+				slots: { footer: '<button>Действие</button>' },
+			})
+
+			expect(container.querySelector('footer')).toBeNull()
+			expect(container.querySelector('.base-card__footer')?.tagName).toBe('DIV')
 		})
 
 		it('не должен рендерить footer когда слот не передан', () => {

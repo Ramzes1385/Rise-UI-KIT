@@ -1,9 +1,10 @@
 <template>
-	<div
+	<!-- nav, а не div: aria-label на элементе без роли не озвучивается, и ориентир навигации не появлялся -->
+	<nav
 		class="base-breadcrumbs"
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:aria-label="UI_ARIA.BREADCRUMBS">
+		:aria-label="UI_ARIA.BREADCRUMBS_NAV">
 		<!-- Schema.org JSON-LD для SEO. v-html безопасен: schemaJson экранирует </script> (см. schemaUtils). -->
 		<!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
 		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
@@ -18,18 +19,15 @@
 				itemscope
 				itemtype="https://schema.org/ListItem">
 				<slot name="home">
-					<BaseButton
-						variant="ghost"
-						:padding="2"
-						class="base-breadcrumbs__link"
-						:custom-class="classes.link"
-						:size-scale="sizeScale"
+					<!-- Кнопка содержит только декоративную иконку, имя берём у крошки, на которую она ведёт -->
+					<button
+						type="button"
+						class="base-breadcrumbs__link base-breadcrumbs__link--home"
+						:class="classes.link"
+						:aria-label="items[0]?.label"
 						@click="handleHomeClick">
-						<BaseIcon
-							:name="homeIcon"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							:custom-class="classes.homeIcon" />
-					</BaseButton>
+						<BaseIcon :name="homeIcon" :size-scale="iconScale" :custom-class="classes.homeIcon" />
+					</button>
 				</slot>
 				<meta itemprop="position" content="1" />
 				<span class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
@@ -46,15 +44,13 @@
 			<!-- Скрытые элементы (многоточие) -->
 			<template v-if="collapsedItems.length > 0">
 				<li class="base-breadcrumbs__item base-breadcrumbs__item--ellipsis" :class="classes.item">
-					<BaseButton
-						variant="ghost"
-						:padding="2"
-						class="base-breadcrumbs__ellipsis-btn"
-						:custom-class="classes.ellipsisBtn"
-						:size-scale="sizeScale"
+					<button
+						type="button"
+						class="base-breadcrumbs__link base-breadcrumbs__ellipsis-btn"
+						:class="classes.ellipsisBtn"
 						@click="isExpanded = true">
 						…
-					</BaseButton>
+					</button>
 				</li>
 				<li class="base-breadcrumbs__item" :class="classes.item" aria-hidden="true">
 					<span class="base-breadcrumbs__sep" :class="classes.separator">
@@ -79,43 +75,28 @@
 				itemscope
 				itemtype="https://schema.org/ListItem">
 				<slot name="item" :item="item" :index="realIndex(index)">
-					<BaseButton
+					<button
 						v-if="!isCurrent(index)"
-						variant="ghost"
-						:padding="4"
+						type="button"
 						class="base-breadcrumbs__link"
-						:custom-class="classes.link"
-						:size-scale="sizeScale"
+						:class="classes.link"
 						@click="handleItemClick(item)">
 						<BaseIcon
 							v-if="item.icon"
 							:name="item.icon"
-							:size-scale="calcIconScale('xs', sizeScale)"
+							:size-scale="iconScale"
 							class="base-breadcrumbs__icon"
 							:custom-class="classes.itemIcon" />
-						<BaseText
-							tag="span"
-							:size-scale="calcIconScale('sm', sizeScale)"
-							itemprop="name"
-							:custom-class="classes.itemText"
-							>{{ item.label }}</BaseText
-						>
-					</BaseButton>
+						<span class="base-breadcrumbs__text" :class="classes.itemText" itemprop="name">{{ item.label }}</span>
+					</button>
 					<span v-else class="base-breadcrumbs__current" :class="classes.current" aria-current="page">
 						<BaseIcon
 							v-if="item.icon"
 							:name="item.icon"
-							:size-scale="calcIconScale('xs', sizeScale)"
+							:size-scale="iconScale"
 							class="base-breadcrumbs__icon"
 							:custom-class="classes.currentIcon" />
-						<BaseText
-							tag="span"
-							:weight="UI_FONT_WEIGHT.SEMIBOLD"
-							:size-scale="calcIconScale('sm', sizeScale)"
-							itemprop="name"
-							:custom-class="classes.currentText"
-							>{{ item.label }}</BaseText
-						>
+						<span class="base-breadcrumbs__text" :class="classes.currentText" itemprop="name">{{ item.label }}</span>
 					</span>
 				</slot>
 				<meta :itemprop="'url'" :content="item.to || item.href || ''" />
@@ -132,16 +113,14 @@
 				</span>
 			</li>
 		</ol>
-	</div>
+	</nav>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_ARIA, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
@@ -179,16 +158,25 @@ defineSlots<BaseBreadcrumbsSlots>()
 
 const isExpanded = ref(false)
 
+/** Иконки крошек и «дома» — 16px при sizeScale = 100 */
+const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
+
+/**
+ * Крошки после кнопки «домой». При showHome первую крошку представляет сама кнопка, поэтому в цепочке её нет
+ * (иначе «Главная» выводилась дважды). Единственная крошка остаётся в цепочке: это текущая страница.
+ */
+const trailItems = computed<BreadcrumbItem[]>(() => (props.showHome && props.items.length > 1 ? props.items.slice(1) : props.items))
+
 const visibleItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return props.items
-	if (props.items.length <= props.maxItems) return props.items
-	return props.items.slice(-props.maxItems)
+	if (props.maxItems <= 0 || isExpanded.value) return trailItems.value
+	if (trailItems.value.length <= props.maxItems) return trailItems.value
+	return trailItems.value.slice(-props.maxItems)
 })
 
 const collapsedItems = computed<BreadcrumbItem[]>(() => {
 	if (props.maxItems <= 0 || isExpanded.value) return []
-	if (props.items.length <= props.maxItems) return []
-	return props.items.slice(0, -props.maxItems)
+	if (trailItems.value.length <= props.maxItems) return []
+	return trailItems.value.slice(0, -props.maxItems)
 })
 
 /** Schema.org JSON-LD для SEO */

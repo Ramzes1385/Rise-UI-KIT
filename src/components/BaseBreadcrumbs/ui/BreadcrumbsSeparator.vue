@@ -1,25 +1,15 @@
 <template>
-	<BaseIcon
-		v-if="separator === 'chevron'"
-		name="chevron-right"
-		:size-scale="calcIconScale('xs', sizeScale)"
-		:custom-class="separatorIconClass" />
-	<BaseText v-else-if="separator === 'slash'" :size-scale="sizeScale" :custom-class="separatorTextClass"
-		>/</BaseText
-	>
-	<BaseText v-else-if="separator === 'dot'" :size-scale="sizeScale" :custom-class="separatorTextClass"
-		>•</BaseText
-	>
+	<span v-if="separator === 'slash'" class="base-breadcrumbs__sep-text" :class="separatorTextClass">/</span>
+	<span v-else-if="separator === 'dot'" class="base-breadcrumbs__sep-text" :class="separatorTextClass">•</span>
 	<BaseIcon
 		v-else
-		name="chevron-right"
-		:size-scale="calcIconScale('xs', sizeScale)"
+		:name="separator === 'arrow' ? 'arrow-right' : 'chevron-right'"
+		:size-scale="calcIconScale('sm', sizeScale)"
 		:custom-class="separatorIconClass" />
 </template>
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import type { BreadcrumbsSeparatorProps } from '../model/BreadcrumbsSeparator.types'
 

@@ -821,6 +821,29 @@ describe('useCalendar', () => {
 
 			expect(cal.internalSelectedDates.value).toHaveLength(2)
 		})
+
+		it('должен брать время из modelValue и при заданном initialMonth, не меняя отображаемый месяц', async () => {
+			const modelValue = ref<Date | null>(new Date(2025, 6, 10, 14, 30, 15))
+			const cal = useCalendar(
+				createOptions({
+					modelValue: () => modelValue.value,
+					initialMonth: () => 5,
+					initialYear: () => 2025,
+				}),
+			)
+
+			expect(cal.hours.value).toBe(14)
+			expect(cal.minutes.value).toBe(30)
+			expect(cal.seconds.value).toBe(15)
+			expect(cal.currentMonth.value).toBe(5)
+
+			modelValue.value = new Date(2025, 6, 11, 9, 5, 0)
+			await nextTick()
+
+			expect(cal.hours.value).toBe(9)
+			expect(cal.minutes.value).toBe(5)
+			expect(cal.currentMonth.value).toBe(5)
+		})
 	})
 
 	describe('isOutOfRange', () => {

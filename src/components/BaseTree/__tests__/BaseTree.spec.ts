@@ -219,6 +219,27 @@ describe('BaseTree unit', () => {
 
 			expect(emitted()['update:selectedIds']).toBeFalsy()
 		})
+
+		it('чекбокс в режиме multiple назван меткой узла, у отключённого узла он заблокирован', () => {
+			render(BaseTree, {
+				props: { items: DISABLED_ITEMS, selectionMode: 'multiple' },
+				slots: { label: DEFAULT_SLOT },
+			})
+
+			expect(screen.getByRole('checkbox', { name: 'Доступный' })).toBeEnabled()
+			expect(screen.getByRole('checkbox', { name: 'Отключённый' })).toBeDisabled()
+		})
+
+		it('заголовок отключённого узла помечен aria-disabled, у доступного атрибута нет', () => {
+			const { container } = render(BaseTree, {
+				props: { items: DISABLED_ITEMS },
+				slots: { label: DEFAULT_SLOT },
+			})
+
+			const [enabledHeader, disabledHeader] = container.querySelectorAll('.base-tree__header')
+			expect(enabledHeader).not.toHaveAttribute('aria-disabled')
+			expect(disabledHeader).toHaveAttribute('aria-disabled', 'true')
+		})
 	})
 
 	describe('пропс isDefaultExpandAll', () => {

@@ -1,26 +1,19 @@
 /**
- * Visual regression тесты для BaseSwitch.
- * Скриншоты всех состояний через Playwright + Storybook.
+ * Visual regression BaseSwitch: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baseswitch'
-const STORIES = [
-	'default',
-	'checked',
-	'disabled',
-	'disabled-checked',
-	'hover-state',
-	'focus-state',
-	'interactive-states',
-	'dark-theme',
-]
+const STORIES = ['variants', 'sizes', 'with-error', 'disabled', 'reverse', 'long-content'] as const
 
-for (const story of STORIES) {
-	test(`BaseSwitch — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-switch--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSwitch · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baseswitch--${story}`, { theme, height: 360 })
+				await expectStoryScreenshot(page, `base-switch-${story}-${theme}.png`)
+			})
+		}
 	})
 }

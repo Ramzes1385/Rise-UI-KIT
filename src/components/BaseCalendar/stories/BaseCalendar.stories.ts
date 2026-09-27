@@ -1,1561 +1,501 @@
-﻿/**
- * Stories для компонента BaseCalendar.
- * Демонстрирует все вариации: single, range, multiple, time, highlights, disabled.
+/**
+ * BaseCalendar — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) → состояния (disabled,
+ * ограничения дат) → режимы выбора (диапазон, несколько дат) → время → содержимое (номера недель, локаль, события,
+ * слот day) → сценарий смены вида → клавиатура. Все даты — вокруг STORY_TODAY (15 мая 2025).
  */
 
-import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	STORY_TODAY,
+	storyDate,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { CALENDAR_VARIANTS } from '../model/BaseCalendar.types'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const now = new Date()
-const y = now.getFullYear()
-const m = now.getMonth()
+type Canvas = ReturnType<typeof within>
 
-const HIGHLIGHTS: CalendarHighlight[] = [
-	{ date: new Date(y, m, 5), color: 'var(--color-accent)', label: 'Встреча с клиентом' },
-	{ date: new Date(y, m, 12), color: 'var(--color-success)', label: 'Дедлайн проекта' },
-	{ date: new Date(y, m, 15), color: '#ff6b6b', label: 'День рождения' },
-	{ date: new Date(y, m, 22), color: 'var(--color-primary)', label: 'Ревью кода' },
-]
+/** Полная дата, как в доступном имени дня: «четверг, 15 мая 2025 г.». */
+const DAY_NAME = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
-const WEEKENDS: CalendarWeekends = {
-	days: [0, 6],
-	holidays: [
-		new Date(y, 0, 1),
-		new Date(y, 0, 7),
-		new Date(y, 2, 8),
-		new Date(y, 4, 1),
-		new Date(y, 4, 9),
-		new Date(y, 5, 12),
-		new Date(y, 10, 4),
-		new Date(y, 11, 31),
-	],
+/** Кнопка дня по смещению от STORY_TODAY. После даты в имени могут идти события дня — сравниваем начало имени. */
+function getDay(canvas: Canvas, days: number): HTMLElement {
+	const name = DAY_NAME.format(storyDate(days))
+	return canvas.getByRole('button', { name: (accessibleName: string) => accessibleName.startsWith(name) })
 }
 
-const meta: Meta<typeof BaseCalendar> = {
-	title: 'UI/BaseCalendar',
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}
+
+/** События мая: точки под датами и список в popover дня. */
+const HIGHLIGHTS: CalendarHighlight[] = [
+	{ date: storyDate(-6), color: 'var(--rise-info)', label: 'Созвон с заказчиком' },
+	{ date: storyDate(5), color: 'var(--rise-success)', label: 'Сдача монтажа' },
+	{ date: storyDate(5), color: 'var(--rise-warning)', label: 'Ревью субтитров' },
+	{ date: storyDate(12), color: 'var(--rise-error)', label: 'Релиз серии' },
+]
+
+/** Выходные — суббота и воскресенье, праздники — 1 и 9 мая. */
+const WEEKENDS: CalendarWeekends = {
+	days: [0, 6],
+	holidays: [storyDate(-14), storyDate(-6)],
+}
+
+/** Цена ночи для примера со слотом day: выходные дороже. */
+function nightPrice(date: Date): string {
+	const day = date.getDay()
+	return day === 0 || day === 6 ? '4 200' : '3 100'
+}
+
+/**
+ * Render сценариев: значения живут в локальных ref, а не в args. Обновление args перерисовывает story асинхронно и
+ * сбрасывает spy событий, поэтому play-проверки событий и последовательных кликов опираются на локальное состояние.
+ */
+function renderWithLocalModel(
+	template = '<BaseCalendar v-bind="props" v-model="value" v-model:model-value-end="valueEnd" v-model:selected-dates="dates" />',
+): NonNullable<Story['render']> {
+	return args => ({
+		components: { BaseCalendar },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'modelValueEnd', 'selectedDates']),
+			value: ref<Date | null>(args.modelValue ?? null),
+			valueEnd: ref<Date | null>(args.modelValueEnd ?? null),
+			dates: ref<Date[]>(args.selectedDates ?? []),
+			nightPrice,
+		}),
+		template,
+	})
+}
+
+const meta = {
+	title: 'Data/BaseCalendar',
 	component: BaseCalendar,
-		argTypes: buildArgTypes({
-		props: {
-			modelValue: {
-				control: 'date',
-				description: 'Выбранная дата или начало диапазона. Пример: `v-model="date"`',
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Календарь для выбора даты, диапазона или нескольких дат — при необходимости со временем.',
+					'',
+					'- Режим — `selectionMode`: `single` (`v-model`), `range` (`v-model` + `v-model:model-value-end`, событие',
+					'  `range-select`), `multiple` (`v-model:selected-dates`).',
+					'- Настройки сгруппированы: `constraints` — недоступные даты, `timeConfig` — блок времени (24/12 ч, секунды,',
+					'  `v-model:is-am`), `displayConfig` — навигация, смена вида, «Сегодня», год, номера недель.',
+					'- Заголовок переключает вид: дни → месяцы → годы. Дни — кнопки с полной датой в имени; выбранные помечены',
+					'  `aria-pressed`, сегодняшний день — `aria-current="date"`.',
+					'- `highlights` ставит точки-события под датами, `weekends` выделяет выходные и праздники, `showDatePopover`',
+					'  показывает дату и события дня по клику.',
+					'',
+					'Поле с выпадающим календарём — `BaseDatePicker`.',
+				].join('\n'),
 			},
-			modelValueEnd: {
-				control: 'date',
-				description: 'Конец диапазона (для range). Пример: `v-model:model-value-end="endDate"`',
-			},
-			selectedDates: {
-				control: 'object',
-				description: 'Массив выбранных дат (для multiple). Пример: `v-model:selected-dates="dates"`',
-			},
-			variant: {
-				control: 'radio',
-				options: CALENDAR_VARIANTS,
-				description: 'Вариант отображения календаря. Пример: `variant="outline"`',
-			},
-			selectionMode: {
-				control: 'radio',
-				options: ['single', 'range', 'multiple'],
-				description: 'Режим выбора: одна дата, диапазон или несколько дат. Пример: `selection-mode="range"`',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера компонента (в %). Пример: `:size-scale="150"`',
-			},
-			firstDayOfWeek: {
-				control: 'radio',
-				options: [0, 1],
-				description: 'Первый день недели: 0 (Вс) или 1 (Пн). Пример: `:first-day-of-week="0"`',
-			},
-			locale: {
-				control: 'text',
-				description: 'Локаль для форматирования дат (например, ru-RU). Пример: `locale="en-US"`',
-			},
-			'timeConfig.showTime': {
-				control: 'boolean',
-				description: 'Показывать блок выбора времени. Пример: `:time-config="{ showTime: true }"`',
-			},
-			'timeConfig.showSeconds': {
-				control: 'boolean',
-				description: 'Показывать выбор секунд. Пример: `:time-config="{ showSeconds: true }"`',
-			},
-			'timeConfig.is24Hour': {
-				control: 'boolean',
-				description: 'Использовать 24-часовой формат времени. Пример: `:time-config="{ is24Hour: false }"`',
-			},
-			'displayConfig.showWeekNumber': {
-				control: 'boolean',
-				description: 'Отображать номера недель. Пример: `:display-config="{ showWeekNumber: true }"`',
-			},
-			'displayConfig.showNavigation': {
-				control: 'boolean',
-				description: 'Отображать кнопки переключения месяцев/лет в шапке. Пример: `:display-config="{ showNavigation: false }"`',
-			},
-			'displayConfig.canSwitchView': {
-				control: 'boolean',
-				description:
-					'Разрешить смену вида (дни/месяцы/годы) при клике на заголовок. Пример: `:display-config="{ canSwitchView: false }"`',
-			},
-			'displayConfig.showTodayButton': {
-				control: 'boolean',
-				description: 'Отображать кнопку "Сегодня" в подвале. Пример: `:display-config="{ showTodayButton: false }"`',
-			},
-			'displayConfig.showYear': {
-				control: 'boolean',
-				description: 'Отображать год в заголовке. Пример: `:display-config="{ showYear: false }"`',
-			},
-			'constraints.minDate': {
-				control: 'date',
-				description: 'Минимально допустимая дата для выбора. Пример: `:constraints="{ minDate: new Date(2024, 0, 1) }"`',
-			},
-			'constraints.maxDate': {
-				control: 'date',
-				description: 'Максимально допустимая дата для выбора. Пример: `:constraints="{ maxDate: new Date() }"`',
-			},
-			'constraints.disabledDates': {
-				control: 'object',
-				description: 'Список отключенных дат. Пример: `:constraints="{ disabledDates: [new Date()] }"`',
-			},
-			'constraints.disabledWeekdays': {
-				control: 'object',
-				description: 'Отключенные дни недели (0-6). Пример: `:constraints="{ disabledWeekdays: [0, 6] }"`',
-			},
-			'constraints.disableFrom': {
-				control: 'date',
-				description: 'Отключить даты начиная с указанной. Пример: `:constraints="{ disableFrom: new Date() }"`',
-			},
-			'constraints.disableTo': {
-				control: 'date',
-				description: 'Отключить даты до указанной. Пример: `:constraints="{ disableTo: new Date() }"`',
-			},
-			highlights: {
-				control: 'object',
-				description: 'Выделенные даты. Пример: `:highlights="[{ date: new Date(), color: \'red\' }]"`',
-			},
-			events: {
-				control: 'object',
-				description: 'События календаря. Пример: `:events="[{ date: new Date(), label: \'Meeting\' }]"`',
-			},
-			weekends: {
-				control: 'object',
-				description: 'Конфигурация выходных. Пример: `:weekends="{ days: [0, 6], holidays: [] }"`',
-			},
-			color: {
-				control: 'object',
-				description:
-					'Кастомная цветовая схема { bg: ColorStates, text: ColorStates }. Пример: `:color="{ bg: { base: \'red\' } }"`',
-			},
-			initialMonth: {
-				control: 'number',
-				description: 'Начальный месяц (0-11). Пример: `:initial-month="0"`',
-			},
-			initialYear: {
-				control: 'number',
-				description: 'Начальный год. Пример: `:initial-year="2025"`',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
+	},
+	argTypes: {
+		...baseArgTypes({ variants: CALENDAR_VARIANTS }),
+		modelValue: { control: false, table: propGroup(ARG_GROUP.content) },
+		modelValueEnd: { control: false, table: propGroup(ARG_GROUP.content) },
+		selectedDates: { control: false, table: propGroup(ARG_GROUP.content) },
+		highlights: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		weekends: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		initialMonth: { control: { type: 'number', min: 0, max: 11 }, table: propGroup(ARG_GROUP.content) },
+		initialYear: { control: 'number', table: propGroup(ARG_GROUP.content) },
+		displayConfig: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		constraints: { control: 'object', table: propGroup(ARG_GROUP.state) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		selectionMode: { control: 'inline-radio', options: ['single', 'range', 'multiple'], table: propGroup(ARG_GROUP.behavior) },
+		timeConfig: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+		isAm: { control: false, table: propGroup(ARG_GROUP.behavior) },
+		firstDayOfWeek: { control: 'inline-radio', options: [1, 0], table: propGroup(ARG_GROUP.behavior) },
+		locale: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+		showDatePopover: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		// events и слоты event/navigation объявлены, но не реализованы (аудит, CAL-6)
+		...hiddenArgTypes('events', 'event', 'navigation'),
+	},
 	args: {
 		selectionMode: 'single',
 		variant: 'default',
 		sizeScale: 100,
-		firstDayOfWeek: 1,
 		locale: 'ru-RU',
-		timeConfig: { showTime: false, showSeconds: false, is24Hour: true },
-		displayConfig: { showWeekNumber: false, showNavigation: true, canSwitchView: true, showTodayButton: true, showYear: true },
+		firstDayOfWeek: 1,
+		initialMonth: STORY_TODAY.getMonth(),
+		initialYear: STORY_TODAY.getFullYear(),
 		showDatePopover: false,
 		isDisabled: false,
+		'onUpdate:modelValue': fn(),
+		'onDate-click': fn(),
+		'onMonth-change': fn(),
+		'onView-change': fn(),
 	},
-}
+	// Значение хранится в args: выбор дня обновляет Controls, а изменение args — календарь.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseCalendar },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: '<BaseCalendar v-bind="props" @update:model-value="onUpdate" />',
+		}
+	},
+} satisfies Meta<typeof BaseCalendar>
 
 export default meta
-type Story = StoryObj<typeof BaseCalendar>
-/** Базовое состояние с навигацией с клавиатуры */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: выберите день или меняйте props в Controls — значение синхронизировано с args (v-model). */
 export const Default: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выбрано: {{ value?.toLocaleDateString('ru-RU') ?? '—' }}
-			</p>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка календаря по Tab', async () => {
-			await userEvent.tab()
-			await waitFor(() => {
-				const grid = canvasElement.querySelector('.base-calendar__grid')
-				expect(grid).toBeInTheDocument()
-			})
-		})
-
-		await step('Навигация по датам стрелками', async () => {
-			await userEvent.keyboard('{ArrowRight}')
-			await userEvent.keyboard('{ArrowDown}')
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { role: 'grid' })
-		})
-	},
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar v-model="value" />',
-			},
-		},
+	args: { modelValue: storyDate(0, 0, 0) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(getDay(canvas, 5))
+		// Значение прошло через args и вернулось в modelValue: выбран новый день, прежний — нет
+		await waitFor(() => expect(getDay(canvas, 5)).toHaveAttribute('aria-pressed', 'true'))
+		await expect(getDay(canvas, 0)).toHaveAttribute('aria-pressed', 'false')
 	},
 }
-/** Все визуальные варианты календаря */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Пять вариантов поверхности: `default` — рамка; `outline` — рамка заметнее; `soft` — мягкий фон без рамки;
+ * `ghost` — без фона и рамки (календарь внутри карточки или панели); `shadow` — рамка и тень.
+ */
 export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'selectionMode'] },
+		docs: { source: { code: CALENDAR_VARIANTS.map(variant => `<BaseCalendar v-model="date" variant="${variant}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseCalendar },
-		setup() {
-			return { args, CALENDAR_VARIANTS }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'variant', 'onUpdate:modelValue']),
+			variants: CALENDAR_VARIANTS,
+			values: ref<Record<string, Date | null>>(Object.fromEntries(CALENDAR_VARIANTS.map(variant => [variant, storyDate(0, 0, 0)]))),
+		}),
 		template: `
-			<div style="display: flex; gap: 24px; flex-wrap: wrap;">
-				<div v-for="v in CALENDAR_VARIANTS" :key="v">
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">{{ v }}</p>
-					<BaseCalendar v-bind="args" :variant="v" />
+			<div class="story-row">
+				<div v-for="variant in variants" :key="variant" class="story-col">
+					<span class="story-label">{{ variant }}</span>
+					<BaseCalendar v-bind="props" v-model="values[variant]" :variant="variant" />
 				</div>
 			</div>
 		`,
 	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<div v-for="v in CALENDAR_VARIANTS" :key="v">
-  <BaseCalendar :variant="v" />
-</div>`,
-			},
-		},
-	},
 }
-/** Масштабирование размера через sizeScale */
-export const SizeScale: Story = {
+
+/** Размеры через `sizeScale`: день и кнопки шапки — 24, 28, 32, 36 и 40px, как высота кнопки того же размера. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseCalendar v-model="date" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseCalendar },
-		setup() {
-			return { args }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref<Record<string, Date | null>>(Object.fromEntries(SIZE_PRESETS.map(p => [p.name, storyDate(0, 0, 0)]))),
+		}),
 		template: `
-			<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
-				<div v-for="scale in [75, 100, 150]" :key="scale">
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">{{ scale }}%</p>
-					<BaseCalendar v-bind="args" :size-scale="scale" />
+			<div class="story-row" style="align-items: flex-start;">
+				<div v-for="preset in presets" :key="preset.name" class="story-col">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseCalendar v-bind="props" v-model="values[preset.name]" :size-scale="preset.sizeScale" :display-config="{ showTodayButton: false }" />
 				</div>
 			</div>
 		`,
 	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :size-scale="75" />
-<BaseCalendar :size-scale="100" />
-<BaseCalendar :size-scale="150" />`,
-			},
-		},
-	},
 }
-/** Отключённое состояние */
-export const Disabled: Story = {
+
+/**
+ * Кастомный цвет через `color`: `bg.base`/`text.base` — поверхность и числа, `bg.hover` — наведение на день,
+ * `bg.active`/`text.active` — выбранный день. Кнопки навигации и «Сегодня» цвет не наследуют.
+ */
+export const CustomColor: Story = {
 	args: {
-		isDisabled: true,
-	},
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar is-disabled />',
-			},
+		modelValue: storyDate(0, 0, 0),
+		color: {
+			bg: { base: 'var(--rise-success-soft)', hover: 'var(--rise-success-soft-hover)', active: 'var(--rise-success)' },
+			text: { base: 'var(--rise-success-text)', active: 'var(--rise-on-success)' },
 		},
 	},
+	play: async ({ canvas }) => {
+		const selected = getDay(canvas, 0)
+		await expect(getComputedStyle(selected).backgroundColor).toBe(resolveColor('var(--rise-success)'))
+		await expect(getComputedStyle(getDay(canvas, 1)).color).toBe(resolveColor('var(--rise-success-text)'))
+		const calendar = selected.closest('.base-calendar') as HTMLElement
+		await expect(getComputedStyle(calendar).backgroundColor).toBe(resolveColor('var(--rise-success-soft)'))
+		// Вложенная ghost-кнопка остаётся прозрачной: color красит календарь, а не кнопки внутри
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Следующий месяц' })).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+	},
 }
-/** Выбор диапазона дат */
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Отключённый календарь: приглушён целиком, дни и кнопки шапки недоступны. */
+export const Disabled: Story = {
+	args: { modelValue: storyDate(0, 0, 0), isDisabled: true },
+	play: async ({ canvas }) => {
+		for (const button of canvas.getAllByRole('button')) {
+			await expect(button).toBeDisabled()
+		}
+	},
+}
+
+/**
+ * Ограничения `constraints`: даты вне `minDate`…`maxDate`, дни недели `disabledWeekdays` и даты `disabledDates`
+ * недоступны — текст приглушён, наведения и клика нет.
+ */
+export const Constraints: Story = {
+	args: {
+		modelValue: storyDate(0, 0, 0),
+		constraints: {
+			minDate: storyDate(-10, 0, 0),
+			maxDate: storyDate(20, 0, 0),
+			disabledWeekdays: [0, 6],
+			disabledDates: [storyDate(6, 0, 0)],
+		},
+	},
+	play: async ({ canvas }) => {
+		await expect(getDay(canvas, -13)).toBeDisabled()
+		await expect(getDay(canvas, -10)).toBeEnabled()
+		await expect(getDay(canvas, 2)).toBeDisabled()
+		await expect(getDay(canvas, 6)).toBeDisabled()
+		await expect(getDay(canvas, 21)).toBeDisabled()
+	},
+}
+
+// ─── Режимы выбора ─────────────────────────────────────────────────────────────
+
+/**
+ * Диапазон (`selectionMode="range"`): первый клик — начало, второй — конец и событие `range-select`. Дни внутри —
+ * полоса мягкого основного цвета, концы — заливка. Клик раньше начала меняет концы местами.
+ */
 export const RangeSelection: Story = {
 	args: {
 		selectionMode: 'range',
+		modelValue: storyDate(-3, 0, 0),
+		modelValueEnd: storyDate(3, 0, 0),
+		'onUpdate:modelValueEnd': fn(),
+		'onRange-select': fn(),
 	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const start = ref<Date | null>(null)
-			const end = ref<Date | null>(null)
-			return { args, start, end }
-		},
-		template: `
-			<BaseCalendar
-				v-bind="args"
-				v-model="start"
-				v-model:model-value-end="end"
-			/>
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Начало: {{ start?.toLocaleDateString('ru-RU') ?? '—' }} В·
-				Конец: {{ end?.toLocaleDateString('ru-RU') ?? '—' }}
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar selection-mode="range" v-model="start" v-model:model-value-end="end" />`,
-			},
-		},
+	render: renderWithLocalModel(),
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(getDay(canvas, 0)).toHaveAttribute('aria-pressed', 'true')
+		await userEvent.click(getDay(canvas, 8))
+		await userEvent.click(getDay(canvas, 4))
+		await expect(args['onRange-select']).toHaveBeenLastCalledWith(storyDate(4, 0, 0), storyDate(8, 0, 0))
+		await expect(getDay(canvas, 6)).toHaveAttribute('aria-pressed', 'true')
+		await expect(getDay(canvas, 0)).toHaveAttribute('aria-pressed', 'false')
 	},
 }
-/** Выбор нескольких дат */
+
+/** Несколько дат (`selectionMode="multiple"`): клик добавляет дату в `selectedDates`, повторный — убирает. */
 export const MultipleSelection: Story = {
 	args: {
 		selectionMode: 'multiple',
+		selectedDates: [storyDate(-7, 0, 0), storyDate(0, 0, 0)],
+		'onUpdate:selectedDates': fn(),
 	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const selected = ref<Date[]>([])
-			return { args, selected }
-		},
-		template: `
-			<BaseCalendar
-				v-bind="args"
-				v-model:selected-dates="selected"
-			/>
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выбрано: {{ selected.length }} дат
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar selection-mode="multiple" v-model:selected-dates="selected" />`,
-			},
-		},
+	render: renderWithLocalModel(),
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(getDay(canvas, 5))
+		await expect(args['onUpdate:selectedDates']).toHaveBeenLastCalledWith([storyDate(-7, 0, 0), storyDate(0, 0, 0), storyDate(5, 0, 0)])
+		await userEvent.click(getDay(canvas, 0))
+		await expect(getDay(canvas, 0)).toHaveAttribute('aria-pressed', 'false')
+		await expect(getDay(canvas, 5)).toHaveAttribute('aria-pressed', 'true')
 	},
 }
-/** Выбор даты вместе со временем */
+
+// ─── Время ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Блок времени (`timeConfig.showTime`): поля часов, минут и секунд под сеткой. Значение меняется, когда ввод завершён
+ * (уход из поля); часы ограничены 0–23, минуты и секунды — 0–59.
+ */
 export const WithTime: Story = {
 	args: {
-		timeConfig: { showTime: true },
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date())
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выбрано: {{ value?.toLocaleString('ru-RU') ?? '—' }}
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar :time-config="{ showTime: true }" v-model="value" />',
-			},
-		},
-	},
-}
-/** Выбор времени с секундами */
-export const WithTimeAndSeconds: Story = {
-	args: {
+		modelValue: storyDate(0, 14, 30),
 		timeConfig: { showTime: true, showSeconds: true },
 	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date())
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выбрано: {{ value?.toLocaleString('ru-RU') ?? '—' }}
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar :time-config="{ showTime: true, showSeconds: true }" v-model="value" />',
-			},
-		},
+	render: renderWithLocalModel(),
+	play: async ({ canvas, userEvent, args }) => {
+		const minutes = canvas.getByLabelText('Минуты')
+		await userEvent.clear(minutes)
+		await userEvent.type(minutes, '45')
+		await userEvent.tab()
+		await expect(args['onUpdate:modelValue']).toHaveBeenLastCalledWith(storyDate(0, 14, 45))
 	},
 }
-/** 12-часовой формат времени с AM/PM */
+
+/**
+ * 12-часовой формат (`timeConfig.is24Hour: false`): часы 1–12 и переключатель AM/PM. Половина суток следует из
+ * значения (14:30 — это 2:30 PM), переключатель сдвигает время на 12 часов в пределах того же дня.
+ */
 export const Time12Hour: Story = {
 	args: {
-		timeConfig: { showTime: true, showSeconds: true, is24Hour: false },
+		modelValue: storyDate(0, 14, 30),
+		timeConfig: { showTime: true, is24Hour: false },
 	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date())
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выбрано: {{ value?.toLocaleString('en-US') ?? '—' }}
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar :time-config="{ showTime: true, showSeconds: true, is24Hour: false }" v-model="value" />',
-			},
-		},
+	render: renderWithLocalModel(),
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByLabelText('Часы')).toHaveValue(2)
+		const toggle = canvas.getByRole('button', { name: 'PM' })
+		await userEvent.click(toggle)
+		await expect(toggle).toHaveTextContent('AM')
+		await expect(args['onUpdate:modelValue']).toHaveBeenLastCalledWith(storyDate(0, 2, 30))
 	},
 }
-/** Подсветка дат с событиями */
-export const WithHighlights: Story = {
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Номера недель ISO (`displayConfig.showWeekNumber`) — колонка слева от сетки. */
+export const WeekNumbers: Story = {
+	args: { modelValue: storyDate(0, 0, 0), displayConfig: { showWeekNumber: true } },
+	play: async ({ canvasElement }) => {
+		const weeks = Array.from(canvasElement.querySelectorAll('.base-calendar__week-num'), cell => cell.textContent?.trim())
+		await expect(weeks).toEqual(['18', '19', '20', '21', '22', '23'])
+	},
+}
+
+/** Локаль и первый день недели: `locale="en-US"` и `:first-day-of-week="0"` — неделя с воскресенья. */
+export const Locale: Story = {
+	args: { modelValue: storyDate(0, 0, 0), locale: 'en-US', firstDayOfWeek: 0 },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: /may 2025/i })).toBeInTheDocument()
+		await expect(canvas.getByRole('button', { name: /May 15, 2025/ })).toHaveAttribute('aria-pressed', 'true')
+	},
+}
+
+/**
+ * События и выходные: `highlights` — точки под датами (цвет из данных), `weekends` — выходные и праздники красным.
+ * С `showDatePopover` клик по дню открывает popover с датой и событиями.
+ */
+export const Events: Story = {
+	args: { modelValue: null, highlights: HIGHLIGHTS, weekends: WEEKENDS, showDatePopover: true },
+	render: renderWithLocalModel(),
+	play: async ({ canvas, userEvent }) => {
+		const day = getDay(canvas, 5)
+		await expect(day).toHaveAccessibleName(/Сдача монтажа/)
+		await userEvent.click(day)
+		const event = await canvas.findByText('Ревью субтитров')
+
+		// Клик внутри popover его не закрывает, клик снаружи (по дням недели) — закрывает
+		await userEvent.click(event)
+		await expect(canvas.getByText('Ревью субтитров')).toBeVisible()
+		await userEvent.click(canvas.getByText('пн'))
+		await waitFor(() => expect(canvas.queryByText('Ревью субтитров')).not.toBeInTheDocument())
+
+		await userEvent.click(getDay(canvas, 5))
+		await expect(await canvas.findByText('Ревью субтитров')).toBeVisible()
+	},
+}
+
+/**
+ * Слот `day` заменяет содержимое ячейки — например, цена ночи под числом. Ячейка растягивается по содержимому,
+ * состояния (выбор, наведение, фокус) рисует календарь; в слот приходят `date`, `isSelected`, `isDisabled` и другие флаги.
+ */
+export const CustomDay: Story = {
 	args: {
-		highlights: HIGHLIGHTS,
+		modelValue: storyDate(0, 0, 0),
+		constraints: { minDate: storyDate(-5, 0, 0) },
+		displayConfig: { showTodayButton: false },
 	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Нажмите на подсвеченную дату, чтобы увидеть события
-			</p>
-		`,
-	}),
 	parameters: {
 		docs: {
 			source: {
-				code: `<BaseCalendar :highlights="highlights" v-model="value" />
-<!-- highlights: [{ date, color, label }] -->`,
+				code: [
+					'<BaseCalendar v-model="date">',
+					'  <template #day="{ date, isDisabled }">',
+					'    {{ date.getDate() }}',
+					'    <small v-if="!isDisabled">{{ price(date) }}</small>',
+					'  </template>',
+					'</BaseCalendar>',
+				].join('\n'),
 			},
 		},
 	},
-}
-/** Выделение выходных и праздников */
-export const WithWeekends: Story = {
-	args: {
-		weekends: WEEKENDS,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выходные и праздники выделены красным
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :weekends="weekends" v-model="value" />
-<!-- weekends: { days: [0, 6], holidays: [...] } -->`,
-			},
-		},
+	render: renderWithLocalModel(`
+		<BaseCalendar v-bind="props" v-model="value">
+			<template #day="{ date, isDisabled }">
+				{{ date.getDate() }}
+				<small v-if="!isDisabled" style="font-size: 10px; line-height: 12px;">{{ nightPrice(date) }}</small>
+			</template>
+		</BaseCalendar>
+	`),
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: /^15\s*3 100$/ })).toHaveAttribute('aria-pressed', 'true')
 	},
 }
-/** Отключённые отдельные даты */
-export const WithDisabledDates: Story = {
-	args: {
-		constraints: { disabledDates: [new Date(y, m, 10), new Date(y, m, 11), new Date(y, m, 12)] },
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Даты 10–12 числа отключены
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :constraints="{ disabledDates: [new Date(y, m, 10)] }" v-model="value" />`,
-			},
-		},
-	},
-}
-/** Отключение дат вне заданного диапазона */
-export const WithDisableRange: Story = {
-	args: {
-		constraints: { disableTo: new Date(y, m, 5), disableFrom: new Date(y, m, 25) },
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Доступны только даты с 6 по 24 число. Навигация к полностью отключённым месяцам заблокирована.
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :constraints="{ disableTo, disableFrom }" v-model="value" />`,
-			},
-		},
-	},
-}
-/** Ограничение навигации через minDate и maxDate */
-export const WithMinMax: Story = {
-	args: {
-		constraints: { minDate: new Date(y, m - 2, 1), maxDate: new Date(y, m + 2, 0) },
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Доступен диапазон: текущий месяц В±2. Навигация за пределы заблокирована.
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :constraints="{ minDate, maxDate }" v-model="value" />`,
-			},
-		},
-	},
-}
-/** Ограничение выбора дат диапазоном minDate–maxDate */
-export const WithMinMaxDates: Story = {
-	args: {
-		constraints: { minDate: new Date(y, m, 5), maxDate: new Date(y, m, 25) },
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date(y, m, 10))
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Доступны даты только с 5 по 25 число текущего месяца.
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			description: {
-				story:
-					'Параметры `minDate` и `maxDate` ограничивают диапазон доступных для выбора дат. Все даты вне этого диапазона становятся неактивными, а навигация блокируется, если в соседних месяцах нет доступных дат.',
-			},
-		},
-	},
-}
-/** Отображение номеров недель */
-export const WithWeekNumbers: Story = {
-	args: {
-		displayConfig: { showWeekNumber: true },
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar :display-config="{ showWeekNumber: true }" v-model="value" />',
-			},
-		},
-	},
-}
-/** Неделя начинается с воскресенья */
-export const SundayFirst: Story = {
-	args: {
-		firstDayOfWeek: 0,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Неделя начинается с воскресенья
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar :first-day-of-week="0" v-model="value" />',
-			},
-		},
-	},
-}
-/** Английская локаль форматирования */
-export const EnglishLocale: Story = {
-	args: {
-		locale: 'en-US',
-		firstDayOfWeek: 0,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar locale="en-US" :first-day-of-week="0" v-model="value" />`,
-			},
-		},
-	},
-}
-/** Всплывающее окно с событиями при клике на дату */
-export const WithDatePopover: Story = {
-	args: {
-		showDatePopover: true,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Нажмите на дату, чтобы увидеть popover
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseCalendar show-date-popover v-model="value" />',
-			},
-		},
-	},
-}
-/** Кастомный рендер ячейки дня через слот #day */
-export const WithCustomDaySlot: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value">
-				<template #day="{ date, isSelected, isToday, isWeekend }">
-					<span
-						:style="{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							width: '100%',
-							height: '100%',
-							borderRadius: 'var(--border-radius-base)',
-							fontWeight: isSelected ? 700 : isToday ? 600 : 400,
-							color: isSelected ? 'var(--color-white)' : isToday ? 'var(--color-accent)' : isWeekend ? 'var(--color-error)' : 'var(--color-text)',
-							background: isSelected ? 'var(--color-accent)' : isToday ? 'rgba(249, 115, 22, 0.08)' : 'transparent',
-							border: isToday && !isSelected ? '2px solid var(--color-accent)' : 'none',
-						}"
-					>{{ date.getDate() }}</span>
-				</template>
-			</BaseCalendar>
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Кастомный слот #day — полный контроль над рендером ячейки
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar v-model="value">
-  <template #day="{ date, isSelected, isToday, isWeekend }">
-    <span :style="{ fontWeight: isSelected ? 700 : 400 }">{{ date.getDate() }}</span>
-  </template>
-</BaseCalendar>`,
-			},
-		},
-	},
-}
-/** Выбор диапазона с подсветкой событий */
-export const RangeWithHighlights: Story = {
-	args: {
-		selectionMode: 'range',
-		highlights: HIGHLIGHTS,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const start = ref<Date | null>(null)
-			const end = ref<Date | null>(null)
-			return { args, start, end }
-		},
-		template: `
-			<BaseCalendar
-				v-bind="args"
-				v-model="start"
-				v-model:model-value-end="end"
-			/>
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Начало: {{ start?.toLocaleDateString('ru-RU') ?? '—' }} В·
-				Конец: {{ end?.toLocaleDateString('ru-RU') ?? '—' }}
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar selection-mode="range" :highlights="highlights" v-model="start" v-model:model-value-end="end" />`,
-			},
-		},
-	},
-}
-/** Выходные вместе с подсветкой событий */
-export const WeekendsWithHighlights: Story = {
-	args: {
-		weekends: WEEKENDS,
-		highlights: HIGHLIGHTS,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Выходные + подсветка событий. Нажмите на подсвеченную дату.
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :weekends="weekends" :highlights="highlights" v-model="value" />`,
-			},
-		},
-	},
-}
-/** Все функции сразу: время, недели, выходные, подсветка */
-export const FullFeatured: Story = {
-	args: {
-		timeConfig: { showTime: true },
-		displayConfig: { showWeekNumber: true },
-		weekends: WEEKENDS,
-		highlights: HIGHLIGHTS,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date())
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value" />
-			<p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">
-				Все функции: время, номера недель, выходные, подсветка
-			</p>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar :time-config="{ showTime: true }" :display-config="{ showWeekNumber: true }" :weekends="weekends" :highlights="highlights" v-model="value" />`,
-			},
-		},
-	},
-}
-/** Визуальные состояния: hover, active, focus */
-export const InteractiveStates: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display: flex; gap: 24px; flex-wrap: wrap;">
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">Hover</p>
-					<BaseCalendar v-bind="args" class="base-calendar--hover" />
-				</div>
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">Active</p>
-					<BaseCalendar v-bind="args" class="base-calendar--active" />
-				</div>
-				<div>
-					<p style="margin-bottom: 8px; font-size: 13px; color: var(--color-text-muted);">Focus</p>
-					<BaseCalendar v-bind="args" class="base-calendar--focus" />
-				</div>
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseCalendar class="base-calendar--hover" />
-<BaseCalendar class="base-calendar--active" />
-<BaseCalendar class="base-calendar--focus" />`,
-			},
-		},
-	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	parameters: {
-		docs: {
-			source: {
-				code: '<div data-theme="dark"><BaseCalendar /></div>',
-			},
-		},
-	},
-}
-/** Интерактивный выбор одной даты кликом */
-export const SelectDate: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		await step('Календарь отображается', async () => {
-			expect(canvasElement.querySelector('.base-calendar')).toBeInTheDocument()
-		})
-		await step('Выбор даты', async () => {
-			const dayButton = canvasElement.querySelector(
-				'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-			) as HTMLButtonElement
-			if (dayButton) {
-				await userEvent.click(dayButton)
-				await waitFor(() => {
-					expect(dayButton).toHaveClass('base-calendar__day--selected')
-				})
-			}
-		})
-	},
-}
-/** Интерактивный выбор диапазона дат */
-export const SelectRange: Story = {
-	args: { selectionMode: 'range' },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const start = ref<Date | null>(null)
-			const end = ref<Date | null>(null)
-			return { args, start, end }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="start" v-model:model-value-end="end" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Выбор диапазона дат', async () => {
-			const days = Array.from(
-				canvasElement.querySelectorAll(
-					'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-				),
-			) as HTMLButtonElement[]
-			if (days.length >= 10) {
-				const startDay = days[2]
-				const endDay = days[8]
-				await userEvent.click(startDay)
-				await waitFor(() => {
-					expect(startDay).toHaveClass('base-calendar__day--selected')
-				})
-				await userEvent.click(endDay)
-				await waitFor(() => {
-					expect(startDay).toHaveClass('base-calendar__day--start')
-					expect(endDay).toHaveClass('base-calendar__day--end')
-				})
-			}
-		})
-	},
-}
-/** Интерактивный множественный выбор дат */
-export const SelectMultiple: Story = {
-	args: { selectionMode: 'multiple' },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const selected = ref<Date[]>([])
-			return { args, selected }
-		},
-		template: `<BaseCalendar v-bind="args" v-model:selected-dates="selected" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Множественный выбор дат', async () => {
-			const days = Array.from(
-				canvasElement.querySelectorAll(
-					'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-				),
-			) as HTMLButtonElement[]
-			if (days.length >= 5) {
-				await userEvent.click(days[1])
-				await userEvent.click(days[3])
-				await userEvent.click(days[4])
-				await waitFor(() => {
-					expect(days[1]).toHaveClass('base-calendar__day--selected')
-					expect(days[3]).toHaveClass('base-calendar__day--selected')
-					expect(days[4]).toHaveClass('base-calendar__day--selected')
-				})
-			}
-		})
-	},
-}
-/** Переход к текущей дате кнопкой «Сегодня» */
-export const TodayButton: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Клик по кнопке Сегодня', async () => {
-			const todayBtn = canvasElement.querySelector('.base-calendar__footer .base-button') as HTMLButtonElement
-			expect(todayBtn).toBeInTheDocument()
-			await userEvent.click(todayBtn)
-			await waitFor(() => {
-				const todayDay = canvasElement.querySelector('.base-calendar__day--today')
-				expect(todayDay).toHaveClass('base-calendar__day--selected')
-			})
-		})
-	},
-}
-/** Переключение видов: дни, месяцы, годы */
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Смена вида: заголовок переключает дни → месяцы → годы (событие `view-change`), выбор года и месяца возвращает к дням.
+ * «Сегодня» возвращает к текущему месяцу и выбирает сегодняшний день.
+ */
 export const SwitchView: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Переключение видов календаря', async () => {
-			const titleBtn = canvasElement.querySelector('.base-calendar__title-btn') as HTMLButtonElement
-			expect(titleBtn).toBeInTheDocument()
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('button', { name: /май 2025/i }))
+		await userEvent.click(canvas.getByRole('button', { name: '2025' }))
+		await expect(args['onView-change']).toHaveBeenLastCalledWith('years')
 
-			// Клик по заголовку переключает на месяцы
-			await userEvent.click(titleBtn)
-			await waitFor(() => {
-				expect(canvasElement.querySelector('.base-calendar__months')).toBeInTheDocument()
-			})
+		await userEvent.click(canvas.getByRole('button', { name: '2026' }))
+		await userEvent.click(canvas.getByRole('button', { name: /март/i }))
+		await expect(canvas.getByRole('button', { name: /март 2026/i })).toBeInTheDocument()
+		await expect(args['onView-change']).toHaveBeenLastCalledWith('days')
 
-			// Клик по заголовку еще раз переключает на годы
-			await userEvent.click(titleBtn)
-			await waitFor(() => {
-				expect(canvasElement.querySelector('.base-calendar__years')).toBeInTheDocument()
-			})
-
-			// Выбираем год
-			const yearBtn = canvasElement.querySelector('.base-calendar__year-btn') as HTMLButtonElement
-			if (yearBtn) {
-				await userEvent.click(yearBtn)
-				await waitFor(() => {
-					expect(canvasElement.querySelector('.base-calendar__months')).toBeInTheDocument()
-				})
-			}
-
-			// Выбираем месяц
-			const monthBtn = canvasElement.querySelector('.base-calendar__month-btn') as HTMLButtonElement
-			if (monthBtn) {
-				await userEvent.click(monthBtn)
-				await waitFor(() => {
-					expect(canvasElement.querySelector('.base-calendar__grid')).toBeInTheDocument()
-				})
-			}
-		})
+		await userEvent.click(canvas.getByRole('button', { name: 'Сегодня' }))
+		await waitFor(() => expect(canvas.getByRole('button', { current: 'date' })).toHaveAttribute('aria-pressed', 'true'))
 	},
 }
-/** Без кнопок навигации по месяцам */
-export const NoNavigation: Story = {
-	args: { displayConfig: { showNavigation: false } },
-}
-/** Без возможности смены вида календаря */
-export const NoSwitchView: Story = {
-	args: { displayConfig: { canSwitchView: false } },
-}
-/** Без кнопки «Сегодня» */
-export const NoTodayButton: Story = {
-	args: { displayConfig: { showTodayButton: false } },
-}
-/** Без отображения года в заголовке */
-export const NoYear: Story = {
-	args: { displayConfig: { showYear: false } },
-}
-/** Переключение AM/PM в 12-часовом формате */
-export const ToggleAmPm: Story = {
-	args: { timeConfig: { showTime: true, is24Hour: false } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date())
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Переключение AM/PM', async () => {
-			const ampmBtn = canvasElement.querySelector('.base-calendar__time-ampm') as HTMLButtonElement
-			expect(ampmBtn).toBeInTheDocument()
-			const initialText = ampmBtn.textContent?.trim()
-			await userEvent.click(ampmBtn)
-			await waitFor(() => {
-				const newText = ampmBtn.textContent?.trim()
-				expect(newText).not.toBe(initialText)
-			})
-		})
-	},
-}
-/** Изменение времени в полях ввода */
-export const ChangeTime: Story = {
-	args: { timeConfig: { showTime: true } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date())
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Изменение времени', async () => {
-			const timeInputs = Array.from(
-				canvasElement.querySelectorAll('.base-calendar__time-input input'),
-			) as HTMLInputElement[]
-			expect(timeInputs.length).toBeGreaterThanOrEqual(2)
 
-			const hoursInput = timeInputs[0]
-			const minutesInput = timeInputs[1]
+// ─── Доступность ───────────────────────────────────────────────────────────────
 
-			await userEvent.clear(hoursInput)
-			await userEvent.type(hoursInput, '14')
-			await fireEvent.change(hoursInput)
+/**
+ * Клавиатура: дни — обычные кнопки. Tab проходит по шапке и дням (видно кольцо фокуса), Enter и Space выбирают день,
+ * Enter на «Следующий месяц» листает месяц.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { modelValue: storyDate(0, 0, 0) },
+	render: renderWithLocalModel(),
+	play: async ({ canvas, userEvent }) => {
+		const first = getDay(canvas, -14)
+		await tabTo(first, userEvent)
+		await expect(getComputedStyle(first).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(first).toHaveAttribute('aria-pressed', 'true')
 
-			await userEvent.clear(minutesInput)
-			await userEvent.type(minutesInput, '45')
-			await fireEvent.change(minutesInput)
+		await userEvent.tab()
+		await expect(getDay(canvas, -13)).toHaveFocus()
+		await userEvent.keyboard(' ')
+		await expect(getDay(canvas, -13)).toHaveAttribute('aria-pressed', 'true')
+		await expect(first).toHaveAttribute('aria-pressed', 'false')
 
-			await waitFor(() => {
-				expect(hoursInput.value).toBe('14')
-				expect(minutesInput.value).toBe('45')
-			})
-		})
-	},
-}
-/** Поповер с датой */
-export const DatePopover: Story = {
-	args: { showDatePopover: true },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Открытие и закрытие поповера даты', async () => {
-			const dayButton = canvasElement.querySelector(
-				'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-			) as HTMLButtonElement
-			if (dayButton) {
-				await userEvent.click(dayButton)
-				await waitFor(() => {
-					expect(canvasElement.querySelector('.base-calendar__popover')).toBeInTheDocument()
-				})
-
-				// Клик по заголовку (вне поповера) должен закрыть поповер
-				const header = canvasElement.querySelector('.base-calendar__header') as HTMLElement
-				await userEvent.click(header)
-				await waitFor(() => {
-					expect(canvasElement.querySelector('.base-calendar__popover')).not.toBeInTheDocument()
-				})
-			}
-		})
-	},
-}
-/** Отключённые дни недели */
-export const DisabledWeekdays: Story = {
-	args: { constraints: { disabledWeekdays: [0, 6] } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-}
-/** Клик по отключённому дню */
-export const ClickDisabledDay: Story = {
-	args: { isDisabled: true },
-	play: async ({ canvasElement, step }) => {
-		await step('Проверка блокировки календаря', async () => {
-			const days = Array.from(canvasElement.querySelectorAll('.base-calendar__day')) as HTMLButtonElement[]
-			for (const day of days) {
-				expect(day).toBeDisabled()
-			}
-		})
-	},
-}
-/** Выбор диапазона в обратном порядке */
-export const SelectRangeReverse: Story = {
-	args: { selectionMode: 'range' },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const start = ref<Date | null>(null)
-			const end = ref<Date | null>(null)
-			return { args, start, end }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="start" v-model:model-value-end="end" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Выбор диапазона в обратном порядке', async () => {
-			const days = Array.from(
-				canvasElement.querySelectorAll(
-					'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-				),
-			) as HTMLButtonElement[]
-			if (days.length >= 10) {
-				const startDay = days[8]
-				const endDay = days[2]
-				await userEvent.click(startDay)
-				await waitFor(() => {
-					expect(startDay).toHaveClass('base-calendar__day--selected')
-				})
-				await userEvent.click(endDay)
-				await waitFor(() => {
-					expect(endDay).toHaveClass('base-calendar__day--start')
-					expect(startDay).toHaveClass('base-calendar__day--end')
-				})
-			}
-		})
-	},
-}
-/** Изменение времени в 12-часовом формате */
-export const ChangeTime12Hour: Story = {
-	args: { timeConfig: { showTime: true, is24Hour: false } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date(2026, 4, 15, 14, 30)) // 2:30 PM
-			const isAm = ref(false)
-			return { args, value, isAm }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" v-model:is-am="isAm" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Изменение времени в 12-часовом формате', async () => {
-			const timeInputs = Array.from(
-				canvasElement.querySelectorAll('.base-calendar__time-input input'),
-			) as HTMLInputElement[]
-			expect(timeInputs.length).toBeGreaterThanOrEqual(2)
-
-			const hoursInput = timeInputs[0]
-			const ampmBtn = canvasElement.querySelector('.base-calendar__time-ampm') as HTMLButtonElement
-
-			expect(hoursInput.value).toBe('2')
-			expect(ampmBtn.textContent?.trim()).toBe('PM')
-
-			// Меняем на AM
-			await userEvent.click(ampmBtn)
-			await waitFor(() => {
-				expect(ampmBtn.textContent?.trim()).toBe('AM')
-			})
-
-			// Меняем часы
-			await userEvent.clear(hoursInput)
-			await userEvent.type(hoursInput, '11')
-			await fireEvent.change(hoursInput)
-
-			await waitFor(() => {
-				expect(hoursInput.value).toBe('11')
-			})
-		})
-	},
-}
-/** Изменение времени с секундами */
-export const ChangeTimeWithSeconds: Story = {
-	args: { timeConfig: { showTime: true, showSeconds: true } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date(2026, 4, 15, 14, 30, 10))
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Изменение секунд', async () => {
-			const timeInputs = Array.from(
-				canvasElement.querySelectorAll('.base-calendar__time-input input'),
-			) as HTMLInputElement[]
-			expect(timeInputs.length).toBe(3)
-
-			const secondsInput = timeInputs[2]
-			expect(secondsInput.value).toBe('10')
-
-			await userEvent.clear(secondsInput)
-			await userEvent.type(secondsInput, '45')
-			await fireEvent.change(secondsInput)
-
-			await waitFor(() => {
-				expect(secondsInput.value).toBe('45')
-			})
-		})
-	},
-}
-/** Интерактивный клик по отключённому дню */
-export const ClickDisabledDayInteractive: Story = {
-	args: { constraints: { disabledWeekdays: [0, 6] } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Клик по отключенному дню', async () => {
-			const disabledDay = canvasElement.querySelector('.base-calendar__day--disabled') as HTMLButtonElement
-			expect(disabledDay).toBeInTheDocument()
-			await fireEvent.click(disabledDay)
-			const selectedDay = canvasElement.querySelector('.base-calendar__day--selected')
-			expect(selectedDay).not.toBeInTheDocument()
-		})
-	},
-}
-/** Поповер даты — остановка всплытия события */
-export const DatePopoverStopPropagation: Story = {
-	args: { showDatePopover: true },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Клик по поповеру не закрывает его', async () => {
-			const dayButton = canvasElement.querySelector(
-				'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-			) as HTMLButtonElement
-			if (dayButton) {
-				await userEvent.click(dayButton)
-				const popover = await waitFor(() => {
-					const el = canvasElement.querySelector('.base-calendar__popover')
-					expect(el).toBeInTheDocument()
-					return el as HTMLElement
-				})
-
-				await userEvent.click(popover)
-				expect(canvasElement.querySelector('.base-calendar__popover')).toBeInTheDocument()
-			}
-		})
-	},
-}
-/** Интерактивная проверка кастомных слотов */
-export const CustomSlotsInteractive: Story = {
-	args: { showDatePopover: true },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `
-			<BaseCalendar v-bind="args" v-model="value">
-				<template #header="{ month, year }">
-					<div class="custom-header">Месяц: {{ month }}, Год: {{ year }}</div>
-				</template>
-				<template #day="{ date, isSelected }">
-					<span class="custom-day" :class="{ 'custom-day--selected': isSelected }">
-						D{{ date.getDate() }}
-					</span>
-				</template>
-				<template #date-popover="{ date, close }">
-					<div class="custom-popover">
-						<span>Дата: {{ date.getDate() }}</span>
-						<button class="custom-close-btn" @click="close">Закрыть</button>
-					</div>
-				</template>
-			</BaseCalendar>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Проверка кастомного заголовка и дней', async () => {
-			expect(canvasElement.querySelector('.custom-header')).toBeInTheDocument()
-			expect(canvasElement.querySelector('.custom-day')).toBeInTheDocument()
-		})
-
-		await step('Открытие и закрытие кастомного поповера', async () => {
-			const dayButton = canvasElement.querySelector('.base-calendar__day') as HTMLButtonElement
-			await userEvent.click(dayButton)
-
-			const closeBtn = await waitFor(() => {
-				const btn = canvasElement.querySelector('.custom-close-btn')
-				expect(btn).toBeInTheDocument()
-				return btn as HTMLButtonElement
-			})
-
-			await userEvent.click(closeBtn)
-			await waitFor(() => {
-				expect(canvasElement.querySelector('.custom-popover')).not.toBeInTheDocument()
-			})
-		})
-	},
-}
-/** Интерактивная проверка событий (emits) */
-export const EmitsInteractive: Story = {
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			const monthLog = ref<number[]>([])
-			const yearLog = ref<number[]>([])
-			const viewLog = ref<string[]>([])
-
-			function handleMonthChange(m: number) {
-				monthLog.value.push(m)
-			}
-			function handleYearChange(y: number) {
-				yearLog.value.push(y)
-			}
-			function handleViewChange(v: string) {
-				viewLog.value.push(v)
-			}
-
-			return { args, value, monthLog, yearLog, viewLog, handleMonthChange, handleYearChange, handleViewChange }
-		},
-		template: `
-			<div>
-				<BaseCalendar
-					v-bind="args"
-					v-model="value"
-					@month-change="handleMonthChange"
-					@year-change="handleYearChange"
-					@view-change="handleViewChange"
-				/>
-				<div class="emits-log">
-					<span class="month-log">{{ monthLog.join(',') }}</span>
-					<span class="year-log">{{ yearLog.join(',') }}</span>
-					<span class="view-log">{{ viewLog.join(',') }}</span>
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Переключение месяца и проверка эмита', async () => {
-			const navButtons = Array.from(canvasElement.querySelectorAll('.base-calendar__nav-btn')) as HTMLButtonElement[]
-			expect(navButtons.length).toBe(2)
-
-			await userEvent.click(navButtons[1])
-			await waitFor(() => {
-				const log = canvasElement.querySelector('.month-log')?.textContent
-				expect(log).not.toBe('')
-			})
-		})
-
-		await step('Переключение вида и проверка эмита', async () => {
-			const titleBtn = canvasElement.querySelector('.base-calendar__title-btn') as HTMLButtonElement
-			await userEvent.click(titleBtn)
-			await waitFor(() => {
-				const log = canvasElement.querySelector('.view-log')?.textContent
-				expect(log).toBe('months')
-			})
-		})
-	},
-}
-/** Поповер с highlights — покрывает строки 116-120 */
-export const DatePopoverWithHighlights: Story = {
-	args: {
-		showDatePopover: true,
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			const today = new Date()
-			const targetDate = new Date(today.getFullYear(), today.getMonth(), 15)
-			const highlights = [
-				{ date: targetDate, label: 'Встреча', color: '#ff5722' },
-				{ date: targetDate, label: 'Дедлайн', color: '#9c27b0' },
-				{ date: targetDate },
-			]
-			return { args, value, highlights }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" :highlights="highlights" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Клик на день с highlights открывает поповер с метками', async () => {
-			const days = Array.from(
-				canvasElement.querySelectorAll(
-					'.base-calendar__day:not(.base-calendar__day--other):not(.base-calendar__day--disabled)',
-				),
-			) as HTMLButtonElement[]
-			const dayFifteen = days.find(d => d.textContent?.trim() === '15')
-			if (dayFifteen) {
-				await userEvent.click(dayFifteen)
-				await waitFor(() => {
-					const popover = canvasElement.querySelector('.base-calendar__popover')
-					expect(popover).toBeInTheDocument()
-					const highlightEls = canvasElement.querySelectorAll('.base-calendar__popover-highlight')
-					expect(highlightEls.length).toBeGreaterThan(0)
-				})
-			}
-		})
-	},
-}
-/** Ввод PM часа в 12-часовом формате — покрывает from12h строка 374 */
-export const ChangeTime12HourPM: Story = {
-	args: { timeConfig: { showTime: true, is24Hour: false } },
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(new Date(2026, 4, 15, 14, 30))
-			const isAm = ref(false)
-			return { args, value, isAm }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" v-model:is-am="isAm" />`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Ввод часа 3 в PM-режиме (h !== 12) — from12h возвращает 15', async () => {
-			const timeInputs = Array.from(
-				canvasElement.querySelectorAll('.base-calendar__time-input input'),
-			) as HTMLInputElement[]
-			const hoursInput = timeInputs[0]
-			const ampmBtn = canvasElement.querySelector('.base-calendar__time-ampm') as HTMLButtonElement
-			expect(ampmBtn.textContent?.trim()).toBe('PM')
-
-			await userEvent.clear(hoursInput)
-			await userEvent.type(hoursInput, '3')
-			await fireEvent.change(hoursInput)
-
-			await waitFor(() => {
-				expect(hoursInput.value).toBe('3')
-			})
-		})
-
-		await step('Ввод часа 12 в PM-режиме (h === 12) — from12h возвращает 12', async () => {
-			const timeInputs = Array.from(
-				canvasElement.querySelectorAll('.base-calendar__time-input input'),
-			) as HTMLInputElement[]
-			const hoursInput = timeInputs[0]
-			await userEvent.clear(hoursInput)
-			await userEvent.type(hoursInput, '12')
-			await fireEvent.change(hoursInput)
-			await waitFor(() => {
-				expect(hoursInput.value).toBe('12')
-			})
-		})
-	},
-}
-/** Кастомный цвет компонента */
-export const CustomColor: Story = {
-	args: {
-		color: {
-			bg: {
-				base: '#f3e5f5',
-				hover: '#e1bee7',
-				active: '#ce93d8',
-			},
-			text: {
-				base: '#4a148c',
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseCalendar },
-		setup() {
-			const value = ref<Date | null>(null)
-			return { args, value }
-		},
-		template: `<BaseCalendar v-bind="args" v-model="value" />`,
-	}),
-	play: async ({ canvasElement }) => {
-		const calendar = canvasElement.querySelector('.base-calendar') as HTMLElement
-		expect(calendar).toBeInTheDocument()
-	},
-}
-/** Кастомные CSS-классы через customClass */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: {
-			root: 'cal-root',
-			header: 'cal-header',
-			weekdays: 'cal-weekdays',
-			grid: 'cal-grid',
-			dayWrapper: 'cal-dayWrapper',
-			day: 'cal-day',
-			popover: 'cal-popover',
-			months: 'cal-months',
-			years: 'cal-years',
-			time: 'cal-time',
-			footer: 'cal-footer',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.cal-root')).toBeTruthy()
+		const next = canvas.getByRole('button', { name: 'Следующий месяц' })
+		next.focus()
+		await userEvent.keyboard('{Enter}')
+		await expect(canvas.getByRole('button', { name: /июнь 2025/i })).toBeInTheDocument()
 	},
 }

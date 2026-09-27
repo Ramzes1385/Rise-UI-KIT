@@ -1,374 +1,226 @@
-﻿/**
- * Stories для BasePin.
- * Каждая story содержит play-функцию для 100% coverage.
+/**
+ * BasePin — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
+ * состояния (пусто, ошибка, disabled) → сценарии (скрытый ввод, вставка кода) → клавиатура.
  */
 
-import { expect, fireEvent, fn, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { PIN_VARIANTS } from '../model/BasePin.types'
 import BasePin from '../ui/BasePin.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Получает инпуты pin'а или бросает ошибку */
-function getInputs(root: ParentNode): HTMLInputElement[] {
-	const list = root.querySelectorAll<HTMLInputElement>('.base-pin__input')
-	if (!list.length) throw new Error('Не найдены инпуты base-pin')
-	return Array.from(list)
-}
-
-/** Эмулирует ввод символа в инпут через input-event */
-async function typeInto(input: HTMLInputElement, char: string): Promise<void> {
-	input.focus()
-	input.value = char
-	await fireEvent.input(input, { target: input })
-}
-
-/** Эмулирует paste-событие на инпуте с заданными данными */
-async function pasteInto(input: HTMLInputElement, data: string): Promise<void> {
-	input.focus()
-	const event = new ClipboardEvent('paste', {
-		clipboardData: new DataTransfer(),
-		bubbles: true,
-		cancelable: true,
-	})
-	event.clipboardData?.setData('text', data)
-	input.dispatchEvent(event)
-	await Promise.resolve()
-}
-
-const meta: Meta<typeof BasePin> = {
-	title: 'UI/BasePin',
+const meta = {
+	title: 'Form/BasePin',
 	component: BasePin,
-	argTypes: buildArgTypes({
-		props: {
-			variant: { control: 'radio', options: PIN_VARIANTS },
-			length: { control: 'number' },
-			type: { control: 'text' },
-			modelValue: { control: 'text' },
-			isDisabled: { control: 'boolean' },
-			error: { control: 'text' },
-			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
-			customClass: { control: 'object' },
-			onComplete: { table: { disable: true } },
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Ввод кода по ячейкам: PIN, код из СМС или письма. Ячейка — поле 32×32 (как инпут высотой 32px).',
+					'',
+					'- Ввод символа переводит фокус в следующую ячейку, Backspace очищает ячейку и возвращает назад, ←/→ — переход между ячейками.',
+					'- Вставка из буфера заполняет все ячейки; когда заполнены все, приходит событие `complete`.',
+					'- Ячейки подписаны «Символ 1 из 4»; имя всей группе даёт `aria-label` на компоненте или обёртка `BaseFormField`.',
+					'- Ошибка (`error`) помечает ячейки `aria-invalid` и связана с ними через `aria-describedby`.',
+				].join('\n'),
+			},
 		},
-	}),
+	},
+	argTypes: {
+		...baseArgTypes({ variants: PIN_VARIANTS }),
+		modelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		length: { control: { type: 'number', min: 1, max: 8 }, table: propGroup(ARG_GROUP.behavior) },
+		type: { control: 'inline-radio', options: ['text', 'password', 'number'], table: propGroup(ARG_GROUP.behavior) },
+		error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		// Слот default объявлен в типах, но компонент его не выводит.
+		...hiddenArgTypes('default'),
+	},
 	args: {
 		modelValue: '',
 		length: 4,
+		type: 'text',
 		variant: 'default',
 		sizeScale: 100,
+		error: '',
+		isDisabled: false,
+		'onUpdate:modelValue': fn(),
+		onComplete: fn(),
 	},
-}
+	// Значение хранится в args: ввод обновляет Controls, а изменение в Controls — ячейки.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BasePin },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<BasePin v-bind="props" aria-label="Код из СМС" @update:model-value="onUpdate" />',
+		}
+	},
+} satisfies Meta<typeof BasePin>
 
 export default meta
-type Story = StoryObj<typeof BasePin>
-// play удалён: дублирует "должен вставлять несколько символов при paste" в *.integration.spec.ts
-/** Базовое состояние компонента */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: введите код — фокус переходит по ячейкам, после последней приходит `complete`. */
 export const Default: Story = {
-	args: {
-		onComplete: fn(),
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('textbox', { name: 'Символ 1 из 4' }))
+		await userEvent.keyboard('4829')
+		await waitFor(() => expect(args.onComplete).toHaveBeenCalledWith('4829'))
+		await expect(canvas.getByRole('textbox', { name: 'Символ 4 из 4' })).toHaveValue('9')
+	},
+}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Пять вариантов, как у `BaseInput`: `default`, `outline` — без фона, `soft` — мягкий фон, `ghost` — без рамки, `shadow` — с тенью. */
+export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'length', 'isDisabled', 'error'] },
+		docs: { source: { code: PIN_VARIANTS.map(variant => `<BasePin v-model="code" variant="${variant}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'variant', 'onUpdate:modelValue']),
+			variants: PIN_VARIANTS,
+			values: ref<Record<string, string>>(Object.fromEntries(PIN_VARIANTS.map(variant => [variant, '48']))),
+		}),
+		template: `
+			<div class="story-col">
+				<div v-for="variant in variants" :key="variant" class="story-row">
+					<span class="story-label">{{ variant }}</span>
+					<BasePin v-bind="props" v-model="values[variant]" :variant="variant" :aria-label="'Код, вариант ' + variant" />
+				</div>
+			</div>
+		`,
 	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка первого инпута по Tab', async () => {
-			await playFocusTest(canvasElement, { selector: '.base-pin__input' })
-		})
+}
 
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-pin__input' })
-		})
+/** Размеры через `sizeScale`: ячейки 24, 28, 32, 36 и 40px — такие же, как высота инпута и кнопки того же размера. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant', 'length'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BasePin v-model="code" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BasePin },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref<Record<string, string>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, '48']))),
+		}),
+		template: `
+			<div class="story-col">
+				<div v-for="preset in presets" :key="preset.name" class="story-row">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BasePin v-bind="props" v-model="values[preset.name]" :size-scale="preset.sizeScale" :aria-label="'Код, размер ' + preset.name" />
+				</div>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const heights = ['xs', 'md', 'xl'].map(name => canvas.getByRole('group', { name: `Код, размер ${name}` }).querySelector('input')!.getBoundingClientRect().height)
+		await expect(heights).toEqual([24, 32, 40])
 	},
 }
-/** Навигация стрелками */
-export const ArrowNavigation: Story = {
-	args: {
-		modelValue: '12',
-	},
-	play: async ({ canvasElement }) => {
-		const inputs = canvasElement.querySelectorAll('.base-pin__input') as NodeListOf<HTMLInputElement>
 
-		// ArrowRight
-		inputs[0].focus()
-		await userEvent.keyboard('{ArrowRight}')
-		expect(document.activeElement).toBe(inputs[1])
+/** Кастомный цвет фона и текста ячеек через `color`. */
+export const CustomColor: Story = {
+	args: { modelValue: '4829', color: { bg: { base: '#eff6ff' }, text: { base: '#1e40af' } } },
+	play: async ({ canvas }) => {
+		const cell = canvas.getByRole('textbox', { name: 'Символ 1 из 4' })
+		await expect(getComputedStyle(cell).backgroundColor).toBe('rgb(239, 246, 255)')
+		await expect(getComputedStyle(cell).color).toBe('rgb(30, 64, 175)')
+	},
+}
 
-		// ArrowLeft
-		await userEvent.keyboard('{ArrowLeft}')
-		expect(document.activeElement).toBe(inputs[0])
-	},
-}
-// play удалён: дублирует "должен вставлять несколько символов при paste" в *.integration.spec.ts
-/** Отключённое состояние */
-export const Disabled: Story = {
-	args: {
-		isDisabled: true,
-		modelValue: '12',
-	},
-}
-/** Состояние с ошибкой валидации */
-export const WithError: Story = {
-	args: {
-		error: 'Неверный код',
-		modelValue: '12',
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-pin--error')).toBeTruthy()
-		expect(canvasElement.querySelector('.base-pin__error-text')?.textContent).toContain('Неверный код')
-	},
-}
-/** Покрывает: ArrowLeft на первом инпуте (index=0, guard clause false) */
-export const ArrowLeftOnFirst: Story = {
-	args: {
-		modelValue: '12',
-	},
-	play: async ({ canvasElement }) => {
-		const inputs = canvasElement.querySelectorAll('.base-pin__input') as NodeListOf<HTMLInputElement>
-		inputs[0].focus()
-		await userEvent.keyboard('{ArrowLeft}')
-		expect(document.activeElement).toBe(inputs[0])
-	},
-}
-/** Покрывает: ArrowRight на последнем инпуте (index=length-1, guard clause false) */
-export const ArrowRightOnLast: Story = {
-	args: {
-		modelValue: '12',
-	},
-	play: async ({ canvasElement }) => {
-		const inputs = canvasElement.querySelectorAll('.base-pin__input') as NodeListOf<HTMLInputElement>
-		inputs[3].focus()
-		await userEvent.keyboard('{ArrowRight}')
-		expect(document.activeElement).toBe(inputs[3])
-	},
-}
-/** Пустой pin-код */
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Пустой код: все ячейки пустые, у каждой — доступное имя с позицией. */
 export const Empty: Story = {
-	args: {
-		modelValue: '',
-		length: 4,
+	play: async ({ canvas }) => {
+		const cells = canvas.getAllByRole('textbox')
+		await expect(cells).toHaveLength(4)
+		for (const cell of cells) {
+			await expect(cell).toHaveValue('')
+		}
+		await expect(canvas.getByRole('group')).toHaveAccessibleName('Код из СМС')
 	},
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка первого инпута по Tab', async () => {
-			await playFocusTest(canvasElement, { selector: '.base-pin__input' })
-		})
+}
 
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-pin__input' })
-		})
+/** Ошибка: красная рамка ячеек и текст под ними; ячейки помечены `aria-invalid` и описаны текстом ошибки. */
+export const WithError: Story = {
+	args: { modelValue: '4830', error: 'Неверный код. Осталось 2 попытки' },
+	play: async ({ canvas }) => {
+		const cell = canvas.getByRole('textbox', { name: 'Символ 1 из 4' })
+		await expect(cell).toHaveAttribute('aria-invalid', 'true')
+		await expect(cell).toHaveAccessibleDescription('Неверный код. Осталось 2 попытки')
 	},
 }
-/** Ввод по одному символу с автопереходом на следующую ячейку */
-export const TypingAutoAdvance: Story = {
-	args: {
-		modelValue: '',
-		onComplete: fn(),
+
+/** Отключённый ввод: ячейки приглушены и не принимают фокус. */
+export const Disabled: Story = {
+	args: { modelValue: '48', isDisabled: true },
+	play: async ({ canvas }) => {
+		for (const cell of canvas.getAllByRole('textbox')) {
+			await expect(cell).toBeDisabled()
+		}
 	},
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** Скрытый ввод `type="password"`: символы заменяются точками — для PIN-кода карты или приложения. */
+export const Password: Story = {
+	args: { type: 'password', modelValue: '48' },
 	play: async ({ canvasElement }) => {
-		const inputs = getInputs(canvasElement)
-		await typeInto(inputs[0], '1')
-		await waitFor(() => expect(document.activeElement).toBe(inputs[1]))
-		await typeInto(inputs[1], '2')
-		await waitFor(() => expect(document.activeElement).toBe(inputs[2]))
+		const cells = canvasElement.querySelectorAll('input')
+		await expect(cells).toHaveLength(4)
+		for (const cell of Array.from(cells)) {
+			await expect(cell).toHaveAttribute('type', 'password')
+		}
 	},
 }
-/** Эмит complete при заполнении всех ячеек */
-export const CompleteEmit: Story = {
-	args: {
-		modelValue: '123',
-		onComplete: fn(),
-	},
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('123')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, args }) => {
-		const inputs = getInputs(canvasElement)
-		await typeInto(inputs[3], '4')
-		await waitFor(() => expect(args.onComplete).toHaveBeenCalledWith('1234'))
+
+/** Вставка кода из буфера (здесь `length` = 6): все ячейки заполняются сразу и приходит `complete`. */
+export const Paste: Story = {
+	args: { length: 6 },
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('textbox', { name: 'Символ 1 из 6' }))
+		await userEvent.paste('482 913')
+		await waitFor(() => expect(args.onComplete).toHaveBeenCalledWith('482913'))
+		await expect(canvas.getByRole('textbox', { name: 'Символ 6 из 6' })).toHaveValue('3')
 	},
 }
-/** Backspace в заполненной ячейке — очищает её, оставаясь в ней */
-export const BackspaceClearsCell: Story = {
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('12')
-			return { args, value }
-		},
-		// v-bind должен идти ПЕРЕД v-model, иначе args.modelValue перетирает реактивный value
-		template: '<BasePin v-bind="args" v-model="value" :length="4" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const inputs = getInputs(canvasElement)
-		inputs[1].focus()
-		await fireEvent.keyDown(inputs[1], { key: 'Backspace' })
-		await waitFor(() => expect(inputs[1].value).toBe(''))
-	},
-}
-/** Backspace на пустой ячейке → переход и очистка предыдущей */
-export const BackspaceMovesToPrev: Story = {
-	args: { modelValue: '12' },
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('12')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const inputs = getInputs(canvasElement)
-		inputs[2].focus()
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab ставит фокус в первую ячейку (видно кольцо), → и ← переходят между ячейками,
+ * Backspace в пустой ячейке стирает предыдущий символ и возвращает фокус назад.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { modelValue: '48' },
+	play: async ({ canvas, userEvent }) => {
+		const first = canvas.getByRole('textbox', { name: 'Символ 1 из 4' })
+		const second = canvas.getByRole('textbox', { name: 'Символ 2 из 4' })
+		const third = canvas.getByRole('textbox', { name: 'Символ 3 из 4' })
+		await tabTo(first, userEvent)
+		await expect(getComputedStyle(first).boxShadow).not.toBe('none')
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}')
+		await expect(third).toHaveFocus()
 		await userEvent.keyboard('{Backspace}')
-		await waitFor(() => expect(document.activeElement).toBe(inputs[1]))
-	},
-}
-/** Backspace на первой пустой ячейке — ничего не происходит */
-export const BackspaceOnFirstEmpty: Story = {
-	args: { modelValue: '' },
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const inputs = getInputs(canvasElement)
-		inputs[0].focus()
-		await userEvent.keyboard('{Backspace}')
-		expect(document.activeElement).toBe(inputs[0])
-	},
-}
-/** Paste полного кода → заполнение всех ячеек и эмит complete */
-export const PasteFull: Story = {
-	args: {
-		modelValue: '',
-		onComplete: fn(),
-	},
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, args }) => {
-		const inputs = getInputs(canvasElement)
-		await pasteInto(inputs[0], '1234')
-		await waitFor(() => expect(args.onComplete).toHaveBeenCalledWith('1234'))
-	},
-}
-/** Paste длиннее length → обрезка до length */
-export const PasteOverflow: Story = {
-	args: {
-		modelValue: '',
-		onComplete: fn(),
-	},
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, args }) => {
-		const inputs = getInputs(canvasElement)
-		await pasteInto(inputs[0], '987654321')
-		await waitFor(() => expect(args.onComplete).toHaveBeenCalledWith('9876'))
-	},
-}
-/** Paste с пробелами и короткой строкой — не вызывает complete */
-export const PastePartial: Story = {
-	args: {
-		modelValue: '',
-		onComplete: fn(),
-	},
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, args }) => {
-		const inputs = getInputs(canvasElement)
-		await pasteInto(inputs[0], '  12  ')
-		await waitFor(() => expect(args.onComplete).not.toHaveBeenCalled())
-	},
-}
-/** Удаление символа из инпута через input event с пустым value */
-export const ClearViaInput: Story = {
-	args: { modelValue: '12' },
-	render: args => ({
-		components: { BasePin },
-		setup() {
-			const value = ref('12')
-			return { args, value }
-		},
-		template: '<BasePin v-model="value" :length="4" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const inputs = getInputs(canvasElement)
-		await typeInto(inputs[1], '')
-		await waitFor(() => expect(inputs[1].value).toBe(''))
-	},
-}
-/** Type=password — проверка ветки type */
-export const PasswordType: Story = {
-	args: { type: 'password', modelValue: '12' },
-	play: async ({ canvasElement }) => {
-		const inputs = getInputs(canvasElement)
-		expect(inputs[0].type).toBe('password')
-	},
-}
-/** Покрытие customClass для всех элементов */
-export const WithCustomClass: Story = {
-	args: {
-		modelValue: '12',
-		error: 'Ошибка',
-		customClass: {
-			root: 'custom-root',
-			cells: 'custom-cells',
-			input: 'custom-input',
-			errorText: 'custom-error',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.custom-root')).toBeTruthy()
-		expect(canvasElement.querySelector('.custom-cells')).toBeTruthy()
-		expect(canvasElement.querySelector('.custom-input')).toBeTruthy()
-		expect(canvasElement.querySelector('.custom-error')).toBeTruthy()
+		await expect(second).toHaveFocus()
+		await expect(second).toHaveValue('')
+		await userEvent.keyboard('{ArrowLeft}')
+		await expect(first).toHaveFocus()
 	},
 }

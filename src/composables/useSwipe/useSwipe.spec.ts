@@ -774,4 +774,85 @@ describe('useSwipe', () => {
 		cancelSpy.mockRestore()
 		removeSpy.mockRestore()
 	})
+
+	// --- Click после перетаскивания мышью ---
+
+	describe('onClickCapture', () => {
+		/** Click-событие со шпионами stopPropagation/preventDefault */
+		function createClick(): MouseEvent {
+			return { type: 'click', stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown as MouseEvent
+		}
+
+		/** Полный цикл перетаскивания мышью из (100, 100) в (toX, toY) */
+		function drag(swipe: ReturnType<typeof useSwipe>, toX: number, toY = 100): void {
+			swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
+			document.dispatchEvent(new MouseEvent('mousemove', { clientX: toX, clientY: toY }))
+			document.dispatchEvent(new MouseEvent('mouseup', { clientX: toX, clientY: toY }))
+		}
+
+		it('гасит click, которым заканчивается перетаскивание дальше порога клика', () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+			drag(swipe, 160)
+
+			const click = createClick()
+			swipe.onClickCapture(click)
+
+			expect(click.stopPropagation).toHaveBeenCalled()
+			expect(click.preventDefault).toHaveBeenCalled()
+		})
+
+		it('гасит click и после вертикального смещения', () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+			drag(swipe, 100, 140)
+
+			const click = createClick()
+			swipe.onClickCapture(click)
+
+			expect(click.stopPropagation).toHaveBeenCalled()
+		})
+
+		it('не гасит click, если указатель сдвинулся не дальше порога клика', () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+			drag(swipe, 103, 104)
+
+			const click = createClick()
+			swipe.onClickCapture(click)
+
+			expect(click.stopPropagation).not.toHaveBeenCalled()
+			expect(click.preventDefault).not.toHaveBeenCalled()
+		})
+
+		it('гасит только один click после перетаскивания', () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+			drag(swipe, 160)
+
+			swipe.onClickCapture(createClick())
+			const second = createClick()
+			swipe.onClickCapture(second)
+
+			expect(second.stopPropagation).not.toHaveBeenCalled()
+		})
+
+		it('если click не последовал, признак перетаскивания снимается после текущей задачи', async () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+			drag(swipe, 160)
+
+			await new Promise(resolve => setTimeout(resolve, 0))
+			const click = createClick()
+			swipe.onClickCapture(click)
+
+			expect(click.stopPropagation).not.toHaveBeenCalled()
+		})
+
+		it('новое нажатие мыши сбрасывает признак прошлого перетаскивания', () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+			drag(swipe, 160)
+
+			swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
+			const click = createClick()
+			swipe.onClickCapture(click)
+
+			expect(click.stopPropagation).not.toHaveBeenCalled()
+		})
+	})
 })

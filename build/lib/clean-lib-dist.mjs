@@ -9,7 +9,6 @@ const paths = [
 	'dist/App.vue.d.ts',
 	'dist/main.d.ts',
 	'dist/playground',
-	'dist/utils/storybookUtils',
 ]
 
 for (const path of paths) {

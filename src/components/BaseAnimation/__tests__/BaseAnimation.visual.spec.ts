@@ -1,16 +1,21 @@
 /**
- * Visual regression тесты для BaseAnimation.
+ * Visual regression BaseAnimation: конечное состояние примеров в светлой и тёмной теме.
+ * Play-функции этих stories переключают видимость (скрыть → показать, добавить → удалить);
+ * openStory ждёт завершения play, поэтому в кадр попадает конечное состояние.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baseanimation'
-const STORIES = ['default', 'all-types', 'modes', 'dark-theme']
+const STORIES = ['default', 'names', 'list'] as const
 
-for (const story of STORIES) {
-	test(`BaseAnimation — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-animation--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseAnimation · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseanimation--${story}`, { theme, height: 400 })
+				await expectStoryScreenshot(page, `base-animation-${story}-${theme}.png`)
+			})
+		}
 	})
 }

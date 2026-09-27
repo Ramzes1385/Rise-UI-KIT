@@ -1,107 +1,86 @@
+// BaseAccordion. Пункты разделены линией border; заголовок 14/20 medium (text-highlighted) с шевроном,
+// который поворачивается при раскрытии; содержимое 14/20 text-muted. Раскрытие — анимация высоты через grid 0fr → 1fr.
+// Варианты: default — линии между пунктами; ghost — без линий; outline — в рамке; shadow — карточка с тенью;
+// soft — на мягком нейтральном фоне. В контейнерных вариантах заголовки подсвечиваются фоном при наведении,
+// а кольцо фокуса рисуется внутри заголовка (контейнер обрезает всё, что выходит за его края).
+// Кастомный цвет: text.base — заголовки, bg.base / bg.hover — фон заголовка и его наведение.
 .base-accordion {
+	--accordion-pad-x: 0px;
+	--accordion-divider: var(--rise-border);
+	--accordion-header-hover: transparent;
+
 	display: flex;
 	flex-direction: column;
-	outline: 1px solid var(--color-border);
-	border-radius: var(--border-radius-base);
-	overflow: hidden;
-	background-color: var(--color-surface);
-	@include transition(border-color, box-shadow);
+	width: 100%;
 
-	// --- Варианты ---
-
-	&--ghost {
-		outline-color: transparent;
-		background-color: transparent;
-	}
-
-	&--outline {
-		outline-color: var(--color-text-muted);
-	}
-
-	&--shadow {
-		outline-color: transparent;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	}
-
-	&--soft {
-		outline-color: transparent;
-		background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
-		backdrop-filter: blur(4px);
-	}
-
-	// --- Элементы ---
+	// ─── Пункт ───────────────────────────────────────────────────────────────────
 
 	&__item {
-		outline: 1px solid var(--color-border);
-		transition: outline-color var(--transition-base);
+		border-bottom: 1px solid var(--accordion-divider);
 
 		&:last-child {
-			outline: none;
-		}
-
-		&--open {
-			outline-color: transparent;
-		}
-
-		&--disabled {
-			opacity: 0.5;
-			pointer-events: none;
+			border-bottom: none;
 		}
 	}
 
 	&__header {
-		padding: sz(16px 20px);
-		font-size: sz(16px);
-		line-height: 1.4;
 		display: flex;
-		align-items: flex-start;
-		gap: sz(8px);
+		align-items: center;
+		gap: sz(6px);
+		padding: sz(14px) sz(var(--accordion-pad-x));
+		border-radius: sz(var(--rise-radius-md));
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
 		cursor: pointer;
-		outline: none;
-		@include custom-bg(background-color, var(--color-surface));
-		@include transition(background-color, color);
+		user-select: none;
+		@include custom-text(color, var(--rise-text-highlighted));
+		@include custom-bg-all(background-color, transparent, var(--accordion-header-hover), var(--accordion-header-hover));
+		@include transition-colors;
+		@include focus-ring;
 
-		@include custom-bg-hover(background-color, var(--color-surface-muted));
-
-		@include focus {
-			background-color: var(--custom-bg-hover, var(--custom-bg, var(--color-surface-muted)));
-			@include custom-text(color, var(--color-accent));
-			outline: 2px solid var(--color-accent);
-			outline-offset: -2px;
+		@include hover {
+			.base-accordion__arrow {
+				color: var(--rise-text-highlighted);
+			}
 		}
+	}
 
-		@include custom-bg-active(background-color, var(--color-border));
+	&__item--disabled &__header {
+		@include disabled-state;
 	}
 
 	&__icon {
-		align-self: flex-start;
 		flex-shrink: 0;
+		color: var(--rise-text-muted);
 	}
 
 	&__label {
 		flex: 1;
-		@include custom-text(color, var(--color-primary));
+		min-width: 0;
+		text-align: left;
+		overflow-wrap: anywhere;
 	}
 
 	&__arrow {
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		align-self: center;
-		color: var(--color-text-muted);
+		margin-left: auto;
+		color: var(--rise-text-muted);
 		@include transition(transform, color);
 	}
 
 	&__item--open &__arrow {
 		transform: rotate(180deg);
-		@include custom-text(color, var(--color-accent));
 	}
 
-	/* Плавное раскрытие через CSS grid transition */
+	// ─── Панель ──────────────────────────────────────────────────────────────────
+
 	&__collapse {
 		display: grid;
 		grid-template-rows: 0fr;
-		transition: grid-template-rows var(--transition-base);
+		@include transition(grid-template-rows);
 	}
 
 	&__collapse--open {
@@ -109,55 +88,63 @@
 	}
 
 	&__content {
+		min-height: 0;
 		overflow: hidden;
-		padding: 0 sz(20px);
-		font-size: sz(14px);
-		line-height: 1.5;
-		outline: 1px solid transparent;
+		padding: 0 sz(var(--accordion-pad-x));
+		@include text-size(sm);
+		color: var(--rise-text-muted);
 		opacity: 0;
-		transition:
-			padding var(--transition-base),
-			outline var(--transition-base),
-			opacity var(--transition-base);
+		@include transition(opacity, padding);
 	}
 
 	&__collapse--open &__content {
-		padding: sz(16px 20px);
-		outline: 1px solid var(--color-border);
+		padding-bottom: sz(14px);
 		opacity: 1;
 	}
 
-	&__content > * {
+	&__text {
 		margin: 0;
 	}
 
-	// --- Переопределения для вариантов ---
+	// ─── Варианты ────────────────────────────────────────────────────────────────
 
-	&--ghost &__item {
-		outline-color: transparent;
+	&--ghost {
+		--accordion-divider: transparent;
 	}
 
-	&--outline &__item {
-		outline-color: var(--color-text-muted);
+	&--outline,
+	&--shadow,
+	&--soft {
+		--accordion-pad-x: 16px;
+		--accordion-header-hover: var(--rise-bg-muted);
+
+		overflow: hidden;
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-radius-lg));
 	}
 
-	&--outline &__item--open {
-		outline-color: transparent;
+	// В контейнере с overflow: hidden внешнее кольцо обрезалось бы — рисуем его внутри заголовка.
+	&--outline &__header,
+	&--shadow &__header,
+	&--soft &__header {
+		border-radius: 0;
+		@include focus-ring(-2px);
 	}
 
-	&--shadow &__item {
-		outline-color: var(--color-border);
+	&--outline {
+		border-color: var(--rise-border);
 	}
 
-	&--shadow &__item--open {
-		outline-color: transparent;
+	&--shadow {
+		border-color: var(--rise-border);
+		background-color: var(--rise-bg);
+		box-shadow: var(--rise-shadow-sm);
 	}
 
-	&--soft &__item {
-		outline-color: color-mix(in srgb, var(--color-border) 50%, transparent);
-	}
+	&--soft {
+		--accordion-divider: var(--rise-border-accented);
+		--accordion-header-hover: var(--rise-bg-elevated);
 
-	&--soft &__item--open {
-		outline-color: transparent;
+		background-color: color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg));
 	}
 }

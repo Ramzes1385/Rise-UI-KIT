@@ -9,24 +9,19 @@
 		]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="progressbar"
-		:aria-valuenow="percent"
+		:aria-label="ariaLabel || UI_ARIA.PROGRESS"
+		:aria-valuenow="isIndeterminate ? undefined : percent"
 		aria-valuemin="0"
 		aria-valuemax="100">
-		<!-- Линейный прогресс -->
+		<!-- Линейный прогресс: подпись над полосой движется вместе с концом заливки -->
 		<template v-if="shape === 'line'">
+			<div v-if="isLabelVisible" class="base-progress__status" :class="classes.tooltipTrigger" :style="{ width: `${percent}%` }">
+				<span class="base-progress__status-text" :class="classes.tooltipAnchor">
+					<slot :value="value" :percent="percent">{{ percent }}%</slot>
+				</span>
+			</div>
 			<div class="base-progress__track" :class="classes.track">
-				<div class="base-progress__fill" :class="classes.fill" :style="{ width: `${percent}%` }">
-					<div v-if="hasLabel" class="base-progress__tooltip-trigger" :class="classes.tooltipTrigger">
-						<BaseTooltip
-							:text="`${percent}%`"
-							position="top"
-							:is-always-visible="true"
-							:size-scale="sizeScale"
-							:color="tooltipColor">
-							<span class="base-progress__tooltip-anchor" :class="classes.tooltipAnchor" />
-						</BaseTooltip>
-					</div>
-				</div>
+				<div class="base-progress__fill" :class="classes.fill" :style="fillStyle"></div>
 			</div>
 		</template>
 
@@ -53,14 +48,9 @@
 					:stroke-dashoffset="circleOffset"
 					stroke-linecap="round" />
 			</svg>
-			<BaseText
-				v-if="hasLabel"
-				tag="span"
-				class="base-progress__circle-label"
-				:weight="UI_FONT_WEIGHT.BOLD"
-				:custom-class="classes.circleLabel">
+			<span v-if="isLabelVisible" class="base-progress__circle-label" :class="classes.circleLabel">
 				<slot :value="value" :percent="percent">{{ percent }}%</slot>
-			</BaseText>
+			</span>
 		</template>
 	</div>
 </template>
@@ -69,12 +59,10 @@
 import { computed, watch } from 'vue'
 import '../styles/BaseProgress.style.scss'
 
-import { BaseText } from '@components/BaseText'
-import { BaseTooltip } from '@components/BaseTooltip'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_ARIA, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
 
 const props = withDefaults(defineProps<BaseProgressProps>(), {
@@ -106,17 +94,20 @@ const { classes } = useCustomClass({
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-/** Цвет тултипа соответствует цвету заливки */
-const tooltipColor = computed(() => {
-	if (props.color?.bg?.base) return { bg: { base: props.color.bg.base } }
-	return { bg: { base: 'var(--color-accent)' } }
-})
-
 const percent = computed((): number => {
 	if (props.isIndeterminate) return 0
+	// Некорректный max (0, отрицательный, NaN, Infinity) или value=NaN давали деление
+	// 0/0 или NaN → «NaN%» в подписи и aria-valuenow; такой прогресс считаем нулевым.
+	if (!Number.isFinite(props.max) || props.max <= 0 || Number.isNaN(props.value)) return 0
 	const clamped = Math.min(Math.max(props.value, 0), props.max)
 	return Math.round((clamped / props.max) * 100)
 })
+
+/** В неопределённом режиме значение неизвестно: «0%» не показываем. */
+const isLabelVisible = computed((): boolean => props.hasLabel && !props.isIndeterminate)
+
+/** Ширину заливки в неопределённом режиме задают стили (бегущая или статичная полоса), а не значение. */
+const fillStyle = computed(() => (props.isIndeterminate ? undefined : { width: `${percent.value}%` }))
 
 const circumference = computed((): number => {
 	return 2 * Math.PI * UI_SIZE.PROGRESS_CIRCLE_RADIUS

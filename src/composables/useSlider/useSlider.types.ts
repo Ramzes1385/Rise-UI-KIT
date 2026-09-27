@@ -65,6 +65,14 @@ interface UseSliderReturn {
 	pauseAutoplay: () => void
 	/** Возобновление автопроигрывания */
 	resumeAutoplay: () => void
+	/** Обработчик mouseenter корня: пауза автопроигрывания, пока указатель над слайдером */
+	onMouseEnter: () => void
+	/** Обработчик mouseleave корня: возобновление, если фокус не внутри слайдера */
+	onMouseLeave: () => void
+	/** Обработчик focusin корня: пауза автопроигрывания, пока фокус внутри слайдера */
+	onFocusIn: () => void
+	/** Обработчик focusout корня: возобновление, когда фокус покинул слайдер и указатель не над ним */
+	onFocusOut: (event: FocusEvent) => void
 	/** Обработчик touchstart */
 	onTouchStart: (event: TouchEvent) => void
 	/** Обработчик touchmove */
@@ -73,6 +81,8 @@ interface UseSliderReturn {
 	onTouchEnd: (event: TouchEvent) => void
 	/** Обработчик начала перетаскивания мышью */
 	onDragStart: (event: MouseEvent) => void
+	/** Обработчик click в фазе захвата: гасит click, которым заканчивается перетаскивание мышью */
+	onClickCapture: (event: MouseEvent) => void
 }
 
 export type { UseSliderOptions, UseSliderReturn }

@@ -1,16 +1,20 @@
 /**
- * Visual regression тесты для BaseTable.
+ * Visual regression BaseTable: ключевые stories в светлой и тёмной теме.
+ * Ширина 1100px: тулбар (поиск, фильтр, «Колонки») помещается в один ряд.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basetable'
-const STORIES = ['default', 'dark-theme']
+const STORIES = ['variants', 'toolbar', 'selection', 'expandable-rows', 'loading', 'empty'] as const
 
-for (const story of STORIES) {
-	test(`BaseTable — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-table')
-		await expect(root).toHaveScreenshot(`base-table--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseTable · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `data-basetable--${story}`, { theme, width: 1100, height: 600 })
+				await expectStoryScreenshot(page, `base-table-${story}-${theme}.png`)
+			})
+		}
 	})
 }

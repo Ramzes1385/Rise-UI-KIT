@@ -5,59 +5,43 @@
 			<BaseButton
 				v-for="reply in quickReplies"
 				:key="reply"
-				variant="ghost"
-				:padding="{ x: 12, y: 6 }"
-				custom-class="base-chat-input__quick-reply-btn"
+				variant="outline"
+				:size-scale="sizeScale * QUICK_REPLY_SCALE"
+				class="base-chat-input__quick-reply-btn"
 				:aria-label="`${UI_CHAT_TEXT.QUICK_REPLY} ${reply}`"
 				@click="handleQuickReply(reply)">
-				<BaseText :size-scale="sizeScale * UI_SCALE.SMALL" :weight="UI_FONT_WEIGHT.MEDIUM">{{ reply }}</BaseText>
+				{{ reply }}
 			</BaseButton>
 		</div>
 
 		<!-- Панель ответа на сообщение -->
 		<div v-if="replyingTo" class="base-chat-input__reply-bar">
-			<div class="base-chat-input__reply-info">
-				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-input__reply-icon" />
-				<div class="base-chat-input__reply-content">
-					<BaseText tag="span" :weight="UI_FONT_WEIGHT.SEMIBOLD" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-input__reply-sender">
-						{{ replyingTo.senderName || UI_CHAT_TEXT.MESSAGE_PLACEHOLDER }}
-					</BaseText>
-					<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" class="base-chat-input__reply-text">
-						{{ replyingTo.text }}
-					</BaseText>
-				</div>
+			<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-input__reply-icon" />
+			<div class="base-chat-input__reply-content">
+				<span class="base-chat-input__reply-sender">{{ replyingTo.senderName || UI_CHAT_TEXT.MESSAGE_PLACEHOLDER }}</span>
+				<span class="base-chat-input__reply-text">{{ replyingTo.text }}</span>
 			</div>
 			<BaseButton
 				variant="ghost"
-				:padding="1"
-				:size-scale="sizeScale * UI_SCALE.SMALL"
+				:size-scale="sizeScale"
 				class="base-chat-input__reply-cancel"
 				:aria-label="UI_CHAT_TEXT.CANCEL_REPLY_ARIA"
 				@click="handleCancelReply">
-				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				</template>
+				<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE.SMALL" />
 			</BaseButton>
 		</div>
 
 		<!-- Список выбранных файлов (превью) -->
-		<ChatFilePreview
-			v-if="attachments.length > 0"
-			:attachments="attachments"
-			:size-scale="sizeScale"
-			@remove="removeAttachment" />
+		<ChatFilePreview v-if="attachments.length > 0" :attachments="attachments" :size-scale="sizeScale" @remove="removeAttachment" />
 
 		<div class="base-chat-input__controls">
 			<BaseButton
 				variant="ghost"
-				:padding="2"
 				:size-scale="sizeScale"
 				class="base-chat-input__attach-btn"
 				:aria-label="UI_CHAT_TEXT.ATTACH_ARIA"
 				@click="triggerFileSelect">
-				<template #left>
-					<BaseIcon name="attach" :size-scale="sizeScale" />
-				</template>
+				<BaseIcon name="attach" :size-scale="sizeScale" />
 			</BaseButton>
 
 			<input
@@ -65,6 +49,7 @@
 				type="file"
 				multiple
 				class="base-chat-input__file-input"
+				tabindex="-1"
 				:aria-label="UI_CHAT_TEXT.FILE_SELECT_ARIA"
 				@change="handleFileChange" />
 
@@ -72,107 +57,114 @@
 			<BaseButton
 				v-if="hasCommands"
 				variant="ghost"
-				:padding="2"
 				:size-scale="sizeScale"
 				class="base-chat-input__commands-btn"
 				:class="{ 'base-chat-input__commands-btn--active': showCommands }"
 				:aria-label="UI_CHAT_TEXT.SHOW_COMMANDS_ARIA"
+				:aria-expanded="showCommands ? 'true' : 'false'"
 				@click="toggleCommands">
-				<template #left>
-					<BaseIcon name="code" :size-scale="sizeScale" />
-				</template>
+				<BaseIcon name="code" :size-scale="sizeScale" />
 			</BaseButton>
 
 			<ChatEmojiPicker :size-scale="sizeScale" @select="insertEmoji" />
 
 			<div class="base-chat-input__field-container">
-				<!-- Выпадающий список упоминаний (@) -->
+				<!-- Подсказки упоминаний (@) и команд (/): список связан с полем через aria-controls и aria-activedescendant,
+					стрелки выбирают пункт, Enter подставляет, Escape закрывает -->
 				<div
 					v-if="showMentions && filteredMembers.length > 0"
-					class="base-chat-input__autocomplete base-chat-input__autocomplete--mentions">
+					:id="suggestionsId"
+					class="base-chat-input__autocomplete base-chat-input__autocomplete--mentions"
+					role="listbox"
+					:aria-label="UI_CHAT_TEXT.MENTIONS_LIST">
 					<div
 						v-for="(member, index) in filteredMembers"
+						:id="`${suggestionsId}-${index}`"
 						:key="member.id"
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
+						role="option"
+						:aria-selected="index === activeSuggestionIndex ? 'true' : 'false'"
+						@mousedown.prevent
 						@click="replaceCurrentWord('@', member.name)">
-						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_CHAT_SCALE.STATUS" />
-						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" :weight="UI_FONT_WEIGHT.SEMIBOLD">{{ member.name }}</BaseText>
-							<BaseText v-if="member.role" :size-scale="sizeScale * UI_CHAT_SCALE.META" class="base-chat-input__autocomplete-sub">
+						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" />
+						<span class="base-chat-input__autocomplete-info">
+							<span class="base-chat-input__autocomplete-title">{{ member.name }}</span>
+							<span v-if="member.role" class="base-chat-input__autocomplete-sub">
 								{{ member.role === 'admin' ? UI_CHAT_TEXT.ADMIN : UI_CHAT_TEXT.MEMBER }}
-							</BaseText>
-						</div>
+							</span>
+						</span>
 					</div>
 				</div>
 
-				<!-- Выпадающий список команд (/) -->
 				<div
 					v-if="showCommands && filteredCommands.length > 0"
-					class="base-chat-input__autocomplete base-chat-input__autocomplete--commands">
+					:id="suggestionsId"
+					class="base-chat-input__autocomplete base-chat-input__autocomplete--commands"
+					role="listbox"
+					:aria-label="UI_CHAT_TEXT.COMMANDS_LIST">
 					<div
 						v-for="(command, index) in filteredCommands"
+						:id="`${suggestionsId}-${index}`"
 						:key="command.name"
 						class="base-chat-input__autocomplete-item"
 						:class="{ 'base-chat-input__autocomplete-item--active': index === activeSuggestionIndex }"
+						role="option"
+						:aria-selected="index === activeSuggestionIndex ? 'true' : 'false'"
+						@mousedown.prevent
 						@click="replaceCurrentWord('/', command.name)">
-						<BaseIcon name="file-config" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" class="base-chat-input__autocomplete-icon" />
-						<div class="base-chat-input__autocomplete-info">
-							<BaseText :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" :weight="UI_FONT_WEIGHT.SEMIBOLD">/{{ command.name }}</BaseText>
-							<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.META" class="base-chat-input__autocomplete-sub">
-								{{ command.description }}
-							</BaseText>
-						</div>
+						<span class="base-chat-input__autocomplete-icon" aria-hidden="true">
+							<BaseIcon name="file-config" :size-scale="sizeScale * UI_SCALE.SMALL" />
+						</span>
+						<span class="base-chat-input__autocomplete-info">
+							<span class="base-chat-input__autocomplete-title">/{{ command.name }}</span>
+							<span class="base-chat-input__autocomplete-sub">{{ command.description }}</span>
+						</span>
 					</div>
 				</div>
 
-				<BaseInput
-					ref="inputComponentRef"
+				<!-- Поле сообщения: Enter — отправить, Shift+Enter — новая строка; высота растёт с текстом -->
+				<textarea
+					:ref="setTextareaRef"
 					v-model="text"
-					:placeholder="UI_CHAT_TEXT.MESSAGE_INPUT"
-					:size-scale="sizeScale"
+					rows="1"
 					class="base-chat-input__field"
+					:placeholder="UI_CHAT_TEXT.MESSAGE_INPUT"
+					:aria-label="UI_CHAT_TEXT.MESSAGE_PLACEHOLDER"
+					aria-autocomplete="list"
+					:aria-controls="isSuggestionsOpen ? suggestionsId : undefined"
+					:aria-activedescendant="isSuggestionsOpen ? `${suggestionsId}-${activeSuggestionIndex}` : undefined"
 					@keydown="handleKeyDown"
-					@keyup="checkAutocomplete"
-					@click="checkAutocomplete" />
+					@keyup="handleKeyUp"
+					@click="checkAutocomplete"></textarea>
 			</div>
 
-			<div class="base-chat-input__send-btn-container">
-				<BaseButton
-					variant="default"
-					:padding="2"
-					:size-scale="sizeScale"
-					:disabled="!text.trim() && attachments.length === 0"
-					class="base-chat-input__send-btn"
-					:aria-label="UI_CHAT_TEXT.SEND_ARIA"
-					@click="handleSend">
-					<template #left>
-						<BaseIcon name="send" :size-scale="sizeScale" />
-					</template>
-				</BaseButton>
-			</div>
+			<BaseButton
+				:size-scale="sizeScale"
+				:is-disabled="!text.trim() && attachments.length === 0"
+				class="base-chat-input__send-btn"
+				:aria-label="UI_CHAT_TEXT.SEND_ARIA"
+				@click="handleSend">
+				<BaseIcon name="send" :size-scale="sizeScale" />
+			</BaseButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, onMounted, useId, watch } from 'vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
-import { BaseText } from '@components/BaseText'
 import { useChatInputState } from '@composables/useChatInputState'
-import {
-	UI_CHAT_SCALE,
-	UI_CHAT_TEXT,
-	UI_FONT_WEIGHT,
-	UI_SCALE,
-	SIZE_SCALE_DEFAULT,
-} from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_CHAT_SCALE, UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import ChatFilePreview from './ChatFilePreview.vue'
 import './ChatInput.style.scss'
 import type { ChatInputEmits, ChatInputProps } from './ChatInput.types'
+
+/** Быстрые ответы — пилюли размера sm (28px) */
+const QUICK_REPLY_SCALE = 0.875
 
 const props = withDefaults(defineProps<ChatInputProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -205,6 +197,46 @@ const {
 	insertEmoji,
 	handleSend,
 } = useChatInputState({ props, emit })
+
+const suggestionsId = useId()
+
+/** Открыт непустой список подсказок — поле ссылается на него и на выбранный пункт */
+const isSuggestionsOpen = computed(
+	() => (showMentions.value && filteredMembers.value.length > 0) || (showCommands.value && filteredCommands.value.length > 0),
+)
+
+/** Поле ввода для useChatInputState: позиция курсора, фокус, подстановка упоминаний и команд */
+function setTextareaRef(element: unknown): void {
+	inputComponentRef.value = element instanceof HTMLTextAreaElement ? { inputRef: element } : null
+}
+
+/**
+ * Высота поля подстраивается под текст (от одной строки до max-height из стилей, дальше — прокрутка).
+ * Сначала высота сбрасывается в auto: иначе scrollHeight не меньше текущей высоты и поле только растёт.
+ */
+function adjustFieldHeight(): void {
+	const field = inputComponentRef.value?.inputRef
+	if (!field) return
+	field.style.height = 'auto'
+	if (field.scrollHeight === 0) {
+		field.style.height = ''
+		return
+	}
+	const borders = field.offsetHeight - field.clientHeight
+	field.style.height = `${field.scrollHeight + borders}px`
+}
+
+watch(text, () => nextTick(adjustFieldHeight))
+onMounted(adjustFieldHeight)
+
+/**
+ * Подсказки пересчитываются после отпускания клавиши (курсор мог сместиться стрелками или Home/End).
+ * Кроме Escape: он закрыл список на keydown, и пересчёт на keyup открыл бы его снова.
+ */
+function handleKeyUp(event: KeyboardEvent): void {
+	if (event.key === 'Escape') return
+	checkAutocomplete()
+}
 
 function handleCancelReply(): void {
 	emit('cancel-reply')

@@ -1,11 +1,8 @@
 /**
- * Entrypoint для addon-vitest (Storybook «Run tests»).
- * Addon ищет vitest.config.* по дереву вверх от configDir
- * и проверяет content.includes('@storybook/addon-vitest').
- * Без этого импорта addon не найдёт конфиг, когда configDir = build/storybook.
+ * Конфигурация Vitest по умолчанию — для `npx vitest` без --config и IDE-расширений Vitest.
+ * Совпадает с конфигурацией npm-скриптов (build/tests/vitest.config.ts).
+ *
+ * Раньше файл импортировал '@storybook/addon-vitest/vitest-plugin', но аддона нет в devDependencies:
+ * запуск без --config падал на старте с ERR_MODULE_NOT_FOUND.
  */
-import '@storybook/addon-vitest/vitest-plugin'
-
-import './build/tests/set-coverage-mode'
-
 export { default } from './build/tests/vitest.config'

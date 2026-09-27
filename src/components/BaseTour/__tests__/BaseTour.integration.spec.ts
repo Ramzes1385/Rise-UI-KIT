@@ -5,14 +5,10 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
 import BaseTour from '../ui/BaseTour.vue'
 import type { TourStep } from '../model/BaseTour.types'
-
-vi.mock('@composables/useScrollLock', () => ({
-	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
-}))
 
 const STEPS: TourStep[] = [
 	{ target: '#a', title: 'Первый', content: 'Контент 1' },
@@ -104,5 +100,77 @@ describe('BaseTour integration', () => {
 		})
 		render(Wrapper)
 		expect(await screen.findByTestId('custom')).toHaveTextContent('Первый — 1/2')
+	})
+
+	it('снимает блокировку прокрутки при размонтировании открытого тура', async () => {
+		const Wrapper = defineComponent({
+			components: { BaseTour },
+			setup() {
+				const isMounted = ref(true)
+				return { isMounted, steps: STEPS }
+			},
+			template: `
+				<div>
+					<button data-testid="unmount" @click="isMounted = false">unmount</button>
+					<BaseTour v-if="isMounted" :is-open="true" :steps="steps" />
+				</div>
+			`,
+		})
+		render(Wrapper)
+		await screen.findByText('Первый')
+		expect(document.body.style.overflow).toBe('hidden')
+
+		// Например, смена маршрута при открытом туре
+		await userEvent.click(screen.getByTestId('unmount'))
+
+		expect(document.querySelector('.base-tour')).not.toBeInTheDocument()
+		expect(document.body.style.overflow).toBe('')
+	})
+
+	describe('фокус с клавиатуры (модальный диалог)', () => {
+		/** Страница с кнопкой запуска и туром через v-model */
+		const Page = defineComponent({
+			components: { BaseTour },
+			setup() {
+				const open = ref(false)
+				return { open, steps: STEPS }
+			},
+			template: `
+				<div>
+					<button type="button" @click="open = true">Запустить тур</button>
+					<BaseTour v-model:is-open="open" :steps="steps" />
+				</div>
+			`,
+		})
+
+		it('переводит фокус в карточку, удерживает Tab внутри и возвращает фокус на кнопку запуска', async () => {
+			const user = userEvent.setup()
+			render(Page)
+			const start = screen.getByRole('button', { name: 'Запустить тур' })
+
+			await user.click(start)
+			const next = await screen.findByRole('button', { name: 'Далее' })
+			await waitFor(() => expect(next).toHaveFocus())
+
+			// С последней кнопки карточки Tab возвращается на первую, а не на страницу под затемнением
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Пропустить тур' })).toHaveFocus()
+
+			await user.keyboard('{Escape}')
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(start).toHaveFocus()
+		})
+
+		it('«Далее» и «Завершить» — одна кнопка: на последнем шаге фокус не теряется', async () => {
+			const user = userEvent.setup()
+			render(Page)
+
+			await user.click(screen.getByRole('button', { name: 'Запустить тур' }))
+			const next = await screen.findByRole('button', { name: 'Далее' })
+			await user.click(next)
+
+			const finish = await screen.findByRole('button', { name: 'Завершить' })
+			expect(finish).toBe(next)
+		})
 	})
 })

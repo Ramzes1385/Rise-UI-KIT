@@ -43,6 +43,21 @@ describe('ChatHeader unit', () => {
 		expect(emitted()['info-click']).toBeTruthy()
 	})
 
+	it('аватар — кнопка с доступным именем «Профиль: …»', async () => {
+		const { emitted } = render(ChatHeader, { props: { title: 'Анна', avatar: 'a.png' } })
+		await fireEvent.click(screen.getByRole('button', { name: 'Профиль: Анна' }))
+		expect(emitted()['avatar-click']).toHaveLength(1)
+	})
+
+	it('поле поиска подписано и закрывается клавишей Escape', async () => {
+		const user = userEvent.setup()
+		const { emitted } = render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
+		const search = screen.getByRole('searchbox', { name: 'Поиск по сообщениям' })
+		search.focus()
+		await user.keyboard('{Escape}')
+		expect(emitted()['toggle-search']).toHaveLength(1)
+	})
+
 	it('показывает поле поиска и эмитит ввод в режиме поиска', async () => {
 		const { emitted } = render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
 		const input = document.querySelector<HTMLInputElement>('.base-chat-header__search-input input')!

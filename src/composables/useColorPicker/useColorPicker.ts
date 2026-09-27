@@ -1,7 +1,8 @@
 /** Composable: логика выбора цвета (HSV-модель) */
 import { computed, ref, watch } from 'vue'
-import { clamp, hexToHsv, hsvToHex, isValidHex, normalizeHex } from '@utils/colorUtils'
+import { clamp, hexToHsv, hsvToHex, normalizeHex } from '@utils/colorUtils'
 import type { RelativePoint, UseColorPickerOptions, UseColorPickerReturn } from './useColorPicker.types'
+import type { HsvColor } from '@utils/colorUtils'
 
 const MAX_HUE = 360
 const MAX_PERCENT = 100
@@ -9,8 +10,8 @@ const DEFAULT_HEX = '#000000'
 
 /**
  * Composable для логики выбора цвета (HSV-модель).
- * Хранит каноническое HSV-состояние, синхронизируется с внешним HEX,
- * вычисляет позицию маркера в SV-области и цвет текущего тона.
+ * Хранит HSV-состояние для элементов управления и точный HEX текущего цвета,
+ * синхронизируется с внешним HEX, вычисляет позицию маркера в SV-области и цвет текущего тона.
  *
  * @example
  * ```ts
@@ -23,9 +24,19 @@ const DEFAULT_HEX = '#000000'
 function useColorPicker(options: UseColorPickerOptions): UseColorPickerReturn {
 	const { getValue, onChange } = options
 
-	const hsv = ref(hexToHsv(normalizeHex(getValue()) ?? DEFAULT_HEX))
+	const initialHex = normalizeHex(getValue()) ?? DEFAULT_HEX
 
-	const hex = computed(() => hsvToHex(hsv.value))
+	const hsv = ref(hexToHsv(initialHex))
+
+	/**
+	 * Точный текущий HEX. HSV хранится в целых градусах/процентах и не переживает обратное
+	 * преобразование (#123456 → #123457), поэтому введённый, выбранный из пресетов или
+	 * пришедший извне цвет храним как есть; из HSV он пересчитывается, только когда
+	 * пользователь меняет сам HSV (тон или SV-область).
+	 */
+	const exactHex = ref(initialHex)
+
+	const hex = computed(() => exactHex.value)
 
 	const hueColor = computed(() => hsvToHex({ h: hsv.value.h, s: MAX_PERCENT, v: MAX_PERCENT }))
 
@@ -36,36 +47,44 @@ function useColorPicker(options: UseColorPickerOptions): UseColorPickerReturn {
 
 	/** Передать текущий HEX наружу */
 	function emitChange(): void {
-		onChange(hex.value)
+		onChange(exactHex.value)
+	}
+
+	/** Применить HSV, изменённый элементами управления, и пересчитать из него HEX */
+	function applyHsv(next: HsvColor): void {
+		hsv.value = next
+		exactHex.value = hsvToHex(next)
+		emitChange()
 	}
 
 	/** Установить тон */
 	function setHue(hue: number): void {
-		hsv.value = { ...hsv.value, h: clamp(hue, 0, MAX_HUE) }
-		emitChange()
+		applyHsv({ ...hsv.value, h: clamp(hue, 0, MAX_HUE) })
 	}
 
 	/** Установить saturation/value по относительной точке области */
 	function setSaturationValue(point: RelativePoint): void {
-		hsv.value = {
+		applyHsv({
 			...hsv.value,
 			s: Math.round(clamp(point.x, 0, 1) * MAX_PERCENT),
 			v: Math.round((1 - clamp(point.y, 0, 1)) * MAX_PERCENT),
-		}
-		emitChange()
+		})
 	}
 
-	/** Установить цвет из строки HEX */
+	/** Установить цвет из строки HEX: наружу уходит нормализованный ввод, а не пересчёт через HSV */
 	function setHex(input: string): void {
-		if (!isValidHex(input)) return
-		hsv.value = hexToHsv(input)
+		const normalized = normalizeHex(input)
+		if (!normalized) return
+		hsv.value = hexToHsv(normalized)
+		exactHex.value = normalized
 		emitChange()
 	}
 
 	watch(getValue, value => {
 		const normalized = normalizeHex(value)
-		if (!normalized || normalized === hex.value) return
+		if (!normalized || normalized === exactHex.value) return
 		hsv.value = hexToHsv(normalized)
+		exactHex.value = normalized
 	})
 
 	return {

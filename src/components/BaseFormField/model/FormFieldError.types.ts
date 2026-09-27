@@ -4,6 +4,8 @@ import type { CustomClassProp } from '@composables/useCustomClass'
 export interface FormFieldErrorProps {
 	/** Текст ошибки */
 	error: string
+	/** id элемента ошибки — для связи с полем через aria-describedby */
+	id?: string
 	/** CSS-класс для обёртки */
 	className?: string
 	/** Кастомный CSS-класс обёртки */

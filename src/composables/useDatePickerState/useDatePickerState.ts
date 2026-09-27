@@ -1,12 +1,21 @@
 /** Composable: управление состоянием дейтпикера — открытие/закрытие, значения, форматирование, позиционирование панели */
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
-import { UI_SIZE } from '@constants'
 import { formatDatePickerValue } from '@utils/dateUtils'
 import type { UseDatePickerStateOptions } from './useDatePickerState.types'
 import type { Ref } from 'vue'
+
+/** Предел высоты панели: календарь не прокручивается внутри панели, пока помещается в окно */
+const PANEL_MAX_HEIGHT = 'calc(100vh - 16px)'
+
+/** Кандидаты на начальный фокус при открытии с клавиатуры: выбранная → сегодняшняя → первая доступная дата месяца */
+const INITIAL_FOCUS_SELECTORS = [
+	'.base-calendar__day--selected:not(:disabled)',
+	'.base-calendar__day--today:not(:disabled)',
+	'.base-calendar__day:not(.base-calendar__day--other):not(:disabled)',
+]
 
 /** Описание: управляет полным состоянием дейтпикера — открытие/закрытие, значения, форматирование, позиционирование панели и обработка выбора даты/диапазона */
 function useDatePickerState(options: UseDatePickerStateOptions) {
@@ -24,19 +33,23 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 	const wrapperWidth = ref(0)
 	let resizeObserver: ResizeObserver | null = null
 
+	/**
+	 * Сколько месяцев помещается в панель шириной с поле. Размеры повторяют стили панели и BaseCalendar
+	 * (DatePickerPanel.style.scss, BaseCalendar.style.scss): 7 колонок по 36px, отступ календаря 4px, рамка 1px,
+	 * номер недели +28px; между календарями 8px; отступ панели 4px и рамка 1px. Рамки не масштабируются.
+	 */
 	const computedMonthsCount = computed((): number => {
 		if (!resolvedProps.value.isMultiMonth) return 1
 
 		const scale = resolvedProps.value.sizeScale / 100
-		const minCalendarWidth = 260 * scale
+		const gridWidth = (7 * 36 + (calendarConfig.value.showWeekNumber ? 28 : 0)) * scale
+		const calendarWidth = gridWidth + 2 * 4 * scale + 2
 		const gap = 8 * scale
-		const padding = 16 * scale
+		const panelChrome = 2 * 4 * scale + 2
 
 		const currentWidth = wrapperWidth.value || (wrapperRef.value?.clientWidth ?? 0)
-		const availableWidth = currentWidth - padding + gap
-		const stepWidth = minCalendarWidth + gap
-
-		const count = Math.floor(availableWidth / stepWidth)
+		// N календарей: N × calendarWidth + (N − 1) × gap + panelChrome ≤ ширина поля
+		const count = Math.floor((currentWidth - panelChrome + gap) / (calendarWidth + gap))
 
 		return Math.max(1, count)
 	})
@@ -49,7 +62,8 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 		position: () => 'bottom-start',
 		gap: () => resolvedProps.value.gap,
 		matchWidth: () => resolvedProps.value.isMultiMonth,
-		maxHeight: () => UI_SIZE.PANEL_MAX_HEIGHT,
+		// Панель с календарём и временем выше 320px (высота списков BaseDropdown) — ограничена только окном
+		maxHeight: () => PANEL_MAX_HEIGHT,
 		isOpen: () => isOpen.value,
 	})
 
@@ -135,12 +149,43 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 
 	function close(): void {
 		if (!isOpen.value) return
+		// Фокус внутри панели (выбор с клавиатуры, Escape) после её удаления из DOM ушёл бы на <body>
+		const shouldRestoreFocus = !!panelEl.value?.contains(document.activeElement)
 		isOpen.value = false
 		emit('close')
+		if (shouldRestoreFocus) focusField()
+	}
+
+	/** Вернуть фокус в поле ввода */
+	function focusField(): void {
+		wrapperRef.value?.querySelector<HTMLInputElement>('input')?.focus()
+	}
+
+	/** Перевести фокус на выбранную (иначе сегодняшнюю или первую доступную) дату панели */
+	function focusInitialDay(): void {
+		const panel = panelEl.value
+		if (!panel) return
+		for (const selector of INITIAL_FOCUS_SELECTORS) {
+			const day = panel.querySelector<HTMLElement>(selector)
+			if (day) {
+				day.focus()
+				return
+			}
+		}
 	}
 
 	function handleFieldClick(): void {
 		open()
+	}
+
+	/**
+	 * Открытие с клавиатуры: панель телепортирована в конец body, поэтому Tab из поля в неё не попадает —
+	 * фокус переводится на дату явно (при открытии мышью фокус остаётся в поле, как раньше).
+	 */
+	function handleKeyboardOpen(): void {
+		open()
+		if (!isOpen.value) return
+		nextTick(focusInitialDay)
 	}
 
 	function handleClear(): void {
@@ -227,6 +272,7 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 		hasValue,
 		displayValue,
 		handleFieldClick,
+		handleKeyboardOpen,
 		handleClear,
 		handleModelUpdate,
 		handleModelEndUpdate,

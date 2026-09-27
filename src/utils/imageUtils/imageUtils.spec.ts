@@ -57,6 +57,30 @@ describe('imageUtils', () => {
 		it('возвращает исходную строку если нет расширения но есть query', () => {
 			expect(replaceExtension('noext?v=1', '.webp')).toBe('noext?v=1')
 		})
+
+		it('не принимает точку в домене за расширение файла', () => {
+			expect(replaceExtension('https://images.unsplash.com/photo-123?w=800', '.webp')).toBe(
+				'https://images.unsplash.com/photo-123?w=800',
+			)
+			expect(replaceExtension('https://cdn.example.com', '.webp')).toBe('https://cdn.example.com')
+		})
+
+		it('не принимает точку в каталоге за расширение файла', () => {
+			expect(replaceExtension('../images/photo', '.avif')).toBe('../images/photo')
+			expect(replaceExtension('/assets.v2/photo', '.avif')).toBe('/assets.v2/photo')
+		})
+
+		it('обрабатывает protocol-relative URL: расширение берётся из имени файла, а не из домена', () => {
+			expect(replaceExtension('//cdn.example.com/img/photo.jpg?w=400', '.webp')).toBe('//cdn.example.com/img/photo.webp?w=400')
+			expect(replaceExtension('//cdn.example.com/img/photo', '.webp')).toBe('//cdn.example.com/img/photo')
+			expect(replaceExtension('//cdn.example.com', '.avif')).toBe('//cdn.example.com')
+		})
+
+		it('заменяет расширение в URL с доменом, каталогами с точкой и hash', () => {
+			expect(replaceExtension('https://cdn.example.com/v1.2/photo.jpg?w=1#top', '.webp')).toBe(
+				'https://cdn.example.com/v1.2/photo.webp?w=1#top',
+			)
+		})
 	})
 
 	// ── buildOptimizedSrc ──

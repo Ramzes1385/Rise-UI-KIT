@@ -5,8 +5,9 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
+import type { UploadedFile } from '../model/BaseFileUpload.types'
 
 /** Создание мок-файла */
 function createFile(name: string, size: number, type: string): File {
@@ -175,6 +176,144 @@ describe('BaseFileUpload integration', () => {
 
 			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
 			expect(fileInput.disabled).toBe(true)
+		})
+
+		it('не принимает перетаскиваемые файлы и не открывает выбор файла', async () => {
+			const { container, emitted } = render(BaseFileUpload, {
+				props: { isDisabled: true },
+			})
+			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
+			const clickSpy = vi.spyOn(fileInput, 'click')
+			const dropzone = screen.getByRole('button', { name: /Выберите файлы/ })
+
+			await fireEvent.drop(dropzone, { dataTransfer: { files: [createFile('a.png', 10, 'image/png')] } })
+			await fireEvent.click(dropzone)
+			await fireEvent.keyDown(dropzone, { key: 'Enter' })
+
+			expect(dropzone).toHaveAttribute('aria-disabled', 'true')
+			expect(clickSpy).not.toHaveBeenCalled()
+			expect(emitted().change).toBeUndefined()
+			expect(container.querySelector('.base-file-upload__item')).not.toBeInTheDocument()
+		})
+	})
+
+	describe('клавиатурная доступность', () => {
+		it('зона загрузки — кнопка, открывающая выбор файла по Enter и Space', async () => {
+			const user = userEvent.setup()
+			const { container } = render(BaseFileUpload, { props: {} })
+			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
+			const clickSpy = vi.spyOn(fileInput, 'click')
+			const dropzone = screen.getByRole('button', { name: /Выберите файлы/ })
+
+			await user.tab()
+			expect(dropzone).toHaveFocus()
+
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+
+			expect(clickSpy).toHaveBeenCalledTimes(2)
+		})
+
+		it('подпись связана с полем выбора файла', () => {
+			const { container } = render(BaseFileUpload, { props: { label: 'Документы' } })
+
+			expect(screen.getByLabelText('Документы')).toBe(container.querySelector('input[type="file"]'))
+		})
+
+		it('отключённая зона загрузки исключена из порядка табуляции', async () => {
+			const user = userEvent.setup()
+			render(BaseFileUpload, { props: { isDisabled: true } })
+
+			await user.tab()
+
+			expect(screen.getByRole('button', { name: /Выберите файлы/ })).not.toHaveFocus()
+		})
+	})
+
+	describe('доступность списка и ошибок', () => {
+		it('ошибки связаны с зоной загрузки через aria-describedby', () => {
+			render(BaseFileUpload, { props: { error: 'Прикрепите документ' } })
+
+			expect(screen.getByRole('button', { name: /Выберите файлы/ })).toHaveAccessibleDescription('Прикрепите документ')
+		})
+
+		it('без ошибок у зоны нет aria-describedby', () => {
+			render(BaseFileUpload, { props: {} })
+
+			expect(screen.getByRole('button', { name: /Выберите файлы/ })).not.toHaveAttribute('aria-describedby')
+		})
+
+		it('кнопка удаления и полоса прогресса называют файл', async () => {
+			const user = userEvent.setup()
+			const { container } = render(BaseFileUpload, { props: { isMultiple: true } })
+			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
+
+			await user.upload(fileInput, [createFile('photo.png', 10, 'image/png'), createFile('report.pdf', 10, 'application/pdf')])
+
+			expect(await screen.findByRole('button', { name: 'Удалить report.pdf' })).toBeInTheDocument()
+			expect(await screen.findByRole('progressbar', { name: 'photo.png' })).toBeInTheDocument()
+		})
+
+		it('в отключённом состоянии кнопки удаления выбранных файлов недоступны', async () => {
+			const user = userEvent.setup()
+			const { container, emitted, rerender } = render(BaseFileUpload, { props: {} })
+			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
+			await user.upload(fileInput, createFile('report.pdf', 10, 'application/pdf'))
+			await rerender({ isDisabled: true })
+
+			const remove = await screen.findByRole('button', { name: 'Удалить report.pdf' })
+			expect(remove).toBeDisabled()
+			await user.click(remove)
+			expect(emitted().remove).toBeUndefined()
+		})
+	})
+
+	describe('одиночный режим (isMultiple=false)', () => {
+		it('повторный выбор заменяет файл, а не добавляет второй', async () => {
+			const user = userEvent.setup()
+			const { container, emitted } = render(BaseFileUpload, { props: {} })
+			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
+
+			await user.upload(fileInput, createFile('first.pdf', 10, 'application/pdf'))
+			await waitFor(() => expect(screen.getByText('first.pdf')).toBeInTheDocument())
+			await user.upload(fileInput, createFile('second.pdf', 10, 'application/pdf'))
+			await waitFor(() => expect(screen.getByText('second.pdf')).toBeInTheDocument())
+
+			expect(screen.queryByText('first.pdf')).not.toBeInTheDocument()
+			expect(container.querySelectorAll('.base-file-upload__item')).toHaveLength(1)
+			const lastChange = emitted().change?.at(-1) as [File[]]
+			expect(lastChange[0].map(file => file.name)).toEqual(['second.pdf'])
+			const lastRemove = emitted().remove?.at(-1) as [UploadedFile]
+			expect(lastRemove[0].name).toBe('first.pdf')
+		})
+
+		it('из перетащенных нескольких файлов оставляет один', async () => {
+			const { container, emitted } = render(BaseFileUpload, { props: {} })
+			const dropzone = container.querySelector('.base-file-upload__dropzone')!
+			const files = [createFile('a.pdf', 10, 'application/pdf'), createFile('b.pdf', 10, 'application/pdf')]
+
+			await fireEvent.drop(dropzone, { dataTransfer: { files } })
+
+			await waitFor(() => expect(emitted()).toHaveProperty('change'))
+			expect(container.querySelectorAll('.base-file-upload__item')).toHaveLength(1)
+			const lastChange = emitted().change?.at(-1) as [File[]]
+			expect(lastChange[0].map(file => file.name)).toEqual(['a.pdf'])
+		})
+
+		it('невалидный файл не заменяет уже выбранный', async () => {
+			const user = userEvent.setup()
+			const { container, emitted } = render(BaseFileUpload, { props: { accept: '.pdf' } })
+			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
+
+			await user.upload(fileInput, createFile('first.pdf', 10, 'application/pdf'))
+			await waitFor(() => expect(screen.getByText('first.pdf')).toBeInTheDocument())
+			await fireEvent.drop(container.querySelector('.base-file-upload__dropzone')!, {
+				dataTransfer: { files: [createFile('bad.exe', 10, 'application/x-msdownload')] },
+			})
+
+			expect(screen.getByText('first.pdf')).toBeInTheDocument()
+			expect(emitted().remove).toBeUndefined()
+			expect(container.querySelector('.base-file-upload__error-item')).toBeInTheDocument()
 		})
 	})
 })

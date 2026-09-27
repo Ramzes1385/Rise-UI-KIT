@@ -1,43 +1,32 @@
-@use "@styles/functions" as *;
+// Время и статус под пузырём: 12/16 --rise-text-muted. Статус: отправляется — спиннер, отправлено — одна галочка,
+// доставлено — две, прочитано — две цветом --rise-primary. Иконка закрепа — перед временем.
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
 
 .base-chat-message-list {
 	&__meta {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
-		justify-content: flex-end;
 		gap: sz(4px);
-		margin-top: sz(4px);
-		align-self: flex-end;
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+		white-space: nowrap;
 	}
 
 	&__time {
-		opacity: 0.7;
+		font-variant-numeric: tabular-nums;
 	}
 
 	&__status-wrapper {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 
 		&--read {
-			.base-chat-message-list__status-icon {
-				color: var(--color-white) !important;
-			}
-		}
-
-		&--delivered {
-			.base-chat-message-list__status-icon {
-				color: rgba(255, 255, 255, 0.6) !important;
-			}
-		}
-
-		&--sent {
-			.base-chat-message-list__status-icon {
-				color: rgba(255, 255, 255, 0.6) !important;
-			}
+			color: var(--rise-primary);
 		}
 	}
 
 	&__status-icon--second {
-		margin-left: sz(-6px);
+		margin-left: sz(-7px);
 	}
 }

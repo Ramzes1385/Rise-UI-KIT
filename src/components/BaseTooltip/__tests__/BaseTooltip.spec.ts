@@ -115,7 +115,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--ghost')).toBe(true)
+					expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--ghost')).toBe(true)
 				})
 			})
 
@@ -127,7 +127,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--outline')).toBe(true)
+					expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--outline')).toBe(true)
 				})
 			})
 		})
@@ -141,8 +141,8 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					const wrapper = container.querySelector('.base-tooltip') as HTMLElement
-					expect(wrapper.style.getPropertyValue('--size-scale')).toBe('')
+					const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+					expect(popup.style.getPropertyValue('--size-scale')).toBe('')
 				})
 			})
 
@@ -154,8 +154,8 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					const wrapper = container.querySelector('.base-tooltip') as HTMLElement
-					expect(wrapper.style.getPropertyValue('--size-scale')).toBe('1.5')
+					const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+					expect(popup.style.getPropertyValue('--size-scale')).toBe('1.5')
 				})
 			})
 		})
@@ -196,8 +196,8 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				const tooltip = container.querySelector('.base-tooltip') as HTMLElement
-				expect(tooltip?.getAttribute('style')).toContain('--custom-text: #ff0000')
+				const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+				expect(popup?.getAttribute('style')).toContain('--custom-text: #ff0000')
 			})
 		})
 	})
@@ -211,7 +211,7 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--shadow')).toBe(true)
+				expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--shadow')).toBe(true)
 			})
 		})
 	})
@@ -225,7 +225,7 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--soft')).toBe(true)
+				expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--soft')).toBe(true)
 			})
 		})
 	})
@@ -263,6 +263,39 @@ describe('BaseTooltip unit', () => {
 				expect(tooltip?.classList.contains('custom-tooltip')).toBe(true)
 				expect(tooltip?.querySelector('.base-text')?.classList.contains('custom-text')).toBe(true)
 			})
+		})
+	})
+
+	describe('вариант, масштаб и цвет — у подсказки, а не у обёртки триггера', () => {
+		it('обёртка не получает класс варианта, --size-scale и --custom-*: кнопка в слоте не перекрашивается', async () => {
+			const { container } = render(BaseTooltip, {
+				props: { text: 'Подсказка', variant: 'soft', sizeScale: 125, color: { bg: { base: '#6d28d9' } }, isAlwaysVisible: true },
+				slots: { default: '<button>Цель</button>' },
+				...renderOptions,
+			})
+
+			const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+			expect(wrapper.getAttribute('style')).toBeNull()
+			expect(wrapper.className).toBe('base-tooltip')
+
+			await waitFor(() => {
+				const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+				expect(popup).toHaveClass('base-tooltip-popup--soft')
+				expect(popup.style.getPropertyValue('--size-scale')).toBe('1.25')
+				expect(popup.style.getPropertyValue('--custom-bg')).toBe('#6d28d9')
+			})
+		})
+
+		it('подсказка — role="tooltip" с id', async () => {
+			render(BaseTooltip, {
+				props: { text: 'Подсказка', isAlwaysVisible: true },
+				slots: { default: '<button>Цель</button>' },
+				...renderOptions,
+			})
+
+			const tooltip = await screen.findByRole('tooltip')
+			expect(tooltip).toHaveTextContent('Подсказка')
+			expect(tooltip.id).not.toBe('')
 		})
 	})
 })

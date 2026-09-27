@@ -69,6 +69,88 @@ describe('BasePagination integration', () => {
 		})
 	})
 
+	describe('текущая страница', () => {
+		it('должен помечать ровно одну текущую страницу aria-current="page"', () => {
+			render(BasePagination, {
+				props: { modelValue: 2, total: 50, pageSize: 10 },
+			})
+
+			const current = screen.getAllByRole('button', { current: 'page' })
+			expect(current).toHaveLength(1)
+			expect(current[0]).toHaveTextContent('2')
+		})
+
+		it('должен переносить aria-current при внешней смене modelValue', async () => {
+			const { rerender } = render(BasePagination, {
+				props: { modelValue: 1, total: 50, pageSize: 10 },
+			})
+
+			await rerender({ modelValue: 4 })
+
+			expect(screen.getByRole('button', { current: 'page' })).toHaveTextContent('4')
+		})
+
+		it('должен оформлять текущую страницу иначе, чем остальные, при variant по умолчанию', () => {
+			render(BasePagination, {
+				props: { modelValue: 2, total: 50, pageSize: 10 },
+			})
+
+			// Оформление кнопки целиком задаётся её классами (вариантом BaseButton)
+			const currentButton = screen.getByText('2').closest('button')
+			const otherButton = screen.getByText('3').closest('button')
+			expect(currentButton?.className).not.toBe(otherButton?.className)
+		})
+	})
+
+	describe('страница за пределами диапазона', () => {
+		it('«назад» ведёт на последнюю существующую страницу, если modelValue больше totalPages', async () => {
+			const user = userEvent.setup()
+			const { container, emitted } = render(BasePagination, {
+				props: { modelValue: 5, total: 30, pageSize: 10 },
+			})
+
+			// Кнопки «назад»/«вперёд» — прямые потомки корня, номера страниц — внутри __pages
+			const [prevButton] = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
+			await user.click(prevButton)
+
+			expect(emitted()['update:modelValue']).toEqual([[3]])
+		})
+
+		it('«вперёд» заблокирована, если modelValue больше totalPages', () => {
+			const { container } = render(BasePagination, {
+				props: { modelValue: 5, total: 30, pageSize: 10 },
+			})
+
+			const buttons = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
+			expect(buttons[buttons.length - 1]).toBeDisabled()
+		})
+
+		it('«назад» и «вперёд» заблокированы, когда страниц нет (total=0)', () => {
+			const { container } = render(BasePagination, {
+				props: { modelValue: 1, total: 0, pageSize: 10 },
+			})
+
+			const buttons = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
+			expect(buttons).toHaveLength(2)
+			expect(buttons[0]).toBeDisabled()
+			expect(buttons[1]).toBeDisabled()
+		})
+	})
+
+	describe('доступные имена', () => {
+		it('кнопки «назад» и «вперёд» имеют доступные имена', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BasePagination, {
+				props: { modelValue: 2, total: 50, pageSize: 10 },
+			})
+
+			await user.click(screen.getByRole('button', { name: 'Следующая страница' }))
+			await user.click(screen.getByRole('button', { name: 'Предыдущая страница' }))
+
+			expect(emitted()['update:modelValue']).toEqual([[3], [1]])
+		})
+	})
+
 	describe('многоточия', () => {
 		it('не должны быть кликабельными', async () => {
 			const user = userEvent.setup()
@@ -82,6 +164,36 @@ describe('BasePagination integration', () => {
 				// Клик по многоточию не должен вызывать emits
 				expect(emitted()).not.toHaveProperty('update:modelValue')
 			}
+		})
+
+		it('два многоточия не дают предупреждения Vue о дублирующихся ключах', async () => {
+			const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			try {
+				// 7 страниц без многоточий → 50 страниц с двумя: оба «…» попадают в keyed-diff одного обновления
+				const { container, rerender } = render(BasePagination, {
+					props: { modelValue: 10, total: 70, pageSize: 10 },
+				})
+				await rerender({ total: 500 })
+				expect(container.querySelectorAll('.base-pagination__ellipsis')).toHaveLength(2)
+
+				const duplicateKeyWarnings = warn.mock.calls.filter(([message]) => String(message).includes('Duplicate keys'))
+				expect(duplicateKeyWarnings).toHaveLength(0)
+			} finally {
+				warn.mockRestore()
+			}
+		})
+	})
+
+	describe('оформление текущей страницы', () => {
+		it('текущая страница помечена классом --current, стрелки и остальные страницы — вариантом ghost', () => {
+			const { container } = render(BasePagination, {
+				props: { modelValue: 2, total: 50, pageSize: 10 },
+			})
+
+			const current = screen.getByRole('button', { current: 'page' })
+			expect(current).toHaveClass('base-pagination__page--current')
+			expect(screen.getByText('3').closest('button')).toHaveClass('base-button--ghost')
+			expect(container.querySelectorAll('.base-pagination__arrow.base-button--ghost')).toHaveLength(2)
 		})
 	})
 })

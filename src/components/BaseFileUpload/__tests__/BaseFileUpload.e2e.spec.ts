@@ -6,7 +6,7 @@
 import { expect, test } from '@playwright/test'
 
 test('загрузка файлов: рендерит зону загрузки', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basefileupload--default')
+	await page.goto('/iframe.html?id=form-basefileupload--default')
 	await page.waitForSelector('.base-file-upload', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -15,7 +15,7 @@ test('загрузка файлов: рендерит зону загрузки'
 })
 
 test('загрузка файлов: отключённая зона не принимает файлы', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basefileupload--disabled')
+	await page.goto('/iframe.html?id=form-basefileupload--disabled')
 	await page.waitForSelector('.base-file-upload', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -24,7 +24,7 @@ test('загрузка файлов: отключённая зона не при
 })
 
 test('загрузка файлов: множественная загрузка', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basefileupload--multiple')
+	await page.goto('/iframe.html?id=form-basefileupload--multiple')
 	await page.waitForSelector('.base-file-upload', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -33,7 +33,7 @@ test('загрузка файлов: множественная загрузка
 })
 
 test('загрузка файлов: только изображения', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basefileupload--images-only')
+	await page.goto('/iframe.html?id=form-basefileupload--images-only')
 	await page.waitForSelector('.base-file-upload', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 

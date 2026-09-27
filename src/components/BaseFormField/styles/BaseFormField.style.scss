@@ -1,60 +1,58 @@
+// BaseFormField. Обёртка поля: подпись (field-label) над полем, под ним — описание (field-hint) или ошибка (field-error).
+// Отступ между строками — 6px, как у BaseInput: поля в обёртке и без неё стоят в форме одинаково.
+// Варианты: default и ghost — без оформления; outline — рамка; soft — мягкий фон; shadow — рамка и тень.
 .base-form-field {
 	display: flex;
 	flex-direction: column;
 	gap: sz(6px);
+	box-sizing: border-box;
 	width: 100%;
-	@include interactive;
-
-	@include custom-text(color, var(--color-text));
+	min-width: 0;
+	@include custom-bg(background-color, transparent);
 
 	&__label {
-		font-size: sz(14px);
-		font-weight: 600;
-		@include custom-text(color, var(--color-text));
-		display: flex;
-		align-items: center;
-		gap: sz(4px);
+		@include field-label;
+		@include custom-text(color, var(--rise-text));
 	}
 
 	&__required {
-		color: var(--color-error);
+		@include field-required;
+	}
+
+	&__content {
+		min-width: 0;
 	}
 
 	&__description {
-		font-size: sz(12px);
-		@include custom-text(color, var(--color-text-muted));
+		margin: 0;
+		@include field-hint;
 	}
 
 	&__error {
-		font-size: sz(12px);
-		@include custom-text(color, var(--color-error));
-		font-weight: 500;
+		margin: 0;
+		@include field-error;
 	}
 
-	// Варианты
-	&--ghost {
-		opacity: 0.8;
+	// ─── Варианты: поле в рамке или на подложке ───────────────────────────────────
 
-		@include hover {
-			opacity: 1;
-		}
+	&--outline,
+	&--soft,
+	&--shadow {
+		padding: sz(12px 16px);
+		border-radius: sz(var(--rise-radius-lg));
 	}
 
 	&--outline {
-		border: 1px solid var(--color-border);
-		padding: sz(12px);
-		border-radius: var(--border-radius-base);
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-sm);
-		padding: sz(12px);
-		border-radius: var(--border-radius-base);
+		border: 1px solid var(--rise-border);
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		padding: sz(12px);
-		border-radius: var(--border-radius-base);
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+	}
+
+	&--shadow {
+		border: 1px solid var(--rise-border);
+		@include custom-bg(background-color, var(--rise-bg));
+		box-shadow: var(--rise-shadow-sm);
 	}
 }

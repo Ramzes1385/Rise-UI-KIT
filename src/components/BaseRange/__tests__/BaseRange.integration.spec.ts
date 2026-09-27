@@ -4,6 +4,7 @@
  */
 
 import { fireEvent, render } from '@testing-library/vue'
+import { defineComponent, ref } from 'vue'
 import { BaseText } from '@components/BaseText'
 import '@testing-library/jest-dom/vitest'
 import { BaseTooltip } from '@components/BaseTooltip'
@@ -131,6 +132,82 @@ describe('BaseRange integration', () => {
 			await fireEvent.mouseUp(document)
 
 			expect(emitted()).toHaveProperty('change')
+		})
+
+		it('должен эмитить change с новым значением при управлении с клавиатуры', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 50, min: 0, max: 100 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'ArrowRight' })
+
+			expect(emitted('change')).toEqual([[51]])
+		})
+
+		it('должен эмитить change с обновлённым диапазоном при управлении с клавиатуры', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { rangeValue: [20, 70], min: 0, max: 100 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelectorAll('.base-range__thumb')[1], { key: 'ArrowLeft' })
+
+			expect(emitted('change')).toEqual([[[20, 69]]])
+		})
+
+		it('должен эмитить change с массивом точек при управлении с клавиатуры', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { points: [20, 50, 80], min: 0, max: 100 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelectorAll('.base-range__thumb')[1], { key: 'ArrowRight' })
+
+			expect(emitted('change')).toEqual([[[20, 51, 80]]])
+		})
+
+		it('не должен эмитить change с клавиатуры, если значение упёрлось в границу', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 100, min: 0, max: 100 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'ArrowRight' })
+
+			expect(emitted('change')).toBeUndefined()
+		})
+	})
+
+	describe('точность дробного шага', () => {
+		it('должен эмитить значение без хвостов плавающей точки при step=0.1', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 0.2, min: 0, max: 1, step: 0.1 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'ArrowRight' })
+
+			expect(emitted('update:modelValue')).toEqual([[0.3]])
+		})
+
+		it('должен показывать точное значение в подписи и aria-valuenow через v-model', async () => {
+			const Host = defineComponent({
+				components: { BaseRange },
+				setup() {
+					const volume = ref(0.5)
+					return { volume }
+				},
+				template: '<BaseRange v-model="volume" :min="0" :max="1" :step="0.05" has-label />',
+			})
+			const { container } = render(Host, { global: globalComponents })
+			const thumb = container.querySelector('.base-range__thumb')!
+
+			await fireEvent.keyDown(thumb, { key: 'ArrowRight' })
+			await fireEvent.keyDown(thumb, { key: 'ArrowRight' })
+
+			expect(thumb).toHaveAttribute('aria-valuenow', '0.6')
+			expect(container.querySelector('.base-range__label-value')).toHaveTextContent(/^0\.6$/)
 		})
 	})
 

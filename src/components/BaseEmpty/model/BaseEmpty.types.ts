@@ -1,7 +1,13 @@
 import type { BaseComponentProps } from '../../../types/base.types'
 
+/**
+ * Варианты отображения пустого состояния:
+ * default — пунктирная рамка, soft — мягкий фон без рамки, ghost — без фона, рамки и отступов (внутри других блоков).
+ */
+export const EMPTY_VARIANTS = ['default', 'ghost', 'soft'] as const
+
 /** Варианты отображения пустого состояния */
-export type EmptyVariant = 'default' | 'ghost' | 'soft'
+export type EmptyVariant = (typeof EMPTY_VARIANTS)[number]
 
 /**
  * Пропсы компонента BaseEmpty

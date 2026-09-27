@@ -12,137 +12,138 @@
 			classes.root,
 		]"
 		:style="[{ height: height }, sizeScaleStyle]"
-		@mouseenter="pauseAutoplay"
-		@mouseleave="resumeAutoplay">
+		@mouseenter="onMouseEnter"
+		@mouseleave="onMouseLeave"
+		@focusin="onFocusIn"
+		@focusout="onFocusOut">
 		<!-- Слот header -->
 		<slot name="header" />
 
-		<!-- Стрелки -->
-		<div v-if="hasArrows" class="base-slider__arrows" :class="classes.arrows">
-			<BaseButton
-				variant="ghost"
-				class="base-slider__arrow base-slider__arrow--prev"
-				:class="classes.arrow"
-				:is-disabled="!isLoop && currentIndex === 0"
-				:size-scale="sizeScale"
-				@click="goPrev"
-				@mousedown="startHold('prev')"
-				@mouseup="stopHold"
-				@mouseleave="stopHold"
-				@touchstart.prevent="startHold('prev')"
-				@touchend="stopHold">
-				<BaseIcon :name="isVertical ? 'chevron-up' : 'chevron-left'" :size-scale="calcIconScale('sm', sizeScale)" />
-			</BaseButton>
-			<BaseButton
-				variant="ghost"
-				class="base-slider__arrow base-slider__arrow--next"
-				:class="classes.arrow"
-				:is-disabled="!isLoop && currentIndex >= maxIndex"
-				:size-scale="sizeScale"
-				@click="goNext"
-				@mousedown="startHold('next')"
-				@mouseup="stopHold"
-				@mouseleave="stopHold"
-				@touchstart.prevent="startHold('next')"
-				@touchend="stopHold">
-				<BaseIcon :name="isVertical ? 'chevron-down' : 'chevron-right'" :size-scale="calcIconScale('sm', sizeScale)" />
-			</BaseButton>
-		</div>
+		<!-- Сцена: область слайдов и стрелки, отцентрованные по ней (а не по всему слайдеру с навигацией) -->
+		<div class="base-slider__stage">
+			<!-- Листать нечего (слайдов не больше, чем видно) — стрелки и навигация не выводятся -->
+			<div v-if="hasArrows && canNavigate" class="base-slider__arrows" :class="classes.arrows">
+				<BaseButton
+					:variant="arrowVariant"
+					class="base-slider__arrow base-slider__arrow--prev"
+					:class="classes.arrow"
+					:aria-label="SLIDER_LABEL.PREV"
+					:is-disabled="!isLoop && currentIndex === 0"
+					:size-scale="sizeScale"
+					@click="goPrev"
+					@mousedown="startHold('prev')"
+					@mouseup="stopHold"
+					@mouseleave="stopHold"
+					@touchstart.prevent="startHold('prev')"
+					@touchend="stopHold">
+					<BaseIcon :name="isVertical ? 'chevron-up' : 'chevron-left'" />
+				</BaseButton>
+				<BaseButton
+					:variant="arrowVariant"
+					class="base-slider__arrow base-slider__arrow--next"
+					:class="classes.arrow"
+					:aria-label="SLIDER_LABEL.NEXT"
+					:is-disabled="!isLoop && currentIndex >= maxIndex"
+					:size-scale="sizeScale"
+					@click="goNext"
+					@mousedown="startHold('next')"
+					@mouseup="stopHold"
+					@mouseleave="stopHold"
+					@touchstart.prevent="startHold('next')"
+					@touchend="stopHold">
+					<BaseIcon :name="isVertical ? 'chevron-down' : 'chevron-right'" />
+				</BaseButton>
+			</div>
 
-		<!-- Область слайдов -->
-		<div
-			ref="viewportRef"
-			class="base-slider__viewport"
-			:class="classes.viewport"
-			@touchstart="onTouchStart"
-			@touchmove="onTouchMove"
-			@touchend="onTouchEnd"
-			@mousedown.prevent="onDragStart"
-			@dragstart.prevent>
-			<div class="base-slider__track" :class="classes.track" :style="trackStyle">
-				<div
-					v-for="(item, index) in items"
-					:key="index"
-					class="base-slider__slide"
-					:class="[{ 'base-slider__slide--active': index === currentIndex }, classes.slide]"
-					:style="slideStyle">
-					<slot :item="item" :index="index">
-						<video
-							v-if="item.type === 'video'"
-							:src="item.src"
-							:poster="item.poster"
-							class="base-slider__video"
-							controls
-							muted
-							loop
-							playsinline></video>
-						<BaseImage
-							v-else
-							:src="item.src"
-							:alt="item.alt || ''"
-							class="base-slider__image"
-							loading="lazy"
-							:has-zoom="isZoomable" />
-					</slot>
+			<!-- Область слайдов -->
+			<div
+				ref="viewportRef"
+				class="base-slider__viewport"
+				:class="classes.viewport"
+				@touchstart="onTouchStart"
+				@touchmove="onTouchMove"
+				@touchend="onTouchEnd"
+				@mousedown.prevent="onDragStart"
+				@click.capture="onClickCapture"
+				@dragstart.prevent>
+				<div class="base-slider__track" :class="classes.track" :style="trackStyle">
+					<!-- Невидимые слайды inert: их ссылки, видео и кнопки зума не попадают в Tab и не читаются скринридером -->
 					<div
-						v-if="hasCaption && (item.title || item.description)"
-						class="base-slider__caption"
-						:class="classes.caption">
-						<slot name="caption" :item="item" :index="index">
-							<BaseText
-								v-if="item.title"
-								tag="h3"
-								class="base-slider__title"
-								:custom-class="classes.title"
-								:size-scale="sizeScale"
-								:weight="UI_FONT_WEIGHT.BOLD"
-								>{{ item.title }}</BaseText
-							>
-							<BaseText
-								v-if="item.description"
-								class="base-slider__desc"
-								:custom-class="classes.desc"
-								:size-scale="sizeScale"
-								>{{ item.description }}</BaseText
-							>
+						v-for="(item, index) in items"
+						:key="index"
+						class="base-slider__slide"
+						:class="[{ 'base-slider__slide--active': index === currentIndex }, classes.slide]"
+						:style="slideStyle"
+						:inert="isSlideVisible(index) ? undefined : true">
+						<slot :item="item" :index="index">
+							<video
+								v-if="item.type === 'video'"
+								:src="item.src"
+								:poster="item.poster"
+								class="base-slider__video"
+								controls
+								muted
+								loop
+								playsinline></video>
+							<BaseImage
+								v-else
+								:src="item.src"
+								:alt="item.alt || ''"
+								class="base-slider__image"
+								:border-radius="0"
+								loading="lazy"
+								:zoom-config="{ hasZoom: isZoomable }" />
 						</slot>
+						<div
+							v-if="hasCaption && (item.title || item.description)"
+							class="base-slider__caption"
+							:class="classes.caption">
+							<slot name="caption" :item="item" :index="index">
+								<h3 v-if="item.title" class="base-slider__title" :class="classes.title">{{ item.title }}</h3>
+								<p v-if="item.description" class="base-slider__desc" :class="classes.desc">{{ item.description }}</p>
+							</slot>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- Навигация -->
-		<div v-if="hasNavigation" class="base-slider__navigation" :class="classes.navigation">
+		<div v-if="hasNavigation && canNavigate" class="base-slider__navigation" :class="classes.navigation">
 			<div v-if="navigation === 'dots' || navigation === 'both'" class="base-slider__dots" :class="classes.dots">
-				<BaseButton
+				<button
 					v-for="(_, page) in pageCount"
 					:key="page"
-					variant="ghost"
+					type="button"
 					class="base-slider__dot"
 					:class="[{ 'base-slider__dot--active': page === currentPage }, classes.dot]"
-					:padding="0"
-					:size-scale="sizeScale"
-					@click="goToPage(page)" />
+					:aria-label="slideLabel(page * perGroup)"
+					:aria-current="page === currentPage ? 'true' : undefined"
+					@click="goToPage(page)"></button>
 			</div>
 
 			<div
 				v-if="navigation === 'thumbnails' || navigation === 'both'"
 				class="base-slider__thumbs"
 				:class="classes.thumbs">
-				<BaseButton
+				<button
 					v-for="(item, index) in items"
 					:key="index"
-					variant="ghost"
+					type="button"
 					class="base-slider__thumb"
 					:class="[{ 'base-slider__thumb--active': index === currentIndex }, classes.thumb]"
-					:size-scale="sizeScale"
+					:aria-label="slideLabel(index)"
+					:aria-current="index === currentIndex ? 'true' : undefined"
 					@click="goTo(index)">
-					<BaseImage v-if="item.type !== 'video'" :src="item.src" :alt="item.alt || ''" />
-					<BaseImage v-else :src="item.poster || ''" :alt="item.alt || 'Video thumbnail'" />
-					<div v-if="item.type === 'video'" class="base-slider__thumb-play">
+					<BaseImage
+						:src="item.type === 'video' ? item.poster || '' : item.src"
+						alt=""
+						class="base-slider__thumb-image"
+						:border-radius="0" />
+					<span v-if="item.type === 'video'" class="base-slider__thumb-play">
 						<BaseIcon name="play" :size-scale="calcIconScale('sm', sizeScale)" />
-					</div>
-				</BaseButton>
+					</span>
+				</button>
 			</div>
 		</div>
 
@@ -156,14 +157,21 @@ import { computed, onBeforeUnmount } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
-import { BaseText } from '@components/BaseText'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
-import { UI_FONT_WEIGHT, UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
+
+/** Доступные имена кнопок слайдера (кандидаты в UI_ARIA). */
+const SLIDER_LABEL = {
+	PREV: 'Предыдущий слайд',
+	NEXT: 'Следующий слайд',
+	SLIDE: 'Слайд',
+	OF: 'из',
+} as const
 
 const props = withDefaults(defineProps<BaseSliderProps>(), {
 	customClass: undefined,
@@ -225,12 +233,15 @@ const {
 	goNext,
 	goPrev,
 	goToPage,
-	pauseAutoplay,
-	resumeAutoplay,
+	onMouseEnter,
+	onMouseLeave,
+	onFocusIn,
+	onFocusOut,
 	onTouchStart,
 	onTouchMove,
 	onTouchEnd,
 	onDragStart,
+	onClickCapture,
 } = useSlider({
 	itemCount: () => props.items.length,
 	animation: () => props.animation,
@@ -248,6 +259,26 @@ const {
 })
 
 const hasNavigation = computed(() => props.navigation !== 'none')
+
+/** Есть что листать: слайдов больше, чем помещается в область. Иначе стрелки и навигация не нужны. */
+const canNavigate = computed(() => maxIndex.value > 0)
+
+/** Стрелки поверх слайдов — приподнятые (shadow), снаружи в углах — контурные (outline). */
+const arrowVariant = computed(() => (props.arrowsPosition === 'center' ? 'shadow' : 'outline'))
+
+const perView = computed(() => Math.max(1, props.slidesPerView))
+const perGroup = computed(() => Math.max(1, props.slidesPerGroup))
+
+/** Слайд виден: в режиме slide — одно из perView окон начиная с текущего, в fade/scale/flip — только текущий. */
+function isSlideVisible(index: number): boolean {
+	if (props.animation !== 'slide') return index === currentIndex.value
+	return index >= currentIndex.value && index < currentIndex.value + perView.value
+}
+
+/** «Слайд 2 из 6»: имя точки и миниатюры — номер слайда, к которому они ведут. */
+function slideLabel(index: number): string {
+	return `${SLIDER_LABEL.SLIDE} ${index + 1} ${SLIDER_LABEL.OF} ${props.items.length}`
+}
 
 let holdTimer: ReturnType<typeof setInterval> | null = null
 

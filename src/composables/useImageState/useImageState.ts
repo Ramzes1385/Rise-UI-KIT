@@ -1,7 +1,7 @@
 /** Composable: управление состоянием изображения (загрузка, fallback, оптимизированные src) */
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { UI_SIZE } from '@constants'
-import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '@utils/imageUtils'
+import { buildOptimizedSrc, buildSrcset, replaceExtension } from '@utils/imageUtils'
 import type { UseImageStateOptions } from './useImageState.types'
 
 /** Описание: управляет состоянием изображения — загрузка, таймаут, fallback, оптимизированные src/srcset и стили контейнера */
@@ -10,6 +10,7 @@ function useImageState(options: UseImageStateOptions) {
 	const hasError = ref(false)
 	const isUsingFallback = ref(false)
 	let loadingTimeoutId: number | null = null
+	let visibilityObserver: IntersectionObserver | null = null
 
 	const hasCustomDimensions = computed((): boolean => {
 		return !!options.width?.() || !!options.height?.() || !!options.aspectRatio?.()
@@ -60,20 +61,29 @@ function useImageState(options: UseImageStateOptions) {
 		return optimizedSrc.value
 	})
 
-	const avifSrc = computed((): string | null => {
+	/**
+	 * Производный <source> (файл-сосед с другим расширением) строится только по явному флагу:
+	 * браузер выбирает <source> по type, не проверяя существование файла, и при 404 не переходит
+	 * к <img src> — автоматическое добавление ломало любые изображения без .avif/.webp-копий.
+	 * Пока показывается fallbackSrc, производные источники убираются, иначе они перекрывали бы его.
+	 */
+	function buildFormatSrc(isEnabled: boolean, extension: string): string | null {
+		if (!isEnabled || isUsingFallback.value) return null
 		const src = options.src()
-		if (isExternalImage(src)) return null
-		return replaceExtension(src, '.avif')
-	})
+		if (!src || src.startsWith('data:') || src.startsWith('blob:')) return null
+		const formatSrc = replaceExtension(src, extension)
+		return formatSrc === src ? null : formatSrc
+	}
 
-	const webpSrc = computed((): string | null => {
-		const src = options.src()
-		if (options.convertToWebp()) return replaceExtension(src, '.webp')
-		if (isExternalImage(src)) return null
-		return replaceExtension(src, '.webp')
-	})
+	const avifSrc = computed((): string | null => buildFormatSrc(options.convertToAvif?.() ?? false, '.avif'))
 
-	const srcsetValue = computed((): string | undefined => buildSrcset(options.src(), options.srcWidth?.()))
+	const webpSrc = computed((): string | null => buildFormatSrc(options.convertToWebp(), '.webp'))
+
+	// srcset приоритетнее src: пока показывается fallbackSrc, варианты исходного изображения не выводятся
+	const srcsetValue = computed((): string | undefined => {
+		if (isUsingFallback.value) return undefined
+		return buildSrcset(options.src(), options.srcWidth?.())
+	})
 
 	const sizesValue = computed((): string => {
 		const width = options.width?.()
@@ -100,20 +110,51 @@ function useImageState(options: UseImageStateOptions) {
 		}
 	}
 
+	function stopVisibilityObserver(): void {
+		visibilityObserver?.disconnect()
+		visibilityObserver = null
+	}
+
+	/**
+	 * Запускает отсчёт таймаута загрузки. lazy-изображение браузер запрашивает только при приближении
+	 * к viewport, поэтому для него отсчёт начинается с попадания в зону видимости: иначе картинка ниже
+	 * первого экрана уходила в ошибку (и <img> удалялся) раньше, чем её загрузка вообще начиналась.
+	 * Без IntersectionObserver начало lazy-загрузки неизвестно — таймаут к такому изображению не применяется.
+	 */
+	function armLoadingTimeout(): void {
+		clearLoadingTimeout()
+		stopVisibilityObserver()
+		if (isLoaded.value || hasError.value) return
+		if (options.loading?.() !== 'lazy') {
+			startLoadingTimeout()
+			return
+		}
+		const img = options.imgRef?.value
+		if (!img || typeof IntersectionObserver === 'undefined') return
+		visibilityObserver = new IntersectionObserver(entries => {
+			if (!entries.some(entry => entry.isIntersecting)) return
+			stopVisibilityObserver()
+			startLoadingTimeout()
+		})
+		visibilityObserver.observe(img)
+	}
+
 	function handleLoad(): void {
 		clearLoadingTimeout()
+		stopVisibilityObserver()
 		isLoaded.value = true
 		options.onLoad?.()
 	}
 
 	function handleError(): void {
 		clearLoadingTimeout()
+		stopVisibilityObserver()
 		const fallback = options.fallbackSrc?.()
 		if (fallback && !isUsingFallback.value) {
 			isUsingFallback.value = true
 			hasError.value = false
 			isLoaded.value = false
-			startLoadingTimeout()
+			armLoadingTimeout()
 		} else {
 			hasError.value = true
 			options.onError?.()
@@ -126,13 +167,25 @@ function useImageState(options: UseImageStateOptions) {
 			isLoaded.value = false
 			hasError.value = false
 			isUsingFallback.value = false
-			startLoadingTimeout()
+			armLoadingTimeout()
 		},
 		{ immediate: true },
 	)
 
+	// <img> появляется только после монтирования и пересоздаётся после ошибки — наблюдение переносится на актуальный элемент
+	if (options.imgRef) {
+		watch(
+			options.imgRef,
+			() => {
+				if (options.loading?.() === 'lazy') armLoadingTimeout()
+			},
+			{ flush: 'post' },
+		)
+	}
+
 	onUnmounted(() => {
 		clearLoadingTimeout()
+		stopVisibilityObserver()
 	})
 
 	return {

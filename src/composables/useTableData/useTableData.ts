@@ -4,6 +4,7 @@ import { useTableFilter } from '@composables/useTableFilter'
 import { useTablePagination } from '@composables/useTablePagination'
 import { useTableSearch } from '@composables/useTableSearch'
 import { useTableSort } from '@composables/useTableSort'
+import { compareSortKeys, toSortKey } from '@utils/tableUtils'
 import type { UseTableDataOptions, UseTableDataReturn } from './useTableData.types'
 import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 import type { Ref } from 'vue'
@@ -103,27 +104,24 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 			})
 		}
 
-		// Множественная сортировка
-		if (sortStates.value.length > 0) {
-			result.sort((a, b) => {
-				for (const sort of sortStates.value) {
-					if (!sort.direction) continue
+		// Множественная сортировка. Ключи нормализуются один раз на строку (а не в каждом сравнении):
+		// пустые и нераспознанные значения получают ранг и уходят в конец, поэтому NaN не ломает компаратор
+		const activeSorts = sortStates.value.filter(sort => sort.direction)
+		if (activeSorts.length > 0) {
+			const sortTypes = new Map(columns.value.map((column: TableColumn) => [column.key, column.sortType]))
+			const keyedRows = result.map(row => ({
+				row,
+				keys: activeSorts.map(sort => toSortKey(row.data[sort.key], sortTypes.get(sort.key))),
+			}))
 
-					const column = columns.value.find((item: TableColumn) => item.key === sort.key)
-					const dir = sort.direction === 'asc' ? 1 : -1
-					const aVal = a.data[sort.key]
-					const bVal = b.data[sort.key]
-
-					const cmp = column?.sortType === 'number'
-						? Number(aVal) - Number(bVal)
-						: column?.sortType === 'date'
-							? new Date(String(aVal)).getTime() - new Date(String(bVal)).getTime()
-							: String(aVal).localeCompare(String(bVal))
-
-					if (cmp !== 0) return cmp * dir
+			keyedRows.sort((a, b) => {
+				for (let index = 0; index < activeSorts.length; index++) {
+					const cmp = compareSortKeys(a.keys[index], b.keys[index], activeSorts[index].direction)
+					if (cmp !== 0) return cmp
 				}
 				return 0
 			})
+			result = keyedRows.map(item => item.row)
 		}
 
 		return result

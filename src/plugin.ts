@@ -48,6 +48,7 @@ import { BaseTextarea } from './components/BaseTextarea'
 import { BaseTooltip } from './components/BaseTooltip'
 import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
+import { ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
 import type { App, Component, Plugin } from 'vue'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
@@ -61,6 +62,11 @@ const BaseFileUpload = defineAsyncComponent(() => import('./components/BaseFileU
 export interface UiKitPluginOptions {
 	/** Префикс для глобальных имён компонентов. */
 	prefix?: string
+	/**
+	 * Путь к SVG-спрайту иконок (например '/assets/icons.svg' или URL из импорта '…/icons.svg?url').
+	 * По умолчанию 'icons.svg' — относительный путь, который на вложенных маршрутах SPA резолвится неверно.
+	 */
+	iconSpritePath?: string
 }
 
 const UI_COMPONENTS: Record<string, Component> = {
@@ -132,6 +138,7 @@ export function createUiKitPlugin(options?: UiKitPluginOptions): Plugin {
 	return {
 		install(app: App): void {
 			installItems(app, options)
+			if (options?.iconSpritePath) app.provide(ICON_SPRITE_PATH_KEY, options.iconSpritePath)
 		},
 	}
 }

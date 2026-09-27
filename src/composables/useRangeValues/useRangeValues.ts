@@ -110,16 +110,20 @@ function useRangeValues({ props, emit }: UseRangeValuesOptions): UseRangeValuesR
 		emitUpdate(index, clamped)
 	}
 
-	function emitChange(): void {
+	/**
+	 * Эмитить change. Без аргумента берутся текущие props (окончание drag — к этому моменту родитель
+	 * уже применил update:*); при клавиатурном шаге props ещё не обновлены — значения передаются явно.
+	 */
+	function emitChange(values: number[] = pointValues.value): void {
 		if (mode.value === 'single') {
-			emit('change', props.modelValue)
+			emit('change', values[0])
 			return
 		}
 		if (mode.value === 'range') {
-			emit('change', [pointValues.value[0], pointValues.value[1]])
+			emit('change', [values[0], values[1]])
 			return
 		}
-		emit('change', pointValues.value.slice())
+		emit('change', values.slice())
 	}
 
 	return {

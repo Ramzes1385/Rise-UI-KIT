@@ -1,557 +1,395 @@
-﻿/**
- * Stories для компонента BaseDropdown.
- * Демонстрирует все позиции и настройки.
+/**
+ * BaseDropdown — stories.
+ *
+ * Разделы: Default (песочница: меню действий, isOpen синхронизирован с Controls) → внешний вид (варианты, кастомный цвет) →
+ * состояния (пустая панель, длинный список) → сценарии (позиции, поле ввода в панели) → клавиатура.
+ * Открытые панели телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, userEvent, waitFor } from 'storybook/test'
-import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { expect, fn, screen, waitFor } from 'storybook/test'
+import { computed, ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, propGroup, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseInput } from '@components/BaseInput'
+import { BaseMenu } from '@components/BaseMenu'
+import { BaseText } from '@components/BaseText'
 import { DROPDOWN_VARIANTS } from '../model/BaseDropdown.types'
 import BaseDropdown from '../ui/BaseDropdown.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { DropdownPosition } from '../model/BaseDropdown.types'
+import type { BaseMenuItem } from '@components/BaseMenu'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseDropdown> = {
-	title: 'UI/BaseDropdown',
+/** Все позиции панели относительно триггера. */
+const POSITIONS: DropdownPosition[] = [
+	'bottom-start',
+	'bottom',
+	'bottom-end',
+	'top-start',
+	'top',
+	'top-end',
+	'left-start',
+	'left',
+	'left-end',
+	'right-start',
+	'right',
+	'right-end',
+]
+
+/** Меню действий с файлом: одна группа, чтобы центр меню приходился на пункт (на это опирается e2e). */
+const FILE_ACTIONS: BaseMenuItem[][] = [
+	[
+		{ label: 'Скопировать ссылку', icon: 'link' },
+		{ label: 'Скачать', icon: 'download' },
+		{ label: 'Удалить', icon: 'trash' },
+	],
+]
+
+/** Длинный список проектов для примера с прокруткой. */
+const PROJECTS: BaseMenuItem[][] = [
+	[
+		'Сайт студии',
+		'Мобильное приложение',
+		'Сериал «Северный ветер», сезон 1',
+		'Сериал «Северный ветер», сезон 2',
+		'Аниме «Лисья тропа»',
+		'Документальный фильм о реставрации',
+		'Подкаст «Голоса»',
+		'Аудиокнига «Старый маяк»',
+		'Трейлеры осеннего сезона',
+		'Архив 2024',
+		'Черновики',
+		'Шаблоны субтитров',
+	].map(label => ({ label })),
+]
+
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}
+
+/** Открытые панели телепортируются в body и перекрыли бы страницу Docs — там пример показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Overlay/BaseDropdown',
 	component: BaseDropdown,
-
-	argTypes: buildArgTypes({
-		props: {
-			variant: { control: 'radio', options: DROPDOWN_VARIANTS },
-			position: {
-				control: 'select',
-				options: [
-					'bottom-start',
-					'bottom-end',
-					'bottom',
-					'top-start',
-					'top-end',
-					'top',
-					'left-start',
-					'left-end',
-					'left',
-					'right-start',
-					'right-end',
-					'right',
-				],
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Выпадающая панель у триггера: меню действий, фильтр, небольшая форма. Основа для `BasePopover`,',
+					'`BaseSelect` и `BaseSearch`.',
+					'',
+					'- Триггер — слот по умолчанию, содержимое панели — слот `dropdown`. Открытием управляет родитель:',
+					'  `v-model:is-open` и обработчик клика на триггере. Панель закрывается кликом снаружи и по Escape.',
+					'- Панель телепортируется в body и позиционируется по триггеру (`position`, `gap`); `matchWidth` — ширина',
+					'  как у триггера, `maxHeight` — высота, после которой содержимое прокручивается.',
+					'- Фокус остаётся на триггере (`preventMousedown`); поля ввода в панели получают фокус, а при закрытии он',
+					'  возвращается на триггер.',
+					'',
+					'Для меню действий положите в панель `BaseMenu variant="ghost"`, для подсказки со стрелкой возьмите `BasePopover`.',
+				].join('\n'),
 			},
-			gap: { control: 'number' },
-			maxHeight: { control: 'text' },
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			padding: {
-				control: 'object',
-				description:
-					'Отступы панели. Число (px): Y = значение, X = значение × 2. Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-		hidden: ['onClose', 'onUpdate:isOpen'],
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: DROPDOWN_VARIANTS }),
+		position: { control: 'select', options: POSITIONS, table: propGroup(ARG_GROUP.appearance) },
+		gap: { control: { type: 'number', min: 0, max: 32 }, table: propGroup(ARG_GROUP.appearance) },
+		maxHeight: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		matchWidth: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		padding: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		panelClass: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		closeOnEscape: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		preventMousedown: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		default: { control: false },
+		dropdown: { control: false },
+	},
 	args: {
 		isOpen: false,
 		position: 'bottom-start',
 		variant: 'default',
 		gap: 4,
 		maxHeight: '320px',
-		matchWidth: true,
+		matchWidth: false,
 		closeOnEscape: true,
 		preventMousedown: true,
-		padding: 2,
-		sizeScale: 90,
+		sizeScale: 100,
+		onClose: fn(),
+		'onUpdate:isOpen': fn(),
 	},
-}
+	// isOpen хранится в args: триггер переключает панель, закрытие кликом снаружи или Escape обновляет Controls.
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseDropdown, BaseButton, BaseIcon, BaseMenu },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), isOpen: computed(() => args.isOpen), onUpdate, actions: FILE_ACTIONS }),
+			template: `
+				<BaseDropdown v-bind="props" @update:is-open="onUpdate">
+					<BaseButton variant="outline" data-testid="trigger" @click="onUpdate(!isOpen)">
+						Действия
+						<template #right><BaseIcon name="chevron-down" :size-scale="80" /></template>
+					</BaseButton>
+					<template #dropdown>
+						<div data-testid="panel">
+							<BaseMenu variant="ghost" :items="actions" @select="onUpdate(false)" />
+						</div>
+					</template>
+				</BaseDropdown>
+			`,
+		}
+	},
+} satisfies Meta<typeof BaseDropdown>
 
 export default meta
-type Story = StoryObj<typeof BaseDropdown>
-/** Базовый dropdown */
-export const Default: Story = {
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button data-testid="trigger" style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;" @click="isOpen = !isOpen">
-						Открыть
-					</button>
-					<template #dropdown>
-						<div data-testid="panel" style="padding:8px;">
-							<div v-for="i in 5" :key="i" style="padding:8px;cursor:pointer;border-radius:var(--border-radius-base);" @click="isOpen = false">
-								Пункт {{ i }}
-							</div>
-						</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const trigger = canvasElement.querySelector('[data-testid="trigger"]') as HTMLButtonElement
+type Story = StoryObj<typeof meta>
 
-		await step('Фокусировка на триггере по Tab', async () => {
-			await userEvent.tab()
-			expect(trigger).toHaveFocus()
-		})
+// ─── Default ───────────────────────────────────────────────────────────────────
 
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '[data-testid="trigger"]' })
-		})
+/**
+ * Песочница: меню действий. Триггер открывает и закрывает панель, выбор пункта закрывает её, `isOpen` виден в Controls.
+ * Без play-функции: story открывают e2e-тесты, и автоматические клики мешали бы им (сценарий проверяет Keyboard).
+ */
+export const Default: Story = {}
 
-		await step('Открытие меню по клавише Enter', async () => {
-			await userEvent.keyboard('[Enter]')
-			await waitFor(() => {
-				const panel = document.body.querySelector('[data-testid="panel"]')
-				expect(panel).toBeInTheDocument()
-			})
-		})
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
 
-		await step('Закрытие меню по клавише Escape', async () => {
-			await userEvent.keyboard('[Escape]')
-			await waitFor(() => {
-				const panel = document.body.querySelector('[data-testid="panel"]')
-				expect(panel).toBeNull()
-			})
-		})
-	},
-	parameters: {
-		docs: {
-			source: {
-				code: `
-<BaseDropdown v-model:is-open="isOpen">
-  <button @click="isOpen = !isOpen">Открыть</button>
-  <template #dropdown>
-    <div v-for="i in 5" :key="i" @click="isOpen = false">Пункт {{ i }}</div>
-  </template>
-</BaseDropdown>
-				`,
-			},
-		},
-	},
-}
-/** Все позиции */
-export const Positions: Story = {
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const positions = [
-				'bottom-start',
-				'bottom-end',
-				'bottom',
-				'top-start',
-				'top-end',
-				'top',
-				'left-start',
-				'left-end',
-				'left',
-				'right-start',
-				'right-end',
-				'right',
-			] as const
-			const openMap = ref<Record<string, boolean>>({})
-			function toggle(p: string) {
-				openMap.value[p] = !openMap.value[p]
-			}
-			return { args, positions, openMap, toggle }
-		},
-		template: `
-			<div style="padding:160px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-				<BaseDropdown v-for="p in positions" :key="p"
-					v-bind="args"
-					v-model:is-open="openMap[p]"
-					:position="p"
-					@close="openMap[p] = false">
-					<button style="padding:6px 12px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;font-size:12px;" @click="toggle(p)">
-						{{ p }}
-					</button>
-					<template #dropdown>
-						<div style="padding:8px;">Контент {{ p }}</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `
-<BaseDropdown v-for="p in positions" :key="p"
-  v-model:is-open="openMap[p]" :position="p" @close="openMap[p] = false">
-  <button @click="toggle(p)">{{ p }}</button>
-  <template #dropdown><div>Контент {{ p }}</div></template>
-</BaseDropdown>
-				`,
-			},
-		},
-	},
-}
-/** Все варианты */
+/**
+ * Пять вариантов панели. `default` — рамка и тень; `outline` — рамка заметнее, без тени; `shadow` — только тень;
+ * `soft` — мягкий нейтральный фон; `ghost` — без фона, рамки и тени, когда оформление даёт содержимое.
+ */
 export const Variants: Story = {
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const openMap = ref<Record<string, boolean>>({})
-			function toggle(v: string) {
-				openMap.value[v] = !openMap.value[v]
-			}
-			return { args, toggle, openMap, DROPDOWN_VARIANTS }
-		},
-		template: `
-			<div style="padding:80px;display:flex;gap:12px;justify-content:center;">
-				<BaseDropdown v-for="v in DROPDOWN_VARIANTS" :key="v"
-					v-bind="args"
-					v-model:is-open="openMap[v]"
-					:variant="v"
-					@close="openMap[v] = false">
-					<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;" @click="toggle(v)">
-						{{ v }}
-					</button>
-					<template #dropdown>
-						<div style="padding:8px;">Контент {{ v }}</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
 	parameters: {
+		controls: { include: ['sizeScale', 'position'] },
 		docs: {
+			...docsFrame(200),
 			source: {
-				code: `
-<BaseDropdown v-for="v in DROPDOWN_VARIANTS" :key="v"
-  v-model:is-open="openMap[v]" :variant="v" @close="openMap[v] = false">
-  <button @click="toggle(v)">{{ v }}</button>
-  <template #dropdown><div>Контент {{ v }}</div></template>
-</BaseDropdown>
-				`,
+				code: DROPDOWN_VARIANTS.map(variant => `<BaseDropdown v-model:is-open="isOpen" variant="${variant}">…</BaseDropdown>`).join('\n'),
 			},
 		},
 	},
-}
-/** Интерактивный */
-export const Interactive: Story = {
 	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
+		components: { BaseDropdown, BaseButton, BaseText },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'variant', 'onUpdate:isOpen']), variants: DROPDOWN_VARIANTS }),
 		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;" @click="isOpen = !isOpen">
-						Открыть
-					</button>
-					<template #dropdown>
-						<div style="padding:8px;">Контент</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: `
-<BaseDropdown v-model:is-open="isOpen">
-  <button @click="isOpen = !isOpen">Открыть</button>
-  <template #dropdown><div>Контент</div></template>
-</BaseDropdown>
-				`,
-			},
-		},
-	},
-}
-/** closeOnEscape=false — Escape не закрывает */
-export const NoCloseOnEscape: Story = {
-	args: { isOpen: true, closeOnEscape: false },
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button>Триггер</button>
-					<template #dropdown><div>Панель</div></template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-		await new Promise(r => setTimeout(r, 50))
-		expect(canvasElement).toBeInTheDocument()
-	},
-}
-/** Кастомный maxHeight */
-export const CustomMaxHeight: Story = {
-	args: { isOpen: true, maxHeight: '500px' },
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(true)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button>Триггер</button>
-					<template #dropdown><div>Панель</div></template>
-				</BaseDropdown>
+			<div class="story-grid" style="--story-grid-min: 140px;">
+				<div v-for="variant in variants" :key="variant" style="height: 110px;">
+					<BaseDropdown v-bind="props" :is-open="true" :variant="variant">
+						<BaseButton variant="outline">{{ variant }}</BaseButton>
+						<template #dropdown>
+							<BaseText style="padding: 6px 8px;">Панель {{ variant }}</BaseText>
+						</template>
+					</BaseDropdown>
+				</div>
 			</div>
 		`,
 	}),
 }
-/** Покрывает watch isOpen → сохранение/сброс savedActiveElement и handlePanelFocusin */
-export const WatchIsOpenAndFocusin: Story = {
-	args: { isOpen: true },
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button data-testid="trigger" @click="isOpen = !isOpen">Триггер</button>
-					<template #dropdown>
-						<div data-testid="panel" style="padding:12px;">
-							<input data-testid="focus-input" placeholder="Фокус" />
-						</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		// Открываем dropdown (watch isOpen: true → сохраняет activeElement)
-		const trigger = canvasElement.querySelector('[data-testid="trigger"]') as HTMLElement
-		trigger.click()
-		await new Promise(r => setTimeout(r, 200))
 
-		// Панель должна быть видна (Teleport to="body" — ищем в document.body)
-		const panel = document.body.querySelector('[data-testid="panel"]')
-		expect(panel).toBeInTheDocument()
-
-		// Фокусируемся на input внутри панели — trigger'ит handlePanelFocusin
-		const input = document.body.querySelector('[data-testid="focus-input"]') as HTMLInputElement
-		if (input) input.focus()
-		await new Promise(r => setTimeout(r, 100))
-
-		// Закрываем (watch isOpen: false → savedActiveElement = null)
-		trigger.click()
-		await new Promise(r => setTimeout(r, 100))
-
-		// Ждём исчезновения панели (Transition может задержать удаление в jsdom)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('[data-testid="panel"]')).toBeNull()
-			},
-			{ timeout: 2000 },
-		)
-	},
-}
-/** Дропдаун без элементов */
-export const Empty: Story = {
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button data-testid="trigger" style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;" @click="isOpen = !isOpen">
-						Открыть
-					</button>
-					<template #dropdown>
-						<div data-testid="panel" style="padding:8px;">
-							<p style="color:var(--color-text-muted);padding:8px;">Нет элементов</p>
-						</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-	},
-}
-/** Дропдаун с длинными текстами элементов */
-export const LongContent: Story = {
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			const items = [
-				'Очень длинное название пункта меню, которое не помещается в одну строку и требует переноса',
-				'Ещё один пункт с длинным текстом для проверки адаптивности компонента',
-				'Короткий',
-				'Последний элемент с достаточно длинным описанием для тестирования',
-			]
-			return { args, isOpen, items }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button data-testid="trigger" style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;" @click="isOpen = !isOpen">
-						Открыть
-					</button>
-					<template #dropdown>
-						<div data-testid="panel" style="padding:8px;max-width:300px;">
-							<div v-for="(item, i) in items" :key="i" style="padding:8px;cursor:pointer;border-radius:var(--border-radius-base);" @click="isOpen = false">
-								{{ item }}
-							</div>
-						</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-	},
-}
-/** preventMousedown=true — покрывает true-ветку handlePanelMousedown (event.preventDefault) */
-export const PreventMousedown: Story = {
-	args: { preventMousedown: true },
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button data-testid="trigger" @click="isOpen = !isOpen">Триггер</button>
-					<template #dropdown>
-						<div data-testid="panel" style="padding:12px;">Контент</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const trigger = canvasElement.querySelector('[data-testid="trigger"]') as HTMLElement
-		trigger.click()
-		await new Promise(r => setTimeout(r, 200))
-
-		const panelEl = document.body.querySelector('.base-dropdown__panel') as HTMLElement
-		expect(panelEl).toBeInTheDocument()
-
-		const mousedownEvent = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
-		panelEl.dispatchEvent(mousedownEvent)
-		expect(mousedownEvent.defaultPrevented).toBe(true)
-	},
-}
-/** preventMousedown=false — покрывает ложную ветку условия в handlePanelFocusin (строка 121) */
-export const NoPreventMousedown: Story = {
-	args: { preventMousedown: false },
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			const isOpen = ref(false)
-			return { args, isOpen }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args" v-model:is-open="isOpen">
-					<button data-testid="trigger" @click="isOpen = !isOpen">Триггер</button>
-					<template #dropdown>
-						<div data-testid="panel" style="padding:12px;">
-							<input data-testid="focus-input" placeholder="Фокус" />
-						</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const trigger = canvasElement.querySelector('[data-testid="trigger"]') as HTMLElement
-		trigger.click()
-		await new Promise(r => setTimeout(r, 200))
-
-		const panel = document.body.querySelector('[data-testid="panel"]')
-		expect(panel).toBeInTheDocument()
-
-		const input = document.body.querySelector('[data-testid="focus-input"]') as HTMLInputElement
-		if (input) input.focus()
-		await new Promise(r => setTimeout(r, 100))
-
-		const mousedownEvent = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
-		const panelEl = document.body.querySelector('.base-dropdown__panel') as HTMLElement
-		panelEl?.dispatchEvent(mousedownEvent)
-		expect(mousedownEvent.defaultPrevented).toBe(false)
-	},
-}
-/** Кастомные CSS-классы через customClass */
-export const WithCustomClass: Story = {
+/**
+ * Кастомный цвет через `color`: фон и текст панели. Подойдёт любой CSS-цвет; токены `var(--rise-…)` сохраняют контраст
+ * в обеих темах. Содержимое панели `color` не наследует — кнопка «Скачать всё» сохраняет свой цвет.
+ */
+export const CustomColor: Story = {
 	args: {
 		isOpen: true,
-		customClass: { root: 'dd-root', panel: 'dd-panel' },
+		color: { bg: { base: 'var(--rise-primary-soft)' }, text: { base: 'var(--rise-primary-text)' } },
 	},
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args">
-					<button>Триггер</button>
+	parameters: { controls: { include: ['color', 'variant'] }, docs: docsFrame(200) },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseDropdown, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), isOpen: computed(() => args.isOpen), onUpdate }),
+			template: `
+				<BaseDropdown v-bind="props" @update:is-open="onUpdate">
+					<BaseButton variant="outline" @click="onUpdate(!isOpen)">Загрузки</BaseButton>
 					<template #dropdown>
-						<div>Контент</div>
+						<div class="story-col" style="padding: 8px;">
+							Готово к скачиванию: 3 файла
+							<BaseButton>Скачать всё</BaseButton>
+						</div>
 					</template>
 				</BaseDropdown>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.dd-root')).toBeTruthy()
+			`,
+		}
 	},
-}
-/** Объектный padding панели: оси x/y и точечные стороны */
-export const ObjectPadding: Story = {
-	args: {
-		isOpen: true,
-		padding: { x: 16, y: 8, bottom: 20 },
-	},
-	render: args => ({
-		components: { BaseDropdown },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:80px;display:flex;justify-content:center;">
-				<BaseDropdown v-bind="args">
-					<button>Триггер</button>
-					<template #dropdown>
-						<div>padding: { x: 16, y: 8, bottom: 20 }</div>
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
-	}),
 	play: async () => {
-		await new Promise(r => setTimeout(r, 100))
-		const panel = document.body.querySelector('.base-dropdown__panel') as HTMLElement
-		expect(panel).toBeInTheDocument()
-		expect(panel.style.getPropertyValue('--dd-pad-top')).toBe('8px')
-		expect(panel.style.getPropertyValue('--dd-pad-bottom')).toBe('20px')
-		expect(panel.style.getPropertyValue('--dd-pad-left')).toBe('16px')
+		const action = await screen.findByRole('button', { name: 'Скачать всё' })
+		const panel = action.closest('.base-dropdown__panel') as HTMLElement
+		await expect(getComputedStyle(panel).backgroundColor).toBe(resolveColor('var(--rise-primary-soft)'))
+		await expect(getComputedStyle(panel).color).toBe(resolveColor('var(--rise-primary-text)'))
+		await expect(getComputedStyle(action).backgroundColor).toBe(resolveColor('var(--rise-primary)'))
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Пустая панель: вместо пунктов — короткое пояснение приглушённым текстом. */
+export const Empty: Story = {
+	args: { isOpen: true },
+	parameters: { controls: { include: ['variant', 'sizeScale'] }, docs: docsFrame(160) },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseDropdown, BaseButton, BaseText },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), isOpen: computed(() => args.isOpen), onUpdate }),
+			template: `
+				<BaseDropdown v-bind="props" @update:is-open="onUpdate">
+					<BaseButton variant="outline" @click="onUpdate(!isOpen)">Недавние</BaseButton>
+					<template #dropdown>
+						<BaseText :color="{ text: { base: 'var(--rise-text-muted)' } }" style="padding: 6px 8px;">
+							Вы ещё не открывали проекты
+						</BaseText>
+					</template>
+				</BaseDropdown>
+			`,
+		}
+	},
+	play: async () => {
+		await waitFor(() => expect(screen.getByText('Вы ещё не открывали проекты')).toBeVisible())
+	},
+}
+
+/** Длинный список прокручивается внутри панели: высоту ограничивает `maxHeight` (здесь 200px). */
+export const LongContent: Story = {
+	args: { isOpen: true, maxHeight: '200px' },
+	parameters: { controls: { include: ['maxHeight', 'variant', 'sizeScale'] }, docs: docsFrame(280) },
+	render: args => {
+		const onUpdate = useModelArg('isOpen')
+		return {
+			components: { BaseDropdown, BaseButton, BaseMenu },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), isOpen: computed(() => args.isOpen), onUpdate, projects: PROJECTS }),
+			template: `
+				<BaseDropdown v-bind="props" @update:is-open="onUpdate">
+					<BaseButton variant="outline" @click="onUpdate(!isOpen)">Проекты</BaseButton>
+					<template #dropdown>
+						<BaseMenu variant="ghost" :items="projects" @select="onUpdate(false)" />
+					</template>
+				</BaseDropdown>
+			`,
+		}
+	},
+	play: async () => {
+		const panel = (await screen.findByText('Сайт студии')).closest('.base-dropdown__panel') as HTMLElement
+		await expect(panel.getBoundingClientRect().height).toBeLessThanOrEqual(200)
+		await expect(panel.scrollHeight).toBeGreaterThan(panel.clientHeight)
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Позиция `position`: сторона (`top`, `bottom`, `left`, `right`) и выравнивание (`-start`, по центру, `-end`).
+ * Здесь — шесть позиций над и под триггером; `left-*` и `right-*` выбираются в Controls песочницы.
+ */
+export const Positions: Story = {
+	parameters: {
+		controls: { include: ['gap', 'variant'] },
+		docs: {
+			...docsFrame(260),
+			source: { code: '<BaseDropdown v-model:is-open="isOpen" position="top-end">…</BaseDropdown>' },
+		},
+	},
+	render: args => ({
+		components: { BaseDropdown, BaseButton, BaseText },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['isOpen', 'position', 'onUpdate:isOpen']),
+			positions: ['top-start', 'top', 'top-end', 'bottom-start', 'bottom', 'bottom-end'] as const,
+		}),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 220px; padding: 64px 0;">
+				<BaseDropdown v-for="position in positions" :key="position" v-bind="props" :is-open="true" :position="position">
+					<BaseButton variant="outline">{{ position }}</BaseButton>
+					<template #dropdown>
+						<BaseText style="padding: 6px 8px;">Панель</BaseText>
+					</template>
+				</BaseDropdown>
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Поле ввода в панели: клик ставит фокус в поле, ввод фильтрует список. При закрытии (Escape, клик снаружи, выбор)
+ * фокус возвращается на триггер. Остальное содержимое панели фокус с триггера не уводит (`preventMousedown`).
+ */
+export const WithField: Story = {
+	parameters: { controls: { include: ['variant', 'sizeScale'] } },
+	render: args => ({
+		components: { BaseDropdown, BaseButton, BaseIcon, BaseInput, BaseMenu },
+		setup: () => {
+			const isOpen = ref(false)
+			const query = ref('')
+			const people = computed<BaseMenuItem[][]>(() => [
+				STORY_USERS.filter(user => user.name.toLowerCase().includes(query.value.toLowerCase())).map(user => ({ label: user.name })),
+			])
+			return { props: useArgsWithoutSlots(args, ['isOpen', 'onUpdate:isOpen']), isOpen, query, people }
+		},
+		template: `
+			<BaseDropdown v-bind="props" v-model:is-open="isOpen">
+				<BaseButton variant="outline" @click="isOpen = !isOpen">
+					Автор
+					<template #right><BaseIcon name="chevron-down" :size-scale="80" /></template>
+				</BaseButton>
+				<template #dropdown>
+					<div class="story-stack" style="gap: 4px; width: 240px;">
+						<BaseInput v-model="query" label="Имя" placeholder="Начните вводить" />
+						<BaseMenu variant="ghost" :items="people" @select="isOpen = false" />
+					</div>
+				</template>
+			</BaseDropdown>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Автор' })
+		await userEvent.click(trigger)
+		const field = await screen.findByLabelText('Имя')
+
+		await userEvent.click(field)
+		await expect(field).toHaveFocus()
+		await userEvent.keyboard('анна')
+		await expect(field).toHaveValue('анна')
+		await expect(screen.getByText('Анна Смирнова')).toBeInTheDocument()
+		await expect(screen.queryByText('Иван Петров')).not.toBeInTheDocument()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByLabelText('Имя')).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab ставит фокус на триггер, Enter открывает панель, Escape закрывает её (события `update:isOpen`
+ * и `close`), фокус всё это время остаётся на триггере; Space открывает панель снова.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('button', { name: 'Действия' })
+		await tabTo(trigger, userEvent)
+
+		await userEvent.keyboard('{Enter}')
+		await waitFor(() => expect(screen.getByText('Скачать')).toBeVisible())
+		await expect(trigger).toHaveFocus()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByText('Скачать')).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
+
+		await userEvent.keyboard(' ')
+		await waitFor(() => expect(screen.getByText('Скачать')).toBeVisible())
+		await expect(trigger).toHaveFocus()
 	},
 }

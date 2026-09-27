@@ -1,33 +1,37 @@
+// BaseForm. Контейнер формы без собственной раскладки: поля располагает содержимое (или customClass.content).
+// Загрузка — полупрозрачная подложка цвета фона поверх полей и лоадер по центру; отключённая форма приглушена целиком.
+// Варианты: default и ghost — без оформления; outline — рамка; soft — мягкий фон; shadow — рамка и тень, как у карточки.
+// Кастомный цвет: color.bg — фон формы.
 .base-form {
 	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: sz(24px);
+	box-sizing: border-box;
 	width: 100%;
-	@include interactive;
+	@include custom-bg(background-color, transparent);
 
-	&--loading {
+	// Мышь заблокирована и для кастомных виджетов, которые fieldset[disabled] не отключает.
+	&--loading,
+	&--disabled {
 		pointer-events: none;
-
-		.base-form__content {
-			opacity: 0.4;
-			filter: blur(2px);
-			transform: scale(0.99);
-		}
 	}
 
 	&--disabled {
-		opacity: 0.6;
-		pointer-events: none;
+		opacity: var(--rise-disabled-opacity);
 	}
 
-	&__content {
-		transition:
-			opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	// fieldset нужен только ради disabled и не должен влиять на раскладку: display: contents оставляет
+	// поля прямыми участниками раскладки __content (flex/grid из customClass.content продолжают работать).
+	// Сброс UA-стилей (рамка, отступы, min-inline-size: min-content) — запасной вариант, если contents не применится
+	&__fieldset {
+		display: contents;
+		min-width: 0;
+		min-inline-size: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
 
+	// Подложка загрузки. Вне загрузки — visibility: hidden (а не только прозрачность): так она не перехватывает
+	// клики и не попадает в дерево доступности; при появлении и скрытии плавно меняется прозрачность.
 	&__overlay {
 		position: absolute;
 		inset: 0;
@@ -35,46 +39,39 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		@include custom-bg(background-color, rgba(255, 255, 255, 0.7));
 		border-radius: inherit;
+		background-color: color-mix(in srgb, var(--rise-bg) 85%, transparent);
 		opacity: 0;
-		backdrop-filter: blur(0px);
-		pointer-events: none;
-		transition:
-			opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		visibility: hidden;
+		@include transition(opacity, visibility);
 
 		&--visible {
 			opacity: 1;
-			backdrop-filter: blur(4px);
+			visibility: visible;
 			pointer-events: auto;
 		}
 	}
 
-	// Варианты
-	&--ghost {
-		gap: sz(12px);
+	// ─── Варианты: форма в рамке или на подложке ─────────────────────────────────
+
+	&--outline,
+	&--soft,
+	&--shadow {
+		padding: sz(20px);
+		border-radius: sz(var(--rise-radius-lg));
 	}
 
 	&--outline {
-		border: 1px solid var(--color-border);
-		padding: sz(24px);
-		border-radius: var(--border-radius-lg);
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-lg);
-		padding: sz(24px);
-		border-radius: var(--border-radius-lg);
+		border: 1px solid var(--rise-border);
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		padding: sz(24px);
-		border-radius: var(--border-radius-lg);
+		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 	}
-}
 
-:root[data-theme='dark'] .base-form__overlay {
-	background-color: rgba(0, 0, 0, 0.5);
+	&--shadow {
+		border: 1px solid var(--rise-border);
+		@include custom-bg(background-color, var(--rise-bg));
+		box-shadow: var(--rise-shadow-sm);
+	}
 }

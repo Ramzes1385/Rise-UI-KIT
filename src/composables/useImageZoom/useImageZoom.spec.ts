@@ -3,9 +3,12 @@
  * Проверяют масштаб, поворот, сброс и мини-карту.
  */
 
-import { mount } from '@vue/test-utils'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { useImageZoom } from './useImageZoom'
+
+// Блокировка прокрутки общая для всех экземпляров: незакрытые зумы из прошлых тестов держали бы её
+enableAutoUnmount(afterEach)
 
 /** Обёртка для вызова composable внутри Vue-контекста */
 function withSetup<T>(composable: () => T): T {

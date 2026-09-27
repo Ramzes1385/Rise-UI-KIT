@@ -3,7 +3,7 @@
 		<slot />
 
 		<Teleport to="body">
-			<Transition name="dropdown">
+			<Transition name="base-dropdown">
 				<div
 					v-if="isOpen"
 					ref="dropdownRef"
@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<BaseDropdownProps>(), {
 	maxHeight: UI_SIZE.PANEL_MAX_HEIGHT,
 	matchWidth: false,
 	panelClass: '',
-	padding: 8,
+	padding: undefined,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 const { wasPropPassed } = useExplicitPropDetection()
@@ -53,7 +53,9 @@ const preventMousedown = computed(() =>
 		: true,
 )
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: UI_SIZE.PADDING.SM })
+const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad' })
+/** Без пропа padding отступ панели берётся из стилей (4px со всех сторон), inline-переменные не пишутся. */
+const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
 
 const emit = defineEmits<BaseDropdownEmits>()
 defineSlots<BaseDropdownSlots>()
@@ -64,13 +66,27 @@ const dropdownRef = ref<HTMLElement | null>(null)
 /** Элемент с фокусом до открытия панели */
 const savedActiveElement = ref<HTMLElement | null>(null)
 
-/** Сохранение активного элемента при открытии */
+/**
+ * Панель закрывается, пока фокус внутри неё (например, в поле поиска BaseSelect): после удаления панели
+ * браузер сбросил бы фокус на body — возвращаем его на элемент, с которого панель открыли.
+ * Вызывается до патча DOM (flush 'pre'), пока панель ещё отрендерена.
+ */
+function restoreFocusFromPanel(): void {
+	const target = savedActiveElement.value
+	const active = document.activeElement
+	if (!target || target === document.body || !target.isConnected) return
+	if (!active || !dropdownRef.value?.contains(active)) return
+	target.focus()
+}
+
+/** Сохранение активного элемента при открытии и возврат фокуса при закрытии */
 watch(
 	() => props.isOpen,
 	value => {
 		if (value) {
 			savedActiveElement.value = getActiveElement()
 		} else {
+			restoreFocusFromPanel()
 			savedActiveElement.value = null
 		}
 	},
@@ -106,16 +122,24 @@ useEscapeKey({
 	callback: handleClose,
 })
 
-/** Предотвратить mousedown внутри панели */
+/** Поля ввода внутри панели (например, поиск BaseSelect) должны получать фокус — иначе в них нельзя печатать */
+const TEXT_ENTRY_SELECTOR = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
+
+/** Событие пришло из поля ввода панели */
+function isTextEntryTarget(target: EventTarget | null): boolean {
+	return target instanceof Element && target.closest(TEXT_ENTRY_SELECTOR) !== null
+}
+
+/** Предотвратить mousedown внутри панели (фокус остаётся на триггере), кроме полей ввода */
 function handlePanelMousedown(event: MouseEvent): void {
-	if (preventMousedown.value) {
+	if (preventMousedown.value && !isTextEntryTarget(event.target)) {
 		event.preventDefault()
 	}
 }
 
-/** Вернуть фокус на триггер при фокусе внутри панели */
-function handlePanelFocusin(): void {
-	if (preventMousedown.value && savedActiveElement.value) {
+/** Вернуть фокус на триггер при фокусе внутри панели, кроме полей ввода */
+function handlePanelFocusin(event: FocusEvent): void {
+	if (preventMousedown.value && savedActiveElement.value && !isTextEntryTarget(event.target)) {
 		savedActiveElement.value.focus()
 	}
 }

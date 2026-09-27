@@ -9,15 +9,18 @@ export type SeparatorOrientation = 'horizontal' | 'vertical'
  * Пропсы компонента BaseSeparator
  */
 export interface BaseSeparatorProps extends BaseComponentProps<string, 'root' | 'line' | 'content'> {
-	/** Ориентация */
+	/** Ориентация: `horizontal` — линия во всю ширину, `vertical` — во всю высоту ряда. */
 	orientation?: SeparatorOrientation
-	/** Текст метки между линиями */
+	/** Подпись между линиями. Она же — доступное имя разделителя (`aria-labelledby`). */
 	label?: string
-	/** Толщина линии (px). По умолчанию 1 */
+	/** Толщина линии (px). По умолчанию 1. */
 	thickness?: number
-	/** Пунктирная линия */
+	/** Пунктирная линия. */
 	isDashed?: boolean
-	/** Базовый padding (px). Y = значение, X = значение * 2. По умолчанию 10 → 10px 20px */
+	/**
+	 * Отступы вокруг подписи (px): вдоль линии — значение × 2, поперёк — значение. Например, 10 → 20px и 10px.
+	 * Без пропа — из стилей: 12px вдоль линии, 0 поперёк.
+	 */
 	spacing?: number
 }
 

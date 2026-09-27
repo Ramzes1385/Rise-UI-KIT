@@ -5,7 +5,7 @@
 
 import { fireEvent, render, waitFor } from '@testing-library/vue'
 import '@testing-library/jest-dom/vitest'
-import { nextTick } from 'vue'
+import { nextTick, reactive } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import BaseSearch from '../ui/BaseSearch.vue'
 
@@ -598,6 +598,40 @@ describe('BaseSearch unit', () => {
 
 			expect(container.querySelector('.base-search__result')).not.toBeInTheDocument()
 		})
+
+		it('должен показывать результаты сервера без клиентской фильтрации при isRemote', () => {
+			const { container } = render(BaseSearch, {
+				props: {
+					modelValue: 'zakat',
+					isRemote: true,
+					results: [
+						{ id: 1, title: 'Закат в горах' },
+						{ id: 2, title: 'Вечер', category: 'Закаты' },
+					],
+				},
+				global: globalConfig,
+			})
+
+			const titles = Array.from(container.querySelectorAll('.base-search__result-title')).map(el => el.textContent?.trim())
+			expect(titles).toEqual(['Закат в горах', 'Вечер'])
+		})
+
+		it('должен ограничивать результаты maxResults при isRemote', () => {
+			const { container } = render(BaseSearch, {
+				props: {
+					modelValue: 'zakat',
+					isRemote: true,
+					maxResults: 1,
+					results: [
+						{ id: 1, title: 'Закат в горах' },
+						{ id: 2, title: 'Вечер' },
+					],
+				},
+				global: globalConfig,
+			})
+
+			expect(container.querySelectorAll('.base-search__result')).toHaveLength(1)
+		})
 	})
 
 	describe('пропс color', () => {
@@ -998,6 +1032,126 @@ describe('BaseSearch unit', () => {
 			expect(container.querySelector('.base-search__icon')).toHaveClass('custom-icon')
 			expect(container.querySelector('.base-search__clear')).toHaveClass('custom-clear')
 			expect(container.querySelector('.base-loader')).toHaveClass('custom-loading')
+		})
+	})
+
+	describe('подсветка при изменении списка результатов', () => {
+		/** Реальный ввод, фокус и клавиатура через стаб BaseInput; дропдаун рендерит панель только когда открыт */
+		const navigationConfig = {
+			stubs: {
+				...globalConfig.stubs,
+				BaseDropdown: {
+					template:
+						'<div class="base-dropdown-stub" :data-is-open="isOpen"><slot /><slot v-if="isOpen" name="dropdown" /></div>',
+					props: ['isOpen'],
+				},
+				BaseInput: {
+					template:
+						'<input class="base-input-stub" :value="modelValue" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+					props: ['modelValue'],
+					emits: ['focus', 'keydown', 'update:modelValue'],
+					methods: { focus: vi.fn() },
+				},
+			},
+		}
+
+		const FIVE_RESULTS = [
+			{ id: 1, title: 'Тест 1' },
+			{ id: 2, title: 'Тест 2' },
+			{ id: 3, title: 'Тест 3' },
+			{ id: 4, title: 'Тест 4' },
+			{ id: 5, title: 'Тест 5' },
+		]
+
+		async function highlightFourth(input: Element): Promise<void> {
+			await fireEvent.focus(input)
+			for (let step = 0; step < 4; step += 1) {
+				await fireEvent.keyDown(input, { key: 'ArrowDown' })
+			}
+		}
+
+		it('должен сбрасывать подсветку, когда новый ответ короче, и искать по Enter', async () => {
+			const { container, emitted, rerender } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await highlightFourth(input)
+
+			await rerender({ results: [FIVE_RESULTS[0]] })
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().search).toEqual([['тест']])
+		})
+
+		it('должен сбрасывать подсветку при вводе, чтобы Enter искал, а не выбирал', async () => {
+			const { container, emitted } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await highlightFourth(input)
+
+			await fireEvent.update(input, 'тест 1')
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().search).toEqual([['тест 1']])
+		})
+
+		it('не должен выбирать скрытый результат по Enter после изменения запроса при isInstant=false', async () => {
+			const { container, emitted } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS, isInstant: false },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await fireEvent.focus(input)
+			await fireEvent.keyDown(input, { key: 'Enter' })
+			await fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+			await fireEvent.update(input, 'тест 2')
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().search).toEqual([['тест'], ['тест 2']])
+		})
+
+		it('должен сохранять подсветку, если набор результатов не изменился', async () => {
+			const { container, emitted, rerender } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await fireEvent.focus(input)
+			await fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+			await rerender({ results: FIVE_RESULTS.map(item => ({ ...item })) })
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toEqual([[FIVE_RESULTS[0]]])
+		})
+
+		it('не должен падать и выбирать исчезнувший результат, если список сократился в том же тике, что и Enter', async () => {
+			const errorHandler = vi.fn()
+			const results = reactive([...FIVE_RESULTS])
+			const { container, emitted } = render(BaseSearch, {
+				props: { modelValue: 'тест', results },
+				global: { ...navigationConfig, config: { errorHandler } },
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await highlightFourth(input)
+
+			// Мутация на месте без ожидания ре-рендера: сброс подсветки (watch) ещё не выполнен
+			results.splice(1)
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(errorHandler).not.toHaveBeenCalled()
+			expect(emitted().select).toBeUndefined()
+
+			// После пересчёта подсветка сброшена — Enter снова запускает поиск по запросу
+			await fireEvent.keyDown(input, { key: 'Enter' })
+			expect(emitted().search).toEqual([['тест']])
 		})
 	})
 

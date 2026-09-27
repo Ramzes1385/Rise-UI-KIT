@@ -567,6 +567,40 @@ describe('useEditorToolbar', () => {
 			expect(editorRef.value!.contains(img)).toBe(false)
 		})
 
+		it('режим только для чтения: меню медиа не открывается, размер и удаление не применяются', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			let isReadonly = false
+			const { handleContextMenu, contextMenu, applyMediaSize, removeMedia } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, isReadonly: () => isReadonly }),
+			)
+			const img = document.createElement('img')
+			editorRef.value!.appendChild(img)
+			const event = { target: img, clientX: 10, clientY: 10, preventDefault: vi.fn() } as unknown as MouseEvent
+			vi.spyOn(img, 'getBoundingClientRect').mockReturnValue({ width: 100, height: 100 } as DOMRect)
+
+			isReadonly = true
+			handleContextMenu(event)
+			expect(contextMenu.isVisible).toBe(false)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+
+			// Меню открыли в режиме редактирования, затем включили режим чтения
+			isReadonly = false
+			handleContextMenu(event)
+			isReadonly = true
+			contextMenu.width = '50'
+			applyMediaSize()
+			expect(img.style.width).toBe('')
+			expect(contextMenu.isVisible).toBe(false)
+
+			isReadonly = false
+			handleContextMenu(event)
+			isReadonly = true
+			removeMedia()
+			expect(editorRef.value!.contains(img)).toBe(true)
+			expect(contextMenu.isVisible).toBe(false)
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
 		it('handleImageUpload / handleVideoUpload', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { handleImageUpload, handleVideoUpload } = withSetup(() =>
@@ -579,7 +613,9 @@ describe('useEditorToolbar', () => {
 			const event = { target: input } as unknown as Event
 
 			handleImageUpload(event)
-			expect(document.execCommand).toHaveBeenCalledWith('insertImage', false, 'blob:test')
+			// Изображение без описания вставляется как оформление (alt=""): иначе скринридер прочитает адрес blob:…
+			expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, '<img src="blob:test" alt="">')
+			expect(document.execCommand).not.toHaveBeenCalledWith('insertImage', false, 'blob:test')
 
 			handleVideoUpload(event)
 			expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, expect.stringContaining('<video'))
@@ -648,7 +684,54 @@ describe('useEditorToolbar', () => {
 			expect(event.preventDefault).not.toHaveBeenCalled()
 		})
 
-		it('convertInlineHtml', () => {
+		it.each([
+			['Ctrl+B', { code: 'KeyB', ctrlKey: true }, 'bold'],
+			['⌘+I', { code: 'KeyI', metaKey: true }, 'italic'],
+			['Ctrl+U в русской раскладке (key = «г»)', { code: 'KeyU', key: 'г', ctrlKey: true }, 'underline'],
+		])('handleKeyDown: %s применяет форматирование вместо действия браузера', (_name, keys, command) => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { key: 'x', shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+
+			expect(event.preventDefault).toHaveBeenCalledOnce()
+			expect(document.execCommand).toHaveBeenCalledWith(command, false)
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it.each([
+			['Ctrl+Shift+B', { code: 'KeyB', ctrlKey: true, shiftKey: true }],
+			['Ctrl+Alt+B', { code: 'KeyB', ctrlKey: true, altKey: true }],
+			['Ctrl+K (не горячая клавиша редактора)', { code: 'KeyK', ctrlKey: true }],
+			['B без модификатора', { code: 'KeyB' }],
+		])('handleKeyDown: %s не перехватывается', (_name, keys) => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { key: 'b', shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+
+			expect(event.preventDefault).not.toHaveBeenCalled()
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it.each([
+			['isComposing', { isComposing: true }],
+			['keyCode 229', { keyCode: 229 }],
+		])('handleKeyDown: Enter во время набора через IME (%s) не вставляет перенос строки', (_name, composing) => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { key: 'Enter', shiftKey: false, preventDefault: vi.fn(), ...composing } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+
+			expect(event.preventDefault).not.toHaveBeenCalled()
+			expect(document.execCommand).not.toHaveBeenCalled()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml: одиночный закрывающий тег остаётся буквальным текстом', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const textNode = document.createTextNode('hello </b>world')
 			editorRef.value!.appendChild(textNode)
@@ -657,7 +740,51 @@ describe('useEditorToolbar', () => {
 
 			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			convertInlineHtml()
-			expect(onInput).toHaveBeenCalled()
+			// Раньше строка разбиралась через innerHTML и `</b>` бесследно пропадал из текста
+			expect(onInput).not.toHaveBeenCalled()
+			expect(editorRef.value!.textContent).toBe('hello </b>world')
+		})
+
+		it('convertInlineHtml: пара, закрытая прямо перед кареткой, становится элементом без атрибутов', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('до <b>жирный</b> после')
+			editorRef.value!.appendChild(textNode)
+			const caret = 'до <b>жирный</b>'.length
+			mockGetSelection({ anchorNode: textNode, anchorOffset: caret, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.innerHTML).toBe('до <b>жирный</b> после')
+			expect(editorRef.value!.querySelector('b')?.textContent).toBe('жирный')
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('convertInlineHtml: пара в самом начале абзаца не создаёт пустой текстовый узел перед элементом', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('<i>курсив</i> хвост')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, anchorOffset: '<i>курсив</i>'.length, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.innerHTML).toBe('<i>курсив</i> хвост')
+			expect(editorRef.value!.firstChild).toBe(editorRef.value!.querySelector('i'))
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('convertInlineHtml: не трогает буквальные теги, если каретка стоит не сразу после пары', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('пример <b>тега</b> в тексте!')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.querySelector('b')).toBeNull()
+			expect(onInput).not.toHaveBeenCalled()
 		})
 
 		it('convertInlineHtml с null textContent', () => {

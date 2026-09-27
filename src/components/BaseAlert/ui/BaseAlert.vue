@@ -3,8 +3,7 @@
 		class="base-alert"
 		:class="[`base-alert--${type}`, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		role="alert"
-		aria-live="polite">
+		:role="liveRole">
 		<div class="base-alert__icon-wrapper" :class="classes.iconWrapper">
 			<slot name="icon">
 				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.icon" />
@@ -15,7 +14,7 @@
 			<BaseText
 				v-if="title"
 				tag="h4"
-				:weight="UI_FONT_WEIGHT.SEMIBOLD"
+				:weight="UI_FONT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
 				class="base-alert__title"
 				:custom-class="classes.title">
@@ -24,7 +23,7 @@
 
 			<div class="base-alert__description" :class="classes.description">
 				<slot>
-					<BaseText v-if="description" tag="p" :size-scale="sizeScale - SIZE_SCALE_OFFSET" :custom-class="classes.text">
+					<BaseText v-if="description" tag="p" :size-scale="sizeScale" class="base-alert__text" :custom-class="classes.text">
 						{{ description }}
 					</BaseText>
 				</slot>
@@ -34,14 +33,17 @@
 		<div v-if="isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
 			<slot name="actions" />
 
+			<!-- Квадратная ghost-кнопка 24px: иконка 16px + отступы 3px + рамка 1px -->
 			<BaseButton
 				v-if="isClosable"
 				variant="ghost"
-				:size-scale="sizeScale - SIZE_SCALE_OFFSET"
+				:size-scale="sizeScale"
+				:padding="CLOSE_BUTTON_PADDING"
 				class="base-alert__close"
 				:custom-class="classes.close"
+				:aria-label="UI_ARIA.CLOSE"
 				@click="handleClose">
-				<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" :custom-class="classes.closeIcon" />
+				<BaseIcon name="close" :custom-class="classes.closeIcon" />
 			</BaseButton>
 		</div>
 	</div>
@@ -53,10 +55,13 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, SIZE_SCALE_OFFSET } from '@constants'
+import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/BaseAlert.types'
+
+/** Отступы кнопки закрытия: квадрат 24px при sizeScale = 100 */
+const CLOSE_BUTTON_PADDING = { x: 3, y: 3 } as const
 
 const props = withDefaults(defineProps<BaseAlertProps>(), {
 	type: 'info',
@@ -68,6 +73,13 @@ const emit = defineEmits<BaseAlertEmits>()
 defineSlots<BaseAlertSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'])
+
+/**
+ * Роль live-региона по срочности: error/warning прерывают озвучивание (alert = assertive),
+ * info/success объявляются вежливо (status = polite). Явный aria-live не ставится,
+ * чтобы не переопределять неявную вежливость роли.
+ */
+const liveRole = computed((): 'alert' | 'status' => (props.type === 'error' || props.type === 'warning' ? 'alert' : 'status'))
 
 /** Иконка оповещения по умолчанию на основе типа */
 const alertIcon = computed((): string => {

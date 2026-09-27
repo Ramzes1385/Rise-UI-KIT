@@ -22,5 +22,6 @@ export interface UseRangeValuesReturn {
 	thumbMax: (index: number) => number
 	snapToStepValue: (value: number) => number
 	setPointValue: (index: number, rawValue: number) => void
-	emitChange: () => void
+	/** Эмитить change; values — значения точек после изменения (по умолчанию — текущие props) */
+	emitChange: (values?: number[]) => void
 }

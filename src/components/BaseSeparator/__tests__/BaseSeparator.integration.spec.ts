@@ -50,11 +50,11 @@ describe('BaseSeparator integration', () => {
 		expect(container.querySelector('.base-separator')?.getAttribute('role')).toBe('separator')
 	})
 
-	it('не должен устанавливать role для вертикального разделителя', () => {
-		const { container } = render(BaseSeparator, {
+	it('должен устанавливать role=separator для вертикального разделителя', () => {
+		render(BaseSeparator, {
 			props: { orientation: 'vertical' },
 		})
 
-		expect(container.querySelector('.base-separator')?.getAttribute('role')).toBeNull()
+		expect(screen.getByRole('separator')).toHaveAttribute('aria-orientation', 'vertical')
 	})
 })

@@ -1,547 +1,317 @@
-﻿/**
- * Stories для компонента BaseRadio.
- * Демонстрирует все вариации, состояния и интерактивные состояния.
+/**
+ * BaseRadio — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет, вертикальная группа) →
+ * состояния (disabled, ошибка, длинные подписи) → сценарии (слот option) → клавиатура.
  */
 
-import { expect, fn, userEvent } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { RADIO_VARIANTS } from '../model/BaseRadio.types'
 import BaseRadio from '../ui/BaseRadio.vue'
 import type { BaseRadioOption } from '../model/BaseRadio.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const OPTIONS: BaseRadioOption[] = [
-	{ value: 'metal', label: 'Металл' },
-	{ value: 'wood', label: 'Дерево' },
-	{ value: 'stone', label: 'Камень' },
-	{ value: 'glass', label: 'Стекло', isDisabled: true },
+const DELIVERY_OPTIONS: BaseRadioOption[] = [
+	{ value: 'courier', label: 'Курьером' },
+	{ value: 'pickup', label: 'Самовывоз' },
+	{ value: 'post', label: 'Почтой России' },
 ]
 
-const MATERIAL_OPTIONS: BaseRadioOption[] = [
-	{ value: 'steel', label: 'Сталь' },
-	{ value: 'bronze', label: 'Бронза' },
-	{ value: 'copper', label: 'Медь' },
-	{ value: 'iron', label: 'Железо' },
-]
+/** Подробности опций для примера со слотом option */
+const DELIVERY_DETAILS: Record<string, string> = {
+	courier: 'Завтра с 10:00 до 22:00 · 290 ₽',
+	pickup: 'Пункт выдачи на Тверской, 12 · бесплатно',
+	post: '5–7 дней · 190 ₽',
+}
 
-const SIZE_OPTIONS: BaseRadioOption[] = [
-	{ value: 'sm', label: 'Маленький' },
-	{ value: 'md', label: 'Средний' },
-	{ value: 'lg', label: 'Большой' },
-]
-
-const meta: Meta<typeof BaseRadio> = {
-	title: 'UI/BaseRadio',
+const meta = {
+	title: 'Form/BaseRadio',
 	component: BaseRadio,
-
-	argTypes: buildArgTypes({
-		props: {
-			name: { control: 'text' },
-			label: { control: 'text' },
-			variant: { control: 'radio', options: RADIO_VARIANTS },
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Группа радиокнопок — выбор одного варианта из нескольких видимых: способ доставки, тариф, формат файла.',
+					'',
+					'- Группа объявлена `role="radiogroup"`, её имя — заголовок `label`; ошибка (`error`) описывает группу и помечает её `aria-invalid`.',
+					'- Нативные radio с общим `name`: один таб-стоп на группу, стрелки переключают выбор. `name` должен быть уникальным на странице.',
+					'- Слот `option` заменяет только подпись опции — круг, выбор и клавиатура остаются.',
+					'- `bordered` — опции-кнопки высотой 32px для короткого выбора («S / M / L»).',
+					'',
+					'Для одного флага «да/нет» используйте `BaseCheckbox` или `BaseSwitch`; для длинного списка — `BaseSelect`.',
+				].join('\n'),
 			},
-			isVertical: { control: 'boolean' },
-			isRequired: { control: 'boolean' },
-			error: { control: 'text' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: RADIO_VARIANTS }),
+		modelValue: { control: 'inline-radio', options: DELIVERY_OPTIONS.map(option => option.value), table: propGroup(ARG_GROUP.content) },
+		options: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		label: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		isVertical: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		name: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+		error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+		isRequired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		option: { control: false },
+		// Слот default объявлен в типах, но компонент его не выводит.
+		...hiddenArgTypes('default'),
+	},
 	args: {
-		name: 'material',
-		options: OPTIONS,
+		modelValue: 'courier',
+		options: DELIVERY_OPTIONS,
+		name: 'delivery',
+		label: 'Способ доставки',
+		variant: 'default',
+		sizeScale: 100,
 		isVertical: false,
 		isRequired: false,
-		variant: 'default',
 		error: '',
-		sizeScale: 100,
+		'onUpdate:modelValue': fn(),
+		onChange: fn(),
 	},
-}
+	// Значение хранится в args: выбор обновляет Controls, а изменение в Controls — группу.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseRadio },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<BaseRadio v-bind="props" @update:model-value="onUpdate" />',
+		}
+	},
+} satisfies Meta<typeof BaseRadio>
 
 export default meta
-type Story = StoryObj<typeof BaseRadio>
-/** Горизонтальная группа */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: выберите опцию или меняйте props в Controls — значение синхронизировано. */
 export const Default: Story = {
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-	args: {
-		onChange: fn(),
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByRole('radiogroup')).toHaveAccessibleName('Способ доставки')
+		await userEvent.click(canvas.getByText('Самовывоз'))
+		await expect(canvas.getByRole('radio', { name: 'Самовывоз' })).toBeChecked()
+		await expect(args.onChange).toHaveBeenCalledWith('pickup')
 	},
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка группы radio по Tab', async () => {
-			await userEvent.tab()
-			const firstRadio = canvasElement.querySelector('input[type="radio"]')
-			expect(firstRadio).toHaveFocus()
-		})
+}
 
-		await step('Перемещение фокуса по ArrowDown', async () => {
-			await userEvent.keyboard('{ArrowDown}')
-			const radios = canvasElement.querySelectorAll('input[type="radio"]')
-			expect(radios[1]).toHaveFocus()
-		})
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
 
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: 'input[type="radio"]' })
-		})
-	},
-}
-/** С заголовком группы */
-export const WithLabel: Story = {
-	args: {
-		label: 'Выберите материал',
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** Вертикальная группа */
-export const Vertical: Story = {
-	args: {
-		isVertical: true,
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** С ошибкой */
-export const WithError: Story = {
-	args: {
-		error: 'Выберите материал',
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** Все опции отключены */
-export const Disabled: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			const options = OPTIONS.map(o => ({ ...o, isDisabled: true }))
-			return { value, options }
-		},
-		template: '<BaseRadio v-model="value" :options="options" name="disabled" label="Отключённая группа" />',
-	}),
-}
-/** С отключенной опцией */
-export const WithDisabledOption: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
-		template: '<BaseRadio v-model="value" :options="options" name="disabled-opt" />',
-	}),
-}
-/** Другой набор опций */
-export const MaterialOptions: Story = {
-	args: {
-		options: MATERIAL_OPTIONS,
-		name: 'material-type',
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('steel')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** Размеры */
-export const SizeOptions: Story = {
-	args: {
-		options: SIZE_OPTIONS,
-		name: 'size',
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('md')
-			return { args, value }
-		},
-		template: `
-			<div>
-				<BaseRadio v-model="value" v-bind="args" />
-				<p style="margin-top:8px;color:var(--color-text-muted);">Выбрано: {{ value }}</p>
-			</div>
-		`,
-	}),
-}
-/** Вертикальная + ошибка */
-export const VerticalWithError: Story = {
-	args: {
-		isVertical: true,
-		error: 'Выберите материал',
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** все варианты */
+/**
+ * Пять вариантов. `default` — основной; `outline` — прозрачный круг, для цветного фона; `ghost` — без рамки;
+ * `shadow` — с тенью; `bordered` — опции-кнопки без круга.
+ */
 export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'isVertical', 'error'] },
+		docs: { source: { code: RADIO_VARIANTS.map(variant => `<BaseRadio v-model="value" :options="options" name="${variant}" variant="${variant}" label="${variant}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value, variants: RADIO_VARIANTS }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;">
-				<BaseRadio v-for="v in variants"
-					:key="v"
-					v-model="value"
-					v-bind="args"
-					:variant="v"
-					:label="'Variant: ' + v"
-				/>
-			</div>
-		`,
-	}),
-}
-/** Hover-состояние */
-export const HoverState: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseRadio v-model="value" :options="options" name="hover-radio" class="base-radio-item--hover" />
-			</div>
-		`,
-	}),
-}
-/** Focus-состояние */
-export const FocusState: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:12px;">
-				<BaseRadio v-model="value" :options="options" name="focus-radio" class="base-radio-item--focus" />
-			</div>
-		`,
-	}),
-}
-/** все интерактивные состояния рядом */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;">
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Normal</span>
-					<BaseRadio v-model="value" :options="options" name="normal" />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Hover</span>
-					<BaseRadio v-model="value" :options="options" name="hover" class="base-radio-item--hover" />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Focus</span>
-					<BaseRadio v-model="value" :options="options" name="focus" class="base-radio-item--focus" />
-				</div>
-				<div>
-					<span style="font-size:12px;color:var(--color-text-muted);">Error</span>
-					<BaseRadio v-model="value" :options="options" name="error" error="Ошибка" />
-				</div>
-			</div>
-		`,
-	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'name', 'label', 'variant', 'onUpdate:modelValue']),
+			variants: RADIO_VARIANTS,
+			values: ref<Record<string, string | number>>(Object.fromEntries(RADIO_VARIANTS.map(variant => [variant, 'pickup']))),
 		}),
-	],
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
 		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<BaseRadio v-model="value" :options="options" name="dark" />
-				<BaseRadio v-model="value" :options="options" name="dark-v" is-vertical />
+			<div class="story-stack">
+				<BaseRadio
+					v-for="variant in variants"
+					:key="variant"
+					v-bind="props"
+					v-model="values[variant]"
+					:name="'delivery-' + variant"
+					:variant="variant"
+					:label="variant" />
 			</div>
 		`,
 	}),
 }
-/** Интерактивный — клик по опции */
-export const Interactive: Story = {
+
+/** Размеры через `sizeScale`: круг 12, 14, 16, 18 и 20px, подписи масштабируются вместе с ним. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant', 'isVertical'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseRadio v-model="value" :options="options" name="size-${p.name}" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseRadio },
-		setup() {
-			const value = ref('metal')
-			return { args, value }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'name', 'label', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref<Record<string, string | number>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 'courier']))),
+		}),
 		template: `
-			<div>
-				<BaseRadio v-model="value" v-bind="args" />
-				<p style="margin-top:8px;color:var(--color-text-muted);">Выбрано: {{ value }}</p>
+			<div class="story-stack">
+				<BaseRadio
+					v-for="preset in presets"
+					:key="preset.name"
+					v-bind="props"
+					v-model="values[preset.name]"
+					:name="'size-' + preset.name"
+					:size-scale="preset.sizeScale"
+					:label="sizeLabel(preset)" />
 			</div>
 		`,
 	}),
-	args: {
-		onChange: fn(),
-	},
-	play: async ({ canvasElement, args }) => {
-		expect(canvasElement).toBeInTheDocument()
-		const radios = canvasElement.querySelectorAll<HTMLInputElement>('input[type="radio"]')
-		expect(radios.length).toBeGreaterThan(1)
-		radios[1].click()
-		expect(args.onChange).toHaveBeenCalled()
-	},
 }
-/** Обязательное поле */
-export const Required: Story = {
-	args: {
-		label: 'Выберите материал',
-		isRequired: true,
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-		const required = canvasElement.querySelector('.base-radio__required')
-		expect(required).toBeInTheDocument()
-	},
-}
-/** Кастомный слот option */
-export const CustomSlot: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
-		template: `
-			<BaseRadio v-model="value" :options="options" name="custom-slot">
-				<template #option="{ option, isChecked }">
-					<span class="custom-radio-slot" :class="{ 'custom-radio-slot--checked': isChecked }">
-						{{ option.label }} {{ isChecked ? '✓' : '' }}
-					</span>
-				</template>
-			</BaseRadio>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-		const slots = canvasElement.querySelectorAll('.custom-radio-slot')
-		expect(slots.length).toBeGreaterThan(0)
-		// Кастомный слот заменяет дефолтный контент — inputs отсутствуют
-		expect(slots[0].textContent).toContain('Металл')
-	},
-}
-/** Кастомный цвет */
+
+/** Кастомный цвет через `color`: `bg` — заливка выбранного круга, `text` — цвет точки. */
 export const CustomColor: Story = {
 	args: {
-		label: 'Цветная группа',
-		color: {
-			bg: { base: '#e0f2fe', hover: '#bae6fd' },
-			text: { base: '#0369a1', hover: '#0c4a6e' },
-		},
+		label: 'Тариф',
+		name: 'plan',
+		modelValue: 'pro',
+		options: [
+			{ value: 'basic', label: 'Базовый' },
+			{ value: 'pro', label: 'Профессиональный' },
+			{ value: 'team', label: 'Командный' },
+		],
+		color: { bg: { base: '#0f766e', hover: '#115e59' }, text: { base: '#ffffff' } },
 	},
+	argTypes: { modelValue: { control: 'inline-radio', options: ['basic', 'pro', 'team'] } },
+	play: async ({ canvas }) => {
+		const circle = canvas.getByRole('radio', { name: 'Профессиональный' }).nextElementSibling as HTMLElement
+		await expect(getComputedStyle(circle).backgroundColor).toBe('rgb(15, 118, 110)')
+	},
+}
+
+/** Вертикальная группа `isVertical` — для длинных подписей и больше чем 3–4 опций. */
+export const Vertical: Story = {
+	args: { isVertical: true, name: 'delivery-vertical' },
+	play: async ({ canvas }) => {
+		const [first, second] = canvas.getAllByRole('radio')
+		await expect(second.getBoundingClientRect().top).toBeGreaterThan(first.getBoundingClientRect().top)
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/**
+ * Отключённые опции: `isDisabled` у отдельной опции или у всех опций сразу (у группы своего `isDisabled` нет).
+ * Отключённая опция приглушена, не выбирается и пропускается стрелками.
+ */
+export const Disabled: Story = {
+	parameters: { controls: { include: ['variant', 'sizeScale', 'isVertical'] } },
 	render: args => ({
 		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** Клик по скрытому инпуту при кастомном слоте — покрывает @change на скрытом input */
-export const CustomSlotClickHiddenInput: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'name', 'label', 'options', 'onUpdate:modelValue']),
+			someDisabled: DELIVERY_OPTIONS.map(option => ({ ...option, isDisabled: option.value === 'post' })),
+			allDisabled: DELIVERY_OPTIONS.map(option => ({ ...option, isDisabled: true })),
+			partial: ref<string | number>('courier'),
+			all: ref<string | number>('pickup'),
+		}),
 		template: `
-			<BaseRadio v-model="value" :options="options" name="custom-slot-click">
-				<template #option="{ option, isChecked }">
-					<span class="custom-slot-item" :class="{ 'custom-slot-item--checked': isChecked }">
-						{{ option.label }}
-					</span>
-				</template>
-			</BaseRadio>
+			<div class="story-stack">
+				<BaseRadio v-bind="props" v-model="partial" :options="someDisabled" name="delivery-partial" label="Почта временно недоступна" />
+				<BaseRadio v-bind="props" v-model="all" :options="allDisabled" name="delivery-all" label="Доставка выбрана менеджером" />
+			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-		const slots = canvasElement.querySelectorAll('.custom-slot-item')
-		expect(slots.length).toBeGreaterThan(0)
-		// Кастомный слот заменяет дефолтный контент — inputs отсутствуют
-		expect(slots[0].textContent).toContain('Металл')
+	play: async ({ canvas }) => {
+		const [partialGroup, allGroup] = canvas.getAllByRole('radiogroup')
+		await expect(within(partialGroup).getByRole('radio', { name: 'Почтой России' })).toBeDisabled()
+		await expect(within(partialGroup).getByRole('radio', { name: 'Курьером' })).toBeEnabled()
+		for (const radio of within(allGroup).getAllByRole('radio')) {
+			await expect(radio).toBeDisabled()
+		}
 	},
 }
-/** Масштаб размера */
-export const SizeScale: Story = {
-	args: {
-		label: 'Масштаб 150%',
-		sizeScale: 150,
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-}
-/** Клик по скрытому инпуту при кастомном слоте — покрывает @change на скрытом input */
-export const CustomSlotHiddenInputClick: Story = {
-	render: () => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			const options = OPTIONS
-			return { value, options }
-		},
-		template: `
-			<BaseRadio v-model="value" :options="options" name="hidden-click">
-				<template #option="{ option, isChecked }">
-					<span class="hidden-slot-item" :class="{ 'hidden-slot-item--checked': isChecked }">
-						{{ option.label }}
-					</span>
-				</template>
-			</BaseRadio>
-		`,
-	}),
-	args: {
-		onChange: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		// Кастомный слот заменяет дефолтный контент — проверяем что слот отрендерился
-		const slots = canvasElement.querySelectorAll('.hidden-slot-item')
-		expect(slots.length).toBeGreaterThan(0)
-		expect(slots[0].textContent).toContain('Металл')
+
+/** Ошибка: круги с красной рамкой и текст под группой; группа помечена `aria-invalid` и описана текстом ошибки. */
+export const WithError: Story = {
+	args: { modelValue: '', name: 'delivery-error', isRequired: true, error: 'Выберите способ доставки' },
+	play: async ({ canvas }) => {
+		const group = canvas.getByRole('radiogroup', { name: /Способ доставки/ })
+		await expect(group).toHaveAttribute('aria-invalid', 'true')
+		await expect(group).toHaveAttribute('aria-required', 'true')
+		await expect(group).toHaveAccessibleDescription('Выберите способ доставки')
 	},
 }
-/** Изменение выбора в не-multiple режиме — покрывает openIndexes.value = [index] */
-export const SwitchSelection: Story = {
-	args: {
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('metal')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-	play: async ({ args, canvasElement }) => {
-		const radios = canvasElement.querySelectorAll<HTMLInputElement>('input[type="radio"]')
-		// Переключаем с 'metal' на 'wood'
-		radios[1].click()
-		expect(args.onChange).toHaveBeenCalledWith('wood')
-		// Переключаем с 'wood' на 'stone'
-		radios[2].click()
-		expect(args.onChange).toHaveBeenCalledWith('stone')
-	},
-}
-/** Radio с длинным текстом подписи */
+
+/** Длинные подписи переносятся по словам, круг остаётся у первой строки (ширина контейнера 360px). */
 export const LongContent: Story = {
 	args: {
-		modelValue: 'option1',
+		label: 'Что сделать, если товара не окажется в наличии',
+		name: 'out-of-stock',
+		modelValue: 'replace',
+		isVertical: true,
 		options: [
-			{
-				label:
-					'Я соглашаюсь с условиями использования сервиса и политикой конфиденциальности, даю согласие на обработку персональных данных',
-				value: 'option1',
-			},
-			{ label: 'Короткий вариант', value: 'option2' },
+			{ value: 'replace', label: 'Заменить на аналогичный товар того же бренда с похожими характеристиками и ценой' },
+			{ value: 'call', label: 'Позвонить мне и согласовать замену до сборки заказа' },
+			{ value: 'remove', label: 'Убрать товар из заказа и вернуть деньги на карту' },
 		],
 	},
-	render: args => ({
-		components: { BaseRadio },
-		setup() {
-			const value = ref<string | number>('option1')
-			return { args, value }
-		},
-		template: '<BaseRadio v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка группы radio по Tab', async () => {
-			await playFocusTest(canvasElement, { selector: 'input[type="radio"]' })
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: 'input[type="radio"]' })
-		})
+	argTypes: { modelValue: { control: 'inline-radio', options: ['replace', 'call', 'remove'] } },
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseRadio },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
+			template: '<div class="story-narrow"><BaseRadio v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+	play: async ({ canvas }) => {
+		const radio = canvas.getByRole('radio', { name: /Заменить на аналогичный/ })
+		const label = canvas.getByText(/Заменить на аналогичный/)
+		await expect(label.getBoundingClientRect().height).toBeGreaterThan(20)
+		// Круг по центру первой строки (20px): его верх на 2px ниже верха подписи
+		const circle = radio.nextElementSibling as HTMLElement
+		await expect(Math.round(circle.getBoundingClientRect().top - label.getBoundingClientRect().top)).toBe(2)
 	},
 }
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'rad-root', label: 'rad-label', options: 'rad-options', radio: 'rad-radio', wrapper: 'rad-wrapper', input: 'rad-input', circle: 'rad-circle', dot: 'rad-dot', optionLabel: 'rad-optionLabel', errorText: 'rad-errorText' },
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Слот `option({ option, isChecked })` заменяет подпись опции — например, добавляет срок и цену.
+ * Круг, выбор кликом по подписи и стрелки работают как обычно.
+ */
+export const OptionSlot: Story = {
+	args: { isVertical: true, name: 'delivery-details' },
+	parameters: { controls: { include: ['variant', 'sizeScale'] } },
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseRadio },
+			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate, details: DELIVERY_DETAILS }),
+			template: `
+				<BaseRadio v-bind="props" @update:model-value="onUpdate">
+					<template #option="{ option }">
+						<span style="display: flex; flex-direction: column;">
+							<span>{{ option.label }}</span>
+							<span style="color: var(--rise-text-muted); font-weight: var(--rise-font-weight-normal);">{{ details[option.value] }}</span>
+						</span>
+					</template>
+				</BaseRadio>
+			`,
+		}
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.rad-root')).toBeTruthy()
+	play: async ({ canvas, userEvent }) => {
+		await expect(canvas.getAllByRole('radio')).toHaveLength(DELIVERY_OPTIONS.length)
+		await userEvent.click(canvas.getByText('Пункт выдачи на Тверской, 12 · бесплатно'))
+		await expect(canvas.getByRole('radio', { name: /Самовывоз/ })).toBeChecked()
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/** Клавиатура: Tab ставит фокус на выбранную опцию (видно кольцо вокруг круга), стрелки переключают выбор. */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { name: 'delivery-keyboard' },
+	play: async ({ canvas, userEvent, args }) => {
+		const courier = canvas.getByRole('radio', { name: 'Курьером' })
+		await tabTo(courier, userEvent)
+		await expect(getComputedStyle(courier.nextElementSibling as HTMLElement).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{ArrowRight}')
+		const pickup = canvas.getByRole('radio', { name: 'Самовывоз' })
+		await expect(pickup).toBeChecked()
+		await expect(pickup).toHaveFocus()
+		await expect(args.onChange).toHaveBeenLastCalledWith('pickup')
 	},
 }

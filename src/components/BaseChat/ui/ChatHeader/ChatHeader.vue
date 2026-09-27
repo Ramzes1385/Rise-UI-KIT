@@ -1,91 +1,74 @@
 <template>
 	<div class="base-chat-header">
-		<!-- Обычный заголовок (когда не ищем) -->
+		<!-- Название и статус чата (когда не ищем) -->
 		<div v-if="!isSearching" class="base-chat-header__info">
-			<BaseAvatar
+			<button
 				v-if="avatar"
-				:src="avatar"
-				:name="title"
-				:size-scale="sizeScale"
-				class="base-chat-header__avatar"
-				@click="handleAvatarClick" />
+				type="button"
+				class="base-chat-header__avatar-button"
+				:aria-label="`${UI_CHAT_TEXT.PROFILE_ARIA} ${title}`"
+				@click="handleAvatarClick">
+				<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale" class="base-chat-header__avatar" />
+			</button>
 			<div class="base-chat-header__text">
-				<BaseText tag="span" :weight="UI_FONT_WEIGHT.BOLD" :size-scale="sizeScale" class="base-chat-header__title">
-					{{ title }}
-				</BaseText>
-				<div class="base-chat-header__status">
-					<BaseText v-if="isTyping" tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-header__typing">
-					{{ typingUsername ? `${typingUsername} ${UI_CHAT_TEXT.TYPING_SUFFIX}` : UI_CHAT_TEXT.TYPING_LABEL
-					}}<span class="base-chat-header__dots">...</span>
-					</BaseText>
-					<BaseText v-else-if="subtitle" tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-header__subtitle">
-						{{ subtitle }}
-					</BaseText>
-				</div>
+				<span class="base-chat-header__title">{{ title }}</span>
+				<span v-if="isTyping" class="base-chat-header__typing">
+					{{ typingText }}<span class="base-chat-header__dots" aria-hidden="true">…</span>
+				</span>
+				<span v-else-if="subtitle" class="base-chat-header__subtitle">{{ subtitle }}</span>
 			</div>
 		</div>
 
-		<!-- Поле поиска (когда активен поиск) -->
+		<!-- Поле поиска (когда активен поиск): Escape закрывает поиск -->
 		<div v-else class="base-chat-header__search-container">
-			<BaseInput
-				:model-value="searchQuery"
-				:placeholder="UI_CHAT_TEXT.SEARCH_PLACEHOLDER"
-				:size-scale="sizeScale * UI_CHAT_SCALE.MEMBER"
-				class="base-chat-header__search-input"
-				:aria-label="UI_CHAT_TEXT.SEARCH_ARIA"
-				@update:model-value="handleSearchInput">
-				<template #prefix>
-					<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				</template>
-			</BaseInput>
+			<div class="base-chat-header__search-input">
+				<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-header__search-icon" />
+				<input
+					ref="searchInputRef"
+					type="search"
+					class="base-chat-header__search-field"
+					:value="searchQuery"
+					:placeholder="UI_CHAT_TEXT.SEARCH_PLACEHOLDER"
+					:aria-label="UI_CHAT_TEXT.SEARCH_ARIA"
+					@input="handleSearchInput"
+					@keydown.esc.prevent="handleSearchEscape" />
+			</div>
 		</div>
 
 		<!-- Кнопки управления -->
 		<div class="base-chat-header__actions">
 			<BaseButton
+				ref="searchToggleRef"
 				variant="ghost"
-				:padding="1"
 				:size-scale="sizeScale"
 				class="base-chat-header__action-btn"
 				:aria-label="isSearching ? UI_CHAT_TEXT.SEARCH_CLOSE : UI_CHAT_TEXT.SEARCH_ARIA"
 				@click="handleToggleSearch">
-				<template #left>
-					<BaseIcon :name="isSearching ? 'close' : 'search'" :size-scale="sizeScale" />
-				</template>
+				<BaseIcon :name="isSearching ? 'close' : 'search'" :size-scale="sizeScale" />
 			</BaseButton>
 
 			<BaseButton
 				variant="ghost"
-				:padding="1"
 				:size-scale="sizeScale"
 				class="base-chat-header__action-btn"
 				:aria-label="UI_CHAT_TEXT.INFO_ARIA"
 				@click="handleInfoClick">
-				<template #left>
-					<BaseIcon name="info" :size-scale="sizeScale" />
-				</template>
+				<BaseIcon name="info" :size-scale="sizeScale" />
 			</BaseButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, ref, watch } from 'vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
-import { BaseText } from '@components/BaseText'
-import {
-	UI_CHAT_SCALE,
-	UI_CHAT_TEXT,
-	UI_FONT_WEIGHT,
-	UI_SCALE,
-	SIZE_SCALE_DEFAULT,
-} from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 
-withDefaults(defineProps<ChatHeaderProps>(), {
+const props = withDefaults(defineProps<ChatHeaderProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isSearching: false,
 	searchQuery: '',
@@ -94,6 +77,22 @@ withDefaults(defineProps<ChatHeaderProps>(), {
 })
 
 const emit = defineEmits<ChatHeaderEmits>()
+
+const searchInputRef = ref<HTMLInputElement | null>(null)
+const searchToggleRef = ref<{ focus: () => void } | null>(null)
+
+/** «Анна печатает» в групповом чате, «Печатает» — в личном */
+const typingText = computed(() =>
+	props.typingUsername ? `${props.typingUsername} ${UI_CHAT_TEXT.TYPING_SUFFIX}` : UI_CHAT_TEXT.TYPING_LABEL,
+)
+
+/** Открытое поле поиска сразу получает фокус: можно печатать без лишнего клика */
+watch(
+	() => props.isSearching,
+	isSearching => {
+		if (isSearching) nextTick(() => searchInputRef.value?.focus())
+	},
+)
 
 /** Обработка клика по аватару */
 function handleAvatarClick(): void {
@@ -106,8 +105,14 @@ function handleToggleSearch(): void {
 }
 
 /** Ввод поискового запроса */
-function handleSearchInput(value: string): void {
-	emit('update:searchQuery', value)
+function handleSearchInput(event: Event): void {
+	emit('update:searchQuery', (event.target as HTMLInputElement).value)
+}
+
+/** Escape в поле поиска закрывает поиск и возвращает фокус на кнопку поиска */
+function handleSearchEscape(): void {
+	emit('toggle-search')
+	nextTick(() => searchToggleRef.value?.focus())
 }
 
 /** Клик по кнопке информации */

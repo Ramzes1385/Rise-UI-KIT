@@ -1,34 +1,41 @@
-@use "@styles/variables" as *;
-@use "@styles/mixins" as *;
-@use "@styles/functions" as *;
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
 
 .base-table {
+	// Фон строки задаёт переменная --tbl-row-bg: её читают ячейки, в том числе закреплённые (им нужен непрозрачный фон).
+	// Наведение — строки данных; служебные строки (вложенная таблица, раскрытое содержимое, дочерние) не подсвечиваются.
 	&__tr {
-		@include transition(background-color);
+		--tbl-row-hover: var(--tbl-hover, var(--rise-bg-muted));
 
-		@include hover {
-			background-color: rgba(249, 115, 22, 0.03);
-		}
-
-		&--selected {
-			background-color: rgba(249, 115, 22, 0.06);
-		}
-
-		&--disabled {
-			opacity: 0.45;
-		}
-
-		&--child {
-			background-color: var(--color-surface-muted);
-
-			.base-table__td {
-				font-size: sz(13px);
-				padding-left: sz(48px);
+		&:not(.base-table__tr--child, .base-table__tr--nested, .base-table__tr--expanded-content) {
+			@include hover {
+				--tbl-row-bg: var(--tbl-row-hover);
 			}
+		}
+
+		// Двойной класс: выбор важнее чередования striped и цвета наведения из color.
+		&.base-table__tr--selected {
+			--tbl-row-bg: var(--rise-primary-soft);
+			--tbl-row-hover: var(--rise-primary-soft-hover);
+		}
+
+		// aria-disabled на строке исключает её из проверки контраста: неактивный элемент приглушён намеренно.
+		&--disabled {
+			@include disabled-state;
 		}
 
 		&--expandable {
 			cursor: pointer;
+		}
+
+		// Дочерние строки раскрытой строки: фон bg-muted, первая ячейка данных с отступом уровня.
+		&--child {
+			--tbl-row-bg: var(--rise-bg-muted);
+		}
+
+		&--child > .base-table__td--expand + .base-table__td {
+			padding-left: calc(#{sz(var(--tbl-pad-left))} + #{sz(20px)});
 		}
 	}
 }

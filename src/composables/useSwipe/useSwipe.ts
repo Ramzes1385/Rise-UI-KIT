@@ -8,7 +8,7 @@ import type { UseSwipeOptions } from './useSwipe.types'
  *
  * @example
  * ```ts
- * const { isDragging, dragOffset, onTouchStart, onTouchMove, onTouchEnd, onDragStart } = useSwipe({
+ * const { isDragging, dragOffset, onTouchStart, onTouchMove, onTouchEnd, onDragStart, onClickCapture } = useSwipe({
  *   isVertical: () => props.isVertical,
  *   threshold: 50,
  *   onSwipeNext: goNext,
@@ -17,6 +17,9 @@ import type { UseSwipeOptions } from './useSwipe.types'
  * })
  * ```
  */
+/** Смещение указателя (px), после которого отпускание мыши считается перетаскиванием, а не кликом */
+const CLICK_SLOP = 5
+
 function useSwipe(options: UseSwipeOptions) {
 	const threshold = options.threshold ?? 50
 	const isDragging = ref(false)
@@ -27,6 +30,8 @@ function useSwipe(options: UseSwipeOptions) {
 	let rafId: number | null = null
 	let activeMouseMove: ((ev: MouseEvent) => void) | null = null
 	let activeMouseUp: ((ev: MouseEvent) => void) | null = null
+	/** Последнее перетаскивание мышью ушло дальше CLICK_SLOP: следующий click относится к нему, а не к содержимому */
+	let isClickAfterDrag = false
 
 	/** Определить направление свайпа и вызвать callback */
 	function resolveSwipe(deltaMain: number, deltaCross: number): void {
@@ -92,6 +97,7 @@ function useSwipe(options: UseSwipeOptions) {
 		dragStartY = event.clientY
 		isDragging.value = true
 		dragOffset.value = 0
+		isClickAfterDrag = false
 
 		let pendingOffset = 0
 
@@ -123,12 +129,37 @@ function useSwipe(options: UseSwipeOptions) {
 			dragOffset.value = 0
 			options.onDragOffset?.(0)
 			cleanupMouseListeners()
+			markClickAfterDrag(Math.abs(deltaX) > CLICK_SLOP || Math.abs(deltaY) > CLICK_SLOP)
 		}
 
 		activeMouseMove = handleMouseMove
 		activeMouseUp = handleMouseUp
 		document.addEventListener('mousemove', handleMouseMove)
 		document.addEventListener('mouseup', handleMouseUp)
+	}
+
+	/**
+	 * Запомнить, что отпускание завершило перетаскивание. Браузер отправляет click в той же задаче, что и mouseup,
+	 * поэтому признак живёт до конца текущей задачи: если click не последовал (отпустили вне элемента),
+	 * он не погасит следующий, не связанный с перетаскиванием click (например, Enter на кнопке внутри слайда)
+	 */
+	function markClickAfterDrag(wasDrag: boolean): void {
+		isClickAfterDrag = wasDrag
+		if (!wasDrag) return
+		setTimeout(() => {
+			isClickAfterDrag = false
+		}, 0)
+	}
+
+	/**
+	 * Обработчик click в фазе захвата на контейнере свайпа: гасит click, завершающий перетаскивание мышью,
+	 * чтобы он не активировал содержимое слайда (зум изображения, ссылку, кнопку)
+	 */
+	function onClickCapture(event: MouseEvent): void {
+		if (!isClickAfterDrag) return
+		isClickAfterDrag = false
+		event.stopPropagation()
+		event.preventDefault()
 	}
 
 	/** Очистка активных слушателей мыши */
@@ -155,6 +186,7 @@ function useSwipe(options: UseSwipeOptions) {
 		onTouchMove,
 		onTouchEnd,
 		onDragStart,
+		onClickCapture,
 	}
 }
 

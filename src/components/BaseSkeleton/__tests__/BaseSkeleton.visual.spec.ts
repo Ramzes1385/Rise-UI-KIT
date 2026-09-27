@@ -1,16 +1,20 @@
 /**
- * Visual regression тесты для BaseSkeleton.
+ * Visual regression BaseSkeleton: ключевые stories в светлой и тёмной теме.
+ * Анимации на скриншоте остановлены (`animations: 'disabled'`): шиммер и мерцание не попадают в снимок.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baseskeleton'
-const STORIES = ['default', 'text-sizes', 'shapes', 'no-animation', 'pulse', 'dark-theme']
+const STORIES = ['shapes', 'sizes', 'custom-color', 'card-placeholder'] as const
 
-for (const story of STORIES) {
-	test(`BaseSkeleton — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-skeleton--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSkeleton · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseskeleton--${story}`, { theme, height: 300 })
+				await expectStoryScreenshot(page, `base-skeleton-${story}-${theme}.png`)
+			})
+		}
 	})
 }

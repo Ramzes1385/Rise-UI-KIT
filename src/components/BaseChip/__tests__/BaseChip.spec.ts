@@ -159,6 +159,22 @@ describe('BaseChip unit', () => {
 		})
 	})
 
+	describe('пропс color', () => {
+		it('должен красить только индикатор, не наследуясь содержимому слота', () => {
+			const { container } = render(BaseChip, {
+				props: { content: 5, color: { bg: { base: 'var(--rise-error)' }, text: { base: 'var(--rise-on-error)' } } },
+				slots: { default: '<button type="button">Уведомления</button>' },
+			})
+
+			const badge = container.querySelector('.base-chip__badge') as HTMLElement
+			const chip = container.querySelector('.base-chip') as HTMLElement
+			expect(badge.style.getPropertyValue('--custom-bg')).toBe('var(--rise-error)')
+			expect(badge.style.getPropertyValue('--custom-text')).toBe('var(--rise-on-error)')
+			// С корня переменные --custom-* унаследовали бы кнопки и другие компоненты в слоте
+			expect(chip.style.getPropertyValue('--custom-bg')).toBe('')
+		})
+	})
+
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу', () => {
 			const { container } = render(BaseChip, {

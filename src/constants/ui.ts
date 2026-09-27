@@ -37,14 +37,39 @@ export const UI_TEXT = {
 
 export const UI_ARIA = {
 	BREADCRUMBS: 'Навигация',
+	BREADCRUMBS_NAV: 'Хлебные крошки',
+	PAGINATION_PREV: 'Предыдущая страница',
+	PAGINATION_NEXT: 'Следующая страница',
+	TABS_SCROLL_LEFT: 'Прокрутить вкладки влево',
+	TABS_SCROLL_RIGHT: 'Прокрутить вкладки вправо',
 	CLOSE: 'Закрыть',
+	PROGRESS: 'Прогресс',
 	PREV_YEAR: 'Предыдущий год',
 	PREV_MONTH: 'Предыдущий месяц',
 	NEXT_MONTH: 'Следующий месяц',
 	NEXT_YEAR: 'Следующий год',
+	PREV_YEARS: 'Предыдущие годы',
+	NEXT_YEARS: 'Следующие годы',
+	OPEN_CALENDAR: 'Открыть календарь',
+	CLEAR_VALUE: 'Очистить',
 	SORT: 'Сортировать',
 	PASSWORD_HIDE: 'Скрыть пароль',
 	PASSWORD_SHOW: 'Показать пароль',
+	NOTIFICATIONS: 'Уведомления',
+	IMAGE_VIEWER: 'Просмотр изображения',
+	ZOOM_IN: 'Увеличить',
+	ZOOM_OUT: 'Уменьшить',
+	ZOOM_RESET: 'Сбросить масштаб',
+	ROTATE_LEFT: 'Повернуть влево',
+	ROTATE_RIGHT: 'Повернуть вправо',
+	GALLERY_PREV: 'Предыдущее изображение',
+	GALLERY_NEXT: 'Следующее изображение',
+	SEARCH: 'Поиск',
+	/** Имена ползунков BaseRange без ariaLabel: одно значение, границы диапазона, точки */
+	RANGE_VALUE: 'Значение',
+	RANGE_MIN: 'Минимум',
+	RANGE_MAX: 'Максимум',
+	RANGE_POINT: 'Точка',
 } as const
 
 // ─── Тайминги (мс) ────────────────────────────────────────────────
@@ -134,6 +159,12 @@ export const UI_FILTER = {
 
 export const UI_CALENDAR = {
 	EVENT_TEXT: 'Событие',
+	/** Подпись блока времени */
+	TIME: 'Время',
+	/** Доступные имена полей времени */
+	HOURS: 'Часы',
+	MINUTES: 'Минуты',
+	SECONDS: 'Секунды',
 } as const
 
 // ─── Color Picker ─────────────────────────────────────────────────
@@ -150,6 +181,10 @@ export const UI_COLOR_PICKER = {
 
 export const UI_RATING = {
 	ARIA_PREFIX: 'Оценка от 0 до',
+	/** Имя рейтинга только для чтения (role="img"): «Оценка 4.5 из 5» */
+	LABEL: 'Оценка',
+	/** Связка значения и максимума в aria-valuetext и имени: «3 из 5» */
+	OF: 'из',
 } as const
 
 // ─── Числовые константы ────────────────────────────────────────────

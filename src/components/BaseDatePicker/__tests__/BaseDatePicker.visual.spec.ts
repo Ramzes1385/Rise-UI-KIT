@@ -1,44 +1,20 @@
 /**
- * Visual Regression тесты для BaseDatePicker.
- * Снимают baseline-скриншоты ключевых состояний через Storybook.
+ * Visual regression BaseDatePicker: ключевые stories в светлой и тёмной теме.
+ * Панель телепортируется в body, поэтому снимается вся страница. Время браузера зафиксировано на STORY_TODAY.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-/** Базовый путь к stories BaseDatePicker в Storybook */
-const STORY_PATH = '/iframe.html?id=ui-basedatepicker'
+const STORIES = ['default', 'variants', 'with-error', 'range-selection', 'with-time'] as const
 
-test.describe('BaseDatePicker visual regression', () => {
-	test('Default: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--default`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-datepicker-default.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseDatePicker · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basedatepicker--${story}`, { theme, height: 560 })
+				await expectStoryScreenshot(page, `base-date-picker-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
-
-	test('WithTime: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--with-time`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-datepicker-with-time.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('RangeSelection: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--range-selection`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-datepicker-range.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-})
+}

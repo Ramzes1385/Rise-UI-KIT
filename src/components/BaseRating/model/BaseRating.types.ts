@@ -19,7 +19,7 @@ export interface BaseRatingProps extends BaseComponentProps<RatingVariant, 'root
 	isHoverSmooth?: boolean
 	/** Имя иконки пустой звезды */
 	icon?: string
-	/** Имя иконки заполненной звезды (по умолчанию совпадает с icon) */
+	/** Имя иконки заполненной звезды. По умолчанию для `icon="star"` — `star-filled` (сплошная звезда), для остальных — та же icon */
 	iconFilled?: string
 	/** Только для чтения — без интерактива */
 	isReadonly?: boolean

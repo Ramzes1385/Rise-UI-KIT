@@ -206,7 +206,8 @@ npm run test:e2e -- src/components/BaseSideBar
 # 4. Build
 npm run build
 
-# 5. Полная CI-валидация (то же, что делает CI)
+# 5. Базовая CI-валидация: lint, типы, unit-тесты, сухая сборка пакета
+#    (пороги покрытия, stories/a11y-гейты и e2e/visual CI запускает отдельными job)
 npm run ci:validate
 
 # 6. Сухой прогон релиза (покажет будущую версию без publish)
@@ -386,6 +387,7 @@ git push -u origin feat/sidebar-disclosure-groups
 
 - [ ] Все коммиты следуют Conventional Commits
 - [ ] `npm run lint` проходит без ошибок
+- [ ] `npm run typecheck` проходит (типы исходников и тестов)
 - [ ] `npm run test:unit` проходит
 - [ ] `npm run test:e2e` проходит (если затронуты компоненты с e2e)
 - [ ] `npm run build` проходит

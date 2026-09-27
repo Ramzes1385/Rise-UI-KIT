@@ -1,508 +1,290 @@
 /**
- * Stories для компонента BaseBreadcrumbs.
- * Демонстрирует все вариации: размеры, разделители, collapsed, home.
- * Каждая story содержит play-функцию для 100% coverage.
+ * BaseBreadcrumbs — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (варианты, размеры, разделители, цвет) →
+ * состояния (пусто, длинные названия) → содержимое (иконки, «домой», слоты) → сценарии (сворачивание) → клавиатура.
  */
 
-import { expect, userEvent, within } from 'storybook/test'
-import { BaseText } from '@components/BaseText'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { expect, fn, within } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import { BaseIcon } from '@components/BaseIcon'
 import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
-import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { BreadcrumbItem, BreadcrumbSeparator } from '../model/BaseBreadcrumbs.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },
 	{ label: 'Каталог', to: '/catalog' },
-	{ label: 'Кованые изделия', to: '/catalog/forged' },
-	{ label: 'Ворота', to: '/catalog/forged/gates' },
-	{ label: 'Распашные ворота' },
+	{ label: 'Электроника', to: '/catalog/electronics' },
+	{ label: 'Ноутбуки', to: '/catalog/electronics/laptops' },
+	{ label: 'Ультрабук 13"' },
 ]
 
-const meta: Meta<typeof BaseBreadcrumbs> = {
-	title: 'UI/BaseBreadcrumbs',
+const ICON_ITEMS: BreadcrumbItem[] = [
+	{ label: 'Главная', to: '/', icon: 'home' },
+	{ label: 'Документы', to: '/docs', icon: 'folder' },
+	{ label: 'Договор поставки.pdf', icon: 'file' },
+]
+
+const LONG_ITEMS: BreadcrumbItem[] = [
+	{ label: 'Главная', to: '/' },
+	{ label: 'Отдел закупок и логистики центрального офиса', to: '/purchasing' },
+	{ label: 'Договоры с поставщиками комплектующих на 2025 год', to: '/purchasing/contracts' },
+	{ label: 'Дополнительное соглашение № 14 об изменении сроков поставки' },
+]
+
+const SEPARATORS: BreadcrumbSeparator[] = ['chevron', 'arrow', 'slash', 'dot']
+
+/**
+ * Слоты `item` и `home` не передаются атрибутами. Слот `separator` не исключаем: одноимённый prop задаёт вид разделителя
+ * (в argTypes у него категория props, поэтому Storybook передаёт его как prop, а не как содержимое слота).
+ */
+const SLOT_KEYS = ['item', 'home']
+
+const meta = {
+	title: 'Navigation/BaseBreadcrumbs',
 	component: BaseBreadcrumbs,
-
-	argTypes: buildArgTypes({
-		props: {
-			separator: { control: 'select', options: ['slash', 'chevron', 'dot', 'arrow'] },
-			variant: { control: 'select', options: BREADCRUMBS_VARIANTS },
-			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
-			maxItems: { control: 'number' },
-			showHome: { control: 'boolean' },
-			homeIcon: { control: 'text' },
-			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 }, description: 'Масштаб размера (50–200%, по умолчанию 100)' },
-			customClass: { control: 'object' },
-			items: { table: { disable: true } },
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Хлебные крошки показывают путь до текущей страницы и позволяют вернуться на любой уровень выше.',
+					'',
+					'- Корень — ориентир `<nav aria-label="Хлебные крошки">`, текущая страница помечена `aria-current="page"`.',
+					'- Переход: для `to` компонент эмитит `navigate(url)` — маршрут открывает приложение; `href` открывается в новой вкладке.',
+					'- `maxItems` сворачивает начало пути в «…», `showHome` добавляет перед крошками кнопку-иконку «домой».',
+					'- Варианты: `default` — ссылки; `ghost` — ссылки-кнопки; `outline`, `shadow`, `soft` — крошки в контейнере высотой с контрол.',
+					'',
+					'Вместе с крошками разметка Schema.org (JSON-LD) попадает на страницу для поисковых систем.',
+				].join('\n'),
+			},
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: BREADCRUMBS_VARIANTS }),
+		items: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		homeIcon: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		separator: { control: 'inline-radio', options: SEPARATORS, table: propGroup(ARG_GROUP.appearance) },
+		showHome: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		maxItems: { control: { type: 'number', min: 0, max: 10 }, table: propGroup(ARG_GROUP.behavior) },
+		item: { control: false },
+		home: { control: false },
+	},
 	args: {
 		items: ITEMS,
-		separator: 'chevron',
 		variant: 'default',
+		separator: 'chevron',
 		maxItems: 0,
 		showHome: false,
 		homeIcon: 'home',
 		sizeScale: 100,
+		onNavigate: fn(),
+		'onItem-click': fn(),
 	},
-}
+} satisfies Meta<typeof BaseBreadcrumbs>
 
 export default meta
-type Story = StoryObj<typeof BaseBreadcrumbs>
-/** Базовая story — клик по элементу, проверка current */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: клик по крошке эмитит `item-click` и `navigate` с адресом из `to`. Текущая страница — последняя крошка. */
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
+	play: async ({ canvas, userEvent, args }) => {
+		const nav = canvas.getByRole('navigation', { name: 'Хлебные крошки' })
+		await expect(within(nav).getByText('Ультрабук 13"').closest('[aria-current="page"]')).not.toBeNull()
 
-		// Клик по «Каталог» — покрывает handleItemClick + navigate
-		const catalogBtn = canvas.getByRole('button', { name: 'Каталог' })
-		await userEvent.click(catalogBtn)
-
-		// Текущий элемент — проверяем что отображается
-		expect(canvas.getByText('Распашные ворота')).toBeInTheDocument()
+		await userEvent.click(canvas.getByRole('button', { name: 'Каталог' }))
+		await expect(args['onItem-click']).toHaveBeenCalledWith(ITEMS[1])
+		await expect(args.onNavigate).toHaveBeenCalledWith('/catalog')
 	},
 }
-/** Все варианты */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Пять вариантов. `default` и `ghost` — для шапки страницы, контейнерные `outline`, `shadow`, `soft` — для тулбаров и карточек.
+ * Если на странице несколько крошек, дайте каждой своё имя через `aria-label` — так ориентиры различимы для скринридера.
+ */
 export const Variants: Story = {
-	render: args => ({
-		components: { BaseBreadcrumbs, BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div v-for="v in ['default','ghost','outline','shadow','soft']" :key="v">
-					<BaseText tag="p" size="xs" style="margin-bottom:4px;">{{ v }}</BaseText>
-					<BaseBreadcrumbs v-bind="args" :variant="v" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const catalogBtns = canvas.getAllByRole('button', { name: 'Каталог' })
-		await userEvent.click(catalogBtns[0]!)
+	argTypes: { variant: { control: false } },
+	parameters: {
+		docs: { source: { code: BREADCRUMBS_VARIANTS.map(variant => `<BaseBreadcrumbs :items="items" variant="${variant}" />`).join('\n') } },
 	},
-}
-/** Разделители — клик для каждого типа */
-export const Separators: Story = {
-	render: args => ({
-		components: { BaseBreadcrumbs, BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div>
-					<BaseText tag="p" size="xs" style="margin-bottom:4px;">chevron</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="chevron" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs" style="margin-bottom:4px;">slash</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="slash" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs" style="margin-bottom:4px;">dot</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="dot" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs" style="margin-bottom:4px;">arrow</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="arrow" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs" style="margin-bottom:4px;">unknown</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="unknown" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const btns = canvas.getAllByRole('button', { name: 'Каталог' })
-		await userEvent.click(btns[0]!)
-	},
-}
-/** Все интерактивные состояния рядом */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseBreadcrumbs, BaseText },
-		setup() {
-			return { items: ITEMS }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div>
-					<BaseText tag="p" size="xs">Normal</BaseText>
-					<BaseBreadcrumbs :items="items" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs">Hover</BaseText>
-					<BaseBreadcrumbs :items="items" class="base-breadcrumbs--hover" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs">Focus</BaseText>
-					<BaseBreadcrumbs :items="items" class="base-breadcrumbs--focus" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const btns = canvas.getAllByRole('button', { name: 'Каталог' })
-		await userEvent.click(btns[0]!)
-	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Распашные ворота')).toBeInTheDocument()
-	},
-}
-/** Интерактивная — клик по всем элементам */
-export const Interactive: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		// Клик по «Главная»
-		const mainBtn = canvas.getByRole('button', { name: 'Главная' })
-		await userEvent.click(mainBtn)
-
-		// Клик по «Кованые изделия»
-		const forgedBtn = canvas.getByRole('button', { name: 'Кованые изделия' })
-		await userEvent.click(forgedBtn)
-
-		// Клик по «Ворота»
-		const gatesBtn = canvas.getByRole('button', { name: 'Ворота' })
-		await userEvent.click(gatesBtn)
-
-		// Проверяем что все элементы отображаются
-		expect(canvas.getByText('Распашные ворота')).toBeInTheDocument()
-	},
-}
-/** С иконкой дома */
-export const WithHome: Story = {
-	args: {
-		showHome: true,
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const homeBtn = canvasElement.querySelector('.base-breadcrumbs__item--home button')
-		expect(homeBtn).toBeInTheDocument()
-		await userEvent.click(homeBtn as HTMLElement)
-	},
-}
-/** С ограничением количества элементов (collapsed) */
-export const Collapsed: Story = {
-	args: {
-		maxItems: 2,
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const ellipsisBtn = canvas.getByRole('button', { name: '…' })
-		expect(ellipsisBtn).toBeInTheDocument()
-		await userEvent.click(ellipsisBtn)
-		// После клика должны появиться все элементы
-		expect(canvas.getByRole('button', { name: 'Каталог' })).toBeInTheDocument()
-	},
-}
-/** С внешними ссылками и иконками */
-export const WithIconsAndHrefs: Story = {
-	args: {
-		items: [
-			{ label: 'Главная', to: '/', icon: 'home' },
-			{ label: 'Внешний сайт', href: 'https://example.com', icon: 'star' },
-			{ label: 'Текущая' },
-		],
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const externalBtn = canvas.getByRole('button', { name: 'Внешний сайт' })
-		expect(externalBtn).toBeInTheDocument()
-		// Кликаем по внешней ссылке
-		await userEvent.click(externalBtn)
-	},
-}
-/** Кастомные слоты */
-export const CustomSlots: Story = {
 	render: args => ({
 		components: { BaseBreadcrumbs },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), variants: BREADCRUMBS_VARIANTS }),
 		template: `
-			<BaseBreadcrumbs v-bind="args" show-home>
-				<template #home>
-					<span class="custom-home">🏠</span>
-				</template>
-				<template #separator="{ index }">
-					<span class="custom-sep">➔</span>
-				</template>
-				<template #item="{ item, index }">
-					<span class="custom-item">{{ index }}: {{ item.label }}</span>
-				</template>
+			<div class="story-stack">
+				<div v-for="variant in variants" :key="variant" class="story-col">
+					<span class="story-label">{{ variant }}</span>
+					<BaseBreadcrumbs v-bind="props" :variant="variant" :aria-label="'Хлебные крошки: ' + variant" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/** Размеры через `sizeScale`: текст 12–17px, контейнерные варианты — высотой с контрол того же размера (24–40px). */
+export const Sizes: Story = {
+	args: { variant: 'outline' },
+	argTypes: { sizeScale: { control: false } },
+	parameters: {
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseBreadcrumbs :items="items" variant="outline" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseBreadcrumbs },
+		setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), presets: SIZE_PRESETS, sizeLabel }),
+		template: `
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-col">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseBreadcrumbs v-bind="props" :size-scale="preset.sizeScale" :aria-label="'Хлебные крошки: ' + preset.name" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/** Разделители: `chevron` (по умолчанию), `arrow`, `slash`, `dot`. Своё содержимое — через слот `separator`. */
+export const Separators: Story = {
+	argTypes: { separator: { control: false } },
+	parameters: {
+		docs: { source: { code: SEPARATORS.map(separator => `<BaseBreadcrumbs :items="items" separator="${separator}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseBreadcrumbs },
+		setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), separators: SEPARATORS }),
+		template: `
+			<div class="story-stack">
+				<div v-for="separator in separators" :key="separator" class="story-col">
+					<span class="story-label">{{ separator }}</span>
+					<BaseBreadcrumbs v-bind="props" :separator="separator" :aria-label="'Хлебные крошки: ' + separator" />
+				</div>
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Кастомный цвет через `color`: `text.base` — ссылки, `text.hover` — ссылка под курсором, `text.active` — текущая страница,
+ * `bg.base` — фон контейнера (варианты `outline`, `shadow`, `soft`).
+ */
+export const CustomColor: Story = {
+	args: {
+		variant: 'soft',
+		color: {
+			bg: { base: '#eff6ff' },
+			text: { base: '#1d4ed8', hover: '#1e3a8a', active: '#172554' },
+		},
+	},
+	play: async ({ canvas }) => {
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Каталог' })).color).toBe('rgb(29, 78, 216)')
+		await expect(getComputedStyle(canvas.getByRole('navigation')).backgroundColor).toBe('rgb(239, 246, 255)')
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Без пунктов: ориентир навигации остаётся, список пустой. */
+export const Empty: Story = {
+	args: { items: [] },
+	play: async ({ canvas }) => {
+		const list = within(canvas.getByRole('navigation', { name: 'Хлебные крошки' })).getByRole('list')
+		await expect(within(list).queryAllByRole('listitem')).toHaveLength(0)
+	},
+}
+
+/** Длинные названия переносятся по словам, крошки не выходят за ширину контейнера (здесь — 360px). */
+export const LongContent: Story = {
+	args: { items: LONG_ITEMS },
+	render: args => ({
+		components: { BaseBreadcrumbs },
+		setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS) }),
+		template: '<div class="story-narrow"><BaseBreadcrumbs v-bind="props" /></div>',
+	}),
+	play: async ({ canvas }) => {
+		const nav = canvas.getByRole('navigation')
+		await expect(nav.scrollWidth).toBeLessThanOrEqual(nav.clientWidth)
+	},
+}
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Иконки у крошек задаёт поле `icon` (имя из спрайта). */
+export const WithIcons: Story = {
+	args: { items: ICON_ITEMS },
+}
+
+/**
+ * `showHome` показывает первую крошку кнопкой-иконкой «домой» (`homeIcon`). Доступное имя кнопки — метка первой крошки,
+ * клик ведёт на её адрес.
+ */
+export const WithHome: Story = {
+	args: { showHome: true },
+	play: async ({ canvas, userEvent, args }) => {
+		const home = canvas.getByRole('button', { name: 'Главная' })
+		await expect(home).not.toHaveTextContent('Главная')
+		await userEvent.click(home)
+		await expect(args.onNavigate).toHaveBeenCalledWith('/')
+	},
+}
+
+/** Слоты `item`, `separator` и `home` заменяют разметку крошки, разделителя и кнопки «домой». */
+export const CustomSlots: Story = {
+	args: { showHome: true },
+	parameters: {
+		docs: {
+			source: {
+				code: [
+					'<BaseBreadcrumbs :items="items" show-home>',
+					'  <template #home><BaseIcon name="star" /></template>',
+					'  <template #separator>—</template>',
+					'  <template #item="{ item, index }">{{ index + 1 }}. {{ item.label }}</template>',
+					'</BaseBreadcrumbs>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseBreadcrumbs, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS) }),
+		template: `
+			<BaseBreadcrumbs v-bind="props">
+				<template #home><BaseIcon name="star" :size-scale="80" /></template>
+				<template #separator>—</template>
+				<template #item="{ item, index }">{{ index + 1 }}. {{ item.label }}</template>
 			</BaseBreadcrumbs>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('🏠')).toBeInTheDocument()
-		expect(canvasElement.querySelector('.custom-sep')).toBeInTheDocument()
-		expect(canvas.getByText('4: Распашные ворота')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText('5. Ультрабук 13"')).toBeVisible()
 	},
 }
-/** Кастомный цвет */
-export const CustomColor: Story = {
-	args: {
-		color: {
-			bg: {
-				base: '#ff0000',
-				hover: '#cc0000',
-				active: '#990000',
-				focus: '#ff0000',
-			},
-			text: {
-				base: '#ffffff',
-				hover: '#ffffff',
-				active: '#ffffff',
-				focus: '#ffffff',
-			},
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Распашные ворота')).toBeInTheDocument()
-	},
-}
-/** Длинный контент — проверка a11y-дерева с длинными пунктами */
-export const LongContent: Story = {
-	args: {
-		items: [
-			{ label: 'Главная страница портала с очень длинным названием для проверки', to: '/' },
-			{ label: 'Раздел каталога кованых изделий и металлических конструкций', to: '/catalog' },
-			{ label: 'Категория кованых ворот и ограждений премиум класса', to: '/catalog/forged' },
-			{ label: 'Подкатегория распашных ворот с художественной ковкой', to: '/catalog/forged/gates' },
-			{ label: 'Ворота с орнаментом из кованых листьев и цветов и ветвей', to: '/catalog/forged/gates/ornament' },
-			{ label: 'Модель ворот с сложным геометрическим узором ковки', to: '/catalog/forged/gates/geo' },
-			{ label: 'Ворота с виноградной лозой и коваными гроздьями и листьями', to: '/catalog/forged/gates/grape' },
-			{ label: 'Ворота с геральдическими лилиями и коваными завитками', to: '/catalog/forged/gates/lily' },
-			{ label: 'Ворота с рыцарскими мотивами и коваными элементами', to: '/catalog/forged/gates/knight' },
-			{ label: 'Ворота с растительным орнаментом и коваными ветвями', to: '/catalog/forged/gates/plant' },
-			{ label: 'Ворота с сложным кованым узором и позолотой премиум' },
-		],
-	},
-	play: async ({ canvasElement }) => {
-		const items = canvasElement.querySelectorAll('.base-breadcrumbs__item')
-		expect(items.length).toBeGreaterThan(10)
-		const firstItem = items[0]
-		expect(firstItem?.textContent?.length).toBeGreaterThan(50)
-	},
-}
-/** Пустые крошки — без пунктов */
-export const Empty: Story = {
-	tags: ['!a11y'],
-	args: {
-		items: [],
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-	},
-}
-/** Slash и dot разделители вместе с домом и collapsed — для покрытия слотов */
-export const SeparatorsWithHomeCollapsed: Story = {
-	render: args => ({
-		components: { BaseBreadcrumbs, BaseText },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div>
-					<BaseText tag="p" size="xs">slash + home + collapsed</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="slash" :show-home="true" :max-items="2" />
-				</div>
-				<div>
-					<BaseText tag="p" size="xs">dot + home + collapsed</BaseText>
-					<BaseBreadcrumbs v-bind="args" separator="dot" :show-home="true" :max-items="2" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const slashes = canvasElement.querySelectorAll('.base-breadcrumbs__sep')
-		expect(slashes.length).toBeGreaterThan(0)
-	},
-}
-/** Клик по ellipsis раскрывает скрытые элементы — покрывает isExpanded = true */
-export const ExpandCollapsed: Story = {
-	args: {
-		items: ITEMS,
-		maxItems: 2,
-		separator: 'chevron',
-	},
-	play: async ({ canvasElement }) => {
-		const ellipsisBtn = canvasElement.querySelector('.base-breadcrumbs__ellipsis-btn') as HTMLButtonElement | null
-		expect(ellipsisBtn).toBeTruthy()
-		const before = canvasElement.querySelectorAll('.base-breadcrumbs__item').length
-		await userEvent.click(ellipsisBtn as HTMLButtonElement)
-		const after = canvasElement.querySelectorAll('.base-breadcrumbs__item').length
-		expect(after).toBeGreaterThan(before)
-	},
-}
-/** Клик по «Главная» без showHome (handleHomeClick не вызывается) и navigate по item.href */
-export const HomeClickWithHref: Story = {
-	args: {
-		items: [
-			{ label: 'Главная', href: 'https://example.com/' },
-			{ label: 'Каталог', to: '/catalog' },
-			{ label: 'Текущая' },
-		],
-		showHome: true,
-		separator: 'chevron',
-	},
-	play: async ({ canvasElement }) => {
-		const originalOpen = window.open
-		let opened = ''
-		window.open = (url?: string | URL): WindowProxy | null => {
-			opened = String(url ?? '')
-			return null
-		}
-		try {
-			const homeBtn = canvasElement.querySelector('.base-breadcrumbs__item--home button') as HTMLButtonElement | null
-			expect(homeBtn).toBeTruthy()
-			await userEvent.click(homeBtn as HTMLButtonElement)
-			expect(opened).toBe('https://example.com/')
 
-			const catalogBtn = within(canvasElement).getByRole('button', { name: 'Каталог' })
-			await userEvent.click(catalogBtn)
-		} finally {
-			window.open = originalOpen
-		}
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** `maxItems` оставляет последние N крошек, остальные сворачиваются в «…»; клик по «…» раскрывает весь путь. */
+export const Collapsed: Story = {
+	args: { maxItems: 2 },
+	play: async ({ canvas, userEvent }) => {
+		await expect(canvas.queryByRole('button', { name: 'Каталог' })).toBeNull()
+		await userEvent.click(canvas.getByRole('button', { name: '…' }))
+		await expect(canvas.getByRole('button', { name: 'Каталог' })).toBeVisible()
 	},
 }
-/** Пустые items и showHome — handleHomeClick без действий (items[0] === undefined) */
-export const HomeClickEmpty: Story = {
-	args: {
-		items: [],
-		showHome: true,
-		separator: 'chevron',
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-breadcrumbs__item--home')).toBeFalsy()
-	},
-}
-/** maxItems превышает items.length — early return в collapsedItems/visibleItems */
-export const MaxItemsLargerThanItems: Story = {
-	args: {
-		items: [
-			{ label: 'A', to: '/a' },
-			{ label: 'B', to: '/b' },
-		],
-		maxItems: 10,
-		separator: 'chevron',
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.base-breadcrumbs__item--ellipsis')).toBeFalsy()
-		expect(canvasElement.querySelectorAll('.base-breadcrumbs__item').length).toBe(2)
-	},
-}
-/** Клик по пункту без to и без href — покрывает false-ветку else if (item.to) (стр. 198) */
-export const NavigateNoLink: Story = {
-	args: {
-		items: [{ label: 'Без ссылки' }, { label: 'Каталог', to: '/catalog' }, { label: 'Текущая' }],
-		separator: 'chevron',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const noLinkBtn = canvas.getByRole('button', { name: 'Без ссылки' })
-		await userEvent.click(noLinkBtn)
-		expect(canvas.getByText('Текущая')).toBeInTheDocument()
-	},
-}
-/** Текущий пункт с иконкой — покрывает v-if="item.icon" в .base-breadcrumbs__current (стр. 101) */
-export const CurrentWithIcon: Story = {
-	args: {
-		items: [
-			{ label: 'Главная', to: '/' },
-			{ label: 'Каталог', to: '/catalog' },
-			{ label: 'Текущая', icon: 'star' },
-		],
-		separator: 'chevron',
-	},
-	play: async ({ canvasElement }) => {
-		const currentIcon = canvasElement.querySelector('.base-breadcrumbs__current .base-breadcrumbs__icon')
-		expect(currentIcon).toBeTruthy()
-	},
-}
-/** Dot-разделитель с home + collapsed раздельно — покрывает оба слота с dot (стр. 38, 65) */
-export const DotSeparatorHomeCollapsed: Story = {
-	args: {
-		items: ITEMS,
-		separator: 'dot',
-		showHome: true,
-		maxItems: 2,
-	},
-	play: async ({ canvasElement }) => {
-		const homeItem = canvasElement.querySelector('.base-breadcrumbs__item--home')
-		expect(homeItem).toBeTruthy()
-		const ellipsisItem = canvasElement.querySelector('.base-breadcrumbs__item--ellipsis')
-		expect(ellipsisItem).toBeTruthy()
-		const dots = canvasElement.querySelectorAll('.base-breadcrumbs__sep')
-		expect(dots.length).toBeGreaterThan(0)
-	},
-}
-/** Slash-разделитель с home + collapsed — оба слота с slash */
-export const SlashSeparatorHomeCollapsed: Story = {
-	args: {
-		items: ITEMS,
-		separator: 'slash',
-		showHome: true,
-		maxItems: 2,
-	},
-	play: async ({ canvasElement }) => {
-		const seps = canvasElement.querySelectorAll('.base-breadcrumbs__sep')
-		expect(seps.length).toBeGreaterThan(0)
-	},
-}
-/** customClass — покрытие всех elementKeys */
-export const WithCustomClass: Story = {
-	args: {
-		items: ITEMS,
-		showHome: true,
-		maxItems: 2,
-		customClass: {
-			root: 'breadcrumbs-root',
-			list: 'breadcrumbs-list',
-			item: 'breadcrumbs-item',
-			ellipsisBtn: 'breadcrumbs-ellipsisBtn',
-			link: 'breadcrumbs-link',
-			current: 'breadcrumbs-current',
-			separator: 'breadcrumbs-separator',
-			separatorIcon: 'breadcrumbs-separatorIcon',
-			separatorText: 'breadcrumbs-separatorText',
-			homeIcon: 'breadcrumbs-homeIcon',
-			itemIcon: 'breadcrumbs-itemIcon',
-			itemText: 'breadcrumbs-itemText',
-			currentIcon: 'breadcrumbs-currentIcon',
-			currentText: 'breadcrumbs-currentText',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.breadcrumbs-root')).toBeTruthy()
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/** Клавиатура: Tab переводит фокус на крошку (видно кольцо фокуса), Enter выполняет переход. */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent, args }) => {
+		const link = canvas.getByRole('button', { name: 'Главная' })
+		await tabTo(link, userEvent)
+		await expect(getComputedStyle(link).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onNavigate).toHaveBeenCalledWith('/')
 	},
 }

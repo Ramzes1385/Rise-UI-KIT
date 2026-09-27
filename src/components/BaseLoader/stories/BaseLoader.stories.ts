@@ -1,234 +1,182 @@
 /**
- * Stories для компонента BaseLoader.
- * Демонстрирует все варианты, масштабирование и состояния.
+ * BaseLoader — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (виды, размеры, кастомный цвет) → содержимое (подпись) →
+ * сценарии (оверлей над контейнером).
  */
 
-import { expect, within } from 'storybook/test'
+import { expect } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import { UI_TEXT } from '@constants'
-import { buildArgTypes } from '@utils/storybookUtils'
 import BaseLoader from '../ui/BaseLoader.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { LoaderVariant } from '../model/BaseLoader.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseLoader> = {
-	title: 'UI/BaseLoader',
+const LOADER_VARIANTS: readonly LoaderVariant[] = ['spinner', 'dots', 'pulse', 'bars']
+
+const meta = {
+	title: 'Element/BaseLoader',
 	component: BaseLoader,
-
-	argTypes: buildArgTypes({
-		props: {
-			variant: {
-				control: 'inline-radio',
-				options: ['spinner', 'dots', 'pulse', 'bars'],
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Индикатор загрузки неизвестной длительности: пока данные грузятся или сохраняются. Если прогресс известен — `BaseProgress`,',
+					'если известна форма будущего содержимого — `BaseSkeleton`.',
+					'',
+					'- Виды: `spinner` (по умолчанию), `dots`, `pulse`, `bars`. Цвет — основной, `color.text` перекрашивает любой вид.',
+					'- Спиннер крутится всегда; пульсация `dots`, `pulse`, `bars` отключается при системной настройке «уменьшить движение».',
+					'- Компонент — `role="status"`: доступное имя берётся из `label`, даже если подпись скрыта (`hasLabel: false`).',
+					'- `isOverlay` накрывает родительский контейнер подложкой; родителю нужен `position: relative`.',
+				].join('\n'),
 			},
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			hasLabel: {
-				control: 'boolean',
-			},
-			label: {
-				control: 'text',
-			},
-			isOverlay: {
-				control: 'boolean',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: LOADER_VARIANTS }),
+		label: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		hasLabel: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		isOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+		// Слот объявлен в типах, но компонент его не выводит — в песочнице не показываем.
+		...hiddenArgTypes('default'),
+	},
 	args: {
 		variant: 'spinner',
-		hasLabel: false,
 		label: UI_TEXT.LOADING,
+		hasLabel: false,
 		isOverlay: false,
 		sizeScale: 100,
 	},
-}
+} satisfies Meta<typeof BaseLoader>
 
 export default meta
-type Story = StoryObj<typeof BaseLoader>
-/** Базовая story */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: меняйте props в панели Controls. Доступное имя статуса — текст `label` без многоточия. */
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
-		const loader = canvasElement.querySelector('[role="status"]')
-		expect(loader).toBeInTheDocument()
-		expect(loader?.getAttribute('aria-label')).toBe(UI_TEXT.LOADING_ARIA)
-		// Проверяем наличие SVG spinner
-		const svg = loader?.querySelector('svg.base-loader__spinner')
-		expect(svg).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('status', { name: 'Загрузка' })).toBeVisible()
 	},
 }
-/** Варианты анимации */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Четыре вида индикатора. Остальные props из Controls (размер, подпись, цвет) применяются ко всем. */
 export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'hasLabel', 'label', 'color'] },
+		docs: { source: { code: LOADER_VARIANTS.map(variant => `<BaseLoader variant="${variant}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseLoader },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), variants: LOADER_VARIANTS }),
 		template: `
-			<div style="display: flex; gap: 40px; align-items: center;">
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" variant="spinner" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">spinner</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" variant="dots" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">dots</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" variant="pulse" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">pulse</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" variant="bars" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">bars</span>
+			<div class="story-row" style="align-items: flex-start; gap: 24px;">
+				<div v-for="variant in variants" :key="variant" class="story-col" style="align-items: center; text-align: center;">
+					<BaseLoader v-bind="props" :variant="variant" />
+					<span class="story-label">{{ variant }}</span>
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const loaders = canvasElement.querySelectorAll('[role="status"]')
-		expect(loaders).toHaveLength(4)
-		// Проверяем наличие нужных элементов для каждого варианта
-		expect(loaders[0].querySelector('.base-loader__spinner')).toBeInTheDocument()
-		expect(loaders[1].querySelectorAll('.base-loader__dot')).toHaveLength(3)
-		expect(loaders[2].querySelector('.base-loader__pulse')).toBeInTheDocument()
-		expect(loaders[3].querySelectorAll('.base-loader__bar')).toHaveLength(4)
+	play: async ({ canvas }) => {
+		await expect(canvas.getAllByRole('status', { name: 'Загрузка' })).toHaveLength(LOADER_VARIANTS.length)
 	},
 }
-/** Масштабирование через sizeScale */
-export const SizeScale: Story = {
+
+/** Размеры задаются `sizeScale`: при 100 индикатор 32 × 32px. Внутри поля или кнопки используйте 50–60. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant', 'hasLabel'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseLoader :size-scale="${preset.sizeScale}" />`).join('\n') } },
+	},
 	render: args => ({
 		components: { BaseLoader },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div style="display: flex; gap: 32px; align-items: center;">
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" :size-scale="50" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">50%</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" :size-scale="75" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">75%</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" :size-scale="100" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">100%</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" :size-scale="150" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">150%</span>
-				</div>
-				<div style="text-align:center;">
-					<BaseLoader v-bind="args" :size-scale="200" />
-					<span style="display:block;margin-top:8px;font-size:12px;color:var(--color-text-muted);">200%</span>
+			<div class="story-row" style="align-items: flex-end; gap: 24px;">
+				<div v-for="preset in presets" :key="preset.name" class="story-col" style="align-items: center; text-align: center;">
+					<BaseLoader v-bind="props" :size-scale="preset.sizeScale" />
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const loaders = canvasElement.querySelectorAll('[role="status"]')
-		expect(loaders).toHaveLength(4)
-	},
 }
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'ldr-root', animation: 'ldr-animation', spinner: 'ldr-spinner', label: 'ldr-label' },
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.ldr-root')).toBeTruthy()
-	},
-}
-/** Все варианты с текстом */
-export const AllVariantsWithLabel: Story = {
-	render: args => ({
-		components: { BaseLoader },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="display: flex; gap: 40px; align-items: center;">
-				<BaseLoader v-bind="args" variant="spinner" has-label />
-				<BaseLoader v-bind="args" variant="dots" has-label />
-				<BaseLoader v-bind="args" variant="pulse" has-label />
-				<BaseLoader v-bind="args" variant="bars" has-label />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const labels = canvas.getAllByText(UI_TEXT.LOADING)
-		expect(labels).toHaveLength(4)
-	},
-}
-/** Кастомный цвет */
+
+/** Кастомный цвет через `color.text`: перекрашивает любой вид индикатора, например под цвет раздела. */
 export const CustomColor: Story = {
+	args: { color: { text: { base: '#7c3aed' } } },
+	parameters: { controls: { include: ['color', 'sizeScale'] } },
 	render: args => ({
 		components: { BaseLoader },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args), variants: LOADER_VARIANTS }),
 		template: `
-			<div style="display: flex; gap: 40px; align-items: center;">
-				<BaseLoader v-bind="args" variant="spinner" :color="{ text: { base: '#e74c3c' } }" />
-				<BaseLoader v-bind="args" variant="dots" :color="{ text: { base: '#2ecc71' } }" />
-				<BaseLoader v-bind="args" variant="pulse" :color="{ text: { base: '#3498db' } }" />
-				<BaseLoader v-bind="args" variant="bars" :color="{ text: { base: '#f39c12' } }" />
+			<div class="story-row" style="gap: 24px;">
+				<BaseLoader v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" />
 			</div>
 		`,
 	}),
 	play: async ({ canvasElement }) => {
-		const loaders = canvasElement.querySelectorAll('[role="status"]')
-		expect(loaders).toHaveLength(4)
+		const arc = canvasElement.querySelector('.base-loader__spinner-fill') as SVGElement
+		await expect(getComputedStyle(arc).stroke).toBe('rgb(124, 58, 237)')
+		const dot = canvasElement.querySelector('.base-loader__dot') as HTMLElement
+		await expect(getComputedStyle(dot).backgroundColor).toBe('rgb(124, 58, 237)')
 	},
 }
-/** Оверлей */
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Подпись под индикатором (`hasLabel`). Текст `label` — и подпись, и доступное имя статуса. */
+export const WithLabel: Story = {
+	args: { hasLabel: true, label: 'Сохранение…' },
+	play: async ({ canvas }) => {
+		const status = canvas.getByRole('status', { name: 'Сохранение' })
+		await expect(status).toHaveTextContent('Сохранение…')
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Оверлей: `isOverlay` накрывает родительский контейнер подложкой с индикатором по центру — например, пока
+ * обновляется карточка или таблица. Родителю нужен `position: relative`.
+ */
 export const Overlay: Story = {
-	render: args => ({
-		components: { BaseLoader },
-		setup() {
-			return { args }
+	args: { isOverlay: true, hasLabel: true, label: 'Обновление…' },
+	parameters: {
+		controls: { include: ['variant', 'hasLabel', 'label', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<div style="position: relative;">',
+					'  <ReportCard />',
+					'  <BaseLoader v-if="isRefreshing" is-overlay has-label label="Обновление…" />',
+					'</div>',
+				].join('\n'),
+			},
 		},
-		template: `
-			<div style="position: relative; width: 300px; height: 200px; border: 1px solid var(--color-border); border-radius: 8px; padding: 16px;">
-				<p style="color: var(--color-text-muted);">Содержимое контейнера за оверлеем</p>
-				<BaseLoader v-bind="args" is-overlay />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const loader = canvasElement.querySelector('.base-loader--overlay')
-		expect(loader).toBeInTheDocument()
 	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 24px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
 	render: args => ({
 		components: { BaseLoader },
-		setup() {
-			return { args }
-		},
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
 		template: `
-			<div style="display: flex; gap: 40px; align-items: center;">
-				<BaseLoader v-bind="args" variant="spinner" has-label />
-				<BaseLoader v-bind="args" variant="dots" has-label />
-				<BaseLoader v-bind="args" variant="pulse" has-label />
-				<BaseLoader v-bind="args" variant="bars" has-label />
+			<div class="story-frame story-narrow" data-testid="container">
+				<div class="story-col">
+					<strong>Отчёт за май</strong>
+					<span>Выручка выросла на 12%, число заказов — на 8%. Данные обновляются раз в час.</span>
+				</div>
+				<BaseLoader v-bind="props" />
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const loaders = canvasElement.querySelectorAll('[role="status"]')
-		expect(loaders).toHaveLength(4)
+	play: async ({ canvas }) => {
+		// Подложка занимает всю внутреннюю область контейнера (без его рамки)
+		const container = canvas.getByTestId('container')
+		const overlay = canvas.getByRole('status', { name: 'Обновление' }).getBoundingClientRect()
+		await expect(overlay.width).toBeCloseTo(container.clientWidth, 0)
+		await expect(overlay.height).toBeCloseTo(container.clientHeight, 0)
 	},
 }

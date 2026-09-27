@@ -1,5 +1,6 @@
 /** Утилиты: валидация и обработка файлов */
 
+import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/urlUtils'
 import type { FileValidationOptions, FileValidationResult } from './fileUtils.types'
 
 /** Получить расширение файла из имени */
@@ -136,8 +137,16 @@ function createImagePreview(file: File): Promise<string | null> {
 	})
 }
 
-/** Скачать файл по URL через программное создание ссылки */
+/**
+ * Скачать файл по URL через программное создание ссылки.
+ * URL вложений приходит из данных сообщений: клик по `<a href="javascript:…">` исполнил бы код,
+ * поэтому допускаются только http(s), blob:, data: и относительные адреса.
+ */
 function downloadFile(url: string, filename: string): void {
+	if (!isSafeUrl(url, DOWNLOAD_PROTOCOLS)) {
+		console.warn(`[rise-ui-kit] Скачивание по небезопасному URL заблокировано: ${String(url).slice(0, 80)}`)
+		return
+	}
 	const link = document.createElement('a')
 	link.href = url
 	link.download = filename

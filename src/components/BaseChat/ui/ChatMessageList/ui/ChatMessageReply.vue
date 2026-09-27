@@ -1,23 +1,15 @@
 <template>
-	<div v-if="replyToId" class="base-chat-message-list__reply-quote" @click.stop="handleClick">
-		<BaseText
-			tag="span"
-			:weight="UI_FONT_WEIGHT.SEMIBOLD"
-			:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
-			class="base-chat-message-list__reply-sender">
-			{{ replyToSenderName || UI_CHAT_TEXT.MESSAGE_PLACEHOLDER }}
-		</BaseText>
-		<BaseText tag="p" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" class="base-chat-message-list__reply-text">
-			{{ replyToText }}
-		</BaseText>
-	</div>
+	<button v-if="replyToId" type="button" class="base-chat-message-list__reply-quote" @click.stop="handleClick">
+		<span class="base-chat-message-list__reply-sender">{{ replyToSenderName || UI_CHAT_TEXT.MESSAGE_PLACEHOLDER }}</span>
+		<span class="base-chat-message-list__reply-text">{{ replyToText }}</span>
+	</button>
 </template>
 
 <script setup lang="ts">
-import { BaseText } from '@components/BaseText'
-import { UI_CHAT_TEXT, UI_CHAT_SCALE, UI_FONT_WEIGHT } from '@constants'
+import { UI_CHAT_TEXT } from '@constants'
 import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../model/ChatMessageReply.types'
 
+/** Цитата сообщения, на которое ответили: клик прокручивает ленту к оригиналу */
 const props = defineProps<ChatMessageReplyProps>()
 const emit = defineEmits<ChatMessageReplyEmits>()
 

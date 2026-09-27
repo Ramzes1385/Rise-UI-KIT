@@ -214,10 +214,10 @@ export interface BaseTableProps extends BaseComponentProps<TableVariant, 'root' 
 	/** Конфигурация поведения таблицы (заменяет boolean-пропсы) */
 	behavior?: TableBehaviorConfig
 	/**
-	 * Внутренние отступы ячеек. Число (px): Y = значение, X = значение × 2.
+	 * Внутренние отступы ячеек и заголовков. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
 	 * (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси.
-	 * По умолчанию 10 → 10px 20px
+	 * По умолчанию — из стилей: 12px сверху/снизу, 16px по бокам (строка 44px при sizeScale = 100).
 	 */
 	padding?: PaddingProp
 }

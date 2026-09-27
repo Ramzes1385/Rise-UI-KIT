@@ -3,6 +3,9 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useSwipe } from '@composables/useSwipe'
 import type { UseSliderOptions, UseSliderReturn } from './useSlider.types'
 
+/** Медиазапрос системной настройки «уменьшить движение» */
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+
 /**
  * Composable для логики слайдера.
  * Навигация, autoplay, drag, snap, trackStyle, ResizeObserver.
@@ -32,6 +35,16 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 	const viewportSizeVal = ref(0)
 	let autoplayTimer: ReturnType<typeof setInterval> | null = null
 	let resizeObserver: ResizeObserver | null = null
+
+	/**
+	 * Причины паузы автопрокрутки (WCAG 2.2.2): указатель над слайдером и фокус внутри него.
+	 * Храним раздельно: уход мыши не должен возобновлять прокрутку, пока внутри остаётся фокус, и наоборот.
+	 */
+	let isHoverPaused = false
+	let isFocusPaused = false
+	/** Пользователь просит минимум движения — автопрокрутку не запускаем */
+	let isReducedMotion = false
+	let reducedMotionQuery: MediaQueryList | null = null
 
 	/** Количество видимых слайдов (минимум 1) */
 	function getPerView(): number {
@@ -197,9 +210,9 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		goTo(clampIndex(targetIndex))
 	}
 
-	/** Запуск автопроигрывания */
+	/** Запуск автопроигрывания (если оно включено и нет причин для паузы) */
 	function startAutoplay(): void {
-		if (!isAutoplay()) return
+		if (!isAutoplay() || isHoverPaused || isFocusPaused || isReducedMotion) return
 		autoplayTimer = setInterval(goNext, autoplayInterval())
 	}
 
@@ -215,6 +228,39 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 	function resumeAutoplay(): void {
 		pauseAutoplay()
 		startAutoplay()
+	}
+
+	/** Указатель над слайдером — пауза */
+	function onMouseEnter(): void {
+		isHoverPaused = true
+		pauseAutoplay()
+	}
+
+	/** Указатель ушёл — возобновляем, если не держит фокус внутри */
+	function onMouseLeave(): void {
+		isHoverPaused = false
+		resumeAutoplay()
+	}
+
+	/** Фокус вошёл внутрь — пауза, чтобы слайд не уходил из-под клавиатуры и скринридера */
+	function onFocusIn(): void {
+		isFocusPaused = true
+		pauseAutoplay()
+	}
+
+	/** Фокус покинул слайдер — возобновляем; переход фокуса между его элементами паузу не снимает */
+	function onFocusOut(event: FocusEvent): void {
+		const root = event.currentTarget
+		const nextFocused = event.relatedTarget
+		if (root instanceof Node && nextFocused instanceof Node && root.contains(nextFocused)) return
+		isFocusPaused = false
+		resumeAutoplay()
+	}
+
+	/** Смена системной настройки prefers-reduced-motion во время работы */
+	function handleReducedMotionChange(event: MediaQueryListEvent): void {
+		isReducedMotion = event.matches
+		resumeAutoplay()
 	}
 
 	watch(isAutoplay, enabled => {
@@ -240,11 +286,19 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 			})
 			resizeObserver.observe(viewportRef.value)
 		}
+		// matchMedia отсутствует в SSR и jsdom — тогда считаем, что ограничения движения нет
+		if (typeof window.matchMedia === 'function') {
+			reducedMotionQuery = window.matchMedia(REDUCED_MOTION_QUERY)
+			isReducedMotion = reducedMotionQuery.matches
+			reducedMotionQuery.addEventListener('change', handleReducedMotionChange)
+		}
 		startAutoplay()
 	})
 
 	onBeforeUnmount(() => {
 		pauseAutoplay()
+		reducedMotionQuery?.removeEventListener('change', handleReducedMotionChange)
+		reducedMotionQuery = null
 		if (resizeObserver) {
 			resizeObserver.disconnect()
 			resizeObserver = null
@@ -267,10 +321,15 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		goToPage,
 		pauseAutoplay,
 		resumeAutoplay,
+		onMouseEnter,
+		onMouseLeave,
+		onFocusIn,
+		onFocusOut,
 		onTouchStart: swipe.onTouchStart,
 		onTouchMove: swipe.onTouchMove,
 		onTouchEnd: swipe.onTouchEnd,
 		onDragStart: swipe.onDragStart,
+		onClickCapture: swipe.onClickCapture,
 	}
 }
 

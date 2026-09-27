@@ -7,6 +7,11 @@ import type { ComputedRef, Ref } from 'vue'
 export interface UseTableSelectionOptions {
 	/** Строки данных */
 	rows: Ref<TableRow[]>
+	/**
+	 * Строки, прошедшие поиск и фильтры (все страницы) — область действия «Выбрать все».
+	 * По умолчанию совпадает с rows.
+	 */
+	filteredRows?: Ref<TableRow[]>
 	/** Callback при изменении выбора */
 	onSelect?: (rows: TableRow[]) => void
 }
@@ -19,12 +24,12 @@ export interface UseTableSelectionReturn {
 	selectedIds: Ref<Set<string | number>>
 	/** Выбранные строки */
 	selectedRows: ComputedRef<TableRow[]>
-	/** Все ли доступные строки выбраны */
+	/** Все ли доступные строки отфильтрованного набора выбраны */
 	isAllSelected: ComputedRef<boolean>
 	/** Проверить, выбрана ли строка */
 	isSelected: (row: TableRow) => boolean
 	/** Переключить выбор строки */
 	toggleRow: (row: TableRow) => void
-	/** Выбрать/снять выбор со всех строк */
+	/** Выбрать/снять выбор со всех строк отфильтрованного набора */
 	toggleAll: () => void
 }

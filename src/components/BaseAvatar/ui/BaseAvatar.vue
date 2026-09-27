@@ -6,34 +6,27 @@
 		@click="handleClick">
 		<div class="base-avatar__content" :class="classes.content">
 			<slot>
-				<BaseImage
+				<img
 					v-if="src && !hasImageError"
 					:src="src"
 					:alt="alt"
 					class="base-avatar__img"
-					:custom-class="classes.img"
+					:class="classes.img"
+					loading="lazy"
+					decoding="async"
 					@error="handleImageError" />
-				<BaseText
-					v-else
-					tag="span"
-					:weight="UI_FONT_WEIGHT.SEMIBOLD"
-					:size-scale="sizeScale"
-					class="base-avatar__initials"
-					:custom-class="classes.initials">
-					{{ initials }}
-				</BaseText>
+				<span v-else class="base-avatar__initials" :class="classes.initials">{{ initials }}</span>
 			</slot>
 		</div>
-		<span v-if="isOnline" class="base-avatar__online" :class="classes.online"></span>
+		<!-- Статус передаётся не только цветом: у точки есть доступное имя -->
+		<span v-if="isOnline" class="base-avatar__online" :class="classes.online" role="img" :aria-label="UI_CHAT_TEXT.ONLINE"></span>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
-import BaseText from '@components/BaseText/ui/BaseText.vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT } from '@constants'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
 

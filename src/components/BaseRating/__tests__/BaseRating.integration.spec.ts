@@ -64,7 +64,7 @@ describe('BaseRating integration', () => {
 		expect(screen.getByTestId('value')).toHaveTextContent('2.5')
 	})
 
-	it('должен записывать точное значение позиции через v-model (точечный клик)', async () => {
+	it('должен записывать через v-model оценку с привязкой к шагу при клике в середину звезды', async () => {
 		const Host = defineComponent({
 			components: { BaseRating },
 			setup() {
@@ -83,7 +83,7 @@ describe('BaseRating integration', () => {
 		mockStarRect(star)
 		await fireEvent.click(star, { clientX: 13 })
 
-		expect(screen.getByTestId('value')).toHaveTextContent('2.65')
+		expect(screen.getByTestId('value').textContent).toBe('3')
 	})
 
 	it('должен отражать внешнее дробное значение в заливке звезды', async () => {

@@ -1,10 +1,20 @@
 import type { BaseComponentProps } from '../../../types/base.types'
 
+/** Типы оповещений: определяют цвет (роль), иконку и срочность озвучивания (error/warning — role="alert") */
+export const ALERT_TYPES = ['info', 'success', 'warning', 'error'] as const
+
 /** Типы оповещений */
-export type AlertType = 'info' | 'success' | 'warning' | 'error'
+export type AlertType = (typeof ALERT_TYPES)[number]
+
+/**
+ * Варианты отображения оповещения:
+ * default — заливка цветом роли; soft — мягкий фон роли; outline — рамка роли;
+ * ghost — только текст роли; shadow — нейтральная карточка с тенью и иконкой цвета роли.
+ */
+export const ALERT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 /** Варианты отображения оповещения */
-export type AlertVariant = 'default' | 'ghost' | 'outline' | 'shadow' | 'soft'
+export type AlertVariant = (typeof ALERT_VARIANTS)[number]
 
 /**
  * Пропсы компонента BaseAlert

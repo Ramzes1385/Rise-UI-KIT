@@ -1,18 +1,19 @@
 <template>
-	<div class="date-picker-field" :class="classes.root">
+	<div class="date-picker-field" :class="[{ 'date-picker-field--disabled': resolvedProps.isDisabled }, classes.root]">
 		<BaseInput
+			ref="inputRef"
 			:model-value="displayValue"
 			:placeholder="placeholder"
 			:label="resolvedProps.label"
 			:error="resolvedProps.error"
 			:is-disabled="resolvedProps.isDisabled"
-			:is-readonly="resolvedProps.isReadonly"
 			:is-required="resolvedProps.isRequired"
 			:variant="inputVariant"
 			:color="color"
 			:size-scale="resolvedProps.sizeScale"
 			:custom-class="classes.input"
-			@click="handleFieldClick">
+			@click="handleFieldClick"
+			@keydown="handleFieldKeydown">
 			<template #suffix>
 				<div class="date-picker-field__suffix">
 					<BaseButton
@@ -20,24 +21,24 @@
 						variant="ghost"
 						class="date-picker-field__clear-btn"
 						:class="classes.clearBtn"
-						:size-scale="calcIconScale('xs', resolvedProps.sizeScale)"
+						:aria-label="UI_ARIA.CLEAR_VALUE"
+						:size-scale="resolvedProps.sizeScale"
 						:is-disabled="resolvedProps.isDisabled"
 						tabindex="-1"
-						:padding="0"
 						@click.stop="handleClearClick">
 						<BaseIcon
 							name="close"
-							:size-scale="calcIconScale('xs', resolvedProps.sizeScale)"
-							padding="0"
+							:size-scale="calcIconScale('sm', resolvedProps.sizeScale)"
 							:custom-class="classes.clearIcon" />
 					</BaseButton>
 					<slot name="icon">
 						<BaseButton
-							:padding="5"
 							variant="ghost"
-							:color="{ bg: { base: 'transparent' } }"
 							class="date-picker-field__icon-btn"
 							:class="classes.iconBtn"
+							:aria-label="UI_ARIA.OPEN_CALENDAR"
+							aria-haspopup="dialog"
+							:aria-expanded="resolvedProps.isOpen ? 'true' : 'false'"
 							:size-scale="resolvedProps.sizeScale"
 							:is-disabled="resolvedProps.isDisabled"
 							tabindex="-1"
@@ -56,12 +57,13 @@
 
 <script setup lang="ts">
 import './DatePickerField.style.scss'
-import { computed } from 'vue'
+import { computed, ref, watchPostEffect } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import type { DatePickerFieldEmits, DatePickerFieldProps, DatePickerFieldSlots } from '../../model/DatePickerField.types'
 
@@ -88,6 +90,17 @@ const { classes } = useCustomClass({
 	elementKeys: ['root', 'input', 'clearBtn', 'clearIcon', 'iconBtn', 'calendarIcon'],
 })
 
+const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
+
+/**
+ * isReadonly (по умолчанию true) только запрещает ручной ввод: дату выбирают в панели. Поэтому поле получает нативный
+ * readonly, но не оформление readonly-поля BaseInput (приглушённый фон) — оно выглядит как обычное поле своего варианта.
+ */
+watchPostEffect(() => {
+	const input = inputRef.value?.inputRef
+	if (input) input.readOnly = resolvedProps.value.isReadonly
+})
+
 /** Клик по полю ввода */
 function handleFieldClick(): void {
 	emit('field-click')
@@ -101,5 +114,17 @@ function handleClearClick(): void {
 /** Клик по кнопке иконки */
 function handleIconClick(): void {
 	emit('icon-click')
+}
+
+/**
+ * Открытие с клавиатуры (Enter / ↓ / Alt+↓, как в APG date picker): поле по умолчанию readonly,
+ * а кнопка-иконка исключена из Tab-порядка — без этого выбрать дату без мыши было невозможно.
+ */
+function handleFieldKeydown(event: KeyboardEvent): void {
+	if (resolvedProps.value.isDisabled) return
+	if (event.key !== 'Enter' && event.key !== 'ArrowDown') return
+	// Enter в поле внутри формы иначе отправил бы форму, ↓ — прокрутил бы страницу
+	event.preventDefault()
+	emit('keyboard-open')
 }
 </script>

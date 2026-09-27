@@ -4,17 +4,17 @@ import type { BaseComponentProps } from '../../../types/base.types'
  * Пропсы компонента BaseSkeleton
  */
 export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
-	/** Ширина (px или %) */
+	/** Ширина: число — пиксели, строка — любая длина CSS (`'100%'`, `'12rem'`). Масштабируется `sizeScale`. */
 	width?: string | number
-	/** Высота (px или %) */
+	/** Высота: число — пиксели, строка — любая длина CSS. У `text` по умолчанию 16px; `rect` и `circle` без высоты не видны. */
 	height?: string | number
-	/** Форма */
+	/** Форма: `text` — строка текста, `rect` — блок со скруглением, `circle` — круг (аватар). */
 	shape?: 'text' | 'circle' | 'rect'
-	/** Анимация */
+	/** Полоса-шиммер (по умолчанию включена). Отключается при системной настройке «уменьшить движение». */
 	isAnimated?: boolean
-	/** Кастомный цвет фона */
+	/** Свой цвет фона вместо `--rise-bg-elevated` (любой цвет CSS, например токен `var(--rise-primary-soft)`). */
 	color?: string
-	/** Пульсация */
+	/** Мерцание прозрачностью. Отключается при системной настройке «уменьшить движение». */
 	isPulse?: boolean
 }
 

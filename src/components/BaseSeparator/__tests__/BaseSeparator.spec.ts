@@ -81,6 +81,13 @@ describe('BaseSeparator unit', () => {
 			expect(content.style.getPropertyValue('--sep-pad-y')).toBe('10px')
 			expect(content.style.getPropertyValue('--sep-pad-x')).toBe('20px')
 		})
+
+		it('не должен писать inline-переменные отступов без пропа spacing (отступы — из стилей)', () => {
+			const { container } = render(BaseSeparator, { props: { label: 'Тест' } })
+
+			const content = container.querySelector('.base-separator__content') as HTMLElement
+			expect(content.getAttribute('style')).toBeNull()
+		})
 	})
 
 	describe('пропс sizeScale', () => {
@@ -143,12 +150,35 @@ describe('BaseSeparator unit', () => {
 		})
 	})
 
-	it('не должен устанавливать role для вертикального разделителя', () => {
-		const { container } = render(BaseSeparator, {
+	it('должен устанавливать role=separator и aria-orientation=vertical для вертикального разделителя', () => {
+		render(BaseSeparator, {
 			props: { orientation: 'vertical' },
 		})
 
-		expect(container.querySelector('.base-separator')?.getAttribute('role')).toBeNull()
+		expect(screen.getByRole('separator')).toHaveAttribute('aria-orientation', 'vertical')
+	})
+
+	describe('доступное имя разделителя с контентом', () => {
+		it('должен получать имя из пропса label', () => {
+			render(BaseSeparator, { props: { label: 'Или' } })
+
+			expect(screen.getByRole('separator', { name: 'Или' })).toBeInTheDocument()
+		})
+
+		it('должен получать имя из слота default (в т.ч. у вертикального)', () => {
+			render(BaseSeparator, {
+				props: { orientation: 'vertical' },
+				slots: { default: 'Раздел 2' },
+			})
+
+			expect(screen.getByRole('separator', { name: 'Раздел 2' })).toHaveAttribute('aria-orientation', 'vertical')
+		})
+
+		it('не должен ссылаться на несуществующий контент у простой линии', () => {
+			render(BaseSeparator)
+
+			expect(screen.getByRole('separator')).not.toHaveAttribute('aria-labelledby')
+		})
 	})
 
 	it('не должен добавлять класс --dashed по умолчанию', () => {

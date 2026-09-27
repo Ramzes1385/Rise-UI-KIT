@@ -60,7 +60,6 @@
 			:match-width="true"
 			:prevent-mousedown="false"
 			:size-scale="sizeScale"
-			:padding="0"
 			:custom-class="classes.dropdown"
 			@close="handleClose">
 			<BaseSearchInput
@@ -136,6 +135,7 @@ const props = withDefaults(defineProps<BaseSearchProps>(), {
 	variant: DEFAULT_VARIANT,
 	mode: 'default',
 	results: () => [],
+	isRemote: false,
 	isInstant: true,
 	debounceMs: UI_TIMING.DEBOUNCE_DEFAULT,
 	isLoading: false,
@@ -226,6 +226,7 @@ const {
 	modelValue: () => props.modelValue,
 	mode: () => props.mode,
 	results: () => props.results,
+	isRemote: () => props.isRemote,
 	isInstant: () => props.isInstant,
 	debounceMs: () => props.debounceMs,
 	maxResults: () => props.maxResults,

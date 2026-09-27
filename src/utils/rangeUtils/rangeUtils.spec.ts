@@ -53,6 +53,20 @@ describe('rangeUtils', () => {
 		it('работает с дробным шагом', () => {
 			expect(snapToStep({ value: 0.12, min: 0, max: 1, step: 0.1 })).toBeCloseTo(0.1)
 		})
+
+		it('округляет результат до точности шага без хвостов плавающей точки', () => {
+			expect(snapToStep({ value: 0.3, min: 0, max: 1, step: 0.1 })).toBe(0.3)
+			expect(snapToStep({ value: 0.7, min: 0, max: 1, step: 0.1 })).toBe(0.7)
+			expect(snapToStep({ value: 0.6, min: 0, max: 1, step: 0.05 })).toBe(0.6)
+		})
+
+		it('учитывает точность смещённого минимума', () => {
+			expect(snapToStep({ value: 0.35, min: 0.05, max: 1, step: 0.1 })).toBe(0.35)
+		})
+
+		it('учитывает шаг в экспоненциальной записи', () => {
+			expect(snapToStep({ value: 3e-7, min: 0, max: 1, step: 1e-7 })).toBe(3e-7)
+		})
 	})
 
 	// ── calcFillStyle ──

@@ -881,5 +881,112 @@ describe('useTableData', () => {
 			expect(sortStates.value[0].direction).toBe('asc')
 		})
 	})
+
+	// ============================================================
+	// Регрессия TBL-1/TBL-20: пустые и нераспознанные значения при сортировке
+	// ============================================================
+
+	describe('Сортировка: пустые и нераспознанные значения', () => {
+		/** Строки с одним полем value; id совпадает с исходной позицией */
+		function createValueRows(values: unknown[]) {
+			return computed((): TableRow[] => values.map((value, index) => ({ id: index, data: { value } })))
+		}
+
+		/** Отсортировать строки по полю value и вернуть значения в итоговом порядке */
+		function sortValues(values: unknown[], sortType: TableColumn['sortType'], direction: 'asc' | 'desc'): unknown[] {
+			const columns = ref<TableColumn[]>([{ key: 'value', label: 'Значение', isSortable: true, sortType }])
+			const { processedRows, sortStates } = useTableData(createDefaultOptions({ rows: createValueRows(values), columns }))
+			sortStates.value = [{ key: 'value', direction }]
+			return processedRows.value.map(row => row.data.value)
+		}
+
+		it('number: числа (в т.ч. числовые строки) по возрастанию, нечисловые — после них, пустые — в самом конце', () => {
+			const result = sortValues([30, undefined, 10, '', 20, '—', null, '5'], 'number', 'asc')
+
+			expect(result).toEqual(['5', 10, 20, 30, '—', undefined, '', null])
+		})
+
+		it('number desc: направление меняет порядок чисел, но пустые значения остаются в конце', () => {
+			const result = sortValues([30, undefined, 10, '', 20, '—', null, '5'], 'number', 'desc')
+
+			expect(result).toEqual([30, 20, 10, '5', '—', undefined, '', null])
+		})
+
+		it('date: null и не-ISO даты не ломают сортировку корректных дат', () => {
+			const result = sortValues(['2024-03-01', null, '2024-01-01', '01.02.2024', '2024-02-01'], 'date', 'asc')
+
+			expect(result).toEqual(['2024-01-01', '2024-02-01', '2024-03-01', '01.02.2024', null])
+		})
+
+		it('date: несуществующая календарная дата считается нераспознанной', () => {
+			const result = sortValues(['2024-02-30', '2024-03-02', '2024-03-01'], 'date', 'asc')
+
+			expect(result).toEqual(['2024-03-01', '2024-03-02', '2024-02-30'])
+		})
+
+		it('date: время с разными часовыми зонами сортируется по абсолютному моменту', () => {
+			// 14:00+03:00 = 11:00Z, 12:00Z, 10:00-03:00 = 13:00Z
+			const result = sortValues(['2024-01-01T12:00:00Z', '2024-01-01T10:00:00-03:00', '2024-01-01T14:00:00+03:00'], 'date', 'asc')
+
+			expect(result).toEqual(['2024-01-01T14:00:00+03:00', '2024-01-01T12:00:00Z', '2024-01-01T10:00:00-03:00'])
+		})
+
+		it('date: объекты Date сортируются по времени, Invalid Date — после корректных', () => {
+			const january = new Date(Date.UTC(2024, 0, 1))
+			const march = new Date(Date.UTC(2024, 2, 1))
+			const invalid = new Date('не дата')
+
+			expect(sortValues([march, invalid, january], 'date', 'asc')).toEqual([january, march, invalid])
+		})
+
+		it('date: timestamp-числа сортируются по времени, NaN — после корректных', () => {
+			const january = Date.UTC(2024, 0, 1)
+			const march = Date.UTC(2024, 2, 1)
+
+			expect(sortValues([march, Number.NaN, january], 'date', 'desc')).toEqual([march, january, Number.NaN])
+		})
+
+		it('date: значение другого типа (boolean) считается нераспознанной датой', () => {
+			const result = sortValues(['2024-02-01', false, '2024-01-01'], 'date', 'asc')
+
+			expect(result).toEqual(['2024-01-01', '2024-02-01', false])
+		})
+
+		it('number: Date сравниваются по времени (как Number(date)), Invalid Date — после корректных', () => {
+			const january = new Date(Date.UTC(2024, 0, 1))
+			const february = new Date(Date.UTC(2024, 1, 1))
+			const invalid = new Date('не дата')
+
+			expect(sortValues([february, invalid, january], 'number', 'asc')).toEqual([january, february, invalid])
+		})
+
+		it('string: пустые значения в конце при любом направлении, числа внутри строк сравниваются численно', () => {
+			const values = ['Item 10', null, 'Item 2', '', 'Item 1']
+
+			expect(sortValues(values, 'string', 'asc')).toEqual(['Item 1', 'Item 2', 'Item 10', null, ''])
+			expect(sortValues(values, 'string', 'desc')).toEqual(['Item 10', 'Item 2', 'Item 1', null, ''])
+		})
+
+		it('мультисортировка: строка с пустым первичным ключом уходит в конец, вторичный ключ сортирует остальные', () => {
+			const rows = computed((): TableRow[] => [
+				{ id: 1, data: { group: 'B', name: 'x' } },
+				{ id: 2, data: { group: null, name: 'a' } },
+				{ id: 3, data: { group: 'A', name: 'z' } },
+				{ id: 4, data: { group: 'A', name: 'b' } },
+			])
+			const columns = ref<TableColumn[]>([
+				{ key: 'group', label: 'Группа', isSortable: true },
+				{ key: 'name', label: 'Имя', isSortable: true },
+			])
+			const { processedRows, sortStates } = useTableData(createDefaultOptions({ rows, columns, isMultiSort: () => true }))
+
+			sortStates.value = [
+				{ key: 'group', direction: 'desc' },
+				{ key: 'name', direction: 'asc' },
+			]
+
+			expect(processedRows.value.map(row => row.id)).toEqual([1, 4, 3, 2])
+		})
+	})
 })
 

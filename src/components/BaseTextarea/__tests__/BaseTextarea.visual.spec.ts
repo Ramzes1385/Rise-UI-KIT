@@ -1,55 +1,19 @@
 /**
- * Visual Regression тесты для BaseTextarea.
- * Снимают baseline-скриншоты ключевых состояний через Storybook.
+ * Visual regression BaseTextarea: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-/** Базовый путь к stories BaseTextarea в Storybook */
-const STORY_PATH = '/iframe.html?id=ui-basetextarea'
+const STORIES = ['variants', 'sizes', 'with-error', 'disabled', 'rows', 'custom-color'] as const
 
-test.describe('BaseTextarea visual regression', () => {
-	test('Default: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--default`)
-		await page.setViewportSize({ width: 800, height: 300 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-textarea-default.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseTextarea · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basetextarea--${story}`, { theme, height: 480 })
+				await expectStoryScreenshot(page, `base-textarea-${story}-${theme}.png`)
+			})
+		}
 	})
-
-	test('WithError: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--with-error`)
-		await page.setViewportSize({ width: 800, height: 300 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-textarea-error.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('Disabled: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--disabled`)
-		await page.setViewportSize({ width: 800, height: 300 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-textarea-disabled.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('DarkTheme: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--dark-theme`)
-		await page.setViewportSize({ width: 800, height: 300 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-textarea-dark.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-})
+}

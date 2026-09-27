@@ -1,15 +1,28 @@
 <template>
-	<tbody :class="tbodyClass">
+	<tbody class="base-table__tbody" :class="tbodyClass">
+		<!-- Загрузка без данных: строки-скелетоны той же высоты, что и строки таблицы -->
 		<template v-if="isLoading && !rows.length">
-			<tr v-for="skeletonRow in skeletonRows" :key="skeletonRow" :class="trClass">
+			<tr v-for="skeletonRow in skeletonRows" :key="skeletonRow" class="base-table__tr--skeleton" :class="trClass">
+				<!-- Без sizeScale у скелетонов: ширины в процентах не масштабируются, высота берёт --size-scale таблицы -->
 				<td v-if="isSelectable" class="base-table__td base-table__td--check" :class="tdClass">
-					<BaseSkeleton shape="circle" width="16px" height="16px" :size-scale="sizeScale" />
+					<span class="base-table__skeleton">
+						<BaseSkeleton shape="rect" class="base-table__skeleton-box" />
+					</span>
 				</td>
 				<td v-if="hasRowNumber" class="base-table__td base-table__td--number" :class="tdClass">
-					<BaseSkeleton shape="text" width="20px" :size-scale="sizeScale" />
+					<span class="base-table__skeleton">
+						<BaseSkeleton shape="text" width="60%" />
+					</span>
 				</td>
-				<td v-for="column in columns" :key="column.key" class="base-table__td" :class="tdClass">
-					<BaseSkeleton shape="text" :width="column.width || '80%'" :size-scale="sizeScale" />
+				<td v-if="hasExpandableRows" class="base-table__td base-table__td--expand" :class="tdClass"></td>
+				<td
+					v-for="(column, columnIndex) in columns"
+					:key="column.key"
+					class="base-table__td"
+					:class="[`base-table__td--${column.align || 'left'}`, tdClass]">
+					<span class="base-table__skeleton">
+						<BaseSkeleton shape="text" :width="getSkeletonWidth(skeletonRow, columnIndex)" />
+					</span>
 				</td>
 			</tr>
 		</template>
@@ -17,7 +30,7 @@
 		<tr v-else-if="!isLoading && rows.length === 0" :class="trClass">
 			<td :colspan="totalColumns" class="base-table__td base-table__td--empty" :class="tdClass">
 				<slot name="empty">
-					<BaseText tag="span" class="base-table__empty-text">{{ emptyText }}</BaseText>
+					<BaseEmpty variant="ghost" :title="emptyText" :custom-class="EMPTY_CLASSES" :size-scale="sizeScale" />
 				</slot>
 			</td>
 		</tr>
@@ -81,17 +94,16 @@
 
 		<tr v-if="isLoading && rows.length && loadMode === 'infinite'" :class="trClass">
 			<td :colspan="totalColumns" class="base-table__td base-table__td--loading-more" :class="tdClass">
-				<BaseLoader variant="spinner" :size-scale="calcIconScale('xs', sizeScale)" has-label />
+				<BaseLoader has-label :custom-class="LOADING_MORE_CLASSES" :size-scale="sizeScale" />
 			</td>
 		</tr>
 	</tbody>
 </template>
 
 <script setup lang="ts">
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
-import { BaseText } from '@components/BaseText'
-import { calcIconScale } from '@utils/iconUtils'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'
@@ -102,4 +114,17 @@ defineProps<BaseTableBodyProps>()
 const emit = defineEmits<BaseTableBodyEmits>()
 
 defineSlots<BaseTableBodySlots>()
+
+/** Класс заголовка пустого состояния сохраняет прежний селектор .base-table__empty-text для приложений и тестов */
+const EMPTY_CLASSES = { root: 'base-table__empty', title: 'base-table__empty-text' }
+
+/** Индикатор подгрузки в строку: спиннер 20px и подпись справа от него */
+const LOADING_MORE_CLASSES = { root: 'base-table__loading-more', animation: 'base-table__loading-more-icon' }
+
+/** Ширины скелетонов в ячейках: повторяющийся узор, чтобы строки-заглушки не выглядели одинаковыми */
+const SKELETON_WIDTHS = ['72%', '48%', '60%', '84%', '40%']
+
+function getSkeletonWidth(row: number, column: number): string {
+	return SKELETON_WIDTHS[(row + column) % SKELETON_WIDTHS.length]
+}
 </script>

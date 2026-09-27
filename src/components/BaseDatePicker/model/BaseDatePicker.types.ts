@@ -20,9 +20,9 @@ export interface BaseDatePickerProps extends BaseComponentProps<string, 'root' |
 	placeholder?: string
 	/** Формат даты в инпуте */
 	dateFormat?: DateFormat
-	/** Вариант отображения инпута */
+	/** Вариант отображения поля — варианты BaseInput. По умолчанию `default`: рамка и фон страницы */
 	inputVariant?: InputVariant
-	/** Вариант отображения календаря */
+	/** Вариант календаря в панели — варианты BaseCalendar. По умолчанию `ghost`: календарь без своей рамки и фона */
 	calendarVariant?: CalendarVariant
 	/** Общая конфигурация календаря */
 	calendarConfig?: BaseDatePickerCalendarProps

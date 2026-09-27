@@ -15,7 +15,7 @@
 - готовый npm package;
 - поддержка глобальной регистрации компонентов через plugin;
 - поддержка прямого импорта компонентов;
-- готовые стили библиотеки;
+- готовые стили библиотеки на дизайн-токенах `--rise-*`: светлая и тёмная тема, перекраска бренда, скругления и плотность без правок стилей;
 - composables для повторного использования логики;
 - utils для работы с датами, файлами, цветами, таблицами и навигацией;
 - набор базовых компонентов для построения сложных интерфейсов;
@@ -26,12 +26,63 @@
 
 ---
 
-## Миграция на 2.0.0
+## Изменения путей импорта (с 1.2.2)
 
-- **`createIconPlugin` перенесён в `src/plugins/iconPlugin/`** (ранее — внутри `@composables/useIcon`). Импорт через `@composables` сохранён для обратной совместимости; новый каноничный путь — `@ramses1385/rise-ui-kit/plugins` (или `export * as plugins` из корня пакета).
+Мажорного релиза 2.0.0 не было: изменения ниже вошли в линейку 1.x (версия 1.2.2), публичный API не удалялся.
+
+- **`createIconPlugin` перенесён в `src/plugins/iconPlugin/`** (ранее — внутри `useIcon`). Каноничный путь — `@ramzes1385/rise-ui-kit/plugins` (или namespace `plugins` из корня: `import { plugins } from '@ramzes1385/rise-ui-kit'`); импорт из `@ramzes1385/rise-ui-kit/composables` сохранён для обратной совместимости.
 - **Subpath-экспорты `./components`, `./composables`, `./utils`, `./icons`, `./plugins` теперь разрешаются корректно** (ранее `dist/` содержал только `index.js`, и subpath-импорты указывали на несуществующие файлы). Главный импорт `@ramzes1385/rise-ui-kit` работает без изменений.
-- Добавлены константы `UI_SIZE.GAP`, `UI_SIZE.PADDING`, `UI_FONT_WEIGHT.REGULAR`, `UI_TIMING.TOUR_FOCUS_DURATION`, `UI_TIMING.SLIDER_AUTOPLAY_INTERVAL`.
-- Stories и компоненты приведены к единому контракту `defineExpose<...>` / `defineSlots<...>`; литералы текстов заменены на `UI_TEXT.*`.
+- Внутренние изменения без влияния на публичный API: добавлены константы `UI_SIZE.GAP`, `UI_SIZE.PADDING`, `UI_FONT_WEIGHT.REGULAR`, `UI_TIMING.TOUR_FOCUS_DURATION`, `UI_TIMING.SLIDER_AUTOPLAY_INTERVAL` (из пакета не экспортируются); stories и компоненты приведены к единому контракту `defineExpose<...>` / `defineSlots<...>`; литералы текстов заменены на `UI_TEXT.*`.
+
+---
+
+## Изменения поведения (не выпущено)
+
+**Редизайн.** Все компоненты переведены на дизайн-токены `--rise-*` и новый визуальный язык в духе Nuxt UI: нейтральная палитра, тонкие рамки, контролы высотой 32px, фокус-кольцо, тёмная тема на тех же токенах. Публичный API не менялся, но изменились визуальные значения по умолчанию (например, отступы `BaseButton` — 5px 10px вместо 10px 20px, `BaseCard` — 16px 20px вместо 24px 48px) и часть внутренней разметки. Что заметит приложение — [docs/design/CHANGES_FOR_APPS.md](docs/design/CHANGES_FOR_APPS.md); изменения по компонентам — [docs/design/VISUAL_CHANGES.md](docs/design/VISUAL_CHANGES.md); правила дизайн-системы — [docs/design/DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md).
+
+Исправления по итогам аудита. Публичный API не удалялся, новые props и опции необязательны; ниже — то, что может заметить приложение.
+
+**Доступность и клавиатура**
+
+- `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
+- `BaseTabs`: в порядке Tab только выбранная вкладка; стрелки, Home/End; выбор следует за фокусом — `update:modelValue`/`change` приходят при каждом переходе стрелками.
+- `BaseAccordion`: заголовок — `role="button"` с `aria-expanded`/`aria-controls`, Enter/Space; закрытая панель получает `inert`.
+- `BaseMenu`: пункты — `role="button"`, активируются Enter/Space.
+- `BaseBreadcrumbs`: корень — `<nav aria-label="Хлебные крошки">`.
+- `BasePagination`: `aria-current="page"` у текущей страницы, имена у стрелок; при `variant="default"` неактивные номера рисуются вариантом `soft` (визуальное изменение); при `modelValue > totalPages` или `total=0` кнопки блокируются корректно.
+- `BaseSwitch`: `role="switch"` (раньше объявлялся как checkbox).
+- `BaseButton`: при `isLoading` — `aria-busy` и `aria-disabled` вместо нативного `disabled`: кнопка остаётся в фокусе, а клик/Enter не эмитят `click`, не отправляют форму и не всплывают к обработчикам предков (как с нативным `disabled`).
+- `BaseAlert`: `role="alert"` только для error/warning, для info/success — `role="status"`; у кнопки закрытия есть имя.
+- `BaseNotification`: контейнер — регион с именем; error — `role="alert"`, остальные — `role="status"`.
+- `BaseLoader`: доступное имя берётся из `label`. `BaseProgress`: новый проп `ariaLabel`, в неопределённом режиме нет `aria-valuenow`, некорректный `max` не даёт «NaN». `BaseSeparator`: `role="separator"` в обеих ориентациях, подпись связана через `aria-labelledby`.
+- `BaseFileUpload`: зона загрузки — кнопка (Enter/Space), подпись связана с полем; при `isDisabled` зона вне порядка Tab и не принимает drop.
+- `BaseTable`: сортируемые заголовки — кнопки с `aria-sort`, сортировка с клавиатуры. `BaseTree`: элементы свёрнутых веток не достижимы по Tab.
+- `BaseDatePicker`: Enter/↓ в поле открывают календарь с фокусом на выбранной дате; после выбора даты с клавиатуры и по Escape фокус возвращается в поле; у кнопок есть имена. `BaseCalendar`: имена у кнопок навигации.
+- `BaseImageZoom`: оверлей — модальный диалог, у кнопок управления есть имена.
+
+**Поведение**
+
+- Оверлеи с блокировкой прокрутки (Modal, Slideover, Tour, зум изображения, оверлей `BaseSearch` в режимах `modal`/`sidebar`) используют общий счётчик: закрытие одного слоя не разблокирует страницу, пока открыт другой.
+- `BaseNotification`: `duration: 0` и некорректные значения заменяются значением по умолчанию (3000 мс); раньше уведомление исчезало почти сразу.
+- `BaseImage`: `<source>` AVIF/WebP добавляются только при явных `convertToAvif`/`convertToWebp` (новый проп `convertToAvif`, по умолчанию `false`); раньше AVIF и WebP запрашивались для любого локального src. Таймаут загрузки `loading="lazy"` отсчитывается с момента попадания в зону видимости.
+- Иконки: путь к спрайту задаётся `createUiKitPlugin({ iconSpritePath })` или `createIconPlugin({ spritePath })`; спрайт доступен как подпуть пакета `@ramzes1385/rise-ui-kit/icons.svg`.
+- `BaseForm`: во время `isLoading`/`isDisabled` поля блокируются через `<fieldset disabled>` (раскладка контента не меняется — у fieldset `display: contents`), после разблокировки фокус возвращается на прежнее поле. `<fieldset disabled>` блокирует только нативные поля (`input`/`textarea`/`select`/`button`): `BaseSelect`, `BaseRange`, `BaseRating`, `BaseEditor` внутри заблокированной формы блокируйте их собственными props. Заблокированные поля не попадают в FormData: если данные собираются после выставления `isLoading` (например, после `await`), соберите FormData до перевода формы в loading.
+- `BaseFormField`: `validate()` больше не сообщает ложное «Обязательное поле» — обязательность проверяет сам контрол/форма, `isRequired` отвечает за звёздочку.
+- `BaseRadio`: слот `option` заменяет только подпись — нативный input и кружок рендерятся всегда.
+- `BaseInput` с маской: в readonly/disabled поле Backspace/Delete ничего не удаляют; маски с несколькими литералами в начале (`+7 (`) набираются посимвольно. Известное ограничение осталось: если первая набранная цифра совпадает с цифрой префикса маски (`+7 (###)…` и ввод «7», `8 (###)…` и ввод «8»), она поглощается префиксом.
+- `BaseRating`: клик всегда привязывается к `step` (раньше при `isHoverSmooth` сохранялось дробное значение вроде 2.65).
+- `BaseColorPicker`: в модель уходит точный HEX пресета/ввода (раньше искажался при пересчёте через HSV).
+- `BaseRange`: управление с клавиатуры эмитит `change`; шаг 0.1 не даёт хвостов плавающей точки.
+- `BaseSearch`: новый проп `isRemote` — результаты с сервера показываются без клиентской фильтрации; подсветка сбрасывается при изменении списка.
+- `BaseSlider`: автопрокрутка останавливается при наведении и фокусе внутри, отключается при `prefers-reduced-motion`. С `isZoomable` клик по слайду открывает зум (раньше проп не работал), а перетаскивание слайда мышью зум не открывает.
+- `BaseDropdown`: клик в поле ввода внутри выпадающего списка оставляет фокус в поле (поиск в `BaseSelect` работает мышью); при закрытии (Escape, выбор опции) фокус из поля ввода панели возвращается на триггер (например, на поле `BaseSelect`), а не теряется на body.
+- `BaseTable`: пустые и нераспознанные значения при сортировке всегда в конце, числовые строки сравниваются как числа; даты в колонках `sortType: 'date'` распознаются как ISO 8601-строки, объекты `Date` и числовые timestamp, а строки вида ДД.ММ.ГГГГ датами не считаются (сортируются как нераспознанные, после корректных); «Выбрать все» при поиске работает по найденным строкам; `columns-change` отдаёт копии колонок, изменения `isHidden`/`width` из props применяются после монтирования.
+- `BaseDatePicker`: настройки `minDate`/`maxDate`/`disabledWeekdays`/`showTime`/`showWeekNumber` снова доходят до календаря (регрессия 1.2.2); при нескольких месяцах (`isMultiMonth`) и `showTime` блок времени показывается один раз — под первым месяцем. `BaseCalendar`: AM/PM считается из часов, ввод времени ограничен диапазоном; `v-model:is-am` при PM-значении эмитит `update:isAm` при монтировании.
+- `BaseEditor`: автоконвертация набранной разметки ограничена парой простых inline-тегов без атрибутов (`<b>`, `<i>`, `<u>`, `<s>`, `<code>` …), остальное остаётся текстом; в `isReadonly` меню медиа не открывается.
+- `BaseChat`: из панели «Информация» убраны демо-данные (описание, телефон, e-mail) — описание передаётся новым пропом `description`; при закрытии поиска запрос сбрасывается; черновик и вложения сохраняются при входе в режим выделения.
+- `BaseFileUpload`: в одиночном режиме новый файл заменяет выбранный (раньше накапливались).
+- Навигация по ссылкам (`openExternalUrl`, переходы компонентов через `navigateAndEmit`) и `downloadFile` блокируют опасные схемы URL (`javascript:`, `vbscript:`, `data:` для навигации и т. п.) с предупреждением в консоли. Новые утилиты: `isSafeUrl`, `NAVIGATION_PROTOCOLS`, `DOWNLOAD_PROTOCOLS`.
+- `utils` больше не содержит вспомогательные функции Storybook (`storybookUtils`): они импортировали `storybook/test`, которого нет в зависимостях пакета.
 
 ---
 
@@ -95,6 +146,47 @@ pnpm add @ramzes1385/rise-ui-kit
 import '@ramzes1385/rise-ui-kit/styles'
 ```
 
+Тот же файл доступен как `@ramzes1385/rise-ui-kit/styles.css`.
+
+### Шрифты
+
+Дизайн-токены `--rise-font-sans` и `--rise-font-mono` ссылаются на `Inter Variable` и `JetBrains Mono Variable`, но `dist/styles.css` не содержит `@font-face` — файлы шрифтов подключает приложение. Пакеты `@fontsource-variable/inter` и `@fontsource-variable/jetbrains-mono` устанавливаются вместе с библиотекой (они в `dependencies`):
+
+```ts
+// main.ts
+import '@fontsource-variable/inter/index.css'
+import '@fontsource-variable/jetbrains-mono/index.css'
+```
+
+Это те же файлы, что и при `import '@fontsource-variable/inter'`; явный путь к `.css` нужен TypeScript 6, где `noUncheckedSideEffectImports` включён по умолчанию: импорт без расширения даёт ошибку TS2882, а `*.css` покрывается объявлениями `vite/client`.
+
+Без этих импортов браузер берёт запасные шрифты из токенов (`system-ui`, `Segoe UI`, `Roboto`, `Arial`; для моноширинного — `ui-monospace`, `Menlo`, `Consolas` и т. п.), то есть системный шрифт. `styles.css` также не задаёт шрифт для `body`, `button` и полей ввода: чтобы весь интерфейс использовал шрифт библиотеки, добавьте в стили приложения `body, button, input, textarea, select { font-family: var(--rise-font-sans); }`.
+
+### Дизайн-система и темы
+
+Внешний вид задают CSS-переменные `--rise-*` из `dist/styles.css`: палитры, семантические цвета (фон, текст, рамки, роли primary/success/info/warning/error), радиусы, тени, шрифты и размеры контролов. Полный список и правила — [docs/design/DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md), живые примеры — Storybook, раздел **Foundations**.
+
+```css
+/* Тёмная тема — атрибутом на <html> или на любом контейнере; data-theme="light" возвращает светлую внутри тёмной */
+/* <html data-theme="dark"> */
+
+:root {
+  /* Бренд: палитра primary (оттенки 50…950). Семантические токены обеих тем пересчитаются сами */
+  --rise-color-primary-400: #a78bfa;
+  --rise-color-primary-700: #6d28d9;
+  --rise-color-primary-800: #5b21b6;
+  /* …остальные оттенки */
+
+  --rise-radius: 6px;            /* база скруглений: 0 — строгий интерфейс, 8px — мягкий */
+  --rise-control-padding-y: 7px; /* плотность: контролы 36px вместо 32px */
+}
+```
+
+- **Размер компонента** — проп `sizeScale` (проценты): 75 / 87.5 / 100 / 112.5 / 125 ≈ xs / sm / md / lg / xl, контролы 24–40px. Кнопка, поле, селект и переключатели одного `sizeScale` одной высоты.
+- **Цвет одного компонента** — проп `color` (`{ bg: { base, hover, active, focus }, text: { … } }`). Вложенные в него компоненты этот цвет не наследуют.
+- **Контраст.** Пары «текст/фон» токенов проходят WCAG 2.2 AA в обеих темах — `npm run test:contrast`, отчёт [docs/design/contrast.md](docs/design/contrast.md).
+- **Переменные 1.x** (`--color-accent`, `--color-text-muted`, `--border-radius-base`…) оставлены алиасами новых токенов для CSS приложения, но компоненты их больше не читают: перекрашивайте через `--rise-*`. Алиасы будут удалены в 2.0.
+
 ---
 
 ## Быстрый старт
@@ -112,16 +204,19 @@ import '@ramzes1385/rise-ui-kit/styles'
 
 const app = createApp(App)
 
-app.use(createUiKitPlugin())
+// iconSpritePath — абсолютный путь к SVG-спрайту иконок (см. раздел «Иконки»)
+app.use(createUiKitPlugin({ iconSpritePath: '/icons.svg' }))
 
 app.mount('#app')
 ```
 
-После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API.
+Опции `createUiKitPlugin`: `prefix` — префикс глобальных имён (`prefix: 'Ui'` → `UiBaseButton`), `iconSpritePath` — путь к спрайту иконок.
+
+После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API. Типы глобальных компонентов пакет не объявляет (`GlobalComponents`), поэтому props в шаблоне проверяются только при прямом импорте.
 
 ```vue
 <template>
-	<BaseButton label="Сохранить" />
+	<BaseButton>Сохранить</BaseButton>
 </template>
 ```
 
@@ -137,7 +232,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseButton label="Сохранить" />
+	<BaseButton>Сохранить</BaseButton>
 </template>
 ```
 
@@ -145,13 +240,19 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## Публичный API
 
-Все внешние импорты должны идти через главный публичный API пакета:
+Компоненты и их типы импортируются из корня пакета. Composables, utils, icons и plugins из корня экспортируются только как namespace (`composables`, `utils`, `icons`, `plugins`) — либо импортируйте их из подпутей пакета:
 
 ```ts
-import { BaseButton, BaseInput, BaseModal, BaseTable, useDebounce, formatFileSize } from '@ramzes1385/rise-ui-kit'
+import { BaseButton, BaseInput, BaseModal, BaseTable, composables, utils } from '@ramzes1385/rise-ui-kit'
+import { useDebounceFn } from '@ramzes1385/rise-ui-kit/composables'
+import { formatFileSize } from '@ramzes1385/rise-ui-kit/utils'
 
 import '@ramzes1385/rise-ui-kit/styles'
+
+const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024)
 ```
+
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons`, `/plugins`, `/styles` (`/styles.css`), `/icons.svg`.
 
 Не рекомендуется импортировать внутренние файлы из `dist` напрямую:
 
@@ -207,6 +308,8 @@ dist/              # результат сборки библиотеки
 
 Подходит для действий, форм, тулбаров, модальных окон и карточек.
 
+Текст кнопки передаётся в слот по умолчанию (иконки — в слоты `left` / `right`). По умолчанию `type="button"`; кнопке отправки формы нужен `type="submit"`. `is-loading` показывает индикатор и подавляет клики.
+
 ### Пример
 
 ```vue
@@ -215,11 +318,11 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseButton label="Сохранить" />
+	<BaseButton>Сохранить</BaseButton>
 
-	<BaseButton variant="ghost" label="Отмена" />
+	<BaseButton variant="ghost">Отмена</BaseButton>
 
-	<BaseButton :disabled="true" label="Недоступно" />
+	<BaseButton is-disabled>Недоступно</BaseButton>
 </template>
 ```
 
@@ -273,8 +376,10 @@ const description = ref('')
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseSelect } from '@ramzes1385/rise-ui-kit'
+import type { BaseSelectProps } from '@ramzes1385/rise-ui-kit'
 
-const selected = ref(null)
+// string | number | (string | number)[] (массив — при is-multiple); undefined — ничего не выбрано
+const selected = ref<BaseSelectProps['modelValue']>()
 
 const options = [
 	{ label: 'Активен', value: 'active' },
@@ -310,20 +415,23 @@ const checked = ref(false)
 
 ## BaseRadio
 
-Radio button.
+Группа radio button: варианты передаются в `options`, `name` (имя группы нативных `input`) обязателен.
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseRadio } from '@ramzes1385/rise-ui-kit'
 
-const value = ref('email')
+const value = ref<string | number>('email')
+
+const options = [
+	{ value: 'email', label: 'Email' },
+	{ value: 'phone', label: 'Телефон' },
+]
 </script>
 
 <template>
-	<BaseRadio v-model="value" value="email" label="Email" />
-
-	<BaseRadio v-model="value" value="phone" label="Телефон" />
+	<BaseRadio v-model="value" name="contact" :options="options" label="Способ связи" />
 </template>
 ```
 
@@ -352,15 +460,24 @@ const enabled = ref(false)
 
 Контейнер формы.
 
+Событие `submit` приходит без перезагрузки страницы (нативная отправка отменяется). Кнопке отправки нужен `type="submit"` — у `BaseButton` по умолчанию `type="button"`. При `is-loading` / `is-disabled` `submit` не эмитится, а нативные поля формы блокируются через `<fieldset disabled>`; `BaseSelect`, `BaseRange`, `BaseRating` и `BaseEditor` блокируйте их собственными props. Заблокированные поля не попадают в FormData — собирайте данные до перевода формы в `is-loading`.
+
 ```vue
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseForm, BaseInput, BaseButton } from '@ramzes1385/rise-ui-kit'
+
+const email = ref('')
+
+function handleSubmit(): void {
+	console.log(email.value)
+}
 </script>
 
 <template>
-	<BaseForm>
-		<BaseInput placeholder="Email" />
-		<BaseButton label="Отправить" />
+	<BaseForm @submit="handleSubmit">
+		<BaseInput v-model="email" type="email" placeholder="Email" />
+		<BaseButton type="submit">Отправить</BaseButton>
 	</BaseForm>
 </template>
 ```
@@ -403,13 +520,15 @@ const isOpen = ref(false)
 </script>
 
 <template>
-	<BaseButton label="Открыть" @click="isOpen = true" />
+	<BaseButton @click="isOpen = true">Открыть</BaseButton>
 
-	<BaseModal v-model="isOpen" title="Подтверждение">
+	<BaseModal v-model:is-open="isOpen" title="Подтверждение">
 		<p>Вы уверены?</p>
 	</BaseModal>
 </template>
 ```
+
+Открытием управляет `v-model:is-open`. Окно — модальный диалог: фокус переводится внутрь, Tab не выходит за его пределы, после закрытия фокус возвращается на элемент, с которого окно открыли (composable `useFocusTrap`).
 
 ---
 
@@ -426,9 +545,9 @@ const isOpen = ref(false)
 </script>
 
 <template>
-	<BaseButton label="Открыть панель" @click="isOpen = true" />
+	<BaseButton @click="isOpen = true">Открыть панель</BaseButton>
 
-	<BaseSlideover v-model="isOpen"> Содержимое панели </BaseSlideover>
+	<BaseSlideover v-model:is-open="isOpen" title="Настройки"> Содержимое панели </BaseSlideover>
 </template>
 ```
 
@@ -438,18 +557,23 @@ const isOpen = ref(false)
 
 Выпадающее меню.
 
+Триггер — слот по умолчанию, содержимое панели — слот `dropdown`. Открытием управляет `v-model:is-open`: открывает панель приложение, закрывается она сама — по клику снаружи и Escape.
+
 ```vue
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BaseDropdown, BaseButton } from '@ramzes1385/rise-ui-kit'
+
+const isOpen = ref(false)
 </script>
 
 <template>
-	<BaseDropdown>
-		<template #trigger>
-			<BaseButton label="Меню" />
-		</template>
+	<BaseDropdown v-model:is-open="isOpen">
+		<BaseButton @click="isOpen = !isOpen">Меню</BaseButton>
 
-		<div>Пункт меню</div>
+		<template #dropdown>
+			<div>Пункт меню</div>
+		</template>
 	</BaseDropdown>
 </template>
 ```
@@ -468,7 +592,7 @@ import { BasePopover, BaseButton } from '@ramzes1385/rise-ui-kit'
 <template>
 	<BasePopover>
 		<template #trigger>
-			<BaseButton label="Открыть popover" />
+			<BaseButton>Открыть popover</BaseButton>
 		</template>
 
 		<div>Контент popover</div>
@@ -488,8 +612,8 @@ import { BaseTooltip, BaseButton } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseTooltip content="Подсказка">
-		<BaseButton label="Наведи на меня" />
+	<BaseTooltip text="Подсказка">
+		<BaseButton>Наведи на меня</BaseButton>
 	</BaseTooltip>
 </template>
 ```
@@ -499,6 +623,8 @@ import { BaseTooltip, BaseButton } from '@ramzes1385/rise-ui-kit'
 ## BaseTable
 
 Таблица данных.
+
+Значения ячеек строки лежат в `data` под ключами из `columns[].key` (типы `TableColumn`, `TableRow`).
 
 ```vue
 <script setup lang="ts">
@@ -510,8 +636,8 @@ const columns = [
 ]
 
 const rows = [
-	{ id: 1, name: 'Задача 1', status: 'Активна' },
-	{ id: 2, name: 'Задача 2', status: 'Завершена' },
+	{ id: 1, data: { name: 'Задача 1', status: 'Активна' } },
+	{ id: 2, data: { name: 'Задача 2', status: 'Завершена' } },
 ]
 </script>
 
@@ -545,6 +671,8 @@ const page = ref(1)
 
 Табы.
 
+`v-model` хранит `id` активной вкладки; содержимое панели передаётся в слот по умолчанию.
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -553,13 +681,16 @@ import { BaseTabs } from '@ramzes1385/rise-ui-kit'
 const activeTab = ref('main')
 
 const tabs = [
-	{ label: 'Основное', value: 'main' },
-	{ label: 'Настройки', value: 'settings' },
+	{ id: 'main', label: 'Основное' },
+	{ id: 'settings', label: 'Настройки' },
 ]
 </script>
 
 <template>
-	<BaseTabs v-model="activeTab" :items="tabs" />
+	<BaseTabs v-model="activeTab" :items="tabs">
+		<p v-if="activeTab === 'main'">Основные параметры</p>
+		<p v-else>Настройки профиля</p>
+	</BaseTabs>
 </template>
 ```
 
@@ -569,13 +700,24 @@ const tabs = [
 
 Аккордеон.
 
+Элементы передаются в `items`: заголовок — `label`, текст — `content`, либо имя слота в `slot` для произвольной разметки. `is-multiple` разрешает открывать несколько элементов.
+
 ```vue
 <script setup lang="ts">
 import { BaseAccordion } from '@ramzes1385/rise-ui-kit'
+
+const items = [
+	{ label: 'Подробнее', content: 'Контент аккордеона' },
+	{ label: 'Доставка', slot: 'delivery' },
+]
 </script>
 
 <template>
-	<BaseAccordion title="Подробнее"> Контент аккордеона </BaseAccordion>
+	<BaseAccordion :items="items">
+		<template #delivery>
+			<p>Произвольная разметка из слота</p>
+		</template>
+	</BaseAccordion>
 </template>
 ```
 
@@ -650,15 +792,21 @@ import { BaseBadge } from '@ramzes1385/rise-ui-kit'
 
 ## BaseChip
 
-Chip-компонент.
+Индикатор-счётчик поверх вложенного элемента (например, число непрочитанных): обёртываемый элемент — слот по умолчанию, значение индикатора — проп `content`, позиция — `placement`. С `has-overflow` значения больше `max-value` (по умолчанию 99) выводятся как `99+`.
 
 ```vue
 <script setup lang="ts">
-import { BaseChip } from '@ramzes1385/rise-ui-kit'
+import { BaseChip, BaseButton } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseChip label="Vue" />
+	<BaseChip :content="5">
+		<BaseButton>Сообщения</BaseButton>
+	</BaseChip>
+
+	<BaseChip :content="120" has-overflow>
+		<BaseButton>Уведомления</BaseButton>
+	</BaseChip>
 </template>
 ```
 
@@ -684,6 +832,8 @@ import { BaseAvatar } from '@ramzes1385/rise-ui-kit'
 
 Компонент изображения.
 
+`<source>` в форматах AVIF/WebP добавляются только по явным `convert-to-avif` / `convert-to-webp` (оба по умолчанию `false`). Включайте их, только если рядом с файлом на сервере лежит копия `.avif` / `.webp`: при 404 браузер не вернётся к `src`.
+
 ```vue
 <script setup lang="ts">
 import { BaseImage } from '@ramzes1385/rise-ui-kit'
@@ -691,6 +841,9 @@ import { BaseImage } from '@ramzes1385/rise-ui-kit'
 
 <template>
 	<BaseImage src="/image.jpg" alt="Описание изображения" />
+
+	<!-- рядом на сервере лежит /photo.avif -->
+	<BaseImage src="/photo.jpg" alt="Фото" convert-to-avif />
 </template>
 ```
 
@@ -698,7 +851,7 @@ import { BaseImage } from '@ramzes1385/rise-ui-kit'
 
 ## BaseIcon
 
-Компонент иконки.
+Компонент иконки. Иконки берутся из SVG-спрайта пакета — как сделать его доступным приложению, см. раздел «Иконки».
 
 ```vue
 <script setup lang="ts">
@@ -732,13 +885,19 @@ import { BaseLoader } from '@ramzes1385/rise-ui-kit'
 
 Skeleton-заглушка.
 
+Размеры задаются `width` / `height` (число — px, строка — любое CSS-значение). Без `height` заглушка формы `rect` (по умолчанию) и `circle` имеет нулевую высоту; у `shape="text"` высота строки задана.
+
 ```vue
 <script setup lang="ts">
 import { BaseSkeleton } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseSkeleton />
+	<BaseSkeleton width="100%" :height="120" />
+
+	<BaseSkeleton shape="text" width="60%" />
+
+	<BaseSkeleton shape="circle" :width="40" :height="40" />
 </template>
 ```
 
@@ -770,9 +929,11 @@ import { BaseProgress } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseProgress :value="65" />
+	<BaseProgress :value="65" ariaLabel="Загрузка файла" />
 </template>
 ```
+
+Проп `ariaLabel` — доступное имя индикатора для скринридеров (по умолчанию «Прогресс»). В шаблоне он записан в camelCase: атрибут `aria-label` Vue тоже передаст в проп, но vue-tsc со `strictTemplates` считает `aria-*` HTML-атрибутами и не сопоставляет их с пропами.
 
 ---
 
@@ -803,14 +964,15 @@ Slider/carousel.
 <script setup lang="ts">
 import { BaseSlider } from '@ramzes1385/rise-ui-kit'
 
+// src обязателен; type: 'video' — для видео
 const slides = [
-	{ id: 1, title: 'Слайд 1' },
-	{ id: 2, title: 'Слайд 2' },
+	{ src: '/slides/1.jpg', alt: 'Слайд 1', title: 'Слайд 1' },
+	{ src: '/slides/2.jpg', alt: 'Слайд 2', title: 'Слайд 2' },
 ]
 </script>
 
 <template>
-	<BaseSlider :items="slides" />
+	<BaseSlider :items="slides" has-caption />
 </template>
 ```
 
@@ -852,6 +1014,28 @@ const query = ref('')
 </template>
 ```
 
+Переданные в `results` результаты по умолчанию фильтруются на клиенте по подстроке в `title`/`description`. Если их уже отобрал сервер (транслит, опечатки, другие поля), укажите `is-remote` — список покажется как есть (с ограничением `max-results`):
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSearch } from '@ramzes1385/rise-ui-kit'
+import type { SearchResult } from '@ramzes1385/rise-ui-kit'
+
+const query = ref('')
+const results = ref<SearchResult[]>([])
+
+async function handleSearch(value: string): Promise<void> {
+	const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`)
+	results.value = await response.json()
+}
+</script>
+
+<template>
+	<BaseSearch v-model="query" :results="results" is-remote placeholder="Поиск" @search="handleSearch" />
+</template>
+```
+
 ---
 
 ## BaseDatePicker
@@ -863,7 +1047,7 @@ const query = ref('')
 import { ref } from 'vue'
 import { BaseDatePicker } from '@ramzes1385/rise-ui-kit'
 
-const date = ref(null)
+const date = ref<Date | null>(null)
 </script>
 
 <template>
@@ -912,17 +1096,19 @@ const color = ref('#42b883')
 
 Загрузка файлов.
 
+Событие `change` передаёт массив `File[]` — текущий список выбранных файлов (без `is-multiple` — один файл: новый выбор заменяет прежний). Файлы проверяются по `accept` (MIME, `image/*` или расширения) и `max-size` (в МБ, по умолчанию 5); ошибки приходят в событии `error`.
+
 ```vue
 <script setup lang="ts">
 import { BaseFileUpload } from '@ramzes1385/rise-ui-kit'
 
-function handleFiles(files: FileList): void {
+function handleFiles(files: File[]): void {
 	console.log(files)
 }
 </script>
 
 <template>
-	<BaseFileUpload @change="handleFiles" />
+	<BaseFileUpload accept="image/*,.pdf" :max-size="10" is-multiple @change="handleFiles" />
 </template>
 ```
 
@@ -945,23 +1131,29 @@ const content = ref('')
 </template>
 ```
 
+> ⚠️ BaseEditor не санитизирует HTML: значение v-model вставляется через innerHTML как есть, и то же сырое содержимое (включая вставленное из буфера и набранное в режиме кода) возвращается в `update:modelValue`. `<img onerror>`, `<svg onload>`, `<iframe srcdoc>`, `<style>` и ссылки `javascript:` сработают, в том числе при `is-readonly`. Передавайте только доверенный HTML; санитизируйте на сервере по allowlist тегов, атрибутов и схем ссылок и при сохранении, и перед выводом.
+
 ---
 
 ## BaseChat
 
 Компонент чата.
 
+Сообщение (`ChatMessage`) обязательно содержит `id`, `text`, `sender` (`'me'` — своё, `'other'` — собеседника) и `time` — строку для отображения. `title` — заголовок чата (обязателен), `description` — описание чата или собеседника для панели «Информация» (без него блок описания не выводится).
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseChat } from '@ramzes1385/rise-ui-kit'
+import type { ChatMessage } from '@ramzes1385/rise-ui-kit'
 
-const messages = ref([
+const messages = ref<ChatMessage[]>([
 	{
 		id: '1',
 		text: 'Привет',
+		sender: 'other',
 		senderName: 'Анна',
-		createdAt: new Date().toISOString(),
+		time: '10:15',
 	},
 ])
 
@@ -969,14 +1161,14 @@ function handleSend(payload: { text: string }): void {
 	messages.value.push({
 		id: String(Date.now()),
 		text: payload.text,
-		senderName: 'Вы',
-		createdAt: new Date().toISOString(),
+		sender: 'me',
+		time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
 	})
 }
 </script>
 
 <template>
-	<BaseChat :messages="messages" @send="handleSend" />
+	<BaseChat title="Анна" description="Менеджер проекта" :messages="messages" @send="handleSend" />
 </template>
 ```
 
@@ -1000,15 +1192,19 @@ const nodes = [
 </script>
 
 <template>
-	<BaseTree :nodes="nodes" />
+	<BaseTree :items="nodes" />
 </template>
 ```
+
+Выбор узлов включается `selection-mode` (`'single'` / `'multiple'`), раскрытые и выбранные узлы доступны через `v-model:expanded-ids` / `v-model:selected-ids`.
 
 ---
 
 ## BaseMegaMenu
 
 Многоуровневое меню.
+
+`items` используются в раскладке `layout="dropdown"`; раскладка по умолчанию — `columns` (колонки `{ title, items }` в пропе `columns`). Вложенность `children` не ограничена. По пунктам с `to` компонент сам не переходит, а эмитит `navigate` с путём — переход выполняет приложение (например, `router.push`); ссылки `href` открываются компонентом, небезопасные схемы URL блокируются.
 
 ```vue
 <script setup lang="ts">
@@ -1020,10 +1216,14 @@ const items = [
 		children: [{ label: 'Подраздел', to: '/section' }],
 	},
 ]
+
+function handleNavigate(path: string): void {
+	console.log(path) // например, router.push(path)
+}
 </script>
 
 <template>
-	<BaseMegaMenu :items="items" />
+	<BaseMegaMenu layout="dropdown" :items="items" @navigate="handleNavigate" />
 </template>
 ```
 
@@ -1033,18 +1233,25 @@ const items = [
 
 Меню.
 
+`items` — массив групп (массив массивов), между группами выводится разделитель. Выбор пункта приходит в событии `select`; у пункта можно задать собственный обработчик `click`.
+
 ```vue
 <script setup lang="ts">
 import { BaseMenu } from '@ramzes1385/rise-ui-kit'
+import type { BaseMenuItem } from '@ramzes1385/rise-ui-kit'
 
-const items = [
-	{ label: 'Профиль', value: 'profile' },
-	{ label: 'Выход', value: 'logout' },
+const items: BaseMenuItem[][] = [
+	[{ label: 'Профиль' }, { label: 'Настройки' }],
+	[{ label: 'Выход', click: () => console.log('logout') }],
 ]
+
+function handleSelect(item: BaseMenuItem): void {
+	console.log(item.label)
+}
 </script>
 
 <template>
-	<BaseMenu :items="items" />
+	<BaseMenu :items="items" @select="handleSelect" />
 </template>
 ```
 
@@ -1080,12 +1287,18 @@ const items = [
 import { BaseBreadcrumbs } from '@ramzes1385/rise-ui-kit'
 
 const items = [{ label: 'Главная', to: '/' }, { label: 'Пользователи', to: '/users' }, { label: 'Профиль' }]
+
+function handleNavigate(path: string): void {
+	console.log(path) // например, router.push(path)
+}
 </script>
 
 <template>
-	<BaseBreadcrumbs :items="items" />
+	<BaseBreadcrumbs :items="items" @navigate="handleNavigate" />
 </template>
 ```
+
+Как и в `BaseMegaMenu`, по `to` компонент только эмитит `navigate`, переход выполняет приложение; `href` открывается компонентом (небезопасные схемы URL блокируются).
 
 ---
 
@@ -1098,13 +1311,14 @@ Stepper.
 import { ref } from 'vue'
 import { BaseStepper } from '@ramzes1385/rise-ui-kit'
 
+// номер текущего шага — с 1
 const step = ref(1)
 
 const steps = [{ label: 'Данные' }, { label: 'Проверка' }, { label: 'Готово' }]
 </script>
 
 <template>
-	<BaseStepper v-model="step" :steps="steps" />
+	<BaseStepper v-model="step" :items="steps" />
 </template>
 ```
 
@@ -1171,15 +1385,22 @@ import { BaseSeparator } from '@ramzes1385/rise-ui-kit'
 
 ## BasePin
 
-Pin/закреплённый элемент.
+Ввод PIN-кода / кода подтверждения по ячейкам (по одному символу в ячейке, `length` — число ячеек, по умолчанию 4). Когда заполнены все ячейки, эмитится `complete`.
 
 ```vue
 <script setup lang="ts">
+import { ref } from 'vue'
 import { BasePin } from '@ramzes1385/rise-ui-kit'
+
+const code = ref('')
+
+function handleComplete(value: string): void {
+	console.log(value)
+}
 </script>
 
 <template>
-	<BasePin />
+	<BasePin v-model="code" :length="4" @complete="handleComplete" />
 </template>
 ```
 
@@ -1263,18 +1484,26 @@ BaseTree
 
 # Composables
 
-Библиотека также экспортирует composables.
+Библиотека также экспортирует composables — из подпути `@ramzes1385/rise-ui-kit/composables` или как namespace `composables` из корня пакета (`import { composables } from '@ramzes1385/rise-ui-kit'`). Именованного экспорта composables из корня нет. Вызывайте их внутри `setup` / `<script setup>`: они подписываются на хуки жизненного цикла компонента.
 
 ## useDebounce
 
-Используется для отложенного вызова функции или реакции на изменение значения.
+Отложенный вызов функции (`useDebounceFn`) или отложенное значение (`useDebounce`).
 
 ```ts
-import { useDebounce } from '@ramzes1385/rise-ui-kit'
+import { useDebounce, useDebounceFn } from '@ramzes1385/rise-ui-kit/composables'
 
-const debouncedSearch = useDebounce((value: string) => {
+// функция выполнится через 300 мс после последнего вызова
+const debouncedSearch = useDebounceFn((value: string) => {
 	console.log(value)
 }, 300)
+
+debouncedSearch('vue')
+
+// ref, запись в который применяется через 300 мс после последнего присваивания
+const query = useDebounce('', 300)
+
+query.value = 'vue'
 ```
 
 ---
@@ -1286,12 +1515,15 @@ const debouncedSearch = useDebounce((value: string) => {
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useClickOutside } from '@ramzes1385/rise-ui-kit'
+import { useClickOutside } from '@ramzes1385/rise-ui-kit/composables'
 
 const rootRef = ref<HTMLElement | null>(null)
 
-useClickOutside(rootRef, () => {
-	console.log('Клик вне блока')
+useClickOutside({
+	targets: [rootRef],
+	callback: () => {
+		console.log('Клик вне блока')
+	},
 })
 </script>
 
@@ -1300,6 +1532,8 @@ useClickOutside(rootRef, () => {
 </template>
 ```
 
+Необязательная опция `isActive: () => boolean` включает обработку только когда нужно (например, пока открыт попап).
+
 ---
 
 ## useEscapeKey
@@ -1307,10 +1541,16 @@ useClickOutside(rootRef, () => {
 Обработка Escape.
 
 ```ts
-import { useEscapeKey } from '@ramzes1385/rise-ui-kit'
+import { ref } from 'vue'
+import { useEscapeKey } from '@ramzes1385/rise-ui-kit/composables'
 
-useEscapeKey(() => {
-	console.log('Escape pressed')
+const isOpen = ref(true)
+
+useEscapeKey({
+	isActive: () => isOpen.value,
+	callback: () => {
+		isOpen.value = false
+	},
 })
 ```
 
@@ -1321,13 +1561,15 @@ useEscapeKey(() => {
 Блокировка прокрутки страницы.
 
 ```ts
-import { useScrollLock } from '@ramzes1385/rise-ui-kit'
+import { useScrollLock } from '@ramzes1385/rise-ui-kit/composables'
 
 const { lock, unlock } = useScrollLock()
 
 lock()
 unlock()
 ```
+
+Счётчик блокировок общий для всех экземпляров: прокрутка вернётся, когда разблокирует последний (вложенные оверлеи).
 
 ---
 
@@ -1336,29 +1578,76 @@ unlock()
 Работа с breakpoint значениями.
 
 ```ts
-import { useBreakpoint } from '@ramzes1385/rise-ui-kit'
+import { computed } from 'vue'
+import { useBreakpoint } from '@ramzes1385/rise-ui-kit/composables'
 
-const { isMobile, isTablet, isDesktop } = useBreakpoint()
+const { width, current, isMobile, isGreaterOrEqual, isSmallerThan } = useBreakpoint()
+
+const isDesktop = computed(() => isGreaterOrEqual('lg'))
+const isTablet = computed(() => !isMobile.value && isSmallerThan('lg'))
 ```
+
+`isMobile` — ширина меньше `md` (768 px), `current` — наибольший активный брейкпоинт (`xs`, `sm`, `mobile`, `md`, `lg`, `xl`, `xxl`), `width` — ширина окна.
 
 ---
 
 ## useTableData
 
-Помощник для работы с табличными данными.
+Помощник для работы с табличными данными: поиск, фильтры, сортировка и пагинация (фасад, который использует `BaseTable`).
 
 ```ts
-import { useTableData } from '@ramzes1385/rise-ui-kit'
+import { ref } from 'vue'
+import { useTableData } from '@ramzes1385/rise-ui-kit/composables'
+import type { TableColumn, TableRow } from '@ramzes1385/rise-ui-kit'
 
-const table = useTableData({
-	rows: [],
-	columns: [],
+const rows = ref<TableRow[]>([])
+const columns = ref<TableColumn[]>([{ key: 'name', label: 'Название', isSortable: true }])
+
+const { displayedRows, handleSort, handleSearchInput, currentPage, totalPages } = useTableData({
+	rows,
+	columns,
+	loadMode: () => 'pagination',
+	pageSize: ref(10),
+	isMultiSort: () => false,
+	searchDebounce: () => 300,
 })
 ```
 
 ---
 
+## useFocusTrap
+
+Удерживает фокус внутри модального окна (используется в `BaseModal` и `BaseSlideover`): при активации переводит фокус внутрь (`[autofocus]` → первый фокусируемый элемент → сам контейнер), зацикливает Tab / Shift+Tab, а при деактивации или размонтировании возвращает фокус на элемент, с которого окно открыли.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useFocusTrap } from '@ramzes1385/rise-ui-kit/composables'
+
+const isOpen = ref(false)
+const dialogRef = ref<HTMLElement | null>(null)
+
+useFocusTrap({
+	containerRef: dialogRef,
+	isActive: () => isOpen.value,
+})
+</script>
+
+<template>
+	<button type="button" @click="isOpen = true">Открыть</button>
+
+	<div v-if="isOpen" ref="dialogRef" role="dialog" aria-modal="true" aria-label="Диалог">
+		<input aria-label="Имя" />
+		<button type="button" @click="isOpen = false">Закрыть</button>
+	</div>
+</template>
+```
+
+---
+
 ## Список composables
+
+Основные composables (полный перечень экспортов — `src/composables/index.ts`):
 
 ```txt
 useAutoScroll
@@ -1374,6 +1663,7 @@ useDropdownPosition
 useEditorToolbar
 useEscapeKey
 useFlyoutPosition
+useFocusTrap
 useIcon
 useImageZoom
 useInputMask
@@ -1394,16 +1684,16 @@ useVariant
 
 # Utils
 
-Библиотека экспортирует набор утилит.
+Библиотека экспортирует набор утилит — из подпути `@ramzes1385/rise-ui-kit/utils` или как namespace `utils` из корня пакета (`import { utils } from '@ramzes1385/rise-ui-kit'`).
 
 ## fileUtils
 
 Утилиты для работы с файлами.
 
 ```ts
-import { formatFileSize } from '@ramzes1385/rise-ui-kit'
+import { formatFileSize } from '@ramzes1385/rise-ui-kit/utils'
 
-const size = formatFileSize(1024)
+const size = formatFileSize(1024) // '1.0 КБ'
 ```
 
 ---
@@ -1413,9 +1703,16 @@ const size = formatFileSize(1024)
 Утилиты для работы с датами.
 
 ```ts
-import { formatDate } from '@ramzes1385/rise-ui-kit'
+import { formatDate } from '@ramzes1385/rise-ui-kit/utils'
 
-const date = formatDate(new Date())
+const date = formatDate({
+	date: new Date(),
+	dateFormat: 'dd.MM.yyyy',
+	showTime: false,
+	showSeconds: false,
+	is24Hour: true,
+	locale: 'ru-RU',
+})
 ```
 
 ---
@@ -1425,9 +1722,24 @@ const date = formatDate(new Date())
 Утилиты для работы с цветами.
 
 ```ts
-import { isValidColor } from '@ramzes1385/rise-ui-kit'
+import { isValidHex } from '@ramzes1385/rise-ui-kit/utils'
 
-const valid = isValidColor('#42b883')
+const valid = isValidHex('#42b883') // true; допускаются 3 и 6 знаков, с # и без
+```
+
+---
+
+## urlUtils
+
+Проверка URL из недоверенных данных (пункты меню, CMS, API) перед переходом, `window.open` или скачиванием. `isSafeUrl` пропускает относительные адреса и схемы из списка: по умолчанию `NAVIGATION_PROTOCOLS` (`http:`, `https:`, `mailto:`, `tel:`), для скачивания — `DOWNLOAD_PROTOCOLS` (`http:`, `https:`, `blob:`, `data:`). Эту же проверку выполняют `openExternalUrl`, `navigateAndEmit` и `downloadFile`.
+
+```ts
+import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@ramzes1385/rise-ui-kit/utils'
+
+isSafeUrl('https://example.com') // true
+isSafeUrl('/users/42') // true — относительный адрес
+isSafeUrl('javascript:alert(1)') // false
+isSafeUrl('blob:https://example.com/7f3c', DOWNLOAD_PROTOCOLS) // true
 ```
 
 ---
@@ -1435,19 +1747,25 @@ const valid = isValidColor('#42b883')
 ## Список utils
 
 ```txt
-assertUtils
+clipboardUtils
 colorUtils
 dateUtils
-editorDomInspect
+domUtils
+editorDomUtils
 fileUtils
-formatUtils
+iconUtils
+idUtils
 imageUtils
 navigationUtils
 paginationUtils
 rangeUtils
+ratingUtils
 schemaUtils
 tableUtils
 tooltipUtils
+treeUtils
+typeUtils
+urlUtils
 ```
 
 ---
@@ -1466,6 +1784,29 @@ import { BaseIcon } from '@ramzes1385/rise-ui-kit'
 	<BaseIcon name="close" />
 	<BaseIcon name="send" />
 </template>
+```
+
+## Спрайт
+
+BaseIcon берёт иконки из спрайта `dist/icons.svg` пакета. Сделайте его доступным приложению: скопируйте `node_modules/@ramzes1385/rise-ui-kit/dist/icons.svg` в `public/` или импортируйте URL — `import iconSpriteUrl from '@ramzes1385/rise-ui-kit/icons.svg?url'` (подпуть `./icons.svg` добавлен в `exports`). Передайте абсолютный путь: `app.use(createUiKitPlugin({ iconSpritePath: '/icons.svg' }))` или `iconSpriteUrl`; если нужны только иконки — `createIconPlugin({ spritePath: '/icons.svg' })`. Без опции используется относительный `'icons.svg'`: он резолвится от URL страницы, и на вложенных маршрутах (`/users/42` → `/users/icons.svg`) файл не находится. Спрайт должен отдаваться с того же origin, что и страница; при деплое под подпутём укажите `${import.meta.env.BASE_URL}icons.svg`.
+
+```ts
+// main.ts: URL спрайта из пакета (Vite)
+import { createApp } from 'vue'
+import App from './App.vue'
+import { createUiKitPlugin } from '@ramzes1385/rise-ui-kit'
+import iconSpriteUrl from '@ramzes1385/rise-ui-kit/icons.svg?url'
+
+createApp(App).use(createUiKitPlugin({ iconSpritePath: iconSpriteUrl })).mount('#app')
+```
+
+```ts
+// main.ts: только иконки — глобальный BaseIcon без остальных компонентов
+import { createApp } from 'vue'
+import App from './App.vue'
+import { createIconPlugin } from '@ramzes1385/rise-ui-kit/plugins'
+
+createApp(App).use(createIconPlugin({ spritePath: '/icons.svg' })).mount('#app')
 ```
 
 ---
@@ -1490,6 +1831,11 @@ npm run dev
 npm run storybook
 ```
 
+- **Разделы:** Introduction, Foundations (цвета, типографика, радиусы и тени, размеры, темы), Element, Form, Data, Navigation, Overlay, Chat, Editor.
+- **Тема** переключается кнопкой «Тема» на панели инструментов; для ссылок и скриншотов — параметр `&globals=theme:dark`.
+- **Stories каждого компонента** устроены одинаково: `Default` (песочница с рабочим v-model) → варианты, размеры, кастомный цвет → состояния → сценарии → `Keyboard`. Правила — [docs/design/STORIES_GUIDE.md](docs/design/STORIES_GUIDE.md).
+- Описания props из JSDoc попадают во вкладку Docs: в `build/storybook/main.ts` плагин `vite:vue` подключается раньше docgen-плагина Storybook (при обратном порядке описания молча терялись).
+
 ---
 
 # Тестирование
@@ -1503,7 +1849,7 @@ npm run test:unit
 ## Один тестовый файл
 
 ```bash
-npm run test:unit -- src/components/BaseChat/ChatInput/ChatInput.spec.ts
+npm run test:unit -- src/components/BaseChat/__tests__/ChatInput.spec.ts
 ```
 
 ---
@@ -1520,6 +1866,11 @@ npm run build:lib
 
 ```txt
 dist/index.js
+dist/components.js
+dist/composables.js
+dist/utils.js
+dist/icons.js
+dist/plugins.js
 dist/index.d.ts
 dist/plugin.d.ts
 dist/styles.css
@@ -1576,6 +1927,7 @@ npm run ci:validate
 
 ```txt
 lint
+typecheck (vue-tsc)
 unit tests
 npm package dry-run
 ```
@@ -1646,6 +1998,7 @@ npm publish
 
 ```bash
 npm run lint
+npm run typecheck
 npm run test:unit
 npm run build:lib
 npm run pack:dry

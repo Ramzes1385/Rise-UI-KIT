@@ -1,30 +1,20 @@
 /**
- * Visual regression тесты для BaseFileUpload.
- * Скриншоты всех состояний через Playwright + Storybook.
+ * Visual regression BaseFileUpload: ключевые stories в светлой и тёмной теме.
+ * В stories со списком play дожидается статуса «Загружено» (прогресс имитируется, FU-2) — снимок конечный.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basefileupload'
-const STORIES = [
-	'default',
-	'multiple',
-	'images-only',
-	'disabled',
-	'without-label',
-	'with-max-size',
-	'documents-only',
-	'hover-state',
-	'active-state',
-	'focus-state',
-	'interactive-states',
-	'dark-theme',
-]
+const STORIES = ['variants', 'custom-color', 'with-error', 'disabled', 'multiple'] as const
 
-for (const story of STORIES) {
-	test(`BaseFileUpload — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-file-upload--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseFileUpload · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basefileupload--${story}`, { theme, height: 500 })
+				await expectStoryScreenshot(page, `base-file-upload-${story}-${theme}.png`)
+			})
+		}
 	})
 }

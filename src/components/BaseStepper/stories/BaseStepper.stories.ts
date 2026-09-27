@@ -1,552 +1,321 @@
-﻿/**
- * Stories для компонента BaseStepper.
- * Демонстрирует все ориентации, формы, варианты, слоты и состояния.
+/**
+ * BaseStepper — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (формы, ориентация, размеры, цвет) →
+ * состояния (отключённый шаг, длинные подписи) → содержимое (иконки, слоты) → сценарии (пошаговая форма) → клавиатура.
  */
 
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
 import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../model/BaseStepper.types'
 import BaseStepper from '../ui/BaseStepper.vue'
 import type { BaseStepperStep } from '../model/BaseStepper.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const ITEMS: BaseStepperStep[] = [
-	{ label: 'Данные', description: 'Личная информация' },
-	{ label: 'Адрес', description: 'Адрес доставки' },
-	{ label: 'Оплата', description: 'Способ оплаты' },
-	{ label: 'Подтверждение' },
+const STEPS: BaseStepperStep[] = [
+	{ label: 'Корзина', description: 'Проверьте товары' },
+	{ label: 'Доставка', description: 'Адрес и время' },
+	{ label: 'Оплата', description: 'Карта или счёт' },
+	{ label: 'Подтверждение', description: 'Итог заказа' },
 ]
 
-const SIMPLE_ITEMS: BaseStepperStep[] = [{ label: 'Шаг 1' }, { label: 'Шаг 2' }, { label: 'Шаг 3' }]
+const DISABLED_STEPS: BaseStepperStep[] = [STEPS[0], STEPS[1], { ...STEPS[2], isDisabled: true }, STEPS[3]]
 
-const MANY_ITEMS: BaseStepperStep[] = [
-	{ label: 'Корзина', description: 'Выбор товаров' },
-	{ label: 'Данные', description: 'Контактная информация' },
-	{ label: 'Доставка', description: 'Способ доставки' },
-	{ label: 'Оплата', description: 'Способ оплаты' },
-	{ label: 'Проверка', description: 'Проверка заказа' },
-	{ label: 'Готово', description: 'Заказ оформлен' },
+const ICON_STEPS: BaseStepperStep[] = [
+	{ label: 'Документы', icon: 'file' },
+	{ label: 'Проверка', icon: 'search' },
+	{ label: 'Отправка', icon: 'send' },
 ]
 
-const DISABLED_ITEMS: BaseStepperStep[] = [{ label: 'Шаг 1' }, { label: 'Шаг 2', isDisabled: true }, { label: 'Шаг 3' }]
+const LONG_STEPS: BaseStepperStep[] = [
+	{ label: 'Заполнение анкеты участника программы', description: 'Контактные данные, опыт работы и образование' },
+	{ label: 'Загрузка подтверждающих документов', description: 'Скан паспорта, диплом и сертификаты о повышении квалификации' },
+	{ label: 'Собеседование с комиссией', description: 'Онлайн, около 30 минут' },
+]
 
-const meta: Meta<typeof BaseStepper> = {
-	title: 'UI/BaseStepper',
+/** Ключи args, которые витрины задают сами (у каждого экземпляра свой шаг). */
+const MODEL_KEYS = ['modelValue', 'onUpdate:modelValue']
+const SLOT_KEYS = ['item', 'header', 'footer']
+
+const meta = {
+	title: 'Navigation/BaseStepper',
 	component: BaseStepper,
-
-	argTypes: buildArgTypes({
-		props: {
-			orientation: {
-				control: 'inline-radio',
-				options: STEPPER_ORIENTATIONS,
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Степпер показывает прогресс многошагового процесса: оформление заказа, регистрация, мастер настройки.',
+					'',
+					'- `v-model` — номер текущего шага (с 1). Пройденные шаги отмечены галочкой, текущий — кольцом,',
+					'  линия между шагами заполняется до текущего.',
+					'- Клик по шагу, Enter или Space эмитят `update:modelValue` и `change`; отключённый шаг (`isDisabled`) недоступен.',
+					'  Шаг — кнопка, текущий помечен `aria-current="step"`.',
+					'- Ориентация `horizontal` / `vertical`, формы индикатора `circle`, `square`, `diamond`, `empty`,',
+					'  вариант `animated` плавно заполняет линию.',
+				].join('\n'),
 			},
-			shape: {
-				control: 'inline-radio',
-				options: STEPPER_SHAPES,
-			},
-			variant: {
-				control: 'radio',
-				options: STEPPER_VARIANTS,
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			color: {
-				control: 'object',
-				description: 'Объект CustomColor: bg (фоновый цвет), text (цвет текста) и их состояния hover/active/focus',
-			},
-			modelValue: { table: { disable: true } },
-			items: {
-				control: 'object',
-				description: 'Массив шагов BaseStepperStep[]',
-			},
-			'onUpdate:modelValue': { table: { disable: true } },
-			onChange: { table: { disable: true } },
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: STEPPER_VARIANTS }),
+		modelValue: { control: { type: 'number', min: 1 }, table: propGroup(ARG_GROUP.content) },
+		items: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		orientation: { control: 'inline-radio', options: STEPPER_ORIENTATIONS, table: propGroup(ARG_GROUP.appearance) },
+		shape: { control: 'inline-radio', options: STEPPER_SHAPES, table: propGroup(ARG_GROUP.appearance) },
+		item: { control: false },
+		header: { control: false },
+		footer: { control: false },
+	},
 	args: {
-		items: ITEMS,
+		modelValue: 2,
+		items: STEPS,
 		orientation: 'horizontal',
 		shape: 'circle',
 		variant: 'default',
 		sizeScale: 100,
+		'onUpdate:modelValue': fn(),
+		onChange: fn(),
 	},
-}
+	// Текущий шаг хранится в args: клик по шагу меняет Controls, а изменение в Controls — степпер.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseStepper },
+			setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), onUpdate }),
+			template: '<BaseStepper v-bind="props" @update:model-value="onUpdate" />',
+		}
+	},
+} satisfies Meta<typeof BaseStepper>
 
 export default meta
-type Story = StoryObj<typeof BaseStepper>
-/** Базовый горизонтальный степпер */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: клик по шагу делает его текущим — значение синхронизировано с Controls. */
 export const Default: Story = {
-	parameters: {
-		docs: {
-			source: { code: '<BaseStepper v-model="step" :items="items" />' },
-		},
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	args: {
-		onChange: fn(),
-	},
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка степпера по Tab', async () => {
-			await userEvent.tab()
-		})
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-stepper' })
-		})
+	play: async ({ canvas, userEvent, args }) => {
+		await expect(canvas.getByRole('button', { name: /Доставка/ })).toHaveAttribute('aria-current', 'step')
+		await userEvent.click(canvas.getByRole('button', { name: /Оплата/ }))
+		await expect(args.onChange).toHaveBeenCalledWith(3)
+		await waitFor(() => expect(canvas.getByRole('button', { name: /Оплата/ })).toHaveAttribute('aria-current', 'step'))
 	},
 }
-/** Кастомные CSS-классы */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'stp-root', header: 'stp-header', items: 'stp-items', step: 'stp-step', indicatorWrapper: 'stp-indicatorWrapper', indicator: 'stp-indicator', check: 'stp-check', content: 'stp-content', label: 'stp-label', description: 'stp-description', footer: 'stp-footer' },
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.stp-root')).toBeTruthy()
-	},
-}
-/** Все варианты отображения */
-export const Variants: Story = {
-	parameters: {
-		docs: {
-			source: `<BaseStepper v-for="v in ['default', 'animated']" :key="v" :variant="v" />`,
-		},
-	},
-	render: () => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			const items = ITEMS
-			const variants = STEPPER_VARIANTS
-			return { step, items, variants }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:32px;">
-				<div v-for="v in variants" :key="v">
-					<span style="font-size:12px;color:var(--color-text-muted);">{{ v }}</span>
-					<BaseStepper v-model="step" :items="items" :variant="v" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('default')).toBeInTheDocument()
-		expect(canvas.getByText('animated')).toBeInTheDocument()
-	},
-}
-/** Все формы индикатора */
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Формы индикатора: `circle` (по умолчанию), `square`, `diamond` и `empty` — без индикатора, только линия прогресса. */
 export const Shapes: Story = {
+	argTypes: { shape: { control: false } },
 	parameters: {
-		docs: {
-			source: `<BaseStepper v-for="s in ['circle', 'square', 'diamond', 'empty']" :key="s" :shape="s" />`,
-		},
-	},
-	render: () => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			const items = ITEMS
-			const shapes = STEPPER_SHAPES
-			return { step, items, shapes }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:32px;">
-				<div v-for="s in shapes" :key="s">
-					<span style="font-size:12px;color:var(--color-text-muted);">{{ s }}</span>
-					<BaseStepper v-model="step" :items="items" :shape="s" />
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		// Проверяем что форма empty не показывает индикатор
-		const steppers = canvasElement.querySelectorAll('.base-stepper')
-		const emptyStepper = steppers[3]
-		expect(emptyStepper?.classList.contains('base-stepper--empty')).toBe(true)
-	},
-}
-/** Масштабирование sizeScale */
-export const SizeScale: Story = {
-	parameters: {
-		docs: {
-			source: `<BaseStepper v-for="scale in [75, 100, 150]" :key="scale" :size-scale="scale" />`,
-		},
+		controls: { include: ['orientation', 'sizeScale', 'variant'] },
+		docs: { source: { code: STEPPER_SHAPES.map(shape => `<BaseStepper v-model="step" :items="items" shape="${shape}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			return { args, step }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...MODEL_KEYS, ...SLOT_KEYS, 'shape']),
+			shapes: STEPPER_SHAPES,
+			steps: ref<Record<string, number>>(Object.fromEntries(STEPPER_SHAPES.map(shape => [shape, 3]))),
+		}),
 		template: `
-			<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
-				<div v-for="scale in [75, 100, 150]" :key="scale">
-					<span style="font-size:13px;color:var(--color-text-muted);">{{ scale }}%</span>
-					<BaseStepper v-model="step" v-bind="args" :size-scale="scale" />
+			<div class="story-stack">
+				<div v-for="shape in shapes" :key="shape" class="story-stack">
+					<span class="story-label">{{ shape }}</span>
+					<BaseStepper v-bind="props" v-model="steps[shape]" :shape="shape" />
 				</div>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const steppers = canvasElement.querySelectorAll('.base-stepper')
-		expect(steppers).toHaveLength(3)
-	},
 }
-/** Вертикальный степпер */
+
+/** Вертикальная ориентация: подписи справа от индикаторов, линия — отрезками между шагами. */
 export const Vertical: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper v-model="step" :items="items" orientation="vertical" />',
-		},
-	},
-	args: {
-		orientation: 'vertical',
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const stepper = canvasElement.querySelector('.base-stepper')
-		expect(stepper?.classList.contains('base-stepper--vertical')).toBe(true)
+	args: { orientation: 'vertical', modelValue: 3 },
+	play: async ({ canvas }) => {
+		const [first, second] = canvas.getAllByRole('button')
+		await expect(second.getBoundingClientRect().top).toBeGreaterThan(first.getBoundingClientRect().bottom - 1)
 	},
 }
-/** Все шаги пройдены */
-export const AllCompleted: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper v-model="step" :items="items" />',
-		},
-	},
-	render: () => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(4)
-			const items = ITEMS
-			return { step, items }
-		},
-		template: '<BaseStepper v-model="step" :items="items" />',
-	}),
-	play: async ({ canvasElement }) => {
-		// Все шаги пройдены — проверяем наличие иконок check
-		const checks = canvasElement.querySelectorAll('.base-stepper__check')
-		expect(checks.length).toBeGreaterThanOrEqual(3)
-	},
-}
-/** Вариант animated — анимация заполнения линии */
-export const Animated: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper variant="animated" />',
-		},
-	},
-	args: {
-		variant: 'animated',
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const stepper = canvasElement.querySelector('.base-stepper')
-		expect(stepper?.classList.contains('base-stepper--animated')).toBe(true)
-	},
-}
-/** Форма empty — без индикатора */
-export const EmptyShape: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper shape="empty" />',
-		},
-	},
-	args: {
-		shape: 'empty',
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		// Форма empty — нет индикатора
-		const indicators = canvasElement.querySelectorAll('.base-stepper__indicator')
-		expect(indicators).toHaveLength(0)
-	},
-}
-/** Много шагов */
-export const ManySteps: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper :items="manyItems" />',
-		},
-	},
-	args: {
-		items: MANY_ITEMS,
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(3)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Корзина')).toBeInTheDocument()
-		expect(canvas.getByText('Готово')).toBeInTheDocument()
-	},
-}
-/** Простые шаги без описания */
-export const SimpleSteps: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper :items="simpleItems" />',
-		},
-	},
-	args: {
-		items: SIMPLE_ITEMS,
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Шаг 1')).toBeInTheDocument()
-		expect(canvas.getByText('Шаг 3')).toBeInTheDocument()
-	},
-}
-/** Отключённый шаг — покрывает handleStepClick (стр. 128-131) и шаблонный @click (стр. 23) */
-export const DisabledStep: Story = {
-	parameters: {
-		docs: {
-			source: '<BaseStepper :items="disabledItems" />',
-		},
-	},
-	args: {
-		items: DISABLED_ITEMS,
-		onChange: fn(),
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ args, canvasElement }) => {
-		const steps = canvasElement.querySelectorAll<HTMLElement>('.base-stepper__step')
-		expect(steps.length).toBe(3)
 
-		await userEvent.click(steps[2])
-		expect(args.onChange).toHaveBeenCalledWith(3)
-
-		const disabledCallsBefore = (args.onChange as ReturnType<typeof fn>).mock.calls.length
-		await userEvent.click(steps[1])
-		const disabledCallsAfter = (args.onChange as ReturnType<typeof fn>).mock.calls.length
-		expect(disabledCallsAfter).toBe(disabledCallsBefore)
-	},
-}
-/** Слоты header и footer */
-export const WithSlots: Story = {
+/** Размеры через `sizeScale`: индикатор 21–35px, подписи и линия масштабируются пропорционально. */
+export const Sizes: Story = {
 	parameters: {
-		docs: {
-			source: `<BaseStepper v-model="step" :items="items">
-  <template #header>Оформление заказа</template>
-  <template #footer>Шаг {{ step }} из {{ items.length }}</template>
-</BaseStepper>`,
-		},
+		controls: { include: ['shape', 'orientation'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseStepper v-model="step" :items="items" :size-scale="${p.sizeScale}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			const items = ITEMS
-			return { args, step, items }
-		},
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...MODEL_KEYS, ...SLOT_KEYS, 'sizeScale']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			steps: ref<Record<string, number>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 2]))),
+		}),
 		template: `
-			<BaseStepper v-model="step" v-bind="args">
-				<template #header>
-					<span style="font-size:18px;font-weight:700;">Оформление заказа</span>
-				</template>
-				<template #footer>
-					<span style="font-size:13px;color:var(--color-text-muted);">Шаг {{ step }} из {{ items.length }}</span>
-				</template>
-			</BaseStepper>
+			<div class="story-stack">
+				<div v-for="preset in presets" :key="preset.name" class="story-stack">
+					<span class="story-label">{{ sizeLabel(preset) }}</span>
+					<BaseStepper v-bind="props" v-model="steps[preset.name]" :size-scale="preset.sizeScale" />
+				</div>
+			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Оформление заказа')).toBeInTheDocument()
-		expect(canvas.getByText('Шаг 2 из 4')).toBeInTheDocument()
+}
+
+/**
+ * Кастомный цвет через `color`: `bg.base` (и `bg.hover`) — пройденные шаги, кольцо текущего и линия прогресса,
+ * `text.base` — галочка на заливке.
+ */
+export const CustomColor: Story = {
+	args: {
+		modelValue: 3,
+		color: {
+			bg: { base: '#2563eb', hover: '#1d4ed8' },
+			text: { base: '#ffffff' },
+		},
+	},
+	play: async ({ canvas }) => {
+		const completed = canvas.getByRole('button', { name: /Корзина/ }).querySelector('.base-stepper__indicator') as HTMLElement
+		await expect(getComputedStyle(completed).backgroundColor).toBe('rgb(37, 99, 235)')
+		await expect(getComputedStyle(completed).color).toBe('rgb(255, 255, 255)')
 	},
 }
-/** Кастомный слот item */
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Отключённый шаг приглушён, помечен `aria-disabled`, выведен из порядка Tab и не выбирается. */
+export const Disabled: Story = {
+	args: { items: DISABLED_STEPS },
+	play: async ({ canvas }) => {
+		const disabled = canvas.getByRole('button', { name: /Оплата/ })
+		await expect(disabled).toHaveAttribute('aria-disabled', 'true')
+		await expect(disabled).toHaveAttribute('tabindex', '-1')
+	},
+}
+
+/** Длинные подписи и описания переносятся по словам в пределах своего шага. */
+export const LongContent: Story = {
+	args: { items: LONG_STEPS, modelValue: 2 },
+	play: async ({ canvas }) => {
+		for (const step of canvas.getAllByRole('button')) {
+			await expect(step.scrollWidth).toBeLessThanOrEqual(step.clientWidth)
+		}
+	},
+}
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Иконка шага (`icon`) заменяет номер в индикаторе; у пройденного шага — галочка. */
+export const WithIcons: Story = {
+	args: { items: ICON_STEPS, modelValue: 2 },
+}
+
+/**
+ * Слот `item` заменяет разметку шага целиком (параметры: `item`, `index`, `stepNumber`, `isActive`, `isCompleted`,
+ * `isDisabled`); клик по шагу по-прежнему переключает его.
+ */
 export const CustomItem: Story = {
 	parameters: {
 		docs: {
-			source: `<BaseStepper v-model="step" :items="items" shape="empty">
-  <template #item="{ item, stepNumber, isActive, isCompleted }">
-    <div class="base-stepper__content">
-      <span class="base-stepper__label">
-        {{ isCompleted ? '✓ ' : stepNumber + '. ' }}{{ item.label }}
-      </span>
-    </div>
-  </template>
-</BaseStepper>`,
+			source: {
+				code: [
+					'<BaseStepper v-model="step" :items="items">',
+					'  <template #item="{ item, stepNumber, isActive }">',
+					'    <span :class="{ active: isActive }">{{ stepNumber }}. {{ item.label }}</span>',
+					'  </template>',
+					'</BaseStepper>',
+				].join('\n'),
+			},
 		},
 	},
-	args: {
-		shape: 'empty',
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			const items = ITEMS
-			return { args, step, items }
-		},
-		template: `
-			<BaseStepper v-model="step" v-bind="args">
-				<template #item="{ item, stepNumber, isActive, isCompleted }">
-					<div class="base-stepper__content">
-						<span class="base-stepper__label"
-							:style="{ fontWeight: isActive ? 700 : 400, color: isActive || isCompleted ? 'var(--color-accent)' : 'var(--color-text-muted)' }">
-							{{ isCompleted ? '✓ ' : stepNumber + '. ' }}{{ item.label }}
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseStepper },
+			setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), onUpdate }),
+			template: `
+				<BaseStepper v-bind="props" @update:model-value="onUpdate">
+					<template #item="{ item, stepNumber, isActive }">
+						<span class="story-label" :style="{ color: isActive ? 'var(--rise-text-highlighted)' : undefined }">
+							{{ stepNumber }}. {{ item.label }}
 						</span>
-					</div>
-				</template>
-			</BaseStepper>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		// Кастомный слот item заменяет дефолтный контент — .base-stepper__label из слота
-		const labels = canvasElement.querySelectorAll('.base-stepper__label')
-		expect(labels.length).toBeGreaterThan(0)
-		// Проверяем что шаг 1 показан как completed (с ✓)
-		expect(labels[0].textContent).toContain('✓')
-		// Проверяем что шаг 2 показан как active (жирный)
-		expect(labels[1].textContent).toContain('Адрес')
+					</template>
+				</BaseStepper>
+			`,
+		}
+	},
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: '2. Доставка' })).toHaveAttribute('aria-current', 'step')
 	},
 }
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Пошаговая форма: слоты `header` и `footer`, кнопки «Назад» и «Далее» меняют `v-model`, вариант `animated`
+ * плавно заполняет линию.
+ */
+export const Wizard: Story = {
+	args: { variant: 'animated', modelValue: 1 },
 	parameters: {
 		docs: {
-			source: '<BaseStepper data-theme="dark" />',
+			source: {
+				code: [
+					'<BaseStepper v-model="step" :items="items" variant="animated">',
+					'  <template #header>Оформление заказа</template>',
+					'  <template #footer>',
+					'    <BaseButton variant="outline" :is-disabled="step === 1" @click="step--">Назад</BaseButton>',
+					'    <BaseButton :is-disabled="step === items.length" @click="step++">Далее</BaseButton>',
+					'  </template>',
+					'</BaseStepper>',
+				].join('\n'),
+			},
 		},
 	},
-	render: () => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(2)
-			const items = ITEMS
-			return { step, items }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:32px;">
-				<BaseStepper v-model="step" :items="items" orientation="horizontal" />
-				<BaseStepper v-model="step" :items="items" orientation="vertical" />
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const steppers = canvasElement.querySelectorAll('.base-stepper')
-		expect(steppers).toHaveLength(2)
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseStepper, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), onUpdate }),
+			template: `
+				<BaseStepper v-bind="props" @update:model-value="onUpdate">
+					<template #header><strong>Оформление заказа</strong></template>
+					<template #footer>
+						<div class="story-row">
+							<BaseButton variant="outline" :is-disabled="props.modelValue <= 1" @click="onUpdate(props.modelValue - 1)">Назад</BaseButton>
+							<BaseButton :is-disabled="props.modelValue >= props.items.length" @click="onUpdate(props.modelValue + 1)">Далее</BaseButton>
+						</div>
+					</template>
+				</BaseStepper>
+			`,
+		}
 	},
-}
-/** Один шаг — покрывает ветку count <= 1 в progressStyle */
-export const SingleStep: Story = {
-	args: {
-		items: [{ label: 'Единственный шаг' }],
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Единственный шаг')).toBeInTheDocument()
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Далее' }))
+		await waitFor(() => expect(canvas.getByRole('button', { name: /Доставка/ })).toHaveAttribute('aria-current', 'step'))
+		await expect(canvas.getByRole('button', { name: 'Назад' })).toBeEnabled()
 	},
 }
 
-// ── Длинные заголовки ──
+// ─── Доступность ───────────────────────────────────────────────────────────────
 
-const LONG_LABEL_ITEMS: BaseStepperStep[] = [
-	{
-		label: 'Заполнение развёрнутой анкеты персональных данных',
-		description: 'Внесите полную информацию о себе включая паспортные данные и адрес регистрации',
-	},
-	{
-		label: 'Выбор способа доставки и оплата транспортных расходов',
-		description: 'Определите предпочтительный вариант получения заказа',
-	},
-	{
-		label: 'Подтверждение и финальная проверка всех введённых данных',
-		description: 'Убедитесь в корректности указанной информации перед отправкой',
-	},
-]
-/** Степпер с длинными заголовками — проверка переполнения текста */
-export const LongContent: Story = {
-	args: {
-		items: LONG_LABEL_ITEMS,
-	},
-	render: args => ({
-		components: { BaseStepper },
-		setup() {
-			const step = ref(1)
-			return { args, step }
-		},
-		template: '<BaseStepper v-model="step" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Заполнение развёрнутой анкеты персональных данных')).toBeInTheDocument()
+/** Клавиатура: Tab переводит фокус между шагами (видно кольцо фокуса), Enter и Space делают шаг текущим. */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	args: { modelValue: 1 },
+	play: async ({ canvas, userEvent, args }) => {
+		const delivery = canvas.getByRole('button', { name: /Доставка/ })
+		await tabTo(delivery, userEvent)
+		await expect(getComputedStyle(delivery).outlineStyle).toBe('solid')
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onChange).toHaveBeenLastCalledWith(2)
+		await waitFor(() => expect(delivery).toHaveAttribute('aria-current', 'step'))
+
+		await userEvent.tab()
+		await userEvent.keyboard(' ')
+		await expect(args.onChange).toHaveBeenLastCalledWith(3)
 	},
 }

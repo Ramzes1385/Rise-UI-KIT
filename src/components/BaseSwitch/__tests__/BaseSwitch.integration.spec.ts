@@ -16,7 +16,7 @@ describe('BaseSwitch integration', () => {
 				props: { modelValue: false },
 			})
 
-			await user.click(screen.getByRole('checkbox'))
+			await user.click(screen.getByRole('switch'))
 
 			expect(emitted()).toHaveProperty('update:modelValue')
 		})
@@ -27,7 +27,7 @@ describe('BaseSwitch integration', () => {
 				props: { modelValue: false },
 			})
 
-			await user.click(screen.getByRole('checkbox'))
+			await user.click(screen.getByRole('switch'))
 
 			const events = emitted()['update:modelValue'] as boolean[][]
 			expect(events.at(-1)?.[0]).toBe(true)
@@ -39,7 +39,7 @@ describe('BaseSwitch integration', () => {
 				props: { modelValue: true },
 			})
 
-			await user.click(screen.getByRole('checkbox'))
+			await user.click(screen.getByRole('switch'))
 
 			const events = emitted()['update:modelValue'] as boolean[][]
 			expect(events.at(-1)?.[0]).toBe(false)
@@ -53,7 +53,7 @@ describe('BaseSwitch integration', () => {
 				props: { modelValue: false },
 			})
 
-			await user.click(screen.getByRole('checkbox'))
+			await user.click(screen.getByRole('switch'))
 
 			expect(emitted()).toHaveProperty('change')
 		})
@@ -77,7 +77,7 @@ describe('BaseSwitch integration', () => {
 				props: { modelValue: false },
 			})
 
-			screen.getByRole('checkbox').focus()
+			screen.getByRole('switch').focus()
 			await user.keyboard(' ')
 
 			expect(emitted()).toHaveProperty('update:modelValue')

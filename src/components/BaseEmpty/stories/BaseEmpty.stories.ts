@@ -1,190 +1,275 @@
 /**
- * Stories для компонента BaseEmpty.
- * Демонстрирует все варианты пустого состояния, интерактивные состояния, слоты и масштабирование.
+ * BaseEmpty — stories.
+ *
+ * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет) →
+ * содержимое (слоты icon, default, actions) → сценарии (пустой блок в карточке, поиск без результатов).
  */
 
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect } from 'storybook/test'
+import { computed, ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
-import { BaseText } from '@components/BaseText'
-import { buildArgTypes } from '@utils/storybookUtils'
+import { BaseCard } from '@components/BaseCard'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseInput } from '@components/BaseInput'
+import { EMPTY_VARIANTS } from '../model/BaseEmpty.types'
 import BaseEmpty from '../ui/BaseEmpty.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseEmpty> = {
-	title: 'UI/BaseEmpty',
+const PROJECTS = ['Ребрендинг', 'Мобильное приложение', 'Справочный центр', 'Интеграция с платёжным сервисом']
+
+const meta = {
+	title: 'Data/BaseEmpty',
 	component: BaseEmpty,
-
-	argTypes: buildArgTypes({
-		props: {
-			title: {
-				control: 'text',
-				description: 'Заголовок пустого состояния',
-			},
+	parameters: {
+		docs: {
 			description: {
-				control: 'text',
-				description: 'Текст описания',
+				component: [
+					'Пустое состояние: в списке ещё нет данных, поиск ничего не нашёл, раздел недоступен.',
+					'Объясняет, почему пусто, и предлагает следующий шаг.',
+					'',
+					'- `title` и `description` — что случилось и что делать; `icon` — иконка из спрайта (по умолчанию `inbox`).',
+					'- Слоты: `icon` — своя иллюстрация, по умолчанию — дополнительный текст, `actions` — кнопки.',
+					'- Варианты: `default` — пунктирная рамка, `soft` — мягкий фон, `ghost` — без рамки и отступов,',
+					'  для встраивания в карточку, таблицу или выпадающий список.',
+				].join('\n'),
 			},
-			icon: {
-				control: 'text',
-				description: 'Имя иконки по умолчанию',
-			},
-			variant: {
-				control: 'select',
-				options: ['default', 'ghost', 'soft'],
-				description: 'Вариант визуального оформления',
-			},
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%)',
-			},
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: EMPTY_VARIANTS }),
+		title: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		description: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		icon: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		default: { control: false },
+		actions: { control: false },
+	},
 	args: {
-		title: 'Нет данных',
-		description: 'Попробуйте изменить параметры фильтрации или обновить страницу.',
+		title: 'Задач пока нет',
+		description: 'Создайте первую задачу — она появится в этом списке.',
 		icon: 'inbox',
 		variant: 'default',
 		sizeScale: 100,
 	},
-}
-
-export default meta
-type Story = StoryObj<typeof BaseEmpty>
-/** Базовое пустое состояние */
-export const Default: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Нет данных')).toBeInTheDocument()
-		expect(canvas.getByText('Попробуйте изменить параметры фильтрации или обновить страницу.')).toBeInTheDocument()
-	},
-}
-/** Все варианты оформления */
-export const AllVariants: Story = {
 	render: args => ({
 		components: { BaseEmpty },
-		setup() {
-			const variants = ['default', 'ghost', 'soft'] as const
-			return { args, variants }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;">
-				<BaseEmpty
-					v-for="v in variants"
-					:key="v"
-					v-bind="args"
-					:variant="v"
-					:title="'Вариант ' + v"
-					:description="'Демонстрация пустого состояния в варианте ' + v"
-				/>
-			</div>
-		`,
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: '<div class="story-medium"><BaseEmpty v-bind="props" /></div>',
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Вариант default')).toBeInTheDocument()
-		expect(canvas.getByText('Вариант ghost')).toBeInTheDocument()
-		expect(canvas.getByText('Вариант soft')).toBeInTheDocument()
-	},
-}
-/** Использование слотов */
-export const WithSlots: Story = {
-	render: args => ({
-		components: { BaseEmpty, BaseButton },
-		setup() {
-			const handleAction = fn()
-			return { args, handleAction }
-		},
-		template: `
-			<BaseEmpty v-bind="args" title="Поиск не дал результатов">
-				<template #icon>
-					<div style="font-size: 48px; line-height: 1;">🔍</div>
-				</template>
-				<template #default>
-					Мы обыскали весь замок, но не нашли ничего похожего на <strong>"экскалибур"</strong>.
-				</template>
-				<template #actions>
-					<BaseButton @click="handleAction" :size-scale="90" variant="outline">
-						Сбросить фильтры
-					</BaseButton>
-				</template>
-			</BaseEmpty>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Поиск не дал результатов')).toBeInTheDocument()
-		expect(canvas.getByText('экскалибур', { exact: false })).toBeInTheDocument()
+} satisfies Meta<typeof BaseEmpty>
 
-		const button = canvas.getByText('Сбросить фильтры')
-		expect(button).toBeInTheDocument()
-		await userEvent.click(button)
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: меняйте props в панели Controls. Иконка декоративная и скрыта от скринридера. */
+export const Default: Story = {
+	play: async ({ canvas, canvasElement }) => {
+		const title = canvas.getByRole('heading', { level: 3, name: 'Задач пока нет' })
+		await expect(getComputedStyle(title).fontWeight).toBe('500')
+		await expect(canvasElement.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
 	},
 }
-/** Масштабирование sizeScale */
-export const SizeScale: Story = {
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Три варианта: `default` — пунктирная рамка, `soft` — мягкий фон, `ghost` — без рамки и отступов. */
+export const Variants: Story = {
+	parameters: {
+		controls: { include: ['sizeScale', 'icon'] },
+		docs: { source: { code: ['default', 'soft', 'ghost'].map(variant => `<BaseEmpty variant="${variant}" title="${variant}" description="…" />`).join('\n') } },
+	},
 	render: args => ({
-		components: { BaseEmpty, BaseText },
-		setup() {
-			const scales = [75, 100, 150]
-			return { args, scales }
-		},
+		components: { BaseEmpty },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['title']), variants: ['default', 'soft', 'ghost'] }),
 		template: `
-			<div style="display:flex;flex-direction:column;gap:32px;">
-				<div v-for="s in scales" :key="s">
-					<BaseText tag="p" size="xs" style="margin-bottom:8px;color:var(--color-text-muted);">Масштаб {{ s }}%</BaseText>
-					<BaseEmpty v-bind="args" :size-scale="s" :title="'Масштаб ' + s + '%'" />
-				</div>
+			<div class="story-grid" style="--story-grid-min: 240px; align-items: start;">
+				<BaseEmpty v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :title="variant" />
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const empties = canvasElement.querySelectorAll('.base-empty')
-		expect(empties).toHaveLength(3)
+}
+
+/** Размеры через `sizeScale`: отступы, иконка и текст масштабируются вместе. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant', 'icon'] },
+		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseEmpty :size-scale="${preset.sizeScale}" title="${preset.name}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseEmpty },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['title', 'description']), presets: SIZE_PRESETS, sizeLabel }),
+		template: `
+			<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
+				<BaseEmpty
+					v-for="preset in presets"
+					:key="preset.name"
+					v-bind="props"
+					:size-scale="preset.sizeScale"
+					:title="sizeLabel(preset)"
+					description="Создайте первую задачу." />
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const title = canvas.getByRole('heading', { name: 'xl · 125' })
+		await expect(getComputedStyle(title).fontSize).toBe('17.5px')
+		await expect(getComputedStyle(title.closest('.base-empty') as HTMLElement).padding).toBe('40px 30px')
 	},
 }
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template:
-				'<div data-theme="dark" style="padding: 24px; background: var(--color-bg); border-radius: 8px;"><story /></div>',
-		}),
-	],
+
+/** Кастомный цвет через `color`: фон и текст. Токены роли дают акцентный блок, который меняется вместе с темой. */
+export const CustomColor: Story = {
 	args: {
-		title: 'Корзина пуста',
-		description: 'Добавьте товары в корзину, чтобы продолжить оформление заказа.',
-		icon: 'shopping-cart',
+		title: 'Скоро здесь появятся отчёты',
+		description: 'Первый отчёт соберётся в понедельник, 19 мая.',
+		icon: 'calendar',
+		variant: 'soft',
+		color: { bg: { base: 'var(--rise-primary-soft)' }, text: { base: 'var(--rise-primary-text)' } },
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Корзина пуста')).toBeInTheDocument()
+	play: async ({ canvas }) => {
+		const root = canvas.getByRole('heading', { name: 'Скоро здесь появятся отчёты' }).closest('.base-empty') as HTMLElement
+		await expect(root.style.getPropertyValue('--custom-bg')).toBe('var(--rise-primary-soft)')
+		await expect(getComputedStyle(root).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
 	},
 }
-/** Без указания icon — покрывает ложную ветку `props.icon || 'inbox'` (используется fallback) */
-export const DefaultIcon: Story = {
-	args: {
-		title: 'Без иконки',
-		description: 'Используется иконка по умолчанию',
-		icon: '',
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/**
+ * Слоты: `icon` — своя иллюстрация вместо иконки, по умолчанию — дополнительный текст под описанием,
+ * `actions` — кнопки следующего шага.
+ */
+export const Slots: Story = {
+	args: { title: 'Нет загруженных файлов', description: 'Перетащите файлы сюда или выберите их на компьютере.' },
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseEmpty title="Нет загруженных файлов" description="…">',
+					'  <template #icon><img :src="illustration" alt="" /></template>',
+					'  Поддерживаются PDF, DOCX и XLSX до 20 МБ.',
+					'  <template #actions>',
+					'    <BaseButton>Выбрать файлы</BaseButton>',
+					'    <BaseButton variant="outline">Создать папку</BaseButton>',
+					'  </template>',
+					'</BaseEmpty>',
+				].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Без иконки')).toBeInTheDocument()
-		const iconWrapper = canvasElement.querySelector('.base-empty__icon-wrapper')
-		expect(iconWrapper).toBeInTheDocument()
+	render: args => ({
+		components: { BaseEmpty, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args), illustration: placeholderImage({ width: 160, height: 100, hue: 200 }) }),
+		template: `
+			<div class="story-medium">
+				<BaseEmpty v-bind="props">
+					<template #icon>
+						<img :src="illustration" alt="" width="160" height="100" style="border-radius: var(--rise-radius-md);" />
+					</template>
+					Поддерживаются PDF, DOCX и XLSX до 20 МБ.
+					<template #actions>
+						<BaseButton><template #left><BaseIcon name="attach" /></template>Выбрать файлы</BaseButton>
+						<BaseButton variant="outline">Создать папку</BaseButton>
+					</template>
+				</BaseEmpty>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText('Поддерживаются PDF, DOCX и XLSX до 20 МБ.')).toBeVisible()
+		const [primary, secondary] = canvas.getAllByRole('button')
+		await expect(primary).toHaveAccessibleName('Выбрать файлы')
+		await expect(secondary).toHaveAccessibleName('Создать папку')
 	},
 }
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'emp-root', iconWrapper: 'emp-iconWrapper', icon: 'emp-icon', content: 'emp-content', title: 'emp-title', description: 'emp-description', body: 'emp-body', actions: 'emp-actions' },
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/** Внутри карточки — вариант `ghost`: без своей рамки и отступов, отступы даёт карточка. */
+export const InCard: Story = {
+	parameters: {
+		controls: { include: ['sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseCard title="Комментарии">',
+					'  <BaseEmpty variant="ghost" icon="smile" title="Комментариев пока нет" description="…" />',
+					'</BaseCard>',
+				].join('\n'),
+			},
+		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.emp-root')).toBeTruthy()
+	render: args => ({
+		components: { BaseEmpty, BaseCard },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['title', 'description', 'icon', 'variant']) }),
+		template: `
+			<div class="story-medium">
+				<BaseCard title="Комментарии" subtitle="Задача «Макет главной страницы»">
+					<BaseEmpty
+						v-bind="props"
+						variant="ghost"
+						icon="smile"
+						title="Комментариев пока нет"
+						description="Напишите первым — участники получат уведомление." />
+				</BaseCard>
+			</div>
+		`,
+	}),
+	play: async ({ canvas }) => {
+		const empty = canvas.getByRole('heading', { name: 'Комментариев пока нет' }).closest('.base-empty') as HTMLElement
+		await expect(getComputedStyle(empty).padding).toBe('0px')
+		await expect(getComputedStyle(empty).borderTopColor).toBe('rgba(0, 0, 0, 0)')
+	},
+}
+
+/** Поиск без результатов: пустое состояние объясняет причину и предлагает сбросить запрос. */
+export const NoResults: Story = {
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseEmpty v-if="!results.length" icon="search" title="Ничего не найдено" :description="`По запросу «${query}» проектов нет.`">',
+					'  <template #actions><BaseButton variant="outline" @click="query = \'\'">Сбросить поиск</BaseButton></template>',
+					'</BaseEmpty>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseEmpty, BaseButton, BaseInput },
+		setup: () => {
+			const query = ref('Бюджет')
+			const results = computed(() => PROJECTS.filter(project => project.toLowerCase().includes(query.value.trim().toLowerCase())))
+			return { props: useArgsWithoutSlots(args, ['title', 'description', 'icon']), query, results }
+		},
+		template: `
+			<div class="story-stack story-medium">
+				<BaseInput v-model="query" label="Поиск проектов" placeholder="Название проекта" />
+				<ul v-if="results.length" aria-label="Проекты" style="margin: 0; padding-left: 20px;">
+					<li v-for="project in results" :key="project">{{ project }}</li>
+				</ul>
+				<BaseEmpty
+					v-else
+					v-bind="props"
+					icon="search"
+					title="Ничего не найдено"
+					:description="'По запросу «' + query + '» проектов нет. Проверьте написание или сбросьте поиск.'">
+					<template #actions>
+						<BaseButton variant="outline" @click="query = ''">Сбросить поиск</BaseButton>
+					</template>
+				</BaseEmpty>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		await expect(canvas.getByRole('heading', { name: 'Ничего не найдено' })).toBeVisible()
+		await userEvent.click(canvas.getByRole('button', { name: 'Сбросить поиск' }))
+		await expect(canvas.getByRole('list', { name: 'Проекты' }).children).toHaveLength(PROJECTS.length)
+		await userEvent.type(canvas.getByLabelText('Поиск проектов'), 'моб')
+		await expect(canvas.getByRole('list', { name: 'Проекты' })).toHaveTextContent('Мобильное приложение')
 	},
 }

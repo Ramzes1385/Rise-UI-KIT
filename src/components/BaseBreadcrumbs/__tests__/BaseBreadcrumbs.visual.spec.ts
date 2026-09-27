@@ -1,44 +1,19 @@
 /**
- * Visual Regression тесты для BaseBreadcrumbs.
- * Снимают baseline-скриншоты ключевых состояний через Storybook.
+ * Visual regression BaseBreadcrumbs: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-/** Базовый путь к stories BaseBreadcrumbs в Storybook */
-const STORY_PATH = '/iframe.html?id=ui-basebreadcrumbs'
+const STORIES = ['variants', 'sizes', 'separators', 'with-icons', 'long-content'] as const
 
-test.describe('BaseBreadcrumbs visual regression', () => {
-	test('Default: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--default`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-breadcrumbs-default.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseBreadcrumbs · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basebreadcrumbs--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-breadcrumbs-${story}-${theme}.png`)
+			})
+		}
 	})
-
-	test('Variants: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--variants`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-breadcrumbs-variants.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('DarkTheme: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--dark-theme`)
-		await page.setViewportSize({ width: 800, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-breadcrumbs-dark.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-})
+}

@@ -6,7 +6,7 @@
 import { expect, test } from '@playwright/test'
 
 test('форма: заполняет поля и отправляет', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseform--simple-form-with-validation')
+	await page.goto('/iframe.html?id=form-baseform--validation')
 	await page.waitForSelector('.base-form', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -20,7 +20,7 @@ test('форма: заполняет поля и отправляет', async ({
 })
 
 test('форма: показывает ошибку валидации при пустом обязательном поле', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseform--simple-form-with-validation')
+	await page.goto('/iframe.html?id=form-baseform--validation')
 	await page.waitForSelector('.base-form', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -32,7 +32,7 @@ test('форма: показывает ошибку валидации при п
 })
 
 test('форма: отключённая форма не отправляется', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseform--disabled')
+	await page.goto('/iframe.html?id=form-baseform--disabled')
 	await page.waitForSelector('.base-form', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 

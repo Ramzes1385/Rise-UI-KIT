@@ -1,29 +1,54 @@
 /** Composable: управление колонками таблицы */
-import { computed, ref, watch } from 'vue'
+import { computed, ref, toRaw, watch } from 'vue'
 import { TABLE } from '@constants'
 import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
 import type { UseTableColumnsOptions, UseTableColumnsReturn } from './useTableColumns.types'
 import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 
+/** Значения полей колонки, которые таблица меняет сама (скрытие в настройках, ресайз) */
+type ColumnPropState = Pick<TableColumn, 'isHidden' | 'width'>
+
+/** Снять значения isHidden/width, пришедшие из props, по ключу колонки */
+function readPropState(columns: TableColumn[]): Map<string, ColumnPropState> {
+	return new Map(columns.map(column => [column.key, { isHidden: column.isHidden, width: column.width }]))
+}
+
 /** Composable для управления колонками таблицы — видимость, ширины, стили, skeleton-строки. */
 function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn {
 	const { columns, rows, isResizable, hasRowNumber, isSelectable, pageSize, emit } = options
 
-	const localColumns = ref<TableColumn[]>([...columns.value])
+	// Внутреннее состояние хранится в копиях: скрытие и ресайз не должны мутировать объекты из props
+	// (общие конфиги колонок, модульные константы), а toolbar и таблица читают один источник
+	const localColumns = ref<TableColumn[]>(columns.value.map(column => ({ ...column })))
+
+	/** isHidden/width из последних props: отличает «родитель изменил значение» от «пересоздал те же колонки» */
+	let lastPropState = readPropState(columns.value)
 
 	watch(
 		() => columns.value,
 		newCols => {
+			const localByKey = new Map(localColumns.value.map(column => [column.key, column]))
 			localColumns.value = newCols.map(column => {
-				const existing = localColumns.value.find(c => c.key === column.key)
-				if (existing) {
-					return { ...column, width: existing.width, isHidden: existing.isHidden }
+				const local = localByKey.get(column.key)
+				const previous = lastPropState.get(column.key)
+				if (!local || !previous) return { ...column }
+				// Значение из props побеждает, только если родитель его действительно изменил;
+				// иначе сохраняем выбор пользователя (скрытие/ширину) при пересоздании колонок
+				return {
+					...column,
+					isHidden: previous.isHidden === column.isHidden ? local.isHidden : column.isHidden,
+					width: previous.width === column.width ? local.width : column.width,
 				}
-				return column
 			})
+			lastPropState = readPropState(newCols)
 		},
 		{ deep: true },
 	)
+
+	/** Копия текущих колонок для эмитов: внешний код не должен получать внутренние объекты */
+	function snapshotColumns(): TableColumn[] {
+		return localColumns.value.map(column => ({ ...toRaw(column) }))
+	}
 
 	const visibleColumns = computed((): TableColumn[] => {
 		return localColumns.value.filter(column => !column.isHidden)
@@ -66,7 +91,7 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 		/* istanbul ignore else -- Защитная ветка при рассинхронизации внешних колонок. */
 		if (index !== -1) {
 			localColumns.value[index].isHidden = !localColumns.value[index].isHidden
-			emit('columns-change', localColumns.value)
+			emit('columns-change', snapshotColumns())
 		}
 	}
 
@@ -89,6 +114,7 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 		getColumnStyle,
 		toggleColumnVisibility,
 		formatCellValue,
+		snapshotColumns,
 	}
 }
 

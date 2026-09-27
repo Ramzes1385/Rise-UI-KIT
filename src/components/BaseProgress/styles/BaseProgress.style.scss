@@ -1,122 +1,165 @@
+// BaseProgress. Линия: трек --rise-bg-accented высотой 8px, заливка --rise-primary, радиус full; подпись с процентом
+// (14/20 --rise-text-muted) стоит над полосой и движется вместе с концом заливки. Круг 64px — те же токены трека и заливки.
+// Цвет заливки задаёт color.bg (для совместимости принимается и color.text). Бегущая полоса неопределённого режима и
+// анимации striped/pulse/glow — только без prefers-reduced-motion; иначе неопределённый прогресс — статичная бледная заливка.
+
+// Полосы striped — цвет текста на заливке роли, 20%: светлые на светлой теме, тёмные на тёмной.
+$progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
+
 .base-progress {
+	// Цвет заливки читают полоса, кольцо и свечение: color.bg, запасной — color.text, иначе основной цвет.
+	@include custom-bg('--progress-color', var(--custom-text, var(--rise-primary)));
+
 	position: relative;
 	display: flex;
-	align-items: center;
 
-	@include custom-text(color, var(--color-text));
+	// ─── Линия ───────────────────────────────────────────────────────────────────
 
-	/* ===== Линейный ===== */
 	&--line {
 		flex-direction: column;
+		gap: sz(8px);
 		width: 100%;
 	}
 
-	&__tooltip-trigger {
-		position: absolute;
-		right: 0;
-		top: 0;
-	}
-
-	&__tooltip-anchor {
-		display: block;
-		width: 0;
-		height: sz(10px);
+	// Ширина подписи = проценту: текст прижат к концу заливки, а в начале шкалы не уходит за левый край.
+	&__status {
+		display: flex;
+		justify-content: flex-end;
+		min-width: fit-content;
+		@include text-size(sm);
+		color: var(--rise-text-muted);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		@include transition(width);
 	}
 
 	&__track {
+		position: relative;
 		width: 100%;
-		height: sz(10px);
-		background-color: var(--color-surface-muted);
-		border-radius: var(--border-radius-full);
-		overflow: visible;
+		height: sz(8px);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-accented);
 	}
 
 	&__fill {
 		height: 100%;
-		border-radius: var(--border-radius-full);
+		border-radius: inherit;
+		background-color: var(--progress-color);
 		@include transition(width);
-		position: relative;
-		@include custom-bg(background-color, var(--color-accent));
 	}
 
-	/* ===== Круговой ===== */
+	// ─── Круг ────────────────────────────────────────────────────────────────────
+
+	// Ширина по кольцу: в колонке flex кольцо не растягивается на всю строку.
 	&--circle {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		width: fit-content;
 	}
 
 	&__svg {
-		width: sz(100px);
-		height: sz(100px);
+		width: sz(64px);
+		height: sz(64px);
+		// Отсчёт от 12 часов
 		transform: rotate(-90deg);
 	}
 
 	&__track-circle {
-		stroke: var(--color-surface-muted);
+		stroke: var(--rise-bg-accented);
 	}
 
 	&__fill-circle {
+		stroke: var(--progress-color);
 		@include transition(stroke-dashoffset);
-		@include custom-text(stroke, var(--color-accent));
 	}
 
 	&__circle-label {
 		position: absolute;
-		font-size: sz(18px);
-		color: var(--color-text);
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-highlighted);
+		font-variant-numeric: tabular-nums;
 	}
 
-	/* ===== Анимация: полоски ===== */
+	// ─── Оформление заливки (animation) ──────────────────────────────────────────
+
 	&--striped &__fill {
 		background-image: linear-gradient(
 			45deg,
-			rgba(255, 255, 255, 0.15) 25%,
+			$progress-stripe 25%,
 			transparent 25%,
 			transparent 50%,
-			rgba(255, 255, 255, 0.15) 50%,
-			rgba(255, 255, 255, 0.15) 75%,
+			$progress-stripe 50%,
+			$progress-stripe 75%,
 			transparent 75%,
 			transparent
 		);
-		background-size: 20px 20px;
-		animation: base-progress-stripes 1s linear infinite;
+		background-size: sz(16px) sz(16px);
 	}
 
-	/* ===== Анимация: пульс ===== */
-	&--pulse &__fill {
-		animation: base-progress-pulse 2s ease-in-out infinite;
-	}
-
-	&--pulse &__fill-circle {
-		animation: base-progress-pulse-circle 2s ease-in-out infinite;
-	}
-
-	/* ===== Анимация: свечение ===== */
 	&--glow &__fill {
-		box-shadow:
-			0 0 10px currentColor,
-			0 0 20px currentColor;
-		animation: base-progress-glow 2s ease-in-out infinite;
+		box-shadow: 0 0 8px color-mix(in srgb, var(--progress-color) 60%, transparent);
 	}
 
-	/* ===== Неопределённый ===== */
-	&--indeterminate.base-progress--line &__track {
+	// ─── Неопределённый режим ────────────────────────────────────────────────────
+
+	// При prefers-reduced-motion: бледная заливка во всю длину (кольцо целиком) — «идёт работа», без движения.
+	&--indeterminate &__track {
 		overflow: hidden;
 	}
 
-	&--indeterminate.base-progress--line &__fill {
-		width: 40% !important;
-		animation: base-progress-indeterminate 1.5s ease-in-out infinite;
+	&--indeterminate &__fill {
+		width: 100%;
+		opacity: 0.4;
+	}
+
+	&--indeterminate &__fill-circle {
+		stroke-dashoffset: 0;
+		opacity: 0.4;
+	}
+
+	// ─── Движение ────────────────────────────────────────────────────────────────
+
+	@include motion-safe {
+		&--striped &__fill {
+			animation: base-progress-stripes 1s linear infinite;
+		}
+
+		&--pulse &__fill,
+		&--pulse &__fill-circle {
+			animation: base-progress-pulse 2s var(--rise-ease) infinite;
+		}
+
+		&--glow &__fill {
+			animation: base-progress-glow 2s var(--rise-ease) infinite;
+		}
+
+		// Бегущий отрезок в 40% длины трека
+		&--indeterminate &__fill {
+			width: 40%;
+			opacity: 1;
+			animation: base-progress-indeterminate 1.5s var(--rise-ease) infinite;
+		}
+
+		// Вращающаяся дуга в четверть окружности (длина окружности r=52 — 326.7 единиц viewBox)
+		&--indeterminate &__fill-circle {
+			stroke-dashoffset: 245px;
+			opacity: 1;
+		}
+
+		&--indeterminate &__svg {
+			animation: base-progress-spin 1s linear infinite;
+		}
 	}
 }
 
 @keyframes base-progress-stripes {
-	0% {
-		background-position: 20px 0;
+	from {
+		background-position: sz(16px) 0;
 	}
 
-	100% {
+	to {
 		background-position: 0 0;
 	}
 }
@@ -132,38 +175,33 @@
 	}
 }
 
-@keyframes base-progress-pulse-circle {
-	0%,
-	100% {
-		opacity: 1;
-		filter: none;
-	}
-
-	50% {
-		opacity: 0.7;
-		filter: drop-shadow(0 0 4px currentColor);
-	}
-}
-
 @keyframes base-progress-glow {
 	0%,
 	100% {
-		box-shadow: 0 0 5px currentColor;
+		box-shadow: 0 0 4px color-mix(in srgb, var(--progress-color) 40%, transparent);
 	}
 
 	50% {
-		box-shadow:
-			0 0 15px currentColor,
-			0 0 30px currentColor;
+		box-shadow: 0 0 12px color-mix(in srgb, var(--progress-color) 70%, transparent);
 	}
 }
 
 @keyframes base-progress-indeterminate {
-	0% {
+	from {
 		transform: translateX(-100%);
 	}
 
-	100% {
-		transform: translateX(350%);
+	to {
+		transform: translateX(250%);
+	}
+}
+
+@keyframes base-progress-spin {
+	from {
+		transform: rotate(-90deg);
+	}
+
+	to {
+		transform: rotate(270deg);
 	}
 }

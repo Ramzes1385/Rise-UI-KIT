@@ -34,6 +34,53 @@ describe('BaseSwitch unit', () => {
 		})
 	})
 
+	describe('доступность', () => {
+		it('должен объявляться как switch с доступным именем и включённым состоянием', () => {
+			render(BaseSwitch, {
+				props: { modelValue: true, label: 'Уведомления' },
+			})
+
+			expect(screen.getByRole('switch', { name: 'Уведомления', checked: true })).toBeInTheDocument()
+		})
+
+		it('должен объявлять выключенное состояние', () => {
+			render(BaseSwitch, {
+				props: { modelValue: false, label: 'Уведомления' },
+			})
+
+			expect(screen.getByRole('switch', { name: 'Уведомления', checked: false })).toBeInTheDocument()
+		})
+
+		it('помечает переключатель aria-invalid и aria-required и связывает с текстом ошибки', () => {
+			render(BaseSwitch, {
+				props: { modelValue: false, label: 'Согласие', isRequired: true, error: 'Нужно согласие' },
+			})
+
+			const toggle = screen.getByRole('switch')
+			expect(toggle).toHaveAttribute('aria-invalid', 'true')
+			expect(toggle).toHaveAttribute('aria-required', 'true')
+			expect(toggle).toHaveAccessibleDescription('Нужно согласие')
+		})
+
+		it('с кастомной ошибкой в слоте error описывает переключатель разметкой слота', () => {
+			render(BaseSwitch, {
+				props: { modelValue: false, label: 'Согласие', error: 'Нужно согласие' },
+				slots: { error: '<span>Включите согласие</span>' },
+			})
+
+			expect(screen.getByRole('switch')).toHaveAccessibleDescription('Включите согласие')
+			expect(screen.queryByText('Нужно согласие')).not.toBeInTheDocument()
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BaseSwitch, { props: { modelValue: false, label: 'Уведомления' } })
+
+			const toggle = screen.getByRole('switch', { name: 'Уведомления' })
+			expect(toggle).not.toHaveAttribute('aria-invalid')
+			expect(toggle).not.toHaveAttribute('aria-describedby')
+		})
+	})
+
 	describe('пропс label', () => {
 		it('должен рендерить лейбл когда передан', () => {
 			render(BaseSwitch, {

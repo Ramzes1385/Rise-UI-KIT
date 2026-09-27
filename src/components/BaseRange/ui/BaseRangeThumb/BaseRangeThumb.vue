@@ -2,11 +2,14 @@
 	<div
 		class="base-range__thumb"
 		:class="[{ 'base-range__thumb--custom': hasCustom }, thumbClass]"
-		tabindex="0"
+		:tabindex="isDisabled ? -1 : 0"
 		role="slider"
+		:aria-label="label"
 		:aria-valuenow="value"
 		:aria-valuemin="boundMin"
 		:aria-valuemax="boundMax"
+		:aria-orientation="isVertical ? 'vertical' : undefined"
+		:aria-disabled="isDisabled ? 'true' : undefined"
 		@mousedown.stop.prevent="emitDown($event)"
 		@touchstart.stop.prevent="emitDown($event)"
 		@keydown="emitKeydown($event)">

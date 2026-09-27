@@ -9,7 +9,8 @@
 			},
 			classes.root,
 		]"
-		:style="skeletonStyle"></div>
+		:style="skeletonStyle"
+		aria-hidden="true"></div>
 </template>
 
 <script setup lang="ts">
@@ -19,6 +20,7 @@ import '../styles/BaseSkeleton.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 
+// Заглушка декоративная (aria-hidden): о загрузке сообщает контейнер (aria-busy) или текст статуса, а не скелетон.
 const props = withDefaults(defineProps<BaseSkeletonProps>(), {
 	shape: 'rect',
 	isAnimated: true,

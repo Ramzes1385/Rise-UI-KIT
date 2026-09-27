@@ -1,21 +1,19 @@
 /**
- * Visual regression тесты для BaseMenu.
+ * Visual regression BaseMenu: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-basemenu'
-const STORIES = ['default', 'variants', 'with-disabled', 'dark-theme']
+const STORIES = ['variants', 'sizes', 'disabled', 'with-dividers', 'long-content'] as const
 
-for (const story of STORIES) {
-	test(`BaseMenu — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		await page.setViewportSize({ width: 800, height: 400 })
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-menu--${story}.png`, {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseMenu · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basemenu--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-menu-${story}-${theme}.png`)
+			})
+		}
 	})
 }

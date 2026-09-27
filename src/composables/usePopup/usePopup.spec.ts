@@ -92,7 +92,7 @@ describe('usePopup', () => {
 			expect(onClose).toHaveBeenCalledTimes(1)
 		})
 
-		it('должен разблокировать скролл при закрытии когда lockScroll=true', () => {
+		it('должен разблокировать скролл при закрытии когда lockScroll=true', async () => {
 			let closeFn: () => void = () => {}
 
 			const TestComponent = defineComponent({
@@ -101,7 +101,11 @@ describe('usePopup', () => {
 						isOpen: () => isOpenRef.value,
 						closeOnOverlay: () => false,
 						closeOnEscape: () => false,
-						onClose,
+						// Родитель с v-model закрывает popup в ответ на onClose
+						onClose: () => {
+							onClose()
+							isOpenRef.value = false
+						},
 						lockScroll: () => true,
 					})
 					closeFn = result.close
@@ -110,8 +114,12 @@ describe('usePopup', () => {
 			})
 
 			render(TestComponent)
-			closeFn()
+			expect(document.body.style.overflow).toBe('hidden')
 
+			closeFn()
+			await nextTick()
+
+			expect(onClose).toHaveBeenCalledTimes(1)
 			expect(document.body.style.overflow).toBe('')
 		})
 	})
@@ -338,6 +346,86 @@ describe('usePopup', () => {
 			unmount()
 
 			// После unmount скролл всё ещё не заблокирован
+			expect(document.body.style.overflow).toBe('')
+		})
+	})
+
+	describe('блокировка следует фактическому состоянию isOpen', () => {
+		it('не снимает блокировку по Escape, пока родитель не закрыл popup', async () => {
+			render(
+				createTestComponent({
+					isOpenRef,
+					closeOnOverlay: () => false,
+					closeOnEscape: () => true,
+					onClose,
+					lockScroll: () => true,
+				}),
+			)
+
+			// Родитель игнорирует запрос закрытия (например, подтверждение несохранённых изменений)
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+			await nextTick()
+
+			expect(onClose).toHaveBeenCalledTimes(1)
+			expect(document.body.style.overflow).toBe('hidden')
+
+			isOpenRef.value = false
+			await nextTick()
+
+			expect(document.body.style.overflow).toBe('')
+		})
+
+		it('снимает блокировку при закрытии, если lockScroll стал false пока popup открыт', async () => {
+			const lockScrollRef = shallowRef(true)
+			render(
+				createTestComponent({
+					isOpenRef,
+					closeOnOverlay: () => false,
+					closeOnEscape: () => false,
+					onClose,
+					lockScroll: () => lockScrollRef.value,
+				}),
+			)
+			expect(document.body.style.overflow).toBe('hidden')
+
+			lockScrollRef.value = false
+			isOpenRef.value = false
+			await nextTick()
+
+			expect(document.body.style.overflow).toBe('')
+		})
+
+		it('снимает блокировку при размонтировании, если lockScroll стал false пока popup открыт', () => {
+			const lockScrollRef = shallowRef(true)
+			const { unmount } = render(
+				createTestComponent({
+					isOpenRef,
+					closeOnOverlay: () => false,
+					closeOnEscape: () => false,
+					onClose,
+					lockScroll: () => lockScrollRef.value,
+				}),
+			)
+			expect(document.body.style.overflow).toBe('hidden')
+
+			lockScrollRef.value = false
+			unmount()
+
+			expect(document.body.style.overflow).toBe('')
+		})
+
+		it('держит блокировку, пока открыт хотя бы один из двух popup (закрытие не в порядке LIFO)', async () => {
+			const firstOpen = shallowRef(true)
+			const secondOpen = shallowRef(true)
+			render(createTestComponent({ isOpenRef: firstOpen, closeOnOverlay: () => false, closeOnEscape: () => false, onClose }))
+			render(createTestComponent({ isOpenRef: secondOpen, closeOnOverlay: () => false, closeOnEscape: () => false, onClose }))
+
+			firstOpen.value = false
+			await nextTick()
+			expect(document.body.style.overflow).toBe('hidden')
+
+			secondOpen.value = false
+			await nextTick()
 			expect(document.body.style.overflow).toBe('')
 		})
 	})

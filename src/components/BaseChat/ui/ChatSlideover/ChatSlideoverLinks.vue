@@ -1,36 +1,26 @@
 <template>
-	<div v-if="links.length === 0" class="base-chat-slideover__empty">
-		<BaseIcon name="link" :size-scale="sizeScale * UI_CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__empty-icon" />
-		<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER" class="base-chat-slideover__empty-text">{{ UI_CHAT_TEXT.NO_LINKS }}</BaseText>
-	</div>
-	<div v-else class="base-chat-slideover__links-list">
-		<div
-			v-for="(link, index) in links"
-			:key="index"
-			class="base-chat-slideover__link-item"
-			@click="openLink(link.url)">
-			<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__link-icon" />
-			<div class="base-chat-slideover__link-info">
-				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE" class="base-chat-slideover__link-url">
-					{{ link.url }}
-				</BaseText>
-				<BaseText tag="span" :size-scale="sizeScale * UI_CHAT_SCALE.META" class="base-chat-slideover__link-date">
-					{{ link.publishedAt }}
-				</BaseText>
-			</div>
-		</div>
-	</div>
+	<BaseEmpty v-if="links.length === 0" variant="ghost" icon="link" :title="UI_CHAT_TEXT.NO_LINKS" :size-scale="sizeScale" class="base-chat-slideover__empty" />
+	<ul v-else class="base-chat-slideover__links-list">
+		<li v-for="link in links" :key="link.url">
+			<!-- Настоящая ссылка: открывается в новой вкладке, доступна с клавиатуры, её можно скопировать -->
+			<a :href="link.url" target="_blank" rel="noopener noreferrer" class="base-chat-slideover__link-item">
+				<span class="base-chat-slideover__link-icon" aria-hidden="true">
+					<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE.SMALL" />
+				</span>
+				<span class="base-chat-slideover__link-info">
+					<span class="base-chat-slideover__link-url">{{ link.url }}</span>
+					<span class="base-chat-slideover__link-date">{{ link.publishedAt }}</span>
+				</span>
+			</a>
+		</li>
+	</ul>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import {
-	UI_CHAT_SCALE,
-	UI_CHAT_TEXT,
-	UI_SCALE,
-} from '@constants'
+import { UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import type { ChatMessage } from '../../model/BaseChat.types'
 import type { ChatSlideoverLinksProps } from '../../model/ChatSlideoverLinks.types'
 
@@ -59,8 +49,4 @@ const links = computed((): SharedLink[] => {
 	}
 	return result
 })
-
-function openLink(url: string): void {
-	window.open(url, '_blank', 'noopener,noreferrer')
-}
 </script>

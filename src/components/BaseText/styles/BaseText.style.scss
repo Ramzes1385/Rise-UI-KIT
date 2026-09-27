@@ -1,18 +1,19 @@
+// BaseText — текстовый примитив: кегль 14/20 (text-sm), цвет --rise-text, шрифт --rise-font-sans.
+// Размер меняет sizeScale (75 → 10.5/15px, 125 → 17.5/25px), начертание — проп weight, цвет — проп color.
+// Тег (tag) задаёт только семантику: заголовок = нужный тег + sizeScale + weight.
 .base-text {
-	@include custom-text(color, var(--color-text));
-	font-family: var(--font-family-base);
-	font-size: sz(14px);
 	margin: 0;
+	// Шрифт задан явно: dist/styles.css не задаёт шрифт странице, а текст библиотеки должен быть её шрифтом.
+	font-family: var(--rise-font-sans);
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
 
-	// Без переноса
 	&--nowrap {
 		white-space: nowrap;
 	}
 
-	// Обрезка с многоточием (одна строка)
+	// Одна строка с многоточием. Несколько строк (maxLines > 1) обрезает -webkit-line-clamp из инлайн-стиля компонента.
 	&--truncate {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		@include truncate;
 	}
 }

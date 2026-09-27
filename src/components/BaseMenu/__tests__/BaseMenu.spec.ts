@@ -96,6 +96,27 @@ describe('BaseMenu unit', () => {
 
 			expect(container.querySelector('.base-menu__divider')).not.toBeInTheDocument()
 		})
+
+		it('hasDivider рисует разделитель сразу после пункта внутри группы', () => {
+			const items: BaseMenuItem[][] = [[{ label: 'Копировать', hasDivider: true }, { label: 'Удалить' }]]
+			const { container } = render(BaseMenu, {
+				props: { items },
+			})
+
+			const divider = container.querySelector('.base-menu__divider')
+			expect(divider).toHaveAttribute('role', 'separator')
+			expect(divider?.previousElementSibling).toHaveTextContent('Копировать')
+			expect(divider?.nextElementSibling).toHaveTextContent('Удалить')
+		})
+
+		it('hasDivider у последнего пункта группы не дублирует разделитель между группами', () => {
+			const items: BaseMenuItem[][] = [[{ label: 'Профиль' }, { label: 'Настройки', hasDivider: true }], [{ label: 'Выход' }]]
+			const { container } = render(BaseMenu, {
+				props: { items },
+			})
+
+			expect(container.querySelectorAll('.base-menu__divider')).toHaveLength(1)
+		})
 	})
 
 	describe('emit select', () => {

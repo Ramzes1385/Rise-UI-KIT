@@ -1,51 +1,21 @@
 /**
- * Visual Regression тесты для BaseChat.
- * Снимают baseline-скриншоты ключевых состояний через Storybook.
- * BaseChat рендерит аватары-картинки — нужен networkidle перед скриншотом.
+ * Visual regression BaseChat: ключевые stories в светлой и тёмной теме.
+ * Варианты оформления, групповой чат (play открывает профиль отправителя), вложения (коллаж, файлы, отправленный
+ * файл), пустая лента, панель «Информация» (play оставляет её открытой). openStory ждёт окончания play.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-/** Базовый путь к stories BaseChat в Storybook */
-const STORY_PATH = '/iframe.html?id=ui-basechat'
+const STORIES = ['variants', 'group', 'attachments', 'empty', 'info-panel'] as const
 
-test.describe('BaseChat visual regression', () => {
-	test('Default: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--default`)
-		await page.setViewportSize({ width: 800, height: 700 })
-		await page.waitForLoadState('networkidle')
-		await page.evaluate(() => document.fonts.ready)
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-chat--default.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseChat · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `chat-basechat--${story}`, { theme, width: 1100, height: 640 })
+				await expectStoryScreenshot(page, `base-chat-${story}-${theme}.png`)
+			})
+		}
 	})
-
-	test('DarkTheme: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--dark-theme`)
-		await page.setViewportSize({ width: 800, height: 700 })
-		await page.waitForLoadState('networkidle')
-		await page.evaluate(() => document.fonts.ready)
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-chat--dark-theme.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('Support: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--support`)
-		await page.setViewportSize({ width: 800, height: 700 })
-		await page.waitForLoadState('networkidle')
-		await page.evaluate(() => document.fonts.ready)
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-chat--support.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-})
+}

@@ -6,8 +6,6 @@ export interface BaseCalendarMonthsProps {
 	currentMonth: number
 	/** Отключён ли выбор месяцев */
 	isDisabled: boolean
-	/** Масштаб размера */
-	sizeScale: number
 	/** Объект CSS-классов для кастомизации элементов месяцев */
 	classes: Record<string, string | undefined>
 }

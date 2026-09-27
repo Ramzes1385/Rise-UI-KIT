@@ -8,7 +8,7 @@ export interface BaseStepperStep {
 	label: string
 	/** Описание */
 	description?: string
-	/** Иконка */
+	/** Иконка в индикаторе вместо номера (имя из спрайта); у пройденного шага — галочка */
 	icon?: string
 	/** Отключен ли шаг */
 	isDisabled?: boolean

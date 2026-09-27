@@ -1,4 +1,5 @@
 <template>
+	<!-- Группа ячеек: имя группе даёт aria-label на компоненте или подпись обёртки BaseFormField -->
 	<div
 		ref="rootRef"
 		class="base-pin"
@@ -10,7 +11,8 @@
 			variantClass,
 			classes.root,
 		]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		role="group">
 		<div class="base-pin__cells" :class="classes.cells">
 			<input
 				v-for="i in length"
@@ -22,12 +24,16 @@
 				:class="classes.input"
 				:value="cells[i - 1]"
 				:disabled="isDisabled"
+				:aria-label="cellLabel(i)"
+				:aria-invalid="hasError ? 'true' : undefined"
+				:aria-describedby="hasError ? errorId : undefined"
 				@input="handleInput($event, i - 1)"
 				@keydown="handleKeyDown($event, i - 1)"
 				@paste="handlePaste" />
 		</div>
 
 		<FormFieldError
+			:id="errorId"
 			:error="formField.error"
 			class-name="base-pin__error-text"
 			:custom-class="classes.errorText"
@@ -36,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFormField } from '@composables/useFormField'
@@ -58,6 +64,14 @@ const formField = useFormField({
 })
 
 const hasError = computed(() => Boolean(formField.error))
+
+/** id текста ошибки: каждая ячейка связана с ним через aria-describedby */
+const errorId = `${useId()}-error`
+
+/** Доступное имя ячейки: «Символ 2 из 4» — скринридер сообщает позицию в коде */
+function cellLabel(position: number): string {
+	return `Символ ${position} из ${props.length}`
+}
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])
 

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
-const STORY_PATH = '/iframe.html?id=ui-basesidebar'
+const STORY_PATH = '/iframe.html?id=navigation-basesidebar'
 
 async function openStory(page: Page, storyId: string): Promise<void> {
 	await page.goto(`${STORY_PATH}--${storyId}`)
@@ -28,10 +28,10 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: controlled v-model управляет состоянием через внешнюю кнопку', async ({ page }) => {
-		await openStory(page, 'controlled-v-model')
+		await openStory(page, 'controlled')
 
 		const sidebar = page.locator('.base-side-bar')
-		const externalToggle = page.getByRole('button', { name: 'Toggle outside' })
+		const externalToggle = page.getByRole('button', { name: 'Переключить панель' })
 
 		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
 		await expect(page.getByText('isCollapsed: false')).toBeVisible()
@@ -58,7 +58,7 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: items API рендерит пункты, children и badge', async ({ page }) => {
-		await openStory(page, 'with-items-api')
+		await openStory(page, 'default')
 
 		const sidebar = page.locator('.base-side-bar')
 
@@ -71,7 +71,7 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: activePath подсвечивает parent и current item', async ({ page }) => {
-		await openStory(page, 'with-items-api')
+		await openStory(page, 'default')
 
 		const catalogLink = page
 			.getByText('Каталог')
@@ -85,7 +85,7 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: disabled item недоступен', async ({ page }) => {
-		await openStory(page, 'with-items-api')
+		await openStory(page, 'default')
 
 		const disabledItem = page.getByRole('button', { name: 'Недоступно' })
 
@@ -93,7 +93,7 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: collapsed mode показывает иконки, скрывает labels и сохраняет footer', async ({ page }) => {
-		await openStory(page, 'collapsed-items')
+		await openStory(page, 'collapsed')
 
 		const sidebar = page.locator('.base-side-bar')
 
@@ -103,12 +103,13 @@ test.describe('BaseSideBar e2e', () => {
 		await expect(sidebar.getByText('Категории')).toHaveCount(0)
 		await expect(sidebar.locator('.base-side-bar-nav__icon').first()).toBeVisible()
 		await expect(sidebar.locator('.base-side-bar__footer')).toBeVisible()
-		await expect(sidebar.locator('.sidebar-story-profile__avatar')).toBeVisible()
-		await expect(sidebar.getByText('Roman Admin')).toHaveCount(1)
+		await expect(sidebar.locator('.base-side-bar__footer .base-avatar')).toBeVisible()
+		// Подвал сохраняется, но в свёрнутой панели в нём остаётся только аватар — имя пользователя, как и названия пунктов, скрыто
+		await expect(sidebar.getByText('Анна Смирнова')).toHaveCount(0)
 	})
 
 	test('сайдбар: collapsed mode показывает tooltip при hover на item', async ({ page }) => {
-		await openStory(page, 'collapsed-items')
+		await openStory(page, 'collapsed')
 
 		const firstItem = page.locator('.base-side-bar-nav__link').first()
 
@@ -127,9 +128,9 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: dark theme применяет dark canvas и компонент остаётся видимым', async ({ page }) => {
-		await openStory(page, 'dark-theme')
+		await openStory(page, 'default&globals=theme:dark')
 
-		await expect(page.locator('.sidebar-story-canvas--dark')).toBeVisible()
+		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
 		await expect(page.locator('.base-side-bar')).toBeVisible()
 	})
 
@@ -144,7 +145,7 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: collapsed variants рендерят свёрнутые варианты', async ({ page }) => {
-		await openStory(page, 'collapsed-variants')
+		await openStory(page, 'variants&args=isCollapsed:!true')
 
 		const sidebars = page.locator('.base-side-bar')
 
@@ -153,22 +154,22 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: custom item slot работает', async ({ page }) => {
-		await openStory(page, 'with-custom-item-slot')
+		await openStory(page, 'custom-item-slot')
 
-		await expect(page.locator('.sidebar-story-custom-button').first()).toBeVisible()
+		await expect(page.getByText('открыто')).toBeVisible()
 	})
 
 	test('сайдбар: navigation slot имеет приоритет над items', async ({ page }) => {
-		await openStory(page, 'navigation-slot-priority')
+		await openStory(page, 'navigation-slot')
 
 		await expect(page.getByText('Кастомная главная')).toBeVisible()
 		await expect(page.getByText('Кастомный каталог')).toBeVisible()
 	})
 
 	test('сайдбар: занимает всю высоту родительского контейнера', async ({ page }) => {
-		await openStory(page, 'full-height-layout')
+		await openStory(page, 'app-layout')
 
-		const wrapper = page.locator('.sidebar-story-full-height')
+		const wrapper = page.locator('.base-side-bar').locator('xpath=..')
 		const sidebar = page.locator('.base-side-bar')
 
 		const wrapperBox = await wrapper.boundingBox()
@@ -178,7 +179,7 @@ test.describe('BaseSideBar e2e', () => {
 	})
 
 	test('сайдбар: disclosure group раскрывает и скрывает children', async ({ page }) => {
-		await openStory(page, 'disclosure-groups')
+		await openStory(page, 'default')
 
 		const settingsButton = page.getByRole('button', { name: 'Настройки' })
 

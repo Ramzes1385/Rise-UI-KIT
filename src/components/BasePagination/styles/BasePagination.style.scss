@@ -1,27 +1,55 @@
+// BasePagination. Кнопки — BaseButton высотой 32px при sizeScale = 100: стрелки и номера страниц в варианте `variant`
+// (при default — нейтральный ghost), текущая страница — заливка основным цветом.
+// Кастомный цвет: bg/text `base`, `hover` — стрелки и номера (через BaseButton), `active` — текущая страница.
 .base-pagination {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
-	gap: sz(16px);
 	justify-content: center;
-
-	// Текст внутри кнопок наследует цвет от кнопки (как и иконки)
-	.base-text {
-		color: inherit;
-	}
+	gap: sz(4px);
 
 	&__pages {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(8px);
+		gap: sz(4px);
+	}
+
+	// Номер страницы: не уже квадрата 32×32, узкие боковые отступы — трёхзначные номера не раздувают кнопку.
+	// Двойной класс перекрывает отступы BaseButton по умолчанию независимо от порядка CSS.
+	&__page.base-button {
+		--btn-pad-left: 6px;
+		--btn-pad-right: 6px;
+
+		min-width: sz(32px);
+		font-variant-numeric: tabular-nums;
+	}
+
+	// Текущая страница: заливка основным цветом или `color.bg.active` / `color.text.active`.
+	&__page--current.base-button {
+		background-color: var(--custom-bg-active, var(--rise-primary));
+		color: var(--custom-text-active, var(--rise-on-primary));
+
+		@include hover {
+			background-color: var(--custom-bg-active, var(--rise-primary-hover));
+			color: var(--custom-text-active, var(--rise-on-primary));
+		}
+	}
+
+	// Стрелки — квадратные кнопки 32×32 с иконкой 20px.
+	&__arrow.base-button {
+		--btn-pad-left: var(--rise-control-padding-y);
+		--btn-pad-right: var(--rise-control-padding-y);
 	}
 
 	&__ellipsis {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: sz(40px);
-		height: sz(40px);
-		color: var(--color-text-muted);
+		min-width: sz(32px);
+		height: sz(32px);
+		@include control-text;
+		color: var(--rise-text-muted);
 		user-select: none;
 	}
 }

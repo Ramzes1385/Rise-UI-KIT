@@ -1,713 +1,258 @@
-﻿/**
- * Stories для компонента BaseTooltip.
- * Демонстрирует все позиции, варианты и состояния.
- * Каждая story содержит play-функцию для 100% coverage.
+/**
+ * BaseTooltip — stories.
+ *
+ * Разделы: Default (песочница: подсказка при наведении и фокусе) → внешний вид (варианты, позиции, размеры,
+ * кастомный цвет) → длинный текст → клавиатура.
+ * Постоянно видимые подсказки телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { ref } from 'vue'
-import { buildArgTypes, playShiftTab } from '@utils/storybookUtils'
+import { expect, screen, waitFor } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
 import { TOOLTIP_VARIANTS } from '../model/BaseTooltip.types'
 import BaseTooltip from '../ui/BaseTooltip.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseTooltip> = {
-	title: 'UI/BaseTooltip',
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}
+
+/** Постоянно видимые подсказки телепортируются в body — в Docs пример показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Overlay/BaseTooltip',
 	component: BaseTooltip,
-
-	argTypes: buildArgTypes({
-		props: {
-			text: { control: 'text' },
-			position: {
-				control: 'inline-radio',
-				options: ['top', 'bottom', 'left', 'right'],
+	parameters: {
+		// Подсказка центрируется по триггеру: пример в центре холста, чтобы она не выходила за край.
+		layout: 'centered',
+		docs: {
+			description: {
+				component: [
+					'Короткая подсказка к элементу: название кнопки-иконки, пояснение к сокращению, горячая клавиша.',
+					'',
+					'- Появляется при наведении и при фокусе с клавиатуры, скрывается при уходе курсора или фокуса и по Escape.',
+					'- `position` — сторона (`top`, `bottom`, `left`, `right`), `isAlwaysVisible` — показывать постоянно.',
+					'- Подсказка телепортируется в body (`role="tooltip"`); вариант, `sizeScale` и `color` применяются к ней,',
+					'  а не к элементу в слоте.',
+					'- Не кладите в подсказку ссылки и кнопки: для интерактивного содержимого — `BasePopover`.',
+					'  Кнопке с одной иконкой нужен ещё `aria-label`: подсказка его не заменяет.',
+				].join('\n'),
 			},
-			variant: {
-				control: 'inline-radio',
-				options: TOOLTIP_VARIANTS,
-			},
-			color: {
-				control: 'object',
-				description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }',
-			},
-			isAlwaysVisible: { control: 'boolean' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: TOOLTIP_VARIANTS }),
+		text: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		position: { control: 'inline-radio', options: ['top', 'bottom', 'left', 'right'], table: propGroup(ARG_GROUP.appearance) },
+		isAlwaysVisible: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		default: { control: false },
+	},
 	args: {
-		text: 'Подсказка',
+		text: 'Скопировать ссылку',
 		position: 'top',
 		variant: 'default',
 		isAlwaysVisible: false,
 		sizeScale: 100,
 	},
-}
+	render: args => ({
+		components: { BaseTooltip, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
+		template: `
+			<BaseTooltip v-bind="props">
+				<BaseButton variant="outline" :aria-label="props.text" :padding="{ x: 5, y: 5 }">
+					<BaseIcon name="link" />
+				</BaseButton>
+			</BaseTooltip>
+		`,
+	}),
+} satisfies Meta<typeof BaseTooltip>
 
 export default meta
-type Story = StoryObj<typeof BaseTooltip>
-/** Базовая подсказка — hover показать/скрыть */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/** Песочница: наведите курсор на кнопку — через 100 мс появится подсказка, при уходе курсора она скроется. */
 export const Default: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-						Наведите
-					</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
+	play: async ({ canvas, userEvent }) => {
+		const button = canvas.getByRole('button', { name: 'Скопировать ссылку' })
+		await userEvent.hover(button)
+		await expect(await screen.findByRole('tooltip')).toHaveTextContent('Скопировать ссылку')
 
-		await step('Фокусировка триггера по Tab', async () => {
-			await userEvent.tab()
-		})
-
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: 'span' })
-		})
-
-		// Наводим — тултип появляется
-		const trigger = canvas.getByText('Наведите')
-		await userEvent.hover(trigger)
-
-		// Ждём setTimeout 100ms + рендер
-		await waitFor(
-			() => {
-				const tooltip = document.body.querySelector('.base-tooltip')
-				expect(tooltip).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-
-		// Убираем курсор — тултип скрывается
-		await userEvent.unhover(trigger)
-		await waitFor(
-			() => {
-				const tooltip = document.body.querySelector('.base-tooltip')
-				expect(tooltip).toBeNull()
-			},
-			{ timeout: 500 },
-		)
+		await userEvent.unhover(button)
+		await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument())
 	},
 }
-/** Все позиции — hover на каждом */
-export const Positions: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:80px;display:flex;gap:24px;justify-content:center;">
-				<BaseTooltip v-bind="args" position="top" text="Сверху">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Top</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" position="bottom" text="Снизу">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Bottom</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" position="left" text="Слева">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Left</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" position="right" text="Справа">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Right</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
 
-		// Hover на Top
-		const topTrigger = canvas.getByText('Top')
-		await userEvent.hover(topTrigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(topTrigger)
-	},
-}
-/** Все варианты */
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Пять вариантов. `default` — инвертированный фон (основной); `soft` — мягкий фон основного цвета;
+ * `outline` и `shadow` — светлая подсказка с рамкой и с тенью; `ghost` — приподнятый нейтральный фон без стрелки.
+ */
 export const Variants: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
+	args: { isAlwaysVisible: true },
+	parameters: {
+		controls: { include: ['position', 'sizeScale'] },
+		docs: {
+			...docsFrame(140),
+			source: { code: TOOLTIP_VARIANTS.map(variant => `<BaseTooltip text="${variant}" variant="${variant}">…</BaseTooltip>`).join('\n') },
 		},
+	},
+	render: args => ({
+		components: { BaseTooltip, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['variant', 'text']), variants: TOOLTIP_VARIANTS }),
 		template: `
-			<div style="padding:80px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
-				<BaseTooltip v-for="v in ['default','ghost','outline','shadow','soft']"
-					:key="v"
-					v-bind="args"
-					:variant="v"
-					:text="'Variant: ' + v"
-				>
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">{{ v }}</span>
+			<div class="story-row" style="gap: 48px;">
+				<BaseTooltip v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :text="variant">
+					<BaseButton variant="outline">{{ variant }}</BaseButton>
 				</BaseTooltip>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const trigger = canvas.getByText('default')
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
-	},
 }
-/** Всегда видима — покрывает onMounted с isAlwaysVisible и watch */
-export const AlwaysVisible: Story = {
-	args: {
-		isAlwaysVisible: true,
+
+/** Сторона `position`: подсказка и стрелка центрируются по элементу. */
+export const Positions: Story = {
+	args: { isAlwaysVisible: true },
+	parameters: {
+		controls: { include: ['variant', 'sizeScale'] },
+		docs: { ...docsFrame(160), source: { code: '<BaseTooltip text="Справа" position="right">…</BaseTooltip>' } },
 	},
 	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
+		components: { BaseTooltip, BaseButton },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['position', 'text']),
+			items: [
+				{ position: 'left', text: 'Слева' },
+				{ position: 'top', text: 'Сверху' },
+				{ position: 'bottom', text: 'Снизу' },
+				{ position: 'right', text: 'Справа' },
+			] as const,
+		}),
 		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">
-						Всегда видима
-					</span>
+			<div class="story-row" style="gap: 96px;">
+				<BaseTooltip v-for="item in items" :key="item.position" v-bind="props" :position="item.position" :text="item.text">
+					<BaseButton variant="outline">{{ item.position }}</BaseButton>
 				</BaseTooltip>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
-
-		// Ту��тип должен быть виден сразу
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-
-		// Hover не должен ничего менять
-		const canvas = within(canvasElement)
-		const trigger = canvas.getByText('Всегда видима')
-		await userEvent.hover(trigger)
+	play: async ({ canvas }) => {
+		// Подсказка справа начинается правее кнопки, стрелка смотрит на неё
+		const button = canvas.getByRole('button', { name: 'right' })
+		const tooltip = (await screen.findByText('Справа')).closest('[role="tooltip"]') as HTMLElement
+		await waitFor(() => expect(tooltip.getBoundingClientRect().left).toBeGreaterThan(button.getBoundingClientRect().right))
 	},
 }
-/** Многострочный текст */
-export const Multiline: Story = {
-	args: {
-		text: 'Первая строка подсказки\nВторая строка подсказки\nТретья строка подсказки',
+
+/** Размеры через `sizeScale`: пропорционально меняются кегль, отступы, радиус и стрелка подсказки; кнопка — нет. */
+export const Sizes: Story = {
+	args: { isAlwaysVisible: true },
+	parameters: {
+		controls: { include: ['variant', 'position'] },
+		docs: {
+			...docsFrame(140),
+			source: { code: SIZE_PRESETS.map(preset => `<BaseTooltip text="${preset.name}" :size-scale="${preset.sizeScale}">…</BaseTooltip>`).join('\n') },
+		},
 	},
 	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
+		components: { BaseTooltip, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'text']), presets: SIZE_PRESETS, sizeLabel }),
 		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-						Наведите для многострочного текста
-					</span>
+			<div class="story-row" style="gap: 40px;">
+				<BaseTooltip v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :text="sizeLabel(preset)">
+					<BaseButton variant="outline">{{ preset.name }}</BaseButton>
 				</BaseTooltip>
 			</div>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const trigger = canvas.getByText('Наведите для многострочного текста')
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
-	},
 }
-/** Масштаб размера */
-export const SizeScale: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:80px;display:flex;gap:24px;justify-content:center;align-items:center;">
-				<BaseTooltip v-bind="args" :size-scale="75" text="Масштаб 75%">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">75%</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" :size-scale="100" text="Масштаб 100%">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">100%</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" :size-scale="150" text="Масштаб 150%">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">150%</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
 
-		const trigger = canvas.getByText('100%')
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
-	},
-}
-/** Кастомный цвет */
+/**
+ * Кастомный цвет через `color`: фон подсказки и стрелки, цвет текста. Подойдёт любой CSS-цвет; токены `var(--rise-…)`
+ * сохраняют контраст в обеих темах. Кнопка в слоте цвет не наследует.
+ */
 export const CustomColor: Story = {
 	args: {
-		color: { bg: { base: '#1a7a3a' }, text: { base: '#ffffff' } },
+		isAlwaysVisible: true,
+		text: 'Новая функция',
+		color: { bg: { base: 'var(--rise-primary)' }, text: { base: 'var(--rise-on-primary)' } },
 	},
+	parameters: { controls: { include: ['color', 'position'] }, docs: docsFrame(120) },
 	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
+		components: { BaseTooltip, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
 		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-						Кастомный цвет
-					</span>
-				</BaseTooltip>
-			</div>
+			<BaseTooltip v-bind="props">
+				<BaseButton variant="outline">Субтитры</BaseButton>
+			</BaseTooltip>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const trigger = canvas.getByText('Кастомный цвет')
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
+	play: async ({ canvas }) => {
+		const tooltip = await screen.findByRole('tooltip')
+		const primary = resolveColor('var(--rise-primary)')
+		await expect(getComputedStyle(tooltip).backgroundColor).toBe(primary)
+		await expect(getComputedStyle(tooltip, '::after').backgroundColor).toBe(primary)
+		await expect(getComputedStyle(tooltip).color).toBe(resolveColor('var(--rise-on-primary)'))
+		const button = canvas.getByRole('button', { name: 'Субтитры' })
+		await expect(getComputedStyle(button).backgroundColor).toBe(resolveColor('var(--rise-bg)'))
 	},
 }
-/** Все варианты × все позиции */
-export const AllCombinations: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:40px;">
-				<div v-for="variant in ['default','ghost','outline','shadow','soft']" :key="variant" style="margin-bottom:32px;">
-					<h4 style="margin-bottom:12px;">{{ variant }}</h4>
-					<div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
-						<BaseTooltip v-bind="args" :variant="variant" position="top" :text="variant + ' top'">
-							<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Top</span>
-						</BaseTooltip>
-						<BaseTooltip v-bind="args" :variant="variant" position="bottom" :text="variant + ' bottom'">
-							<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Bottom</span>
-						</BaseTooltip>
-						<BaseTooltip v-bind="args" :variant="variant" position="left" :text="variant + ' left'">
-							<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Left</span>
-						</BaseTooltip>
-						<BaseTooltip v-bind="args" :variant="variant" position="right" :text="variant + ' right'">
-							<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);">Right</span>
-						</BaseTooltip>
-					</div>
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
 
-		const trigger = canvas.getAllByText('Top')[0]!
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
-	},
-}
-/** Длинный текст в тултипе */
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/** Длинный текст переносится по словам: ширина подсказки не больше 280px. Переносы строк `\n` сохраняются. */
 export const LongContent: Story = {
 	args: {
-		text: 'Это очень длинный текст подсказки, который проверяет как компонент BaseTooltip справляется с большим объёмом содержимого, включая перенос строк и масштабирование контейнера тултипа при значительном объёме текстовой информации',
-	},
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-						Длинный текст
-					</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvasElement).toBeInTheDocument()
-
-		const trigger = canvas.getByText('Длинный текст')
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
-	},
-}
-/** Hover → быстрый Unhover → быстрый Hover (покрытие clearTimeout hideTimer в handleEnter) */
-export const QuickReenter: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args" text="Быстрый возврат">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);">Trigger</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const trigger = canvas.getByText('Trigger')
-
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		// Запускаем hideTimer
-		await userEvent.unhover(trigger)
-		// До истечения 150ms возвращаемся — handleEnter должен очистить hideTimer
-		await userEvent.hover(trigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(trigger)
-	},
-}
-/** Реактивное переключение isAlwaysVisible с true на false (покрытие watch false branch) */
-export const ToggleAlwaysVisible: Story = {
-	render: () => ({
-		components: { BaseTooltip },
-		setup() {
-			const isAlwaysVisible = ref(true)
-			function handleToggle(): void {
-				isAlwaysVisible.value = !isAlwaysVisible.value
-			}
-			return { isAlwaysVisible, handleToggle }
-		},
-		template: `
-			<div style="padding:60px;display:flex;flex-direction:column;gap:16px;align-items:center;">
-				<button type="button" data-testid="toggle-btn" @click="handleToggle">Переключить</button>
-				<BaseTooltip text="Подсказка" :is-always-visible="isAlwaysVisible">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);">Trigger</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		const toggleBtn = canvasElement.querySelector('[data-testid="toggle-btn"]')
-		if (toggleBtn instanceof HTMLElement) {
-			await userEvent.click(toggleBtn)
-		}
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).toBeNull()
-			},
-			{ timeout: 500 },
-		)
-	},
-}
-/** Реактивное переключение isAlwaysVisible с false на true (покрытие watch true branch, стр. 138-141) */
-export const ToggleToAlwaysVisible: Story = {
-	render: () => ({
-		components: { BaseTooltip },
-		setup() {
-			const isAlwaysVisible = ref(false)
-			function handleToggle(): void {
-				isAlwaysVisible.value = !isAlwaysVisible.value
-			}
-			return { isAlwaysVisible, handleToggle }
-		},
-		template: `
-			<div style="padding:60px;display:flex;flex-direction:column;gap:16px;align-items:center;">
-				<button type="button" data-testid="toggle-on-btn" @click="handleToggle">Показать</button>
-				<BaseTooltip text="Постоянная подсказка" :is-always-visible="isAlwaysVisible">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);">Trigger</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		// Начальное состояние — тултип скрыт
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		// Переключаем на true → watch: updateCoords + isVisible = true + startUpdateLoop (стр. 139-141)
-		const toggleBtn = canvasElement.querySelector('[data-testid="toggle-on-btn"]')
-		if (toggleBtn instanceof HTMLElement) {
-			await userEvent.click(toggleBtn)
-		}
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-	},
-}
-/** Быстрый unhover ДО истечения showTimer (100ms) — покрывает ветку `if (showTimer)` в `handleLeave` (clearTimeout showTimer). */
-export const TooltipHoverDelay: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args" text="Задержка показа">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);">HoverDelay</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const trigger = canvas.getByText('HoverDelay')
-
-		await userEvent.hover(trigger)
-		await userEvent.unhover(trigger)
-
-		await new Promise(resolve => setTimeout(resolve, 200))
-
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).toBeNull()
-			},
-			{ timeout: 500 },
-		)
-	},
-}
-/** Hover/unhover при `isAlwaysVisible: true` — покрывает early-return ветки в `handleEnter` и `handleLeave`. */
-export const TooltipKeyboardEsc: Story = {
-	args: {
 		isAlwaysVisible: true,
+		position: 'bottom',
+		text: 'Ctrl + Shift + S — сохранить копию проекта.\nКопия появится в списке проектов с пометкой «копия» и текущей датой.',
 	},
+	parameters: { controls: { include: ['text', 'position', 'variant', 'sizeScale'] }, docs: docsFrame(180) },
 	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
+		components: { BaseTooltip, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
 		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args" text="Always">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);">AlwaysTrigger</span>
-				</BaseTooltip>
-			</div>
+			<BaseTooltip v-bind="props">
+				<BaseButton variant="outline">Сохранить копию</BaseButton>
+			</BaseTooltip>
 		`,
 	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const trigger = canvas.getByText('AlwaysTrigger')
-
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-
-		await userEvent.hover(trigger)
-		await userEvent.unhover(trigger)
-
-		trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip')).not.toBeNull()
-			},
-			{ timeout: 300 },
-		)
+	play: async () => {
+		const tooltip = await screen.findByRole('tooltip')
+		const box = tooltip.getBoundingClientRect()
+		await expect(box.width).toBeLessThanOrEqual(280)
+		// Три строки и больше: перенос по \n и по ширине
+		await expect(box.height).toBeGreaterThanOrEqual(3 * 16)
 	},
 }
-/** Hover на тултипах со всеми позициями (bottom/left/right) — покрывает все ветки `getTooltipTransition` и стили позиционирования. */
-export const TooltipPlacementFlip: Story = {
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:120px;display:flex;gap:48px;justify-content:center;">
-				<BaseTooltip v-bind="args" position="bottom" text="BottomTip">
-					<span data-testid="flip-bottom" style="padding:8px 16px;border:1px solid var(--color-border);">FlipBottom</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" position="left" text="LeftTip">
-					<span data-testid="flip-left" style="padding:8px 16px;border:1px solid var(--color-border);">FlipLeft</span>
-				</BaseTooltip>
-				<BaseTooltip v-bind="args" position="right" text="RightTip">
-					<span data-testid="flip-right" style="padding:8px 16px;border:1px solid var(--color-border);">FlipRight</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
 
-		const bottomTrigger = canvas.getByText('FlipBottom')
-		await userEvent.hover(bottomTrigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip--bottom')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(bottomTrigger)
+// ─── Доступность ───────────────────────────────────────────────────────────────
 
-		const leftTrigger = canvas.getByText('FlipLeft')
-		await userEvent.hover(leftTrigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip--left')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(leftTrigger)
+/**
+ * Клавиатура: Tab ставит фокус на кнопку — подсказка появляется, как при наведении; Escape скрывает её,
+ * а фокус остаётся на кнопке.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent }) => {
+		const button = canvas.getByRole('button', { name: 'Скопировать ссылку' })
+		await tabTo(button, userEvent)
+		await expect(await screen.findByRole('tooltip')).toHaveTextContent('Скопировать ссылку')
 
-		const rightTrigger = canvas.getByText('FlipRight')
-		await userEvent.hover(rightTrigger)
-		await waitFor(
-			() => {
-				expect(document.body.querySelector('.base-tooltip--right')).not.toBeNull()
-			},
-			{ timeout: 500 },
-		)
-		await userEvent.unhover(rightTrigger)
-	},
-}
-/** Размонтирование компонента при активных таймерах и видимом тултипе — покрывает `onBeforeUnmount` ветки `if (showTimer)` / `if (hideTimer)` true. */
-export const TooltipDisabled: Story = {
-	render: () => ({
-		components: { BaseTooltip },
-		setup() {
-			const isMounted = ref(true)
-			function handleUnmount(): void {
-				isMounted.value = false
-			}
-			return { isMounted, handleUnmount }
-		},
-		template: `
-			<div style="padding:60px;display:flex;flex-direction:column;gap:16px;align-items:center;">
-				<button type="button" data-testid="unmount-btn" @click="handleUnmount">Размонтировать</button>
-				<BaseTooltip v-if="isMounted" text="Исчезающая подсказка">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);">UnmountTrigger</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		const trigger = canvas.getByText('UnmountTrigger')
-
-		await userEvent.hover(trigger)
-
-		const unmountBtn = canvasElement.querySelector('[data-testid="unmount-btn"]')
-		if (unmountBtn instanceof HTMLElement) {
-			await userEvent.click(unmountBtn)
-		}
-
-		await waitFor(
-			() => {
-				expect(canvasElement.textContent).not.toContain('UnmountTrigger')
-			},
-			{ timeout: 500 },
-		)
-	},
-}
-/** Кастомные CSS-классы */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'tt-root', tooltip: 'tt-tooltip', text: 'tt-text' },
-	},
-	render: args => ({
-		components: { BaseTooltip },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div style="padding:60px;display:flex;justify-content:center;">
-				<BaseTooltip v-bind="args">
-					<span style="padding:8px 16px;border:1px solid var(--color-border);border-radius:var(--border-radius-base);cursor:pointer;">
-						Наведите
-					</span>
-				</BaseTooltip>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.tt-root')).toBeTruthy()
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument())
+		await expect(button).toHaveFocus()
 	},
 }

@@ -1,6 +1,13 @@
 /** Composable: обработчики ввода для маскированных полей */
 import { useInputMask } from './useInputMask'
-import type { UseMaskedInputHandlersOptions, UseMaskedInputHandlersReturn } from './useMaskedInputHandlers.types'
+import type { AllowedCharsFilter, UseMaskedInputHandlersOptions, UseMaskedInputHandlersReturn } from './useMaskedInputHandlers.types'
+
+/** Недопустимые символы для каждого фильтра (\p{L} — буква любого алфавита) */
+const DISALLOWED_CHARS: Record<AllowedCharsFilter, RegExp> = {
+	digits: /\D/g,
+	letters: /[^\p{L}]/gu,
+	alphanumeric: /[^\p{L}\d]/gu,
+}
 
 /** Обработчики ввода для маскированных полей — применение маски, управление курсором, эмит значений. */
 function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMaskedInputHandlersReturn {
@@ -19,9 +26,22 @@ function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMask
 		})
 	}
 
+	/** Текст, который поле должно показывать для текущего modelValue */
+	function getDisplayValue(): string {
+		const currentMask = options.getMask()
+		const rawValue = getRawValue()
+		return currentMask && !options.isPassword() ? mask.applyMask(rawValue, currentMask) : rawValue
+	}
+
 	function handleInput(e: Event): void {
 		const target = e.target
 		if (!(target instanceof HTMLInputElement)) return
+		// Readonly/disabled поле меняет только родитель: не эмитим и возвращаем DOM к текущей модели
+		if (options.isReadonly?.()) {
+			const displayValue = getDisplayValue()
+			if (target.value !== displayValue) target.value = displayValue
+			return
+		}
 		const rawValue = target.value
 		const currentMask = options.getMask()
 
@@ -38,14 +58,23 @@ function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMask
 
 			setCursorPos(mask.cursorAfterInput(limitedValue.length))
 		} else {
-			options.emit('update:modelValue', rawValue)
+			const filter = options.getAllowedChars?.()
+			const value = filter ? rawValue.replace(DISALLOWED_CHARS[filter], '') : rawValue
+			if (value !== rawValue) {
+				// Курсор остаётся там, где был бы без отброшенного символа
+				const cursor = Math.max(0, (target.selectionStart ?? value.length) - (rawValue.length - value.length))
+				target.value = value
+				setCursorPos(cursor)
+			}
+			options.emit('update:modelValue', value)
 		}
 	}
 
 	function handleKeydown(e: KeyboardEvent): void {
 		options.onKeydown?.(e)
 		const currentMask = options.getMask()
-		if (!currentMask || options.isPassword()) return
+		// Readonly/disabled: не удаляем символы и не отменяем нативное поведение клавиш (выделение, навигация)
+		if (!currentMask || options.isPassword() || options.isReadonly?.()) return
 
 		const target = e.target
 		if (!(target instanceof HTMLInputElement)) return

@@ -1,35 +1,55 @@
 /**
  * Integration-тесты для BaseProgress.
- * Проверяют взаимодействие с BaseTooltip, BaseText и emit complete.
+ * Проверяют подпись с процентом, слот и emit complete.
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
+import { render, screen } from '@testing-library/vue'
 import BaseProgress from '../ui/BaseProgress.vue'
 
 describe('BaseProgress integration', () => {
-	describe('hasLabel + BaseTooltip (линейный)', () => {
-		it('должен рендерить BaseTooltip внутри fill когда hasLabel=true и shape=line', () => {
+	describe('hasLabel (линейный)', () => {
+		it('должен показывать подпись с процентом над полосой, внутри progressbar', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 50, hasLabel: true, shape: 'line' },
 			})
 
-			const trigger = container.querySelector('.base-progress__tooltip-trigger')
-			expect(trigger).toBeInTheDocument()
-			expect(trigger?.closest('.base-progress__fill')).toBeInTheDocument()
+			const status = container.querySelector('.base-progress__status') as HTMLElement
+			expect(status).toHaveTextContent('50%')
+			// Подпись идёт перед треком и ширина её области равна проценту — текст стоит у конца заливки
+			expect(status.nextElementSibling).toHaveClass('base-progress__track')
+			expect(status.style.width).toBe('50%')
+			expect(screen.getByRole('progressbar')).toHaveTextContent('50%')
 		})
 
-		it('не должен рендерить BaseTooltip когда hasLabel=false', () => {
+		it('не должен телепортировать подпись в body (без BaseTooltip)', () => {
+			render(BaseProgress, {
+				props: { value: 50, hasLabel: true, shape: 'line' },
+			})
+
+			expect(document.body.querySelector('.base-tooltip-popup')).toBeNull()
+		})
+
+		it('не должен рендерить подпись когда hasLabel=false', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 50, hasLabel: false, shape: 'line' },
 			})
 
-			expect(container.querySelector('.base-progress__tooltip-trigger')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-progress__status')).not.toBeInTheDocument()
+		})
+
+		it('должен рендерить слот default в подписи линии', () => {
+			render(BaseProgress, {
+				props: { value: 3, max: 5, hasLabel: true, shape: 'line' },
+				slots: { default: '<template #default="{ value }">Шаг {{ value }} из 5</template>' },
+			})
+
+			expect(screen.getByRole('progressbar')).toHaveTextContent('Шаг 3 из 5')
 		})
 	})
 
-	describe('hasLabel + BaseText (круговой)', () => {
-		it('должен рендерить BaseText с процентами когда hasLabel=true и shape=circle', () => {
+	describe('hasLabel (круговой)', () => {
+		it('должен рендерить подпись с процентами когда hasLabel=true и shape=circle', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 75, hasLabel: true, shape: 'circle' },
 			})
@@ -39,7 +59,7 @@ describe('BaseProgress integration', () => {
 			expect(label?.textContent).toContain('75%')
 		})
 
-		it('не должен рендерить BaseText когда hasLabel=false и shape=circle', () => {
+		it('не должен рендерить подпись когда hasLabel=false и shape=circle', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 50, hasLabel: false, shape: 'circle' },
 			})

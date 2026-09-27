@@ -1,4 +1,4 @@
-import { effectScope } from 'vue'
+import { effectScope, nextTick } from 'vue'
 import { useChatSearch } from './useChatSearch'
 import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 
@@ -40,5 +40,19 @@ describe('useChatSearch unit', () => {
 
 		expect(search.filteredMessages.value).toHaveLength(1)
 		expect(search.filteredMessages.value[0]?.id).toBe('2')
+	})
+
+	it('сбрасывает запрос и фильтр при закрытии поиска', async () => {
+		const search = setup([message('1', { text: 'Привет' }), message('2', { text: 'Пока' })])
+		search.isSearching.value = true
+		search.searchQuery.value = 'привет'
+		await nextTick()
+		expect(search.filteredMessages.value).toHaveLength(1)
+
+		search.isSearching.value = false
+		await nextTick()
+
+		expect(search.searchQuery.value).toBe('')
+		expect(search.filteredMessages.value).toHaveLength(2)
 	})
 })

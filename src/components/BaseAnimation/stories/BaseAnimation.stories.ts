@@ -1,302 +1,250 @@
 /**
- * Stories для компонента BaseAnimation.
- * Демонстрирует все типы анимаций, режимы и интерактивные состояния.
+ * BaseAnimation — stories.
+ *
+ * Разделы: Default (песочница с кнопкой «Скрыть/Показать») → все анимации (одна кнопка на все примеры) →
+ * сценарии (список с добавлением и удалением, раскрывающийся блок).
  */
 
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { ARG_GROUP, hiddenArgTypes, propGroup, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
-import { BaseText } from '@components/BaseText'
-import { buildArgTypes } from '@utils/storybookUtils'
 import { ANIMATION_MODES, ANIMATION_NAMES } from '../model/BaseAnimation.types'
 import BaseAnimation from '../ui/BaseAnimation.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-const meta: Meta<typeof BaseAnimation> = {
-	title: 'UI/BaseAnimation',
+/** Анимации одиночного элемента; `list` — для списков (story List). */
+const SINGLE_NAMES = ANIMATION_NAMES.filter(name => name !== 'list')
+
+const meta = {
+	title: 'Element/BaseAnimation',
 	component: BaseAnimation,
-
-	argTypes: buildArgTypes({
-		props: {
-			show: {
-				control: 'boolean',
-				description: 'Управление видимостью контента',
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Обёртка над `<Transition>` с готовыми анимациями появления и исчезновения: сообщения об ошибке, подсказки,',
+					'раскрывающиеся блоки, элементы списков.',
+					'',
+					'- `show` показывает и скрывает содержимое; `name` выбирает анимацию (`fade` по умолчанию).',
+					'- `isGroup` — список (`<TransitionGroup>`): каждый дочерний элемент с `key` анимируется отдельно, соседи плавно сдвигаются.',
+					'- Длительности и кривые — токены `--rise-duration*`/`--rise-ease*`; при системной настройке «уменьшить движение»',
+					'  переходы мгновенные, а события `after-enter`/`after-leave` приходят как обычно.',
+				].join('\n'),
 			},
-			name: {
-				control: 'select',
-				options: ANIMATION_NAMES,
-				description: 'Имя анимации',
-			},
-			mode: {
-				control: 'inline-radio',
-				options: ANIMATION_MODES,
-				description: 'Режим анимации (только для обычного Transition)',
-			},
-			isGroup: {
-				control: 'boolean',
-				description: 'Использовать TransitionGroup для списков',
-			},
-			tag: {
-				control: 'text',
-				description: 'HTML-тег для TransitionGroup',
-			},
-			customClass: { control: 'object' },
 		},
-	}),
-
+	},
+	argTypes: {
+		...hiddenArgTypes('variant', 'sizeScale', 'color'),
+		show: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		name: { control: 'select', options: ANIMATION_NAMES, table: propGroup(ARG_GROUP.appearance) },
+		mode: { control: 'inline-radio', options: ANIMATION_MODES, table: propGroup(ARG_GROUP.behavior) },
+		isGroup: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		tag: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+		customClass: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+		default: { control: false },
+	},
 	args: {
 		show: true,
 		name: 'fade',
 		mode: 'out-in',
 		isGroup: false,
 		tag: 'div',
+		'onAfter-enter': fn(),
+		'onAfter-leave': fn(),
 	},
-}
+} satisfies Meta<typeof BaseAnimation>
 
 export default meta
-type Story = StoryObj<typeof BaseAnimation>
-/** Анимация fade */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/**
+ * Песочница: кнопка переключает `show` (значение синхронизировано с Controls), в Controls выбирается анимация.
+ * После завершения анимации приходят события `after-leave` и `after-enter`.
+ */
 export const Default: Story = {
 	parameters: {
+		controls: { exclude: ['isGroup', 'tag'] },
 		docs: {
 			source: {
-				code: '<BaseAnimation :show="show"><div>Контент</div></BaseAnimation>',
+				code: [
+					'<BaseButton variant="outline" @click="isVisible = !isVisible">{{ isVisible ? \'Скрыть\' : \'Показать\' }}</BaseButton>',
+					'<BaseAnimation :show="isVisible" name="slide-down">',
+					'  <div class="banner">Отчёт за май готов</div>',
+					'</BaseAnimation>',
+				].join('\n'),
 			},
 		},
 	},
-	render: args => ({
-		components: { BaseAnimation, BaseButton },
-		setup() {
-			const show = ref(true)
-			return { args, show }
-		},
-		template: `
-			<div>
-				<BaseButton variant="outline" @click="show = !show" style="margin-bottom:16px;">
-					Переключить
-				</BaseButton>
-				<BaseAnimation v-bind="args" :show="show">
-					<div style="padding:24px;background:var(--color-surface-muted);border-radius:var(--border-radius-base);">
-						Анимированный контент
-					</div>
-				</BaseAnimation>
-			</div>
-		`,
-	}),
-	args: {
-		'onAfter-enter': fn(),
-		'onAfter-leave': fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-		const button = canvas.getByRole('button')
-		// Кликаем для скрытия — вызовет after-leave
-		await userEvent.click(button)
-		await waitFor(() => expect(args['onAfter-leave']).toHaveBeenCalled())
-		// Кликаем для показа — вызовет after-enter
-		await userEvent.click(button)
-		await waitFor(() => expect(args['onAfter-enter']).toHaveBeenCalled())
-	},
-}
-/** Все типы анимаций */
-export const AllTypes: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseAnimation v-for="n in animationNames" :key="n" :name="n" :show="show" />`,
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseAnimation, BaseButton, BaseText },
-		setup() {
-			const show = ref(true)
-			return { args, show, names: ANIMATION_NAMES }
-		},
-		template: `
-			<div>
-				<BaseButton variant="outline" @click="show = !show" style="margin-bottom:16px;">
-					Переключить все
-				</BaseButton>
-				<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
-					<div v-for="n in names" :key="n">
-						<BaseText tag="p" size="xs" style="margin-bottom:4px;">{{ n }}</BaseText>
-						<BaseAnimation v-bind="args" :name="n" :show="show">
-							<div style="padding:16px;background:var(--color-surface-muted);border-radius:var(--border-radius-base);">
-								{{ n }}
-							</div>
-						</BaseAnimation>
-					</div>
+	render: args => {
+		const setShow = useModelArg('show')
+		return {
+			components: { BaseAnimation, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args), args, toggle: () => setShow(!args.show) }),
+			template: `
+				<div class="story-col" style="min-height: 120px;">
+					<BaseButton variant="outline" @click="toggle">{{ args.show ? 'Скрыть' : 'Показать' }}</BaseButton>
+					<BaseAnimation v-bind="props">
+						<div class="story-frame">Отчёт за май готов</div>
+					</BaseAnimation>
 				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const labels = canvasElement.querySelectorAll('.base-stepper__label, .base-text')
-		expect(labels.length).toBeGreaterThan(0)
+			`,
+		}
 	},
-}
-/** Режимы анимации */
-export const Modes: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<BaseAnimation v-for="m in ['out-in', 'in-out', 'default']" :key="m" :mode="m" />`,
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseAnimation, BaseButton, BaseText },
-		setup() {
-			const show = ref(true)
-			return { args, show, modes: ANIMATION_MODES }
-		},
-		template: `
-			<div>
-				<BaseButton variant="outline" @click="show = !show" style="margin-bottom:16px;">
-					Переключить
-				</BaseButton>
-				<div style="display:flex;gap:24px;">
-					<div v-for="m in modes" :key="m">
-						<BaseText tag="p" size="xs" style="margin-bottom:4px;">{{ m }}</BaseText>
-						<BaseAnimation v-bind="args" name="fade" :mode="m" :show="show">
-							<div style="padding:16px;background:var(--color-surface-muted);border-radius:var(--border-radius-base);">
-								Контент
-							</div>
-						</BaseAnimation>
-					</div>
-				</div>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('out-in')).toBeInTheDocument()
-	},
-}
-/** Групповая анимация (TransitionGroup) */
-export const GroupAnimation: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseAnimation name="list" :is-group="true" :show="show" tag="ul" />',
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseAnimation, BaseButton },
-		setup() {
-			const show = ref(true)
-			const items = ref(['Элемент 1', 'Элемент 2', 'Элемент 3', 'Элемент 4'])
-			return { args, show, items }
-		},
-		template: `
-			<div>
-				<BaseButton variant="outline" @click="show = !show" style="margin-bottom:16px;">
-					Переключить
-				</BaseButton>
-				<BaseAnimation v-bind="args" name="list" :is-group="true" :show="show" tag="ul" style="list-style:none;padding:0;">
-					<li v-for="item in items" :key="item" style="padding:8px 16px;margin-bottom:4px;background:var(--color-surface-muted);border-radius:var(--border-radius-base);">
-						{{ item }}
-					</li>
-				</BaseAnimation>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByText('Элемент 1')).toBeInTheDocument()
-		expect(canvas.getByText('Элемент 4')).toBeInTheDocument()
-	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `<div data-theme="dark">
-  <BaseAnimation :show="show" />
-</div>`,
-			},
-		},
-	},
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
-		}),
-	],
-	render: args => ({
-		components: { BaseAnimation, BaseButton },
-		setup() {
-			const show = ref(true)
-			return { args, show }
-		},
-		template: `
-			<div>
-				<BaseButton variant="outline" @click="show = !show" style="margin-bottom:16px;">
-					Переключить
-				</BaseButton>
-				<BaseAnimation v-bind="args" :show="show">
-					<div style="padding:24px;background:var(--color-surface-muted);border-radius:var(--border-radius-base);">
-						Анимированный контент
-					</div>
-				</BaseAnimation>
-			</div>
-		`,
-	}),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement)
-		expect(canvas.getByRole('button')).toBeInTheDocument()
-	},
-}
-/** Интерактивная story с полными контролами */
-export const Interactive: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseAnimation :show="show" :name="name" :mode="mode" />',
-			},
-		},
-	},
-	render: args => ({
-		components: { BaseAnimation, BaseButton },
-		setup() {
-			const show = ref(true)
-			return { args, show }
-		},
-		template: `
-			<div>
-				<BaseButton variant="outline" @click="show = !show" style="margin-bottom:16px;">
-					Переключить
-				</BaseButton>
-				<BaseAnimation v-bind="args" :show="show">
-					<div style="padding:24px;background:var(--color-surface-muted);border-radius:var(--border-radius-base);">
-						Анимированный контент
-					</div>
-				</BaseAnimation>
-			</div>
-		`,
-	}),
-	args: {
-		'onAfter-enter': fn(),
-		'onAfter-leave': fn(),
-	},
-	play: async ({ args, canvasElement }) => {
-		const canvas = within(canvasElement)
-		const button = canvas.getByRole('button')
-		await userEvent.click(button)
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Скрыть' }))
+		await waitFor(() => expect(canvas.queryByText('Отчёт за май готов')).not.toBeInTheDocument())
 		await waitFor(() => expect(args['onAfter-leave']).toHaveBeenCalled())
-		await userEvent.click(button)
+		await userEvent.click(canvas.getByRole('button', { name: 'Показать' }))
+		// Во время анимации появления элемент прозрачен — ждём конца перехода
+		await waitFor(() => expect(canvas.getByText('Отчёт за май готов')).toBeVisible())
 		await waitFor(() => expect(args['onAfter-enter']).toHaveBeenCalled())
-	},
-}
-/** Кастомные CSS-классы через customClass */
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'anim-root' },
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.anim-root')).toBeTruthy()
 	},
 }
 
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/** Все анимации одиночного элемента: кнопка скрывает и показывает все примеры сразу. `list` — в story List. */
+export const Names: Story = {
+	parameters: {
+		controls: { include: ['mode'] },
+		docs: { source: { code: SINGLE_NAMES.map(name => `<BaseAnimation :show="isVisible" name="${name}">…</BaseAnimation>`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseAnimation, BaseButton },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'show', 'name', 'isGroup', 'tag', 'onAfter-enter', 'onAfter-leave']),
+			names: SINGLE_NAMES,
+			isVisible: ref(true),
+		}),
+		template: `
+			<div class="story-stack">
+				<div>
+					<BaseButton variant="outline" @click="isVisible = !isVisible">{{ isVisible ? 'Скрыть все' : 'Показать все' }}</BaseButton>
+				</div>
+				<div class="story-grid" style="--story-grid-min: 140px;">
+					<div v-for="name in names" :key="name" style="min-height: 56px;">
+						<BaseAnimation v-bind="props" :name="name" :show="isVisible">
+							<div class="story-frame">{{ name }}</div>
+						</BaseAnimation>
+					</div>
+				</div>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Скрыть все' }))
+		await waitFor(() => expect(canvas.queryByText('fade')).not.toBeInTheDocument())
+		await waitFor(() => expect(canvas.queryByText('collapse')).not.toBeInTheDocument())
+		await userEvent.click(canvas.getByRole('button', { name: 'Показать все' }))
+		for (const name of SINGLE_NAMES) {
+			await waitFor(() => expect(canvas.getByText(name)).toBeVisible())
+		}
+	},
+}
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+const TASKS = ['Подготовить отчёт за май', 'Созвониться с командой', 'Проверить макеты', 'Обновить документацию', 'Отправить счёт клиенту']
+
+/**
+ * Список (`isGroup`, `name="list"`): новые элементы въезжают справа, удалённые уходят вправо, остальные плавно
+ * сдвигаются. У каждого элемента — `key`; элементы — прямые потомки тега `tag`.
+ */
+export const List: Story = {
+	args: { isGroup: true, name: 'list', tag: 'ul' },
+	parameters: {
+		controls: { include: ['show'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseAnimation is-group name="list" tag="ul">',
+					'  <li v-for="task in tasks" :key="task">{{ task }}</li>',
+					'</BaseAnimation>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseAnimation, BaseButton },
+		setup: () => {
+			const tasks = ref(TASKS.slice(0, 3))
+			const add = (): void => {
+				const next = TASKS.find(task => !tasks.value.includes(task))
+				if (next) tasks.value = [...tasks.value, next]
+			}
+			const removeFirst = (): void => {
+				tasks.value = tasks.value.slice(1)
+			}
+			return { props: useArgsWithoutSlots(args), tasks, add, removeFirst }
+		},
+		template: `
+			<div class="story-stack story-narrow">
+				<div class="story-row">
+					<BaseButton variant="outline" @click="add">Добавить задачу</BaseButton>
+					<BaseButton variant="ghost" @click="removeFirst">Удалить первую</BaseButton>
+				</div>
+				<BaseAnimation v-bind="props" aria-label="Задачи" style="margin: 0; padding: 0; list-style: none;">
+					<li v-for="task in tasks" :key="task" class="story-frame" style="margin-bottom: 8px;">{{ task }}</li>
+				</BaseAnimation>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const list = canvas.getByRole('list', { name: 'Задачи' })
+		await expect(within(list).getAllByRole('listitem')).toHaveLength(3)
+		await userEvent.click(canvas.getByRole('button', { name: 'Добавить задачу' }))
+		await waitFor(() => expect(canvas.getByText('Обновить документацию')).toBeVisible())
+		await userEvent.click(canvas.getByRole('button', { name: 'Удалить первую' }))
+		await waitFor(() => expect(canvas.queryByText('Подготовить отчёт за май')).not.toBeInTheDocument())
+		await expect(within(list).getAllByRole('listitem')).toHaveLength(3)
+	},
+}
+
+/**
+ * Раскрывающийся блок (`name="collapse"`): высота плавно меняется от нуля до содержимого. Кнопка сообщает
+ * состояние через `aria-expanded` и связана с блоком через `aria-controls`.
+ */
+export const Collapse: Story = {
+	args: { name: 'collapse' },
+	parameters: {
+		controls: { include: ['mode'] },
+		docs: {
+			source: {
+				code: [
+					'<BaseButton variant="ghost" :aria-expanded="isOpen" aria-controls="delivery" @click="isOpen = !isOpen">Условия доставки</BaseButton>',
+					'<BaseAnimation :show="isOpen" name="collapse">',
+					'  <div id="delivery">…</div>',
+					'</BaseAnimation>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseAnimation, BaseButton },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'show', 'isGroup', 'tag']), isOpen: ref(false) }),
+		template: `
+			<div class="story-col story-narrow">
+				<BaseButton variant="ghost" :aria-expanded="isOpen" aria-controls="delivery-details" @click="isOpen = !isOpen">
+					Условия доставки
+				</BaseButton>
+				<BaseAnimation v-bind="props" :show="isOpen">
+					<div id="delivery-details" class="story-frame">
+						Доставим за 1–3 дня. Курьер позвонит за час; бесплатно при заказе от 3 000 ₽.
+					</div>
+				</BaseAnimation>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const toggle = canvas.getByRole('button', { name: 'Условия доставки' })
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+		await userEvent.click(toggle)
+		await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+		await waitFor(() => expect(canvas.getByText(/Доставим за 1–3 дня/)).toBeVisible())
+		await userEvent.click(toggle)
+		await waitFor(() => expect(canvas.queryByText(/Доставим за 1–3 дня/)).not.toBeInTheDocument())
+	},
+}

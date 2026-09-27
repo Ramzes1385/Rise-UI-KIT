@@ -126,6 +126,27 @@ describe('BaseCalendar integration', () => {
 		})
 	})
 
+	describe('доступные имена кнопок навигации (реальные BaseButton/BaseIcon)', () => {
+		it('в виде дней кнопки-иконки называются «Предыдущий месяц» / «Следующий месяц»', () => {
+			render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 15) } })
+
+			expect(screen.getByRole('button', { name: 'Предыдущий месяц' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Следующий месяц' })).toBeInTheDocument()
+		})
+
+		it('в видах месяцев и лет имя отражает шаг навигации', async () => {
+			render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 15) } })
+
+			await fireEvent.click(screen.getByRole('button', { name: 'январь 2024' }))
+			expect(screen.getByRole('button', { name: 'Предыдущий год' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Следующий год' })).toBeInTheDocument()
+
+			await fireEvent.click(screen.getByRole('button', { name: '2024' }))
+			expect(screen.getByRole('button', { name: 'Предыдущие годы' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Следующие годы' })).toBeInTheDocument()
+		})
+	})
+
 	describe('isDisabled', () => {
 		it('не должен эмитить события при isDisabled', async () => {
 			const { emitted } = render(BaseCalendar, {

@@ -1,0 +1,387 @@
+@use 'sass:map';
+
+/// Дизайн-токены Rise UI Kit.
+///
+/// Три уровня, как в Nuxt UI:
+/// 1. Палитры `--rise-color-{роль}-{50…950}` — сырые цвета. Роли: primary, neutral, success, info, warning, error.
+/// 2. Семантические токены `--rise-*` — что именно красится: фон, текст, рамка, заливка роли, мягкий фон роли…
+///    Значения зависят от темы: `:root` / `[data-theme='light']` — светлая, `[data-theme='dark']` — тёмная.
+/// 3. Компоненты используют только семантические токены (никаких HEX в стилях компонентов).
+///
+/// Перекраска:
+/// - всего приложения — переопределите палитру роли на `:root`, например `--rise-color-primary-700`;
+/// - части интерфейса — задайте элементу `data-theme="light"` (или `dark`) и переопределите палитру на нём:
+///   семантические токены пересчитываются на каждом элементе с `data-theme`.
+///
+/// Контраст (WCAG 2.2 AA) проверен для пар «текст/фон» светлой и тёмной темы: `docs/design/contrast.md`.
+
+// ─── 1. Палитры ────────────────────────────────────────────────────────────────
+// Значения — палитры Tailwind CSS: orange (primary), zinc (neutral), green, blue, amber, red.
+
+$palettes: (
+	'primary': (
+		50: #fff7ed,
+		100: #ffedd5,
+		200: #fed7aa,
+		300: #fdba74,
+		400: #fb923c,
+		500: #f97316,
+		600: #ea580c,
+		700: #c2410c,
+		800: #9a3412,
+		900: #7c2d12,
+		950: #431407,
+	),
+	'neutral': (
+		50: #fafafa,
+		100: #f4f4f5,
+		200: #e4e4e7,
+		300: #d4d4d8,
+		400: #a1a1aa,
+		500: #71717a,
+		600: #52525b,
+		700: #3f3f46,
+		800: #27272a,
+		900: #18181b,
+		950: #09090b,
+	),
+	'success': (
+		50: #f0fdf4,
+		100: #dcfce7,
+		200: #bbf7d0,
+		300: #86efac,
+		400: #4ade80,
+		500: #22c55e,
+		600: #16a34a,
+		700: #15803d,
+		800: #166534,
+		900: #14532d,
+		950: #052e16,
+	),
+	'info': (
+		50: #eff6ff,
+		100: #dbeafe,
+		200: #bfdbfe,
+		300: #93c5fd,
+		400: #60a5fa,
+		500: #3b82f6,
+		600: #2563eb,
+		700: #1d4ed8,
+		800: #1e40af,
+		900: #1e3a8a,
+		950: #172554,
+	),
+	'warning': (
+		50: #fffbeb,
+		100: #fef3c7,
+		200: #fde68a,
+		300: #fcd34d,
+		400: #fbbf24,
+		500: #f59e0b,
+		600: #d97706,
+		700: #b45309,
+		800: #92400e,
+		900: #78350f,
+		950: #451a03,
+	),
+	'error': (
+		50: #fef2f2,
+		100: #fee2e2,
+		200: #fecaca,
+		300: #fca5a5,
+		400: #f87171,
+		500: #ef4444,
+		600: #dc2626,
+		700: #b91c1c,
+		800: #991b1b,
+		900: #7f1d1d,
+		950: #450a0a,
+	),
+);
+
+/// Цветовые роли с заливкой (у neutral свой набор токенов фона/текста/рамок).
+$roles: ('primary', 'success', 'info', 'warning', 'error');
+
+/// Какой оттенок палитры отвечает за «основной» цвет роли в светлой теме.
+/// Подобран так, чтобы белый текст на заливке и цвет роли на белом фоне давали контраст не ниже 4.5:1.
+$light-main-shade: (
+	'primary': 700,
+	'success': 700,
+	'info': 600,
+	'warning': 700,
+	'error': 600,
+);
+
+@function palette($role, $shade) {
+	@return var(--rise-color-#{$role}-#{$shade});
+}
+
+// ─── 2. Семантические токены ───────────────────────────────────────────────────
+
+/// Токены, не зависящие от темы: типографика, радиусы, размеры контролов, анимации.
+@mixin static-tokens {
+	// Шрифты. @font-face для Inter Variable / JetBrains Mono Variable подключает приложение (см. README → «Шрифты»).
+	--rise-font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+	--rise-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+	// Шкала шрифта: размер + межстрочный интервал парами (как text-xs … text-3xl в Tailwind).
+	--rise-font-size-2xs: 10px;
+	--rise-line-height-2xs: 14px;
+	--rise-font-size-xs: 12px;
+	--rise-line-height-xs: 16px;
+	--rise-font-size-sm: 14px;
+	--rise-line-height-sm: 20px;
+	--rise-font-size-base: 16px;
+	--rise-line-height-base: 24px;
+	--rise-font-size-lg: 18px;
+	--rise-line-height-lg: 28px;
+	--rise-font-size-xl: 20px;
+	--rise-line-height-xl: 28px;
+	--rise-font-size-2xl: 24px;
+	--rise-line-height-2xl: 32px;
+	--rise-font-size-3xl: 30px;
+	--rise-line-height-3xl: 36px;
+
+	--rise-font-weight-normal: 400;
+	--rise-font-weight-medium: 500;
+	--rise-font-weight-semibold: 600;
+	--rise-font-weight-bold: 700;
+
+	// База радиусов: поменяйте --rise-radius, чтобы сделать интерфейс острее или круглее (шкала — в derived-tokens).
+	--rise-radius: 4px;
+	--rise-radius-full: 9999px;
+
+	// Контролы (кнопка, поле ввода, селект…) при sizeScale = 100: высота 32px = рамка 1px × 2 + отступ 5px × 2 + строка 20px.
+	--rise-control-padding-y: 5px;
+	--rise-control-padding-x: 10px;
+	--rise-control-gap: 6px;
+	--rise-control-icon-size: 16px;
+
+	--rise-disabled-opacity: 0.5;
+
+	// Анимации. При prefers-reduced-motion длительности обнуляются (см. ниже).
+	--rise-duration-fast: 150ms;
+	--rise-duration: 200ms;
+	--rise-duration-slow: 300ms;
+	--rise-ease: cubic-bezier(0.4, 0, 0.2, 1);
+	--rise-ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--rise-ease-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/// Токены, вычисляемые из других токенов (шкала радиусов, шрифт и радиус контролов).
+/// Объявлены на каждом элементе темы: если на контейнере с data-theme переопределить базу (--rise-radius,
+/// --rise-font-size-sm), производные пересчитаются внутри него. На :root без data-theme они считаются от значений :root.
+@mixin derived-tokens {
+	--rise-radius-xs: calc(var(--rise-radius) * 0.5);
+	--rise-radius-sm: var(--rise-radius);
+	--rise-radius-md: calc(var(--rise-radius) * 1.5);
+	--rise-radius-lg: calc(var(--rise-radius) * 2);
+	--rise-radius-xl: calc(var(--rise-radius) * 3);
+	--rise-radius-2xl: calc(var(--rise-radius) * 4);
+
+	--rise-control-font-size: var(--rise-font-size-sm);
+	--rise-control-line-height: var(--rise-line-height-sm);
+	--rise-control-radius: var(--rise-radius-md);
+}
+
+/// Палитры — сырые цвета ролей.
+@mixin palette-tokens {
+	@each $role, $shades in $palettes {
+		@each $shade, $value in $shades {
+			--rise-color-#{$role}-#{$shade}: #{$value};
+		}
+	}
+}
+
+@mixin light-tokens {
+	color-scheme: light;
+
+	// Фон
+	--rise-bg: #ffffff;
+	--rise-bg-muted: #{palette('neutral', 50)};
+	--rise-bg-elevated: #{palette('neutral', 100)};
+	--rise-bg-accented: #{palette('neutral', 200)};
+	--rise-bg-inverted: #{palette('neutral', 900)};
+
+	// Текст: dimmed — плейсхолдеры и неактивное, muted — вторичный текст, toned — вторичный на приподнятом фоне,
+	// обычный — основной текст, highlighted — заголовки и значения, inverted — текст на bg-inverted.
+	--rise-text-dimmed: #{palette('neutral', 400)};
+	--rise-text-muted: #{palette('neutral', 500)};
+	--rise-text-toned: #{palette('neutral', 600)};
+	--rise-text: #{palette('neutral', 700)};
+	--rise-text-highlighted: #{palette('neutral', 900)};
+	--rise-text-inverted: #ffffff;
+
+	// Рамки
+	--rise-border: #{palette('neutral', 200)};
+	--rise-border-muted: #{palette('neutral', 200)};
+	--rise-border-accented: #{palette('neutral', 300)};
+	--rise-border-inverted: #{palette('neutral', 900)};
+
+	// Роли: основной цвет, наведение, текст на заливке, мягкий фон, текст на мягком фоне, тонкая рамка
+	@each $role in $roles {
+		$main: map.get($light-main-shade, $role);
+
+		--rise-#{$role}: #{palette($role, $main)};
+		--rise-#{$role}-hover: #{palette($role, $main + 100)};
+		--rise-on-#{$role}: #ffffff;
+		--rise-#{$role}-soft: #{palette($role, 50)};
+		--rise-#{$role}-soft-hover: #{palette($role, 100)};
+		--rise-#{$role}-text: #{palette($role, 800)};
+		--rise-#{$role}-border: #{palette($role, 200)};
+	}
+
+	--rise-focus-ring: var(--rise-primary);
+
+	// Подложка модальных окон и выезжающих панелей
+	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
+
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+@mixin dark-tokens {
+	color-scheme: dark;
+
+	--rise-bg: #{palette('neutral', 900)};
+	--rise-bg-muted: #{palette('neutral', 800)};
+	--rise-bg-elevated: #{palette('neutral', 800)};
+	--rise-bg-accented: #{palette('neutral', 700)};
+	--rise-bg-inverted: #ffffff;
+
+	--rise-text-dimmed: #{palette('neutral', 500)};
+	--rise-text-muted: #{palette('neutral', 400)};
+	--rise-text-toned: #{palette('neutral', 300)};
+	--rise-text: #{palette('neutral', 200)};
+	--rise-text-highlighted: #ffffff;
+	--rise-text-inverted: #{palette('neutral', 900)};
+
+	--rise-border: #{palette('neutral', 800)};
+	--rise-border-muted: #{palette('neutral', 700)};
+	--rise-border-accented: #{palette('neutral', 700)};
+	--rise-border-inverted: #ffffff;
+
+	// В тёмной теме роли светлее (оттенок 400), а текст на заливке — тёмный: так контраст выше 4.5:1.
+	@each $role in $roles {
+		--rise-#{$role}: #{palette($role, 400)};
+		--rise-#{$role}-hover: #{palette($role, 300)};
+		--rise-on-#{$role}: #{palette('neutral', 950)};
+		--rise-#{$role}-soft: color-mix(in srgb, var(--rise-#{$role}) 12%, var(--rise-bg));
+		--rise-#{$role}-soft-hover: color-mix(in srgb, var(--rise-#{$role}) 18%, var(--rise-bg));
+		--rise-#{$role}-text: #{palette($role, 300)};
+		--rise-#{$role}-border: color-mix(in srgb, var(--rise-#{$role}) 35%, var(--rise-bg));
+	}
+
+	--rise-focus-ring: var(--rise-primary);
+	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
+
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+}
+
+/// Совместимость с переменными 1.x (`--color-*`, `--shadow-*`, `--border-radius-*`, `--transition-*`, `--font-family-*`).
+/// Компоненты их больше не используют; они оставлены для CSS приложений, которые их читают.
+/// @deprecated Используйте токены `--rise-*`. Будут удалены в 2.0.
+@mixin legacy-aliases {
+	--color-primary: var(--rise-text-highlighted);
+	--color-accent: var(--rise-primary);
+	--color-accent-hover: var(--rise-primary-hover);
+	--color-text: var(--rise-text);
+	--color-text-muted: var(--rise-text-muted);
+	--color-bg: var(--rise-bg-muted);
+	--color-white: var(--rise-bg);
+	--color-border: var(--rise-border);
+	--color-error: var(--rise-error);
+	--color-success: var(--rise-success);
+	--color-warning: var(--rise-warning);
+	--color-info: var(--rise-info);
+	--color-surface: var(--rise-bg);
+	--color-surface-muted: var(--rise-bg-elevated);
+	--color-bg-soft: var(--rise-bg-muted);
+	--color-text-inverse: #ffffff;
+	--color-primary-soft: var(--rise-primary-soft);
+	--color-primary-soft-hover: var(--rise-primary-soft-hover);
+
+	@each $role in ('info', 'success', 'warning', 'error') {
+		--color-#{$role}-bg: var(--rise-#{$role}-soft);
+		--color-#{$role}-border: var(--rise-#{$role}-border);
+		--color-#{$role}-text: var(--rise-#{$role}-text);
+		--color-#{$role}-icon: var(--rise-#{$role});
+	}
+
+	--color-code-bg: var(--rise-bg-muted);
+	--color-code-border: var(--rise-border);
+	--color-code-header-bg: var(--rise-bg-elevated);
+	--color-code-text: var(--rise-text);
+
+	--color-sidebar-bg: var(--rise-bg);
+	--color-sidebar-border: var(--rise-border);
+	--color-sidebar-text: var(--rise-text);
+	--color-sidebar-muted: var(--rise-text-muted);
+	--color-sidebar-subtle: var(--rise-text-dimmed);
+	--color-sidebar-hover-bg: var(--rise-bg-elevated);
+	--color-sidebar-current-bg: var(--rise-primary-soft);
+	--color-sidebar-current-border: var(--rise-primary-border);
+	--color-sidebar-current-text: var(--rise-primary-text);
+	--color-sidebar-badge-bg: var(--rise-primary-soft-hover);
+	--color-sidebar-badge-text: var(--rise-primary-text);
+	--color-sidebar-footer-bg: var(--rise-bg-muted);
+	--color-sidebar-children-line: var(--rise-border);
+	--color-sidebar-soft-bg: var(--rise-bg-muted);
+	--color-sidebar-soft-border: var(--rise-border);
+	--color-sidebar-soft-footer-bg: var(--rise-bg-elevated);
+
+	--font-family-base: var(--rise-font-sans);
+	--font-family-heading: var(--rise-font-sans);
+	--font-family-mono: var(--rise-font-mono);
+
+	--transition-base: var(--rise-duration) var(--rise-ease);
+	--transition-slow: var(--rise-duration-slow) var(--rise-ease);
+	--border-radius-sm: var(--rise-radius-sm);
+	--border-radius-base: var(--rise-radius-lg);
+	--border-radius-lg: var(--rise-radius-xl);
+	--border-radius-full: var(--rise-radius-full);
+
+	--shadow-sm: var(--rise-shadow-xs);
+	--shadow-md: var(--rise-shadow-md);
+	--shadow-lg: var(--rise-shadow-lg);
+	--shadow-xl: var(--rise-shadow-xl);
+}
+
+// ─── 3. Вывод ──────────────────────────────────────────────────────────────────
+
+:root {
+	@include palette-tokens;
+	@include static-tokens;
+}
+
+:root,
+[data-theme='light'] {
+	@include light-tokens;
+}
+
+[data-theme='dark'] {
+	@include dark-tokens;
+}
+
+// Производные токены и алиасы объявлены на каждом элементе темы: в поддереве с data-theme они считаются от его значений.
+:root,
+[data-theme='light'],
+[data-theme='dark'] {
+	@include derived-tokens;
+	@include legacy-aliases;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--rise-duration-fast: 0.01ms;
+		--rise-duration: 0.01ms;
+		--rise-duration-slow: 0.01ms;
+	}
+}

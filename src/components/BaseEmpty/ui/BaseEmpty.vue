@@ -13,7 +13,7 @@
 			<BaseText
 				v-if="title"
 				tag="h3"
-				:weight="UI_FONT_WEIGHT.SEMIBOLD"
+				:weight="UI_FONT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
 				class="base-empty__title"
 				:custom-class="classes.title">
@@ -23,7 +23,7 @@
 			<BaseText
 				v-if="description"
 				tag="p"
-				:size-scale="sizeScale - 10"
+				:size-scale="sizeScale"
 				class="base-empty__description"
 				:custom-class="classes.description">
 				{{ description }}

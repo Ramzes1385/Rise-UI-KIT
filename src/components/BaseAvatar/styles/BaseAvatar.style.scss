@@ -1,118 +1,88 @@
+// BaseAvatar. Размер при sizeScale = 100: 32px (как контрол), инициалы 16px medium — пропорции аватара md в Nuxt UI.
+// Варианты: default — нейтральный фон bg-elevated; soft — мягкий фон основного цвета; outline — фон bg и рамка;
+// ghost — без фона; shadow — фон bg, тонкая рамка и тень. Формы: circle — круг, square — радиус md.
+// Проп color перекрашивает фон (color.bg) и инициалы (color.text).
 .base-avatar {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
 	position: relative;
-	width: sz(40px);
-	height: sz(40px);
-	font-size: sz(16px);
+	display: inline-flex;
 	flex-shrink: 0;
-	border-radius: var(--border-radius-full);
-	@include transition(transform, box-shadow);
+	width: sz(32px);
+	height: sz(32px);
+	border-radius: var(--rise-radius-full);
+	vertical-align: middle;
+	// Аватар не фокусируется сам; если приложение сделает его интерактивным (tabindex), фокус виден кольцом.
+	@include focus-ring;
 
-	@include hover {
-		transform: scale(1.1);
-		z-index: 1;
-		box-shadow: var(--shadow-md);
-
-		.base-avatar__content {
-			border-color: var(--color-accent);
-		}
+	&--square {
+		border-radius: sz(var(--rise-radius-md));
 	}
 
-	@include active {
-		transform: scale(0.95);
-	}
-
-	@include focus {
-		box-shadow:
-			0 0 0 2px var(--color-bg),
-			0 0 0 4px var(--color-accent);
-	}
-
-	// --- Обертка для контента (чтобы overflow: hidden не резал статус) ---
+	// Содержимое обрезается по форме аватара; статус-точка лежит снаружи этой обёртки и не обрезается.
 	&__content {
-		width: 100%;
-		height: 100%;
+		box-sizing: border-box;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
+		height: 100%;
 		overflow: hidden;
-		border: sz(1px) solid var(--color-border);
-		border-radius: var(--border-radius-full);
-		@include custom-bg(background-color, var(--color-surface-muted));
-		@include custom-text(color, var(--color-text-muted));
-		font-weight: 600;
-		@include transition(border-color);
+		border-radius: inherit;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+		// На bg-elevated вторичный текст — toned: у muted там контраст ниже 4.5:1.
+		@include custom-text(color, var(--rise-text-toned));
+		@include text-size(base);
+		font-weight: var(--rise-font-weight-medium);
+		white-space: nowrap;
+		user-select: none;
 	}
-
-	// --- Формы ---
-
-	&--circle {
-		border-radius: var(--border-radius-full);
-
-		.base-avatar__content {
-			border-radius: var(--border-radius-full);
-		}
-	}
-
-	&--square {
-		border-radius: sz(var(--border-radius-base));
-
-		.base-avatar__content {
-			border-radius: sz(var(--border-radius-base));
-		}
-	}
-
-	// --- Варианты ---
-
-	&--ghost {
-		.base-avatar__content {
-			background-color: transparent;
-			border-color: transparent;
-		}
-	}
-
-	&--outline {
-		.base-avatar__content {
-			background-color: transparent;
-			border-color: var(--color-text-muted);
-		}
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-sm);
-	}
-
-	&--soft {
-		.base-avatar__content {
-			@include custom-bg(background-color, var(--color-surface-muted));
-			border-color: transparent;
-		}
-	}
-
-	// --- Элементы ---
 
 	&__img {
+		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
 
-	&__initials {
-		line-height: 1;
-		text-transform: uppercase;
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--soft &__content {
+		@include custom-bg(background-color, var(--rise-primary-soft));
+		@include custom-text(color, var(--rise-primary-text));
 	}
 
+	&--outline &__content {
+		border: 1px solid var(--rise-border-accented);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--ghost &__content {
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--shadow {
+		box-shadow: var(--rise-shadow-sm);
+	}
+
+	&--shadow &__content {
+		border: 1px solid var(--rise-border);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	// ─── Статус «в сети» ─────────────────────────────────────────────────────────
+
+	// Точка цвета success в правом нижнем углу; кольцо цвета фона отделяет её от изображения.
 	&__online {
 		position: absolute;
-		bottom: sz(0px);
-		right: sz(0px);
-		width: sz(12px);
-		height: sz(12px);
-		background-color: var(--color-success);
-		border: sz(2px) solid var(--color-bg);
-		border-radius: sz(var(--border-radius-full));
-		z-index: 2;
+		right: 0;
+		bottom: 0;
+		box-sizing: border-box;
+		width: sz(10px);
+		height: sz(10px);
+		border: sz(2px) solid var(--rise-bg);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-success);
 	}
 }

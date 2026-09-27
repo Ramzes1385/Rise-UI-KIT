@@ -24,4 +24,6 @@ export interface UseTableColumnsReturn {
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 	toggleColumnVisibility: (column: TableColumn) => void
 	formatCellValue: (column: TableColumn, row: TableRow) => string
+	/** Копии текущих колонок (с isHidden/width из внутреннего состояния) для эмитов */
+	snapshotColumns: () => TableColumn[]
 }

@@ -4,6 +4,8 @@ import type { CustomClassProp } from '@composables/useCustomClass'
 export interface FormFieldLabelProps {
 	/** Текст метки */
 	label: string
+	/** id поля, к которому относится метка (атрибут `for`): клик по метке фокусирует поле, скринридер озвучивает её как имя поля */
+	forId?: string
 	/** HTML-тег обёртки */
 	tag?: 'label' | 'span' | 'div' | 'p' | 'small' | 'strong' | 'em' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 	/** Показывать звёздочку обязательности */

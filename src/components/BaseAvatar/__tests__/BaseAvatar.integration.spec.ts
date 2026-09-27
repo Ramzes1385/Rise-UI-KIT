@@ -1,6 +1,6 @@
 /**
  * Integration-тесты для BaseAvatar.
- * Проверяют взаимодействие с дочерними компонентами и emits.
+ * Проверяют изображение, запасные инициалы, статус и emit click.
  */
 
 import '@testing-library/jest-dom/vitest'
@@ -27,18 +27,18 @@ describe('BaseAvatar integration', () => {
 		})
 	})
 
-	describe('интеграция с BaseImage', () => {
-		it('должен рендерить BaseImage когда передан src', () => {
-			const { container } = render(BaseAvatar, {
+	describe('изображение', () => {
+		it('должен рендерить изображение с alt когда передан src', () => {
+			render(BaseAvatar, {
 				props: { src: '/avatar.jpg', alt: 'Фото' },
 			})
 
-			const img = container.querySelector('.base-avatar__img')
-			expect(img).toBeInTheDocument()
-			expect(img?.querySelector('img')).toBeInTheDocument()
+			const img = screen.getByRole('img', { name: 'Фото' })
+			expect(img).toHaveClass('base-avatar__img')
+			expect(img).toHaveAttribute('src', '/avatar.jpg')
 		})
 
-		it('не должен рендерить BaseImage когда src не передан', () => {
+		it('не должен рендерить изображение когда src не передан', () => {
 			const { container } = render(BaseAvatar, {
 				props: { name: 'Иван' },
 			})
@@ -47,8 +47,8 @@ describe('BaseAvatar integration', () => {
 		})
 	})
 
-	describe('интеграция с BaseText', () => {
-		it('должен рендерить BaseText с инициалами когда нет src', () => {
+	describe('инициалы', () => {
+		it('должен рендерить инициалы когда нет src', () => {
 			render(BaseAvatar, {
 				props: { name: 'Иван Петров' },
 			})
@@ -56,13 +56,13 @@ describe('BaseAvatar integration', () => {
 			expect(screen.getByText('ИП')).toBeInTheDocument()
 		})
 
-		it('должен рендерить BaseText с "?" когда нет имени и src', () => {
+		it('должен рендерить "?" когда нет имени и src', () => {
 			render(BaseAvatar)
 
 			expect(screen.getByText('?')).toBeInTheDocument()
 		})
 
-		it('не должен рендерить BaseText когда есть src', () => {
+		it('не должен рендерить инициалы когда есть src', () => {
 			const { container } = render(BaseAvatar, {
 				props: { src: '/avatar.jpg', name: 'Иван Петров' },
 			})
@@ -72,7 +72,7 @@ describe('BaseAvatar integration', () => {
 	})
 
 	describe('комбинированные сценарии', () => {
-		it('должен рендерить BaseImage и emit click вместе', async () => {
+		it('должен рендерить изображение и emit click вместе', async () => {
 			const { container, emitted } = render(BaseAvatar, {
 				props: { src: '/avatar.jpg', alt: 'Фото' },
 			})

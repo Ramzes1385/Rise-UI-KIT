@@ -58,8 +58,6 @@
 		"../../src/**/*.stories.ts",
 		"../../src/**/*.stories.tsx",
 
-		"../../src/utils/storybookUtils/**",
-
 		"../../tests",
 		"../../node_modules",
 		"../../dist"

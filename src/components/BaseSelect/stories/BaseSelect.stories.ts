@@ -1,1025 +1,458 @@
-﻿/**
- * Stories для компонента BaseSelect.
- * Демонстрирует все вариации, мультивыбор, поиск, ошибки и интерактивные состояния.
+/**
+ * BaseSelect — stories.
+ *
+ * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
+ * состояния (пустой список, ошибка, disabled, длинные значения) → содержимое (иконки и описания, слоты) →
+ * сценарии (мультивыбор, поиск, недоступные опции) → клавиатура.
+ * Открытый список телепортируется в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { UI_TEXT } from '@constants'
-import { buildArgTypes, playFocusTest, playShiftTab } from '@utils/storybookUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { BaseButton } from '@components/BaseButton'
 import { SELECT_VARIANTS } from '../model/BaseSelect.types'
 import BaseSelect from '../ui/BaseSelect.vue'
 import type { BaseSelectOption } from '../model/BaseSelect.types'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Демо-опции для stories */
-const OPTIONS: BaseSelectOption[] = [
-	{ value: 'metal', label: 'Металл' },
-	{ value: 'wood', label: 'Дерево' },
-	{ value: 'stone', label: 'Камень' },
-	{ value: 'glass', label: 'Стекло', description: 'Прозрачный материал' },
-	{ value: 'ceramic', label: 'Керамика', isDisabled: true },
+/** Города доставки. Екатеринбург недоступен — на нём видно отключённую опцию. */
+const CITIES: BaseSelectOption[] = [
+	{ value: 'msk', label: 'Москва' },
+	{ value: 'spb', label: 'Санкт-Петербург' },
+	{ value: 'kzn', label: 'Казань' },
+	{ value: 'nsk', label: 'Новосибирск' },
+	{ value: 'ekb', label: 'Екатеринбург', isDisabled: true },
 ]
 
-/** Опции с иконками */
-const ICON_OPTIONS: BaseSelectOption[] = [
-	{ value: 'steel', label: 'Сталь', icon: '⚙️' },
-	{ value: 'bronze', label: 'Бронза', icon: 'рџҐ‰' },
-	{ value: 'copper', label: 'Медь', icon: 'рџџ¤' },
-	{ value: 'gold', label: 'Золото', icon: 'рџҐ‡' },
+/** Длинный список городов для поиска. */
+const ALL_CITIES: BaseSelectOption[] = [
+	'Москва',
+	'Санкт-Петербург',
+	'Новосибирск',
+	'Екатеринбург',
+	'Казань',
+	'Нижний Новгород',
+	'Челябинск',
+	'Самара',
+	'Омск',
+	'Ростов-на-Дону',
+	'Уфа',
+	'Красноярск',
+].map(label => ({ value: label, label }))
+
+/** Валюты: символ — в поле icon, код — в описании. */
+const CURRENCIES: BaseSelectOption[] = [
+	{ value: 'rub', label: 'Российский рубль', icon: '₽', description: 'RUB · валюта счёта' },
+	{ value: 'usd', label: 'Доллар США', icon: '$', description: 'USD' },
+	{ value: 'eur', label: 'Евро', icon: '€', description: 'EUR' },
+	{ value: 'cny', label: 'Китайский юань', icon: '¥', description: 'CNY' },
 ]
 
-/** Много опций для скролла */
-const MANY_OPTIONS: BaseSelectOption[] = Array.from({ length: 20 }, (_, i) => ({
-	value: `item-${i}`,
-	label: `Элемент ${i + 1}`,
-}))
+/** Жанры для мультивыбора. */
+const GENRES: BaseSelectOption[] = [
+	{ value: 'drama', label: 'Драма' },
+	{ value: 'comedy', label: 'Комедия' },
+	{ value: 'fantasy', label: 'Фэнтези' },
+	{ value: 'detective', label: 'Детектив' },
+	{ value: 'romance', label: 'Романтика' },
+	{ value: 'history', label: 'Исторический' },
+]
 
-const meta: Meta<typeof BaseSelect> = {
-	title: 'UI/BaseSelect',
+/** Статусы задачи: цвет точки задаёт слот option. */
+const STATUSES: (BaseSelectOption & { color: string })[] = [
+	{ value: 'todo', label: 'К выполнению', color: 'var(--rise-text-dimmed)' },
+	{ value: 'progress', label: 'В работе', color: 'var(--rise-info)' },
+	{ value: 'review', label: 'На проверке', color: 'var(--rise-warning)' },
+	{ value: 'done', label: 'Готово', color: 'var(--rise-success)' },
+]
+
+/** Проекты с длинными названиями. */
+const PROJECTS: BaseSelectOption[] = [
+	{ value: 'north', label: 'Сериал «Северный ветер», сезон 2, серии 1–12 — русский дубляж и субтитры' },
+	{ value: 'fox', label: 'Аниме «Лисья тропа» — закадровый перевод' },
+	{ value: 'lighthouse', label: 'Аудиокнига «Старый маяк»' },
+]
+
+/** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
+function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}
+
+/** Открытый список телепортируется в body и перекрыл бы страницу Docs — там пример показывается во фрейме. */
+function docsFrame(height: number) {
+	return { story: { inline: false, height: `${height}px` } }
+}
+
+const meta = {
+	title: 'Form/BaseSelect',
 	component: BaseSelect,
-
-	argTypes: buildArgTypes({
-		props: {
-			variant: { control: 'radio', options: SELECT_VARIANTS },
-			sizeScale: { control: { type: 'range', min: 50, max: 200, step: 10 } },
-			color: { control: 'object', description: 'Кастомный цвет { bg: { base, hover... }, text: { base, hover... } }' },
-			placeholder: { control: 'text' },
-			label: { control: 'text' },
-			isRequired: { control: 'boolean' },
-			isMultiple: { control: 'boolean' },
-			isSearchable: { control: 'boolean' },
-			isDisabled: { control: 'boolean' },
-			error: { control: 'text' },
-			customClass: { control: 'object' },
+	parameters: {
+		docs: {
+			description: {
+				component: [
+					'Выбор одного или нескольких значений из списка. Триггер выглядит как поле `BaseInput` (32px),',
+					'список — панель `BaseDropdown` в body.',
+					'',
+					'- `v-model` — значение опции; при `isMultiple` — массив значений, выбранные показаны бейджами.',
+					'- `isSearchable` — поле поиска в панели: фокус переходит в него при открытии, стрелки и Enter управляют списком.',
+					'- Доступность: триггер — `combobox` с подписью (`label`), список — `listbox`; стрелки, Home/End, Enter/Space,',
+					'  Escape; ошибка помечает триггер `aria-invalid` и связана с ним через `aria-describedby`.',
+					'',
+					'Для свободного ввода с подсказками используйте `BaseSearch`, для 2–5 вариантов на виду — `BaseRadio`.',
+				].join('\n'),
+			},
 		},
-		hidden: ['modelValue', 'options', 'onUpdate:modelValue', 'onChange'],
-	}),
-
+	},
+	argTypes: {
+		...baseArgTypes({ variants: SELECT_VARIANTS }),
+		modelValue: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		options: { control: 'object', table: propGroup(ARG_GROUP.content) },
+		label: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		placeholder: { control: 'text', table: propGroup(ARG_GROUP.content) },
+		isMultiple: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		isSearchable: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+		isRequired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	},
 	args: {
-		options: OPTIONS,
-		placeholder: 'Выберите материал...',
-		label: '',
-		isRequired: false,
-		isMultiple: false,
-		isSearchable: false,
-		isDisabled: false,
-		error: '',
+		modelValue: '',
+		options: CITIES,
+		label: 'Город доставки',
+		placeholder: 'Выберите город',
 		variant: 'default',
 		sizeScale: 100,
+		isMultiple: false,
+		isSearchable: false,
+		isRequired: false,
+		isDisabled: false,
+		'onUpdate:modelValue': fn(),
+		onChange: fn(),
 	},
-}
+	// Значение хранится в args: выбор в списке обновляет Controls, а изменение в Controls — селект.
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseSelect },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: '<div class="story-narrow"><BaseSelect v-bind="props" @update:model-value="onUpdate" /></div>',
+		}
+	},
+} satisfies Meta<typeof BaseSelect>
 
 export default meta
-type Story = StoryObj<typeof BaseSelect>
-/** Базовый выбор */
-export const Default: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка по Tab', async () => {
-			await playFocusTest(canvasElement, { selector: '.base-select__trigger' })
-		})
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-select__trigger' })
-		})
-	},
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" :options="options" />' },
-		},
-	},
-}
-/** Все варианты отображения */
+type Story = StoryObj<typeof meta>
+
+// ─── Default ───────────────────────────────────────────────────────────────────
+
+/**
+ * Песочница: выберите город или меняйте props в Controls — значение синхронизировано.
+ * Без play-функции: story открывают e2e-тесты (сценарий с клавиатурой проверяет Keyboard).
+ */
+export const Default: Story = {}
+
+// ─── Внешний вид ───────────────────────────────────────────────────────────────
+
+/**
+ * Шесть вариантов триггера — как у `BaseInput`. `default` — основной; `outline` — на цветном фоне;
+ * `soft`, `ghost` — в тулбарах и фильтрах; `shadow` — с тенью; `underline` — только нижняя линия.
+ */
 export const Variants: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const values = ref<Record<string, string | number | (string | number)[]>>({})
-			const options = OPTIONS
-			const variants = SELECT_VARIANTS
-			return { args, values, options, variants }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:320px;">
-				<BaseSelect v-for="v in variants" :key="v"
-					v-model="values[v]"
-					v-bind="args"
-					:variant="v"
-					:placeholder="'Variant: ' + v"
-					:options="options"
-				/>
-			</div>
-		`,
-	}),
 	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-for="v in variants" :key="v" :variant="v" />' },
-		},
-	},
-}
-/** Масштаб размера */
-export const SizeScale: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			const options = OPTIONS
-			return { args, value, options }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:320px;">
-				<BaseSelect v-model="value" :options="options" :size-scale="75" placeholder="75%" />
-				<BaseSelect v-model="value" :options="options" :size-scale="100" placeholder="100%" />
-				<BaseSelect v-model="value" :options="options" :size-scale="150" placeholder="150%" />
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect :size-scale="150" />' },
-		},
-	},
-}
-/** Отключенный */
-export const Disabled: Story = {
-	args: {
-		isDisabled: true,
+		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
+		docs: { source: { code: SELECT_VARIANTS.map(variant => `<BaseSelect v-model="city" :options="cities" variant="${variant}" label="${variant}" />`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" is-disabled />' },
-		},
-	},
-}
-/** С ошибкой */
-export const WithError: Story = {
-	args: {
-		error: 'Выберите обязательный материал',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" error="Выберите обязательный материал" />' },
-		},
-	},
-}
-/** С label и required */
-export const WithLabel: Story = {
-	args: {
-		label: 'Материал',
-		isRequired: true,
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" label="Материал" is-required />' },
-		},
-	},
-}
-/** Мультивыбор */
-export const Multiple: Story = {
-	args: {
-		isMultiple: true,
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<(string | number)[]>([])
-			return { args, value }
-		},
-		template: `
-			<div>
-				<BaseSelect v-model="value" v-bind="args" />
-				<p style="margin-top:8px;color:var(--color-text-muted);font-size:12px;">Выбрано: {{ value }}</p>
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" is-multiple />' },
-		},
-	},
-}
-/** С поиском */
-export const Searchable: Story = {
-	args: {
-		isSearchable: true,
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" is-searchable />' },
-		},
-	},
-}
-/** Мультивыбор + поиск */
-export const MultipleSearchable: Story = {
-	args: {
-		isMultiple: true,
-		isSearchable: true,
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<(string | number)[]>([])
-			return { args, value }
-		},
-		template: `
-			<div>
-				<BaseSelect v-model="value" v-bind="args" />
-				<p style="margin-top:8px;color:var(--color-text-muted);font-size:12px;">Выбрано: {{ value }}</p>
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" is-multiple is-searchable />' },
-		},
-	},
-}
-/** С иконками */
-export const WithIcons: Story = {
-	args: {
-		options: ICON_OPTIONS,
-		placeholder: 'Выберите металл...',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" :options="iconOptions" />' },
-		},
-	},
-}
-/** С описаниями опций */
-export const WithDescriptions: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			const options = OPTIONS
-			return { args, value, options }
-		},
-		template: '<BaseSelect v-model="value" :options="options" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" :options="options" />' },
-		},
-	},
-}
-/** С отключенной опцией */
-export const WithDisabledOption: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" :options="options" />' },
-		},
-	},
-}
-/** Много опций */
-export const ManyOptions: Story = {
-	args: {
-		options: MANY_OPTIONS,
-		placeholder: 'Выберите элемент...',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	parameters: {
-		docs: {
-			source: { code: '<BaseSelect v-model="value" :options="manyOptions" />' },
-		},
-	},
-}
-/** Все интерактивные состояния рядом */
-export const InteractiveStates: Story = {
-	render: () => ({
-		components: { BaseSelect },
-		setup() {
-			const v1 = ref<string | number | (string | number)[]>('')
-			const v2 = ref<string | number | (string | number)[]>('')
-			const v3 = ref<string | number | (string | number)[]>('')
-			const v4 = ref<string | number | (string | number)[]>('')
-			const v5 = ref<string | number | (string | number)[]>('')
-			const v6 = ref<string | number | (string | number)[]>('')
-			const options = OPTIONS
-			return { v1, v2, v3, v4, v5, v6, options }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:320px;">
-				<BaseSelect v-model="v1" variant="default" placeholder="Normal" :options="options" />
-				<BaseSelect v-model="v2" variant="default" placeholder="Hover" class="base-select--hover" :options="options" />
-				<BaseSelect v-model="v3" variant="default" placeholder="Active" class="base-select--active" :options="options" />
-				<BaseSelect v-model="v4" variant="default" placeholder="Focus" class="base-select--focus" :options="options" />
-				<BaseSelect v-model="v5" variant="default" placeholder="Error" error="Ошибка" :options="options" />
-				<BaseSelect v-model="v6" variant="default" placeholder="Disabled" is-disabled :options="options" />
-			</div>
-		`,
-	}),
-	parameters: {
-		docs: {
-			source: {
-				code: '<BaseSelect placeholder="Normal" />\n<BaseSelect class="base-select--hover" />\n<BaseSelect error="Ошибка" />\n<BaseSelect is-disabled />',
-			},
-		},
-	},
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	decorators: [
-		() => ({
-			template: '<div data-theme="dark" style="padding: 16px; background: var(--color-bg);"><story /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'variant', 'onUpdate:modelValue']),
+			variants: SELECT_VARIANTS,
+			values: ref<Record<string, string>>({ default: 'msk' }),
 		}),
-	],
-	render: () => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			const options = OPTIONS
-			return { value, options }
-		},
 		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:320px;">
-				<BaseSelect v-model="value" variant="default" :options="options" placeholder="Тёмная тема" />
+			<div class="story-grid" style="--story-grid-min: 240px;">
+				<BaseSelect
+					v-for="variant in variants"
+					:key="variant"
+					v-bind="props"
+					v-model="values[variant]"
+					:variant="variant"
+					:label="variant" />
 			</div>
 		`,
 	}),
+}
+
+/** Размеры через `sizeScale`: высота триггера 24, 28, 32, 36 и 40px — как у поля и кнопки того же размера. */
+export const Sizes: Story = {
+	parameters: {
+		controls: { include: ['variant'] },
+		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSelect v-model="city" :options="cities" :size-scale="${p.sizeScale}" />`).join('\n') } },
+	},
+	render: args => ({
+		components: { BaseSelect },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'label', 'sizeScale', 'onUpdate:modelValue']), presets: SIZE_PRESETS, sizeLabel, values: ref<Record<string, string>>({}) }),
+		template: `
+			<div class="story-col story-narrow">
+				<BaseSelect
+					v-for="preset in presets"
+					:key="preset.name"
+					v-bind="props"
+					v-model="values[preset.name]"
+					:size-scale="preset.sizeScale"
+					:placeholder="sizeLabel(preset)" />
+			</div>
+		`,
+	}),
+}
+
+/**
+ * Кастомный цвет фона и текста триггера через `color`. Бейджи выбранных значений — вложенные компоненты:
+ * они цвет селекта не наследуют и остаются мягкими основного цвета.
+ */
+export const CustomColor: Story = {
+	args: {
+		label: 'Жанры',
+		options: GENRES,
+		isMultiple: true,
+		modelValue: ['drama', 'comedy'],
+		color: { bg: { base: '#eff6ff' }, text: { base: '#1e3a8a' } },
+	},
+	play: async ({ canvas }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Жанры' })
+		await expect(getComputedStyle(trigger).backgroundColor).toBe('rgb(239, 246, 255)')
+		const tag = canvas.getByText('Драма').closest('.base-badge') as HTMLElement
+		await expect(getComputedStyle(tag).backgroundColor).toBe(resolveColor('var(--rise-primary-soft)'))
+	},
+}
+
+// ─── Состояния ─────────────────────────────────────────────────────────────────
+
+/** Пустой список: вместо опций — текст из слота `empty` (по умолчанию «Ничего не найдено»). */
+export const Empty: Story = {
+	args: { options: [], label: 'Склад', placeholder: 'Выберите склад' },
+	parameters: { docs: docsFrame(200) },
+	render: args => ({
+		components: { BaseSelect },
+		setup: () => ({ props: useArgsWithoutSlots(args, ['onUpdate:modelValue']) }),
+		template: `
+			<div class="story-narrow">
+				<BaseSelect v-bind="props">
+					<template #empty>Складов пока нет — добавьте первый в настройках</template>
+				</BaseSelect>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('combobox', { name: 'Склад' }))
+		const empty = await screen.findByText('Складов пока нет — добавьте первый в настройках')
+		await waitFor(() => expect(empty).toBeVisible())
+		await expect(screen.queryAllByRole('option')).toHaveLength(0)
+	},
+}
+
+/** Ошибка: красная рамка и текст под полем; триггер помечен `aria-invalid` и описан текстом ошибки. */
+export const WithError: Story = {
+	args: { error: 'Выберите город, чтобы рассчитать доставку', isRequired: true },
+	play: async ({ canvas }) => {
+		const trigger = canvas.getByRole('combobox', { name: /Город доставки/ })
+		await expect(trigger).toHaveAttribute('aria-invalid', 'true')
+		await expect(trigger).toHaveAttribute('aria-required', 'true')
+		await expect(trigger).toHaveAccessibleDescription('Выберите город, чтобы рассчитать доставку')
+	},
+}
+
+/** Отключённый селект: приглушён, не получает фокус и не открывается. */
+export const Disabled: Story = {
+	args: { modelValue: 'msk', isDisabled: true },
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Город доставки' })
+		await expect(trigger).toHaveAttribute('aria-disabled', 'true')
+		// Без tabindex: не получает фокус ни с клавиатуры, ни кликом
+		await expect(trigger).not.toHaveAttribute('tabindex')
+		await userEvent.click(trigger)
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+	},
+}
+
+/** Длинное значение обрезается многоточием в триггере; в списке длинные названия переносятся. */
+export const LongContent: Story = {
+	args: { label: 'Проект', options: PROJECTS, modelValue: 'north', placeholder: 'Выберите проект' },
+	play: async ({ canvas }) => {
+		const value = within(canvas.getByRole('combobox', { name: 'Проект' })).getByText(/Северный ветер/)
+		await expect(value.scrollWidth).toBeGreaterThan(value.clientWidth)
+	},
+}
+
+// ─── Содержимое ────────────────────────────────────────────────────────────────
+
+/**
+ * Иконка (`icon` — символ или эмодзи) и описание (`description`) опции. Иконка выбранной опции видна и в триггере,
+ * выбранная опция в списке отмечена галочкой.
+ */
+export const WithIcons: Story = {
+	args: { label: 'Валюта', options: CURRENCIES, modelValue: 'rub', placeholder: 'Выберите валюту' },
+	parameters: { docs: docsFrame(300) },
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('combobox', { name: 'Валюта' }))
+		const listbox = await screen.findByRole('listbox', { name: 'Валюта' })
+		await expect(within(listbox).getByRole('option', { name: /Российский рубль/ })).toHaveAttribute('aria-selected', 'true')
+		await expect(within(listbox).getByRole('option', { name: /Доллар США/ })).toHaveAttribute('aria-selected', 'false')
+	},
+}
+
+/**
+ * Слоты: `option` — своя разметка опции (здесь цветная точка статуса), `selected` — значение в триггере,
+ * `footer` — действие под списком.
+ */
+export const Slots: Story = {
+	args: { label: 'Статус задачи', options: STATUSES, modelValue: 'progress', placeholder: 'Выберите статус' },
 	parameters: {
 		docs: {
-			source: { code: '<div data-theme="dark"><BaseSelect v-model="value" /></div>' },
-		},
-	},
-}
-/** Открытие/закрытие дропдауна — покрывает toggleDropdown, handleClose */
-export const OpenClose: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (trigger) {
-			await userEvent.click(trigger)
-			await waitFor(() => {
-				const dropdown = document.querySelector('.base-select__dropdown-content')
-				expect(dropdown).toBeTruthy()
-			})
-			await userEvent.click(trigger)
-			await waitFor(() => {
-				const dropdown = document.querySelector('.base-select__dropdown-content')
-				expect(dropdown).toBeFalsy()
-			})
-		}
-	},
-}
-/** Выбор одной опции */
-export const SelectOption: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (trigger) {
-			await userEvent.click(trigger)
-			let dropdown: HTMLElement | null = null
-			await waitFor(() => {
-				dropdown = document.querySelector('.base-select__dropdown-content')
-				expect(dropdown).toBeTruthy()
-			})
-			if (dropdown) {
-				const option = (dropdown as HTMLElement).querySelector(
-					'.base-select__option:not(.base-select__option--disabled)',
-				) as HTMLElement
-				expect(option).toBeTruthy()
-				await userEvent.click(option)
-				await waitFor(() => {
-					const valueText = canvasElement.querySelector('.base-select__value-text') as HTMLElement
-					expect(valueText).toBeTruthy()
-					expect(valueText.textContent).toBe('Металл')
-				})
-			}
-		}
-	},
-}
-/** Выбор нескольких опций */
-export const SelectMultipleOption: Story = {
-	args: { isMultiple: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<(string | number)[]>([])
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (trigger) {
-			await userEvent.click(trigger)
-			let dropdown: HTMLElement | null = null
-			await waitFor(() => {
-				dropdown = document.querySelector('.base-select__dropdown-content')
-				expect(dropdown).toBeTruthy()
-			})
-			if (dropdown) {
-				const options = (dropdown as HTMLElement).querySelectorAll(
-					'.base-select__option:not(.base-select__option--disabled)',
-				)
-				expect(options.length).toBeGreaterThan(0)
-				if (options[0]) await userEvent.click(options[0] as HTMLElement)
-				if (options[1]) await userEvent.click(options[1] as HTMLElement)
-
-				await waitFor(() => {
-					const tags = canvasElement.querySelectorAll('.base-select__tag')
-					expect(tags.length).toBe(2)
-				})
-
-				const closeBtn = canvasElement.querySelector('.base-select__tag-close') as HTMLElement
-				if (closeBtn) {
-					await userEvent.click(closeBtn)
-					await waitFor(() => {
-						const tags = canvasElement.querySelectorAll('.base-select__tag')
-						expect(tags.length).toBe(1)
-					})
-				}
-			}
-		}
-	},
-}
-/** Поиск по опциям */
-export const SearchOptions: Story = {
-	args: { isSearchable: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-}
-/** Навигация с клавиатуры */
-export const KeyboardNavigation: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		expect(trigger).toBeInTheDocument()
-
-		await step('Фокусировка на селекте через Tab', async () => {
-			trigger.focus()
-			expect(trigger).toHaveFocus()
-		})
-
-		await step('Открытие выпадающего списка по Enter', async () => {
-			await userEvent.keyboard('{Enter}')
-			await waitFor(() => {
-				const dropdown = document.querySelector('.base-select__dropdown-content')
-				expect(dropdown).toBeTruthy()
-			})
-		})
-
-		await step('Выбор первого элемента кликом', async () => {
-			// Компонент не поддерживает навигацию стрелками между опциями,
-			// поэтому выбираем первый доступный элемент кликом
-			const firstOption = document.querySelector('.base-select__option') as HTMLElement
-			expect(firstOption).toBeTruthy()
-			await userEvent.click(firstOption)
-
-			await waitFor(() => {
-				const valueText = canvasElement.querySelector('.base-select__value-text') as HTMLElement
-				expect(valueText).toBeTruthy()
-				expect(valueText.textContent).toBe('Металл')
-			})
-		})
-	},
-}
-/** Клик по отключённой опции */
-export const ClickDisabledOption: Story = {
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (trigger) {
-			await userEvent.click(trigger)
-			let dropdown: HTMLElement | null = null
-			await waitFor(() => {
-				dropdown = document.querySelector('.base-select__dropdown-content')
-				expect(dropdown).toBeTruthy()
-			})
-			if (dropdown) {
-				const disabledOption = (dropdown as HTMLElement).querySelector('.base-select__option--disabled') as HTMLElement
-				expect(disabledOption).toBeTruthy()
-				await userEvent.click(disabledOption)
-				const valueText = canvasElement.querySelector('.base-select__value-text')
-				expect(valueText).toBeFalsy()
-			}
-		}
-	},
-}
-/** searchable с вводом текста (filteredOptions с query) */
-export const SearchWithQuery: Story = {
-	args: { isSearchable: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (trigger) await userEvent.click(trigger)
-		let dropdown: HTMLElement | null = null
-		await waitFor(() => {
-			dropdown = document.querySelector('.base-select__dropdown-content')
-			expect(dropdown).toBeTruthy()
-		})
-		if (dropdown) {
-			const input = (dropdown as HTMLElement).querySelector('.base-select__search-input') as HTMLInputElement
-			expect(input).toBeTruthy()
-			await userEvent.type(input, 'Мет')
-			await waitFor(
-				() => {
-					const options = (dropdown as HTMLElement).querySelectorAll('.base-select__option')
-					expect(options.length).toBeGreaterThan(0)
-				},
-				{ timeout: 2000 },
-			)
-		}
-	},
-}
-/** Селект без опций */
-export const Empty: Story = {
-	args: {
-		modelValue: '',
-		options: [],
-		label: 'Пустой список',
-		placeholder: 'Нет элементов',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка по Tab', async () => {
-			await playFocusTest(canvasElement, { selector: '.base-select__trigger' })
-		})
-		await step('Обратная фокусировка по Shift+Tab', async () => {
-			await playShiftTab(canvasElement, { selector: '.base-select__trigger' })
-		})
-	},
-}
-/** Селект с большим количеством опций */
-export const LongContent: Story = {
-	args: {
-		modelValue: '',
-		options: MANY_OPTIONS,
-		label: 'Много опций',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement, step }) => {
-		await step('Фокусировка по Tab', async () => {
-			await playFocusTest(canvasElement, { selector: '.base-select__trigger' })
-		})
-	},
-}
-/** Поиск без совпадений — покрывает блок "Ничего не найдено" (стр. 192-196) */
-export const SearchNoResults: Story = {
-	args: { isSearchable: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (!trigger) return
-		await userEvent.click(trigger)
-		let dropdown: HTMLElement | null = null
-		await waitFor(() => {
-			dropdown = document.querySelector('.base-select__dropdown-content')
-			expect(dropdown).toBeTruthy()
-		})
-		if (dropdown) {
-			const input = (dropdown as HTMLElement).querySelector('.base-select__search-input') as HTMLInputElement
-			expect(input).toBeTruthy()
-			input.value = 'qwertyzzz'
-			input.dispatchEvent(new Event('input', { bubbles: true }))
-			await waitFor(
-				() => {
-					const noResults = (dropdown as HTMLElement).querySelector('.base-select__no-results')
-					expect(noResults).toBeTruthy()
-				},
-				{ timeout: 2000 },
-			)
-		}
-	},
-}
-/** Поиск по описанию опции — покрывает ветку matchDesc (стр. 291-292) */
-export const SearchByDescription: Story = {
-	args: { isSearchable: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (!trigger) return
-		await userEvent.click(trigger)
-		let dropdown: HTMLElement | null = null
-		await waitFor(() => {
-			dropdown = document.querySelector('.base-select__dropdown-content')
-			expect(dropdown).toBeTruthy()
-		})
-		if (dropdown) {
-			const input = (dropdown as HTMLElement).querySelector('.base-select__search-input') as HTMLInputElement
-			expect(input).toBeTruthy()
-			input.value = 'прозрачный'
-			input.dispatchEvent(new Event('input', { bubbles: true }))
-			await waitFor(
-				() => {
-					const options = (dropdown as HTMLElement).querySelectorAll('.base-select__option')
-					expect(options.length).toBe(1)
-				},
-				{ timeout: 2000 },
-			)
-		}
-		// Закрываем дропдаун кликом по триггеру — покрывает handleClose (стр. 306)
-		await userEvent.click(trigger)
-		await waitFor(() => {
-			const stillOpen = document.querySelector('.base-select__dropdown-content')
-			expect(stillOpen).toBeFalsy()
-		})
-	},
-}
-/** Отображение иконки выбранной опции — покрывает стр. 94 (selectedOption.icon) */
-export const SelectedIconDisplay: Story = {
-	args: { options: ICON_OPTIONS, placeholder: 'Выберите металл...' },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number>('steel')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const icon = canvasElement.querySelector('.base-select__icon')
-		expect(icon).toBeTruthy()
-		if (icon instanceof HTMLElement) {
-			expect(icon.textContent?.trim()).toBeTruthy()
-		}
-	},
-}
-/** Отображение иконок в списке опций — покрывает стр. 171 (option.icon) */
-export const OptionIconsList: Story = {
-	args: { options: ICON_OPTIONS, placeholder: 'Выберите металл...' },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger')
-		if (!(trigger instanceof HTMLElement)) return
-		await userEvent.click(trigger)
-		await waitFor(() => {
-			const optionIcons = document.querySelectorAll('.base-select__option-icon')
-			expect(optionIcons.length).toBeGreaterThan(0)
-		})
-	},
-}
-/** Закрытие через клик вне — покрывает handleClose (стр. 306) */
-export const HandleCloseClearsSearch: Story = {
-	args: { options: OPTIONS, isSearchable: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number>('')
-			return { args, value }
-		},
-		template: '<div style="padding:200px;"><BaseSelect v-model="value" v-bind="args" /></div>',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger')
-		if (!(trigger instanceof HTMLElement)) return
-		await userEvent.click(trigger)
-		let searchInput: HTMLInputElement | null = null
-		await waitFor(() => {
-			const found = document.querySelector('.base-select__search-input')
-			if (found instanceof HTMLInputElement) searchInput = found
-			expect(searchInput).toBeTruthy()
-		})
-		if (searchInput) {
-			await userEvent.type(searchInput, 'мет')
-		}
-		await userEvent.click(document.body)
-		await waitFor(() => {
-			const stillOpen = document.querySelector('.base-select__dropdown-content')
-			expect(stillOpen).toBeFalsy()
-		})
-	},
-}
-/** Снятие выбора в multiple — покрывает splice ветку (стр. 322-324) */
-export const MultipleDeselect: Story = {
-	args: { isMultiple: true },
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<(string | number)[]>(['metal'])
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		document.querySelectorAll('.base-dropdown__panel').forEach(el => el.remove())
-		const trigger = canvasElement.querySelector('.base-select__trigger') as HTMLElement
-		if (!trigger) return
-		await userEvent.click(trigger)
-		let dropdown: HTMLElement | null = null
-		await waitFor(() => {
-			dropdown = document.querySelector('.base-select__dropdown-content')
-			expect(dropdown).toBeTruthy()
-		})
-		if (dropdown) {
-			const selectedOption = (dropdown as HTMLElement).querySelector('.base-select__option--selected') as HTMLElement
-			expect(selectedOption).toBeTruthy()
-			await userEvent.click(selectedOption)
-			await waitFor(() => {
-				const stillSelected = (dropdown as HTMLElement).querySelector('.base-select__option--selected')
-				expect(stillSelected).toBeFalsy()
-			})
-		}
-	},
-}
-/** Селект с обязательным label — ветка isRequired=true */
-export const RequiredLabel: Story = {
-	args: {
-		label: UI_TEXT.REQUIRED_FIELD,
-		isRequired: true,
-		options: OPTIONS,
-		placeholder: 'Выберите',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		const required = canvasElement.querySelector('.base-select__required')
-		expect(required).toBeTruthy()
-	},
-}
-/** Клик по триггеру при isDisabled — ветка !props.isDisabled ложна */
-export const DisabledTriggerClick: Story = {
-	args: {
-		options: OPTIONS,
-		isDisabled: true,
-		placeholder: 'Заблокировано',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		let trigger: HTMLElement | null = null
-		await waitFor(() => {
-			const found = canvasElement.querySelector('.base-select__trigger')
-			expect(found).toBeTruthy()
-			if (found instanceof HTMLElement) trigger = found
-		})
-		try {
-			if (trigger) await userEvent.click(trigger)
-		} catch { /* ignore */ }
-		await waitFor(() => {
-			const dropdown =
-				document.querySelector('.base-select__dropdown-content') || document.querySelector('.base-select__dropdown')
-			const visible = dropdown instanceof HTMLElement && dropdown.offsetParent !== null && dropdown.children.length > 0
-			expect(visible).toBeFalsy()
-		})
-	},
-}
-/** Удаление тега в multiple — функция removeValue */
-export const MultipleRemoveTag: Story = {
-	args: {
-		options: OPTIONS,
-		isMultiple: true,
-		placeholder: 'Выберите несколько',
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<(string | number)[]>(['metal', 'wood'])
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		// Дожидаемся рендера двух тегов (steel + iron) и крестиков закрытия
-		await waitFor(
-			() => {
-				const tags = canvasElement.querySelectorAll('.base-select__tag')
-				const closes = canvasElement.querySelectorAll('.base-select__tag-close')
-				expect(tags.length).toBe(2)
-				expect(closes.length).toBe(2)
+			...docsFrame(300),
+			source: {
+				code: [
+					'<BaseSelect v-model="status" :options="statuses" label="Статус задачи">',
+					'  <template #option="{ option }"><span class="dot" :style="{ background: option.color }" />{{ option.label }}</template>',
+					'  <template #selected="{ option }"><span class="dot" :style="{ background: option.color }" />{{ option.label }}</template>',
+					'  <template #footer><BaseButton variant="ghost">Настроить статусы</BaseButton></template>',
+					'</BaseSelect>',
+				].join('\n'),
 			},
-			{ timeout: 3000 },
-		)
-		// Кликаем по крестику первого тега и ждём удаления
-		const firstClose = canvasElement.querySelector('.base-select__tag-close')
-		if (!(firstClose instanceof HTMLElement)) throw new Error('tag-close не найден')
-		await userEvent.click(firstClose)
-		await waitFor(
-			() => {
-				const tags = canvasElement.querySelectorAll('.base-select__tag')
-				expect(tags.length).toBe(1)
-			},
-			{ timeout: 3000 },
-		)
+		},
+	},
+	render: args => {
+		const onUpdate = useModelArg()
+		return {
+			components: { BaseSelect, BaseButton },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
+			template: `
+				<div class="story-narrow">
+					<BaseSelect v-bind="props" @update:model-value="onUpdate">
+						<template #option="{ option }">
+							<span :style="{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: option.color }" />
+							{{ option.label }}
+						</template>
+						<template #selected="{ option }">
+							<span :style="{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: option.color }" />
+							{{ option.label }}
+						</template>
+						<template #footer>
+							<BaseButton variant="ghost" style="width: 100%;">Настроить статусы</BaseButton>
+						</template>
+					</BaseSelect>
+				</div>
+			`,
+		}
+	},
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Статус задачи' })
+		await expect(trigger).toHaveTextContent('В работе')
+		await userEvent.click(trigger)
+		const action = await screen.findByRole('button', { name: 'Настроить статусы' })
+		await waitFor(() => expect(action).toBeVisible())
+		await expect(screen.getAllByRole('option')).toHaveLength(4)
 	},
 }
-/** Селект с customClass — покрытие всех elementKeys */
-export const WithCustomClass: Story = {
-	args: {
-		options: OPTIONS,
-		label: 'С классами',
-		isRequired: true,
-		error: 'Ошибка',
-		isSearchable: true,
-		customClass: {
-			root: 'sel-root',
-			dropdown: 'sel-dropdown',
-			label: 'sel-label',
-			required: 'sel-required',
-			trigger: 'sel-trigger',
-			values: 'sel-values',
-			tag: 'sel-tag',
-			tagText: 'sel-tagText',
-			tagClose: 'sel-tagClose',
-			icon: 'sel-icon',
-			valueText: 'sel-valueText',
-			placeholder: 'sel-placeholder',
-			arrow: 'sel-arrow',
-			errorText: 'sel-error',
-			dropdownContent: 'sel-dropdownContent',
-			search: 'sel-search',
-			searchInput: 'sel-searchInput',
-			options: 'sel-options',
-			option: 'sel-option',
-			checkbox: 'sel-checkbox',
-			optionIcon: 'sel-optionIcon',
-			optionContent: 'sel-optionContent',
-			optionLabel: 'sel-optionLabel',
-			optionDesc: 'sel-optionDesc',
-			noResults: 'sel-noResults',
-		},
-	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.sel-root')).toBeTruthy()
+
+// ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Мультивыбор: выбранные значения — бейджи в триггере, крестик убирает значение; список остаётся открытым,
+ * опции отмечаются чекбоксами.
+ */
+export const Multiple: Story = {
+	args: { label: 'Жанры', options: GENRES, isMultiple: true, modelValue: ['drama', 'comedy', 'fantasy'], placeholder: 'Выберите жанры' },
+	parameters: { docs: docsFrame(360) },
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Жанры' })
+		await userEvent.click(canvas.getByRole('button', { name: 'Удалить Комедия' }))
+		await waitFor(() => expect(within(trigger).queryByText('Комедия')).not.toBeInTheDocument())
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+		await userEvent.click(trigger)
+		const listbox = await screen.findByRole('listbox', { name: 'Жанры' })
+		await expect(listbox).toHaveAttribute('aria-multiselectable', 'true')
+		await userEvent.click(within(listbox).getByRole('option', { name: 'Детектив' }))
+		await waitFor(() => expect(within(trigger).getByText('Детектив')).toBeInTheDocument())
+		// Список не закрывается: можно выбрать ещё
+		await expect(within(listbox).getByRole('option', { name: 'Детектив' })).toHaveAttribute('aria-selected', 'true')
+		await expect(trigger).toHaveAttribute('aria-expanded', 'true')
 	},
 }
-/** Селект с customColor — покрытие customColorStyle */
-export const WithCustomColor: Story = {
-	args: {
-		options: OPTIONS,
-		color: {
-			bg: { base: '#fafafa', hover: '#f0f0f0' },
-			text: { base: '#222222', hover: '#000000' },
-		},
+
+/**
+ * Поиск по опциям (`isSearchable`): при открытии фокус переходит в поле поиска, список фильтруется по названию
+ * и описанию, стрелки и Enter выбирают опцию прямо из поля.
+ */
+export const Searchable: Story = {
+	args: { label: 'Город', options: ALL_CITIES, isSearchable: true },
+	parameters: { docs: docsFrame(360) },
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Город' })
+		await userEvent.click(trigger)
+		const search = await screen.findByRole('textbox', { name: 'Поиск' })
+		await waitFor(() => expect(search).toHaveFocus())
+
+		await userEvent.keyboard('Каз')
+		await waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(1))
+		await expect(screen.getByRole('option')).toHaveTextContent('Казань')
+
+		await userEvent.keyboard('{Enter}')
+		await expect(trigger).toHaveTextContent('Казань')
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+		await expect(trigger).toHaveFocus()
 	},
-	render: args => ({
-		components: { BaseSelect },
-		setup() {
-			const value = ref<string | number | (string | number)[]>('')
-			return { args, value }
-		},
-		template: '<BaseSelect v-model="value" v-bind="args" />',
-	}),
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeInTheDocument()
+}
+
+/** Недоступные опции (`isDisabled` у опции): приглушены, не выбираются кликом и пропускаются стрелками. */
+export const DisabledOptions: Story = {
+	parameters: { docs: docsFrame(300) },
+	play: async ({ canvas, userEvent, args }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Город доставки' })
+		await userEvent.click(trigger)
+		const disabled = await screen.findByRole('option', { name: 'Екатеринбург' })
+		await expect(disabled).toHaveAttribute('aria-disabled', 'true')
+		await userEvent.click(disabled)
+		await expect(args.onChange).not.toHaveBeenCalled()
+		await expect(trigger).toHaveTextContent('Выберите город')
+		// Список не закрылся: клик по недоступной опции ничего не делает
+		await waitFor(() => expect(disabled).toBeVisible())
+	},
+}
+
+// ─── Доступность ───────────────────────────────────────────────────────────────
+
+/**
+ * Клавиатура: Tab ставит фокус на триггер, стрелка вниз открывает список, стрелки двигают активную опцию,
+ * Enter выбирает её и закрывает список, Escape закрывает без выбора.
+ */
+export const Keyboard: Story = {
+	tags: ['!autodocs'],
+	play: async ({ canvas, userEvent }) => {
+		const trigger = canvas.getByRole('combobox', { name: 'Город доставки' })
+		await tabTo(trigger, userEvent)
+
+		await userEvent.keyboard('{ArrowDown}')
+		await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+		const options = within(await screen.findByRole('listbox', { name: 'Город доставки' })).getAllByRole('option')
+		await expect(trigger).toHaveAttribute('aria-activedescendant', options[0]?.id)
+
+		await userEvent.keyboard('{ArrowDown}{Enter}')
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+		await expect(trigger).toHaveTextContent('Санкт-Петербург')
+		await expect(trigger).toHaveFocus()
+
+		await userEvent.keyboard('{Enter}')
+		await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+		await userEvent.keyboard('{Escape}')
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+		await expect(trigger).toHaveTextContent('Санкт-Петербург')
 	},
 }

@@ -261,6 +261,125 @@ describe('useSlider', () => {
 		})
 	})
 
+	describe('пауза autoplay по наведению, фокусу и prefers-reduced-motion', () => {
+		const AUTOPLAY = { isAutoplay: () => true, autoplayInterval: () => 1000 }
+
+		/** Корень с вложенной кнопкой: focusout диспатчится на корне, чтобы задать currentTarget */
+		function createRoot(slider: UseSliderReturn): { root: HTMLElement; inner: HTMLButtonElement } {
+			const root = document.createElement('div')
+			const inner = document.createElement('button')
+			root.appendChild(inner)
+			root.addEventListener('focusout', slider.onFocusOut)
+			return { root, inner }
+		}
+
+		/** Мок MediaQueryList с управляемым событием change */
+		function stubReducedMotion(matches: boolean) {
+			const listeners = new Set<(event: MediaQueryListEvent) => void>()
+			const query = {
+				matches,
+				addEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => listeners.add(listener)),
+				removeEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => listeners.delete(listener)),
+			}
+			vi.stubGlobal('matchMedia', vi.fn(() => query))
+			return {
+				query,
+				emitChange(next: boolean) {
+					listeners.forEach(listener => listener({ matches: next } as MediaQueryListEvent))
+				},
+			}
+		}
+
+		afterEach(() => {
+			vi.useRealTimers()
+			vi.unstubAllGlobals()
+		})
+
+		it('должен ставить на паузу при focusin и возобновлять, когда фокус ушёл наружу', () => {
+			vi.useFakeTimers()
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+			const { root } = createRoot(slider)
+
+			slider.onFocusIn()
+			vi.advanceTimersByTime(3000)
+			expect(slider.currentIndex.value).toBe(0)
+
+			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: document.body }))
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+		})
+
+		it('не должен возобновлять, если фокус перешёл на другой элемент внутри слайдера', () => {
+			vi.useFakeTimers()
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+			const { root, inner } = createRoot(slider)
+
+			slider.onFocusIn()
+			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: inner }))
+			vi.advanceTimersByTime(3000)
+
+			expect(slider.currentIndex.value).toBe(0)
+		})
+
+		it('не должен возобновлять при уходе мыши, пока фокус внутри', () => {
+			vi.useFakeTimers()
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+			const { root } = createRoot(slider)
+
+			slider.onMouseEnter()
+			slider.onFocusIn()
+			slider.onMouseLeave()
+			vi.advanceTimersByTime(3000)
+			expect(slider.currentIndex.value).toBe(0)
+
+			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }))
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+		})
+
+		it('не должен возобновлять при уходе фокуса, пока указатель над слайдером', () => {
+			vi.useFakeTimers()
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+			const { root } = createRoot(slider)
+
+			slider.onMouseEnter()
+			slider.onFocusIn()
+			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }))
+			vi.advanceTimersByTime(3000)
+
+			expect(slider.currentIndex.value).toBe(0)
+		})
+
+		it('не должен запускать autoplay при prefers-reduced-motion и должен реагировать на смену настройки', () => {
+			vi.useFakeTimers()
+			const reducedMotion = stubReducedMotion(true)
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+
+			vi.advanceTimersByTime(3000)
+			expect(slider.currentIndex.value).toBe(0)
+
+			reducedMotion.emitChange(false)
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+
+			reducedMotion.emitChange(true)
+			vi.advanceTimersByTime(3000)
+			expect(slider.currentIndex.value).toBe(1)
+		})
+
+		it('должен отписываться от изменения prefers-reduced-motion при размонтировании', () => {
+			const reducedMotion = stubReducedMotion(false)
+			const { wrapper } = withSetupFull(() => useSlider(createOptions()))
+
+			wrapper.unmount()
+
+			expect(reducedMotion.query.removeEventListener).toHaveBeenCalledWith(
+				'change',
+				reducedMotion.query.addEventListener.mock.calls[0][1],
+			)
+		})
+	})
+
 	// --- dragOffset и isDragging ---
 
 	it('должен возвращать dragOffset равным 0 по умолчанию', () => {

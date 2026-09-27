@@ -1,7 +1,7 @@
 import type { BaseComponentProps } from '../../../types/base.types'
 
 /**
- * Вариант лоадера
+ * Вид индикатора: `spinner` — вращающаяся дуга, `dots` — три точки, `pulse` — точка с расходящимся кольцом, `bars` — столбики.
  */
 export type LoaderVariant = 'spinner' | 'dots' | 'pulse' | 'bars'
 
@@ -9,11 +9,11 @@ export type LoaderVariant = 'spinner' | 'dots' | 'pulse' | 'bars'
  * Пропсы компонента BaseLoader
  */
 export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant, 'root' | 'animation' | 'spinner' | 'label'> {
-	/** Показывать текст */
+	/** Показывать подпись `label` под индикатором. */
 	hasLabel?: boolean
-	/** Текст загрузки */
+	/** Текст подписи. Он же — доступное имя статуса (без завершающего многоточия), даже если подпись скрыта. */
 	label?: string
-	/** Оверлей поверх родительского контейнера */
+	/** Подложка на весь родительский контейнер с индикатором по центру. Родителю нужен `position: relative`. */
 	isOverlay?: boolean
 }
 

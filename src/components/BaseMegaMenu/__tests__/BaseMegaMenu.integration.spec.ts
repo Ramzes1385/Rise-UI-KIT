@@ -513,4 +513,52 @@ describe('BaseMegaMenu integration', () => {
 			expect(container.querySelector('.base-mega-menu__sub-list')).not.toBeInTheDocument()
 		})
 	})
+	describe('клавиатура и семантика', () => {
+		it('заголовок узла — кнопка: Enter раскрывает вложенный уровень, aria-expanded отражает состояние', async () => {
+			render(BaseMegaMenu, { props: { columns: COLUMNS, trigger: 'click' } })
+
+			const stairs = screen.getByRole('button', { name: 'Лестницы' })
+			expect(stairs).toHaveAttribute('tabindex', '0')
+			expect(stairs).toHaveAttribute('aria-expanded', 'false')
+
+			await fireEvent.keyDown(stairs, { key: 'Enter' })
+			expect(stairs).toHaveAttribute('aria-expanded', 'true')
+			expect(screen.getByRole('button', { name: 'Винтовые' })).toBeInTheDocument()
+
+			await fireEvent.keyDown(stairs, { key: ' ' })
+			expect(stairs).toHaveAttribute('aria-expanded', 'false')
+		})
+
+		it('Space на листе выполняет переход, как клик', async () => {
+			const { emitted } = render(BaseMegaMenu, { props: { columns: COLUMNS, trigger: 'click' } })
+
+			const gates = screen.getByRole('button', { name: 'Ворота и ограды' })
+			expect(gates).not.toHaveAttribute('aria-expanded')
+
+			await fireEvent.keyDown(gates, { key: ' ' })
+			expect(emitted().navigate).toEqual([['/gates']])
+		})
+
+		it('отключённый узел помечен aria-disabled, выведен из порядка Tab и не реагирует на Enter', async () => {
+			const { emitted } = render(BaseMegaMenu, { props: { columns: COLUMNS, trigger: 'click' } })
+
+			const disabled = screen.getByRole('button', { name: 'Отключенный элемент' })
+			expect(disabled).toHaveAttribute('aria-disabled', 'true')
+			expect(disabled).toHaveAttribute('tabindex', '-1')
+
+			await fireEvent.keyDown(disabled, { key: 'Enter' })
+			expect(emitted().navigate).toBeUndefined()
+		})
+
+		it('пункт навигации с подменю сообщает aria-expanded, пункт-ссылка — нет', async () => {
+			render(BaseMegaMenu, { props: { items: DROPDOWN_ITEMS, layout: 'dropdown', trigger: 'click' } })
+
+			const catalog = screen.getByRole('button', { name: 'Каталог' })
+			expect(catalog).toHaveAttribute('aria-expanded', 'false')
+			expect(screen.getByRole('button', { name: 'Контакты' })).not.toHaveAttribute('aria-expanded')
+
+			await fireEvent.click(catalog)
+			expect(catalog).toHaveAttribute('aria-expanded', 'true')
+		})
+	})
 })

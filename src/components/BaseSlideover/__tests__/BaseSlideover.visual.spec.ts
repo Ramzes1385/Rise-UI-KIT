@@ -1,19 +1,20 @@
 /**
- * Visual regression тесты для BaseSlideover.
+ * Visual regression BaseSlideover: ключевые stories в светлой и тёмной теме.
+ * Витрины показывают панели внутри рамок (isContained), длинный текст — панель поверх страницы, поэтому снимается вся страница.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baseslideover'
-const STORIES = ['default', 'left-side', 'full-width', 'with-footer']
+const STORIES = ['sides', 'widths', 'custom-color', 'long-content'] as const
 
-for (const story of STORIES) {
-	test(`BaseSlideover — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		// BaseSlideover использует teleport — рендерится в body, #storybook-root пуст.
-		// Снимаем скриншот всей страницы.
-		await expect(page).toHaveScreenshot(`base-slideover--${story}.png`, {
-			fullPage: true,
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSlideover · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `overlay-baseslideover--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-slideover-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

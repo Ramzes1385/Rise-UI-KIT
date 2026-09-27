@@ -4,8 +4,8 @@
 		:class="[`base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="status"
-		:aria-label="UI_TEXT.LOADING_ARIA">
-		<div class="base-loader__animation" :class="classes.animation">
+		:aria-label="accessibleName">
+		<div class="base-loader__animation" :class="classes.animation" aria-hidden="true">
 			<!-- Spinner -->
 			<template v-if="variant === 'spinner'">
 				<svg class="base-loader__spinner" :class="classes.spinner" viewBox="0 0 50 50">
@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useSizeScale } from '@composables/useSizeScale'
@@ -60,4 +61,11 @@ const { classes } = useCustomClass({
 })
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })
+
+/**
+ * Доступное имя статуса берётся из label, чтобы кастомная подпись («Сохранение…»)
+ * не расходилась с фиксированным «Загрузка». Завершающее многоточие — визуальный
+ * признак процесса, в имени оно лишнее; пустой label даёт имя по умолчанию.
+ */
+const accessibleName = computed((): string => props.label.replace(/[.…\s]+$/, '') || UI_TEXT.LOADING_ARIA)
 </script>

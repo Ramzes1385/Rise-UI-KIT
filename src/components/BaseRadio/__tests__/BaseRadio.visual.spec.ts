@@ -1,26 +1,19 @@
 /**
- * Visual regression тесты для BaseRadio.
- * Скриншоты всех состояний через Playwright + Storybook.
+ * Visual regression BaseRadio: ключевые stories в светлой и тёмной теме.
  */
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
 
-const COMPONENT = 'ui-baseradio'
-const STORIES = [
-	'default',
-	'vertical',
-	'with-error',
-	'with-disabled-option',
-	'hover-state',
-	'focus-state',
-	'interactive-states',
-	'dark-theme',
-]
+const STORIES = ['variants', 'sizes', 'with-error', 'disabled', 'long-content'] as const
 
-for (const story of STORIES) {
-	test(`BaseRadio — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-radio--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseRadio · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baseradio--${story}`, { theme, height: 480 })
+				await expectStoryScreenshot(page, `base-radio-${story}-${theme}.png`)
+			})
+		}
 	})
 }

@@ -6,7 +6,7 @@
 import { expect, test } from '@playwright/test'
 
 test('datepicker: открывает панель и выбирает дату', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basedatepicker--default')
+	await page.goto('/iframe.html?id=form-basedatepicker--default')
 	await page.waitForSelector('.date-picker-field', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -23,7 +23,7 @@ test('datepicker: открывает панель и выбирает дату',
 })
 
 test('datepicker: не открывает панель если isDisabled', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basedatepicker--disabled')
+	await page.goto('/iframe.html?id=form-basedatepicker--disabled')
 	await page.waitForSelector('.date-picker-field', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 

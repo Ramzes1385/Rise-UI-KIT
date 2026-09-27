@@ -53,9 +53,11 @@
 				@mention-click="handleMentionClick"
 				@command-click="handleCommandClick" />
 
-			<!-- Панель ввода или тулбар массовых действий -->
+			<!-- Панель ввода или тулбар массовых действий.
+				v-show, а не v-if: черновик и вложения живут в состоянии ChatInput,
+				и размонтирование при входе в режим выделения стирало бы их. -->
 			<ChatInput
-				v-if="selectedMessageIds.length === 0"
+				v-show="selectedMessageIds.length === 0"
 				:size-scale="sizeScale"
 				:replying-to="replyingTo"
 				:quick-replies="quickReplies"
@@ -68,7 +70,7 @@
 				@quick-reply="handleQuickReply" />
 
 			<ChatSelectionToolbar
-				v-else
+				v-if="selectedMessageIds.length > 0"
 				:selected-count="selectedMessageIds.length"
 				:size-scale="sizeScale"
 				@forward="handleForwardSelected"
@@ -82,22 +84,14 @@
 				:size-scale="sizeScale"
 				:title="UI_CHAT_TEXT.DELETE_CONFIRM"
 				@update:is-open="handleCancelDelete">
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.CONFIRM" class="base-chat__confirm-text">
-					{{ deleteConfirmText }}
-				</BaseText>
+				<p class="base-chat__confirm-text">{{ deleteConfirmText }}</p>
 				<template #footer>
-					<div class="base-chat__confirm-actions">
-						<BaseButton variant="ghost" :size-scale="sizeScale" @click="handleCancelDelete">
-							{{ UI_TEXT.CANCEL }}
-						</BaseButton>
-						<BaseButton
-							variant="default"
-							:size-scale="sizeScale"
-							class="base-chat__confirm-delete-btn"
-							@click="handleConfirmDelete">
-							{{ UI_TEXT.DELETE }}
-						</BaseButton>
-					</div>
+					<BaseButton variant="outline" :size-scale="sizeScale" @click="handleCancelDelete">
+						{{ UI_TEXT.CANCEL }}
+					</BaseButton>
+					<BaseButton :size-scale="sizeScale" class="base-chat__confirm-delete-btn" @click="handleConfirmDelete">
+						{{ UI_TEXT.DELETE }}
+					</BaseButton>
 				</template>
 			</BaseModal>
 
@@ -109,6 +103,7 @@
 				:title="title"
 				:subtitle="subtitle"
 				:avatar="avatar"
+				:description="description"
 				:is-group="isGroup"
 				:members="members"
 				:messages="messages"
@@ -129,12 +124,11 @@ import { ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
-import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useChatActions } from '@composables/useChatActions'
 import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
 import { useChatState } from '@composables/useChatState'
-import { UI_TEXT, UI_SIZE, UI_CHAT_SCALE, UI_CHAT_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
+import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SIZE, UI_TEXT } from '@constants'
 import '../styles/BaseChat.style.scss'
 import { ChatHeader } from './ChatHeader'
 import { ChatInput } from './ChatInput'
