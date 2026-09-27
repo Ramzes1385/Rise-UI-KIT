@@ -128,6 +128,27 @@ git add src/components/BaseSideBar
 git commit -m "feat: add disclosure groups to BaseSideBarNavigation"
 ```
 
+#### Новый компонент
+
+Заготовку создаёт скрипт: раскладывает файлы по структуре библиотеки и регистрирует компонент.
+
+```bash
+npm run create:component -- Kbd --group=Element
+npm run create:component -- InputNumber --group=Form --kind=form --long
+```
+
+| Параметр | Значение |
+|---|---|
+| `--group` | Раздел Storybook из `storySort` в `build/storybook/preview.ts` |
+| `--kind` | `display` (по умолчанию) — отображение; `interactive` — кнопкоподобный элемент с `click` и `isDisabled`; `form` — поле с подписью, v-model, `isDisabled` и `error` |
+| `--variants` | Варианты оформления через запятую, по умолчанию `default,soft,outline,ghost` |
+| `--loading`, `--empty`, `--long` | Включить проверку состояний Loading, Empty, LongContent и создать заготовки этих stories |
+| `--dry-run` | Показать, что будет создано, ничего не записывая |
+
+Скрипт создаёт `index.ts`, модель с типами, компонент, стили, stories, unit-, integration- и visual-тесты. Экспорт добавляется в `src/components/index.ts`, регистрация — в `src/plugin.ts`, имя компонента — в наборы `scripts/check-a11y-coverage.mjs`.
+
+Заготовка сразу проходит lint, проверку типов, тесты с покрытием 100% и прогон stories в обеих темах. Назначение, размеры и различия вариантов автор описывает сам: эти места помечены `TODO(scaffold)`, и `npm run test:a11y:coverage` не пройдёт, пока метки остаются.
+
 ### 3.3. Conventional Commits
 
 Каждый коммит должен следовать формату:

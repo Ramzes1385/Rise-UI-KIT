@@ -116,6 +116,18 @@ const STATE_ALIASES = {
   LongContent: ['LongContent', 'Long', 'Overflow'],
 }
 
+/** Метка незаполненных мест заготовки scripts/create-component.mjs: пока она есть, компонент не готов. */
+const SCAFFOLD_TODO = 'TODO(scaffold)'
+
+/** Файлы компонентов, в которых остались незаполненные места заготовки. */
+function findScaffoldTodos() {
+  return readdirSync(COMPONENTS_DIR, { recursive: true, withFileTypes: true })
+    .filter(entry => entry.isFile() && /\.(ts|vue|scss)$/.test(entry.name))
+    .map(entry => join(entry.parentPath ?? entry.path, entry.name))
+    .filter(path => readFileSync(path, 'utf-8').includes(SCAFFOLD_TODO))
+    .map(path => path.replace(`${ROOT}/`, ''))
+}
+
 function checkA11yCoverage() {
   console.log('=== Запуск проверки покрытия Accessibility-тестами ===\n')
 
@@ -287,6 +299,13 @@ function checkA11yCoverage() {
   if (results.missingKeyboardFocus.length > 0) {
     console.log(`⚠️  Компоненты без Focused/Keyboard play (${results.missingKeyboardFocus.length}):`)
     results.missingKeyboardFocus.forEach(c => console.log(`  - ${c}`))
+    hasErrors = true
+  }
+
+  const scaffoldTodos = findScaffoldTodos()
+  if (scaffoldTodos.length > 0) {
+    console.log(`❌ Незаполненные места заготовки (${SCAFFOLD_TODO}):`)
+    scaffoldTodos.forEach(path => console.log(`  - ${path}`))
     hasErrors = true
   }
 
