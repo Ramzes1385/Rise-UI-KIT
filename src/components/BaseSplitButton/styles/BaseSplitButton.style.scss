@@ -1,0 +1,36 @@
+// BaseSplitButton. Основная кнопка и кнопка меню (шеврон 16px, отступы 5/8) вплотную: общие внешние скругления,
+// внутренние углы прямые, рамки накладываются на 1px. У залитой кнопки (default) между ними линия цвета текста 30%.
+// Кнопка в фокусе — поверх соседки, кольцо фокуса не обрезается.
+.base-split-button {
+	display: inline-flex;
+	align-items: stretch;
+	vertical-align: middle;
+
+	&__main,
+	&__toggle {
+		position: relative;
+
+		&:hover,
+		&:focus-visible {
+			z-index: 1;
+		}
+	}
+
+	&__main.base-button {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	&__menu {
+		margin-left: -1px;
+	}
+
+	&__toggle.base-button {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	&--default &__toggle.base-button {
+		box-shadow: inset 1px 0 0 color-mix(in srgb, currentcolor 30%, transparent);
+	}
+}

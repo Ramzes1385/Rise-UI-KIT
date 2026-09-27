@@ -104,6 +104,24 @@ export const ru = {
 		TAG_REMOVED: 'Удалено: {name}',
 		/** Список тегов BaseInputTags */
 		TAGS: 'Теги',
+		/** Имена клавиш BaseKbd для скринридера (на экране — символ) */
+		KEY_COMMAND: 'Command',
+		KEY_OPTION: 'Option',
+		KEY_CONTROL: 'Control',
+		KEY_SHIFT: 'Shift',
+		KEY_ENTER: 'Enter',
+		KEY_BACKSPACE: 'Backspace',
+		KEY_DELETE: 'Delete',
+		KEY_UP: 'стрелка вверх',
+		KEY_DOWN: 'стрелка вниз',
+		KEY_LEFT: 'стрелка влево',
+		KEY_RIGHT: 'стрелка вправо',
+		/** Остаток BaseAvatarGroup: «+3» на экране */
+		AVATARS_MORE: 'и ещё {n}',
+		/** Кнопка меню BaseSplitButton */
+		MORE_ACTIONS: 'Другие действия',
+		/** Подсказка кнопки BaseInplace */
+		INPLACE_HINT: 'Нажмите, чтобы изменить',
 	},
 	tour: {
 		SKIP: 'Пропустить тур',

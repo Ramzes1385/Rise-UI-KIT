@@ -9,9 +9,11 @@ import { BaseAnimation } from './components/BaseAnimation'
 import { BaseApp } from './components/BaseApp'
 import { BaseAutocomplete } from './components/BaseAutocomplete'
 import { BaseAvatar } from './components/BaseAvatar'
+import { BaseAvatarGroup } from './components/BaseAvatarGroup'
 import { BaseBadge } from './components/BaseBadge'
 import { BaseBreadcrumbs } from './components/BaseBreadcrumbs'
 import { BaseButton } from './components/BaseButton'
+import { BaseButtonGroup } from './components/BaseButtonGroup'
 import { BaseCard } from './components/BaseCard'
 import { BaseCheckbox } from './components/BaseCheckbox'
 import { BaseCheckboxGroup } from './components/BaseCheckboxGroup'
@@ -23,13 +25,16 @@ import { BaseContextMenu } from './components/BaseContextMenu'
 import { BaseDropdown } from './components/BaseDropdown'
 import { BaseDropdownMenu } from './components/BaseDropdownMenu'
 import { BaseEmpty } from './components/BaseEmpty'
+import { BaseFab } from './components/BaseFab'
 import { BaseForm } from './components/BaseForm'
 import { BaseFormField } from './components/BaseFormField'
 import { BaseIcon } from './components/BaseIcon'
 import { BaseImage } from './components/BaseImage'
+import { BaseInplace } from './components/BaseInplace'
 import { BaseInput } from './components/BaseInput'
 import { BaseInputNumber } from './components/BaseInputNumber'
 import { BaseInputTags } from './components/BaseInputTags'
+import { BaseKbd } from './components/BaseKbd'
 import { BaseLink } from './components/BaseLink'
 import { BaseLoader } from './components/BaseLoader'
 import { BaseMegaMenu } from './components/BaseMegaMenu'
@@ -52,15 +57,19 @@ import { BaseSideBar } from './components/BaseSideBar'
 import { BaseSkeleton } from './components/BaseSkeleton'
 import { BaseSlideover } from './components/BaseSlideover'
 import { BaseSlider } from './components/BaseSlider'
+import { BaseSplitButton } from './components/BaseSplitButton'
 import { BaseStepper } from './components/BaseStepper'
 import { BaseSwitch } from './components/BaseSwitch'
 import { BaseTabs } from './components/BaseTabs'
 import { BaseText } from './components/BaseText'
 import { BaseTextarea } from './components/BaseTextarea'
+import { BaseTimeline } from './components/BaseTimeline'
 import { BaseTimePicker } from './components/BaseTimePicker'
+import { BaseToolbar } from './components/BaseToolbar'
 import { BaseTooltip } from './components/BaseTooltip'
 import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
+import { BaseUser } from './components/BaseUser'
 import { DEFAULTS_KEY } from './composables/useDefaults/useDefaults'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
 import { LINK_COMPONENT_KEY } from './composables/useLink/useLink'
@@ -121,9 +130,11 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseApp,
 	BaseAutocomplete,
 	BaseAvatar,
+	BaseAvatarGroup,
 	BaseBadge,
 	BaseBreadcrumbs,
 	BaseButton,
+	BaseButtonGroup,
 	BaseCalendar,
 	BaseCard,
 	BaseChat,
@@ -139,14 +150,17 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseDropdownMenu,
 	BaseEditor,
 	BaseEmpty,
+	BaseFab,
 	BaseFileUpload,
 	BaseForm,
 	BaseFormField,
 	BaseIcon,
 	BaseImage,
+	BaseInplace,
 	BaseInput,
 	BaseInputNumber,
 	BaseInputTags,
+	BaseKbd,
 	BaseLink,
 	BaseLoader,
 	BaseMegaMenu,
@@ -169,6 +183,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseSkeleton,
 	BaseSlideover,
 	BaseSlider,
+	BaseSplitButton,
 	BaseStepper,
 	BaseSwitch,
 	BaseTable,
@@ -176,9 +191,12 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseText,
 	BaseTextarea,
 	BaseTimePicker,
+	BaseTimeline,
+	BaseToolbar,
 	BaseTooltip,
 	BaseTour,
 	BaseTree,
+	BaseUser,
 }
 
 function getName(name: string, prefix?: string): string {

@@ -1,0 +1,83 @@
+// BaseFab. Плавающая кнопка 56px (круг) в углу окна с отступом 24px (и безопасной зоной телефона), тень lg, иконка 20px.
+// Широкая (isExtended) — высота 48px, отступы 0 20px, иконка и подпись 14/20 medium. Слой — под окнами и панелями
+// (z-overlay − 1). default — заливка основным цветом; soft — мягкий основной цвет; outline — фон страницы и рамка.
+// isContained — в углу контейнера (position: absolute) вместо окна.
+.base-fab {
+	--fab-offset: #{sz(24px)};
+	position: fixed;
+	z-index: calc(var(--rise-z-overlay) - 1);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: sz(8px);
+	width: sz(56px);
+	height: sz(56px);
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: var(--rise-radius-full);
+	@include custom-bg(background-color, var(--rise-primary));
+	@include custom-text(color, var(--rise-on-primary));
+	box-shadow: var(--rise-shadow-lg);
+	cursor: pointer;
+	text-decoration: none;
+	@include text-size(sm);
+	font-weight: var(--rise-font-weight-medium);
+	@include transition-colors;
+	@include focus-ring;
+
+	@include custom-bg-hover(background-color, var(--rise-primary-hover));
+
+	&--bottom-right {
+		right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+		bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
+	}
+
+	&--bottom-left {
+		bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
+		left: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
+	}
+
+	&--top-right {
+		top: calc(var(--fab-offset) + env(safe-area-inset-top, 0px));
+		right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+	}
+
+	&--top-left {
+		top: calc(var(--fab-offset) + env(safe-area-inset-top, 0px));
+		left: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
+	}
+
+	&--contained {
+		--fab-offset: #{sz(16px)};
+		position: absolute;
+	}
+
+	&--extended {
+		width: auto;
+		height: sz(48px);
+		padding: 0 sz(20px);
+	}
+
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--rise-primary-soft));
+		@include custom-text(color, var(--rise-primary-text));
+
+		@include custom-bg-hover(background-color, var(--rise-primary-soft-hover));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text-highlighted));
+
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
+	}
+
+	&__icon {
+		flex-shrink: 0;
+	}
+}

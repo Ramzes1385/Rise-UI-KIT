@@ -50,6 +50,10 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseTimePicker',
   'BaseInputTags',
   'BaseSegmented',
+  'BaseSplitButton',
+  'BaseToolbar',
+  'BaseFab',
+  'BaseInplace',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -68,6 +72,10 @@ const INTERACTIVE_WITH_DISABLED = new Set([
   'BaseTimePicker',
   'BaseInputTags',
   'BaseSegmented',
+  'BaseSplitButton',
+  'BaseToolbar',
+  'BaseFab',
+  'BaseInplace',
 ])
 
 /** Формовые компоненты, требующие story Error */

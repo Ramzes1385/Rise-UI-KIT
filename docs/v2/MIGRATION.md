@@ -324,6 +324,21 @@
 - Утилиты: `parseNumberInput`, `roundToPrecision`, `clampNumber`, `stepPrecision`; `parseTimeInput`, `buildTimeOptions`, `timePrefixes`, `timeToMinutes`, `minutesToTime`.
 - Строки словаря (ru, en): `aria.NUMBER_DECREASE`, `aria.NUMBER_INCREASE`, `aria.TAG_REMOVE`, `aria.TAG_ADDED`, `aria.TAG_REMOVED`, `aria.TAGS`, `text.TIME_PLACEHOLDER`.
 
+## Отображение и действия (порция 2.2)
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseKbd` — клавиша (`<kbd>`): служебные клавиши символом с названием для скринридера, `meta`/`alt` по системе (`platform`).
+- `BaseTimeline` — лента событий: `items` (`title`, `description`, `date`, `icon`, `color`), `currentId` (`aria-current="step"`), `orientation`, `dateFormat`, слот `item`.
+- `BaseAvatarGroup` — аватары внахлёст: `items`, `max`, `shape`, `ariaLabel`; «+N» со скрытым «и ещё N».
+- `BaseUser` — аватар, имя и подпись: `src`, `description`, `isOnline`, `orientation`, `to`/`href`, слот `description`.
+- `BaseButtonGroup` — склеенные кнопки: `orientation`, `ariaLabel`.
+- `BaseSplitButton` — основная кнопка и меню (BaseDropdownMenu): `label`, `items`, `menuLabel`, `isLoading`, события `click` и `select`.
+- `BaseToolbar` — панель по образцу APG Toolbar: один таб-стоп, стрелки, Home/End, `orientation`, `ariaLabel`.
+- `BaseFab` — плавающая кнопка: `label`, `icon`, `isExtended`, `position`, `isContained`, `to`/`href`.
+- `BaseInplace` — правка текста на месте: v-model, `label`, `placeholder`, `isSaveOnBlur`, события `save` и `cancel`, методы `edit`, `save`, `cancel`.
+- Строки словаря (ru, en): `aria.KEY_*` (названия клавиш), `aria.AVATARS_MORE`, `aria.MORE_ACTIONS`, `aria.INPLACE_HINT`.
+
 ## Новые утилиты
 
 | Функция | Назначение |

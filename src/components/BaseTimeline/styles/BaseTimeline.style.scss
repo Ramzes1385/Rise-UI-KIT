@@ -1,0 +1,144 @@
+// BaseTimeline. Лента событий: маркер 24px (круг) и линия 2px цвета border между маркерами; справа (или снизу у
+// горизонтальной) — дата 12/16 приглушённая, заголовок 14/20 medium, описание 14/20 приглушённое. Между событиями 24px.
+// Цвет маркера — роль события (primary по умолчанию). default — заливка цветом, иконка или точка 8px цвета on-primary;
+// soft — мягкий фон (15% цвета) и иконка цвета события; outline — кольцо 2px цвета события на фоне страницы.
+// Текущее событие — заголовок text-highlighted; предстоящие — маркер нейтральный, текст приглушённый.
+.base-timeline {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	&__item {
+		--timeline-color: var(--rise-primary);
+		position: relative;
+		display: flex;
+		gap: sz(12px);
+		padding-bottom: sz(24px);
+
+		&:last-child {
+			padding-bottom: 0;
+		}
+
+		&--success {
+			--timeline-color: var(--rise-success);
+		}
+
+		&--warning {
+			--timeline-color: var(--rise-warning);
+		}
+
+		&--error {
+			--timeline-color: var(--rise-error);
+		}
+
+		&--info {
+			--timeline-color: var(--rise-info);
+		}
+
+		&--neutral,
+		&--upcoming {
+			--timeline-color: var(--rise-border-accented);
+		}
+	}
+
+	&__marker {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(24px);
+		height: sz(24px);
+		border: 2px solid transparent;
+		border-radius: 50%;
+		background-color: var(--timeline-color);
+		color: var(--rise-on-primary);
+	}
+
+	&__dot {
+		width: sz(8px);
+		height: sz(8px);
+		border-radius: 50%;
+		background-color: currentcolor;
+	}
+
+	// Линия от маркера до следующего события: от низа маркера до верха следующего
+	&__line {
+		position: absolute;
+		top: sz(24px);
+		bottom: 0;
+		left: calc(#{sz(12px)} - 1px);
+		width: 2px;
+		background-color: var(--rise-border);
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+		padding-top: sz(2px);
+	}
+
+	&__date {
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+	}
+
+	&__title {
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text);
+	}
+
+	&__description {
+		@include text-size(sm);
+		color: var(--rise-text-muted);
+	}
+
+	&__item--current &__title {
+		color: var(--rise-text-highlighted);
+	}
+
+	&__item--upcoming &__title {
+		color: var(--rise-text-muted);
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--soft &__marker {
+		background-color: color-mix(in srgb, var(--timeline-color) 15%, var(--rise-bg));
+		color: var(--timeline-color);
+	}
+
+	&--outline &__marker {
+		border-color: var(--timeline-color);
+		background-color: var(--rise-bg);
+		color: var(--timeline-color);
+	}
+
+	// ─── Горизонтальная лента ────────────────────────────────────────────────────
+
+	&--horizontal {
+		flex-direction: row;
+		overflow-x: auto;
+	}
+
+	&--horizontal &__item {
+		flex: 1 0 sz(160px);
+		flex-direction: column;
+		padding-right: sz(16px);
+		padding-bottom: 0;
+	}
+
+	&--horizontal &__line {
+		top: calc(#{sz(12px)} - 1px);
+		right: 0;
+		left: sz(24px);
+		width: auto;
+		height: 2px;
+	}
+}

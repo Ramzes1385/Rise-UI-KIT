@@ -1,0 +1,53 @@
+// BaseInplace. Текст с правкой на месте: в просмотре — кнопка без рамки с текстом окружения (шрифт наследуется),
+// отступы 2/4, радиус sm; default — пунктирное подчёркивание, ghost — без него; наведение — фон bg-elevated.
+// Пустое значение — плейсхолдер приглушённый. В правке — BaseInput шириной не меньше 160px.
+.base-inplace {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	vertical-align: baseline;
+
+	&__display {
+		max-width: 100%;
+		margin: 0;
+		padding: sz(2px 4px);
+		border: none;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		text-decoration: underline dashed;
+		text-decoration-color: var(--rise-border-accented);
+		text-underline-offset: 0.25em;
+		cursor: text;
+		overflow-wrap: anywhere;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+
+		&:disabled {
+			text-decoration: none;
+			cursor: default;
+		}
+
+		&--empty {
+			color: var(--rise-text-muted);
+		}
+	}
+
+	&--ghost &__display {
+		text-decoration: none;
+	}
+
+	&__field {
+		min-width: sz(160px);
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}

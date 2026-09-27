@@ -1,0 +1,54 @@
+// BaseUser. Аватар 32px и текст справа с зазором 8px: имя 14/20 medium, подпись 12/16 приглушённая, оба обрезаются
+// многоточием. vertical — аватар над текстом, по центру. Блок-ссылка: без подчёркивания, наведение подчёркивает имя.
+.base-user {
+	display: inline-flex;
+	align-items: center;
+	gap: sz(8px);
+	max-width: 100%;
+	min-width: 0;
+	@include custom-text(color, var(--rise-text-highlighted));
+	text-align: left;
+
+	&--vertical {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__name {
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		@include truncate;
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+
+	&__description {
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+		@include truncate;
+	}
+
+	// Ссылка: вид блока, а не текста — без подчёркивания; при наведении подчёркнуто только имя
+	&--link.base-link {
+		display: inline-flex;
+		font-size: inherit;
+		text-decoration: none;
+		border-radius: sz(var(--rise-radius-md));
+
+		@include hover {
+			text-decoration: none;
+
+			.base-user__name {
+				text-decoration: underline;
+			}
+		}
+	}
+}

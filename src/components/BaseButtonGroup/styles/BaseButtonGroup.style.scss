@@ -1,0 +1,58 @@
+// BaseButtonGroup. Кнопки вплотную: у крайних — внешние скругления, у средних углы прямые; соседние рамки
+// накладываются на 1px (одна линия между outline-кнопками). Кнопка в фокусе или под указателем — поверх соседей,
+// кольцо фокуса не обрезается. vertical — столбиком, скругления сверху и снизу.
+.base-button-group {
+	display: inline-flex;
+	align-items: stretch;
+	vertical-align: middle;
+
+	> * {
+		position: relative;
+		border-radius: 0;
+
+		&:hover,
+		&:focus-visible,
+		&:focus-within {
+			z-index: 1;
+		}
+	}
+
+	// Вложенные кнопки (BaseSplitButton, BaseDropdownMenu): углы задаёт группа
+	> * .base-button {
+		border-radius: 0;
+	}
+
+	&--horizontal > * + * {
+		margin-left: -1px;
+	}
+
+	&--horizontal > :first-child,
+	&--horizontal > :first-child .base-button {
+		border-top-left-radius: sz(var(--rise-control-radius));
+		border-bottom-left-radius: sz(var(--rise-control-radius));
+	}
+
+	&--horizontal > :last-child,
+	&--horizontal > :last-child .base-button {
+		border-top-right-radius: sz(var(--rise-control-radius));
+		border-bottom-right-radius: sz(var(--rise-control-radius));
+	}
+
+	&--vertical {
+		flex-direction: column;
+	}
+
+	&--vertical > * + * {
+		margin-top: -1px;
+	}
+
+	&--vertical > :first-child {
+		border-top-left-radius: sz(var(--rise-control-radius));
+		border-top-right-radius: sz(var(--rise-control-radius));
+	}
+
+	&--vertical > :last-child {
+		border-bottom-left-radius: sz(var(--rise-control-radius));
+		border-bottom-right-radius: sz(var(--rise-control-radius));
+	}
+}

@@ -105,6 +105,7 @@
 
 **Новые поля**
 
+- `BaseKbd`, `BaseTimeline`, `BaseAvatarGroup`, `BaseUser`, `BaseButtonGroup`, `BaseSplitButton`, `BaseToolbar` (APG Toolbar), `BaseFab`, `BaseInplace` — отображение и действия (порция 2.2).
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
 
 **Доступность и клавиатура**
@@ -511,6 +512,53 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ---
 
+## BaseButtonGroup
+
+Склеенные кнопки связанных действий: общие скругления у крайних, рамки соседей совпадают. `role="group"` с именем `aria-label`; каждая кнопка — отдельный таб-стоп (стрелки между кнопками — у `BaseToolbar`).
+
+```vue
+<BaseButtonGroup aria-label="Период">
+	<BaseButton variant="outline">День</BaseButton>
+	<BaseButton variant="outline">Неделя</BaseButton>
+	<BaseButton variant="outline">Месяц</BaseButton>
+</BaseButtonGroup>
+```
+
+---
+
+## BaseSplitButton
+
+Основное действие и меню похожих: `click` — основная кнопка, `select` — пункт меню (формат пунктов — как у `BaseDropdownMenu`). Кнопка меню называется «Другие действия» (`menu-label`).
+
+```vue
+<BaseSplitButton label="Сохранить" :items="[{ label: 'Сохранить как черновик' }, { label: 'Сохранить и закрыть' }]" @click="save" @select="handleMenu" />
+```
+
+---
+
+## BaseFab
+
+Плавающая кнопка главного действия страницы в углу окна (`position`), слоем под окнами и панелями. Круглая с иконкой — имя из `label`; `is-extended` — широкая с подписью; `is-contained` — в углу контейнера; `to`/`href` — ссылка.
+
+```vue
+<BaseFab label="Новая задача" icon="plus" @click="createTask" />
+```
+
+---
+
+## BaseToolbar
+
+Панель инструментов по образцу APG Toolbar: `role="toolbar"` с именем, в порядке Tab один элемент, ←/→ (у вертикальной — ↑/↓) ведут по элементам, Home/End — первый и последний, в текстовом поле стрелки двигают курсор, отключённые кнопки пропускаются.
+
+```vue
+<BaseToolbar aria-label="Форматирование">
+	<BaseButton variant="ghost" aria-label="Полужирный"><BaseIcon name="bold" /></BaseButton>
+	<BaseButton variant="ghost" aria-label="Курсив"><BaseIcon name="italic" /></BaseButton>
+</BaseToolbar>
+```
+
+---
+
 ## BaseInput
 
 Базовое поле ввода.
@@ -553,6 +601,16 @@ const description = ref('')
 <template>
 	<BaseTextarea v-model="description" placeholder="Описание" />
 </template>
+```
+
+---
+
+## BaseInplace
+
+Текст с правкой на месте: по клику, Enter или пробелу — поле с выделенным текстом, Enter сохраняет, Escape отменяет, выход из поля сохраняет (`is-save-on-blur`). В просмотре — кнопка «что: значение» с подсказкой для скринридера; шрифт наследуется от окружения.
+
+```vue
+<h2><BaseInplace v-model="title" label="Название проекта" placeholder="Без названия" /></h2>
 ```
 
 ---
@@ -1246,6 +1304,16 @@ import { BaseBadge } from '@ramzes1385/rise-ui-kit'
 
 ---
 
+## BaseKbd
+
+Клавиша в тексте: `<kbd>`, служебные клавиши (`meta`, `shift`, `enter`, стрелки…) — символом с названием для скринридера; `meta` и `alt` на macOS — ⌘ и ⌥, на других системах — Ctrl и Alt.
+
+```vue
+<p>Нажмите <BaseKbd value="meta" /> + <BaseKbd value="K" />, чтобы открыть поиск</p>
+```
+
+---
+
 ## BaseChip
 
 Индикатор-счётчик поверх вложенного элемента (например, число непрочитанных): обёртываемый элемент — слот по умолчанию, значение индикатора — проп `content`, позиция — `placement`. С `has-overflow` значения больше `max-value` (по умолчанию 99) выводятся как `99+`.
@@ -1280,6 +1348,26 @@ import { BaseAvatar } from '@ramzes1385/rise-ui-kit'
 <template>
 	<BaseAvatar name="Иван Иванов" src="/avatar.png" />
 </template>
+```
+
+---
+
+## BaseAvatarGroup
+
+Аватары внахлёст с остатком «+N»: список, скринридер слышит имена и «и ещё N»; если сверх `max` остаётся один человек, показывается он.
+
+```vue
+<BaseAvatarGroup :items="[{ name: 'Анна Смирнова', src: '/anna.jpg' }, { name: 'Иван Петров' }]" :max="4" aria-label="Участники" />
+```
+
+---
+
+## BaseUser
+
+Человек: аватар, имя и подпись. Аватар скрыт от скринридера, статус «в сети» — скрытым текстом; `to`/`href` делают блок ссылкой на профиль, `orientation="vertical"` — аватар над текстом.
+
+```vue
+<BaseUser name="Анна Смирнова" description="Дизайнер" src="/anna.jpg" to="/users/1" is-online />
 ```
 
 ---
@@ -1703,6 +1791,22 @@ const pages: TreeNode[] = [
 
 ---
 
+## BaseTimeline
+
+Лента событий: упорядоченный список, дата — `<time datetime>` в формате языка, текущее событие (`current-id`) — `aria-current="step"`, следующие приглушены. Маркер — иконка или точка цвета роли события, `orientation="horizontal"` — лента слева направо.
+
+```vue
+<BaseTimeline
+	current-id="shipped"
+	:items="[
+		{ id: 'created', title: 'Заказ оформлен', date: '2026-05-12T10:24:00', icon: 'check', color: 'success' },
+		{ id: 'shipped', title: 'Передан в доставку', date: '2026-05-14T16:40:00', icon: 'send' },
+		{ id: 'delivered', title: 'Доставлен', date: 'ожидается 15 мая' },
+	]" />
+```
+
+---
+
 ## BaseMegaMenu
 
 Многоуровневое меню.
@@ -1952,9 +2056,11 @@ BaseAlert
 BaseAnimation
 BaseAutocomplete
 BaseAvatar
+BaseAvatarGroup
 BaseBadge
 BaseBreadcrumbs
 BaseButton
+BaseButtonGroup
 BaseCalendar
 BaseCard
 BaseChat
@@ -1969,14 +2075,17 @@ BaseDropdown
 BaseDropdownMenu
 BaseEditor
 BaseEmpty
+BaseFab
 BaseFileUpload
 BaseForm
 BaseFormField
 BaseIcon
 BaseImage
+BaseInplace
 BaseInput
 BaseInputNumber
 BaseInputTags
+BaseKbd
 BaseLoader
 BaseMegaMenu
 BaseMenu
@@ -1998,16 +2107,20 @@ BaseSideBar
 BaseSkeleton
 BaseSlideover
 BaseSlider
+BaseSplitButton
 BaseStepper
 BaseSwitch
 BaseTable
 BaseTabs
 BaseText
 BaseTextarea
+BaseTimeline
 BaseTimePicker
+BaseToolbar
 BaseTooltip
 BaseTour
 BaseTree
+BaseUser
 ```
 
 ---

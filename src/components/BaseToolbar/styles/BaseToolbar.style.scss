@@ -1,0 +1,32 @@
+// BaseToolbar. Панель: элементы в ряд с зазором 4px, внутренний отступ 4px, радиус md. default — без фона и рамки;
+// ghost — без отступа; outline — рамка border; soft — фон bg-elevated. Вертикальная — столбиком.
+// Разделитель (BaseSeparator vertical) — между группами кнопок.
+.base-toolbar {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: sz(4px);
+	max-width: 100%;
+	padding: sz(4px);
+	border: 1px solid transparent;
+	border-radius: sz(var(--rise-radius-md));
+	@include custom-bg(background-color, transparent);
+
+	&--vertical {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	&--ghost {
+		padding: 0;
+		border-width: 0;
+	}
+
+	&--outline {
+		border-color: var(--rise-border);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+}

@@ -1,0 +1,43 @@
+// BaseKbd. Клавиша: высота 20px, минимальная ширина 20px, отступ 0 4px, текст 12/16 medium моноширинный для цифр,
+// радиус sm. default — фон bg-elevated, рамка border-accented и нижняя грань 2px (клавиша «стоит»); outline — рамка
+// без фона; soft — фон без рамки; ghost — только текст. Название служебной клавиши — скрытый текст для скринридера.
+.base-kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: sz(20px);
+	height: sz(20px);
+	padding: 0 sz(4px);
+	border: 1px solid var(--rise-border-accented);
+	border-bottom-width: 2px;
+	border-radius: sz(var(--rise-radius-sm));
+	@include custom-bg(background-color, var(--rise-bg-elevated));
+	@include custom-text(color, var(--rise-text-highlighted));
+	font-family: inherit;
+	@include text-size(xs);
+	font-weight: var(--rise-font-weight-medium);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+	vertical-align: middle;
+
+	&__name {
+		@include visually-hidden;
+	}
+
+	&--outline {
+		@include custom-bg(background-color, transparent);
+		border-bottom-width: 1px;
+	}
+
+	&--soft {
+		border-color: transparent;
+		border-bottom-width: 1px;
+	}
+
+	&--ghost {
+		border-color: transparent;
+		border-bottom-width: 1px;
+		@include custom-bg(background-color, transparent);
+		color: var(--rise-text-muted);
+	}
+}
