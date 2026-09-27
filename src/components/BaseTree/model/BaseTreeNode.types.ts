@@ -8,6 +8,8 @@ export interface BaseTreeNodeProps {
 	setSize: number
 	/** Позиция узла среди них, с 1 (aria-posinset) */
 	posInSet: number
+	/** Узел плоского списка (виртуальная прокрутка): без вложенной группы детей, отступ по глубине */
+	isFlat?: boolean
 }
 
 export interface BaseTreeNodeSlots {

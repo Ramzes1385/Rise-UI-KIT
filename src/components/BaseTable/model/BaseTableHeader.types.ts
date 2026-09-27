@@ -2,6 +2,8 @@ import type { SortDirection, TableColumn } from './BaseTable.types'
 
 /** Props компонента BaseTableHeader */
 export interface BaseTableHeaderProps {
+	/** Виртуальная прокрутка: строка заголовка получает aria-rowindex="1" */
+	isVirtual?: boolean
 	/** Определения колонок таблицы */
 	columns: TableColumn[]
 	/** Показывать чекбокс «Выбрать все» */

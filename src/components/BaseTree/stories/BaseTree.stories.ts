@@ -195,6 +195,9 @@ const meta = {
 		selectedIds: { control: 'object', table: propGroup(ARG_GROUP.state) },
 		isDefaultExpandAll: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
+		isVirtual: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		height: { control: 'number', table: propGroup(ARG_GROUP.appearance) },
+		itemSize: { control: 'number', table: propGroup(ARG_GROUP.appearance) },
 	},
 	args: {
 		items: FILES,
@@ -605,6 +608,37 @@ export const Links: Story = {
 		await userEvent.keyboard('{ArrowUp}{Enter}')
 		await expect(nodeHeader(canvasElement, 'Компоненты')).toHaveAttribute('aria-expanded', 'true')
 		await expect(args.onSelect).toHaveBeenLastCalledWith('components', true)
+	},
+}
+
+// ─── Виртуальная прокрутка ─────────────────────────────────────────────────────
+
+/** 60 отделов по 80 сотрудников: 4860 узлов при раскрытии всех */
+const STAFF: TreeNode[] = Array.from({ length: 60 }, (_, department) => ({
+	id: `department-${department + 1}`,
+	label: `Отдел ${department + 1}`,
+	icon: 'folder',
+	children: Array.from({ length: 80 }, (_, person) => ({ id: `person-${department + 1}-${person + 1}`, label: `Сотрудник ${department + 1}.${person + 1}` })),
+}))
+
+/**
+ * Виртуальная прокрутка (`isVirtual` и `height`): дерево — плоский список видимых узлов, в DOM только видимые и запас.
+ * Уровень и позиция объявляются через `aria-level`, `aria-setsize`, `aria-posinset`; узел в порядке Tab остаётся
+ * в DOM, а стрелки и Home/End к неотрисованному узлу сначала прокручивают к нему. Анимации раскрытия в этом режиме нет.
+ */
+export const Virtual: Story = {
+	args: { items: STAFF, isVirtual: true, height: 320, isDefaultExpandAll: true, expandedIds: undefined, ariaLabel: 'Сотрудники' },
+	parameters: { controls: { include: ['variant', 'sizeScale', 'height', 'itemSize'] } },
+	play: async ({ canvas, userEvent }) => {
+		const tree = canvas.getByRole('tree', { name: 'Сотрудники' })
+		await expect(canvas.getAllByRole('treeitem').length).toBeLessThan(40)
+		const first = canvas.getByRole('treeitem', { name: 'Отдел 1' })
+		await tabTo(first, userEvent)
+		await userEvent.keyboard('{End}')
+		await waitFor(() => expect(canvas.getByRole('treeitem', { name: 'Сотрудник 60.80' })).toHaveFocus())
+		await expect(tree.scrollTop).toBeGreaterThan(0)
+		await userEvent.keyboard('{Home}')
+		await waitFor(() => expect(canvas.getByRole('treeitem', { name: 'Отдел 1' })).toHaveFocus())
 	},
 }
 

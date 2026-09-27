@@ -79,6 +79,7 @@ import { BaseTooltip } from './components/BaseTooltip'
 import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
 import { BaseUser } from './components/BaseUser'
+import { BaseVirtualList } from './components/BaseVirtualList'
 import { DEFAULTS_KEY } from './composables/useDefaults/useDefaults'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
 import { LINK_COMPONENT_KEY } from './composables/useLink/useLink'
@@ -215,6 +216,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseTour,
 	BaseTree,
 	BaseUser,
+	BaseVirtualList,
 }
 
 function getName(name: string, prefix?: string): string {

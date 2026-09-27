@@ -85,6 +85,15 @@ export interface BaseTreeProps extends BaseComponentProps<(typeof TREE_VARIANTS)
 	isDefaultExpandAll?: boolean
 	/** Имя дерева для скринридера, например «Файлы проекта» */
 	ariaLabel?: string
+	/**
+	 * Виртуальная прокрутка для деревьев на тысячи видимых узлов: в DOM только видимые узлы и запас, дерево —
+	 * плоский список treeitem с aria-level, aria-setsize и aria-posinset. Работает вместе с `height`
+	 */
+	isVirtual?: boolean
+	/** Высота области дерева при `isVirtual`: число — в пикселях, строка — любая CSS-длина */
+	height?: number | string
+	/** Высота узла до замера при `isVirtual`, px */
+	itemSize?: number
 }
 
 /**

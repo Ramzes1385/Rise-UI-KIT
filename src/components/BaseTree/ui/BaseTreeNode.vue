@@ -1,5 +1,9 @@
 <template>
-	<div class="base-tree__node" :class="[nodeClasses, treeContext.classes.value.node]" role="none">
+	<div
+		class="base-tree__node"
+		:class="[nodeClasses, treeContext.classes.value.node]"
+		:style="isFlat ? { '--base-tree-depth': depth } : undefined"
+		role="none">
 		<!-- Заголовок — treeitem: уровень, позиция, раскрытие и выбор; фокус и клавиши — у корня дерева -->
 		<div
 			:ref="setHeaderElement"
@@ -82,7 +86,7 @@
 			</div>
 		</div>
 		<BaseTreeChildren
-			v-if="hasChildren"
+			v-if="hasChildren && !isFlat"
 			:children="childNodes"
 			:depth="depth + 1"
 			:size-scale="sizeScale"
@@ -198,6 +202,7 @@ const nodeClasses = computed(function getNodeClasses() {
 		'base-tree__node--selected': isSelected.value,
 		'base-tree__node--disabled': props.node.isDisabled,
 		'base-tree__node--leaf': !hasChildren.value,
+		'base-tree__node--flat': props.isFlat,
 	}
 })
 

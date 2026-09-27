@@ -42,6 +42,13 @@ export interface BaseTableBodyProps {
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 	/** Форматирование значения ячейки */
 	formatCellValue: (column: TableColumn, row: TableRow) => string
+	/** Виртуальная прокрутка: rows — видимая часть, распорки сверху и снизу, у строк data-virtual-index и aria-rowindex */
+	isVirtual?: boolean
+	/** Индекс первой строки из rows среди всех строк */
+	indexOffset?: number
+	/** Высота распорок до и после видимых строк, px */
+	paddingStart?: number
+	paddingEnd?: number
 }
 
 /** Emits компонента BaseTableBody */

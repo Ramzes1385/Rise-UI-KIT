@@ -220,6 +220,13 @@ export interface BaseTableProps extends BaseComponentProps<TableVariant, 'root' 
 	 * По умолчанию — из стилей: 12px сверху/снизу, 16px по бокам (строка 44px при sizeScale = 100).
 	 */
 	padding?: PaddingProp
+	/**
+	 * Виртуальная прокрутка: в DOM только видимые строки и запас, остальные — высотой распорок. Работает вместе с `height`
+	 * (область прокрутки таблицы). Для тысяч строк без пагинации
+	 */
+	isVirtual?: boolean
+	/** Высота строки до замера при `isVirtual`, px: строки замеряются после отрисовки, раскрытые строки учитываются */
+	rowHeight?: number
 }
 
 /**

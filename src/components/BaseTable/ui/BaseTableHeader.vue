@@ -1,6 +1,6 @@
 <template>
 	<thead class="base-table__thead" :class="theadClass">
-		<tr :class="trClass">
+		<tr :class="trClass" :aria-rowindex="isVirtual ? 1 : undefined">
 			<th v-if="isSelectable" class="base-table__th base-table__th--check" :class="thClass">
 				<BaseCheckbox
 					:model-value="isAllSelected"

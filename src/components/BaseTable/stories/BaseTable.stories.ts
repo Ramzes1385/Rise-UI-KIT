@@ -113,6 +113,8 @@ const meta = {
 		nestedConfig: { control: 'object', table: propGroup(ARG_GROUP.content) },
 		padding: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 		height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+		isVirtual: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		rowHeight: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
 		isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 		features: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 		behavior: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
@@ -717,6 +719,35 @@ export const StickyHeader: Story = {
 		scroller.scrollTop = 120
 		const header = canvas.getByRole('columnheader', { name: 'Заказ' })
 		await waitFor(() => expect(Math.round(header.getBoundingClientRect().top)).toBe(Math.round(scroller.getBoundingClientRect().top)))
+	},
+}
+
+/** 5000 заказов для виртуальной прокрутки: строки собираются из примера по кругу */
+const MANY_ROWS: TableRow[] = Array.from({ length: 5000 }, (_, index) => {
+	const order = ORDERS[index % ORDERS.length]
+	return { id: `many-${index}`, data: { ...order, number: `№ ${10000 + index}` } }
+})
+
+/**
+ * Виртуальная прокрутка (`isVirtual` и `height`): в DOM только видимые строки и запас, остальные — высотой распорок.
+ * Таблица объявляет полное число строк (`aria-rowcount`), строки — своё место (`aria-rowindex`). Высота строки до замера —
+ * `rowHeight`; после отрисовки строки замеряются, раскрытые строки учитываются.
+ */
+export const Virtual: Story = {
+	args: { height: '360px', rows: MANY_ROWS, columns: COMPACT_COLUMNS, isVirtual: true, features: { rowNumber: true } },
+	render: args => ({
+		components: { BaseTable },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: '<div style="max-width: 720px;"><BaseTable v-bind="props" /></div>',
+	}),
+	play: async ({ canvas }) => {
+		const table = canvas.getByRole('table')
+		await expect(table).toHaveAttribute('aria-rowcount', '5001')
+		await expect(bodyRows(table).length).toBeLessThan(40)
+		const scroller = table.parentElement as HTMLElement
+		scroller.scrollTop = scroller.scrollHeight
+		await waitFor(() => expect(canvas.getByText('№ 14999')).toBeVisible())
+		await expect(canvas.getByText('№ 14999').closest('tr')).toHaveAttribute('aria-rowindex', '5001')
 	},
 }
 

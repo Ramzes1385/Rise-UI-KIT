@@ -7,3 +7,9 @@
 @use './cell';
 @use './settings';
 @use './footer-bar';
+
+// Виртуальная прокрутка: распорки без отступов и рамок — их высота равна высоте строк вне видимой области
+.base-table__spacer-cell {
+	padding: 0;
+	border: 0;
+}

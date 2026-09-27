@@ -1,0 +1,42 @@
+import type { BaseComponentProps } from '../../../types/base.types'
+import type { VirtualAlign, VirtualKey } from '@composables/useVirtualList'
+
+/** У списка одно оформление: строки рисует слот */
+export const VIRTUAL_LIST_VARIANTS = ['default'] as const
+
+/**
+ * Пропсы компонента BaseVirtualList.
+ * `variant` и `color` не используются: оформление строк задаёт слот.
+ */
+export interface BaseVirtualListProps<T = unknown> extends BaseComponentProps<(typeof VIRTUAL_LIST_VARIANTS)[number], 'root' | 'item'> {
+	/** Элементы списка */
+	items: T[]
+	/** Высота строки до замера, px: строки замеряются после отрисовки, разная высота допустима */
+	itemSize?: number
+	/** Ключ строки: имя поля или функция; по умолчанию поле `id`, без него — индекс */
+	itemKey?: string | ((item: T, index: number) => VirtualKey)
+	/** Строк сверх видимых сверху и снизу */
+	overscan?: number
+	/** Высота области: число — в пикселях, строка — любая CSS-длина */
+	height?: number | string
+	/** Имя списка для скринридера */
+	ariaLabel?: string
+}
+
+/**
+ * Слоты компонента BaseVirtualList
+ */
+export interface BaseVirtualListSlots<T = unknown> {
+	/** Строка списка */
+	default?: (props: { item: T; index: number }) => unknown
+}
+
+/**
+ * Методы BaseVirtualList (ref)
+ */
+export interface BaseVirtualListExpose {
+	/** Прокрутить к строке: `auto` — к ближнему краю, только если строка не видна */
+	scrollToIndex: (index: number, align?: VirtualAlign) => void
+	/** Прокручиваемый элемент */
+	getViewport: () => HTMLElement | null
+}

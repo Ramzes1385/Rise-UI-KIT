@@ -56,7 +56,8 @@
 					<table
 						class="base-table__table"
 						:class="[classes.table, { 'base-table__table--fixed': useFixedLayout }]"
-						:aria-busy="isLoading ? 'true' : undefined">
+						:aria-busy="isLoading ? 'true' : undefined"
+						:aria-rowcount="isVirtualMode ? displayedRows.length + 1 : undefined">
 						<colgroup>
 							<col v-if="isSelectable" class="base-table__col base-table__col--check" />
 							<col v-if="hasRowNumber" class="base-table__col base-table__col--number" />
@@ -64,6 +65,7 @@
 							<col v-for="(column, i) in visibleColumns" :key="column.key" :style="{ width: columnWidths[i] }" />
 						</colgroup>
 						<BaseTableHeader
+							:is-virtual="isVirtualMode"
 							:columns="visibleColumns"
 							:is-selectable="isSelectable"
 							:has-row-number="hasRowNumber"
@@ -87,7 +89,11 @@
 						</BaseTableHeader>
 
 						<BaseTableBody
-							:rows="displayedRows"
+							:rows="bodyRows"
+							:is-virtual="isVirtualMode"
+							:index-offset="isVirtualMode ? virtual.range.value.start : 0"
+							:padding-start="virtual.paddingStart.value"
+							:padding-end="virtual.paddingEnd.value"
 							:columns="visibleColumns"
 							:empty-text="emptyText ?? UI_TEXT.EMPTY"
 							:is-loading="isLoading"
@@ -177,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { BasePagination } from '@components/BasePagination'
@@ -188,6 +194,7 @@ import { useExpandTransition } from '@composables/useExpandTransition'
 import { isolateFormField } from '@composables/useFormContext'
 import { usePadding } from '@composables/usePadding'
 import { useTableComposition } from '@composables/useTableComposition'
+import { useVirtualList } from '@composables/useVirtualList'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT, TABLE, TABLE_TEXT } from '@constants'
 import '../styles/BaseTable.style.scss'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
@@ -206,6 +213,8 @@ const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable
 	searchDebounce: TABLE.SEARCH_DEBOUNCE_MS,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	padding: undefined,
+	isVirtual: false,
+	rowHeight: 44,
 }))
 
 // Поиск, фильтры и выбор строк — служебные поля: они не становятся полем BaseFormField вокруг таблицы
@@ -353,4 +362,53 @@ onBeforeUnmount(() => {
 	scrollObserver?.disconnect()
 	scrollObserver = null
 })
+
+// ─── Виртуальная прокрутка ─────────────────────────────────────────────────────
+
+/** Виртуальный режим: нужен height — без своей области прокрутки таблица растёт на все строки */
+const isVirtualMode = computed(() => props.isVirtual && Boolean(props.height))
+
+const virtual = useVirtualList({
+	count: () => (isVirtualMode.value ? displayedRows.value.length : 0),
+	estimateSize: () => props.rowHeight,
+	scrollElement: computed(() => (isVirtualMode.value ? tableWrapperRef.value : null)),
+	getKey: index => displayedRows.value[index].id,
+})
+
+/** Строки для tbody: в виртуальном режиме — видимая часть с запасом */
+const bodyRows = computed(() =>
+	isVirtualMode.value ? displayedRows.value.slice(virtual.range.value.start, virtual.range.value.end) : displayedRows.value,
+)
+
+/**
+ * Высота строки — от её начала до начала следующей: так в неё входят вложенные и раскрытые строки.
+ * У последней отрисованной строки следующей служит нижняя распорка
+ */
+function measureRows(): void {
+	const wrapper = tableWrapperRef.value as HTMLElement
+	const rowElements = [...wrapper.querySelectorAll<HTMLElement>('tr[data-virtual-index]')]
+	const end = wrapper.querySelector<HTMLElement>('.base-table__spacer--end') as HTMLElement
+	rowElements.forEach((row, position) => {
+		const next = rowElements[position + 1] ?? end
+		virtual.measure(Number(row.dataset.virtualIndex), next.offsetTop - row.offsetTop)
+	})
+}
+
+/** Замер после каждой отрисовки строк и при изменении высоты tbody (раскрытие строки, загрузка картинок) */
+let rowsObserver: ResizeObserver | null = null
+
+watch(
+	[isVirtualMode, bodyRows],
+	([isVirtual]) => {
+		rowsObserver?.disconnect()
+		rowsObserver = null
+		if (!isVirtual) return
+		measureRows()
+		rowsObserver = new ResizeObserver(measureRows)
+		rowsObserver.observe((tableWrapperRef.value as HTMLElement).querySelector('.base-table__tbody') as HTMLElement)
+	},
+	{ flush: 'post' },
+)
+
+onBeforeUnmount(() => rowsObserver?.disconnect())
 </script>

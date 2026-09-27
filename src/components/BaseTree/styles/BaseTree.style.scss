@@ -178,3 +178,37 @@
 		overflow: hidden;
 	}
 }
+
+// ─── Виртуальная прокрутка: область с высотой из height, узлы — плоский список со сдвигом по глубине ─────────
+// Отступ уровня — 20px, как у вложенной группы; линии уровней — фоном в отступе (на 15px от начала уровня)
+
+.base-tree--virtual {
+	position: relative;
+	display: block;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	@include scrollbar-thin;
+}
+
+.base-tree__virtual {
+	position: relative;
+}
+
+.base-tree__row {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+}
+
+.base-tree__node--flat {
+	padding-left: calc(var(--base-tree-depth, 0) * #{sz(20px)});
+	background-image: repeating-linear-gradient(
+		to right,
+		transparent 0 #{sz(15px)},
+		var(--rise-border) #{sz(15px)} calc(#{sz(15px)} + 1px),
+		transparent calc(#{sz(15px)} + 1px) #{sz(20px)}
+	);
+	background-repeat: no-repeat;
+	background-size: calc(var(--base-tree-depth, 0) * #{sz(20px)}) 100%;
+}

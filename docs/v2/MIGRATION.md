@@ -355,6 +355,15 @@
 - Строки словаря (ru, en): `text.NO_MORE_ITEMS`, `text.LOAD_ERROR`, `text.RETRY`, `text.SKIP_TO_CONTENT`, `aria.MENU`, `aria.BACK_TO_TOP`, `aria.SPLITTER`.
 - Storybook: новый раздел Layout.
 
+## Виртуализация (порция 2.4)
+
+Новое, существующее поведение без `isVirtual` не меняется.
+
+- `BaseVirtualList` — список на тысячи строк: `items`, слот по умолчанию (`item`, `index`), `itemSize` (высота до замера), `itemKey`, `overscan`, `height`, `ariaLabel`; метод `scrollToIndex(index, align)`. Строки — `listitem` с `aria-setsize` и `aria-posinset`, строка с фокусом не уходит из DOM.
+- `useVirtualList` — composable виртуального списка: диапазон видимых строк, распорки, замеры по ключу строки, закреплённая строка, `scrollToIndex`.
+- `BaseTable`: `isVirtual` и `rowHeight` — виртуальная прокрутка вместе с `height`; в этом режиме таблица получает `aria-rowcount`, строки — `aria-rowindex`, в `tbody` появляются распорки (`tr.base-table__spacer`, `aria-hidden`). Без `height` режим не включается.
+- `BaseTree`: `isVirtual`, `height`, `itemSize` — дерево рисуется плоским списком `treeitem` с `aria-level`, `aria-setsize`, `aria-posinset` (без `role="group"` и анимации раскрытия); стрелки и Home/End к неотрисованному узлу прокручивают к нему.
+
 ## Новые утилиты
 
 | Функция | Назначение |

@@ -385,7 +385,7 @@
 | TBL-15 | Тип слота `cell-*`: `{ row; value: unknown; column; index?: number }` + type-test | Вне объёма этапа | patch | S |
 | TBL-16 (остаток) | Эмитить копии в `sort`/`filter`; тест на неизменность сохранённого payload (включая `columns-change`) | Вне объёма этапа | patch | S |
 | TBL-17 | `v-model:expandedIds`; игнорировать клики из интерактивных элементов; `isDisabled` блокирует раскрытие; `<tr>` только при раскрытии; предупреждение о дублях id | Меняет поведение раскрытия | minor | M |
-| TBL-18 | Виртуализация; статическая передача слотов; состояние фильтра — в тулбар; `v-memo`; не создавать NestedRow/ExpandedRow без надобности; бенчмарк на 5k строк | Большой объём, нужен браузер | minor | L |
+| TBL-18 | Виртуализация (сделано в 2.0, порция 2.4: `isVirtual` у BaseTable и BaseTree, BaseVirtualList); осталось: статическая передача слотов; состояние фильтра — в тулбар; `v-memo`; не создавать NestedRow/ExpandedRow без надобности; бенчмарк на 5k строк | Большой объём, нужен браузер | minor | L |
 | TBL-19 | Накопленные смещения sticky-колонок; sticky у child-строк; flex от остатка (поправить тест `tableUtils.spec.ts:128-132`) | Визуальные изменения, нужны новые baseline | patch | M |
 | TBL-20 (остаток) | Локаль коллатора из prop; `sortAccessor`/`compare` у колонки; описать принимаемые форматы дат (ISO-строка, Date, timestamp) в JSDoc `sortType` (в README уже описаны) | Новый API | minor | S |
 | TBL-21 | Реактивная проверка toolbar-слотов; метки операторов — в constants; guard `getCurrentInstance`; убрать внутренние composables из публичного namespace | Удаление экспорта — breaking | patch / major (экспорт) | S |

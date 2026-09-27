@@ -36,12 +36,18 @@
 		</tr>
 
 		<template v-else>
+			<!-- Виртуальная прокрутка: распорка высотой строк выше видимых -->
+			<tr v-if="isVirtual" class="base-table__spacer" aria-hidden="true">
+				<td :colspan="totalColumns" class="base-table__spacer-cell" :style="{ height: `${paddingStart}px` }"></td>
+			</tr>
 			<template v-for="(row, index) in rows" :key="row.id">
 				<BaseTableRow
 					:row="row"
 					:columns="columns"
-					:row-index="index"
-					:row-number="getRowNumber(index)"
+					:row-index="indexOffset + index"
+					:row-number="getRowNumber(indexOffset + index)"
+					:data-virtual-index="isVirtual ? indexOffset + index : undefined"
+					:aria-rowindex="isVirtual ? indexOffset + index + 2 : undefined"
 					:is-selectable="isSelectable"
 					:has-row-number="hasRowNumber"
 					:has-expandable-rows="hasExpandableRows"
@@ -90,6 +96,10 @@
 					</template>
 				</BaseTableExpandedRow>
 			</template>
+			<!-- Распорка ниже видимых строк: по её началу замеряется высота последней отрисованной строки -->
+			<tr v-if="isVirtual" class="base-table__spacer base-table__spacer--end" aria-hidden="true">
+				<td :colspan="totalColumns" class="base-table__spacer-cell" :style="{ height: `${paddingEnd}px` }"></td>
+			</tr>
 		</template>
 
 		<tr v-if="isLoading && rows.length && loadMode === 'infinite'" :class="trClass">
@@ -109,7 +119,7 @@ import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableRow from './BaseTableRow.vue'
 import type { BaseTableBodyEmits, BaseTableBodyProps, BaseTableBodySlots } from '../model/BaseTableBody.types'
 
-defineProps<BaseTableBodyProps>()
+withDefaults(defineProps<BaseTableBodyProps>(), { isVirtual: false, indexOffset: 0, paddingStart: 0, paddingEnd: 0 })
 
 const emit = defineEmits<BaseTableBodyEmits>()
 

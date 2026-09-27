@@ -61,6 +61,7 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseDrawer',
   'BaseBackTop',
   'BaseInfiniteScroll',
+  'BaseVirtualList',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */

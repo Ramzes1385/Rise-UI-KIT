@@ -107,6 +107,7 @@
 
 - `BaseKbd`, `BaseTimeline`, `BaseAvatarGroup`, `BaseUser`, `BaseButtonGroup`, `BaseSplitButton`, `BaseToolbar` (APG Toolbar), `BaseFab`, `BaseInplace` — отображение и действия (порция 2.2).
 - `BaseLayout`, `BaseHeader`, `BaseFooter`, `BaseContainer` — каркас страницы со ссылкой «Перейти к содержимому»; `BaseSplitter` (APG Window Splitter), `BaseScrollArea`, `BaseDrawer`, `BaseBackTop`, `BaseInfiniteScroll` — каркас и прокрутка (порция 2.3).
+- `BaseVirtualList` — список на тысячи строк (в DOM только видимые) и composable `useVirtualList`; виртуальная прокрутка в `BaseTable` (`isVirtual`, `rowHeight`) и `BaseTree` (`isVirtual`, `height`, `itemSize`) — порция 2.4.
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
 
 **Доступность и клавиатура**
@@ -1184,6 +1185,12 @@ const rows = [
 </template>
 ```
 
+
+Тысячи строк без пагинации — виртуальная прокрутка: `is-virtual` вместе с `height`. В DOM только видимые строки и запас, таблица объявляет полное число строк (`aria-rowcount`), строки — своё место (`aria-rowindex`); `row-height` — высота строки до замера.
+
+```vue
+<BaseTable :columns="columns" :rows="orders" height="480px" is-virtual />
+```
 ---
 
 ## BasePagination
@@ -1225,6 +1232,20 @@ async function loadMore({ done }: InfiniteScrollLoadEvent) {
 	}
 }
 </script>
+```
+
+---
+
+## BaseVirtualList
+
+Список на тысячи строк: в DOM только видимые строки и запас. Строки разной высоты замеряются после отрисовки (`item-size` — высота до замера), ключ — `item-key` (по умолчанию `id`). Список — `role="list"` с именем, строки — `listitem` с `aria-setsize` и `aria-posinset`; строка с фокусом не уходит из DOM при прокрутке. `scrollToIndex(index, align)` через ref; та же логика — в composable `useVirtualList`.
+
+```vue
+<BaseVirtualList :items="orders" :height="480" aria-label="Заказы">
+	<template #default="{ item }">
+		<OrderRow :order="item" />
+	</template>
+</BaseVirtualList>
 ```
 
 ---
@@ -1839,6 +1860,12 @@ const pages: TreeNode[] = [
 </template>
 ```
 
+
+Дерево на тысячи видимых узлов — `is-virtual` и `height`: узлы рисуются плоским списком (`aria-level`, `aria-setsize`, `aria-posinset`), в DOM только видимые; стрелки и Home/End к неотрисованному узлу сначала прокручивают к нему. `item-size` — высота узла до замера.
+
+```vue
+<BaseTree :items="staff" is-virtual :height="480" aria-label="Сотрудники" />
+```
 ---
 
 ## BaseTimeline
@@ -2259,6 +2286,7 @@ BaseTooltip
 BaseTour
 BaseTree
 BaseUser
+BaseVirtualList
 ```
 
 ---
@@ -2493,6 +2521,7 @@ useTableData
 useTeleportTarget
 useTriggerAttributes
 useVariant
+useVirtualList
 ```
 
 ---
