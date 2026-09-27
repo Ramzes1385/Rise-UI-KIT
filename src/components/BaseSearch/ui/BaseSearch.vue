@@ -119,6 +119,7 @@
 import { computed, ref } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { useSearchState } from '@composables/useSearchState'
 import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
@@ -128,7 +129,7 @@ import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
 import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../model/BaseSearch.types'
 
-const props = withDefaults(defineProps<BaseSearchProps>(), {
+const props = withDefaults(defineProps<BaseSearchProps>(), kitDefaults('BaseSearch', {
 	modelValue: '',
 	placeholder: UI_TEXT.SEARCH_PLACEHOLDER,
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -145,7 +146,7 @@ const props = withDefaults(defineProps<BaseSearchProps>(), {
 	isAutofocus: false,
 	isDisabled: false,
 	error: '',
-})
+}))
 
 const emit = defineEmits<BaseSearchEmits>()
 defineSlots<BaseSearchSlots>()

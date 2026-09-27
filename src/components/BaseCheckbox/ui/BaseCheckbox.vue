@@ -59,19 +59,21 @@ import { ref, useId } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCheckbox.style.scss'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
 
-const props = withDefaults(defineProps<BaseCheckboxProps>(), {
+const props = withDefaults(defineProps<BaseCheckboxProps>(), kitDefaults('BaseCheckbox', {
+	variant: DEFAULT_VARIANT,
 	modelValue: false,
 	isDisabled: false,
 	error: '',
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseCheckboxEmits>()
 defineSlots<BaseCheckboxSlots>()

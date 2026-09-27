@@ -175,6 +175,7 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { useSelect } from '@composables/useSelect'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
@@ -183,7 +184,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
 import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model/BaseSelect.types'
 
-const props = withDefaults(defineProps<BaseSelectProps>(), {
+const props = withDefaults(defineProps<BaseSelectProps>(), kitDefaults('BaseSelect', {
 	modelValue: '',
 	placeholder: UI_TEXT.SELECT_PLACEHOLDER,
 	label: '',
@@ -194,7 +195,7 @@ const props = withDefaults(defineProps<BaseSelectProps>(), {
 	error: '',
 	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
 	'root',

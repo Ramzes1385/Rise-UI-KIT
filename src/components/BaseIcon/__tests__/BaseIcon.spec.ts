@@ -10,7 +10,7 @@ import BaseIcon from '../ui/BaseIcon.vue'
 /** Мокаем useIcon — разрыв циклической зависимости */
 vi.mock('@composables/useIcon', () => ({
 	useIcon: () => ({
-		getIconUrl: (name: string) => `icons.svg#${name}`,
+		resolveIcon: (name: string) => ({ url: `icons.svg#${name}` }),
 	}),
 	createIconPlugin: () => ({ install: () => {} }),
 }))

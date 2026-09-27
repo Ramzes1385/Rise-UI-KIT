@@ -59,13 +59,15 @@
 import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTextarea.style.scss'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
 import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../model/BaseTextarea.types'
 
-const props = withDefaults(defineProps<BaseTextareaProps>(), {
+const props = withDefaults(defineProps<BaseTextareaProps>(), kitDefaults('BaseTextarea', {
+	variant: DEFAULT_VARIANT,
 	modelValue: '',
 	placeholder: '',
 	rows: 4,
@@ -74,7 +76,7 @@ const props = withDefaults(defineProps<BaseTextareaProps>(), {
 	isRequired: false,
 	isAutosize: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-textarea', props, ['root', 'label', 'required', 'field', 'errorText'])
 

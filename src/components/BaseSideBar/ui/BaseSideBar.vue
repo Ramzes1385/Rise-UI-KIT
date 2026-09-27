@@ -39,7 +39,7 @@
 				:active-key="activeKey"
 				:active-path="activePath"
 				:active-match="activeMatch"
-				:link-component="linkComponent"
+				:link-component="resolvedLinkComponent"
 				:is-collapsed="isCollapsedState"
 				@item-click="handleItemClick">
 				<template v-if="$slots.item" #item="slotProps">
@@ -88,9 +88,11 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { useLinkComponent } from '@composables/useLink'
 import { usePadding } from '@composables/usePadding'
-import { UI_TEXT, UI_SIZE, SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE, UI_TEXT } from '@constants'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
 import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
@@ -99,21 +101,25 @@ defineOptions({
 	name: 'BaseSideBar',
 })
 
-const props = withDefaults(defineProps<BaseSideBarProps>(), {
+const props = withDefaults(defineProps<BaseSideBarProps>(), kitDefaults('BaseSideBar', {
+	variant: DEFAULT_VARIANT,
 	width: UI_SIZE.SIDEBAR_DEFAULT_WIDTH,
 	collapsedWidth: 68,
 	padding: undefined,
 	gap: UI_SIZE.GAP.SM,
 	activeMatch: 'exact',
-	linkComponent: 'a',
 	isCollapsible: true,
 	isLoading: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 const emit = defineEmits<BaseSideBarEmits>()
 const slots = defineSlots<BaseSideBarSlots>()
 
 const { wasPropPassed } = useExplicitPropDetection()
+
+/** Компонент ссылок: проп, `linkComponent` из плагина, RouterLink приложения или `a` */
+const appLinkComponent = useLinkComponent()
+const resolvedLinkComponent = computed(() => props.linkComponent ?? appLinkComponent)
 
 const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-side-bar', props, ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'])
 

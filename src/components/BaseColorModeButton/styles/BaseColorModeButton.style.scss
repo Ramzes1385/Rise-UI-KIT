@@ -1,0 +1,10 @@
+// BaseColorModeButton — квадратная кнопка-иконка BaseButton: 32 × 32px при sizeScale = 100, как высота контролов
+// (иконка 16px, отступы 7px со всех сторон, рамка 1px). Варианты — как у BaseButton.
+.base-color-mode-button.base-button {
+	--btn-pad-top: 7px;
+	--btn-pad-right: 7px;
+	--btn-pad-bottom: 7px;
+	--btn-pad-left: 7px;
+
+	flex: none;
+}

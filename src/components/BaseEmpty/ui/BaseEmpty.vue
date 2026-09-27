@@ -45,14 +45,16 @@ import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_FONT_WEIGHT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'
 
-const props = withDefaults(defineProps<BaseEmptyProps>(), {
+const props = withDefaults(defineProps<BaseEmptyProps>(), kitDefaults('BaseEmpty', {
+	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'])
 defineSlots<BaseEmptySlots>()

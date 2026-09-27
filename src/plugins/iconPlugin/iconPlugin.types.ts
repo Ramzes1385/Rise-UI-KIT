@@ -1,3 +1,5 @@
+import type { IconMap } from '@composables/useIcon/useIcon.types'
+
 /** Опции плагина глобальной регистрации BaseIcon. */
 export interface IconPluginOptions {
 	/** Имя компонента для глобальной регистрации. */
@@ -7,4 +9,6 @@ export interface IconPluginOptions {
 	 * По умолчанию 'icons.svg' — относительный путь, который на вложенных маршрутах SPA резолвится неверно.
 	 */
 	spritePath?: string
+	/** Замена иконок кита своими: имя символа, полный адрес символа или компонент (см. `IconMap`) */
+	icons?: IconMap
 }

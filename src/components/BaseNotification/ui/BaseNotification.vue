@@ -86,6 +86,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, UI_ARIA, UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseNotification.style.scss'
@@ -98,7 +99,7 @@ import type {
 	NotificationItem,
 } from '../model/BaseNotification.types'
 
-const props = withDefaults(defineProps<BaseNotificationProps>(), {
+const props = withDefaults(defineProps<BaseNotificationProps>(), kitDefaults('BaseNotification', {
 	title: '',
 	type: 'info',
 	position: 'top-right',
@@ -106,7 +107,7 @@ const props = withDefaults(defineProps<BaseNotificationProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isContained: false,
 	isPersistent: false,
-})
+}))
 
 /** Кнопки действий — размер sm (28px при sizeScale = 100), компактнее кнопок форм */
 const ACTION_SCALE_RATIO = 0.875

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 import { createIconPlugin } from './iconPlugin'
 
@@ -66,5 +66,14 @@ describe('createIconPlugin', () => {
 		})
 
 		expect(wrapper.find('use').attributes('href')).toBe('icons.svg#close')
+	})
+
+	it('icons заменяет иконки кита: другим символом или полным адресом', () => {
+		const wrapper = mount(
+			{ render: () => [h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'home' })] },
+			{ global: { plugins: [createIconPlugin({ spritePath: '/assets/icons.svg', icons: { close: 'x-mark', home: '/brand.svg#house' } })] } },
+		)
+
+		expect(wrapper.findAll('use').map(use => use.attributes('href'))).toEqual(['/assets/icons.svg#x-mark', '/brand.svg#house'])
 	})
 })

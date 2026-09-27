@@ -27,16 +27,17 @@
 
 <script setup lang="ts">
 import { useCustomClass } from '@composables/useCustomClass'
+import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
 
-const props = withDefaults(defineProps<BaseAnimationProps>(), {
+const props = withDefaults(defineProps<BaseAnimationProps>(), kitDefaults('BaseAnimation', {
 	show: true,
 	name: 'fade',
 	mode: 'out-in',
 	isGroup: false,
 	tag: 'div',
-})
+}))
 
 const emit = defineEmits<BaseAnimationEmits>()
 defineSlots<BaseAnimationSlots>()

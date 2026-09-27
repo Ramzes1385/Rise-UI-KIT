@@ -1,4 +1,4 @@
-import { DOWNLOAD_PROTOCOLS, isSafeUrl, normalizeLinkUrl } from './urlUtils'
+import { DOWNLOAD_PROTOCOLS, isExternalUrl, isSafeUrl, normalizeLinkUrl } from './urlUtils'
 
 describe('urlUtils.isSafeUrl', () => {
 	it.each([
@@ -64,4 +64,17 @@ describe('urlUtils.normalizeLinkUrl', () => {
 			expect(normalizeLinkUrl(input)).toBe(input)
 		},
 	)
+})
+
+describe('urlUtils.isExternalUrl', () => {
+	it.each(['https://example.com', 'mailto:team@example.com', 'tel:+79990000000', '//cdn.example.com/app.js', '  HTTPS://EXAMPLE.COM'])(
+		'%s — адрес вне приложения',
+		url => {
+			expect(isExternalUrl(url)).toBe(true)
+		},
+	)
+
+	it.each(['/docs', 'docs/intro', './relative', '#anchor', '?page=2', ''])('%s — путь приложения', url => {
+		expect(isExternalUrl(url)).toBe(false)
+	})
 })

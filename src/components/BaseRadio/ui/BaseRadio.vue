@@ -76,17 +76,19 @@
 import { ref, useId } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
 
-const props = withDefaults(defineProps<BaseRadioProps>(), {
+const props = withDefaults(defineProps<BaseRadioProps>(), kitDefaults('BaseRadio', {
+	variant: DEFAULT_VARIANT,
 	isVertical: false,
 	isRequired: false,
 	error: '',
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])
 

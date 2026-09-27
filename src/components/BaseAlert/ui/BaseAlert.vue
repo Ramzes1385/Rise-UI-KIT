@@ -55,7 +55,8 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/BaseAlert.types'
@@ -63,11 +64,12 @@ import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/Ba
 /** Отступы кнопки закрытия: квадрат 24px при sizeScale = 100 */
 const CLOSE_BUTTON_PADDING = { x: 3, y: 3 } as const
 
-const props = withDefaults(defineProps<BaseAlertProps>(), {
+const props = withDefaults(defineProps<BaseAlertProps>(), kitDefaults('BaseAlert', {
+	variant: DEFAULT_VARIANT,
 	type: 'info',
 	isClosable: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseAlertEmits>()
 defineSlots<BaseAlertSlots>()

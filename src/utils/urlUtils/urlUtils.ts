@@ -62,4 +62,13 @@ function normalizeLinkUrl(input: string): string {
 	return url
 }
 
-export { DOWNLOAD_PROTOCOLS, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }
+/**
+ * Адрес вне приложения: со схемой (`https://…`, `mailto:`) или протокол-относительный (`//cdn.example.com`).
+ * Такой адрес открывается обычной ссылкой `<a href>`, а не RouterLink: роутер принял бы его за путь.
+ */
+function isExternalUrl(url: string): boolean {
+	const normalized = normalizeUrl(url)
+	return normalized.startsWith('//') || SCHEME_RE.test(normalized)
+}
+
+export { DOWNLOAD_PROTOCOLS, isExternalUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }

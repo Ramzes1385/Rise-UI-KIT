@@ -70,16 +70,18 @@
 import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'
 
-const props = withDefaults(defineProps<BaseStepperProps>(), {
+const props = withDefaults(defineProps<BaseStepperProps>(), kitDefaults('BaseStepper', {
+	variant: DEFAULT_VARIANT,
 	orientation: 'horizontal',
 	shape: 'circle',
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseStepperEmits>()
 defineSlots<BaseStepperSlots>()

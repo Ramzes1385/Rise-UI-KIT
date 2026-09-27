@@ -124,6 +124,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { useEscapeKey } from '@composables/useEscapeKey'
@@ -134,7 +135,7 @@ import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../model/BaseEditor.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
-const props = withDefaults(defineProps<BaseEditorProps>(), {
+const props = withDefaults(defineProps<BaseEditorProps>(), kitDefaults('BaseEditor', {
 	modelValue: '',
 	placeholder: '',
 	isReadonly: false,
@@ -142,7 +143,7 @@ const props = withDefaults(defineProps<BaseEditorProps>(), {
 	hasToolbar: true,
 	isAutofocus: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'])
 

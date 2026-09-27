@@ -30,17 +30,19 @@
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
-import { UI_TIMING, UI_SIZE, SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE, UI_TIMING } from '@constants'
 import { calcTooltipPosition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
 
-const props = withDefaults(defineProps<BaseTooltipProps>(), {
+const props = withDefaults(defineProps<BaseTooltipProps>(), kitDefaults('BaseTooltip', {
+	variant: DEFAULT_VARIANT,
 	position: 'top',
 	isAlwaysVisible: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 defineSlots<BaseTooltipSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip-popup', props, [

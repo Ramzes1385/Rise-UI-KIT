@@ -33,15 +33,17 @@
 import { computed, ref, watch } from 'vue'
 import { BaseLoader } from '@components/BaseLoader'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
 import '../styles/BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
 
-const props = withDefaults(defineProps<BaseFormProps>(), {
+const props = withDefaults(defineProps<BaseFormProps>(), kitDefaults('BaseForm', {
+	variant: DEFAULT_VARIANT,
 	isLoading: false,
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form', props, ['root', 'overlay', 'content'])
 

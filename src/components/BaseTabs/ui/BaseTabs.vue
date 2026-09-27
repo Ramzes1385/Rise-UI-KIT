@@ -82,17 +82,18 @@ import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'v
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseTabs.style.scss'
 import { SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
 import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../model/BaseTabs.types'
 
-const props = withDefaults(defineProps<BaseTabsProps>(), {
+const props = withDefaults(defineProps<BaseTabsProps>(), kitDefaults('BaseTabs', {
 	isFullWidth: false,
 	isScrollable: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	variant: 'underline',
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
 	'base-tabs',

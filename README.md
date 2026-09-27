@@ -54,6 +54,14 @@
 - `BaseNotification`: автозакрытие останавливается, пока указатель над уведомлениями или фокус внутри, и продолжается с остатка времени (WCAG 2.2.1). Новые props `isPersistent` (без автозакрытия), `actions` (кнопки вроде «Отменить»), `items` (управляемый список) и событие `remove(id)`. `add()` возвращает id; уведомление из `add()` без своего `duration` берёт `duration` компонента; длительность больше 2³¹−1 мс ограничивается этим значением.
 - `BaseModal`: props `dialogRole` (`dialog` или `alertdialog`) и `ariaDescribedby`, событие `after-leave` после анимации закрытия.
 
+**Тема, настройки и ссылки**
+
+- Тема «как в системе»: `data-theme="system"` включает тёмные токены при `prefers-color-scheme: dark`. `useColorMode()` переключает светлую, тёмную и системную тему и запоминает выбор; `BaseColorModeButton` — кнопка тёмной темы для шапки.
+- `createUiKitPlugin` принимает `defaults` (значения props по умолчанию для всех компонентов или для одного), `icons` (замена иконок кита своими) и `linkComponent` (RouterLink, NuxtLink). Компоненты с вариантами оформления теперь объявляют `variant: 'default'` по умолчанию — вид не меняется, но вариант можно задать через `defaults`.
+- Новый `BaseLink`: маршрут (`to`) или внешний адрес (`href`), небезопасные схемы не попадают в `href`, для `target="_blank"` — `rel="noopener noreferrer"` и подсказка для скринридера.
+- `BaseBreadcrumbs`: крошки — настоящие ссылки (RouterLink приложения или `<a href>`), а не кнопки; крошка без адреса — кнопка с `item-click`. Новые `linkComponent` и `target` у крошки.
+- `BaseSideBar`: без пропа `linkComponent` берёт компонент из плагина или RouterLink подключённого vue-router; внешний адрес в `to` (`https://…`) открывается обычной ссылкой.
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -195,6 +203,7 @@ import '@fontsource-variable/jetbrains-mono/index.css'
 }
 ```
 
+- **Тема «как в системе»** — `data-theme="system"`: тёмная при `prefers-color-scheme: dark`. Переключать тему из кода — `useColorMode()` (`mode`: `light`, `dark`, `system`; выбор сохраняется в localStorage), кнопка для шапки — `BaseColorModeButton`. Чтобы тема из localStorage применялась до загрузки скриптов, добавьте в `<head>`: `<script>document.documentElement.dataset.theme = localStorage.getItem('rise-color-mode') || 'system'</script>`.
 - **Размер компонента** — проп `sizeScale` (проценты): 75 / 87.5 / 100 / 112.5 / 125 ≈ xs / sm / md / lg / xl, контролы 24–40px. Кнопка, поле, селект и переключатели одного `sizeScale` одной высоты.
 - **Цвет одного компонента** — проп `color` (`{ bg: { base, hover, active, focus }, text: { … } }`). Вложенные в него компоненты этот цвет не наследуют.
 - **Контраст.** Пары «текст/фон» токенов проходят WCAG 2.2 AA в обеих темах — `npm run test:contrast`, отчёт [docs/design/contrast.md](docs/design/contrast.md).
@@ -223,7 +232,27 @@ app.use(createUiKitPlugin({ iconSpritePath: '/icons.svg' }))
 app.mount('#app')
 ```
 
-Опции `createUiKitPlugin`: `prefix` — префикс глобальных имён (`prefix: 'Ui'` → `UiBaseButton`), `iconSpritePath` — путь к спрайту иконок.
+Опции `createUiKitPlugin`:
+
+- `prefix` — префикс глобальных имён (`prefix: 'Ui'` → `UiBaseButton`);
+- `iconSpritePath` — путь к спрайту иконок;
+- `defaults` — значения props по умолчанию: `global` — для всех компонентов, по имени — для одного. Переопределяются props со значением по умолчанию в компоненте (строки, числа, логические значения); props из шаблона важнее;
+- `icons` — замена иконок кита: имя символа в спрайте, полный адрес символа или компонент с `<svg>`;
+- `linkComponent` — компонент ссылок на маршруты (RouterLink, NuxtLink). Без него компоненты берут RouterLink, если подключён vue-router, иначе рендерят `<a href>`.
+
+```ts
+import { RouterLink } from 'vue-router'
+import CloseIcon from './icons/CloseIcon.vue'
+
+app.use(
+	createUiKitPlugin({
+		iconSpritePath: '/icons.svg',
+		defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' }, BaseModal: { closeOnOverlay: false } },
+		icons: { close: CloseIcon, 'chevron-down': 'arrow-down' },
+		linkComponent: RouterLink,
+	}),
+)
+```
 
 После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API. Типы глобальных компонентов пакет не объявляет (`GlobalComponents`), поэтому props в шаблоне проверяются только при прямом импорте.
 
@@ -312,7 +341,7 @@ import '@ramzes1385/rise-ui-kit/styles'
 const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024)
 ```
 
-Исключение — сервисы `BaseApp`: `useToast`, `useOverlay` и `useConfirm` импортируются из корня пакета по имени, как компоненты.
+Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm` и `useColorMode` импортируются из корня пакета по имени, как компоненты.
 
 Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons`, `/plugins`, `/styles` (`/styles.css`), `/icons.svg`.
 
@@ -962,6 +991,28 @@ import { BaseIcon } from '@ramzes1385/rise-ui-kit'
 </template>
 ```
 
+Иконки кита можно заменить своими для всего приложения: `createUiKitPlugin({ icons: { close: 'x-mark', search: SearchIcon } })` — имя символа в спрайте, полный адрес символа (`/brand.svg#search`) или компонент, который рисует `<svg>`.
+
+---
+
+## BaseColorModeButton
+
+Кнопка тёмной темы для шапки приложения.
+
+```vue
+<script setup lang="ts">
+import { BaseColorModeButton, useColorMode } from '@ramzes1385/rise-ui-kit'
+
+const { mode } = useColorMode() // 'light' | 'dark' | 'system'
+</script>
+
+<template>
+	<BaseColorModeButton />
+</template>
+```
+
+Кнопка-переключатель: имя «Тёмная тема» постоянное, нажатое состояние (`aria-pressed`) — тёмная тема. Тему меняет `useColorMode()`: ставит `data-theme` на `<html>` и сохраняет выбор в localStorage. Режим «как в системе» — `mode.value = 'system'`. Проп `colorMode` принимает свой экземпляр `createColorMode({ target })`, чтобы переключать тему части интерфейса.
+
 ---
 
 ## BaseLoader
@@ -1375,6 +1426,27 @@ const items = [
 </template>
 ```
 
+Пункты с `to` — ссылки: компонент из пропа `linkComponent`, из `createUiKitPlugin({ linkComponent })` или RouterLink подключённого vue-router, иначе `<a href>`. Внешний адрес (`https://…`) открывается обычной ссылкой.
+
+---
+
+## BaseLink
+
+Ссылка на маршрут приложения (`to`) или внешний адрес (`href`).
+
+```vue
+<script setup lang="ts">
+import { BaseLink } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseLink to="/projects/42/settings">Настройки проекта</BaseLink>
+	<BaseLink href="https://example.com/guide" target="_blank">Руководство</BaseLink>
+</template>
+```
+
+`to` рендерит RouterLink приложения (как и остальные компоненты с навигацией), без роутера — `<a href>`. Небезопасные схемы (`javascript:`, `data:`) в `href` не попадают: ссылка показывается отключённой. Для `target="_blank"` добавляются `rel="noopener noreferrer"`, стрелка и подсказка «откроется в новой вкладке» для скринридера. Шрифт берётся у окружающего текста. Варианты: `default` — цвет ссылки и подчёркивание (в тексте ссылку видно не только по цвету), `ghost` — цвет текста и подчёркивание при наведении, для навигации и списков ссылок.
+
 ---
 
 ## BaseBreadcrumbs
@@ -1386,18 +1458,14 @@ const items = [
 import { BaseBreadcrumbs } from '@ramzes1385/rise-ui-kit'
 
 const items = [{ label: 'Главная', to: '/' }, { label: 'Пользователи', to: '/users' }, { label: 'Профиль' }]
-
-function handleNavigate(path: string): void {
-	console.log(path) // например, router.push(path)
-}
 </script>
 
 <template>
-	<BaseBreadcrumbs :items="items" @navigate="handleNavigate" />
+	<BaseBreadcrumbs :items="items" />
 </template>
 ```
 
-Как и в `BaseMegaMenu`, по `to` компонент только эмитит `navigate`, переход выполняет приложение; `href` открывается компонентом (небезопасные схемы URL блокируются).
+Крошки — ссылки: `to` рендерит RouterLink приложения (из `linkComponent`, плагина или vue-router), без роутера — `<a href>`; `href` открывается в новой вкладке (`target` у крошки меняет это). Небезопасные схемы URL в адрес не попадают. Крошка без адреса — кнопка с событием `item-click`; `navigate(url)` сообщает о переходе по ссылке.
 
 ---
 

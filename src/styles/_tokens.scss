@@ -5,7 +5,8 @@
 /// Три уровня, как в Nuxt UI:
 /// 1. Палитры `--rise-color-{роль}-{50…950}` — сырые цвета. Роли: primary, neutral, success, info, warning, error.
 /// 2. Семантические токены `--rise-*` — что именно красится: фон, текст, рамка, заливка роли, мягкий фон роли…
-///    Значения зависят от темы: `:root` / `[data-theme='light']` — светлая, `[data-theme='dark']` — тёмная.
+///    Значения зависят от темы: `:root` / `[data-theme='light']` — светлая, `[data-theme='dark']` — тёмная,
+///    `[data-theme='system']` — как в системе (prefers-color-scheme).
 /// 3. Компоненты используют только семантические токены (никаких HEX в стилях компонентов).
 ///
 /// Перекраска:
@@ -362,7 +363,8 @@ $light-main-shade: (
 }
 
 :root,
-[data-theme='light'] {
+[data-theme='light'],
+[data-theme='system'] {
 	@include light-tokens;
 }
 
@@ -370,10 +372,18 @@ $light-main-shade: (
 	@include dark-tokens;
 }
 
+// data-theme="system" — тема как в системе: тёмная при prefers-color-scheme: dark. Правило ниже светлого и сильнее его
+@media (prefers-color-scheme: dark) {
+	[data-theme='system'] {
+		@include dark-tokens;
+	}
+}
+
 // Производные токены и алиасы объявлены на каждом элементе темы: в поддереве с data-theme они считаются от его значений.
 :root,
 [data-theme='light'],
-[data-theme='dark'] {
+[data-theme='dark'],
+[data-theme='system'] {
 	@include derived-tokens;
 	@include legacy-aliases;
 }

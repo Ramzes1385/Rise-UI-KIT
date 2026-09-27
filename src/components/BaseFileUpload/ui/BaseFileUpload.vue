@@ -137,6 +137,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseProgress } from '@components/BaseProgress'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFileUploadState } from '@composables/useFileUploadState'
 import { useFormField } from '@composables/useFormField'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
@@ -146,7 +147,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots, UploadedFile } from '../model/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
-const props = withDefaults(defineProps<BaseFileUploadProps>(), {
+const props = withDefaults(defineProps<BaseFileUploadProps>(), kitDefaults('BaseFileUpload', {
 	accept: '',
 	isMultiple: false,
 	isDisabled: false,
@@ -161,7 +162,7 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), {
 	emptyText: UI_TEXT.FILE_DROP,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	error: '',
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-file-upload', props, [
 	'root',

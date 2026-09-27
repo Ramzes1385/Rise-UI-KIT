@@ -157,8 +157,8 @@ export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VAR
 	/**
 	 * Компонент для ссылок.
 	 *
-	 * По умолчанию используется `a`, чтобы UI Kit не зависел от vue-router.
-	 * В приложении можно передать `RouterLink` или строку `RouterLink`.
+	 * По умолчанию — `linkComponent` из `createUiKitPlugin`, RouterLink (если в приложении подключён vue-router)
+	 * или `a`: UI Kit не зависит от vue-router. Внешние адреса (`https://…`) всегда открываются обычной ссылкой.
 	 */
 	linkComponent?: string | Component
 

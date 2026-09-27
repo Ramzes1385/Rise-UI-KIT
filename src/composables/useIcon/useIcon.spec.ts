@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
-import { ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
+import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
 
 describe('useIcon', () => {
 	it('возвращает spritePath', () => {
@@ -22,6 +22,40 @@ describe('useIcon', () => {
 
 		expect(icon?.spritePath).toBe('/static/icons.svg')
 		expect(icon?.getIconUrl('close')).toBe('/static/icons.svg#close')
+	})
+
+	describe('resolveIcon', () => {
+		const CustomClose = defineComponent({ render: () => h('svg') })
+
+		function resolveWith(icons: Record<string, unknown>) {
+			let icon: ReturnType<typeof useIcon> | undefined
+			mount(
+				defineComponent({
+					setup() {
+						icon = useIcon()
+						return () => h('span')
+					},
+				}),
+				{ global: { provide: { [ICON_MAP_KEY as symbol]: icons, [ICON_SPRITE_PATH_KEY as symbol]: '/icons.svg' } } },
+			)
+			return icon!.resolveIcon
+		}
+
+		it('без замены — символ спрайта кита', () => {
+			expect(useIcon().resolveIcon('close')).toEqual({ url: 'icons.svg#close' })
+		})
+
+		it('замена именем — другой символ того же спрайта, полным адресом — как есть', () => {
+			const resolve = resolveWith({ close: 'x-mark', home: '/brand.svg#house' })
+
+			expect(resolve('close')).toEqual({ url: '/icons.svg#x-mark' })
+			expect(resolve('home')).toEqual({ url: '/brand.svg#house' })
+			expect(resolve('menu')).toEqual({ url: '/icons.svg#menu' })
+		})
+
+		it('замена компонентом', () => {
+			expect(resolveWith({ close: CustomClose })('close')).toEqual({ component: CustomClose, url: '' })
+		})
 	})
 
 	describe('getIconUrl', () => {

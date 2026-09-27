@@ -44,6 +44,8 @@ export const UI_ARIA = {
 	TABS_SCROLL_LEFT: 'Прокрутить вкладки влево',
 	TABS_SCROLL_RIGHT: 'Прокрутить вкладки вправо',
 	CLOSE: 'Закрыть',
+	DARK_THEME: 'Тёмная тема',
+	OPENS_IN_NEW_TAB: '(откроется в новой вкладке)',
 	PROGRESS: 'Прогресс',
 	PREV_YEAR: 'Предыдущий год',
 	PREV_MONTH: 'Предыдущий месяц',

@@ -1,6 +1,6 @@
 /** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
 import { ref } from 'vue'
-import { isSafeUrl } from '@utils/urlUtils'
+import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
 import type { UseSideBarNavigationOptions } from './useSideBarNavigation.types'
 import type {
 	BaseSideBarItemSlotProps,
@@ -69,12 +69,17 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 		return item.label
 	}
 
+	/** Внешний адрес (https://…, mailto:) — обычная ссылка: роутер принял бы его за путь */
+	function isExternalItem(item: SideBarItem): boolean {
+		return typeof item.to === 'string' && isExternalUrl(item.to)
+	}
+
 	function getItemComponent(item: SideBarItem): string | Component {
 		if (!isLinkItem(item)) {
 			return 'button'
 		}
 
-		return props.linkComponent ?? 'a'
+		return isExternalItem(item) ? 'a' : (props.linkComponent ?? 'a')
 	}
 
 	function getItemProps(item: SideBarItem): Record<string, unknown> {
@@ -85,7 +90,7 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 			}
 		}
 
-		if (props.linkComponent === 'a') {
+		if (props.linkComponent === 'a' || isExternalItem(item)) {
 			return {
 				href: getHref(item.to!),
 			}

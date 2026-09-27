@@ -93,16 +93,18 @@ import { computed, ref, useSlots } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
-import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
+import { DEFAULT_VARIANT, UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import BaseRangeMarks from './BaseRangeMarks.vue'
 import { BaseRangeThumb } from './BaseRangeThumb'
 import '../styles/BaseRange.style.scss'
 import type { BaseRangeEmits, BaseRangeProps, BaseRangeSlots } from '../model/BaseRange.types'
 
-const props = withDefaults(defineProps<BaseRangeProps>(), {
+const props = withDefaults(defineProps<BaseRangeProps>(), kitDefaults('BaseRange', {
+	variant: DEFAULT_VARIANT,
 	modelValue: 0,
 	min: 0,
 	max: 100,
@@ -112,7 +114,7 @@ const props = withDefaults(defineProps<BaseRangeProps>(), {
 	marks: () => [],
 	isVertical: false,
 	hasLabel: false,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-range', props, [
 		'root',

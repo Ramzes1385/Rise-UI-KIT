@@ -68,15 +68,17 @@
 import { onMounted, ref, useId } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../model/BaseAccordion.types'
 
-const props = withDefaults(defineProps<BaseAccordionProps>(), {
+const props = withDefaults(defineProps<BaseAccordionProps>(), kitDefaults('BaseAccordion', {
+	variant: DEFAULT_VARIANT,
 	isMultiple: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseAccordionEmits>()
 defineSlots<BaseAccordionSlots>()

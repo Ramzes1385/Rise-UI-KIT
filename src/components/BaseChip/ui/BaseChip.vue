@@ -19,17 +19,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../model/BaseChip.types'
 
-const props = withDefaults(defineProps<BaseChipProps>(), {
+const props = withDefaults(defineProps<BaseChipProps>(), kitDefaults('BaseChip', {
+	variant: DEFAULT_VARIANT,
 	placement: 'top-right',
 	isHiddenOnZero: false,
 	hasOverflow: false,
 	maxValue: 99,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, ['root', 'badge'])
 

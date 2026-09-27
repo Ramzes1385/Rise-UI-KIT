@@ -6,7 +6,7 @@
  */
 
 import { expect, fn, within } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, StoryRouterLink, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseIcon } from '@components/BaseIcon'
 import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
@@ -52,8 +52,10 @@ const meta = {
 					'Хлебные крошки показывают путь до текущей страницы и позволяют вернуться на любой уровень выше.',
 					'',
 					'- Корень — ориентир `<nav aria-label="Хлебные крошки">`, текущая страница помечена `aria-current="page"`.',
-					'- Переход: для `to` компонент эмитит `navigate(url)` — маршрут открывает приложение; `href` открывается в новой вкладке.',
-					'- `maxItems` сворачивает начало пути в «…», `showHome` добавляет перед крошками кнопку-иконку «домой».',
+					'- Крошки — ссылки: `to` рендерит компонент ссылок приложения (`linkComponent`, плагин или RouterLink',
+					'  подключённого vue-router), без роутера — `<a href>`; `href` открывается в новой вкладке (`target` меняет это).',
+					'  Крошка без адреса — кнопка с событием `item-click`. `navigate(url)` сообщает о переходе.',
+					'- `maxItems` сворачивает начало пути в «…», `showHome` добавляет перед крошками ссылку-иконку «домой».',
 					'- Варианты: `default` — ссылки; `ghost` — ссылки-кнопки; `outline`, `shadow`, `soft` — крошки в контейнере высотой с контрол.',
 					'',
 					'Вместе с крошками разметка Schema.org (JSON-LD) попадает на страницу для поисковых систем.',
@@ -68,6 +70,7 @@ const meta = {
 		separator: { control: 'inline-radio', options: SEPARATORS, table: propGroup(ARG_GROUP.appearance) },
 		showHome: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		maxItems: { control: { type: 'number', min: 0, max: 10 }, table: propGroup(ARG_GROUP.behavior) },
+		...hiddenArgTypes('linkComponent'),
 		item: { control: false },
 		home: { control: false },
 	},
@@ -79,6 +82,7 @@ const meta = {
 		showHome: false,
 		homeIcon: 'home',
 		sizeScale: 100,
+		linkComponent: StoryRouterLink,
 		onNavigate: fn(),
 		'onItem-click': fn(),
 	},
@@ -89,13 +93,15 @@ type Story = StoryObj<typeof meta>
 
 // ─── Default ───────────────────────────────────────────────────────────────────
 
-/** Песочница: клик по крошке эмитит `item-click` и `navigate` с адресом из `to`. Текущая страница — последняя крошка. */
+/** Песочница: крошки — ссылки; клик эмитит `item-click` и `navigate` с адресом из `to`. Текущая страница — последняя крошка. */
 export const Default: Story = {
 	play: async ({ canvas, userEvent, args }) => {
 		const nav = canvas.getByRole('navigation', { name: 'Хлебные крошки' })
 		await expect(within(nav).getByText('Ультрабук 13"').closest('[aria-current="page"]')).not.toBeNull()
 
-		await userEvent.click(canvas.getByRole('button', { name: 'Каталог' }))
+		const catalog = canvas.getByRole('link', { name: 'Каталог' })
+		await expect(catalog).toHaveAttribute('href', '/catalog')
+		await userEvent.click(catalog)
 		await expect(args['onItem-click']).toHaveBeenCalledWith(ITEMS[1])
 		await expect(args.onNavigate).toHaveBeenCalledWith('/catalog')
 	},
@@ -180,7 +186,7 @@ export const CustomColor: Story = {
 		},
 	},
 	play: async ({ canvas }) => {
-		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Каталог' })).color).toBe('rgb(29, 78, 216)')
+		await expect(getComputedStyle(canvas.getByRole('link', { name: 'Каталог' })).color).toBe('rgb(29, 78, 216)')
 		await expect(getComputedStyle(canvas.getByRole('navigation')).backgroundColor).toBe('rgb(239, 246, 255)')
 	},
 }
@@ -218,13 +224,13 @@ export const WithIcons: Story = {
 }
 
 /**
- * `showHome` показывает первую крошку кнопкой-иконкой «домой» (`homeIcon`). Доступное имя кнопки — метка первой крошки,
- * клик ведёт на её адрес.
+ * `showHome` показывает первую крошку ссылкой-иконкой «домой» (`homeIcon`). Доступное имя ссылки — метка первой крошки,
+ * она ведёт на её адрес.
  */
 export const WithHome: Story = {
 	args: { showHome: true },
 	play: async ({ canvas, userEvent, args }) => {
-		const home = canvas.getByRole('button', { name: 'Главная' })
+		const home = canvas.getByRole('link', { name: 'Главная' })
 		await expect(home).not.toHaveTextContent('Главная')
 		await userEvent.click(home)
 		await expect(args.onNavigate).toHaveBeenCalledWith('/')
@@ -269,9 +275,9 @@ export const CustomSlots: Story = {
 export const Collapsed: Story = {
 	args: { maxItems: 2 },
 	play: async ({ canvas, userEvent }) => {
-		await expect(canvas.queryByRole('button', { name: 'Каталог' })).toBeNull()
+		await expect(canvas.queryByRole('link', { name: 'Каталог' })).toBeNull()
 		await userEvent.click(canvas.getByRole('button', { name: '…' }))
-		await expect(canvas.getByRole('button', { name: 'Каталог' })).toBeVisible()
+		await expect(canvas.getByRole('link', { name: 'Каталог' })).toBeVisible()
 	},
 }
 
@@ -281,7 +287,7 @@ export const Collapsed: Story = {
 export const Keyboard: Story = {
 	tags: ['!autodocs'],
 	play: async ({ canvas, userEvent, args }) => {
-		const link = canvas.getByRole('button', { name: 'Главная' })
+		const link = canvas.getByRole('link', { name: 'Главная' })
 		await tabTo(link, userEvent)
 		await expect(getComputedStyle(link).outlineStyle).toBe('solid')
 		await userEvent.keyboard('{Enter}')

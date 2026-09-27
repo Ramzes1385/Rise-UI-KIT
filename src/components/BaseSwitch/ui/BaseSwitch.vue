@@ -73,19 +73,21 @@ import { ref, useId } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseSwitch.style.scss'
 import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../model/BaseSwitch.types'
 
-const props = withDefaults(defineProps<BaseSwitchProps>(), {
+const props = withDefaults(defineProps<BaseSwitchProps>(), kitDefaults('BaseSwitch', {
+	variant: DEFAULT_VARIANT,
 	modelValue: false,
 	isDisabled: false,
 	isRequired: false,
 	reverse: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 /** id переключателя и обёртки ошибки: подпись связана через for, ошибка (текст error или слот error) — через aria-describedby */
 const inputId = useId()

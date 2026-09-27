@@ -70,6 +70,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { usePopup } from '@composables/usePopup'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
@@ -77,7 +78,7 @@ import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@c
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../model/BaseModal.types'
 
-const props = withDefaults(defineProps<BaseModalProps>(), {
+const props = withDefaults(defineProps<BaseModalProps>(), kitDefaults('BaseModal', {
 	isOpen: undefined,
 	variant: DEFAULT_VARIANT,
 	closeOnOverlay: true,
@@ -85,7 +86,7 @@ const props = withDefaults(defineProps<BaseModalProps>(), {
 	isContained: false,
 	hasOverlay: true,
 	dialogRole: 'dialog',
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'])
 

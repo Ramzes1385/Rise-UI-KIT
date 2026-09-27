@@ -86,6 +86,8 @@
 | 50 | Поправить тестовую инфраструктуру Storybook или описать её ограничения в STORIES_GUIDE (список ниже²) | `build/storybook/preview.ts`, `src/stories/helpers`, STORIES_GUIDE | Особенности тестовой среды | patch | S |
 | 51 | Вынести повторяющиеся помощники stories: `resolveColor()` (дублирован в группе Overlay) и обёртку `docs.story.inline: false` + `height` для оверлеев, открытых при монтировании | `src/stories/helpers` | Общие файлы | patch | S |
 | 52 | E2E «форма: заполняет поля и отправляет» заканчивается `expect(true).toBeTruthy()` | `BaseForm.e2e.spec.ts` | Сценарий e2e по брифу не меняли | patch (тесты) | S |
+| 53 | Тесты BaseSideBar кликают по `<a href>`, и jsdom 12 раз пишет «Not implemented: navigation»: отменять переход в тестах, как в BaseBreadcrumbs | `BaseSideBar.*.spec.ts` | Найдено в порции 1.3, шум был и раньше | patch (тесты) | S |
+| 54 | BaseColorModeButton при серверном рендере: на сервере тема светлая, и при сохранённой тёмной иконка и `aria-pressed` расходятся при гидратации. Нужен рендер после монтирования | BaseColorModeButton, `useColorMode` | Кит не рендерится на сервере; найдено в порции 1.3 | patch | S |
 
 ² Ограничения тестовой среды Storybook:
 - `resetAllMocksLoader` после `updateArgs` (`useModelArg`) стирает вызовы шпионов `fn()`;

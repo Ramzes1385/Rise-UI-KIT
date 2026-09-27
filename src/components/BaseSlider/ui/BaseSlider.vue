@@ -158,6 +158,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { useCustomClass } from '@composables/useCustomClass'
+import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
 import { UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
@@ -173,7 +174,7 @@ const SLIDER_LABEL = {
 	OF: 'из',
 } as const
 
-const props = withDefaults(defineProps<BaseSliderProps>(), {
+const props = withDefaults(defineProps<BaseSliderProps>(), kitDefaults('BaseSlider', {
 	customClass: undefined,
 	items: undefined,
 	animation: 'slide',
@@ -192,7 +193,7 @@ const props = withDefaults(defineProps<BaseSliderProps>(), {
 	slidesPerGroup: 1,
 	hasCaption: true,
 	isZoomable: false,
-})
+}))
 
 const emit = defineEmits<BaseSliderEmits>()
 defineSlots<BaseSliderSlots>()

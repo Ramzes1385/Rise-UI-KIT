@@ -29,16 +29,17 @@
 import { computed, ref, watch } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
+import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BasePopover.style.scss'
 import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
 
-const props = withDefaults(defineProps<BasePopoverProps>(), {
+const props = withDefaults(defineProps<BasePopoverProps>(), kitDefaults('BasePopover', {
 	isOpen: false,
 	position: 'bottom',
 	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BasePopoverEmits>()
 defineSlots<BasePopoverSlots>()

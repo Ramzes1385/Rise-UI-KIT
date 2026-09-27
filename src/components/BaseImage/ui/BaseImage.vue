@@ -67,11 +67,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { BaseIcon } from '@components/BaseIcon'
 import '../styles/BaseImage.style.scss'
 
-import { BaseIcon } from '@components/BaseIcon'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
+import { kitDefaults } from '@composables/useDefaults'
 import { useImageGallery } from '@composables/useImageGallery'
 import { useImageState } from '@composables/useImageState'
 import { useImageZoom } from '@composables/useImageZoom'
@@ -80,7 +81,7 @@ import { UI_ARIA, UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import BaseImageZoom from './BaseImageZoom.vue'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../model/BaseImage.types'
 
-const props = withDefaults(defineProps<BaseImageProps>(), {
+const props = withDefaults(defineProps<BaseImageProps>(), kitDefaults('BaseImage', {
 	src: undefined,
 	alt: undefined,
 	timeout: UI_TIMING.IMAGE_LOAD_TIMEOUT,
@@ -92,7 +93,7 @@ const props = withDefaults(defineProps<BaseImageProps>(), {
 	convertToWebp: false,
 	convertToAvif: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

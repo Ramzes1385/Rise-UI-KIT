@@ -23,16 +23,18 @@
 import { computed, ref, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useClickOutside } from '@composables/useClickOutside'
+import { kitDefaults } from '@composables/useDefaults'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { usePadding } from '@composables/usePadding'
-import { UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE } from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
 
-const props = withDefaults(defineProps<BaseDropdownProps>(), {
+const props = withDefaults(defineProps<BaseDropdownProps>(), kitDefaults('BaseDropdown', {
+	variant: DEFAULT_VARIANT,
 	isOpen: false,
 	position: 'bottom-start',
 	gap: UI_SIZE.GAP.SM,
@@ -41,7 +43,7 @@ const props = withDefaults(defineProps<BaseDropdownProps>(), {
 	panelClass: '',
 	padding: undefined,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 const { wasPropPassed } = useExplicitPropDetection()
 
 const closeOnEscape = computed(() =>

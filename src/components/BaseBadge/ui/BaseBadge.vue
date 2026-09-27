@@ -12,13 +12,15 @@
 
 <script setup lang="ts">
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseBadge.style.scss'
 import type { BaseBadgeEmits, BaseBadgeProps, BaseBadgeSlots } from '../model/BaseBadge.types'
 
-const props = withDefaults(defineProps<BaseBadgeProps>(), {
+const props = withDefaults(defineProps<BaseBadgeProps>(), kitDefaults('BaseBadge', {
+	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseBadgeEmits>()
 defineSlots<BaseBadgeSlots>()

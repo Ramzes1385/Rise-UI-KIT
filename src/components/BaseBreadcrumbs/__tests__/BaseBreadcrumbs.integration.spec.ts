@@ -6,6 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
+import { markRaw } from 'vue'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
 import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 
@@ -16,6 +17,14 @@ const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Кованые изделия', to: '/catalog/forged' },
 	{ label: 'Ворота' },
 ]
+
+// jsdom не умеет переходить по ссылкам и пишет об этом в консоль: в тестах переход по клику отменяется
+function preventNavigation(event: Event): void {
+	event.preventDefault()
+}
+
+beforeAll(() => document.addEventListener('click', preventNavigation))
+afterAll(() => document.removeEventListener('click', preventNavigation))
 
 describe('BaseBreadcrumbs integration', () => {
 	describe('навигация по клику', () => {
@@ -108,24 +117,26 @@ describe('BaseBreadcrumbs integration', () => {
 			expect(current[0]).toHaveTextContent('Ворота')
 		})
 
-		it('кнопка «домой» имеет доступное имя — метку первой крошки, на которую она ведёт', async () => {
+		it('ссылка «домой» имеет доступное имя — метку первой крошки, на которую она ведёт', async () => {
 			const user = userEvent.setup()
 			const { container, emitted } = render(BaseBreadcrumbs, {
 				props: { items: ITEMS, showHome: true },
 			})
 
 			const homeItem = container.querySelector('.base-breadcrumbs__item--home') as HTMLElement
-			await user.click(within(homeItem).getByRole('button', { name: 'Главная' }))
+			const home = within(homeItem).getByRole('link', { name: 'Главная' })
+			expect(home).toHaveAttribute('href', '/')
+			await user.click(home)
 
 			expect(emitted().navigate).toEqual([['/']])
 		})
 
-		it('при showHome первая крошка представлена только кнопкой «домой» и не дублируется в цепочке', () => {
+		it('при showHome первая крошка представлена только ссылкой «домой» и не дублируется в цепочке', () => {
 			render(BaseBreadcrumbs, { props: { items: ITEMS, showHome: true } })
 
-			expect(screen.getAllByRole('button', { name: 'Главная' })).toHaveLength(1)
+			expect(screen.getAllByRole('link', { name: 'Главная' })).toHaveLength(1)
 			expect(screen.queryByText('Главная')).not.toBeInTheDocument()
-			expect(screen.getByRole('button', { name: 'Каталог' })).toBeInTheDocument()
+			expect(screen.getByRole('link', { name: 'Каталог' })).toBeInTheDocument()
 			expect(screen.getByText('Ворота').closest('[aria-current="page"]')).not.toBeNull()
 		})
 
@@ -157,6 +168,55 @@ describe('BaseBreadcrumbs integration', () => {
 			})
 
 			expect(screen.getByTestId('custom-home')).toBeInTheDocument()
+		})
+	})
+
+	describe('ссылки (BC-2)', () => {
+		const RouterLinkStub = markRaw({ name: 'RouterLinkStub', props: ['to'], template: '<a data-router :href="to"><slot /></a>' })
+
+		it('крошка с to — ссылка RouterLink приложения, без роутера — <a href>', () => {
+			const { unmount } = render(BaseBreadcrumbs, { props: { items: ITEMS }, global: { components: { RouterLink: RouterLinkStub } } })
+			expect(screen.getByRole('link', { name: 'Каталог' })).toHaveAttribute('data-router')
+			unmount()
+
+			render(BaseBreadcrumbs, { props: { items: ITEMS, linkComponent: 'a' } })
+			expect(screen.getByRole('link', { name: 'Каталог' })).not.toHaveAttribute('data-router')
+		})
+
+		it('внешняя крошка открывается в новой вкладке, target меняет это', () => {
+			render(BaseBreadcrumbs, {
+				props: {
+					items: [
+						{ label: 'Документация', href: 'https://example.com/docs' },
+						{ label: 'Блог', href: 'https://example.com/blog', target: '_self' },
+						{ label: 'Статья' },
+					],
+				},
+			})
+
+			const docs = screen.getByRole('link', { name: 'Документация' })
+			expect(docs).toHaveAttribute('target', '_blank')
+			expect(docs).toHaveAttribute('rel', 'noopener noreferrer')
+			expect(screen.getByRole('link', { name: 'Блог' })).toHaveAttribute('target', '_self')
+		})
+
+		it('крошка без адреса — кнопка с item-click, без navigate', async () => {
+			const { emitted } = render(BaseBreadcrumbs, { props: { items: [{ label: 'Раздел' }, { label: 'Страница' }] } })
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Раздел' }))
+			expect(emitted()['item-click']).toEqual([[{ label: 'Раздел' }]])
+			expect(emitted()).not.toHaveProperty('navigate')
+		})
+
+		it('небезопасный адрес: ссылка без href, клик не сообщает о переходе', async () => {
+			vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const { emitted } = render(BaseBreadcrumbs, { props: { items: [{ label: 'Отчёт', href: 'javascript:alert(1)' }, { label: 'Страница' }] } })
+
+			const link = screen.getByRole('link', { name: 'Отчёт' })
+			expect(link).not.toHaveAttribute('href')
+			await fireEvent.click(link)
+			expect(emitted()).not.toHaveProperty('navigate')
+			vi.restoreAllMocks()
 		})
 	})
 })

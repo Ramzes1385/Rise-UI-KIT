@@ -7,5 +7,5 @@
  */
 export { createIconPlugin } from '@plugins/iconPlugin'
 export type { IconPluginOptions } from '@plugins/iconPlugin'
-export { ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
-export type { UseIconReturn } from './useIcon.types'
+export { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
+export type { IconMap, ResolvedIcon, UseIconReturn } from './useIcon.types'

@@ -50,6 +50,40 @@ describe('BaseSideBar navigation items', () => {
 		})
 	})
 
+	describe('компонент ссылок', () => {
+		const RouterLinkStub = markRaw({ props: ['to'], template: '<a data-testid="router-link" :href="to"><slot /></a>' })
+		const items = [
+			{ key: 'dashboard', label: 'Главная', to: '/dashboard' },
+			{ key: 'help', label: 'Справка', to: 'https://example.com/help' },
+		]
+
+		it('без пропа берёт linkComponent из плагина или RouterLink приложения', () => {
+			render(BaseSideBar, {
+				props: { items },
+				global: { stubs: BASE_SIDEBAR_STUBS, provide: { [Symbol.for('rise-ui-kit.link-component')]: RouterLinkStub } },
+			})
+			expect(screen.getByText('Главная').closest('a')).toHaveAttribute('data-testid', 'router-link')
+		})
+
+		it('RouterLink приложения, если плагин его не задал; без роутера — <a href>', () => {
+			const { unmount } = render(BaseSideBar, { props: { items }, global: { stubs: BASE_SIDEBAR_STUBS, components: { RouterLink: RouterLinkStub } } })
+			expect(screen.getByText('Главная').closest('a')).toHaveAttribute('data-testid', 'router-link')
+			unmount()
+
+			render(BaseSideBar, { props: { items }, global: { stubs: BASE_SIDEBAR_STUBS } })
+			expect(screen.getByText('Главная').closest('a')).not.toHaveAttribute('data-testid')
+			expect(screen.getByText('Главная').closest('a')).toHaveAttribute('href', '/dashboard')
+		})
+
+		it('внешний адрес — обычная ссылка, даже с RouterLink', () => {
+			render(BaseSideBar, { props: { items, linkComponent: RouterLinkStub }, global: { stubs: BASE_SIDEBAR_STUBS } })
+
+			const help = screen.getByText('Справка').closest('a')
+			expect(help).toHaveAttribute('href', 'https://example.com/help')
+			expect(help).not.toHaveAttribute('data-testid')
+		})
+	})
+
 	it('рендерит items как навигацию', () => {
 		render(BaseSideBar, {
 			props: {

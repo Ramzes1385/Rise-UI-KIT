@@ -15,19 +15,21 @@
 <script setup lang="ts">
 import { computed, provide, toRef } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useTreeState } from '@composables/useTreeState'
 import '../styles/BaseTree.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
 import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots } from '../model/BaseTree.types'
 
-const props = withDefaults(defineProps<BaseTreeProps>(), {
+const props = withDefaults(defineProps<BaseTreeProps>(), kitDefaults('BaseTree', {
+	variant: DEFAULT_VARIANT,
 	selectionMode: 'none',
 	arrowPosition: 'left',
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isDefaultExpandAll: false,
-})
+}))
 
 const emit = defineEmits<BaseTreeEmits>()
 defineSlots<BaseTreeSlots>()

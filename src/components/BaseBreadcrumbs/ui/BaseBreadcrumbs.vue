@@ -19,15 +19,16 @@
 				itemscope
 				itemtype="https://schema.org/ListItem">
 				<slot name="home">
-					<!-- Кнопка содержит только декоративную иконку, имя берём у крошки, на которую она ведёт -->
-					<button
-						type="button"
+					<!-- Ссылка содержит только декоративную иконку, имя берём у крошки, на которую она ведёт -->
+					<component
+						:is="getLink(items[0]!).is"
+						v-bind="getLink(items[0]!).attrs"
 						class="base-breadcrumbs__link base-breadcrumbs__link--home"
 						:class="classes.link"
 						:aria-label="items[0]?.label"
-						@click="handleHomeClick">
+						@click="handleItemClick(items[0]!)">
 						<BaseIcon :name="homeIcon" :size-scale="iconScale" :custom-class="classes.homeIcon" />
-					</button>
+					</component>
 				</slot>
 				<meta itemprop="position" content="1" />
 				<span class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
@@ -75,9 +76,11 @@
 				itemscope
 				itemtype="https://schema.org/ListItem">
 				<slot name="item" :item="item" :index="realIndex(index)">
-					<button
+					<!-- Крошка с адресом — ссылка (RouterLink приложения или <a href>), без адреса — кнопка с событием item-click -->
+					<component
+						:is="getLink(item).is"
 						v-if="!isCurrent(index)"
-						type="button"
+						v-bind="getLink(item).attrs"
 						class="base-breadcrumbs__link"
 						:class="classes.link"
 						@click="handleItemClick(item)">
@@ -88,7 +91,7 @@
 							class="base-breadcrumbs__icon"
 							:custom-class="classes.itemIcon" />
 						<span class="base-breadcrumbs__text" :class="classes.itemText" itemprop="name">{{ item.label }}</span>
-					</button>
+					</component>
 					<span v-else class="base-breadcrumbs__current" :class="classes.current" aria-current="page">
 						<BaseIcon
 							v-if="item.icon"
@@ -120,21 +123,24 @@
 import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_ARIA, SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { resolveLink, useLinkComponent } from '@composables/useLink'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
-import { navigateAndEmit } from '@utils/navigationUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import '../styles/BaseBreadcrumbs.style.scss'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
+import type { ResolvedLink } from '@composables/useLink'
 
-const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
+const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), kitDefaults('BaseBreadcrumbs', {
+	variant: DEFAULT_VARIANT,
 	separator: 'chevron',
 	maxItems: 0,
 	showHome: false,
 	homeIcon: 'home',
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-breadcrumbs', props, [
 		'root',
@@ -190,19 +196,23 @@ function realIndex(visibleIdx: number): number {
 	return props.items.length - visibleItems.value.length + visibleIdx
 }
 
-function navigate(item: BreadcrumbItem): void {
-	navigateAndEmit({ to: item.to, href: item.href }, (url) => emit('navigate', url))
+/** Компонент ссылок: проп, `linkComponent` из плагина, RouterLink приложения или `a` */
+const appLinkComponent = useLinkComponent()
+
+/**
+ * Ссылка крошки. Внешний адрес (`href`) по умолчанию открывается в новой вкладке, как раньше открывался через window.open.
+ * Крошка без адреса — кнопка: приложение обрабатывает её событием item-click.
+ */
+function getLink(item: BreadcrumbItem): ResolvedLink {
+	if (!item.to && !item.href) return { is: 'button', attrs: { type: 'button' }, hasTarget: false }
+	const target = item.target ?? (item.href ? '_blank' : undefined)
+	return resolveLink({ to: item.to, href: item.href, target }, props.linkComponent ?? appLinkComponent)
 }
 
+/** Переход выполняет сама ссылка; события сообщают о нём приложению (аналитика, закрытие меню) */
 function handleItemClick(item: BreadcrumbItem): void {
 	emit('item-click', item)
-	navigate(item)
+	if (getLink(item).hasTarget) emit('navigate', (item.href ?? item.to)!)
 }
 
-function handleHomeClick(): void {
-	/* istanbul ignore next — defensive: home-кнопка рендерится только при items.length > 0 */
-	if (props.items[0]) {
-		navigate(props.items[0])
-	}
-}
 </script>

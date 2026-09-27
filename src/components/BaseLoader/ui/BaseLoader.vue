@@ -43,18 +43,19 @@
 import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
+import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
 import { UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../model/BaseLoader.types'
 
-const props = withDefaults(defineProps<BaseLoaderProps>(), {
+const props = withDefaults(defineProps<BaseLoaderProps>(), kitDefaults('BaseLoader', {
 	variant: 'spinner',
 	hasLabel: false,
 	label: UI_TEXT.LOADING,
 	isOverlay: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'animation', 'spinner', 'label'],

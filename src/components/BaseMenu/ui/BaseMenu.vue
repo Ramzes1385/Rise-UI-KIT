@@ -52,14 +52,16 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSeparator } from '@components/BaseSeparator'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseMenu.style.scss'
 import { calcIconScale } from '@utils/iconUtils'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../model/BaseMenu.types'
 
-const props = withDefaults(defineProps<BaseMenuProps>(), {
+const props = withDefaults(defineProps<BaseMenuProps>(), kitDefaults('BaseMenu', {
+	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, ['root', 'group', 'item', 'icon', 'label', 'divider'])
 

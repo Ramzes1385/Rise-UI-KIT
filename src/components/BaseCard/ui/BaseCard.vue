@@ -54,17 +54,19 @@
 import { computed } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { usePadding } from '@composables/usePadding'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseCard.style.scss'
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
 
-const props = withDefaults(defineProps<BaseCardProps>(), {
+const props = withDefaults(defineProps<BaseCardProps>(), kitDefaults('BaseCard', {
+	variant: DEFAULT_VARIANT,
 	isHoverable: false,
 	padding: undefined,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	scroll: false,
-})
+}))
 
 defineSlots<BaseCardSlots>()
 

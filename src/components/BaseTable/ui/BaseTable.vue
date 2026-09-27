@@ -183,6 +183,7 @@ import { BaseLoader } from '@components/BaseLoader'
 import { BasePagination } from '@components/BasePagination'
 import { BaseSelect } from '@components/BaseSelect'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { usePadding } from '@composables/usePadding'
 import { useTableComposition } from '@composables/useTableComposition'
@@ -194,7 +195,7 @@ import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
 import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../model/BaseTable.types'
 
-const props = withDefaults(defineProps<BaseTableProps>(), {
+const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable', {
 	variant: DEFAULT_VARIANT,
 	isLoading: false,
 	emptyText: UI_TEXT.EMPTY,
@@ -205,7 +206,7 @@ const props = withDefaults(defineProps<BaseTableProps>(), {
 	searchDebounce: TABLE.SEARCH_DEBOUNCE_MS,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	padding: undefined,
-})
+}))
 
 const slots = useSlots()
 

@@ -128,6 +128,7 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useChatActions } from '@composables/useChatActions'
 import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
 import { useChatState } from '@composables/useChatState'
+import { kitDefaults } from '@composables/useDefaults'
 import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SIZE, UI_TEXT } from '@constants'
 import '../styles/BaseChat.style.scss'
 import { ChatHeader } from './ChatHeader'
@@ -143,7 +144,7 @@ interface MessageListExposed {
 	scrollToMessage: (messageId: string) => void
 }
 
-const props = withDefaults(defineProps<BaseChatProps>(), {
+const props = withDefaults(defineProps<BaseChatProps>(), kitDefaults('BaseChat', {
 	variant: 'bubble',
 	height: UI_SIZE.CHAT_DEFAULT_HEIGHT,
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -154,7 +155,7 @@ const props = withDefaults(defineProps<BaseChatProps>(), {
 	quickReplies: () => [],
 	commands: () => [],
 	currentUserRole: 'member',
-})
+}))
 
 const emit = defineEmits<BaseChatEmits>()
 

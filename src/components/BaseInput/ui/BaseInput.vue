@@ -112,15 +112,17 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../model/BaseInput.types'
 
-const props = withDefaults(defineProps<BaseInputProps>(), {
+const props = withDefaults(defineProps<BaseInputProps>(), kitDefaults('BaseInput', {
+	variant: DEFAULT_VARIANT,
 	type: 'text',
 	placeholder: '',
 	isDisabled: false,
@@ -130,7 +132,7 @@ const props = withDefaults(defineProps<BaseInputProps>(), {
 	prefix: '',
 	postfix: '',
 	mask: '',
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-input', props, [
 	'root', 'label', 'required', 'wrapper', 'prefix', 'field',

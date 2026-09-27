@@ -26,16 +26,18 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_CHAT_TEXT } from '@constants'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
 
-const props = withDefaults(defineProps<BaseAvatarProps>(), {
+const props = withDefaults(defineProps<BaseAvatarProps>(), kitDefaults('BaseAvatar', {
+	variant: DEFAULT_VARIANT,
 	alt: '',
 	shape: 'circle',
 	isOnline: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseAvatarEmits>()
 defineSlots<BaseAvatarSlots>()

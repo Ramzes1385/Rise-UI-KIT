@@ -39,6 +39,8 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseSlideover', 'BasePagination', 'BaseStepper', 'BaseTable',
   'BaseCalendar', 'BaseNotification',
   'BaseConfirm',
+  'BaseColorModeButton',
+  'BaseLink',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -47,6 +49,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
   'BaseCheckbox', 'BaseRadio', 'BaseSwitch',
   'BaseRange', 'BasePin', 'BaseSearch', 'BaseFileUpload',
   'BaseDatePicker',
+  'BaseColorModeButton',
+  'BaseLink',
 ])
 
 /** Формовые компоненты, требующие story Error */

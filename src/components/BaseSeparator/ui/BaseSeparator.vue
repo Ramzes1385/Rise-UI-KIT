@@ -33,19 +33,20 @@
 import { computed, useId } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
+import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseSeparator.style.scss'
 
 import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { BaseSeparatorProps, BaseSeparatorSlots } from '../model/BaseSeparator.types'
 
-const props = withDefaults(defineProps<BaseSeparatorProps>(), {
+const props = withDefaults(defineProps<BaseSeparatorProps>(), kitDefaults('BaseSeparator', {
 	orientation: 'horizontal',
 	thickness: 1,
 	isDashed: false,
 	spacing: undefined,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 defineSlots<BaseSeparatorSlots>()
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

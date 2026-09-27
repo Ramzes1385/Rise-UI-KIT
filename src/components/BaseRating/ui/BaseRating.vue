@@ -33,13 +33,14 @@
 import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { UI_RATING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseRating.style.scss'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../model/BaseRating.types'
 
-const props = withDefaults(defineProps<BaseRatingProps>(), {
+const props = withDefaults(defineProps<BaseRatingProps>(), kitDefaults('BaseRating', {
 	modelValue: 0,
 	max: 5,
 	step: 1,
@@ -49,7 +50,7 @@ const props = withDefaults(defineProps<BaseRatingProps>(), {
 	isDisabled: false,
 	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseRatingEmits>()
 

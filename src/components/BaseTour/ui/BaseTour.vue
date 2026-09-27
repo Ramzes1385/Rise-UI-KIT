@@ -98,6 +98,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useCustomClass } from '@composables/useCustomClass'
+import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useScrollLock } from '@composables/useScrollLock'
@@ -110,13 +111,13 @@ import {
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseTour.types'
 
-const props = withDefaults(defineProps<BaseTourProps>(), {
+const props = withDefaults(defineProps<BaseTourProps>(), kitDefaults('BaseTour', {
 	isOpen: false,
 	step: 0,
 	placement: 'auto',
 	showSkip: true,
 	showProgress: true,
-})
+}))
 
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()

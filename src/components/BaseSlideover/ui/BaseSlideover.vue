@@ -64,6 +64,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
@@ -72,7 +73,7 @@ import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
 
-const props = withDefaults(defineProps<BaseSlideoverProps>(), {
+const props = withDefaults(defineProps<BaseSlideoverProps>(), kitDefaults('BaseSlideover', {
 	side: 'right',
 	width: 100,
 	isFullWidth: false,
@@ -81,7 +82,7 @@ const props = withDefaults(defineProps<BaseSlideoverProps>(), {
 	isContained: false,
 	hasOverlay: true,
 	padding: undefined,
-})
+}))
 
 /** Масштаб и кастомный цвет — на корне: панель и её содержимое наследуют --size-scale и --custom-* */
 const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-slideover', props, [

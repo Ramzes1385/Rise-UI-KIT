@@ -34,19 +34,21 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { usePadding } from '@composables/usePadding'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseButton.style.scss'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
 
 
-const props = withDefaults(defineProps<BaseButtonProps>(), {
+const props = withDefaults(defineProps<BaseButtonProps>(), kitDefaults('BaseButton', {
+	variant: DEFAULT_VARIANT,
 	type: 'button',
 	padding: undefined,
 	isLoading: false,
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseButtonEmits>()
 

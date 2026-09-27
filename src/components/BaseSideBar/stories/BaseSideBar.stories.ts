@@ -7,8 +7,8 @@
  */
 
 import { expect, fn, waitFor } from 'storybook/test'
-import { defineComponent, h, markRaw, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { ref } from 'vue'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, StoryRouterLink, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -16,19 +16,6 @@ import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import type { SideBarItem } from '../model/BaseSideBar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-
-/**
- * Ссылка для примеров — как RouterLink: получает `to` и рендерит `<a>`, но не уходит со страницы Storybook.
- * В приложении передайте в `linkComponent` настоящий RouterLink (или оставьте `a` по умолчанию).
- * markRaw: args в Storybook реактивны, а компонент не должен превращаться в реактивный объект.
- */
-const StoryRouterLink = markRaw(
-	defineComponent({
-		name: 'StoryRouterLink',
-		props: { to: { type: String, required: true } },
-		setup: (props, { slots }) => () => h('a', { href: props.to, onClick: (event: MouseEvent) => event.preventDefault() }, slots.default?.()),
-	}),
-)
 
 const BASIC_ITEMS: SideBarItem[] = [
 	{ key: 'dashboard', label: 'Главная', icon: 'home', to: '/dashboard' },

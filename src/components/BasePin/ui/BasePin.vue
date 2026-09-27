@@ -45,18 +45,20 @@
 import { computed, ref, useId } from 'vue'
 import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BasePin.style.scss'
 import { toHTMLInputElement } from '@utils/domUtils'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'
 
-const props = withDefaults(defineProps<BasePinProps>(), {
+const props = withDefaults(defineProps<BasePinProps>(), kitDefaults('BasePin', {
+	variant: DEFAULT_VARIANT,
 	length: 4,
 	type: 'text',
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const formField = useFormField({
 	value: () => props.modelValue,

@@ -86,6 +86,7 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { BasePopover } from '@components/BasePopover'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { UI_COLOR_PICKER, UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
@@ -94,7 +95,7 @@ import '../styles/BaseColorPicker.style.scss'
 import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../model/BaseColorPicker.types'
 
-const props = withDefaults(defineProps<BaseColorPickerProps>(), {
+const props = withDefaults(defineProps<BaseColorPickerProps>(), kitDefaults('BaseColorPicker', {
 	position: 'bottom',
 	isHexHidden: false,
 	isPresetsHidden: false,
@@ -104,7 +105,7 @@ const props = withDefaults(defineProps<BaseColorPickerProps>(), {
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	presets: () => DEFAULT_COLOR_PRESETS,
-})
+}))
 
 const emit = defineEmits<BaseColorPickerEmits>()
 defineSlots<BaseColorPickerSlots>()

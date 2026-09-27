@@ -43,6 +43,8 @@
 		font: inherit;
 		font-weight: var(--rise-font-weight-medium);
 		text-align: left;
+		// Крошки — ссылки <a>: подчёркивание браузера убрано, вид как у прежних кнопок
+		text-decoration: none;
 		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;

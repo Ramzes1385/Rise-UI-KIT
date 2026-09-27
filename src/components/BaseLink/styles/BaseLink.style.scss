@@ -1,0 +1,47 @@
+// BaseLink — ссылка: шрифт и размер берёт у окружения, `sizeScale` масштабирует их относительно него.
+// default — цвет роли primary (`--rise-primary-text`) и тонкое подчёркивание: в тексте ссылку видно не только по цвету
+// (WCAG 1.4.1); при наведении подчёркивание цвета ссылки. ghost — цвет текста вокруг, подчёркивание при наведении:
+// для навигации и списков ссылок, где понятно, что это ссылки.
+.base-link {
+	display: inline;
+	font-size: calc(1em * var(--size-scale, 1));
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-decoration-color: color-mix(in srgb, currentcolor 45%, transparent);
+	text-underline-offset: 0.2em;
+	border-radius: var(--rise-radius-xs);
+	cursor: pointer;
+	@include custom-text(color, var(--rise-primary-text));
+	@include custom-text-hover(color, var(--rise-primary-text));
+	@include focus-ring;
+
+	@include hover {
+		text-decoration-color: currentcolor;
+	}
+
+	&--ghost {
+		text-decoration-line: none;
+		@include custom-text(color, inherit);
+		@include custom-text-hover(color, inherit);
+
+		@include hover {
+			text-decoration-line: underline;
+		}
+	}
+
+	// Отключённая ссылка: без адреса, наведение ничего не меняет (миксин hover пропускает --disabled)
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&__external {
+		display: inline-block;
+		margin-inline-start: 0.15em;
+		font-size: 0.85em;
+		text-decoration: none;
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}

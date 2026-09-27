@@ -14,6 +14,7 @@ import { BaseButton } from './components/BaseButton'
 import { BaseCard } from './components/BaseCard'
 import { BaseCheckbox } from './components/BaseCheckbox'
 import { BaseChip } from './components/BaseChip'
+import { BaseColorModeButton } from './components/BaseColorModeButton'
 import { BaseColorPicker } from './components/BaseColorPicker'
 import { BaseConfirm } from './components/BaseConfirm'
 import { BaseDropdown } from './components/BaseDropdown'
@@ -23,6 +24,7 @@ import { BaseFormField } from './components/BaseFormField'
 import { BaseIcon } from './components/BaseIcon'
 import { BaseImage } from './components/BaseImage'
 import { BaseInput } from './components/BaseInput'
+import { BaseLink } from './components/BaseLink'
 import { BaseLoader } from './components/BaseLoader'
 import { BaseMegaMenu } from './components/BaseMegaMenu'
 import { BaseMenu } from './components/BaseMenu'
@@ -50,7 +52,12 @@ import { BaseTextarea } from './components/BaseTextarea'
 import { BaseTooltip } from './components/BaseTooltip'
 import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
-import { ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
+import { DEFAULTS_KEY } from './composables/useDefaults/useDefaults'
+import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
+import { LINK_COMPONENT_KEY } from './composables/useLink/useLink'
+import type { UiKitDefaults } from './composables/useDefaults/useDefaults.types'
+import type { IconMap } from './composables/useIcon/useIcon.types'
+import type { LinkComponent } from './composables/useLink/useLink.types'
 import type { App, Component, Plugin } from 'vue'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
@@ -69,6 +76,19 @@ export interface UiKitPluginOptions {
 	 * По умолчанию 'icons.svg' — относительный путь, который на вложенных маршрутах SPA резолвится неверно.
 	 */
 	iconSpritePath?: string
+	/**
+	 * Значения props по умолчанию: `global` — для всех компонентов, по имени компонента — для него.
+	 * Например `{ global: { sizeScale: 90 }, BaseButton: { variant: 'soft' } }`. Переопределяются props,
+	 * у которых в компоненте есть значение по умолчанию (строки, числа, логические значения)
+	 */
+	defaults?: UiKitDefaults
+	/** Замена иконок кита своими: имя символа в спрайте, полный адрес символа или компонент с `<svg>` */
+	icons?: IconMap
+	/**
+	 * Компонент ссылок на маршруты приложения (RouterLink, NuxtLink). Без него компоненты берут RouterLink,
+	 * если подключён vue-router, иначе рендерят `<a href>`
+	 */
+	linkComponent?: LinkComponent
 }
 
 const UI_COMPONENTS: Record<string, Component> = {
@@ -85,6 +105,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseChat,
 	BaseCheckbox,
 	BaseChip,
+	BaseColorModeButton,
 	BaseColorPicker,
 	BaseConfirm,
 	BaseDatePicker,
@@ -97,6 +118,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseIcon,
 	BaseImage,
 	BaseInput,
+	BaseLink,
 	BaseLoader,
 	BaseMegaMenu,
 	BaseMenu,
@@ -143,6 +165,9 @@ export function createUiKitPlugin(options?: UiKitPluginOptions): Plugin {
 		install(app: App): void {
 			installItems(app, options)
 			if (options?.iconSpritePath) app.provide(ICON_SPRITE_PATH_KEY, options.iconSpritePath)
+			if (options?.defaults) app.provide(DEFAULTS_KEY, options.defaults)
+			if (options?.icons) app.provide(ICON_MAP_KEY, options.icons)
+			if (options?.linkComponent) app.provide(LINK_COMPONENT_KEY, options.linkComponent)
 		},
 	}
 }

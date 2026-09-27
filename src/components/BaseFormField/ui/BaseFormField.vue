@@ -44,15 +44,17 @@
 import { computed, ref, useId } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseFormField.style.scss'
 import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
 
-const props = withDefaults(defineProps<BaseFormFieldProps>(), {
+const props = withDefaults(defineProps<BaseFormFieldProps>(), kitDefaults('BaseFormField', {
+	variant: DEFAULT_VARIANT,
 	isRequired: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'])
 defineSlots<BaseFormFieldSlots>()

@@ -115,20 +115,22 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useBreakpoint } from '@composables/useBreakpoint'
+import { kitDefaults } from '@composables/useDefaults'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TIMING } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../model/BaseMegaMenu.types'
 
-const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
+const props = withDefaults(defineProps<BaseMegaMenuProps>(), kitDefaults('BaseMegaMenu', {
+	variant: DEFAULT_VARIANT,
 	trigger: 'click',
 	layout: 'columns',
 	hoverDelay: UI_TIMING.HOVER_DELAY,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'])
 

@@ -57,22 +57,23 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
+import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BaseProgress.style.scss'
 
-import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
+import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
 import { UI_ARIA, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
 
-const props = withDefaults(defineProps<BaseProgressProps>(), {
+const props = withDefaults(defineProps<BaseProgressProps>(), kitDefaults('BaseProgress', {
 	max: 100,
 	shape: 'line',
 	animation: 'none',
 	hasLabel: false,
 	isIndeterminate: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
-})
+}))
 
 const emit = defineEmits<BaseProgressEmits>()
 defineSlots<BaseProgressSlots>()

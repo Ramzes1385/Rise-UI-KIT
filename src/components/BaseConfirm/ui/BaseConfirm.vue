@@ -28,18 +28,19 @@ import { useId } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseModal } from '@components/BaseModal'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
 import '../styles/BaseConfirm.style.scss'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../model/BaseConfirm.types'
 import type { CustomColor } from '@composables/useCustomColor'
 
-const props = withDefaults(defineProps<BaseConfirmProps>(), {
+const props = withDefaults(defineProps<BaseConfirmProps>(), kitDefaults('BaseConfirm', {
 	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	confirmLabel: UI_TEXT.CONFIRM,
 	cancelLabel: UI_TEXT.CANCEL,
 	isDanger: false,
-})
+}))
 
 const emit = defineEmits<BaseConfirmEmits>()
 
