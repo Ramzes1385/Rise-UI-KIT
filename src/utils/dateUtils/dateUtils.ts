@@ -1,5 +1,6 @@
 /** Утилиты: работа с датами — сравнение, парсинг, форматирование */
 
+import { getLocale, pluralize } from '@/locales/state'
 import { MS_PER_DAY } from '@constants'
 import type { BuildDateOptions } from './dateUtils.types'
 
@@ -161,7 +162,7 @@ function formatMultiple(options: FormatMultipleOptions): string {
 		return dates.map(d => formatDate({ ...baseOpts, date: d })).join(', ')
 	}
 
-	return `Выбрано: ${dates.length} дат`
+	return pluralize(getLocale().plural.DATES_SELECTED, dates.length)
 }
 
 /** Форматировать значение date picker с учётом режима выбора */

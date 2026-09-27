@@ -1,7 +1,8 @@
 /** Composable: вычисление нормализованных пропсов календаря с дефолтами и поддержкой constraints/timeConfig/displayConfig */
 import { computed } from 'vue'
+import { getLocale } from '@/locales/state'
 import type { ResolvedCalendarProps } from './useCalendarResolvedProps.types'
-import type { BaseCalendarProps } from '@components/BaseCalendar/model/BaseCalendar.types'
+import type { BaseCalendarProps, CalendarWeekday } from '@components/BaseCalendar/model/BaseCalendar.types'
 import type { ComputedRef } from 'vue'
 
 /** Описание: вычисляет нормализованные пропсы календаря с дефолтами и поддержкой constraints/timeConfig/displayConfig, возвращает computed-объект */
@@ -20,12 +21,13 @@ function useCalendarResolvedProps(props: BaseCalendarProps): ComputedRef<Resolve
 		highlights: props.highlights ?? [],
 		events: props.events ?? [],
 		weekends: props.weekends ?? null,
-		firstDayOfWeek: props.firstDayOfWeek ?? 1,
+		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
+		firstDayOfWeek: props.firstDayOfWeek ?? (getLocale().firstDayOfWeek as CalendarWeekday),
 		showTime: props.timeConfig?.showTime ?? false,
 		showSeconds: props.timeConfig?.showSeconds ?? false,
 		is24Hour: props.timeConfig?.is24Hour ?? true,
 		showWeekNumber: props.displayConfig?.showWeekNumber ?? false,
-		locale: props.locale ?? 'ru-RU',
+		locale: props.locale ?? getLocale().intl,
 		variant: props.variant ?? 'default',
 		color: props.color,
 		showDatePopover: props.showDatePopover ?? false,

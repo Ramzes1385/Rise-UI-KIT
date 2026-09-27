@@ -48,7 +48,7 @@
 			@drop.prevent="handleZoneDrop">
 			<slot name="trigger">
 				<BaseIcon name="upload" class="base-file-upload__icon" />
-				<span class="base-file-upload__text" :class="classes.text">{{ buttonText }}</span>
+				<span class="base-file-upload__text" :class="classes.text">{{ buttonText ?? UI_TEXT.FILE_SELECT }}</span>
 				<span v-if="accept || maxSize" class="base-file-upload__hint" :class="classes.hint">
 					<span v-if="accept">{{ formatHint }}</span>
 					<span v-if="maxSize">{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</span>
@@ -155,11 +155,10 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), kitDefaults('Base
 	maxSize: 5,
 	maxCount: 10,
 	label: '',
-	buttonText: UI_TEXT.FILE_SELECT,
 	// Без пропа размер превью берётся из стилей (40px, масштабируется sizeScale): inline-размер — только при явном значении
 	previewSize: undefined,
 	allowPreview: true,
-	emptyText: UI_TEXT.FILE_DROP,
+	emptyText: () => UI_TEXT.FILE_DROP,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	error: '',
 }))

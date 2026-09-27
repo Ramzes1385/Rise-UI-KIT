@@ -4,6 +4,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { setLocale } from '@/locales/state'
 import { calcPageInfo, calcTotalPages, calcVisiblePages } from './paginationUtils'
 
 describe('paginationUtils', () => {
@@ -126,6 +127,13 @@ describe('paginationUtils', () => {
 	// ── calcPageInfo ──
 
 	describe('calcPageInfo', () => {
+		it('числа и связка — на языке кита', () => {
+			expect(calcPageInfo({ current: 2, pageSize: 1000, total: 5000 })).toBe('1\u00a0001–2\u00a0000 из 5\u00a0000')
+
+			setLocale('en')
+			expect(calcPageInfo({ current: 1, pageSize: 10, total: 100 })).toBe('1–10 of 100')
+		})
+
 		it('форматирует информацию о первой странице', () => {
 			const result = calcPageInfo({ current: 1, pageSize: 10, total: 100 })
 			expect(result).toBe('1–10 из 100')

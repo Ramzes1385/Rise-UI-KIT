@@ -100,7 +100,8 @@ describe('ChatSlideover unit', () => {
 		it('должен показывать список участников и количество', () => {
 			render(ChatSlideover, { props: baseProps({ isGroup: true, members: MEMBERS }) })
 
-			expect(screen.getByText('3 участников')).toBeInTheDocument()
+			// Число участников — по правилам множественного числа: 1 участник, 3 участника, 5 участников
+			expect(screen.getByText('3 участника')).toBeInTheDocument()
 			expect(screen.getByText('Участники группы')).toBeInTheDocument()
 		})
 

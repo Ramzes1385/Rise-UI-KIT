@@ -43,11 +43,12 @@
 
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue'
+import { formatMessage } from '@/locales'
 import { FormFieldError } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '../styles/BasePin.style.scss'
 import { toHTMLInputElement } from '@utils/domUtils'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'
@@ -72,7 +73,7 @@ const errorId = `${useId()}-error`
 
 /** Доступное имя ячейки: «Символ 2 из 4» — скринридер сообщает позицию в коде */
 function cellLabel(position: number): string {
-	return `Символ ${position} из ${props.length}`
+	return formatMessage(UI_ARIA.PIN_CELL, { position, length: props.length })
 }
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])

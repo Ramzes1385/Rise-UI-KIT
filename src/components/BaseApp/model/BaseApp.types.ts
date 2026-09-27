@@ -1,3 +1,4 @@
+import type { LocaleInput } from '@/locales/state'
 import type { NOTIFICATION_VARIANTS, NotificationPosition } from '@components/BaseNotification/model/BaseNotification.types'
 
 /** Настройки уведомлений `useToast()` */
@@ -20,6 +21,11 @@ export interface BaseAppToasterOptions {
 export interface BaseAppProps {
 	/** Настройки уведомлений, которые показывает `useToast()` */
 	toaster?: BaseAppToasterOptions
+	/**
+	 * Язык кита: `ru`, `en` или свой словарь из `defineLocale()`. Меняет строки интерфейса, формат дат и чисел
+	 * во всём приложении (язык один на страницу). Без пропа язык не меняется
+	 */
+	locale?: LocaleInput
 }
 
 /**

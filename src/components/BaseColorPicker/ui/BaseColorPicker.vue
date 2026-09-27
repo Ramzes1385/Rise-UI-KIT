@@ -75,7 +75,7 @@
 				class="base-color-picker__reset"
 				:class="classes.reset"
 				@click="handleReset">
-				{{ resetLabel }}
+				{{ resetLabel ?? UI_TEXT.NO_COLOR }}
 			</button>
 		</div>
 	</BasePopover>
@@ -100,7 +100,6 @@ const props = withDefaults(defineProps<BaseColorPickerProps>(), kitDefaults('Bas
 	isHexHidden: false,
 	isPresetsHidden: false,
 	isResettable: false,
-	resetLabel: UI_TEXT.NO_COLOR,
 	hasTransparentSwatch: false,
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,

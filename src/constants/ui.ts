@@ -1,79 +1,18 @@
 /**
  * Глобальные константы UI-библиотеки.
- * Группированы в объекты для удобного доступа.
+ * Группированы в объекты для удобного доступа. Строки интерфейса (`UI_TEXT`, `UI_ARIA` и др.) берутся
+ * из словаря текущего языка (`src/locales`): константа возвращает строку на языке, выбранном `setLocale()`.
  */
+
+import { localized } from './localized'
 
 // ─── Текст ────────────────────────────────────────────────────────
 
-export const UI_TEXT = {
-	EMPTY: 'Нет данных',
-	NO_RESULTS: 'Ничего не найдено',
-	SEARCH_PLACEHOLDER: 'Поиск...',
-	TODAY: 'Сегодня',
-	LOADING: 'Загрузка...',
-	LOADING_ARIA: 'Загрузка',
-	LOAD_MORE: 'Загрузить еще',
-	IMAGE_ERROR: 'Ошибка загрузки',
-	FILE_STATUS_DONE: 'Загружено',
-	FILE_STATUS_ERROR: 'Ошибка',
-	FILE_STATUS_PENDING: 'Ожидание',
-	DELETE: 'Удалить',
-	NO_COLOR: 'Без цвета',
-	CANCEL: 'Отмена',
-	CONFIRM: 'Подтвердить',
-	APPLY: 'Применить',
-	REQUIRED_FIELD: 'Обязательное поле',
-	SELECT_PLACEHOLDER: 'Выберите...',
-	SELECT_DATE: 'Выберите дату',
-	EXPAND: 'Развернуть',
-	COLLAPSE: 'Свернуть',
-	FILE_SELECT: 'Выберите файлы',
-	FILE_DROP: 'Перетащите файлы сюда',
-	FILE_MAX_SIZE_PREFIX: 'до',
-	FILE_MAX_SIZE_SUFFIX: 'МБ',
-	FILE_MAX_COUNT_PREFIX: 'Максимум файлов:',
-} as const
+export const UI_TEXT = localized('text')
 
 // ─── Aria-labels ───────────────────────────────────────────────────
 
-export const UI_ARIA = {
-	BREADCRUMBS: 'Навигация',
-	BREADCRUMBS_NAV: 'Хлебные крошки',
-	PAGINATION_PREV: 'Предыдущая страница',
-	PAGINATION_NEXT: 'Следующая страница',
-	TABS_SCROLL_LEFT: 'Прокрутить вкладки влево',
-	TABS_SCROLL_RIGHT: 'Прокрутить вкладки вправо',
-	CLOSE: 'Закрыть',
-	DARK_THEME: 'Тёмная тема',
-	OPENS_IN_NEW_TAB: '(откроется в новой вкладке)',
-	PROGRESS: 'Прогресс',
-	PREV_YEAR: 'Предыдущий год',
-	PREV_MONTH: 'Предыдущий месяц',
-	NEXT_MONTH: 'Следующий месяц',
-	NEXT_YEAR: 'Следующий год',
-	PREV_YEARS: 'Предыдущие годы',
-	NEXT_YEARS: 'Следующие годы',
-	OPEN_CALENDAR: 'Открыть календарь',
-	CLEAR_VALUE: 'Очистить',
-	SORT: 'Сортировать',
-	PASSWORD_HIDE: 'Скрыть пароль',
-	PASSWORD_SHOW: 'Показать пароль',
-	NOTIFICATIONS: 'Уведомления',
-	IMAGE_VIEWER: 'Просмотр изображения',
-	ZOOM_IN: 'Увеличить',
-	ZOOM_OUT: 'Уменьшить',
-	ZOOM_RESET: 'Сбросить масштаб',
-	ROTATE_LEFT: 'Повернуть влево',
-	ROTATE_RIGHT: 'Повернуть вправо',
-	GALLERY_PREV: 'Предыдущее изображение',
-	GALLERY_NEXT: 'Следующее изображение',
-	SEARCH: 'Поиск',
-	/** Имена ползунков BaseRange без ariaLabel: одно значение, границы диапазона, точки */
-	RANGE_VALUE: 'Значение',
-	RANGE_MIN: 'Минимум',
-	RANGE_MAX: 'Максимум',
-	RANGE_POINT: 'Точка',
-} as const
+export const UI_ARIA = localized('aria')
 
 // ─── Тайминги (мс) ────────────────────────────────────────────────
 
@@ -142,53 +81,23 @@ export const UI_FONT_WEIGHT = {
 
 // ─── Тур ──────────────────────────────────────────────────────────
 
-export const UI_TOUR = {
-	SKIP: 'Пропустить тур',
-	NEXT: 'Далее',
-	PREV: 'Назад',
-	FINISH: 'Завершить',
-	TITLE: 'Тур по интерфейсу',
-} as const
+export const UI_TOUR = localized('tour')
 
 // ─── Фильтр таблицы ───────────────────────────────────────────────
 
-export const UI_FILTER = {
-	COLUMN: 'Колонка',
-	CONDITION: 'Условие',
-	VALUE_PLACEHOLDER: 'Значение...',
-} as const
+export const UI_FILTER = localized('filter')
 
 // ─── Календарь ────────────────────────────────────────────────────
 
-export const UI_CALENDAR = {
-	EVENT_TEXT: 'Событие',
-	/** Подпись блока времени */
-	TIME: 'Время',
-	/** Доступные имена полей времени */
-	HOURS: 'Часы',
-	MINUTES: 'Минуты',
-	SECONDS: 'Секунды',
-} as const
+export const UI_CALENDAR = localized('calendar')
 
 // ─── Color Picker ─────────────────────────────────────────────────
 
-export const UI_COLOR_PICKER = {
-	SELECTED_COLOR: 'Выбранный цвет',
-	SATURATION_BRIGHTNESS: 'Насыщенность и яркость',
-	HUE: 'Тон',
-	HEX_VALUE: 'HEX-значение',
-	PRESET: 'Пресет',
-} as const
+export const UI_COLOR_PICKER = localized('colorPicker')
 
 // ─── Rating ───────────────────────────────────────────────────────
 
-export const UI_RATING = {
-	ARIA_PREFIX: 'Оценка от 0 до',
-	/** Имя рейтинга только для чтения (role="img"): «Оценка 4.5 из 5» */
-	LABEL: 'Оценка',
-	/** Связка значения и максимума в aria-valuetext и имени: «3 из 5» */
-	OF: 'из',
-} as const
+export const UI_RATING = localized('rating')
 
 // ─── Числовые константы ────────────────────────────────────────────
 

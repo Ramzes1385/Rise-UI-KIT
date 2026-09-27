@@ -35,7 +35,7 @@
 			</template>
 		</div>
 
-		<span v-if="hasLabel" class="base-loader__label" :class="classes.label">{{ label }}</span>
+		<span v-if="hasLabel" class="base-loader__label" :class="classes.label">{{ resolvedLabel }}</span>
 	</div>
 </template>
 
@@ -52,7 +52,6 @@ import type { BaseLoaderProps } from '../model/BaseLoader.types'
 const props = withDefaults(defineProps<BaseLoaderProps>(), kitDefaults('BaseLoader', {
 	variant: 'spinner',
 	hasLabel: false,
-	label: UI_TEXT.LOADING,
 	isOverlay: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 }))
@@ -68,5 +67,8 @@ const { customColorStyle } = useCustomColor({ getColor: () => props.color })
  * не расходилась с фиксированным «Загрузка». Завершающее многоточие — визуальный
  * признак процесса, в имени оно лишнее; пустой label даёт имя по умолчанию.
  */
-const accessibleName = computed((): string => props.label.replace(/[.…\s]+$/, '') || UI_TEXT.LOADING_ARIA)
+/** Подпись: своя или «Загрузка...» на текущем языке */
+const resolvedLabel = computed((): string => props.label ?? UI_TEXT.LOADING)
+
+const accessibleName = computed((): string => resolvedLabel.value.replace(/[.…\s]+$/, '') || UI_TEXT.LOADING_ARIA)
 </script>

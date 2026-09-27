@@ -114,7 +114,7 @@ export const Default: Story = {
 		// Подпись связана с полем выбора файла
 		await userEvent.upload(canvas.getByLabelText('Вложения'), documentFile('Отчёт за май.pdf', 248))
 		await expect(await canvas.findByText('Отчёт за май.pdf')).toBeVisible()
-		await expect(canvas.getByText('248.0 КБ')).toBeVisible()
+		await expect(canvas.getByText('248,0 КБ')).toBeVisible()
 		await expect(args.onChange).toHaveBeenCalledOnce()
 	},
 }

@@ -7,9 +7,9 @@
 		:color="color"
 		:custom-class="classes.root"
 		:is-disabled="isDisabled"
-		:aria-label="label"
+		:aria-label="resolvedLabel"
 		:aria-pressed="isDark ? 'true' : 'false'"
-		:title="label"
+		:title="resolvedLabel"
 		@click="handleClick">
 		<BaseIcon :name="isDark ? 'moon' : 'sun'" :size-scale="iconScale" :custom-class="classes.icon" />
 	</BaseButton>
@@ -30,7 +30,6 @@ import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../mode
 const props = withDefaults(defineProps<BaseColorModeButtonProps>(), kitDefaults('BaseColorModeButton', {
 	variant: 'ghost',
 	sizeScale: SIZE_SCALE_DEFAULT,
-	label: UI_ARIA.DARK_THEME,
 	isDisabled: false,
 }))
 
@@ -40,6 +39,9 @@ const { classes } = useStandardBaseComponent('base-color-mode-button', props, ['
 
 // Экземпляр выбирается один раз: кнопка управляет одной и той же темой всё время жизни
 const { isDark, resolvedMode, toggle } = props.colorMode ?? useColorMode()
+
+/** Подпись: своя или «Тёмная тема» на текущем языке */
+const resolvedLabel = computed(() => props.label ?? UI_ARIA.DARK_THEME)
 
 /** Иконка 16px при sizeScale = 100, как в других кнопках-иконках */
 const iconScale = computed(() => calcIconScale('sm', props.sizeScale))

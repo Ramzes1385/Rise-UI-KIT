@@ -14,10 +14,10 @@
 		<template #footer>
 			<!-- Фокус при открытии: на «Отмене» для необратимых действий, иначе на подтверждении -->
 			<BaseButton variant="outline" :size-scale="sizeScale" :custom-class="classes.cancel" :autofocus="isDanger" @click="finish(false)">
-				{{ cancelLabel }}
+				{{ cancelLabel ?? UI_TEXT.CANCEL }}
 			</BaseButton>
 			<BaseButton :size-scale="sizeScale" :color="isDanger ? DANGER_COLOR : undefined" :custom-class="classes.confirm" :autofocus="!isDanger" @click="finish(true)">
-				{{ confirmLabel }}
+				{{ confirmLabel ?? UI_TEXT.CONFIRM }}
 			</BaseButton>
 		</template>
 	</BaseModal>
@@ -37,8 +37,6 @@ import type { CustomColor } from '@composables/useCustomColor'
 const props = withDefaults(defineProps<BaseConfirmProps>(), kitDefaults('BaseConfirm', {
 	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
-	confirmLabel: UI_TEXT.CONFIRM,
-	cancelLabel: UI_TEXT.CANCEL,
 	isDanger: false,
 }))
 

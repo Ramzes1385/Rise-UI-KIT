@@ -4,6 +4,7 @@
  * validateFile, formatAcceptHint, createImagePreview.
  */
 
+import { setLocale } from '@/locales/state'
 import '@testing-library/jest-dom/vitest'
 import {
 	createImagePreview,
@@ -44,12 +45,20 @@ describe('fileUtils', () => {
 			expect(formatFileSize(500)).toBe('500 Б')
 		})
 
-		it('форматирует килобайты', () => {
-			expect(formatFileSize(1536)).toBe('1.5 КБ')
+		it('форматирует килобайты: десятичная запятая по-русски', () => {
+			expect(formatFileSize(1536)).toBe('1,5 КБ')
 		})
 
 		it('форматирует мегабайты', () => {
-			expect(formatFileSize(2 * 1024 * 1024)).toBe('2.0 МБ')
+			expect(formatFileSize(2 * 1024 * 1024)).toBe('2,0 МБ')
+		})
+
+		it('на английском — точка и английские единицы', () => {
+			setLocale('en')
+
+			expect(formatFileSize(500)).toBe('500 B')
+			expect(formatFileSize(1536)).toBe('1.5 KB')
+			expect(formatFileSize(2 * 1024 * 1024)).toBe('2.0 MB')
 		})
 
 		it('форматирует нулевой размер', () => {
@@ -57,11 +66,11 @@ describe('fileUtils', () => {
 		})
 
 		it('форматирует ровно 1024 байта как КБ', () => {
-			expect(formatFileSize(1024)).toBe('1.0 КБ')
+			expect(formatFileSize(1024)).toBe('1,0 КБ')
 		})
 
 		it('форматирует ровно 1048576 байт как МБ', () => {
-			expect(formatFileSize(1048576)).toBe('1.0 МБ')
+			expect(formatFileSize(1048576)).toBe('1,0 МБ')
 		})
 	})
 

@@ -48,7 +48,7 @@
 				:aria-controls="isOpen ? listboxId : undefined"
 				:aria-activedescendant="isOpen && activeIndex >= 0 ? getOptionId(activeIndex) : undefined"
 				:aria-labelledby="label ? labelId : undefined"
-				:aria-label="label ? undefined : placeholder"
+				:aria-label="label ? undefined : resolvedPlaceholder"
 				:aria-required="isRequired ? 'true' : undefined"
 				:aria-invalid="formField.error ? 'true' : undefined"
 				:aria-describedby="formField.error ? errorId : undefined"
@@ -113,7 +113,7 @@
 							class="base-select__placeholder"
 							:custom-class="classes.placeholder"
 							:size-scale="sizeScale"
-							>{{ placeholder }}</BaseText
+							>{{ resolvedPlaceholder }}</BaseText
 						>
 					</div>
 				</slot>
@@ -144,7 +144,7 @@
 				:size-scale-style="sizeScaleStyle"
 				:listbox-id="listboxId"
 				:labelledby="label ? labelId : undefined"
-				:listbox-label="placeholder"
+				:listbox-label="resolvedPlaceholder"
 				:active-index="activeIndex"
 				:get-option-id="getOptionId"
 				@select="handleSelect"
@@ -186,7 +186,6 @@ import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model
 
 const props = withDefaults(defineProps<BaseSelectProps>(), kitDefaults('BaseSelect', {
 	modelValue: '',
-	placeholder: UI_TEXT.SELECT_PLACEHOLDER,
 	label: '',
 	isRequired: false,
 	isMultiple: false,
@@ -196,6 +195,9 @@ const props = withDefaults(defineProps<BaseSelectProps>(), kitDefaults('BaseSele
 	variant: DEFAULT_VARIANT,
 	sizeScale: SIZE_SCALE_DEFAULT,
 }))
+
+/** Подсказка пустого поля: своя или «Выберите...» на текущем языке */
+const resolvedPlaceholder = computed(() => props.placeholder ?? UI_TEXT.SELECT_PLACEHOLDER)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
 	'root',

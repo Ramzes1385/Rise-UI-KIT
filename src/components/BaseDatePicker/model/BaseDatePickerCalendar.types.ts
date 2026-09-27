@@ -1,3 +1,4 @@
+import { getLocale } from '@/locales/state'
 import type { BaseCalendarProps, CalendarHighlight, CalendarWeekday, CalendarWeekends } from '@components/BaseCalendar'
 
 /**
@@ -56,8 +57,9 @@ export function pickDatePickerCalendarConfig(source: BaseDatePickerCalendarProps
 		disableTo: source.disableTo ?? null,
 		highlights: source.highlights ?? [],
 		weekends: source.weekends ?? null,
-		firstDayOfWeek: source.firstDayOfWeek ?? 1,
-		locale: source.locale ?? 'ru-RU',
+		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
+		firstDayOfWeek: source.firstDayOfWeek ?? (getLocale().firstDayOfWeek as CalendarWeekday),
+		locale: source.locale ?? getLocale().intl,
 		showTime: source.showTime ?? false,
 		showSeconds: source.showSeconds ?? false,
 		is24Hour: source.is24Hour ?? true,
@@ -151,24 +153,4 @@ export function toBaseCalendarProps(
  */
 export function withoutTimeBlock(bindings: DatePickerCalendarBindings): DatePickerCalendarBindings {
 	return { ...bindings, timeConfig: { ...bindings.timeConfig, showTime: false } }
-}
-
-/**
- * Общие runtime default values для календарных пропсов date picker.
- */
-export const DATE_PICKER_CALENDAR_DEFAULTS = {
-	minDate: null,
-	maxDate: null,
-	disabledDates: () => [],
-	disabledWeekdays: () => [],
-	disableFrom: null,
-	disableTo: null,
-	highlights: () => [],
-	weekends: null,
-	firstDayOfWeek: 1 as const,
-	locale: 'ru-RU',
-	showTime: false,
-	showSeconds: false,
-	is24Hour: true,
-	showWeekNumber: false,
 }

@@ -1,5 +1,7 @@
 /** Утилиты: валидация и обработка файлов */
 
+import { formatMessage, formatNumber } from '@/locales/state'
+import { UI_TEXT } from '@constants'
 import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/urlUtils'
 import type { FileValidationOptions, FileValidationResult } from './fileUtils.types'
 
@@ -11,9 +13,10 @@ function getExtension(name: string): string {
 
 /** Форматировать размер файла в человекочитаемый вид */
 function formatFileSize(bytes: number): string {
-	if (bytes < 1024) return `${bytes} Б`
-	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`
-	return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`
+	if (bytes < 1024) return `${formatNumber(bytes)} ${UI_TEXT.SIZE_B}`
+	const fraction = { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+	if (bytes < 1024 * 1024) return `${formatNumber(bytes / 1024, fraction)} ${UI_TEXT.SIZE_KB}`
+	return `${formatNumber(bytes / (1024 * 1024), fraction)} ${UI_TEXT.SIZE_MB}`
 }
 
 /** Получить эмодзи-иконку по расширению файла */
@@ -95,7 +98,7 @@ function validateFile(file: File, options: FileValidationOptions): FileValidatio
 	const errors: string[] = []
 
 	if (options.maxSize && file.size > options.maxSize * 1024 * 1024) {
-		errors.push(`Файл "${file.name}" превышает ${options.maxSize} МБ`)
+		errors.push(formatMessage(UI_TEXT.FILE_TOO_LARGE, { name: file.name, size: formatNumber(options.maxSize) }))
 	}
 
 	if (options.accept) {

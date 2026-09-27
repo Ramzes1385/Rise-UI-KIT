@@ -1,5 +1,7 @@
 /** Утилиты: расчёт пагинации и видимых страниц */
 
+import { formatMessage, formatNumber } from '@/locales/state'
+import { UI_TEXT } from '@constants'
 import type { PageInfoOptions, VisiblePageItem, VisiblePagesOptions } from './paginationUtils.types'
 
 /** Рассчитать общее количество страниц */
@@ -77,7 +79,7 @@ function calcPageInfo(options: PageInfoOptions): string {
 	const { current, pageSize, total } = options
 	const from = (current - 1) * pageSize + 1
 	const to = Math.min(current * pageSize, total)
-	return `${from}–${to} из ${total}`
+	return formatMessage(UI_TEXT.PAGE_RANGE, { from: formatNumber(from), to: formatNumber(to), total: formatNumber(total) })
 }
 
 export { calcPageInfo, calcTotalPages, calcVisiblePages }

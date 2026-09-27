@@ -55,9 +55,11 @@ import { BaseTree } from './components/BaseTree'
 import { DEFAULTS_KEY } from './composables/useDefaults/useDefaults'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from './composables/useIcon/useIcon'
 import { LINK_COMPONENT_KEY } from './composables/useLink/useLink'
+import { setLocale } from './locales/state'
 import type { UiKitDefaults } from './composables/useDefaults/useDefaults.types'
 import type { IconMap } from './composables/useIcon/useIcon.types'
 import type { LinkComponent } from './composables/useLink/useLink.types'
+import type { LocaleInput } from './locales/state'
 import type { App, Component, Plugin } from 'vue'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
@@ -89,6 +91,11 @@ export interface UiKitPluginOptions {
 	 * если подключён vue-router, иначе рендерят `<a href>`
 	 */
 	linkComponent?: LinkComponent
+	/**
+	 * Язык кита: `ru` (по умолчанию), `en` или свой словарь из `defineLocale()`. Меняет строки интерфейса,
+	 * формат дат и чисел, первый день недели в календаре. Язык один на страницу
+	 */
+	locale?: LocaleInput
 }
 
 const UI_COMPONENTS: Record<string, Component> = {
@@ -168,6 +175,7 @@ export function createUiKitPlugin(options?: UiKitPluginOptions): Plugin {
 			if (options?.defaults) app.provide(DEFAULTS_KEY, options.defaults)
 			if (options?.icons) app.provide(ICON_MAP_KEY, options.icons)
 			if (options?.linkComponent) app.provide(LINK_COMPONENT_KEY, options.linkComponent)
+			if (options?.locale) setLocale(options.locale)
 		},
 	}
 }

@@ -1,9 +1,11 @@
 /** Composable: тулбар таблицы — фильтры и настройки колонок */
 import { computed, ref } from 'vue'
+import { UI_FILTER } from '@constants'
 import type { UseTableToolbarOptions, UseTableToolbarReturn } from './useTableToolbar.types'
 
-const FILTER_OPERATOR_OPTIONS = [
-	{ value: 'contains', label: 'Содержит' },
+/** Операторы фильтра. Подпись «Содержит» — на текущем языке, поэтому список собирается при чтении */
+const getFilterOperatorOptions = () => [
+	{ value: 'contains', label: UI_FILTER.CONTAINS },
 	{ value: 'eq', label: '=' },
 	{ value: 'ne', label: '≠' },
 	{ value: 'gt', label: '>' },
@@ -59,7 +61,7 @@ function useTableToolbar(options: UseTableToolbarOptions): UseTableToolbarReturn
 		filterValue,
 		isSettingsOpen,
 		filterColumnOptions,
-		filterOperatorOptions: FILTER_OPERATOR_OPTIONS,
+		filterOperatorOptions: computed(getFilterOperatorOptions),
 		showToolbar,
 		getSelectValue,
 		setFilterColumn,

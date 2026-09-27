@@ -20,7 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, provide } from 'vue'
+import { onBeforeUnmount, provide, watch } from 'vue'
+import { setLocale } from '@/locales/state'
 import { BaseNotification } from '@components/BaseNotification'
 import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
 import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
@@ -35,6 +36,15 @@ defineSlots<BaseAppSlots>()
 // У каждого BaseApp свои хранилища: вложенный BaseApp не показывает уведомления внешнего второй раз
 const toasts = createToastStore({ max: () => props.toaster?.max ?? TOAST_MAX })
 const overlays = createOverlayStore()
+
+// Язык ставится до создания дочерних компонентов: они сразу рендерят строки на нём
+watch(
+	() => props.locale,
+	locale => {
+		if (locale) setLocale(locale)
+	},
+	{ immediate: true },
+)
 
 provide(TOAST_STORE_KEY, toasts)
 provide(OVERLAY_STORE_KEY, overlays)

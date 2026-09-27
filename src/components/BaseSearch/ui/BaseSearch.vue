@@ -6,7 +6,7 @@
 			:panel="mode"
 			:model-value="query"
 			:search-placeholder="resolvedPlaceholder"
-			:trigger-placeholder="placeholder"
+			:trigger-placeholder="resolvedPlaceholder"
 			:variant="variant"
 			:size-scale="sizeScale"
 			:is-disabled="isDisabled"
@@ -131,7 +131,6 @@ import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../model
 
 const props = withDefaults(defineProps<BaseSearchProps>(), kitDefaults('BaseSearch', {
 	modelValue: '',
-	placeholder: UI_TEXT.SEARCH_PLACEHOLDER,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	variant: DEFAULT_VARIANT,
 	mode: 'default',

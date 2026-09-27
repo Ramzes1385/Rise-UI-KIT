@@ -23,7 +23,7 @@ export interface UseTableToolbarReturn {
 	filterValue: Ref<string>
 	isSettingsOpen: Ref<boolean>
 	filterColumnOptions: ComputedRef<Array<{ value: string; label: string }>>
-	filterOperatorOptions: FilterOperatorOption[]
+	filterOperatorOptions: ComputedRef<FilterOperatorOption[]>
 	showToolbar: ComputedRef<boolean>
 	getSelectValue: (value: string | number | (string | number)[]) => string | number
 	setFilterColumn: (value: string | number | (string | number)[]) => void

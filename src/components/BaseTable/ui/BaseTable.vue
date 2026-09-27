@@ -89,7 +89,7 @@
 						<BaseTableBody
 							:rows="displayedRows"
 							:columns="visibleColumns"
-							:empty-text="emptyText"
+							:empty-text="emptyText ?? UI_TEXT.EMPTY"
 							:is-loading="isLoading"
 							:skeleton-rows="skeletonRows"
 							:is-selectable="isSelectable"
@@ -198,7 +198,6 @@ import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../model/Ba
 const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable', {
 	variant: DEFAULT_VARIANT,
 	isLoading: false,
-	emptyText: UI_TEXT.EMPTY,
 	height: '',
 	pageSize: 0,
 	pageSizeOptions: () => [],

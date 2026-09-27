@@ -5,6 +5,7 @@
  * formatDate, formatRange, formatMultiple.
  */
 
+import { setLocale } from '@/locales/state'
 import '@testing-library/jest-dom/vitest'
 import {
 	buildDateWithTime,
@@ -316,10 +317,13 @@ describe('dateUtils', () => {
 			expect(result).not.toContain('Выбрано')
 		})
 
-		it('показывает количество если дат больше 3', () => {
+		it('показывает количество если дат больше 3 — по правилам множественного числа', () => {
 			const dates = [new Date(2025, 5, 10), new Date(2025, 5, 11), new Date(2025, 5, 12), new Date(2025, 5, 13)]
-			const result = formatMultiple({ ...base, dates })
-			expect(result).toContain('4')
+			expect(formatMultiple({ ...base, dates })).toBe('Выбрано: 4 даты')
+			expect(formatMultiple({ ...base, dates: [...dates, new Date(2025, 5, 14)] })).toBe('Выбрано: 5 дат')
+
+			setLocale('en')
+			expect(formatMultiple({ ...base, dates })).toBe('4 dates selected')
 		})
 	})
 

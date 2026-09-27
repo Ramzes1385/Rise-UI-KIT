@@ -7,6 +7,7 @@
  */
 
 import { cleanup } from '@testing-library/vue'
+import { setLocale } from '@/locales/state'
 
 // Подавление неинформативных логов и предупреждений в консоли тестов
 const originalLog = console.log
@@ -30,6 +31,8 @@ afterEach(() => {
 	cleanup()
 	vi.restoreAllMocks()
 	vi.clearAllMocks()
+	// Язык кита — глобальный: тест, переключивший его, не должен менять язык следующих
+	setLocale('ru')
 })
 
 /** Мок ResizeObserver — отсутствует в jsdom, нужен для BaseSlider, BaseTree и др. */

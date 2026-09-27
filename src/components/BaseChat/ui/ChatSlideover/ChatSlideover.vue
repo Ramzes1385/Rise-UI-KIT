@@ -42,7 +42,7 @@
 						<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * UI_CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__avatar" />
 						<span class="base-chat-slideover__name">{{ title }}</span>
 						<span class="base-chat-slideover__status">
-							{{ isGroup ? `${members.length} ${UI_CHAT_TEXT.PARTICIPANTS_SUFFIX}` : subtitle || UI_CHAT_TEXT.ONLINE }}
+							{{ isGroup ? membersCountLabel : subtitle || UI_CHAT_TEXT.ONLINE }}
 						</span>
 						<!-- Только данные приложения: демо-тексты библиотеки показывались бы в каждом чате -->
 						<p v-if="description" class="base-chat-slideover__description">{{ description }}</p>
@@ -187,6 +187,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch } from 'vue'
+import { getLocale, pluralize } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -214,6 +215,9 @@ const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	currentUserRole: 'member',
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
+
+/** «12 участников» по правилам языка: 1 участник, 3 участника, 5 участников */
+const membersCountLabel = computed(() => pluralize(getLocale().plural.PARTICIPANTS, props.members.length))
 
 const emit = defineEmits<ChatSlideoverEmits>()
 

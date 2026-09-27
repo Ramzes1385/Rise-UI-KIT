@@ -5,9 +5,11 @@
  * Декоратор ставит `data-theme` на <html> iframe — так токены `--rise-*` переключаются и в canvas,
  * и на странице Docs, и в телепортированных оверлеях (Modal, Dropdown, Tooltip…).
  * Для скриншотов и ссылок тему можно задать в URL: `iframe.html?id=…&globals=theme:dark`.
+ * Язык компонентов — кнопка «Язык» (глобальная переменная `locale`, `&globals=locale:en`): декоратор вызывает setLocale.
  */
 
 import { configure } from 'storybook/test'
+import { setLocale } from '../../src/locales/state'
 import { STORY_WAIT_TIMEOUT } from '../../src/stories/helpers'
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 import { theme as docsTheme } from './theme'
@@ -41,6 +43,12 @@ const withTheme: Decorator = (story, context) => {
 	return story()
 }
 
+/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат */
+const withLocale: Decorator = (story, context) => {
+	setLocale(context.globals.locale === 'en' ? 'en' : 'ru')
+	return story()
+}
+
 const preview: Preview = {
 	tags: ['autodocs'],
 
@@ -59,13 +67,26 @@ const preview: Preview = {
 				dynamicTitle: true,
 			},
 		},
+		locale: {
+			description: 'Язык строк компонентов',
+			toolbar: {
+				title: 'Язык',
+				icon: 'globe',
+				items: [
+					{ value: 'ru', title: 'Русский' },
+					{ value: 'en', title: 'English' },
+				],
+				dynamicTitle: true,
+			},
+		},
 	},
 
 	initialGlobals: {
 		theme: 'light',
+		locale: 'ru',
 	},
 
-	decorators: [withTheme],
+	decorators: [withTheme, withLocale],
 
 	parameters: {
 		layout: 'padded',

@@ -62,6 +62,13 @@
 - `BaseBreadcrumbs`: крошки — настоящие ссылки (RouterLink приложения или `<a href>`), а не кнопки; крошка без адреса — кнопка с `item-click`. Новые `linkComponent` и `target` у крошки.
 - `BaseSideBar`: без пропа `linkComponent` берёт компонент из плагина или RouterLink подключённого vue-router; внешний адрес в `to` (`https://…`) открывается обычной ссылкой.
 
+**Языки**
+
+- Строки интерфейса кита — в словарях `ru` (по умолчанию) и `en`. Язык задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` или `setLocale()`; `useLocale()` возвращает язык и форматирование по его правилам. Свой язык — `defineLocale(en, { … })`.
+- Константы `UI_TEXT`, `UI_ARIA`, `UI_CHAT_TEXT` и другие со строками возвращают строку текущего языка, а шаблоны перерисовываются при его смене.
+- Календарь и выбор даты берут формат дат и первый день недели из языка кита (по-русски — как раньше), если не заданы `locale` и `firstDayOfWeek`.
+- Числа — через `Intl`: размер файла по-русски с запятой (`1,5 КБ`), большие номера страниц с разделителем разрядов. Множественное число по правилам языка: «3 участника», «Выбрано: 4 даты».
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -238,7 +245,8 @@ app.mount('#app')
 - `iconSpritePath` — путь к спрайту иконок;
 - `defaults` — значения props по умолчанию: `global` — для всех компонентов, по имени — для одного. Переопределяются props со значением по умолчанию в компоненте (строки, числа, логические значения); props из шаблона важнее;
 - `icons` — замена иконок кита: имя символа в спрайте, полный адрес символа или компонент с `<svg>`;
-- `linkComponent` — компонент ссылок на маршруты (RouterLink, NuxtLink). Без него компоненты берут RouterLink, если подключён vue-router, иначе рендерят `<a href>`.
+- `linkComponent` — компонент ссылок на маршруты (RouterLink, NuxtLink). Без него компоненты берут RouterLink, если подключён vue-router, иначе рендерят `<a href>`;
+- `locale` — язык строк кита: `ru` (по умолчанию), `en` или свой словарь (см. «Языки»).
 
 ```ts
 import { RouterLink } from 'vue-router'
@@ -250,9 +258,27 @@ app.use(
 		defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' }, BaseModal: { closeOnOverlay: false } },
 		icons: { close: CloseIcon, 'chevron-down': 'arrow-down' },
 		linkComponent: RouterLink,
+		locale: 'en',
 	}),
 )
 ```
+
+### Языки
+
+Строки интерфейса кита (подписи кнопок, доступные имена, «Нет данных», формат дат и чисел) есть на русском и английском. Язык один на страницу: его задают `createUiKitPlugin({ locale: 'en' })`, `<BaseApp locale="en">` или `setLocale('en')` — компоненты перерисовываются сразу.
+
+```ts
+import { defineLocale, en, setLocale, useLocale } from '@ramzes1385/rise-ui-kit'
+
+// Свой язык или правки поверх готового словаря
+setLocale(defineLocale(en, { code: 'en-GB', intl: 'en-GB', firstDayOfWeek: 1, text: { EMPTY: 'Nothing here yet' } }))
+
+// Формат по правилам текущего языка
+const { locale, formatNumber, formatDate, plural } = useLocale()
+plural({ one: '{n} file', other: '{n} files' }, 3) // '3 files'
+```
+
+Календарь и выбор даты берут из языка формат дат и первый день недели, если не заданы пропсы `locale` и `firstDayOfWeek`. Строки из props (`placeholder`, `label`) приложение переводит само.
 
 После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API. Типы глобальных компонентов пакет не объявляет (`GlobalComponents`), поэтому props в шаблоне проверяются только при прямом импорте.
 
@@ -341,7 +367,7 @@ import '@ramzes1385/rise-ui-kit/styles'
 const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024)
 ```
 
-Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm` и `useColorMode` импортируются из корня пакета по имени, как компоненты.
+Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты.
 
 Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons`, `/plugins`, `/styles` (`/styles.css`), `/icons.svg`.
 

@@ -3,48 +3,7 @@
  * Группированы в объект UI_EDITOR для удобного доступа.
  */
 
-import { UI_TEXT } from './ui'
+import { localized } from './localized'
 
-export const UI_EDITOR = {
-	BOLD: 'Жирный',
-	ITALIC: 'Курсив',
-	UNDERLINE: 'Подчёркнутый',
-	STRIKETHROUGH: 'Зачёркнутый',
-	TEXT_COLOR: 'Цвет текста',
-	TEXT_COLOR_RESET: 'Сбросить цвет',
-	BG_COLOR: 'Цвет фона',
-	BG_COLOR_RESET: 'Сбросить фон',
-	ALIGN_LEFT: 'По левому краю',
-	ALIGN_CENTER: 'По центру',
-	ALIGN_RIGHT: 'По правому краю',
-	ALIGN_JUSTIFY: 'По ширине',
-	LIST_BULLET: 'Маркированный список',
-	LIST_NUMBERED: 'Нумерованный список',
-	FORMAT: 'Формат',
-	LINK: 'Ссылка',
-	IMAGE: 'Изображение',
-	VIDEO: 'Видео',
-	QUOTE: 'Цитата',
-	CODE_BLOCK: 'Блок кода',
-	CLEAR_FORMAT: 'Очистить форматирование',
-	DIVIDER: 'Разделитель',
-	VISUAL_MODE: 'Визуальный режим',
-	CODE_MODE: 'Режим кода',
-	PARAGRAPH: 'Параграф',
-	HEADING_PREFIX: 'Заголовок',
-	WIDTH: 'Ширина',
-	HEIGHT: 'Высота',
-	APPLY: UI_TEXT.APPLY,
-	DELETE: UI_TEXT.DELETE,
-	URL_PROMPT: 'Введите URL ссылки:',
-	/** Доступное имя области редактирования (role="textbox") */
-	CONTENT_LABEL: 'Текстовый редактор',
-	/** Доступное имя панели инструментов (role="toolbar") */
-	TOOLBAR_LABEL: 'Форматирование',
-	/** Подпись поля HTML-кода в режиме кода (скрыта визуально, озвучивается скринридером) */
-	CODE_LABEL: 'HTML-код',
-	/** Доступное имя меню размера медиа */
-	MEDIA_MENU_LABEL: 'Размер медиа',
-	DEFAULT_TEXT_COLOR: '#000000',
-	DEFAULT_BG_COLOR: '#ffff00',
-} as const
+/** Строки редактора на текущем языке и цвета по умолчанию */
+export const UI_EDITOR = localized('editor', { DEFAULT_TEXT_COLOR: '#000000', DEFAULT_BG_COLOR: '#ffff00' } as const)

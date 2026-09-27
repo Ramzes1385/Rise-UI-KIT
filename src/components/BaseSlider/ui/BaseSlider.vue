@@ -27,7 +27,7 @@
 					:variant="arrowVariant"
 					class="base-slider__arrow base-slider__arrow--prev"
 					:class="classes.arrow"
-					:aria-label="SLIDER_LABEL.PREV"
+					:aria-label="UI_ARIA.SLIDER_PREV"
 					:is-disabled="!isLoop && currentIndex === 0"
 					:size-scale="sizeScale"
 					@click="goPrev"
@@ -42,7 +42,7 @@
 					:variant="arrowVariant"
 					class="base-slider__arrow base-slider__arrow--next"
 					:class="classes.arrow"
-					:aria-label="SLIDER_LABEL.NEXT"
+					:aria-label="UI_ARIA.SLIDER_NEXT"
 					:is-disabled="!isLoop && currentIndex >= maxIndex"
 					:size-scale="sizeScale"
 					@click="goNext"
@@ -154,6 +154,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount } from 'vue'
+import { formatMessage } from '@/locales'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
@@ -161,18 +162,10 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
-import { UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
+import { UI_ARIA, UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
-
-/** Доступные имена кнопок слайдера (кандидаты в UI_ARIA). */
-const SLIDER_LABEL = {
-	PREV: 'Предыдущий слайд',
-	NEXT: 'Следующий слайд',
-	SLIDE: 'Слайд',
-	OF: 'из',
-} as const
 
 const props = withDefaults(defineProps<BaseSliderProps>(), kitDefaults('BaseSlider', {
 	customClass: undefined,
@@ -278,7 +271,7 @@ function isSlideVisible(index: number): boolean {
 
 /** «Слайд 2 из 6»: имя точки и миниатюры — номер слайда, к которому они ведут. */
 function slideLabel(index: number): string {
-	return `${SLIDER_LABEL.SLIDE} ${index + 1} ${SLIDER_LABEL.OF} ${props.items.length}`
+	return formatMessage(UI_ARIA.SLIDE_POSITION, { current: index + 1, total: props.items.length })
 }
 
 let holdTimer: ReturnType<typeof setInterval> | null = null

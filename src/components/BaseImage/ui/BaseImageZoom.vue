@@ -137,6 +137,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
+import { formatMessage } from '@/locales'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useFocusTrap } from '@composables/useFocusTrap'
@@ -145,15 +146,11 @@ import type { BaseImageZoomProps } from '../model/BaseImageZoom.types'
 
 const props = defineProps<BaseImageZoomProps>()
 
-/** Подпись миниатюры галереи: «Изображение 2 из 5» (кандидат в UI_ARIA). */
-const THUMB_LABEL = 'Изображение'
-const THUMB_LABEL_OF = 'из'
-
 /** Имя диалога: у декоративного изображения (alt="") остаётся общее «Просмотр изображения» */
 const dialogLabel = computed((): string => (props.alt ? `${UI_ARIA.IMAGE_VIEWER}: ${props.alt}` : UI_ARIA.IMAGE_VIEWER))
 
 function thumbLabel(index: number): string {
-	return `${THUMB_LABEL} ${index + 1} ${THUMB_LABEL_OF} ${props.gallery.galleryList.value.length}`
+	return formatMessage(UI_ARIA.GALLERY_ITEM, { current: index + 1, total: props.gallery.galleryList.value.length })
 }
 
 const dialogRef = ref<HTMLElement | null>(null)
