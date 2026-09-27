@@ -99,6 +99,17 @@
 		visibility: hidden;
 	}
 
+	// Флажок — только вид (inert): клик проходит к заголовку узла
+	&__checkbox-wrap {
+		display: inline-flex;
+		flex-shrink: 0;
+	}
+
+	// Подпись-ссылка (BaseLink ghost): кегль подписи узла — sizeScale дерева уже учтён в нём
+	&__label &__link {
+		font-size: inherit;
+	}
+
 	&__checkbox {
 		@include reset-custom-color;
 		flex-shrink: 0;

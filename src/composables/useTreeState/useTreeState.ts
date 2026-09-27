@@ -50,6 +50,16 @@ function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 		emit('toggle', id, !isExpanded)
 	}
 
+	/** Раскрыть несколько узлов разом (клавиша `*` раскрывает соседей) — одно событие update:expandedIds */
+	function expandNodes(ids: string[]): void {
+		const toExpand = ids.filter(id => !expandedSet.value.has(id))
+		if (!toExpand.length) return
+		const next = [...expandedIds.value, ...toExpand]
+		internalExpandedIds.value = next
+		emit('update:expandedIds', next)
+		for (const id of toExpand) emit('toggle', id, true)
+	}
+
 	function handleSingleSelection(id: string, isSelected: boolean): void {
 		const newIds = isSelected ? [] : [id]
 		internalSelectedIds.value = newIds
@@ -118,6 +128,7 @@ function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 		expandedSet,
 		selectedSet,
 		toggleNode,
+		expandNodes,
 		selectNode,
 	}
 }

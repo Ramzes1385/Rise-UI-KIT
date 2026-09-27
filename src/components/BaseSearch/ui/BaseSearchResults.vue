@@ -7,12 +7,16 @@
 			</div>
 		</slot>
 		<slot name="result-before" :results="visibleResults" :query="query" />
-		<template v-if="visibleResults.length > 0">
+		<!-- Список — listbox: фокус остаётся в поле, подсвеченный результат — aria-activedescendant поля -->
+		<div v-if="visibleResults.length > 0" :id="listboxId" class="base-search__listbox" role="listbox" :aria-label="listboxLabel">
 			<div
 				v-for="(item, index) in visibleResults"
+				:id="listboxId ? getSearchOptionId(listboxId, index) : undefined"
 				:key="item.id"
 				class="base-search__result"
 				:class="[{ 'base-search__result--highlighted': index === highlightedIndex }, classes.result]"
+				role="option"
+				:aria-selected="index === highlightedIndex ? 'true' : 'false'"
 				@mousedown.prevent="handleSelect(item)"
 				@mouseenter="handleHighlight(index)">
 				<slot name="result" :item="item" :index="index">
@@ -64,7 +68,7 @@
 					</BaseText>
 				</slot>
 			</div>
-		</template>
+		</div>
 		<template v-else-if="query && !isLoading">
 			<slot name="empty">
 				<div class="base-search__empty" :class="classes.empty">
@@ -82,6 +86,7 @@ import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
+import { getSearchOptionId } from '../model/BaseSearch.types'
 import type { SearchResult } from '../model/BaseSearch.types'
 import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../model/BaseSearchResults.types'
 

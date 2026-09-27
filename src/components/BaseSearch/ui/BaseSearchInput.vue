@@ -54,6 +54,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseLoader } from '@components/BaseLoader'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import type { BaseSearchInputEmits, BaseSearchInputProps } from '../model/BaseSearchInput.types'
@@ -62,11 +63,17 @@ import type { BaseSearchInputEmits, BaseSearchInputProps } from '../model/BaseSe
  * Поле поиска — BaseInput: иконка поиска слева, справа индикатор загрузки и ghost-кнопка очистки 24px.
  * Подпись поля — текст плейсхолдера, скрытый визуально: у поля есть доступное имя и после ввода текста.
  */
-defineProps<BaseSearchInputProps>()
+const props = defineProps<BaseSearchInputProps>()
 
 const emit = defineEmits<BaseSearchInputEmits>()
 
 const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
+
+/** Поле — combobox (APG «combobox with listbox popup»): атрибуты ставятся на сам <input> внутри BaseInput */
+useTriggerAttributes(
+	() => inputRef.value?.$el as HTMLElement | undefined,
+	() => props.comboboxAttributes ?? {},
+)
 
 function handleInput(value: string): void {
 	emit('update:modelValue', value)

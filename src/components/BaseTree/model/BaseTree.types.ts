@@ -24,10 +24,12 @@ export interface TreeNode {
 	children?: TreeNode[]
 	/** Отключен ли узел */
 	isDisabled?: boolean
-	/** Ссылка маршрута */
+	/** Маршрут приложения: подпись узла — ссылка (BaseLink), Enter переходит по ней */
 	to?: string
-	/** Внешняя ссылка */
+	/** Внешний адрес: подпись узла — ссылка (BaseLink) */
 	href?: string
+	/** Target ссылки */
+	target?: '_blank' | '_self'
 }
 
 /**
@@ -52,6 +54,14 @@ export interface TreeContext {
 	selectNode: (id: string) => void
 	/** Кастомные классы */
 	classes: ComputedRef<Record<string, string | undefined>>
+	/** tabindex узла: 0 — у одного узла дерева (roving tabindex), у остальных -1 */
+	tabIndexOf: (id: string) => number
+	/** Узел получил фокус: стрелки продолжат от него */
+	setActive: (id: string) => void
+	/** Элемент заголовка узла (treeitem) — для перевода фокуса с клавиатуры */
+	registerHeader: (id: string, element: HTMLElement) => void
+	/** Снять регистрацию; элемент сверяется — узел с тем же id мог уже смонтироваться в другом месте дерева */
+	unregisterHeader: (id: string, element: HTMLElement) => void
 }
 
 /** Ключ для provide/inject контекста дерева */
@@ -73,6 +83,8 @@ export interface BaseTreeProps extends BaseComponentProps<(typeof TREE_VARIANTS)
 	selectedIds?: string[]
 	/** Раскрыть все узлы по умолчанию */
 	isDefaultExpandAll?: boolean
+	/** Имя дерева для скринридера, например «Файлы проекта» */
+	ariaLabel?: string
 }
 
 /**

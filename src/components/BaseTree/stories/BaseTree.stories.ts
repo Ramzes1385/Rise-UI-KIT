@@ -3,7 +3,7 @@
  *
  * Разделы: Default (песочница с v-model раскрытых и выбранных узлов) → внешний вид (варианты, размеры, цвет, стрелка
  * справа) → состояния (отключённый узел, пусто, длинные метки) → сценарии (режимы выбора, слоты, управление
- * раскрытием) → клавиатура.
+ * раскрытием, навигация по ссылкам) → клавиатура.
  */
 
 import { expect, fn, waitFor } from 'storybook/test'
@@ -101,6 +101,24 @@ const DOCUMENTS: TreeNode[] = [
 	},
 ]
 
+/** Навигация по документации: страницы — маршруты (`to`), внешний адрес (`href`) открывается в новой вкладке */
+const DOCS_NAV: TreeNode[] = [
+	{ id: 'intro', label: 'Введение', icon: 'home', to: '/docs/intro' },
+	{
+		id: 'components',
+		label: 'Компоненты',
+		icon: 'folder',
+		to: '/docs/components',
+		children: [
+			{ id: 'button', label: 'Кнопка', icon: 'file-md', to: '/docs/components/button' },
+			{ id: 'input', label: 'Поле ввода', icon: 'file-md', to: '/docs/components/input' },
+			{ id: 'tree', label: 'Дерево', icon: 'file-md', to: '/docs/components/tree' },
+		],
+	},
+	{ id: 'changelog', label: 'Изменения', icon: 'file-md', to: '/docs/changelog' },
+	{ id: 'github', label: 'Исходный код', icon: 'link', href: 'https://github.com', target: '_blank' },
+]
+
 /** Длинные названия и глубокая вложенность */
 const DEEP: TreeNode[] = [
 	{
@@ -157,11 +175,13 @@ const meta = {
 				component: [
 					'Дерево показывает иерархию: файлы и папки, разделы каталога, структуру организации.',
 					'',
-					'- Узлы задаёт `items` (`id`, `label`, `icon`, `children`, `isDisabled`); дочерние узлы монтируются при первом раскрытии.',
-					'- Раскрытие — клик по узлу или шеврону, Enter; `v-model:expanded-ids`, `isDefaultExpandAll` — всё раскрыто сразу.',
+					'- Узлы задаёт `items` (`id`, `label`, `icon`, `children`, `isDisabled`, `to`/`href`); дочерние узлы монтируются при первом раскрытии.',
+					'- Раскрытие — клик по узлу или шеврону, стрелки ←/→, Enter; `v-model:expanded-ids`, `isDefaultExpandAll` — всё раскрыто сразу.',
 					'- Выбор: `selectionMode` `single` — один узел, `multiple` — чекбоксы с выбором всего поддерева; `v-model:selected-ids`.',
+					'- Узел с `to` или `href` — ссылка (BaseLink): маршрут открывает RouterLink приложения, внешний адрес — `<a>`.',
 					'- Слоты `icon`, `label`, `arrow` меняют части строки, `actions` — кнопки справа (видны при наведении и фокусе).',
-					'- Строки 32px как пункты меню; уровень — отступ 20px с направляющей линией. Узлы свёрнутых веток не попадают в порядок Tab.',
+					'- Клавиатура по образцу APG Tree View: в порядке Tab один узел, по дереву — стрелки, Home/End, `*` и буквы. Имя дерева — `ariaLabel`.',
+					'- Строки 32px как пункты меню; уровень — отступ 20px с направляющей линией.',
 				].join('\n'),
 			},
 		},
@@ -174,9 +194,11 @@ const meta = {
 		expandedIds: { control: 'object', table: propGroup(ARG_GROUP.state) },
 		selectedIds: { control: 'object', table: propGroup(ARG_GROUP.state) },
 		isDefaultExpandAll: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+		ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	},
 	args: {
 		items: FILES,
+		ariaLabel: 'Файлы проекта',
 		variant: 'default',
 		sizeScale: 100,
 		selectionMode: 'none',
@@ -413,8 +435,11 @@ export const SelectionModes: Story = {
 		await expect(canvas.getByText('Выбрано: package-json')).toBeVisible()
 		await expect(singleTree.querySelectorAll('.base-tree__node--selected')).toHaveLength(1)
 
-		await userEvent.click(canvas.getByRole('checkbox', { name: 'public' }))
-		await expect(canvas.getByRole('checkbox', { name: 'public' })).toBeChecked()
+		await expect(nodeHeader(singleTree, 'package.json')).toHaveAttribute('aria-selected', 'true')
+
+		// В multiple флажок — только вид: отметку объявляет aria-checked узла, клик по строке отмечает всё поддерево
+		await userEvent.click(nodeHeader(multipleTree, 'public'))
+		await expect(nodeHeader(multipleTree, 'public')).toHaveAttribute('aria-checked', 'true')
 		await expect(canvas.getByText(/Выбрано: composables, use-auth, use-api, public, favicon, robots/)).toBeVisible()
 		await expect(multipleTree.querySelectorAll('.base-tree__node--selected').length).toBeGreaterThan(1)
 	},
@@ -474,7 +499,10 @@ export const Slots: Story = {
 	play: async ({ canvasElement, userEvent }) => {
 		const header = nodeHeader(canvasElement, 'package.json')
 		const actions = header.querySelector('.base-tree__actions') as HTMLElement
-		await tabTo(header, userEvent)
+		// Подпись папки со слотом — «src 4» (со счётчиком): первый узел берём по роли
+		await tabTo(canvasElement.querySelector('[role="treeitem"]') as HTMLElement, userEvent)
+		await userEvent.keyboard('{End}{ArrowUp}')
+		await expect(header).toHaveFocus()
 		await waitFor(() => expect(getComputedStyle(actions).opacity).toBe('1'))
 	},
 }
@@ -530,11 +558,63 @@ export const Controlled: Story = {
 	},
 }
 
+/**
+ * Навигация: узел с `to` (маршрут) или `href` (внешний адрес) — подпись-ссылка BaseLink. Клик по подписи и Enter
+ * переходят по ссылке и не раскрывают раздел (для этого шеврон и стрелки); в режиме `single` узел становится выбранным —
+ * так отмечается текущая страница. Маршруты открывает RouterLink приложения или `linkComponent` плагина.
+ */
+export const Links: Story = {
+	args: { items: DOCS_NAV, selectionMode: 'single', expandedIds: ['components'], selectedIds: ['intro'], ariaLabel: 'Документация' },
+	parameters: {
+		controls: { include: ['variant', 'sizeScale', 'arrowPosition'] },
+		docs: {
+			source: {
+				code: [
+					'<!-- { id: "button", label: "Кнопка", to: "/docs/components/button" } -->',
+					'<!-- { id: "github", label: "Исходный код", href: "https://github.com/…", target: "_blank" } -->',
+					'<BaseTree v-model:selected-ids="current" :items="pages" selection-mode="single" aria-label="Документация" />',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => {
+		const onExpanded = useModelArg('expandedIds')
+		const onSelected = useModelArg('selectedIds')
+		return {
+			components: { BaseTree },
+			setup: () => ({ props: useArgsWithoutSlots(args, []), onExpanded, onSelected }),
+			template: `
+				<div class="story-stack story-narrow" style="gap: 8px;">
+					<BaseTree v-bind="props" @update:expanded-ids="onExpanded" @update:selected-ids="onSelected" />
+					<span class="story-label">Текущая страница: {{ props.selectedIds?.join(', ') || '—' }}</span>
+				</div>
+			`,
+		}
+	},
+	play: async ({ canvas, canvasElement, userEvent, args }) => {
+		const link = canvas.getByRole('link', { name: 'Кнопка' })
+		await expect(link).toHaveAttribute('href', '/docs/components/button')
+		await expect(canvas.getByRole('link', { name: /Исходный код/ })).toHaveAttribute('rel', 'noopener noreferrer')
+
+		await userEvent.click(link)
+		await expect(nodeHeader(canvasElement, 'Кнопка')).toHaveAttribute('aria-selected', 'true')
+		await expect(nodeHeader(canvasElement, 'Кнопка')).toHaveFocus()
+		await expect(canvas.getByText('Текущая страница: button')).toBeVisible()
+
+		// Enter на разделе-ссылке — переход без сворачивания
+		await userEvent.keyboard('{ArrowUp}{Enter}')
+		await expect(nodeHeader(canvasElement, 'Компоненты')).toHaveAttribute('aria-expanded', 'true')
+		await expect(args.onSelect).toHaveBeenLastCalledWith('components', true)
+	},
+}
+
 // ─── Доступность ───────────────────────────────────────────────────────────────
 
 /**
- * Клавиатура: Tab переводит фокус по узлам (кольцо внутри строки), Enter раскрывает и сворачивает папку.
- * Узлы свёрнутой ветки пропускаются: после сворачивания `src` Tab переходит сразу к `public`.
+ * Клавиатура по образцу APG Tree View. В порядке Tab один узел: Tab входит в дерево и выходит из него.
+ * ↓/↑ — соседний видимый узел, → — раскрыть папку или перейти к первому вложенному, ← — свернуть или к родителю,
+ * Home/End — первый и последний узел, `*` — раскрыть все папки уровня, буквы — к узлу по началу подписи,
+ * Enter — действие узла (раскрыть, выбрать, перейти по ссылке), пробел — выбор.
  */
 export const Keyboard: Story = {
 	tags: ['!autodocs'],
@@ -544,15 +624,27 @@ export const Keyboard: Story = {
 		await tabTo(src, userEvent)
 		await expect(getComputedStyle(src).outlineStyle).toBe('solid')
 
-		await userEvent.keyboard('{Enter}')
-		await expect(treeNode(canvasElement, 'src')).toHaveClass('base-tree__node--expanded')
-		await userEvent.tab()
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(src).toHaveAttribute('aria-expanded', 'true')
+		await userEvent.keyboard('{ArrowRight}')
 		await expect(nodeHeader(canvasElement, 'components')).toHaveFocus()
+		await userEvent.keyboard('{ArrowDown}{ArrowDown}')
+		await expect(nodeHeader(canvasElement, 'App.vue')).toHaveFocus()
+		await userEvent.keyboard('{ArrowLeft}')
+		await expect(src).toHaveFocus()
+		await userEvent.keyboard('{ArrowLeft}')
+		await expect(src).toHaveAttribute('aria-expanded', 'false')
 
-		await userEvent.tab({ shift: true })
-		await userEvent.keyboard('{Enter}')
-		await expect(treeNode(canvasElement, 'src')).not.toHaveClass('base-tree__node--expanded')
-		await userEvent.tab()
+		await userEvent.keyboard('{End}')
+		await expect(nodeHeader(canvasElement, 'README.md')).toHaveFocus()
+		await userEvent.keyboard('p')
 		await expect(nodeHeader(canvasElement, 'public')).toHaveFocus()
+		await userEvent.keyboard('{Home}*')
+		await expect(nodeHeader(canvasElement, 'public')).toHaveAttribute('aria-expanded', 'true')
+		await expect(src).toHaveFocus()
+
+		// Остальные узлы вне порядка Tab: следующий Tab уходит из дерева
+		await userEvent.tab()
+		await expect(canvasElement.querySelector('.base-tree')?.contains(document.activeElement)).toBe(false)
 	},
 }

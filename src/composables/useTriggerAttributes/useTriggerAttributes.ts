@@ -5,8 +5,11 @@ import type { Ref } from 'vue'
 /** Значение атрибута; `undefined` — атрибута нет */
 export type TriggerAttributes = Record<string, string | undefined>
 
-/** Фокусируемые элементы: триггером считается первый из них внутри обёртки */
-const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])'
+/**
+ * Фокусируемые элементы: триггером считается первый из них внутри обёртки. Ссылки — только `a` и `area`:
+ * `[href]` есть и у `<use>` в SVG-иконке перед полем или кнопкой
+ */
+const FOCUSABLE_SELECTOR = 'button, a[href], area[href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])'
 
 /** Атрибуты со списком id через пробел: компонент добавляет и убирает свой id, не трогая чужие */
 const TOKEN_ATTRIBUTES = new Set(['aria-describedby'])

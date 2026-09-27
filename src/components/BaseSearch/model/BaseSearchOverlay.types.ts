@@ -17,6 +17,12 @@ export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant
 	highlightedIndex: number
 	shouldShowResults: boolean
 	classes: Record<string, string | undefined>
+	/** id списка результатов (listbox) */
+	listboxId?: string
+	/** ARIA-атрибуты поля как combobox */
+	comboboxAttributes?: Record<string, string | undefined>
+	/** Статус для скринридера: сколько найдено */
+	resultsStatus?: string
 }
 
 export interface BaseSearchOverlayEmits {

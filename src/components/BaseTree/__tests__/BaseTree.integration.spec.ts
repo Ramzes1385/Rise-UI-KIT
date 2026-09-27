@@ -5,7 +5,7 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { render, screen, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../model/BaseTree.types'
 
@@ -57,11 +57,16 @@ const DISABLED_ITEMS: TreeNode[] = [
 const DEFAULT_SLOT = `<template #label="{ node }">{{ node.label }}</template>`
 
 /**
- * Видимая метка узла. В режиме multiple та же подпись есть у чекбокса (скрыта визуально, это его доступное имя),
+ * Видимая метка узла. В режиме multiple та же подпись есть у флажка (скрыта визуально и от скринридера),
  * поэтому поиск по тексту уточняется классом метки.
  */
 function nodeLabel(text: string): HTMLElement {
 	return screen.getByText(text, { selector: '.base-tree__label' })
+}
+
+/** Узел (treeitem) по подписи — в том числе в свёрнутой ветке */
+function treeItem(name: string): HTMLElement {
+	return screen.getByRole('treeitem', { name, hidden: true })
 }
 
 describe('BaseTree integration', () => {
@@ -359,75 +364,459 @@ describe('BaseTree integration', () => {
 		})
 	})
 
-	// Регрессия TRE-3: свёрнутая ветка остаётся в DOM (ленивый рендер), но не должна быть достижима по Tab
-	describe('свёрнутые ветки', () => {
-		it('заголовки свёрнутой после раскрытия ветки не достижимы по Tab', async () => {
+	// Порядок Tab по образцу APG Tree View: в нём один узел (roving tabindex), стрелки ходят по видимым узлам
+	describe('порядок Tab', () => {
+		it('в порядке Tab один узел — первый видимый; следующий Tab уходит из дерева', async () => {
 			const user = userEvent.setup()
-			render(BaseTree, {
-				props: { items: NESTED_ITEMS },
-				slots: { label: DEFAULT_SLOT },
-			})
-			const metallHeader = screen.getByText('Металл').closest('.base-tree__header') as HTMLElement
+			render(BaseTree, { props: { items: NESTED_ITEMS, isDefaultExpandAll: true }, slots: { label: DEFAULT_SLOT } })
 
-			await user.click(metallHeader)
-			await user.click(metallHeader)
-			metallHeader.focus()
+			const tabbable = screen.getAllByRole('treeitem').filter(item => item.tabIndex === 0)
+			expect(tabbable).toEqual([treeItem('Металл')])
+
 			await user.tab()
-
-			expect(document.activeElement).toBe(screen.getByText('Дерево').closest('.base-tree__header'))
+			expect(treeItem('Металл')).toHaveFocus()
+			await user.tab()
+			expect(document.body).toHaveFocus()
 		})
 
-		it('чекбоксы свёрнутой ветки в режиме multiple не достижимы по Tab', async () => {
+		it('в порядке Tab — выбранный узел, если он виден', () => {
+			render(BaseTree, {
+				props: { items: NESTED_ITEMS, selectionMode: 'single', selectedIds: ['wood'] },
+				slots: { label: DEFAULT_SLOT },
+			})
+
+			expect(treeItem('Дерево')).toHaveAttribute('tabindex', '0')
+			expect(treeItem('Металл')).toHaveAttribute('tabindex', '-1')
+		})
+
+		it('дерево запоминает узел с фокусом: Shift+Tab возвращает на него', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT } })
+
+			await user.tab()
+			await user.keyboard('{ArrowDown}')
+			expect(treeItem('Дерево')).toHaveFocus()
+			await user.tab()
+			await user.tab({ shift: true })
+
+			expect(treeItem('Дерево')).toHaveFocus()
+			expect(treeItem('Металл')).toHaveAttribute('tabindex', '-1')
+		})
+
+		it('клик ставит фокус на узел и переносит на него порядок Tab', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT } })
+
+			await user.click(nodeLabel('Дерево'))
+
+			expect(treeItem('Дерево')).toHaveFocus()
+			expect(treeItem('Дерево')).toHaveAttribute('tabindex', '0')
+		})
+
+		// Регрессия TRE-3: свёрнутая ветка остаётся в DOM (ленивый рендер), но её узлы скрыты и вне порядка Tab
+		it('узлы свёрнутой после раскрытия ветки скрыты и не получают tabindex 0', async () => {
+			const user = userEvent.setup()
+			const { container } = render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT } })
+
+			await user.click(nodeLabel('Металл'))
+			await user.click(nodeLabel('Металл'))
+
+			expect(container.querySelector('.base-tree__children')).toHaveStyle({ visibility: 'hidden' })
+			expect(screen.queryByRole('treeitem', { name: 'Сталь' })).not.toBeInTheDocument()
+			const steel = nodeLabel('Сталь').closest('[role="treeitem"]')
+			expect(steel).toHaveAttribute('tabindex', '-1')
+		})
+
+		it('флажок в режиме multiple — только вид: вне порядка Tab и дерева доступности, отметку несёт aria-checked', async () => {
 			const user = userEvent.setup()
 			const { container } = render(BaseTree, {
 				props: { items: NESTED_ITEMS, selectionMode: 'multiple' },
 				slots: { label: DEFAULT_SLOT },
 			})
-			const metallNode = nodeLabel('Металл').closest('.base-tree__node') as HTMLElement
-			const metallArrow = metallNode.querySelector('.base-tree__arrow') as HTMLElement
 
-			await user.click(metallArrow)
-			await user.click(metallArrow)
-			const metallCheckbox = metallNode.querySelector('.base-tree__checkbox input') as HTMLElement
-			metallCheckbox.focus()
-			await user.tab()
+			const wraps = container.querySelectorAll('.base-tree__checkbox-wrap')
+			expect(wraps).toHaveLength(2)
+			for (const wrap of wraps) {
+				expect(wrap).toHaveAttribute('inert')
+				expect(wrap).toHaveAttribute('aria-hidden', 'true')
+			}
+			expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+			expect(treeItem('Металл')).toHaveAttribute('aria-checked', 'false')
 
-			const woodHeader = nodeLabel('Дерево').closest('.base-tree__header')
-			expect(document.activeElement).toBe(woodHeader)
-			expect(container.querySelector('.base-tree__children')).toBeInTheDocument()
+			// Клик по флажку — клик по узлу: отметка переключается, фокус — на узле
+			await user.click(treeItem('Металл').querySelector('.base-tree__checkbox') as HTMLElement)
+			expect(treeItem('Металл')).toHaveAttribute('aria-checked', 'true')
+			expect(treeItem('Дерево')).toHaveAttribute('aria-checked', 'false')
 		})
+	})
 
-		it('раскрытая ветка остаётся достижимой по Tab', async () => {
-			const user = userEvent.setup()
-			render(BaseTree, {
-				props: { items: NESTED_ITEMS },
+	describe('роли и состояния (APG Tree View)', () => {
+		it('корень — tree с именем, узлы — treeitem с уровнем и позицией, дети — group', () => {
+			const { container } = render(BaseTree, {
+				props: { items: NESTED_ITEMS, isDefaultExpandAll: true, ariaLabel: 'Материалы' },
 				slots: { label: DEFAULT_SLOT },
 			})
-			const metallHeader = screen.getByText('Металл').closest('.base-tree__header') as HTMLElement
 
-			await user.click(metallHeader)
-			metallHeader.focus()
-			await user.tab()
+			expect(screen.getByRole('tree', { name: 'Материалы' })).toBe(container.querySelector('.base-tree'))
+			expect(treeItem('Металл')).toHaveAttribute('aria-level', '1')
+			expect(treeItem('Металл')).toHaveAttribute('aria-setsize', '2')
+			expect(treeItem('Металл')).toHaveAttribute('aria-posinset', '1')
+			expect(treeItem('Металл')).toHaveAttribute('aria-expanded', 'true')
+			expect(treeItem('Дерево')).toHaveAttribute('aria-posinset', '2')
+			expect(treeItem('Дерево')).not.toHaveAttribute('aria-expanded')
+			expect(treeItem('Медь')).toHaveAttribute('aria-level', '2')
+			expect(treeItem('Медь')).toHaveAttribute('aria-setsize', '2')
+			expect(treeItem('Медь')).toHaveAttribute('aria-posinset', '2')
+			expect(screen.getByRole('group')).toContainElement(treeItem('Сталь'))
+		})
 
-			expect(document.activeElement).toBe(screen.getByText('Сталь').closest('.base-tree__header'))
+		it('имя узла — только подпись: кнопки слота actions в него не входят', () => {
+			render(BaseTree, {
+				props: { items: [{ id: 'doc', label: 'Договор' }] },
+				slots: { actions: '<button type="button">Скачать</button>' },
+			})
+
+			expect(screen.getByRole('treeitem', { name: 'Договор' })).toBeInTheDocument()
+		})
+
+		it('без выбора у узлов нет aria-selected и aria-checked', () => {
+			render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT } })
+
+			expect(treeItem('Металл')).not.toHaveAttribute('aria-selected')
+			expect(treeItem('Металл')).not.toHaveAttribute('aria-checked')
+		})
+
+		it('в режиме single aria-selected="true" только у выбранного узла, у остальных атрибута нет', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: NESTED_ITEMS, selectionMode: 'single' }, slots: { label: DEFAULT_SLOT } })
+
+			await user.click(nodeLabel('Дерево'))
+
+			expect(treeItem('Дерево')).toHaveAttribute('aria-selected', 'true')
+			expect(treeItem('Металл')).not.toHaveAttribute('aria-selected')
 		})
 	})
 
 	describe('клавиатура', () => {
-		it('должен раскрывать узел по Enter', async () => {
-			const user = userEvent.setup()
-			const { container } = render(BaseTree, {
-				props: { items: NESTED_ITEMS },
-				slots: { label: DEFAULT_SLOT },
-			})
+		/** Корзина: вложенность в два уровня, отключённая папка и лист в корне */
+		const FOOD: TreeNode[] = [
+			{
+				id: 'fruits',
+				label: 'Фрукты',
+				children: [
+					{ id: 'apple', label: 'Яблоко' },
+					{ id: 'banana', label: 'Банан' },
+					{
+						id: 'citrus',
+						label: 'Цитрусы',
+						children: [
+							{ id: 'orange', label: 'Апельсин' },
+							{ id: 'lemon', label: 'Лимон' },
+						],
+					},
+				],
+			},
+			{ id: 'vegetables', label: 'Овощи', children: [{ id: 'carrot', label: 'Морковь' }] },
+			{ id: 'berries', label: 'Ягоды', isDisabled: true, children: [{ id: 'cherry', label: 'Вишня' }] },
+			{ id: 'bread', label: 'Батон' },
+		]
 
-			// Находим header элемент и фокусируем его
-			const header = container.querySelector('.base-tree__header') as HTMLElement
-			header?.focus()
+		async function focusFirst(user: ReturnType<typeof userEvent.setup>): Promise<void> {
+			await user.tab()
+			expect(treeItem('Фрукты')).toHaveFocus()
+		}
+
+		it('↓ и ↑ ходят по видимым узлам, отключённый узел тоже получает фокус; на краях фокус остаётся', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{ArrowUp}')
+			expect(treeItem('Фрукты')).toHaveFocus()
+			await user.keyboard('{ArrowDown}')
+			expect(treeItem('Овощи')).toHaveFocus()
+			await user.keyboard('{ArrowDown}')
+			expect(treeItem('Ягоды')).toHaveFocus()
+			await user.keyboard('{ArrowDown}{ArrowDown}')
+			expect(treeItem('Батон')).toHaveFocus()
+			await user.keyboard('{ArrowUp}')
+			expect(treeItem('Ягоды')).toHaveFocus()
+			expect(screen.getAllByRole('treeitem').filter(item => item.tabIndex === 0)).toEqual([treeItem('Ягоды')])
+		})
+
+		it('Home и End — первый и последний видимый узел', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{End}')
+			expect(treeItem('Батон')).toHaveFocus()
+			await user.keyboard('{Home}')
+			expect(treeItem('Фрукты')).toHaveFocus()
+		})
+
+		it('→ раскрывает закрытый узел, на раскрытом — к первому ребёнку, на листе ничего не делает', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{ArrowRight}')
+			expect(treeItem('Фрукты')).toHaveAttribute('aria-expanded', 'true')
+			expect(treeItem('Фрукты')).toHaveFocus()
+			await user.keyboard('{ArrowRight}')
+			expect(treeItem('Яблоко')).toHaveFocus()
+			await user.keyboard('{ArrowRight}')
+			expect(treeItem('Яблоко')).toHaveFocus()
+			expect(emitted().toggle).toEqual([['fruits', true]])
+		})
+
+		it('← с ребёнка ведёт к родителю, на раскрытом узле сворачивает его; у свёрнутого корня ничего не делает', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: FOOD, isDefaultExpandAll: true }, slots: { label: DEFAULT_SLOT } })
+			treeItem('Лимон').focus()
+
+			await user.keyboard('{ArrowLeft}')
+			expect(treeItem('Цитрусы')).toHaveFocus()
+			await user.keyboard('{ArrowLeft}')
+			expect(treeItem('Цитрусы')).toHaveAttribute('aria-expanded', 'false')
+			expect(treeItem('Цитрусы')).toHaveFocus()
+			await user.keyboard('{ArrowLeft}')
+			expect(treeItem('Фрукты')).toHaveFocus()
+			await user.keyboard('{ArrowLeft}{ArrowLeft}')
+			expect(treeItem('Фрукты')).toHaveAttribute('aria-expanded', 'false')
+			expect(treeItem('Фрукты')).toHaveFocus()
+		})
+
+		it('← на раскрытом узле сворачивает его и оставляет фокус', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{ArrowRight}{ArrowLeft}')
+
+			expect(treeItem('Фрукты')).toHaveAttribute('aria-expanded', 'false')
+			expect(treeItem('Фрукты')).toHaveFocus()
+			expect(emitted().toggle).toEqual([['fruits', true], ['fruits', false]])
+		})
+
+		it('стрелки не раскрывают и не сворачивают отключённый узел', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}')
+			expect(treeItem('Ягоды')).toHaveFocus()
+			expect(treeItem('Ягоды')).toHaveAttribute('aria-expanded', 'false')
+			await user.keyboard('{Enter}{ }')
+			expect(emitted().toggle).toBeUndefined()
+		})
+
+		it('открытый отключённый узел: → ведёт к ребёнку, ← с ребёнка — обратно к узлу, а не сворачивает его', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: FOOD, expandedIds: ['berries'] }, slots: { label: DEFAULT_SLOT } })
+			treeItem('Ягоды').focus()
+
+			await user.keyboard('{ArrowRight}')
+			expect(treeItem('Вишня')).toHaveFocus()
+			await user.keyboard('{ArrowLeft}{ArrowLeft}')
+			expect(treeItem('Ягоды')).toHaveFocus()
+			expect(treeItem('Ягоды')).toHaveAttribute('aria-expanded', 'true')
+		})
+
+		it('`*` раскрывает всех соседей узла одним событием, кроме отключённых', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('*')
+
+			expect(emitted()['update:expandedIds']).toEqual([[['fruits', 'vegetables']]])
+			expect(treeItem('Овощи')).toHaveAttribute('aria-expanded', 'true')
+			expect(treeItem('Ягоды')).toHaveAttribute('aria-expanded', 'false')
+			expect(treeItem('Фрукты')).toHaveFocus()
+
+			// Все соседи уже раскрыты — событий нет
+			await user.keyboard('*')
+			expect(emitted()['update:expandedIds']).toHaveLength(1)
+		})
+
+		it('буквы ведут к узлу по началу подписи: повтор буквы — к следующему, несколько букв — к слову', async () => {
+			vi.useFakeTimers()
+			render(BaseTree, { props: { items: FOOD, expandedIds: ['fruits'] }, slots: { label: DEFAULT_SLOT } })
+			treeItem('Фрукты').focus()
+
+			await fireEvent.keyDown(treeItem('Фрукты'), { key: 'б' })
+			expect(treeItem('Банан')).toHaveFocus()
+			await fireEvent.keyDown(treeItem('Банан'), { key: 'б' })
+			expect(treeItem('Батон')).toHaveFocus()
+			vi.advanceTimersByTime(600)
+
+			await fireEvent.keyDown(treeItem('Батон'), { key: 'Я' })
+			expect(treeItem('Яблоко')).toHaveFocus()
+			vi.advanceTimersByTime(600)
+
+			for (const key of ['я', 'г']) await fireEvent.keyDown(document.activeElement as HTMLElement, { key })
+			expect(treeItem('Ягоды')).toHaveFocus()
+			vi.advanceTimersByTime(600)
+
+			// Нет совпадения, клавиши с Ctrl/Alt/Meta — не поиск
+			await fireEvent.keyDown(treeItem('Ягоды'), { key: 'щ' })
+			await fireEvent.keyDown(treeItem('Ягоды'), { key: 'ф', ctrlKey: true })
+			expect(treeItem('Ягоды')).toHaveFocus()
+			vi.useRealTimers()
+		})
+
+		it('пробел во время поиска по буквам — часть запроса, а не выбор', async () => {
+			vi.useFakeTimers()
+			const items: TreeNode[] = [
+				{ id: 'juice-orange', label: 'Сок апельсиновый' },
+				{ id: 'juice-apple', label: 'Сок яблочный' },
+			]
+			const { emitted } = render(BaseTree, { props: { items, selectionMode: 'single' }, slots: { label: DEFAULT_SLOT } })
+			treeItem('Сок апельсиновый').focus()
+
+			for (const key of ['с', 'о', 'к', ' ', 'я']) await fireEvent.keyDown(document.activeElement as HTMLElement, { key })
+
+			expect(treeItem('Сок яблочный')).toHaveFocus()
+			expect(emitted().select).toBeUndefined()
+			vi.useRealTimers()
+		})
+
+		it('Enter без выбора раскрывает и сворачивает папку', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: FOOD }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{Enter}')
+			expect(treeItem('Фрукты')).toHaveAttribute('aria-expanded', 'true')
+			await user.keyboard('{Enter}')
+			expect(treeItem('Фрукты')).toHaveAttribute('aria-expanded', 'false')
+		})
+
+		it('Enter и пробел в режиме single выбирают узел', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: FOOD, selectionMode: 'single' }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{End}{Enter}')
+			expect(treeItem('Батон')).toHaveAttribute('aria-selected', 'true')
+			await user.keyboard('{ArrowUp}{ArrowUp}{ }')
+			expect(treeItem('Овощи')).toHaveAttribute('aria-selected', 'true')
+			expect(emitted().select).toEqual([['bread', true], ['vegetables', true]])
+		})
+
+		it('пробел в режиме multiple переключает отметку узла и его поддерева', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: FOOD, selectionMode: 'multiple' }, slots: { label: DEFAULT_SLOT } })
+			await focusFirst(user)
+
+			await user.keyboard('{ArrowDown}{ }')
+			expect(treeItem('Овощи')).toHaveAttribute('aria-checked', 'true')
+			expect(emitted()['update:selectedIds']).toEqual([[['vegetables', 'carrot']]])
+			await user.keyboard('{ }')
+			expect(treeItem('Овощи')).toHaveAttribute('aria-checked', 'false')
+		})
+
+		it('клавиши из слота actions дерево не перехватывает', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, {
+				props: { items: FOOD },
+				slots: { label: DEFAULT_SLOT, actions: '<button type="button">Ещё</button>' },
+			})
+			const [firstAction] = screen.getAllByRole('button', { name: 'Ещё' })
+			firstAction.focus()
+
+			await user.keyboard('{ArrowDown}')
+
+			expect(firstAction).toHaveFocus()
+		})
+	})
+
+	describe('ссылки (to и href)', () => {
+		const LINKS: TreeNode[] = [
+			{ id: 'intro', label: 'Введение', to: '/intro' },
+			{
+				id: 'components',
+				label: 'Компоненты',
+				to: '/components',
+				children: [{ id: 'button', label: 'Кнопка', to: '/components/button' }],
+			},
+			{ id: 'github', label: 'GitHub', href: 'https://github.com', target: '_blank' },
+			{ id: 'draft', label: 'Черновик', to: '/draft', isDisabled: true },
+		]
+
+		/** jsdom не умеет переходить по ссылкам: отменяем переход, считаем клики */
+		function trackLinkClicks(): ReturnType<typeof vi.fn> {
+			const clicks = vi.fn()
+			for (const link of document.querySelectorAll('.base-tree__link')) {
+				link.addEventListener('click', event => {
+					event.preventDefault()
+					clicks(link.getAttribute('href'))
+				})
+			}
+			return clicks
+		}
+
+		it('подпись узла с to/href — ссылка BaseLink вне порядка Tab; у отключённого узла ссылки нет', () => {
+			render(BaseTree, { props: { items: LINKS } })
+
+			const intro = screen.getByRole('link', { name: 'Введение' })
+			expect(intro).toHaveAttribute('href', '/intro')
+			expect(intro).toHaveAttribute('tabindex', '-1')
+			expect(screen.getByRole('link', { name: /GitHub/ })).toHaveAttribute('rel', 'noopener noreferrer')
+			expect(screen.queryByRole('link', { name: 'Черновик' })).not.toBeInTheDocument()
+			expect(screen.getByRole('treeitem', { name: 'Черновик' })).toBeInTheDocument()
+		})
+
+		it('Enter на узле-ссылке переходит по ней и не раскрывает узел', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: LINKS } })
+			const clicks = trackLinkClicks()
+
+			await user.tab()
+			await user.keyboard('{ArrowDown}{Enter}')
+
+			expect(clicks).toHaveBeenCalledWith('/components')
+			expect(screen.getByRole('treeitem', { name: 'Компоненты' })).toHaveAttribute('aria-expanded', 'false')
+			expect(emitted().toggle).toBeUndefined()
+		})
+
+		it('клик по ссылке в режиме single выбирает узел; повторный клик выбор не снимает', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: LINKS, selectionMode: 'single' } })
+			const clicks = trackLinkClicks()
+
+			await user.click(screen.getByRole('link', { name: 'Введение' }))
+			await user.click(screen.getByRole('link', { name: 'Введение' }))
+
+			expect(clicks).toHaveBeenCalledTimes(2)
+			expect(emitted().select).toEqual([['intro', true]])
+			expect(screen.getByRole('treeitem', { name: 'Введение' })).toHaveAttribute('aria-selected', 'true')
+		})
+
+		it('нажатие мышью на ссылку оставляет фокус на узле', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: LINKS } })
+			trackLinkClicks()
+
+			await user.click(screen.getByRole('link', { name: 'Введение' }))
+			expect(screen.getByRole('treeitem', { name: 'Введение' })).toHaveFocus()
+
+			// Средняя кнопка (открыть в новой вкладке) — поведение браузера по умолчанию
+			const middle = new MouseEvent('mousedown', { button: 1, bubbles: true, cancelable: true })
+			screen.getByRole('link', { name: /GitHub/ }).dispatchEvent(middle)
+			expect(middle.defaultPrevented).toBe(false)
+			expect(screen.getByRole('treeitem', { name: 'Введение' })).toHaveFocus()
+		})
+
+		it('Enter на отключённом узле-ссылке ничего не делает', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, { props: { items: LINKS, selectionMode: 'single' } })
+			screen.getByRole('treeitem', { name: 'Черновик' }).focus()
+
 			await user.keyboard('{Enter}')
 
-			const expandedNodes = container.querySelectorAll('.base-tree__node--expanded')
-			expect(expandedNodes.length).toBeGreaterThanOrEqual(1)
+			expect(emitted().select).toBeUndefined()
 		})
 	})
 })

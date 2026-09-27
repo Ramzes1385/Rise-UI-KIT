@@ -4,6 +4,10 @@ export interface BaseTreeNodeProps {
 	node: TreeNode
 	depth: number
 	sizeScale: number
+	/** Число узлов на этом уровне у того же родителя (aria-setsize) */
+	setSize: number
+	/** Позиция узла среди них, с 1 (aria-posinset) */
+	posInSet: number
 }
 
 export interface BaseTreeNodeSlots {

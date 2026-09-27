@@ -1,7 +1,11 @@
 /** Composable: логика выбора и фильтрации для BaseSelect */
-import { computed, ref, watch } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
+import { findTypeaheadIndex } from '@utils/menuUtils'
 import type { UseSelectOptions } from './useSelect.types'
 import type { BaseSelectOption } from '@components/BaseSelect/model/BaseSelect.types'
+
+/** Пауза, после которой набранные буквы сбрасываются, мс */
+const TYPEAHEAD_RESET = 500
 
 /**
  * Логика выбора/фильтрации для BaseSelect.
@@ -83,10 +87,49 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 		if (option && !option.isDisabled) activeIndex.value = index
 	}
 
-	// Открытие ставит активной выбранную опцию, закрытие снимает подсветку
-	watch(isOpen, value => {
-		activeIndex.value = value ? initialActiveIndex() : -1
+	let typeahead = ''
+	let typeaheadTimer: ReturnType<typeof setTimeout> | null = null
+
+	/** Идёт набор букв: пробел — часть поиска, а не выбор */
+	function isTypingAhead(): boolean {
+		return typeahead !== ''
+	}
+
+	/**
+	 * Поиск по буквам (APG select-only combobox): активной становится доступная опция, подпись которой начинается
+	 * с набранного. Повтор буквы перебирает опции на неё; через полсекунды без ввода набранное сбрасывается.
+	 */
+	function typeaheadActive(char: string): void {
+		typeahead += char
+		if (typeaheadTimer) clearTimeout(typeaheadTimer)
+		typeaheadTimer = setTimeout(() => {
+			typeahead = ''
+			typeaheadTimer = null
+		}, TYPEAHEAD_RESET)
+
+		const enabled = filteredOptions.value.map((option, index) => ({ option, index })).filter(({ option }) => !option.isDisabled)
+		const current = enabled.findIndex(({ index }) => index === activeIndex.value)
+		const found = findTypeaheadIndex(
+			enabled.map(({ option }) => option.label),
+			typeahead,
+			current,
+		)
+		if (found !== -1) activeIndex.value = enabled[found].index
+	}
+
+	onScopeDispose(() => {
+		if (typeaheadTimer) clearTimeout(typeaheadTimer)
 	})
+
+	// Открытие ставит активной выбранную опцию, закрытие снимает подсветку. Синхронно: клавиша, которая открыла
+	// список (буква, Home, End), сразу двигает активную опцию, и watch не перезаписывает её
+	watch(
+		isOpen,
+		value => {
+			activeIndex.value = value ? initialActiveIndex() : -1
+		},
+		{ flush: 'sync' },
+	)
 
 	// Новый поисковый запрос — активной становится первая подходящая опция
 	watch(filteredOptions, () => {
@@ -171,6 +214,8 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 		moveActive,
 		setActiveEdge,
 		setActive,
+		typeaheadActive,
+		isTypingAhead,
 		removeValue,
 	}
 }

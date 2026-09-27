@@ -220,14 +220,17 @@ describe('BaseTree unit', () => {
 			expect(emitted()['update:selectedIds']).toBeFalsy()
 		})
 
-		it('чекбокс в режиме multiple назван меткой узла, у отключённого узла он заблокирован', () => {
-			render(BaseTree, {
-				props: { items: DISABLED_ITEMS, selectionMode: 'multiple' },
+		it('в режиме multiple отметку несёт aria-checked узла; флажок отключённого узла заблокирован', () => {
+			const { container } = render(BaseTree, {
+				props: { items: DISABLED_ITEMS, selectionMode: 'multiple', isDefaultExpandAll: true },
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			expect(screen.getByRole('checkbox', { name: 'Доступный' })).toBeEnabled()
-			expect(screen.getByRole('checkbox', { name: 'Отключённый' })).toBeDisabled()
+			expect(screen.getByRole('treeitem', { name: 'Доступный' })).toHaveAttribute('aria-checked', 'false')
+			const disabled = screen.getByRole('treeitem', { name: 'Отключённый' })
+			expect(disabled).toHaveAttribute('aria-checked', 'false')
+			expect(disabled).toHaveAttribute('aria-disabled', 'true')
+			expect(container.querySelector('.base-tree__node--disabled .base-tree__checkbox input')).toBeDisabled()
 		})
 
 		it('заголовок отключённого узла помечен aria-disabled, у доступного атрибута нет', () => {

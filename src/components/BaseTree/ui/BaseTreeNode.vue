@@ -1,31 +1,45 @@
 <template>
-	<div class="base-tree__node" :class="[nodeClasses, treeContext.classes.value.node]">
+	<div class="base-tree__node" :class="[nodeClasses, treeContext.classes.value.node]" role="none">
+		<!-- Заголовок — treeitem: уровень, позиция, раскрытие и выбор; фокус и клавиши — у корня дерева -->
 		<div
+			:ref="setHeaderElement"
 			class="base-tree__header"
 			:class="treeContext.classes.value.header"
-			tabindex="0"
+			role="treeitem"
+			:tabindex="tabIndex"
+			:aria-labelledby="labelId"
+			:aria-level="depth + 1"
+			:aria-setsize="setSize"
+			:aria-posinset="posInSet"
+			:aria-expanded="hasChildren ? isExpanded : undefined"
+			:aria-selected="treeContext.selectionMode.value === 'single' && isSelected ? true : undefined"
+			:aria-checked="treeContext.selectionMode.value === 'multiple' ? isSelected : undefined"
 			:aria-disabled="node.isDisabled ? 'true' : undefined"
 			@click="handleHeaderClick"
-			@keydown.enter="handleHeaderClick">
+			@focus="treeContext.setActive(node.id)">
 			<span
 				v-if="treeContext.arrowPosition.value === 'left'"
 				class="base-tree__arrow"
 				:class="[{ 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
+				aria-hidden="true"
 				@click.stop="handleArrowClick">
 				<slot name="arrow" :node="node" :is-expanded="isExpanded">
 					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 				</slot>
 			</span>
-			<BaseCheckbox
-				v-if="treeContext.selectionMode.value === 'multiple'"
-				class="base-tree__checkbox"
-				:custom-class="checkboxClasses"
-				:model-value="isSelected"
-				:label="node.label"
-				:is-disabled="node.isDisabled"
-				:size-scale="sizeScale"
-				@click.stop
-				@update:model-value="handleCheckboxChange" />
+			<!--
+				Флажок — только вид: отметку объявляет aria-checked узла, клик по флажку — клик по узлу.
+				inert убирает его из порядка Tab и дерева доступности, указатель проходит сквозь него к заголовку
+			-->
+			<span v-if="treeContext.selectionMode.value === 'multiple'" class="base-tree__checkbox-wrap" aria-hidden="true" inert>
+				<BaseCheckbox
+					class="base-tree__checkbox"
+					:custom-class="checkboxClasses"
+					:model-value="isSelected"
+					:label="node.label"
+					:is-disabled="node.isDisabled"
+					:size-scale="sizeScale" />
+			</span>
 			<slot name="icon" :node="node">
 				<BaseIcon
 					v-if="node.icon"
@@ -34,15 +48,30 @@
 					:custom-class="treeContext.classes.value.icon"
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</slot>
-			<span class="base-tree__label" :class="treeContext.classes.value.label">
+			<!-- Имя узла — только подпись: кнопки слота actions в имя не попадают -->
+			<span :id="labelId" class="base-tree__label" :class="treeContext.classes.value.label">
 				<slot name="label" :node="node" :depth="depth" :is-selected="isSelected" :is-expanded="isExpanded">
-					{{ node.label }}
+					<!-- Узел с адресом — ссылка (BaseLink): клик и Enter переходят по ней, фокус остаётся у узла -->
+					<BaseLink
+						v-if="(node.to || node.href) && !node.isDisabled"
+						class="base-tree__link"
+						variant="ghost"
+						tabindex="-1"
+						:to="node.to"
+						:href="node.href"
+						:target="node.target"
+						@mousedown="handleLinkMousedown"
+						@click="handleLinkClick">
+						{{ node.label }}
+					</BaseLink>
+					<template v-else>{{ node.label }}</template>
 				</slot>
 			</span>
 			<span
 				v-if="treeContext.arrowPosition.value === 'right'"
 				class="base-tree__arrow base-tree__arrow--right"
 				:class="[{ 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
+				aria-hidden="true"
 				@click.stop="handleArrowClick">
 				<slot name="arrow" :node="node" :is-expanded="isExpanded">
 					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
@@ -81,9 +110,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, ref, useId, watch } from 'vue'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
 import { calcIconScale } from '@utils/iconUtils'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeChildren from './BaseTreeChildren.vue'
@@ -105,6 +135,22 @@ function getTreeContext(): TreeContext {
 	return context
 }
 
+const labelId = `rise-tree-${useId()}-label`
+
+/** Текущий элемент заголовка — чтобы снять именно его регистрацию при размонтировании */
+let headerElement: HTMLElement | null = null
+
+/** Заголовок регистрируется в дереве: на него дерево переводит фокус стрелками и поиском по буквам */
+function setHeaderElement(element: unknown): void {
+	if (element instanceof HTMLElement) {
+		headerElement = element
+		treeContext.registerHeader(props.node.id, element)
+	} else if (headerElement) {
+		treeContext.unregisterHeader(props.node.id, headerElement)
+		headerElement = null
+	}
+}
+
 const hasChildren = computed(function getHasChildren() {
 	return Boolean(props.node.children?.length)
 })
@@ -123,9 +169,14 @@ const isSelected = computed(function getIsSelected() {
 	return treeContext.selectedSet.value.has(props.node.id)
 })
 
+/** 0 — узел в порядке Tab, −1 — нет. Computed: при переходе стрелкой перерисовываются только два узла */
+const tabIndex = computed(function getTabIndex() {
+	return treeContext.tabIndexOf(props.node.id)
+})
+
 /**
  * Классы чекбокса: пользовательский класс checkbox — на корень, подпись скрыта визуально.
- * Подпись (label узла) — доступное имя чекбокса: рядом видна та же метка узла.
+ * Флажок скрыт от скринридера (отметку объявляет aria-checked узла); подпись оставлена, чтобы поле не было безымянным.
  */
 const checkboxClasses = computed(function getCheckboxClasses() {
 	return { root: treeContext.classes.value.checkbox, label: 'base-tree__visually-hidden' }
@@ -158,6 +209,22 @@ function handleArrowClick(): void {
 	treeContext.toggleNode(props.node.id)
 }
 
+/** Нажатие мышью на ссылку: фокус остаётся на узле (treeitem), иначе стрелки перестали бы работать */
+function handleLinkMousedown(event: MouseEvent): void {
+	if (event.button !== 0) return
+	event.preventDefault()
+	headerElement?.focus()
+}
+
+/**
+ * Переход по ссылке узла (клик или Enter). Раскрытие не меняется — для него стрелка; в режиме single узел
+ * становится выбранным (текущая страница), повторный переход выбор не снимает.
+ */
+function handleLinkClick(event: MouseEvent): void {
+	event.stopPropagation()
+	if (treeContext.selectionMode.value === 'single' && !isSelected.value) treeContext.selectNode(props.node.id)
+}
+
 /** Клик по заголовку узла */
 function handleHeaderClick(): void {
 	if (props.node.isDisabled) {
@@ -175,11 +242,4 @@ function handleHeaderClick(): void {
 	treeContext.selectNode(props.node.id)
 }
 
-/** Клик по чекбоксу */
-function handleCheckboxChange(): void {
-	if (props.node.isDisabled) {
-		return
-	}
-	treeContext.selectNode(props.node.id)
-}
 </script>

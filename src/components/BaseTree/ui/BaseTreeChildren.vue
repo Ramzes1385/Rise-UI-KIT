@@ -3,9 +3,17 @@
 		v-if="children.length && wasExpanded"
 		class="base-tree__children"
 		:class="[{ 'base-tree__children--open': isExpanded }, treeContext.classes.value.children]"
-		:style="isExpanded ? undefined : COLLAPSED_STYLE">
-		<div class="base-tree__children-inner">
-			<BaseTreeNode v-for="child in children" :key="child.id" :node="child" :depth="depth" :size-scale="sizeScale">
+		:style="isExpanded ? undefined : COLLAPSED_STYLE"
+		role="group">
+		<div class="base-tree__children-inner" role="none">
+			<BaseTreeNode
+				v-for="(child, index) in children"
+				:key="child.id"
+				:node="child"
+				:depth="depth"
+				:set-size="children.length"
+				:pos-in-set="index + 1"
+				:size-scale="sizeScale">
 				<template #icon="slotProps">
 					<slot name="icon" :node="slotProps.node" />
 				</template>

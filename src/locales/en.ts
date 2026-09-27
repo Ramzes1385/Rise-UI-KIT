@@ -258,5 +258,6 @@ export const en: UiKitLocale = {
 	plural: {
 		DATES_SELECTED: { one: '{n} date selected', other: '{n} dates selected' },
 		PARTICIPANTS: { one: '{n} member', other: '{n} members' },
+		SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 	},
 }

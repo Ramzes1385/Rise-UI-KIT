@@ -12,6 +12,8 @@ export interface BaseSearchInputProps {
 	isLoading: boolean
 	inputClass?: string | Record<string, string | undefined>
 	classes: Record<string, string | undefined>
+	/** ARIA-атрибуты поля как combobox (role, aria-expanded, aria-controls, aria-activedescendant): ставятся на <input> */
+	comboboxAttributes?: Record<string, string | undefined>
 }
 
 export interface BaseSearchInputEmits {

@@ -40,6 +40,15 @@ describe('useTriggerAttributes', () => {
 		expect(button).not.toHaveAttribute('id')
 	})
 
+	it('иконка SVG с <use href> перед полем — не триггер: атрибуты получает поле', () => {
+		const { container } = mountTrigger(
+			() => ({ role: 'combobox' }),
+			() => [h('svg', [h('use', { href: '#search' })]), h('input', { type: 'text' })],
+		)
+		expect(container.value?.querySelector('input')).toHaveAttribute('role', 'combobox')
+		expect(container.value?.querySelector('use')).not.toHaveAttribute('role')
+	})
+
 	it('свой id элемента сохраняется; без фокусируемого — первый дочерний элемент', () => {
 		const { container, api } = mountTrigger(
 			() => ({ 'aria-haspopup': 'dialog' }),

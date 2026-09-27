@@ -16,5 +16,7 @@ export interface UseTreeStateResult {
 	expandedSet: ComputedRef<Set<string>>
 	selectedSet: ComputedRef<Set<string>>
 	toggleNode: (id: string) => void
+	/** Раскрыть несколько узлов разом */
+	expandNodes: (ids: string[]) => void
 	selectNode: (id: string) => void
 }

@@ -225,6 +225,63 @@ describe('BaseSelect integration', () => {
 			expect(trigger).toHaveFocus()
 		})
 
+		it('Home и End на закрытом списке открывают его на первой и последней доступной опции', async () => {
+			const user = userEvent.setup()
+			render(BaseSelect, { props: { modelValue: '', options: OPTIONS, label: 'Материал' } })
+			const trigger = screen.getByRole('combobox', { name: 'Материал' })
+
+			await user.tab()
+			await user.keyboard('{End}')
+			expect(trigger).toHaveAttribute('aria-expanded', 'true')
+			expect(trigger).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Камень' }).id)
+
+			await user.keyboard('{Escape}')
+			await user.keyboard('{Home}')
+			expect(trigger).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Металл' }).id)
+		})
+
+		it('буквы открывают список и ищут опцию по началу подписи; повтор буквы — следующая, пробел — часть слова', async () => {
+			vi.useFakeTimers()
+			const options: BaseSelectOption[] = [
+				{ value: 'metal', label: 'Металл' },
+				{ value: 'wood', label: 'Дерево' },
+				{ value: 'stone', label: 'Камень' },
+				{ value: 'ceramic', label: 'Керамика', isDisabled: true },
+				{ value: 'clay', label: 'Кирпич' },
+				{ value: 'dark-wood', label: 'Дерево тёмное' },
+			]
+			const { emitted } = render(BaseSelect, { props: { modelValue: '', options, label: 'Материал' } })
+			const trigger = screen.getByRole('combobox', { name: 'Материал' })
+			trigger.focus()
+			const activeLabel = () => document.getElementById(trigger.getAttribute('aria-activedescendant') ?? '')?.textContent?.trim()
+
+			await fireEvent.keyDown(trigger, { key: 'к' })
+			expect(trigger).toHaveAttribute('aria-expanded', 'true')
+			expect(activeLabel()).toBe('Камень')
+			await fireEvent.keyDown(trigger, { key: 'к' })
+			// Керамика отключена и пропускается
+			expect(activeLabel()).toBe('Кирпич')
+			vi.advanceTimersByTime(600)
+
+			for (const key of ['д', 'е', 'р', 'е', 'в', 'о', ' ', 'т']) await fireEvent.keyDown(trigger, { key })
+			expect(activeLabel()).toBe('Дерево тёмное')
+			expect(emitted()['update:modelValue']).toBeUndefined()
+			vi.advanceTimersByTime(600)
+
+			await fireEvent.keyDown(trigger, { key: 'я' })
+			expect(activeLabel()).toBe('Дерево тёмное')
+			await fireEvent.keyDown(trigger, { key: 'c', ctrlKey: true })
+			expect(activeLabel()).toBe('Дерево тёмное')
+			vi.useRealTimers()
+		})
+
+		it('в поле с поиском буквы на триггере не ищут', async () => {
+			render(BaseSelect, { props: { modelValue: '', options: OPTIONS, label: 'Материал', isSearchable: true } })
+			const trigger = screen.getByRole('combobox', { name: 'Материал' })
+			await fireEvent.keyDown(trigger, { key: 'к' })
+			expect(trigger).toHaveAttribute('aria-expanded', 'false')
+		})
+
 		it('при открытии активна выбранная опция', async () => {
 			const user = userEvent.setup()
 			render(BaseSelect, { props: { modelValue: 'wood', options: OPTIONS, label: 'Материал' } })

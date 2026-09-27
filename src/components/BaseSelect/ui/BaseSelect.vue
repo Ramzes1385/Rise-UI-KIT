@@ -267,6 +267,8 @@ const {
 	moveActive,
 	setActiveEdge,
 	setActive,
+	typeaheadActive,
+	isTypingAhead,
 	removeValue,
 } = useSelect({
 	props,
@@ -281,12 +283,25 @@ function focusTrigger(): void {
 	if (!props.isDisabled) selectRef.value?.focus()
 }
 
+/** Печатный символ без модификаторов — для поиска по буквам */
+function isPrintableKey(event: KeyboardEvent): boolean {
+	return event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey
+}
+
 /**
- * Клавиатура на триггере: Enter/Space открывают список или выбирают активную опцию, стрелки открывают список
- * и двигают активную опцию, Home/End — к первой/последней, Tab закрывает список. Escape закрывает BaseDropdown.
+ * Клавиатура на триггере по APG «select-only combobox»: Enter/Space открывают список или выбирают активную опцию,
+ * стрелки открывают список и двигают активную опцию, Home/End открывают список на первой/последней опции,
+ * буквы открывают список и ищут опцию по началу подписи (без поля поиска), Tab закрывает список.
+ * Escape закрывает BaseDropdown.
  */
 function handleTriggerKeydown(event: KeyboardEvent): void {
 	if (props.isDisabled) return
+	// Пробел посреди набираемого слова — часть поиска, а не выбор
+	if (event.key === ' ' && isTypingAhead()) {
+		event.preventDefault()
+		typeaheadActive(' ')
+		return
+	}
 	switch (event.key) {
 		case 'Enter':
 		case ' ':
@@ -302,13 +317,18 @@ function handleTriggerKeydown(event: KeyboardEvent): void {
 			break
 		case 'Home':
 		case 'End':
-			if (!isOpen.value) return
 			event.preventDefault()
+			openDropdown()
 			setActiveEdge(event.key === 'Home' ? 'first' : 'last')
 			break
 		case 'Tab':
 			if (isOpen.value) closeDropdown()
 			break
+		default:
+			if (props.isSearchable || !isPrintableKey(event)) return
+			event.preventDefault()
+			openDropdown()
+			typeaheadActive(event.key)
 	}
 }
 

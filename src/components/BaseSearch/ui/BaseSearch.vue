@@ -18,6 +18,9 @@
 			:highlighted-index="highlightedIndex"
 			:should-show-results="shouldShowResults"
 			:classes="classes"
+			:listbox-id="listboxId"
+			:combobox-attributes="comboboxAttributes"
+			:results-status="resultsStatus"
 			:color="color"
 			:custom-class="customClass"
 			@update:model-value="handleInput"
@@ -74,6 +77,7 @@
 				:has-clear="hasClear"
 				:is-loading="isLoading"
 				:classes="classes"
+				:combobox-attributes="comboboxAttributes"
 				class="base-search__trigger"
 				@update:model-value="handleInput"
 				@keydown="handleKeydown"
@@ -89,6 +93,8 @@
 					:size-scale="sizeScale"
 					:highlighted-index="highlightedIndex"
 					:classes="classes"
+					:listbox-id="listboxId"
+					:listbox-label="resolvedPlaceholder"
 					@select="handleSelect"
 					@highlight="highlightedIndex = $event">
 					<template #result="slotProps">
@@ -112,19 +118,23 @@
 				</BaseSearchResults>
 			</template>
 		</BaseDropdown>
+		<!-- Статус для скринридера: число результатов или «Ничего не найдено» -->
+		<span class="base-search__live" role="status">{{ resultsStatus }}</span>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
+import { getLocale, pluralize } from '@/locales/state'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { useSearchState } from '@composables/useSearchState'
 import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import BaseSearchInput from './BaseSearchInput.vue'
+import { getSearchOptionId } from '../model/BaseSearch.types'
 import '../styles/BaseSearch.style.scss'
+import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
 import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../model/BaseSearch.types'
@@ -239,6 +249,30 @@ const {
 	},
 	focusActiveInput,
 	closeOverlay,
+})
+
+const listboxId = `rise-search-${useId()}-listbox`
+
+/** Список результатов на экране: в режиме по умолчанию — открытая панель, в окне и панели — блок результатов */
+const hasListbox = computed((): boolean => {
+	const isShown = props.mode === 'modal' || props.mode === 'sidebar' ? shouldShowResults.value && Boolean(query.value) : isOpen.value
+	return isShown && visibleResults.value.length > 0
+})
+
+/** Поле — combobox по APG «combobox with listbox popup»: фокус в поле, подсвеченный результат — aria-activedescendant */
+const comboboxAttributes = computed(() => ({
+	role: 'combobox',
+	'aria-autocomplete': 'list',
+	'aria-expanded': hasListbox.value ? 'true' : 'false',
+	'aria-controls': hasListbox.value ? listboxId : undefined,
+	'aria-activedescendant': hasListbox.value && highlightedIndex.value >= 0 ? getSearchOptionId(listboxId, highlightedIndex.value) : undefined,
+}))
+
+/** Статус для скринридера: сколько найдено по запросу; пока идёт загрузка — пусто */
+const resultsStatus = computed((): string => {
+	if (!query.value || props.isLoading) return ''
+	const count = visibleResults.value.length
+	return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
 })
 
 defineExpose({

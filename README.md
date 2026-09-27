@@ -86,6 +86,15 @@
 - Окна, панели и подсказки монтируют телепорт после приложения (`defer`): контейнер слоёв может стоять в том же шаблоне, что и меню.
 - Подробности — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Меню и тултипы».
 
+**Выбор и дерево**
+
+- `BaseSelect`: закрытое поле открывается буквой и сразу подсвечивает опцию по началу подписи (повтор буквы — следующая опция, пробел во время поиска — часть слова); Home/End открывают список на первой и последней опции. В поле с поиском (`isSearchable`) буквы вводятся в поле.
+- `BaseSearch`: поле — `role="combobox"` со списком результатов `role="listbox"` (`aria-expanded`, `aria-controls`, `aria-activedescendant` подсвеченного результата); число найденного объявляется через `role="status"` («Найдено 3 результата»).
+- `BaseTree` по образцу APG Tree View: корень — `role="tree"` (имя — новый проп `ariaLabel`), узлы — `treeitem` с `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded`; выбор — `aria-selected` (single) или `aria-checked` (multiple). В порядке Tab один узел; по дереву — стрелки, Home/End, `*` (раскрыть соседей), буквы (поиск по началу подписи), Enter и пробел. Ветки раскрываются с клавиатуры и в режимах выбора.
+- `BaseTree`: флажок в режиме `multiple` — только вид (`inert`): не получает фокус и не объявляется отдельно, клик по нему — клик по узлу.
+- `BaseTree`: узел с `to` или `href` — ссылка `BaseLink` (у узла новое поле `target`). Клик по подписи и Enter переходят по ней, в режиме `single` узел становится выбранным; раскрытие не меняется.
+- Подробности — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Выбор и дерево».
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -100,7 +109,7 @@
 - `BaseNotification`: контейнер — регион с именем; error — `role="alert"`, остальные — `role="status"`.
 - `BaseLoader`: доступное имя берётся из `label`. `BaseProgress`: новый проп `ariaLabel`, в неопределённом режиме нет `aria-valuenow`, некорректный `max` не даёт «NaN». `BaseSeparator`: `role="separator"` в обеих ориентациях, подпись связана через `aria-labelledby`.
 - `BaseFileUpload`: зона загрузки — кнопка (Enter/Space), подпись связана с полем; при `isDisabled` зона вне порядка Tab и не принимает drop.
-- `BaseTable`: сортируемые заголовки — кнопки с `aria-sort`, сортировка с клавиатуры. `BaseTree`: элементы свёрнутых веток не достижимы по Tab.
+- `BaseTable`: сортируемые заголовки — кнопки с `aria-sort`, сортировка с клавиатуры. `BaseTree`: элементы свёрнутых веток не достижимы по Tab (клавиатура дерева — в разделе «Выбор и дерево»).
 - `BaseDatePicker`: Enter/↓ в поле открывают календарь с фокусом на выбранной дате; после выбора даты с клавиатуры и по Escape фокус возвращается в поле; у кнопок есть имена. `BaseCalendar`: имена у кнопок навигации.
 - `BaseImageZoom`: оверлей — модальный диалог, у кнопок управления есть имена.
 
@@ -553,6 +562,8 @@ const options = [
 	<BaseSelect v-model="selected" :options="options" placeholder="Выберите статус" />
 </template>
 ```
+
+Клавиатура по образцу APG (combobox со списком): ↓/↑, Enter и пробел открывают список, Home/End — первая и последняя опция, буквы — опция по началу подписи, Escape закрывает список.
 
 ---
 
@@ -1334,6 +1345,8 @@ async function handleSearch(value: string): Promise<void> {
 </template>
 ```
 
+Поле поиска — `role="combobox"`, результаты — `role="listbox"`: ↓/↑ подсвечивают результат (`aria-activedescendant`), Enter открывает его. Сколько найдено, скринридер слышит из скрытой области `role="status"`.
+
 ---
 
 ## BaseDatePicker
@@ -1495,6 +1508,29 @@ const nodes = [
 ```
 
 Выбор узлов включается `selection-mode` (`'single'` / `'multiple'`), раскрытые и выбранные узлы доступны через `v-model:expanded-ids` / `v-model:selected-ids`.
+
+Клавиатура по образцу APG Tree View: в порядке Tab один узел дерева; ↓/↑ — соседний видимый узел, → — раскрыть или перейти к первому вложенному, ← — свернуть или перейти к родителю, Home/End, `*` — раскрыть все ветки уровня, буквы — узел по началу подписи, Enter — действие узла, пробел — выбор. Имя дерева для скринридера — `aria-label`.
+
+Узел с `to` (маршрут) или `href` (внешний адрес) — ссылка: маршрут открывает RouterLink приложения или `linkComponent` плагина. Клик по подписи и Enter переходят по ссылке, в режиме `single` узел становится выбранным:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseTree } from '@ramzes1385/rise-ui-kit'
+import type { TreeNode } from '@ramzes1385/rise-ui-kit'
+
+const current = ref(['intro'])
+const pages: TreeNode[] = [
+	{ id: 'intro', label: 'Введение', to: '/docs/intro' },
+	{ id: 'guide', label: 'Руководство', to: '/docs/guide', children: [{ id: 'install', label: 'Установка', to: '/docs/install' }] },
+	{ id: 'source', label: 'Исходный код', href: 'https://github.com/…', target: '_blank' },
+]
+</script>
+
+<template>
+	<BaseTree v-model:selected-ids="current" :items="pages" selection-mode="single" aria-label="Документация" />
+</template>
+```
 
 ---
 

@@ -7,6 +7,10 @@ export interface BaseSearchResultsProps {
 	sizeScale: number
 	highlightedIndex: number
 	classes: Record<string, string | undefined>
+	/** id списка результатов: на него ссылаются aria-controls поля и id опций (aria-activedescendant) */
+	listboxId?: string
+	/** Имя списка результатов для скринридера */
+	listboxLabel?: string
 }
 
 export interface BaseSearchResultsEmits {

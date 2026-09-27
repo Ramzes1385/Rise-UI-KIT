@@ -269,14 +269,18 @@ export const Disabled: Story = {
 	},
 }
 
-/** Ничего не найдено: в панели — текст из слота `empty` (по умолчанию «Ничего не найдено»). */
+/**
+ * Ничего не найдено: в панели — текст из слота `empty` (по умолчанию «Ничего не найдено»). Скринридер слышит то же
+ * из скрытой области `role="status"`.
+ */
 export const Empty: Story = {
 	args: { modelValue: 'Трейлер' },
 	parameters: { docs: docsFrame(200) },
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
-		const empty = await screen.findByText('Ничего не найдено')
+		const empty = await screen.findByText('Ничего не найдено', { ignore: 'script, style, [role="status"]' })
 		await waitFor(() => expect(empty).toBeVisible())
+		await expect(canvas.getByRole('status')).toHaveTextContent('Ничего не найдено')
 	},
 }
 

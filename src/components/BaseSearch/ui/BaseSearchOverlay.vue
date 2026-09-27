@@ -48,6 +48,7 @@
 							:is-loading="isLoading"
 							:input-class="inputClass"
 							:classes="classes"
+							:combobox-attributes="comboboxAttributes"
 							@update:model-value="emit('update:modelValue', $event)"
 							@keydown="emit('keydown', $event)"
 							@clear="emit('clear')" />
@@ -61,6 +62,7 @@
 							<BaseIcon name="close" :custom-class="closeIconCustomClass" :size-scale="sizeScale" />
 						</BaseButton>
 					</div>
+					<span class="base-search__live" role="status">{{ resultsStatus }}</span>
 					<div v-if="shouldShowResults && modelValue" :class="resultsClass">
 						<BaseSearchResults
 							:visible-results="visibleResults"
@@ -69,6 +71,8 @@
 							:size-scale="sizeScale"
 							:highlighted-index="highlightedIndex"
 							:classes="classes"
+							:listbox-id="listboxId"
+							:listbox-label="searchPlaceholder"
 							@select="emit('select', $event)"
 							@highlight="emit('highlight', $event)">
 							<template #result="slotProps">

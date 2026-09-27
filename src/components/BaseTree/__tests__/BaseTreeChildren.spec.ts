@@ -53,7 +53,7 @@ describe('BaseTreeNode', () => {
 
 		expect(() =>
 			render(BaseTreeNode, {
-				props: { node: { id: 'x', label: 'X' }, depth: 0, sizeScale: 100 },
+				props: { node: { id: 'x', label: 'X' }, depth: 0, setSize: 1, posInSet: 1, sizeScale: 100 },
 			}),
 		).toThrow('BaseTreeNode: TreeContext not found')
 		errorSpy.mockRestore()
