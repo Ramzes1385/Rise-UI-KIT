@@ -109,6 +109,7 @@ const preview: Preview = {
 					'Form',
 					'Data',
 					'Navigation',
+					'Layout',
 					'Overlay',
 					'Chat',
 					'Editor',

@@ -1,0 +1,33 @@
+// BaseInfiniteScroll: под списком — строка состояния высотой от 48px при sizeScale = 100: индикатор, текст 14px
+// приглушённого цвета и кнопка («Повторить» или «Загрузить еще»). Метка конца списка — нулевой высоты.
+.base-infinite-scroll {
+	display: flex;
+	flex-direction: column;
+
+	&__sentinel {
+		height: 1px;
+		margin-top: -1px;
+		pointer-events: none;
+	}
+
+	&__footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: sz(8px) sz(12px);
+		min-height: sz(48px);
+		padding-block: sz(8px);
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+	}
+
+	&__footer--empty {
+		min-height: 0;
+		padding-block: 0;
+	}
+
+	&__loader {
+		flex: none;
+	}
+}

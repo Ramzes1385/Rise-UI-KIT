@@ -106,6 +106,7 @@
 **Новые поля**
 
 - `BaseKbd`, `BaseTimeline`, `BaseAvatarGroup`, `BaseUser`, `BaseButtonGroup`, `BaseSplitButton`, `BaseToolbar` (APG Toolbar), `BaseFab`, `BaseInplace` — отображение и действия (порция 2.2).
+- `BaseLayout`, `BaseHeader`, `BaseFooter`, `BaseContainer` — каркас страницы со ссылкой «Перейти к содержимому»; `BaseSplitter` (APG Window Splitter), `BaseScrollArea`, `BaseDrawer`, `BaseBackTop`, `BaseInfiniteScroll` — каркас и прокрутка (порция 2.3).
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
 
 **Доступность и клавиатура**
@@ -542,6 +543,17 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ```vue
 <BaseFab label="Новая задача" icon="plus" @click="createTask" />
+```
+
+---
+
+## BaseBackTop
+
+Кнопка «Наверх» (BaseFab): появляется после прокрутки на `visibility-height` и возвращает окно или контейнер (`target`) к началу — плавно, если пользователь не включил уменьшение движения. После прокрутки фокус переходит в контейнер или в `<main>` страницы (`focus-target` — своё место).
+
+```vue
+<BaseBackTop :visibility-height="600" />
+<BaseBackTop target="#feed" is-contained label="К началу ленты" is-extended />
 ```
 
 ---
@@ -988,6 +1000,20 @@ const isOpen = ref(false)
 
 ---
 
+## BaseDrawer
+
+Выдвижная панель у края окна: нижний лист (`direction="bottom"`), сверху или сбоку. Модальный диалог: имя из `title`, описание из `description`, фокус заперт внутри и возвращается к кнопке. Закрывают кнопка «Закрыть», Escape, клик по затемнению и перетаскивание за ручку или шапку к краю (`is-draggable`).
+
+```vue
+<BaseButton @click="isOpen = true">Фильтры</BaseButton>
+<BaseDrawer v-model:is-open="isOpen" title="Фильтры" description="Заказы за сентябрь">
+	<BaseCheckboxGroup v-model="statuses" :options="options" label="Статус" is-vertical />
+	<template #footer><BaseButton @click="isOpen = false">Показать</BaseButton></template>
+</BaseDrawer>
+```
+
+---
+
 ## BaseDropdown
 
 Выпадающее меню.
@@ -1175,6 +1201,30 @@ const page = ref(1)
 <template>
 	<BasePagination v-model="page" :total="100" :page-size="10" />
 </template>
+```
+
+---
+
+## BaseInfiniteScroll
+
+Бесконечная прокрутка: событие `load` приходит, когда конец списка подходит к краю окна или контейнера (`root`), и несёт `done` — итог подгрузки: `ok`, `empty` (конец списка) или `error` (кнопка «Повторить»). Пока идёт загрузка — `aria-busy`, состояние объявляет `role="status"`. `mode="manual"` — подгрузка кнопкой «Загрузить еще»; `reset()` через ref — начать заново после смены фильтра.
+
+```vue
+<BaseInfiniteScroll @load="loadMore">
+	<OrderRow v-for="order in orders" :key="order.id" :order="order" />
+</BaseInfiniteScroll>
+
+<script setup lang="ts">
+async function loadMore({ done }: InfiniteScrollLoadEvent) {
+	try {
+		const page = await api.orders(orders.value.length)
+		orders.value.push(...page)
+		done(page.length < 20 ? 'empty' : 'ok')
+	} catch {
+		done('error')
+	}
+}
+</script>
 ```
 
 ---
@@ -1864,6 +1914,85 @@ function handleSelect(item: BaseMenuItem): void {
 
 ---
 
+## BaseLayout
+
+Каркас страницы на всю высоту окна: слоты `header`, `sidebar`, default (содержимое в `<main>`) и `footer`. Первая остановка Tab — ссылка «Перейти к содержимому» (видна только в фокусе) переносит фокус в `<main>`. Шапка прилипает к верху (`is-header-sticky`), боковое меню стоит под ней и прокручивается отдельно, подвал прижат к низу окна. На экране уже 768px боковое меню скрыто — положите навигацию в слот `menu` у BaseHeader.
+
+```vue
+<BaseLayout>
+	<template #header><BaseHeader title="Rise CRM" to="/" /></template>
+	<template #sidebar><BaseSideBar :items="menu" /></template>
+	<BaseContainer><RouterView /></BaseContainer>
+	<template #footer><BaseFooter>© 2026 Rise</BaseFooter></template>
+</BaseLayout>
+```
+
+---
+
+## BaseHeader
+
+Шапка (`<header>`, ориентир banner): название `title` (ссылка при `to` / `href`) или слот `start`, навигация в слоте по умолчанию, действия в слоте `end`. Слот `menu` — меню для узкого экрана: ниже 768px навигация прячется, а кнопка «Меню» открывает меню в BaseDrawer; слот получает `close`.
+
+```vue
+<BaseHeader title="Rise CRM" to="/" container-size="xl">
+	<nav aria-label="Основное"><BaseLink to="/orders">Заказы</BaseLink></nav>
+	<template #end><BaseColorModeButton /></template>
+	<template #menu="{ close }">
+		<BaseLink to="/orders" @click="close">Заказы</BaseLink>
+	</template>
+</BaseHeader>
+```
+
+---
+
+## BaseFooter
+
+Подвал (`<footer>`, ориентир contentinfo): слоты `start`, по умолчанию и `end`; на узком экране зоны встают столбиком. `container-size` — ширина содержимого, как у BaseContainer.
+
+```vue
+<BaseFooter container-size="xl">
+	<template #start>© 2026 Rise Studio</template>
+	<BaseLink href="/terms">Условия</BaseLink>
+</BaseFooter>
+```
+
+---
+
+## BaseContainer
+
+Контейнер страницы: ограничивает ширину (`size`: `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px, `full`), центрирует содержимое и даёт боковые отступы, растущие с экраном.
+
+```vue
+<BaseContainer size="lg" tag="section">…</BaseContainer>
+```
+
+---
+
+## BaseSplitter
+
+Две панели с разделителем по образцу APG Window Splitter: `v-model` — размер первой панели в процентах, `min` / `max` — границы, `change` — итог. Разделитель — `role="separator"`; стрелки двигают его на `step`, Home/End — к границам, Enter сворачивает первую панель и возвращает её. `orientation="vertical"` — панели одна над другой.
+
+```vue
+<BaseSplitter v-model="listSize" :min="20" :max="60" label="Список писем" @change="saveLayout">
+	<template #start><MailList /></template>
+	<template #end><MailView /></template>
+</BaseSplitter>
+```
+
+---
+
+## BaseScrollArea
+
+Область прокрутки с тонкой полосой поверх содержимого, одинаковой во всех системах. Прокручивает родной элемент (колесо, касание, клавиатура работают как обычно), область с прокруткой получает tabindex="0". `orientation`: `vertical`, `horizontal`, `both`; `max-height`; `scrollbar`: `hover` или `always`; `aria-label` делает область ориентиром. Методы через ref: `scrollTo`, `scrollToTop`, `scrollToBottom`, `update`.
+
+```vue
+<BaseScrollArea :max-height="320" aria-label="Журнал склада">
+	<LogRow v-for="row in rows" :key="row.id" :row="row" />
+</BaseScrollArea>
+```
+
+---
+
 ## BaseSideBar
 
 Боковая панель навигации.
@@ -2057,6 +2186,7 @@ BaseAnimation
 BaseAutocomplete
 BaseAvatar
 BaseAvatarGroup
+BaseBackTop
 BaseBadge
 BaseBreadcrumbs
 BaseButton
@@ -2069,23 +2199,29 @@ BaseCheckboxGroup
 BaseChip
 BaseColorPicker
 BaseConfirm
+BaseContainer
 BaseContextMenu
 BaseDatePicker
+BaseDrawer
 BaseDropdown
 BaseDropdownMenu
 BaseEditor
 BaseEmpty
 BaseFab
 BaseFileUpload
+BaseFooter
 BaseForm
 BaseFormField
+BaseHeader
 BaseIcon
 BaseImage
+BaseInfiniteScroll
 BaseInplace
 BaseInput
 BaseInputNumber
 BaseInputTags
 BaseKbd
+BaseLayout
 BaseLoader
 BaseMegaMenu
 BaseMenu
@@ -2099,6 +2235,7 @@ BaseProgress
 BaseRadio
 BaseRange
 BaseRating
+BaseScrollArea
 BaseSearch
 BaseSegmented
 BaseSelect
@@ -2108,6 +2245,7 @@ BaseSkeleton
 BaseSlideover
 BaseSlider
 BaseSplitButton
+BaseSplitter
 BaseStepper
 BaseSwitch
 BaseTable

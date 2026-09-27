@@ -1,0 +1,86 @@
+// BaseLayout: каркас страницы на всю высоту окна. Шапка сверху (прилипает при isHeaderSticky), под ней — боковое меню
+// и колонка содержимого; подвал в конце колонки прижат к низу окна. На экране уже 768px боковое меню скрыто
+// (isSidebarVisibleOnMobile — оставить). Ссылка «Перейти к содержимому» видна только в фокусе.
+.base-layout {
+	--base-layout-sticky-top: 0px;
+
+	display: flex;
+	flex-direction: column;
+	min-height: 100dvh;
+
+	&--sticky-header {
+		--base-layout-sticky-top: var(--base-layout-header-height, 0px);
+	}
+
+	&__skip-link {
+		&:not(:focus) {
+			@include visually-hidden;
+		}
+
+		&:focus {
+			position: fixed;
+			top: sz(8px);
+			left: sz(8px);
+			z-index: calc(var(--rise-z-overlay) - 1);
+			padding: sz(8px) sz(16px);
+			border-radius: sz(var(--rise-radius-md));
+			background-color: var(--rise-primary);
+			color: var(--rise-on-primary);
+			@include text-size(sm);
+			font-weight: 600;
+			text-decoration: none;
+			box-shadow: var(--rise-shadow-lg);
+		}
+
+		@include focus-ring;
+	}
+
+	&--sticky-header &__header {
+		position: sticky;
+		top: 0;
+		z-index: calc(var(--rise-z-overlay) - 2);
+	}
+
+	&__body {
+		display: flex;
+		flex: 1 0 auto;
+	}
+
+	&__sidebar {
+		position: sticky;
+		top: var(--base-layout-sticky-top);
+		display: flex;
+		flex-direction: column;
+		align-self: flex-start;
+		height: calc(100dvh - var(--base-layout-sticky-top));
+		overflow-y: auto;
+		@include scrollbar-thin;
+
+		@media (max-width: 767.98px) {
+			display: none;
+		}
+	}
+
+	&--mobile-sidebar &__sidebar {
+		@media (max-width: 767.98px) {
+			display: flex;
+		}
+	}
+
+	&__content {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__main {
+		flex: 1 0 auto;
+		scroll-margin-top: var(--base-layout-sticky-top);
+
+		// Фокус на <main> ставит только ссылка «Перейти к содержимому»: рамка вокруг всей страницы не нужна
+		&:focus {
+			outline: none;
+		}
+	}
+}

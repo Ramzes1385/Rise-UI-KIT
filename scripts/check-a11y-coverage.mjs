@@ -54,6 +54,13 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseToolbar',
   'BaseFab',
   'BaseInplace',
+  'BaseLayout',
+  'BaseHeader',
+  'BaseSplitter',
+  'BaseScrollArea',
+  'BaseDrawer',
+  'BaseBackTop',
+  'BaseInfiniteScroll',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -76,6 +83,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
   'BaseToolbar',
   'BaseFab',
   'BaseInplace',
+  'BaseSplitter',
 ])
 
 /** Формовые компоненты, требующие story Error */

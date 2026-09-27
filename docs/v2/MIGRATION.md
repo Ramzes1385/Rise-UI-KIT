@@ -339,6 +339,22 @@
 - `BaseInplace` — правка текста на месте: v-model, `label`, `placeholder`, `isSaveOnBlur`, события `save` и `cancel`, методы `edit`, `save`, `cancel`.
 - Строки словаря (ru, en): `aria.KEY_*` (названия клавиш), `aria.AVATARS_MORE`, `aria.MORE_ACTIONS`, `aria.INPLACE_HINT`.
 
+## Каркас и прокрутка (порция 2.3)
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseLayout` — каркас страницы: слоты `header`, `sidebar`, default (`<main>`), `footer`; ссылка «Перейти к содержимому» (`hasSkipLink`, `skipLinkLabel`, `mainId`), `isHeaderSticky`, `isSidebarVisibleOnMobile`.
+- `BaseHeader` — шапка (`<header>`): `title` и `to`/`href`, слоты `start`, default, `end`; слот `menu` — меню для узкого экрана в BaseDrawer (`menuLabel`, `menuDirection`), методы `openMenu`, `closeMenu`; `isSticky`, `containerSize`, варианты `default`, `soft`, `ghost`.
+- `BaseFooter` — подвал (`<footer>`): слоты `start`, default, `end`; `containerSize`, варианты `default`, `soft`, `ghost`.
+- `BaseContainer` — ширина содержимого: `size` (`sm`…`xl`, `full`), `tag`.
+- `BaseSplitter` — две панели по образцу APG Window Splitter: v-model (размер первой панели, %), `orientation`, `min`, `max`, `step`, `label`, `isDisabled`, событие `change`.
+- `BaseScrollArea` — область прокрутки со своей полосой: `orientation`, `maxHeight`, `scrollbar` (`hover`/`always`), `ariaLabel`; методы `scrollTo`, `scrollToTop`, `scrollToBottom`, `update`, `getViewport`.
+- `BaseDrawer` — выдвижная панель: `v-model:isOpen`, `title`, `description`, `ariaLabel`, `direction`, `hasHandle`, `isDraggable`, `closeOnOverlay`, `closeOnEscape`, `hasOverlay`, слоты `header`, `footer`.
+- `BaseBackTop` — кнопка «Наверх» на BaseFab: `target`, `visibilityHeight`, `focusTarget`, `label`, `icon`, `isExtended`, `position`, `isContained`.
+- `BaseInfiniteScroll` — бесконечная прокрутка: событие `load` с `done('ok' | 'empty' | 'error')`, `mode` (`intersect`/`manual`), `root`, `distance`, тексты состояния; методы `reset`, `load`.
+- Строки словаря (ru, en): `text.NO_MORE_ITEMS`, `text.LOAD_ERROR`, `text.RETRY`, `text.SKIP_TO_CONTENT`, `aria.MENU`, `aria.BACK_TO_TOP`, `aria.SPLITTER`.
+- Storybook: новый раздел Layout.
+
 ## Новые утилиты
 
 | Функция | Назначение |

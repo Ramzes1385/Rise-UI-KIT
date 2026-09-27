@@ -1,0 +1,82 @@
+// BaseHeader: шапка высотой 64px при sizeScale = 100; три зоны — начало (название), середина (навигация), конец
+// (действия). Варианты: default — фон страницы и линия снизу, soft — приглушённый фон, ghost — прозрачная.
+// Со слотом menu на экране уже 768px середина скрыта, вместо неё — кнопка «Меню».
+.base-header {
+	box-sizing: border-box;
+	width: 100%;
+	border-bottom: 1px solid var(--rise-border);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+	@include text-size(sm);
+
+	&--soft {
+		border-bottom-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--ghost {
+		border-bottom-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--sticky {
+		position: sticky;
+		top: 0;
+		z-index: calc(var(--rise-z-overlay) - 2);
+	}
+
+	&__inner {
+		display: flex;
+		align-items: center;
+		gap: sz(16px);
+		min-height: sz(64px);
+	}
+
+	&__start {
+		display: flex;
+		flex: 1 1 0;
+		align-items: center;
+		gap: sz(8px);
+		min-width: 0;
+	}
+
+	&__title {
+		@include text-size(md);
+		font-weight: 600;
+		color: inherit;
+		text-decoration: none;
+		@include truncate;
+	}
+
+	&__center {
+		display: flex;
+		flex: 0 1 auto;
+		align-items: center;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__end {
+		display: flex;
+		flex: 1 1 0;
+		align-items: center;
+		justify-content: flex-end;
+		gap: sz(8px);
+	}
+
+	&__toggle {
+		display: none;
+	}
+
+	&--has-menu &__center {
+		@media (max-width: 767.98px) {
+			display: none;
+		}
+	}
+
+	&--has-menu &__toggle {
+		@media (max-width: 767.98px) {
+			display: inline-flex;
+		}
+	}
+}

@@ -10,6 +10,7 @@ import { BaseApp } from './components/BaseApp'
 import { BaseAutocomplete } from './components/BaseAutocomplete'
 import { BaseAvatar } from './components/BaseAvatar'
 import { BaseAvatarGroup } from './components/BaseAvatarGroup'
+import { BaseBackTop } from './components/BaseBackTop'
 import { BaseBadge } from './components/BaseBadge'
 import { BaseBreadcrumbs } from './components/BaseBreadcrumbs'
 import { BaseButton } from './components/BaseButton'
@@ -21,20 +22,26 @@ import { BaseChip } from './components/BaseChip'
 import { BaseColorModeButton } from './components/BaseColorModeButton'
 import { BaseColorPicker } from './components/BaseColorPicker'
 import { BaseConfirm } from './components/BaseConfirm'
+import { BaseContainer } from './components/BaseContainer'
 import { BaseContextMenu } from './components/BaseContextMenu'
+import { BaseDrawer } from './components/BaseDrawer'
 import { BaseDropdown } from './components/BaseDropdown'
 import { BaseDropdownMenu } from './components/BaseDropdownMenu'
 import { BaseEmpty } from './components/BaseEmpty'
 import { BaseFab } from './components/BaseFab'
+import { BaseFooter } from './components/BaseFooter'
 import { BaseForm } from './components/BaseForm'
 import { BaseFormField } from './components/BaseFormField'
+import { BaseHeader } from './components/BaseHeader'
 import { BaseIcon } from './components/BaseIcon'
 import { BaseImage } from './components/BaseImage'
+import { BaseInfiniteScroll } from './components/BaseInfiniteScroll'
 import { BaseInplace } from './components/BaseInplace'
 import { BaseInput } from './components/BaseInput'
 import { BaseInputNumber } from './components/BaseInputNumber'
 import { BaseInputTags } from './components/BaseInputTags'
 import { BaseKbd } from './components/BaseKbd'
+import { BaseLayout } from './components/BaseLayout'
 import { BaseLink } from './components/BaseLink'
 import { BaseLoader } from './components/BaseLoader'
 import { BaseMegaMenu } from './components/BaseMegaMenu'
@@ -49,6 +56,7 @@ import { BaseProgress } from './components/BaseProgress'
 import { BaseRadio } from './components/BaseRadio'
 import { BaseRange } from './components/BaseRange'
 import { BaseRating } from './components/BaseRating'
+import { BaseScrollArea } from './components/BaseScrollArea'
 import { BaseSearch } from './components/BaseSearch'
 import { BaseSegmented } from './components/BaseSegmented'
 import { BaseSelect } from './components/BaseSelect'
@@ -58,6 +66,7 @@ import { BaseSkeleton } from './components/BaseSkeleton'
 import { BaseSlideover } from './components/BaseSlideover'
 import { BaseSlider } from './components/BaseSlider'
 import { BaseSplitButton } from './components/BaseSplitButton'
+import { BaseSplitter } from './components/BaseSplitter'
 import { BaseStepper } from './components/BaseStepper'
 import { BaseSwitch } from './components/BaseSwitch'
 import { BaseTabs } from './components/BaseTabs'
@@ -131,6 +140,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseAutocomplete,
 	BaseAvatar,
 	BaseAvatarGroup,
+	BaseBackTop,
 	BaseBadge,
 	BaseBreadcrumbs,
 	BaseButton,
@@ -144,23 +154,29 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseColorModeButton,
 	BaseColorPicker,
 	BaseConfirm,
+	BaseContainer,
 	BaseContextMenu,
 	BaseDatePicker,
+	BaseDrawer,
 	BaseDropdown,
 	BaseDropdownMenu,
 	BaseEditor,
 	BaseEmpty,
 	BaseFab,
 	BaseFileUpload,
+	BaseFooter,
 	BaseForm,
 	BaseFormField,
+	BaseHeader,
 	BaseIcon,
 	BaseImage,
+	BaseInfiniteScroll,
 	BaseInplace,
 	BaseInput,
 	BaseInputNumber,
 	BaseInputTags,
 	BaseKbd,
+	BaseLayout,
 	BaseLink,
 	BaseLoader,
 	BaseMegaMenu,
@@ -175,6 +191,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseRadio,
 	BaseRange,
 	BaseRating,
+	BaseScrollArea,
 	BaseSearch,
 	BaseSegmented,
 	BaseSelect,
@@ -184,6 +201,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseSlideover,
 	BaseSlider,
 	BaseSplitButton,
+	BaseSplitter,
 	BaseStepper,
 	BaseSwitch,
 	BaseTable,

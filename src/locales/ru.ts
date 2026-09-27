@@ -17,6 +17,13 @@ export const ru = {
 		LOADING: 'Загрузка...',
 		LOADING_ARIA: 'Загрузка',
 		LOAD_MORE: 'Загрузить еще',
+		/** Конец списка BaseInfiniteScroll */
+		NO_MORE_ITEMS: 'Больше ничего нет',
+		/** Ошибка подгрузки BaseInfiniteScroll */
+		LOAD_ERROR: 'Не удалось загрузить',
+		RETRY: 'Повторить',
+		/** Первая ссылка BaseLayout: к основному содержимому мимо шапки и меню */
+		SKIP_TO_CONTENT: 'Перейти к содержимому',
 		IMAGE_ERROR: 'Ошибка загрузки',
 		FILE_STATUS_DONE: 'Загружено',
 		FILE_STATUS_ERROR: 'Ошибка',
@@ -122,6 +129,12 @@ export const ru = {
 		MORE_ACTIONS: 'Другие действия',
 		/** Подсказка кнопки BaseInplace */
 		INPLACE_HINT: 'Нажмите, чтобы изменить',
+		/** Кнопка меню в BaseHeader и заголовок выдвижного меню */
+		MENU: 'Меню',
+		/** Кнопка BaseBackTop */
+		BACK_TO_TOP: 'Наверх',
+		/** Разделитель BaseSplitter */
+		SPLITTER: 'Размер панелей',
 	},
 	tour: {
 		SKIP: 'Пропустить тур',

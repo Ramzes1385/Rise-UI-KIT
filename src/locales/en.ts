@@ -13,6 +13,13 @@ export const en: UiKitLocale = {
 		LOADING: 'Loading...',
 		LOADING_ARIA: 'Loading',
 		LOAD_MORE: 'Load more',
+		/** Конец списка BaseInfiniteScroll */
+		NO_MORE_ITEMS: 'No more items',
+		/** Ошибка подгрузки BaseInfiniteScroll */
+		LOAD_ERROR: 'Failed to load',
+		RETRY: 'Retry',
+		/** Первая ссылка BaseLayout: к основному содержимому мимо шапки и меню */
+		SKIP_TO_CONTENT: 'Skip to content',
 		IMAGE_ERROR: 'Failed to load',
 		FILE_STATUS_DONE: 'Uploaded',
 		FILE_STATUS_ERROR: 'Error',
@@ -102,6 +109,12 @@ export const en: UiKitLocale = {
 		AVATARS_MORE: 'and {n} more',
 		MORE_ACTIONS: 'More actions',
 		INPLACE_HINT: 'Click to edit',
+		/** Кнопка меню в BaseHeader и заголовок выдвижного меню */
+		MENU: 'Menu',
+		/** Кнопка BaseBackTop */
+		BACK_TO_TOP: 'Back to top',
+		/** Разделитель BaseSplitter */
+		SPLITTER: 'Resize panels',
 	},
 	tour: {
 		SKIP: 'Skip tour',

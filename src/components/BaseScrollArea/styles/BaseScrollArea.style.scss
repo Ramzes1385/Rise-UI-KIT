@@ -1,0 +1,90 @@
+// BaseScrollArea: родная прокрутка со скрытой системной полосой и своей полосой толщиной 10px (ползунок 6px) поверх
+// содержимого при sizeScale = 100. В режиме hover полосы видны при наведении, прокрутке, перетаскивании и фокусе,
+// в режиме always — всегда.
+.base-scroll-area {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+
+	&__viewport {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+		scrollbar-width: none;
+		@include focus-ring(-2px);
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	&--vertical &__viewport {
+		overflow-y: auto;
+	}
+
+	&--horizontal &__viewport {
+		overflow-x: auto;
+	}
+
+	&--both &__viewport {
+		overflow: auto;
+	}
+
+	&__bar {
+		position: absolute;
+		z-index: 1;
+		box-sizing: border-box;
+		padding: sz(2px);
+		opacity: 0;
+		touch-action: none;
+		@include transition(opacity);
+
+		&--y {
+			top: 0;
+			right: 0;
+			bottom: 0;
+			width: sz(10px);
+		}
+
+		&--x {
+			right: 0;
+			bottom: 0;
+			left: 0;
+			height: sz(10px);
+		}
+	}
+
+	&:hover &__bar,
+	&--active &__bar,
+	&--scrollbar-always &__bar,
+	&__viewport:focus-visible ~ &__bar {
+		opacity: 1;
+	}
+
+	&__thumb {
+		position: absolute;
+		border-radius: 999px;
+		background-color: var(--rise-border-accented);
+		@include transition-colors;
+
+		&:hover {
+			background-color: var(--rise-text-muted);
+		}
+	}
+
+	&__bar--y &__thumb {
+		right: sz(2px);
+		left: sz(2px);
+	}
+
+	&__bar--x &__thumb {
+		top: sz(2px);
+		bottom: sz(2px);
+	}
+
+	&--active &__thumb {
+		background-color: var(--rise-text-muted);
+	}
+}

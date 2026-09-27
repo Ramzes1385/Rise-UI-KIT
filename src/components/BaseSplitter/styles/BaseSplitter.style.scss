@@ -1,0 +1,126 @@
+// BaseSplitter: две панели и разделитель толщиной 9px (видимая линия 1px, ручка 4×24px) при sizeScale = 100.
+// Первая панель занимает долю --base-splitter-ratio от ширины (высоты) без разделителя, вторая — остаток. Варианты: default — линия с ручкой,
+// ghost — линия проявляется при наведении, в фокусе и при перетаскивании.
+.base-splitter {
+	--base-splitter-bar: #{sz(9px)};
+
+	display: flex;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+
+	&--vertical {
+		flex-direction: column;
+	}
+
+	&--dragging {
+		user-select: none;
+	}
+
+	&__pane {
+		box-sizing: border-box;
+		min-width: 0;
+		min-height: 0;
+		overflow: auto;
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+
+		&--start {
+			flex: 0 0 calc((100% - var(--base-splitter-bar)) * var(--base-splitter-ratio, 0.5));
+		}
+
+		&--end {
+			flex: 1 1 0;
+		}
+	}
+
+	&__separator {
+		position: relative;
+		display: flex;
+		flex: 0 0 var(--base-splitter-bar);
+		align-items: center;
+		justify-content: center;
+		outline: none;
+		touch-action: none;
+
+		// Линия разделителя
+		&::before {
+			position: absolute;
+			background-color: var(--rise-border);
+			content: '';
+			@include transition-colors;
+		}
+
+		@include focus-ring(-2px);
+	}
+
+	&--horizontal &__separator {
+		cursor: col-resize;
+
+		&::before {
+			top: 0;
+			bottom: 0;
+			left: 50%;
+			width: 1px;
+		}
+	}
+
+	&--vertical &__separator {
+		cursor: row-resize;
+
+		&::before {
+			top: 50%;
+			right: 0;
+			left: 0;
+			height: 1px;
+		}
+	}
+
+	&__handle {
+		position: relative;
+		border-radius: 999px;
+		background-color: var(--rise-border-accented);
+		@include transition-colors;
+	}
+
+	&--horizontal &__handle {
+		width: sz(4px);
+		height: sz(24px);
+	}
+
+	&--vertical &__handle {
+		width: sz(24px);
+		height: sz(4px);
+	}
+
+	&__separator:hover::before,
+	&__separator:focus-visible::before,
+	&--dragging &__separator::before {
+		background-color: var(--rise-primary);
+	}
+
+	&__separator:hover &__handle,
+	&--dragging &__handle {
+		background-color: var(--rise-primary);
+	}
+
+	&--ghost &__separator:not(:hover, :focus-visible)::before {
+		background-color: transparent;
+	}
+
+	&--ghost &__handle {
+		opacity: 0;
+	}
+
+	&--ghost &__separator:hover &__handle,
+	&--ghost &__separator:focus-visible &__handle,
+	&--ghost.base-splitter--dragging &__handle {
+		opacity: 1;
+	}
+
+	&--disabled &__separator {
+		cursor: default;
+		@include disabled-state;
+	}
+}

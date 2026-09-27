@@ -1,0 +1,43 @@
+// BaseFooter: подвал с отступами 24px по вертикали при sizeScale = 100, приглушённый текст 14px. Зоны: начало, середина,
+// конец — в строку, на экране уже 768px — столбиком. Варианты: default — линия сверху, soft — приглушённый фон, ghost — прозрачный.
+.base-footer {
+	box-sizing: border-box;
+	width: 100%;
+	border-top: 1px solid var(--rise-border);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text-muted));
+	@include text-size(sm);
+
+	&--soft {
+		border-top-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--ghost {
+		border-top-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(12px) sz(24px);
+		padding-block: sz(24px);
+
+		@media (max-width: 767.98px) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+
+	&__start,
+	&__center,
+	&__end {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px) sz(16px);
+	}
+}

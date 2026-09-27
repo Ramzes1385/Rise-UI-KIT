@@ -1,0 +1,19 @@
+/**
+ * Visual regression BaseBackTop: ключевые stories в светлой и тёмной теме.
+ */
+
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
+
+const STORIES = ['default', 'extended'] as const
+
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseBackTop · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basebacktop--${story}`, { theme, height: 200 })
+				await expectStoryScreenshot(page, `base-back-top-${story}-${theme}.png`)
+			})
+		}
+	})
+}
