@@ -146,8 +146,9 @@ const meta = {
 					'',
 					'- Узлы с `children` раскрываются по клику (`trigger="click"`) или наведению (`trigger="hover"`); в columns —',
 					'  вниз, в dropdown — каскадом вбок. На узком экране меню становится аккордеоном.',
-					'- Клик по листу эмитит `navigate(url)` (для `to` — маршрут открывает приложение), `item-click` — клик по любому узлу.',
-					'- Узлы — кнопки (`role="button"`, Enter/Space, `aria-expanded` у узлов с детьми), пункты навигации — `BaseButton`.',
+					'- Лист с `to` или `href` — ссылка (`BaseLink`): RouterLink приложения или `<a href>`, открывается и в новой',
+					'  вкладке. Клик эмитит `navigate(url)`, `item-click` — клик по любому узлу.',
+					'- Узлы с детьми — кнопки (`role="button"`, Enter/Space, `aria-expanded`), пункты навигации — `BaseButton`.',
 					'  Закрытия по Escape и клику вне меню пока нет.',
 				].join('\n'),
 			},
@@ -188,16 +189,19 @@ type Story = StoryObj<typeof meta>
 
 // ─── Default ───────────────────────────────────────────────────────────────────
 
-/** Песочница: раскладка columns. Клик по ссылке эмитит `navigate` с её адресом, по узлу «Интеграции» — раскрывает его. */
+/**
+ * Песочница: раскладка columns. Пункты с адресом — ссылки (BaseLink: RouterLink приложения или `<a href>`), клик
+ * эмитит `navigate` с адресом; узел «Интеграции» раскрывает вложенный уровень.
+ */
 export const Default: Story = {
 	play: async ({ canvas, userEvent, args }) => {
-		await userEvent.click(canvas.getByRole('button', { name: 'Документы' }))
+		await userEvent.click(canvas.getByRole('link', { name: 'Документы' }))
 		await expect(args.onNavigate).toHaveBeenCalledWith('/docs')
 
 		const integrations = canvas.getByRole('button', { name: 'Интеграции' })
 		await userEvent.click(integrations)
 		await expect(integrations).toHaveAttribute('aria-expanded', 'true')
-		await expect(canvas.getByRole('button', { name: 'Почта' })).toBeVisible()
+		await expect(canvas.getByRole('link', { name: 'Почта' })).toBeVisible()
 	},
 }
 
@@ -260,7 +264,7 @@ export const CustomColor: Story = {
 		},
 	},
 	play: async ({ canvas }) => {
-		const link = canvas.getByRole('button', { name: 'Документы' })
+		const link = canvas.getByRole('link', { name: 'Документы' })
 		await expect(getComputedStyle(link).color).toBe('rgb(30, 58, 138)')
 		await expect(getComputedStyle(link.closest('.base-mega-menu') as HTMLElement).backgroundColor).toBe('rgb(239, 246, 255)')
 	},
@@ -295,7 +299,7 @@ export const LongContent: Story = {
 		template: '<div class="story-narrow"><BaseMegaMenu v-bind="props" /></div>',
 	}),
 	play: async ({ canvas }) => {
-		const link = canvas.getByRole('button', { name: /Комплексное сопровождение/ })
+		const link = canvas.getByRole('link', { name: /Комплексное сопровождение/ })
 		await expect(link.scrollWidth).toBeLessThanOrEqual(link.clientWidth)
 	},
 }
@@ -314,7 +318,7 @@ export const Dropdown: Story = {
 		await expect(products).toHaveAttribute('aria-expanded', 'true')
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Аналитика' }))
-		await expect(await canvas.findByRole('button', { name: 'Продажи' })).toBeVisible()
+		await expect(await canvas.findByRole('link', { name: 'Продажи' })).toBeVisible()
 	},
 }
 
@@ -338,7 +342,7 @@ export const DeepNesting: Story = {
 		for (const label of ['Электроника', 'Компьютеры', 'Ноутбуки']) {
 			await userEvent.click(await canvas.findByRole('button', { name: label }))
 		}
-		await userEvent.click(await canvas.findByRole('button', { name: 'Ультрабуки' }))
+		await userEvent.click(await canvas.findByRole('link', { name: 'Ультрабуки' }))
 		await expect(args.onNavigate).toHaveBeenCalledWith('/catalog/electronics/computers/laptops/ultrabooks')
 	},
 }

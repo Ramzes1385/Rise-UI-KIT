@@ -41,6 +41,9 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseConfirm',
   'BaseColorModeButton',
   'BaseLink',
+  'BaseDropdownMenu',
+  'BaseContextMenu',
+  'BasePopconfirm',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -51,6 +54,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
   'BaseDatePicker',
   'BaseColorModeButton',
   'BaseLink',
+  'BaseDropdownMenu',
+  'BaseContextMenu',
 ])
 
 /** Формовые компоненты, требующие story Error */

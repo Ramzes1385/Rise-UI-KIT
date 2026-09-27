@@ -1,5 +1,5 @@
 <template>
-	<Teleport :to="teleportTarget">
+	<Teleport defer :to="teleportTarget">
 		<div
 			v-if="isOpen && currentStep"
 			class="base-tour"

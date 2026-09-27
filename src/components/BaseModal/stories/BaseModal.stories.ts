@@ -3,7 +3,7 @@
  *
  * Разделы: Default (песочница: окно открывается кнопкой, isOpen синхронизирован с Controls) → внешний вид
  * (варианты, размеры, кастомный цвет — окна открыты внутри рамок через isContained) → открытое окно и длинный текст →
- * сценарии (окно в блоке, запрет закрытия по подложке, на весь экран, список в окне) → клавиатура.
+ * сценарии (окно в блоке, запрет закрытия по подложке, на весь экран, список в окне, окно из поповера) → клавиатура.
  * Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу.
  */
 
@@ -12,6 +12,7 @@ import { computed, ref } from 'vue'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
+import { BasePopover } from '@components/BasePopover'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
 import { MODAL_VARIANTS } from '../model/BaseModal.types'
@@ -421,6 +422,49 @@ export const WithList: Story = {
 
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+	},
+}
+
+/**
+ * Окно из открытого поповера: окно открыто позже и поэтому выше поповера, хотя поповер смонтирован раньше
+ * и его якорь в DOM стоит перед окном. Порядок наложения — порядок открытия (`--rise-layer-index`).
+ */
+export const FromPopover: Story = {
+	tags: ['!autodocs'],
+	render: args => ({
+		components: { BaseModal, BaseButton, BasePopover, BaseText },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'isOpen', 'title', 'onUpdate:isOpen']),
+			isPopoverOpen: ref(true),
+			isModalOpen: ref(false),
+		}),
+		template: `
+			<BasePopover v-model:is-open="isPopoverOpen" position="bottom">
+				<template #trigger>
+					<BaseButton variant="outline">Серия 3</BaseButton>
+				</template>
+				<div class="story-stack" style="width: 240px;">
+					<BaseText>Опубликована 12 сентября</BaseText>
+					<BaseButton variant="soft" @click="isModalOpen = true">Снять с публикации…</BaseButton>
+				</div>
+			</BasePopover>
+			<BaseModal v-bind="props" v-model:is-open="isModalOpen" title="Снять серию с публикации?">
+				<BaseText>Подписчики перестанут видеть серию 3, ссылки на неё перестанут открываться.</BaseText>
+				<template #footer>
+					<BaseButton variant="outline" @click="isModalOpen = false">Отмена</BaseButton>
+					<BaseButton @click="isModalOpen = false">Снять</BaseButton>
+				</template>
+			</BaseModal>
+		`,
+	}),
+	play: async ({ userEvent }) => {
+		const action = await screen.findByRole('button', { name: 'Снять с публикации…' })
+		const popoverLayer = action.closest('.base-dropdown__panel') as HTMLElement
+		await userEvent.click(action)
+
+		const dialog = await screen.findByRole('dialog', { name: 'Снять серию с публикации?' })
+		const modalLayer = dialog.closest('.base-modal') as HTMLElement
+		await expect(Number(getComputedStyle(modalLayer).zIndex)).toBeGreaterThan(Number(getComputedStyle(popoverLayer).zIndex))
 	},
 }
 

@@ -1,5 +1,6 @@
 <template>
-	<div
+	<!-- Обёртка — span: подсказку можно поставить на кнопку внутри абзаца или строки таблицы -->
+	<span
 		ref="wrapperRef"
 		class="base-tooltip"
 		:class="classes.root"
@@ -7,35 +8,42 @@
 		@mouseleave="handleLeave"
 		@focusin="handleEnter"
 		@focusout="handleLeave">
-		<slot />
+		<slot :trigger-props="triggerAttributes" />
 
-		<Teleport :to="teleportTarget">
+		<Teleport defer :to="teleportTarget">
 			<Transition name="base-tooltip">
-				<!-- Подсказка в body не наследует стили обёртки: вариант, масштаб и цвет задаются на ней самой -->
+				<!--
+					Подсказка в body не наследует стили обёртки: вариант, масштаб и цвет задаются на ней самой.
+					На подсказку можно навести указатель (WCAG 1.4.13): она не пропадает, пока указатель над ней.
+				-->
 				<div
-					v-if="isVisible"
+					v-if="isShown"
 					:id="tooltipId"
+					ref="popupRef"
 					class="base-tooltip-popup"
-					:class="[`base-tooltip-popup--${position}`, variantClass, classes.tooltip]"
+					:class="[`base-tooltip-popup--${placement}`, variantClass, classes.tooltip]"
 					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]"
 					:data-theme="inheritedTheme"
-					role="tooltip">
+					role="tooltip"
+					@mouseenter="cancelHide"
+					@mouseleave="handleLeave">
 					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
 			</Transition>
 		</Teleport>
-	</div>
+	</span>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE, UI_TIMING } from '@constants'
-import { calcTooltipPosition } from '@utils/tooltipUtils'
+import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
 
@@ -57,26 +65,53 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 ])
 
 const isVisible = ref(false)
+/** Подсказка на экране: видима и есть текст — пустой пузырь не показывается */
+const isShown = computed(() => isVisible.value && Boolean(props.text))
 const wrapperRef = ref<HTMLElement | null>(null)
+const popupRef = ref<HTMLElement | null>(null)
 /** Тема блока, в котором стоит триггер: подсказка в body иначе взяла бы тему страницы */
 const inheritedTheme = useInheritedTheme(() => wrapperRef.value, () => isVisible.value)
-const tooltipId = useId()
+const tooltipId = `rise-tooltip-${useId()}`
+
+/** Триггер описан подсказкой, пока она на экране: скринридер читает её после имени элемента */
+const triggerAttributes = computed(() => ({ 'aria-describedby': isShown.value ? tooltipId : undefined }))
+useTriggerAttributes(() => wrapperRef.value, () => triggerAttributes.value)
 let showTimer: ReturnType<typeof setTimeout> | null = null
 let hideTimer: ReturnType<typeof setTimeout> | null = null
 let rafId: number | null = null
 
 const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
+/** Размер подсказки: нужен, чтобы перевернуть её и сдвинуть от края окна */
+const popupSize = ref({ width: 0, height: 0 })
 
+/** Новые координаты — только если триггер сдвинулся: иначе подсказка перерисовывалась бы каждый кадр */
 function updateCoords(): void {
 	/* istanbul ignore next -- defensive guard: wrapperRef всегда доступен после onMounted */
 	if (!wrapperRef.value) return
-	const rect = wrapperRef.value.getBoundingClientRect()
-	coords.value = { top: rect.top, left: rect.left, width: rect.width, height: rect.height }
+	const { top, left, width, height } = wrapperRef.value.getBoundingClientRect()
+	const current = coords.value
+	if (current.top !== top || current.left !== left || current.width !== width || current.height !== height) {
+		coords.value = { top, left, width, height }
+	}
+}
+
+function measurePopup(): void {
+	const popup = popupRef.value
+	if (!popup) return
+	const { offsetWidth: width, offsetHeight: height } = popup
+	if (popupSize.value.width !== width || popupSize.value.height !== height) popupSize.value = { width, height }
+}
+
+/** Размер окна без полос прокрутки; в среде без раскладки (jsdom) clientWidth равен 0 — берётся innerWidth */
+function getViewport(): { width: number; height: number } {
+	const root = document.documentElement
+	return { width: root.clientWidth || window.innerWidth, height: root.clientHeight || window.innerHeight }
 }
 
 function startUpdateLoop(): void {
 	function tick(): void {
 		updateCoords()
+		measurePopup()
 		/* istanbul ignore else -- RAF race-condition: tick может выполниться после isVisible=false */
 		if (isVisible.value) {
 			rafId = requestAnimationFrame(tick)
@@ -92,12 +127,23 @@ function stopUpdateLoop(): void {
 	}
 }
 
+/** Сторона подсказки: выбранная или противоположная, если у края окна не хватает места */
+const placement = computed(() => resolveTooltipPlacement(props.position, coords.value, popupSize.value, getViewport(), UI_SIZE.GAP.MD))
+
+/** Координаты со сдвигом от края окна; стрелка сдвигается обратно и смотрит на триггер */
 const tooltipStyle = computed((): Record<string, string> => {
-	return calcTooltipPosition({
-		position: props.position,
-		coords: coords.value,
-		gap: UI_SIZE.GAP.MD,
-	})
+	const shift = calcTooltipShift(placement.value, coords.value, popupSize.value, getViewport())
+	return {
+		...calcTooltipPosition({ position: placement.value, coords: coords.value, gap: UI_SIZE.GAP.MD, shift }),
+		'--tooltip-arrow-offset': `${-shift}px`,
+	}
+})
+
+/** Появившуюся подсказку измеряем до отрисовки кадра: переворот и сдвиг — без мигания на старом месте */
+watch(isShown, async shown => {
+	if (!shown) return
+	await nextTick()
+	measurePopup()
 })
 
 /** Наведение или фокус на триггере: подсказка появляется после короткой задержки */
@@ -115,6 +161,12 @@ function handleEnter(): void {
 		isVisible.value = true
 		startUpdateLoop()
 	}, UI_TIMING.TOOLTIP_SHOW_DELAY)
+}
+
+/** Указатель перешёл с триггера на подсказку: она остаётся на экране */
+function cancelHide(): void {
+	if (hideTimer) clearTimeout(hideTimer)
+	hideTimer = null
 }
 
 /** Уход курсора или фокуса: подсказка скрывается с задержкой, чтобы не мигать при переходе между элементами */

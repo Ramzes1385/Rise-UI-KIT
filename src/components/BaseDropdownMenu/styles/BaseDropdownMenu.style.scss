@@ -1,0 +1,136 @@
+// BaseDropdownMenu и BaseContextMenu. Меню — панель BaseDropdown (фон, рамка, тень, отступ 4px; варианты — её варианты).
+// Пункт — menu-item: 14/20, отступы 6/8, радиус md; фон bg-elevated у пункта с фокусом (стрелки и наведение ставят фокус).
+// Флажок и переключатель — колонка отметок 16px слева; подпись группы — 12/16 приглушённая; разделитель — линия border
+// на всю ширину панели. Сочетание клавиш и стрелка подменю прижаты вправо и приглушены. Опасное действие — цвет error.
+
+// Корень — обёртка кнопки: строчная, по размеру кнопки, чтобы меню выравнивалось по кнопке, а не по строке.
+.base-dropdown-menu {
+	display: inline-flex;
+	vertical-align: middle;
+
+	&__trigger {
+		display: inline-flex;
+	}
+
+	&__panel {
+		min-width: sz(180px);
+		max-width: sz(320px);
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		outline: none;
+	}
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__item {
+		@include menu-item;
+		@include custom-text(color, var(--rise-text));
+		outline: none;
+
+		// Фокус — и от стрелок, и от наведения: подсветка одна, кольцо не нужно
+		&:focus {
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+
+			.base-dropdown-menu__icon,
+			.base-dropdown-menu__submenu-arrow {
+				color: inherit;
+			}
+		}
+
+		// Пункт с открытым подменю остаётся подсвеченным, пока фокус в подменю
+		&[aria-expanded='true'] {
+			background-color: var(--rise-bg-elevated);
+		}
+
+		@include active {
+			background-color: var(--rise-bg-accented);
+		}
+
+		&--danger,
+		&--danger:focus {
+			color: var(--rise-error);
+
+			.base-dropdown-menu__icon {
+				color: inherit;
+			}
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+
+		// Пункт-ссылка (BaseLink) выглядит как остальные пункты: блок, текст sm, без подчёркивания и цвета ссылки.
+		// Двойной класс перекрывает стили BaseLink независимо от порядка CSS.
+		&.base-link {
+			display: flex;
+			@include text-size(sm);
+			text-decoration: none;
+			@include custom-text(color, var(--rise-text));
+
+			@include hover {
+				text-decoration: none;
+			}
+
+			&:focus {
+				color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+			}
+		}
+	}
+
+	&__indicator {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: sz(16px);
+	}
+
+	&__dot {
+		width: sz(6px);
+		height: sz(6px);
+		border-radius: 50%;
+		background-color: currentcolor;
+	}
+
+	&__icon,
+	&__submenu-arrow {
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+		@include transition-colors;
+	}
+
+	&__item-label {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	&__shortcut {
+		flex-shrink: 0;
+		padding-left: sz(16px);
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+	}
+
+	&__label {
+		padding: sz(6px 8px 2px);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-muted);
+	}
+
+	// Линия на всю ширину панели: компенсирует её внутренний отступ
+	&__separator {
+		flex-shrink: 0;
+		height: 1px;
+		margin: sz(4px) sz(-4px);
+		background-color: var(--rise-border);
+	}
+}

@@ -1,5 +1,5 @@
 <template>
-	<Teleport :to="teleportTarget" :disabled="isContained">
+	<Teleport defer :to="teleportTarget" :disabled="isContained">
 		<!-- Пока указатель над уведомлениями или фокус внутри, они не закрываются и прогресс стоит (WCAG 2.2.1) -->
 		<div
 			ref="containerRef"

@@ -128,6 +128,20 @@
 		}
 	}
 
+	// Лист-ссылка (BaseLink) выглядит как остальные пункты: блок на всю ширину, текст sm, без подчёркивания.
+	// Двойной класс перекрывает стили BaseLink независимо от порядка CSS.
+	&__node-header.base-link {
+		display: flex;
+		@include text-size(sm);
+		text-decoration: none;
+		@include custom-text(color, var(--rise-text));
+
+		@include hover {
+			text-decoration: none;
+			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+		}
+	}
+
 	&__node--open > &__node-header {
 		background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
 		color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));

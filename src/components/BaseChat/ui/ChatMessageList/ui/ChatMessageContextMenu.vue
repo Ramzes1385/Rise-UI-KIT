@@ -1,5 +1,5 @@
 <template>
-	<Teleport :to="teleportTarget">
+	<Teleport defer :to="teleportTarget">
 		<!-- Меню по образцу APG Menu: фокус на первом пункте, стрелки/Home/End — навигация, Escape и Tab — закрытие -->
 		<div
 			v-if="isOpen"

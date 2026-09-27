@@ -2,7 +2,7 @@
 	<div ref="wrapperRef" class="base-dropdown" :class="classes.root">
 		<slot />
 
-		<Teleport :to="teleportTarget">
+		<Teleport defer :to="teleportTarget">
 			<Transition name="base-dropdown">
 				<div
 					v-if="isOpen"

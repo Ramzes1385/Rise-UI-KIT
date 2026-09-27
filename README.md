@@ -77,6 +77,15 @@
 - Контейнер слоёв — `createUiKitPlugin({ teleportTo })` и `<BaseApp teleport-to>`. Панели, подсказки и контекстные меню берут `data-theme` блока, из которого открыты.
 - Подробности и что сделать приложению — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Слои оверлеев».
 
+**Меню и подсказки**
+
+- Новые компоненты: `BaseDropdownMenu` (меню у кнопки по APG: флажки, переключатели, подменю, поиск по буквам), `BaseContextMenu` (меню по правому клику, клавише «Меню» и Shift+F10), `BasePopconfirm` (вопрос у кнопки).
+- `BaseTooltip`: элемент описан подсказкой (`aria-describedby`), на подсказку можно навести указатель, у края окна она переворачивается и сдвигается, пустой `text` не показывается. Обёртка — `span` вместо `div`.
+- `BasePopover`: кнопке ставятся `aria-haspopup`, `aria-expanded` и `aria-controls`, панель — диалог с именем кнопки; закрытие повторным кликом эмитит `close`.
+- `BaseMegaMenu`: листья с `to` или `href` — ссылки (`BaseLink`): RouterLink приложения или `<a href>`.
+- Окна, панели и подсказки монтируют телепорт после приложения (`defer`): контейнер слоёв может стоять в том же шаблоне, что и меню.
+- Подробности — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Меню и тултипы».
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -352,9 +361,9 @@ const newName = await rename.open({ name: project.name })
 - **Escape и клик снаружи получает только верхний слой.** Из окна с открытым списком первое нажатие Escape закрывает список, второе — окно. Клик в панели вложенного списка (фильтр в поповере, выбор в окне) не закрывает внешний слой, хотя обе панели телепортированы в body.
 - **Свой обработчик Escape** внутри слоя вызывает `event.preventDefault()` — тогда слои это нажатие не трогают: поле с собственной отменой по Escape не закроет окно.
 - **Свои всплывающие элементы** подключаются к стеку через `useEscapeKey` и `useClickOutside` (или `useLayer`) из `@ramzes1385/rise-ui-kit/composables`, место в порядке наложения даёт `useLayerIndex` — см. раздел «Composables».
-- **Край окна.** Выпадающие панели (`BaseDropdown`, `BaseSelect`, `BasePopover`, `BaseSearch`, `BaseDatePicker`) открываются с противоположной стороны, если на выбранной не хватает места, а вдоль края окна сдвигаются, оставляя 8px.
+- **Край окна.** Выпадающие панели (`BaseDropdown`, `BaseDropdownMenu`, `BaseContextMenu`, `BaseSelect`, `BasePopover`, `BasePopconfirm`, `BaseSearch`, `BaseDatePicker`) и подсказки `BaseTooltip` открываются с противоположной стороны, если на выбранной не хватает места, а вдоль края окна сдвигаются, оставляя 8px.
 - **Тема.** Панель, открытая из блока с `data-theme`, берёт тему этого блока, а не страницы: тёмный плеер на светлой странице получает тёмное меню. Так работают выпадающие панели, подсказки, календарь и контекстные меню редактора и чата.
-- **Контейнер слоёв.** По умолчанию слои телепортируются в `body`. Свой контейнер задают `createUiKitPlugin({ teleportTo: '#layers' })` или `<BaseApp teleport-to="#layers">` (он важнее плагина для компонентов внутри). Это нужно, например, в полноэкранном режиме: панели в `body` не видны поверх элемента, развёрнутого через Fullscreen API. У контейнера не должно быть `transform`, `filter` и `contain` — панели позиционируются через `position: fixed`.
+- **Контейнер слоёв.** По умолчанию слои телепортируются в `body`. Свой контейнер задают `createUiKitPlugin({ teleportTo: '#layers' })` или `<BaseApp teleport-to="#layers">` (он важнее плагина для компонентов внутри); контейнер может стоять в том же шаблоне, что и меню. Это нужно, например, в полноэкранном режиме: панели в `body` не видны поверх элемента, развёрнутого через Fullscreen API. У контейнера не должно быть `transform`, `filter` и `contain` — панели позиционируются через `position: fixed`.
 - **Порядок наложения — порядок открытия.** Окно, открытое из меню, — над меню; список в окне — над окном; тур, запущенный из окна, — над окном. z-index такого слоя — `--rise-z-overlay` плюс его место среди открытых (`--rise-layer-index`), поэтому порядок компонентов в DOM не важен. Уведомления, подсказки и просмотр изображения всегда выше — у них свои токены (см. «Дизайн-система и темы»).
 
 ```vue
@@ -768,9 +777,61 @@ const isOpen = ref(false)
 
 ---
 
+## BaseDropdownMenu
+
+Меню у кнопки по паттерну APG Menu Button: действия, флажки, переключатели, подменю, ссылки. Кнопка — слот по умолчанию: кит ставит ей `aria-haspopup="menu"`, `aria-expanded` и `aria-controls` и открывает меню по клику, Enter, Space и стрелкам.
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { BaseButton, BaseDropdownMenu } from '@ramzes1385/rise-ui-kit'
+import type { DropdownMenuItem } from '@ramzes1385/rise-ui-kit'
+
+const showAuthor = ref(true)
+
+const items = computed((): DropdownMenuItem[][] => [
+	[
+		{ label: 'Переименовать', icon: 'code', shortcut: 'F2', onSelect: rename },
+		{ label: 'Скачать', icon: 'download', children: [{ label: 'Видео MP4' }, { label: 'Субтитры SRT' }] },
+		{ label: 'Открыть на сайте', href: 'https://example.com/episodes/3', target: '_blank' },
+	],
+	[{ type: 'checkbox', label: 'Показывать автора', isChecked: showAuthor.value, onUpdateChecked: value => (showAuthor.value = value) }],
+	[{ label: 'Удалить', icon: 'trash', isDanger: true, onSelect: remove }],
+])
+</script>
+
+<template>
+	<BaseDropdownMenu :items="items" @select="item => console.log(item.label)">
+		<BaseButton variant="outline">Действия</BaseButton>
+	</BaseDropdownMenu>
+</template>
+```
+
+- Пункты — список или группы (группы разделены линией). Типы: `item`, `checkbox`, `radio`, `label` (подпись группы), `separator`. Пункт с `to` или `href` — ссылка (`BaseLink`), `isDanger` — цвет ошибки, `shortcut` — подпись сочетания клавиш, `children` — подменю.
+- Клавиатура: стрелки по кругу, Home/End, буквы — поиск по началу подписи, стрелка вправо открывает подменю, влево — закрывает, Escape закрывает верхнее меню и возвращает фокус на кнопку, Tab из меню не уходит.
+- Обычный пункт закрывает меню. Флажок и переключатель по клику и Space меню не закрывают, по Enter — закрывают. Отметки хранит приложение: `isChecked` и `onUpdateChecked`.
+
+---
+
+## BaseContextMenu
+
+Меню по правому клику на области — те же пункты и клавиатура, что у `BaseDropdownMenu`. Открывается у указателя, клавишей «Меню» или Shift+F10 — у элемента с фокусом; `isDisabled` возвращает меню браузера.
+
+```vue
+<template>
+	<BaseContextMenu :items="items" @select="handleSelect">
+		<EpisodeCard :episode="episode" />
+	</BaseContextMenu>
+</template>
+```
+
+Правый клик — не единственный путь: то же действие должно быть доступно кнопкой или меню у кнопки.
+
+---
+
 ## BasePopover
 
-Popover-компонент.
+Панель с содержимым у кнопки: форма, фильтр, подробности. Кнопка — слот `trigger`: кит ставит ей `aria-haspopup="dialog"`, `aria-expanded` и `aria-controls`, панель — немодальный диалог с именем кнопки. Закрывается повторным кликом, Escape и кликом снаружи (событие `close` во всех трёх случаях).
 
 ```vue
 <script setup lang="ts">
@@ -788,11 +849,34 @@ import { BasePopover, BaseButton } from '@ramzes1385/rise-ui-kit'
 </template>
 ```
 
+Если кнопка вложена глубже (в своём компоненте), привяжите атрибуты из слота: `<template #trigger="{ triggerProps }"><MyButton v-bind="triggerProps" /></template>`.
+
+---
+
+## BasePopconfirm
+
+Вопрос у кнопки перед действием: «Снять с публикации?», «Удалить комментарий?». Легче окна `BaseConfirm`: не закрывает страницу. Ответ — события `confirm` и `cancel`; Escape и клик снаружи — отмена.
+
+```vue
+<template>
+	<BasePopconfirm
+		title="Удалить комментарий?"
+		description="Ответы на него тоже удалятся."
+		confirm-label="Удалить"
+		is-danger
+		@confirm="removeComment">
+		<BaseButton variant="ghost">Удалить</BaseButton>
+	</BasePopconfirm>
+</template>
+```
+
+`isDanger` — значок предупреждения, кнопка цвета ошибки и фокус на «Отмене». Панель — `role="alertdialog"`, Tab ходит между кнопками по кругу.
+
 ---
 
 ## BaseTooltip
 
-Tooltip для подсказок.
+Короткая подсказка к элементу: по наведению и по фокусу, Escape скрывает. Пока подсказка на экране, элемент описан ею (`aria-describedby`); на подсказку можно навести указатель — она не пропадает. У края окна подсказка переворачивается и сдвигается.
 
 ```vue
 <script setup lang="ts">
@@ -805,6 +889,8 @@ import { BaseTooltip, BaseButton } from '@ramzes1385/rise-ui-kit'
 	</BaseTooltip>
 </template>
 ```
+
+Подсказка — описание, а не имя: у кнопки-иконки нужен свой `aria-label`. Пустой `text` подсказку не показывает.
 
 ---
 
@@ -1669,8 +1755,11 @@ BaseChat
 BaseCheckbox
 BaseChip
 BaseColorPicker
+BaseConfirm
+BaseContextMenu
 BaseDatePicker
 BaseDropdown
+BaseDropdownMenu
 BaseEditor
 BaseEmpty
 BaseFileUpload
@@ -1686,6 +1775,7 @@ BaseModal
 BaseNotification
 BasePagination
 BasePin
+BasePopconfirm
 BasePopover
 BaseProgress
 BaseRadio
@@ -1939,6 +2029,7 @@ useSlider
 useSwipe
 useTableData
 useTeleportTarget
+useTriggerAttributes
 useVariant
 ```
 

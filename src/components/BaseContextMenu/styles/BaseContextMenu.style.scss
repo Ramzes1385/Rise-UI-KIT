@@ -1,0 +1,14 @@
+// BaseContextMenu. Область с меню по правому клику, клавише «Меню» или Shift+F10. Пункты и панель — как у BaseDropdownMenu
+// (стили в BaseDropdownMenu.style.scss). Точка привязки меню — невидимый элемент у указателя или у элемента с фокусом.
+.base-context-menu {
+	&__layer {
+		display: contents;
+	}
+
+	&__anchor {
+		position: fixed;
+		width: 0;
+		height: 0;
+		pointer-events: none;
+	}
+}

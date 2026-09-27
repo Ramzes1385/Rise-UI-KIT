@@ -1,2 +1,2 @@
-export { calcTooltipPosition, getTooltipTransition } from './tooltipUtils'
-export type { TooltipCoords, TooltipPosition, TooltipPositionOptions } from './tooltipUtils.types'
+export { calcTooltipPosition, calcTooltipShift, getTooltipTransition, resolveTooltipPlacement, TOOLTIP_VIEWPORT_MARGIN } from './tooltipUtils'
+export type { TooltipCoords, TooltipPosition, TooltipPositionOptions, TooltipSize } from './tooltipUtils.types'

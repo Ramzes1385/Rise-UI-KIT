@@ -1,5 +1,5 @@
 <template>
-	<Teleport :to="teleportTarget">
+	<Teleport defer :to="teleportTarget">
 		<Transition name="date-picker-panel">
 			<!-- data-theme копируется с ближайшего контейнера поля: панель в body иначе взяла бы токены темы страницы -->
 			<div

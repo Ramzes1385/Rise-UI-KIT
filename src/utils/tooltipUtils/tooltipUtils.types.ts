@@ -9,6 +9,12 @@ interface TooltipCoords {
 	height: number
 }
 
+/** Размер подсказки или окна, px */
+interface TooltipSize {
+	width: number
+	height: number
+}
+
 /** Параметры для расчёта позиции тултипа */
 interface TooltipPositionOptions {
 	/** Позиция тултипа */
@@ -17,6 +23,8 @@ interface TooltipPositionOptions {
 	coords: TooltipCoords
 	/** Отступ от триггера в px */
 	gap?: number
+	/** Сдвиг вдоль края окна в px (`calcTooltipShift`): по горизонтали для top/bottom, по вертикали для left/right */
+	shift?: number
 }
 
-export type { TooltipCoords, TooltipPosition, TooltipPositionOptions }
+export type { TooltipCoords, TooltipPosition, TooltipPositionOptions, TooltipSize }

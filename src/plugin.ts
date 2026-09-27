@@ -17,7 +17,9 @@ import { BaseChip } from './components/BaseChip'
 import { BaseColorModeButton } from './components/BaseColorModeButton'
 import { BaseColorPicker } from './components/BaseColorPicker'
 import { BaseConfirm } from './components/BaseConfirm'
+import { BaseContextMenu } from './components/BaseContextMenu'
 import { BaseDropdown } from './components/BaseDropdown'
+import { BaseDropdownMenu } from './components/BaseDropdownMenu'
 import { BaseEmpty } from './components/BaseEmpty'
 import { BaseForm } from './components/BaseForm'
 import { BaseFormField } from './components/BaseFormField'
@@ -32,6 +34,7 @@ import { BaseModal } from './components/BaseModal'
 import { BaseNotification } from './components/BaseNotification'
 import { BasePagination } from './components/BasePagination'
 import { BasePin } from './components/BasePin'
+import { BasePopconfirm } from './components/BasePopconfirm'
 import { BasePopover } from './components/BasePopover'
 import { BaseProgress } from './components/BaseProgress'
 import { BaseRadio } from './components/BaseRadio'
@@ -122,8 +125,10 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseColorModeButton,
 	BaseColorPicker,
 	BaseConfirm,
+	BaseContextMenu,
 	BaseDatePicker,
 	BaseDropdown,
+	BaseDropdownMenu,
 	BaseEditor,
 	BaseEmpty,
 	BaseFileUpload,
@@ -140,6 +145,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseNotification,
 	BasePagination,
 	BasePin,
+	BasePopconfirm,
 	BasePopover,
 	BaseProgress,
 	BaseRadio,

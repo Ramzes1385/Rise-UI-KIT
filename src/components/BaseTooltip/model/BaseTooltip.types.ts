@@ -28,6 +28,9 @@ export type BaseTooltipEmits = Record<string, never>
  * Слоты компонента BaseTooltip
  */
 export interface BaseTooltipSlots {
-	/** Триггер тултипа */
-	default?: () => unknown
+	/**
+	 * Триггер тултипа. Кит сам ставит `aria-describedby` на первый фокусируемый элемент в слоте;
+	 * `triggerProps` нужен, если фокусируемый элемент вложен глубже
+	 */
+	default?: (props: { triggerProps: Record<string, string | undefined> }) => unknown
 }

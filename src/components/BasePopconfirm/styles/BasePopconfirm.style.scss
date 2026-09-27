@@ -1,0 +1,58 @@
+// BasePopconfirm. Вопрос у кнопки: панель BaseDropdown (фон, рамка, тень), внутри — отступ 8px (итого 12px от рамки),
+// ширина до 300px. Вопрос 14/20 полужирный, пояснение 14/20 приглушённое, кнопки sm справа через 8px.
+// Необратимое действие: значок предупреждения цвета error и кнопка подтверждения цвета error.
+
+// Корень — обёртка кнопки: строчная, по размеру кнопки, чтобы панель выравнивалась по кнопке, а не по строке.
+.base-popconfirm-root {
+	display: inline-flex;
+	vertical-align: middle;
+}
+
+.base-popconfirm-trigger {
+	display: inline-flex;
+}
+
+.base-popconfirm {
+	display: flex;
+	flex-direction: column;
+	gap: sz(8px);
+	box-sizing: border-box;
+	width: max-content;
+	max-width: sz(300px);
+	padding: sz(8px);
+
+	&__header {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(8px);
+	}
+
+	&__icon {
+		flex-shrink: 0;
+		margin-top: sz(2px);
+		color: var(--rise-error);
+	}
+
+	&__title {
+		margin: 0;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-highlighted);
+		overflow-wrap: anywhere;
+	}
+
+	&__description {
+		margin: 0;
+		@include text-size(sm);
+		color: var(--rise-text-muted);
+		overflow-wrap: anywhere;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: sz(8px);
+		margin-top: sz(4px);
+	}
+}

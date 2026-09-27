@@ -8,9 +8,11 @@
  * Язык компонентов — кнопка «Язык» (глобальная переменная `locale`, `&globals=locale:en`): декоратор вызывает setLocale.
  */
 
+import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'
+import { LINK_COMPONENT_KEY } from '../../src/composables/useLink/useLink'
 import { setLocale } from '../../src/locales/state'
-import { STORY_WAIT_TIMEOUT } from '../../src/stories/helpers'
+import { STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 import { theme as docsTheme } from './theme'
 
@@ -21,6 +23,12 @@ import '../../src/styles/index.scss'
 import './preview.scss'
 
 type Theme = 'light' | 'dark'
+
+// Ссылки на маршруты (`to`) во всех stories — StoryRouterLink, как RouterLink в приложении: клик не уводит
+// iframe со страницы Storybook (пункты BaseMegaMenu и BaseDropdownMenu, крошки, боковая панель)
+setup(app => {
+	app.provide(LINK_COMPONENT_KEY, StoryRouterLink)
+})
 
 // findBy* и waitFor в play-функциях ждут до 3 с вместо 1 с: оверлеи с анимацией и прогон stories в CI
 // под нагрузкой открываются дольше, а короткий таймаут давал случайные падения

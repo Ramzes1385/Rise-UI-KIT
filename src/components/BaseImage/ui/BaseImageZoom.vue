@@ -1,5 +1,5 @@
 <template>
-	<teleport :to="teleportTarget">
+	<teleport defer :to="teleportTarget">
 		<!-- Модальный диалог: фокус переходит на «Закрыть», Tab обходит только элементы просмотра, после закрытия фокус возвращается -->
 		<div
 			ref="dialogRef"

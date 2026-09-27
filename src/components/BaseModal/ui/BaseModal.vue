@@ -1,5 +1,5 @@
 <template>
-	<teleport :to="teleportTarget" :disabled="isContained">
+	<teleport defer :to="teleportTarget" :disabled="isContained">
 		<transition name="base-modal" @after-leave="emit('after-leave')">
 			<div
 				v-if="isOpen"

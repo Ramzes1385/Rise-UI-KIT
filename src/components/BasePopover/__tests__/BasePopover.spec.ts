@@ -6,6 +6,7 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { h } from 'vue'
 import BasePopover from '../ui/BasePopover.vue'
 
 /** Общие слоты для рендера */
@@ -329,5 +330,35 @@ describe('BasePopover unit', () => {
 			expect(document.querySelector('.base-popover__inner')).toHaveClass('custom-inner')
 			expect(document.querySelector('.base-dropdown__panel')).toHaveClass('custom-panel')
 		})
+	})
+})
+
+describe('BasePopover: кнопка и диалог', () => {
+	it('кнопка получает aria-haspopup, aria-expanded и aria-controls; панель — диалог с именем кнопки', async () => {
+		render(BasePopover, {
+			slots: { trigger: '<button type="button">Пригласить</button>', default: '<p>Форма</p>' },
+		})
+		const button = screen.getByRole('button', { name: 'Пригласить' })
+		expect(button).toHaveAttribute('aria-haspopup', 'dialog')
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+
+		await fireEvent.click(button)
+		const dialog = screen.getByRole('dialog', { name: 'Пригласить' })
+		expect(button).toHaveAttribute('aria-expanded', 'true')
+		expect(button).toHaveAttribute('aria-controls', dialog.id)
+	})
+
+	it('закрытие повторным кликом по кнопке эмитит close (POPV-5); слот получает isOpen и triggerProps', async () => {
+		const { emitted } = render(BasePopover, {
+			slots: {
+				trigger: (props: { isOpen: boolean; triggerProps: Record<string, string | undefined> }) =>
+					h('button', { type: 'button', ...props.triggerProps }, props.isOpen ? 'Скрыть' : 'Показать'),
+				default: () => h('p', 'Содержимое'),
+			},
+		})
+		await fireEvent.click(screen.getByRole('button', { name: 'Показать' }))
+		await fireEvent.click(screen.getByRole('button', { name: 'Скрыть' }))
+		expect(emitted('update:isOpen')).toEqual([[true], [false]])
+		expect(emitted('close')).toHaveLength(1)
 	})
 })

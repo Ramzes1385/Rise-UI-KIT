@@ -12,13 +12,15 @@
 		:size-scale="sizeScale"
 		:custom-class="{ root: rootClass, panel: classes.panel }"
 		@close="handleClose">
-		<div class="base-popover__trigger" :class="classes.trigger" @click="toggle">
-			<slot name="trigger" />
+		<!-- Кнопка — из слота: кит ставит ей aria-haspopup, aria-expanded и aria-controls сам -->
+		<div ref="triggerRef" class="base-popover__trigger" :class="classes.trigger" @click="toggle">
+			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
 		<template #dropdown>
 			<div class="base-popover__arrow" :class="[`base-popover__arrow--${position}`, classes.arrow]"></div>
-			<div class="base-popover__inner" :class="classes.inner">
+			<!-- Немодальный диалог с именем кнопки: фокус остаётся на кнопке, Tab идёт в поля поповера -->
+			<div :id="panelId" class="base-popover__inner" :class="classes.inner" role="dialog" :aria-labelledby="triggerId">
 				<slot />
 			</div>
 		</template>
@@ -26,10 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import '../styles/BasePopover.style.scss'
 import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
@@ -50,6 +53,16 @@ const { classes } = useCustomClass({
 })
 
 const isOpenLocal = ref(props.isOpen)
+const triggerRef = ref<HTMLElement | null>(null)
+const panelId = `rise-popover-${useId()}`
+
+const triggerAttributes = computed(() => ({
+	'aria-haspopup': 'dialog',
+	'aria-expanded': isOpenLocal.value ? 'true' : 'false',
+	'aria-controls': isOpenLocal.value ? panelId : undefined,
+}))
+
+const { triggerId } = useTriggerAttributes(() => triggerRef.value, () => triggerAttributes.value, { withId: true })
 
 watch(
 	() => props.isOpen,
@@ -68,9 +81,11 @@ const panelClasses = computed((): string => {
 	return `base-popover__panel base-popover__panel--${props.variant}`
 })
 
+/** Клик по кнопке открывает и закрывает поповер; закрытие кнопкой — такое же закрытие, как Escape: с `close` */
 function toggle(): void {
 	isOpenLocal.value = !isOpenLocal.value
 	emit('update:isOpen', isOpenLocal.value)
+	if (!isOpenLocal.value) emit('close')
 }
 
 function handleClose(): void {

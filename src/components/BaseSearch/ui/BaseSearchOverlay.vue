@@ -25,7 +25,7 @@
 			</template>
 		</BaseInput>
 	</div>
-	<Teleport :to="teleportTarget">
+	<Teleport defer :to="teleportTarget">
 		<Transition :name="`base-search-${panel}`">
 			<!-- Подложка --rise-overlay, окно — как модальное (BaseModal); клик по подложке и Escape закрывают -->
 			<div

@@ -233,7 +233,7 @@ describe('BaseMegaMenu integration', () => {
 			expect(emittedEvents).not.toHaveProperty('navigate')
 		})
 
-		it('должен вызывать openExternalUrl при клике на подузел с href и target="_blank"', async () => {
+		it('подузел с href — ссылка с target="_blank" и rel; клик эмитит navigate', async () => {
 			const { emitted } = render(BaseMegaMenu, {
 				props: { columns: COLUMNS, trigger: 'click' },
 			})
@@ -241,11 +241,14 @@ describe('BaseMegaMenu integration', () => {
 			await fireEvent.click(screen.getByText('Лестницы'))
 			await nextTick()
 
-			const subItem = screen.getByText('Маршевые')
-			await fireEvent.click(subItem)
-			await nextTick()
+			const link = screen.getByRole('link', { name: /Маршевые/ })
+			expect(link).toHaveAttribute('href', 'https://example.com/stairs')
+			expect(link).toHaveAttribute('target', '_blank')
+			expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+			link.addEventListener('click', event => event.preventDefault())
+			await fireEvent.click(link)
 
-			expect(openExternalUrl).toHaveBeenCalledWith('https://example.com/stairs')
+			expect(openExternalUrl).not.toHaveBeenCalled()
 			const emittedEvents = emitted() as Record<string, any[][]>
 			expect(emittedEvents['navigate'][0][0]).toBe('https://example.com/stairs')
 		})
@@ -445,7 +448,7 @@ describe('BaseMegaMenu integration', () => {
 			expect(emittedEvents).not.toHaveProperty('navigate')
 		})
 
-		it('должен изменять window.location.href при target="_self"', async () => {
+		it('подузел с target="_self" — ссылка в той же вкладке, переход выполняет браузер', async () => {
 			render(BaseMegaMenu, {
 				props: { items: DROPDOWN_ITEMS, layout: 'dropdown', trigger: 'click' },
 			})
@@ -455,11 +458,10 @@ describe('BaseMegaMenu integration', () => {
 			await fireEvent.click(screen.getByText('Кованые изделия'))
 			await nextTick()
 
-			const subItem = screen.getByText('Ограды')
-			await fireEvent.click(subItem)
-			await nextTick()
-
-			expect(locationHref).toBe('https://example.com/fences')
+			const link = screen.getByRole('link', { name: 'Ограды' })
+			expect(link).toHaveAttribute('href', 'https://example.com/fences')
+			expect(link).toHaveAttribute('target', '_self')
+			expect(locationHref).toBe('')
 		})
 	})
 
@@ -523,30 +525,41 @@ describe('BaseMegaMenu integration', () => {
 
 			await fireEvent.keyDown(stairs, { key: 'Enter' })
 			expect(stairs).toHaveAttribute('aria-expanded', 'true')
-			expect(screen.getByRole('button', { name: 'Винтовые' })).toBeInTheDocument()
+			expect(screen.getByRole('link', { name: 'Винтовые' })).toBeInTheDocument()
 
 			await fireEvent.keyDown(stairs, { key: ' ' })
 			expect(stairs).toHaveAttribute('aria-expanded', 'false')
 		})
 
-		it('Space на листе выполняет переход, как клик', async () => {
+		it('лист с адресом — ссылка в порядке Tab: клик (и Enter браузера) эмитит item-click и navigate', async () => {
 			const { emitted } = render(BaseMegaMenu, { props: { columns: COLUMNS, trigger: 'click' } })
 
-			const gates = screen.getByRole('button', { name: 'Ворота и ограды' })
+			const gates = screen.getByRole('link', { name: 'Ворота и ограды' })
+			expect(gates).toHaveAttribute('href', '/gates')
 			expect(gates).not.toHaveAttribute('aria-expanded')
 
-			await fireEvent.keyDown(gates, { key: ' ' })
+			gates.addEventListener('click', event => event.preventDefault())
+			await fireEvent.click(gates)
 			expect(emitted().navigate).toEqual([['/gates']])
+			expect(emitted()['item-click']).toHaveLength(1)
+		})
+
+		it('лист без адреса — кнопка: клик эмитит только item-click', async () => {
+			const { emitted } = render(BaseMegaMenu, { props: { columns: COLUMNS, trigger: 'click' } })
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Кованые изделия' }))
+			expect(emitted()['item-click']).toHaveLength(1)
+			expect(emitted().navigate).toBeUndefined()
 		})
 
 		it('отключённый узел помечен aria-disabled, выведен из порядка Tab и не реагирует на Enter', async () => {
 			const { emitted } = render(BaseMegaMenu, { props: { columns: COLUMNS, trigger: 'click' } })
 
-			const disabled = screen.getByRole('button', { name: 'Отключенный элемент' })
+			const disabled = screen.getByRole('link', { name: 'Отключенный элемент' })
 			expect(disabled).toHaveAttribute('aria-disabled', 'true')
-			expect(disabled).toHaveAttribute('tabindex', '-1')
+			expect(disabled).not.toHaveAttribute('href')
 
-			await fireEvent.keyDown(disabled, { key: 'Enter' })
+			await fireEvent.click(disabled)
 			expect(emitted().navigate).toBeUndefined()
 		})
 

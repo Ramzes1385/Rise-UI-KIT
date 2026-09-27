@@ -1,5 +1,5 @@
 <template>
-	<teleport :to="teleportTarget" :disabled="isTeleportDisabled">
+	<teleport defer :to="teleportTarget" :disabled="isTeleportDisabled">
 		<transition name="base-slideover">
 			<div
 				v-if="isOpen"

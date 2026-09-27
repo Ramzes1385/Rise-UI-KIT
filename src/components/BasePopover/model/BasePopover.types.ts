@@ -25,6 +25,7 @@ export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'ro
 /** События компонента BasePopover */
 export interface BasePopoverEmits {
 	(event: 'update:isOpen', value: boolean): void
+	/** Поповер закрыт: кнопкой, Escape или кликом снаружи */
 	(event: 'close'): void
 }
 
@@ -32,8 +33,11 @@ export interface BasePopoverEmits {
  * Слоты компонента BasePopover
  */
 export interface BasePopoverSlots {
-	/** Триггер */
-	trigger?: () => unknown
+	/**
+	 * Триггер. Кит ставит `aria-haspopup`, `aria-expanded` и `aria-controls` на первый фокусируемый элемент в слоте;
+	 * `triggerProps` нужен, если он вложен глубже
+	 */
+	trigger?: (props: { isOpen: boolean; triggerProps: Record<string, string | undefined> }) => unknown
 	/** Содержимое поповера */
 	default?: () => unknown
 }

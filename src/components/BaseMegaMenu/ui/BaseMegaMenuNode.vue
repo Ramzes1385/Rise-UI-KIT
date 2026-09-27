@@ -9,8 +9,23 @@
 		@mouseenter="handleEnter"
 		@mouseleave="handleLeave">
 		<slot name="item" :item="item" :level="level">
-			<!-- Заголовок узла — кнопка: раскрывает вложенный уровень или выполняет переход (Enter/Space — как клик) -->
+			<!-- Лист с адресом — ссылка (BaseLink): RouterLink приложения или <a href>, открывается и в новой вкладке -->
+			<BaseLink
+				v-if="isLink"
+				class="base-mega-menu__node-header"
+				variant="ghost"
+				:to="item.to"
+				:href="item.href"
+				:target="item.target"
+				:is-disabled="item.isDisabled"
+				:size-scale="sizeScale"
+				@click="handleLinkClick">
+				<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__node-icon" />
+				<span class="base-mega-menu__node-label">{{ item.label }}</span>
+			</BaseLink>
+			<!-- Узел без адреса — кнопка: раскрывает вложенный уровень (Enter/Space — как клик) -->
 			<div
+				v-else
 				ref="anchorRef"
 				class="base-mega-menu__node-header"
 				role="button"
@@ -69,10 +84,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
 import { calcIconScale } from '@utils/iconUtils'
-import { navigateAndEmit } from '@utils/navigationUtils'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../model/BaseMegaMenuNode.types'
 
@@ -94,6 +109,8 @@ const boundaryRef = ref<HTMLElement | null>(null)
 const panelRef = ref<HTMLElement | null>(null)
 /** Есть ли дочерние узлы */
 const hasChildren = computed(() => Boolean(props.item.children && props.item.children.length > 0))
+/** Лист с адресом — ссылка, переход выполняет она сама */
+const isLink = computed(() => !hasChildren.value && Boolean(props.item.to || props.item.href))
 
 /**
  * Каскадный flyout — только в dropdown-layout на десктопе.
@@ -129,24 +146,23 @@ function clearTimer(): void {
 
 onBeforeUnmount(clearTimer)
 
-function navigate(): void {
-	const { to, href, target } = props.item
-	navigateAndEmit({ to, href, target }, (url) => emit('navigate', url))
+
+/** Клик по ссылке: переход выполняет BaseLink, компонент сообщает о нём событиями */
+function handleLinkClick(): void {
+	emit('item-click', props.item)
+	emit('navigate', (props.item.href ?? props.item.to) as string)
 }
 
-/** Клик по узлу: раскрытие (закрывая соседей) или навигация */
+/** Клик по узлу: раскрытие вложенного уровня (закрывая соседей); у листа без адреса — только item-click */
 function handleClick(): void {
 	if (props.item.isDisabled) return
 	emit('item-click', props.item)
-	if (hasChildren.value) {
-		if (isOpen.value) {
-			tree.close(nodePath.value)
-		} else {
-			updateBoundary()
-			tree.open(nodePath.value)
-		}
+	if (!hasChildren.value) return
+	if (isOpen.value) {
+		tree.close(nodePath.value)
 	} else {
-		navigate()
+		updateBoundary()
+		tree.open(nodePath.value)
 	}
 }
 

@@ -1,32 +1,45 @@
-/** Утилиты: позиционирование тултипа относительно триггера */
+/** Утилиты: позиционирование тултипа относительно триггера, переворот и сдвиг у края окна */
 
-import type { TooltipPositionOptions } from './tooltipUtils.types'
+import type { TooltipCoords, TooltipPosition, TooltipPositionOptions, TooltipSize } from './tooltipUtils.types'
 
-/** Рассчитать CSS-координаты тултипа относительно триггера */
+/** Отступ подсказки от края окна при сдвиге, px */
+const TOOLTIP_VIEWPORT_MARGIN = 8
+
+const OPPOSITE: Record<TooltipPosition, TooltipPosition> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
+
+function isVertical(position: TooltipPosition): boolean {
+	return position === 'top' || position === 'bottom'
+}
+
+/**
+ * Рассчитать CSS-координаты тултипа относительно триггера: точка у середины стороны триггера,
+ * подсказку от неё отодвигает `translate` в стилях. `shift` сдвигает точку вдоль края окна.
+ */
 function calcTooltipPosition(options: TooltipPositionOptions): Record<string, string> {
 	const { position, coords } = options
 	const gap = options.gap ?? 8
+	const shift = options.shift ?? 0
 	const { top, left, width, height } = coords
 
 	switch (position) {
 		case 'top':
 			return {
 				top: `${top - gap}px`,
-				left: `${left + width / 2}px`,
+				left: `${left + width / 2 + shift}px`,
 			}
 		case 'bottom':
 			return {
 				top: `${top + height + gap}px`,
-				left: `${left + width / 2}px`,
+				left: `${left + width / 2 + shift}px`,
 			}
 		case 'left':
 			return {
-				top: `${top + height / 2}px`,
+				top: `${top + height / 2 + shift}px`,
 				left: `${left - gap}px`,
 			}
 		case 'right':
 			return {
-				top: `${top + height / 2}px`,
+				top: `${top + height / 2 + shift}px`,
 				left: `${left + width + gap}px`,
 			}
 		default:
@@ -34,9 +47,51 @@ function calcTooltipPosition(options: TooltipPositionOptions): Record<string, st
 	}
 }
 
+/** Свободное место от триггера до края окна со стороны `side` */
+function spaceOn(side: TooltipPosition, coords: TooltipCoords, viewport: TooltipSize, gap: number): number {
+	switch (side) {
+		case 'top':
+			return coords.top - gap
+		case 'bottom':
+			return viewport.height - coords.top - coords.height - gap
+		case 'left':
+			return coords.left - gap
+		case 'right':
+			return viewport.width - coords.left - coords.width - gap
+	}
+}
+
+/**
+ * Сторона подсказки: выбранная, если подсказка там помещается; иначе противоположная, если помещается там.
+ * Пока размер подсказки не измерен (0), остаётся выбранная.
+ *
+ * @example
+ * resolveTooltipPlacement('top', { top: 4, left: 100, width: 80, height: 32 }, { width: 120, height: 24 }, { width: 1024, height: 768 }) // 'bottom'
+ */
+function resolveTooltipPlacement(position: TooltipPosition, coords: TooltipCoords, size: TooltipSize, viewport: TooltipSize, gap = 8): TooltipPosition {
+	if (!size.width || !size.height) return position
+	const need = (isVertical(position) ? size.height : size.width) + TOOLTIP_VIEWPORT_MARGIN
+	const fits = (side: TooltipPosition): boolean => spaceOn(side, coords, viewport, gap) >= need
+	return fits(position) || !fits(OPPOSITE[position]) ? position : OPPOSITE[position]
+}
+
+/**
+ * Сдвиг подсказки вдоль края окна, px: подсказка по центру триггера не выходит за окно (отступ 8px).
+ * Для top/bottom — по горизонтали, для left/right — по вертикали; стрелку стили сдвигают обратно на столько же.
+ */
+function calcTooltipShift(placement: TooltipPosition, coords: TooltipCoords, size: TooltipSize, viewport: TooltipSize): number {
+	if (!size.width || !size.height) return 0
+	const vertical = isVertical(placement)
+	const center = vertical ? coords.left + coords.width / 2 : coords.top + coords.height / 2
+	const half = (vertical ? size.width : size.height) / 2
+	const limit = vertical ? viewport.width : viewport.height
+	const clamped = Math.max(TOOLTIP_VIEWPORT_MARGIN + half, Math.min(center, limit - TOOLTIP_VIEWPORT_MARGIN - half))
+	return clamped - center
+}
+
 /** Получить имя CSS-перехода по позиции тултипа */
 function getTooltipTransition(position: string): string {
 	return `tooltip-${position}`
 }
 
-export { calcTooltipPosition, getTooltipTransition }
+export { calcTooltipPosition, calcTooltipShift, getTooltipTransition, resolveTooltipPlacement, TOOLTIP_VIEWPORT_MARGIN }

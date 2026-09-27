@@ -299,3 +299,64 @@ describe('BaseTooltip unit', () => {
 		})
 	})
 })
+
+describe('BaseTooltip: доступность и край окна', () => {
+	afterEach(() => {
+		vi.useRealTimers()
+		vi.restoreAllMocks()
+	})
+
+	it('кнопка описана подсказкой, пока та на экране; пустой текст не показывается', async () => {
+		vi.useFakeTimers()
+		const { rerender } = render(BaseTooltip, { props: { text: 'Сохранить черновик' }, slots: { default: '<button type="button">Сохранить</button>' } })
+		const button = screen.getByRole('button', { name: 'Сохранить' })
+		expect(button).not.toHaveAttribute('aria-describedby')
+
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		const tooltip = screen.getByRole('tooltip')
+		expect(button).toHaveAttribute('aria-describedby', tooltip.id)
+		expect(button).toHaveAccessibleDescription('Сохранить черновик')
+
+		await rerender({ text: '' })
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+		expect(button).not.toHaveAttribute('aria-describedby')
+	})
+
+	it('указатель на подсказке не даёт ей скрыться, уход с подсказки скрывает', async () => {
+		vi.useFakeTimers()
+		const { container } = render(BaseTooltip, { props: { text: 'Подсказка' }, slots: { default: '<button type="button">Цель</button>' } })
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(200)
+		const tooltip = screen.getByRole('tooltip')
+
+		wrapper.dispatchEvent(new MouseEvent('mouseleave'))
+		tooltip.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+
+		tooltip.dispatchEvent(new MouseEvent('mouseleave'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+	})
+
+	it('у верхнего края переворачивается вниз, у левого края сдвигается внутрь, стрелка смотрит на триггер', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Свернуть панель', isAlwaysVisible: true },
+			slots: { default: '<button type="button">≡</button>' },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () => ({ top: 4, left: 0, width: 20, height: 20, bottom: 24, right: 20, x: 0, y: 4, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		await waitFor(() => expect(screen.getByRole('tooltip')).toHaveClass('base-tooltip-popup--bottom'))
+		const tooltip = screen.getByRole('tooltip')
+		// центр триггера 10, половина подсказки 60, отступ от края 8 → точка 68, сдвиг 58
+		expect(tooltip.style.left).toBe('68px')
+		expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset')).toBe('-58px')
+	})
+})

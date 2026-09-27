@@ -2,7 +2,7 @@
  * BasePopover — stories.
  *
  * Разделы: Default (песочница: клик по кнопке открывает поповер, isOpen синхронизирован с Controls) → внешний вид
- * (варианты, позиции, размеры, кастомный цвет) → длинный текст → сценарии (форма в поповере) → клавиатура.
+ * (варианты, позиции, размеры, кастомный цвет) → длинный текст → сценарии (форма и список в поповере) → клавиатура.
  * Открытые поповеры телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
@@ -11,6 +11,7 @@ import { ref } from 'vue'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
+import { BaseSelect } from '@components/BaseSelect'
 import { BaseText } from '@components/BaseText'
 import { POPOVER_VARIANTS } from '../model/BasePopover.types'
 import BasePopover from '../ui/BasePopover.vue'
@@ -322,6 +323,55 @@ export const WithForm: Story = {
 		await userEvent.click(within(screen.getByRole('form', { name: 'Приглашение' })).getByRole('button', { name: 'Отправить приглашение' }))
 		await waitFor(() => expect(screen.queryByLabelText('Почта участника')).not.toBeInTheDocument())
 		await expect(trigger).toHaveFocus()
+	},
+}
+
+/**
+ * Список в поповере: выбор в выпадающем списке не закрывает поповер, хотя панель списка телепортирована в body.
+ * Escape сначала закрывает список, следующее нажатие — поповер.
+ */
+export const NestedList: Story = {
+	parameters: { controls: { include: ['position', 'variant'] }, docs: docsFrame(360) },
+	render: args => ({
+		components: { BasePopover, BaseButton, BaseSelect },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]),
+			isOpen: ref(false),
+			status: ref('draft'),
+			statuses: [
+				{ value: 'draft', label: 'Черновик' },
+				{ value: 'review', label: 'На проверке' },
+				{ value: 'published', label: 'Опубликована' },
+			],
+		}),
+		template: `
+			<BasePopover v-bind="props" v-model:is-open="isOpen">
+				<template #trigger>
+					<BaseButton variant="outline">Фильтры</BaseButton>
+				</template>
+				<div style="width: 240px;">
+					<BaseSelect v-model="status" label="Статус серии" :options="statuses" />
+				</div>
+			</BasePopover>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('button', { name: 'Фильтры' }))
+		const select = await screen.findByRole('combobox', { name: 'Статус серии' })
+
+		await userEvent.click(select)
+		await userEvent.click(await screen.findByRole('option', { name: 'Опубликована' }))
+		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
+		await expect(select).toHaveTextContent('Опубликована')
+		await expect(select).toBeVisible()
+
+		await userEvent.click(select)
+		await screen.findByRole('listbox')
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
+		await expect(select).toBeVisible()
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('combobox', { name: 'Статус серии' })).not.toBeInTheDocument())
 	},
 }
 

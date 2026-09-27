@@ -77,6 +77,7 @@ export const ru = {
 		GALLERY_PREV: 'Предыдущее изображение',
 		GALLERY_NEXT: 'Следующее изображение',
 		SEARCH: 'Поиск',
+		CONTEXT_MENU: 'Контекстное меню',
 		/** Имена ползунков BaseRange без ariaLabel: одно значение, границы диапазона, точки */
 		RANGE_VALUE: 'Значение',
 		RANGE_MIN: 'Минимум',

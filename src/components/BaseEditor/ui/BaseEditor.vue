@@ -82,7 +82,7 @@
 			@focus="handleFocus"
 			@blur="handleBlur" />
 
-		<Teleport :to="teleportTarget">
+		<Teleport defer :to="teleportTarget">
 			<!-- Меню размера медиа (правый клик по изображению или видео). В body масштаб не наследуется — задаём его сами -->
 			<div
 				v-if="contextMenu.isVisible"

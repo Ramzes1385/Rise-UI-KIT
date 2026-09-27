@@ -29,7 +29,6 @@
 	@include text-size(xs);
 	white-space: pre-wrap;
 	overflow-wrap: break-word;
-	pointer-events: none;
 
 	// Текст — BaseText: наследует цвет и кегль подсказки.
 	.base-text {
@@ -52,12 +51,13 @@
 	}
 
 	// Позиция: координаты задают точку у триггера, translate ставит подсказку по нужную сторону от неё.
+	// У края окна подсказка сдвигается, а стрелка — обратно на --tooltip-arrow-offset и смотрит на триггер.
 	&--top {
 		translate: -50% calc(-100% - var(--tooltip-offset));
 
 		&::after {
 			top: 100%;
-			left: 50%;
+			left: calc(50% + var(--tooltip-arrow-offset, 0px));
 			border-top-color: transparent;
 			border-left-color: transparent;
 			transform: translate(-50%, -50%) rotate(45deg);
@@ -69,7 +69,7 @@
 
 		&::after {
 			bottom: 100%;
-			left: 50%;
+			left: calc(50% + var(--tooltip-arrow-offset, 0px));
 			border-right-color: transparent;
 			border-bottom-color: transparent;
 			transform: translate(-50%, 50%) rotate(45deg);
@@ -80,7 +80,7 @@
 		translate: calc(-100% - var(--tooltip-offset)) -50%;
 
 		&::after {
-			top: 50%;
+			top: calc(50% + var(--tooltip-arrow-offset, 0px));
 			left: 100%;
 			border-bottom-color: transparent;
 			border-left-color: transparent;
@@ -92,7 +92,7 @@
 		translate: var(--tooltip-offset) -50%;
 
 		&::after {
-			top: 50%;
+			top: calc(50% + var(--tooltip-arrow-offset, 0px));
 			right: 100%;
 			border-top-color: transparent;
 			border-right-color: transparent;

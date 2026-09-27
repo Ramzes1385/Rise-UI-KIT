@@ -70,6 +70,7 @@ export const en: UiKitLocale = {
 		GALLERY_PREV: 'Previous image',
 		GALLERY_NEXT: 'Next image',
 		SEARCH: 'Search',
+		CONTEXT_MENU: 'Context menu',
 		RANGE_VALUE: 'Value',
 		RANGE_MIN: 'Minimum',
 		RANGE_MAX: 'Maximum',

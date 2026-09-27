@@ -229,6 +229,8 @@
     - `ghost` — без фона и рамки;
     - `shadow` — рамка + `shadow-sm`.
 - **Плавающие панели** (Popover, Dropdown, меню Select/Search, календарь в поповере) — `@include floating-surface`: фон bg, рамка border, радиус `md`, `shadow-lg`, внутренний отступ 4px. Пункты — `@include menu-item`: 6/8, радиус `md`, hover `bg-elevated`.
+- **Меню** (DropdownMenu, ContextMenu) — панель Dropdown шириной 180–320px. Пункт — `menu-item`, подсветка `bg-elevated` у пункта с фокусом (стрелки и наведение ставят фокус, кольца нет); колонка отметок 16px у флажков и переключателей; подпись группы 12/16 `text-muted` полужирная; разделитель — линия `border` на всю ширину панели; сочетание клавиш и стрелка подменю — справа, `text-muted`; опасное действие — `error`.
+- **Вопрос у кнопки** (Popconfirm) — панель Dropdown, внутри отступ 8px, ширина до 300px; вопрос 14/20 полужирный, пояснение 14/20 `text-muted`, кнопки sm справа.
   - Выбранный пункт: текст `--rise-text-highlighted` + галочка `--rise-primary`, либо фон `--rise-primary-soft` и текст `--rise-primary-text`.
 - **Modal / Slideover.**
   - Подложка `--rise-overlay`.
