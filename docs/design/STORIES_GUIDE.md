@@ -190,5 +190,5 @@ for (const theme of VISUAL_THEMES) {
 
 - `npx eslint --max-warnings 0 <файлы>` и `npm run typecheck` — без ошибок.
 - `node scripts/check-a11y-coverage.mjs` и `node scripts/check-stories-coverage.mjs` — зелёные.
-- Каждая story открывается без ошибок в консоли, play-функции проходят в светлой и тёмной теме, axe без нарушений.
+- Каждая story открывается без ошибок в консоли, play-функции проходят в светлой и тёмной теме, axe без нарушений. Проверка — `npm run test:stories` по собранному Storybook (`npm run build-storybook`, затем `node scripts/serve-storybook-static.mjs`); для одного компонента — `npm run test:stories -- --filter=basebadge`. В CI она выполняется для всех stories в отдельном job.
 - В stories нет внешних URL, `new Date()` без аргументов, `Math.random()`, `try/catch`, inline-цветов.

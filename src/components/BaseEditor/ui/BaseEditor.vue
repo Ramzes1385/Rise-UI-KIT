@@ -56,6 +56,10 @@
 			:aria-placeholder="placeholder || undefined"
 			:data-placeholder="placeholder"
 			@input="handleInput"
+			@paste="handlePaste"
+			@dragstart="isInternalDrag = true"
+			@dragend="isInternalDrag = false"
+			@drop="handleDrop"
 			@focus="handleFocus"
 			@blur="handleBlur"
 			@mouseup="saveSelection"
@@ -124,6 +128,7 @@ import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
+import { escapeHtml, sanitizeHtml } from '@utils/htmlUtils'
 import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../model/BaseEditor.types'
@@ -159,6 +164,11 @@ const headingOptions: BaseSelectOption[] = [
 	{ value: 'h5', label: `${UI_EDITOR.HEADING_PREFIX} 5` },
 	{ value: 'h6', label: `${UI_EDITOR.HEADING_PREFIX} 6` },
 ]
+
+/** Очистка HTML по пропу sanitize: своя функция или встроенный allowlist */
+function sanitizeContent(html: string): string {
+	return (props.sanitize ?? sanitizeHtml)(html)
+}
 
 // handleInput зависит от outputs обоих composables, поэтому определяется после них.
 // Ленивый вызов через замыкание разрывает цикл зависимости.
@@ -198,6 +208,7 @@ const {
 	onInput: () => handleInput(),
 	promptForUrl: () => prompt(UI_EDITOR.URL_PROMPT),
 	isReadonly: () => props.isReadonly,
+	sanitize: sanitizeContent,
 })
 
 const {
@@ -222,15 +233,58 @@ const {
 
 handleInput = () => {
 	if (isCodeMode.value) {
-		emit('update:modelValue', codeContent.value)
+		emit('update:modelValue', sanitizeContent(codeContent.value))
 		return
 	}
 	/* istanbul ignore next -- defensive: editorRef всегда привязан после mount */
 	if (!editorRef.value) return
 	convertInlineHtml()
-	emit('update:modelValue', editorRef.value.innerHTML)
+	emit('update:modelValue', sanitizeContent(editorRef.value.innerHTML))
 	updateActiveStates()
 	checkEmpty()
+}
+
+/**
+ * Вставка из буфера обмена: HTML очищается, простой текст вставляется как текст с переносами строк.
+ * Без перехвата браузер вставил бы разметку чужой страницы вместе с обработчиками событий.
+ */
+function handlePaste(event: ClipboardEvent): void {
+	const data = event.clipboardData
+	if (props.isReadonly || !data) return
+	const html = data.getData('text/html')
+	const text = data.getData('text/plain')
+	if (!html && !text) return
+	event.preventDefault()
+	document.execCommand('insertHTML', false, html ? sanitizeContent(html) : escapeHtml(text).replace(/\r?\n/g, '<br>'))
+}
+
+/** Перетаскивание внутри редактора браузер выполняет сам: этот HTML уже очищен */
+const isInternalDrag = ref(false)
+
+/** Позиция каретки в точке, куда отпустили перетаскиваемое содержимое */
+function getRangeFromPoint(x: number, y: number): Range | null {
+	if (typeof document.caretPositionFromPoint === 'function') {
+		const position = document.caretPositionFromPoint(x, y)
+		if (!position) return null
+		const range = document.createRange()
+		range.setStart(position.offsetNode, position.offset)
+		return range
+	}
+	return typeof document.caretRangeFromPoint === 'function' ? document.caretRangeFromPoint(x, y) : null
+}
+
+/** HTML, перетащенный из другой страницы, вставляется очищенным в точку, куда его отпустили */
+function handleDrop(event: DragEvent): void {
+	const html = event.dataTransfer?.getData('text/html')
+	if (props.isReadonly || isInternalDrag.value || !html) return
+	event.preventDefault()
+	const range = getRangeFromPoint(event.clientX, event.clientY)
+	if (range) {
+		const selection = window.getSelection()
+		selection?.removeAllRanges()
+		selection?.addRange(range)
+	}
+	document.execCommand('insertHTML', false, sanitizeContent(html))
 }
 
 function handleFocus(): void {
@@ -278,14 +332,14 @@ watch(
 	(newVal: string) => {
 		if (!editorRef.value) return
 		if (editorRef.value.innerHTML === newVal) return
-		editorRef.value.innerHTML = newVal
+		editorRef.value.innerHTML = sanitizeContent(newVal)
 		checkEmpty()
 	},
 )
 
 onMounted(() => {
 	if (editorRef.value && props.modelValue) {
-		editorRef.value.innerHTML = props.modelValue
+		editorRef.value.innerHTML = sanitizeContent(props.modelValue)
 	}
 	checkEmpty()
 	if (props.isAutofocus) {

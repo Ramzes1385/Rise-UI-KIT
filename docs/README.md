@@ -8,6 +8,7 @@
 |---|---|
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Полное руководство по ведению репозитория: ветки, задачи, коммиты, PR, релизы, заготовка нового компонента |
 | [v2/PLAN.md](./v2/PLAN.md) | План версии 2.0: порции работы, решения, статус |
+| [v2/MIGRATION.md](./v2/MIGRATION.md) | Переход на 2.0: что меняется для приложения (пополняется по порциям) |
 | [design/DESIGN_SYSTEM.md](./design/DESIGN_SYSTEM.md) | Дизайн-система: токены `--rise-*`, темы, размеры, правила и рецепты стилей компонентов |
 | [design/STORIES_GUIDE.md](./design/STORIES_GUIDE.md) | Как писать stories: структура, argTypes, v-model, play-проверки, visual/e2e |
 | [design/VISUAL_CHANGES.md](./design/VISUAL_CHANGES.md) | Визуальные изменения редизайна по компонентам (объяснение нового baseline) |

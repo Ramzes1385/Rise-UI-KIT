@@ -44,7 +44,7 @@
 
 | № | Порция | Состав | Время | Статус |
 |---|---|---|---|---|
-| 1.1 | Безопасность и stories в CI | Схемы ссылок в редакторе (EDT-5), `href` в BaseSideBar через `isSafeUrl` (SB-6), проп `sanitize` у BaseEditor (EDT-2). Прогон всех stories (рендер, play, axe, две темы) скриптом в `scripts/` и шагом CI (TST-2) | 1 ч | ⬜ |
+| 1.1 | Безопасность и stories в CI | Схемы ссылок в редакторе (EDT-5), `href` в BaseSideBar через `isSafeUrl` (SB-6), проп `sanitize` у BaseEditor (EDT-2). Прогон всех stories (рендер, play, axe, две темы) скриптом в `scripts/` и шагом CI (TST-2). Попутно: гонка курсора в BaseInput, шрифты до рендера stories, таймаут findBy 3 с | 1 ч | ✅ |
 | 1.2 | BaseApp и сервисы | `<BaseApp>`: контейнер уведомлений и оверлеев, провайдер настроек. `useToast()`, `useOverlay()`, `useConfirm()` и подтверждение у элемента (Popconfirm). Пауза автозакрытия уведомлений при наведении и фокусе (NTF-2) | 1,5 ч | ⬜ |
 | 1.3 | Тема и настройки | `data-theme="system"`, `useColorMode()`, переключатель темы. Значения по умолчанию для всего приложения (`createUiKitPlugin({ defaults })`). Замена иконок кита своими. BaseLink и `linkComponent` в плагине (BC-2, SB-6, TRE-6, часть MM-1) | 1,5 ч | ⬜ |
 | 1.4 | Локализация | Словари ru и en для 229 строк интерфейса, `locale` в BaseApp и плагине, `useLocale()`. Календарь без жёсткого `ru-RU`, числа, даты и множественное число через `Intl` | 1,5 ч | ⬜ |

@@ -95,6 +95,20 @@ describe('useEditorToolbar', () => {
 		})
 	})
 
+	describe('toggleCodeMode: очистка HTML', () => {
+		it('очищает HTML из режима кода функцией sanitize при возврате в визуальный режим', async () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const sanitize = vi.fn((html: string) => html.replace(' onerror="alert(1)"', ''))
+			const { codeContent, toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, sanitize }))
+			toggleCodeMode()
+			codeContent.value = '<img src="a.png" onerror="alert(1)">'
+			toggleCodeMode()
+			await nextTick()
+			expect(sanitize).toHaveBeenCalledWith('<img src="a.png" onerror="alert(1)">')
+			expect(editorRef.value!.innerHTML).toBe('<img src="a.png">')
+		})
+	})
+
 	describe('toggleCodeMode', () => {
 		it('должен переключать режимы', async () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
@@ -363,6 +377,37 @@ describe('useEditorToolbar', () => {
 			codeContent.value = 'link'
 			insertLink()
 			expect(codeContent.value).toBe('<a href="https://example.com">link</a>')
+		})
+
+		it('дополняет адрес без схемы до https', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'example.com/docs' }))
+			insertLink()
+			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com/docs')
+		})
+
+		it.each(['javascript:alert(1)', ' JaVaScRiPt:alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)'])(
+			'не вставляет ссылку с небезопасной схемой %j',
+			url => {
+				const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+				const { editorRef, codeTextareaRef, onInput } = createOptions()
+				const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => url }))
+				insertLink()
+				expect(document.execCommand).not.toHaveBeenCalledWith('createLink', false, expect.anything())
+				expect(onInput).not.toHaveBeenCalled()
+				expect(warn).toHaveBeenCalledWith(expect.stringContaining('небезопасной схемой'))
+			},
+		)
+
+		it('режим кода: экранирует кавычки адреса в атрибуте', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com/?q="><img src=x onerror=alert(1)>' }),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'link'
+			insertLink()
+			expect(codeContent.value).toBe('<a href="https://example.com/?q=&quot;&gt;&lt;img src=x onerror=alert(1)&gt;">link</a>')
 		})
 
 		it('режим кода: отмена prompt', () => {

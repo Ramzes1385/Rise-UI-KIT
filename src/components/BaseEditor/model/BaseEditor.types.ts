@@ -29,13 +29,18 @@ export type EditorHeading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p'
  */
 export interface BaseEditorProps extends BaseComponentProps<(typeof EDITOR_VARIANTS)[number], 'root' | 'toolbar' | 'btn' | 'group' | 'colorPicker' | 'headingSelect' | 'fileInput' | 'content' | 'code'> {
 	/**
-	 * HTML-содержимое.
-	 * ВНИМАНИЕ: редактор не санитизирует HTML ни на входе, ни в `update:modelValue` — строка
-	 * вставляется через innerHTML как есть (`<img onerror>`, `<svg onload>`, `<iframe srcdoc>`,
-	 * `<style>` сработают и в режиме только для чтения). Недоверенный HTML санитизируйте на сервере
-	 * (allowlist тегов/атрибутов, схемы ссылок) перед сохранением и перед передачей в редактор.
+	 * HTML-содержимое. Перед показом в редакторе и перед `update:modelValue` очищается функцией `sanitize`:
+	 * по умолчанию удаляются скрипты, обработчики `on*`, ссылки `javascript:`, `<iframe>`, `<svg>`, `<style>`.
+	 * Сохранённый HTML всё равно проверяйте на сервере: клиентскую очистку можно обойти, отправив запрос напрямую.
 	 */
 	modelValue?: string
+	/**
+	 * Очистка HTML: при показе `modelValue`, вставке из буфера обмена, перетаскивании, выходе из режима кода
+	 * и в `update:modelValue`. По умолчанию — `sanitizeHtml` из `utils`: разрешённые элементы редактора,
+	 * безопасные ссылки и медиа. Можно передать свою функцию, например DOMPurify со своими правилами.
+	 * Отключить очистку можно функцией `html => html` — только для HTML из доверенного источника.
+	 */
+	sanitize?: (html: string) => string
 	/** Плейсхолдер */
 	placeholder?: string
 	/** Только чтение */

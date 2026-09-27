@@ -1,4 +1,4 @@
-import { DOWNLOAD_PROTOCOLS, isSafeUrl } from './urlUtils'
+import { DOWNLOAD_PROTOCOLS, isSafeUrl, normalizeLinkUrl } from './urlUtils'
 
 describe('urlUtils.isSafeUrl', () => {
 	it.each([
@@ -45,4 +45,23 @@ describe('urlUtils.isSafeUrl', () => {
 		expect(isSafeUrl('javascript:alert(1)', DOWNLOAD_PROTOCOLS)).toBe(false)
 		expect(isSafeUrl('mailto:a@b.c', DOWNLOAD_PROTOCOLS)).toBe(false)
 	})
+})
+
+describe('urlUtils.normalizeLinkUrl', () => {
+	it.each([
+		['example.com', 'https://example.com'],
+		['  www.example.com/docs?page=2  ', 'https://www.example.com/docs?page=2'],
+		['localhost:3000', 'https://localhost:3000'],
+		['example.com:8080/path', 'https://example.com:8080/path'],
+		['team@example.com', 'mailto:team@example.com'],
+	])('дополняет %j до %j', (input, expected) => {
+		expect(normalizeLinkUrl(input)).toBe(expected)
+	})
+
+	it.each(['https://example.com', 'http://example.com', 'mailto:team@example.com', 'tel:88005553535', '/docs', '#install', './file', '?q=1', 'javascript:alert(1)', ''])(
+		'не меняет %j',
+		input => {
+			expect(normalizeLinkUrl(input)).toBe(input)
+		},
+	)
 })

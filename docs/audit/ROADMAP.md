@@ -14,7 +14,8 @@
 | TST-4, STB-2 | Закрыт | Устаревшие эталоны удалены вместе со всеми старыми (baseline перегенерируются после редизайна), патчи Storybook удалены |
 | SB-8 и мёртвый код stories | Закрыт | Тёмная тема — через toolbar и `&globals=theme:dark`; forced-state, coverage- и DarkTheme-stories, `try/catch`, внешние URL, `new Date()`/`Math.random()` удалены; все 51 компонент с docs-описанием |
 | OVL-6 | Частично | Visual spec снимают оверлеи открытыми (scope `page`) и ждут окончания play; baseline нужно сгенерировать |
-| TST-2 | Частично | Прогон всех stories (рендер, play, axe в двух темах) выполнен скриптом при редизайне, в CI не добавлен |
+| TST-2 | Закрыт | `npm run test:stories` (`scripts/check-stories.mjs`): каждая story в двух темах — рендер, play, axe, без внешних запросов; отдельный job CI. Подстрока `play:` в `check-a11y-coverage.mjs` исправлена |
+| EDT-2, EDT-5, SB-6 | Закрыт | Очистка HTML в BaseEditor по умолчанию (`sanitize`, `sanitizeHtml`), проверка схемы ссылок в редакторе и в BaseSideBar — порция 1.1 плана 2.0 |
 
 Открытые задачи редизайна — [docs/design/FOLLOW_UPS.md](../design/FOLLOW_UPS.md). Изменения для приложений — [docs/design/CHANGES_FOR_APPS.md](../design/CHANGES_FOR_APPS.md).
 

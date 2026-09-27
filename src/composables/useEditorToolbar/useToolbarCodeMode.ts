@@ -6,7 +6,7 @@ import type { UseToolbarCodeModeOptions } from './useToolbarCodeMode.types'
  * Composable для переключения режима кода/HTML в редакторе и синхронизации содержимого.
  */
 function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
-	const { editorRef, codeTextareaRef, onInput } = options
+	const { editorRef, codeTextareaRef, onInput, sanitize = (html: string) => html } = options
 
 	const isCodeMode = ref(false)
 	const codeContent = ref('')
@@ -52,7 +52,7 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 			isCodeMode.value = false
 			nextTick(() => {
 				if (!editorRef.value) return
-				editorRef.value.innerHTML = codeContent.value
+				editorRef.value.innerHTML = sanitize(codeContent.value)
 				onInput()
 			})
 		}

@@ -1,5 +1,6 @@
 /** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
 import { ref } from 'vue'
+import { isSafeUrl } from '@utils/urlUtils'
 import type { UseSideBarNavigationOptions } from './useSideBarNavigation.types'
 import type {
 	BaseSideBarItemSlotProps,
@@ -14,6 +15,23 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 	const { props, emit } = options
 
 	const expandedItemKeys = ref(new Set<SideBarItemKey>())
+
+	/** Адреса, о которых уже предупредили: пропсы пункта пересчитываются при каждом рендере */
+	const warnedUnsafeUrls = new Set<string>()
+
+	/**
+	 * Пункт становится ссылкой, только если он активен и его адрес безопасен. Строковый `to` приходит из данных
+	 * (CMS, API): `javascript:` в href исполнился бы по клику, поэтому такой пункт остаётся кнопкой.
+	 */
+	function isLinkItem(item: SideBarItem): boolean {
+		if (item.isDisabled || !item.to) return false
+		if (typeof item.to !== 'string' || isSafeUrl(item.to)) return true
+		if (!warnedUnsafeUrls.has(item.to)) {
+			warnedUnsafeUrls.add(item.to)
+			console.warn(`[rise-ui-kit] BaseSideBar: пункт «${item.label}» с небезопасным адресом показан кнопкой: ${item.to.slice(0, 80)}`)
+		}
+		return false
+	}
 
 	function getHref(to: SideBarItemTo): string {
 		return typeof to === 'string' ? to : '#'
@@ -52,7 +70,7 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 	}
 
 	function getItemComponent(item: SideBarItem): string | Component {
-		if (item.isDisabled || !item.to) {
+		if (!isLinkItem(item)) {
 			return 'button'
 		}
 
@@ -60,7 +78,7 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 	}
 
 	function getItemProps(item: SideBarItem): Record<string, unknown> {
-		if (item.isDisabled || !item.to) {
+		if (!isLinkItem(item)) {
 			return {
 				type: 'button',
 				disabled: item.isDisabled,
@@ -69,7 +87,7 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 
 		if (props.linkComponent === 'a') {
 			return {
-				href: getHref(item.to),
+				href: getHref(item.to!),
 			}
 		}
 

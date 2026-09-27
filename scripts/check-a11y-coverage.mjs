@@ -178,7 +178,8 @@ function checkA11yCoverage() {
 
     // Проверка play-функций для интерактивных компонентов
     if (isInteractive) {
-      const hasPlay = content.includes('play:') || content.includes('play =')
+      // Граница слова: иначе `display:` в стилях шаблона засчитывался бы как play-функция
+      const hasPlay = /\bplay\s*[:=]/.test(content)
       if (hasPlay) {
         results.hasPlay++
         // Проверка keyboard navigation

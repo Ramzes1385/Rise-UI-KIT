@@ -5,6 +5,8 @@ import {
 	isInsideList,
 	matchTypedInlineTag,
 } from '@utils/editorDomUtils'
+import { escapeHtml } from '@utils/htmlUtils'
+import { isSafeUrl, normalizeLinkUrl } from '@utils/urlUtils'
 import type { UseToolbarCommandsOptions } from './useToolbarCommands.types'
 
 /**
@@ -163,10 +165,15 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 	}
 
 	function insertLink(): void {
-		const url = promptForUrl?.()
+		const url = normalizeLinkUrl(promptForUrl?.() ?? '')
 		if (!url) return
+		// javascript:, data: и другие схемы исполнили бы код по клику на ссылку в документе
+		if (!isSafeUrl(url)) {
+			console.warn(`[rise-ui-kit] BaseEditor: ссылка с небезопасной схемой не вставлена: ${url.slice(0, 80)}`)
+			return
+		}
 		if (isCodeMode.value) {
-			wrapCodeSelection(`<a href="${url}">`, '</a>')
+			wrapCodeSelection(`<a href="${escapeHtml(url)}">`, '</a>')
 			return
 		}
 		saveSelection()

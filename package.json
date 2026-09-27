@@ -79,6 +79,7 @@
     "typecheck": "vue-tsc -b tsconfig.app.json",
     "test:unit": "vitest run --config build/tests/vitest.config.ts --project unit-integration",
     "test:a11y:coverage": "node scripts/check-a11y-coverage.mjs",
+    "test:stories": "node scripts/check-stories.mjs",
     "test:stories-coverage": "node scripts/check-stories-coverage.mjs",
     "test:contrast": "node scripts/check-contrast.mjs",
     "create:component": "node scripts/create-component.mjs",

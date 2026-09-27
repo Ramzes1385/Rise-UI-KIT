@@ -58,6 +58,46 @@ jobs:
       - name: Check missing play/keyboard a11y
         run: node scripts/check-a11y-coverage.mjs
 
+  stories-run:
+    name: Stories Run (render, play, axe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      # Каждая story в светлой и тёмной теме: рендер, play-функция, axe, без внешних запросов
+      - name: Run all stories
+        run: |
+          node scripts/serve-storybook-static.mjs &
+          npx wait-on http://localhost:6006
+          npm run test:stories -- --concurrency=3 --report=test-results/stories-report.json
+
+      - name: Upload stories report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: stories-report
+          path: test-results/stories-report.json
+          retention-days: 14
+
       # Пары «текст/фон» дизайн-токенов обеих тем — не ниже WCAG AA (docs/design/contrast.md)
       - name: Check design token contrast
         run: npm run test:contrast

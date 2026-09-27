@@ -114,6 +114,128 @@ describe('BaseEditor integration', () => {
 		})
 	})
 
+	describe('очистка HTML', () => {
+		/** Событие вставки с содержимым буфера обмена: в jsdom нет DataTransfer и ClipboardEvent с данными */
+		function createPasteEvent(data: Record<string, string>): Event {
+			const event = new Event('paste', { bubbles: true, cancelable: true })
+			Object.defineProperty(event, 'clipboardData', { value: { getData: (type: string) => data[type] ?? '' } })
+			return event
+		}
+
+		/** Событие drop с HTML из другой страницы */
+		function createDropEvent(html: string): Event {
+			const event = new Event('drop', { bubbles: true, cancelable: true })
+			Object.defineProperty(event, 'dataTransfer', { value: { getData: (type: string) => (type === 'text/html' ? html : '') } })
+			return event
+		}
+
+		function mockExecCommand() {
+			const execCommand = vi.fn(() => true)
+			Object.defineProperty(document, 'execCommand', { configurable: true, value: execCommand })
+			return execCommand
+		}
+
+		it('показывает modelValue без скриптов и обработчиков событий', () => {
+			const { container } = render(BaseEditor, {
+				props: { modelValue: '<p>Фото<img src="https://example.com/a.png" onerror="alert(1)" alt="фото"><script>alert(2)</script></p>' },
+			})
+			const content = getContent(container)
+
+			expect(content.innerHTML).toBe('<p>Фото<img src="https://example.com/a.png" alt="фото"></p>')
+		})
+
+		it('очищает новое значение modelValue', async () => {
+			const { container, rerender } = render(BaseEditor, { props: { modelValue: '<p>Текст</p>' } })
+
+			await rerender({ modelValue: '<p><a href="javascript:alert(1)">ссылка</a></p>' })
+
+			expect(getContent(container).innerHTML).toBe('<p><a>ссылка</a></p>')
+		})
+
+		it('отправляет в update:modelValue очищенный HTML', async () => {
+			const { container, emitted } = render(BaseEditor, { props: { modelValue: '' } })
+			const content = getContent(container)
+
+			content.innerHTML = '<p onclick="alert(1)">Текст</p>'
+			await fireEvent.input(content)
+
+			expect(emitted()['update:modelValue'][0]).toEqual(['<p>Текст</p>'])
+		})
+
+		it('вставляет HTML из буфера обмена очищенным', () => {
+			const execCommand = mockExecCommand()
+			const { container } = render(BaseEditor, { props: { modelValue: '' } })
+			const event = createPasteEvent({ 'text/html': '<!--StartFragment--><b onmouseover="alert(1)">жирный</b><style>p{}</style>', 'text/plain': 'жирный' })
+
+			getContent(container).dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(true)
+			expect(execCommand).toHaveBeenCalledWith('insertHTML', false, '<b>жирный</b>')
+		})
+
+		it('вставляет простой текст как текст с переносами строк', () => {
+			const execCommand = mockExecCommand()
+			const { container } = render(BaseEditor, { props: { modelValue: '' } })
+
+			getContent(container).dispatchEvent(createPasteEvent({ 'text/plain': 'Строка <b>1</b>\nСтрока 2' }))
+
+			expect(execCommand).toHaveBeenCalledWith('insertHTML', false, 'Строка &lt;b&gt;1&lt;/b&gt;<br>Строка 2')
+		})
+
+		it('не перехватывает вставку без текста и HTML (например, файлы)', () => {
+			const execCommand = mockExecCommand()
+			const { container } = render(BaseEditor, { props: { modelValue: '' } })
+			const event = createPasteEvent({})
+
+			getContent(container).dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(false)
+			expect(execCommand).not.toHaveBeenCalled()
+		})
+
+		it('вставляет перетащенный HTML очищенным', () => {
+			const execCommand = mockExecCommand()
+			const { container } = render(BaseEditor, { props: { modelValue: '' } })
+			const event = createDropEvent('<img src="x" onerror="alert(1)">')
+
+			getContent(container).dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(true)
+			expect(execCommand).toHaveBeenCalledWith('insertHTML', false, '<img src="x">')
+		})
+
+		it('не перехватывает перетаскивание внутри редактора', async () => {
+			const execCommand = mockExecCommand()
+			const { container } = render(BaseEditor, { props: { modelValue: '<p>Текст</p>' } })
+			const content = getContent(container)
+			await fireEvent.dragStart(content)
+			const event = createDropEvent('<p>Текст</p>')
+
+			content.dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(false)
+			expect(execCommand).not.toHaveBeenCalled()
+		})
+
+		it('использует свою функцию sanitize', async () => {
+			const sanitize = vi.fn(() => '<p>очищено</p>')
+			const { container, emitted } = render(BaseEditor, { props: { modelValue: '<p>исходный</p>', sanitize } })
+			const content = getContent(container)
+
+			expect(content.innerHTML).toBe('<p>очищено</p>')
+			content.innerHTML = '<p>новый</p>'
+			await fireEvent.input(content)
+			expect(sanitize).toHaveBeenLastCalledWith('<p>новый</p>')
+			expect(emitted()['update:modelValue'][0]).toEqual(['<p>очищено</p>'])
+		})
+
+		it('функция html => html отключает очистку для доверенного HTML', () => {
+			const { container } = render(BaseEditor, { props: { modelValue: '<p class="lead" data-id="1">Текст</p>', sanitize: (html: string) => html } })
+
+			expect(getContent(container).innerHTML).toBe('<p class="lead" data-id="1">Текст</p>')
+		})
+	})
+
 	describe('горячие клавиши', () => {
 		it('Ctrl+B в области текста делает текст жирным вместо действия браузера и отправляет v-model', async () => {
 			// execCommand в jsdom нет: проверяем, что редактор вызывает нужную команду

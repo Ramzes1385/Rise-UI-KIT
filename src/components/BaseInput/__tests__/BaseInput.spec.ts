@@ -524,108 +524,61 @@ describe('BaseInput unit', () => {
 		})
 	})
 
-	describe('requestAnimationFrame — синхронные вызовы для покрытия inputRef ветки', () => {
-		const originalRaf = globalThis.requestAnimationFrame
-
-		afterEach(() => {
-			globalThis.requestAnimationFrame = originalRaf
-		})
-
-		it('должен вызывать setSelectionRange после ввода с маской', async () => {
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				cb(0)
-				return 0
-			}
-
-			const { emitted } = render(BaseInput, { props: { modelValue: '', mask: '##' } })
+	describe('позиция курсора после маски', () => {
+		it('ставит курсор сразу после ввода с маской', async () => {
+			render(BaseInput, { props: { modelValue: '', mask: '##-##' } })
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
-			await fireEvent.update(input, '12')
+			await fireEvent.update(input, '123')
 
-			expect(emitted()).toHaveProperty('update:modelValue')
+			expect(input.value).toBe('12-3')
+			expect(input.selectionStart).toBe(4)
 		})
 
-		it('должен вызывать setSelectionRange после Backspace с маской', async () => {
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				cb(0)
-				return 0
-			}
-
-			const { emitted } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
+		it('ставит курсор после Backspace и Delete с маской', async () => {
+			render(BaseInput, { props: { modelValue: '12', mask: '##' } })
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
 			input.setSelectionRange(2, 2)
 			await fireEvent.keyDown(input, { key: 'Backspace' })
-
-			expect(emitted()).toHaveProperty('update:modelValue')
-		})
-
-		it('должен вызывать setSelectionRange после Delete с маской', async () => {
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				cb(0)
-				return 0
-			}
-
-			const { emitted } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
-			const input = screen.getByRole('textbox') as HTMLInputElement
+			expect(input.selectionStart).toBe(1)
 
 			input.setSelectionRange(0, 0)
 			await fireEvent.keyDown(input, { key: 'Delete' })
-
-			expect(emitted()).toHaveProperty('update:modelValue')
+			expect(input.selectionStart).toBe(0)
 		})
 
-		it('должен корректно работать когда inputRef стал null после ввода', async () => {
-			const callbacks: FrameRequestCallback[] = []
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				callbacks.push(cb)
-				return 0
-			}
+		it('не возвращает курсор, если значение изменилось до обновления DOM', async () => {
+			render(BaseInput, { props: { modelValue: '', mask: '####' } })
+			const input = screen.getByRole('textbox') as HTMLInputElement
 
+			const pending = fireEvent.update(input, '12')
+			// Следующий символ введён раньше, чем Vue обновил DOM: прежняя позиция устарела
+			input.value = '123'
+			input.setSelectionRange(3, 3)
+			await pending
+
+			expect(input.selectionStart).toBe(3)
+		})
+
+		it('не ставит курсор у типов без выделения текста', async () => {
+			const { emitted } = render(BaseInput, { props: { modelValue: '', type: 'email', allowedChars: 'letters' } })
+			const input = screen.getByRole('textbox') as HTMLInputElement
+
+			await fireEvent.update(input, 'ab1')
+
+			expect(input.value).toBe('ab')
+			expect(emitted()['update:modelValue']).toEqual([['ab']])
+		})
+
+		it('не падает, если поле размонтировали до обновления DOM', async () => {
 			const { unmount } = render(BaseInput, { props: { modelValue: '', mask: '##' } })
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
-			await fireEvent.update(input, '12')
+			const pending = fireEvent.update(input, '12')
 			unmount()
-			callbacks.forEach(cb => cb(0))
 
-			expect(callbacks.length).toBeGreaterThan(0)
-		})
-
-		it('должен корректно работать когда inputRef стал null после Backspace', async () => {
-			const callbacks: FrameRequestCallback[] = []
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				callbacks.push(cb)
-				return 0
-			}
-
-			const { unmount } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
-			const input = screen.getByRole('textbox') as HTMLInputElement
-
-			input.setSelectionRange(2, 2)
-			await fireEvent.keyDown(input, { key: 'Backspace' })
-			unmount()
-			callbacks.forEach(cb => cb(0))
-
-			expect(callbacks.length).toBeGreaterThan(0)
-		})
-
-		it('должен корректно работать когда inputRef стал null после Delete', async () => {
-			const callbacks: FrameRequestCallback[] = []
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				callbacks.push(cb)
-				return 0
-			}
-
-			const { unmount } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
-			const input = screen.getByRole('textbox') as HTMLInputElement
-
-			input.setSelectionRange(0, 0)
-			await fireEvent.keyDown(input, { key: 'Delete' })
-			unmount()
-			callbacks.forEach(cb => cb(0))
-
-			expect(callbacks.length).toBeGreaterThan(0)
+			await expect(pending).resolves.not.toThrow()
 		})
 	})
 

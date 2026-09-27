@@ -1,1 +1,1 @@
-export { DOWNLOAD_PROTOCOLS, isSafeUrl, NAVIGATION_PROTOCOLS } from './urlUtils'
+export { DOWNLOAD_PROTOCOLS, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl } from './urlUtils'

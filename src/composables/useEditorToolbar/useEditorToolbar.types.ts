@@ -35,4 +35,6 @@ export interface UseEditorToolbarOptions {
 	promptForUrl?: () => string | null
 	/** Режим только для чтения: контекстное меню медиа не открывается и не меняет содержимое */
 	isReadonly?: () => boolean
+	/** Очистка HTML, набранного в режиме кода, перед возвратом в визуальный режим. По умолчанию HTML не меняется */
+	sanitize?: (html: string) => string
 }

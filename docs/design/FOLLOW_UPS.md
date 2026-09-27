@@ -52,7 +52,7 @@
 | 26 | `v-html` в `icon` (TAB-3); не сбрасывается `hasDragMoved` (TAB-6); `change` при клике по активной вкладке (TAB-8) | BaseTabs | TAB-3 несовместим; остальное вне объёма | major (TAB-3), patch | S |
 | 27 | Крошки — кнопки, а не `<a href>` (BC-2). У «…» нет имени и `aria-expanded`, свернуть нельзя (BC-3); дубль Schema.org (BC-5). Нет `<nav aria-label>` и «Страница N» (PG-3); PG-4, PG-6, PG-7 | BaseBreadcrumbs, BasePagination | Нужны строки (№ 13) и смена семантики `navigate` | minor (BC-2), patch | M |
 | 28 | Нет полного APG Menu (MENU-1). MegaMenu: заголовок колонки `h4 tabindex=0` без клавиатуры, листья не `<a href>`, нет `<nav>` (MM-1); MM-3, MM-4 (Escape, клик вне), MM-5 (слоты), MM-7, MM-8 | BaseMenu, BaseMegaMenu | Большой объём, контракт слотов | minor | L |
-| 29 | `href` не проходит `isSafeUrl` (SB-6, безопасность); нет `<nav>` (SB-5); SB-3, SB-4 (flyout в свёрнутой панели), SB-9…SB-12 | BaseSideBar | Логика `useSideBarNavigation`, вне редизайна | patch (SB-5, SB-6), minor | M |
+| 29 | ~~`href` не проходит `isSafeUrl` (SB-6)~~ — сделано в 2.0, порция 1.1; нет `<nav>` (SB-5); SB-3, SB-4 (flyout в свёрнутой панели), SB-9…SB-12 | BaseSideBar | Логика `useSideBarNavigation`, вне редизайна | patch (SB-5, SB-6), minor | M |
 | 30 | Stepper: нет текста «пройден» (ST-2); кликабельны все шаги, `change` при клике по текущему (ST-3). Accordion: `div role=button` без уровня заголовка (ACC-2); ACC-3, ACC-4 (`v-model:open`), ACC-6 | BaseStepper, BaseAccordion | Разметка и новый API | minor | M |
 | 31 | Смена `rows` сбрасывает страницу и выбор (TBL-3); догрузка «схлопывается» (TBL-4). Клик по строке и ресайз — только мышью. У `cell-<key>` нет `value`/`index`. Закреплённые колонки перекрывают колонку выбора. У `header-<key>` нет кнопки сортировки. Один текст для «нет данных» и «ничего не найдено». TBL-8…TBL-21 | BaseTable | Поведение и API не менялись | minor | L |
 | 32 | Нет ролей `tree`/`treeitem`, клавиатуры APG и roving tabindex (TRE-1, TRE-2); нет каскада и indeterminate (TRE-4); TRE-5/6/8/9/11 | BaseTree | Большой объём, меняет порядок Tab | minor | L |
@@ -64,7 +64,7 @@
 | 38 | Имя диалога не меняется при листании (IMG-4). Клавиши зума слушаются на `document` — Esc в BaseModal закрывает и зум, и окно (IMG-10). Нет touch и pinch (IMG-6). IMG-8, IMG-9, IMG-12…IMG-16 | BaseImage, `useImageZoom` | Composables вне объёма | patch, minor | M |
 | 39 | Нет Pause/Play и live-региона (SLD-1); нет `region` и имени карусели (SLD-5); 1 слайд + loop + autoplay эмитит `change(0)` (SLD-8); SLD-2, 3, 6, 7, 9, 10 | BaseSlider, `useSlider` | Новые элементы UI и логика | minor | M |
 | 40 | Нет заявленных функций: разделителей дат и «непрочитанных», подгрузки истории, редактирования, состояния загрузки. `pinnedMessages` игнорируется, `search` и `add-member` не эмитятся (CHAT-5). «3 из 2» (CHAT-6); CHAT-7, 9, 10, 14, 15, 19, 20. Enter на подсказке @ или / сразу отправляет сообщение | BaseChat | Новый API и контракт | minor | L |
-| 41 | **Безопасность.** HTML не санитизируется (EDT-2, P1 — проп `sanitize`). `insertLink` не проверяет схему — проходит `javascript:` (EDT-5). Медиа сохраняются как `blob:` без revoke (EDT-4) | BaseEditor | Меняет контракт; вне объёма редизайна | patch (EDT-5), minor | M |
+| 41 | **Безопасность.** ~~HTML не санитизируется (EDT-2)~~ и ~~`insertLink` не проверяет схему (EDT-5)~~ — сделано в 2.0, порция 1.1. Осталось: медиа сохраняются как `blob:` без revoke (EDT-4) | BaseEditor | Меняет контракт; вне объёма редизайна | patch (EDT-5), minor | M |
 | 42 | Асинхронный родитель v-model откатывает DOM и сбивает каретку. В тулбаре 21 остановка Tab. Меню медиа открывается только правым кликом. У «Блок кода» и «Режим кода» одна иконка. `isEmpty` не учитывает медиа (EDT-14). Цвет по умолчанию `#000000` не виден в тёмной теме. Нет `isDisabled`/`error`/`label` (EDT-10). Enter вставляет `<br>`. Разделитель групп переносится в начало строки | BaseEditor | Логика и API вне редизайна | patch, minor | M |
 | 43 | `weight` по умолчанию (400) пишется inline и перебивает `strong`, `h1–h6` и CSS потребителя. Предложение — дефолт `undefined` | BaseText | Меняет публичное поведение и тесты | major | S |
 
@@ -96,6 +96,6 @@
 
 ## С чего начать
 
-1. **Безопасность.** Сначала проверка схем ссылок: EDT-5 из № 41 и SB-6 из № 29 (обе — patch, S). Затем проп `sanitize` у BaseEditor (EDT-2, minor).
+1. ~~**Безопасность.** Проверка схем ссылок (EDT-5, SB-6) и очистка HTML в BaseEditor (EDT-2)~~ — сделано в 2.0, порция 1.1.
 2. **Сквозные задачи, которые разблокируют остальное:** № 1–3 (имена полей, контекст формы, CORE-1) и № 5 (flip/shift).
 3. **Быстрые patch:** № 8, 10, 11, 13, 14, 48, 49, 52.

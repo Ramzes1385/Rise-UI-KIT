@@ -8,6 +8,48 @@ import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
 import type { BaseSideBarItemSlotProps } from '../model/BaseSideBar.types'
 
 describe('BaseSideBar navigation items', () => {
+	describe('безопасность адресов', () => {
+		it.each(['javascript:alert(1)', ' JaVaScRiPt:alert(1)', 'data:text/html,<script>alert(1)</script>'])(
+			'пункт с адресом %j остаётся кнопкой без href и предупреждает один раз',
+			async to => {
+				const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+				const { rerender } = render(BaseSideBar, {
+					props: {
+						linkComponent: 'a',
+						items: [
+							{ key: 'evil', label: 'Отчёт', to },
+							{ key: 'safe', label: 'Главная', to: '/dashboard' },
+						],
+					},
+					global: { stubs: BASE_SIDEBAR_STUBS },
+				})
+
+				const evil = screen.getByText('Отчёт').closest('a, button')
+				expect(evil?.tagName).toBe('BUTTON')
+				expect(evil).not.toHaveAttribute('href')
+				expect(screen.getByText('Главная').closest('a')).toHaveAttribute('href', '/dashboard')
+
+				await rerender({ title: 'Меню' })
+				expect(warn).toHaveBeenCalledTimes(1)
+				expect(warn.mock.calls[0][0]).toContain('небезопасным адресом')
+				warn.mockRestore()
+			},
+		)
+
+		it('не передаёт небезопасный адрес в свой linkComponent', () => {
+			vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const RouterLinkStub = markRaw({ props: ['to'], template: '<a data-testid="router-link" :href="to"><slot /></a>' })
+			render(BaseSideBar, {
+				props: { linkComponent: RouterLinkStub, items: [{ key: 'evil', label: 'Отчёт', to: 'javascript:alert(1)' }] },
+				global: { stubs: BASE_SIDEBAR_STUBS },
+			})
+
+			expect(screen.queryByTestId('router-link')).toBeNull()
+			expect(screen.getByText('Отчёт').closest('button')).toBeInTheDocument()
+			vi.restoreAllMocks()
+		})
+	})
+
 	it('рендерит items как навигацию', () => {
 		render(BaseSideBar, {
 			props: {

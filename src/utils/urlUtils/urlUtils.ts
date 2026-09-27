@@ -41,4 +41,25 @@ function isSafeUrl(url: string, allowedProtocols: readonly string[] = NAVIGATION
 	return allowedProtocols.includes(`${scheme.toLowerCase()}:`)
 }
 
-export { DOWNLOAD_PROTOCOLS, isSafeUrl, NAVIGATION_PROTOCOLS }
+/** Адрес электронной почты без схемы: team@example.com */
+const EMAIL_RE = /^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/
+/** Хост с портом без схемы: localhost:3000, example.com:8080/path — двоеточие здесь не отделяет схему */
+const HOST_WITH_PORT_RE = /^[\w-]+(\.[\w-]+)*:\d+([/?#]|$)/
+/** Схемы, у которых после двоеточия сразу идут данные: tel:88005553535 не должен стать хостом с портом */
+const DATA_SCHEME_RE = /^(mailto|tel):/i
+
+/**
+ * Приводит введённый пользователем адрес к ссылке: `example.com` → `https://example.com`,
+ * `localhost:3000` → `https://localhost:3000`, `team@example.com` → `mailto:team@example.com`.
+ * Адреса со схемой и относительные (`/docs`, `#anchor`, `./file`, `?q=1`) не меняются —
+ * их безопасность проверяет `isSafeUrl`.
+ */
+function normalizeLinkUrl(input: string): string {
+	const url = input.trim()
+	if (!url || /^[/#?.]/.test(url) || DATA_SCHEME_RE.test(url)) return url
+	if (EMAIL_RE.test(url)) return `mailto:${url}`
+	if (HOST_WITH_PORT_RE.test(url) || !SCHEME_RE.test(url)) return `https://${url}`
+	return url
+}
+
+export { DOWNLOAD_PROTOCOLS, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }

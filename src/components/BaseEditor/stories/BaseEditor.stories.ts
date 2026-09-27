@@ -74,8 +74,10 @@ const meta = {
 					'- Высота области текста — CSS-переменные `--editor-min-height` (160px) и `--editor-max-height` (600px) на корне;',
 					'  длинный текст прокручивается внутри. Проп `color` красит область текста, тулбар остаётся нейтральным.',
 					'',
-					'**Безопасность.** HTML из `modelValue` вставляется как есть, без санитизации (сработают `<img onerror>`, `<svg onload>`,',
-					'в том числе при `isReadonly`). Недоверенный HTML санитизируйте на сервере до сохранения и до передачи в редактор.',
+					'**Безопасность.** HTML очищается при показе `modelValue`, вставке из буфера, перетаскивании, выходе из режима кода',
+					'и в `update:modelValue`: скрипты, обработчики `on*`, ссылки `javascript:`, `<iframe>`, `<svg>`, `<style>` удаляются',
+					'(проп `sanitize`, по умолчанию `sanitizeHtml` из `utils`). Ссылка с небезопасной схемой не вставляется.',
+					'Сохранённый HTML всё равно проверяйте на сервере — см. story «Очистка HTML».',
 				].join('\n'),
 			},
 		},
@@ -449,6 +451,28 @@ export const CodeMode: Story = {
 		await expect(toggle).toHaveAttribute('aria-pressed', 'false')
 		const textbox = await canvas.findByRole('textbox', { name: 'Текстовый редактор' })
 		await waitFor(() => expect(within(textbox).getByRole('heading', { name: 'Итоги' })).toBeVisible())
+	},
+}
+
+/**
+ * Очистка HTML. В `modelValue` пришла разметка из недоверенного источника: скрипт, обработчик `onerror`,
+ * ссылка `javascript:` и `<iframe>`. Редактор показывает только безопасную часть: текст, изображение без обработчика
+ * и ссылку без адреса. Своя очистка — проп `sanitize`, например DOMPurify со своими правилами.
+ */
+export const SanitizedContent: Story = {
+	render: renderWithLocalModel,
+	args: {
+		modelValue: [
+			`<p>Фото стенда <img src="${STORY_IMAGES[2].src}" onerror="console.error('xss')" alt="${STORY_IMAGES[2].alt}" width="120"></p>`,
+			`<p><a href="javascript:console.error('xss')">Подробнее</a><script>console.error('xss')</script></p>`,
+			`<iframe srcdoc="<script>console.error('xss')</script>"></iframe>`,
+		].join(''),
+	},
+	play: async ({ canvas }) => {
+		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
+		await expect(textbox.querySelector('script, iframe')).toBeNull()
+		await expect(within(textbox).getByRole('img', { name: STORY_IMAGES[2].alt })).not.toHaveAttribute('onerror')
+		await expect(within(textbox).getByText('Подробнее')).not.toHaveAttribute('href')
 	},
 }
 

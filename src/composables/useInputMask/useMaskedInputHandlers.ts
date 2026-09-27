@@ -1,4 +1,5 @@
 /** Composable: обработчики ввода для маскированных полей */
+import { nextTick } from 'vue'
 import { useInputMask } from './useInputMask'
 import type { AllowedCharsFilter, UseMaskedInputHandlersOptions, UseMaskedInputHandlersReturn } from './useMaskedInputHandlers.types'
 
@@ -17,12 +18,20 @@ function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMask
 		return options.getValue() == null ? '' : String(options.getValue())
 	}
 
+	/**
+	 * Ставит курсор сразу и ещё раз после обновления DOM: v-model может перерисовать поле и сдвинуть курсор в конец.
+	 * Раньше позиция ставилась в requestAnimationFrame и при быстром вводе срабатывала уже после следующих символов,
+	 * перенося курсор назад («12ab34» с фильтром цифр давало «1243»). nextTick выполняется до следующего нажатия,
+	 * и позиция применяется, только если значение поля с тех пор не изменилось.
+	 */
 	function setCursorPos(pos: number): void {
-		requestAnimationFrame(() => {
-			/* istanbul ignore next — defensive: inputRef доступен после mount */
-			if (options.inputRef.value) {
-				options.inputRef.value.setSelectionRange(pos, pos)
-			}
+		const input = options.inputRef.value
+		// selectionStart === null у типов без выделения текста (email, number): setSelectionRange там бросает исключение
+		if (!input || input.selectionStart === null) return
+		input.setSelectionRange(pos, pos)
+		const value = input.value
+		nextTick(() => {
+			if (input.value === value) input.setSelectionRange(pos, pos)
 		})
 	}
 
