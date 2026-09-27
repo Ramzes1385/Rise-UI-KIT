@@ -484,3 +484,19 @@ describe('BaseTextarea unit', () => {
 		})
 	})
 })
+
+describe('BaseTextarea: имя и атрибуты поля', () => {
+	it('ariaLabel и inputAttrs попадают на нативный textarea; name из пропа или inputAttrs', async () => {
+		const { rerender } = render(BaseTextarea, {
+			props: { ariaLabel: 'Отзыв', inputAttrs: { id: 'review', name: 'review', 'data-testid': 'review-field' } },
+		})
+
+		const textarea = screen.getByRole('textbox', { name: 'Отзыв' })
+		expect(textarea).toHaveAttribute('id', 'review')
+		expect(textarea).toHaveAttribute('name', 'review')
+		expect(textarea).toHaveAttribute('data-testid', 'review-field')
+
+		await rerender({ name: 'comment' })
+		expect(textarea).toHaveAttribute('name', 'comment')
+	})
+})

@@ -185,6 +185,7 @@ import { BaseSelect } from '@components/BaseSelect'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useExpandTransition } from '@composables/useExpandTransition'
+import { isolateFormField } from '@composables/useFormContext'
 import { usePadding } from '@composables/usePadding'
 import { useTableComposition } from '@composables/useTableComposition'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT, TABLE, TABLE_TEXT } from '@constants'
@@ -206,6 +207,9 @@ const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable
 	sizeScale: SIZE_SCALE_DEFAULT,
 	padding: undefined,
 }))
+
+// Поиск, фильтры и выбор строк — служебные поля: они не становятся полем BaseFormField вокруг таблицы
+isolateFormField()
 
 const slots = useSlots()
 

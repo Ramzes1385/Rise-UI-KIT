@@ -7,7 +7,7 @@
 		:custom-class="customClass"
 		:weight="UI_FONT_WEIGHT.MEDIUM"
 		:size-scale="sizeScale">
-		{{ label }}<span v-if="isRequired" :class="[requiredClassName, requiredCustomClass]">*</span>
+		{{ label }}<span v-if="isRequired" :class="[requiredClassName, requiredCustomClass]" aria-hidden="true">*</span>
 	</BaseText>
 </template>
 

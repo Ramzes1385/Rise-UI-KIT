@@ -5,7 +5,7 @@
 		:class="[
 			variantClass,
 			{
-				'base-range--disabled': isDisabled,
+				'base-range--disabled': isControlDisabled,
 				'base-range--vertical': isVertical,
 			},
 			classes.root,
@@ -50,7 +50,7 @@
 							:bound-min="thumbMin(index)"
 							:bound-max="thumbMax(index)"
 							:label="thumbLabel(index)"
-							:is-disabled="isDisabled"
+							:is-disabled="isControlDisabled"
 							:is-vertical="isVertical"
 							:has-custom="hasThumbSlot"
 							:thumb-class="classes.thumb"
@@ -69,7 +69,7 @@
 						:bound-min="thumbMin(index)"
 						:bound-max="thumbMax(index)"
 						:label="thumbLabel(index)"
-						:is-disabled="isDisabled"
+						:is-disabled="isControlDisabled"
 						:is-vertical="isVertical"
 						:has-custom="hasThumbSlot"
 						:thumb-class="classes.thumb"
@@ -94,6 +94,7 @@ import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
@@ -115,6 +116,9 @@ const props = withDefaults(defineProps<BaseRangeProps>(), kitDefaults('BaseRange
 	isVertical: false,
 	hasLabel: false,
 }))
+
+/** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
+const isControlDisabled = useFormDisabled(() => props.isDisabled)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-range', props, [
 		'root',
@@ -176,7 +180,7 @@ function thumbLabel(index: number): string {
 const { handleThumbDown, handleTrackDown, handleThumbKeydown } = useRangeDrag({
 	trackRef,
 	pointValues,
-	isDisabled: () => props.isDisabled,
+	isDisabled: () => isControlDisabled.value,
 	min: () => props.min,
 	max: () => props.max,
 	step: () => props.step,

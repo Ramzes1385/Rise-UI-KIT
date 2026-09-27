@@ -685,3 +685,30 @@ describe('BaseInput unit', () => {
 		})
 	})
 })
+
+describe('BaseInput: имя и атрибуты поля', () => {
+	it('ariaLabel — имя поля без видимой подписи', () => {
+		render(BaseInput, { props: { modelValue: '', ariaLabel: 'Поиск по заказам' } })
+
+		expect(screen.getByRole('textbox', { name: 'Поиск по заказам' })).toBeInTheDocument()
+	})
+
+	it('inputAttrs попадают на нативный input; свой id связывает подпись, описание добавляется к ошибке', () => {
+		render(BaseInput, {
+			props: {
+				modelValue: '',
+				label: 'E-mail',
+				error: 'Неверный адрес',
+				inputAttrs: { id: 'email', name: 'email', autocomplete: 'email', inputmode: 'email', 'data-testid': 'email-field', 'aria-describedby': 'email-hint' },
+			},
+		})
+
+		const input = screen.getByRole('textbox', { name: 'E-mail' })
+		expect(input).toHaveAttribute('id', 'email')
+		expect(input).toHaveAttribute('name', 'email')
+		expect(input).toHaveAttribute('autocomplete', 'email')
+		expect(input).toHaveAttribute('inputmode', 'email')
+		expect(input).toHaveAttribute('data-testid', 'email-field')
+		expect(input.getAttribute('aria-describedby')).toMatch(/^v-\S+-error email-hint$/)
+	})
+})

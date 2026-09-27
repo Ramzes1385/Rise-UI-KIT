@@ -14,8 +14,8 @@
 				variantClass,
 				{
 					'base-select--open': isOpen,
-					'base-select--disabled': isDisabled,
-					'base-select--error': formField.error,
+					'base-select--disabled': isControlDisabled,
+					'base-select--error': control.hasError.value,
 					'base-select--multiple': isMultiple,
 					'base-select--has-tags': hasTags,
 				},
@@ -42,17 +42,15 @@
 				class="base-select__trigger"
 				:class="classes.trigger"
 				role="combobox"
-				:tabindex="isDisabled ? undefined : 0"
+				:tabindex="isControlDisabled ? undefined : 0"
 				aria-haspopup="listbox"
 				:aria-expanded="isOpen ? 'true' : 'false'"
 				:aria-controls="isOpen ? listboxId : undefined"
 				:aria-activedescendant="isOpen && activeIndex >= 0 ? getOptionId(activeIndex) : undefined"
-				:aria-labelledby="label ? labelId : undefined"
-				:aria-label="label ? undefined : resolvedPlaceholder"
-				:aria-required="isRequired ? 'true' : undefined"
-				:aria-invalid="formField.error ? 'true' : undefined"
-				:aria-describedby="formField.error ? errorId : undefined"
-				:aria-disabled="isDisabled ? 'true' : undefined"
+				:aria-labelledby="triggerLabelledBy"
+				:aria-label="triggerLabelledBy ? undefined : resolvedPlaceholder"
+				v-bind="control.aria.value"
+				:aria-disabled="isControlDisabled ? 'true' : undefined"
 				@click="toggleDropdown"
 				@keydown="handleTriggerKeydown">
 				<slot name="trigger" :is-open="isOpen" :selected-label="selectedLabel" :selected-labels="selectedLabels">
@@ -76,7 +74,7 @@
 									>
 									<!-- Мышью убирает значение; с клавиатуры то же делает повторный выбор опции в списке -->
 									<button
-										v-if="!isDisabled"
+										v-if="!isControlDisabled"
 										type="button"
 										class="base-select__tag-close"
 										:class="classes.tagClose"
@@ -176,6 +174,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { useSelect } from '@composables/useSelect'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
@@ -247,6 +246,23 @@ const formField = useFormField({
 	isRequired: () => props.isRequired,
 })
 
+/** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы не блокирует combobox на div) */
+const isControlDisabled = useFormDisabled(() => props.isDisabled)
+
+/**
+ * Триггер и BaseFormField вокруг: подпись обёртки называет триггер через aria-labelledby (`for` к div не применим),
+ * её описание или ошибка — в aria-describedby, aria-invalid и aria-required
+ */
+const control = useFieldControl({
+	isLabelable: false,
+	describedBy: () => (formField.error ? errorId : undefined),
+	hasError: () => Boolean(formField.error),
+	isRequired: () => props.isRequired,
+})
+
+/** Имя триггера: своя подпись, иначе подпись BaseFormField */
+const triggerLabelledBy = computed(() => (props.label ? labelId : control.fieldLabelId.value))
+
 const selectRef = ref<HTMLDivElement | null>(null)
 
 const {
@@ -274,13 +290,14 @@ const {
 	props,
 	emit,
 	onBlur: formField.onBlur,
+	isDisabled: () => isControlDisabled.value,
 })
 
 /** В мультивыборе есть выбранные значения — они показаны бейджами */
 const hasTags = computed(() => props.isMultiple && Array.isArray(props.modelValue) && props.modelValue.length > 0)
 
 function focusTrigger(): void {
-	if (!props.isDisabled) selectRef.value?.focus()
+	if (!isControlDisabled.value) selectRef.value?.focus()
 }
 
 /** Печатный символ без модификаторов — для поиска по буквам */
@@ -295,7 +312,7 @@ function isPrintableKey(event: KeyboardEvent): boolean {
  * Escape закрывает BaseDropdown.
  */
 function handleTriggerKeydown(event: KeyboardEvent): void {
-	if (props.isDisabled) return
+	if (isControlDisabled.value) return
 	// Пробел посреди набираемого слова — часть поиска, а не выбор
 	if (event.key === ' ' && isTypingAhead()) {
 		event.preventDefault()

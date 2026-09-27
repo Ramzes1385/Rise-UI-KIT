@@ -2,13 +2,14 @@
  * BaseFormField — stories.
  *
  * Разделы: Default (песочница) → внешний вид (варианты, размеры) → состояния (ошибка, длинный текст) →
- * сценарии (связь подписи с полем через `for`).
+ * сценарии (контрол кита внутри, связь подписи с полем через `for`).
  */
 
 import { expect } from 'storybook/test'
 import { ref } from 'vue'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseCheckbox } from '@components/BaseCheckbox'
+import { BaseInput } from '@components/BaseInput'
 import { BasePin } from '@components/BasePin'
 import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
 import BaseFormField from '../ui/BaseFormField.vue'
@@ -24,11 +25,12 @@ const meta = {
 					'Обёртка поля формы: подпись сверху, под полем — описание или ошибка. Нужна контролам без собственной подписи:',
 					'группам чекбоксов и радиокнопок, `BasePin`, нативным и сторонним полям.',
 					'',
-					'- `for` связывает подпись с полем по `id`: клик по подписи ставит фокус, подпись становится именем поля.',
-					'- Без `for` содержимое помечается группой (`role="group"`) с именем из подписи; описание и ошибка описывают группу.',
-					'- Ошибка (`error`) вытесняет описание. `isRequired` только показывает звёздочку — обязательность проверяет сам контрол.',
-					'',
-					'У `BaseInput` и `BaseTextarea` есть свои `label` и `error`: одиночному полю кита обёртка не нужна.',
+					'- Контрол кита внутри (BaseInput, BaseTextarea, BaseSelect, BaseCheckboxGroup) сам берёт id, описание, ошибку и',
+					'  обязательность обёртки: подпись — его имя, описание или ошибка — его описание, ошибка обёртки красит поле.',
+					'- `for` связывает подпись с другим полем по `id`: клик по подписи ставит фокус, подпись становится именем поля.',
+					'- Без контрола кита и без `for` содержимое — группа (`role="group"`) с именем из подписи; описание и ошибка описывают группу.',
+					'- Ошибка (`error`) вытесняет описание. `isRequired` показывает звёздочку и ставит полю `aria-required`; пустоту проверяет контрол.',
+					'- `name` — имя поля в данных BaseForm: ошибку проверки формы по схеме обёртка показывает сама.',
 				].join('\n'),
 			},
 		},
@@ -208,6 +210,36 @@ export const LongContent: Story = {
 }
 
 // ─── Сценарии ──────────────────────────────────────────────────────────────────
+
+/**
+ * Контрол кита внутри: BaseInput, BaseTextarea, BaseSelect и BaseCheckboxGroup сами сообщают обёртке свой id — `for`
+ * не нужен. Подпись обёртки — имя поля, описание или ошибка — его описание, `isRequired` — `aria-required`,
+ * ошибка обёртки красит поле. Ошибку из проверки BaseForm по схеме обёртка берёт по `name`.
+ */
+export const KitControl: Story = {
+	args: { label: 'E-mail', description: 'Пришлём чек на эту почту', isRequired: true },
+	parameters: { controls: { include: ['variant', 'sizeScale', 'error', 'description', 'isRequired'] } },
+	render: args => ({
+		components: { BaseFormField, BaseInput },
+		setup: () => ({ props: useArgsWithoutSlots(args), email: ref('') }),
+		template: `
+			<div class="story-narrow">
+				<BaseFormField v-bind="props">
+					<BaseInput v-model="email" type="email" placeholder="name@example.com" :input-attrs="{ name: 'email', autocomplete: 'email' }" />
+				</BaseFormField>
+			</div>
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const input = canvas.getByRole('textbox', { name: 'E-mail' })
+		await expect(input).toHaveAccessibleDescription('Пришлём чек на эту почту')
+		await expect(input).toHaveAttribute('aria-required', 'true')
+		await expect(input).toHaveAttribute('autocomplete', 'email')
+		await userEvent.click(canvas.getByText('E-mail'))
+		await expect(input).toHaveFocus()
+		await expect(canvas.queryByRole('group')).toBeNull()
+	},
+}
 
 /**
  * Связь подписи с полем через `for`: значение — `id` поля внутри обёртки. Клик по подписи ставит фокус в поле,

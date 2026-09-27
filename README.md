@@ -95,6 +95,14 @@
 - `BaseTree`: узел с `to` или `href` — ссылка `BaseLink` (у узла новое поле `target`). Клик по подписи и Enter переходят по ней, в режиме `single` узел становится выбранным; раскрытие не меняется.
 - Подробности — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Выбор и дерево».
 
+**Формы**
+
+- `BaseFormField` передаёт контролу кита внутри (BaseInput, BaseTextarea, BaseSelect, BaseCheckboxGroup) свой id, описание, ошибку и обязательность: подпись обёртки — имя поля (`for` не нужен), описание или ошибка — его `aria-describedby`, ошибка обёртки красит поле. Новый проп `name` — ошибка из проверки `BaseForm` по схеме.
+- `BaseInput`, `BaseTextarea`: новые `ariaLabel` (имя без видимой подписи) и `inputAttrs` (`name`, `autocomplete`, `inputmode`, `aria-*`, `data-*`, свой `id` — на нативное поле). Звёздочка обязательного поля скрыта от скринридера — обязательность объявляет `aria-required`.
+- `BaseForm`: `schema` (Standard Schema — Zod, Valibot, ArkType) и `state` — проверка перед `submit`, событие `invalid`, фокус на первом поле с ошибкой, `validate()` и `reset()` через ref; `submit` получает данные вторым аргументом. Отключённая или отправляемая форма блокирует и кастомные контролы кита (BaseSelect, BaseRange, BaseRating, BaseFileUpload, BaseEditor).
+- `BaseCheckbox`: частичный выбор `isIndeterminate`. Новый компонент `BaseCheckboxGroup` — группа флажков с массивом в `v-model` и флажком «Выбрать все».
+- Подробности — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Формы».
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -120,7 +128,7 @@
 - `BaseNotification`: `duration: 0` и некорректные значения заменяются значением по умолчанию (3000 мс); раньше уведомление исчезало почти сразу.
 - `BaseImage`: `<source>` AVIF/WebP добавляются только при явных `convertToAvif`/`convertToWebp` (новый проп `convertToAvif`, по умолчанию `false`); раньше AVIF и WebP запрашивались для любого локального src. Таймаут загрузки `loading="lazy"` отсчитывается с момента попадания в зону видимости.
 - Иконки: путь к спрайту задаётся `createUiKitPlugin({ iconSpritePath })` или `createIconPlugin({ spritePath })`; спрайт доступен как подпуть пакета `@ramzes1385/rise-ui-kit/icons.svg`.
-- `BaseForm`: во время `isLoading`/`isDisabled` поля блокируются через `<fieldset disabled>` (раскладка контента не меняется — у fieldset `display: contents`), после разблокировки фокус возвращается на прежнее поле. `<fieldset disabled>` блокирует только нативные поля (`input`/`textarea`/`select`/`button`): `BaseSelect`, `BaseRange`, `BaseRating`, `BaseEditor` внутри заблокированной формы блокируйте их собственными props. Заблокированные поля не попадают в FormData: если данные собираются после выставления `isLoading` (например, после `await`), соберите FormData до перевода формы в loading.
+- `BaseForm`: во время `isLoading`/`isDisabled` поля блокируются через `<fieldset disabled>` (раскладка контента не меняется — у fieldset `display: contents`), после разблокировки фокус возвращается на прежнее поле. Кастомные контролы кита (`BaseSelect`, `BaseRange`, `BaseRating`, `BaseFileUpload`, `BaseEditor`) блокируются вместе с формой через её контекст (раздел «Формы»). Заблокированные поля не попадают в FormData: если данные собираются после выставления `isLoading` (например, после `await`), соберите FormData до перевода формы в loading.
 - `BaseFormField`: `validate()` больше не сообщает ложное «Обязательное поле» — обязательность проверяет сам контрол/форма, `isRequired` отвечает за звёздочку.
 - `BaseRadio`: слот `option` заменяет только подпись — нативный input и кружок рендерятся всегда.
 - `BaseInput` с маской: в readonly/disabled поле Backspace/Delete ничего не удаляют; маски с несколькими литералами в начале (`+7 (`) набираются посимвольно. Известное ограничение осталось: если первая набранная цифра совпадает с цифрой префикса маски (`+7 (###)…` и ввод «7», `8 (###)…` и ввод «8»), она поглощается префиксом.
@@ -518,6 +526,12 @@ const value = ref('')
 </template>
 ```
 
+У `BaseInput` и `BaseTextarea` имя без видимой подписи задаёт `aria-label`, атрибуты нативного поля — `input-attrs`:
+
+```vue
+<BaseInput v-model="email" type="email" aria-label="E-mail" :input-attrs="{ name: 'email', autocomplete: 'email', 'data-testid': 'email' }" />
+```
+
 ---
 
 ## BaseTextarea
@@ -584,6 +598,33 @@ const checked = ref(false)
 </template>
 ```
 
+`is-indeterminate` — частичный выбор (флажок с чертой, скринридер слышит «частично отмечен»): например, «Выбрать все», когда отмечена часть. Клик отмечает флажок, снимать частичный выбор — задача родителя.
+
+---
+
+## BaseCheckboxGroup
+
+Группа флажков: `v-model` — массив отмеченных значений в порядке вариантов, `options` — `value`, `label`, `isDisabled`. Группа — `role="group"` с именем из `label` (или подписи `BaseFormField` вокруг), ошибка описывает группу. `has-select-all` добавляет флажок «Выбрать все»: при части отмеченных он частично отмечен, клик отмечает все доступные варианты.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseCheckboxGroup } from '@ramzes1385/rise-ui-kit'
+
+const channels = ref<(string | number)[]>(['email'])
+
+const options = [
+	{ value: 'email', label: 'Электронная почта' },
+	{ value: 'push', label: 'Push-уведомления' },
+	{ value: 'sms', label: 'SMS', isDisabled: true },
+]
+</script>
+
+<template>
+	<BaseCheckboxGroup v-model="channels" :options="options" label="Каналы уведомлений" has-select-all />
+</template>
+```
+
 ---
 
 ## BaseRadio
@@ -633,7 +674,7 @@ const enabled = ref(false)
 
 Контейнер формы.
 
-Событие `submit` приходит без перезагрузки страницы (нативная отправка отменяется). Кнопке отправки нужен `type="submit"` — у `BaseButton` по умолчанию `type="button"`. При `is-loading` / `is-disabled` `submit` не эмитится, а нативные поля формы блокируются через `<fieldset disabled>`; `BaseSelect`, `BaseRange`, `BaseRating` и `BaseEditor` блокируйте их собственными props. Заблокированные поля не попадают в FormData — собирайте данные до перевода формы в `is-loading`.
+Событие `submit` приходит без перезагрузки страницы (нативная отправка отменяется). Кнопке отправки нужен `type="submit"` — у `BaseButton` по умолчанию `type="button"`. При `is-loading` / `is-disabled` `submit` не эмитится, нативные поля блокируются через `<fieldset disabled>`, а кастомные контролы кита (`BaseSelect`, `BaseRange`, `BaseRating`, `BaseFileUpload`, `BaseEditor`, `BaseCheckboxGroup`) — через контекст формы. Заблокированные поля не попадают в FormData — собирайте данные до перевода формы в `is-loading`.
 
 ```vue
 <script setup lang="ts">
@@ -655,13 +696,41 @@ function handleSubmit(): void {
 </template>
 ```
 
+Проверка по схеме: `schema` — любая схема [Standard Schema](https://standardschema.dev) (Zod 3.24+, Valibot 1.0+, ArkType 2.0+), `state` — данные формы. При отправке кит проверяет `state`: ошибки показывают `BaseFormField` с тем же `name` (путь через точку: `address.city`), приходит событие `invalid`, фокус уходит на первое поле с ошибкой. После первой отправки ошибки исчезают по мере исправления. Без ошибок `submit` получает вторым аргументом данные после схемы. Через ref доступны `validate()`, `reset()` и `errors`. Кит не зависит от библиотеки схем — её ставит приложение.
+
+```vue
+<script setup lang="ts">
+import { reactive } from 'vue'
+import { z } from 'zod'
+import { BaseButton, BaseForm, BaseFormField, BaseInput } from '@ramzes1385/rise-ui-kit'
+
+const schema = z.object({
+	name: z.string().trim().min(1, 'Введите имя'),
+	email: z.string().email('Введите e-mail'),
+})
+const state = reactive({ name: '', email: '' })
+
+function handleSubmit(_event: Event, data: unknown): void {
+	console.log(data as z.infer<typeof schema>)
+}
+</script>
+
+<template>
+	<BaseForm :schema="schema" :state="state" @submit="handleSubmit">
+		<BaseFormField label="Имя" name="name" is-required><BaseInput v-model="state.name" /></BaseFormField>
+		<BaseFormField label="E-mail" name="email" is-required><BaseInput v-model="state.email" type="email" /></BaseFormField>
+		<BaseButton type="submit">Отправить</BaseButton>
+	</BaseForm>
+</template>
+```
+
 ---
 
 ## BaseFormField
 
 Обёртка для поля формы.
 
-Обычно используется для label, ошибок и вспомогательного текста.
+Обычно используется для label, ошибок и вспомогательного текста. Контрол кита внутри (`BaseInput`, `BaseTextarea`, `BaseSelect`, `BaseCheckboxGroup`) сам получает от обёртки id, описание, ошибку и обязательность: подпись становится его именем, описание или ошибка — описанием (`aria-describedby`), ошибка обёртки красит поле. Для другого поля подпись связывает `for`, без него содержимое — группа с именем из подписи. `name` — имя поля в данных `BaseForm`: ошибку проверки по схеме обёртка показывает сама.
 
 ```vue
 <script setup lang="ts">
@@ -1789,6 +1858,7 @@ BaseCalendar
 BaseCard
 BaseChat
 BaseCheckbox
+BaseCheckboxGroup
 BaseChip
 BaseColorPicker
 BaseConfirm

@@ -19,14 +19,15 @@
 					class="base-checkbox__input"
 					:class="classes.input"
 					:checked="modelValue"
+					:indeterminate="isIndeterminate"
 					:disabled="isDisabled"
 					:aria-invalid="formField.error ? 'true' : undefined"
 					:aria-describedby="formField.error ? errorId : undefined"
 					@change="handleChange" />
 				<span class="base-checkbox__box" :class="classes.box" aria-hidden="true">
 					<BaseIcon
-						v-if="modelValue"
-						name="check"
+						v-if="modelValue || isIndeterminate"
+						:name="isIndeterminate ? 'minus' : 'check'"
 						:size-scale="calcIconScale('sm', sizeScale)"
 						class="base-checkbox__icon"
 						:custom-class="classes.icon" />
@@ -71,6 +72,7 @@ const props = withDefaults(defineProps<BaseCheckboxProps>(), kitDefaults('BaseCh
 	variant: DEFAULT_VARIANT,
 	modelValue: false,
 	isDisabled: false,
+	isIndeterminate: false,
 	error: '',
 	sizeScale: SIZE_SCALE_DEFAULT,
 }))
@@ -95,6 +97,8 @@ function handleChange(e: Event): void {
 	if (!target) return
 	emit('update:modelValue', target.checked)
 	emit('change', target.checked)
+	// Клик снимает indeterminate у элемента; вернуть его, если родитель оставил частичный выбор
+	target.indeterminate = props.isIndeterminate
 }
 
 defineExpose({

@@ -4,7 +4,7 @@
 		:class="[
 			variantClass,
 			{
-				'base-input--error': formField.error,
+				'base-input--error': control.hasError.value,
 				'base-input--disabled': isDisabled,
 				'base-input--readonly': isReadonly,
 				'base-input--has-prefix': prefix || $slots.prefix,
@@ -36,7 +36,9 @@
 					>{{ prefix }}</BaseText
 				>
 			</slot>
+			<!-- Атрибуты поля — первыми: id, значение и состояние кита их перекрывают (свой id и описание учтены в них) -->
 			<input
+				v-bind="nativeAttrs"
 				:id="inputId"
 				ref="inputRef"
 				class="base-input__field"
@@ -46,9 +48,6 @@
 				:placeholder="placeholder"
 				:disabled="isDisabled"
 				:readonly="isReadonly"
-				:aria-invalid="formField.error ? 'true' : undefined"
-				:aria-required="isRequired ? 'true' : undefined"
-				:aria-describedby="formField.error ? errorId : undefined"
 				@input="masked.handleInput"
 				@keydown="masked.handleKeydown"
 				@blur="handleBlur"
@@ -113,6 +112,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { useFieldControl } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
@@ -143,15 +143,30 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 const emit = defineEmits<BaseInputEmits>()
 defineSlots<BaseInputSlots>()
 const inputRef = ref<HTMLInputElement | null>(null)
-/** id поля и текста ошибки: метка связана с полем через for, ошибка — через aria-describedby */
-const inputId = useId()
-const errorId = `${inputId}-error`
+/** id текста ошибки: поле описано ею через aria-describedby */
+const errorId = `${useId()}-error`
 
 const formField = useFormField({
 	value: () => props.modelValue,
 	error: () => props.error,
 	isRequired: () => props.isRequired,
 })
+
+/** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */
+const control = useFieldControl({
+	id: () => props.inputAttrs?.id as string | undefined,
+	describedBy: () => [formField.error ? errorId : undefined, props.inputAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
+	hasError: () => Boolean(formField.error),
+	isRequired: () => props.isRequired,
+})
+const inputId = control.id
+
+/** Атрибуты нативного поля: inputAttrs, имя без подписи (ariaLabel) и aria-состояния поля и обёртки */
+const nativeAttrs = computed(() => ({
+	...props.inputAttrs,
+	...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
+	...control.aria.value,
+}))
 
 const masked = useMaskedInputHandlers({
 	getMask: () => props.mask,

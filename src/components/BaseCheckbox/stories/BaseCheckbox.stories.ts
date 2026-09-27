@@ -2,7 +2,7 @@
  * BaseCheckbox — stories.
  *
  * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (disabled, ошибка, длинная подпись) → сценарии (слот ошибки, согласие перед отправкой) → клавиатура.
+ * состояния (disabled, ошибка, частичный выбор, длинная подпись) → сценарии (слот ошибки, согласие перед отправкой) → клавиатура.
  */
 
 import { expect, fn } from 'storybook/test'
@@ -176,6 +176,18 @@ export const WithError: Story = {
 		const checkbox = canvas.getByRole('checkbox', { name: 'Принимаю условия пользовательского соглашения' })
 		await expect(checkbox).toHaveAttribute('aria-invalid', 'true')
 		await expect(checkbox).toHaveAccessibleDescription('Без согласия с условиями заказ не оформить')
+	},
+}
+
+/**
+ * Частичный выбор (`isIndeterminate`): флажок с чертой — например, «Выбрать все», когда выбрана часть. Скринридер
+ * слышит «частично отмечен»; клик отмечает флажок, а снять частичный выбор должен родитель. Группу с таким флажком
+ * собирает `BaseCheckboxGroup` (`hasSelectAll`).
+ */
+export const Indeterminate: Story = {
+	args: { label: 'Все уведомления', isIndeterminate: true },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('checkbox', { name: 'Все уведомления' })).toBePartiallyChecked()
 	},
 }
 

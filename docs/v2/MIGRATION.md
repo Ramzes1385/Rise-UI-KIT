@@ -266,6 +266,51 @@
 - `BaseTree`: проп `ariaLabel`, поле узла `target`; `useTreeState` возвращает `expandNodes(ids)` — раскрыть несколько узлов одним событием `update:expandedIds`.
 - Строка словаря `plural.SEARCH_RESULTS` (ru, en) — число найденного для `BaseSearch`.
 
+## Формы (порция 1.8)
+
+### BaseFormField: контекст для контрола внутри
+
+**Что изменилось.**
+- Контрол кита внутри обёртки (BaseInput, BaseTextarea, BaseSelect, BaseCheckboxGroup) сам сообщает ей свой id: подпись связана с нативным полем через `for`, combobox BaseSelect и группа флажков названы подписью через `aria-labelledby`. Содержимое с таким контролом больше не помечается `role="group"`.
+- Контрол получает описание или ошибку обёртки в `aria-describedby`, `aria-invalid` при ошибке обёртки и `aria-required` при `isRequired`. Ошибка обёртки красит поле (рамка цвета ошибки), текст ошибки по-прежнему один — под обёрткой.
+- Подпись обёртки связывается с контролом после его монтирования — в следующем тике после первого рендера.
+- Новый проп `name`: ошибку проверки `BaseForm` по схеме обёртка показывает сама.
+- Звёздочка обязательного поля (у обёртки и у подписей BaseInput, BaseTextarea, BaseSelect, BaseRadio, BaseSwitch) скрыта от скринридера (`aria-hidden`): имя поля больше не заканчивается на «*».
+
+**Что сделать.**
+- Уберите `for` у обёртки вокруг контрола кита — он больше не нужен (с `for` подпись связывается с указанным id, как раньше).
+- Тесты, которые искали поле по имени со звёздочкой (`getByLabelText('Email *')`), — на имя без неё. Тесты, которые сразу после `mount` проверяли связь подписи обёртки с полем, — после `await nextTick()`.
+- Если под ошибкой обёртки поле не должно краситься, передавайте ошибку самому контролу (`error`), а не обёртке.
+
+### BaseInput и BaseTextarea: `ariaLabel` и `inputAttrs`
+
+**Что изменилось.** `ariaLabel` — имя поля без видимой подписи. `inputAttrs` — атрибуты нативного `<input>`/`<textarea>` (`name`, `autocomplete`, `inputmode`, `aria-*`, `data-*`); `id` из них заменяет сгенерированный, а `aria-describedby` добавляется к описаниям кита. Атрибуты на самом компоненте, как и раньше, попадают на корневой `div`.
+
+**Что сделать.** Перенесите `name`, `autocomplete`, `data-testid` и подобные атрибуты с компонента в `inputAttrs` — на корне они не работали.
+
+### BaseForm: проверка по схеме и блокировка кастомных контролов
+
+**Что изменилось.**
+- `schema` — схема Standard Schema (Zod 3.24+, Valibot 1.0+, ArkType 2.0+), `state` — данные формы. Со схемой отправка сначала проверяет `state`: при ошибках приходит `invalid` (список `{ name, message }`), ошибки показывают BaseFormField с тем же `name`, фокус уходит на первое поле с ошибкой, `submit` не приходит. После первой отправки проверка повторяется при каждом изменении `state`. `submit` приходит после проверки — асинхронно.
+- `submit` получает вторым аргументом данные: после схемы или `state` без неё.
+- Через ref: `validate()` (промис с `{ value, issues }`), `reset()` и `errors`.
+- Отключённая или отправляемая форма блокирует кастомные контролы кита: BaseSelect, BaseRange, BaseRating, BaseFileUpload, BaseCheckboxGroup (отключены) и BaseEditor (только чтение). Раньше их нужно было блокировать собственными props.
+
+**Что сделать.** Уберите ручную блокировку этих контролов по `isLoading` формы. Обработчик `submit` со схемой вызывается не синхронно с событием отправки — не рассчитывайте на это в тестах (ждите `waitFor`).
+
+### BaseCheckbox и BaseCheckboxGroup
+
+**Что изменилось.** У BaseCheckbox новый проп `isIndeterminate` — частичный выбор: флажок с чертой, скринридер слышит «частично отмечен»; клик отмечает флажок. Новый компонент `BaseCheckboxGroup`: `options`, массив в `v-model`, `label`, `error`, `isRequired`, `isDisabled`, `isVertical`, `hasSelectAll` (флажок «Выбрать все»).
+
+**Что сделать.** Ничего. Группы из нескольких `BaseCheckbox` в `BaseFormField` можно заменить на `BaseCheckboxGroup`.
+
+### Новое
+
+- `useFormContext`: `useFormDisabled()` (блокировка с учётом формы), `useFieldControl()` (id, описание и ошибка обёртки для своих контролов), ключи `FORM_CONTEXT_KEY` и `FORM_FIELD_CONTEXT_KEY`.
+- `formUtils`: `validateSchema`, `issuesToErrors`, `issueName` и типы Standard Schema (`StandardSchemaV1`).
+- `useSelect` принимает `isDisabled` — блокировку с учётом формы.
+- Строка словаря `text.SELECT_ALL_OPTIONS` (ru, en) — «Выбрать все» в BaseCheckboxGroup.
+
 ## Новые утилиты
 
 | Функция | Назначение |

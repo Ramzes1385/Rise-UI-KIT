@@ -49,6 +49,7 @@
 					class="base-switch__required"
 					:custom-class="classes.required"
 					:size-scale="sizeScale"
+					aria-hidden="true"
 					>*</BaseText
 				>
 				<slot />

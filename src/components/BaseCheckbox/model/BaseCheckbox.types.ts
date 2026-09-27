@@ -15,6 +15,11 @@ export interface BaseCheckboxProps extends BaseComponentProps<(typeof CHECKBOX_V
 	error?: string
 	/** Отключенное состояние */
 	isDisabled?: boolean
+	/**
+	 * Частичный выбор (например, «Выбрать все», когда выбрана часть): флажок с чертой, скринридер слышит
+	 * «частично отмечен». Клик отмечает флажок; снимать частичный выбор — задача родителя
+	 */
+	isIndeterminate?: boolean
 }
 
 /**

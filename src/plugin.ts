@@ -13,6 +13,7 @@ import { BaseBreadcrumbs } from './components/BaseBreadcrumbs'
 import { BaseButton } from './components/BaseButton'
 import { BaseCard } from './components/BaseCard'
 import { BaseCheckbox } from './components/BaseCheckbox'
+import { BaseCheckboxGroup } from './components/BaseCheckboxGroup'
 import { BaseChip } from './components/BaseChip'
 import { BaseColorModeButton } from './components/BaseColorModeButton'
 import { BaseColorPicker } from './components/BaseColorPicker'
@@ -121,6 +122,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseCard,
 	BaseChat,
 	BaseCheckbox,
+	BaseCheckboxGroup,
 	BaseChip,
 	BaseColorModeButton,
 	BaseColorPicker,

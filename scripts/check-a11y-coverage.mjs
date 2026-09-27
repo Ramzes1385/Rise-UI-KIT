@@ -44,6 +44,7 @@ const INTERACTIVE_COMPONENTS = new Set([
   'BaseDropdownMenu',
   'BaseContextMenu',
   'BasePopconfirm',
+  'BaseCheckboxGroup',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -56,6 +57,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
   'BaseLink',
   'BaseDropdownMenu',
   'BaseContextMenu',
+  'BaseCheckboxGroup',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -63,6 +65,7 @@ const FORM_COMPONENTS = new Set([
   'BaseInput', 'BaseTextarea', 'BaseSelect', 'BaseCheckbox',
   'BaseRadio', 'BaseSwitch', 'BasePin', 'BaseSearch',
   'BaseFileUpload', 'BaseDatePicker',
+  'BaseCheckboxGroup',
 ])
 
 /** Компоненты с состоянием Loading */

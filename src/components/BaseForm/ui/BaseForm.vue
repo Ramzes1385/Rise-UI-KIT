@@ -30,13 +30,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, provide, ref, watch } from 'vue'
 import { BaseLoader } from '@components/BaseLoader'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { FORM_CONTEXT_KEY } from '@composables/useFormContext'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
+import { issuesToErrors, validateSchema } from '@utils/formUtils'
 import '../styles/BaseForm.style.scss'
-import type { BaseFormEmits, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
+import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
+import type { FormValidationResult } from '@utils/formUtils'
 
 const props = withDefaults(defineProps<BaseFormProps>(), kitDefaults('BaseForm', {
 	variant: DEFAULT_VARIANT,
@@ -75,9 +78,74 @@ watch(isLocked, locked => {
 	if (target.isConnected && (!active || active === document.body)) target.focus()
 }, { flush: 'post' })
 
-function handleSubmit(e: Event): void {
-	if (!props.isLoading && !props.isDisabled) {
-		emit('submit', e)
+/** Ошибки проверки схемой: имя поля → текст (их показывают BaseFormField с тем же name) */
+const errors = ref<Record<string, string>>({})
+
+/** Была попытка отправки: с этого момента схема проверяет данные при каждом изменении */
+const isSubmitted = ref(false)
+
+/** Номер проверки: ответ асинхронной схемы, пришедший после более новой проверки, не показывается */
+let validationRun = 0
+
+async function validate(): Promise<FormValidationResult> {
+	const run = ++validationRun
+	if (!props.schema) {
+		errors.value = {}
+		return { value: props.state, issues: [] }
 	}
+	const result = await validateSchema(props.schema, props.state)
+	if (run === validationRun) errors.value = issuesToErrors(result.issues)
+	return result
 }
+
+function reset(): void {
+	validationRun++
+	isSubmitted.value = false
+	errors.value = {}
+}
+
+// После первой отправки ошибки исчезают по мере исправления полей
+watch(
+	() => props.state,
+	() => {
+		if (isSubmitted.value) void validate()
+	},
+	{ deep: true },
+)
+
+/** Первое поле с ошибкой получает фокус: клавиатурный пользователь и скринридер сразу у проблемы */
+async function focusFirstInvalid(): Promise<void> {
+	await nextTick()
+	formRef.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus()
+}
+
+async function handleSubmit(e: Event): Promise<void> {
+	if (isLocked.value) return
+	if (!props.schema) {
+		emit('submit', e, props.state)
+		return
+	}
+	isSubmitted.value = true
+	const result = await validate()
+	if (result.issues.length > 0) {
+		emit('invalid', result.issues)
+		await focusFirstInvalid()
+		return
+	}
+	emit('submit', e, result.value)
+}
+
+// Вложенные контролы и поля: блокировка кастомных контролов (fieldset блокирует только нативные) и ошибки схемы
+provide(FORM_CONTEXT_KEY, {
+	isDisabled: isLocked,
+	errors: computed(() => errors.value),
+})
+
+defineExpose<BaseFormExpose>({
+	validate,
+	reset,
+	get errors() {
+		return errors.value
+	},
+})
 </script>

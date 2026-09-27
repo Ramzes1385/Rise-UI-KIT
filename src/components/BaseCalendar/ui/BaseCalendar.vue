@@ -143,6 +143,7 @@ import { useCalendar } from '@composables/useCalendar'
 import { useCalendarInteraction } from '@composables/useCalendarInteraction'
 import { useCalendarPopover } from '@composables/useCalendarPopover'
 import { useCalendarResolvedProps } from '@composables/useCalendarResolvedProps'
+import { isolateFormField } from '@composables/useFormContext'
 import { UI_ARIA, UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCalendar.style.scss'
@@ -156,6 +157,9 @@ import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '..
 // 2) вложенные config-объекты (timeConfig, displayConfig, constraints) дают тройной приоритет
 // См. useCalendarResolvedProps — единый источник дефолтов.
 const props = defineProps<BaseCalendarProps>()
+
+// Поля часов и минут — служебные: они не становятся полем BaseFormField вокруг календаря (или BaseDatePicker)
+isolateFormField()
 const resolvedProps = useCalendarResolvedProps(props)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({

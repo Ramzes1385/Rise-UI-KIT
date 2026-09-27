@@ -4,7 +4,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
 
 describe('BaseCheckbox unit', () => {
@@ -204,5 +204,24 @@ describe('BaseCheckbox unit', () => {
 			expect(container.querySelector('.base-checkbox__label')).toHaveClass('custom-label')
 			expect(container.querySelector('.base-checkbox__error-text')).toHaveClass('custom-error-text')
 		})
+	})
+})
+
+describe('BaseCheckbox: частичный выбор (isIndeterminate)', () => {
+	it('флажок частично отмечен и рисует черту', () => {
+		const { container } = render(BaseCheckbox, { props: { label: 'Выбрать все', isIndeterminate: true } })
+
+		expect(screen.getByRole('checkbox', { name: 'Выбрать все' })).toBePartiallyChecked()
+		expect(container.querySelector('.base-checkbox__icon use')?.getAttribute('href')).toContain('minus')
+	})
+
+	it('клик отмечает флажок; если родитель оставил частичный выбор — он возвращается', async () => {
+		const { emitted } = render(BaseCheckbox, { props: { label: 'Выбрать все', isIndeterminate: true } })
+		const checkbox = screen.getByRole('checkbox', { name: 'Выбрать все' }) as HTMLInputElement
+
+		await fireEvent.click(checkbox)
+
+		expect(emitted()['update:modelValue']).toEqual([[true]])
+		expect(checkbox.indeterminate).toBe(true)
 	})
 })

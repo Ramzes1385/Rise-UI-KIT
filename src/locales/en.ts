@@ -24,6 +24,7 @@ export const en: UiKitLocale = {
 		APPLY: 'Apply',
 		REQUIRED_FIELD: 'Required field',
 		SELECT_PLACEHOLDER: 'Select...',
+		SELECT_ALL_OPTIONS: 'Select all',
 		SELECT_DATE: 'Select a date',
 		EXPAND: 'Expand',
 		COLLAPSE: 'Collapse',

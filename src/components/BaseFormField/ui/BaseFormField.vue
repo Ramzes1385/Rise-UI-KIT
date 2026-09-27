@@ -5,19 +5,20 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
 			{
-				'base-form-field--error': formField.error,
+				'base-form-field--error': error,
 			},
 			variantClass,
 			classes.root,
 		]">
 		<div v-if="label" class="base-form-field__header" :class="classes.header">
-			<label :id="labelId" :for="props.for" class="base-form-field__label" :class="classes.label"
-				>{{ label }}<span v-if="isRequired" class="base-form-field__required" :class="classes.required">*</span></label
+			<!-- Звёздочка — только знак: обязательность объявляет aria-required поля -->
+			<label :id="labelId" :for="controlId" class="base-form-field__label" :class="classes.label"
+				>{{ label }}<span v-if="isRequired" class="base-form-field__required" :class="classes.required" aria-hidden="true">*</span></label
 			>
 		</div>
 
-		<!-- Без for подпись не связать с полем атрибутом: содержимое становится группой с именем из подписи,
-			а описание или ошибка описывают эту группу (aria-describedby) -->
+		<!-- Контрол кита внутри сообщает свой id (подпись связана с ним через for) и сам берёт описание и ошибку.
+			Без контрола и без for содержимое — группа с именем из подписи, описание или ошибка описывают группу -->
 		<div
 			class="base-form-field__content"
 			:class="classes.content"
@@ -27,24 +28,25 @@
 			<slot />
 		</div>
 
-		<p v-if="description && !formField.error" :id="descriptionId" class="base-form-field__description" :class="classes.description">
+		<p v-if="description && !error" :id="descriptionId" class="base-form-field__description" :class="classes.description">
 			{{ description }}
 		</p>
 
 		<!-- Обёртка анимации рендерится только вместе с ошибкой: так появление ошибки плавное, а без ошибки нет пустого элемента -->
-		<BaseAnimation v-if="formField.error" name="fade" :size-scale="sizeScale" :custom-class="classes.animation">
+		<BaseAnimation v-if="error" name="fade" :size-scale="sizeScale" :custom-class="classes.animation">
 			<p :id="errorId" class="base-form-field__error" :class="classes.error">
-				{{ formField.error }}
+				{{ error }}
 			</p>
 		</BaseAnimation>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue'
+import { computed, provide, ref, shallowRef, useId } from 'vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseFormField.style.scss'
@@ -69,19 +71,48 @@ const errorId = `${fieldId}-error`
 
 // Обёртка не владеет значением дочернего контрола, поэтому required здесь не проверяется:
 // проверка по «пустому» значению всегда проваливалась бы и показывала ложное «Обязательное поле».
-// isRequired влияет только на звёздочку; обязательность валидирует сам контрол (его isRequired/validate()).
+// isRequired — звёздочка и aria-required у контрола кита внутри; пустоту значения проверяет сам контрол (его validate()).
+const form = useFormContext()
+
+/** Ошибка поля: из пропа или из проверки BaseForm по схеме (по `name`) */
+const formError = computed(() => (props.name ? form?.errors.value[props.name] : undefined))
+
 const formField = useFormField({
 	value: () => undefined,
-	error: () => props.error,
+	error: () => props.error || formError.value,
 })
 
-/** Подпись есть, но `for` не задан — связываем подпись с содержимым как с группой */
-const isGroup = computed(() => Boolean(props.label) && !props.for)
+const error = computed(() => formField.error)
 
-/** Что описывает группу: ошибка вытесняет описание так же, как на экране */
+/** Контрол кита внутри обёртки (первый): как получить id его элемента и можно ли назвать его через `for` */
+const control = shallowRef<{ getId: () => string; isLabelable: boolean } | null>(null)
+
+/** С чем связана подпись: `for` из пропа или id подключённого нативного поля */
+const controlId = computed(() => props.for ?? (control.value?.isLabelable ? control.value.getId() : undefined))
+
+/** Подпись есть, но связать её не с чем — связываем подпись с содержимым как с группой */
+const isGroup = computed(() => Boolean(props.label) && !props.for && !control.value)
+
+/** Что описывает поле: ошибка вытесняет описание так же, как на экране */
 const describedBy = computed(() => {
-	if (formField.error) return errorId
+	if (error.value) return errorId
 	return props.description ? descriptionId : undefined
+})
+
+provide(FORM_FIELD_CONTEXT_KEY, {
+	labelId,
+	hasLabel: computed(() => Boolean(props.label)),
+	describedBy,
+	hasError: computed(() => Boolean(error.value)),
+	isRequired: computed(() => props.isRequired),
+	register: (getId, isLabelable) => {
+		if (control.value) return undefined
+		const entry = { getId, isLabelable }
+		control.value = entry
+		return () => {
+			if (control.value === entry) control.value = null
+		}
+	},
 })
 
 defineExpose({

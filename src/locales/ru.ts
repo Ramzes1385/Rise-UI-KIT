@@ -28,6 +28,8 @@ export const ru = {
 		APPLY: 'Применить',
 		REQUIRED_FIELD: 'Обязательное поле',
 		SELECT_PLACEHOLDER: 'Выберите...',
+		/** Флажок «выбрать все» над вариантами BaseCheckboxGroup */
+		SELECT_ALL_OPTIONS: 'Выбрать все',
 		SELECT_DATE: 'Выберите дату',
 		EXPAND: 'Развернуть',
 		COLLAPSE: 'Свернуть',

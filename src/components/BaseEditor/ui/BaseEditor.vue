@@ -4,7 +4,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
 			{
-				'base-editor--readonly': isReadonly,
+				'base-editor--readonly': isLocked,
 				'base-editor--focused': isFocused,
 				'base-editor--code-mode': isCodeMode,
 			},
@@ -16,7 +16,7 @@
 			:size-scale="sizeScale"
 			:classes="classes"
 			:is-code-mode="isCodeMode"
-			:is-readonly="isReadonly"
+			:is-readonly="isLocked"
 			:has-toolbar="hasToolbar"
 			:heading-options="headingOptions"
 			:text-color="textColor"
@@ -48,11 +48,11 @@
 			ref="editorRef"
 			class="base-editor__content"
 			:class="[{ 'base-editor__content--empty': isEmpty }, classes.content]"
-			:contenteditable="!isReadonly"
+			:contenteditable="!isLocked"
 			role="textbox"
 			aria-multiline="true"
 			:aria-label="UI_EDITOR.CONTENT_LABEL"
-			:aria-readonly="isReadonly ? 'true' : undefined"
+			:aria-readonly="isLocked ? 'true' : undefined"
 			:aria-placeholder="placeholder || undefined"
 			:data-placeholder="placeholder"
 			@input="handleInput"
@@ -129,6 +129,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import { isolateFormField, useFormDisabled } from '@composables/useFormContext'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
@@ -150,6 +151,12 @@ const props = withDefaults(defineProps<BaseEditorProps>(), kitDefaults('BaseEdit
 	isAutofocus: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 }))
+
+/** Только чтение: свой isReadonly или неактивная BaseForm вокруг (fieldset формы не блокирует contenteditable) */
+const isLocked = useFormDisabled(() => props.isReadonly)
+
+// Поле адреса ссылки и списки панели — служебные: они не становятся полем BaseFormField вокруг редактора
+isolateFormField()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'])
 
@@ -214,7 +221,7 @@ const {
 	codeTextareaRef,
 	onInput: () => handleInput(),
 	promptForUrl: () => prompt(UI_EDITOR.URL_PROMPT),
-	isReadonly: () => props.isReadonly,
+	isReadonly: () => isLocked.value,
 	sanitize: sanitizeContent,
 })
 
@@ -257,7 +264,7 @@ handleInput = () => {
  */
 function handlePaste(event: ClipboardEvent): void {
 	const data = event.clipboardData
-	if (props.isReadonly || !data) return
+	if (isLocked.value || !data) return
 	const html = data.getData('text/html')
 	const text = data.getData('text/plain')
 	if (!html && !text) return
@@ -283,7 +290,7 @@ function getRangeFromPoint(x: number, y: number): Range | null {
 /** HTML, перетащенный из другой страницы, вставляется очищенным в точку, куда его отпустили */
 function handleDrop(event: DragEvent): void {
 	const html = event.dataTransfer?.getData('text/html')
-	if (props.isReadonly || isInternalDrag.value || !html) return
+	if (isLocked.value || isInternalDrag.value || !html) return
 	event.preventDefault()
 	const range = getRangeFromPoint(event.clientX, event.clientY)
 	if (range) {
@@ -331,7 +338,7 @@ watch(
 
 // В режиме чтения тулбара нет: из режима кода было бы не выйти, а меню медиа не должно менять документ
 watch(
-	() => props.isReadonly,
+	() => isLocked.value,
 	isReadonly => {
 		if (!isReadonly) return
 		if (isCodeMode.value) toggleCodeMode()

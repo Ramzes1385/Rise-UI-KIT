@@ -8,7 +8,7 @@
 			{
 				'base-rating--interactive': isInteractive,
 				'base-rating--readonly': isReadonly,
-				'base-rating--disabled': isDisabled,
+				'base-rating--disabled': isControlDisabled,
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
@@ -34,6 +34,7 @@ import { computed, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { UI_RATING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseRating.style.scss'
@@ -52,6 +53,9 @@ const props = withDefaults(defineProps<BaseRatingProps>(), kitDefaults('BaseRati
 	sizeScale: SIZE_SCALE_DEFAULT,
 }))
 
+/** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
+const isControlDisabled = useFormDisabled(() => props.isDisabled)
+
 const emit = defineEmits<BaseRatingEmits>()
 
 defineSlots<BaseRatingSlots>()
@@ -66,7 +70,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 
 const hoverValue = ref(0)
 
-const isInteractive = computed((): boolean => !props.isReadonly && !props.isDisabled)
+const isInteractive = computed((): boolean => !props.isReadonly && !isControlDisabled.value)
 const displayValue = computed((): number => (hoverValue.value > 0 ? hoverValue.value : props.modelValue))
 /** Заполненная иконка: явный iconFilled; для звезды по умолчанию — сплошная звезда (форма, а не только цвет), иначе та же icon. */
 const filledIcon = computed((): string => props.iconFilled || (props.icon === 'star' ? 'star-filled' : props.icon))
@@ -78,18 +82,18 @@ const filledIcon = computed((): string => props.iconFilled || (props.icon === 's
  */
 const ariaAttrs = computed(() => {
 	const valueText = `${props.modelValue} ${UI_RATING.OF} ${props.max}`
-	if (props.isReadonly && !props.isDisabled) {
+	if (props.isReadonly && !isControlDisabled.value) {
 		return { role: 'img', 'aria-label': `${UI_RATING.LABEL} ${valueText}` }
 	}
 	return {
 		role: 'slider',
-		tabindex: props.isDisabled ? undefined : 0,
+		tabindex: isControlDisabled.value ? undefined : 0,
 		'aria-label': `${UI_RATING.ARIA_PREFIX} ${props.max}`,
 		'aria-valuemin': 0,
 		'aria-valuemax': props.max,
 		'aria-valuenow': props.modelValue,
 		'aria-valuetext': valueText,
-		'aria-disabled': props.isDisabled ? ('true' as const) : undefined,
+		'aria-disabled': isControlDisabled.value ? ('true' as const) : undefined,
 	}
 })
 

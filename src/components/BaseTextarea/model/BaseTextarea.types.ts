@@ -1,4 +1,5 @@
 import type { BaseComponentProps } from '../../../types/base.types'
+import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты отображения текстового поля */
 export const TEXTAREA_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -29,6 +30,10 @@ export interface BaseTextareaProps extends BaseComponentProps<(typeof TEXTAREA_V
 	isAutosize?: boolean
 	/** Имя поля для формы */
 	name?: string
+	/** Имя поля без видимой подписи (`aria-label`) */
+	ariaLabel?: string
+	/** Атрибуты нативного `<textarea>`: `autocomplete`, `aria-*`, `data-*`; `id` — свой id поля */
+	inputAttrs?: FieldInputAttrs
 }
 
 /**

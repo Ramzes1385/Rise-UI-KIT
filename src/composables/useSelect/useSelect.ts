@@ -13,7 +13,7 @@ const TYPEAHEAD_RESET = 500
  * выбор/снятие значений (включая multi-select), удаление тегов
  * и активную (подсвеченную) опцию для управления с клавиатуры.
  */
-function useSelect({ props, emit, onBlur }: UseSelectOptions) {
+function useSelect({ props, emit, onBlur, isDisabled = () => Boolean(props.isDisabled) }: UseSelectOptions) {
 	const isOpen = ref(false)
 	const searchQuery = ref('')
 	/** Индекс активной опции в filteredOptions: её выбирает Enter, на неё указывает aria-activedescendant; -1 — нет */
@@ -137,11 +137,11 @@ function useSelect({ props, emit, onBlur }: UseSelectOptions) {
 	})
 
 	function openDropdown(): void {
-		if (!props.isDisabled) isOpen.value = true
+		if (!isDisabled()) isOpen.value = true
 	}
 
 	function toggleDropdown(): void {
-		if (!props.isDisabled) {
+		if (!isDisabled()) {
 			isOpen.value = !isOpen.value
 			if (!isOpen.value) {
 				searchQuery.value = ''

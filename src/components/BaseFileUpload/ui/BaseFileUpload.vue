@@ -5,7 +5,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
 			{
-				'base-file-upload--disabled': isDisabled,
+				'base-file-upload--disabled': isControlDisabled,
 				'base-file-upload--dragover': isDragOver,
 				'base-file-upload--error': hasError,
 			},
@@ -21,7 +21,7 @@
 			tabindex="-1"
 			:accept="accept"
 			:multiple="isMultiple"
-			:disabled="isDisabled"
+			:disabled="isControlDisabled"
 			@change="handleFileChange" />
 
 		<FormFieldLabel
@@ -36,8 +36,8 @@
 		<div
 			class="base-file-upload__dropzone"
 			role="button"
-			:tabindex="isDisabled ? -1 : 0"
-			:aria-disabled="isDisabled || undefined"
+			:tabindex="isControlDisabled ? -1 : 0"
+			:aria-disabled="isControlDisabled || undefined"
 			:aria-describedby="hasError ? errorsId : undefined"
 			:class="[{ 'base-file-upload__dropzone--active': isDragOver }, classes.dropzone]"
 			@click="triggerUpload"
@@ -105,7 +105,7 @@
 					class="base-file-upload__remove"
 					:custom-class="classes.remove"
 					:aria-label="`${UI_TEXT.DELETE} ${item.name}`"
-					:is-disabled="isDisabled"
+					:is-disabled="isControlDisabled"
 					:size-scale="sizeScale"
 					@click="handleRemove(item)">
 					<template #left><BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" /></template>
@@ -139,6 +139,7 @@ import { BaseProgress } from '@components/BaseProgress'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFileUploadState } from '@composables/useFileUploadState'
+import { useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import { toHTMLInputElement } from '@utils/domUtils'
@@ -162,6 +163,9 @@ const props = withDefaults(defineProps<BaseFileUploadProps>(), kitDefaults('Base
 	sizeScale: SIZE_SCALE_DEFAULT,
 	error: '',
 }))
+
+/** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
+const isControlDisabled = useFormDisabled(() => props.isDisabled)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-file-upload', props, [
 	'root',
@@ -241,18 +245,18 @@ function fileIconName(item: UploadedFile): string {
 }
 
 function triggerUpload(): void {
-	if (props.isDisabled) return
+	if (isControlDisabled.value) return
 	fileInput.value?.click()
 }
 
 // Отключённое состояние не может полагаться только на CSS pointer-events: drop и клавиатура его обходят
 function handleZoneDragOver(): void {
-	if (props.isDisabled) return
+	if (isControlDisabled.value) return
 	handleDragOver()
 }
 
 function handleZoneDrop(e: DragEvent): void {
-	if (props.isDisabled) return
+	if (isControlDisabled.value) return
 	handleDrop(e)
 }
 

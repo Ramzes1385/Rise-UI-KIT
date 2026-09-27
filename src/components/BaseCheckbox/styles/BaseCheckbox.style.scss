@@ -63,7 +63,8 @@
 		@include transition-colors;
 	}
 
-	&__input:checked + &__box {
+	&__input:checked + &__box,
+	&__input:indeterminate + &__box {
 		border-color: var(--checkbox-checked-border);
 		background-color: var(--checkbox-checked-bg);
 	}
@@ -98,11 +99,11 @@
 	// ─── Наведение ───────────────────────────────────────────────────────────────
 
 	@media (hover: hover) {
-		&:not(&--disabled) &__label-wrapper:hover &__input:not(:checked) + &__box {
+		&:not(&--disabled) &__label-wrapper:hover &__input:not(:checked, :indeterminate) + &__box {
 			background-color: var(--checkbox-bg-hover);
 		}
 
-		&:not(&--disabled) &__label-wrapper:hover &__input:checked + &__box {
+		&:not(&--disabled) &__label-wrapper:hover &__input:is(:checked, :indeterminate) + &__box {
 			background-color: var(--checkbox-checked-bg-hover);
 		}
 	}

@@ -4,7 +4,7 @@
 		:class="[
 			variantClass,
 			{
-				'base-textarea--error': formField.error,
+				'base-textarea--error': control.hasError.value,
 				'base-textarea--disabled': isDisabled,
 				'base-textarea--readonly': isReadonly,
 				'base-textarea--autosize': isAutosize,
@@ -24,7 +24,9 @@
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
+		<!-- Атрибуты поля — первыми: id, значение и состояние кита их перекрывают (свой id и описание учтены в них) -->
 		<textarea
+			v-bind="nativeAttrs"
 			:id="textareaId"
 			ref="textareaRef"
 			class="base-textarea__field"
@@ -35,10 +37,6 @@
 			:maxlength="maxlength"
 			:disabled="isDisabled"
 			:readonly="isReadonly"
-			:name="name"
-			:aria-invalid="formField.error ? 'true' : undefined"
-			:aria-required="isRequired ? 'true' : undefined"
-			:aria-describedby="describedBy"
 			@input="handleInput"
 			@blur="handleBlur"
 			@focus="handleFocus"></textarea>
@@ -60,6 +58,7 @@ import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { useFieldControl } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTextarea.style.scss'
@@ -84,10 +83,10 @@ const emit = defineEmits<BaseTextareaEmits>()
 
 defineSlots<BaseTextareaSlots>()
 
-/** id поля, текста ошибки и счётчика: метка связана с полем через for, ошибка и счётчик — через aria-describedby */
-const textareaId = useId()
-const errorId = `${textareaId}-error`
-const counterId = `${textareaId}-counter`
+/** id текста ошибки и счётчика: поле описано ими через aria-describedby */
+const ownId = useId()
+const errorId = `${ownId}-error`
+const counterId = `${ownId}-counter`
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -99,11 +98,24 @@ const formField = useFormField({
 const hasCounter = computed(() => Boolean(props.maxlength && props.maxlength > 0))
 const characterCount = computed(() => props.modelValue?.length ?? 0)
 
-/** Что описывает поле: текст ошибки и счётчик символов (если есть) */
-const describedBy = computed(() => {
-	const ids = [formField.error ? errorId : '', hasCounter.value ? counterId : ''].filter(Boolean)
-	return ids.length > 0 ? ids.join(' ') : undefined
+/** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */
+const control = useFieldControl({
+	id: () => props.inputAttrs?.id as string | undefined,
+	// Что описывает поле: текст ошибки, счётчик символов и описание из inputAttrs
+	describedBy: () =>
+		[formField.error ? errorId : '', hasCounter.value ? counterId : '', props.inputAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
+	hasError: () => Boolean(formField.error),
+	isRequired: () => props.isRequired,
 })
+const textareaId = control.id
+
+/** Атрибуты нативного поля: inputAttrs, имя без подписи (ariaLabel) и aria-состояния поля и обёртки */
+const nativeAttrs = computed(() => ({
+	...props.inputAttrs,
+	...(props.name ? { name: props.name } : {}),
+	...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
+	...control.aria.value,
+}))
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 

@@ -1,4 +1,5 @@
 import type { BaseComponentProps } from '../../../types/base.types'
+import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты отображения инпута */
 export const INPUT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
@@ -55,6 +56,10 @@ export interface BaseInputProps extends BaseComponentProps<InputVariant, 'root' 
 	isRequired?: boolean
 	/** Только для чтения */
 	isReadonly?: boolean
+	/** Имя поля без видимой подписи (`aria-label`) */
+	ariaLabel?: string
+	/** Атрибуты нативного `<input>`: `name`, `autocomplete`, `inputmode`, `aria-*`, `data-*`; `id` — свой id поля */
+	inputAttrs?: FieldInputAttrs
 	/** Префикс (например, код страны) */
 	prefix?: string
 	/** Постфикс (например, единица измерения) */
