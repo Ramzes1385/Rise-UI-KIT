@@ -1,0 +1,73 @@
+// BaseInputTags. Поле — BaseInput (варианты, фокус, ошибка); теги стоят внутри рамки перед строкой ввода и переносятся.
+// Тег — 22px: фон bg-elevated, рамка border, радиус sm, текст 12/16, кнопка удаления 16px с иконкой 12px.
+// Строка ввода не уже 96px: при нехватке места уходит на следующую строку.
+.base-input-tags {
+	display: block;
+	width: 100%;
+
+	&--has-tags .base-input__wrapper {
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px);
+		padding-left: sz(4px);
+	}
+
+	&--has-tags .base-input__field {
+		flex: 1 0 sz(96px);
+		padding-left: sz(4px);
+	}
+
+	&__list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+		max-width: 100%;
+		margin: 0;
+		padding: sz(4px) 0;
+		list-style: none;
+	}
+
+	&__tag {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(2px);
+		max-width: 100%;
+		height: sz(22px);
+		padding: 0 sz(2px) 0 sz(8px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-highlighted);
+		@include text-size(xs);
+	}
+
+	&__text {
+		@include truncate;
+	}
+
+	&__remove {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(16px);
+		height: sz(16px);
+		padding: 0;
+		border: none;
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: transparent;
+		color: var(--rise-text-muted);
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring(1px);
+
+		@include hover {
+			background-color: var(--rise-bg-accented);
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+}

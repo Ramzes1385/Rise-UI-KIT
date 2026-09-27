@@ -7,6 +7,7 @@ import { BaseAccordion } from './components/BaseAccordion'
 import { BaseAlert } from './components/BaseAlert'
 import { BaseAnimation } from './components/BaseAnimation'
 import { BaseApp } from './components/BaseApp'
+import { BaseAutocomplete } from './components/BaseAutocomplete'
 import { BaseAvatar } from './components/BaseAvatar'
 import { BaseBadge } from './components/BaseBadge'
 import { BaseBreadcrumbs } from './components/BaseBreadcrumbs'
@@ -27,6 +28,8 @@ import { BaseFormField } from './components/BaseFormField'
 import { BaseIcon } from './components/BaseIcon'
 import { BaseImage } from './components/BaseImage'
 import { BaseInput } from './components/BaseInput'
+import { BaseInputNumber } from './components/BaseInputNumber'
+import { BaseInputTags } from './components/BaseInputTags'
 import { BaseLink } from './components/BaseLink'
 import { BaseLoader } from './components/BaseLoader'
 import { BaseMegaMenu } from './components/BaseMegaMenu'
@@ -42,6 +45,7 @@ import { BaseRadio } from './components/BaseRadio'
 import { BaseRange } from './components/BaseRange'
 import { BaseRating } from './components/BaseRating'
 import { BaseSearch } from './components/BaseSearch'
+import { BaseSegmented } from './components/BaseSegmented'
 import { BaseSelect } from './components/BaseSelect'
 import { BaseSeparator } from './components/BaseSeparator'
 import { BaseSideBar } from './components/BaseSideBar'
@@ -53,6 +57,7 @@ import { BaseSwitch } from './components/BaseSwitch'
 import { BaseTabs } from './components/BaseTabs'
 import { BaseText } from './components/BaseText'
 import { BaseTextarea } from './components/BaseTextarea'
+import { BaseTimePicker } from './components/BaseTimePicker'
 import { BaseTooltip } from './components/BaseTooltip'
 import { BaseTour } from './components/BaseTour'
 import { BaseTree } from './components/BaseTree'
@@ -114,6 +119,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseAlert,
 	BaseAnimation,
 	BaseApp,
+	BaseAutocomplete,
 	BaseAvatar,
 	BaseBadge,
 	BaseBreadcrumbs,
@@ -139,6 +145,8 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseIcon,
 	BaseImage,
 	BaseInput,
+	BaseInputNumber,
+	BaseInputTags,
 	BaseLink,
 	BaseLoader,
 	BaseMegaMenu,
@@ -154,6 +162,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseRange,
 	BaseRating,
 	BaseSearch,
+	BaseSegmented,
 	BaseSelect,
 	BaseSeparator,
 	BaseSideBar,
@@ -166,6 +175,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseTabs,
 	BaseText,
 	BaseTextarea,
+	BaseTimePicker,
 	BaseTooltip,
 	BaseTour,
 	BaseTree,

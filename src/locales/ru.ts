@@ -30,6 +30,8 @@ export const ru = {
 		SELECT_PLACEHOLDER: 'Выберите...',
 		/** Флажок «выбрать все» над вариантами BaseCheckboxGroup */
 		SELECT_ALL_OPTIONS: 'Выбрать все',
+		/** Подсказка в пустом поле BaseTimePicker */
+		TIME_PLACEHOLDER: 'чч:мм',
 		SELECT_DATE: 'Выберите дату',
 		EXPAND: 'Развернуть',
 		COLLAPSE: 'Свернуть',
@@ -93,6 +95,15 @@ export const ru = {
 		GALLERY_ITEM: 'Изображение {current} из {total}',
 		/** Имя ячейки BasePin: позиция в коде */
 		PIN_CELL: 'Символ {position} из {length}',
+		/** Кнопки BaseInputNumber */
+		NUMBER_DECREASE: 'Уменьшить',
+		NUMBER_INCREASE: 'Увеличить',
+		/** Кнопка удаления тега BaseInputTags и объявления для скринридера */
+		TAG_REMOVE: 'Удалить {name}',
+		TAG_ADDED: 'Добавлено: {name}',
+		TAG_REMOVED: 'Удалено: {name}',
+		/** Список тегов BaseInputTags */
+		TAGS: 'Теги',
 	},
 	tour: {
 		SKIP: 'Пропустить тур',

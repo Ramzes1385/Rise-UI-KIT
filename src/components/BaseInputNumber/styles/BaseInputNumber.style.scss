@@ -1,0 +1,33 @@
+// BaseInputNumber. Поле числа — BaseInput (высота 32px, варианты и фокус поля) с кнопками −/+ внутри рамки:
+// квадрат 32px без фона, иконка 16px приглушённая, наведение — фон bg-elevated. Текст числа — по центру.
+.base-input-number {
+	&__button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		align-self: stretch;
+		width: sz(32px);
+		padding: 0;
+		border: none;
+		background-color: transparent;
+		color: var(--rise-text-muted);
+		cursor: pointer;
+		@include transition-colors;
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text-highlighted);
+		}
+
+		&:disabled {
+			@include disabled-state;
+		}
+	}
+
+	&--controls .base-input__field {
+		padding-inline: sz(4px);
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+}

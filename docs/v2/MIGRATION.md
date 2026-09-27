@@ -311,6 +311,19 @@
 - `useSelect` принимает `isDisabled` — блокировку с учётом формы.
 - Строка словаря `text.SELECT_ALL_OPTIONS` (ru, en) — «Выбрать все» в BaseCheckboxGroup.
 
+## Новые поля (порция 2.1)
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseInputNumber` — число по образцу APG Spinbutton: кнопки −/+ вне порядка Tab, ↑/↓, PageUp/PageDown, Home/End, `min`, `max`, `step`, `precision`, `formatValueText` (`aria-valuetext`). Ввод принимает запятую и точку, нечисло при выходе из поля возвращает прежнее значение.
+- `BaseAutocomplete` — поле с подсказками по образцу APG Combobox (autocomplete list): `options`, фильтр по вводу с выделением совпадения, `isCustomAllowed` и `normalize`, `isRemote` + `search` + `isLoading`, `maxResults`, слоты `option` и `empty`, число найденного в `role="status"`.
+- `BaseTimePicker` — время `HH:MM` на основе BaseAutocomplete: `step` (минуты), `minTime`, `maxTime`, ввод «930» → 09:30.
+- `BaseInputTags` — поле тегов: `separators`, `isUnique`, `maxTags`, `validate`, `isAddOnBlur`, события `add` и `remove`; клавиатура по тегам и объявления для скринридера.
+- `BaseSegmented` — переключатель сегментами на нативных radio: `options` с `icon`, `isBlock`, варианты `default`, `soft`, `outline`.
+- Все пять берут подпись, описание и ошибку `BaseFormField` и блокируются неактивной `BaseForm`.
+- Утилиты: `parseNumberInput`, `roundToPrecision`, `clampNumber`, `stepPrecision`; `parseTimeInput`, `buildTimeOptions`, `timePrefixes`, `timeToMinutes`, `minutesToTime`.
+- Строки словаря (ru, en): `aria.NUMBER_DECREASE`, `aria.NUMBER_INCREASE`, `aria.TAG_REMOVE`, `aria.TAG_ADDED`, `aria.TAG_REMOVED`, `aria.TAGS`, `text.TIME_PLACEHOLDER`.
+
 ## Новые утилиты
 
 | Функция | Назначение |

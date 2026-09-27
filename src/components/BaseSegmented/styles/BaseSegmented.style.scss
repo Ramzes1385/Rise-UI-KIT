@@ -1,0 +1,128 @@
+// BaseSegmented. Переключатель сегментами высотой 32px: дорожка с отступом 2px, сегмент 28px (6/12, текст 14/20).
+// Сегмент без выбора — текст text (контраст на дорожке), наведение — text-highlighted; выбранный — по варианту:
+// default — фон страницы с тенью на дорожке bg-elevated; soft — мягкий основной цвет; outline — рамка основного цвета
+// на дорожке с рамкой. Фокус с клавиатуры — кольцо вокруг сегмента. isBlock — во всю ширину, сегменты поровну.
+// Кастомный цвет: color.bg — фон выбранного сегмента, color.text — его текст.
+.base-segmented {
+	--segment-checked-bg: var(--custom-bg, var(--rise-bg));
+	--segment-checked-text: var(--custom-text, var(--rise-text-highlighted));
+	--segment-checked-shadow: var(--rise-shadow-sm);
+	--segment-checked-border: transparent;
+	--segment-track-bg: var(--rise-bg-elevated);
+	--segment-track-border: transparent;
+
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: sz(6px);
+	max-width: 100%;
+
+	& &__label {
+		@include field-label;
+	}
+
+	&__track {
+		display: inline-flex;
+		gap: sz(2px);
+		max-width: 100%;
+		padding: sz(2px);
+		border: 1px solid var(--segment-track-border);
+		border-radius: sz(var(--rise-control-radius));
+		background-color: var(--segment-track-bg);
+		overflow-x: auto;
+	}
+
+	&__segment {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: sz(6px);
+		flex-shrink: 0;
+		padding: sz(4px 12px);
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-radius-sm));
+		// Невыбранный сегмент — цвет text: приглушённый text-muted на дорожке bg-elevated не проходит контраст 4.5:1
+		color: var(--rise-text);
+		white-space: nowrap;
+		cursor: pointer;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		@include transition-colors;
+
+		@include hover {
+			color: var(--rise-text-highlighted);
+		}
+
+		&--checked {
+			border-color: var(--segment-checked-border);
+			background-color: var(--segment-checked-bg);
+			color: var(--segment-checked-text);
+			box-shadow: var(--segment-checked-shadow);
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+
+		// Кольцо фокуса с клавиатуры: сам radio прозрачный, кольцо рисует сегмент
+		&:has(.base-segmented__input:focus-visible) {
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: 1px;
+		}
+	}
+
+	// Нативный radio лежит поверх сегмента: получает клик, фокус и стрелки, но не виден
+	&__input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: inherit;
+	}
+
+	&__icon {
+		flex-shrink: 0;
+	}
+
+	& &__error {
+		display: block;
+		@include field-error;
+	}
+
+	&--block {
+		display: flex;
+		width: 100%;
+	}
+
+	&--block &__track {
+		display: flex;
+		width: 100%;
+	}
+
+	&--block &__segment {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	&--error &__track {
+		--segment-track-border: var(--rise-error);
+	}
+
+	// ─── Варианты ────────────────────────────────────────────────────────────────
+
+	&--soft {
+		--segment-checked-bg: var(--custom-bg, var(--rise-primary-soft));
+		--segment-checked-text: var(--custom-text, var(--rise-primary-text));
+		--segment-checked-shadow: none;
+	}
+
+	&--outline {
+		--segment-track-bg: var(--rise-bg);
+		--segment-track-border: var(--rise-border-accented);
+		--segment-checked-border: var(--custom-bg, var(--rise-primary));
+		--segment-checked-shadow: none;
+	}
+}

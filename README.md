@@ -103,6 +103,10 @@
 - `BaseCheckbox`: частичный выбор `isIndeterminate`. Новый компонент `BaseCheckboxGroup` — группа флажков с массивом в `v-model` и флажком «Выбрать все».
 - Подробности — [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md), раздел «Формы».
 
+**Новые поля**
+
+- `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -553,6 +557,44 @@ const description = ref('')
 
 ---
 
+## BaseInputNumber
+
+Поле числа: кнопки −/+ по краям, ввод `1,5` и `1.5`, границы `min`/`max`, шаг `step`, знаков после запятой — `precision`. По образцу APG Spinbutton: ↑/↓ — шаг, PageUp/PageDown — десять шагов, Home/End — границы. Число вне границ при выходе из поля поднимается или опускается до границы, нечисло возвращает прежнее значение.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseInputNumber } from '@ramzes1385/rise-ui-kit'
+
+const guests = ref<number | null>(2)
+</script>
+
+<template>
+	<BaseInputNumber v-model="guests" label="Гостей" :min="1" :max="10" :format-value-text="n => `${n} гостей`" />
+</template>
+```
+
+---
+
+## BaseInputTags
+
+Поле тегов: Enter или запятая (`separators`) добавляют тег, вставка «a, b, c» — несколько тегов, повторы не добавляются (`isUnique`), `maxTags` ограничивает число, `validate` отклоняет тег (текст остаётся в поле). В пустой строке ← или Backspace ведут к последнему тегу, ←/→ — между тегами, Backspace и Delete удаляют тег.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseInputTags } from '@ramzes1385/rise-ui-kit'
+
+const skills = ref(['Vue', 'TypeScript'])
+</script>
+
+<template>
+	<BaseInputTags v-model="skills" label="Навыки" placeholder="Добавьте навык" :max-tags="10" />
+</template>
+```
+
+---
+
 ## BaseSelect
 
 Компонент выбора значения из списка.
@@ -578,6 +620,40 @@ const options = [
 ```
 
 Клавиатура по образцу APG (combobox со списком): ↓/↑, Enter и пробел открывают список, Home/End — первая и последняя опция, буквы — опция по началу подписи, Escape закрывает список.
+
+---
+
+## BaseAutocomplete
+
+Поле с подсказками: список фильтруется по вводу, выбор — мышью или ↓/↑ и Enter (APG Combobox: фокус остаётся в поле, `aria-activedescendant`). Escape закрывает список, а при закрытом — очищает поле. Текст без выбора при выходе из поля заменяется выбранным значением; `is-custom-allowed` делает его значением (`normalize` — привести текст к значению). Варианты с сервера — `is-remote`, событие `search` и `is-loading`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseAutocomplete } from '@ramzes1385/rise-ui-kit'
+import type { AutocompleteOption } from '@ramzes1385/rise-ui-kit'
+
+const city = ref<string | number | null>(null)
+const cities: AutocompleteOption[] = [
+	{ value: 'msk', label: 'Москва' },
+	{ value: 'kzn', label: 'Казань' },
+]
+</script>
+
+<template>
+	<BaseAutocomplete v-model="city" :options="cities" label="Город доставки" placeholder="Начните вводить город" />
+</template>
+```
+
+---
+
+## BaseTimePicker
+
+Время `HH:MM`: список с шагом `step` (по умолчанию 30 минут) в границах `min-time`–`max-time` и свободный ввод — «930», «9:30», «9.30» становятся 09:30. Построено на `BaseAutocomplete`.
+
+```vue
+<BaseTimePicker v-model="time" label="Время звонка" :step="15" min-time="09:00" max-time="18:00" />
+```
 
 ---
 
@@ -646,6 +722,30 @@ const options = [
 
 <template>
 	<BaseRadio v-model="value" name="contact" :options="options" label="Способ связи" />
+</template>
+```
+
+---
+
+## BaseSegmented
+
+Переключатель сегментами для двух–пяти коротких вариантов: период отчёта, вид списка. Нативные radio с общим `name` — один таб-стоп, стрелки переключают выбор; группа названа `label`, `aria-label` или подписью `BaseFormField`. `is-block` — во всю ширину, у сегмента может быть иконка.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSegmented } from '@ramzes1385/rise-ui-kit'
+
+const period = ref<string | number | null>('week')
+const periods = [
+	{ value: 'day', label: 'День' },
+	{ value: 'week', label: 'Неделя' },
+	{ value: 'month', label: 'Месяц' },
+]
+</script>
+
+<template>
+	<BaseSegmented v-model="period" :options="periods" aria-label="Период отчёта" />
 </template>
 ```
 
@@ -1850,6 +1950,7 @@ import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
 BaseAccordion
 BaseAlert
 BaseAnimation
+BaseAutocomplete
 BaseAvatar
 BaseBadge
 BaseBreadcrumbs
@@ -1874,6 +1975,8 @@ BaseFormField
 BaseIcon
 BaseImage
 BaseInput
+BaseInputNumber
+BaseInputTags
 BaseLoader
 BaseMegaMenu
 BaseMenu
@@ -1888,6 +1991,7 @@ BaseRadio
 BaseRange
 BaseRating
 BaseSearch
+BaseSegmented
 BaseSelect
 BaseSeparator
 BaseSideBar
@@ -1900,6 +2004,7 @@ BaseTable
 BaseTabs
 BaseText
 BaseTextarea
+BaseTimePicker
 BaseTooltip
 BaseTour
 BaseTree
