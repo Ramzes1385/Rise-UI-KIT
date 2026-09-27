@@ -13,42 +13,11 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
 import { mergeConfig } from 'vite'
 import svgLoader from 'vite-svg-loader'
+import { createAliasConfig } from '../config/alias.ts'
+import { createScssOptions } from '../config/css.ts'
 import { createSpritePlugin } from '../plugins/sprite.ts'
 
 const PROJECT_ROOT = resolve(process.cwd())
-
-/** Alias проекта, продублированные из build/config/alias.ts. */
-const ALIASES: Record<string, string> = {
-	'@': resolve(PROJECT_ROOT, 'src'),
-	'@components': resolve(PROJECT_ROOT, 'src/components'),
-	'@composables': resolve(PROJECT_ROOT, 'src/composables'),
-	'@constants': resolve(PROJECT_ROOT, 'src/constants'),
-	'@icons': resolve(PROJECT_ROOT, 'src/icons'),
-	'@plugins': resolve(PROJECT_ROOT, 'src/plugins'),
-	'@styles': resolve(PROJECT_ROOT, 'src/styles'),
-	'@ui': resolve(PROJECT_ROOT, 'src/components'),
-	'@utils': resolve(PROJECT_ROOT, 'src/utils'),
-}
-
-/** Глобальный SCSS prelude — продублирован из build/config/css.ts. */
-const GLOBAL_SCSS_PRELUDE = [
-	'@use "@styles/variables" as *;',
-	'@use "@styles/mixins" as *;',
-	'@use "@styles/functions" as *;',
-	'',
-].join('\n')
-
-// Глобальные SCSS-файлы не импортируют сами себя — иначе зацикливание.
-const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
-
-function shouldSkipImport(filename: string): boolean {
-	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))
-}
-
-function addGlobalImports(source: string, filename: string): string {
-	if (shouldSkipImport(filename)) return source
-	return `${GLOBAL_SCSS_PRELUDE}${source}`
-}
 
 const config: StorybookConfig = {
 	stories: ['../../src/stories/**/*.mdx', '../../src/stories/**/*.stories.ts', '../../src/components/**/*.stories.ts'],
@@ -73,16 +42,12 @@ const config: StorybookConfig = {
 				},
 			},
 			resolve: {
-				alias: ALIASES,
+				alias: createAliasConfig(),
 				extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
 			},
 			css: {
 				preprocessorOptions: {
-					scss: {
-						api: 'modern-compiler',
-						additionalData: addGlobalImports,
-						charset: false,
-					},
+					scss: createScssOptions(),
 				},
 			},
 		})

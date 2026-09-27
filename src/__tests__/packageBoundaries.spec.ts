@@ -25,7 +25,6 @@ const ALIASES: Record<string, string> = {
 	'@plugins': 'plugins',
 	'@styles': 'styles',
 	'@utils': 'utils',
-	'@ui': 'components',
 	'@': '',
 }
 

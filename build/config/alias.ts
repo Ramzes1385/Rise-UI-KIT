@@ -1,6 +1,6 @@
 /**
- * Псевдонимы путей UI-библиотеки.
- * Каждый alias должен быть синхронизирован с paths в tsconfig.json.
+ * Псевдонимы путей UI-библиотеки — единый источник для сборки библиотеки, Storybook и Vitest.
+ * TypeScript читает свою копию: paths в tsconfig.app.json (держать в соответствии).
  */
 
 import type { AliasOptions } from 'vite'
@@ -22,7 +22,6 @@ export function createAliasConfig(): AliasOptions {
 		'@icons': resolveFromRoot(SOURCE_DIR, 'icons'),
 		'@plugins': resolveFromRoot(SOURCE_DIR, 'plugins'),
 		'@styles': resolveFromRoot(SOURCE_DIR, 'styles'),
-		'@ui': resolveFromRoot(SOURCE_DIR, 'components'),
 		'@utils': resolveFromRoot(SOURCE_DIR, 'utils'),
 	}
 }

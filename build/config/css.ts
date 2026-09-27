@@ -29,18 +29,23 @@ function addGlobalImports(source: string, filename: string): string {
 	return `${GLOBAL_SCSS_PRELUDE}${source}`
 }
 
-/** Создаёт конфигурацию CSS для Vite. */
+/** Настройки Sass с глобальным prelude — общие для сборки библиотеки, Storybook и Vitest. */
+export function createScssOptions() {
+	return {
+		api: 'modern-compiler',
+		additionalData: addGlobalImports,
+		charset: false,
+	}
+}
+
+/** Создаёт конфигурацию CSS для сборки библиотеки. */
 export function createCssConfig(mode: string): CSSOptions {
 	const isProduction = isProductionMode(mode)
 
 	return {
 		transformer: 'lightningcss',
 		preprocessorOptions: {
-			scss: {
-				api: 'modern-compiler',
-				additionalData: addGlobalImports,
-				charset: false,
-			},
+			scss: createScssOptions(),
 		},
 
 		devSourcemap: !isProduction,

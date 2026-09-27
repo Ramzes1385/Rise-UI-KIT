@@ -1,6 +1,6 @@
 /**
  * Конфигурация Vitest для unit и integration тестов.
- * Alias и SCSS-настройки синхронизированы со структурой UI-библиотеки.
+ * Alias и SCSS-настройки — общие со сборкой библиотеки (build/config/alias.ts, build/config/css.ts).
  */
 
 /// <reference types="vitest" />
@@ -10,44 +10,13 @@ import { fileURLToPath } from 'node:url'
 
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import { createAliasConfig } from '../config/alias'
+import { createScssOptions } from '../config/css'
 
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url))
 
 /** Корень проекта: build/tests/ → на два уровня выше. */
 const ROOT = path.resolve(dirname, '../..')
-
-/** Alias проекта, продублированные из build/config/alias.ts. */
-const ALIASES: Record<string, string> = {
-	'@': path.resolve(ROOT, 'src'),
-	'@components': path.resolve(ROOT, 'src/components'),
-	'@composables': path.resolve(ROOT, 'src/composables'),
-	'@constants': path.resolve(ROOT, 'src/constants'),
-	'@icons': path.resolve(ROOT, 'src/icons'),
-	'@plugins': path.resolve(ROOT, 'src/plugins'),
-	'@styles': path.resolve(ROOT, 'src/styles'),
-	'@ui': path.resolve(ROOT, 'src/components'),
-	'@utils': path.resolve(ROOT, 'src/utils'),
-}
-
-/** Глобальный SCSS prelude — продублирован из build/config/css.ts. */
-const GLOBAL_SCSS_PRELUDE = [
-	'@use "@styles/variables" as *;',
-	'@use "@styles/mixins" as *;',
-	'@use "@styles/functions" as *;',
-	'',
-].join('\n')
-
-/** Глобальные SCSS-файлы — не должны импортировать сами себя (защита от module loop). */
-const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
-
-function shouldSkipImport(filename: string): boolean {
-	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))
-}
-
-function addGlobalImports(source: string, filename: string): string {
-	if (shouldSkipImport(filename)) return source
-	return `${GLOBAL_SCSS_PRELUDE}${source}`
-}
 
 /** Базовая зона покрытия для общего прогона Vitest. */
 const BASE_COVERAGE_INCLUDE = ['src/utils/**/*.ts', 'src/composables/**/*.ts', 'src/components/**/*.vue']
@@ -90,18 +59,14 @@ export default defineConfig({
 	root: ROOT,
 	plugins: [vue()],
 	resolve: {
-		alias: ALIASES,
+		alias: createAliasConfig(),
 	},
 	optimizeDeps: {
 		include: ['vue'],
 	},
 	css: {
 		preprocessorOptions: {
-			scss: {
-				api: 'modern-compiler',
-				additionalData: addGlobalImports,
-				charset: false,
-			},
+			scss: createScssOptions(),
 		},
 	},
 	test: {
