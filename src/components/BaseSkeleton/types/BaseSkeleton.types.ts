@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
@@ -20,3 +21,5 @@ export type BaseSkeletonEmits = Record<string, never>
 export interface BaseSkeletonSlots {
 	default?: () => unknown
 }
+
+export type SkeletonProps = PropsWithDefaults<BaseSkeletonProps, 'sizeScale'>

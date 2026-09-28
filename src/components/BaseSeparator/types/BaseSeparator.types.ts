@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export type SeparatorOrientation = 'horizontal' | 'vertical'
@@ -27,3 +28,5 @@ export interface BaseSeparatorSlots {
 	/** Контент между линиями (текст, иконка, кастомный декоратор) */
 	default?: () => unknown
 }
+
+export type SeparatorProps = PropsWithDefaults<BaseSeparatorProps, 'sizeScale'>

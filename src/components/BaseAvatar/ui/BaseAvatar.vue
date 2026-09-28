@@ -24,10 +24,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseAvatar } from '../model/useBaseAvatar'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../types/BaseAvatar.types'
 
@@ -45,41 +45,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseAvatarEmits>()
 defineSlots<BaseAvatarSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-avatar', props, [
-	'root',
-	'content',
-	'img',
-	'initials',
-	'online',
-])
-
-const hasImageError = ref(false)
-
-watch(
-	() => props.src,
-	() => {
-		hasImageError.value = false
-	},
-)
-
-const initials = computed(() => {
-	if (!props.name) return '?'
-	return (
-		props.name
-			.split(' ')
-			.map(n => n[0] ?? '')
-			.filter(Boolean)
-			.slice(0, 2)
-			.join('')
-			.toUpperCase() || '?'
-	)
-})
-
-function handleImageError(): void {
-	hasImageError.value = true
-}
-
-function handleClick(event: MouseEvent): void {
-	emit('click', event)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, hasImageError, initials, handleImageError, handleClick } =
+	useBaseAvatar(props, emit)
 </script>

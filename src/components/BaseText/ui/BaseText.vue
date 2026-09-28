@@ -9,14 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
 import '../styles/BaseText.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { TEXT_WEIGHT } from '../model/textWeight'
+import { useBaseText } from '../model/useBaseText'
 import type { BaseTextProps, BaseTextSlots } from '../types/BaseText.types'
 
 const props = withDefaults(
@@ -32,32 +29,5 @@ const props = withDefaults(
 )
 defineSlots<BaseTextSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const weightStyle = computed(() => ({
-	fontWeight: props.weight,
-}))
-
-const maxLinesStyle = computed(() => {
-	if (!props.truncate) return {}
-	if (props.maxLines > 1) {
-		return {
-			display: '-webkit-box',
-			WebkitLineClamp: props.maxLines,
-			WebkitBoxOrient: 'vertical',
-			overflow: 'hidden',
-		}
-	}
-	return {}
-})
-
-const modifierClasses = computed(() => [
-	{ 'base-text--nowrap': props.nowrap },
-	{ 'base-text--truncate': props.truncate && props.maxLines <= 1 },
-])
+const { classes, sizeScaleStyle, customColorStyle, weightStyle, maxLinesStyle, modifierClasses } = useBaseText(props)
 </script>

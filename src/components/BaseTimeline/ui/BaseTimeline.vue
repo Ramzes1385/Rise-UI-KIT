@@ -34,12 +34,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { getLocale } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseTimeline } from '../model/useBaseTimeline'
 import '../styles/BaseTimeline.style.scss'
 import type { BaseTimelineProps, BaseTimelineSlots } from '../types/BaseTimeline.types'
 
@@ -54,33 +53,6 @@ const props = withDefaults(
 
 defineSlots<BaseTimelineSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-timeline', props, [
-	'root',
-	'item',
-	'marker',
-	'content',
-])
-
-const currentIndex = computed(() => (props.currentId === undefined ? -1 : props.items.findIndex(item => item.id === props.currentId)))
-
-function isUpcoming(index: number): boolean {
-	return currentIndex.value !== -1 && index > currentIndex.value
-}
-
-/** Дата события: Date или распознаваемая строка; иначе undefined */
-function toDate(value: Date | string): Date | undefined {
-	const date = value instanceof Date ? value : new Date(value)
-	return Number.isNaN(date.getTime()) ? undefined : date
-}
-
-/** Значение атрибута datetime: ISO для даты, исходная строка иначе */
-function dateTime(value: Date | string): string {
-	return toDate(value)?.toISOString() ?? String(value)
-}
-
-function formatDate(value: Date | string): string {
-	const date = toDate(value)
-	if (!date) return String(value)
-	return new Intl.DateTimeFormat(getLocale().intl, props.dateFormat ?? { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, currentIndex, isUpcoming, dateTime, formatDate } =
+	useBaseTimeline(props)
 </script>

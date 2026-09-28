@@ -46,16 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useSlots, watch } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDrawer } from '@components/BaseDrawer'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
-import { useBreakpoint } from '@composables/useBreakpoint'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseHeader } from '../model/useBaseHeader'
 import '../styles/BaseHeader.style.scss'
 import type { BaseHeaderProps, BaseHeaderSlots } from '../types/BaseHeader.types'
 
@@ -71,29 +69,20 @@ const props = withDefaults(
 )
 
 defineSlots<BaseHeaderSlots>()
-const slots = useSlots()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-header', props, [
-	'root',
-	'inner',
-	'title',
-	'toggle',
-])
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	slots,
+	hasMenu,
+	resolvedMenuLabel,
+	isMenuOpen,
+	closeMenu,
+	exposed,
+} = useBaseHeader(props)
 
-const hasMenu = computed(() => Boolean(slots.menu))
-const resolvedMenuLabel = computed(() => props.menuLabel ?? UI_ARIA.MENU)
-
-const isMenuOpen = ref(false)
-
-function closeMenu(): void {
-	isMenuOpen.value = false
-}
-
-/** Окно стало шире 768px — навигация снова в шапке, выдвижное меню закрывается */
-const { isMobile } = useBreakpoint()
-watch(isMobile, value => {
-	if (!value) closeMenu()
-})
-
-defineExpose({ openMenu: () => (isMenuOpen.value = true), closeMenu })
+defineExpose(exposed)
 </script>

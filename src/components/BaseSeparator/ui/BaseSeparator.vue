@@ -28,14 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useId } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
 import '../styles/BaseSeparator.style.scss'
-
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSeparator } from '../model/useBaseSeparator'
 import type { BaseSeparatorProps, BaseSeparatorSlots } from '../types/BaseSeparator.types'
 
 const props = withDefaults(
@@ -49,30 +45,6 @@ const props = withDefaults(
 	}),
 )
 defineSlots<BaseSeparatorSlots>()
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'line', 'content'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-/**
- * Потомки role="separator" презентационные (ARIA: Children Presentational), поэтому метка
- * внутри разделителя сама по себе не озвучивается — имя берётся из неё через aria-labelledby.
- * useId() стабилен между SSR и гидратацией.
- */
-const contentId = useId()
-
-/** Без пропа spacing отступы подписи берутся из стилей (0 12px); inline-переменные пишутся только для явного значения. */
-const spacingStyle = computed(() => {
-	if (props.spacing === undefined) return undefined
-	return {
-		'--sep-pad-y': `${props.spacing}px`,
-		'--sep-pad-x': `${props.spacing * 2}px`,
-	}
-})
-
-const thicknessStyle = computed(() => ({
-	'--sep-thickness': `${props.thickness}px`,
-}))
+const { classes, sizeScaleStyle, customColorStyle, contentId, spacingStyle, thicknessStyle } = useBaseSeparator(props)
 </script>

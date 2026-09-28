@@ -14,11 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BaseSkeleton.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSkeleton } from '../model/useBaseSkeleton'
 import type { BaseSkeletonProps } from '../types/BaseSkeleton.types'
 
 // Заглушка декоративная (aria-hidden): о загрузке сообщает контейнер (aria-busy) или текст статуса, а не скелетон.
@@ -32,40 +31,5 @@ const props = withDefaults(
 	}),
 )
 
-const { classes } = useCustomClass({
-	getClass: function () {
-		return props.customClass
-	},
-	elementKeys: ['root'],
-})
-
-function scaleDimension(value: number | string, scale: number): string {
-	if (typeof value === 'number') return `${value * scale}px`
-	if (scale === 1) return value
-	return `calc(${value} * ${scale})`
-}
-
-const skeletonStyle = computed(() => {
-	const styles: Record<string, string> = {}
-	const scale = props.sizeScale / 100
-
-	if (props.width) {
-		styles.width = scaleDimension(props.width, scale)
-	}
-
-	if (props.height) {
-		styles.height = scaleDimension(props.height, scale)
-	}
-
-	if (props.color) {
-		styles.backgroundColor = props.color
-	}
-
-	// Для SCSS sz() — border-radius и дефолтные размеры shape
-	if (scale !== 1) {
-		styles['--size-scale'] = String(scale)
-	}
-
-	return styles
-})
+const { classes, skeletonStyle } = useBaseSkeleton(props)
 </script>

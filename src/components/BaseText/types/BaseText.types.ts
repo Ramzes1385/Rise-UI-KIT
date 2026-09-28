@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const TEXT_TAGS = ['p', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label', 'small', 'strong', 'em'] as const
@@ -20,3 +21,5 @@ export type BaseTextEmits = Record<string, never>
 export interface BaseTextSlots {
 	default?: () => unknown
 }
+
+export type TextProps = PropsWithDefaults<BaseTextProps, 'sizeScale' | 'maxLines'>

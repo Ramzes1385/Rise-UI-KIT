@@ -67,11 +67,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseStepper } from '../model/useBaseStepper'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../types/BaseStepper.types'
 
@@ -88,34 +88,8 @@ const props = withDefaults(
 const emit = defineEmits<BaseStepperEmits>()
 defineSlots<BaseStepperSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-stepper', props, [
-	'root',
-	'header',
-	'items',
-	'step',
-	'indicatorWrapper',
-	'indicator',
-	'check',
-	'content',
-	'label',
-	'description',
-	'footer',
-])
-
-const progressStyle = computed(() => {
-	const count = props.items.length
-	if (count <= 1) return undefined
-	const scale = (props.modelValue - 1) / (count - 1)
-	const halfStep = 50 / count
-	return {
-		'--stepper-progress-scale': scale,
-		'--stepper-line-offset': `${halfStep}%`,
-	}
-})
-
-function handleStepClick(step: number): void {
-	if (props.items[step - 1].isDisabled) return
-	emit('update:modelValue', step)
-	emit('change', step)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, progressStyle, handleStepClick } = useBaseStepper(
+	props,
+	emit,
+)
 </script>

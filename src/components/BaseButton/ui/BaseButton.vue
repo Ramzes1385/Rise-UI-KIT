@@ -32,10 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { usePadding } from '@composables/usePadding'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseButton } from '../model/useBaseButton'
 import '../styles/BaseButton.style.scss'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../types/BaseButton.types'
 
@@ -55,33 +54,8 @@ const emit = defineEmits<BaseButtonEmits>()
 
 defineSlots<BaseButtonSlots>()
 
-const buttonRef = ref<HTMLButtonElement | null>(null)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, buttonRef, paddingStyle, handleClick, exposed } =
+	useBaseButton(props, emit)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-button', props, ['root'])
-const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad' })
-/** Без пропа padding отступы берутся из токенов темы (--rise-control-padding-*), inline-переменные не пишутся. */
-const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
-
-/**
- * Во время загрузки кнопка не получает нативный `disabled`: иначе сфокусированная кнопка
- * выпадает из фокус-порядка и браузер сбрасывает фокус на body. Вместо этого она помечена
- * aria-disabled/aria-busy, а активация (мышь, Enter, Space) гасится здесь — preventDefault
- * отменяет и отправку/сброс формы для type="submit"/"reset", stopPropagation не даёт клику
- * дойти до обработчиков предков (как и с нативным disabled: `<tr @click>` вокруг кнопки не срабатывает).
- */
-function handleClick(e: MouseEvent): void {
-	if (props.isLoading) {
-		e.preventDefault()
-		e.stopPropagation()
-		return
-	}
-	if (props.isDisabled) return
-	emit('click', e)
-}
-
-defineExpose({
-	buttonRef,
-	focus: () => buttonRef.value?.focus(),
-	blur: () => buttonRef.value?.blur(),
-})
+defineExpose(exposed)
 </script>

@@ -30,14 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { useCustomClass } from '@composables/useCustomClass'
 import { BaseAutocomplete } from '@components/BaseAutocomplete'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/timeUtils'
-import type { AutocompleteOption } from '@components/BaseAutocomplete'
+import { useBaseTimePicker } from '../model/useBaseTimePicker'
 import type { BaseTimePickerEmits, BaseTimePickerProps } from '../types/BaseTimePicker.types'
 
 const props = withDefaults(
@@ -55,38 +52,7 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseTimePickerEmits>()
 
-const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option'] })
+const { classes, autocompleteRef, options, filterTime, normalizeTime, toTime, exposed } = useBaseTimePicker(props)
 
-const autocompleteRef = ref<InstanceType<typeof BaseAutocomplete> | null>(null)
-
-const options = computed((): AutocompleteOption[] =>
-	buildTimeOptions(props.step, props.minTime, props.maxTime).map(time => ({ value: time, label: time })),
-)
-
-/** Вариант подходит, если начинается с набранного: «9» — 09:… и 9…, «9:3» — 09:3… */
-function filterTime(option: AutocompleteOption, query: string): boolean {
-	return timePrefixes(query).some(prefix => option.label.startsWith(prefix))
-}
-
-/** Набранное время → `HH:MM` в границах minTime–maxTime; иначе `null` (значение не меняется) */
-function normalizeTime(text: string): string | null {
-	const time = parseTimeInput(text)
-	if (!time) return null
-	const minutes = timeToMinutes(time) as number
-	const min = props.minTime ? timeToMinutes(props.minTime) : undefined
-	const max = props.maxTime ? timeToMinutes(props.maxTime) : undefined
-	if ((min !== undefined && minutes < min) || (max !== undefined && minutes > max)) return null
-	return time
-}
-
-function toTime(value: string | number | null): string | null {
-	return value === null ? null : String(value)
-}
-
-defineExpose({
-	focus: () => autocompleteRef.value?.focus(),
-	blur: () => autocompleteRef.value?.blur(),
-	validate: () => autocompleteRef.value?.validate() ?? true,
-	reset: () => autocompleteRef.value?.reset(),
-})
+defineExpose(exposed)
 </script>
