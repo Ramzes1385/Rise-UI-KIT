@@ -1,7 +1,10 @@
 /** Composable: состояние редактора (фокус, цвет текста/фона, пустой контент) */
 import { ref } from 'vue'
-import { UI_EDITOR } from '@constants'
 import type { UseEditorStateOptions } from './useEditorState.types'
+
+/** Цвета текста и фона, выбранные в палитре до первого выбора */
+const DEFAULT_TEXT_COLOR = '#000000'
+const DEFAULT_BG_COLOR = '#ffff00'
 
 /**
  * Состояние редактора, не зависящее от порядка инициализации тулбара:
@@ -12,8 +15,8 @@ import type { UseEditorStateOptions } from './useEditorState.types'
 function useEditorState({ editorRef, applyColor, applyBackgroundColor, resetColor: resetColorFn, resetBackgroundColor: resetBackgroundColorFn }: UseEditorStateOptions) {
 	const isFocused = ref(false)
 	const isEmpty = ref(true)
-	const textColor = ref(UI_EDITOR.DEFAULT_TEXT_COLOR)
-	const backgroundColor = ref(UI_EDITOR.DEFAULT_BG_COLOR)
+	const textColor = ref(DEFAULT_TEXT_COLOR)
+	const backgroundColor = ref(DEFAULT_BG_COLOR)
 	const isTextColorActive = ref(false)
 	const isBackgroundColorActive = ref(false)
 

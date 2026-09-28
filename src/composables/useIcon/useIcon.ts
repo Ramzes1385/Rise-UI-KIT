@@ -1,8 +1,10 @@
 /** Composable: работа с SVG-иконками из спрайта */
 import { hasInjectionContext, inject } from 'vue'
-import { UI_ICON_SPRITE_PATH } from '@constants'
 import type { IconMap, ResolvedIcon, UseIconReturn } from './useIcon.types'
 import type { InjectionKey } from 'vue'
+
+/** Путь к SVG-спрайту по умолчанию — файл рядом со страницей; экспортируется из `/icons` */
+export const ICON_SPRITE_PATH = 'icons.svg'
 
 /**
  * Ключ provide/inject пути к SVG-спрайту: его задают createIconPlugin({ spritePath })
@@ -20,8 +22,8 @@ function isIconExists(name: string, names: string[]): boolean {
 
 /** Путь к спрайту из плагина; вне setup inject недоступен — используется прежний путь по умолчанию */
 function resolveSpritePath(): string {
-	if (!hasInjectionContext()) return UI_ICON_SPRITE_PATH
-	return inject(ICON_SPRITE_PATH_KEY, UI_ICON_SPRITE_PATH)
+	if (!hasInjectionContext()) return ICON_SPRITE_PATH
+	return inject(ICON_SPRITE_PATH_KEY, ICON_SPRITE_PATH)
 }
 
 function resolveIconMap(): IconMap {

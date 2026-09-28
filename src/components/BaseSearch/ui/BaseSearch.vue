@@ -125,13 +125,13 @@
 
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
 import { useSearchState } from '@composables/useSearchState'
-import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import { getSearchOptionId } from '../model/BaseSearch.types'
 import '../styles/BaseSearch.style.scss'
 import BaseSearchInput from './BaseSearchInput.vue'
@@ -147,7 +147,7 @@ const props = withDefaults(defineProps<BaseSearchProps>(), kitDefaults('BaseSear
 	results: () => [],
 	isRemote: false,
 	isInstant: true,
-	debounceMs: UI_TIMING.DEBOUNCE_DEFAULT,
+	debounceMs: 300,
 	isLoading: false,
 	hasClear: true,
 	hasIcon: true,

@@ -37,15 +37,21 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE, UI_TIMING } from '@constants'
 import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
+
+/** Отступ подсказки от элемента, px */
+const GAP = 8
+/** Задержка показа, мс: подсказка не мелькает, когда курсор проходит мимо */
+const SHOW_DELAY_MS = 100
+/** Задержка скрытия, мс: курсор успевает перейти на подсказку */
+const HIDE_DELAY_MS = 150
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
@@ -128,13 +134,13 @@ function stopUpdateLoop(): void {
 }
 
 /** Сторона подсказки: выбранная или противоположная, если у края окна не хватает места */
-const placement = computed(() => resolveTooltipPlacement(props.position, coords.value, popupSize.value, getViewport(), UI_SIZE.GAP.MD))
+const placement = computed(() => resolveTooltipPlacement(props.position, coords.value, popupSize.value, getViewport(), GAP))
 
 /** Координаты со сдвигом от края окна; стрелка сдвигается обратно и смотрит на триггер */
 const tooltipStyle = computed((): Record<string, string> => {
 	const shift = calcTooltipShift(placement.value, coords.value, popupSize.value, getViewport())
 	return {
-		...calcTooltipPosition({ position: placement.value, coords: coords.value, gap: UI_SIZE.GAP.MD, shift }),
+		...calcTooltipPosition({ position: placement.value, coords: coords.value, gap: GAP, shift }),
 		'--tooltip-arrow-offset': `${-shift}px`,
 	}
 })
@@ -160,7 +166,7 @@ function handleEnter(): void {
 		updateCoords()
 		isVisible.value = true
 		startUpdateLoop()
-	}, UI_TIMING.TOOLTIP_SHOW_DELAY)
+	}, SHOW_DELAY_MS)
 }
 
 /** Указатель перешёл с триггера на подсказку: она остаётся на экране */
@@ -182,7 +188,7 @@ function handleLeave(): void {
 	hideTimer = setTimeout(() => {
 		isVisible.value = false
 		stopUpdateLoop()
-	}, UI_TIMING.TOOLTIP_HIDE_DELAY)
+	}, HIDE_DELAY_MS)
 }
 
 /** Escape скрывает подсказку сразу (WCAG 1.4.13): она не должна мешать, пока фокус остаётся на триггере */

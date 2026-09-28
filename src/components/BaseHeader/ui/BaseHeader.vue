@@ -42,15 +42,15 @@
 
 <script setup lang="ts">
 import { computed, ref, useSlots, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseContainer } from '@components/BaseContainer'
 import { BaseDrawer } from '@components/BaseDrawer'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '../styles/BaseHeader.style.scss'
 import type { BaseHeaderProps, BaseHeaderSlots } from '../model/BaseHeader.types'
 

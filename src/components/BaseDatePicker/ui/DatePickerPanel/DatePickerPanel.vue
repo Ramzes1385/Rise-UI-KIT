@@ -107,6 +107,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import './DatePickerPanel.style.scss'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseIcon } from '@components/BaseIcon'
@@ -115,7 +116,6 @@ import { useDatePickerPanelNavigation } from '@composables/useDatePickerPanelNav
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { UI_ARIA, UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { pickDatePickerCalendarConfig, toBaseCalendarProps, withoutTimeBlock } from '../../model/BaseDatePickerCalendar.types'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'

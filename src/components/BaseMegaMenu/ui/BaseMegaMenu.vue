@@ -113,11 +113,10 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { kitDefaults } from '@composables/useDefaults'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TIMING } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
@@ -128,7 +127,7 @@ const props = withDefaults(defineProps<BaseMegaMenuProps>(), kitDefaults('BaseMe
 	variant: DEFAULT_VARIANT,
 	trigger: 'click',
 	layout: 'columns',
-	hoverDelay: UI_TIMING.HOVER_DELAY,
+	hoverDelay: 200,
 	sizeScale: SIZE_SCALE_DEFAULT,
 }))
 

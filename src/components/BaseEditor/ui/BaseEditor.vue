@@ -119,12 +119,13 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import { UI_EDITOR } from '@/locales/messages'
 import '../styles/BaseEditor.style.scss'
 
+import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseTextarea } from '@components/BaseTextarea'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useEditorState } from '@composables/useEditorState'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
@@ -132,7 +133,6 @@ import { useEscapeKey } from '@composables/useEscapeKey'
 import { isolateFormField, useFormDisabled } from '@composables/useFormContext'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
-import { UI_EDITOR, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
 import { escapeHtml, sanitizeHtml } from '@utils/htmlUtils'
 import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'

@@ -17,7 +17,7 @@
 				class="base-chat-slideover__file-download"
 				:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
 				@click="emit('download-file', file)">
-				<BaseIcon name="download" :size-scale="sizeScale * UI_SCALE.SMALL" />
+				<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 			</BaseButton>
 		</li>
 	</ul>
@@ -25,11 +25,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
+import { CHAT_SCALE } from '../../model/chatScale'
 import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../model/ChatSlideoverFiles.types'
 

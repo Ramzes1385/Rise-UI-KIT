@@ -6,8 +6,11 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
-import { UI_TIMING } from '@constants'
 import BaseTooltip from '../ui/BaseTooltip.vue'
+
+/** Задержки показа и скрытия подсказки, мс — как в BaseTooltip */
+const SHOW_DELAY = 100
+const HIDE_DELAY = 150
 
 /** Пауза дольше заданной задержки: отложенный показ или скрытие успели бы сработать. */
 function waitLongerThan(delay: number): Promise<void> {
@@ -63,7 +66,7 @@ describe('BaseTooltip integration', () => {
 
 			await user.hover(trigger)
 			await user.unhover(trigger)
-			await waitLongerThan(UI_TIMING.TOOLTIP_HIDE_DELAY)
+			await waitLongerThan(HIDE_DELAY)
 			expect(screen.getByRole('tooltip')).toBeInTheDocument()
 		})
 	})
@@ -120,7 +123,7 @@ describe('BaseTooltip integration', () => {
 				expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
 			})
 
-			await waitLongerThan(UI_TIMING.TOOLTIP_SHOW_DELAY)
+			await waitLongerThan(SHOW_DELAY)
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
 		})
 
@@ -142,7 +145,7 @@ describe('BaseTooltip integration', () => {
 				expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
 			})
 
-			await waitLongerThan(UI_TIMING.TOOLTIP_HIDE_DELAY)
+			await waitLongerThan(HIDE_DELAY)
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
 			expect(trigger).toHaveFocus()
 		})

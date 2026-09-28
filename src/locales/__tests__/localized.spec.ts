@@ -1,11 +1,11 @@
 /**
- * Константы со строками интерфейса читают словарь текущего языка и следуют его смене.
+ * Разделы словаря (`localized`) читают строки текущего языка и следуют его смене.
  */
 
 import { computed } from 'vue'
-import { setLocale } from '@/locales/state'
-import { UI_ARIA, UI_EDITOR, UI_TEXT } from '../index'
 import { localized } from '../localized'
+import { UI_ARIA, UI_TEXT } from '../messages'
+import { setLocale } from '../state'
 
 afterEach(() => {
 	setLocale('ru')
@@ -27,16 +27,11 @@ describe('localized', () => {
 		expect(label.value).toBe('Cancel / Confirm')
 	})
 
-	it('ключи, in, копия через spread и дополнительные поля', () => {
+	it('ключи, in и копия через spread', () => {
 		expect('CLOSE' in UI_ARIA).toBe(true)
 		expect('MISSING' in UI_ARIA).toBe(false)
 		expect(Object.keys(UI_TEXT)).toContain('EMPTY')
 		expect({ ...UI_TEXT }.EMPTY).toBe('Нет данных')
-
-		expect(UI_EDITOR.DEFAULT_TEXT_COLOR).toBe('#000000')
-		expect('DEFAULT_BG_COLOR' in UI_EDITOR).toBe(true)
-		expect(Object.keys(UI_EDITOR)).toEqual(expect.arrayContaining(['BOLD', 'DEFAULT_TEXT_COLOR']))
-		expect(Object.getOwnPropertyDescriptor(UI_EDITOR, 'DEFAULT_BG_COLOR')?.value).toBe('#ffff00')
 	})
 
 	it('неизвестный ключ — undefined', () => {

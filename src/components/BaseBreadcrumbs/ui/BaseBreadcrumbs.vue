@@ -121,11 +121,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { resolveLink, useLinkComponent } from '@composables/useLink'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'

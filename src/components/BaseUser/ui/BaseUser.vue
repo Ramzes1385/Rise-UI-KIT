@@ -27,11 +27,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLink } from '@components/BaseLink'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_CHAT_TEXT } from '@constants'
 import '../styles/BaseUser.style.scss'
 import type { BaseUserProps, BaseUserSlots } from '../model/BaseUser.types'
 

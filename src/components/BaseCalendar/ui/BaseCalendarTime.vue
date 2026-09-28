@@ -49,9 +49,9 @@
 
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue'
+import { UI_CALENDAR } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
-import { UI_CALENDAR } from '@constants'
 import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../model/BaseCalendarTime.types'
 
 const props = defineProps<BaseCalendarTimeProps>()

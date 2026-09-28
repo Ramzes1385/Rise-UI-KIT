@@ -1,8 +1,10 @@
 /** Composable: управление состоянием изображения (загрузка, fallback, оптимизированные src) */
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { UI_SIZE } from '@constants'
 import { buildOptimizedSrc, buildSrcset, replaceExtension } from '@utils/imageUtils'
 import type { UseImageStateOptions } from './useImageState.types'
+
+/** Высота заглушки, пока размер изображения неизвестен */
+const LOADING_MIN_HEIGHT = '120px'
 
 /** Описание: управляет состоянием изображения — загрузка, таймаут, fallback, оптимизированные src/srcset и стили контейнера */
 function useImageState(options: UseImageStateOptions) {
@@ -39,7 +41,7 @@ function useImageState(options: UseImageStateOptions) {
 
 		if (!hasCustomDimensions.value && (!isLoaded.value || hasError.value)) {
 			styles['aspect-ratio'] = '16/9'
-			styles['min-height'] = UI_SIZE.IMAGE_LOADING_MIN_HEIGHT
+			styles['min-height'] = LOADING_MIN_HEIGHT
 			styles['width'] = '100%'
 		}
 

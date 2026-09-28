@@ -6,8 +6,8 @@
  */
 
 import { expect } from 'storybook/test'
+import { UI_TEXT } from '@/locales/messages'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
-import { UI_TEXT } from '@constants'
 import BaseLoader from '../ui/BaseLoader.vue'
 import type { LoaderVariant } from '../model/BaseLoader.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'

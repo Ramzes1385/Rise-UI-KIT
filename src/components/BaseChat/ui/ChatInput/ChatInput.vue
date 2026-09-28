@@ -16,7 +16,7 @@
 
 		<!-- Панель ответа на сообщение -->
 		<div v-if="replyingTo" class="base-chat-input__reply-bar">
-			<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-input__reply-icon" />
+			<BaseIcon name="reply" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-input__reply-icon" />
 			<div class="base-chat-input__reply-content">
 				<span class="base-chat-input__reply-sender">{{ replyingTo.senderName || UI_CHAT_TEXT.MESSAGE_PLACEHOLDER }}</span>
 				<span class="base-chat-input__reply-text">{{ replyingTo.text }}</span>
@@ -27,7 +27,7 @@
 				class="base-chat-input__reply-cancel"
 				:aria-label="UI_CHAT_TEXT.CANCEL_REPLY_ARIA"
 				@click="handleCancelReply">
-				<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE.SMALL" />
+				<BaseIcon name="close" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 			</BaseButton>
 		</div>
 
@@ -87,7 +87,7 @@
 						:aria-selected="index === activeSuggestionIndex ? 'true' : 'false'"
 						@mousedown.prevent
 						@click="replaceCurrentWord('@', member.name)">
-						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * UI_CHAT_SCALE.ICON" />
+						<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale * CHAT_SCALE.MENTION_AVATAR" />
 						<span class="base-chat-input__autocomplete-info">
 							<span class="base-chat-input__autocomplete-title">{{ member.name }}</span>
 							<span v-if="member.role" class="base-chat-input__autocomplete-sub">
@@ -114,7 +114,7 @@
 						@mousedown.prevent
 						@click="replaceCurrentWord('/', command.name)">
 						<span class="base-chat-input__autocomplete-icon" aria-hidden="true">
-							<BaseIcon name="file-config" :size-scale="sizeScale * UI_SCALE.SMALL" />
+							<BaseIcon name="file-config" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 						</span>
 						<span class="base-chat-input__autocomplete-info">
 							<span class="base-chat-input__autocomplete-title">/{{ command.name }}</span>
@@ -153,11 +153,13 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, useId, watch } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useChatInputState } from '@composables/useChatInputState'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_SCALE, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { CHAT_SCALE } from '../../model/chatScale'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import ChatFilePreview from './ChatFilePreview.vue'
 import './ChatInput.style.scss'

@@ -19,7 +19,7 @@
 				:columns="localColumns"
 				:is-settings-open="isSettingsOpen"
 				:size-scale="sizeScale"
-				:settings-max-height="TABLE.SETTINGS_MAX_HEIGHT"
+				:settings-max-height="SETTINGS_MAX_HEIGHT"
 				:toolbar-class="classes.toolbar"
 				:search-class="classes.search"
 				:filters-class="classes.filters"
@@ -170,7 +170,7 @@
 						v-model="currentPage"
 						:total="processedRows.length"
 						:page-size="localPageSize"
-						:max-visible="TABLE.PAGINATION_MAX_VISIBLE"
+						:max-visible="PAGINATION_MAX_VISIBLE"
 						:size-scale="sizeScale" />
 				</slot>
 			</div>
@@ -184,24 +184,33 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
+import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { BasePagination } from '@components/BasePagination'
 import { BaseSelect } from '@components/BaseSelect'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { isolateFormField } from '@composables/useFormContext'
 import { usePadding } from '@composables/usePadding'
 import { useTableComposition } from '@composables/useTableComposition'
 import { useVirtualList } from '@composables/useVirtualList'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT, TABLE, TABLE_TEXT } from '@constants'
 import '../styles/BaseTable.style.scss'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
 import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../model/BaseTable.types'
+
+/** Наибольшая высота панели настроек колонок */
+const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
+/** Номеров страниц в пагинации, не считая крайних */
+const PAGINATION_MAX_VISIBLE = 4
+/** Длительность раскрытия и сворачивания строки, мс */
+const EXPAND_DURATION_MS = 300
+/** Расстояние до низа таблицы, px, с которого подгружаются следующие строки */
+const INFINITE_SCROLL_THRESHOLD = 50
 
 const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable', {
 	variant: DEFAULT_VARIANT,
@@ -210,7 +219,7 @@ const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable
 	pageSize: 0,
 	pageSizeOptions: () => [],
 	loadMode: 'pagination',
-	searchDebounce: TABLE.SEARCH_DEBOUNCE_MS,
+	searchDebounce: 300,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	padding: undefined,
 	isVirtual: false,
@@ -232,7 +241,7 @@ const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => pr
 /** Без пропа padding отступы ячеек берутся из стилей (12px 16px), inline-переменные не пишутся. */
 const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
 
-const expand = useExpandTransition({ duration: TABLE.EXPAND_TRANSITION_DURATION })
+const expand = useExpandTransition({ duration: EXPAND_DURATION_MS })
 
 provide(TABLE_EXPAND_TRANSITION_KEY, {
 	onExpandBeforeEnter: expand.onBeforeEnter,
@@ -321,7 +330,7 @@ const {
 	hasColumnSettings,
 	isLoading: computed(() => props.isLoading),
 	pageSizeOptions: computed(() => props.pageSizeOptions),
-	infiniteScrollThreshold: TABLE.INFINITE_SCROLL_THRESHOLD,
+	infiniteScrollThreshold: INFINITE_SCROLL_THRESHOLD,
 	emit,
 	slots,
 })

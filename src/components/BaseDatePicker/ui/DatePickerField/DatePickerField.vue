@@ -58,12 +58,12 @@
 <script setup lang="ts">
 import './DatePickerField.style.scss'
 import { computed, ref, watchPostEffect } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import type { DatePickerFieldEmits, DatePickerFieldProps, DatePickerFieldSlots } from '../../model/DatePickerField.types'
 

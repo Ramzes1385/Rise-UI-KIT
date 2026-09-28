@@ -23,8 +23,6 @@ const aliases = [
 	{ prefix: '@composables/', target: 'dist/composables/' },
 	{ prefix: '@utils/', target: 'dist/utils/' },
 	{ prefix: '@icons/', target: 'dist/icons/' },
-	{ prefix: '@constants', target: 'dist/constants/index' },
-	{ prefix: '@constants/', target: 'dist/constants/' },
 	{ prefix: '@/', target: 'dist/' },
 ]
 

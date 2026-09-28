@@ -1,7 +1,7 @@
 /** Утилиты: валидация и обработка файлов */
 
+import { UI_TEXT } from '@/locales/messages'
 import { formatMessage, formatNumber } from '@/locales/state'
-import { UI_TEXT } from '@constants'
 import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/urlUtils'
 import type { FileValidationOptions, FileValidationResult } from './fileUtils.types'
 

@@ -1,7 +1,7 @@
 /** Утилиты: расчёт пагинации и видимых страниц */
 
+import { UI_TEXT } from '@/locales/messages'
 import { formatMessage, formatNumber } from '@/locales/state'
-import { UI_TEXT } from '@constants'
 import type { PageInfoOptions, VisiblePageItem, VisiblePagesOptions } from './paginationUtils.types'
 
 /** Рассчитать общее количество страниц */

@@ -83,12 +83,13 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
+import { UI_COLOR_PICKER, UI_TEXT } from '@/locales/messages'
 import { BasePopover } from '@components/BasePopover'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { UI_COLOR_PICKER, UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseColorPicker.style.scss'

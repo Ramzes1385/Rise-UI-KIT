@@ -1,6 +1,6 @@
 /** Composable: тулбар таблицы — фильтры и настройки колонок */
 import { computed, ref } from 'vue'
-import { UI_FILTER } from '@constants'
+import { UI_FILTER } from '@/locales/messages'
 import type { UseTableToolbarOptions, UseTableToolbarReturn } from './useTableToolbar.types'
 
 /** Операторы фильтра. Подпись «Содержит» — на текущем языке, поэтому список собирается при чтении */

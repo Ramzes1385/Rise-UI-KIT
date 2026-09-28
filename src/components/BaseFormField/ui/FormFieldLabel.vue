@@ -5,15 +5,14 @@
 		:for="tag === 'label' ? forId : undefined"
 		:class="className"
 		:custom-class="customClass"
-		:weight="UI_FONT_WEIGHT.MEDIUM"
+		:weight="TEXT_WEIGHT.MEDIUM"
 		:size-scale="sizeScale">
 		{{ label }}<span v-if="isRequired" :class="[requiredClassName, requiredCustomClass]" aria-hidden="true">*</span>
 	</BaseText>
 </template>
 
 <script setup lang="ts">
-import { BaseText } from '@components/BaseText'
-import { UI_FONT_WEIGHT } from '@constants'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import type { FormFieldLabelProps } from '../model/FormFieldLabel.types'
 
 withDefaults(defineProps<FormFieldLabelProps>(), {

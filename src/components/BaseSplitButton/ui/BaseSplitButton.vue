@@ -29,12 +29,13 @@
 </template>
 
 <script setup lang="ts">
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { BaseIcon } from '@components/BaseIcon'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSplitButton.style.scss'
 import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../model/BaseSplitButton.types'

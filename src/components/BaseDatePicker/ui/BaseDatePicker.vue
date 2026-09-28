@@ -47,13 +47,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDatePickerState } from '@composables/useDatePickerState'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useFormField } from '@composables/useFormField'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT, UI_SIZE } from '@constants'
 import '../styles/BaseDatePicker.style.scss'
 import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
@@ -80,7 +80,7 @@ const resolvedProps = computed(() => ({
 	isClearable: props.isClearable ?? false,
 	closeOnClickOutside: resolveBooleanPropDefault('closeOnClickOutside', props.closeOnClickOutside, true),
 	closeOnEscape: resolveBooleanPropDefault('closeOnEscape', props.closeOnEscape, true),
-	gap: props.gap ?? UI_SIZE.DATEPICKER_GAP,
+	gap: props.gap ?? 4,
 	label: props.label ?? '',
 	error: props.error ?? '',
 	isMultiMonth: props.isMultiMonth ?? false,

@@ -56,11 +56,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFieldControl } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTextarea.style.scss'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
 import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../model/BaseTextarea.types'

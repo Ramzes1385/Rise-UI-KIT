@@ -1,8 +1,10 @@
 /** Composable: вычисление сетки дней календаря, названий месяцев, дней недели и диапазонов годов */
 import { computed } from 'vue'
-import { CALENDAR_GRID_CELLS } from '@constants'
 import { daysInMonth, getWeekNumber, getWeekday } from '@utils/dateUtils'
 import type { UseCalendarGridOptions } from './useCalendarGrid.types'
+
+/** Ячеек в сетке месяца: 6 недель по 7 дней — высота сетки не меняется от месяца к месяцу */
+const GRID_CELLS = 42
 
 /**
  * Composable для вычисления сетки дней календаря, названий месяцев, дней недели и диапазонов годов.
@@ -71,7 +73,7 @@ function useCalendarGrid(options: UseCalendarGridOptions) {
 			days.push(new Date(currentYear.value, currentMonth.value, d))
 		}
 
-		const remaining = CALENDAR_GRID_CELLS - days.length
+		const remaining = GRID_CELLS - days.length
 		const nextMonth = currentMonth.value === 11 ? 0 : currentMonth.value + 1
 		const nextYear = currentMonth.value === 11 ? currentYear.value + 1 : currentYear.value
 		for (let d = 1; d <= remaining; d++) {

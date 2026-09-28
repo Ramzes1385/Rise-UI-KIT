@@ -17,10 +17,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_ARIA } from '@/locales/messages'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { resolveLink, useLinkComponent } from '@composables/useLink'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '../styles/BaseLink.style.scss'
 import type { BaseLinkEmits, BaseLinkProps, BaseLinkSlots } from '../model/BaseLink.types'
 

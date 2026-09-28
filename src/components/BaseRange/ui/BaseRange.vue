@@ -14,7 +14,7 @@
 		<!-- Метка значения -->
 		<div v-if="hasLabel" class="base-range__label" :class="classes.label">
 			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ min }}</BaseText>
-			<BaseText tag="span" class="base-range__label-value" :weight="UI_FONT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
+			<BaseText tag="span" class="base-range__label-value" :weight="TEXT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
 				labelText
 			}}</BaseText>
 			<BaseText tag="span" class="base-range__label-max" :custom-class="classes.labelMax">{{ max }}</BaseText>
@@ -90,15 +90,15 @@
 
 <script setup lang="ts">
 import { computed, ref, useSlots } from 'vue'
-import { BaseText } from '@components/BaseText'
+import { UI_ARIA } from '@/locales/messages'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
-import { DEFAULT_VARIANT, UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import BaseRangeMarks from './BaseRangeMarks.vue'
 import { BaseRangeThumb } from './BaseRangeThumb'
 import '../styles/BaseRange.style.scss'

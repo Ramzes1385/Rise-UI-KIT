@@ -18,7 +18,7 @@
 						v-if="title"
 						tag="h3"
 						:size-scale="sizeScale"
-						:weight="UI_FONT_WEIGHT.SEMIBOLD"
+						:weight="TEXT_WEIGHT.SEMIBOLD"
 						class="base-card__title"
 						:custom-class="classes.title"
 						>{{ title }}</BaseText
@@ -52,11 +52,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { usePadding } from '@composables/usePadding'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseCard.style.scss'
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
 

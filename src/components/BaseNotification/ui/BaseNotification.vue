@@ -34,7 +34,7 @@
 						<BaseText
 							tag="h4"
 							:size-scale="sizeScale"
-							:weight="UI_FONT_WEIGHT.SEMIBOLD"
+							:weight="TEXT_WEIGHT.SEMIBOLD"
 							class="base-notification-item__title"
 							:custom-class="classes.title">
 							{{ notification.title }}
@@ -82,13 +82,13 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { DEFAULT_VARIANT, UI_ARIA, UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseNotification.style.scss'
 import type {
@@ -100,6 +100,9 @@ import type {
 	NotificationItem,
 } from '../model/BaseNotification.types'
 
+/** Длительность показа по умолчанию, мс */
+const DEFAULT_DURATION = 3000
+
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
@@ -107,7 +110,7 @@ const props = withDefaults(defineProps<BaseNotificationProps>(), kitDefaults('Ba
 	title: '',
 	type: 'info',
 	position: 'top-right',
-	duration: UI_TIMING.NOTIFICATION_AUTO_CLOSE,
+	duration: DEFAULT_DURATION,
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isContained: false,
 	isPersistent: false,
@@ -155,7 +158,7 @@ const MAX_TIMEOUT = 2_147_483_647
  */
 function resolveDuration(duration: number | undefined): number {
 	if (duration !== undefined && Number.isFinite(duration) && duration > 0) return Math.min(duration, MAX_TIMEOUT)
-	return UI_TIMING.NOTIFICATION_AUTO_CLOSE
+	return DEFAULT_DURATION
 }
 
 /** Длительность показа уведомления: своя или длительность компонента */

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { ref, nextTick } from 'vue'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT } from '@/locales/messages'
 import { useFormField } from '../useFormField'
 
 describe('useFormField', () => {

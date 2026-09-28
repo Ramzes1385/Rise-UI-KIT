@@ -38,9 +38,9 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { UI_TEXT } from '@/locales/messages'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
 import '../styles/BaseLayout.style.scss'
 import type { BaseLayoutProps, BaseLayoutSlots } from '../model/BaseLayout.types'
 

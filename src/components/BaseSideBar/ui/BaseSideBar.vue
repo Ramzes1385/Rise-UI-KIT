@@ -83,16 +83,16 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useLinkComponent } from '@composables/useLink'
 import { usePadding } from '@composables/usePadding'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE, UI_TEXT } from '@constants'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
 import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
@@ -103,10 +103,10 @@ defineOptions({
 
 const props = withDefaults(defineProps<BaseSideBarProps>(), kitDefaults('BaseSideBar', {
 	variant: DEFAULT_VARIANT,
-	width: UI_SIZE.SIDEBAR_DEFAULT_WIDTH,
+	width: 280,
 	collapsedWidth: 68,
 	padding: undefined,
-	gap: UI_SIZE.GAP.SM,
+	gap: 4,
 	activeMatch: 'exact',
 	isCollapsible: true,
 	isLoading: false,

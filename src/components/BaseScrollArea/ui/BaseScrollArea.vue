@@ -49,9 +49,8 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseScrollArea.style.scss'
 import type { BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps, BaseScrollAreaSlots } from '../model/BaseScrollArea.types'
 

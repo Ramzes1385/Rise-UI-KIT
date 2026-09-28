@@ -11,9 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseButtonGroup.style.scss'
 import type { BaseButtonGroupProps, BaseButtonGroupSlots } from '../model/BaseButtonGroup.types'
 

@@ -138,11 +138,11 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
 import { formatMessage } from '@/locales'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { UI_ARIA } from '@constants'
 import type { BaseImageZoomProps } from '../model/BaseImageZoom.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */

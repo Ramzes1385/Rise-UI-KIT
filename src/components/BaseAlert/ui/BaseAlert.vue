@@ -14,7 +14,7 @@
 			<BaseText
 				v-if="title"
 				tag="h4"
-				:weight="UI_FONT_WEIGHT.MEDIUM"
+				:weight="TEXT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
 				class="base-alert__title"
 				:custom-class="classes.title">
@@ -51,12 +51,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/BaseAlert.types'

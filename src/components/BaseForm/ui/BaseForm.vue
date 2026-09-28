@@ -31,11 +31,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, provide, ref, watch } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { BaseLoader } from '@components/BaseLoader'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { FORM_CONTEXT_KEY } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
 import { issuesToErrors, validateSchema } from '@utils/formUtils'
 import '../styles/BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'

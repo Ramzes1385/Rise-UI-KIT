@@ -2,7 +2,7 @@
 	<div v-if="pinnedMessages && pinnedMessages.length > 0" class="base-chat-pinned-panel">
 		<!-- Клик по панели прокручивает ленту к закреплённому сообщению -->
 		<button type="button" class="base-chat-pinned-panel__content" @click="handlePanelClick">
-			<BaseIcon name="pin" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
+			<BaseIcon name="pin" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<span class="base-chat-pinned-panel__text-wrapper">
 				<span class="base-chat-pinned-panel__title">
 					{{ UI_CHAT_TEXT.PINNED_MESSAGE }}
@@ -20,7 +20,7 @@
 					class="base-chat-pinned-panel__nav-btn"
 					:aria-label="UI_CHAT_TEXT.PREV_PINNED_ARIA"
 					@click="handlePrev">
-					<BaseIcon name="chevron-up" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					<BaseIcon name="chevron-up" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
 				<BaseButton
 					variant="ghost"
@@ -28,7 +28,7 @@
 					class="base-chat-pinned-panel__nav-btn"
 					:aria-label="UI_CHAT_TEXT.NEXT_PINNED_ARIA"
 					@click="handleNext">
-					<BaseIcon name="chevron-down" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					<BaseIcon name="chevron-down" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
 			</template>
 
@@ -39,7 +39,7 @@
 				class="base-chat-pinned-panel__unpin-btn"
 				:aria-label="UI_CHAT_TEXT.UNPIN_ARIA"
 				@click="handleUnpin">
-				<BaseIcon name="close" :size-scale="sizeScale * UI_SCALE.SMALL" />
+				<BaseIcon name="close" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 			</BaseButton>
 		</div>
 	</div>
@@ -47,9 +47,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { CHAT_SCALE } from '../../model/chatScale'
 import type { ChatMessage } from '../../model/BaseChat.types'
 import type { ChatPinnedPanelEmits, ChatPinnedPanelProps } from '../../model/ChatPinnedPanel.types'
 import './ChatPinnedPanel.style.scss'

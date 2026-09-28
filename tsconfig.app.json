@@ -26,12 +26,6 @@
       "@composables/*": [
         "src/composables/*"
       ],
-      "@constants": [
-        "src/constants/index.ts"
-      ],
-      "@constants/*": [
-        "src/constants/*"
-      ],
       "@icons": [
         "src/icons/index.ts"
       ],

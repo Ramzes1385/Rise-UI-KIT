@@ -31,11 +31,12 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseDropdown } from '@components/BaseDropdown'
 import DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '@components/BaseDropdownMenu/styles/BaseDropdownMenu.style.scss'
 import '../styles/BaseContextMenu.style.scss'
 import type { BaseContextMenuEmits, BaseContextMenuProps, BaseContextMenuSlots } from '../model/BaseContextMenu.types'

@@ -29,7 +29,7 @@
 					<div v-if="hasHandle" class="base-drawer__handle" :class="classes.handle" aria-hidden="true" />
 					<div v-if="hasHeader" class="base-drawer__header" :class="classes.header">
 						<slot name="header">
-							<BaseText :id="titleId" tag="h2" :weight="UI_FONT_WEIGHT.SEMIBOLD" class="base-drawer__title" :custom-class="classes.title">
+							<BaseText :id="titleId" tag="h2" :weight="TEXT_WEIGHT.SEMIBOLD" class="base-drawer__title" :custom-class="classes.title">
 								{{ title }}
 							</BaseText>
 						</slot>
@@ -53,17 +53,17 @@
 
 <script setup lang="ts">
 import { computed, ref, useId, useSlots, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { usePopup } from '@composables/usePopup'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseDrawer.style.scss'
 import type { BaseDrawerEmits, BaseDrawerProps, BaseDrawerSlots } from '../model/BaseDrawer.types'
 

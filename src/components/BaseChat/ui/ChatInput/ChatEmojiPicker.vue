@@ -31,10 +31,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { useClickOutside } from '@composables/useClickOutside'
-import { UI_CHAT_TEXT } from '@constants'
 import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './ChatEmojiPicker.types'
 
 defineProps<ChatEmojiPickerProps>()

@@ -58,12 +58,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, provide, ref, toRef } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useTreeState } from '@composables/useTreeState'
 import { useVirtualList } from '@composables/useVirtualList'
 import '../styles/BaseTree.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import { findTypeaheadIndex } from '@utils/menuUtils'
 import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'

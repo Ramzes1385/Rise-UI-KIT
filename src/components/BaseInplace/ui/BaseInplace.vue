@@ -32,11 +32,11 @@
 
 <script setup lang="ts">
 import { nextTick, ref, useId } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormDisabled } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '../styles/BaseInplace.style.scss'
 import type { BaseInplaceEmits, BaseInplaceProps, BaseInplaceSlots } from '../model/BaseInplace.types'
 

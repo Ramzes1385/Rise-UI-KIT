@@ -1,9 +1,11 @@
 /** Composable: управление колонками таблицы */
 import { computed, ref, toRaw, watch } from 'vue'
-import { TABLE } from '@constants'
 import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
 import type { UseTableColumnsOptions, UseTableColumnsReturn } from './useTableColumns.types'
 import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+
+/** Строк скелетона, когда размер страницы не задан */
+const DEFAULT_SKELETON_ROWS = 5
 
 /** Значения полей колонки, которые таблица меняет сама (скрытие в настройках, ресайз) */
 type ColumnPropState = Pick<TableColumn, 'isHidden' | 'width'>
@@ -55,7 +57,7 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 	})
 
 	const skeletonRows = computed((): number => {
-		return pageSize() || TABLE.DEFAULT_SKELETON_ROWS
+		return pageSize() || DEFAULT_SKELETON_ROWS
 	})
 
 	const filterableColumns = computed((): TableColumn[] => {

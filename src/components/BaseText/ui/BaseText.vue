@@ -10,17 +10,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseText.style.scss'
-import { SIZE_SCALE_DEFAULT, UI_FONT_WEIGHT } from '@constants'
+import { useSizeScale } from '@composables/useSizeScale'
+import { TEXT_WEIGHT } from '../model/BaseText.types'
 import type { BaseTextProps, BaseTextSlots } from '../model/BaseText.types'
 
 const props = withDefaults(defineProps<BaseTextProps>(), kitDefaults('BaseText', {
 	tag: 'p',
-	weight: UI_FONT_WEIGHT.REGULAR,
+	weight: TEXT_WEIGHT.REGULAR,
 	nowrap: false,
 	truncate: false,
 	maxLines: 1,

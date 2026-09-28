@@ -51,9 +51,8 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseMenu.style.scss'
 import { calcIconScale } from '@utils/iconUtils'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../model/BaseMenu.types'

@@ -21,7 +21,7 @@
 					class="base-chat-message-list__download-btn"
 					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_IMAGE} ${img.name}`"
 					@click.stop="handleDownload(img)">
-					<BaseIcon name="download" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
 			</div>
 		</div>
@@ -44,7 +44,7 @@
 					class="base-chat-message-list__download-btn"
 					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
 					@click.stop="handleDownload(file)">
-					<BaseIcon name="download" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
 			</div>
 		</div>
@@ -53,11 +53,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
-import { UI_CHAT_TEXT, UI_SCALE } from '@constants'
 import { getFileIconName } from '@utils/fileUtils'
+import { CHAT_SCALE } from '../../../model/chatScale'
 import type { ChatMessageAttachment } from '../../../model/BaseChat.types'
 import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../model/ChatMessageAttachments.types'
 

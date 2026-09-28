@@ -121,15 +121,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useChatActions } from '@composables/useChatActions'
 import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
 import { useChatState } from '@composables/useChatState'
 import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SIZE, UI_TEXT } from '@constants'
 import '../styles/BaseChat.style.scss'
 import { ChatHeader } from './ChatHeader'
 import { ChatInput } from './ChatInput'
@@ -146,7 +146,7 @@ interface MessageListExposed {
 
 const props = withDefaults(defineProps<BaseChatProps>(), kitDefaults('BaseChat', {
 	variant: 'bubble',
-	height: UI_SIZE.CHAT_DEFAULT_HEIGHT,
+	height: '500px',
 	sizeScale: SIZE_SCALE_DEFAULT,
 	isTyping: false,
 	typingUsername: '',

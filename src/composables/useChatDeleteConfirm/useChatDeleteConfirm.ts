@@ -1,6 +1,6 @@
 /** Composable: подтверждение удаления сообщений чата */
 import { computed, ref } from 'vue'
-import { UI_CHAT_TEXT } from '@constants'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import type { UseChatDeleteConfirmOptions, UseChatDeleteConfirmReturn } from './useChatDeleteConfirm.types'
 
 /** Composable для подтверждения удаления сообщений чата — состояние диалога, выбранные ID, текст подтверждения. */

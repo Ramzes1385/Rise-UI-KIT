@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_TEXT } from '@constants'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../model/ChatMessageReply.types'
 
 /** Цитата сообщения, на которое ответили: клик прокручивает ленту к оригиналу */

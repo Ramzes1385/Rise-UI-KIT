@@ -162,12 +162,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { UI_EDITOR } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseColorPicker } from '@components/BaseColorPicker'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { UI_EDITOR } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
 import type { BaseEditorToolbarEmits, BaseEditorToolbarProps, BaseEditorToolbarSlots, EditorActiveStates } from '../model/BaseEditorToolbar.types'

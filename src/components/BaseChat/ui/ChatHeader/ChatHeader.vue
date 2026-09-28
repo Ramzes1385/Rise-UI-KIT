@@ -22,7 +22,7 @@
 		<!-- Поле поиска (когда активен поиск): Escape закрывает поиск -->
 		<div v-else class="base-chat-header__search-container">
 			<div class="base-chat-header__search-input">
-				<BaseIcon name="search" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-header__search-icon" />
+				<BaseIcon name="search" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-header__search-icon" />
 				<input
 					ref="searchInputRef"
 					type="search"
@@ -61,10 +61,12 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { CHAT_SCALE } from '../../model/chatScale'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './ChatHeader.types'
 

@@ -2,9 +2,12 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
-import { UI_SCALE, UI_SIZE } from '@constants'
-import { useZoomMinimap } from './useZoomMinimap'
+import { MINIMAP_HEIGHT, MINIMAP_WIDTH, useZoomMinimap } from './useZoomMinimap'
 import type { UseImageZoomOptions } from './useImageZoom.types'
+
+/** Поворот за одно нажатие, градусы */
+const ROTATION_STEP_DEG = 90
+const FULL_TURN_DEG = 360
 
 /**
  * Composable для зума изображений: панорамирование, вращение, масштабирование и миникарта.
@@ -19,8 +22,8 @@ function useImageZoom(options: UseImageZoomOptions) {
 	const zoomContentW = ref(0)
 	const zoomContentH = ref(0)
 
-	const mmContentWidth = ref<number>(UI_SIZE.MINIMAP_WIDTH)
-	const mmContentHeight = ref<number>(UI_SIZE.MINIMAP_HEIGHT)
+	const mmContentWidth = ref<number>(MINIMAP_WIDTH)
+	const mmContentHeight = ref<number>(MINIMAP_HEIGHT)
 	const mmContentOffsetX = ref(0)
 	const mmContentOffsetY = ref(0)
 
@@ -94,7 +97,7 @@ function useImageZoom(options: UseImageZoomOptions) {
 		}
 
 		if (minimapImg && minimapImg instanceof HTMLImageElement && minimapImg.naturalWidth > 0) {
-			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, UI_SIZE.MINIMAP_WIDTH, UI_SIZE.MINIMAP_HEIGHT)
+			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, MINIMAP_WIDTH, MINIMAP_HEIGHT)
 			mmContentWidth.value = contained.width
 			mmContentHeight.value = contained.height
 			mmContentOffsetX.value = contained.offX
@@ -146,11 +149,11 @@ function useImageZoom(options: UseImageZoomOptions) {
 	}
 
 	function rotateLeft(): void {
-		rotation.value = (rotation.value - UI_SCALE.ROTATION_STEP_DEG) % UI_SCALE.FULL_ROTATION_DEG
+		rotation.value = (rotation.value - ROTATION_STEP_DEG) % FULL_TURN_DEG
 	}
 
 	function rotateRight(): void {
-		rotation.value = (rotation.value + UI_SCALE.ROTATION_STEP_DEG) % UI_SCALE.FULL_ROTATION_DEG
+		rotation.value = (rotation.value + ROTATION_STEP_DEG) % FULL_TURN_DEG
 	}
 
 	function handleWheel(event: WheelEvent): void {

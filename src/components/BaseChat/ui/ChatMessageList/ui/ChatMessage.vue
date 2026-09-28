@@ -48,7 +48,7 @@
 						class="base-chat-message-list__action-btn"
 						:aria-label="UI_CHAT_TEXT.REPLY_ARIA"
 						@click.stop="handleReplyAction">
-						<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" />
+						<BaseIcon name="reply" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 					</BaseButton>
 					<BaseButton
 						variant="ghost"
@@ -56,7 +56,7 @@
 						class="base-chat-message-list__action-btn"
 						:aria-label="UI_CHAT_TEXT.SELECT_ARIA"
 						@click.stop="handleSelect">
-						<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE.SMALL" />
+						<BaseIcon name="check" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 					</BaseButton>
 					<BaseButton
 						variant="ghost"
@@ -66,7 +66,7 @@
 						aria-haspopup="menu"
 						:aria-expanded="isContextActive ? 'true' : 'false'"
 						@click.stop="handleMoreClick">
-						<BaseIcon name="dots-horizontal" :size-scale="sizeScale * UI_SCALE.SMALL" />
+						<BaseIcon name="dots-horizontal" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 					</BaseButton>
 				</div>
 
@@ -100,7 +100,7 @@
 						v-if="message.isPinned"
 						name="pin"
 						:aria-label="UI_CHAT_TEXT.PINNED_LABEL"
-						:size-scale="sizeScale * UI_CHAT_SCALE.STATUS"
+						:size-scale="sizeScale * CHAT_SCALE.STATUS"
 						class="base-chat-message-list__pin-icon" />
 					<span class="base-chat-message-list__time">{{ message.time }}</span>
 					<template v-if="message.sender === 'me' && message.status">
@@ -108,7 +108,7 @@
 							v-if="message.status === 'sending'"
 							variant="spinner"
 							:label="UI_CHAT_TEXT.STATUS_SENDING"
-							:size-scale="sizeScale * UI_CHAT_SCALE.SPINNER"
+							:size-scale="sizeScale * CHAT_SCALE.SPINNER"
 							class="base-chat-message-list__status base-chat-message-list__status--sending" />
 						<span
 							v-else
@@ -116,11 +116,11 @@
 							:class="`base-chat-message-list__status-wrapper--${message.status}`"
 							role="img"
 							:aria-label="statusLabel">
-							<BaseIcon name="check" :size-scale="sizeScale * UI_CHAT_SCALE.STATUS" class="base-chat-message-list__status-icon" />
+							<BaseIcon name="check" :size-scale="sizeScale * CHAT_SCALE.STATUS" class="base-chat-message-list__status-icon" />
 							<BaseIcon
 								v-if="message.status === 'read' || message.status === 'delivered'"
 								name="check"
-								:size-scale="sizeScale * UI_CHAT_SCALE.STATUS"
+								:size-scale="sizeScale * CHAT_SCALE.STATUS"
 								class="base-chat-message-list__status-icon base-chat-message-list__status-icon--second" />
 						</span>
 					</template>
@@ -132,12 +132,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
-import { UI_CHAT_SCALE, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { CHAT_SCALE } from '../../../model/chatScale'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageReply from './ChatMessageReply.vue'

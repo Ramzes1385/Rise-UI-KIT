@@ -44,11 +44,11 @@
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue'
 import { formatMessage } from '@/locales'
+import { UI_ARIA } from '@/locales/messages'
 import { FormFieldError } from '@components/BaseFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '../styles/BasePin.style.scss'
 import { toHTMLInputElement } from '@utils/domUtils'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'

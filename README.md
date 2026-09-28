@@ -461,7 +461,6 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 src/
   components/      # UI-компоненты: index.ts, model/, ui/, styles/, stories/, __tests__/
   composables/     # Vue composables
-  constants/       # общие константы
   icons/           # SVG-иконки, спрайт и createIconPlugin
   locales/         # словари ru и en
   stories/         # вводная страница и Foundations в Storybook, хелперы stories

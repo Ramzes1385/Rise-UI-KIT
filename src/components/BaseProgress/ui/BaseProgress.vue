@@ -33,7 +33,7 @@
 					:class="classes.trackCircle"
 					cx="60"
 					cy="60"
-					r="52"
+					:r="CIRCLE_RADIUS"
 					fill="none"
 					stroke-width="8" />
 				<circle
@@ -41,7 +41,7 @@
 					:class="classes.fillCircle"
 					cx="60"
 					cy="60"
-					r="52"
+					:r="CIRCLE_RADIUS"
 					fill="none"
 					stroke-width="8"
 					:stroke-dasharray="circumference"
@@ -57,14 +57,18 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
+import { UI_ARIA } from '@/locales/messages'
 import '../styles/BaseProgress.style.scss'
 
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_ARIA, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
 import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
+
+/** Радиус круга в системе координат viewBox 120×120 */
+const CIRCLE_RADIUS = 52
 
 const props = withDefaults(defineProps<BaseProgressProps>(), kitDefaults('BaseProgress', {
 	max: 100,
@@ -111,7 +115,7 @@ const isLabelVisible = computed((): boolean => props.hasLabel && !props.isIndete
 const fillStyle = computed(() => (props.isIndeterminate ? undefined : { width: `${percent.value}%` }))
 
 const circumference = computed((): number => {
-	return 2 * Math.PI * UI_SIZE.PROGRESS_CIRCLE_RADIUS
+	return 2 * Math.PI * CIRCLE_RADIUS
 })
 
 const circleOffset = computed((): number => {

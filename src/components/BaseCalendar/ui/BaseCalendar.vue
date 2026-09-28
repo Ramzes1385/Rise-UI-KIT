@@ -135,6 +135,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
@@ -144,7 +145,6 @@ import { useCalendarInteraction } from '@composables/useCalendarInteraction'
 import { useCalendarPopover } from '@composables/useCalendarPopover'
 import { useCalendarResolvedProps } from '@composables/useCalendarResolvedProps'
 import { isolateFormField } from '@composables/useFormContext'
-import { UI_ARIA, UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCalendar.style.scss'
 import BaseCalendarDays from './BaseCalendarDays.vue'

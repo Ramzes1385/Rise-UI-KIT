@@ -14,11 +14,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import '../styles/BaseAvatarGroup.style.scss'
 import type { BaseAvatarGroupProps } from '../model/BaseAvatarGroup.types'
 

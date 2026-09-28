@@ -20,7 +20,6 @@ const PUBLIC_ENTRIES = ['index.ts', 'components/index.ts', 'composables/index.ts
 const ALIASES: Record<string, string> = {
 	'@components': 'components',
 	'@composables': 'composables',
-	'@constants': 'constants',
 	'@icons': 'icons',
 	'@styles': 'styles',
 	'@utils': 'utils',

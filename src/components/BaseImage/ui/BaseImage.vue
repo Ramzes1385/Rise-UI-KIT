@@ -67,9 +67,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { BaseIcon } from '@components/BaseIcon'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import '../styles/BaseImage.style.scss'
 
+import { BaseIcon } from '@components/BaseIcon'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { kitDefaults } from '@composables/useDefaults'
@@ -77,14 +79,13 @@ import { useImageGallery } from '@composables/useImageGallery'
 import { useImageState } from '@composables/useImageState'
 import { useImageZoom } from '@composables/useImageZoom'
 import { useSizeScale } from '@composables/useSizeScale'
-import { UI_ARIA, UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import BaseImageZoom from './BaseImageZoom.vue'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../model/BaseImage.types'
 
 const props = withDefaults(defineProps<BaseImageProps>(), kitDefaults('BaseImage', {
 	src: undefined,
 	alt: undefined,
-	timeout: UI_TIMING.IMAGE_LOAD_TIMEOUT,
+	timeout: 5000,
 	fit: 'cover',
 	loading: 'lazy',
 	// Без пропа радиус берётся из темы (--rise-radius-md в стилях): inline-стиль пишется только при явном значении

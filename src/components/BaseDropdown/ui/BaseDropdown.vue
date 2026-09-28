@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useClickOutside } from '@composables/useClickOutside'
 import { kitDefaults } from '@composables/useDefaults'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
@@ -31,7 +31,6 @@ import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { usePadding } from '@composables/usePadding'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_SIZE } from '@constants'
 import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
 import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
@@ -43,8 +42,8 @@ const props = withDefaults(defineProps<BaseDropdownProps>(), kitDefaults('BaseDr
 	variant: DEFAULT_VARIANT,
 	isOpen: false,
 	position: 'bottom-start',
-	gap: UI_SIZE.GAP.SM,
-	maxHeight: UI_SIZE.PANEL_MAX_HEIGHT,
+	gap: 4,
+	maxHeight: '320px',
 	matchWidth: false,
 	panelClass: '',
 	padding: undefined,

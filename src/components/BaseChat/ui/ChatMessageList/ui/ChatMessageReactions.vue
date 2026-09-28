@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_TEXT } from '@constants'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import type { ChatMessageReaction } from '../../../model/BaseChat.types'
 import type { ChatMessageReactionsEmits, ChatMessageReactionsProps } from '../model/ChatMessageReactions.types'
 

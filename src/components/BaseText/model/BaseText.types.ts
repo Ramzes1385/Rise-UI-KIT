@@ -18,6 +18,17 @@ export const TEXT_TAGS = [
 ] as const
 
 /**
+ * Начертания кита: 400 — текст, 500 — подписи и кнопки, 600 — заголовки, 700 — акценты.
+ * Проп `weight` принимает и другие значения 100–900
+ */
+export const TEXT_WEIGHT = {
+	REGULAR: 400,
+	MEDIUM: 500,
+	SEMIBOLD: 600,
+	BOLD: 700,
+} as const
+
+/**
  * Пропсы компонента BaseText
  */
 export interface BaseTextProps extends BaseComponentProps<string, 'root'> {

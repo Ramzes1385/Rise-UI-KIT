@@ -58,10 +58,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { TABLE_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
-import { TABLE_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import type { BaseTableRowEmits, BaseTableRowProps, BaseTableRowSlots } from '../model/BaseTableRow.types'
 

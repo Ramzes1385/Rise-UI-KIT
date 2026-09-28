@@ -1,9 +1,12 @@
 /** Composable: координирование пошагового тура (переходы, фокусировка, стили) */
 import { computed, nextTick, ref } from 'vue'
-import { UI_TIMING, UI_TOUR } from '@constants'
+import { UI_TOUR } from '@/locales/messages'
 import { DEFAULT_RADIUS } from '../useTourLogic'
 import type { UseTourCoordinationOptions } from './useTourCoordination.types'
 import type { BaseTourSlotContext } from '@components/BaseTour/model/BaseTour.types'
+
+/** Время на прокрутку к шагу до переноса фокуса, мс */
+const FOCUS_DURATION_MS = 450
 
 const MAX_DOTS = 8
 
@@ -136,7 +139,7 @@ function useTourCoordination(options: UseTourCoordinationOptions) {
 			focusTimer = setTimeout(() => {
 				isFocusing.value = false
 				focusTimer = null
-			}, UI_TIMING.TOUR_FOCUS_DURATION)
+			}, FOCUS_DURATION_MS)
 		})
 	}
 

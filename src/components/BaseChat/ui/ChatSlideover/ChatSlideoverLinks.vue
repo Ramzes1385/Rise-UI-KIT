@@ -5,7 +5,7 @@
 			<!-- Настоящая ссылка: открывается в новой вкладке, доступна с клавиатуры, её можно скопировать -->
 			<a :href="link.url" target="_blank" rel="noopener noreferrer" class="base-chat-slideover__link-item">
 				<span class="base-chat-slideover__link-icon" aria-hidden="true">
-					<BaseIcon name="link" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					<BaseIcon name="link" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</span>
 				<span class="base-chat-slideover__link-info">
 					<span class="base-chat-slideover__link-url">{{ link.url }}</span>
@@ -18,9 +18,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { CHAT_SCALE } from '../../model/chatScale'
 import type { ChatMessage } from '../../model/BaseChat.types'
 import type { ChatSlideoverLinksProps } from '../../model/ChatSlideoverLinks.types'
 

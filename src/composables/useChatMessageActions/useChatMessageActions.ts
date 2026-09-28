@@ -1,14 +1,16 @@
 /** Composable: действия над сообщениями чата */
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
-import {
-	UI_SIZE,
-	UI_TIMING,
-} from '@constants'
 import { copyTextToClipboard } from '@utils/clipboardUtils'
 import type { UseChatMessageActionsOptions } from './useChatMessageActions.types'
 import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
 import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/model/ChatMessageContextMenu.types'
+
+/** Размер контекстного меню сообщения, px: меню не выходит за край окна */
+const CONTEXT_MENU_WIDTH = 200
+const CONTEXT_MENU_HEIGHT = 280
+/** Подсветка сообщения после перехода к нему, мс */
+const HIGHLIGHT_DURATION_MS = 1500
 
 /**
  * На сколько пикселей нужно прокрутить ленту, чтобы открытое меню закрылось. Мелкие сдвиги не в счёт: фокус кнопки
@@ -118,8 +120,8 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		if (selectedMessageIds.value.length > 0) return
 		returnFocusTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null
 		scrollTopAtOpen = listRef.value?.scrollTop ?? 0
-		const menuWidth = UI_SIZE.CONTEXT_MENU_WIDTH
-		const menuHeight = UI_SIZE.CONTEXT_MENU_HEIGHT
+		const menuWidth = CONTEXT_MENU_WIDTH
+		const menuHeight = CONTEXT_MENU_HEIGHT
 		const windowWidth = window.innerWidth
 		const windowHeight = window.innerHeight
 
@@ -235,7 +237,7 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		highlightTimeoutId.value = setTimeout(() => {
 			element.classList.remove('base-chat-message-list__item--highlighted')
 			highlightTimeoutId.value = null
-		}, UI_TIMING.HIGHLIGHT_DURATION)
+		}, HIGHLIGHT_DURATION_MS)
 	}
 
 	onBeforeUnmount(() => {

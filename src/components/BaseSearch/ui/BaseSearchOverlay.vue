@@ -103,6 +103,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
@@ -111,7 +112,6 @@ import { useEscapeKey } from '@composables/useEscapeKey'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useScrollLock } from '@composables/useScrollLock'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'

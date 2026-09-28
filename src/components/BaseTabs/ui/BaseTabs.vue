@@ -79,12 +79,12 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
+import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTabs.style.scss'
-import { SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
+import { kitDefaults } from '@composables/useDefaults'
 import { toHTMLElement } from '@utils/domUtils'
 import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../model/BaseTabs.types'
 

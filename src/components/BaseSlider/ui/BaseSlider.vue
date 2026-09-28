@@ -155,17 +155,21 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount } from 'vue'
 import { formatMessage } from '@/locales'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useSlider } from '@composables/useSlider'
-import { UI_ARIA, UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
+
+/** Шаг перелистывания, пока стрелка зажата, мс */
+const HOLD_INTERVAL_MS = 150
 
 const props = withDefaults(defineProps<BaseSliderProps>(), kitDefaults('BaseSlider', {
 	customClass: undefined,
@@ -173,13 +177,13 @@ const props = withDefaults(defineProps<BaseSliderProps>(), kitDefaults('BaseSlid
 	animation: 'slide',
 	navigation: 'dots',
 	isAutoplay: false,
-	autoplayInterval: UI_TIMING.SLIDER_AUTOPLAY_INTERVAL,
+	autoplayInterval: 4000,
 	hasArrows: true,
 	arrowsPosition: 'center',
 	isLoop: true,
 	isVertical: false,
 	initialIndex: 0,
-	height: UI_SIZE.SLIDER_DEFAULT_HEIGHT,
+	height: '400px',
 	sizeScale: SIZE_SCALE_DEFAULT,
 	spaceBetween: 0,
 	slidesPerView: 1,
@@ -280,7 +284,7 @@ let holdTimer: ReturnType<typeof setInterval> | null = null
 function startHold(direction: 'prev' | 'next'): void {
 	stopHold()
 	const action = direction === 'next' ? goNext : goPrev
-	holdTimer = setInterval(action, UI_TIMING.SLIDER_HOLD_INTERVAL)
+	holdTimer = setInterval(action, HOLD_INTERVAL_MS)
 }
 
 /** Остановка удержания */

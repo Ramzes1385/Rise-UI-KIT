@@ -33,10 +33,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { usePadding } from '@composables/usePadding'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseButton.style.scss'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
 

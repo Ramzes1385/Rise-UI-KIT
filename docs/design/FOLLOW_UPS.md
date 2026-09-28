@@ -74,7 +74,7 @@
 |---|---|---|---|---|---|
 | 44 | Объявленные, но неработающие props и слоты скрыты в Controls. Реализовать или удалить в 2.0 | Слот `default`: BaseIcon, BaseLoader, BaseTextarea, BasePin, BaseRadio, BaseRating, BaseFileUpload (+ `emptyText`), BaseChat. `variant`: BaseSlideover (SLD-4), BaseImage (IMG-15). `variant` и `color`: BaseSlider. `variant`, `sizeScale`, `color`: BaseAnimation (CORE-7). `to` и слот: BaseMenu (MENU-2). `sizeScale`: ChatMessageReply | Удаление ломает типы | major (удаление), minor (реализация) | M |
 | 45 | Константы есть в моделях, но не экспортированы из `index.ts` (у остальных `*_VARIANTS` экспорт есть) | `ALERT_TYPES`, `ALERT_VARIANTS`, `EMPTY_VARIANTS`, `CHAT_VARIANTS`, `PROGRESS_SHAPES` | Публичный API не меняли | minor | S |
-| 46 | Мёртвые экспорты | `getTooltipTransition` (публичный `utils`): deprecate, удалить в 2.0. Внутренние `MODAL_CLOSE_BUTTON_PADDING`, `SIZE_SCALE_OFFSET`, `UI_CHAT_TEXT.CLOSE_PANEL`, часть `UI_CHAT_SCALE` можно удалить сразу | Решение о депрекации | minor → major; patch для внутренних | S |
+| 46 | Мёртвые экспорты | `getTooltipTransition` (публичный `utils`): deprecate, удалить в 2.0. Внутренние `MODAL_CLOSE_BUTTON_PADDING`, `SIZE_SCALE_OFFSET` и лишние ключи `UI_CHAT_SCALE` удалены в 2.0 вместе с `src/constants`; осталась строка словаря `chat.CLOSE_PANEL` | Решение о депрекации | minor → major; patch для внутренних | S |
 | 47 | Группа аватаров сделана inline-стилями в story `Group` (кольцо 2px, перекрытие −8px) | Нужен `BaseAvatarGroup` или класс | Новый компонент | minor | M |
 
 ## Документация, stories, тесты

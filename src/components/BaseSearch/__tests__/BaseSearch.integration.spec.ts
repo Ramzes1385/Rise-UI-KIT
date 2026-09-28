@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT } from '@/locales/messages'
 import BaseSearch from '../ui/BaseSearch.vue'
 
 /** Мокаем DOM-зависимые композаблы */

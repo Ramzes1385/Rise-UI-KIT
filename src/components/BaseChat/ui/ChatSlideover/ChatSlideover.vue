@@ -39,7 +39,7 @@
 				<!-- Вкладка: Информация / Участники -->
 				<template v-if="activeTab === 'info'">
 					<div class="base-chat-slideover__profile-summary">
-						<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * UI_CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__avatar" />
+						<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__avatar" />
 						<span class="base-chat-slideover__name">{{ title }}</span>
 						<span class="base-chat-slideover__status">
 							{{ isGroup ? membersCountLabel : subtitle || UI_CHAT_TEXT.ONLINE }}
@@ -75,7 +75,7 @@
 										aria-haspopup="menu"
 										:aria-expanded="activeAdminMenuId === member.id ? 'true' : 'false'"
 										@click="toggleAdminMenu(member.id)">
-										<BaseIcon name="chevron-down" :size-scale="sizeScale * UI_SCALE.SMALL" />
+										<BaseIcon name="chevron-down" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 									</BaseButton>
 
 									<div
@@ -88,7 +88,7 @@
 											role="menuitem"
 											class="base-chat-slideover__dropdown-item"
 											@click="handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')">
-											<BaseIcon name="file-config" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
+											<BaseIcon name="file-config" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
 											{{ member.role === 'admin' ? UI_CHAT_TEXT.DEMOTE : UI_CHAT_TEXT.MAKE_ADMIN }}
 										</button>
 										<button
@@ -96,7 +96,7 @@
 											role="menuitem"
 											class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 											@click="handleKick(member.id)">
-											<BaseIcon name="x-circle" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
+											<BaseIcon name="x-circle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
 											{{ UI_CHAT_TEXT.EXCLUDE }}
 										</button>
 										<button
@@ -104,7 +104,7 @@
 											role="menuitem"
 											class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 											@click="handleBan(member.id)">
-											<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
+											<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
 											{{ UI_CHAT_TEXT.BAN }}
 										</button>
 									</div>
@@ -120,7 +120,7 @@
 						<BaseAvatar
 							:src="selectedMember.avatar"
 							:name="selectedMember.name"
-							:size-scale="sizeScale * UI_CHAT_SCALE.AVATAR_LARGE"
+							:size-scale="sizeScale * CHAT_SCALE.AVATAR_LARGE"
 							:is-online="selectedMember.status === 'online'"
 							class="base-chat-slideover__avatar" />
 						<span class="base-chat-slideover__name">{{ selectedMember.name }}</span>
@@ -131,7 +131,7 @@
 						<div class="base-chat-slideover__profile-actions">
 							<BaseButton :size-scale="sizeScale" @click="handleWriteMessage(selectedMember.id)">
 								<template #left>
-									<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" />
+									<BaseIcon name="reply" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 								</template>
 								{{ UI_CHAT_TEXT.WRITE_MESSAGE }}
 							</BaseButton>
@@ -141,7 +141,7 @@
 					<dl class="base-chat-slideover__info-details">
 						<div class="base-chat-slideover__info-item">
 							<dt class="base-chat-slideover__info-label">
-								<BaseIcon name="calendar" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__info-icon" />
+								<BaseIcon name="calendar" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__info-icon" />
 								{{ UI_CHAT_TEXT.ROLE }}
 							</dt>
 							<dd class="base-chat-slideover__info-value">
@@ -150,7 +150,7 @@
 						</div>
 						<div v-if="selectedMember.warningsCount !== undefined" class="base-chat-slideover__info-item">
 							<dt class="base-chat-slideover__info-label">
-								<BaseIcon name="alert-triangle" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-slideover__info-icon" />
+								<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__info-icon" />
 								{{ UI_CHAT_TEXT.WARNINGS }}
 							</dt>
 							<dd class="base-chat-slideover__info-value">{{ selectedMember.warningsCount }} / 3</dd>
@@ -160,7 +160,7 @@
 					<div class="base-chat-slideover__profile-back">
 						<BaseButton variant="ghost" :size-scale="sizeScale" @click="handleBackToInfo">
 							<template #left>
-								<BaseIcon name="arrow-left" :size-scale="sizeScale * UI_SCALE.SMALL" />
+								<BaseIcon name="arrow-left" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 							</template>
 							{{ UI_CHAT_TEXT.BACK_TO_LIST }}
 						</BaseButton>
@@ -187,12 +187,14 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseSlideover } from '@components/BaseSlideover'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_SCALE, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { CHAT_SCALE } from '../../model/chatScale'
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'

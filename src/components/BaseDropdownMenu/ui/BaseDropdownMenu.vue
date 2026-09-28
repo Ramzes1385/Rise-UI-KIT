@@ -32,10 +32,10 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { BaseDropdown } from '@components/BaseDropdown'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@constants'
 import DropdownMenuContent from './DropdownMenuContent.vue'
 import '../styles/BaseDropdownMenu.style.scss'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, BaseDropdownMenuSlots, DropdownMenuItem } from '../model/BaseDropdownMenu.types'

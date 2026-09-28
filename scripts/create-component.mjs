@@ -152,8 +152,7 @@ function vueTemplate(n, kind) {
 	const style = '[sizeScaleStyle, variantStyle, customColorStyle]'
 	const imports = [
 		...(kind === 'form' ? ["import { computed, useId } from 'vue'"] : []),
-		"import { useStandardBaseComponent } from '@composables/useBaseComponent'",
-		"import { SIZE_SCALE_DEFAULT } from '@constants'",
+		"import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'",
 		`import '../styles/${n.name}.style.scss'`,
 		`import type { ${[kind !== 'display' && `${n.name}Emits`, `${n.name}Props`, kind !== 'form' && `${n.name}Slots`].filter(Boolean).join(', ')} } from '../model/${n.name}.types'`,
 	]

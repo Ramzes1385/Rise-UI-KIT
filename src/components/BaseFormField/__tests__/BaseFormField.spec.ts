@@ -7,7 +7,7 @@ import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import { UI_TEXT } from '@constants'
+import { UI_TEXT } from '@/locales/messages'
 import BaseFormField from '../ui/BaseFormField.vue'
 import type { FormFieldValidateExpose } from '@composables/useFormField'
 

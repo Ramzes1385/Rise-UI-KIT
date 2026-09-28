@@ -6,12 +6,14 @@ import { useTableData } from '@composables/useTableData'
 import { useTableExpand } from '@composables/useTableExpand'
 import { useTableSelection } from '@composables/useTableSelection'
 import { useTableToolbar } from '@composables/useTableToolbar'
-import { TABLE } from '@constants'
 import { toHTMLElement } from '@utils/domUtils'
 import { calcPageInfo } from '@utils/paginationUtils'
 import { calcRowNumber } from '@utils/tableUtils'
 import type { UseTableCompositionOptions } from './useTableComposition.types'
 import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+
+/** Наименьшая ширина колонки при изменении размера, px */
+const MIN_COL_WIDTH = 50
 
 /** Описание: агрегирует логику таблицы — сортировка, фильтрация, поиск, пагинация, выбор строк, раскрытие, ресайз колонок и infinite scroll */
 function useTableComposition(options: UseTableCompositionOptions) {
@@ -181,7 +183,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 	const { startResize: startColumnResize } = useColumnResize({
 		columns: localColumns,
 		visibleColumns,
-		minWidth: TABLE.MIN_COL_WIDTH,
+		minWidth: MIN_COL_WIDTH,
 		onColumnResize: (key, width) => emit('column-resize', key, width),
 		// Копия, а не внутренний массив: если родитель вернёт payload в props, таблица не должна мутировать его объекты
 		onColumnsChange: () => emit('columns-change', snapshotColumns()),

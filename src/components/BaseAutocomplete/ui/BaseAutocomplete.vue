@@ -85,13 +85,14 @@
 
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseInput } from '@components/BaseInput'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormDisabled } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
 import '../styles/BaseAutocomplete.style.scss'
 import type { AutocompleteOption, BaseAutocompleteEmits, BaseAutocompleteProps, BaseAutocompleteSlots } from '../model/BaseAutocomplete.types'
 

@@ -58,9 +58,9 @@
 
 <script setup lang="ts">
 import { useId } from 'vue'
+import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
-import { TABLE_TEXT, UI_TEXT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
 import type { TableColumn } from '../model/BaseTable.types'

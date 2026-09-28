@@ -5,8 +5,10 @@
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { UI_TIMING } from '@constants'
 import BaseImage from '../ui/BaseImage.vue'
+
+/** Проп timeout по умолчанию, мс */
+const LOAD_TIMEOUT = 5000
 
 /** Управляемая замена IntersectionObserver: в jsdom его нет, а тесту нужно «прокрутить» страницу к изображению */
 class FakeIntersectionObserver {
@@ -433,7 +435,7 @@ describe('BaseImage unit', () => {
 			vi.useFakeTimers()
 			const { container } = render(BaseImage, { props: { src, alt: 'Фото' } })
 
-			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT * 2)
+			await vi.advanceTimersByTimeAsync(LOAD_TIMEOUT * 2)
 
 			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
 			const img = screen.getByRole('img', { name: 'Фото' })
@@ -447,11 +449,11 @@ describe('BaseImage unit', () => {
 			vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver)
 			const { container } = render(BaseImage, { props: { src, alt: 'Фото' } })
 
-			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT * 2)
+			await vi.advanceTimersByTimeAsync(LOAD_TIMEOUT * 2)
 			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
 
 			FakeIntersectionObserver.instances.at(-1)?.enterViewport()
-			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT - 1)
+			await vi.advanceTimersByTimeAsync(LOAD_TIMEOUT - 1)
 			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
 
 			await vi.advanceTimersByTimeAsync(1)
@@ -462,7 +464,7 @@ describe('BaseImage unit', () => {
 			vi.useFakeTimers()
 			const { container, emitted } = render(BaseImage, { props: { src, alt: 'Фото', loading: 'eager' } })
 
-			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT)
+			await vi.advanceTimersByTimeAsync(LOAD_TIMEOUT)
 
 			expect(container.querySelector('.base-image__error')).toBeInTheDocument()
 			expect(emitted()).toHaveProperty('error')
@@ -472,7 +474,7 @@ describe('BaseImage unit', () => {
 			vi.useFakeTimers()
 			const { container, emitted } = render(BaseImage, { props: { src, alt: 'Фото', loading: 'eager', timeout: 0 } })
 
-			await vi.advanceTimersByTimeAsync(UI_TIMING.IMAGE_LOAD_TIMEOUT * 2)
+			await vi.advanceTimersByTimeAsync(LOAD_TIMEOUT * 2)
 
 			expect(container.querySelector('.base-image__error')).not.toBeInTheDocument()
 			expect(emitted()).not.toHaveProperty('error')

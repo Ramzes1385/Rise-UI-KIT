@@ -7,8 +7,7 @@
 
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
-import { UI_FONT_WEIGHT } from '@constants'
-import { TEXT_TAGS } from '../model/BaseText.types'
+import { TEXT_TAGS, TEXT_WEIGHT } from '../model/BaseText.types'
 import BaseText from '../ui/BaseText.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
@@ -36,7 +35,7 @@ const meta = {
 		...baseArgTypes(),
 		...hiddenArgTypes('variant'),
 		tag: { control: 'select', options: TEXT_TAGS, table: propGroup(ARG_GROUP.content) },
-		weight: { control: 'inline-radio', options: Object.values(UI_FONT_WEIGHT), table: propGroup(ARG_GROUP.appearance) },
+		weight: { control: 'inline-radio', options: Object.values(TEXT_WEIGHT), table: propGroup(ARG_GROUP.appearance) },
 		nowrap: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		truncate: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		maxLines: { control: { type: 'number', min: 1, max: 10 }, table: propGroup(ARG_GROUP.behavior) },
@@ -45,7 +44,7 @@ const meta = {
 	args: {
 		default: 'Сохраните изменения, чтобы их увидели участники проекта.',
 		tag: 'p',
-		weight: UI_FONT_WEIGHT.REGULAR,
+		weight: TEXT_WEIGHT.REGULAR,
 		sizeScale: 100,
 		nowrap: false,
 		truncate: false,
@@ -96,15 +95,15 @@ export const Sizes: Story = {
 	},
 }
 
-/** Начертания из `UI_FONT_WEIGHT`: 400 — текст, 500 — подписи и кнопки, 600 — заголовки, 700 — акценты. */
+/** Начертания из `TEXT_WEIGHT`: 400 — текст, 500 — подписи и кнопки, 600 — заголовки, 700 — акценты. */
 export const Weights: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'color'] },
-		docs: { source: { code: Object.values(UI_FONT_WEIGHT).map(weight => `<BaseText :weight="${weight}">${weight}</BaseText>`).join('\n') } },
+		docs: { source: { code: Object.values(TEXT_WEIGHT).map(weight => `<BaseText :weight="${weight}">${weight}</BaseText>`).join('\n') } },
 	},
 	render: args => ({
 		components: { BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args), weights: Object.entries(UI_FONT_WEIGHT) }),
+		setup: () => ({ props: useArgsWithoutSlots(args), weights: Object.entries(TEXT_WEIGHT) }),
 		template: `
 			<div class="story-col">
 				<div v-for="[name, weight] in weights" :key="name" class="story-row">
@@ -294,10 +293,10 @@ export const Hierarchy: Story = {
 	},
 	render: () => ({
 		components: { BaseText },
-		setup: () => ({ UI_FONT_WEIGHT }),
+		setup: () => ({ TEXT_WEIGHT }),
 		template: `
 			<div class="story-col story-narrow" style="gap: 4px;">
-				<BaseText tag="h3" :size-scale="125" :weight="UI_FONT_WEIGHT.SEMIBOLD" :color="{ text: { base: 'var(--rise-text-highlighted)' } }">
+				<BaseText tag="h3" :size-scale="125" :weight="TEXT_WEIGHT.SEMIBOLD" :color="{ text: { base: 'var(--rise-text-highlighted)' } }">
 					Ребрендинг
 				</BaseText>
 				<BaseText>Новый логотип, палитра и шаблоны презентаций для всех отделов.</BaseText>

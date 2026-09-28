@@ -25,15 +25,15 @@
 			</div>
 			<div class="base-chat-context-menu__divider" role="separator"></div>
 			<button type="button" role="menuitem" tabindex="-1" class="base-chat-context-menu__item" @click="handleReply">
-				<BaseIcon name="reply" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<BaseIcon name="reply" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
 				<span>{{ UI_CHAT_TEXT.REPLY }}</span>
 			</button>
 			<button type="button" role="menuitem" tabindex="-1" class="base-chat-context-menu__item" @click="handleSelect">
-				<BaseIcon name="check" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<BaseIcon name="check" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
 				<span>{{ UI_CHAT_TEXT.SELECT }}</span>
 			</button>
 			<button type="button" role="menuitem" tabindex="-1" class="base-chat-context-menu__item" @click="handleCopy">
-				<BaseIcon name="copy" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<BaseIcon name="copy" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
 				<span>{{ UI_CHAT_TEXT.COPY }}</span>
 			</button>
 			<button
@@ -43,7 +43,7 @@
 				tabindex="-1"
 				class="base-chat-context-menu__item"
 				@click="handlePin">
-				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
 				<span>{{ message?.isPinned ? UI_CHAT_TEXT.UNPIN : UI_CHAT_TEXT.PIN }}</span>
 			</button>
 			<button
@@ -53,7 +53,7 @@
 				tabindex="-1"
 				class="base-chat-context-menu__item base-chat-context-menu__item--danger"
 				@click="handleDelete">
-				<BaseIcon name="trash" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<BaseIcon name="trash" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
 				<span>{{ UI_CHAT_TEXT.DELETE }}</span>
 			</button>
 		</div>
@@ -62,10 +62,12 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { CHAT_SCALE } from '../../../model/chatScale'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */

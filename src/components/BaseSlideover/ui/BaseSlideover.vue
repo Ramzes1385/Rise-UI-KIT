@@ -28,7 +28,7 @@
 								v-if="title"
 								:id="titleId"
 								tag="h3"
-								:weight="UI_FONT_WEIGHT.SEMIBOLD"
+								:weight="TEXT_WEIGHT.SEMIBOLD"
 								class="base-slideover__title"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
@@ -60,9 +60,10 @@
 
 <script setup lang="ts">
 import { computed, ref, useId, useSlots } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFocusTrap } from '@composables/useFocusTrap'
@@ -71,7 +72,6 @@ import { usePadding } from '@composables/usePadding'
 import { usePopup } from '@composables/usePopup'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { UI_ARIA, UI_FONT_WEIGHT } from '@constants'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
 

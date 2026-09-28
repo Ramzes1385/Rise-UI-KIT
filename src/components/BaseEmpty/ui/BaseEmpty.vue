@@ -13,7 +13,7 @@
 			<BaseText
 				v-if="title"
 				tag="h3"
-				:weight="UI_FONT_WEIGHT.MEDIUM"
+				:weight="TEXT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
 				class="base-empty__title"
 				:custom-class="classes.title">
@@ -43,10 +43,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_FONT_WEIGHT } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'

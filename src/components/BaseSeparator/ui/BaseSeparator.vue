@@ -31,13 +31,13 @@
 
 <script setup lang="ts">
 import { computed, useId } from 'vue'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseSeparator.style.scss'
 
-import { SIZE_SCALE_DEFAULT } from '@constants'
+import { useSizeScale } from '@composables/useSizeScale'
 import type { BaseSeparatorProps, BaseSeparatorSlots } from '../model/BaseSeparator.types'
 
 const props = withDefaults(defineProps<BaseSeparatorProps>(), kitDefaults('BaseSeparator', {

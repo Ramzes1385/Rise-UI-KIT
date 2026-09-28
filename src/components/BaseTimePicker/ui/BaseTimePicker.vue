@@ -31,10 +31,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { BaseAutocomplete } from '@components/BaseAutocomplete'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_TEXT } from '@constants'
 import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/timeUtils'
 import type { BaseTimePickerEmits, BaseTimePickerProps } from '../model/BaseTimePicker.types'
 import type { AutocompleteOption } from '@components/BaseAutocomplete'

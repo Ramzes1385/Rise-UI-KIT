@@ -55,13 +55,14 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { formatNumber } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormDisabled } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, UI_ARIA } from '@constants'
 import { calcIconScale } from '@utils/iconUtils'
 import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '@utils/numberInputUtils'
 import '../styles/BaseInputNumber.style.scss'

@@ -50,7 +50,7 @@ export default tseslint.config(
         type: 'alphabetical',
         order: 'asc',
         newlinesBetween: 0,
-        internalPattern: ['^@/', '^@components(/|$)', '^@composables(/|$)', '^@constants(/|$)', '^@utils(/|$)', '^@icons(/|$)', '^@styles(/|$)'],
+        internalPattern: ['^@/', '^@components(/|$)', '^@composables(/|$)', '^@utils(/|$)', '^@icons(/|$)', '^@styles(/|$)'],
         groups: [
           'builtin',
           'external',

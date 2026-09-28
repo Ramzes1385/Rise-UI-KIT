@@ -31,12 +31,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { UI_RATING } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
-import { UI_RATING, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
 import '../styles/BaseRating.style.scss'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../model/BaseRating.types'

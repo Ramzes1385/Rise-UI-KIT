@@ -1,8 +1,9 @@
 /** Утилиты: работа с датами — сравнение, парсинг, форматирование */
 
 import { getLocale, pluralize } from '@/locales/state'
-import { MS_PER_DAY } from '@constants'
 import type { BuildDateOptions } from './dateUtils.types'
+
+const MS_PER_DAY = 86_400_000
 
 /** Сравнить две даты без учёта времени */
 function isSameDay(a: Date, b: Date): boolean {

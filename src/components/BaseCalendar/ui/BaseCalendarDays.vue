@@ -61,8 +61,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { UI_CALENDAR } from '@/locales/messages'
 import { useClickOutside } from '@composables/useClickOutside'
-import { UI_CALENDAR } from '@constants'
 import { formatPopoverDate } from '@utils/dateUtils'
 import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../model/BaseCalendarDays.types'
 

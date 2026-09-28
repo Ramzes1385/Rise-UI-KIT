@@ -50,7 +50,7 @@
 				class="base-chat-message-list__avatar" />
 			<div class="base-chat-message-list__bubble-wrapper">
 				<div class="base-chat-message-list__bubble base-chat-message-list__bubble--typing">
-					<BaseLoader variant="dots" :label="typingLabel" :size-scale="sizeScale * UI_SCALE.SMALL" />
+					<BaseLoader variant="dots" :label="typingLabel" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</div>
 			</div>
 		</div>
@@ -75,12 +75,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseLoader } from '@components/BaseLoader'
 import { useAutoScroll } from '@composables/useAutoScroll'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useChatMessageActions } from '@composables/useChatMessageActions'
-import { SIZE_SCALE_DEFAULT, UI_CHAT_TEXT, UI_SCALE } from '@constants'
+import { CHAT_SCALE } from '../../../model/chatScale'
 import ChatMessageItem from './ChatMessage.vue'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 import '../styles/ChatMessageList.style.scss'

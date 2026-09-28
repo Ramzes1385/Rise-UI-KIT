@@ -30,7 +30,7 @@
 									<BaseText
 										v-if="currentStep.title"
 										tag="h3"
-										:weight="UI_FONT_WEIGHT.SEMIBOLD"
+										:weight="TEXT_WEIGHT.SEMIBOLD"
 										class="base-tour__title"
 										:custom-class="classes.title"
 										>{{ currentStep.title }}</BaseText
@@ -94,9 +94,10 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { UI_TOUR } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
@@ -107,10 +108,6 @@ import { useScrollLock } from '@composables/useScrollLock'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useTourCoordination } from '@composables/useTourCoordination'
 import { useTourLogic } from '@composables/useTourLogic'
-import {
-	UI_FONT_WEIGHT,
-	UI_TOUR,
-} from '@constants'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseTour.types'
 

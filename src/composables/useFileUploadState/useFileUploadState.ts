@@ -1,15 +1,16 @@
 /** Composable: управление состоянием загрузки файлов (валидация, drag-and-drop, прогресс) */
 import { computed, onBeforeUnmount, ref } from 'vue'
-import {
-	UI_TEXT,
-	UI_TIMING,
-	UI_PROGRESS_STEP_MIN,
-	UI_PROGRESS_STEP_RANGE,
-} from '@constants'
+import { UI_TEXT } from '@/locales/messages'
 import { createImagePreview, getExtension, validateFile } from '@utils/fileUtils'
 import { generateId } from '@utils/idUtils'
 import type { UseFileUploadStateOptions } from './useFileUploadState.types'
 import type { UploadedFile } from '@components/BaseFileUpload/model/BaseFileUpload.types'
+
+/** Имитация загрузки: прибавка прогресса за шаг — от PROGRESS_STEP_MIN до PROGRESS_STEP_MIN + PROGRESS_STEP_RANGE, % */
+const PROGRESS_STEP_MIN = 5
+const PROGRESS_STEP_RANGE = 20
+/** Интервал шагов, мс */
+const PROGRESS_INTERVAL_MS = 200
 
 /** Описание: управляет состоянием загрузки файлов — валидация, добавление, удаление, drag-and-drop и симуляция прогресса загрузки */
 function useFileUploadState(options: UseFileUploadStateOptions) {
@@ -133,14 +134,14 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 				progressIntervals.delete(interval)
 				return
 			}
-			item.progress = Math.min(item.progress + Math.floor(Math.random() * UI_PROGRESS_STEP_RANGE) + UI_PROGRESS_STEP_MIN, 100)
+			item.progress = Math.min(item.progress + Math.floor(Math.random() * PROGRESS_STEP_RANGE) + PROGRESS_STEP_MIN, 100)
 			if (item.progress >= 100) {
 				item.status = 'done'
 				item.progress = 100
 				clearInterval(interval)
 				progressIntervals.delete(interval)
 			}
-		}, UI_TIMING.PROGRESS_INTERVAL)
+		}, PROGRESS_INTERVAL_MS)
 		progressIntervals.add(interval)
 	}
 

@@ -1,7 +1,9 @@
 /** Composable: пропорциональное масштабирование размеров компонента */
 import { computed } from 'vue'
-import { SIZE_SCALE_DEFAULT } from '@constants'
 import type { UseSizeScaleOptions } from './useSizeScale.types'
+
+/** Масштаб по умолчанию, %: базовые размеры без `--size-scale` */
+export const SIZE_SCALE_DEFAULT = 100 as const
 
 /**
  * Composable для пропорционального масштабирования размеров компонента.
