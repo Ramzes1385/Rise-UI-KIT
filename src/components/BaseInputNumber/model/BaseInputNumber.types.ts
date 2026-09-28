@@ -3,7 +3,15 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты оформления — как у BaseInput: поле числа — BaseInput с кнопками −/+ */
-export const INPUT_NUMBER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const satisfies readonly InputVariant[]
+export const INPUT_NUMBER_VARIANTS = [
+	'default',
+	'ghost',
+	'outline',
+	'shadow',
+	'soft',
+	'filled',
+	'underline',
+] as const satisfies readonly InputVariant[]
 
 /**
  * Пропсы компонента BaseInputNumber

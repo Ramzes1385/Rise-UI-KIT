@@ -35,17 +35,9 @@
 				@click.stop="handleClick"
 				@keydown.enter.prevent="handleClick"
 				@keydown.space.prevent="handleClick">
-				<BaseIcon
-					v-if="item.icon"
-					:name="item.icon"
-					:size-scale="iconScale"
-					class="base-mega-menu__node-icon" />
+				<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__node-icon" />
 				<span class="base-mega-menu__node-label">{{ item.label }}</span>
-				<BaseIcon
-					v-if="hasChildren"
-					name="chevron-right"
-					:size-scale="iconScale"
-					class="base-mega-menu__node-arrow" />
+				<BaseIcon v-if="hasChildren" name="chevron-right" :size-scale="iconScale" class="base-mega-menu__node-arrow" />
 			</div>
 		</slot>
 
@@ -145,7 +137,6 @@ function clearTimer(): void {
 }
 
 onBeforeUnmount(clearTimer)
-
 
 /** Клик по ссылке: переход выполняет BaseLink, компонент сообщает о нём событиями */
 function handleLinkClick(): void {

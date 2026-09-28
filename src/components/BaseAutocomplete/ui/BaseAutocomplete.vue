@@ -4,82 +4,88 @@
 		(aria-activedescendant), Enter выбирает, Escape закрывает список, а при закрытом — очищает поле
 	-->
 	<div class="base-autocomplete" :class="classes.root">
-	<BaseDropdown
-		v-model:is-open="isOpen"
-		class="base-autocomplete__dropdown"
-		position="bottom-start"
-		:match-width="true"
-		:padding="0"
-		:prevent-mousedown="true"
-		:size-scale="sizeScale"
-		:custom-class="{ panel: classes.panel }">
-		<BaseInput
-			ref="inputRef"
-			:model-value="query"
-			:variant="variant"
-			:label="label"
-			:placeholder="placeholder"
-			:error="error"
-			:is-disabled="isControlDisabled"
-			:is-readonly="isReadonly"
-			:is-required="isRequired"
-			:aria-label="ariaLabel"
-			:input-attrs="comboboxAttrs"
+		<BaseDropdown
+			v-model:is-open="isOpen"
+			class="base-autocomplete__dropdown"
+			position="bottom-start"
+			:match-width="true"
+			:padding="0"
+			:prevent-mousedown="true"
 			:size-scale="sizeScale"
-			:color="color"
-			:custom-class="{ field: classes.field }"
-			@update:model-value="handleInput"
-			@keydown="handleKeydown"
-			@blur="handleBlur"
-			@focus="emit('focus', $event)"
-			@click="handleClick" />
+			:custom-class="{ panel: classes.panel }">
+			<BaseInput
+				ref="inputRef"
+				:model-value="query"
+				:variant="variant"
+				:label="label"
+				:placeholder="placeholder"
+				:error="error"
+				:is-disabled="isControlDisabled"
+				:is-readonly="isReadonly"
+				:is-required="isRequired"
+				:aria-label="ariaLabel"
+				:input-attrs="comboboxAttrs"
+				:size-scale="sizeScale"
+				:color="color"
+				:custom-class="{ field: classes.field }"
+				@update:model-value="handleInput"
+				@keydown="handleKeydown"
+				@blur="handleBlur"
+				@focus="emit('focus', $event)"
+				@click="handleClick" />
 
-		<template #dropdown>
-			<div class="base-autocomplete__panel-content">
-				<ul
-					:id="listboxId"
-					class="base-autocomplete__options"
-					:class="{ 'base-autocomplete__options--empty': visibleOptions.length === 0 }"
-					role="listbox"
-					:aria-label="label || ariaLabel || placeholder">
-					<li
-						v-for="(option, index) in visibleOptions"
-						:id="optionId(index)"
-						:key="option.value"
-						class="base-autocomplete__option"
-						:class="[
-							{
-								'base-autocomplete__option--active': index === activeIndex,
-								'base-autocomplete__option--selected': option.value === modelValue,
-								'base-autocomplete__option--disabled': option.isDisabled,
-							},
-							classes.option,
-						]"
-						role="option"
-						:aria-selected="option.value === modelValue ? 'true' : 'false'"
-						:aria-disabled="option.isDisabled ? 'true' : undefined"
-						@mousemove="activeIndex = index"
-						@click="selectOption(option)">
-						<slot name="option" :option="option" :is-active="index === activeIndex" :is-selected="option.value === modelValue">
-							<span class="base-autocomplete__option-label">
-								<template v-for="(part, partIndex) in highlight(option.label)" :key="partIndex">
-									<mark v-if="part.isMatch" class="base-autocomplete__match">{{ part.text }}</mark>
-									<template v-else>{{ part.text }}</template>
-								</template>
-							</span>
-							<span v-if="option.description" class="base-autocomplete__option-description">{{ option.description }}</span>
-						</slot>
-					</li>
-				</ul>
-				<div v-if="isLoading" class="base-autocomplete__empty" :class="classes.empty">{{ UI_TEXT.LOADING }}</div>
-				<div v-else-if="visibleOptions.length === 0" class="base-autocomplete__empty" :class="classes.empty">
-					<slot name="empty">{{ UI_TEXT.NO_RESULTS }}</slot>
+			<template #dropdown>
+				<div class="base-autocomplete__panel-content">
+					<ul
+						:id="listboxId"
+						class="base-autocomplete__options"
+						:class="{ 'base-autocomplete__options--empty': visibleOptions.length === 0 }"
+						role="listbox"
+						:aria-label="label || ariaLabel || placeholder">
+						<li
+							v-for="(option, index) in visibleOptions"
+							:id="optionId(index)"
+							:key="option.value"
+							class="base-autocomplete__option"
+							:class="[
+								{
+									'base-autocomplete__option--active': index === activeIndex,
+									'base-autocomplete__option--selected': option.value === modelValue,
+									'base-autocomplete__option--disabled': option.isDisabled,
+								},
+								classes.option,
+							]"
+							role="option"
+							:aria-selected="option.value === modelValue ? 'true' : 'false'"
+							:aria-disabled="option.isDisabled ? 'true' : undefined"
+							@mousemove="activeIndex = index"
+							@click="selectOption(option)">
+							<slot
+								name="option"
+								:option="option"
+								:is-active="index === activeIndex"
+								:is-selected="option.value === modelValue">
+								<span class="base-autocomplete__option-label">
+									<template v-for="(part, partIndex) in highlight(option.label)" :key="partIndex">
+										<mark v-if="part.isMatch" class="base-autocomplete__match">{{ part.text }}</mark>
+										<template v-else>{{ part.text }}</template>
+									</template>
+								</span>
+								<span v-if="option.description" class="base-autocomplete__option-description">{{
+									option.description
+								}}</span>
+							</slot>
+						</li>
+					</ul>
+					<div v-if="isLoading" class="base-autocomplete__empty" :class="classes.empty">{{ UI_TEXT.LOADING }}</div>
+					<div v-else-if="visibleOptions.length === 0" class="base-autocomplete__empty" :class="classes.empty">
+						<slot name="empty">{{ UI_TEXT.NO_RESULTS }}</slot>
+					</div>
 				</div>
-			</div>
-		</template>
-	</BaseDropdown>
-	<!-- Число вариантов для скринридера: список открылся или изменился по вводу -->
-	<span class="base-autocomplete__status" role="status">{{ statusText }}</span>
+			</template>
+		</BaseDropdown>
+		<!-- Число вариантов для скринридера: список открылся или изменился по вводу -->
+		<span class="base-autocomplete__status" role="status">{{ statusText }}</span>
 	</div>
 </template>
 
@@ -94,19 +100,27 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormDisabled } from '@composables/useFormContext'
 import '../styles/BaseAutocomplete.style.scss'
-import type { AutocompleteOption, BaseAutocompleteEmits, BaseAutocompleteProps, BaseAutocompleteSlots } from '../model/BaseAutocomplete.types'
+import type {
+	AutocompleteOption,
+	BaseAutocompleteEmits,
+	BaseAutocompleteProps,
+	BaseAutocompleteSlots,
+} from '../model/BaseAutocomplete.types'
 
-const props = withDefaults(defineProps<BaseAutocompleteProps>(), kitDefaults('BaseAutocomplete', {
-	variant: DEFAULT_VARIANT,
-	modelValue: null,
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	isCustomAllowed: false,
-	isRemote: false,
-	isLoading: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseAutocompleteProps>(),
+	kitDefaults('BaseAutocomplete', {
+		variant: DEFAULT_VARIANT,
+		modelValue: null,
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		isCustomAllowed: false,
+		isRemote: false,
+		isLoading: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAutocompleteEmits>()
 defineSlots<BaseAutocompleteSlots>()
@@ -209,7 +223,10 @@ function firstEnabled(from: number, direction: 1 | -1): number {
 function move(direction: 1 | -1): void {
 	const count = visibleOptions.value.length
 	if (count === 0) return
-	activeIndex.value = firstEnabled(activeIndex.value === -1 ? (direction === 1 ? 0 : count - 1) : activeIndex.value + direction, direction)
+	activeIndex.value = firstEnabled(
+		activeIndex.value === -1 ? (direction === 1 ? 0 : count - 1) : activeIndex.value + direction,
+		direction,
+	)
 }
 
 function setValue(value: string | number | null): void {

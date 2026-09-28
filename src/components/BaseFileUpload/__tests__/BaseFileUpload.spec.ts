@@ -360,9 +360,7 @@ describe('BaseFileUpload unit', () => {
 			expect(container.querySelector('.base-file-upload__text')?.classList.contains('custom-text')).toBe(true)
 			expect(container.querySelector('.base-file-upload__hint')?.classList.contains('custom-hint')).toBe(true)
 			expect(container.querySelector('.custom-errors')).toBeInTheDocument()
-			expect(container.querySelector('.base-file-upload__error-item')?.classList.contains('custom-error-item')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-file-upload__error-item')?.classList.contains('custom-error-item')).toBe(true)
 		})
 	})
 })

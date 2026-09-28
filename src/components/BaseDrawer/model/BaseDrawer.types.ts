@@ -12,7 +12,10 @@ export type DrawerDirection = (typeof DRAWER_DIRECTIONS)[number]
  * Пропсы компонента BaseDrawer.
  * `sizeScale` масштабирует отступы, кегль и ширину боковой панели; `color` задаёт фон и текст панели.
  */
-export interface BaseDrawerProps extends BaseComponentProps<(typeof DRAWER_VARIANTS)[number], 'root' | 'panel' | 'handle' | 'header' | 'title' | 'body' | 'footer'> {
+export interface BaseDrawerProps extends BaseComponentProps<
+	(typeof DRAWER_VARIANTS)[number],
+	'root' | 'panel' | 'handle' | 'header' | 'title' | 'body' | 'footer'
+> {
 	/** Панель открыта (v-model:isOpen) */
 	isOpen: boolean
 	/** Заголовок — имя диалога */

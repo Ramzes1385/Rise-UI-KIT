@@ -246,5 +246,4 @@ function handleHeaderClick(): void {
 
 	treeContext.selectNode(props.node.id)
 }
-
 </script>

@@ -43,16 +43,22 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseTimeline.style.scss'
 import type { BaseTimelineProps, BaseTimelineSlots } from '../model/BaseTimeline.types'
 
-const props = withDefaults(defineProps<BaseTimelineProps>(), kitDefaults('BaseTimeline', {
-	variant: DEFAULT_VARIANT,
-	orientation: 'vertical',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseTimelineProps>(),
+	kitDefaults('BaseTimeline', {
+		variant: DEFAULT_VARIANT,
+		orientation: 'vertical',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseTimelineSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-timeline', props, [
-	'root', 'item', 'marker', 'content',
+	'root',
+	'item',
+	'marker',
+	'content',
 ])
 
 const currentIndex = computed(() => (props.currentId === undefined ? -1 : props.items.findIndex(item => item.id === props.currentId)))

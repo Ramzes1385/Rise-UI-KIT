@@ -1,5 +1,11 @@
 <template>
-	<BaseEmpty v-if="media.length === 0" variant="ghost" icon="image" :title="UI_CHAT_TEXT.NO_MEDIA" :size-scale="sizeScale" class="base-chat-slideover__empty" />
+	<BaseEmpty
+		v-if="media.length === 0"
+		variant="ghost"
+		icon="image"
+		:title="UI_CHAT_TEXT.NO_MEDIA"
+		:size-scale="sizeScale"
+		class="base-chat-slideover__empty" />
 	<ul v-else class="base-chat-slideover__media-grid">
 		<li v-for="item in media" :key="item.id" class="base-chat-slideover__media-item">
 			<BaseImage

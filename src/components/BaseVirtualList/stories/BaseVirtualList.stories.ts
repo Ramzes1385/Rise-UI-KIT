@@ -28,7 +28,8 @@ const PHRASES = [
 ]
 const MESSAGES = Array.from({ length: 2000 }, (_, index) => ({ id: index, text: `${index + 1}. ${PHRASES[index % PHRASES.length]}` }))
 
-const ROW_STYLE = 'display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--rise-border)'
+const ROW_STYLE =
+	'display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--rise-border)'
 
 const meta = {
 	title: 'Data/BaseVirtualList',

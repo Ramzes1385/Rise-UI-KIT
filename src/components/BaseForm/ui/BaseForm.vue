@@ -41,14 +41,21 @@ import '../styles/BaseForm.style.scss'
 import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
 import type { FormValidationResult } from '@utils/formUtils'
 
-const props = withDefaults(defineProps<BaseFormProps>(), kitDefaults('BaseForm', {
-	variant: DEFAULT_VARIANT,
-	isLoading: false,
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseFormProps>(),
+	kitDefaults('BaseForm', {
+		variant: DEFAULT_VARIANT,
+		isLoading: false,
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form', props, ['root', 'overlay', 'content'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form', props, [
+	'root',
+	'overlay',
+	'content',
+])
 
 const emit = defineEmits<BaseFormEmits>()
 defineSlots<BaseFormSlots>()
@@ -70,13 +77,17 @@ watch(isLocked, locked => {
 
 // Возвращаем фокус после разблокировки, чтобы клавиатурный пользователь не терял позицию после отправки;
 // не перехватываем его, если за время блокировки фокус уже перевели на другой элемент
-watch(isLocked, locked => {
-	const target = focusedBeforeLock
-	if (locked || !target) return
-	focusedBeforeLock = null
-	const active = document.activeElement
-	if (target.isConnected && (!active || active === document.body)) target.focus()
-}, { flush: 'post' })
+watch(
+	isLocked,
+	locked => {
+		const target = focusedBeforeLock
+		if (locked || !target) return
+		focusedBeforeLock = null
+		const active = document.activeElement
+		if (target.isConnected && (!active || active === document.body)) target.focus()
+	},
+	{ flush: 'post' },
+)
 
 /** Ошибки проверки схемой: имя поля → текст (их показывают BaseFormField с тем же name) */
 const errors = ref<Record<string, string>>({})

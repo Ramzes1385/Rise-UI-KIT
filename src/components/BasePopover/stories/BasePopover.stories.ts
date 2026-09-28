@@ -120,7 +120,9 @@ export const Variants: Story = {
 		docs: {
 			...docsFrame(340),
 			source: {
-				code: POPOVER_VARIANTS.map(variant => `<BasePopover v-model:is-open="isOpen" variant="${variant}">…</BasePopover>`).join('\n'),
+				code: POPOVER_VARIANTS.map(variant => `<BasePopover v-model:is-open="isOpen" variant="${variant}">…</BasePopover>`).join(
+					'\n',
+				),
 			},
 		},
 	},
@@ -175,7 +177,9 @@ export const Positions: Story = {
 	play: async () => {
 		// Стрелка поповера сверху смотрит вниз, на центр кнопки
 		const button = screen.getByRole('button', { name: 'top' })
-		const arrow = (await screen.findByText('Сверху')).closest('.base-dropdown__panel')?.querySelector('.base-popover__arrow') as HTMLElement
+		const arrow = (await screen.findByText('Сверху'))
+			.closest('.base-dropdown__panel')
+			?.querySelector('.base-popover__arrow') as HTMLElement
 		await waitFor(() => {
 			const buttonBox = button.getBoundingClientRect()
 			const arrowBox = arrow.getBoundingClientRect()
@@ -320,7 +324,9 @@ export const WithForm: Story = {
 		await userEvent.keyboard('ivan@example.com')
 		await expect(field).toHaveValue('ivan@example.com')
 
-		await userEvent.click(within(screen.getByRole('form', { name: 'Приглашение' })).getByRole('button', { name: 'Отправить приглашение' }))
+		await userEvent.click(
+			within(screen.getByRole('form', { name: 'Приглашение' })).getByRole('button', { name: 'Отправить приглашение' }),
+		)
 		await waitFor(() => expect(screen.queryByLabelText('Почта участника')).not.toBeInTheDocument())
 		await expect(trigger).toHaveFocus()
 	},

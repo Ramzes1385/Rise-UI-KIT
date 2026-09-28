@@ -242,9 +242,7 @@ describe('BaseMegaMenu unit', () => {
 
 			expect(container.querySelectorAll('.base-mega-menu__sub-list')).toHaveLength(1)
 			expect(container.querySelectorAll('.base-mega-menu__node--open')).toHaveLength(1)
-			expect(container.querySelector('.base-mega-menu__node--open .base-mega-menu__node-label')?.textContent).toContain(
-				'Второй',
-			)
+			expect(container.querySelector('.base-mega-menu__node--open .base-mega-menu__node-label')?.textContent).toContain('Второй')
 		})
 
 		it('не должен эмитить item-click для отключённого узла', async () => {

@@ -84,12 +84,20 @@ export const CHAT_VARIANTS = ['bubble', 'flat', 'modern'] as const
  * Пропсы компонента BaseChat
  */
 export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)[number], 'root'> {
-	messages: ChatMessage[]; title: string; subtitle?: string; avatar?: string;
-	height?: string; isTyping?: boolean;
-	typingUsername?: string; isGroup?: boolean; members?: ChatMember[];
-	quickReplies?: string[]; commands?: ChatCommand[];
+	messages: ChatMessage[]
+	title: string
+	subtitle?: string
+	avatar?: string
+	height?: string
+	isTyping?: boolean
+	typingUsername?: string
+	isGroup?: boolean
+	members?: ChatMember[]
+	quickReplies?: string[]
+	commands?: ChatCommand[]
 	/** Не используется: закреплённые сообщения берутся из `messages[].isPinned` */
-	pinnedMessages?: ChatMessage[]; currentUserRole?: 'admin' | 'member'
+	pinnedMessages?: ChatMessage[]
+	currentUserRole?: 'admin' | 'member'
 	/** Описание чата или собеседника для панели «Информация»; без него блок описания не выводится */
 	description?: string
 }

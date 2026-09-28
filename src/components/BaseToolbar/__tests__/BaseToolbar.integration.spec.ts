@@ -7,7 +7,8 @@ import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import BaseToolbar from '../ui/BaseToolbar.vue'
 
-const BUTTONS = '<button>A</button><button>B</button><input aria-label="Поле" /><input type="checkbox" aria-label="Флажок" /><button>C</button>'
+const BUTTONS =
+	'<button>A</button><button>B</button><input aria-label="Поле" /><input type="checkbox" aria-label="Флажок" /><button>C</button>'
 
 function button(name: string): HTMLElement {
 	return screen.getByRole('button', { name })
@@ -16,7 +17,10 @@ function button(name: string): HTMLElement {
 describe('BaseToolbar integration', () => {
 	it('←/→ с переходом через край, Home/End; фокус запоминается как элемент в порядке Tab', async () => {
 		const user = userEvent.setup()
-		render(BaseToolbar, { props: { ariaLabel: 'Панель' }, slots: { default: '<button>A</button><button>B</button><input type="checkbox" aria-label="Флажок" /><button>C</button>' } })
+		render(BaseToolbar, {
+			props: { ariaLabel: 'Панель' },
+			slots: { default: '<button>A</button><button>B</button><input type="checkbox" aria-label="Флажок" /><button>C</button>' },
+		})
 
 		await user.tab()
 		expect(button('A')).toHaveFocus()
@@ -54,7 +58,10 @@ describe('BaseToolbar integration', () => {
 
 	it('вертикальная панель — ↑/↓; клавиши вне элементов панели не обрабатываются', async () => {
 		const user = userEvent.setup()
-		render(BaseToolbar, { props: { orientation: 'vertical' }, slots: { default: '<button>A</button><button>B</button><span tabindex="-1" data-testid="plain">текст</span>' } })
+		render(BaseToolbar, {
+			props: { orientation: 'vertical' },
+			slots: { default: '<button>A</button><button>B</button><span tabindex="-1" data-testid="plain">текст</span>' },
+		})
 
 		button('A').focus()
 		await user.keyboard('{ArrowDown}')
@@ -72,7 +79,12 @@ describe('BaseToolbar integration', () => {
 
 	it('многострочное поле и редактируемый блок — стрелки остаются в них', async () => {
 		const user = userEvent.setup()
-		render(BaseToolbar, { slots: { default: '<button>A</button><textarea aria-label="Заметка"></textarea><div contenteditable="true" tabindex="0" aria-label="Текст">x</div>' } })
+		render(BaseToolbar, {
+			slots: {
+				default:
+					'<button>A</button><textarea aria-label="Заметка"></textarea><div contenteditable="true" tabindex="0" aria-label="Текст">x</div>',
+			},
+		})
 
 		const note = screen.getByRole('textbox', { name: 'Заметка' })
 		note.focus()

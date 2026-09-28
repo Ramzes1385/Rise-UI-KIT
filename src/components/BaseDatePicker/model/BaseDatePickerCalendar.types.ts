@@ -115,10 +115,7 @@ export type DatePickerCalendarBindings = Required<
  * (constraints/timeConfig/displayConfig): плоские ключи уходили бы в $attrs и молча игнорировались.
  * Навигация и смена вида календаря отключены — их выполняет шапка панели.
  */
-export function toBaseCalendarProps(
-	config: BaseDatePickerCalendarConfig,
-	display: DatePickerCalendarDisplay,
-): DatePickerCalendarBindings {
+export function toBaseCalendarProps(config: BaseDatePickerCalendarConfig, display: DatePickerCalendarDisplay): DatePickerCalendarBindings {
 	return {
 		constraints: {
 			minDate: config.minDate,

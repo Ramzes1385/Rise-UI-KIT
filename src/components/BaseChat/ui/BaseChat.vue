@@ -144,18 +144,21 @@ interface MessageListExposed {
 	scrollToMessage: (messageId: string) => void
 }
 
-const props = withDefaults(defineProps<BaseChatProps>(), kitDefaults('BaseChat', {
-	variant: 'bubble',
-	height: '500px',
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isTyping: false,
-	typingUsername: '',
-	isGroup: false,
-	members: () => [],
-	quickReplies: () => [],
-	commands: () => [],
-	currentUserRole: 'member',
-}))
+const props = withDefaults(
+	defineProps<BaseChatProps>(),
+	kitDefaults('BaseChat', {
+		variant: 'bubble',
+		height: '500px',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isTyping: false,
+		typingUsername: '',
+		isGroup: false,
+		members: () => [],
+		quickReplies: () => [],
+		commands: () => [],
+		currentUserRole: 'member',
+	}),
+)
 
 const emit = defineEmits<BaseChatEmits>()
 

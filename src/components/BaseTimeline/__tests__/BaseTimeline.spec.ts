@@ -40,7 +40,9 @@ describe('BaseTimeline', () => {
 	})
 
 	it('свой формат даты', () => {
-		const { container } = render(BaseTimeline, { props: { items: ITEMS.slice(0, 1), dateFormat: { hour: '2-digit', minute: '2-digit' } } })
+		const { container } = render(BaseTimeline, {
+			props: { items: ITEMS.slice(0, 1), dateFormat: { hour: '2-digit', minute: '2-digit' } },
+		})
 
 		expect(container.querySelector('time')).toHaveTextContent('10:24')
 	})
@@ -62,7 +64,9 @@ describe('BaseTimeline', () => {
 	it('горизонтальная лента и слот события', () => {
 		const { container } = render(BaseTimeline, {
 			props: { items: ITEMS, orientation: 'horizontal', currentId: 1 },
-			slots: { item: `<template #item="{ item, isCurrent, isUpcoming }">{{ item.title }}:{{ isCurrent }}:{{ isUpcoming }}</template>` },
+			slots: {
+				item: `<template #item="{ item, isCurrent, isUpcoming }">{{ item.title }}:{{ isCurrent }}:{{ isUpcoming }}</template>`,
+			},
 		})
 
 		expect(container.querySelector('.base-timeline')).toHaveClass('base-timeline--horizontal')

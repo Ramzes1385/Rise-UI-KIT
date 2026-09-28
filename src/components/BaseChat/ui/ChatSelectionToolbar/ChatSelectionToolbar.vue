@@ -9,7 +9,11 @@
 					</template>
 					{{ UI_CHAT_TEXT.FORWARD }}
 				</BaseButton>
-				<BaseButton variant="ghost" :size-scale="sizeScale" class="base-chat-selection-toolbar__btn--danger" @click="emit('delete')">
+				<BaseButton
+					variant="ghost"
+					:size-scale="sizeScale"
+					class="base-chat-selection-toolbar__btn--danger"
+					@click="emit('delete')">
 					<template #left>
 						<BaseIcon name="trash" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 					</template>

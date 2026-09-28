@@ -50,12 +50,15 @@ import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../model/BaseLoader.types'
 
-const props = withDefaults(defineProps<BaseLoaderProps>(), kitDefaults('BaseLoader', {
-	variant: 'spinner',
-	hasLabel: false,
-	isOverlay: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseLoaderProps>(),
+	kitDefaults('BaseLoader', {
+		variant: 'spinner',
+		hasLabel: false,
+		isOverlay: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
 	elementKeys: ['root', 'animation', 'spinner', 'label'],

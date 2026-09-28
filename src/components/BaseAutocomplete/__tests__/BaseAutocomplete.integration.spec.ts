@@ -30,7 +30,8 @@ function renderModel(initial: string | number | null = null, props: Record<strin
 	const utils = render({
 		components: { BaseAutocomplete },
 		setup: () => ({ model, props, onChange, onSearch, options: CITIES }),
-		template: '<BaseAutocomplete v-model="model" :options="options" v-bind="props" aria-label="Город" @change="onChange" @search="onSearch" />',
+		template:
+			'<BaseAutocomplete v-model="model" :options="options" v-bind="props" aria-label="Город" @change="onChange" @search="onSearch" />',
 	})
 	return { ...utils, model, onChange, onSearch, field: screen.getByRole('combobox', { name: 'Город' }) }
 }
@@ -239,7 +240,8 @@ describe('BaseAutocomplete integration', () => {
 		render({
 			components: { BaseAutocomplete },
 			setup: () => ({ list, autocompleteRef, onFocus }),
-			template: '<BaseAutocomplete ref="autocompleteRef" model-value="msk" :options="list" aria-label="Город" is-required @focus="onFocus" />',
+			template:
+				'<BaseAutocomplete ref="autocompleteRef" model-value="msk" :options="list" aria-label="Город" is-required @focus="onFocus" />',
 		})
 		const field = screen.getByRole('combobox', { name: 'Город' })
 		expect(field).toHaveValue('msk')

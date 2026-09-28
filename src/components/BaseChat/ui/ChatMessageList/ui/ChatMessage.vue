@@ -41,7 +41,11 @@
 
 			<div class="base-chat-message-list__bubble">
 				<!-- Действия появляются при наведении и при фокусе внутри сообщения (клавиатура) -->
-				<div v-if="!isSelectionMode" class="base-chat-message-list__actions" role="group" :aria-label="UI_CHAT_TEXT.MESSAGE_ACTIONS">
+				<div
+					v-if="!isSelectionMode"
+					class="base-chat-message-list__actions"
+					role="group"
+					:aria-label="UI_CHAT_TEXT.MESSAGE_ACTIONS">
 					<BaseButton
 						variant="ghost"
 						:size-scale="sizeScale"
@@ -116,7 +120,10 @@
 							:class="`base-chat-message-list__status-wrapper--${message.status}`"
 							role="img"
 							:aria-label="statusLabel">
-							<BaseIcon name="check" :size-scale="sizeScale * CHAT_SCALE.STATUS" class="base-chat-message-list__status-icon" />
+							<BaseIcon
+								name="check"
+								:size-scale="sizeScale * CHAT_SCALE.STATUS"
+								class="base-chat-message-list__status-icon" />
 							<BaseIcon
 								v-if="message.status === 'read' || message.status === 'delivered'"
 								name="check"
@@ -170,11 +177,11 @@ const senderName = computed(() => props.message.senderName || 'Companion')
 const avatarLabel = computed(() =>
 	props.message.senderName ? `${UI_CHAT_TEXT.PROFILE_ARIA} ${props.message.senderName}` : UI_CHAT_TEXT.SENDER_PROFILE_ARIA,
 )
-const statusLabel = computed(() => (props.message.status && props.message.status !== 'sending' ? STATUS_LABELS[props.message.status] : undefined))
-
-const gallery = computed(() =>
-	props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message),
+const statusLabel = computed(() =>
+	props.message.status && props.message.status !== 'sending' ? STATUS_LABELS[props.message.status] : undefined,
 )
+
+const gallery = computed(() => (props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message)))
 
 function getMessageImageUrls(message: ChatMessage): string[] {
 	return message.attachments?.filter(attachment => attachment.type === 'image').map(attachment => attachment.url) ?? []

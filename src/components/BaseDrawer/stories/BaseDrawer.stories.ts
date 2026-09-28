@@ -115,7 +115,11 @@ export const Directions: Story = {
 		components: { BaseDrawer, BaseButton },
 		setup: () => {
 			const openDirection = ref<string | null>(null)
-			return { props: useArgsWithoutSlots(args, ['isOpen', 'direction', 'title', 'description']), directions: DRAWER_DIRECTIONS, openDirection }
+			return {
+				props: useArgsWithoutSlots(args, ['isOpen', 'direction', 'title', 'description']),
+				directions: DRAWER_DIRECTIONS,
+				openDirection,
+			}
 		},
 		template: `
 			<div class="story-row">

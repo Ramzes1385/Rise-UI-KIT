@@ -6,7 +6,16 @@
  */
 
 import { expect, fn, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, BROKEN_IMAGE_SRC, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	BROKEN_IMAGE_SRC,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	STORY_USERS,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseIcon } from '@components/BaseIcon'
 import { AVATAR_SHAPES, AVATAR_VARIANTS } from '../model/BaseAvatar.types'
 import BaseAvatar from '../ui/BaseAvatar.vue'
@@ -99,7 +108,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant', 'shape', 'isOnline'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseAvatar :size-scale="${preset.sizeScale}" name="Анна Смирнова" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseAvatar :size-scale="${preset.sizeScale}" name="Анна Смирнова" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseAvatar },
@@ -201,12 +214,9 @@ export const WithSlot: Story = {
 		controls: { include: ['variant', 'sizeScale', 'shape'] },
 		docs: {
 			source: {
-				code: [
-					'<BaseAvatar>',
-					'  <BaseIcon name="star" />',
-					'</BaseAvatar>',
-					'<BaseAvatar variant="soft">+3</BaseAvatar>',
-				].join('\n'),
+				code: ['<BaseAvatar>', '  <BaseIcon name="star" />', '</BaseAvatar>', '<BaseAvatar variant="soft">+3</BaseAvatar>'].join(
+					'\n',
+				),
 			},
 		},
 	},

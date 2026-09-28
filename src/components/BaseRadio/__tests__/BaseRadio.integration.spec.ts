@@ -138,4 +138,3 @@ describe('BaseRadio integration', () => {
 		})
 	})
 })
-

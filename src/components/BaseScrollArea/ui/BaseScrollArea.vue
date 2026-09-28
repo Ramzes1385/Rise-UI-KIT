@@ -64,17 +64,25 @@ const MIN_THUMB = 20
 /** Сколько полосы остаются видны после прокрутки в режиме hover, мс */
 const SCROLL_IDLE_DELAY = 800
 
-const props = withDefaults(defineProps<BaseScrollAreaProps>(), kitDefaults('BaseScrollArea', {
-	variant: DEFAULT_VARIANT,
-	orientation: 'vertical',
-	scrollbar: 'hover',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseScrollAreaProps>(),
+	kitDefaults('BaseScrollArea', {
+		variant: DEFAULT_VARIANT,
+		orientation: 'vertical',
+		scrollbar: 'hover',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseScrollAreaEmits>()
 defineSlots<BaseScrollAreaSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-scroll-area', props, ['root', 'viewport', 'bar', 'thumb'])
+const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-scroll-area', props, [
+	'root',
+	'viewport',
+	'bar',
+	'thumb',
+])
 
 const viewportRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)

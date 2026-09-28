@@ -66,7 +66,9 @@ describe('BaseConfirm', () => {
 		it('color красит окно', () => {
 			render(BaseConfirm, { props: { isOpen: true, title: TITLE, color: { bg: { base: 'var(--rise-warning-soft)' } } } })
 
-			expect((document.querySelector('.base-modal') as HTMLElement).style.getPropertyValue('--custom-bg')).toBe('var(--rise-warning-soft)')
+			expect((document.querySelector('.base-modal') as HTMLElement).style.getPropertyValue('--custom-bg')).toBe(
+				'var(--rise-warning-soft)',
+			)
 		})
 
 		it('customClass распределяется по элементам, variant передаётся окну', () => {

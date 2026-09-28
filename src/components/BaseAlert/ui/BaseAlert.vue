@@ -64,17 +64,31 @@ import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/Ba
 /** Отступы кнопки закрытия: квадрат 24px при sizeScale = 100 */
 const CLOSE_BUTTON_PADDING = { x: 3, y: 3 } as const
 
-const props = withDefaults(defineProps<BaseAlertProps>(), kitDefaults('BaseAlert', {
-	variant: DEFAULT_VARIANT,
-	type: 'info',
-	isClosable: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseAlertProps>(),
+	kitDefaults('BaseAlert', {
+		variant: DEFAULT_VARIANT,
+		type: 'info',
+		isClosable: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAlertEmits>()
 defineSlots<BaseAlertSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, [
+	'root',
+	'iconWrapper',
+	'icon',
+	'content',
+	'title',
+	'description',
+	'text',
+	'actions',
+	'close',
+	'closeIcon',
+])
 
 /**
  * Роль live-региона по срочности: error/warning прерывают озвучивание (alert = assertive),

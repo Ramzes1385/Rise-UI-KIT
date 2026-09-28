@@ -12,18 +12,7 @@ import DatePickerField from '../ui/DatePickerField/DatePickerField.vue'
 const GLOBAL_STUBS = {
 	BaseInput: {
 		template: '<div class="base-input" @click="$emit(\'click\')"><slot /><slot name="suffix" /></div>',
-		props: [
-			'modelValue',
-			'placeholder',
-			'label',
-			'error',
-			'isDisabled',
-			'isReadonly',
-			'isRequired',
-			'variant',
-			'color',
-			'sizeScale',
-		],
+		props: ['modelValue', 'placeholder', 'label', 'error', 'isDisabled', 'isReadonly', 'isRequired', 'variant', 'color', 'sizeScale'],
 	},
 	BaseButton: {
 		template: '<button class="base-button" :disabled="isDisabled" @click="$emit(\'click\', $event)"><slot /></button>',

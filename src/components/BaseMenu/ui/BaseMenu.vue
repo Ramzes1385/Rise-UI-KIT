@@ -1,8 +1,5 @@
 <template>
-	<div
-		class="base-menu"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<div class="base-menu" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div v-for="(group, gIndex) in items" :key="gIndex" class="base-menu__group" :class="classes.group">
 			<template v-for="(item, iIndex) in group" :key="iIndex">
 				<!--
@@ -39,11 +36,7 @@
 					:class="classes.divider"
 					:size-scale="sizeScale" />
 			</template>
-			<BaseSeparator
-				v-if="gIndex < items.length - 1"
-				class="base-menu__divider"
-				:class="classes.divider"
-				:size-scale="sizeScale" />
+			<BaseSeparator v-if="gIndex < items.length - 1" class="base-menu__divider" :class="classes.divider" :size-scale="sizeScale" />
 		</div>
 	</div>
 </template>
@@ -57,12 +50,22 @@ import '../styles/BaseMenu.style.scss'
 import { calcIconScale } from '@utils/iconUtils'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../model/BaseMenu.types'
 
-const props = withDefaults(defineProps<BaseMenuProps>(), kitDefaults('BaseMenu', {
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseMenuProps>(),
+	kitDefaults('BaseMenu', {
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, ['root', 'group', 'item', 'icon', 'label', 'divider'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, [
+	'root',
+	'group',
+	'item',
+	'icon',
+	'label',
+	'divider',
+])
 
 const emit = defineEmits<BaseMenuEmits>()
 

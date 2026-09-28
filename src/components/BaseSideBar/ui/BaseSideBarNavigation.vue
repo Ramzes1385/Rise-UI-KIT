@@ -27,13 +27,9 @@
 							:aria-disabled="item.isDisabled || undefined"
 							:aria-expanded="getItemAriaExpanded(item)"
 							@click="handleClick(item, $event)">
-						<slot
-							name="item"
-							v-bind="getSlotProps(item)">
-							<span v-if="item.icon" class="base-side-bar-nav__icon">
-								<slot
-									name="icon"
-									v-bind="getSlotProps(item)">
+							<slot name="item" v-bind="getSlotProps(item)">
+								<span v-if="item.icon" class="base-side-bar-nav__icon">
+									<slot name="icon" v-bind="getSlotProps(item)">
 										<BaseIcon :name="item.icon" />
 									</slot>
 								</span>
@@ -50,41 +46,28 @@
 					:class="{
 						'base-side-bar-nav__link--active': isItemActive(item),
 						'base-side-bar-nav__link--current': isCurrentItemActive(item),
-						'base-side-bar-nav__link--parent-active':
-							hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
+						'base-side-bar-nav__link--parent-active': hasChildren(item) && isItemActive(item) && !isCurrentItemActive(item),
 						'base-side-bar-nav__link--collapsed': isCollapsed,
 					}"
 					:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 					:aria-disabled="item.isDisabled || undefined"
 					:aria-expanded="getItemAriaExpanded(item)"
 					@click="handleClick(item, $event)">
-				<slot
-					name="item"
-					v-bind="getSlotProps(item)">
-					<span v-if="item.icon" class="base-side-bar-nav__icon">
-						<slot
-							name="icon"
-							v-bind="getSlotProps(item)">
+					<slot name="item" v-bind="getSlotProps(item)">
+						<span v-if="item.icon" class="base-side-bar-nav__icon">
+							<slot name="icon" v-bind="getSlotProps(item)">
 								<BaseIcon :name="item.icon" />
 							</slot>
 						</span>
 
-					<span class="base-side-bar-nav__label">
-						<slot
-							name="label"
-							v-bind="getSlotProps(item)">
+						<span class="base-side-bar-nav__label">
+							<slot name="label" v-bind="getSlotProps(item)">
 								{{ item.label }}
 							</slot>
 						</span>
 
-						<BaseBadge
-							v-if="item.badge"
-							class="base-side-bar-nav__badge"
-							:label="String(item.badge)"
-							variant="soft">
-						<slot
-							name="badge"
-							v-bind="getSlotProps(item)">
+						<BaseBadge v-if="item.badge" class="base-side-bar-nav__badge" :label="String(item.badge)" variant="soft">
+							<slot name="badge" v-bind="getSlotProps(item)">
 								{{ item.badge }}
 							</slot>
 						</BaseBadge>
@@ -138,11 +121,7 @@ import { BaseBadge } from '@components/BaseBadge'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useSideBarNavigation } from '@composables/useSideBarNavigation'
-import type {
-	BaseSideBarNavigationEmits,
-	BaseSideBarNavigationProps,
-	BaseSideBarNavigationSlots,
-} from '../model/BaseSideBar.types'
+import type { BaseSideBarNavigationEmits, BaseSideBarNavigationProps, BaseSideBarNavigationSlots } from '../model/BaseSideBar.types'
 
 defineOptions({
 	name: 'BaseSideBarNavigation',

@@ -106,15 +106,18 @@ const DEFAULT_DURATION = 3000
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
-const props = withDefaults(defineProps<BaseNotificationProps>(), kitDefaults('BaseNotification', {
-	title: '',
-	type: 'info',
-	position: 'top-right',
-	duration: DEFAULT_DURATION,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isContained: false,
-	isPersistent: false,
-}))
+const props = withDefaults(
+	defineProps<BaseNotificationProps>(),
+	kitDefaults('BaseNotification', {
+		title: '',
+		type: 'info',
+		position: 'top-right',
+		duration: DEFAULT_DURATION,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isContained: false,
+		isPersistent: false,
+	}),
+)
 
 /** Кнопки действий — размер sm (28px при sizeScale = 100), компактнее кнопок форм */
 const ACTION_SCALE_RATIO = 0.875

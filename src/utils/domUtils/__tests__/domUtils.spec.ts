@@ -5,12 +5,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import '@testing-library/jest-dom/vitest'
-import {
-	getActiveElement,
-	toHTMLElement,
-	toHTMLInputElement,
-	toHTMLTextAreaElement,
-} from '../domUtils'
+import { getActiveElement, toHTMLElement, toHTMLInputElement, toHTMLTextAreaElement } from '../domUtils'
 
 describe('domUtils', () => {
 	afterEach(() => {

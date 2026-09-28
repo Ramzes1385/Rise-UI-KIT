@@ -55,7 +55,8 @@ const meta = {
 		return {
 			components: { BaseTimePicker },
 			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-			template: '<div class="story-narrow" style="max-width: 220px;"><BaseTimePicker v-bind="props" @update:model-value="onUpdate" /></div>',
+			template:
+				'<div class="story-narrow" style="max-width: 220px;"><BaseTimePicker v-bind="props" @update:model-value="onUpdate" /></div>',
 		}
 	},
 } satisfies Meta<typeof BaseTimePicker>

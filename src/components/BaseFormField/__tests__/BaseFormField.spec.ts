@@ -216,12 +216,8 @@ describe('BaseFormField unit', () => {
 			expect(container.querySelector('.base-form-field')?.classList.contains('custom-field-root')).toBe(true)
 			expect(container.querySelector('.base-form-field__header')?.classList.contains('custom-field-header')).toBe(true)
 			expect(container.querySelector('.base-form-field__label')?.classList.contains('custom-field-label')).toBe(true)
-			expect(container.querySelector('.base-form-field__required')?.classList.contains('custom-field-required')).toBe(
-				true,
-			)
-			expect(container.querySelector('.base-form-field__content')?.classList.contains('custom-field-content')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-form-field__required')?.classList.contains('custom-field-required')).toBe(true)
+			expect(container.querySelector('.base-form-field__content')?.classList.contains('custom-field-content')).toBe(true)
 			expect(container.querySelector('.custom-field-animation')).toBeInTheDocument()
 			expect(container.querySelector('.base-form-field__error')?.classList.contains('custom-field-error')).toBe(true)
 		})

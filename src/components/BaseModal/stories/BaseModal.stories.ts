@@ -9,7 +9,17 @@
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { computed, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	slotArgType,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BasePopover } from '@components/BasePopover'
@@ -143,7 +153,9 @@ export const Variants: Story = {
 		controls: { include: ['sizeScale', 'hasOverlay'] },
 		docs: {
 			source: {
-				code: MODAL_VARIANTS.map(variant => `<BaseModal v-model:is-open="isOpen" variant="${variant}" title="${variant}">…</BaseModal>`).join('\n'),
+				code: MODAL_VARIANTS.map(
+					variant => `<BaseModal v-model:is-open="isOpen" variant="${variant}" title="${variant}">…</BaseModal>`,
+				).join('\n'),
 			},
 		},
 	},
@@ -171,9 +183,9 @@ export const Sizes: Story = {
 		controls: { include: ['variant'] },
 		docs: {
 			source: {
-				code: SIZE_PRESETS.map(preset => `<BaseModal v-model:is-open="isOpen" :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseModal>`).join(
-					'\n',
-				),
+				code: SIZE_PRESETS.map(
+					preset => `<BaseModal v-model:is-open="isOpen" :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseModal>`,
+				).join('\n'),
 			},
 		},
 	},
@@ -478,7 +490,11 @@ export const Keyboard: Story = {
 	tags: ['!autodocs'],
 	render: args => ({
 		components: { BaseModal, BaseButton, BaseInput },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'isOpen', 'title', 'onUpdate:isOpen']), isOpen: ref(false), name: ref('Сайт студии') }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'isOpen', 'title', 'onUpdate:isOpen']),
+			isOpen: ref(false),
+			name: ref('Сайт студии'),
+		}),
 		template: `
 			<BaseButton variant="outline" @click="isOpen = true">Переименовать</BaseButton>
 			<BaseModal v-bind="props" v-model:is-open="isOpen" title="Переименовать проект">

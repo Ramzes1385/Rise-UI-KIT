@@ -74,4 +74,3 @@ function usePopup(options: UsePopupOptions): {
 }
 
 export { usePopup }
-

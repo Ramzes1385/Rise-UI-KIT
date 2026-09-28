@@ -42,12 +42,7 @@ const DISABLED_ITEMS: BaseMenuItem[][] = [
 ]
 
 const DIVIDER_ITEMS: BaseMenuItem[][] = [
-	[
-		{ label: 'Вырезать' },
-		{ label: 'Копировать' },
-		{ label: 'Вставить', hasDivider: true },
-		{ label: 'Выделить всё' },
-	],
+	[{ label: 'Вырезать' }, { label: 'Копировать' }, { label: 'Вставить', hasDivider: true }, { label: 'Выделить всё' }],
 	[{ label: 'Свойства' }],
 ]
 

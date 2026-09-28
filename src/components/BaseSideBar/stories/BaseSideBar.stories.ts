@@ -8,7 +8,18 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, StoryRouterLink, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	STORY_USERS,
+	StoryRouterLink,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
@@ -183,7 +194,11 @@ export const Default: Story = {
 export const Variants: Story = {
 	argTypes: { variant: { control: false } },
 	parameters: {
-		docs: { source: { code: SIDEBAR_VARIANTS.map(variant => `<BaseSideBar :items="items" variant="${variant}" title="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIDEBAR_VARIANTS.map(variant => `<BaseSideBar :items="items" variant="${variant}" title="${variant}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSideBar },
@@ -191,7 +206,9 @@ export const Variants: Story = {
 			props: useArgsWithoutSlots(args, [...SLOT_KEYS, 'isCollapsed', 'onUpdate:isCollapsed', 'title', 'items', 'variant', 'width']),
 			variants: SIDEBAR_VARIANTS,
 			items: BASIC_ITEMS,
-			collapsed: ref<Record<string, boolean>>(Object.fromEntries(SIDEBAR_VARIANTS.map(variant => [variant, Boolean(args.isCollapsed)]))),
+			collapsed: ref<Record<string, boolean>>(
+				Object.fromEntries(SIDEBAR_VARIANTS.map(variant => [variant, Boolean(args.isCollapsed)])),
+			),
 		}),
 		template: `
 			<div class="story-row" style="align-items: stretch; height: 320px;">
@@ -215,7 +232,9 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	argTypes: { sizeScale: { control: false } },
 	parameters: {
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSideBar :items="items" :width="200" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: { code: SIZE_PRESETS.map(p => `<BaseSideBar :items="items" :width="200" :size-scale="${p.sizeScale}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseSideBar },

@@ -1,8 +1,5 @@
 <template>
-	<div
-		class="base-accordion"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<div class="base-accordion" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div
 			v-for="(item, index) in items"
 			:key="index"
@@ -34,10 +31,7 @@
 					:custom-class="classes.icon" />
 				<span class="base-accordion__label" :class="classes.label">{{ item.label }}</span>
 				<span class="base-accordion__arrow" :class="classes.arrow">
-					<BaseIcon
-						name="chevron-down"
-						:size-scale="calcIconScale('md', sizeScale)"
-						:custom-class="classes.arrowIcon" />
+					<BaseIcon name="chevron-down" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.arrowIcon" />
 				</span>
 			</div>
 
@@ -73,16 +67,30 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../model/BaseAccordion.types'
 
-const props = withDefaults(defineProps<BaseAccordionProps>(), kitDefaults('BaseAccordion', {
-	variant: DEFAULT_VARIANT,
-	isMultiple: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseAccordionProps>(),
+	kitDefaults('BaseAccordion', {
+		variant: DEFAULT_VARIANT,
+		isMultiple: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAccordionEmits>()
 defineSlots<BaseAccordionSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-accordion', props, ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-accordion', props, [
+	'root',
+	'item',
+	'header',
+	'icon',
+	'label',
+	'arrow',
+	'arrowIcon',
+	'collapse',
+	'content',
+	'contentText',
+])
 
 const openIndexes = ref<number[]>([])
 

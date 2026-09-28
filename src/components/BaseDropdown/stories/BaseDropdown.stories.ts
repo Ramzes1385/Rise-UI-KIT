@@ -177,7 +177,9 @@ export const Variants: Story = {
 		docs: {
 			...docsFrame(200),
 			source: {
-				code: DROPDOWN_VARIANTS.map(variant => `<BaseDropdown v-model:is-open="isOpen" variant="${variant}">…</BaseDropdown>`).join('\n'),
+				code: DROPDOWN_VARIANTS.map(variant => `<BaseDropdown v-model:is-open="isOpen" variant="${variant}">…</BaseDropdown>`).join(
+					'\n',
+				),
 			},
 		},
 	},
@@ -332,7 +334,11 @@ export const ViewportEdge: Story = {
 	parameters: { layout: 'fullscreen', controls: { include: ['gap', 'variant'] } },
 	render: args => ({
 		components: { BaseDropdown, BaseButton, BaseIcon, BaseMenu },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'position', 'onUpdate:isOpen']), isOpen: ref(false), actions: FILE_ACTIONS }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['isOpen', 'position', 'onUpdate:isOpen']),
+			isOpen: ref(false),
+			actions: FILE_ACTIONS,
+		}),
 		template: `
 			<div style="box-sizing: border-box; display: flex; align-items: flex-end; justify-content: flex-end; min-height: 100vh; padding: 16px;">
 				<BaseDropdown v-bind="props" v-model:is-open="isOpen" position="bottom-start">

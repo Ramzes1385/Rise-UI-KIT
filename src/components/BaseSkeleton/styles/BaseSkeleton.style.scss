@@ -29,7 +29,12 @@
 			content: '';
 			position: absolute;
 			inset: 0;
-			background-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rise-bg-accented) 80%, transparent), transparent);
+			background-image: linear-gradient(
+				90deg,
+				transparent,
+				color-mix(in srgb, var(--rise-bg-accented) 80%, transparent),
+				transparent
+			);
 			transform: translateX(-100%);
 			animation: base-skeleton-shimmer 1.5s var(--rise-ease) infinite;
 		}

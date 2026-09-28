@@ -71,7 +71,8 @@ export const Sizes: Story = {
 	render: args => ({
 		components: { BaseKbd },
 		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale']), presets: SIZE_PRESETS, sizeLabel }),
-		template: '<div class="story-row"><span v-for="preset in presets" :key="preset.name" class="story-row" style="gap: 4px;"><BaseKbd v-bind="props" :size-scale="preset.sizeScale" /><span class="story-label">{{ sizeLabel(preset) }}</span></span></div>',
+		template:
+			'<div class="story-row"><span v-for="preset in presets" :key="preset.name" class="story-row" style="gap: 4px;"><BaseKbd v-bind="props" :size-scale="preset.sizeScale" /><span class="story-label">{{ sizeLabel(preset) }}</span></span></div>',
 	}),
 }
 
@@ -85,7 +86,22 @@ export const SpecialKeys: Story = {
 		components: { BaseKbd },
 		setup: () => ({
 			props: useArgsWithoutSlots(args, ['value', 'platform']),
-			keys: ['meta', 'ctrl', 'alt', 'shift', 'enter', 'backspace', 'delete', 'escape', 'tab', 'space', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'],
+			keys: [
+				'meta',
+				'ctrl',
+				'alt',
+				'shift',
+				'enter',
+				'backspace',
+				'delete',
+				'escape',
+				'tab',
+				'space',
+				'arrowup',
+				'arrowdown',
+				'arrowleft',
+				'arrowright',
+			],
 		}),
 		template: `
 			<div class="story-stack">
@@ -106,7 +122,8 @@ export const Shortcut: Story = {
 	render: args => ({
 		components: { BaseKbd },
 		setup: () => ({ props: useArgsWithoutSlots(args, ['value', 'platform']) }),
-		template: '<p style="margin: 0;">Нажмите <BaseKbd v-bind="props" value="meta" platform="other" /> + <BaseKbd v-bind="props" value="K" />, чтобы открыть поиск</p>',
+		template:
+			'<p style="margin: 0;">Нажмите <BaseKbd v-bind="props" value="meta" platform="other" /> + <BaseKbd v-bind="props" value="K" />, чтобы открыть поиск</p>',
 	}),
 	play: async ({ canvasElement }) => {
 		await expect(canvasElement.querySelectorAll('kbd')).toHaveLength(2)

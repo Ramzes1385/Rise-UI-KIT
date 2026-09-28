@@ -24,11 +24,14 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseToolbar.style.scss'
 import type { BaseToolbarProps, BaseToolbarSlots } from '../model/BaseToolbar.types'
 
-const props = withDefaults(defineProps<BaseToolbarProps>(), kitDefaults('BaseToolbar', {
-	variant: DEFAULT_VARIANT,
-	orientation: 'horizontal',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseToolbarProps>(),
+	kitDefaults('BaseToolbar', {
+		variant: DEFAULT_VARIANT,
+		orientation: 'horizontal',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseToolbarSlots>()
 

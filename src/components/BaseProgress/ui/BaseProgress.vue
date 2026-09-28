@@ -70,31 +70,24 @@ import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '..
 /** Радиус круга в системе координат viewBox 120×120 */
 const CIRCLE_RADIUS = 52
 
-const props = withDefaults(defineProps<BaseProgressProps>(), kitDefaults('BaseProgress', {
-	max: 100,
-	shape: 'line',
-	animation: 'none',
-	hasLabel: false,
-	isIndeterminate: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseProgressProps>(),
+	kitDefaults('BaseProgress', {
+		max: 100,
+		shape: 'line',
+		animation: 'none',
+		hasLabel: false,
+		isIndeterminate: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseProgressEmits>()
 defineSlots<BaseProgressSlots>()
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'track',
-		'fill',
-		'tooltipTrigger',
-		'tooltipAnchor',
-		'svg',
-		'trackCircle',
-		'fillCircle',
-		'circleLabel',
-	],
+	elementKeys: ['root', 'track', 'fill', 'tooltipTrigger', 'tooltipAnchor', 'svg', 'trackCircle', 'fillCircle', 'circleLabel'],
 })
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })

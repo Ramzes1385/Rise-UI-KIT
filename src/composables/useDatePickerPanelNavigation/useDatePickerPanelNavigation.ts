@@ -75,19 +75,11 @@ function useDatePickerPanelNavigation(options: UseDatePickerPanelNavigationOptio
 	}
 
 	function handlePrevRange(): void {
-		currentBaseDate.value = new Date(
-			currentBaseDate.value.getFullYear(),
-			currentBaseDate.value.getMonth() - safeMonthsCount.value,
-			1,
-		)
+		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() - safeMonthsCount.value, 1)
 	}
 
 	function handleNextRange(): void {
-		currentBaseDate.value = new Date(
-			currentBaseDate.value.getFullYear(),
-			currentBaseDate.value.getMonth() + safeMonthsCount.value,
-			1,
-		)
+		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + safeMonthsCount.value, 1)
 	}
 
 	function handlePrevYear(): void {

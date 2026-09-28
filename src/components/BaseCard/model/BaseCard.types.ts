@@ -11,7 +11,10 @@ export const CARD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] a
 /**
  * Пропсы компонента BaseCard
  */
-export interface BaseCardProps extends BaseComponentProps<(typeof CARD_VARIANTS)[number], 'root' | 'header' | 'title' | 'subtitle' | 'actions' | 'body' | 'footer'> {
+export interface BaseCardProps extends BaseComponentProps<
+	(typeof CARD_VARIANTS)[number],
+	'root' | 'header' | 'title' | 'subtitle' | 'actions' | 'body' | 'footer'
+> {
 	/** Заголовок */
 	title?: string
 	/** Подзаголовок */

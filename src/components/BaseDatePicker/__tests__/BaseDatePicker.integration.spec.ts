@@ -364,4 +364,3 @@ describe('BaseDatePicker integration', () => {
 		})
 	})
 })
-

@@ -59,7 +59,7 @@ const meta = {
 					'- `useToast()` — уведомления: `add`, `update`, `remove`, `clear`. Уведомление с тем же `id` заменяет',
 					'  показанное, `isPersistent` не закрывается само, `actions` — кнопки вроде «Отменить».',
 					'- `useOverlay()` — окна и панели из кода: `create(Component).open(props)` возвращает промис с результатом',
-					'  из `emit(\'close\', value)`. Закрытое окно удаляется после анимации.',
+					"  из `emit('close', value)`. Закрытое окно удаляется после анимации.",
 					'- `useConfirm()` — окно подтверждения, промис с `true` или `false` (см. BaseConfirm).',
 					'- `toaster` — угол экрана, время показа, лимит, оформление и масштаб уведомлений.',
 					'',
@@ -351,7 +351,11 @@ const PlayerDemo = defineComponent({
 export const LayerContainer: Story = {
 	parameters: {
 		controls: { disable: true },
-		docs: { source: { code: '<BaseApp teleport-to="#player-layers">\n\t<Player /> <!-- внутри: <div id="player-layers" /> -->\n</BaseApp>' } },
+		docs: {
+			source: {
+				code: '<BaseApp teleport-to="#player-layers">\n\t<Player /> <!-- внутри: <div id="player-layers" /> -->\n</BaseApp>',
+			},
+		},
 	},
 	render: () => ({
 		components: { BaseApp, PlayerDemo },

@@ -13,10 +13,20 @@
 		<p v-if="description" :id="descriptionId" class="base-confirm__description" :class="classes.description">{{ description }}</p>
 		<template #footer>
 			<!-- Фокус при открытии: на «Отмене» для необратимых действий, иначе на подтверждении -->
-			<BaseButton variant="outline" :size-scale="sizeScale" :custom-class="classes.cancel" :autofocus="isDanger" @click="finish(false)">
+			<BaseButton
+				variant="outline"
+				:size-scale="sizeScale"
+				:custom-class="classes.cancel"
+				:autofocus="isDanger"
+				@click="finish(false)">
 				{{ cancelLabel ?? UI_TEXT.CANCEL }}
 			</BaseButton>
-			<BaseButton :size-scale="sizeScale" :color="isDanger ? DANGER_COLOR : undefined" :custom-class="classes.confirm" :autofocus="!isDanger" @click="finish(true)">
+			<BaseButton
+				:size-scale="sizeScale"
+				:color="isDanger ? DANGER_COLOR : undefined"
+				:custom-class="classes.confirm"
+				:autofocus="!isDanger"
+				@click="finish(true)">
 				{{ confirmLabel ?? UI_TEXT.CONFIRM }}
 			</BaseButton>
 		</template>
@@ -34,11 +44,14 @@ import '../styles/BaseConfirm.style.scss'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../model/BaseConfirm.types'
 import type { CustomColor } from '@composables/useCustomColor'
 
-const props = withDefaults(defineProps<BaseConfirmProps>(), kitDefaults('BaseConfirm', {
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isDanger: false,
-}))
+const props = withDefaults(
+	defineProps<BaseConfirmProps>(),
+	kitDefaults('BaseConfirm', {
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isDanger: false,
+	}),
+)
 
 const emit = defineEmits<BaseConfirmEmits>()
 

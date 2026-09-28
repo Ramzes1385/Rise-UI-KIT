@@ -10,7 +10,11 @@ import BaseScrollArea from '../ui/BaseScrollArea.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Журнал склада для длинного списка */
-const EVENTS = Array.from({ length: 30 }, (_, index) => `${String(9 + Math.floor(index / 4)).padStart(2, '0')}:${String((index % 4) * 15).padStart(2, '0')} — отгрузка № ${1200 + index}`)
+const EVENTS = Array.from(
+	{ length: 30 },
+	(_, index) =>
+		`${String(9 + Math.floor(index / 4)).padStart(2, '0')}:${String((index % 4) * 15).padStart(2, '0')} — отгрузка № ${1200 + index}`,
+)
 
 const CARDS = ['Москва', 'Казань', 'Волгоград', 'Самара', 'Пермь', 'Уфа', 'Омск', 'Томск', 'Сочи', 'Тверь']
 

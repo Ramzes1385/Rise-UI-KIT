@@ -19,14 +19,17 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { TEXT_WEIGHT } from '../model/BaseText.types'
 import type { BaseTextProps, BaseTextSlots } from '../model/BaseText.types'
 
-const props = withDefaults(defineProps<BaseTextProps>(), kitDefaults('BaseText', {
-	tag: 'p',
-	weight: TEXT_WEIGHT.REGULAR,
-	nowrap: false,
-	truncate: false,
-	maxLines: 1,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseTextProps>(),
+	kitDefaults('BaseText', {
+		tag: 'p',
+		weight: TEXT_WEIGHT.REGULAR,
+		nowrap: false,
+		truncate: false,
+		maxLines: 1,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 defineSlots<BaseTextSlots>()
 
 const { classes } = useCustomClass({

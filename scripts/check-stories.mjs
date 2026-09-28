@@ -110,12 +110,20 @@ async function checkStory(page, options, story, theme) {
 	page.on('console', onConsole)
 	page.on('response', onResponse)
 	try {
-		await page.goto(`${options.url}/iframe.html?id=${story.id}&viewMode=story&globals=theme:${theme}`, { waitUntil: 'load', timeout: 60_000 })
+		await page.goto(`${options.url}/iframe.html?id=${story.id}&viewMode=story&globals=theme:${theme}`, {
+			waitUntil: 'load',
+			timeout: 60_000,
+		})
 		const phase = await page
-			.waitForFunction(phases => phases.includes(window.__STORYBOOK_PREVIEW__?.currentRender?.phase) && window.__STORYBOOK_PREVIEW__.currentRender.phase, DONE_PHASES, {
-				timeout: RENDER_TIMEOUT,
-				polling: 50,
-			})
+			.waitForFunction(
+				phases =>
+					phases.includes(window.__STORYBOOK_PREVIEW__?.currentRender?.phase) && window.__STORYBOOK_PREVIEW__.currentRender.phase,
+				DONE_PHASES,
+				{
+					timeout: RENDER_TIMEOUT,
+					polling: 50,
+				},
+			)
 			.then(handle => handle.jsonValue())
 			.catch(() => 'timeout')
 		if (phase === 'timeout') result.errors.push(`Рендер или play не завершились за ${RENDER_TIMEOUT / 1000} с`)
@@ -143,7 +151,9 @@ async function main() {
 	const index = await fetch(`${options.url}/index.json`)
 		.then(response => response.json())
 		.catch(error => {
-			console.error(`❌ Storybook недоступен по адресу ${options.url}: ${error.message}. Соберите и запустите его (см. шапку скрипта).`)
+			console.error(
+				`❌ Storybook недоступен по адресу ${options.url}: ${error.message}. Соберите и запустите его (см. шапку скрипта).`,
+			)
 			process.exit(2)
 		})
 	const stories = Object.values(index.entries).filter(
@@ -189,11 +199,14 @@ async function main() {
 		writeFileSync(options.report, JSON.stringify(results, null, 1))
 	}
 	const seconds = Math.round((Date.now() - startedAt) / 1000)
-	console.log(`\nПроверено: ${results.length} за ${seconds} с. С ошибками: ${results.filter(result => result.errors.length).length}. С нарушениями axe: ${results.filter(result => result.violations.length).length}.`)
+	console.log(
+		`\nПроверено: ${results.length} за ${seconds} с. С ошибками: ${results.filter(result => result.errors.length).length}. С нарушениями axe: ${results.filter(result => result.violations.length).length}.`,
+	)
 	for (const result of failed.slice(0, 50)) {
 		console.log(`\n❌ ${result.id} (${result.theme})`)
 		for (const error of result.errors.slice(0, 3)) console.log(`   ${error}`)
-		for (const violation of result.violations.slice(0, 3)) console.log(`   axe ${violation.id} (${violation.impact}, узлов: ${violation.nodes}): ${violation.target}`)
+		for (const violation of result.violations.slice(0, 3))
+			console.log(`   axe ${violation.id} (${violation.impact}, узлов: ${violation.nodes}): ${violation.target}`)
 	}
 	if (failed.length > 50) console.log(`\n…и ещё ${failed.length - 50}. Полный список — в отчёте (--report).`)
 	if (failed.length) process.exit(1)

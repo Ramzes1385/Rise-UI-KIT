@@ -31,9 +31,7 @@ function createMockTextarea(selStart = 0, selEnd = 0): HTMLTextAreaElement {
 function createOptions(withTextarea = false, selStart = 0, selEnd = 0) {
 	const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
 	const textareaEl = withTextarea ? createMockTextarea(selStart, selEnd) : null
-	const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(
-		textareaEl ? { textareaRef: textareaEl } : null,
-	)
+	const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(textareaEl ? { textareaRef: textareaEl } : null)
 	const onInput = vi.fn()
 
 	return { editorRef, codeTextareaRef, onInput, textareaEl }
@@ -113,9 +111,7 @@ describe('useEditorToolbar', () => {
 		it('должен переключать режимы', async () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			editorRef.value!.innerHTML = '<p>test</p>'
-			const { isCodeMode, codeContent, toggleCodeMode } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			toggleCodeMode()
 			expect(isCodeMode.value).toBe(true)
@@ -157,9 +153,7 @@ describe('useEditorToolbar', () => {
 
 		it('режим кода: оборачивает тегами', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 5)
-			const { isCodeMode, codeContent, applyFormat } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			isCodeMode.value = true
 			codeContent.value = 'hello'
 			applyFormat('bold')
@@ -184,9 +178,7 @@ describe('useEditorToolbar', () => {
 
 		it('режим кода: неизвестная команда ничего не делает', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
-			const { isCodeMode, codeContent, applyFormat } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			isCodeMode.value = true
 			codeContent.value = 'text'
 			applyFormat('unknown')
@@ -199,9 +191,7 @@ describe('useEditorToolbar', () => {
 			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
 			const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>({ textareaRef: null })
 			const onInput = vi.fn()
-			const { isCodeMode, codeContent, applyFormat } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			isCodeMode.value = true
 			codeContent.value = 'preserved'
 			// applyFormat('bold') в code-режиме вызывает wrapCodeSelection → getCodeTextarea() === null → return
@@ -213,9 +203,7 @@ describe('useEditorToolbar', () => {
 	describe('applyBlock / handleHeadingChange', () => {
 		it('визуальный режим: вызывает formatBlock', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyBlock, handleHeadingChange } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { applyBlock, handleHeadingChange } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			applyBlock('blockquote')
 			expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'blockquote')
 			handleHeadingChange('h1')
@@ -245,9 +233,7 @@ describe('useEditorToolbar', () => {
 	describe('applyColor / handleColorInput', () => {
 		it('визуальный режим: вызывает foreColor', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyColor, handleColorInput } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { applyColor, handleColorInput } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			applyColor('#ff0000')
 			expect(document.execCommand).toHaveBeenCalledWith('foreColor', false, '#ff0000')
 
@@ -260,9 +246,7 @@ describe('useEditorToolbar', () => {
 
 		it('режим кода: оборачивает в span', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
-			const { isCodeMode, codeContent, applyColor } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, applyColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			isCodeMode.value = true
 			codeContent.value = 'text'
 			applyColor('#ff0000')
@@ -273,9 +257,7 @@ describe('useEditorToolbar', () => {
 	describe('applyBackgroundColor', () => {
 		it('визуальный режим: вызывает hiliteColor', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyBackgroundColor } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { applyBackgroundColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			applyBackgroundColor('#ffff00')
 			expect(document.execCommand).toHaveBeenCalledWith('hiliteColor', false, '#ffff00')
 		})
@@ -322,9 +304,7 @@ describe('useEditorToolbar', () => {
 				rangeCount: 1,
 				getRangeAt: vi.fn().mockReturnValue(mockRange({ intersectsNode: vi.fn().mockReturnValue(true) })),
 			})
-			const { resetColor, resetBackgroundColor } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { resetColor, resetBackgroundColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			resetBackgroundColor()
 			expect(span.style.backgroundColor).toBe('')
 			resetColor()
@@ -363,7 +343,9 @@ describe('useEditorToolbar', () => {
 	describe('insertLink', () => {
 		it('визуальный режим: вызывает createLink', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }))
+			const { insertLink } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }),
+			)
 			insertLink()
 			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com')
 		})
@@ -381,7 +363,9 @@ describe('useEditorToolbar', () => {
 
 		it('дополняет адрес без схемы до https', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'example.com/docs' }))
+			const { insertLink } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'example.com/docs' }),
+			)
 			insertLink()
 			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com/docs')
 		})
@@ -402,7 +386,12 @@ describe('useEditorToolbar', () => {
 		it('режим кода: экранирует кавычки адреса в атрибуте', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
 			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com/?q="><img src=x onerror=alert(1)>' }),
+				useEditorToolbar({
+					editorRef,
+					codeTextareaRef,
+					onInput,
+					promptForUrl: () => 'https://example.com/?q="><img src=x onerror=alert(1)>',
+				}),
 			)
 			isCodeMode.value = true
 			codeContent.value = 'link'
@@ -485,9 +474,7 @@ describe('useEditorToolbar', () => {
 
 		it('режим кода: вставляет hr', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 0)
-			const { isCodeMode, codeContent, insertSeparator } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, insertSeparator } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			isCodeMode.value = true
 			codeContent.value = 'text'
 			insertSeparator()
@@ -503,9 +490,7 @@ describe('useEditorToolbar', () => {
 			const { codeTextareaRef, onInput } = createOptions()
 			const editorRef = ref<HTMLDivElement | null>(editorDiv)
 
-			const { saveSelection, restoreSelection } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			saveSelection()
 			expect(restoreSelection()).toBe(true)
@@ -527,9 +512,7 @@ describe('useEditorToolbar', () => {
 
 			const { codeTextareaRef, onInput } = createOptions()
 			const editorRef = ref<HTMLDivElement | null>(editorDiv)
-			const { saveSelection, ensureSelection } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { saveSelection, ensureSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			saveSelection()
 
@@ -546,9 +529,7 @@ describe('useEditorToolbar', () => {
 			const { codeTextareaRef, onInput } = createOptions()
 			const editorRef = ref<HTMLDivElement | null>(editorDiv)
 
-			const { saveSelection, restoreSelection } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			saveSelection()
 			vi.spyOn(window, 'getSelection').mockReturnValue(null as any)
@@ -564,9 +545,7 @@ describe('useEditorToolbar', () => {
 			const { codeTextareaRef, onInput } = createOptions()
 			const editorRef = ref<HTMLDivElement | null>(editorDiv)
 
-			const { saveSelection, restoreSelection } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			saveSelection()
 			editorRef.value = null
@@ -648,9 +627,7 @@ describe('useEditorToolbar', () => {
 
 		it('handleImageUpload / handleVideoUpload', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleImageUpload, handleVideoUpload } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { handleImageUpload, handleVideoUpload } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			const file = new File([''], 'test.png')
 			const input = document.createElement('input')
@@ -687,9 +664,7 @@ describe('useEditorToolbar', () => {
 
 		it('handleImageUpload / handleVideoUpload без файлов', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleImageUpload, handleVideoUpload } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { handleImageUpload, handleVideoUpload } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			const input = document.createElement('input')
 			Object.defineProperty(input, 'files', { value: [] })
@@ -857,9 +832,7 @@ describe('useEditorToolbar', () => {
 	describe('handleCodeInput', () => {
 		it('обновляет codeContent и вызывает onInput', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleCodeInput, codeContent } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { handleCodeInput, codeContent } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			handleCodeInput('new content')
 			expect(codeContent.value).toBe('new content')
 			expect(onInput).toHaveBeenCalled()
@@ -877,9 +850,7 @@ describe('useEditorToolbar', () => {
 
 		it('handleImageUpload / handleVideoUpload игнорируют не-input target', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleImageUpload, handleVideoUpload } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { handleImageUpload, handleVideoUpload } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			const event = { target: document.createElement('div') } as unknown as Event
 			handleImageUpload(event)
 			handleVideoUpload(event)
@@ -894,9 +865,7 @@ describe('useEditorToolbar', () => {
 			const { codeTextareaRef, onInput } = createOptions()
 			const editorRef = ref<HTMLDivElement | null>(editorDiv)
 
-			const { saveSelection, restoreSelection } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			saveSelection()
 			expect(restoreSelection()).toBe(false)
@@ -929,9 +898,7 @@ describe('useEditorToolbar', () => {
 			editorRef.value!.appendChild(p)
 			mockGetSelection({ anchorNode: p.firstChild, rangeCount: 1 })
 
-			const { updateActiveStates, activeStates } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { updateActiveStates, activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			updateActiveStates()
 			expect(activeStates.isJustifyCenter).toBe(true)
 
@@ -977,9 +944,7 @@ describe('useEditorToolbar', () => {
 			editorRef.value!.appendChild(b)
 			mockGetSelection({ anchorNode: b.firstChild, rangeCount: 1 })
 
-			const { updateActiveStates, activeStates } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { updateActiveStates, activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			updateActiveStates()
 			expect(activeStates.isBold).toBe(true)
 
@@ -1014,9 +979,7 @@ describe('useEditorToolbar', () => {
 			editorRef.value!.appendChild(ul)
 			mockGetSelection({ anchorNode: li.firstChild, rangeCount: 1 })
 
-			const { updateActiveStates, activeStates } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { updateActiveStates, activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			updateActiveStates()
 			expect(activeStates.isUnorderedList).toBe(true)
 
@@ -1133,9 +1096,7 @@ describe('useEditorToolbar', () => {
 			const textareaEl = createMockTextarea(0, 3)
 			const codeTextareaRef = ref<HTMLTextAreaElement | null>(textareaEl)
 			const onInput = vi.fn()
-			const { isCodeMode, codeContent, applyFormat } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			isCodeMode.value = true
 			codeContent.value = 'abc'
 			applyFormat('bold')
@@ -1184,9 +1145,7 @@ describe('useEditorToolbar', () => {
 		it('handleContextMenu: target не HTMLElement → ранний return', () => {
 			// Покрывает useEditorToolbar.ts:277 — `if (!(target instanceof HTMLElement)) return`.
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleContextMenu, contextMenu } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { handleContextMenu, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			const event = {
 				target: document.createTextNode('text'),
 				clientX: 0,
@@ -1200,9 +1159,7 @@ describe('useEditorToolbar', () => {
 		it('handleContextMenu: target не IMG/VIDEO → ранний return', () => {
 			// Покрывает useEditorToolbar.ts:278 — `target.tagName !== 'IMG' && !== 'VIDEO'`.
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleContextMenu, contextMenu } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { handleContextMenu, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			const span = document.createElement('span')
 			const event = {
 				target: span,
@@ -1217,9 +1174,7 @@ describe('useEditorToolbar', () => {
 		it('applyMediaSize: contextMenu.element=null → ранний return', () => {
 			// Покрывает useEditorToolbar.ts:290 — `if (!contextMenu.element) return`.
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyMediaSize, contextMenu } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { applyMediaSize, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			contextMenu.element = null
 			expect(() => applyMediaSize()).not.toThrow()
 			expect(onInput).not.toHaveBeenCalled()
@@ -1228,9 +1183,7 @@ describe('useEditorToolbar', () => {
 		it('applyMediaSize: пустые width/height не применяют стиль', () => {
 			// Покрывает useEditorToolbar.ts:292-293 — ветки `if (contextMenu.width)` false.
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyMediaSize, contextMenu } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { applyMediaSize, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			const img = document.createElement('img')
 			contextMenu.element = img
 			contextMenu.width = ''
@@ -1244,9 +1197,7 @@ describe('useEditorToolbar', () => {
 		it('removeMedia: contextMenu.element=null → ранний return', () => {
 			// Покрывает useEditorToolbar.ts:299 — `if (!contextMenu.element) return`.
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { removeMedia, contextMenu } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { removeMedia, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			contextMenu.element = null
 			expect(() => removeMedia()).not.toThrow()
 			expect(onInput).not.toHaveBeenCalled()
@@ -1309,9 +1260,7 @@ describe('useEditorToolbar', () => {
 			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
 			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
 			const onInput = vi.fn()
-			const { isCodeMode, codeContent, insertSeparator } = withSetup(() =>
-				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
-			)
+			const { isCodeMode, codeContent, insertSeparator } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			// insertSeparator в codeMode вызывает insertCodeAtCursor — нужно codeMode=true
 			isCodeMode.value = true
 			codeContent.value = 'before'

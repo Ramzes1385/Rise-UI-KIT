@@ -74,7 +74,8 @@ export const Variants: Story = {
 	render: args => ({
 		components: { BaseAvatarGroup },
 		setup: () => ({ props: useArgsWithoutSlots(args, ['variant']), variants: AVATAR_GROUP_VARIANTS }),
-		template: '<div class="story-stack"><div v-for="variant in variants" :key="variant" class="story-row"><span class="story-label" style="width: 64px;">{{ variant }}</span><BaseAvatarGroup v-bind="props" :variant="variant" /></div></div>',
+		template:
+			'<div class="story-stack"><div v-for="variant in variants" :key="variant" class="story-row"><span class="story-label" style="width: 64px;">{{ variant }}</span><BaseAvatarGroup v-bind="props" :variant="variant" /></div></div>',
 	}),
 }
 
@@ -83,8 +84,13 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['variant', 'shape'] } },
 	render: args => ({
 		components: { BaseAvatarGroup },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale']), presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)), sizeLabel }),
-		template: '<div class="story-stack"><div v-for="preset in presets" :key="preset.name" class="story-row"><span class="story-label" style="width: 96px;">{{ sizeLabel(preset) }}</span><BaseAvatarGroup v-bind="props" :size-scale="preset.sizeScale" /></div></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+		}),
+		template:
+			'<div class="story-stack"><div v-for="preset in presets" :key="preset.name" class="story-row"><span class="story-label" style="width: 96px;">{{ sizeLabel(preset) }}</span><BaseAvatarGroup v-bind="props" :size-scale="preset.sizeScale" /></div></div>',
 	}),
 }
 

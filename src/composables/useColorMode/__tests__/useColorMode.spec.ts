@@ -12,7 +12,10 @@ function mockSystemTheme(isDark: boolean) {
 		addEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => listeners.add(listener)),
 		removeEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => listeners.delete(listener)),
 	}
-	vi.stubGlobal('matchMedia', vi.fn(() => query))
+	vi.stubGlobal(
+		'matchMedia',
+		vi.fn(() => query),
+	)
 	return {
 		query,
 		change(matches: boolean) {

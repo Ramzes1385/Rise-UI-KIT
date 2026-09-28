@@ -64,20 +64,28 @@ import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import '../styles/BaseCheckboxGroup.style.scss'
 import type { BaseCheckboxGroupEmits, BaseCheckboxGroupProps } from '../model/BaseCheckboxGroup.types'
 
-const props = withDefaults(defineProps<BaseCheckboxGroupProps>(), kitDefaults('BaseCheckboxGroup', {
-	variant: DEFAULT_VARIANT,
-	modelValue: () => [],
-	isRequired: false,
-	isDisabled: false,
-	isVertical: false,
-	hasSelectAll: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseCheckboxGroupProps>(),
+	kitDefaults('BaseCheckboxGroup', {
+		variant: DEFAULT_VARIANT,
+		modelValue: () => [],
+		isRequired: false,
+		isDisabled: false,
+		isVertical: false,
+		hasSelectAll: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseCheckboxGroupEmits>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox-group', props, [
-	'root', 'label', 'required', 'options', 'checkbox', 'error',
+	'root',
+	'label',
+	'required',
+	'options',
+	'checkbox',
+	'error',
 ])
 
 const ownId = useId()
@@ -107,7 +115,10 @@ const isPartlyChecked = computed(() => !isAllChecked.value && enabledValues.valu
 /** Новый набор в порядке вариантов; отмеченные значения вне вариантов сохраняются в конце */
 function update(next: Set<string | number>): void {
 	const known = new Set(props.options.map(option => option.value))
-	const value = [...props.options.map(option => option.value).filter(item => next.has(item)), ...props.modelValue.filter(item => !known.has(item))]
+	const value = [
+		...props.options.map(option => option.value).filter(item => next.has(item)),
+		...props.modelValue.filter(item => !known.has(item)),
+	]
 	emit('update:modelValue', value)
 	emit('change', value)
 }

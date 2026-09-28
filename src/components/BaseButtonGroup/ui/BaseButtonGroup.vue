@@ -16,11 +16,14 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseButtonGroup.style.scss'
 import type { BaseButtonGroupProps, BaseButtonGroupSlots } from '../model/BaseButtonGroup.types'
 
-const props = withDefaults(defineProps<BaseButtonGroupProps>(), kitDefaults('BaseButtonGroup', {
-	variant: DEFAULT_VARIANT,
-	orientation: 'horizontal',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseButtonGroupProps>(),
+	kitDefaults('BaseButtonGroup', {
+		variant: DEFAULT_VARIANT,
+		orientation: 'horizontal',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseButtonGroupSlots>()
 

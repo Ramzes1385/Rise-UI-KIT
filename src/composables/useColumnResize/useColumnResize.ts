@@ -59,9 +59,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		const newWidth = Math.max(minWidth, resizeState.value.startWidth + diff)
 
 		const hasSibling = resizeState.value.nextColumnKey && resizeState.value.nextStartWidth > 0
-		const maxWidth = hasSibling
-			? resizeState.value.startWidth + resizeState.value.nextStartWidth - minWidth
-			: Infinity
+		const maxWidth = hasSibling ? resizeState.value.startWidth + resizeState.value.nextStartWidth - minWidth : Infinity
 		const clampedWidth = Math.min(newWidth, maxWidth)
 
 		const columnIndex = columns.value.findIndex(column => column.key === resizeState.value.columnKey)

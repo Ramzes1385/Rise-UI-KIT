@@ -9,11 +9,14 @@ function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 	const isDirty = ref(false)
 	const initialValue = options.value()
 
-	watch(() => options.value(), val => {
-		if (val !== initialValue) {
-			isDirty.value = true
-		}
-	})
+	watch(
+		() => options.value(),
+		val => {
+			if (val !== initialValue) {
+				isDirty.value = true
+			}
+		},
+	)
 
 	const touchedError = computed<string>(() => {
 		const externalError = options.error?.()
@@ -73,10 +76,18 @@ function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 	}
 
 	return {
-		get error() { return error.value },
-		get isTouched() { return isTouched.value },
-		get isDirty() { return isDirty.value },
-		get isValid() { return isValid.value },
+		get error() {
+			return error.value
+		},
+		get isTouched() {
+			return isTouched.value
+		},
+		get isDirty() {
+			return isDirty.value
+		},
+		get isValid() {
+			return isValid.value
+		},
 		validate,
 		reset,
 		onBlur,

@@ -186,7 +186,13 @@ export const Remote: Story = {
 					isLoading.value = false
 				}, SEARCH_DELAY)
 			}
-			return { props: useArgsWithoutSlots(args, ['options', 'isRemote', 'isLoading', 'modelValue', 'onChange']), options, isLoading, selected, handleSearch }
+			return {
+				props: useArgsWithoutSlots(args, ['options', 'isRemote', 'isLoading', 'modelValue', 'onChange']),
+				options,
+				isLoading,
+				selected,
+				handleSearch,
+			}
 		},
 		template: `
 			<div class="story-narrow">

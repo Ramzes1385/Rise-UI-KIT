@@ -13,7 +13,8 @@
 		<div v-if="label" class="base-form-field__header" :class="classes.header">
 			<!-- Звёздочка — только знак: обязательность объявляет aria-required поля -->
 			<label :id="labelId" :for="controlId" class="base-form-field__label" :class="classes.label"
-				>{{ label }}<span v-if="isRequired" class="base-form-field__required" :class="classes.required" aria-hidden="true">*</span></label
+				>{{ label
+				}}<span v-if="isRequired" class="base-form-field__required" :class="classes.required" aria-hidden="true">*</span></label
 			>
 		</div>
 
@@ -51,13 +52,25 @@ import { useFormField } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
 import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
 
-const props = withDefaults(defineProps<BaseFormFieldProps>(), kitDefaults('BaseFormField', {
-	variant: DEFAULT_VARIANT,
-	isRequired: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseFormFieldProps>(),
+	kitDefaults('BaseFormField', {
+		variant: DEFAULT_VARIANT,
+		isRequired: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, [
+	'root',
+	'header',
+	'label',
+	'required',
+	'content',
+	'description',
+	'animation',
+	'error',
+])
 defineSlots<BaseFormFieldSlots>()
 
 const rootRef = ref<HTMLElement | null>(null)

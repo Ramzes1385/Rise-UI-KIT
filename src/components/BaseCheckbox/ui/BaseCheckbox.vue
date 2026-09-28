@@ -67,14 +67,17 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCheckbox.style.scss'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
 
-const props = withDefaults(defineProps<BaseCheckboxProps>(), kitDefaults('BaseCheckbox', {
-	variant: DEFAULT_VARIANT,
-	modelValue: false,
-	isDisabled: false,
-	isIndeterminate: false,
-	error: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseCheckboxProps>(),
+	kitDefaults('BaseCheckbox', {
+		variant: DEFAULT_VARIANT,
+		modelValue: false,
+		isDisabled: false,
+		isIndeterminate: false,
+		error: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseCheckboxEmits>()
 defineSlots<BaseCheckboxSlots>()
@@ -87,7 +90,16 @@ const formField = useFormField({
 	error: () => props.error,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox', props, ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox', props, [
+	'root',
+	'labelWrapper',
+	'wrapper',
+	'input',
+	'box',
+	'icon',
+	'label',
+	'errorText',
+])
 
 const rootRef = ref<HTMLElement | null>(null)
 

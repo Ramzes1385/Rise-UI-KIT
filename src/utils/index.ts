@@ -2,7 +2,18 @@ export * from './clipboardUtils'
 export * from './colorUtils'
 export * from './dateUtils'
 export * from './domUtils'
-export { ALIGN_MAP, findAncestorByTags, FORMAT_CONFIG, getBlockAlign, getBlockParent, getFormatBlock, INLINE_FORMAT_TAGS, isInsideList, isInsideTags, toHTMLElement as editorToHTMLElement } from './editorDomUtils'
+export {
+	ALIGN_MAP,
+	findAncestorByTags,
+	FORMAT_CONFIG,
+	getBlockAlign,
+	getBlockParent,
+	getFormatBlock,
+	INLINE_FORMAT_TAGS,
+	isInsideList,
+	isInsideTags,
+	toHTMLElement as editorToHTMLElement,
+} from './editorDomUtils'
 export * from './fileUtils'
 export * from './formUtils'
 export * from './htmlUtils'

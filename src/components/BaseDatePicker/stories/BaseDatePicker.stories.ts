@@ -182,7 +182,11 @@ export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
 		docs: {
-			source: { code: INPUT_VARIANTS.map(variant => `<BaseDatePicker v-model="date" input-variant="${variant}" label="${variant}" />`).join('\n') },
+			source: {
+				code: INPUT_VARIANTS.map(variant => `<BaseDatePicker v-model="date" input-variant="${variant}" label="${variant}" />`).join(
+					'\n',
+				),
+			},
 		},
 	},
 	render: args => ({

@@ -12,10 +12,7 @@ import type { DropdownMenuItems } from '@components/BaseDropdownMenu'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const ITEMS: DropdownMenuItems = [
-	[
-		{ label: 'Сохранить как черновик', icon: 'file' },
-		{ label: 'Сохранить и закрыть' },
-	],
+	[{ label: 'Сохранить как черновик', icon: 'file' }, { label: 'Сохранить и закрыть' }],
 	[{ label: 'Удалить черновик', icon: 'trash', isDanger: true }],
 ]
 
@@ -81,7 +78,8 @@ export const Variants: Story = {
 	render: args => ({
 		components: { BaseSplitButton },
 		setup: () => ({ props: useArgsWithoutSlots(args, ['variant']), variants: SPLIT_BUTTON_VARIANTS }),
-		template: '<div class="story-row"><BaseSplitButton v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" /></div>',
+		template:
+			'<div class="story-row"><BaseSplitButton v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" /></div>',
 	}),
 }
 
@@ -90,8 +88,13 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['variant'] } },
 	render: args => ({
 		components: { BaseSplitButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'label']), presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)), sizeLabel }),
-		template: '<div class="story-row"><BaseSplitButton v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale', 'label']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+		}),
+		template:
+			'<div class="story-row"><BaseSplitButton v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',
 	}),
 }
 

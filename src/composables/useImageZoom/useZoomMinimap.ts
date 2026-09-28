@@ -70,11 +70,9 @@ function useZoomMinimap(options: UseZoomMinimapOptions) {
 		}
 	})
 
-	const minimapImageStyle = computed(
-		(): Record<string, string> => ({
-			transform: `rotate(${rotation.value}deg)`,
-		}),
-	)
+	const minimapImageStyle = computed((): Record<string, string> => ({
+		transform: `rotate(${rotation.value}deg)`,
+	}))
 
 	function handleMinimapDragStart(event: MouseEvent): void {
 		isMinimapDragging.value = true

@@ -62,7 +62,8 @@ const meta = {
 		return {
 			components: { BaseInputNumber },
 			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-			template: '<div class="story-narrow" style="max-width: 200px;"><BaseInputNumber v-bind="props" @update:model-value="onUpdate" /></div>',
+			template:
+				'<div class="story-narrow" style="max-width: 200px;"><BaseInputNumber v-bind="props" @update:model-value="onUpdate" /></div>',
 		}
 	},
 } satisfies Meta<typeof BaseInputNumber>
@@ -107,7 +108,11 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['variant'] } },
 	render: args => ({
 		components: { BaseInputNumber },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'label']), presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)), sizeLabel }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale', 'label']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+		}),
 		template: `
 			<div class="story-row">
 				<BaseInputNumber v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" />
@@ -153,7 +158,15 @@ export const Readonly: Story = {
  * «2,5 кг». Ввод «1.25» и «1,25» одинаковы; при выходе из поля число округляется до двух знаков и ограничивается.
  */
 export const DecimalStep: Story = {
-	args: { label: 'Вес посылки, кг', modelValue: 2.5, min: 0.5, max: 30, step: 0.5, precision: 2, formatValueText: (value: number) => `${String(value).replace('.', ',')} кг` },
+	args: {
+		label: 'Вес посылки, кг',
+		modelValue: 2.5,
+		min: 0.5,
+		max: 30,
+		step: 0.5,
+		precision: 2,
+		formatValueText: (value: number) => `${String(value).replace('.', ',')} кг`,
+	},
 	play: async ({ canvas, userEvent, args }) => {
 		const field = canvas.getByRole('spinbutton', { name: 'Вес посылки, кг' })
 		await expect(field).toHaveValue('2,50')

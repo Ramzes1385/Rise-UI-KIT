@@ -106,7 +106,9 @@ export const Variants: Story = {
 		controls: { include: ['position', 'sizeScale'] },
 		docs: {
 			...docsFrame(140),
-			source: { code: TOOLTIP_VARIANTS.map(variant => `<BaseTooltip text="${variant}" variant="${variant}">…</BaseTooltip>`).join('\n') },
+			source: {
+				code: TOOLTIP_VARIANTS.map(variant => `<BaseTooltip text="${variant}" variant="${variant}">…</BaseTooltip>`).join('\n'),
+			},
 		},
 	},
 	render: args => ({
@@ -163,7 +165,11 @@ export const Sizes: Story = {
 		controls: { include: ['variant', 'position'] },
 		docs: {
 			...docsFrame(140),
-			source: { code: SIZE_PRESETS.map(preset => `<BaseTooltip text="${preset.name}" :size-scale="${preset.sizeScale}">…</BaseTooltip>`).join('\n') },
+			source: {
+				code: SIZE_PRESETS.map(
+					preset => `<BaseTooltip text="${preset.name}" :size-scale="${preset.sizeScale}">…</BaseTooltip>`,
+				).join('\n'),
+			},
 		},
 	},
 	render: args => ({

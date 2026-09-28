@@ -9,7 +9,11 @@
 			<div
 				v-if="isOpen"
 				class="base-drawer"
-				:class="[`base-drawer--${direction}`, { 'base-drawer--no-overlay': !hasOverlay, 'base-drawer--dragging': isDragging }, classes.root]"
+				:class="[
+					`base-drawer--${direction}`,
+					{ 'base-drawer--no-overlay': !hasOverlay, 'base-drawer--dragging': isDragging },
+					classes.root,
+				]"
 				:style="[sizeScaleStyle, customColorStyle, layerStyle]"
 				@click.self="handleOverlayClick">
 				<div
@@ -29,7 +33,12 @@
 					<div v-if="hasHandle" class="base-drawer__handle" :class="classes.handle" aria-hidden="true" />
 					<div v-if="hasHeader" class="base-drawer__header" :class="classes.header">
 						<slot name="header">
-							<BaseText :id="titleId" tag="h2" :weight="TEXT_WEIGHT.SEMIBOLD" class="base-drawer__title" :custom-class="classes.title">
+							<BaseText
+								:id="titleId"
+								tag="h2"
+								:weight="TEXT_WEIGHT.SEMIBOLD"
+								class="base-drawer__title"
+								:custom-class="classes.title">
 								{{ title }}
 							</BaseText>
 						</slot>
@@ -67,16 +76,19 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import '../styles/BaseDrawer.style.scss'
 import type { BaseDrawerEmits, BaseDrawerProps, BaseDrawerSlots } from '../model/BaseDrawer.types'
 
-const props = withDefaults(defineProps<BaseDrawerProps>(), kitDefaults('BaseDrawer', {
-	variant: DEFAULT_VARIANT,
-	direction: 'bottom',
-	hasHandle: true,
-	isDraggable: true,
-	closeOnOverlay: true,
-	closeOnEscape: true,
-	hasOverlay: true,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseDrawerProps>(),
+	kitDefaults('BaseDrawer', {
+		variant: DEFAULT_VARIANT,
+		direction: 'bottom',
+		hasHandle: true,
+		isDraggable: true,
+		closeOnOverlay: true,
+		closeOnEscape: true,
+		hasOverlay: true,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseDrawerEmits>()
 defineSlots<BaseDrawerSlots>()

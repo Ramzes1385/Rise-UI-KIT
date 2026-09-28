@@ -59,5 +59,3 @@ export function useFieldControl(options: UseFieldControlOptions = {}): UseFieldC
 
 	return { id, isInField, fieldLabelId, hasError, aria }
 }
-
-

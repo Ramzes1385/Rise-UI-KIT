@@ -15,7 +15,20 @@ import BaseColorPicker from '../ui/BaseColorPicker.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Фирменная палитра студии для примера своих пресетов. */
-const BRAND_PRESETS = ['#0f172a', '#1d4ed8', '#0891b2', '#15803d', '#ca8a04', '#c2410c', '#be123c', '#7e22ce', '#f8fafc', '#cbd5e1', '#64748b', '#334155']
+const BRAND_PRESETS = [
+	'#0f172a',
+	'#1d4ed8',
+	'#0891b2',
+	'#15803d',
+	'#ca8a04',
+	'#c2410c',
+	'#be123c',
+	'#7e22ce',
+	'#f8fafc',
+	'#cbd5e1',
+	'#64748b',
+	'#334155',
+]
 
 /**
  * Образец — по центру примера: панель открывается под ним по центру и не выходит за левый край холста
@@ -111,7 +124,12 @@ export const Sizes: Story = {
 	},
 	render: args => ({
 		components: { BaseColorPicker },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'sizeScale', 'onUpdate:modelValue']), presets: SIZE_PRESETS, sizeLabel, colors: ref<Record<string, string>>({}) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			colors: ref<Record<string, string>>({}),
+		}),
 		template: `
 			<div class="story-row">
 				<div v-for="preset in presets" :key="preset.name" class="story-col" style="align-items: center; gap: 6px;">

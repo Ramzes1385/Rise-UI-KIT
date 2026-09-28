@@ -12,7 +12,10 @@ import BaseLink from '../ui/BaseLink.vue'
 const RouterLinkStub = defineComponent({
 	name: 'RouterLinkStub',
 	props: { to: { type: [String, Object], required: true } },
-	setup: (props, { slots }) => () => h('a', { href: typeof props.to === 'string' ? props.to : '/resolved', 'data-router': '' }, slots.default?.()),
+	setup:
+		(props, { slots }) =>
+		() =>
+			h('a', { href: typeof props.to === 'string' ? props.to : '/resolved', 'data-router': '' }, slots.default?.()),
 })
 
 afterEach(() => {

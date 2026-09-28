@@ -6,7 +6,16 @@
  */
 
 import { expect } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	slotArgType,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { TEXT_TAGS, TEXT_WEIGHT } from '../model/BaseText.types'
 import BaseText from '../ui/BaseText.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
@@ -73,7 +82,11 @@ export const Default: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['weight', 'color'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseText :size-scale="${preset.sizeScale}">${preset.name}</BaseText>`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseText :size-scale="${preset.sizeScale}">${preset.name}</BaseText>`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseText },
@@ -99,7 +112,13 @@ export const Sizes: Story = {
 export const Weights: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'color'] },
-		docs: { source: { code: Object.values(TEXT_WEIGHT).map(weight => `<BaseText :weight="${weight}">${weight}</BaseText>`).join('\n') } },
+		docs: {
+			source: {
+				code: Object.values(TEXT_WEIGHT)
+					.map(weight => `<BaseText :weight="${weight}">${weight}</BaseText>`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseText },

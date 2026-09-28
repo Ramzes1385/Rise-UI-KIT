@@ -183,7 +183,10 @@ describe('BaseDropdownMenu', () => {
 		const onUpdateChecked = vi.fn()
 		const onRadio = vi.fn()
 		const { trigger } = renderMenu([
-			[{ type: 'label', label: 'Колонки' }, { type: 'checkbox', label: 'Автор', isChecked: false, onUpdateChecked }],
+			[
+				{ type: 'label', label: 'Колонки' },
+				{ type: 'checkbox', label: 'Автор', isChecked: false, onUpdateChecked },
+			],
 			[
 				{ type: 'radio', label: 'По дате', isChecked: true, onUpdateChecked: onRadio },
 				{ type: 'radio', label: 'По названию', isChecked: false, onUpdateChecked: onRadio },
@@ -219,13 +222,20 @@ describe('BaseDropdownMenu', () => {
 			{ type: 'radio', label: 'По дате', isChecked: true },
 		])
 		await openWithKeyboard(trigger)
-		expect(document.querySelectorAll('.base-dropdown-menu__indicator svg, .base-dropdown-menu__indicator .base-icon')).not.toHaveLength(0)
+		expect(document.querySelectorAll('.base-dropdown-menu__indicator svg, .base-dropdown-menu__indicator .base-icon')).not.toHaveLength(
+			0,
+		)
 		expect(document.querySelector('.base-dropdown-menu__dot')).toBeInTheDocument()
 	})
 
 	it('поиск по буквам: буква, повтор буквы, несколько букв, пробел внутри слова; без совпадений фокус на месте', async () => {
 		vi.useFakeTimers()
-		const { trigger } = renderMenu([{ label: 'Вставить' }, { label: 'Выделить всё' }, { label: 'Копировать' }, { label: 'Вставить как текст' }])
+		const { trigger } = renderMenu([
+			{ label: 'Вставить' },
+			{ label: 'Выделить всё' },
+			{ label: 'Копировать' },
+			{ label: 'Вставить как текст' },
+		])
 		const menu = await openWithKeyboard(trigger)
 
 		await fireEvent.keyDown(menu, { key: 'к' })
@@ -274,7 +284,10 @@ describe('BaseDropdownMenu', () => {
 	})
 
 	it('пункт-ссылка — BaseLink с ролью menuitem; выбор закрывает меню', async () => {
-		const { trigger, emitted } = renderMenu([{ label: 'Открыть на сайте', href: 'https://example.com/episodes/3' }, { label: 'Скачать' }])
+		const { trigger, emitted } = renderMenu([
+			{ label: 'Открыть на сайте', href: 'https://example.com/episodes/3' },
+			{ label: 'Скачать' },
+		])
 		const menu = await openWithKeyboard(trigger)
 		const link = within(menu).getByRole('menuitem', { name: 'Открыть на сайте' })
 		expect(link.tagName).toBe('A')
@@ -308,7 +321,12 @@ describe('BaseDropdownMenu', () => {
 				setup: () => () =>
 					h(
 						BaseDropdownMenu,
-						{ ref: menuRef, items: ACTIONS, isOpen: isOpen.value, 'onUpdate:isOpen': (value: boolean) => (isOpen.value = value) },
+						{
+							ref: menuRef,
+							items: ACTIONS,
+							isOpen: isOpen.value,
+							'onUpdate:isOpen': (value: boolean) => (isOpen.value = value),
+						},
 						{ default: () => h('button', { type: 'button' }, 'Действия') },
 					),
 			}),

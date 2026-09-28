@@ -7,7 +7,10 @@ export const LAYOUT_VARIANTS = ['default'] as const
  * Пропсы компонента BaseLayout.
  * `sizeScale` масштабирует ссылку «Перейти к содержимому»; `variant` и `color` не используются.
  */
-export interface BaseLayoutProps extends BaseComponentProps<(typeof LAYOUT_VARIANTS)[number], 'root' | 'header' | 'sidebar' | 'main' | 'footer'> {
+export interface BaseLayoutProps extends BaseComponentProps<
+	(typeof LAYOUT_VARIANTS)[number],
+	'root' | 'header' | 'sidebar' | 'main' | 'footer'
+> {
 	/** Ссылка «Перейти к содержимому» — первая остановка Tab: переносит фокус в `<main>` мимо шапки и меню */
 	hasSkipLink?: boolean
 	/** Текст ссылки (по умолчанию из словаря: «Перейти к содержимому») */

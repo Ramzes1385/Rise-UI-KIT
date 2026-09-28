@@ -7,7 +7,10 @@ export const TEXTAREA_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft
 /**
  * Пропсы компонента BaseTextarea
  */
-export interface BaseTextareaProps extends BaseComponentProps<(typeof TEXTAREA_VARIANTS)[number], 'root' | 'label' | 'required' | 'field' | 'errorText'> {
+export interface BaseTextareaProps extends BaseComponentProps<
+	(typeof TEXTAREA_VARIANTS)[number],
+	'root' | 'label' | 'required' | 'field' | 'errorText'
+> {
 	/** Значение поля */
 	modelValue?: string
 	/** Плейсхолдер */

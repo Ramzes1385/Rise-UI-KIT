@@ -15,9 +15,22 @@ import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Этапы заказа: даты фиксированы, чтобы снимки не зависели от текущего дня */
 const ORDER: TimelineItem[] = [
-	{ id: 'created', title: 'Заказ оформлен', description: 'Оплата картой прошла', date: '2026-05-12T10:24:00', icon: 'check', color: 'success' },
+	{
+		id: 'created',
+		title: 'Заказ оформлен',
+		description: 'Оплата картой прошла',
+		date: '2026-05-12T10:24:00',
+		icon: 'check',
+		color: 'success',
+	},
 	{ id: 'packed', title: 'Собран на складе', description: 'Склад в Подольске', date: '2026-05-13T08:05:00', icon: 'inbox' },
-	{ id: 'shipped', title: 'Передан в доставку', description: 'Курьер привезёт завтра с 10 до 14', date: '2026-05-14T16:40:00', icon: 'send' },
+	{
+		id: 'shipped',
+		title: 'Передан в доставку',
+		description: 'Курьер привезёт завтра с 10 до 14',
+		date: '2026-05-14T16:40:00',
+		icon: 'send',
+	},
 	{ id: 'delivered', title: 'Доставлен', date: 'ожидается 15 мая', icon: 'home' },
 ]
 
@@ -93,7 +106,11 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['variant'] } },
 	render: args => ({
 		components: { BaseTimeline },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale']), presets: SIZE_PRESETS.filter(preset => ['xs', 'xl'].includes(preset.name)), sizeLabel }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'xl'].includes(preset.name)),
+			sizeLabel,
+		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 260px;">
 				<div v-for="preset in presets" :key="preset.name" class="story-stack" style="gap: 8px;">

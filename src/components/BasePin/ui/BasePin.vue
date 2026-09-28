@@ -53,13 +53,16 @@ import '../styles/BasePin.style.scss'
 import { toHTMLInputElement } from '@utils/domUtils'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'
 
-const props = withDefaults(defineProps<BasePinProps>(), kitDefaults('BasePin', {
-	variant: DEFAULT_VARIANT,
-	length: 4,
-	type: 'text',
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BasePinProps>(),
+	kitDefaults('BasePin', {
+		variant: DEFAULT_VARIANT,
+		length: 4,
+		type: 'text',
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const formField = useFormField({
 	value: () => props.modelValue,
@@ -76,7 +79,12 @@ function cellLabel(position: number): string {
 	return formatMessage(UI_ARIA.PIN_CELL, { position, length: props.length })
 }
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, [
+	'root',
+	'cells',
+	'input',
+	'errorText',
+])
 
 const emit = defineEmits<BasePinEmits>()
 

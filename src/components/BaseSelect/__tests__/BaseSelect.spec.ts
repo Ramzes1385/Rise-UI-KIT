@@ -191,7 +191,6 @@ describe('BaseSelect unit', () => {
 			expect(document.querySelector('.base-select__search')).toBeInTheDocument()
 			expect(document.querySelector('.base-select__search-input')).toBeInTheDocument()
 		})
-
 	})
 
 	describe('пропс sizeScale', () => {

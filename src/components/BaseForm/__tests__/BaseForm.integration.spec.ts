@@ -172,7 +172,8 @@ function profileSchema(delay?: number): StandardSchemaV1 {
 		'~standard': {
 			version: 1,
 			vendor: 'test',
-			validate: value => (delay === undefined ? check(value) : new Promise(resolve => setTimeout(() => resolve(check(value)), delay))),
+			validate: value =>
+				delay === undefined ? check(value) : new Promise(resolve => setTimeout(() => resolve(check(value)), delay)),
 		},
 	}
 }
@@ -203,10 +204,12 @@ describe('BaseForm: проверка по схеме (Standard Schema)', () => {
 
 		await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
-		await waitFor(() => expect(onInvalid).toHaveBeenCalledWith([
-			{ name: 'name', message: 'Введите имя' },
-			{ name: 'age', message: 'С 18 лет' },
-		]))
+		await waitFor(() =>
+			expect(onInvalid).toHaveBeenCalledWith([
+				{ name: 'name', message: 'Введите имя' },
+				{ name: 'age', message: 'С 18 лет' },
+			]),
+		)
 		expect(screen.getByText('Введите имя')).toBeInTheDocument()
 		expect(screen.getByText('С 18 лет')).toBeInTheDocument()
 		await waitFor(() => expect(screen.getByRole('textbox', { name: 'Имя' })).toHaveFocus())

@@ -154,11 +154,18 @@ export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale'] },
 		docs: {
-			source: { code: NOTIFICATION_VARIANTS.map(variant => `notifications.value.add({ variant: '${variant}', title: '…' })`).join('\n') },
+			source: {
+				code: NOTIFICATION_VARIANTS.map(variant => `notifications.value.add({ variant: '${variant}', title: '…' })`).join('\n'),
+			},
 		},
 	},
 	render: listRender(
-		NOTIFICATION_VARIANTS.map(variant => ({ type: 'success', variant, title: `Вариант ${variant}`, description: 'Изменения сохранены.' })),
+		NOTIFICATION_VARIANTS.map(variant => ({
+			type: 'success',
+			variant,
+			title: `Вариант ${variant}`,
+			description: 'Изменения сохранены.',
+		})),
 	),
 }
 
@@ -171,7 +178,10 @@ export const CustomColor: Story = {
 		type: 'info',
 		title: 'Новый участник',
 		description: 'Мария Кузнецова присоединилась к проекту.',
-		color: { bg: { base: 'var(--rise-primary-soft)', hover: 'var(--rise-primary-soft-hover)' }, text: { base: 'var(--rise-primary-text)' } },
+		color: {
+			bg: { base: 'var(--rise-primary-soft)', hover: 'var(--rise-primary-soft-hover)' },
+			text: { base: 'var(--rise-primary-text)' },
+		},
 	},
 	parameters: { controls: { include: ['color', 'type', 'sizeScale'] } },
 	play: async ({ canvas }) => {
@@ -245,7 +255,7 @@ export const ShowFromCode: Story = {
 		docs: {
 			source: {
 				code: [
-					'<BaseButton @click="notifications.add({ type: \'success\', title: \'Сохранено\' })">Показать</BaseButton>',
+					"<BaseButton @click=\"notifications.add({ type: 'success', title: 'Сохранено' })\">Показать</BaseButton>",
 					'<BaseNotification ref="notifications" />',
 				].join('\n'),
 			},
@@ -256,7 +266,13 @@ export const ShowFromCode: Story = {
 		setup: () => {
 			const list = ref<BaseNotificationExpose | null>(null)
 			const show = (item: BaseNotificationProps) => list.value?.add(item)
-			return { props: useArgsWithoutSlots(args, ['title', 'description', 'type', 'duration']), list, show, examples: TYPE_EXAMPLES, labels: TYPE_LABELS }
+			return {
+				props: useArgsWithoutSlots(args, ['title', 'description', 'type', 'duration']),
+				list,
+				show,
+				examples: TYPE_EXAMPLES,
+				labels: TYPE_LABELS,
+			}
 		},
 		template: `
 			<div class="story-stack">
@@ -278,7 +294,7 @@ export const AutoClose: Story = {
 		docs: {
 			source: {
 				code: [
-					'<BaseButton @click="notifications.add({ type: \'success\', title: \'Ссылка скопирована\', duration: 1500 })">',
+					"<BaseButton @click=\"notifications.add({ type: 'success', title: 'Ссылка скопирована', duration: 1500 })\">",
 					'\tСкопировать ссылку',
 					'</BaseButton>',
 					'<BaseNotification ref="notifications" @close="onAllClosed" />',

@@ -44,13 +44,16 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseLayout.style.scss'
 import type { BaseLayoutProps, BaseLayoutSlots } from '../model/BaseLayout.types'
 
-const props = withDefaults(defineProps<BaseLayoutProps>(), kitDefaults('BaseLayout', {
-	variant: DEFAULT_VARIANT,
-	hasSkipLink: true,
-	isHeaderSticky: true,
-	isSidebarVisibleOnMobile: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseLayoutProps>(),
+	kitDefaults('BaseLayout', {
+		variant: DEFAULT_VARIANT,
+		hasSkipLink: true,
+		isHeaderSticky: true,
+		isSidebarVisibleOnMobile: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseLayoutSlots>()
 const slots = useSlots()

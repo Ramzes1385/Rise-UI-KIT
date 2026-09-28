@@ -167,7 +167,12 @@ export const Sizes: Story = {
 			props: useArgsWithoutSlots(args, ['isOpen', 'sizeScale', 'items']),
 			presets: SIZE_PRESETS,
 			sizeLabel,
-			items: [[{ label: 'Копировать', icon: 'copy' }, { label: 'Удалить', icon: 'trash' }]],
+			items: [
+				[
+					{ label: 'Копировать', icon: 'copy' },
+					{ label: 'Удалить', icon: 'trash' },
+				],
+			],
 		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 160px;">
@@ -201,7 +206,14 @@ export const CustomColor: Story = {
  */
 export const Disabled: Story = {
 	args: {
-		items: [[{ label: 'Опубликовать', isDisabled: true }, { label: 'Сохранить черновик' }, { label: 'Отправить на проверку', isDisabled: true }, { label: 'Удалить' }]],
+		items: [
+			[
+				{ label: 'Опубликовать', isDisabled: true },
+				{ label: 'Сохранить черновик' },
+				{ label: 'Отправить на проверку', isDisabled: true },
+				{ label: 'Удалить' },
+			],
+		],
 	},
 	parameters: { docs: docsFrame(260) },
 	render: args => ({
@@ -288,7 +300,12 @@ export const CheckboxesAndRadios: Story = {
 				[
 					{ type: 'label', label: 'Сортировка' },
 					{ type: 'radio', label: 'По дате', isChecked: sort.value === 'date', onUpdateChecked: () => (sort.value = 'date') },
-					{ type: 'radio', label: 'По названию', isChecked: sort.value === 'title', onUpdateChecked: () => (sort.value = 'title') },
+					{
+						type: 'radio',
+						label: 'По названию',
+						isChecked: sort.value === 'title',
+						onUpdateChecked: () => (sort.value = 'title'),
+					},
 				],
 			]
 			return { props: useArgsWithoutSlots(args, ['items']), items }

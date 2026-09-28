@@ -60,14 +60,7 @@ const STUBS = {
 			</div>
 		`,
 		props: BASE_CALENDAR_PROP_NAMES,
-		emits: [
-			'update:modelValue',
-			'update:modelValueEnd',
-			'update:selectedDates',
-			'range-select',
-			'month-change',
-			'year-change',
-		],
+		emits: ['update:modelValue', 'update:modelValueEnd', 'update:selectedDates', 'range-select', 'month-change', 'year-change'],
 	},
 }
 

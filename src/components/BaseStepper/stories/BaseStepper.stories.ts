@@ -111,7 +111,9 @@ export const Shapes: Story = {
 	argTypes: { shape: { control: false } },
 	parameters: {
 		controls: { include: ['orientation', 'sizeScale', 'variant'] },
-		docs: { source: { code: STEPPER_SHAPES.map(shape => `<BaseStepper v-model="step" :items="items" shape="${shape}" />`).join('\n') } },
+		docs: {
+			source: { code: STEPPER_SHAPES.map(shape => `<BaseStepper v-model="step" :items="items" shape="${shape}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseStepper },
@@ -144,7 +146,11 @@ export const Vertical: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['shape', 'orientation'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseStepper v-model="step" :items="items" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseStepper v-model="step" :items="items" :size-scale="${p.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseStepper },

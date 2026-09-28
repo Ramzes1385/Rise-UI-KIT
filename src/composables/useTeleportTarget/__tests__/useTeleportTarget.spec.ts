@@ -28,7 +28,17 @@ describe('useInheritedTheme', () => {
 		section.append(anchor)
 		const isOpen = ref(false)
 		let theme!: ReturnType<typeof useInheritedTheme>
-		mount(defineComponent({ setup: () => ((theme = useInheritedTheme(() => anchor, () => isOpen.value)), () => h('div')) }))
+		mount(
+			defineComponent({
+				setup: () => (
+					(theme = useInheritedTheme(
+						() => anchor,
+						() => isOpen.value,
+					)),
+					() => h('div')
+				),
+			}),
+		)
 
 		await nextTick()
 		expect(theme.value).toBeUndefined()
@@ -44,8 +54,14 @@ describe('useInheritedTheme', () => {
 		mount(
 			defineComponent({
 				setup() {
-					plain = useInheritedTheme(() => document.createElement('button'), () => true)
-					detached = useInheritedTheme(() => null, () => true)
+					plain = useInheritedTheme(
+						() => document.createElement('button'),
+						() => true,
+					)
+					detached = useInheritedTheme(
+						() => null,
+						() => true,
+					)
 					return () => h('div')
 				},
 			}),

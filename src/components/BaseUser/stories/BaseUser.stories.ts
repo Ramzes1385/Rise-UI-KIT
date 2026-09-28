@@ -71,8 +71,13 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['orientation'] } },
 	render: args => ({
 		components: { BaseUser },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale']), presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)), sizeLabel }),
-		template: '<div class="story-stack"><div v-for="preset in presets" :key="preset.name" class="story-row"><span class="story-label" style="width: 96px;">{{ sizeLabel(preset) }}</span><BaseUser v-bind="props" :size-scale="preset.sizeScale" /></div></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+		}),
+		template:
+			'<div class="story-stack"><div v-for="preset in presets" :key="preset.name" class="story-row"><span class="story-label" style="width: 96px;">{{ sizeLabel(preset) }}</span><BaseUser v-bind="props" :size-scale="preset.sizeScale" /></div></div>',
 	}),
 }
 
@@ -109,7 +114,8 @@ export const CustomDescription: Story = {
 	render: args => ({
 		components: { BaseUser, BaseBadge },
 		setup: () => ({ props: useArgsWithoutSlots(args, ['description']) }),
-		template: '<BaseUser v-bind="props"><template #description><BaseBadge variant="soft" label="Администратор" /></template></BaseUser>',
+		template:
+			'<BaseUser v-bind="props"><template #description><BaseBadge variant="soft" label="Администратор" /></template></BaseUser>',
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByText('Администратор')).toBeVisible()

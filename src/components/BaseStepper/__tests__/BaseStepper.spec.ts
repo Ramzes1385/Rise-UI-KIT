@@ -352,19 +352,13 @@ describe('BaseStepper unit', () => {
 			expect(container.querySelector('.base-stepper__items')?.classList.contains('custom-stepper-items')).toBe(true)
 			expect(container.querySelector('.base-stepper__step')?.classList.contains('custom-stepper-step')).toBe(true)
 			expect(
-				container
-					.querySelector('.base-stepper__indicator-wrapper')
-					?.classList.contains('custom-stepper-indicator-wrapper'),
+				container.querySelector('.base-stepper__indicator-wrapper')?.classList.contains('custom-stepper-indicator-wrapper'),
 			).toBe(true)
-			expect(container.querySelector('.base-stepper__indicator')?.classList.contains('custom-stepper-indicator')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-stepper__indicator')?.classList.contains('custom-stepper-indicator')).toBe(true)
 			expect(container.querySelector('.base-stepper__check')?.classList.contains('custom-stepper-check')).toBe(true)
 			expect(container.querySelector('.base-stepper__content')?.classList.contains('custom-stepper-content')).toBe(true)
 			expect(container.querySelector('.base-stepper__label')?.classList.contains('custom-stepper-label')).toBe(true)
-			expect(
-				container.querySelector('.base-stepper__description')?.classList.contains('custom-stepper-description'),
-			).toBe(true)
+			expect(container.querySelector('.base-stepper__description')?.classList.contains('custom-stepper-description')).toBe(true)
 			expect(container.querySelector('.base-stepper__footer')?.classList.contains('custom-stepper-footer')).toBe(true)
 		})
 	})

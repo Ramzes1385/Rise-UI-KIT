@@ -6,7 +6,10 @@ export const FORM_FIELD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'so
 /**
  * Пропсы компонента BaseFormField
  */
-export interface BaseFormFieldProps extends BaseComponentProps<(typeof FORM_FIELD_VARIANTS)[number], 'root' | 'header' | 'label' | 'required' | 'content' | 'description' | 'animation' | 'error'> {
+export interface BaseFormFieldProps extends BaseComponentProps<
+	(typeof FORM_FIELD_VARIANTS)[number],
+	'root' | 'header' | 'label' | 'required' | 'content' | 'description' | 'animation' | 'error'
+> {
 	/** Заголовок поля */
 	label?: string
 	/** Описание поля */

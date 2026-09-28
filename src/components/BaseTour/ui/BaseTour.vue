@@ -54,7 +54,11 @@
 							</slot>
 
 							<div class="base-tour__footer" :class="classes.footer">
-								<div v-if="showProgress && useDots" class="base-tour__progress" :class="classes.progress" aria-hidden="true">
+								<div
+									v-if="showProgress && useDots"
+									class="base-tour__progress"
+									:class="classes.progress"
+									aria-hidden="true">
 									<span
 										v-for="(_, dotIndex) in total"
 										:key="dotIndex"
@@ -114,13 +118,16 @@ import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseT
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
-const props = withDefaults(defineProps<BaseTourProps>(), kitDefaults('BaseTour', {
-	isOpen: false,
-	step: 0,
-	placement: 'auto',
-	showSkip: true,
-	showProgress: true,
-}))
+const props = withDefaults(
+	defineProps<BaseTourProps>(),
+	kitDefaults('BaseTour', {
+		isOpen: false,
+		step: 0,
+		placement: 'auto',
+		showSkip: true,
+		showProgress: true,
+	}),
+)
 
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()

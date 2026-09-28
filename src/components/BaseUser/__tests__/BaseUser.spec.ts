@@ -26,7 +26,10 @@ describe('BaseUser', () => {
 	})
 
 	it('to или href — весь блок ссылка; слот подписи', () => {
-		render(BaseUser, { props: { name: 'Мария', href: 'https://example.com/maria', target: '_blank' }, slots: { description: 'Менеджер' } })
+		render(BaseUser, {
+			props: { name: 'Мария', href: 'https://example.com/maria', target: '_blank' },
+			slots: { description: 'Менеджер' },
+		})
 
 		const link = screen.getByRole('link', { name: /Мария/ })
 		expect(link).toHaveAttribute('href', 'https://example.com/maria')

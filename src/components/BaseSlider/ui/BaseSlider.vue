@@ -94,10 +94,7 @@
 								loading="lazy"
 								:zoom-config="{ hasZoom: isZoomable }" />
 						</slot>
-						<div
-							v-if="hasCaption && (item.title || item.description)"
-							class="base-slider__caption"
-							:class="classes.caption">
+						<div v-if="hasCaption && (item.title || item.description)" class="base-slider__caption" :class="classes.caption">
 							<slot name="caption" :item="item" :index="index">
 								<h3 v-if="item.title" class="base-slider__title" :class="classes.title">{{ item.title }}</h3>
 								<p v-if="item.description" class="base-slider__desc" :class="classes.desc">{{ item.description }}</p>
@@ -122,10 +119,7 @@
 					@click="goToPage(page)"></button>
 			</div>
 
-			<div
-				v-if="navigation === 'thumbnails' || navigation === 'both'"
-				class="base-slider__thumbs"
-				:class="classes.thumbs">
+			<div v-if="navigation === 'thumbnails' || navigation === 'both'" class="base-slider__thumbs" :class="classes.thumbs">
 				<button
 					v-for="(item, index) in items"
 					:key="index"
@@ -171,26 +165,29 @@ import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model
 /** Шаг перелистывания, пока стрелка зажата, мс */
 const HOLD_INTERVAL_MS = 150
 
-const props = withDefaults(defineProps<BaseSliderProps>(), kitDefaults('BaseSlider', {
-	customClass: undefined,
-	items: undefined,
-	animation: 'slide',
-	navigation: 'dots',
-	isAutoplay: false,
-	autoplayInterval: 4000,
-	hasArrows: true,
-	arrowsPosition: 'center',
-	isLoop: true,
-	isVertical: false,
-	initialIndex: 0,
-	height: '400px',
-	sizeScale: SIZE_SCALE_DEFAULT,
-	spaceBetween: 0,
-	slidesPerView: 1,
-	slidesPerGroup: 1,
-	hasCaption: true,
-	isZoomable: false,
-}))
+const props = withDefaults(
+	defineProps<BaseSliderProps>(),
+	kitDefaults('BaseSlider', {
+		customClass: undefined,
+		items: undefined,
+		animation: 'slide',
+		navigation: 'dots',
+		isAutoplay: false,
+		autoplayInterval: 4000,
+		hasArrows: true,
+		arrowsPosition: 'center',
+		isLoop: true,
+		isVertical: false,
+		initialIndex: 0,
+		height: '400px',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		spaceBetween: 0,
+		slidesPerView: 1,
+		slidesPerGroup: 1,
+		hasCaption: true,
+		isZoomable: false,
+	}),
+)
 
 const emit = defineEmits<BaseSliderEmits>()
 defineSlots<BaseSliderSlots>()

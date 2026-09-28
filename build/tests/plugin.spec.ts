@@ -12,14 +12,20 @@ import { BaseLink } from '@components/BaseLink'
 const RouterLinkStub = defineComponent({
 	name: 'RouterLinkStub',
 	props: { to: { type: String, required: true } },
-	setup: (props, { slots }) => () => h('a', { href: props.to, 'data-router': '' }, slots.default?.()),
+	setup:
+		(props, { slots }) =>
+		() =>
+			h('a', { href: props.to, 'data-router': '' }, slots.default?.()),
 })
 
 const CustomIcon = defineComponent({ name: 'CustomIcon', render: () => h('svg', { 'data-custom': '' }) })
 
 describe('createUiKitPlugin', () => {
 	it('регистрирует компоненты глобально, с префиксом', () => {
-		const wrapper = mount({ template: '<UiBaseButton>Сохранить</UiBaseButton>' }, { global: { plugins: [createUiKitPlugin({ prefix: 'Ui' })] } })
+		const wrapper = mount(
+			{ template: '<UiBaseButton>Сохранить</UiBaseButton>' },
+			{ global: { plugins: [createUiKitPlugin({ prefix: 'Ui' })] } },
+		)
 
 		expect(wrapper.get('button').classes()).toContain('base-button')
 	})
@@ -39,7 +45,10 @@ describe('createUiKitPlugin', () => {
 
 	it('icons: иконка кита заменяется символом спрайта или компонентом', () => {
 		const plugin = createUiKitPlugin({ iconSpritePath: '/icons.svg', icons: { close: 'x-mark', search: CustomIcon } })
-		const wrapper = mount({ render: () => [h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'search' })] }, { global: { plugins: [plugin] } })
+		const wrapper = mount(
+			{ render: () => [h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'search' })] },
+			{ global: { plugins: [plugin] } },
+		)
 
 		expect(wrapper.get('use').attributes('href')).toBe('/icons.svg#x-mark')
 		const custom = wrapper.get('[data-custom]')
@@ -48,7 +57,10 @@ describe('createUiKitPlugin', () => {
 	})
 
 	it('linkComponent: ссылки на маршруты рендерит компонент приложения', () => {
-		const wrapper = mount(BaseLink, { props: { to: '/docs', label: 'Документация' }, global: { plugins: [createUiKitPlugin({ linkComponent: RouterLinkStub })] } })
+		const wrapper = mount(BaseLink, {
+			props: { to: '/docs', label: 'Документация' },
+			global: { plugins: [createUiKitPlugin({ linkComponent: RouterLinkStub })] },
+		})
 
 		expect(wrapper.get('a').attributes()).toMatchObject({ href: '/docs', 'data-router': '' })
 	})

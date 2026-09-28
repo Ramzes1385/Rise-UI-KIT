@@ -44,14 +44,7 @@ const GLOBAL_STUBS = {
 			</div>
 		`,
 		props: BASE_CALENDAR_PROP_NAMES,
-		emits: [
-			'update:modelValue',
-			'update:modelValueEnd',
-			'update:selectedDates',
-			'range-select',
-			'month-change',
-			'year-change',
-		],
+		emits: ['update:modelValue', 'update:modelValueEnd', 'update:selectedDates', 'range-select', 'month-change', 'year-change'],
 	},
 	BaseIcon: { template: '<i class="base-icon" />' },
 	BaseText: { template: '<span class="base-text"><slot /></span>', props: ['tag', 'weight', 'sizeScale'] },

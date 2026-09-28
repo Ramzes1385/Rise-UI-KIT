@@ -37,7 +37,11 @@ const meta = {
 		label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 		icon: { control: 'text', table: propGroup(ARG_GROUP.content) },
 		isExtended: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
-		position: { control: 'select', options: ['bottom-right', 'bottom-left', 'top-right', 'top-left'], table: propGroup(ARG_GROUP.appearance) },
+		position: {
+			control: 'select',
+			options: ['bottom-right', 'bottom-left', 'top-right', 'top-left'],
+			table: propGroup(ARG_GROUP.appearance),
+		},
 		isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	},
@@ -75,8 +79,14 @@ export const Variants: Story = {
 	parameters: { controls: { include: ['sizeScale', 'isExtended'] } },
 	render: args => ({
 		components: { BaseFab },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['variant', 'position']), variants: FAB_VARIANTS, frame: FRAME, positions: ['bottom-left', 'bottom-right', 'top-left'] as FabPosition[] }),
-		template: '<div :style="frame"><BaseFab v-for="(variant, index) in variants" :key="variant" v-bind="props" :variant="variant" :position="positions[index]" :label="variant" /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['variant', 'position']),
+			variants: FAB_VARIANTS,
+			frame: FRAME,
+			positions: ['bottom-left', 'bottom-right', 'top-left'] as FabPosition[],
+		}),
+		template:
+			'<div :style="frame"><BaseFab v-for="(variant, index) in variants" :key="variant" v-bind="props" :variant="variant" :position="positions[index]" :label="variant" /></div>',
 	}),
 }
 
@@ -93,8 +103,15 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['variant'] } },
 	render: args => ({
 		components: { BaseFab },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'position', 'label']), presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)), sizeLabel, frame: FRAME, positions: ['bottom-left', 'top-left', 'bottom-right'] as FabPosition[] }),
-		template: '<div :style="frame"><BaseFab v-for="(preset, index) in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :position="positions[index]" :label="sizeLabel(preset)" /></div>',
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale', 'position', 'label']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+			frame: FRAME,
+			positions: ['bottom-left', 'top-left', 'bottom-right'] as FabPosition[],
+		}),
+		template:
+			'<div :style="frame"><BaseFab v-for="(preset, index) in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :position="positions[index]" :label="sizeLabel(preset)" /></div>',
 	}),
 }
 

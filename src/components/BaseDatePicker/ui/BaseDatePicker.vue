@@ -102,9 +102,7 @@ const { classes } = useCustomClass({
 const emit = defineEmits<BaseDatePickerEmits>()
 defineSlots<BaseDatePickerSlots>()
 
-const calendarConfig = computed(() =>
-	resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig),
-)
+const calendarConfig = computed(() => resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig))
 
 const {
 	isOpen,

@@ -123,15 +123,28 @@ import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../model/BaseMegaMenu.types'
 
-const props = withDefaults(defineProps<BaseMegaMenuProps>(), kitDefaults('BaseMegaMenu', {
-	variant: DEFAULT_VARIANT,
-	trigger: 'click',
-	layout: 'columns',
-	hoverDelay: 200,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseMegaMenuProps>(),
+	kitDefaults('BaseMegaMenu', {
+		variant: DEFAULT_VARIANT,
+		trigger: 'click',
+		layout: 'columns',
+		hoverDelay: 200,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, [
+	'root',
+	'container',
+	'column',
+	'title',
+	'list',
+	'nav',
+	'navItem',
+	'navLink',
+	'dropdown',
+])
 
 const emit = defineEmits<BaseMegaMenuEmits>()
 defineSlots<BaseMegaMenuSlots>()
@@ -170,7 +183,7 @@ function hasChildren(item: MegaMenuItem): boolean {
 }
 
 function navigate(to?: string, href?: string, target?: '_blank' | '_self'): void {
-	navigateAndEmit({ to, href, target }, (url) => emit('navigate', url))
+	navigateAndEmit({ to, href, target }, url => emit('navigate', url))
 }
 
 // ── Columns ──

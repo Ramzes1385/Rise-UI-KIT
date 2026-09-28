@@ -50,9 +50,7 @@ describe('BaseColorPicker — integration', () => {
 		const [preset] = DEFAULT_COLOR_PRESETS
 		await fireEvent.click(screen.getByRole('button', { name: `${UI_COLOR_PICKER.PRESET} ${preset}` }))
 		expect(getByTestId('value').textContent).toBe(preset)
-		expect(container.querySelector<HTMLElement>('.base-color-picker__swatch')?.style.backgroundColor).toBe(
-			'rgb(249, 115, 22)',
-		)
+		expect(container.querySelector<HTMLElement>('.base-color-picker__swatch')?.style.backgroundColor).toBe('rgb(249, 115, 22)')
 	})
 
 	it('отражает внешнее изменение модели на swatch', async () => {

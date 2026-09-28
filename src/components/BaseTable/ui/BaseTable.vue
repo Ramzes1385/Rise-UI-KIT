@@ -139,7 +139,12 @@
 			</div>
 
 			<div v-if="loadMode === 'button' && hasMoreRows" class="base-table__load-more" :class="classes.loadMore">
-				<BaseButton variant="outline" :is-loading="isLoading" :is-disabled="isLoading" :size-scale="sizeScale" @click="handleLoadMore">
+				<BaseButton
+					variant="outline"
+					:is-loading="isLoading"
+					:is-disabled="isLoading"
+					:size-scale="sizeScale"
+					@click="handleLoadMore">
 					{{ isLoading ? UI_TEXT.LOADING : UI_TEXT.LOAD_MORE }}
 				</BaseButton>
 			</div>
@@ -212,19 +217,22 @@ const EXPAND_DURATION_MS = 300
 /** Расстояние до низа таблицы, px, с которого подгружаются следующие строки */
 const INFINITE_SCROLL_THRESHOLD = 50
 
-const props = withDefaults(defineProps<BaseTableProps>(), kitDefaults('BaseTable', {
-	variant: DEFAULT_VARIANT,
-	isLoading: false,
-	height: '',
-	pageSize: 0,
-	pageSizeOptions: () => [],
-	loadMode: 'pagination',
-	searchDebounce: 300,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	padding: undefined,
-	isVirtual: false,
-	rowHeight: 44,
-}))
+const props = withDefaults(
+	defineProps<BaseTableProps>(),
+	kitDefaults('BaseTable', {
+		variant: DEFAULT_VARIANT,
+		isLoading: false,
+		height: '',
+		pageSize: 0,
+		pageSizeOptions: () => [],
+		loadMode: 'pagination',
+		searchDebounce: 300,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		padding: undefined,
+		isVirtual: false,
+		rowHeight: 44,
+	}),
+)
 
 // Поиск, фильтры и выбор строк — служебные поля: они не становятся полем BaseFormField вокруг таблицы
 isolateFormField()
@@ -232,9 +240,27 @@ isolateFormField()
 const slots = useSlots()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-table', props, [
-	'root', 'body', 'header', 'toolbar', 'search', 'filters', 'settings',
-	'activeFilters', 'wrapper', 'loadingOverlay', 'table', 'thead', 'tr',
-	'th', 'tbody', 'td', 'loadMore', 'footerBar', 'pageSize', 'paginationInfo', 'footer',
+	'root',
+	'body',
+	'header',
+	'toolbar',
+	'search',
+	'filters',
+	'settings',
+	'activeFilters',
+	'wrapper',
+	'loadingOverlay',
+	'table',
+	'thead',
+	'tr',
+	'th',
+	'tbody',
+	'td',
+	'loadMore',
+	'footerBar',
+	'pageSize',
+	'paginationInfo',
+	'footer',
 ])
 
 const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad' })

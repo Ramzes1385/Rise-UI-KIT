@@ -11,14 +11,7 @@ export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as con
 export const NOTIFICATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 /** Позиция контейнера уведомлений на экране */
-export const NOTIFICATION_POSITIONS = [
-	'top-left',
-	'top-right',
-	'top-center',
-	'bottom-left',
-	'bottom-right',
-	'bottom-center',
-] as const
+export const NOTIFICATION_POSITIONS = ['top-left', 'top-right', 'top-center', 'bottom-left', 'bottom-right', 'bottom-center'] as const
 
 /** Тип позиции уведомлений */
 export type NotificationPosition = (typeof NOTIFICATION_POSITIONS)[number]
@@ -38,7 +31,10 @@ export interface NotificationAction {
  * Пропсы компонента BaseNotification
  */
 
-export interface BaseNotificationProps extends BaseComponentProps<(typeof NOTIFICATION_VARIANTS)[number], 'root' | 'notification' | 'icon' | 'content' | 'title' | 'description' | 'actions' | 'close' | 'progress'> {
+export interface BaseNotificationProps extends BaseComponentProps<
+	(typeof NOTIFICATION_VARIANTS)[number],
+	'root' | 'notification' | 'icon' | 'content' | 'title' | 'description' | 'actions' | 'close' | 'progress'
+> {
 	/** Заголовок */
 	title?: string
 	/** Описание */

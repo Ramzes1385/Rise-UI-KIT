@@ -94,7 +94,12 @@ function useTableComposition(options: UseTableCompositionOptions) {
 	})
 
 	// «Выбрать все» действует на строки, прошедшие поиск и фильтры, а не на все переданные rows
-	const { isAllSelected, isSelected, toggleRow: toggleRowSelection, toggleAll: toggleAllRows } = useTableSelection({
+	const {
+		isAllSelected,
+		isSelected,
+		toggleRow: toggleRowSelection,
+		toggleAll: toggleAllRows,
+	} = useTableSelection({
 		rows,
 		filteredRows: processedRows,
 		onSelect: selectedRows => emit('select', selectedRows),

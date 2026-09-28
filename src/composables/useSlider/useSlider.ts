@@ -334,4 +334,3 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 }
 
 export { useSlider }
-

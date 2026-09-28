@@ -3,7 +3,10 @@
 		Текст, который редактируется на месте: в просмотре — кнопка (имя — «что: значение», подсказка «Нажмите, чтобы
 		изменить»), по клику, Enter или пробелу — поле. Enter сохраняет, Escape отменяет; фокус возвращается на кнопку
 	-->
-	<span class="base-inplace" :class="[variantClass, { 'base-inplace--editing': isEditing }, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<span
+		class="base-inplace"
+		:class="[variantClass, { 'base-inplace--editing': isEditing }, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<button
 			v-if="!isEditing"
 			ref="displayRef"
@@ -40,19 +43,26 @@ import { useFormDisabled } from '@composables/useFormContext'
 import '../styles/BaseInplace.style.scss'
 import type { BaseInplaceEmits, BaseInplaceProps, BaseInplaceSlots } from '../model/BaseInplace.types'
 
-const props = withDefaults(defineProps<BaseInplaceProps>(), kitDefaults('BaseInplace', {
-	variant: DEFAULT_VARIANT,
-	modelValue: '',
-	placeholder: '—',
-	isDisabled: false,
-	isSaveOnBlur: true,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseInplaceProps>(),
+	kitDefaults('BaseInplace', {
+		variant: DEFAULT_VARIANT,
+		modelValue: '',
+		placeholder: '—',
+		isDisabled: false,
+		isSaveOnBlur: true,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseInplaceEmits>()
 defineSlots<BaseInplaceSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-inplace', props, ['root', 'display', 'field'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-inplace', props, [
+	'root',
+	'display',
+	'field',
+])
 
 const hintId = `${useId()}-hint`
 const displayRef = ref<HTMLButtonElement | null>(null)

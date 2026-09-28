@@ -168,19 +168,7 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 	getSizeScale: () => resolvedProps.value.sizeScale,
 	getColor: () => resolvedProps.value.color,
 	getClass: () => resolvedProps.value.customClass,
-	elementKeys: [
-		'root',
-		'header',
-		'weekdays',
-		'grid',
-		'dayWrapper',
-		'day',
-		'popover',
-		'months',
-		'years',
-		'time',
-		'footer',
-	],
+	elementKeys: ['root', 'header', 'weekdays', 'grid', 'dayWrapper', 'day', 'popover', 'months', 'years', 'time', 'footer'],
 })
 
 const emit = defineEmits<BaseCalendarEmits>()
@@ -242,13 +230,7 @@ const {
 	isSameDay,
 } = calendar
 
-const {
-	popoverDate,
-	popoverStyle,
-	popoverHighlights,
-	closePopover,
-	dayClasses,
-} = useCalendarPopover({
+const { popoverDate, popoverStyle, popoverHighlights, closePopover, dayClasses } = useCalendarPopover({
 	getEvents,
 	isCurrentMonth,
 	isToday,
@@ -283,8 +265,7 @@ const { isAmResolved, handleDayClick, toggleAmPm, handleTimeChange, handleTodayC
  * Пока выбрано одно начало, оно выглядит как обычный выбранный день.
  */
 const isRangeComplete = computed(
-	(): boolean =>
-		resolvedProps.value.selectionMode === 'range' && !!calendar.internalValue.value && !!calendar.internalValueEnd.value,
+	(): boolean => resolvedProps.value.selectionMode === 'range' && !!calendar.internalValue.value && !!calendar.internalValueEnd.value,
 )
 
 /**

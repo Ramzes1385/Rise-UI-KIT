@@ -12,8 +12,10 @@ export interface BaseRadioOption {
 	isDisabled?: boolean
 }
 
-
-export interface BaseRadioProps extends BaseComponentProps<(typeof RADIO_VARIANTS)[number], 'root' | 'label' | 'options' | 'radio' | 'wrapper' | 'input' | 'circle' | 'dot' | 'optionLabel' | 'errorText'> {
+export interface BaseRadioProps extends BaseComponentProps<
+	(typeof RADIO_VARIANTS)[number],
+	'root' | 'label' | 'options' | 'radio' | 'wrapper' | 'input' | 'circle' | 'dot' | 'optionLabel' | 'errorText'
+> {
 	/** Выбранное значение */
 	modelValue: string | number
 	/** Список опций */

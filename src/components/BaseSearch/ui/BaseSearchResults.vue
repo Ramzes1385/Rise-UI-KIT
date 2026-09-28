@@ -36,11 +36,7 @@
 						:size-scale="calcIconScale('sm', sizeScale)" />
 					<div class="base-search__result-content" :class="classes.resultContent">
 						<!-- Совпадения с запросом выделены <mark>: видно, почему результат попал в список -->
-						<BaseText
-							tag="span"
-							class="base-search__result-title"
-							:custom-class="classes.resultTitle"
-							:size-scale="sizeScale">
+						<BaseText tag="span" class="base-search__result-title" :custom-class="classes.resultTitle" :size-scale="sizeScale">
 							<template v-for="(part, partIndex) in splitByQuery(item.title)" :key="partIndex">
 								<mark v-if="part.isMatch" class="base-search__match">{{ part.text }}</mark>
 								<template v-else>{{ part.text }}</template>

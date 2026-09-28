@@ -9,7 +9,10 @@ export const AVATAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
 /**
  * Пропсы компонента BaseAvatar
  */
-export interface BaseAvatarProps extends BaseComponentProps<(typeof AVATAR_VARIANTS)[number], 'root' | 'content' | 'img' | 'initials' | 'online'> {
+export interface BaseAvatarProps extends BaseComponentProps<
+	(typeof AVATAR_VARIANTS)[number],
+	'root' | 'content' | 'img' | 'initials' | 'online'
+> {
 	/** URL изображения или GIF. Если изображение не загрузилось, показываются инициалы из `name`. */
 	src?: string
 	/** Альтернативный текст изображения. Пустой (по умолчанию) — изображение декоративное, например когда имя написано рядом. */

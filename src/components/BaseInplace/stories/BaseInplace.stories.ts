@@ -79,7 +79,8 @@ export const Variants: Story = {
 	render: args => ({
 		components: { BaseInplace },
 		setup: () => ({ props: useArgsWithoutSlots(args, ['variant']), variants: INPLACE_VARIANTS }),
-		template: '<div class="story-stack"><div v-for="variant in variants" :key="variant" class="story-row"><span class="story-label" style="width: 64px;">{{ variant }}</span><BaseInplace v-bind="props" :variant="variant" /></div></div>',
+		template:
+			'<div class="story-stack"><div v-for="variant in variants" :key="variant" class="story-row"><span class="story-label" style="width: 64px;">{{ variant }}</span><BaseInplace v-bind="props" :variant="variant" /></div></div>',
 	}),
 }
 

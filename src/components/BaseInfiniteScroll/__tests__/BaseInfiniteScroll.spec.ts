@@ -37,7 +37,8 @@ function setup(initialProps: Record<string, unknown> = {}) {
 	const result = render({
 		components: { BaseInfiniteScroll },
 		setup: () => ({ api, props, onLoad: (event: InfiniteScrollLoadEvent) => events.push(event) }),
-		template: '<BaseInfiniteScroll ref="api" v-bind="props" @load="onLoad"><ul aria-label="Заказы"><li>Заказ 1</li></ul></BaseInfiniteScroll>',
+		template:
+			'<BaseInfiniteScroll ref="api" v-bind="props" @load="onLoad"><ul aria-label="Заказы"><li>Заказ 1</li></ul></BaseInfiniteScroll>',
 	})
 	const setProps = async (next: Record<string, unknown>) => {
 		props.value = next

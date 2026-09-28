@@ -142,11 +142,19 @@ export const Animations: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['isAnimated', 'isPulse'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseSkeleton shape="text" :width="160" :size-scale="${preset.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseSkeleton shape="text" :width="160" :size-scale="${preset.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSkeleton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height', 'sizeScale']), presets: SIZE_PRESETS, sizeLabel }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height', 'sizeScale']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+		}),
 		template: `
 			<div class="story-stack">
 				<div v-for="preset in presets" :key="preset.name" class="story-row" style="flex-wrap: nowrap;">

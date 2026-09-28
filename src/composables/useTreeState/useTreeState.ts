@@ -5,14 +5,7 @@ import type { UseTreeStateOptions, UseTreeStateResult } from './useTreeState.typ
 
 /** Composable для состояния дерева — expand/collapse, выбор (single/multi/checkbox), кэш потомков. */
 function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
-	const {
-		items,
-		selectionMode,
-		expandedIds: propExpandedIds,
-		selectedIds: propSelectedIds,
-		isDefaultExpandAll,
-		emit,
-	} = options
+	const { items, selectionMode, expandedIds: propExpandedIds, selectedIds: propSelectedIds, isDefaultExpandAll, emit } = options
 
 	const internalExpandedIds = ref<string[]>([])
 	const internalSelectedIds = ref<string[]>([])

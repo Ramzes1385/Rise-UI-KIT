@@ -13,8 +13,12 @@ function createOptions(initialIds: string[] = []) {
 		forwarded,
 		opts: {
 			selectedMessageIds,
-			onDelete: (ids: string[]) => { deleted.push(ids) },
-			onForward: (ids: string[]) => { forwarded.push(ids) },
+			onDelete: (ids: string[]) => {
+				deleted.push(ids)
+			},
+			onForward: (ids: string[]) => {
+				forwarded.push(ids)
+			},
 		},
 	}
 }

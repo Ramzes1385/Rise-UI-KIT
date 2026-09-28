@@ -92,7 +92,12 @@ export const Variants: Story = {
 	parameters: { controls: { include: ['sizeScale'] } },
 	render: args => ({
 		components: { BaseToolbar, BaseButton, BaseIcon, BaseSeparator },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['variant', 'ariaLabel']), variants: TOOLBAR_VARIANTS, format: FORMAT_BUTTONS, align: ALIGN_BUTTONS }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['variant', 'ariaLabel']),
+			variants: TOOLBAR_VARIANTS,
+			format: FORMAT_BUTTONS,
+			align: ALIGN_BUTTONS,
+		}),
 		template: `
 			<div class="story-stack">
 				<BaseToolbar v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :aria-label="variant">

@@ -227,7 +227,15 @@ export const MultiPoint: Story = {
 
 /** Вертикальный слайдер (`isVertical`): высота 200px, значение растёт снизу вверх, деления — справа. */
 export const Vertical: Story = {
-	args: { isVertical: true, modelValue: 65, marks: [{ value: 0, label: '0' }, { value: 50, label: '50' }, { value: 100, label: '100' }] },
+	args: {
+		isVertical: true,
+		modelValue: 65,
+		marks: [
+			{ value: 0, label: '0' },
+			{ value: 50, label: '50' },
+			{ value: 100, label: '100' },
+		],
+	},
 	render: args => {
 		const onUpdate = useModelArg()
 		return {
@@ -253,7 +261,8 @@ export const WithTooltip: Story = {
 		return {
 			components: { BaseRange },
 			setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'thumb']), onUpdate }),
-			template: '<div class="story-narrow" style="padding-top: 40px;"><BaseRange v-bind="props" @update:range-value="onUpdate" /></div>',
+			template:
+				'<div class="story-narrow" style="padding-top: 40px;"><BaseRange v-bind="props" @update:range-value="onUpdate" /></div>',
 		}
 	},
 	play: async ({ canvas, userEvent }) => {
@@ -276,7 +285,8 @@ export const WithMarks: Story = {
 			components: { BaseRange },
 			setup: () => ({ props: useArgsWithoutSlots(args, ['thumb']), onUpdate }),
 			// Отступы по бокам — место под подписи крайних делений, они выходят за трек наполовину
-			template: '<div class="story-narrow" style="padding: 0 12px;"><BaseRange v-bind="props" @update:model-value="onUpdate" /></div>',
+			template:
+				'<div class="story-narrow" style="padding: 0 12px;"><BaseRange v-bind="props" @update:model-value="onUpdate" /></div>',
 		}
 	},
 	play: async ({ canvas }) => {
@@ -307,7 +317,11 @@ export const DecimalStep: Story = {
 export const CustomThumb: Story = {
 	args: { modelValue: 35, ariaLabel: 'Скорость воспроизведения' },
 	parameters: {
-		docs: { source: { code: '<BaseRange v-model="value">\n  <template #thumb="{ value }"><span class="my-thumb">{{ value }}</span></template>\n</BaseRange>' } },
+		docs: {
+			source: {
+				code: '<BaseRange v-model="value">\n  <template #thumb="{ value }"><span class="my-thumb">{{ value }}</span></template>\n</BaseRange>',
+			},
+		},
 	},
 	render: args => {
 		const onUpdate = useModelArg()

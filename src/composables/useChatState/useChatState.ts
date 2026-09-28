@@ -8,11 +8,7 @@ import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from '.
 import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 
 /** Оркестратор состояния чата — объединяет поиск, выделение, панель информации, ответ, закреплённые сообщения. */
-function useChatState(
-	props: UseChatStateProps,
-	emit: UseChatStateEmit,
-	options: UseChatStateOptions = {},
-) {
+function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options: UseChatStateOptions = {}) {
 	const { searchQuery, isSearching, filteredMessages } = useChatSearch({ getMessages: () => props.messages })
 	const { selectedMessageIds, handleMessageSelect } = useChatSelection({
 		onMessageSelect: messageId => emit('message-select', messageId),
@@ -60,8 +56,7 @@ function useChatState(
 
 	function handlePrevPinned(): void {
 		if (pinnedMessages.value.length <= 1) return
-		currentPinnedIndex.value =
-			(currentPinnedIndex.value - 1 + pinnedMessages.value.length) % pinnedMessages.value.length
+		currentPinnedIndex.value = (currentPinnedIndex.value - 1 + pinnedMessages.value.length) % pinnedMessages.value.length
 	}
 
 	/** Скролл к закрепленному сообщению */

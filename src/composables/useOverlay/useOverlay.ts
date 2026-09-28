@@ -34,7 +34,13 @@ export function createOverlayStore(): OverlayStore {
 
 	function register(component: Component, options: Required<OverlayCreateOptions>): number {
 		const id = ++nextId
-		entries.value.push({ id, component: markRaw(component), props: { ...options.props }, isOpen: false, destroyOnClose: options.destroyOnClose })
+		entries.value.push({
+			id,
+			component: markRaw(component),
+			props: { ...options.props },
+			isOpen: false,
+			destroyOnClose: options.destroyOnClose,
+		})
 		return id
 	}
 
@@ -57,7 +63,11 @@ export function createOverlayStore(): OverlayStore {
 		resolvers.get(id)?.(result)
 		resolvers.delete(id)
 		pending.delete(id)
-		if (entry.destroyOnClose) destroyTimers.set(id, setTimeout(() => destroyIfClosed(id), OVERLAY_DESTROY_DELAY))
+		if (entry.destroyOnClose)
+			destroyTimers.set(
+				id,
+				setTimeout(() => destroyIfClosed(id), OVERLAY_DESTROY_DELAY),
+			)
 	}
 
 	function patch(id: number, props: OverlayProps): void {

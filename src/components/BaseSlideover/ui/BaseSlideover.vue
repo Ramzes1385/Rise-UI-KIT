@@ -40,11 +40,7 @@
 					</div>
 
 					<!-- Тело: с прокруткой получает tabindex, чтобы его можно было прокрутить с клавиатуры -->
-					<div
-						ref="bodyRef"
-						class="base-slideover__body"
-						:class="classes.body"
-						:tabindex="isBodyScrollable ? 0 : undefined">
+					<div ref="bodyRef" class="base-slideover__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>
 
@@ -75,16 +71,19 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
 
-const props = withDefaults(defineProps<BaseSlideoverProps>(), kitDefaults('BaseSlideover', {
-	side: 'right',
-	width: 100,
-	isFullWidth: false,
-	closeOnOverlay: true,
-	closeOnEscape: true,
-	isContained: false,
-	hasOverlay: true,
-	padding: undefined,
-}))
+const props = withDefaults(
+	defineProps<BaseSlideoverProps>(),
+	kitDefaults('BaseSlideover', {
+		side: 'right',
+		width: 100,
+		isFullWidth: false,
+		closeOnOverlay: true,
+		closeOnEscape: true,
+		isContained: false,
+		hasOverlay: true,
+		padding: undefined,
+	}),
+)
 
 /** Масштаб и кастомный цвет — на корне: панель и её содержимое наследуют --size-scale и --custom-* */
 const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-slideover', props, [

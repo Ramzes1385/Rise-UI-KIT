@@ -20,4 +20,3 @@ export interface UseDropdownPositionOptions {
 	/** Открыт ли dropdown */
 	isOpen: () => boolean
 }
-

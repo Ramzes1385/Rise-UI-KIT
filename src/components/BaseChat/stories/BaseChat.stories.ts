@@ -56,7 +56,15 @@ const [ANNA, IVAN, MARIA, OLEG] = STORY_USERS
 
 /** Личный чат с дизайнером: фото, файл, ссылка, ответ с цитатой, реакция и все статусы доставки */
 const PRIVATE_MESSAGES: ChatMessage[] = [
-	{ id: 'p1', sender: 'other', senderId: 'u1', senderName: ANNA.name, senderAvatar: ANNA.avatar, text: 'Привет! Посмотрела новые макеты главной — выглядит отлично 👍', ...sentAt(9, 12) },
+	{
+		id: 'p1',
+		sender: 'other',
+		senderId: 'u1',
+		senderName: ANNA.name,
+		senderAvatar: ANNA.avatar,
+		text: 'Привет! Посмотрела новые макеты главной — выглядит отлично 👍',
+		...sentAt(9, 12),
+	},
 	{ id: 'p2', sender: 'me', text: 'Спасибо! Что стоит поправить до релиза?', status: 'read', ...sentAt(9, 14) },
 	{
 		id: 'p3',
@@ -116,8 +124,24 @@ const GROUP_MESSAGES: ChatMessage[] = [
 		],
 		...sentAt(10, 2),
 	},
-	{ id: 'g2', sender: 'other', senderId: 'u2', senderName: IVAN.name, senderAvatar: IVAN.avatar, text: '@Мария посмотри, пожалуйста, таблицу: в шапке съехал отступ.', ...sentAt(10, 5) },
-	{ id: 'g3', sender: 'other', senderId: 'u3', senderName: MARIA.name, senderAvatar: MARIA.avatar, text: 'Смотрю. Список задач релиза — по команде /tasks', ...sentAt(10, 7) },
+	{
+		id: 'g2',
+		sender: 'other',
+		senderId: 'u2',
+		senderName: IVAN.name,
+		senderAvatar: IVAN.avatar,
+		text: '@Мария посмотри, пожалуйста, таблицу: в шапке съехал отступ.',
+		...sentAt(10, 5),
+	},
+	{
+		id: 'g3',
+		sender: 'other',
+		senderId: 'u3',
+		senderName: MARIA.name,
+		senderAvatar: MARIA.avatar,
+		text: 'Смотрю. Список задач релиза — по команде /tasks',
+		...sentAt(10, 7),
+	},
 	{ id: 'g4', sender: 'me', text: 'Кнопки и поля готовы, осталась тёмная тема графиков.', status: 'read', ...sentAt(10, 9) },
 	{
 		id: 'g5',
@@ -377,7 +401,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale'] },
-		docs: { source: { code: CHAT_VARIANTS.map(variant => `<BaseChat :messages="messages" title="Анна Смирнова" variant="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: CHAT_VARIANTS.map(variant => `<BaseChat :messages="messages" title="Анна Смирнова" variant="${variant}" />`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseChat },
@@ -402,11 +432,23 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.slice(1, 4).map(p => `<BaseChat :messages="messages" title="Анна Смирнова" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.slice(1, 4)
+					.map(p => `<BaseChat :messages="messages" title="Анна Смирнова" :size-scale="${p.sizeScale}" />`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseChat },
-		setup: () => ({ variant: args.variant, presets: SIZE_PRESETS.slice(1, 4), sizeLabel, messages: SHOWCASE_MESSAGES.slice(0, 2), chat: PRIVATE_CHAT }),
+		setup: () => ({
+			variant: args.variant,
+			presets: SIZE_PRESETS.slice(1, 4),
+			sizeLabel,
+			messages: SHOWCASE_MESSAGES.slice(0, 2),
+			chat: PRIVATE_CHAT,
+		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 320px;">
 				<BaseChat
@@ -446,7 +488,9 @@ export const CustomColor: Story = {
 		const brand = globals.theme === 'dark' ? '#0c1a2b' : '#f0f9ff'
 		await expect(getComputedStyle(root).backgroundColor).toBe(resolveColor(brand))
 		// Вложенная кнопка не унаследовала цвет чата
-		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Отправить сообщение' })).backgroundColor).toBe(resolveColor('var(--rise-primary)'))
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Отправить сообщение' })).backgroundColor).toBe(
+			resolveColor('var(--rise-primary)'),
+		)
 	},
 }
 

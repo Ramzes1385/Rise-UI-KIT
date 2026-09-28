@@ -28,11 +28,7 @@
 	<Teleport defer :to="teleportTarget">
 		<Transition :name="`base-search-${panel}`">
 			<!-- Подложка --rise-overlay, окно — как модальное (BaseModal); клик по подложке и Escape закрывают -->
-			<div
-				v-if="isOpen"
-				:class="[overlayClass, classes[`${prefix}Overlay`]]"
-				:style="layerStyle"
-				@click.self="close">
+			<div v-if="isOpen" :class="[overlayClass, classes[`${prefix}Overlay`]]" :style="layerStyle" @click.self="close">
 				<div :class="panelClass" :style="sizeScaleStyle" role="dialog" :aria-label="UI_ARIA.SEARCH">
 					<div :class="headerClass">
 						<BaseSearchInput

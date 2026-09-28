@@ -699,8 +699,7 @@ describe('BaseSearch unit', () => {
 						props: ['isOpen', 'position', 'matchWidth', 'preventMousedown', 'sizeScale', 'maxHeight'],
 					},
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
 						methods: { focus: vi.fn() },
@@ -1041,8 +1040,7 @@ describe('BaseSearch unit', () => {
 			stubs: {
 				...globalConfig.stubs,
 				BaseDropdown: {
-					template:
-						'<div class="base-dropdown-stub" :data-is-open="isOpen"><slot /><slot v-if="isOpen" name="dropdown" /></div>',
+					template: '<div class="base-dropdown-stub" :data-is-open="isOpen"><slot /><slot v-if="isOpen" name="dropdown" /></div>',
 					props: ['isOpen'],
 				},
 				BaseInput: {
@@ -1167,8 +1165,7 @@ describe('BaseSearch unit', () => {
 						emits: ['update:isOpen'],
 					},
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
 						methods: { focus: vi.fn() },
@@ -1201,8 +1198,7 @@ describe('BaseSearch unit', () => {
 						props: ['isOpen'],
 					},
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus', 'blur'],
 						methods: { focus: vi.fn() },
@@ -1473,8 +1469,7 @@ describe('BaseSearch unit', () => {
 				stubs: {
 					...globalConfig.stubs,
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
 						emits: ['focus', 'keydown'],
 						methods: { focus: vi.fn() },
 					},
@@ -1501,8 +1496,7 @@ describe('BaseSearch unit', () => {
 				stubs: {
 					...globalConfig.stubs,
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
 						emits: ['focus', 'keydown'],
 						methods: { focus: vi.fn() },
 					},

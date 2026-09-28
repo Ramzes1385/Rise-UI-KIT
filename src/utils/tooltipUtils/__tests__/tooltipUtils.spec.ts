@@ -72,7 +72,9 @@ describe('tooltipUtils', () => {
 		it('остаётся на выбранной стороне, если там хватает места или не хватает и напротив; до измерения — тоже', () => {
 			expect(resolveTooltipPlacement('top', { top: 300, left: 400, width: 80, height: 32 }, size, viewport)).toBe('top')
 			expect(resolveTooltipPlacement('top', { top: 4, left: 400, width: 80, height: 760 }, size, viewport)).toBe('top')
-			expect(resolveTooltipPlacement('top', { top: 4, left: 400, width: 80, height: 32 }, { width: 0, height: 0 }, viewport)).toBe('top')
+			expect(resolveTooltipPlacement('top', { top: 4, left: 400, width: 80, height: 32 }, { width: 0, height: 0 }, viewport)).toBe(
+				'top',
+			)
 		})
 
 		it('переворачивается на противоположную сторону, если там помещается', () => {

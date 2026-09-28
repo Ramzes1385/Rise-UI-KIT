@@ -10,7 +10,12 @@
 		:custom-class="{ root: rootClass, panel: classes.panel }"
 		@update:is-open="setOpen">
 		<!-- Кнопка — из слота. Кит ставит ей aria-haspopup, aria-expanded и aria-controls и слушает клик и клавиши -->
-		<span ref="triggerRef" class="base-dropdown-menu__trigger" :class="classes.trigger" @click="handleTriggerClick" @keydown="handleTriggerKeydown">
+		<span
+			ref="triggerRef"
+			class="base-dropdown-menu__trigger"
+			:class="classes.trigger"
+			@click="handleTriggerClick"
+			@keydown="handleTriggerKeydown">
 			<slot :is-open="isOpenState" :trigger-props="triggerAttributes" />
 		</span>
 
@@ -88,7 +93,11 @@ const triggerAttributes = computed(() => ({
 	'aria-controls': isOpenState.value ? menuId : undefined,
 }))
 
-const { triggerId, getTrigger } = useTriggerAttributes(() => triggerRef.value, () => triggerAttributes.value, { withId: true })
+const { triggerId, getTrigger } = useTriggerAttributes(
+	() => triggerRef.value,
+	() => triggerAttributes.value,
+	{ withId: true },
+)
 
 function setOpen(value: boolean, focus: FocusTarget = 'menu'): void {
 	if (value === isOpenLocal.value) return

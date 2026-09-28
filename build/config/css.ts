@@ -10,12 +10,9 @@ import type { CSSOptions } from 'vite'
 import { isProductionMode } from '../utils/helpers'
 
 /** Глобальный prelude — автоматически инжектится во все .scss-entry компонентов. */
-const GLOBAL_SCSS_PRELUDE = [
-	'@use "@styles/variables" as *;',
-	'@use "@styles/mixins" as *;',
-	'@use "@styles/functions" as *;',
-	'',
-].join('\n')
+const GLOBAL_SCSS_PRELUDE = ['@use "@styles/variables" as *;', '@use "@styles/mixins" as *;', '@use "@styles/functions" as *;', ''].join(
+	'\n',
+)
 
 /** Глобальные SCSS-файлы — не должны импортировать сами себя (защита от module loop). */
 const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']

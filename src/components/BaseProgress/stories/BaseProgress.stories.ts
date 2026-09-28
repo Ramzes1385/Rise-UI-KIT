@@ -154,7 +154,9 @@ export const CustomColor: Story = {
 export const Animations: Story = {
 	parameters: {
 		controls: { include: ['value', 'sizeScale', 'color'] },
-		docs: { source: { code: PROGRESS_ANIMATIONS.map(animation => `<BaseProgress :value="60" animation="${animation}" />`).join('\n') } },
+		docs: {
+			source: { code: PROGRESS_ANIMATIONS.map(animation => `<BaseProgress :value="60" animation="${animation}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseProgress },

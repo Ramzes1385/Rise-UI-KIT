@@ -80,20 +80,34 @@ import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseSwitch.style.scss'
 import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../model/BaseSwitch.types'
 
-const props = withDefaults(defineProps<BaseSwitchProps>(), kitDefaults('BaseSwitch', {
-	variant: DEFAULT_VARIANT,
-	modelValue: false,
-	isDisabled: false,
-	isRequired: false,
-	reverse: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSwitchProps>(),
+	kitDefaults('BaseSwitch', {
+		variant: DEFAULT_VARIANT,
+		modelValue: false,
+		isDisabled: false,
+		isRequired: false,
+		reverse: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 /** id переключателя и обёртки ошибки: подпись связана через for, ошибка (текст error или слот error) — через aria-describedby */
 const inputId = useId()
 const errorId = `${inputId}-error`
 const rootRef = ref<HTMLElement | null>(null)
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, [
+	'root',
+	'row',
+	'wrapper',
+	'input',
+	'slider',
+	'handle',
+	'content',
+	'label',
+	'required',
+	'errorText',
+])
 
 const emit = defineEmits<BaseSwitchEmits>()
 defineSlots<BaseSwitchSlots>()

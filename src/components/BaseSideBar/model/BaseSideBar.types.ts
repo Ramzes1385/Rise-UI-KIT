@@ -83,7 +83,10 @@ export interface BaseSideBarItemSlotProps extends BaseComponentProps<(typeof SID
 /**
  * Пропсы компонента BaseSideBar
  */
-export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number], 'root' | 'header' | 'title' | 'toggle' | 'navigation' | 'loading' | 'body' | 'footer' | 'collapsed'> {
+export interface BaseSideBarProps extends BaseComponentProps<
+	(typeof SIDEBAR_VARIANTS)[number],
+	'root' | 'header' | 'title' | 'toggle' | 'navigation' | 'loading' | 'body' | 'footer' | 'collapsed'
+> {
 	/** v-model свёрнутого состояния (undefined = внутреннее управление) */
 	isCollapsed?: boolean
 
@@ -98,7 +101,6 @@ export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VAR
 
 	/** Можно ли сворачивать */
 	isCollapsible?: boolean
-
 
 	/**
 	 * Внутренние отступы.
@@ -119,8 +121,6 @@ export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VAR
 	 * По умолчанию 4
 	 */
 	gap?: number
-
-
 
 	/** Состояние загрузки */
 	isLoading?: boolean
@@ -161,7 +161,6 @@ export interface BaseSideBarProps extends BaseComponentProps<(typeof SIDEBAR_VAR
 	 * или `a`: UI Kit не зависит от vue-router. Внешние адреса (`https://…`) всегда открываются обычной ссылкой.
 	 */
 	linkComponent?: string | Component
-
 }
 
 /**

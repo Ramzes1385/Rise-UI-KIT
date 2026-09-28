@@ -187,7 +187,30 @@ export interface TableBehaviorConfig {
 /**
  * Пропсы компонента BaseTable
  */
-export interface BaseTableProps extends BaseComponentProps<TableVariant, 'root' | 'body' | 'header' | 'toolbar' | 'search' | 'filters' | 'settings' | 'activeFilters' | 'wrapper' | 'loadingOverlay' | 'table' | 'thead' | 'tr' | 'th' | 'tbody' | 'td' | 'loadMore' | 'footerBar' | 'pageSize' | 'paginationInfo' | 'footer'> {
+export interface BaseTableProps extends BaseComponentProps<
+	TableVariant,
+	| 'root'
+	| 'body'
+	| 'header'
+	| 'toolbar'
+	| 'search'
+	| 'filters'
+	| 'settings'
+	| 'activeFilters'
+	| 'wrapper'
+	| 'loadingOverlay'
+	| 'table'
+	| 'thead'
+	| 'tr'
+	| 'th'
+	| 'tbody'
+	| 'td'
+	| 'loadMore'
+	| 'footerBar'
+	| 'pageSize'
+	| 'paginationInfo'
+	| 'footer'
+> {
 	/** Колонки */
 	columns: TableColumn[]
 	/** Строки */

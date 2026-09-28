@@ -31,15 +31,18 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseBackTop.style.scss'
 import type { BaseBackTopEmits, BaseBackTopProps } from '../model/BaseBackTop.types'
 
-const props = withDefaults(defineProps<BaseBackTopProps>(), kitDefaults('BaseBackTop', {
-	variant: DEFAULT_VARIANT,
-	visibilityHeight: 400,
-	icon: 'chevron-up',
-	isExtended: false,
-	position: 'bottom-right',
-	isContained: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseBackTopProps>(),
+	kitDefaults('BaseBackTop', {
+		variant: DEFAULT_VARIANT,
+		visibilityHeight: 400,
+		icon: 'chevron-up',
+		isExtended: false,
+		position: 'bottom-right',
+		isContained: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseBackTopEmits>()
 

@@ -8,7 +8,18 @@
 
 import { expect } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, STORY_USERS, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	placeholderImage,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	slotArgType,
+	STORY_USERS,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { CARD_VARIANTS } from '../model/BaseCard.types'
@@ -99,11 +110,20 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isHoverable'] },
-		docs: { source: { code: ['default', 'outline', 'soft', 'ghost', 'shadow'].map(variant => `<BaseCard variant="${variant}" title="${variant}">…</BaseCard>`).join('\n') } },
+		docs: {
+			source: {
+				code: ['default', 'outline', 'soft', 'ghost', 'shadow']
+					.map(variant => `<BaseCard variant="${variant}" title="${variant}">…</BaseCard>`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseCard },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), variants: ['default', 'outline', 'soft', 'ghost', 'shadow'] }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']),
+			variants: ['default', 'outline', 'soft', 'ghost', 'shadow'],
+		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 240px;">
 				<BaseCard v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :title="variant" subtitle="Обновлён 15 мая">
@@ -118,7 +138,13 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseCard :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseCard>`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseCard :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseCard>`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseCard },
@@ -193,7 +219,10 @@ export const Padding: Story = {
 	},
 	render: args => ({
 		components: { BaseCard },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), cover: placeholderImage({ width: 480, height: 240, hue: 200 }) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']),
+			cover: placeholderImage({ width: 480, height: 240, hue: 200 }),
+		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
 				<BaseCard v-bind="props" title="Из стилей">16px 20px</BaseCard>
@@ -272,7 +301,11 @@ export const WithFooter: Story = {
 			},
 		},
 	},
-	args: { title: 'Уведомления', subtitle: 'Письма о задачах и комментариях', default: 'Присылать сводку раз в день, в 9:00 по московскому времени.' },
+	args: {
+		title: 'Уведомления',
+		subtitle: 'Письма о задачах и комментариях',
+		default: 'Присылать сводку раз в день, в 9:00 по московскому времени.',
+	},
 	render: args => ({
 		components: { BaseCard, BaseButton },
 		setup: () => ({ props: useArgsWithoutSlots(args), args }),
@@ -375,7 +408,10 @@ export const FixedHeight: Story = {
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			source: {
-				code: ['<BaseCard title="Со scroll" height="240px" scroll>…</BaseCard>', '<BaseCard title="Без scroll" height="240px">…</BaseCard>'].join('\n'),
+				code: [
+					'<BaseCard title="Со scroll" height="240px" scroll>…</BaseCard>',
+					'<BaseCard title="Без scroll" height="240px">…</BaseCard>',
+				].join('\n'),
 			},
 		},
 	},

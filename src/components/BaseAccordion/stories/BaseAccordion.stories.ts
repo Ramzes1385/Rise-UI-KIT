@@ -148,7 +148,11 @@ export const Sizes: Story = {
 	args: { variant: 'outline' },
 	argTypes: { sizeScale: { control: false } },
 	parameters: {
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseAccordion :items="items" variant="outline" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseAccordion :items="items" variant="outline" :size-scale="${p.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseAccordion },
@@ -226,7 +230,7 @@ export const WithSlot: Story = {
 		docs: {
 			source: {
 				code: [
-					'<BaseAccordion :items="[{ label: \'Контакты\', slot: \'contacts\' }, …]">',
+					"<BaseAccordion :items=\"[{ label: 'Контакты', slot: 'contacts' }, …]\">",
 					'  <template #contacts>',
 					'    <a href="mailto:support@example.com">support@example.com</a>',
 					'  </template>',

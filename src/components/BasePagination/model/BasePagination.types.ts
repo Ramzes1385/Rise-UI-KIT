@@ -7,7 +7,10 @@ export const PAGINATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'so
  * Пропсы компонента BasePagination
  */
 
-export interface BasePaginationProps extends BaseComponentProps<(typeof PAGINATION_VARIANTS)[number], 'root' | 'prev' | 'next' | 'pages' | 'button' | 'ellipsis'> {
+export interface BasePaginationProps extends BaseComponentProps<
+	(typeof PAGINATION_VARIANTS)[number],
+	'root' | 'prev' | 'next' | 'pages' | 'button' | 'ellipsis'
+> {
 	/** Текущая страница */
 	modelValue: number
 	/** Всего элементов */

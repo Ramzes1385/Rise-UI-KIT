@@ -73,12 +73,8 @@ test.describe('BaseSideBar e2e', () => {
 	test('сайдбар: activePath подсвечивает parent и current item', async ({ page }) => {
 		await openStory(page, 'default')
 
-		const catalogLink = page
-			.getByText('Каталог')
-			.locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
-		const productsLink = page
-			.getByText('Товары')
-			.locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
+		const catalogLink = page.getByText('Каталог').locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
+		const productsLink = page.getByText('Товары').locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
 
 		await expect(catalogLink).toHaveClass(/base-side-bar-nav__link--parent-active/)
 		await expect(productsLink).toHaveClass(/base-side-bar-nav__link--current/)

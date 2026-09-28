@@ -35,12 +35,7 @@ function getColumnStyle(options: ColumnStyleOptions): Record<string, string> {
 }
 
 /** Рассчитать общее количество колонок с учётом доп. столбцов */
-function calcTotalColumns(
-	visibleCount: number,
-	isSelectable: boolean,
-	hasRowNumber: boolean,
-	hasExpandableRows: boolean,
-): number {
+function calcTotalColumns(visibleCount: number, isSelectable: boolean, hasRowNumber: boolean, hasExpandableRows: boolean): number {
 	let count = visibleCount
 	if (isSelectable) count++
 	if (hasRowNumber) count++

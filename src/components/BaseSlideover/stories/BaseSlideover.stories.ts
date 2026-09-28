@@ -9,7 +9,17 @@
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseInput } from '@components/BaseInput'
 import { BaseText } from '@components/BaseText'
@@ -208,7 +218,12 @@ export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['side'] },
 		docs: {
-			source: { code: SIZE_PRESETS.map(preset => `<BaseSlideover v-model:is-open="isOpen" :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseSlideover>`).join('\n') },
+			source: {
+				code: SIZE_PRESETS.map(
+					preset =>
+						`<BaseSlideover v-model:is-open="isOpen" :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseSlideover>`,
+				).join('\n'),
+			},
 		},
 	},
 	render: args => ({

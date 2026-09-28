@@ -29,11 +29,20 @@ const TABS_WITH_DISABLED: TabItem[] = [
 ]
 
 /** Иконки вкладок — доверенная SVG-разметка (поле `icon` выводится через v-html). */
-const SVG_ATTRS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"'
+const SVG_ATTRS =
+	'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"'
 const ICON_TABS: TabItem[] = [
 	{ id: 'profile', label: 'Профиль', icon: `<svg ${SVG_ATTRS}><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>` },
-	{ id: 'security', label: 'Безопасность', icon: `<svg ${SVG_ATTRS}><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>` },
-	{ id: 'notifications', label: 'Уведомления', icon: `<svg ${SVG_ATTRS}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg>` },
+	{
+		id: 'security',
+		label: 'Безопасность',
+		icon: `<svg ${SVG_ATTRS}><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+	},
+	{
+		id: 'notifications',
+		label: 'Уведомления',
+		icon: `<svg ${SVG_ATTRS}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg>`,
+	},
 ]
 
 const MANY_TABS: TabItem[] = [
@@ -136,7 +145,9 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isFullWidth'] },
-		docs: { source: { code: TABS_VARIANTS.map(variant => `<BaseTabs v-model="tab" :items="items" variant="${variant}" />`).join('\n') } },
+		docs: {
+			source: { code: TABS_VARIANTS.map(variant => `<BaseTabs v-model="tab" :items="items" variant="${variant}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseTabs },
@@ -161,7 +172,13 @@ export const Sizes: Story = {
 	args: { variant: 'pills' },
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseTabs v-model="tab" :items="items" variant="pills" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseTabs v-model="tab" :items="items" variant="pills" :size-scale="${p.sizeScale}" />`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTabs },
@@ -270,11 +287,7 @@ export const WithContent: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: [
-					'<BaseTabs v-model="tab" :items="items" variant="arc">',
-					'  <div>{{ panels[tab] }}</div>',
-					'</BaseTabs>',
-				].join('\n'),
+				code: ['<BaseTabs v-model="tab" :items="items" variant="arc">', '  <div>{{ panels[tab] }}</div>', '</BaseTabs>'].join('\n'),
 			},
 		},
 	},

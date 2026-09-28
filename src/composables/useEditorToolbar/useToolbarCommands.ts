@@ -1,10 +1,6 @@
 /** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
 import { nextTick } from 'vue'
-import {
-	FORMAT_CONFIG,
-	isInsideList,
-	matchTypedInlineTag,
-} from '@utils/editorDomUtils'
+import { FORMAT_CONFIG, isInsideList, matchTypedInlineTag } from '@utils/editorDomUtils'
 import { escapeHtml } from '@utils/htmlUtils'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/urlUtils'
 import type { UseToolbarCommandsOptions } from './useToolbarCommands.types'

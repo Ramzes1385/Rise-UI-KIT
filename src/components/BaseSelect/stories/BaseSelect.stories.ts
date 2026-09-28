@@ -166,7 +166,13 @@ export const Default: Story = {}
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
-		docs: { source: { code: SELECT_VARIANTS.map(variant => `<BaseSelect v-model="city" :options="cities" variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SELECT_VARIANTS.map(
+					variant => `<BaseSelect v-model="city" :options="cities" variant="${variant}" label="${variant}" />`,
+				).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSelect },
@@ -193,11 +199,20 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSelect v-model="city" :options="cities" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseSelect v-model="city" :options="cities" :size-scale="${p.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSelect },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'label', 'sizeScale', 'onUpdate:modelValue']), presets: SIZE_PRESETS, sizeLabel, values: ref<Record<string, string>>({}) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref<Record<string, string>>({}),
+		}),
 		template: `
 			<div class="story-col story-narrow">
 				<BaseSelect

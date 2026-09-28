@@ -129,7 +129,9 @@ export const Variants: Story = {
 	parameters: {
 		maxWidth: 760,
 		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
-		docs: { source: { code: FILE_UPLOAD_VARIANTS.map(variant => `<BaseFileUpload variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: { code: FILE_UPLOAD_VARIANTS.map(variant => `<BaseFileUpload variant="${variant}" label="${variant}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseFileUpload },

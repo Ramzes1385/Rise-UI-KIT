@@ -56,7 +56,10 @@ describe('BaseBackTop unit', () => {
 	})
 
 	it('при prefers-reduced-motion прокрутка без анимации; без <main> фокус на body', async () => {
-		vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })))
+		vi.stubGlobal(
+			'matchMedia',
+			vi.fn(() => ({ matches: true })),
+		)
 		main.remove()
 		scrollWindow(1000)
 		render(BaseBackTop)

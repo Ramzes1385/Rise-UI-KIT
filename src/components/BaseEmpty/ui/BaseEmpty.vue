@@ -1,8 +1,5 @@
 <template>
-	<div
-		class="base-empty"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<div class="base-empty" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div class="base-empty__icon-wrapper" :class="classes.iconWrapper">
 			<slot name="icon">
 				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', sizeScale)" :custom-class="classes.icon" />
@@ -50,12 +47,24 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'
 
-const props = withDefaults(defineProps<BaseEmptyProps>(), kitDefaults('BaseEmpty', {
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseEmptyProps>(),
+	kitDefaults('BaseEmpty', {
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, [
+	'root',
+	'iconWrapper',
+	'icon',
+	'content',
+	'title',
+	'description',
+	'body',
+	'actions',
+])
 defineSlots<BaseEmptySlots>()
 
 const emptyIcon = computed((): string => props.icon || 'inbox')

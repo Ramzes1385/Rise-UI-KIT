@@ -69,12 +69,7 @@
 					@click="handlePresetClick(preset)" />
 			</div>
 
-			<button
-				v-if="isResettable"
-				type="button"
-				class="base-color-picker__reset"
-				:class="classes.reset"
-				@click="handleReset">
+			<button v-if="isResettable" type="button" class="base-color-picker__reset" :class="classes.reset" @click="handleReset">
 				{{ resetLabel ?? UI_TEXT.NO_COLOR }}
 			</button>
 		</div>
@@ -96,16 +91,19 @@ import '../styles/BaseColorPicker.style.scss'
 import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../model/BaseColorPicker.types'
 
-const props = withDefaults(defineProps<BaseColorPickerProps>(), kitDefaults('BaseColorPicker', {
-	position: 'bottom',
-	isHexHidden: false,
-	isPresetsHidden: false,
-	isResettable: false,
-	hasTransparentSwatch: false,
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	presets: () => DEFAULT_COLOR_PRESETS,
-}))
+const props = withDefaults(
+	defineProps<BaseColorPickerProps>(),
+	kitDefaults('BaseColorPicker', {
+		position: 'bottom',
+		isHexHidden: false,
+		isPresetsHidden: false,
+		isResettable: false,
+		hasTransparentSwatch: false,
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		presets: () => DEFAULT_COLOR_PRESETS,
+	}),
+)
 
 const emit = defineEmits<BaseColorPickerEmits>()
 defineSlots<BaseColorPickerSlots>()

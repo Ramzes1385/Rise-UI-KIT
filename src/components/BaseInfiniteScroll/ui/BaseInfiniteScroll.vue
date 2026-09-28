@@ -39,12 +39,15 @@ import type {
 	InfiniteScrollStatus,
 } from '../model/BaseInfiniteScroll.types'
 
-const props = withDefaults(defineProps<BaseInfiniteScrollProps>(), kitDefaults('BaseInfiniteScroll', {
-	variant: DEFAULT_VARIANT,
-	mode: 'intersect',
-	distance: 200,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseInfiniteScrollProps>(),
+	kitDefaults('BaseInfiniteScroll', {
+		variant: DEFAULT_VARIANT,
+		mode: 'intersect',
+		distance: 200,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseInfiniteScrollEmits>()
 defineSlots<BaseInfiniteScrollSlots>()

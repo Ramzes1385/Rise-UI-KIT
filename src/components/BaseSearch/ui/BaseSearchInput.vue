@@ -16,11 +16,7 @@
 		@focus="handleFocus"
 		@blur="handleBlur">
 		<template v-if="hasIcon" #prefix>
-			<BaseIcon
-				name="search"
-				class="base-search__icon"
-				:custom-class="classes.icon"
-				:size-scale="calcIconScale('sm', sizeScale)" />
+			<BaseIcon name="search" class="base-search__icon" :custom-class="classes.icon" :size-scale="calcIconScale('sm', sizeScale)" />
 		</template>
 		<template v-if="isLoading || (hasClear && modelValue)" #suffix>
 			<span class="base-search__actions">

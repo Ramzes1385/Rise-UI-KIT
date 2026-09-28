@@ -18,7 +18,11 @@ describe('словари', () => {
 		const placeholders = (value: string) => [...value.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort()
 		for (const section of SECTIONS.filter(name => name !== 'plural')) {
 			for (const [key, value] of Object.entries(ru[section])) {
-				expect([section, key, placeholders((en[section] as Record<string, string>)[key])]).toEqual([section, key, placeholders(value)])
+				expect([section, key, placeholders((en[section] as Record<string, string>)[key])]).toEqual([
+					section,
+					key,
+					placeholders(value),
+				])
 			}
 		}
 	})

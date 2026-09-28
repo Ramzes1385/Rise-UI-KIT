@@ -20,7 +20,10 @@ function setSize(element: HTMLElement, size: Size): void {
 	for (const [key, value] of Object.entries(size)) Object.defineProperty(element, key, { value, configurable: true })
 }
 
-function setup(props: Record<string, unknown> = {}, size: Size = { clientHeight: 100, scrollHeight: 400, clientWidth: 200, scrollWidth: 200 }) {
+function setup(
+	props: Record<string, unknown> = {},
+	size: Size = { clientHeight: 100, scrollHeight: 400, clientWidth: 200, scrollWidth: 200 },
+) {
 	const api = ref<BaseScrollAreaExpose | null>(null)
 	const result = render({
 		components: { BaseScrollArea },
@@ -88,7 +91,10 @@ describe('BaseScrollArea unit', () => {
 	})
 
 	it('клик по полосе ставит ползунок серединой под указатель', async () => {
-		const { container, viewport } = setup({ orientation: 'both' }, { clientHeight: 100, scrollHeight: 400, clientWidth: 100, scrollWidth: 400 })
+		const { container, viewport } = setup(
+			{ orientation: 'both' },
+			{ clientHeight: 100, scrollHeight: 400, clientWidth: 100, scrollWidth: 400 },
+		)
 		await Promise.resolve()
 		const barY = container.querySelector('.base-scroll-area__bar--y') as HTMLElement
 		const barX = container.querySelector('.base-scroll-area__bar--x') as HTMLElement
@@ -104,7 +110,10 @@ describe('BaseScrollArea unit', () => {
 	})
 
 	it('перетаскивание ползунка прокручивает пропорционально его свободному ходу', async () => {
-		const { container, viewport } = setup({ orientation: 'both' }, { clientHeight: 100, scrollHeight: 400, clientWidth: 100, scrollWidth: 200 })
+		const { container, viewport } = setup(
+			{ orientation: 'both' },
+			{ clientHeight: 100, scrollHeight: 400, clientWidth: 100, scrollWidth: 200 },
+		)
 		await Promise.resolve()
 		const thumbY = thumb(container, 'y')
 		await fireEvent.pointerMove(thumbY, { clientY: 10 })

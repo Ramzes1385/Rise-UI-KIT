@@ -34,22 +34,16 @@ import type { Ref } from 'vue'
  * ```
  */
 function useTableData(options: UseTableDataOptions): UseTableDataReturn {
-	const {
-		rows,
-		columns,
-		loadMode,
-		pageSize,
-		isMultiSort,
-		searchDebounce,
-		onSearch,
-		onSort,
-		onFilter,
-		onPageSizeChange,
-	} = options
+	const { rows, columns, loadMode, pageSize, isMultiSort, searchDebounce, onSearch, onSort, onFilter, onPageSizeChange } = options
 
 	const { searchQuery, handleSearchInput } = useTableSearch({ searchDebounce, onSearch })
 
-	const { activeFilters, addFilter: baseAddFilter, removeFilter: baseRemoveFilter, getFilterLabel } = useTableFilter({
+	const {
+		activeFilters,
+		addFilter: baseAddFilter,
+		removeFilter: baseRemoveFilter,
+		getFilterLabel,
+	} = useTableFilter({
 		columns,
 		onFilter,
 	})
@@ -127,28 +121,15 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 		return result
 	})
 
-	const {
-		currentPage,
-		localPageSize,
-		displayedRows,
-		totalPages,
-		visiblePages,
-		hasMoreRows,
-		loadMore,
-		resetPage,
-		handlePageSizeChange,
-	} = useTablePagination({
-		processedRows,
-		loadMode,
-		pageSize,
-		onPageSizeChange,
-	})
+	const { currentPage, localPageSize, displayedRows, totalPages, visiblePages, hasMoreRows, loadMore, resetPage, handlePageSizeChange } =
+		useTablePagination({
+			processedRows,
+			loadMode,
+			pageSize,
+			onPageSizeChange,
+		})
 
-	function addFilter(
-		filterColumn: Ref<string | number>,
-		filterOperator: Ref<string | number>,
-		filterValue: Ref<string>,
-	): void {
+	function addFilter(filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>): void {
 		baseAddFilter(filterColumn, filterOperator, filterValue)
 		resetPage()
 	}

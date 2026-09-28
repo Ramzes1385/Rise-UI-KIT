@@ -43,7 +43,10 @@
 				tabindex="-1"
 				class="base-chat-context-menu__item"
 				@click="handlePin">
-				<BaseIcon :name="message?.isPinned ? 'unpin' : 'pin'" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<BaseIcon
+					:name="message?.isPinned ? 'unpin' : 'pin'"
+					:size-scale="sizeScale * CHAT_SCALE.SMALL"
+					class="base-chat-context-menu__icon" />
 				<span>{{ message?.isPinned ? UI_CHAT_TEXT.UNPIN : UI_CHAT_TEXT.PIN }}</span>
 			</button>
 			<button
@@ -86,7 +89,10 @@ const menuRef = ref<HTMLElement | null>(null)
  * его метка остаётся в списке сообщений: от неё ищется ближайший `data-theme`
  */
 const instance = getCurrentInstance()
-const inheritedTheme = useInheritedTheme(() => (instance?.proxy?.$el as Node | null | undefined)?.parentElement, () => props.isOpen)
+const inheritedTheme = useInheritedTheme(
+	() => (instance?.proxy?.$el as Node | null | undefined)?.parentElement,
+	() => props.isOpen,
+)
 /** Место меню среди открытых слоёв: меню чата в окне — над окном */
 const layerStyle = useLayerIndex(() => props.isOpen)
 

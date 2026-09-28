@@ -58,12 +58,20 @@ describe('urlUtils.normalizeLinkUrl', () => {
 		expect(normalizeLinkUrl(input)).toBe(expected)
 	})
 
-	it.each(['https://example.com', 'http://example.com', 'mailto:team@example.com', 'tel:88005553535', '/docs', '#install', './file', '?q=1', 'javascript:alert(1)', ''])(
-		'не меняет %j',
-		input => {
-			expect(normalizeLinkUrl(input)).toBe(input)
-		},
-	)
+	it.each([
+		'https://example.com',
+		'http://example.com',
+		'mailto:team@example.com',
+		'tel:88005553535',
+		'/docs',
+		'#install',
+		'./file',
+		'?q=1',
+		'javascript:alert(1)',
+		'',
+	])('не меняет %j', input => {
+		expect(normalizeLinkUrl(input)).toBe(input)
+	})
 })
 
 describe('urlUtils.isExternalUrl', () => {

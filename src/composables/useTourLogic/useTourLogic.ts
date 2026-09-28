@@ -32,11 +32,7 @@ function resolvePlacement(rect: DOMRect, preferred: TourPlacement): Exclude<Tour
 	return 'left'
 }
 
-function computeCardPosition(
-	rect: DOMRect,
-	placement: Exclude<TourPlacement, 'auto'>,
-	gap: number,
-): { top: number; left: number } {
+function computeCardPosition(rect: DOMRect, placement: Exclude<TourPlacement, 'auto'>, gap: number): { top: number; left: number } {
 	const centerX = rect.left + rect.width / 2
 	const centerY = rect.top + rect.height / 2
 	if (placement === 'top') return { top: rect.top - gap, left: centerX }

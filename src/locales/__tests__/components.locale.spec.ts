@@ -62,10 +62,10 @@ describe('откуда берётся язык', () => {
 	})
 
 	it('createUiKitPlugin({ locale })', () => {
-		const wrapper = mount(
-			defineComponent({ render: () => h(BaseModal, { isOpen: true, title: 'Settings' }) }),
-			{ global: { plugins: [createUiKitPlugin({ locale: 'en' })] }, attachTo: document.body },
-		)
+		const wrapper = mount(defineComponent({ render: () => h(BaseModal, { isOpen: true, title: 'Settings' }) }), {
+			global: { plugins: [createUiKitPlugin({ locale: 'en' })] },
+			attachTo: document.body,
+		})
 
 		expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
 		wrapper.unmount()

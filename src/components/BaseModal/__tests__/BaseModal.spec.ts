@@ -80,7 +80,9 @@ describe('BaseModal unit', () => {
 			expect(screen.getByRole('dialog', { name: 'Удалить проект?' })).not.toHaveAttribute('aria-describedby')
 
 			await rerender({ dialogRole: 'alertdialog', ariaDescribedby: 'modal-hint' })
-			expect(screen.getByRole('alertdialog', { name: 'Удалить проект?' })).toHaveAccessibleDescription('Это действие нельзя отменить.')
+			expect(screen.getByRole('alertdialog', { name: 'Удалить проект?' })).toHaveAccessibleDescription(
+				'Это действие нельзя отменить.',
+			)
 		})
 
 		it('после анимации закрытия эмитит after-leave', async () => {

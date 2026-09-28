@@ -1,11 +1,7 @@
 <template>
 	<div
 		class="base-tabs"
-		:class="[
-			classes.root,
-			variantClass,
-			{ 'base-tabs--full-width': isFullWidth, 'base-tabs--scrollable': isScrollable },
-		]"
+		:class="[classes.root, variantClass, { 'base-tabs--full-width': isFullWidth, 'base-tabs--scrollable': isScrollable }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div class="base-tabs__nav" :class="classes.nav">
 			<BaseButton
@@ -88,18 +84,26 @@ import { kitDefaults } from '@composables/useDefaults'
 import { toHTMLElement } from '@utils/domUtils'
 import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../model/BaseTabs.types'
 
-const props = withDefaults(defineProps<BaseTabsProps>(), kitDefaults('BaseTabs', {
-	isFullWidth: false,
-	isScrollable: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	variant: 'underline',
-}))
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
-	'base-tabs',
-	props,
-	['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content'],
+const props = withDefaults(
+	defineProps<BaseTabsProps>(),
+	kitDefaults('BaseTabs', {
+		isFullWidth: false,
+		isScrollable: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		variant: 'underline',
+	}),
 )
+
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tabs', props, [
+	'root',
+	'nav',
+	'scrollBtn',
+	'list',
+	'tab',
+	'icon',
+	'label',
+	'content',
+])
 
 const emit = defineEmits<BaseTabsEmits>()
 defineSlots<BaseTabsSlots>()

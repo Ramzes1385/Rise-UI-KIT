@@ -19,11 +19,14 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseKbd.style.scss'
 import type { BaseKbdProps, BaseKbdSlots } from '../model/BaseKbd.types'
 
-const props = withDefaults(defineProps<BaseKbdProps>(), kitDefaults('BaseKbd', {
-	variant: DEFAULT_VARIANT,
-	value: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseKbdProps>(),
+	kitDefaults('BaseKbd', {
+		variant: DEFAULT_VARIANT,
+		value: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseKbdSlots>()
 

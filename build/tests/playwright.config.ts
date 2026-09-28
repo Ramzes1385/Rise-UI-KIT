@@ -70,5 +70,5 @@ export default defineConfig({
 					port: storybookPort,
 					reuseExistingServer: false,
 				},
-		  ],
+			],
 })

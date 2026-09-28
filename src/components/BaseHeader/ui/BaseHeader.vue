@@ -34,7 +34,12 @@
 				</BaseButton>
 			</div>
 		</BaseContainer>
-		<BaseDrawer v-if="hasMenu" v-model:is-open="isMenuOpen" :direction="menuDirection" :title="resolvedMenuLabel" :size-scale="sizeScale">
+		<BaseDrawer
+			v-if="hasMenu"
+			v-model:is-open="isMenuOpen"
+			:direction="menuDirection"
+			:title="resolvedMenuLabel"
+			:size-scale="sizeScale">
 			<slot name="menu" :close="closeMenu" />
 		</BaseDrawer>
 	</header>
@@ -54,13 +59,16 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseHeader.style.scss'
 import type { BaseHeaderProps, BaseHeaderSlots } from '../model/BaseHeader.types'
 
-const props = withDefaults(defineProps<BaseHeaderProps>(), kitDefaults('BaseHeader', {
-	variant: DEFAULT_VARIANT,
-	containerSize: 'full',
-	isSticky: true,
-	menuDirection: 'right',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseHeaderProps>(),
+	kitDefaults('BaseHeader', {
+		variant: DEFAULT_VARIANT,
+		containerSize: 'full',
+		isSticky: true,
+		menuDirection: 'right',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseHeaderSlots>()
 const slots = useSlots()

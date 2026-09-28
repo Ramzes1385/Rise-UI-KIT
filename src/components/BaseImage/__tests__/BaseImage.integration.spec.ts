@@ -254,7 +254,8 @@ describe('BaseImage integration', () => {
 			const user = userEvent.setup()
 			render({
 				components: { BaseImage },
-				template: '<div><button type="button">До</button><BaseImage src="img1.jpg" alt="Закат" :zoom-config="{ hasZoom: true }" /></div>',
+				template:
+					'<div><button type="button">До</button><BaseImage src="img1.jpg" alt="Закат" :zoom-config="{ hasZoom: true }" /></div>',
 			})
 
 			await user.click(screen.getByRole('button', { name: 'Закат' }))
@@ -355,7 +356,13 @@ describe('BaseImage integration', () => {
 
 		it('перетаскивание слайда мышью не открывает зум: click после drag гасится', async () => {
 			const { container } = render(BaseSlider, {
-				props: { items: [{ src: url, alt: 'Слайд 1' }, { src: url, alt: 'Слайд 2' }], isZoomable: true },
+				props: {
+					items: [
+						{ src: url, alt: 'Слайд 1' },
+						{ src: url, alt: 'Слайд 2' },
+					],
+					isZoomable: true,
+				},
 			})
 			const image = container.querySelector('.base-slider__slide .base-image__img')!
 

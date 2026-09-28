@@ -1,5 +1,11 @@
 <template>
-	<BaseEmpty v-if="links.length === 0" variant="ghost" icon="link" :title="UI_CHAT_TEXT.NO_LINKS" :size-scale="sizeScale" class="base-chat-slideover__empty" />
+	<BaseEmpty
+		v-if="links.length === 0"
+		variant="ghost"
+		icon="link"
+		:title="UI_CHAT_TEXT.NO_LINKS"
+		:size-scale="sizeScale"
+		class="base-chat-slideover__empty" />
 	<ul v-else class="base-chat-slideover__links-list">
 		<li v-for="link in links" :key="link.url">
 			<!-- Настоящая ссылка: открывается в новой вкладке, доступна с клавиатуры, её можно скопировать -->

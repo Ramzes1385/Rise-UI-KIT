@@ -90,7 +90,9 @@ export const Variants: Story = {
 		controls: { include: ['description', 'error', 'isRequired', 'sizeScale'] },
 		docs: {
 			source: {
-				code: FORM_FIELD_VARIANTS.map(variant => `<BaseFormField variant="${variant}" label="${variant}">…</BaseFormField>`).join('\n'),
+				code: FORM_FIELD_VARIANTS.map(variant => `<BaseFormField variant="${variant}" label="${variant}">…</BaseFormField>`).join(
+					'\n',
+				),
 			},
 		},
 	},
@@ -184,7 +186,11 @@ export const LongContent: Story = {
 	parameters: { controls: { include: ['variant', 'sizeScale'] } },
 	render: args => ({
 		components: { BaseFormField, BasePin },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'label', 'description', 'error']), smsCode: ref(''), cardPin: ref('0000') }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'label', 'description', 'error']),
+			smsCode: ref(''),
+			cardPin: ref('0000'),
+		}),
 		template: `
 			<div class="story-col story-narrow">
 				<BaseFormField
@@ -203,7 +209,9 @@ export const LongContent: Story = {
 		`,
 	}),
 	play: async ({ canvasElement }) => {
-		for (const text of canvasElement.querySelectorAll<HTMLElement>('.base-form-field__label, .base-form-field__description, .base-form-field__error')) {
+		for (const text of canvasElement.querySelectorAll<HTMLElement>(
+			'.base-form-field__label, .base-form-field__description, .base-form-field__error',
+		)) {
 			await expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
 		}
 	},

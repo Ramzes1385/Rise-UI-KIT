@@ -28,7 +28,9 @@
 					<BaseIcon v-if="isDanger" class="base-popconfirm__icon" name="alert-triangle" :size-scale="iconScale" />
 					<p :id="titleId" class="base-popconfirm__title" :class="classes.title">{{ title }}</p>
 				</div>
-				<p v-if="description" :id="descriptionId" class="base-popconfirm__description" :class="classes.description">{{ description }}</p>
+				<p v-if="description" :id="descriptionId" class="base-popconfirm__description" :class="classes.description">
+					{{ description }}
+				</p>
 				<div class="base-popconfirm__actions">
 					<BaseButton
 						variant="outline"
@@ -121,7 +123,10 @@ const triggerAttributes = computed(() => ({
 	'aria-controls': isOpenState.value ? dialogId : undefined,
 }))
 
-const { getTrigger } = useTriggerAttributes(() => triggerRef.value, () => triggerAttributes.value)
+const { getTrigger } = useTriggerAttributes(
+	() => triggerRef.value,
+	() => triggerAttributes.value,
+)
 
 function setOpen(value: boolean): void {
 	isOpenLocal.value = value

@@ -15,9 +15,7 @@ describe('useMessageParser', () => {
 
 		it('должен распознавать обычный текст как один токен', () => {
 			const { parseMessageText } = useMessageParser()
-			expect(parseMessageText('Привет мир')).toEqual([
-				{ type: 'text', value: 'Привет мир' },
-			])
+			expect(parseMessageText('Привет мир')).toEqual([{ type: 'text', value: 'Привет мир' }])
 		})
 
 		it('должен распознавать ссылку', () => {
@@ -47,9 +45,7 @@ describe('useMessageParser', () => {
 
 		it('не должен распознавать слеш в середине слова как команду', () => {
 			const { parseMessageText } = useMessageParser()
-			expect(parseMessageText('путь/к/файлу')).toEqual([
-				{ type: 'text', value: 'путь/к/файлу' },
-			])
+			expect(parseMessageText('путь/к/файлу')).toEqual([{ type: 'text', value: 'путь/к/файлу' }])
 		})
 
 		it('должен обрабатывать смесь токенов', () => {
@@ -69,9 +65,7 @@ describe('useMessageParser', () => {
 	describe('getHighlightedParts', () => {
 		it('должен возвращать текст как единую часть без поискового запроса', () => {
 			const { getHighlightedParts } = useMessageParser()
-			expect(getHighlightedParts('Привет мир')).toEqual([
-				{ text: 'Привет мир', isMatch: false },
-			])
+			expect(getHighlightedParts('Привет мир')).toEqual([{ text: 'Привет мир', isMatch: false }])
 		})
 
 		it('должен подсвечивать совпадения', () => {

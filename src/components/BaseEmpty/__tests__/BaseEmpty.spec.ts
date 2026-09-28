@@ -23,7 +23,10 @@ function resolvePx(declaration: string, sizeScale: string): number[] {
 	const values = declaration.match(/^sz\(([^)]+)\)$/)?.[1]
 	if (!values) throw new Error(`Ожидалось значение через sz(): ${declaration}`)
 	const factor = sizeScale === '' ? 1 : Number(sizeScale)
-	return values.trim().split(/\s+/).map(value => Number.parseFloat(value) * factor)
+	return values
+		.trim()
+		.split(/\s+/)
+		.map(value => Number.parseFloat(value) * factor)
 }
 
 /** Объявление свойства в корневом блоке .base-empty (строки с одним отступом табуляцией, без вложенных блоков) */

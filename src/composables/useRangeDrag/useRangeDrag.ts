@@ -4,19 +4,8 @@ import type { UseRangeDragOptions, UseRangeDragReturn } from './useRangeDrag.typ
 
 /** Описание: обрабатывает drag-взаимодействие ползунков range-слайдера — mouse/touch перетаскивание, клик по треку и клавиатурная навигация */
 function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
-	const {
-		trackRef,
-		pointValues,
-		isDisabled,
-		min,
-		max,
-		isVertical,
-		thumbMin,
-		thumbMax,
-		snapToStepValue,
-		setPointValue,
-		emitChange,
-	} = options
+	const { trackRef, pointValues, isDisabled, min, max, isVertical, thumbMin, thumbMax, snapToStepValue, setPointValue, emitChange } =
+		options
 
 	const activeIndex = ref<number | null>(null)
 

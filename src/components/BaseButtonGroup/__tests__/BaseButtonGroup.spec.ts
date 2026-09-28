@@ -8,7 +8,10 @@ import BaseButtonGroup from '../ui/BaseButtonGroup.vue'
 
 describe('BaseButtonGroup', () => {
 	it('группа с именем, кнопки из слота, горизонтально по умолчанию', () => {
-		render(BaseButtonGroup, { props: { ariaLabel: 'Выравнивание' }, slots: { default: '<button>Слева</button><button>По центру</button>' } })
+		render(BaseButtonGroup, {
+			props: { ariaLabel: 'Выравнивание' },
+			slots: { default: '<button>Слева</button><button>По центру</button>' },
+		})
 
 		const group = screen.getByRole('group', { name: 'Выравнивание' })
 		expect(group).toHaveClass('base-button-group--horizontal')

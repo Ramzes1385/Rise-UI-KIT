@@ -4,12 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import {
-	rawValueFromPointer,
-	snapRating,
-	starFillPercent,
-	valueFromPointer,
-} from '../ratingUtils'
+import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../ratingUtils'
 
 describe('ratingUtils', () => {
 	describe('snapRating', () => {

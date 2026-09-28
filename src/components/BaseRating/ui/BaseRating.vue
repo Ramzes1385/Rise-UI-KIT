@@ -41,17 +41,20 @@ import '../styles/BaseRating.style.scss'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../model/BaseRating.types'
 
-const props = withDefaults(defineProps<BaseRatingProps>(), kitDefaults('BaseRating', {
-	modelValue: 0,
-	max: 5,
-	step: 1,
-	isHoverSmooth: true,
-	icon: 'star',
-	isReadonly: false,
-	isDisabled: false,
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseRatingProps>(),
+	kitDefaults('BaseRating', {
+		modelValue: 0,
+		max: 5,
+		step: 1,
+		isHoverSmooth: true,
+		icon: 'star',
+		isReadonly: false,
+		isDisabled: false,
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 /** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
 const isControlDisabled = useFormDisabled(() => props.isDisabled)
@@ -66,7 +69,11 @@ const formField = useFormField({
 	value: () => props.modelValue,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-rating', props, ['root', 'icon', 'iconFilled'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-rating', props, [
+	'root',
+	'icon',
+	'iconFilled',
+])
 
 const hoverValue = ref(0)
 

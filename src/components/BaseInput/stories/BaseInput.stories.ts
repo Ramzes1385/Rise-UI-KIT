@@ -95,7 +95,11 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
-		docs: { source: { code: INPUT_VARIANTS.map(variant => `<BaseInput v-model="value" variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: INPUT_VARIANTS.map(variant => `<BaseInput v-model="value" variant="${variant}" label="${variant}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseInput },
@@ -123,11 +127,22 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseInput v-model="value" :size-scale="${p.sizeScale}" placeholder="${p.name}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseInput v-model="value" :size-scale="${p.sizeScale}" placeholder="${p.name}" />`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseInput },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'label', 'sizeScale', 'onUpdate:modelValue']), presets: SIZE_PRESETS, sizeLabel, values: ref<Record<string, string>>({}) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'sizeScale', 'onUpdate:modelValue']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			values: ref<Record<string, string>>({}),
+		}),
 		template: `
 			<div class="story-col story-narrow">
 				<BaseInput
@@ -217,7 +232,11 @@ export const PrefixPostfix: Story = {
 	parameters: { controls: { include: ['variant', 'sizeScale'] } },
 	render: args => ({
 		components: { BaseInput },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'label', 'placeholder', 'type', 'onUpdate:modelValue']), site: ref('rise-ui.dev'), price: ref('1 490') }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'placeholder', 'type', 'onUpdate:modelValue']),
+			site: ref('rise-ui.dev'),
+			price: ref('1 490'),
+		}),
 		template: `
 			<div class="story-col story-narrow">
 				<BaseInput v-bind="props" v-model="site" label="Сайт" prefix="https://" />
@@ -232,7 +251,10 @@ export const WithSlots: Story = {
 	parameters: { controls: { include: ['variant', 'sizeScale'] } },
 	render: args => ({
 		components: { BaseInput, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'label', 'placeholder', 'type', 'onUpdate:modelValue']), query: ref('') }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'placeholder', 'type', 'onUpdate:modelValue']),
+			query: ref(''),
+		}),
 		template: `
 			<div class="story-narrow">
 				<BaseInput v-bind="props" v-model="query" label="Поиск" placeholder="Название проекта">

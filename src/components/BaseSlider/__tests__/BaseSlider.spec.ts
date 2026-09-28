@@ -642,9 +642,7 @@ describe('BaseSlider unit', () => {
 			expect(container.querySelector('.base-slider__caption')?.classList.contains('custom-slider-caption')).toBe(true)
 			expect(container.querySelector('.base-slider__title')?.classList.contains('custom-slider-title')).toBe(true)
 			expect(container.querySelector('.base-slider__desc')?.classList.contains('custom-slider-desc')).toBe(true)
-			expect(container.querySelector('.base-slider__navigation')?.classList.contains('custom-slider-navigation')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-slider__navigation')?.classList.contains('custom-slider-navigation')).toBe(true)
 			expect(container.querySelector('.base-slider__dots')?.classList.contains('custom-slider-dots')).toBe(true)
 			expect(container.querySelector('.base-slider__dot')?.classList.contains('custom-slider-dot')).toBe(true)
 			expect(container.querySelector('.base-slider__thumbs')?.classList.contains('custom-slider-thumbs')).toBe(true)

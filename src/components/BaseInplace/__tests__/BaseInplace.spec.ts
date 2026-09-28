@@ -8,7 +8,10 @@ import BaseInplace from '../ui/BaseInplace.vue'
 
 describe('BaseInplace', () => {
 	it('в просмотре — кнопка «что: значение» с подсказкой; слот display', () => {
-		render(BaseInplace, { props: { modelValue: 'Альфа', label: 'Проект' }, slots: { display: '<template #display="{ value }"><b>{{ value }}</b></template>' } })
+		render(BaseInplace, {
+			props: { modelValue: 'Альфа', label: 'Проект' },
+			slots: { display: '<template #display="{ value }"><b>{{ value }}</b></template>' },
+		})
 
 		const display = screen.getByRole('button', { name: 'Проект: Альфа' })
 		expect(display).toHaveAccessibleDescription('Нажмите, чтобы изменить')

@@ -9,6 +9,9 @@ export const StoryRouterLink = markRaw(
 	defineComponent({
 		name: 'StoryRouterLink',
 		props: { to: { type: String, required: true } },
-		setup: (props, { slots }) => () => h('a', { href: props.to, onClick: (event: MouseEvent) => event.preventDefault() }, slots.default?.()),
+		setup:
+			(props, { slots }) =>
+			() =>
+				h('a', { href: props.to, onClick: (event: MouseEvent) => event.preventDefault() }, slots.default?.()),
 	}),
 )

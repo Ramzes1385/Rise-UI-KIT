@@ -17,7 +17,12 @@ describe('BaseTimePicker', () => {
 		expect(field).toHaveAttribute('inputmode', 'numeric')
 		await user.click(field)
 
-		expect([...document.querySelectorAll('[role="option"]')].map(option => option.textContent?.trim())).toEqual(['09:00', '10:00', '11:00', '12:00'])
+		expect([...document.querySelectorAll('[role="option"]')].map(option => option.textContent?.trim())).toEqual([
+			'09:00',
+			'10:00',
+			'11:00',
+			'12:00',
+		])
 	})
 
 	it('своя подсказка и значение в поле', () => {

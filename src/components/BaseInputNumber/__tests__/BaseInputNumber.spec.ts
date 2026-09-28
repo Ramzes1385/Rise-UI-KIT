@@ -30,7 +30,12 @@ describe('BaseInputNumber', () => {
 
 	it('пустое значение, formatValueText, свои атрибуты поля', () => {
 		const { rerender } = render(BaseInputNumber, {
-			props: { modelValue: null, ariaLabel: 'Сумма', formatValueText: (value: number) => `${value} ₽`, inputAttrs: { name: 'amount' } },
+			props: {
+				modelValue: null,
+				ariaLabel: 'Сумма',
+				formatValueText: (value: number) => `${value} ₽`,
+				inputAttrs: { name: 'amount' },
+			},
 		})
 
 		const field = screen.getByRole('spinbutton', { name: 'Сумма' })

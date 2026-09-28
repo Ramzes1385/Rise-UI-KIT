@@ -40,15 +40,18 @@ import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@
 import type { BaseTimePickerEmits, BaseTimePickerProps } from '../model/BaseTimePicker.types'
 import type { AutocompleteOption } from '@components/BaseAutocomplete'
 
-const props = withDefaults(defineProps<BaseTimePickerProps>(), kitDefaults('BaseTimePicker', {
-	variant: DEFAULT_VARIANT,
-	modelValue: null,
-	step: 30,
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseTimePickerProps>(),
+	kitDefaults('BaseTimePicker', {
+		variant: DEFAULT_VARIANT,
+		modelValue: null,
+		step: 30,
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseTimePickerEmits>()
 
@@ -56,7 +59,9 @@ const { classes } = useCustomClass({ getClass: () => props.customClass, elementK
 
 const autocompleteRef = ref<InstanceType<typeof BaseAutocomplete> | null>(null)
 
-const options = computed((): AutocompleteOption[] => buildTimeOptions(props.step, props.minTime, props.maxTime).map(time => ({ value: time, label: time })))
+const options = computed((): AutocompleteOption[] =>
+	buildTimeOptions(props.step, props.minTime, props.maxTime).map(time => ({ value: time, label: time })),
+)
 
 /** Вариант подходит, если начинается с набранного: «9» — 09:… и 9…, «9:3» — 09:3… */
 function filterTime(option: AutocompleteOption, query: string): boolean {

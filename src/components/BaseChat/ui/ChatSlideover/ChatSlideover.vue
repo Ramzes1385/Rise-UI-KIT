@@ -39,7 +39,11 @@
 				<!-- Вкладка: Информация / Участники -->
 				<template v-if="activeTab === 'info'">
 					<div class="base-chat-slideover__profile-summary">
-						<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale * CHAT_SCALE.AVATAR_LARGE" class="base-chat-slideover__avatar" />
+						<BaseAvatar
+							:src="avatar"
+							:name="title"
+							:size-scale="sizeScale * CHAT_SCALE.AVATAR_LARGE"
+							class="base-chat-slideover__avatar" />
 						<span class="base-chat-slideover__name">{{ title }}</span>
 						<span class="base-chat-slideover__status">
 							{{ isGroup ? membersCountLabel : subtitle || UI_CHAT_TEXT.ONLINE }}
@@ -49,12 +53,21 @@
 					</div>
 
 					<!-- Список участников для групп -->
-					<section v-if="isGroup && members.length > 0" class="base-chat-slideover__members-list" :aria-labelledby="`${idPrefix}-members`">
-						<h4 :id="`${idPrefix}-members`" class="base-chat-slideover__section-title">{{ UI_CHAT_TEXT.PARTICIPANTS_TITLE }}</h4>
+					<section
+						v-if="isGroup && members.length > 0"
+						class="base-chat-slideover__members-list"
+						:aria-labelledby="`${idPrefix}-members`">
+						<h4 :id="`${idPrefix}-members`" class="base-chat-slideover__section-title">
+							{{ UI_CHAT_TEXT.PARTICIPANTS_TITLE }}
+						</h4>
 						<ul class="base-chat-slideover__members-scroll">
 							<li v-for="member in members" :key="member.id" class="base-chat-slideover__member-item">
 								<button type="button" class="base-chat-slideover__member-main" @click="handleMemberClick(member.id)">
-									<BaseAvatar :src="member.avatar" :name="member.name" :size-scale="sizeScale" :is-online="member.status === 'online'" />
+									<BaseAvatar
+										:src="member.avatar"
+										:name="member.name"
+										:size-scale="sizeScale"
+										:is-online="member.status === 'online'" />
 									<span class="base-chat-slideover__member-info">
 										<span class="base-chat-slideover__member-name">{{ member.name }}</span>
 										<span class="base-chat-slideover__member-role">{{ getMemberRoleLabel(member) }}</span>
@@ -88,7 +101,10 @@
 											role="menuitem"
 											class="base-chat-slideover__dropdown-item"
 											@click="handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')">
-											<BaseIcon name="file-config" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
+											<BaseIcon
+												name="file-config"
+												:size-scale="sizeScale * CHAT_SCALE.SMALL"
+												class="base-chat-slideover__dropdown-icon" />
 											{{ member.role === 'admin' ? UI_CHAT_TEXT.DEMOTE : UI_CHAT_TEXT.MAKE_ADMIN }}
 										</button>
 										<button
@@ -96,7 +112,10 @@
 											role="menuitem"
 											class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 											@click="handleKick(member.id)">
-											<BaseIcon name="x-circle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
+											<BaseIcon
+												name="x-circle"
+												:size-scale="sizeScale * CHAT_SCALE.SMALL"
+												class="base-chat-slideover__dropdown-icon" />
 											{{ UI_CHAT_TEXT.EXCLUDE }}
 										</button>
 										<button
@@ -104,7 +123,10 @@
 											role="menuitem"
 											class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
 											@click="handleBan(member.id)">
-											<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__dropdown-icon" />
+											<BaseIcon
+												name="alert-triangle"
+												:size-scale="sizeScale * CHAT_SCALE.SMALL"
+												class="base-chat-slideover__dropdown-icon" />
 											{{ UI_CHAT_TEXT.BAN }}
 										</button>
 									</div>
@@ -141,7 +163,10 @@
 					<dl class="base-chat-slideover__info-details">
 						<div class="base-chat-slideover__info-item">
 							<dt class="base-chat-slideover__info-label">
-								<BaseIcon name="calendar" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__info-icon" />
+								<BaseIcon
+									name="calendar"
+									:size-scale="sizeScale * CHAT_SCALE.SMALL"
+									class="base-chat-slideover__info-icon" />
 								{{ UI_CHAT_TEXT.ROLE }}
 							</dt>
 							<dd class="base-chat-slideover__info-value">
@@ -150,7 +175,10 @@
 						</div>
 						<div v-if="selectedMember.warningsCount !== undefined" class="base-chat-slideover__info-item">
 							<dt class="base-chat-slideover__info-label">
-								<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-slideover__info-icon" />
+								<BaseIcon
+									name="alert-triangle"
+									:size-scale="sizeScale * CHAT_SCALE.SMALL"
+									class="base-chat-slideover__info-icon" />
 								{{ UI_CHAT_TEXT.WARNINGS }}
 							</dt>
 							<dd class="base-chat-slideover__info-value">{{ selectedMember.warningsCount }} / 3</dd>

@@ -16,7 +16,10 @@ export type ModalFullScreen = 'width' | 'height' | 'both'
 /**
  * Пропсы компонента BaseModal
  */
-export interface BaseModalProps extends BaseComponentProps<ModalVariant, 'root' | 'content' | 'header' | 'headerLeft' | 'title' | 'close' | 'body' | 'footer'> {
+export interface BaseModalProps extends BaseComponentProps<
+	ModalVariant,
+	'root' | 'content' | 'header' | 'headerLeft' | 'title' | 'close' | 'body' | 'footer'
+> {
 	/** Состояние открытия */
 	isOpen: boolean
 	/** Заголовок */

@@ -110,7 +110,9 @@ export const CustomColor: Story = {
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.pointer({ keys: '[MouseRight]', target: canvas.getByText('Серия 3 · «Туман над заливом»') })
 		const menu = await screen.findByRole('menu')
-		await expect((menu.closest('.base-dropdown__panel') as HTMLElement).style.getPropertyValue('--custom-bg')).toBe('var(--rise-primary-soft)')
+		await expect((menu.closest('.base-dropdown__panel') as HTMLElement).style.getPropertyValue('--custom-bg')).toBe(
+			'var(--rise-primary-soft)',
+		)
 	},
 }
 

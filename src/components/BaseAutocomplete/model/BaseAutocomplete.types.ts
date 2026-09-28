@@ -3,7 +3,15 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты оформления — как у BaseInput: поле автодополнения — BaseInput со списком вариантов */
-export const AUTOCOMPLETE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const satisfies readonly InputVariant[]
+export const AUTOCOMPLETE_VARIANTS = [
+	'default',
+	'ghost',
+	'outline',
+	'shadow',
+	'soft',
+	'filled',
+	'underline',
+] as const satisfies readonly InputVariant[]
 
 /** Вариант в списке */
 export interface AutocompleteOption {

@@ -23,7 +23,25 @@ export interface RangeMark {
 }
 
 /** Пропсы компонента BaseRange */
-export interface BaseRangeProps extends BaseComponentProps<RangeVariant, 'root' | 'label' | 'labelMin' | 'labelValue' | 'labelMax' | 'body' | 'trackWrapper' | 'track' | 'fill' | 'thumbContainer' | 'thumb' | 'thumbDot' | 'marks' | 'mark' | 'markTick' | 'markText'> {
+export interface BaseRangeProps extends BaseComponentProps<
+	RangeVariant,
+	| 'root'
+	| 'label'
+	| 'labelMin'
+	| 'labelValue'
+	| 'labelMax'
+	| 'body'
+	| 'trackWrapper'
+	| 'track'
+	| 'fill'
+	| 'thumbContainer'
+	| 'thumb'
+	| 'thumbDot'
+	| 'marks'
+	| 'mark'
+	| 'markTick'
+	| 'markText'
+> {
 	/** Текущее значение (одиночный ползунок) */
 	modelValue?: number
 	/** Диапазон (двойной ползунок) */

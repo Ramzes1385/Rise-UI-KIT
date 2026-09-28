@@ -1,11 +1,5 @@
 <template>
-	<Transition
-		v-if="!isGroup"
-		:name="name"
-		:mode="mode"
-		appear
-		@after-enter="handleAfterEnter"
-		@after-leave="handleAfterLeave">
+	<Transition v-if="!isGroup" :name="name" :mode="mode" appear @after-enter="handleAfterEnter" @after-leave="handleAfterLeave">
 		<div v-if="show" class="base-animation" :class="classes.root">
 			<slot />
 		</div>
@@ -31,13 +25,16 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
 
-const props = withDefaults(defineProps<BaseAnimationProps>(), kitDefaults('BaseAnimation', {
-	show: true,
-	name: 'fade',
-	mode: 'out-in',
-	isGroup: false,
-	tag: 'div',
-}))
+const props = withDefaults(
+	defineProps<BaseAnimationProps>(),
+	kitDefaults('BaseAnimation', {
+		show: true,
+		name: 'fade',
+		mode: 'out-in',
+		isGroup: false,
+		tag: 'div',
+	}),
+)
 
 const emit = defineEmits<BaseAnimationEmits>()
 defineSlots<BaseAnimationSlots>()

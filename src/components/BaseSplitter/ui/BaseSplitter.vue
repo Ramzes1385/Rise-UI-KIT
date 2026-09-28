@@ -41,7 +41,11 @@
 			@pointercancel="handlePointerup">
 			<span class="base-splitter__handle" aria-hidden="true" />
 		</div>
-		<div ref="endRef" class="base-splitter__pane base-splitter__pane--end" :class="classes.pane" :tabindex="isEndScrollable ? 0 : undefined">
+		<div
+			ref="endRef"
+			class="base-splitter__pane base-splitter__pane--end"
+			:class="classes.pane"
+			:tabindex="isEndScrollable ? 0 : undefined">
 			<slot name="end" />
 		</div>
 	</div>
@@ -56,21 +60,28 @@ import { useScrollableRegion } from '@composables/useScrollableRegion'
 import '../styles/BaseSplitter.style.scss'
 import type { BaseSplitterEmits, BaseSplitterProps, BaseSplitterSlots } from '../model/BaseSplitter.types'
 
-const props = withDefaults(defineProps<BaseSplitterProps>(), kitDefaults('BaseSplitter', {
-	variant: DEFAULT_VARIANT,
-	modelValue: 50,
-	orientation: 'horizontal',
-	min: 10,
-	max: 90,
-	step: 5,
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSplitterProps>(),
+	kitDefaults('BaseSplitter', {
+		variant: DEFAULT_VARIANT,
+		modelValue: 50,
+		orientation: 'horizontal',
+		min: 10,
+		max: 90,
+		step: 5,
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseSplitterEmits>()
 defineSlots<BaseSplitterSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-splitter', props, ['root', 'pane', 'separator'])
+const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-splitter', props, [
+	'root',
+	'pane',
+	'separator',
+])
 
 const startId = useId()
 const rootRef = ref<HTMLElement | null>(null)

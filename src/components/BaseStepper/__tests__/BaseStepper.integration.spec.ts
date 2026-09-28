@@ -96,7 +96,13 @@ describe('BaseStepper integration', () => {
 	describe('иконка шага', () => {
 		it('icon заменяет номер в индикаторе, у пройденного шага остаётся галочка', () => {
 			const { container } = render(BaseStepper, {
-				props: { modelValue: 2, items: [{ label: 'Документы', icon: 'file' }, { label: 'Проверка', icon: 'search' }] },
+				props: {
+					modelValue: 2,
+					items: [
+						{ label: 'Документы', icon: 'file' },
+						{ label: 'Проверка', icon: 'search' },
+					],
+				},
 			})
 
 			const [completed, current] = container.querySelectorAll('.base-stepper__indicator')

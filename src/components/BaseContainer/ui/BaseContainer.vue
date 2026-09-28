@@ -11,12 +11,15 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseContainer.style.scss'
 import type { BaseContainerProps, BaseContainerSlots } from '../model/BaseContainer.types'
 
-const props = withDefaults(defineProps<BaseContainerProps>(), kitDefaults('BaseContainer', {
-	variant: DEFAULT_VARIANT,
-	size: 'xl',
-	tag: 'div',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseContainerProps>(),
+	kitDefaults('BaseContainer', {
+		variant: DEFAULT_VARIANT,
+		size: 'xl',
+		tag: 'div',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseContainerSlots>()
 

@@ -74,9 +74,7 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 			await createUploadItem(file)
 		}
 
-		onChange(
-			uploadedFiles.value.map(uploadedFile => uploadedFile.file),
-		)
+		onChange(uploadedFiles.value.map(uploadedFile => uploadedFile.file))
 	}
 
 	/**
@@ -155,9 +153,7 @@ function useFileUploadState(options: UseFileUploadStateOptions) {
 	function handleRemove(item: UploadedFile): void {
 		uploadedFiles.value = uploadedFiles.value.filter(uploadedFile => uploadedFile.id !== item.id)
 		releaseItem(item)
-		onChange(
-			uploadedFiles.value.map(uploadedFile => uploadedFile.file),
-		)
+		onChange(uploadedFiles.value.map(uploadedFile => uploadedFile.file))
 	}
 
 	function handleDragOver(): void {

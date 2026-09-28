@@ -148,21 +148,24 @@ import { calcIconScale } from '@utils/iconUtils'
 import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots, UploadedFile } from '../model/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
-const props = withDefaults(defineProps<BaseFileUploadProps>(), kitDefaults('BaseFileUpload', {
-	accept: '',
-	isMultiple: false,
-	isDisabled: false,
-	variant: DEFAULT_VARIANT,
-	maxSize: 5,
-	maxCount: 10,
-	label: '',
-	// Без пропа размер превью берётся из стилей (40px, масштабируется sizeScale): inline-размер — только при явном значении
-	previewSize: undefined,
-	allowPreview: true,
-	emptyText: () => UI_TEXT.FILE_DROP,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	error: '',
-}))
+const props = withDefaults(
+	defineProps<BaseFileUploadProps>(),
+	kitDefaults('BaseFileUpload', {
+		accept: '',
+		isMultiple: false,
+		isDisabled: false,
+		variant: DEFAULT_VARIANT,
+		maxSize: 5,
+		maxCount: 10,
+		label: '',
+		// Без пропа размер превью берётся из стилей (40px, масштабируется sizeScale): inline-размер — только при явном значении
+		previewSize: undefined,
+		allowPreview: true,
+		emptyText: () => UI_TEXT.FILE_DROP,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		error: '',
+	}),
+)
 
 /** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
 const isControlDisabled = useFormDisabled(() => props.isDisabled)

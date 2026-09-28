@@ -166,8 +166,7 @@ describe('BaseTour unit', () => {
 			const { emitted } = render(BaseTour, {
 				props: { isOpen: true, steps: STEPS, step: 2 },
 				slots: {
-					default: (ctx: BaseTourSlotContext) =>
-						h('button', { 'data-testid': 'next-call', onClick: ctx.next }, 'next'),
+					default: (ctx: BaseTourSlotContext) => h('button', { 'data-testid': 'next-call', onClick: ctx.next }, 'next'),
 				},
 			})
 			await fireEvent.click(await screen.findByTestId('next-call'))
@@ -179,8 +178,7 @@ describe('BaseTour unit', () => {
 			const { emitted } = render(BaseTour, {
 				props: { isOpen: true, steps: STEPS, step: 0 },
 				slots: {
-					default: (ctx: BaseTourSlotContext) =>
-						h('button', { 'data-testid': 'prev-call', onClick: ctx.prev }, 'prev'),
+					default: (ctx: BaseTourSlotContext) => h('button', { 'data-testid': 'prev-call', onClick: ctx.prev }, 'prev'),
 				},
 			})
 			await fireEvent.click(await screen.findByTestId('prev-call'))

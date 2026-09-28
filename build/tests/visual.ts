@@ -27,7 +27,11 @@ type PreviewWindow = { __STORYBOOK_PREVIEW__?: { currentRender?: { phase?: strin
  * Открывает story в iframe Storybook и ждёт, пока она отрисуется, её play-функция завершится
  * (play может открыть оверлей или переключить состояние — снимок должен быть конечным) и загрузятся шрифты.
  */
-export async function openStory(page: Page, id: string, { theme = 'light', width = 800, height = 400 }: OpenStoryOptions = {}): Promise<void> {
+export async function openStory(
+	page: Page,
+	id: string,
+	{ theme = 'light', width = 800, height = 400 }: OpenStoryOptions = {},
+): Promise<void> {
 	await page.clock.setFixedTime(new Date(2025, 4, 15, 10, 30))
 	await page.setViewportSize({ width, height })
 	await page.goto(`/iframe.html?id=${id}&viewMode=story&globals=theme:${theme}`)

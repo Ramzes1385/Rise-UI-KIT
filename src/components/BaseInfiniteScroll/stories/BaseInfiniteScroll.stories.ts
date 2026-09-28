@@ -16,7 +16,7 @@ const PAGE = 10
 const TOTAL = 40
 
 function order(index: number): string {
-	return `Заказ № ${1000 + index} — ${(index * 1370) % 9000 + 500} ₽`
+	return `Заказ № ${1000 + index} — ${((index * 1370) % 9000) + 500} ₽`
 }
 
 /**

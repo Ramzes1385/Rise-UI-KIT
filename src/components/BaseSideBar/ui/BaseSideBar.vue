@@ -101,17 +101,20 @@ defineOptions({
 	name: 'BaseSideBar',
 })
 
-const props = withDefaults(defineProps<BaseSideBarProps>(), kitDefaults('BaseSideBar', {
-	variant: DEFAULT_VARIANT,
-	width: 280,
-	collapsedWidth: 68,
-	padding: undefined,
-	gap: 4,
-	activeMatch: 'exact',
-	isCollapsible: true,
-	isLoading: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSideBarProps>(),
+	kitDefaults('BaseSideBar', {
+		variant: DEFAULT_VARIANT,
+		width: 280,
+		collapsedWidth: 68,
+		padding: undefined,
+		gap: 4,
+		activeMatch: 'exact',
+		isCollapsible: true,
+		isLoading: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const emit = defineEmits<BaseSideBarEmits>()
 const slots = defineSlots<BaseSideBarSlots>()
 
@@ -121,7 +124,17 @@ const { wasPropPassed } = useExplicitPropDetection()
 const appLinkComponent = useLinkComponent()
 const resolvedLinkComponent = computed(() => props.linkComponent ?? appLinkComponent)
 
-const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-side-bar', props, ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'])
+const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-side-bar', props, [
+	'root',
+	'header',
+	'title',
+	'toggle',
+	'navigation',
+	'loading',
+	'body',
+	'footer',
+	'collapsed',
+])
 
 const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--sidebar-pad' })
 /** Без пропа padding отступы берутся из стилей (8px 12px): inline-переменные --sidebar-pad-* пишутся только для явного значения. */

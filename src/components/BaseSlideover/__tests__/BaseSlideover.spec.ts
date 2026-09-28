@@ -117,18 +117,14 @@ describe('BaseSlideover unit', () => {
 			render(BaseSlideover, { props: { isOpen: true, isFullWidth: true } })
 
 			expect(document.querySelector('.base-slideover')?.classList.contains('base-slideover--full')).toBe(true)
-			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(
-				true,
-			)
+			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(true)
 		})
 
 		it('не должен применять модификатор --full когда isFullWidth=false', () => {
 			render(BaseSlideover, { props: { isOpen: true, isFullWidth: false } })
 
 			expect(document.querySelector('.base-slideover')?.classList.contains('base-slideover--full')).toBe(false)
-			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(
-				false,
-			)
+			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(false)
 		})
 	})
 
@@ -331,14 +327,10 @@ describe('BaseSlideover unit', () => {
 
 			expect(document.querySelector('.base-slideover')?.classList.contains('custom-slideover-root')).toBe(true)
 			expect(document.querySelector('.base-slideover__panel')?.classList.contains('custom-slideover-panel')).toBe(true)
-			expect(document.querySelector('.base-slideover__header')?.classList.contains('custom-slideover-header')).toBe(
-				true,
-			)
+			expect(document.querySelector('.base-slideover__header')?.classList.contains('custom-slideover-header')).toBe(true)
 			expect(document.querySelector('.base-slideover__title')?.classList.contains('custom-slideover-title')).toBe(true)
 			expect(document.querySelector('.base-slideover__body')?.classList.contains('custom-slideover-body')).toBe(true)
-			expect(document.querySelector('.base-slideover__footer')?.classList.contains('custom-slideover-footer')).toBe(
-				true,
-			)
+			expect(document.querySelector('.base-slideover__footer')?.classList.contains('custom-slideover-footer')).toBe(true)
 		})
 	})
 })

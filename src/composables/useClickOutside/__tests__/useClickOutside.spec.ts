@@ -70,7 +70,10 @@ describe('useClickOutside', () => {
 		const instanceRoot = attached()
 		render(
 			createTestComponent({
-				targets: [shallowRef<Target>([first, null, second]), shallowRef<Target>({ $el: instanceRoot } as unknown as ComponentPublicInstance)],
+				targets: [
+					shallowRef<Target>([first, null, second]),
+					shallowRef<Target>({ $el: instanceRoot } as unknown as ComponentPublicInstance),
+				],
 				callback,
 			}),
 		)
@@ -81,7 +84,12 @@ describe('useClickOutside', () => {
 	})
 
 	it('корень компонента без элемента (текстовый узел) не считается целью', () => {
-		render(createTestComponent({ targets: [shallowRef<Target>({ $el: document.createTextNode('') } as unknown as ComponentPublicInstance)], callback }))
+		render(
+			createTestComponent({
+				targets: [shallowRef<Target>({ $el: document.createTextNode('') } as unknown as ComponentPublicInstance)],
+				callback,
+			}),
+		)
 
 		pressAt(document.body)
 		expect(callback).toHaveBeenCalledTimes(1)
@@ -106,7 +114,9 @@ describe('useClickOutside', () => {
 		const isChildOpen = ref(false)
 		const childCallback = vi.fn()
 		render(createTestComponent({ targets: [shallowRef<Target>(parentPanel)], callback }))
-		render(createTestComponent({ targets: [shallowRef<Target>(childPanel)], callback: childCallback, isActive: () => isChildOpen.value }))
+		render(
+			createTestComponent({ targets: [shallowRef<Target>(childPanel)], callback: childCallback, isActive: () => isChildOpen.value }),
+		)
 
 		isChildOpen.value = true
 		await nextTick()

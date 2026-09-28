@@ -16,7 +16,10 @@ export interface CheckboxGroupOption {
 /**
  * Пропсы компонента BaseCheckboxGroup
  */
-export interface BaseCheckboxGroupProps extends BaseComponentProps<(typeof CHECKBOX_GROUP_VARIANTS)[number], 'root' | 'label' | 'required' | 'options' | 'checkbox' | 'error'> {
+export interface BaseCheckboxGroupProps extends BaseComponentProps<
+	(typeof CHECKBOX_GROUP_VARIANTS)[number],
+	'root' | 'label' | 'required' | 'options' | 'checkbox' | 'error'
+> {
 	/** Отмеченные значения (v-model) в порядке вариантов */
 	modelValue?: (string | number)[]
 	/** Варианты выбора */

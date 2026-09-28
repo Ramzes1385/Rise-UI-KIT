@@ -113,7 +113,11 @@ export const Sizes: Story = {
 	parameters: { controls: { include: ['variant'] } },
 	render: args => ({
 		components: { BaseCheckboxGroup },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'label']), presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)), sizeLabel }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['sizeScale', 'label']),
+			presets: SIZE_PRESETS.filter(preset => ['xs', 'md', 'xl'].includes(preset.name)),
+			sizeLabel,
+		}),
 		template: `
 			<div class="story-stack">
 				<BaseCheckboxGroup v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" />

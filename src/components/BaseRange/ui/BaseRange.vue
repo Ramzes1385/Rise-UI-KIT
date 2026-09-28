@@ -21,11 +21,7 @@
 		</div>
 
 		<div class="base-range__body" :class="classes.body">
-			<div
-				class="base-range__track-wrapper"
-				:class="classes.trackWrapper"
-				ref="trackRef"
-				@mousedown.prevent="handleTrackDown">
+			<div class="base-range__track-wrapper" :class="classes.trackWrapper" ref="trackRef" @mousedown.prevent="handleTrackDown">
 				<!-- Трек -->
 				<div class="base-range__track" :class="classes.track">
 					<div
@@ -104,40 +100,43 @@ import { BaseRangeThumb } from './BaseRangeThumb'
 import '../styles/BaseRange.style.scss'
 import type { BaseRangeEmits, BaseRangeProps, BaseRangeSlots } from '../model/BaseRange.types'
 
-const props = withDefaults(defineProps<BaseRangeProps>(), kitDefaults('BaseRange', {
-	variant: DEFAULT_VARIANT,
-	modelValue: 0,
-	min: 0,
-	max: 100,
-	step: 1,
-	isDisabled: false,
-	hasTooltip: false,
-	marks: () => [],
-	isVertical: false,
-	hasLabel: false,
-}))
+const props = withDefaults(
+	defineProps<BaseRangeProps>(),
+	kitDefaults('BaseRange', {
+		variant: DEFAULT_VARIANT,
+		modelValue: 0,
+		min: 0,
+		max: 100,
+		step: 1,
+		isDisabled: false,
+		hasTooltip: false,
+		marks: () => [],
+		isVertical: false,
+		hasLabel: false,
+	}),
+)
 
 /** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
 const isControlDisabled = useFormDisabled(() => props.isDisabled)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-range', props, [
-		'root',
-		'label',
-		'labelMin',
-		'labelValue',
-		'labelMax',
-		'body',
-		'trackWrapper',
-		'track',
-		'fill',
-		'thumbContainer',
-		'thumb',
-		'thumbDot',
-		'marks',
-		'mark',
-		'markTick',
-		'markText',
-	])
+	'root',
+	'label',
+	'labelMin',
+	'labelValue',
+	'labelMax',
+	'body',
+	'trackWrapper',
+	'track',
+	'fill',
+	'thumbContainer',
+	'thumb',
+	'thumbDot',
+	'marks',
+	'mark',
+	'markTick',
+	'markText',
+])
 
 const emit = defineEmits<BaseRangeEmits>()
 defineSlots<BaseRangeSlots>()

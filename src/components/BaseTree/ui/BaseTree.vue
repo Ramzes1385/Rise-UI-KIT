@@ -68,25 +68,34 @@ import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
 import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots, TreeNode } from '../model/BaseTree.types'
 
-const props = withDefaults(defineProps<BaseTreeProps>(), kitDefaults('BaseTree', {
-	variant: DEFAULT_VARIANT,
-	selectionMode: 'none',
-	arrowPosition: 'left',
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isDefaultExpandAll: false,
-	isVirtual: false,
-	height: 400,
-	itemSize: 36,
-}))
+const props = withDefaults(
+	defineProps<BaseTreeProps>(),
+	kitDefaults('BaseTree', {
+		variant: DEFAULT_VARIANT,
+		selectionMode: 'none',
+		arrowPosition: 'left',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isDefaultExpandAll: false,
+		isVirtual: false,
+		height: 400,
+		itemSize: 36,
+	}),
+)
 
 const emit = defineEmits<BaseTreeEmits>()
 defineSlots<BaseTreeSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
-	'base-tree',
-	props,
-	['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children'],
-)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tree', props, [
+	'root',
+	'node',
+	'header',
+	'arrow',
+	'checkbox',
+	'icon',
+	'label',
+	'actions',
+	'children',
+])
 
 const { expandedIds, selectedIds, expandedSet, selectedSet, toggleNode, expandNodes, selectNode } = useTreeState({
 	items: toRef(props, 'items'),
@@ -212,7 +221,11 @@ function handleKeydown(event: KeyboardEvent): void {
 			else focusNode(entry.parentId ?? undefined)
 			break
 		case '*':
-			expandNodes(visible.filter(({ parentId, node: sibling }) => parentId === entry.parentId && sibling.children?.length && !sibling.isDisabled).map(({ node: sibling }) => sibling.id))
+			expandNodes(
+				visible
+					.filter(({ parentId, node: sibling }) => parentId === entry.parentId && sibling.children?.length && !sibling.isDisabled)
+					.map(({ node: sibling }) => sibling.id),
+			)
 			break
 		case 'Enter':
 			activate(entry)

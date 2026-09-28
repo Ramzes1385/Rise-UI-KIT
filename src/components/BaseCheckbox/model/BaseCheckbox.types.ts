@@ -6,7 +6,10 @@ export const CHECKBOX_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft
 /**
  * Пропсы компонента BaseCheckbox
  */
-export interface BaseCheckboxProps extends BaseComponentProps<(typeof CHECKBOX_VARIANTS)[number], 'root' | 'labelWrapper' | 'wrapper' | 'input' | 'box' | 'icon' | 'label' | 'errorText'> {
+export interface BaseCheckboxProps extends BaseComponentProps<
+	(typeof CHECKBOX_VARIANTS)[number],
+	'root' | 'labelWrapper' | 'wrapper' | 'input' | 'box' | 'icon' | 'label' | 'errorText'
+> {
 	/** Состояние */
 	modelValue?: boolean
 	/** Заголовок */

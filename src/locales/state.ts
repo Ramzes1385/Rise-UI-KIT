@@ -56,7 +56,11 @@ export function formatMessage(template: string, params: Record<string, string | 
 }
 
 /** Строка для числа по правилам языка: 1 участник, 3 участника, 5 участников. `{n}` — число в формате языка */
-export function pluralize(forms: { readonly other: string } & Partial<Record<Intl.LDMLPluralRule, string>>, count: number, locale: UiKitLocale = currentLocale.value): string {
+export function pluralize(
+	forms: { readonly other: string } & Partial<Record<Intl.LDMLPluralRule, string>>,
+	count: number,
+	locale: UiKitLocale = currentLocale.value,
+): string {
 	const category = new Intl.PluralRules(locale.intl).select(count)
 	return formatMessage(forms[category] ?? forms.other, { n: formatNumber(count, undefined, locale) })
 }

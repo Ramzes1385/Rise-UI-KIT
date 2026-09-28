@@ -5,7 +5,15 @@
 	-->
 	<div
 		class="base-segmented"
-		:class="[variantClass, { 'base-segmented--block': isBlock, 'base-segmented--disabled': isControlDisabled, 'base-segmented--error': control.hasError.value }, classes.root]"
+		:class="[
+			variantClass,
+			{
+				'base-segmented--block': isBlock,
+				'base-segmented--disabled': isControlDisabled,
+				'base-segmented--error': control.hasError.value,
+			},
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="radiogroup"
 		:aria-labelledby="labelledBy"
@@ -24,7 +32,13 @@
 				v-for="option in options"
 				:key="option.value"
 				class="base-segmented__segment"
-				:class="[{ 'base-segmented__segment--checked': option.value === modelValue, 'base-segmented__segment--disabled': isControlDisabled || option.isDisabled }, classes.segment]">
+				:class="[
+					{
+						'base-segmented__segment--checked': option.value === modelValue,
+						'base-segmented__segment--disabled': isControlDisabled || option.isDisabled,
+					},
+					classes.segment,
+				]">
 				<input
 					type="radio"
 					class="base-segmented__input"
@@ -33,11 +47,20 @@
 					:checked="option.value === modelValue"
 					:disabled="isControlDisabled || option.isDisabled"
 					@change="select(option.value)" />
-				<BaseIcon v-if="option.icon" :name="option.icon" class="base-segmented__icon" :size-scale="calcIconScale('sm', sizeScale)" />
+				<BaseIcon
+					v-if="option.icon"
+					:name="option.icon"
+					class="base-segmented__icon"
+					:size-scale="calcIconScale('sm', sizeScale)" />
 				<span class="base-segmented__text">{{ option.label }}</span>
 			</label>
 		</div>
-		<FormFieldError :id="errorId" :error="error ?? ''" class-name="base-segmented__error" :custom-class="classes.error" :size-scale="sizeScale" />
+		<FormFieldError
+			:id="errorId"
+			:error="error ?? ''"
+			class-name="base-segmented__error"
+			:custom-class="classes.error"
+			:size-scale="sizeScale" />
 	</div>
 </template>
 
@@ -52,18 +75,25 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSegmented.style.scss'
 import type { BaseSegmentedEmits, BaseSegmentedProps } from '../model/BaseSegmented.types'
 
-const props = withDefaults(defineProps<BaseSegmentedProps>(), kitDefaults('BaseSegmented', {
-	variant: DEFAULT_VARIANT,
-	modelValue: null,
-	isDisabled: false,
-	isBlock: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSegmentedProps>(),
+	kitDefaults('BaseSegmented', {
+		variant: DEFAULT_VARIANT,
+		modelValue: null,
+		isDisabled: false,
+		isBlock: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseSegmentedEmits>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-segmented', props, [
-	'root', 'label', 'track', 'segment', 'error',
+	'root',
+	'label',
+	'track',
+	'segment',
+	'error',
 ])
 
 const ownId = useId()

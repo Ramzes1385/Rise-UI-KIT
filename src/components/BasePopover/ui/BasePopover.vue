@@ -37,12 +37,15 @@ import '../styles/BasePopover.style.scss'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
 
-const props = withDefaults(defineProps<BasePopoverProps>(), kitDefaults('BasePopover', {
-	isOpen: false,
-	position: 'bottom',
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BasePopoverProps>(),
+	kitDefaults('BasePopover', {
+		isOpen: false,
+		position: 'bottom',
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BasePopoverEmits>()
 defineSlots<BasePopoverSlots>()
@@ -62,7 +65,11 @@ const triggerAttributes = computed(() => ({
 	'aria-controls': isOpenLocal.value ? panelId : undefined,
 }))
 
-const { triggerId } = useTriggerAttributes(() => triggerRef.value, () => triggerAttributes.value, { withId: true })
+const { triggerId } = useTriggerAttributes(
+	() => triggerRef.value,
+	() => triggerAttributes.value,
+	{ withId: true },
+)
 
 watch(
 	() => props.isOpen,

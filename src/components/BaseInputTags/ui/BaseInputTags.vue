@@ -70,17 +70,20 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseInputTags.style.scss'
 import type { BaseInputTagsEmits, BaseInputTagsProps } from '../model/BaseInputTags.types'
 
-const props = withDefaults(defineProps<BaseInputTagsProps>(), kitDefaults('BaseInputTags', {
-	variant: DEFAULT_VARIANT,
-	modelValue: () => [],
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	isUnique: true,
-	separators: () => [','],
-	isAddOnBlur: true,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseInputTagsProps>(),
+	kitDefaults('BaseInputTags', {
+		variant: DEFAULT_VARIANT,
+		modelValue: () => [],
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		isUnique: true,
+		separators: () => [','],
+		isAddOnBlur: true,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseInputTagsEmits>()
 
@@ -141,7 +144,10 @@ function addTags(parts: string[]): string[] {
 
 function removeAt(index: number, isFromButton = false): void {
 	const tag = props.modelValue[index]
-	emit('update:modelValue', props.modelValue.filter((_, itemIndex) => itemIndex !== index))
+	emit(
+		'update:modelValue',
+		props.modelValue.filter((_, itemIndex) => itemIndex !== index),
+	)
 	emit('remove', tag)
 	announcement.value = formatMessage(UI_ARIA.TAG_REMOVED, { name: tag })
 	if (isFromButton) focusInput()

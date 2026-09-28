@@ -5,17 +5,7 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import {
-	channelToHex,
-	hexToHsv,
-	hexToRgb,
-	hsvToHex,
-	hsvToRgb,
-	isValidHex,
-	normalizeHex,
-	rgbToHex,
-	rgbToHsv,
-} from '../colorUtils'
+import { channelToHex, hexToHsv, hexToRgb, hsvToHex, hsvToRgb, isValidHex, normalizeHex, rgbToHex, rgbToHsv } from '../colorUtils'
 
 describe('colorUtils', () => {
 	describe('normalizeHex', () => {

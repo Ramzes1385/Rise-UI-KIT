@@ -38,28 +38,32 @@ import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '..
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
-const props = withDefaults(defineProps<BaseDropdownProps>(), kitDefaults('BaseDropdown', {
-	variant: DEFAULT_VARIANT,
-	isOpen: false,
-	position: 'bottom-start',
-	gap: 4,
-	maxHeight: '320px',
-	matchWidth: false,
-	panelClass: '',
-	padding: undefined,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseDropdownProps>(),
+	kitDefaults('BaseDropdown', {
+		variant: DEFAULT_VARIANT,
+		isOpen: false,
+		position: 'bottom-start',
+		gap: 4,
+		maxHeight: '320px',
+		matchWidth: false,
+		panelClass: '',
+		padding: undefined,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const { wasPropPassed } = useExplicitPropDetection()
 
 const closeOnEscape = computed(() =>
 	wasPropPassed('closeOnEscape') || wasPropPassed('close-on-escape') ? (props.closeOnEscape ?? true) : true,
 )
 const preventMousedown = computed(() =>
-	wasPropPassed('preventMousedown') || wasPropPassed('prevent-mousedown')
-		? (props.preventMousedown ?? true)
-		: true,
+	wasPropPassed('preventMousedown') || wasPropPassed('prevent-mousedown') ? (props.preventMousedown ?? true) : true,
 )
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-dropdown__panel', props, [
+	'root',
+	'panel',
+])
 const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad' })
 /** Без пропа padding отступ панели берётся из стилей (4px со всех сторон), inline-переменные не пишутся. */
 const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
@@ -69,7 +73,10 @@ defineSlots<BaseDropdownSlots>()
 
 const wrapperRef = ref<HTMLElement | null>(null)
 /** Тема блока, в котором стоит триггер: панель в body иначе взяла бы тему страницы */
-const inheritedTheme = useInheritedTheme(() => wrapperRef.value, () => props.isOpen)
+const inheritedTheme = useInheritedTheme(
+	() => wrapperRef.value,
+	() => props.isOpen,
+)
 /** Место панели среди открытых слоёв: список в окне — над окном, окно из поповера — над поповером */
 const layerStyle = useLayerIndex(() => props.isOpen)
 const dropdownRef = ref<HTMLElement | null>(null)

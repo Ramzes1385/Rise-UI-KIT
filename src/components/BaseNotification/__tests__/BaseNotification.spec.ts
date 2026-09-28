@@ -276,9 +276,7 @@ describe('BaseNotification unit', () => {
 
 				await vi.advanceTimersByTimeAsync(100)
 				expect(emitted()).not.toHaveProperty('close')
-				expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe(
-					'3000ms',
-				)
+				expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('3000ms')
 
 				await vi.advanceTimersByTimeAsync(2900)
 				expect(emitted()).toHaveProperty('close')
@@ -306,7 +304,9 @@ describe('BaseNotification unit', () => {
 
 			await vi.advanceTimersByTimeAsync(1000)
 			expect(emitted()).not.toHaveProperty('close')
-			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('2147483647ms')
+			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe(
+				'2147483647ms',
+			)
 		})
 
 		it('положительная длительность одинаково задаёт таймер и прогресс-бар', async () => {
@@ -314,9 +314,7 @@ describe('BaseNotification unit', () => {
 			const { emitted } = render(BaseNotification, { props: { title: 'Тест', duration: 5000 } })
 
 			await vi.advanceTimersByTimeAsync(100)
-			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe(
-				'5000ms',
-			)
+			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('5000ms')
 			await vi.advanceTimersByTimeAsync(4800)
 			expect(emitted()).not.toHaveProperty('close')
 			await vi.advanceTimersByTimeAsync(100)

@@ -1,13 +1,15 @@
 import { effectScope } from 'vue'
 import { useChatInfoPanel } from '../useChatInfoPanel'
 
-function setup(): { panel: ReturnType<typeof useChatInfoPanel>; onAvatarClick: ReturnType<typeof vi.fn>; onInfoClick: ReturnType<typeof vi.fn> } {
+function setup(): {
+	panel: ReturnType<typeof useChatInfoPanel>
+	onAvatarClick: ReturnType<typeof vi.fn>
+	onInfoClick: ReturnType<typeof vi.fn>
+} {
 	const onAvatarClick = vi.fn()
 	const onInfoClick = vi.fn()
 	const scope = effectScope()
-	const panel = scope.run(() => useChatInfoPanel({ onAvatarClick, onInfoClick })) as ReturnType<
-		typeof useChatInfoPanel
-	>
+	const panel = scope.run(() => useChatInfoPanel({ onAvatarClick, onInfoClick })) as ReturnType<typeof useChatInfoPanel>
 
 	return { panel, onAvatarClick, onInfoClick }
 }

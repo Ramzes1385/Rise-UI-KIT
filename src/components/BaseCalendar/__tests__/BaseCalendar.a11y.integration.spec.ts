@@ -115,10 +115,7 @@ describe('BaseCalendar: popover даты', () => {
 		initialMonth: 4,
 		initialYear: 2025,
 		showDatePopover: true,
-		highlights: [
-			{ date: new Date(2025, 4, 20), label: 'Сдача монтажа' },
-			{ date: new Date(2025, 4, 20) },
-		],
+		highlights: [{ date: new Date(2025, 4, 20), label: 'Сдача монтажа' }, { date: new Date(2025, 4, 20) }],
 	}
 
 	it('клик по дню показывает дату и события; клик внутри не закрывает, mousedown снаружи — закрывает', async () => {
@@ -154,7 +151,8 @@ describe('BaseCalendar: popover даты', () => {
 		const { container } = render(BaseCalendar, {
 			props,
 			slots: {
-				'date-popover': '<template #date-popover="{ date, close }"><span>Выбрано {{ date.getDate() }}</span><button @click="close">Закрыть</button></template>',
+				'date-popover':
+					'<template #date-popover="{ date, close }"><span>Выбрано {{ date.getDate() }}</span><button @click="close">Закрыть</button></template>',
 			},
 		})
 

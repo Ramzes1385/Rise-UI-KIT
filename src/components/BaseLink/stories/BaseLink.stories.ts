@@ -7,7 +7,18 @@
  */
 
 import { expect, fn, within } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, StoryRouterLink, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	slotArgType,
+	StoryRouterLink,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseText } from '@components/BaseText'
 import { LINK_VARIANTS } from '../model/BaseLink.types'
 import BaseLink from '../ui/BaseLink.vue'
@@ -106,7 +117,8 @@ export const Sizes: Story = {
 	render: args => ({
 		components: { BaseLink },
 		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),
-		template: '<div class="story-row"><BaseLink v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',
+		template:
+			'<div class="story-row"><BaseLink v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',
 	}),
 }
 

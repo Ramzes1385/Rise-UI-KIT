@@ -7,7 +7,10 @@ export const CONTEXT_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', '
 /**
  * Пропсы компонента BaseContextMenu
  */
-export interface BaseContextMenuProps extends BaseComponentProps<(typeof CONTEXT_MENU_VARIANTS)[number], 'root' | 'panel' | 'item' | 'label' | 'separator'> {
+export interface BaseContextMenuProps extends BaseComponentProps<
+	(typeof CONTEXT_MENU_VARIANTS)[number],
+	'root' | 'panel' | 'item' | 'label' | 'separator'
+> {
 	/** Пункты меню: список или группы (как у BaseDropdownMenu) */
 	items: DropdownMenuItems
 	/** Своё меню отключено: по правому клику открывается меню браузера */

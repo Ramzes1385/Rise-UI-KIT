@@ -68,7 +68,13 @@ function spaceOn(side: TooltipPosition, coords: TooltipCoords, viewport: Tooltip
  * @example
  * resolveTooltipPlacement('top', { top: 4, left: 100, width: 80, height: 32 }, { width: 120, height: 24 }, { width: 1024, height: 768 }) // 'bottom'
  */
-function resolveTooltipPlacement(position: TooltipPosition, coords: TooltipCoords, size: TooltipSize, viewport: TooltipSize, gap = 8): TooltipPosition {
+function resolveTooltipPlacement(
+	position: TooltipPosition,
+	coords: TooltipCoords,
+	size: TooltipSize,
+	viewport: TooltipSize,
+	gap = 8,
+): TooltipPosition {
 	if (!size.width || !size.height) return position
 	const need = (isVertical(position) ? size.height : size.width) + TOOLTIP_VIEWPORT_MARGIN
 	const fits = (side: TooltipPosition): boolean => spaceOn(side, coords, viewport, gap) >= need

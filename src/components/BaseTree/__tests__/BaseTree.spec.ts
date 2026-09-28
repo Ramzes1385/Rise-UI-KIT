@@ -212,9 +212,7 @@ describe('BaseTree unit', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			const disabledCheckbox = container.querySelector(
-				'.base-tree__node--disabled .base-tree__checkbox input',
-			) as HTMLElement
+			const disabledCheckbox = container.querySelector('.base-tree__node--disabled .base-tree__checkbox input') as HTMLElement
 			await fireEvent.click(disabledCheckbox)
 
 			expect(emitted()['update:selectedIds']).toBeFalsy()

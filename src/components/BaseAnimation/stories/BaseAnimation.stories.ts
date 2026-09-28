@@ -110,7 +110,9 @@ export const Default: Story = {
 export const Names: Story = {
 	parameters: {
 		controls: { include: ['mode'] },
-		docs: { source: { code: SINGLE_NAMES.map(name => `<BaseAnimation :show="isVisible" name="${name}">…</BaseAnimation>`).join('\n') } },
+		docs: {
+			source: { code: SINGLE_NAMES.map(name => `<BaseAnimation :show="isVisible" name="${name}">…</BaseAnimation>`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseAnimation, BaseButton },

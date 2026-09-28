@@ -7,7 +7,17 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { PIN_VARIANTS } from '../model/BasePin.types'
 import BasePin from '../ui/BasePin.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
@@ -126,7 +136,13 @@ export const Sizes: Story = {
 		`,
 	}),
 	play: async ({ canvas }) => {
-		const heights = ['xs', 'md', 'xl'].map(name => canvas.getByRole('group', { name: `Код, размер ${name}` }).querySelector('input')!.getBoundingClientRect().height)
+		const heights = ['xs', 'md', 'xl'].map(
+			name =>
+				canvas
+					.getByRole('group', { name: `Код, размер ${name}` })
+					.querySelector('input')!
+					.getBoundingClientRect().height,
+		)
 		await expect(heights).toEqual([24, 32, 40])
 	},
 }

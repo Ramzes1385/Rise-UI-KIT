@@ -138,7 +138,13 @@ export const Default: Story = {
 export const Fits: Story = {
 	parameters: {
 		controls: { include: ['src', 'borderRadius', 'sizeScale'] },
-		docs: { source: { code: ['cover', 'contain', 'none'].map(fit => `<BaseImage src="…" alt="…" fit="${fit}" :width="120" :height="160" />`).join('\n') } },
+		docs: {
+			source: {
+				code: ['cover', 'contain', 'none']
+					.map(fit => `<BaseImage src="…" alt="…" fit="${fit}" :width="120" :height="160" />`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseImage },

@@ -9,8 +9,10 @@ export type PopconfirmPosition = 'top' | 'bottom' | 'left' | 'right'
 /**
  * Пропсы компонента BasePopconfirm
  */
-export interface BasePopconfirmProps
-	extends BaseComponentProps<(typeof POPCONFIRM_VARIANTS)[number], 'root' | 'trigger' | 'panel' | 'title' | 'description' | 'cancel' | 'confirm'> {
+export interface BasePopconfirmProps extends BaseComponentProps<
+	(typeof POPCONFIRM_VARIANTS)[number],
+	'root' | 'trigger' | 'panel' | 'title' | 'description' | 'cancel' | 'confirm'
+> {
 	/** Вопрос: имя диалога, например «Удалить серию?» */
 	title: string
 	/** Пояснение последствий под вопросом */

@@ -139,23 +139,26 @@ import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
 import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../model/BaseSearch.types'
 
-const props = withDefaults(defineProps<BaseSearchProps>(), kitDefaults('BaseSearch', {
-	modelValue: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-	variant: DEFAULT_VARIANT,
-	mode: 'default',
-	results: () => [],
-	isRemote: false,
-	isInstant: true,
-	debounceMs: 300,
-	isLoading: false,
-	hasClear: true,
-	hasIcon: true,
-	maxResults: 10,
-	isAutofocus: false,
-	isDisabled: false,
-	error: '',
-}))
+const props = withDefaults(
+	defineProps<BaseSearchProps>(),
+	kitDefaults('BaseSearch', {
+		modelValue: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		variant: DEFAULT_VARIANT,
+		mode: 'default',
+		results: () => [],
+		isRemote: false,
+		isInstant: true,
+		debounceMs: 300,
+		isLoading: false,
+		hasClear: true,
+		hasIcon: true,
+		maxResults: 10,
+		isAutofocus: false,
+		isDisabled: false,
+		error: '',
+	}),
+)
 
 const emit = defineEmits<BaseSearchEmits>()
 defineSlots<BaseSearchSlots>()
@@ -167,43 +170,39 @@ const formField = useFormField({
 	error: () => props.error,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
-	'base-search',
-	props,
-	[
-		'root',
-		'trigger',
-		'icon',
-		'modalOverlay',
-		'modal',
-		'modalHeader',
-		'modalInput',
-		'clear',
-		'clearIcon',
-		'loading',
-		'modalClose',
-		'modalCloseIcon',
-		'modalResults',
-		'result',
-		'resultImage',
-		'resultIcon',
-		'resultContent',
-		'resultTitle',
-		'resultDesc',
-		'resultCategory',
-		'empty',
-		'emptyText',
-		'sidebarOverlay',
-		'sidebar',
-		'sidebarHeader',
-		'sidebarInput',
-		'sidebarClose',
-		'sidebarCloseIcon',
-		'sidebarResults',
-		'dropdown',
-		'input',
-	],
-)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-search', props, [
+	'root',
+	'trigger',
+	'icon',
+	'modalOverlay',
+	'modal',
+	'modalHeader',
+	'modalInput',
+	'clear',
+	'clearIcon',
+	'loading',
+	'modalClose',
+	'modalCloseIcon',
+	'modalResults',
+	'result',
+	'resultImage',
+	'resultIcon',
+	'resultContent',
+	'resultTitle',
+	'resultDesc',
+	'resultCategory',
+	'empty',
+	'emptyText',
+	'sidebarOverlay',
+	'sidebar',
+	'sidebarHeader',
+	'sidebarInput',
+	'sidebarClose',
+	'sidebarCloseIcon',
+	'sidebarResults',
+	'dropdown',
+	'input',
+])
 
 const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 const overlayRef = ref<InstanceType<typeof BaseSearchOverlay> | null>(null)
@@ -265,7 +264,8 @@ const comboboxAttributes = computed(() => ({
 	'aria-autocomplete': 'list',
 	'aria-expanded': hasListbox.value ? 'true' : 'false',
 	'aria-controls': hasListbox.value ? listboxId : undefined,
-	'aria-activedescendant': hasListbox.value && highlightedIndex.value >= 0 ? getSearchOptionId(listboxId, highlightedIndex.value) : undefined,
+	'aria-activedescendant':
+		hasListbox.value && highlightedIndex.value >= 0 ? getSearchOptionId(listboxId, highlightedIndex.value) : undefined,
 }))
 
 /** Статус для скринридера: сколько найдено по запросу; пока идёт загрузка — пусто */

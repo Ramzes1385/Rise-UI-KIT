@@ -4,18 +4,8 @@ import type { UseCalendarPopoverOptions, UseCalendarPopoverReturn } from './useC
 
 /** Composable для управления поповером дня календаря — позиционирование, подсветка, открытие/закрытие. */
 function useCalendarPopover(options: UseCalendarPopoverOptions): UseCalendarPopoverReturn {
-	const {
-		getEvents,
-		isCurrentMonth,
-		isToday,
-		isSelected,
-		isInRange,
-		isWeekend,
-		isDayDisabled,
-		isRangeStart,
-		isRangeEnd,
-		isOutOfRange,
-	} = options
+	const { getEvents, isCurrentMonth, isToday, isSelected, isInRange, isWeekend, isDayDisabled, isRangeStart, isRangeEnd, isOutOfRange } =
+		options
 
 	const popoverDate = ref<Date | null>(null)
 	const popoverStyle = ref<Record<string, string>>({})

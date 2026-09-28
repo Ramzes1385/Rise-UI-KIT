@@ -86,4 +86,3 @@ interface UseSliderReturn {
 }
 
 export type { UseSliderOptions, UseSliderReturn }
-

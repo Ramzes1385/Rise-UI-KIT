@@ -209,7 +209,7 @@ describe('BaseCalendar unit', () => {
 			})
 		})
 
-			describe('эмиты', () => {
+		describe('эмиты', () => {
 			it('должен эмитить range-select при выборе диапазона', async () => {
 				const { container, emitted } = render(BaseCalendar, {
 					props: {

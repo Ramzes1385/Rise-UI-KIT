@@ -142,15 +142,18 @@ import type { BaseSelectOption } from '@components/BaseSelect'
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
-const props = withDefaults(defineProps<BaseEditorProps>(), kitDefaults('BaseEditor', {
-	modelValue: '',
-	placeholder: '',
-	isReadonly: false,
-	variant: DEFAULT_VARIANT,
-	hasToolbar: true,
-	isAutofocus: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseEditorProps>(),
+	kitDefaults('BaseEditor', {
+		modelValue: '',
+		placeholder: '',
+		isReadonly: false,
+		variant: DEFAULT_VARIANT,
+		hasToolbar: true,
+		isAutofocus: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 /** Только чтение: свой isReadonly или неактивная BaseForm вокруг (fieldset формы не блокирует contenteditable) */
 const isLocked = useFormDisabled(() => props.isReadonly)
@@ -158,7 +161,17 @@ const isLocked = useFormDisabled(() => props.isReadonly)
 // Поле адреса ссылки и списки панели — служебные: они не становятся полем BaseFormField вокруг редактора
 isolateFormField()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-editor', props, [
+	'root',
+	'toolbar',
+	'btn',
+	'group',
+	'colorPicker',
+	'headingSelect',
+	'fileInput',
+	'content',
+	'code',
+])
 
 const emit = defineEmits<BaseEditorEmits>()
 defineSlots<BaseEditorSlots>()
@@ -313,7 +326,10 @@ function handleBlur(): void {
 }
 
 /** Тема блока, в котором стоит редактор: меню в body иначе взяло бы тему страницы */
-const inheritedTheme = useInheritedTheme(() => editorRef.value, () => contextMenu.isVisible)
+const inheritedTheme = useInheritedTheme(
+	() => editorRef.value,
+	() => contextMenu.isVisible,
+)
 /** Место меню среди открытых слоёв: меню редактора в окне — над окном */
 const layerStyle = useLayerIndex(() => contextMenu.isVisible)
 

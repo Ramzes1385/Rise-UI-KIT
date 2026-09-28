@@ -82,19 +82,22 @@ import { useSizeScale } from '@composables/useSizeScale'
 import BaseImageZoom from './BaseImageZoom.vue'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../model/BaseImage.types'
 
-const props = withDefaults(defineProps<BaseImageProps>(), kitDefaults('BaseImage', {
-	src: undefined,
-	alt: undefined,
-	timeout: 5000,
-	fit: 'cover',
-	loading: 'lazy',
-	// Без пропа радиус берётся из темы (--rise-radius-md в стилях): inline-стиль пишется только при явном значении
-	borderRadius: undefined,
-	hasPlaceholder: true,
-	convertToWebp: false,
-	convertToAvif: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseImageProps>(),
+	kitDefaults('BaseImage', {
+		src: undefined,
+		alt: undefined,
+		timeout: 5000,
+		fit: 'cover',
+		loading: 'lazy',
+		// Без пропа радиус берётся из темы (--rise-radius-md в стилях): inline-стиль пишется только при явном значении
+		borderRadius: undefined,
+		hasPlaceholder: true,
+		convertToWebp: false,
+		convertToAvif: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const { classes } = useCustomClass({
 	getClass: () => props.customClass,

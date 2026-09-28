@@ -479,28 +479,28 @@ describe('BaseInput unit', () => {
 					cursorAfterDelete: () => ({ maskPos: 0, valueIndex: 999 }),
 				}),
 				useMaskedInputHandlers: (opts: any) => {
-					const maskFns = ({
+					const maskFns = {
 						applyMask: (v: string) => v,
 						stripMask: (v: string) => v,
 						limitValue: (v: string) => v,
 						cursorAfterInput: () => 0,
 						cursorAfterBackspace: () => ({ maskPos: 0, valueIndex: 0 }),
-					cursorAfterDelete: (_pos: number) => ({ maskPos: 0, valueIndex: 999 }),
-				})
-				return {
-					handleInput: (e: Event) => {
-						const target = e.target as HTMLInputElement
-						opts.emit('update:modelValue', target.value)
-					},
-					handleKeydown: (e: KeyboardEvent) => {
-						opts.onKeydown?.(e)
-						if (e.key === 'Delete') {
+						cursorAfterDelete: (_pos: number) => ({ maskPos: 0, valueIndex: 999 }),
+					}
+					return {
+						handleInput: (e: Event) => {
 							const target = e.target as HTMLInputElement
-							const cursorPos = target.selectionStart ?? 0
-							const current = opts.getValue() == null ? '' : String(opts.getValue())
-							e.preventDefault()
-							if (cursorPos >= current.length) return
-							const { valueIndex } = maskFns.cursorAfterDelete(cursorPos)
+							opts.emit('update:modelValue', target.value)
+						},
+						handleKeydown: (e: KeyboardEvent) => {
+							opts.onKeydown?.(e)
+							if (e.key === 'Delete') {
+								const target = e.target as HTMLInputElement
+								const cursorPos = target.selectionStart ?? 0
+								const current = opts.getValue() == null ? '' : String(opts.getValue())
+								e.preventDefault()
+								if (cursorPos >= current.length) return
+								const { valueIndex } = maskFns.cursorAfterDelete(cursorPos)
 								if (valueIndex < 0 || valueIndex >= current.length) return
 								const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
 								opts.emit('update:modelValue', newValue)
@@ -699,7 +699,14 @@ describe('BaseInput: имя и атрибуты поля', () => {
 				modelValue: '',
 				label: 'E-mail',
 				error: 'Неверный адрес',
-				inputAttrs: { id: 'email', name: 'email', autocomplete: 'email', inputmode: 'email', 'data-testid': 'email-field', 'aria-describedby': 'email-hint' },
+				inputAttrs: {
+					id: 'email',
+					name: 'email',
+					autocomplete: 'email',
+					inputmode: 'email',
+					'data-testid': 'email-field',
+					'aria-describedby': 'email-hint',
+				},
 			},
 		})
 

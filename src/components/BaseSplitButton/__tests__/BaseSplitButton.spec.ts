@@ -18,7 +18,10 @@ describe('BaseSplitButton', () => {
 	})
 
 	it('своё имя меню, слот основной кнопки, отключение и загрузка', () => {
-		render(BaseSplitButton, { props: { items: ITEMS, menuLabel: 'Ещё', isDisabled: true, isLoading: true }, slots: { default: 'Отправить' } })
+		render(BaseSplitButton, {
+			props: { items: ITEMS, menuLabel: 'Ещё', isDisabled: true, isLoading: true },
+			slots: { default: 'Отправить' },
+		})
 
 		expect(screen.getByRole('button', { name: 'Ещё' })).toBeDisabled()
 		expect(screen.getByRole('button', { name: /Отправить/ })).toHaveAttribute('aria-busy', 'true')

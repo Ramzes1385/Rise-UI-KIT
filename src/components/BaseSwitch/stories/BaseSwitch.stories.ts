@@ -85,7 +85,11 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
-		docs: { source: { code: SWITCH_VARIANTS.map(variant => `<BaseSwitch v-model="enabled" variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SWITCH_VARIANTS.map(variant => `<BaseSwitch v-model="enabled" variant="${variant}" label="${variant}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSwitch },
@@ -110,7 +114,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSwitch v-model="enabled" :size-scale="${p.sizeScale}" label="${p.name}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseSwitch v-model="enabled" :size-scale="${p.sizeScale}" label="${p.name}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSwitch },
@@ -154,7 +162,11 @@ export const Disabled: Story = {
 	parameters: { controls: { include: ['variant', 'sizeScale', 'reverse'] } },
 	render: args => ({
 		components: { BaseSwitch },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'isDisabled', 'onUpdate:modelValue']), off: ref(false), on: ref(true) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'label', 'isDisabled', 'onUpdate:modelValue']),
+			off: ref(false),
+			on: ref(true),
+		}),
 		template: `
 			<div class="story-col">
 				<BaseSwitch v-bind="props" v-model="off" label="Резервное копирование (недоступно на тарифе)" is-disabled />

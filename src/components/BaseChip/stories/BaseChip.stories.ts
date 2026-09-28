@@ -89,7 +89,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'placement'] },
-		docs: { source: { code: ['default', 'soft', 'outline', 'ghost', 'shadow'].map(variant => `<BaseChip variant="${variant}" :content="3">…</BaseChip>`).join('\n') } },
+		docs: {
+			source: {
+				code: ['default', 'soft', 'outline', 'ghost', 'shadow']
+					.map(variant => `<BaseChip variant="${variant}" :content="3">…</BaseChip>`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseChip, BaseButton, BaseIcon },
@@ -109,7 +115,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant', 'placement'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseChip :size-scale="${preset.sizeScale}" :content="3">…</BaseChip>`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseChip :size-scale="${preset.sizeScale}" :content="3">…</BaseChip>`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseChip, BaseButton, BaseIcon },
@@ -300,7 +310,10 @@ export const Counter: Story = {
 	},
 	render: args => ({
 		components: { BaseChip, BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'content', 'isHiddenOnZero', 'hasOverflow', 'maxValue']), count: ref(0) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'content', 'isHiddenOnZero', 'hasOverflow', 'maxValue']),
+			count: ref(0),
+		}),
 		template: `
 			<div style="padding: 12px;">
 				<BaseChip v-bind="props" :content="count" is-hidden-on-zero has-overflow :max-value="9">

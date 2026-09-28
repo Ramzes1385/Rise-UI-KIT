@@ -34,11 +34,9 @@ function useImageZoom(options: UseImageZoomOptions) {
 	const isMinScale = computed((): boolean => currentScale.value <= options.minScale())
 	const isMaxScale = computed((): boolean => currentScale.value >= options.maxScale())
 
-	const zoomImageStyle = computed(
-		(): Record<string, string> => ({
-			transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${currentScale.value}) rotate(${rotation.value}deg)`,
-		}),
-	)
+	const zoomImageStyle = computed((): Record<string, string> => ({
+		transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${currentScale.value}) rotate(${rotation.value}deg)`,
+	}))
 
 	function calcContain(
 		natW: number,

@@ -13,11 +13,7 @@ function useTableFilter(options: UseTableFilterOptions): UseTableFilterReturn {
 	const activeFilters = ref<ColumnFilter[]>([])
 
 	/** Добавить фильтр */
-	function addFilter(
-		filterColumn: Ref<string | number>,
-		filterOperator: Ref<string | number>,
-		filterValue: Ref<string>,
-	): void {
+	function addFilter(filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>): void {
 		if (!filterColumn.value || !filterValue.value) return
 		activeFilters.value.push({
 			key: String(filterColumn.value),

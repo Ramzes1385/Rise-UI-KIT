@@ -9,7 +9,17 @@
 
 import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	placeholderImage,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
 import BaseSearch from '../ui/BaseSearch.vue'
@@ -29,10 +39,34 @@ const FILES: SearchResult[] = [
 
 /** Картины с превью: изображения генерируются локально, без сети. */
 const ARTWORKS: SearchResult[] = [
-	{ id: 1, title: 'Закат в горах', description: 'Масло, холст · 80×60 см', image: placeholderImage({ width: 80, height: 80, hue: 24 }), category: 'Пейзаж' },
-	{ id: 2, title: 'Горы в тумане', description: 'Масло, холст · 70×50 см', image: placeholderImage({ width: 80, height: 80, hue: 200 }), category: 'Пейзаж' },
-	{ id: 3, title: 'Зелёная долина', description: 'Акрил, холст · 100×80 см', image: placeholderImage({ width: 80, height: 80, hue: 150 }), category: 'Пейзаж' },
-	{ id: 4, title: 'Горы в сумерках', description: 'Масло, холст · 60×40 см', image: placeholderImage({ width: 80, height: 80, hue: 270 }), category: 'Пейзаж' },
+	{
+		id: 1,
+		title: 'Закат в горах',
+		description: 'Масло, холст · 80×60 см',
+		image: placeholderImage({ width: 80, height: 80, hue: 24 }),
+		category: 'Пейзаж',
+	},
+	{
+		id: 2,
+		title: 'Горы в тумане',
+		description: 'Масло, холст · 70×50 см',
+		image: placeholderImage({ width: 80, height: 80, hue: 200 }),
+		category: 'Пейзаж',
+	},
+	{
+		id: 3,
+		title: 'Зелёная долина',
+		description: 'Акрил, холст · 100×80 см',
+		image: placeholderImage({ width: 80, height: 80, hue: 150 }),
+		category: 'Пейзаж',
+	},
+	{
+		id: 4,
+		title: 'Горы в сумерках',
+		description: 'Масло, холст · 60×40 см',
+		image: placeholderImage({ width: 80, height: 80, hue: 270 }),
+		category: 'Пейзаж',
+	},
 ]
 
 /** Результаты с длинными названиями и описаниями. */
@@ -77,7 +111,10 @@ function resultTitles(): string[] {
 function renderWithLocalQuery(args: SearchArgs) {
 	return {
 		components: { BaseSearch },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'onUpdate:modelValue']), query: ref(String(args.modelValue ?? '')) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'onUpdate:modelValue']),
+			query: ref(String(args.modelValue ?? '')),
+		}),
 		template: '<div class="story-narrow"><BaseSearch v-bind="props" v-model="query" /></div>',
 	}
 }
@@ -170,7 +207,11 @@ export const Default: Story = {}
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isDisabled', 'hasIcon'] },
-		docs: { source: { code: SEARCH_VARIANTS.map(variant => `<BaseSearch v-model="query" :results="results" variant="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SEARCH_VARIANTS.map(variant => `<BaseSearch v-model="query" :results="results" variant="${variant}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSearch },
@@ -197,7 +238,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseSearch v-model="query" :results="results" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseSearch v-model="query" :results="results" :size-scale="${p.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseSearch },

@@ -31,18 +31,27 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
 
-const props = withDefaults(defineProps<BaseAvatarProps>(), kitDefaults('BaseAvatar', {
-	variant: DEFAULT_VARIANT,
-	alt: '',
-	shape: 'circle',
-	isOnline: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseAvatarProps>(),
+	kitDefaults('BaseAvatar', {
+		variant: DEFAULT_VARIANT,
+		alt: '',
+		shape: 'circle',
+		isOnline: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAvatarEmits>()
 defineSlots<BaseAvatarSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-avatar', props, ['root', 'content', 'img', 'initials', 'online'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-avatar', props, [
+	'root',
+	'content',
+	'img',
+	'initials',
+	'online',
+])
 
 const hasImageError = ref(false)
 
@@ -56,13 +65,15 @@ watch(
 
 const initials = computed(() => {
 	if (!props.name) return '?'
-	return props.name
-		.split(' ')
-		.map(n => n[0] ?? '')
-		.filter(Boolean)
-		.slice(0, 2)
-		.join('')
-		.toUpperCase() || '?'
+	return (
+		props.name
+			.split(' ')
+			.map(n => n[0] ?? '')
+			.filter(Boolean)
+			.slice(0, 2)
+			.join('')
+			.toUpperCase() || '?'
+	)
 })
 
 function handleImageError(): void {

@@ -61,11 +61,7 @@ export interface UseTableDataReturn {
 	/** Обработчик ввода поиска */
 	handleSearchInput: (value: string) => void
 	/** Добавить фильтр */
-	addFilter: (
-		filterColumn: Ref<string | number>,
-		filterOperator: Ref<string | number>,
-		filterValue: Ref<string>,
-	) => void
+	addFilter: (filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>) => void
 	/** Удалить фильтр */
 	removeFilter: (index: number) => void
 	/** Получить метку фильтра */

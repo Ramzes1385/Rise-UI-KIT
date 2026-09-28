@@ -270,7 +270,11 @@ export const Keyboard: Story = {
 	// Состояние тура — в самом примере, а не в args: обновление args перерисовывало бы story во время проверок.
 	render: args => ({
 		components: { BaseTour, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'step', 'onUpdate:isOpen', 'onUpdate:step']), isOpen: ref(false), step: ref(0) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['isOpen', 'step', 'onUpdate:isOpen', 'onUpdate:step']),
+			isOpen: ref(false),
+			step: ref(0),
+		}),
 		template: `
 			<div class="story-stack">
 				${DEMO_TOOLBAR}

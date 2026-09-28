@@ -12,7 +12,10 @@ export type EmptyVariant = (typeof EMPTY_VARIANTS)[number]
 /**
  * Пропсы компонента BaseEmpty
  */
-export interface BaseEmptyProps extends BaseComponentProps<EmptyVariant, 'root' | 'iconWrapper' | 'icon' | 'content' | 'title' | 'description' | 'body' | 'actions'> {
+export interface BaseEmptyProps extends BaseComponentProps<
+	EmptyVariant,
+	'root' | 'iconWrapper' | 'icon' | 'content' | 'title' | 'description' | 'body' | 'actions'
+> {
 	/** Заголовок пустого состояния */
 	title?: string
 	/** Текст описания */

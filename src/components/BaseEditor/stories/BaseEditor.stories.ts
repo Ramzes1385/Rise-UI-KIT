@@ -8,7 +8,17 @@
 
 import { expect, fn, screen, spyOn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_IMAGES, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	STORY_IMAGES,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
 import BaseEditor from '../ui/BaseEditor.vue'
@@ -40,9 +50,11 @@ const ARTICLE_HTML = [
 /** Длинный документ: прокрутка внутри области текста и перенос длинных слов. */
 const LONG_HTML = [
 	'<h2>Регламент подготовки релиза</h2>',
-	...Array.from({ length: 12 }, (_, index) =>
-		`<p>Шаг ${index + 1}. Проверьте изменения в ветке, обновите changelog и убедитесь, что visual-тесты и e2e проходят ` +
-		'в обеих темах. Замечания фиксируйте в задаче, а не в личных сообщениях: так их увидит вся команда.</p>',
+	...Array.from(
+		{ length: 12 },
+		(_, index) =>
+			`<p>Шаг ${index + 1}. Проверьте изменения в ветке, обновите changelog и убедитесь, что visual-тесты и e2e проходят ` +
+			'в обеих темах. Замечания фиксируйте в задаче, а не в личных сообщениях: так их увидит вся команда.</p>',
 	),
 	'<p>Путь без пробелов переносится по символам: src/components/BaseEditor/styles/BaseEditor.style.scss/typography/long-content</p>',
 	'<ul><li>Сборка пакета</li><li>Публикация документации</li><li>Анонс в канале команды</li></ul>',
@@ -159,7 +171,11 @@ export const Variants: Story = {
 		setup: () => ({
 			props: useArgsWithoutSlots(args, ['toolbar', 'modelValue', 'variant', 'onUpdate:modelValue']),
 			variants: EDITOR_VARIANTS,
-			values: ref<Record<string, string>>(Object.fromEntries(EDITOR_VARIANTS.map(variant => [variant, `<p>Вариант <strong>${variant}</strong>: рамка, фон и тулбар.</p>`]))),
+			values: ref<Record<string, string>>(
+				Object.fromEntries(
+					EDITOR_VARIANTS.map(variant => [variant, `<p>Вариант <strong>${variant}</strong>: рамка, фон и тулбар.</p>`]),
+				),
+			),
 			compactStyle: COMPACT_STYLE,
 		}),
 		template: `
@@ -186,7 +202,9 @@ export const Sizes: Story = {
 			props: useArgsWithoutSlots(args, ['toolbar', 'modelValue', 'sizeScale', 'onUpdate:modelValue']),
 			presets: SIZE_PRESETS,
 			sizeLabel,
-			values: ref<Record<string, string>>(Object.fromEntries(SIZE_PRESETS.map(p => [p.name, `<p>Размер <strong>${p.name}</strong> — sizeScale ${p.sizeScale}.</p>`]))),
+			values: ref<Record<string, string>>(
+				Object.fromEntries(SIZE_PRESETS.map(p => [p.name, `<p>Размер <strong>${p.name}</strong> — sizeScale ${p.sizeScale}.</p>`])),
+			),
 			compactStyle: COMPACT_STYLE,
 		}),
 		template: `
@@ -264,7 +282,13 @@ export const Readonly: Story = {
  */
 export const Loading: Story = {
 	args: { modelValue: '', isReadonly: true, placeholder: 'Загрузка документа…' },
-	parameters: { docs: { source: { code: '<BaseEditor v-model="html" :is-readonly="isLoading" :placeholder="isLoading ? \'Загрузка документа…\' : \'\'" />' } } },
+	parameters: {
+		docs: {
+			source: {
+				code: '<BaseEditor v-model="html" :is-readonly="isLoading" :placeholder="isLoading ? \'Загрузка документа…\' : \'\'" />',
+			},
+		},
+	},
 	play: async ({ canvas }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		await expect(textbox).toHaveAttribute('aria-readonly', 'true')

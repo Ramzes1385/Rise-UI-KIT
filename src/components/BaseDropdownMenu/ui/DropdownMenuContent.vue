@@ -20,8 +20,16 @@
 			<div v-if="groupIndex > 0" class="base-dropdown-menu__separator" :class="classes.separator" role="separator" />
 			<div class="base-dropdown-menu__group" role="group" :aria-labelledby="groupLabelId(group, groupIndex)">
 				<template v-for="(item, itemIndex) in group" :key="itemIndex">
-					<div v-if="item.type === 'separator'" class="base-dropdown-menu__separator" :class="classes.separator" role="separator" />
-					<div v-else-if="item.type === 'label'" :id="labelId(groupIndex, itemIndex)" class="base-dropdown-menu__label" :class="classes.label">
+					<div
+						v-if="item.type === 'separator'"
+						class="base-dropdown-menu__separator"
+						:class="classes.separator"
+						role="separator" />
+					<div
+						v-else-if="item.type === 'label'"
+						:id="labelId(groupIndex, itemIndex)"
+						class="base-dropdown-menu__label"
+						:class="classes.label">
 						{{ item.label }}
 					</div>
 					<!-- Пункт с подменю: подменю — вложенная панель, в стеке слоёв она выше меню -->
@@ -201,7 +209,10 @@ function itemRole(item: DropdownMenuItem): string {
 }
 
 function itemClasses(item: DropdownMenuItem): (string | Record<string, boolean | undefined>)[] {
-	return [{ 'base-dropdown-menu__item--disabled': item.isDisabled, 'base-dropdown-menu__item--danger': item.isDanger }, props.classes.item ?? '']
+	return [
+		{ 'base-dropdown-menu__item--disabled': item.isDisabled, 'base-dropdown-menu__item--danger': item.isDanger },
+		props.classes.item ?? '',
+	]
 }
 
 /** Props ссылки: BaseLink рендерит RouterLink приложения или `<a href>` */

@@ -281,7 +281,10 @@ describe('useSlider', () => {
 				addEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => listeners.add(listener)),
 				removeEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => listeners.delete(listener)),
 			}
-			vi.stubGlobal('matchMedia', vi.fn(() => query))
+			vi.stubGlobal(
+				'matchMedia',
+				vi.fn(() => query),
+			)
 			return {
 				query,
 				emitChange(next: boolean) {
@@ -428,9 +431,7 @@ describe('useSlider', () => {
 
 	it('должен клампить currentIndex при уменьшении itemCount', async () => {
 		const itemCount = ref(5)
-		const slider = withSetup(() =>
-			useSlider(createOptions({ itemCount: () => itemCount.value, initialIndex: () => 4 })),
-		)
+		const slider = withSetup(() => useSlider(createOptions({ itemCount: () => itemCount.value, initialIndex: () => 4 })))
 
 		expect(slider.currentIndex.value).toBe(4)
 
@@ -588,9 +589,7 @@ describe('useSlider', () => {
 		it('должен запускать autoplay при изменении на true', async () => {
 			vi.useFakeTimers()
 			const isAutoplay = ref(false)
-			const slider = withSetup(() =>
-				useSlider(createOptions({ isAutoplay: () => isAutoplay.value, autoplayInterval: () => 1000 })),
-			)
+			const slider = withSetup(() => useSlider(createOptions({ isAutoplay: () => isAutoplay.value, autoplayInterval: () => 1000 })))
 
 			isAutoplay.value = true
 			await nextTick()
@@ -605,9 +604,7 @@ describe('useSlider', () => {
 		it('должен останавливать autoplay при изменении на false', async () => {
 			vi.useFakeTimers()
 			const isAutoplay = ref(true)
-			const slider = withSetup(() =>
-				useSlider(createOptions({ isAutoplay: () => isAutoplay.value, autoplayInterval: () => 1000 })),
-			)
+			const slider = withSetup(() => useSlider(createOptions({ isAutoplay: () => isAutoplay.value, autoplayInterval: () => 1000 })))
 
 			isAutoplay.value = false
 			await nextTick()
@@ -860,4 +857,3 @@ describe('useSlider', () => {
 		})
 	})
 })
-

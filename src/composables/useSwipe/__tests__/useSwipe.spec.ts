@@ -257,9 +257,7 @@ describe('useSwipe', () => {
 		const onDragEnd = vi.fn()
 		const onSwipeNext = vi.fn()
 		const onDragOffset = vi.fn()
-		const swipe = withSetup(() =>
-			useSwipe({ isVertical: () => false, threshold: 50, onDragEnd, onSwipeNext, onDragOffset }),
-		)
+		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50, onDragEnd, onSwipeNext, onDragOffset }))
 
 		// Вызываем touchEnd без touchStart — isDragging=false
 		swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 200, clientY: 100 }]))
@@ -572,9 +570,7 @@ describe('useSwipe', () => {
 		const onDragEnd = vi.fn()
 		const onSwipePrev = vi.fn()
 		const onDragOffset = vi.fn()
-		const swipe = withSetup(() =>
-			useSwipe({ isVertical: () => false, threshold: 50, onDragEnd, onSwipePrev, onDragOffset }),
-		)
+		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50, onDragEnd, onSwipePrev, onDragOffset }))
 
 		const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
 			cb(0)

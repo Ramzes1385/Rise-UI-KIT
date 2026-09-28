@@ -18,10 +18,7 @@ console.log = (...args: unknown[]) => {
 
 const originalWarn = console.warn
 console.warn = (...args: unknown[]) => {
-	if (
-		typeof args[0] === 'string' &&
-		args[0].includes('decodeEntities option is passed but will be ignored in non-browser builds')
-	) {
+	if (typeof args[0] === 'string' && args[0].includes('decodeEntities option is passed but will be ignored in non-browser builds')) {
 		return
 	}
 	originalWarn(...args)
@@ -226,10 +223,7 @@ Object.defineProperty(HTMLInputElement.prototype, 'files', {
 	},
 	set(value: unknown) {
 		const looksLikeFileList =
-			value !== null &&
-			typeof value === 'object' &&
-			'length' in value &&
-			typeof (value as { length: unknown }).length === 'number'
+			value !== null && typeof value === 'object' && 'length' in value && typeof (value as { length: unknown }).length === 'number'
 
 		if (looksLikeFileList) {
 			Object.defineProperty(this, 'files', {
@@ -305,7 +299,7 @@ globalThis.ClipboardEvent = class MockClipboardEvent extends Event implements Cl
 Object.defineProperty(HTMLTextAreaElement.prototype, 'scrollHeight', {
 	configurable: true,
 	get(this: HTMLTextAreaElement): number {
-		const lines = Math.max(1, (this.value?.split('\n').length ?? 1))
+		const lines = Math.max(1, this.value?.split('\n').length ?? 1)
 		return lines * 20
 	},
 })

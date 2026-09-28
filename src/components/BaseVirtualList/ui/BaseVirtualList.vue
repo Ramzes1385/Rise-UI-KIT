@@ -41,13 +41,16 @@ import '../styles/BaseVirtualList.style.scss'
 import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../model/BaseVirtualList.types'
 import type { VirtualKey } from '@composables/useVirtualList'
 
-const props = withDefaults(defineProps<BaseVirtualListProps<T>>(), kitDefaults('BaseVirtualList', {
-	variant: DEFAULT_VARIANT,
-	itemSize: 40,
-	overscan: 5,
-	height: 400,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseVirtualListProps<T>>(),
+	kitDefaults('BaseVirtualList', {
+		variant: DEFAULT_VARIANT,
+		itemSize: 40,
+		overscan: 5,
+		height: 400,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseVirtualListSlots<T>>()
 

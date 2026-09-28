@@ -57,10 +57,7 @@ for (const filePath of files) {
 			return `${pre}${toRelative(fileDir, absTarget)}${quote}`
 		})
 
-		const typeImportInline = new RegExp(
-			`(import\\s*\\(\\s*['"])${escapeRegex(prefix)}([^'"]+)(['"]\\s*\\))`,
-			'g'
-		)
+		const typeImportInline = new RegExp(`(import\\s*\\(\\s*['"])${escapeRegex(prefix)}([^'"]+)(['"]\\s*\\))`, 'g')
 
 		content = content.replace(typeImportInline, (match, pre, modulePath, post) => {
 			const absTarget = resolve(process.cwd(), target, modulePath)

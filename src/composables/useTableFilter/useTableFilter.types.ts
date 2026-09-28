@@ -18,11 +18,7 @@ export interface UseTableFilterReturn {
 	/** Активные фильтры */
 	activeFilters: Ref<ColumnFilter[]>
 	/** Добавить фильтр */
-	addFilter: (
-		filterColumn: Ref<string | number>,
-		filterOperator: Ref<string | number>,
-		filterValue: Ref<string>,
-	) => void
+	addFilter: (filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>) => void
 	/** Удалить фильтр */
 	removeFilter: (index: number) => void
 	/** Получить текстовую метку фильтра */

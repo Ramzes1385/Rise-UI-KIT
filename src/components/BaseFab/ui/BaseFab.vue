@@ -28,19 +28,26 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseFab.style.scss'
 import type { BaseFabEmits, BaseFabProps } from '../model/BaseFab.types'
 
-const props = withDefaults(defineProps<BaseFabProps>(), kitDefaults('BaseFab', {
-	variant: DEFAULT_VARIANT,
-	icon: 'plus',
-	isExtended: false,
-	position: 'bottom-right',
-	isContained: false,
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseFabProps>(),
+	kitDefaults('BaseFab', {
+		variant: DEFAULT_VARIANT,
+		icon: 'plus',
+		isExtended: false,
+		position: 'bottom-right',
+		isContained: false,
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseFabEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-fab', props, ['root', 'icon', 'label'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-fab', props, [
+	'root',
+	'icon',
+	'label',
+])
 
 const isLink = computed(() => Boolean(props.to || props.href))
 

@@ -16,8 +16,7 @@ export interface StandardSchemaProps<Input = unknown, Output = Input> {
 
 /** Результат проверки: значение (после преобразований схемы) или список ошибок */
 export type StandardSchemaResult<Output> =
-	| { readonly value: Output; readonly issues?: undefined }
-	| { readonly issues: ReadonlyArray<StandardSchemaIssue> }
+	{ readonly value: Output; readonly issues?: undefined } | { readonly issues: ReadonlyArray<StandardSchemaIssue> }
 
 /** Ошибка схемы: сообщение и путь к полю (`['address', 'city']` или сегменты `{ key }`) */
 export interface StandardSchemaIssue {

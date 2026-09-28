@@ -7,7 +7,17 @@
 
 import { expect, fn, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { RADIO_VARIANTS } from '../model/BaseRadio.types'
 import BaseRadio from '../ui/BaseRadio.vue'
 import type { BaseRadioOption } from '../model/BaseRadio.types'
@@ -106,7 +116,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isVertical', 'error'] },
-		docs: { source: { code: RADIO_VARIANTS.map(variant => `<BaseRadio v-model="value" :options="options" name="${variant}" variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: RADIO_VARIANTS.map(
+					variant => `<BaseRadio v-model="value" :options="options" name="${variant}" variant="${variant}" label="${variant}" />`,
+				).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseRadio },
@@ -134,7 +150,13 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant', 'isVertical'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseRadio v-model="value" :options="options" name="size-${p.name}" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(
+					p => `<BaseRadio v-model="value" :options="options" name="size-${p.name}" :size-scale="${p.sizeScale}" />`,
+				).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseRadio },

@@ -366,7 +366,10 @@ function storiesTemplate(n, kind, variants, flags) {
 	helpers.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
 
 	const argTypes = {
-		display: ["\t\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },", "\t\tdefault: slotArgType('Содержимое (заменяет label)'),"],
+		display: [
+			"\t\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
+			"\t\tdefault: slotArgType('Содержимое (заменяет label)'),",
+		],
 		interactive: [
 			"\t\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
 			"\t\tisDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },",
@@ -515,7 +518,9 @@ function storiesTemplate(n, kind, variants, flags) {
 			'export const Disabled: Story = {',
 			'\targs: { isDisabled: true },',
 			'\tplay: async ({ canvas }) => {',
-			kind === 'form' ? "\t\tawait expect(canvas.getByLabelText('Название')).toBeDisabled()" : "\t\tawait expect(canvas.getByRole('button', { name: 'Пример' })).toBeDisabled()",
+			kind === 'form'
+				? "\t\tawait expect(canvas.getByLabelText('Название')).toBeDisabled()"
+				: "\t\tawait expect(canvas.getByRole('button', { name: 'Пример' })).toBeDisabled()",
 			'\t},',
 			'}',
 		)
@@ -735,7 +740,10 @@ function registerInPlugin(n, changes) {
 
 	const block = source.match(/const UI_COMPONENTS: Record<string, Component> = \{\n([\s\S]*?)\n\}/)
 	if (!block) fail('В src/plugin.ts не найден объект UI_COMPONENTS')
-	const entries = block[1].split('\n').concat(`\t${n.name},`).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+	const entries = block[1]
+		.split('\n')
+		.concat(`\t${n.name},`)
+		.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
 	source = source.replace(block[0], `const UI_COMPONENTS: Record<string, Component> = {\n${entries.join('\n')}\n}`)
 	changes.set(path, source)
 }
@@ -770,7 +778,10 @@ function main() {
 	if (!groups.includes(options.group)) {
 		fail(`Раздела «${options.group}» нет в storySort (build/storybook/preview.ts): ${groups.join(', ')}. Добавьте его туда.`)
 	}
-	const variants = options.variants.split(',').map(variant => variant.trim()).filter(Boolean)
+	const variants = options.variants
+		.split(',')
+		.map(variant => variant.trim())
+		.filter(Boolean)
 	if (!variants.includes('default')) variants.unshift('default')
 	for (const variant of variants) {
 		if (!/^[a-z][a-z0-9-]*$/.test(variant)) fail(`Недопустимое имя варианта: ${variant}`)
@@ -811,7 +822,11 @@ function main() {
 	for (const [path, content] of changes) writeFileSync(path, content)
 
 	if (options.lint) {
-		const lintable = [...created.map(([path]) => path).filter(path => /\.(ts|vue)$/.test(path)), join(ROOT, 'src/plugin.ts'), join(COMPONENTS_DIR, 'index.ts')]
+		const lintable = [
+			...created.map(([path]) => path).filter(path => /\.(ts|vue)$/.test(path)),
+			join(ROOT, 'src/plugin.ts'),
+			join(COMPONENTS_DIR, 'index.ts'),
+		]
 		try {
 			execFileSync('npx', ['eslint', '--fix', ...lintable], { stdio: 'inherit', cwd: ROOT })
 		} catch {
@@ -824,7 +839,9 @@ function main() {
 	console.log(`\nДальше:`)
 	console.log(`  1. Заполните места с пометкой ${TODO} — без этого проверка stories не пройдёт.`)
 	console.log('  2. Реализуйте компонент, дополните stories (состояния, сценарии) и тесты.')
-	console.log(`  3. npm run lint && npm run typecheck && npx vitest run --config build/tests/vitest.config.ts --project unit-integration src/components/${n.name}`)
+	console.log(
+		`  3. npm run lint && npm run typecheck && npx vitest run --config build/tests/vitest.config.ts --project unit-integration src/components/${n.name}`,
+	)
 }
 
 main()

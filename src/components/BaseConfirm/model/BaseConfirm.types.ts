@@ -4,7 +4,10 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /**
  * Пропсы компонента BaseConfirm
  */
-export interface BaseConfirmProps extends BaseComponentProps<(typeof MODAL_VARIANTS)[number], 'root' | 'description' | 'cancel' | 'confirm'> {
+export interface BaseConfirmProps extends BaseComponentProps<
+	(typeof MODAL_VARIANTS)[number],
+	'root' | 'description' | 'cancel' | 'confirm'
+> {
 	/** Открыто ли окно (v-model:is-open) */
 	isOpen: boolean
 	/** Вопрос: доступное имя окна, например «Удалить проект?» */

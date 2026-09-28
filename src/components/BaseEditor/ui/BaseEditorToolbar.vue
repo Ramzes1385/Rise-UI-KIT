@@ -170,7 +170,12 @@ import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { calcIconScale } from '@utils/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
-import type { BaseEditorToolbarEmits, BaseEditorToolbarProps, BaseEditorToolbarSlots, EditorActiveStates } from '../model/BaseEditorToolbar.types'
+import type {
+	BaseEditorToolbarEmits,
+	BaseEditorToolbarProps,
+	BaseEditorToolbarSlots,
+	EditorActiveStates,
+} from '../model/BaseEditorToolbar.types'
 
 const props = defineProps<BaseEditorToolbarProps>()
 
@@ -219,8 +224,20 @@ const buttonGroups = computed(() => [
 	{
 		key: 'list',
 		items: [
-			{ icon: 'list-bullet', label: UI_EDITOR.LIST_BULLET, activeKey: 'isUnorderedList', action: 'insertUnorderedList', type: 'format' },
-			{ icon: 'list-number', label: UI_EDITOR.LIST_NUMBERED, activeKey: 'isOrderedList', action: 'insertOrderedList', type: 'format' },
+			{
+				icon: 'list-bullet',
+				label: UI_EDITOR.LIST_BULLET,
+				activeKey: 'isUnorderedList',
+				action: 'insertUnorderedList',
+				type: 'format',
+			},
+			{
+				icon: 'list-number',
+				label: UI_EDITOR.LIST_NUMBERED,
+				activeKey: 'isOrderedList',
+				action: 'insertOrderedList',
+				type: 'format',
+			},
 		] as ToolbarButton[],
 	},
 	{

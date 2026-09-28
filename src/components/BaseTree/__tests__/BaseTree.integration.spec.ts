@@ -596,7 +596,10 @@ describe('BaseTree integration', () => {
 
 			expect(treeItem('Фрукты')).toHaveAttribute('aria-expanded', 'false')
 			expect(treeItem('Фрукты')).toHaveFocus()
-			expect(emitted().toggle).toEqual([['fruits', true], ['fruits', false]])
+			expect(emitted().toggle).toEqual([
+				['fruits', true],
+				['fruits', false],
+			])
 		})
 
 		it('стрелки не раскрывают и не сворачивают отключённый узел', async () => {
@@ -702,7 +705,10 @@ describe('BaseTree integration', () => {
 			expect(treeItem('Батон')).toHaveAttribute('aria-selected', 'true')
 			await user.keyboard('{ArrowUp}{ArrowUp}{ }')
 			expect(treeItem('Овощи')).toHaveAttribute('aria-selected', 'true')
-			expect(emitted().select).toEqual([['bread', true], ['vegetables', true]])
+			expect(emitted().select).toEqual([
+				['bread', true],
+				['vegetables', true],
+			])
 		})
 
 		it('пробел в режиме multiple переключает отметку узла и его поддерева', async () => {

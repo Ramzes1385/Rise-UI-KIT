@@ -115,14 +115,4 @@ function hsvToHex(hsv: HsvColor): string {
 	return rgbToHex(hsvToRgb(hsv))
 }
 
-export {
-	channelToHex,
-	hexToHsv,
-	hexToRgb,
-	hsvToHex,
-	hsvToRgb,
-	isValidHex,
-	normalizeHex,
-	rgbToHex,
-	rgbToHsv,
-}
+export { channelToHex, hexToHsv, hexToRgb, hsvToHex, hsvToRgb, isValidHex, normalizeHex, rgbToHex, rgbToHsv }

@@ -7,7 +7,16 @@
  */
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, STORY_IMAGES, STORY_WAIT_TIMEOUT, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	STORY_IMAGES,
+	STORY_WAIT_TIMEOUT,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCard } from '@components/BaseCard'
 import { BaseSkeleton } from '@components/BaseSkeleton'
@@ -42,9 +51,17 @@ const LONG_SLIDES: SliderItem[] = [
 ]
 
 const PROMOS = [
-	{ title: 'Скидка 20% на весенние туры', subtitle: 'До 31 мая', text: 'Бронируйте маршруты апреля и мая со скидкой — места ограничены.' },
+	{
+		title: 'Скидка 20% на весенние туры',
+		subtitle: 'До 31 мая',
+		text: 'Бронируйте маршруты апреля и мая со скидкой — места ограничены.',
+	},
 	{ title: 'Снаряжение в аренду', subtitle: 'Новое', text: 'Палатки, спальники и треккинговые палки — прямо на базе маршрута.' },
-	{ title: 'Подарочный сертификат', subtitle: 'Любой номинал', text: 'Подарите поход: сертификат действует год и подходит для всех туров.' },
+	{
+		title: 'Подарочный сертификат',
+		subtitle: 'Любой номинал',
+		text: 'Подарите поход: сертификат действует год и подходит для всех туров.',
+	},
 	{ title: 'Клуб путешественников', subtitle: 'Бесплатно', text: 'Накопительные баллы за каждый маршрут и закрытые встречи с гидами.' },
 ]
 
@@ -289,7 +306,11 @@ export const WithZoom: Story = {
 		const { left, top, width, height } = viewport.getBoundingClientRect()
 		const y = top + height / 2
 		await userEvent.pointer([
-			{ keys: '[MouseLeft>]', target: canvas.getByRole('button', { name: 'Горы на рассвете' }), coords: { clientX: left + width * 0.8, clientY: y } },
+			{
+				keys: '[MouseLeft>]',
+				target: canvas.getByRole('button', { name: 'Горы на рассвете' }),
+				coords: { clientX: left + width * 0.8, clientY: y },
+			},
 			{ coords: { clientX: left + width * 0.2, clientY: y } },
 			{ keys: '[/MouseLeft]' },
 		])

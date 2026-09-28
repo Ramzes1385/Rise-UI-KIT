@@ -7,7 +7,17 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
 import BaseTextarea from '../ui/BaseTextarea.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
@@ -103,7 +113,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'rows', 'isDisabled', 'error'] },
-		docs: { source: { code: TEXTAREA_VARIANTS.map(variant => `<BaseTextarea v-model="value" variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: TEXTAREA_VARIANTS.map(variant => `<BaseTextarea v-model="value" variant="${variant}" label="${variant}" />`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	args: { rows: 3 },
 	render: args => ({
@@ -132,7 +148,13 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseTextarea v-model="value" :rows="1" :size-scale="${p.sizeScale}" placeholder="${p.name}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(
+					p => `<BaseTextarea v-model="value" :rows="1" :size-scale="${p.sizeScale}" placeholder="${p.name}" />`,
+				).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTextarea },
@@ -233,7 +255,9 @@ export const LongContent: Story = {
 export const Rows: Story = {
 	parameters: {
 		controls: { include: ['variant', 'sizeScale'] },
-		docs: { source: { code: [1, 3, 6].map(rows => `<BaseTextarea v-model="value" :rows="${rows}" label="rows: ${rows}" />`).join('\n') } },
+		docs: {
+			source: { code: [1, 3, 6].map(rows => `<BaseTextarea v-model="value" :rows="${rows}" label="rows: ${rows}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseTextarea },

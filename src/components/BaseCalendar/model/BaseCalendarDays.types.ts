@@ -47,13 +47,6 @@ export interface BaseCalendarDaysEmits {
 
 /** Slots компонента BaseCalendarDays */
 export interface BaseCalendarDaysSlots {
-	day?(props: {
-		date: Date
-		isToday: boolean
-		isSelected: boolean
-		isDisabled: boolean
-		isWeekend: boolean
-		isInRange: boolean
-	}): unknown
+	day?(props: { date: Date; isToday: boolean; isSelected: boolean; isDisabled: boolean; isWeekend: boolean; isInRange: boolean }): unknown
 	'date-popover'?(props: { date: Date; close: () => void; highlights: CalendarHighlight[] }): unknown
 }

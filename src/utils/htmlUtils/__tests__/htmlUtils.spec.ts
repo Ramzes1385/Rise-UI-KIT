@@ -68,10 +68,13 @@ describe('htmlUtils.sanitizeHtml', () => {
 			template.innerHTML = html
 			return [...template.content.querySelectorAll('*')].flatMap(element => {
 				const tag = element.tagName.toLowerCase()
-				const issues = ['script', 'iframe', 'object', 'embed', 'svg', 'math', 'style', 'noscript', 'form'].includes(tag) ? [tag] : []
+				const issues = ['script', 'iframe', 'object', 'embed', 'svg', 'math', 'style', 'noscript', 'form'].includes(tag)
+					? [tag]
+					: []
 				for (const attribute of element.attributes) {
 					if (attribute.name.startsWith('on')) issues.push(`${tag}[${attribute.name}]`)
-					if (/^\s*(javascript|vbscript|data:text)/i.test(attribute.value)) issues.push(`${tag}[${attribute.name}=${attribute.value}]`)
+					if (/^\s*(javascript|vbscript|data:text)/i.test(attribute.value))
+						issues.push(`${tag}[${attribute.name}=${attribute.value}]`)
 				}
 				return issues
 			})
@@ -103,11 +106,15 @@ describe('htmlUtils.sanitizeHtml', () => {
 
 	describe('атрибуты', () => {
 		it('удаляет обработчики событий, class, id и data-атрибуты', () => {
-			expect(sanitizeHtml('<p onclick="alert(1)" onmouseover="x()" class="evil" id="login" data-x="1">текст</p>')).toBe('<p>текст</p>')
+			expect(sanitizeHtml('<p onclick="alert(1)" onmouseover="x()" class="evil" id="login" data-x="1">текст</p>')).toBe(
+				'<p>текст</p>',
+			)
 		})
 
 		it('удаляет обработчик у разрешённого изображения', () => {
-			expect(sanitizeHtml('<img src="https://example.com/a.png" onerror="alert(1)" alt="фото">')).toBe('<img src="https://example.com/a.png" alt="фото">')
+			expect(sanitizeHtml('<img src="https://example.com/a.png" onerror="alert(1)" alt="фото">')).toBe(
+				'<img src="https://example.com/a.png" alt="фото">',
+			)
 		})
 
 		it.each([
@@ -129,17 +136,25 @@ describe('htmlUtils.sanitizeHtml', () => {
 		})
 
 		it.each([
-			['<img src="data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C%2Fsvg%3E" alt="">', '<img src="data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C%2Fsvg%3E" alt="">'],
+			[
+				'<img src="data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C%2Fsvg%3E" alt="">',
+				'<img src="data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C%2Fsvg%3E" alt="">',
+			],
 			['<img src="data:text/html;base64,PHNjcmlwdD4=" alt="">', '<img alt="">'],
 			['<img src="javascript:alert(1)" alt="">', '<img alt="">'],
 			['<video src="data:video/mp4;base64,AAAA" controls=""></video>', '<video controls=""></video>'],
-			['<video src="https://example.com/v.mp4" poster="javascript:alert(1)"></video>', '<video src="https://example.com/v.mp4"></video>'],
+			[
+				'<video src="https://example.com/v.mp4" poster="javascript:alert(1)"></video>',
+				'<video src="https://example.com/v.mp4"></video>',
+			],
 		])('проверяет адреса медиа: %s', (html, expected) => {
 			expect(sanitizeHtml(html)).toBe(expected)
 		})
 
 		it('добавляет rel="noopener noreferrer" ссылке в новой вкладке', () => {
-			expect(sanitizeHtml('<a href="https://example.com" target="_blank" rel="opener">сайт</a>')).toBe('<a href="https://example.com" target="_blank" rel="noopener noreferrer">сайт</a>')
+			expect(sanitizeHtml('<a href="https://example.com" target="_blank" rel="opener">сайт</a>')).toBe(
+				'<a href="https://example.com" target="_blank" rel="noopener noreferrer">сайт</a>',
+			)
 		})
 
 		it('удаляет неизвестное значение target', () => {

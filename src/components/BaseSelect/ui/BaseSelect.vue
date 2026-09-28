@@ -183,17 +183,20 @@ import { calcIconScale } from '@utils/iconUtils'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
 import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model/BaseSelect.types'
 
-const props = withDefaults(defineProps<BaseSelectProps>(), kitDefaults('BaseSelect', {
-	modelValue: '',
-	label: '',
-	isRequired: false,
-	isMultiple: false,
-	isSearchable: false,
-	isDisabled: false,
-	error: '',
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSelectProps>(),
+	kitDefaults('BaseSelect', {
+		modelValue: '',
+		label: '',
+		isRequired: false,
+		isMultiple: false,
+		isSearchable: false,
+		isDisabled: false,
+		error: '',
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 /** Подсказка пустого поля: своя или «Выберите...» на текущем языке */
 const resolvedPlaceholder = computed(() => props.placeholder ?? UI_TEXT.SELECT_PLACEHOLDER)

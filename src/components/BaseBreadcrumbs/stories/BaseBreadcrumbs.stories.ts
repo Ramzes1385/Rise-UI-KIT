@@ -6,7 +6,17 @@
  */
 
 import { expect, fn, within } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, StoryRouterLink, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	StoryRouterLink,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseIcon } from '@components/BaseIcon'
 import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
@@ -116,7 +126,9 @@ export const Default: Story = {
 export const Variants: Story = {
 	argTypes: { variant: { control: false } },
 	parameters: {
-		docs: { source: { code: BREADCRUMBS_VARIANTS.map(variant => `<BaseBreadcrumbs :items="items" variant="${variant}" />`).join('\n') } },
+		docs: {
+			source: { code: BREADCRUMBS_VARIANTS.map(variant => `<BaseBreadcrumbs :items="items" variant="${variant}" />`).join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseBreadcrumbs },
@@ -137,7 +149,11 @@ export const Sizes: Story = {
 	args: { variant: 'outline' },
 	argTypes: { sizeScale: { control: false } },
 	parameters: {
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseBreadcrumbs :items="items" variant="outline" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseBreadcrumbs :items="items" variant="outline" :size-scale="${p.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseBreadcrumbs },

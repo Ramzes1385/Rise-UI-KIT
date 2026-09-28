@@ -107,7 +107,10 @@ export const Variants: Story = {
 	parameters: { layout: 'padded', controls: { include: ['sizeScale'] }, docs: docsFrame(260) },
 	render: args => ({
 		components: { BasePopconfirm, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'variant', 'description', 'position']), variants: POPCONFIRM_VARIANTS }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['isOpen', 'variant', 'description', 'position']),
+			variants: POPCONFIRM_VARIANTS,
+		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 320px; padding-top: 110px;">
 				<div v-for="variant in variants" :key="variant" style="height: 150px;">
@@ -147,7 +150,11 @@ export const Sizes: Story = {
 	parameters: { layout: 'padded', controls: { include: ['variant'] }, docs: docsFrame(300) },
 	render: args => ({
 		components: { BasePopconfirm, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'sizeScale', 'description', 'position']), presets: SIZE_PRESETS, sizeLabel }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['isOpen', 'sizeScale', 'description', 'position']),
+			presets: SIZE_PRESETS,
+			sizeLabel,
+		}),
 		template: `
 			<div class="story-grid" style="--story-grid-min: 320px; padding-top: 140px;">
 				<div v-for="preset in presets" :key="preset.name" style="height: 180px;">

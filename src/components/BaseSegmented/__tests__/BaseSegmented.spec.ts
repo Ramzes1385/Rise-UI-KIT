@@ -28,7 +28,9 @@ describe('BaseSegmented', () => {
 	})
 
 	it('имя без заголовка — ariaLabel; свой name; isBlock и вариант', () => {
-		const { container } = render(BaseSegmented, { props: { options: OPTIONS, ariaLabel: 'Вид', name: 'view', isBlock: true, variant: 'soft' } })
+		const { container } = render(BaseSegmented, {
+			props: { options: OPTIONS, ariaLabel: 'Вид', name: 'view', isBlock: true, variant: 'soft' },
+		})
 
 		expect(screen.getByRole('radiogroup', { name: 'Вид' })).toBeInTheDocument()
 		expect((screen.getAllByRole('radio')[0] as HTMLInputElement).name).toBe('view')

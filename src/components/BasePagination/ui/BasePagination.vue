@@ -56,13 +56,16 @@ import '../styles/BasePagination.style.scss'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../model/BasePagination.types'
 
-const props = withDefaults(defineProps<BasePaginationProps>(), kitDefaults('BasePagination', {
-	pageSize: 10,
-	maxVisible: 7,
-	showLastPage: true,
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BasePaginationProps>(),
+	kitDefaults('BasePagination', {
+		pageSize: 10,
+		maxVisible: 7,
+		showLastPage: true,
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
 const { customColorStyle } = useCustomColor({ getColor: () => props.color })

@@ -38,11 +38,7 @@ function createHost(dialogContent: string, options: { hideTriggerWhenOpen?: bool
  * начальный render() из @testing-library/vue после монтирования переносит DOM-узлы из обёртки
  * и тем самым сбрасывает фокус, выставленный при монтировании
  */
-async function showActiveTrapDialog(options: {
-	dialogAttrs?: string
-	content: string
-	components?: Record<string, Component>
-}) {
+async function showActiveTrapDialog(options: { dialogAttrs?: string; content: string; components?: Record<string, Component> }) {
 	const TrapDialog = defineComponent({
 		components: options.components ?? {},
 		setup() {

@@ -1,21 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Семантические HTML-теги */
-export const TEXT_TAGS = [
-	'p',
-	'span',
-	'div',
-	'h1',
-	'h2',
-	'h3',
-	'h4',
-	'h5',
-	'h6',
-	'label',
-	'small',
-	'strong',
-	'em',
-] as const
+export const TEXT_TAGS = ['p', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label', 'small', 'strong', 'em'] as const
 
 /**
  * Начертания кита: 400 — текст, 500 — подписи и кнопки, 600 — заголовки, 700 — акценты.

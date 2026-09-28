@@ -15,7 +15,8 @@ function useSearchState(options: UseSearchStateOptions) {
 		// Сервер ищет не только по подстроке (транслит, опечатки, другие поля) — повторная фильтрация скрыла бы его ответ
 		if (options.isRemote?.()) return options.results().slice(0, options.maxResults())
 		const lowerQuery = query.value.toLowerCase()
-		return options.results()
+		return options
+			.results()
 			.filter(item => {
 				const matchTitle = item.title.toLowerCase().includes(lowerQuery)
 				const matchDesc = item.description?.toLowerCase().includes(lowerQuery) ?? false
@@ -154,12 +155,9 @@ function useSearchState(options: UseSearchStateOptions) {
 		cancelPendingSearch()
 	})
 
-	watch(
-		options.modelValue,
-		newValue => {
-			if (newValue !== query.value) query.value = newValue
-		},
-	)
+	watch(options.modelValue, newValue => {
+		if (newValue !== query.value) query.value = newValue
+	})
 
 	return {
 		query,

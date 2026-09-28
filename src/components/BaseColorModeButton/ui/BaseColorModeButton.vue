@@ -27,11 +27,14 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseColorModeButton.style.scss'
 import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../model/BaseColorModeButton.types'
 
-const props = withDefaults(defineProps<BaseColorModeButtonProps>(), kitDefaults('BaseColorModeButton', {
-	variant: 'ghost',
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isDisabled: false,
-}))
+const props = withDefaults(
+	defineProps<BaseColorModeButtonProps>(),
+	kitDefaults('BaseColorModeButton', {
+		variant: 'ghost',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isDisabled: false,
+	}),
+)
 
 const emit = defineEmits<BaseColorModeButtonEmits>()
 

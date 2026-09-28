@@ -28,9 +28,7 @@
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<div
-			class="base-radio__options"
-			:class="[{ 'base-radio__options--vertical': isVertical }, classes.options]">
+		<div class="base-radio__options" :class="[{ 'base-radio__options--vertical': isVertical }, classes.options]">
 			<label
 				v-for="option in options"
 				:key="option.value"
@@ -81,15 +79,29 @@ import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
 
-const props = withDefaults(defineProps<BaseRadioProps>(), kitDefaults('BaseRadio', {
-	variant: DEFAULT_VARIANT,
-	isVertical: false,
-	isRequired: false,
-	error: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseRadioProps>(),
+	kitDefaults('BaseRadio', {
+		variant: DEFAULT_VARIANT,
+		isVertical: false,
+		isRequired: false,
+		error: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio', props, [
+	'root',
+	'label',
+	'options',
+	'radio',
+	'wrapper',
+	'input',
+	'circle',
+	'dot',
+	'optionLabel',
+	'errorText',
+])
 
 const rootRef = ref<HTMLElement | null>(null)
 

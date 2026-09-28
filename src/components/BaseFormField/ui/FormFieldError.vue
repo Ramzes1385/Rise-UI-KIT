@@ -1,13 +1,5 @@
 <template>
-	<BaseText
-		v-if="error"
-		:id="id"
-		tag="span"
-		:class="className"
-		:custom-class="customClass"
-		:size-scale="sizeScale"
-		>{{ error }}</BaseText
-	>
+	<BaseText v-if="error" :id="id" tag="span" :class="className" :custom-class="customClass" :size-scale="sizeScale">{{ error }}</BaseText>
 </template>
 
 <script setup lang="ts">

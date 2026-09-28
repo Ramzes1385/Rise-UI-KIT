@@ -1,5 +1,11 @@
 <template>
-	<BaseEmpty v-if="files.length === 0" variant="ghost" icon="file" :title="UI_CHAT_TEXT.NO_FILES" :size-scale="sizeScale" class="base-chat-slideover__empty" />
+	<BaseEmpty
+		v-if="files.length === 0"
+		variant="ghost"
+		icon="file"
+		:title="UI_CHAT_TEXT.NO_FILES"
+		:size-scale="sizeScale"
+		class="base-chat-slideover__empty" />
 	<ul v-else class="base-chat-slideover__files-list">
 		<li v-for="file in files" :key="file.id" class="base-chat-slideover__file-item">
 			<button type="button" class="base-chat-slideover__file-main" @click="emit('file-click', file)">
@@ -8,7 +14,9 @@
 				</span>
 				<span class="base-chat-slideover__file-info">
 					<span class="base-chat-slideover__file-name">{{ file.name }}</span>
-					<span class="base-chat-slideover__file-meta"><template v-if="file.size">{{ file.size }} · </template>{{ file.publishedAt }}</span>
+					<span class="base-chat-slideover__file-meta"
+						><template v-if="file.size">{{ file.size }} · </template>{{ file.publishedAt }}</span
+					>
 				</span>
 			</button>
 			<BaseButton

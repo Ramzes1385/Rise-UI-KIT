@@ -63,8 +63,7 @@
 		height: sz(128px);
 		border-radius: sz(var(--rise-radius-md));
 		background-image:
-			linear-gradient(to top, var(--picker-black), transparent),
-			linear-gradient(to right, var(--picker-white), transparent);
+			linear-gradient(to top, var(--picker-black), transparent), linear-gradient(to right, var(--picker-white), transparent);
 		cursor: crosshair;
 		touch-action: none;
 		@include focus-ring;

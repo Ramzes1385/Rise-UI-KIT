@@ -108,7 +108,10 @@ describe('BaseRange unit', () => {
 			expect(screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-label'))).toEqual(['Минимум', 'Максимум'])
 
 			await rerender({ ariaLabel: 'Цена' })
-			expect(screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-label'))).toEqual(['Цена: минимум', 'Цена: максимум'])
+			expect(screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-label'))).toEqual([
+				'Цена: минимум',
+				'Цена: максимум',
+			])
 		})
 
 		it('точки нумеруются: «Точка N», с ariaLabel — «Громкость: точка N»', async () => {

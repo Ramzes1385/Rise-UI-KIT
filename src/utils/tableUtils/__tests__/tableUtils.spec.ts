@@ -157,7 +157,6 @@ describe('tableUtils', () => {
 			expect(result[1]).toBe('50%')
 			expect(result[2]).toBe('25%')
 		})
-
 	})
 
 	// ── toSortKey / compareSortKeys ──

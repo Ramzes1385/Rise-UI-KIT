@@ -27,14 +27,9 @@
 
 		<div class="base-input__wrapper" :class="classes.wrapper">
 			<slot name="prefix">
-				<BaseText
-					v-if="prefix"
-					tag="span"
-					class="base-input__prefix"
-					:custom-class="classes.prefix"
-					:size-scale="sizeScale"
-					>{{ prefix }}</BaseText
-				>
+				<BaseText v-if="prefix" tag="span" class="base-input__prefix" :custom-class="classes.prefix" :size-scale="sizeScale">{{
+					prefix
+				}}</BaseText>
 			</slot>
 			<!-- Атрибуты поля — первыми: id, значение и состояние кита их перекрывают (свой id и описание учтены в них) -->
 			<input
@@ -67,14 +62,9 @@
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</BaseButton>
 			<slot name="postfix">
-				<BaseText
-					v-if="postfix"
-					tag="span"
-					class="base-input__postfix"
-					:custom-class="classes.postfix"
-					:size-scale="sizeScale"
-					>{{ postfix }}</BaseText
-				>
+				<BaseText v-if="postfix" tag="span" class="base-input__postfix" :custom-class="classes.postfix" :size-scale="sizeScale">{{
+					postfix
+				}}</BaseText>
 			</slot>
 			<slot name="suffix" />
 		</div>
@@ -121,23 +111,36 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../model/BaseInput.types'
 
-const props = withDefaults(defineProps<BaseInputProps>(), kitDefaults('BaseInput', {
-	variant: DEFAULT_VARIANT,
-	type: 'text',
-	placeholder: '',
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	prefix: '',
-	postfix: '',
-	mask: '',
-}))
+const props = withDefaults(
+	defineProps<BaseInputProps>(),
+	kitDefaults('BaseInput', {
+		variant: DEFAULT_VARIANT,
+		type: 'text',
+		placeholder: '',
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		prefix: '',
+		postfix: '',
+		mask: '',
+	}),
+)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-input', props, [
-	'root', 'label', 'required', 'wrapper', 'prefix', 'field',
-	'passwordToggle', 'passwordIcon', 'postfix', 'passwordRules',
-	'passwordRule', 'passwordRuleIcon', 'errorText',
+	'root',
+	'label',
+	'required',
+	'wrapper',
+	'prefix',
+	'field',
+	'passwordToggle',
+	'passwordIcon',
+	'postfix',
+	'passwordRules',
+	'passwordRule',
+	'passwordRuleIcon',
+	'errorText',
 ])
 
 const emit = defineEmits<BaseInputEmits>()
@@ -155,7 +158,8 @@ const formField = useFormField({
 /** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */
 const control = useFieldControl({
 	id: () => props.inputAttrs?.id as string | undefined,
-	describedBy: () => [formField.error ? errorId : undefined, props.inputAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
+	describedBy: () =>
+		[formField.error ? errorId : undefined, props.inputAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
 	hasError: () => Boolean(formField.error),
 	isRequired: () => props.isRequired,
 })
@@ -175,7 +179,7 @@ const masked = useMaskedInputHandlers({
 	isPassword: () => props.type === 'password',
 	isReadonly: () => props.isReadonly || props.isDisabled,
 	emit: (event, value) => emit(event, value),
-	onKeydown: (e) => emit('keydown', e),
+	onKeydown: e => emit('keydown', e),
 	inputRef,
 })
 

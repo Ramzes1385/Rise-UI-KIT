@@ -133,31 +133,34 @@ import '../styles/BaseBreadcrumbs.style.scss'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 import type { ResolvedLink } from '@composables/useLink'
 
-const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), kitDefaults('BaseBreadcrumbs', {
-	variant: DEFAULT_VARIANT,
-	separator: 'chevron',
-	maxItems: 0,
-	showHome: false,
-	homeIcon: 'home',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseBreadcrumbsProps>(),
+	kitDefaults('BaseBreadcrumbs', {
+		variant: DEFAULT_VARIANT,
+		separator: 'chevron',
+		maxItems: 0,
+		showHome: false,
+		homeIcon: 'home',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-breadcrumbs', props, [
-		'root',
-		'list',
-		'item',
-		'ellipsisBtn',
-		'link',
-		'current',
-		'separator',
-		'separatorIcon',
-		'separatorText',
-		'homeIcon',
-		'itemIcon',
-		'itemText',
-		'currentIcon',
-		'currentText',
-	])
+	'root',
+	'list',
+	'item',
+	'ellipsisBtn',
+	'link',
+	'current',
+	'separator',
+	'separatorIcon',
+	'separatorText',
+	'homeIcon',
+	'itemIcon',
+	'itemText',
+	'currentIcon',
+	'currentText',
+])
 
 const emit = defineEmits<BaseBreadcrumbsEmits>()
 defineSlots<BaseBreadcrumbsSlots>()
@@ -214,5 +217,4 @@ function handleItemClick(item: BreadcrumbItem): void {
 	emit('item-click', item)
 	if (getLink(item).hasTarget) emit('navigate', (item.href ?? item.to)!)
 }
-
 </script>

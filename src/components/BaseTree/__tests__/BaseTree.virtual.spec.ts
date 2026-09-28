@@ -14,7 +14,13 @@ import type { TreeNode } from '../model/BaseTree.types'
 const ITEMS: TreeNode[] = Array.from({ length: 200 }, (_, index) => ({
 	id: `folder-${index}`,
 	label: `Папка ${index + 1}`,
-	children: index === 0 ? [{ id: 'file-a', label: 'Акт.pdf' }, { id: 'file-b', label: 'Счёт.pdf' }] : undefined,
+	children:
+		index === 0
+			? [
+					{ id: 'file-a', label: 'Акт.pdf' },
+					{ id: 'file-b', label: 'Счёт.pdf' },
+				]
+			: undefined,
 }))
 
 beforeAll(() => {

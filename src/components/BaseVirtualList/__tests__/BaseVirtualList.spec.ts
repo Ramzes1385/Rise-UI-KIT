@@ -88,7 +88,10 @@ describe('BaseVirtualList unit', () => {
 		const byField = setup({ items: ORDERS.slice(0, 2), itemKey: 'title', ariaLabel: 'По полю' })
 		await nextTick()
 		expect(byField.list).not.toHaveAttribute('tabindex')
-		render(BaseVirtualList, { props: { items: ['Москва', 'Казань'], ariaLabel: 'Города', height: '50vh' }, slots: { default: '<template #default="{ item }">{{ item }}</template>' } })
+		render(BaseVirtualList, {
+			props: { items: ['Москва', 'Казань'], ariaLabel: 'Города', height: '50vh' },
+			slots: { default: '<template #default="{ item }">{{ item }}</template>' },
+		})
 		const cities = screen.getByRole('list', { name: 'Города' })
 		expect(cities).toHaveStyle({ height: '50vh' })
 		expect(cities).toHaveTextContent('МоскваКазань')

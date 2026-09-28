@@ -39,15 +39,17 @@ import { usePadding } from '@composables/usePadding'
 import '../styles/BaseButton.style.scss'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
 
-
-const props = withDefaults(defineProps<BaseButtonProps>(), kitDefaults('BaseButton', {
-	variant: DEFAULT_VARIANT,
-	type: 'button',
-	padding: undefined,
-	isLoading: false,
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseButtonProps>(),
+	kitDefaults('BaseButton', {
+		variant: DEFAULT_VARIANT,
+		type: 'button',
+		padding: undefined,
+		isLoading: false,
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseButtonEmits>()
 

@@ -8,7 +8,17 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	tabTo,
+	useArgsWithoutSlots,
+	useModelArg,
+} from '@/stories/helpers'
 import { BaseFormField } from '@components/BaseFormField'
 import { RATING_VARIANTS } from '../model/BaseRating.types'
 import BaseRating from '../ui/BaseRating.vue'
@@ -233,7 +243,10 @@ export const CustomIcons: Story = {
 		controls: { include: ['sizeScale', 'variant'] },
 		docs: {
 			source: {
-				code: ['<BaseRating v-model="quality" icon="mic" />', '<BaseRating v-model="stages" icon="x-circle" icon-filled="check-circle" />'].join('\n'),
+				code: [
+					'<BaseRating v-model="quality" icon="mic" />',
+					'<BaseRating v-model="stages" icon="x-circle" icon-filled="check-circle" />',
+				].join('\n'),
 			},
 		},
 	},
@@ -273,7 +286,11 @@ export const InFormField: Story = {
 		controls: { include: ['variant', 'sizeScale', 'step'] },
 		docs: {
 			source: {
-				code: ['<BaseFormField label="Качество озвучки" description="Оцените дубляж серии от 1 до 5">', '  <BaseRating v-model="rating" />', '</BaseFormField>'].join('\n'),
+				code: [
+					'<BaseFormField label="Качество озвучки" description="Оцените дубляж серии от 1 до 5">',
+					'  <BaseRating v-model="rating" />',
+					'</BaseFormField>',
+				].join('\n'),
 			},
 		},
 	},
@@ -327,11 +344,17 @@ export const HoverPreview: Story = {
 	args: { modelValue: 0 },
 	parameters: {
 		controls: { include: ['step', 'variant', 'sizeScale'] },
-		docs: { source: { code: ['<BaseRating v-model="rating" />', '<BaseRating v-model="rating" :is-hover-smooth="false" />'].join('\n') } },
+		docs: {
+			source: { code: ['<BaseRating v-model="rating" />', '<BaseRating v-model="rating" :is-hover-smooth="false" />'].join('\n') },
+		},
 	},
 	render: args => ({
 		components: { BaseRating },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'modelValue', 'isHoverSmooth', 'onUpdate:modelValue']), smooth: ref(0), stepped: ref(0) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'isHoverSmooth', 'onUpdate:modelValue']),
+			smooth: ref(0),
+			stepped: ref(0),
+		}),
 		template: `
 			<div class="story-col">
 				<div class="story-row">

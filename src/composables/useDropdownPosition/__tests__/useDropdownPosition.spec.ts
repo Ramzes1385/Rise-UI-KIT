@@ -35,12 +35,23 @@ function createPanel(width = 100, height = 50): HTMLElement {
 	return panel
 }
 
-function setup(options: { position?: DropdownPosition; trigger?: DOMRect | null; panel?: HTMLElement | null; isOpen?: boolean; matchWidth?: boolean; wrapper?: HTMLElement | null } = {}) {
+function setup(
+	options: {
+		position?: DropdownPosition
+		trigger?: DOMRect | null
+		panel?: HTMLElement | null
+		isOpen?: boolean
+		matchWidth?: boolean
+		wrapper?: HTMLElement | null
+	} = {},
+) {
 	const position = ref<DropdownPosition>(options.position ?? 'bottom-start')
 	const isOpen = ref(options.isOpen ?? true)
 	const gap = ref(GAP)
 	const matchWidth = ref(options.matchWidth ?? false)
-	const wrapperRef = ref<HTMLElement | null>(options.wrapper === undefined ? createWrapper(options.trigger === undefined ? rect(300, 400) : options.trigger) : options.wrapper)
+	const wrapperRef = ref<HTMLElement | null>(
+		options.wrapper === undefined ? createWrapper(options.trigger === undefined ? rect(300, 400) : options.trigger) : options.wrapper,
+	)
 	const dropdownRef = ref<HTMLElement | null>(options.panel === undefined ? createPanel() : options.panel)
 	let api!: ReturnType<typeof useDropdownPosition>
 	const wrapper = mount({
@@ -190,7 +201,13 @@ describe('useDropdownPosition', () => {
 
 	it('без панели наблюдатель размера не создаётся; повторное открытие не плодит наблюдателей', async () => {
 		const observe = vi.fn()
-		vi.stubGlobal('ResizeObserver', class { observe = observe; disconnect() {} })
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				observe = observe
+				disconnect() {}
+			},
+		)
 		const { isOpen, dropdownRef } = setup({ isOpen: false, panel: null })
 
 		isOpen.value = true

@@ -75,29 +75,32 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseStepper.style.scss'
 import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'
 
-const props = withDefaults(defineProps<BaseStepperProps>(), kitDefaults('BaseStepper', {
-	variant: DEFAULT_VARIANT,
-	orientation: 'horizontal',
-	shape: 'circle',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseStepperProps>(),
+	kitDefaults('BaseStepper', {
+		variant: DEFAULT_VARIANT,
+		orientation: 'horizontal',
+		shape: 'circle',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseStepperEmits>()
 defineSlots<BaseStepperSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-stepper', props, [
-		'root',
-		'header',
-		'items',
-		'step',
-		'indicatorWrapper',
-		'indicator',
-		'check',
-		'content',
-		'label',
-		'description',
-		'footer',
-	])
+	'root',
+	'header',
+	'items',
+	'step',
+	'indicatorWrapper',
+	'indicator',
+	'check',
+	'content',
+	'label',
+	'description',
+	'footer',
+])
 
 const progressStyle = computed(() => {
 	const count = props.items.length

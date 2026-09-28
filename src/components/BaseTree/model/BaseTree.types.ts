@@ -70,7 +70,10 @@ export const TREE_CONTEXT_KEY: InjectionKey<TreeContext> = Symbol('tree-context'
 /**
  * Пропсы компонента BaseTree
  */
-export interface BaseTreeProps extends BaseComponentProps<(typeof TREE_VARIANTS)[number], 'root' | 'node' | 'header' | 'arrow' | 'checkbox' | 'icon' | 'label' | 'actions' | 'children'> {
+export interface BaseTreeProps extends BaseComponentProps<
+	(typeof TREE_VARIANTS)[number],
+	'root' | 'node' | 'header' | 'arrow' | 'checkbox' | 'icon' | 'label' | 'actions' | 'children'
+> {
 	/** Корневые узлы дерева */
 	items: TreeNode[]
 	/** Режим выбора */

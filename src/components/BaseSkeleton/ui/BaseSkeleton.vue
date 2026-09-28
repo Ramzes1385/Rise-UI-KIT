@@ -22,12 +22,15 @@ import { kitDefaults } from '@composables/useDefaults'
 import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 
 // Заглушка декоративная (aria-hidden): о загрузке сообщает контейнер (aria-busy) или текст статуса, а не скелетон.
-const props = withDefaults(defineProps<BaseSkeletonProps>(), kitDefaults('BaseSkeleton', {
-	shape: 'rect',
-	isAnimated: true,
-	isPulse: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSkeletonProps>(),
+	kitDefaults('BaseSkeleton', {
+		shape: 'rect',
+		isAnimated: true,
+		isPulse: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const { classes } = useCustomClass({
 	getClass: function () {

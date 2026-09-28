@@ -93,9 +93,7 @@ function useChatInputState(options: UseChatInputStateOptions) {
 
 		const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ')
 		const newTextBefore =
-			lastSpaceIndex === -1
-				? `${prefix}${value} `
-				: textBeforeCursor.slice(0, lastSpaceIndex + 1) + `${prefix}${value} `
+			lastSpaceIndex === -1 ? `${prefix}${value} ` : textBeforeCursor.slice(0, lastSpaceIndex + 1) + `${prefix}${value} `
 
 		const nextText = newTextBefore + textAfterCursor
 

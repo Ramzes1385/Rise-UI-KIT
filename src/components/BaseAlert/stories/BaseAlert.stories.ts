@@ -7,7 +7,17 @@
 
 import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, avatarImage, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	avatarImage,
+	baseArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	slotArgType,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { ALERT_TYPES, ALERT_VARIANTS } from '../model/BaseAlert.types'
 import BaseAlert from '../ui/BaseAlert.vue'
@@ -111,7 +121,13 @@ export const Types: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['type', 'sizeScale', 'isClosable'] },
-		docs: { source: { code: ['default', 'soft', 'outline', 'ghost', 'shadow'].map(variant => `<BaseAlert variant="${variant}" title="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: ['default', 'soft', 'outline', 'ghost', 'shadow']
+					.map(variant => `<BaseAlert variant="${variant}" title="${variant}" />`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseAlert },
@@ -129,7 +145,13 @@ export const Sizes: Story = {
 	args: { isClosable: true, description: '' },
 	parameters: {
 		controls: { include: ['type', 'variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseAlert :size-scale="${preset.sizeScale}" title="${preset.name}" is-closable />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseAlert :size-scale="${preset.sizeScale}" title="${preset.name}" is-closable />`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseAlert },

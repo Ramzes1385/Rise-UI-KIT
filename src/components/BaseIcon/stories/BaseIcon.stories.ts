@@ -29,7 +29,7 @@ const meta = {
 				component: [
 					'Иконка из SVG-спрайта библиотеки (`icons.svg`): `<BaseIcon name="search" />`. Имя — имя файла из `src/icons/svg`.',
 					'',
-					'- Размер 20px при `sizeScale` = 100. Типовые размеры — `calcIconScale(\'xs\' | \'sm\' | \'md\' | \'lg\' | \'xl\', sizeScale)`: 12, 16, 20, 28 и 36px.',
+					"- Размер 20px при `sizeScale` = 100. Типовые размеры — `calcIconScale('xs' | 'sm' | 'md' | 'lg' | 'xl', sizeScale)`: 12, 16, 20, 28 и 36px.",
 					'- Цвет наследуется от текста (`currentColor`); проп `color` задаёт его явно — лучше токеном `var(--rise-…)`.',
 					'- Без `ariaLabel` иконка декоративная (`aria-hidden`), с `ariaLabel` — изображение с доступным именем (`role="img"`).',
 					'',

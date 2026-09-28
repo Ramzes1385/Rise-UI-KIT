@@ -33,19 +33,18 @@ import { useIcon } from '@composables/useIcon'
 import '../styles/BaseIcon.style.scss'
 import type { BaseIconProps } from '../model/BaseIcon.types'
 
-const props = withDefaults(defineProps<BaseIconProps>(), kitDefaults('BaseIcon', {
-	color: '',
-	rotate: 0,
-	isFlipX: false,
-	isFlipY: false,
-	ariaLabel: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
-const { sizeScaleStyle, classes } = useStandardBaseComponent(
-	'base-icon',
-	props,
-	['root', 'svg'],
+const props = withDefaults(
+	defineProps<BaseIconProps>(),
+	kitDefaults('BaseIcon', {
+		color: '',
+		rotate: 0,
+		isFlipX: false,
+		isFlipY: false,
+		ariaLabel: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
 )
+const { sizeScaleStyle, classes } = useStandardBaseComponent('base-icon', props, ['root', 'svg'])
 
 const { resolveIcon } = useIcon()
 

@@ -48,11 +48,13 @@ export const STEPPER_ORIENTATIONS = ['horizontal', 'vertical'] as const
 /** Тип ориентации */
 export type StepperOrientation = (typeof STEPPER_ORIENTATIONS)[number]
 
-
 /**
  * Пропсы компонента BaseStepper
  */
-export interface BaseStepperProps extends BaseComponentProps<StepperVariant, 'root' | 'header' | 'items' | 'step' | 'indicatorWrapper' | 'indicator' | 'check' | 'content' | 'label' | 'description' | 'footer'> {
+export interface BaseStepperProps extends BaseComponentProps<
+	StepperVariant,
+	'root' | 'header' | 'items' | 'step' | 'indicatorWrapper' | 'indicator' | 'check' | 'content' | 'label' | 'description' | 'footer'
+> {
 	/** Текущий шаг (1-based) */
 	modelValue: number
 	/** Список шагов */

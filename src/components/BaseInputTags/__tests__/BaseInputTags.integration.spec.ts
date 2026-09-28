@@ -17,7 +17,8 @@ function renderModel(initial: string[] = [], props: Record<string, unknown> = {}
 	const utils = render({
 		components: { BaseInputTags },
 		setup: () => ({ model, props, onAdd, onRemove, onBlur, onFocus }),
-		template: '<form @submit.prevent><BaseInputTags v-model="model" v-bind="props" aria-label="Теги" @add="onAdd" @remove="onRemove" @blur="onBlur" @focus="onFocus" /><button>Ок</button></form>',
+		template:
+			'<form @submit.prevent><BaseInputTags v-model="model" v-bind="props" aria-label="Теги" @add="onAdd" @remove="onRemove" @blur="onBlur" @focus="onFocus" /><button>Ок</button></form>',
 	})
 	return { ...utils, model, onAdd, onRemove, onBlur, onFocus, field: screen.getByRole('textbox', { name: 'Теги' }) }
 }

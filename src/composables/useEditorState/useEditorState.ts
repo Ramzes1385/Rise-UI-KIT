@@ -12,7 +12,13 @@ const DEFAULT_BG_COLOR = '#ffff00'
  * применения/сброса цвета. Цветовые обработчики делегируют форматирование
  * функциям тулбара, переданным извне.
  */
-function useEditorState({ editorRef, applyColor, applyBackgroundColor, resetColor: resetColorFn, resetBackgroundColor: resetBackgroundColorFn }: UseEditorStateOptions) {
+function useEditorState({
+	editorRef,
+	applyColor,
+	applyBackgroundColor,
+	resetColor: resetColorFn,
+	resetBackgroundColor: resetBackgroundColorFn,
+}: UseEditorStateOptions) {
 	const isFocused = ref(false)
 	const isEmpty = ref(true)
 	const textColor = ref(DEFAULT_TEXT_COLOR)

@@ -161,9 +161,7 @@ describe('ChatMessageList unit', () => {
 				props: { messages: BASE_MESSAGES, selectedMessageIds: ['1'] },
 			})
 
-			const checkbox = container.querySelector(
-				'.base-chat-message-list__checkbox-wrapper input',
-			) as HTMLInputElement
+			const checkbox = container.querySelector('.base-chat-message-list__checkbox-wrapper input') as HTMLInputElement
 			await fireEvent.click(checkbox)
 
 			expect(emitted()['message-select']).toBeTruthy()

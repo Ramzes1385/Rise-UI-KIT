@@ -1,8 +1,5 @@
 <template>
-	<div
-		class="base-chip"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle]">
+	<div class="base-chip" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]">
 		<slot />
 		<!-- Кастомный цвет — только на индикаторе: с корня --custom-* унаследовало бы содержимое слота (кнопка, аватар) -->
 		<span
@@ -23,16 +20,22 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../model/BaseChip.types'
 
-const props = withDefaults(defineProps<BaseChipProps>(), kitDefaults('BaseChip', {
-	variant: DEFAULT_VARIANT,
-	placement: 'top-right',
-	isHiddenOnZero: false,
-	hasOverflow: false,
-	maxValue: 99,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseChipProps>(),
+	kitDefaults('BaseChip', {
+		variant: DEFAULT_VARIANT,
+		placement: 'top-right',
+		isHiddenOnZero: false,
+		hasOverflow: false,
+		maxValue: 99,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, ['root', 'badge'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, [
+	'root',
+	'badge',
+])
 
 const emit = defineEmits<BaseChipEmits>()
 defineSlots<BaseChipSlots>()

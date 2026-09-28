@@ -458,9 +458,7 @@ describe('useTableData', () => {
 			])
 			const numberCols = ref<TableColumn[]>([{ key: 'value', label: 'Значение', isSortable: true, sortType: 'number' }])
 
-			const { processedRows, handleSort } = useTableData(
-				createDefaultOptions({ rows: numberRows, columns: numberCols }),
-			)
+			const { processedRows, handleSort } = useTableData(createDefaultOptions({ rows: numberRows, columns: numberCols }))
 
 			handleSort(numberCols.value[0]) // asc
 
@@ -863,9 +861,7 @@ describe('useTableData', () => {
 		it('handlePageSizeChange: newSize === localPageSize → ничего не делает', () => {
 			// Покрывает useTableData.ts:316 — ветка else у `if (newSize !== localPageSize.value)`.
 			const onPageSizeChange = vi.fn()
-			const { localPageSize, handlePageSizeChange } = useTableData(
-				createDefaultOptions({ pageSize: ref(10), onPageSizeChange }),
-			)
+			const { localPageSize, handlePageSizeChange } = useTableData(createDefaultOptions({ pageSize: ref(10), onPageSizeChange }))
 			expect(localPageSize.value).toBe(10)
 			handlePageSizeChange(10) // совпадает с текущим → callback НЕ вызывается
 			expect(onPageSizeChange).not.toHaveBeenCalled()
@@ -989,4 +985,3 @@ describe('useTableData', () => {
 		})
 	})
 })
-

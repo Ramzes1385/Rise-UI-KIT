@@ -16,7 +16,10 @@ const COLUMNS: TableColumn[] = [
 ]
 
 function makeRows(count: number): TableRow[] {
-	return Array.from({ length: count }, (_, index) => ({ id: `order-${index}`, data: { title: `Заказ № ${index + 1}`, city: 'Волгоград' } }))
+	return Array.from({ length: count }, (_, index) => ({
+		id: `order-${index}`,
+		data: { title: `Заказ № ${index + 1}`, city: 'Волгоград' },
+	}))
 }
 
 /** ResizeObserver с записью наблюдаемых элементов: колбэк наблюдателя tbody вызывается вручную */
@@ -66,7 +69,9 @@ function spacers(): HTMLElement[] {
 
 describe('BaseTable: виртуальная прокрутка', () => {
 	it('рендерит видимые строки с запасом и распорки; таблица объявляет полное число строк', async () => {
-		render(BaseTable, { props: { columns: COLUMNS, rows: makeRows(1000), height: '300px', isVirtual: true, features: { rowNumber: true } } })
+		render(BaseTable, {
+			props: { columns: COLUMNS, rows: makeRows(1000), height: '300px', isVirtual: true, features: { rowNumber: true } },
+		})
 		await nextTick()
 		// 300px области по 44px — строки 0–6 и 5 строк запаса снизу
 		expect(dataRows()).toHaveLength(12)

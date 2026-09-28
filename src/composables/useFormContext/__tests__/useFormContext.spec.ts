@@ -1,7 +1,14 @@
 import { mount } from '@vue/test-utils'
 /** Тесты контекста формы и поля: блокировка контролов, подключение контрола к BaseFormField */
 import { computed, defineComponent, effectScope, h, provide, ref } from 'vue'
-import { FORM_CONTEXT_KEY, FORM_FIELD_CONTEXT_KEY, isolateFormField, useFieldControl, useFormContext, useFormDisabled } from '../useFormContext'
+import {
+	FORM_CONTEXT_KEY,
+	FORM_FIELD_CONTEXT_KEY,
+	isolateFormField,
+	useFieldControl,
+	useFormContext,
+	useFormDisabled,
+} from '../useFormContext'
 import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../useFormContext.types'
 
 /** Смонтировать composable внутри провайдеров формы и поля */
@@ -18,7 +25,8 @@ function withProviders<T>(
 	})
 	const Parent = defineComponent({
 		setup() {
-			if (formDisabled) provide(FORM_CONTEXT_KEY, { isDisabled: computed(() => Boolean(formDisabled.value)), errors: computed(() => ({})) })
+			if (formDisabled)
+				provide(FORM_CONTEXT_KEY, { isDisabled: computed(() => Boolean(formDisabled.value)), errors: computed(() => ({})) })
 			if (field) provide(FORM_FIELD_CONTEXT_KEY, field)
 			return () => h(Child)
 		},
@@ -28,7 +36,9 @@ function withProviders<T>(
 }
 
 /** Контекст поля для тестов: запоминает подключённый контрол */
-function createField(overrides: Partial<FormFieldContext> = {}): FormFieldContext & { control: { getId: () => string; isLabelable: boolean } | null } {
+function createField(
+	overrides: Partial<FormFieldContext> = {},
+): FormFieldContext & { control: { getId: () => string; isLabelable: boolean } | null } {
 	const state = {
 		control: null as { getId: () => string; isLabelable: boolean } | null,
 		labelId: 'field-label',
@@ -76,7 +86,11 @@ describe('useFormContext', () => {
 		it('вне BaseFormField: свой id, только собственные состояния', () => {
 			const hasError = ref(false)
 			const { result } = withProviders(() =>
-				useFieldControl({ describedBy: () => (hasError.value ? 'own-error' : undefined), hasError: () => hasError.value, isRequired: () => true }),
+				useFieldControl({
+					describedBy: () => (hasError.value ? 'own-error' : undefined),
+					hasError: () => hasError.value,
+					isRequired: () => true,
+				}),
 			)
 
 			expect(result.id.value).toMatch(/^v-/)
@@ -100,14 +114,20 @@ describe('useFormContext', () => {
 
 		it('в BaseFormField: подключается нативным полем, берёт описание, ошибку и обязательность обёртки', () => {
 			const field = createField({ hasError: computed(() => true), isRequired: computed(() => true) })
-			const { result, unmount } = withProviders(() => useFieldControl({ id: () => 'phone', describedBy: () => 'own-hint' }), { field })
+			const { result, unmount } = withProviders(() => useFieldControl({ id: () => 'phone', describedBy: () => 'own-hint' }), {
+				field,
+			})
 
 			expect(result.isInField).toBe(true)
 			expect(field.control?.getId()).toBe('phone')
 			expect(field.control?.isLabelable).toBe(true)
 			expect(result.fieldLabelId.value).toBe('field-label')
 			expect(result.hasError.value).toBe(true)
-			expect(result.aria.value).toEqual({ 'aria-invalid': 'true', 'aria-required': 'true', 'aria-describedby': 'own-hint field-description' })
+			expect(result.aria.value).toEqual({
+				'aria-invalid': 'true',
+				'aria-required': 'true',
+				'aria-describedby': 'own-hint field-description',
+			})
 
 			unmount()
 			expect(field.control).toBeNull()
@@ -131,12 +151,14 @@ describe('useFormContext', () => {
 					return () => null
 				},
 			})
-			mount(defineComponent({
-				setup() {
-					provide(FORM_FIELD_CONTEXT_KEY, field)
-					return () => h(Two)
-				},
-			}))
+			mount(
+				defineComponent({
+					setup() {
+						provide(FORM_FIELD_CONTEXT_KEY, field)
+						return () => h(Two)
+					},
+				}),
+			)
 
 			expect(second.isInField).toBe(false)
 			expect(second.fieldLabelId.value).toBeUndefined()
@@ -157,12 +179,14 @@ describe('useFormContext', () => {
 					return () => h(Inner)
 				},
 			})
-			mount(defineComponent({
-				setup() {
-					provide(FORM_FIELD_CONTEXT_KEY, field)
-					return () => h(Composite)
-				},
-			}))
+			mount(
+				defineComponent({
+					setup() {
+						provide(FORM_FIELD_CONTEXT_KEY, field)
+						return () => h(Composite)
+					},
+				}),
+			)
 
 			expect(inner.isInField).toBe(false)
 			expect(field.control).toBeNull()
@@ -177,12 +201,14 @@ describe('useFormContext', () => {
 					return () => null
 				},
 			})
-			mount(defineComponent({
-				setup() {
-					provide(FORM_FIELD_CONTEXT_KEY, field)
-					return () => h(Probe)
-				},
-			}))
+			mount(
+				defineComponent({
+					setup() {
+						provide(FORM_FIELD_CONTEXT_KEY, field)
+						return () => h(Probe)
+					},
+				}),
+			)
 
 			expect(field.control).not.toBeNull()
 			scope.stop()

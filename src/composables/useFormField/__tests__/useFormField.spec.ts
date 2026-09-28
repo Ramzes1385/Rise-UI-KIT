@@ -52,7 +52,7 @@ describe('useFormField', () => {
 		it('возвращает false при нарушении правила', () => {
 			const field = useFormField({
 				value: () => 'ab',
-				rules: [{ validate: (v) => String(v).length >= 3, message: 'Минимум 3 символа' }],
+				rules: [{ validate: v => String(v).length >= 3, message: 'Минимум 3 символа' }],
 			})
 			expect(field.validate()).toBe(false)
 			expect(field.error).toBe('Минимум 3 символа')
@@ -61,7 +61,7 @@ describe('useFormField', () => {
 		it('возвращает true когда все правила пройдены', () => {
 			const field = useFormField({
 				value: () => 'hello',
-				rules: [{ validate: (v) => String(v).length >= 3, message: 'Минимум 3 символа' }],
+				rules: [{ validate: v => String(v).length >= 3, message: 'Минимум 3 символа' }],
 			})
 			expect(field.validate()).toBe(true)
 			expect(field.error).toBe('')
@@ -140,9 +140,7 @@ describe('useFormField', () => {
 		it('проверяет правила после touch', () => {
 			const field = useFormField({
 				value: () => 'abc',
-				rules: [
-					{ validate: (v) => String(v).length >= 5, message: 'Минимум 5 символов' },
-				],
+				rules: [{ validate: v => String(v).length >= 5, message: 'Минимум 5 символов' }],
 			})
 			field.onBlur()
 			expect(field.error).toBe('Минимум 5 символов')
@@ -152,8 +150,8 @@ describe('useFormField', () => {
 			const field = useFormField({
 				value: () => 'ab',
 				rules: [
-					{ validate: (v) => String(v).length >= 3, message: 'Минимум 3 символа' },
-					{ validate: (v) => String(v).length <= 10, message: 'Максимум 10 символов' },
+					{ validate: v => String(v).length >= 3, message: 'Минимум 3 символа' },
+					{ validate: v => String(v).length <= 10, message: 'Максимум 10 символов' },
 				],
 			})
 			field.onBlur()
@@ -164,8 +162,8 @@ describe('useFormField', () => {
 			const field = useFormField({
 				value: () => 'hello',
 				rules: [
-					{ validate: (v) => String(v).length >= 3, message: 'Минимум 3 символа' },
-					{ validate: (v) => String(v).length <= 10, message: 'Максимум 10 символов' },
+					{ validate: v => String(v).length >= 3, message: 'Минимум 3 символа' },
+					{ validate: v => String(v).length <= 10, message: 'Максимум 10 символов' },
 				],
 			})
 			field.onBlur()

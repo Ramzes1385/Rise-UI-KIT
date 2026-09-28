@@ -38,7 +38,11 @@ const meta = {
 		icon: { control: 'text', table: propGroup(ARG_GROUP.content) },
 		visibilityHeight: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
 		isExtended: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
-		position: { control: 'inline-radio', options: ['bottom-right', 'bottom-left', 'top-right', 'top-left'], table: propGroup(ARG_GROUP.appearance) },
+		position: {
+			control: 'inline-radio',
+			options: ['bottom-right', 'bottom-left', 'top-right', 'top-left'],
+			table: propGroup(ARG_GROUP.appearance),
+		},
 		isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 		target: { control: false, table: propGroup(ARG_GROUP.behavior) },
 		focusTarget: { control: false, table: propGroup(ARG_GROUP.behavior) },

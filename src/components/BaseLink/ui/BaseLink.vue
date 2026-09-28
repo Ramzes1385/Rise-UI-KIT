@@ -36,7 +36,10 @@ const props = withDefaults(
 const emit = defineEmits<BaseLinkEmits>()
 defineSlots<BaseLinkSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-link', props, ['root', 'external'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-link', props, [
+	'root',
+	'external',
+])
 
 /** Компонент ссылок приложения: проп, плагин или RouterLink — определяется один раз */
 const appLinkComponent = useLinkComponent()

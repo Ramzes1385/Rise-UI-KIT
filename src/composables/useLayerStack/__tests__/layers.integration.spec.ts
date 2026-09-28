@@ -63,7 +63,9 @@ describe('слои оверлеев', () => {
 		const { isListOpen, unmount } = renderModalWithList()
 		isListOpen.value = true
 		await nextTick()
-		expect(layerIndex(document.querySelector('.base-dropdown__panel'))).toBeGreaterThan(layerIndex(document.querySelector('.base-modal')))
+		expect(layerIndex(document.querySelector('.base-dropdown__panel'))).toBeGreaterThan(
+			layerIndex(document.querySelector('.base-modal')),
+		)
 		unmount()
 
 		// Меню на странице открыто, из него открывают окно: окно над меню, хотя в DOM его якорь раньше
@@ -73,14 +75,20 @@ describe('слои оверлеев', () => {
 			defineComponent({
 				setup: () => () => [
 					h(BaseModal, { isOpen: isConfirmOpen.value, title: 'Удалить серию?' }),
-					h(BaseDropdown, { isOpen: isMenuOpen.value }, { default: () => h('button', { type: 'button' }, 'Действия'), dropdown: () => h('span', 'Удалить') }),
+					h(
+						BaseDropdown,
+						{ isOpen: isMenuOpen.value },
+						{ default: () => h('button', { type: 'button' }, 'Действия'), dropdown: () => h('span', 'Удалить') },
+					),
 				],
 			}),
 		)
 		await nextTick()
 		isConfirmOpen.value = true
 		await nextTick()
-		expect(layerIndex(document.querySelector('.base-modal'))).toBeGreaterThan(layerIndex(document.querySelector('.base-dropdown__panel')))
+		expect(layerIndex(document.querySelector('.base-modal'))).toBeGreaterThan(
+			layerIndex(document.querySelector('.base-dropdown__panel')),
+		)
 	})
 
 	it('Escape, обработанный элементом (панель эмодзи чата), не закрывает окно под ним', async () => {
@@ -88,8 +96,10 @@ describe('слои оверлеев', () => {
 		render(
 			defineComponent({
 				setup: () => () =>
-					h(BaseModal, { isOpen: isModalOpen.value, title: 'Чат', 'onUpdate:isOpen': (value: boolean) => (isModalOpen.value = value) }, () =>
-						h(ChatEmojiPicker, { sizeScale: 100 }),
+					h(
+						BaseModal,
+						{ isOpen: isModalOpen.value, title: 'Чат', 'onUpdate:isOpen': (value: boolean) => (isModalOpen.value = value) },
+						() => h(ChatEmojiPicker, { sizeScale: 100 }),
 					),
 			}),
 		)
@@ -162,7 +172,11 @@ describe('слои оверлеев', () => {
 			defineComponent({
 				render: () =>
 					h('section', { 'data-theme': 'dark' }, [
-						h(BaseDropdown, { isOpen: true }, { default: () => h('button', { type: 'button' }, 'Меню'), dropdown: () => h('span', 'Пункт') }),
+						h(
+							BaseDropdown,
+							{ isOpen: true },
+							{ default: () => h('button', { type: 'button' }, 'Меню'), dropdown: () => h('span', 'Пункт') },
+						),
 					]),
 			}),
 		)
@@ -178,7 +192,14 @@ describe('слои оверлеев', () => {
 				setup: () => () =>
 					h('section', { 'data-theme': 'dark' }, [
 						h(BaseEditor, { modelValue: '<p><img src="data:," alt="Схема"></p>' }),
-						h(ChatMessageContextMenu, { isOpen: isMenuOpen.value, x: 0, y: 0, message: null, currentUserRole: 'member', sizeScale: 100 }),
+						h(ChatMessageContextMenu, {
+							isOpen: isMenuOpen.value,
+							x: 0,
+							y: 0,
+							message: null,
+							currentUserRole: 'member',
+							sizeScale: 100,
+						}),
 					]),
 			}),
 		)

@@ -33,7 +33,31 @@ export interface ImageZoomConfig {
 /**
  * Пропсы компонента BaseImage
  */
-export interface BaseImageProps extends BaseComponentProps<string, 'root' | 'placeholder' | 'error' | 'img' | 'zoomOutButton' | 'zoomOutIcon' | 'zoomScale' | 'zoomInButton' | 'zoomInIcon' | 'zoomResetButton' | 'zoomResetIcon' | 'rotateLeftButton' | 'rotateLeftIcon' | 'rotateRightButton' | 'rotateRightIcon' | 'zoomCloseButton' | 'zoomCloseIcon' | 'galleryPrevButton' | 'galleryPrevIcon' | 'galleryNextButton' | 'galleryNextIcon' | 'galleryCounter'> {
+export interface BaseImageProps extends BaseComponentProps<
+	string,
+	| 'root'
+	| 'placeholder'
+	| 'error'
+	| 'img'
+	| 'zoomOutButton'
+	| 'zoomOutIcon'
+	| 'zoomScale'
+	| 'zoomInButton'
+	| 'zoomInIcon'
+	| 'zoomResetButton'
+	| 'zoomResetIcon'
+	| 'rotateLeftButton'
+	| 'rotateLeftIcon'
+	| 'rotateRightButton'
+	| 'rotateRightIcon'
+	| 'zoomCloseButton'
+	| 'zoomCloseIcon'
+	| 'galleryPrevButton'
+	| 'galleryPrevIcon'
+	| 'galleryNextButton'
+	| 'galleryNextIcon'
+	| 'galleryCounter'
+> {
 	/** URL изображения */
 	src: string
 	/** Альтернативный текст */

@@ -83,7 +83,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'isDisabled', 'error'] },
-		docs: { source: { code: CHECKBOX_VARIANTS.map(variant => `<BaseCheckbox v-model="checked" variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: CHECKBOX_VARIANTS.map(variant => `<BaseCheckbox v-model="checked" variant="${variant}" label="${variant}" />`).join(
+					'\n',
+				),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseCheckbox },
@@ -108,7 +114,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BaseCheckbox v-model="checked" :size-scale="${p.sizeScale}" label="${p.name}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BaseCheckbox v-model="checked" :size-scale="${p.sizeScale}" label="${p.name}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseCheckbox },
@@ -152,7 +162,11 @@ export const Disabled: Story = {
 	parameters: { controls: { include: ['variant', 'sizeScale'] } },
 	render: args => ({
 		components: { BaseCheckbox },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'label', 'isDisabled', 'onUpdate:modelValue']), off: ref(false), on: ref(true) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'isDisabled', 'onUpdate:modelValue']),
+			off: ref(false),
+			on: ref(true),
+		}),
 		template: `
 			<div class="story-col">
 				<BaseCheckbox v-bind="props" v-model="off" label="Резервная копия (недоступно на тарифе)" is-disabled />

@@ -33,7 +33,7 @@ const meta = {
 					'- Варианты как у кнопки: `default` — заливка основным цветом, `soft` — мягкий фон,',
 					'  `outline`, `ghost`, `shadow` — нейтральные.',
 					'- Высота 20px при `sizeScale` = 100, текст 12/16. Длинный `label` обрезается многоточием.',
-					'- Статусы (успех, ошибка) — проп `color` с токенами роли: `{ bg: { base: \'var(--rise-success-soft)\' }, text: { base: \'var(--rise-success-text)\' } }`.',
+					"- Статусы (успех, ошибка) — проп `color` с токенами роли: `{ bg: { base: 'var(--rise-success-soft)' }, text: { base: 'var(--rise-success-text)' } }`.",
 					'',
 					'Бейдж не интерактивный: для действий используйте `BaseButton`, для индикатора поверх элемента — `BaseChip`.',
 				].join('\n'),
@@ -74,7 +74,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale'] },
-		docs: { source: { code: ['default', 'soft', 'outline', 'ghost', 'shadow'].map(variant => `<BaseBadge variant="${variant}" label="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: ['default', 'soft', 'outline', 'ghost', 'shadow']
+					.map(variant => `<BaseBadge variant="${variant}" label="${variant}" />`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseBadge },
@@ -91,7 +97,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseBadge :size-scale="${preset.sizeScale}" label="${preset.name}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseBadge :size-scale="${preset.sizeScale}" label="${preset.name}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseBadge },
@@ -103,7 +113,9 @@ export const Sizes: Story = {
 		`,
 	}),
 	play: async ({ canvas }) => {
-		const [xs, md, xl] = ['xs · 75', 'md · 100', 'xl · 125'].map(label => canvas.getByText(label).closest('.base-badge')?.getBoundingClientRect().height ?? 0)
+		const [xs, md, xl] = ['xs · 75', 'md · 100', 'xl · 125'].map(
+			label => canvas.getByText(label).closest('.base-badge')?.getBoundingClientRect().height ?? 0,
+		)
 		await expect(md).toBe(20)
 		await expect(xs).toBeLessThan(md)
 		await expect(xl).toBeGreaterThan(md)
@@ -131,12 +143,9 @@ export const WithIcon: Story = {
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			source: {
-				code: [
-					'<BaseBadge variant="soft">',
-					'  <BaseIcon name="check" :size-scale="80" />',
-					'  Проверено',
-					'</BaseBadge>',
-				].join('\n'),
+				code: ['<BaseBadge variant="soft">', '  <BaseIcon name="check" :size-scale="80" />', '  Проверено', '</BaseBadge>'].join(
+					'\n',
+				),
 			},
 		},
 	},

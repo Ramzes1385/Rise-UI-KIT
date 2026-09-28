@@ -46,11 +46,7 @@
 					</div>
 
 					<!-- Тело: с прокруткой получает tabindex, чтобы его можно было прокрутить с клавиатуры -->
-					<div
-						ref="bodyRef"
-						class="base-modal__body"
-						:class="classes.body"
-						:tabindex="isBodyScrollable ? 0 : undefined">
+					<div ref="bodyRef" class="base-modal__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>
 
@@ -83,17 +79,29 @@ import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../model/Ba
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
-const props = withDefaults(defineProps<BaseModalProps>(), kitDefaults('BaseModal', {
-	isOpen: undefined,
-	variant: DEFAULT_VARIANT,
-	closeOnOverlay: true,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isContained: false,
-	hasOverlay: true,
-	dialogRole: 'dialog',
-}))
+const props = withDefaults(
+	defineProps<BaseModalProps>(),
+	kitDefaults('BaseModal', {
+		isOpen: undefined,
+		variant: DEFAULT_VARIANT,
+		closeOnOverlay: true,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isContained: false,
+		hasOverlay: true,
+		dialogRole: 'dialog',
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, [
+	'root',
+	'content',
+	'header',
+	'headerLeft',
+	'title',
+	'close',
+	'body',
+	'footer',
+])
 
 const emit = defineEmits<BaseModalEmits>()
 defineSlots<BaseModalSlots>()

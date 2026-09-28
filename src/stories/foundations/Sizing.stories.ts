@@ -44,7 +44,15 @@ const OPTIONS = [
 export const Presets: Story = {
 	render: () => ({
 		components: { BaseBadge, BaseButton, BaseCheckbox, BaseInput, BaseSelect, BaseSwitch },
-		setup: () => ({ presets: SIZE_PRESETS, sizeLabel, options: OPTIONS, text: ref(''), lang: ref('ru'), on: ref(true), checked: ref(true) }),
+		setup: () => ({
+			presets: SIZE_PRESETS,
+			sizeLabel,
+			options: OPTIONS,
+			text: ref(''),
+			lang: ref('ru'),
+			on: ref(true),
+			checked: ref(true),
+		}),
 		template: `
 			<div class="story-stack">
 				<div v-for="preset in presets" :key="preset.name" class="story-row" style="flex-wrap: nowrap;">
@@ -79,7 +87,8 @@ export const Alignment: Story = {
 		`,
 	}),
 	play: async ({ canvasElement }) => {
-		const height = (selector: string) => Math.round((canvasElement.querySelector(selector) as HTMLElement).getBoundingClientRect().height)
+		const height = (selector: string) =>
+			Math.round((canvasElement.querySelector(selector) as HTMLElement).getBoundingClientRect().height)
 		const button = height('.base-button')
 		await expect(button).toBe(32)
 		await expect(height('.base-input__wrapper')).toBe(button)
@@ -124,7 +133,9 @@ export const Density: Story = {
 		`,
 	}),
 	play: async ({ canvasElement }) => {
-		const [compact, spacious] = [...canvasElement.querySelectorAll('.base-button')].map(el => Math.round(el.getBoundingClientRect().height))
+		const [compact, spacious] = [...canvasElement.querySelectorAll('.base-button')].map(el =>
+			Math.round(el.getBoundingClientRect().height),
+		)
 		await expect(compact).toBe(32)
 		await expect(spacious).toBe(36)
 	},

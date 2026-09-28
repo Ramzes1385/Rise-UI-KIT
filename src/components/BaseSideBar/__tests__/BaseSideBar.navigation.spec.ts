@@ -66,7 +66,10 @@ describe('BaseSideBar navigation items', () => {
 		})
 
 		it('RouterLink приложения, если плагин его не задал; без роутера — <a href>', () => {
-			const { unmount } = render(BaseSideBar, { props: { items }, global: { stubs: BASE_SIDEBAR_STUBS, components: { RouterLink: RouterLinkStub } } })
+			const { unmount } = render(BaseSideBar, {
+				props: { items },
+				global: { stubs: BASE_SIDEBAR_STUBS, components: { RouterLink: RouterLinkStub } },
+			})
 			expect(screen.getByText('Главная').closest('a')).toHaveAttribute('data-testid', 'router-link')
 			unmount()
 
@@ -145,9 +148,7 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Каталог').closest('.base-side-bar-nav__link')).toHaveClass(
-			'base-side-bar-nav__link--parent-active',
-		)
+		expect(screen.getByText('Каталог').closest('.base-side-bar-nav__link')).toHaveClass('base-side-bar-nav__link--parent-active')
 		expect(screen.getByText('Товары').closest('.base-side-bar-nav__link')).toHaveClass('base-side-bar-nav__link--current')
 	})
 
@@ -395,9 +396,7 @@ describe('BaseSideBar navigation items', () => {
 		expect(screen.getByText('Каталог').closest('a')).toHaveAttribute('href', '/catalog')
 		expect(screen.getByText('Товары')).toBeInTheDocument()
 		expect(screen.getByText('Каталог').closest('.base-side-bar-nav__link')).not.toHaveAttribute('aria-expanded')
-		expect(
-			screen.getByText('Каталог').closest('.base-side-bar-nav__link')?.querySelector('.base-side-bar-nav__chevron'),
-		).toBeNull()
+		expect(screen.getByText('Каталог').closest('.base-side-bar-nav__link')?.querySelector('.base-side-bar-nav__chevron')).toBeNull()
 	})
 
 	it('рендерит item с children без to как disclosure button', async () => {
@@ -670,9 +669,7 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Активный вручную').closest('.base-side-bar-nav__link')).toHaveClass(
-			'base-side-bar-nav__link--current',
-		)
+		expect(screen.getByText('Активный вручную').closest('.base-side-bar-nav__link')).toHaveClass('base-side-bar-nav__link--current')
 	})
 
 	it('эмитит itemClick при клике на child item disclosure group', async () => {
@@ -879,9 +876,7 @@ describe('BaseSideBar navigation items', () => {
 			},
 		})
 
-		expect(screen.getByText('Активный вручную').closest('.base-side-bar-nav__link')).toHaveClass(
-			'base-side-bar-nav__link--current',
-		)
+		expect(screen.getByText('Активный вручную').closest('.base-side-bar-nav__link')).toHaveClass('base-side-bar-nav__link--current')
 	})
 
 	it('эмитит itemClick при клике на child item disclosure group', async () => {

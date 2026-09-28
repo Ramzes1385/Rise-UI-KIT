@@ -22,7 +22,10 @@ export interface SegmentedOption {
 /**
  * Пропсы компонента BaseSegmented
  */
-export interface BaseSegmentedProps extends BaseComponentProps<(typeof SEGMENTED_VARIANTS)[number], 'root' | 'label' | 'track' | 'segment' | 'error'> {
+export interface BaseSegmentedProps extends BaseComponentProps<
+	(typeof SEGMENTED_VARIANTS)[number],
+	'root' | 'label' | 'track' | 'segment' | 'error'
+> {
 	/** Выбранное значение (v-model) */
 	modelValue?: string | number | null
 	/** Сегменты */

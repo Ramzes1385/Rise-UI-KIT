@@ -56,12 +56,15 @@ const HIDE_DELAY_MS = 150
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
 
-const props = withDefaults(defineProps<BaseTooltipProps>(), kitDefaults('BaseTooltip', {
-	variant: DEFAULT_VARIANT,
-	position: 'top',
-	isAlwaysVisible: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseTooltipProps>(),
+	kitDefaults('BaseTooltip', {
+		variant: DEFAULT_VARIANT,
+		position: 'top',
+		isAlwaysVisible: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 defineSlots<BaseTooltipSlots>()
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip-popup', props, [
@@ -76,12 +79,18 @@ const isShown = computed(() => isVisible.value && Boolean(props.text))
 const wrapperRef = ref<HTMLElement | null>(null)
 const popupRef = ref<HTMLElement | null>(null)
 /** Тема блока, в котором стоит триггер: подсказка в body иначе взяла бы тему страницы */
-const inheritedTheme = useInheritedTheme(() => wrapperRef.value, () => isVisible.value)
+const inheritedTheme = useInheritedTheme(
+	() => wrapperRef.value,
+	() => isVisible.value,
+)
 const tooltipId = `rise-tooltip-${useId()}`
 
 /** Триггер описан подсказкой, пока она на экране: скринридер читает её после имени элемента */
 const triggerAttributes = computed(() => ({ 'aria-describedby': isShown.value ? tooltipId : undefined }))
-useTriggerAttributes(() => wrapperRef.value, () => triggerAttributes.value)
+useTriggerAttributes(
+	() => wrapperRef.value,
+	() => triggerAttributes.value,
+)
 let showTimer: ReturnType<typeof setTimeout> | null = null
 let hideTimer: ReturnType<typeof setTimeout> | null = null
 let rafId: number | null = null

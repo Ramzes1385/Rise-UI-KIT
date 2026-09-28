@@ -62,9 +62,17 @@ describe('resolveLink', () => {
 	})
 
 	it('маршрут — компонент ссылок с to; без него — <a href>', () => {
-		expect(resolveLink({ to: '/docs' }, RouterLinkStub)).toEqual({ is: RouterLinkStub, attrs: { to: '/docs', target: undefined, rel: undefined }, hasTarget: true })
+		expect(resolveLink({ to: '/docs' }, RouterLinkStub)).toEqual({
+			is: RouterLinkStub,
+			attrs: { to: '/docs', target: undefined, rel: undefined },
+			hasTarget: true,
+		})
 		expect(resolveLink({ to: { name: 'user' } }, RouterLinkStub).attrs.to).toEqual({ name: 'user' })
-		expect(resolveLink({ to: '/docs' })).toEqual({ is: 'a', attrs: { href: '/docs', target: undefined, rel: undefined }, hasTarget: true })
+		expect(resolveLink({ to: '/docs' })).toEqual({
+			is: 'a',
+			attrs: { href: '/docs', target: undefined, rel: undefined },
+			hasTarget: true,
+		})
 	})
 
 	it('внешний адрес в to открывается обычной ссылкой, даже с RouterLink', () => {

@@ -78,7 +78,13 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'icon'] },
-		docs: { source: { code: ['default', 'soft', 'ghost'].map(variant => `<BaseEmpty variant="${variant}" title="${variant}" description="…" />`).join('\n') } },
+		docs: {
+			source: {
+				code: ['default', 'soft', 'ghost']
+					.map(variant => `<BaseEmpty variant="${variant}" title="${variant}" description="…" />`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseEmpty },
@@ -95,7 +101,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant', 'icon'] },
-		docs: { source: { code: SIZE_PRESETS.map(preset => `<BaseEmpty :size-scale="${preset.sizeScale}" title="${preset.name}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(preset => `<BaseEmpty :size-scale="${preset.sizeScale}" title="${preset.name}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseEmpty },

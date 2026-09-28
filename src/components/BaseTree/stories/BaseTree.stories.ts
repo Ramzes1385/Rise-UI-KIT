@@ -221,7 +221,8 @@ const meta = {
 		return {
 			components: { BaseTree },
 			setup: () => ({ props: useArgsWithoutSlots(args, []), onExpanded, onSelected }),
-			template: '<div class="story-narrow"><BaseTree v-bind="props" @update:expanded-ids="onExpanded" @update:selected-ids="onSelected" /></div>',
+			template:
+				'<div class="story-narrow"><BaseTree v-bind="props" @update:expanded-ids="onExpanded" @update:selected-ids="onSelected" /></div>',
 		}
 	},
 } satisfies Meta<typeof BaseTree>
@@ -270,7 +271,13 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant', 'arrowPosition'] },
-		docs: { source: { code: ['xs', 'md', 'xl'].map(name => `<BaseTree :items="items" :size-scale="${SIZE_PRESETS.find(p => p.name === name)?.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: ['xs', 'md', 'xl']
+					.map(name => `<BaseTree :items="items" :size-scale="${SIZE_PRESETS.find(p => p.name === name)?.sizeScale}" />`)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTree },
@@ -349,7 +356,10 @@ export const Empty: Story = {
 	parameters: {
 		docs: {
 			source: {
-				code: ['<BaseTree v-if="items.length" :items="items" />', '<BaseEmpty v-else variant="soft" icon="folder" title="Папка пуста" description="Загрузите первый файл" />'].join('\n'),
+				code: [
+					'<BaseTree v-if="items.length" :items="items" />',
+					'<BaseEmpty v-else variant="soft" icon="folder" title="Папка пуста" description="Загрузите первый файл" />',
+				].join('\n'),
 			},
 		},
 	},
@@ -405,7 +415,13 @@ export const SelectionModes: Story = {
 	render: args => ({
 		components: { BaseTree },
 		setup: () => ({
-			props: useArgsWithoutSlots(args, ['selectionMode', 'expandedIds', 'selectedIds', 'onUpdate:expandedIds', 'onUpdate:selectedIds']),
+			props: useArgsWithoutSlots(args, [
+				'selectionMode',
+				'expandedIds',
+				'selectedIds',
+				'onUpdate:expandedIds',
+				'onUpdate:selectedIds',
+			]),
 			// У каждого дерева своё состояние: раскрыта папка src, в single и multiple есть начальный выбор
 			expandedNone: ref(['src']),
 			expandedSingle: ref(['src']),
@@ -433,7 +449,9 @@ export const SelectionModes: Story = {
 		`,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		const [, singleTree, multipleTree] = canvas.getAllByText(/^(none|single|multiple)$/).map(label => label.nextElementSibling as HTMLElement)
+		const [, singleTree, multipleTree] = canvas
+			.getAllByText(/^(none|single|multiple)$/)
+			.map(label => label.nextElementSibling as HTMLElement)
 		await userEvent.click(nodeHeader(singleTree, 'package.json'))
 		await expect(canvas.getByText('Выбрано: package-json')).toBeVisible()
 		await expect(singleTree.querySelectorAll('.base-tree__node--selected')).toHaveLength(1)
@@ -618,7 +636,10 @@ const STAFF: TreeNode[] = Array.from({ length: 60 }, (_, department) => ({
 	id: `department-${department + 1}`,
 	label: `Отдел ${department + 1}`,
 	icon: 'folder',
-	children: Array.from({ length: 80 }, (_, person) => ({ id: `person-${department + 1}-${person + 1}`, label: `Сотрудник ${department + 1}.${person + 1}` })),
+	children: Array.from({ length: 80 }, (_, person) => ({
+		id: `person-${department + 1}-${person + 1}`,
+		label: `Сотрудник ${department + 1}.${person + 1}`,
+	})),
 }))
 
 /**

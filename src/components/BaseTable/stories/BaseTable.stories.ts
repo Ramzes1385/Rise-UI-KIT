@@ -8,7 +8,18 @@
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, avatarImage, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_WAIT_TIMEOUT, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import {
+	ARG_GROUP,
+	avatarImage,
+	baseArgTypes,
+	hiddenArgTypes,
+	propGroup,
+	SIZE_PRESETS,
+	sizeLabel,
+	STORY_WAIT_TIMEOUT,
+	tabTo,
+	useArgsWithoutSlots,
+} from '@/stories/helpers'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseButton } from '@components/BaseButton'
@@ -34,18 +45,117 @@ function formatDate(value: unknown): string {
 }
 
 const ORDERS = [
-	{ id: 1, number: 'З-1041', customer: 'Анна Смирнова', city: 'Москва', status: 'Доставлен', date: '2025-05-14', total: 12490, progress: 100 },
+	{
+		id: 1,
+		number: 'З-1041',
+		customer: 'Анна Смирнова',
+		city: 'Москва',
+		status: 'Доставлен',
+		date: '2025-05-14',
+		total: 12490,
+		progress: 100,
+	},
 	{ id: 2, number: 'З-1042', customer: 'Иван Петров', city: 'Казань', status: 'В пути', date: '2025-05-14', total: 3150, progress: 70 },
-	{ id: 3, number: 'З-1043', customer: 'Мария Кузнецова', city: 'Санкт-Петербург', status: 'Оплачен', date: '2025-05-13', total: 28700, progress: 30 },
-	{ id: 4, number: 'З-1044', customer: 'Олег Соколов', city: 'Новосибирск', status: 'Отменён', date: '2025-05-12', total: 990, progress: 0 },
-	{ id: 5, number: 'З-1045', customer: 'Екатерина Волкова', city: 'Екатеринбург', status: 'Доставлен', date: '2025-05-11', total: 7640, progress: 100 },
-	{ id: 6, number: 'З-1046', customer: 'Дмитрий Орлов', city: 'Москва', status: 'В пути', date: '2025-05-10', total: 15300, progress: 60 },
-	{ id: 7, number: 'З-1047', customer: 'Ольга Лебедева', city: 'Самара', status: 'Оплачен', date: '2025-05-09', total: 4380, progress: 20 },
-	{ id: 8, number: 'З-1048', customer: 'Сергей Новиков', city: 'Казань', status: 'Доставлен', date: '2025-05-08', total: 21900, progress: 100 },
-	{ id: 9, number: 'З-1049', customer: 'Наталья Морозова', city: 'Москва', status: 'Оплачен', date: '2025-05-07', total: 5870, progress: 40 },
-	{ id: 10, number: 'З-1050', customer: 'Алексей Фёдоров', city: 'Пермь', status: 'Доставлен', date: '2025-05-06', total: 9990, progress: 100 },
-	{ id: 11, number: 'З-1051', customer: 'Татьяна Козлова', city: 'Уфа', status: 'В пути', date: '2025-05-05', total: 13200, progress: 80 },
-	{ id: 12, number: 'З-1052', customer: 'Павел Никитин', city: 'Воронеж', status: 'Отменён', date: '2025-05-04', total: 2400, progress: 0 },
+	{
+		id: 3,
+		number: 'З-1043',
+		customer: 'Мария Кузнецова',
+		city: 'Санкт-Петербург',
+		status: 'Оплачен',
+		date: '2025-05-13',
+		total: 28700,
+		progress: 30,
+	},
+	{
+		id: 4,
+		number: 'З-1044',
+		customer: 'Олег Соколов',
+		city: 'Новосибирск',
+		status: 'Отменён',
+		date: '2025-05-12',
+		total: 990,
+		progress: 0,
+	},
+	{
+		id: 5,
+		number: 'З-1045',
+		customer: 'Екатерина Волкова',
+		city: 'Екатеринбург',
+		status: 'Доставлен',
+		date: '2025-05-11',
+		total: 7640,
+		progress: 100,
+	},
+	{
+		id: 6,
+		number: 'З-1046',
+		customer: 'Дмитрий Орлов',
+		city: 'Москва',
+		status: 'В пути',
+		date: '2025-05-10',
+		total: 15300,
+		progress: 60,
+	},
+	{
+		id: 7,
+		number: 'З-1047',
+		customer: 'Ольга Лебедева',
+		city: 'Самара',
+		status: 'Оплачен',
+		date: '2025-05-09',
+		total: 4380,
+		progress: 20,
+	},
+	{
+		id: 8,
+		number: 'З-1048',
+		customer: 'Сергей Новиков',
+		city: 'Казань',
+		status: 'Доставлен',
+		date: '2025-05-08',
+		total: 21900,
+		progress: 100,
+	},
+	{
+		id: 9,
+		number: 'З-1049',
+		customer: 'Наталья Морозова',
+		city: 'Москва',
+		status: 'Оплачен',
+		date: '2025-05-07',
+		total: 5870,
+		progress: 40,
+	},
+	{
+		id: 10,
+		number: 'З-1050',
+		customer: 'Алексей Фёдоров',
+		city: 'Пермь',
+		status: 'Доставлен',
+		date: '2025-05-06',
+		total: 9990,
+		progress: 100,
+	},
+	{
+		id: 11,
+		number: 'З-1051',
+		customer: 'Татьяна Козлова',
+		city: 'Уфа',
+		status: 'В пути',
+		date: '2025-05-05',
+		total: 13200,
+		progress: 80,
+	},
+	{
+		id: 12,
+		number: 'З-1052',
+		customer: 'Павел Никитин',
+		city: 'Воронеж',
+		status: 'Отменён',
+		date: '2025-05-04',
+		total: 2400,
+		progress: 0,
+	},
 ]
 
 type Order = (typeof ORDERS)[number]
@@ -180,11 +290,20 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'features', 'behavior'] },
-		docs: { source: { code: TABLE_VARIANTS.map(variant => `<BaseTable :columns="columns" :rows="rows" variant="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: TABLE_VARIANTS.map(variant => `<BaseTable :columns="columns" :rows="rows" variant="${variant}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTable },
-		setup: () => ({ props: useArgsWithoutSlots(args), variants: TABLE_VARIANTS, columns: COMPACT_COLUMNS, rows: toRows(ORDERS.slice(0, 4)) }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args),
+			variants: TABLE_VARIANTS,
+			columns: COMPACT_COLUMNS,
+			rows: toRows(ORDERS.slice(0, 4)),
+		}),
 		template: `
 			<div class="story-stack">
 				<div v-for="variant in variants" :key="variant" class="story-stack" style="gap: 8px;">
@@ -204,7 +323,16 @@ export const Sizes: Story = {
 	args: { behavior: { selectable: true } },
 	parameters: {
 		controls: { include: ['variant', 'behavior'] },
-		docs: { source: { code: ['xs', 'md', 'xl'].map(name => `<BaseTable :columns="columns" :rows="rows" :size-scale="${SIZE_PRESETS.find(p => p.name === name)?.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: ['xs', 'md', 'xl']
+					.map(
+						name =>
+							`<BaseTable :columns="columns" :rows="rows" :size-scale="${SIZE_PRESETS.find(p => p.name === name)?.sizeScale}" />`,
+					)
+					.join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTable },
@@ -275,7 +403,14 @@ export const CustomColor: Story = {
 export const Padding: Story = {
 	parameters: {
 		controls: { include: ['variant', 'sizeScale'] },
-		docs: { source: { code: ['<BaseTable :columns="columns" :rows="rows" :padding="6" />', '<BaseTable :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />'].join('\n') } },
+		docs: {
+			source: {
+				code: [
+					'<BaseTable :columns="columns" :rows="rows" :padding="6" />',
+					'<BaseTable :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />',
+				].join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTable },
@@ -352,7 +487,14 @@ export const Loading: Story = {
 	args: { isLoading: true },
 	parameters: {
 		controls: { include: ['variant', 'sizeScale', 'behavior', 'features'] },
-		docs: { source: { code: ['<BaseTable :columns="columns" :rows="[]" is-loading />', '<BaseTable :columns="columns" :rows="rows" is-loading />'].join('\n') } },
+		docs: {
+			source: {
+				code: [
+					'<BaseTable :columns="columns" :rows="[]" is-loading />',
+					'<BaseTable :columns="columns" :rows="rows" is-loading />',
+				].join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BaseTable },
@@ -390,7 +532,8 @@ export const LongContent: Story = {
 				id: 1,
 				data: {
 					number: 'З-1041',
-					comment: 'Позвонить за час до доставки, домофон не работает: подъезд со стороны двора, третий этаж, дверь направо от лифта',
+					comment:
+						'Позвонить за час до доставки, домофон не работает: подъезд со стороны двора, третий этаж, дверь направо от лифта',
 					total: 12490,
 				},
 			},
@@ -565,7 +708,10 @@ export const LoadMore: Story = {
 		controls: { include: ['variant', 'sizeScale', 'pageSize'] },
 		docs: {
 			source: {
-				code: ['<BaseTable :columns="columns" :rows="rows" :page-size="4" load-mode="button" />', '<BaseTable :columns="columns" :rows="rows" :page-size="4" load-mode="infinite" height="180px" />'].join('\n'),
+				code: [
+					'<BaseTable :columns="columns" :rows="rows" :page-size="4" load-mode="button" />',
+					'<BaseTable :columns="columns" :rows="rows" :page-size="4" load-mode="infinite" height="180px" />',
+				].join('\n'),
 			},
 		},
 	},
@@ -608,8 +754,28 @@ export const ExpandableRows: Story = {
 				id: 'bundle',
 				data: { number: 'З-1040', customer: 'ООО «Вектор»', city: 'Москва', status: 'В пути', date: '2025-05-15', total: 45200 },
 				children: [
-					{ id: 'bundle-1', data: { number: 'З-1040/1', customer: 'Склад на Складской', city: 'Москва', status: 'Доставлен', date: '2025-05-15', total: 30100 } },
-					{ id: 'bundle-2', data: { number: 'З-1040/2', customer: 'Офис на Тверской', city: 'Москва', status: 'В пути', date: '2025-05-15', total: 15100 } },
+					{
+						id: 'bundle-1',
+						data: {
+							number: 'З-1040/1',
+							customer: 'Склад на Складской',
+							city: 'Москва',
+							status: 'Доставлен',
+							date: '2025-05-15',
+							total: 30100,
+						},
+					},
+					{
+						id: 'bundle-2',
+						data: {
+							number: 'З-1040/2',
+							customer: 'Офис на Тверской',
+							city: 'Москва',
+							status: 'В пути',
+							date: '2025-05-15',
+							total: 15100,
+						},
+					},
 				],
 			},
 		],
@@ -811,7 +977,9 @@ export const CustomCells: Story = {
 	render: args => ({
 		components: { BaseTable, BaseAvatar, BaseBadge, BaseButton, BaseIcon, BaseProgress },
 		setup: () => {
-			const rows = ref<TableRow[]>(toRows(ORDERS.slice(0, 4)).map((row, index) => ({ ...row, data: { ...row.data, avatar: avatarImage(24 + index * 70) } })))
+			const rows = ref<TableRow[]>(
+				toRows(ORDERS.slice(0, 4)).map((row, index) => ({ ...row, data: { ...row.data, avatar: avatarImage(24 + index * 70) } })),
+			)
 			const total = () => formatRub(rows.value.reduce((sum, row) => sum + Number(row.data.total), 0))
 			const remove = (id: string | number) => {
 				rows.value = rows.value.filter(row => row.id !== id)

@@ -122,7 +122,16 @@ export const WithError: Story = {
 /** Много тегов: переносятся на новые строки, длинный тег обрезается многоточием. */
 export const LongContent: Story = {
 	args: {
-		modelValue: ['Vue', 'TypeScript', 'Pinia', 'Vite', 'Vitest', 'Playwright', 'Storybook', 'Доступность интерфейсов по WCAG 2.2 и шаблонам APG'],
+		modelValue: [
+			'Vue',
+			'TypeScript',
+			'Pinia',
+			'Vite',
+			'Vitest',
+			'Playwright',
+			'Storybook',
+			'Доступность интерфейсов по WCAG 2.2 и шаблонам APG',
+		],
 	},
 	play: async ({ canvas }) => {
 		await expect(canvas.getAllByRole('listitem')).toHaveLength(8)

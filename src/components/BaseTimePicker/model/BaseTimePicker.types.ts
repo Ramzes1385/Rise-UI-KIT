@@ -3,7 +3,15 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты оформления — как у BaseInput */
-export const TIME_PICKER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const satisfies readonly InputVariant[]
+export const TIME_PICKER_VARIANTS = [
+	'default',
+	'ghost',
+	'outline',
+	'shadow',
+	'soft',
+	'filled',
+	'underline',
+] as const satisfies readonly InputVariant[]
 
 /**
  * Пропсы компонента BaseTimePicker

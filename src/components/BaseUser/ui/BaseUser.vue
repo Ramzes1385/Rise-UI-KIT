@@ -35,16 +35,24 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseUser.style.scss'
 import type { BaseUserProps, BaseUserSlots } from '../model/BaseUser.types'
 
-const props = withDefaults(defineProps<BaseUserProps>(), kitDefaults('BaseUser', {
-	variant: DEFAULT_VARIANT,
-	isOnline: false,
-	orientation: 'horizontal',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseUserProps>(),
+	kitDefaults('BaseUser', {
+		variant: DEFAULT_VARIANT,
+		isOnline: false,
+		orientation: 'horizontal',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseUserSlots>()
 
-const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-user', props, ['root', 'avatar', 'name', 'description'])
+const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-user', props, [
+	'root',
+	'avatar',
+	'name',
+	'description',
+])
 
 const isLink = computed(() => Boolean(props.to || props.href))
 

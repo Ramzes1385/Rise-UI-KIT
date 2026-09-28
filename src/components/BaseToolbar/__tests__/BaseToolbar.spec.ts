@@ -11,7 +11,10 @@ describe('BaseToolbar', () => {
 	it('role="toolbar" с именем и ориентацией; в порядке Tab первый доступный элемент', () => {
 		render(BaseToolbar, {
 			props: { ariaLabel: 'Форматирование' },
-			slots: { default: '<button disabled>Отменить</button><button>Полужирный</button><button>Курсив</button><div role="button" tabindex="0">Цвет</div>' },
+			slots: {
+				default:
+					'<button disabled>Отменить</button><button>Полужирный</button><button>Курсив</button><div role="button" tabindex="0">Цвет</div>',
+			},
 		})
 
 		const toolbar = screen.getByRole('toolbar', { name: 'Форматирование' })
@@ -27,7 +30,8 @@ describe('BaseToolbar', () => {
 		render({
 			components: { BaseToolbar },
 			setup: () => ({ disabled, shown }),
-			template: '<BaseToolbar aria-label="Панель"><button :disabled="disabled">A</button><button v-if="shown">B</button></BaseToolbar>',
+			template:
+				'<BaseToolbar aria-label="Панель"><button :disabled="disabled">A</button><button v-if="shown">B</button></BaseToolbar>',
 		})
 
 		disabled.value = true

@@ -52,7 +52,10 @@ export type DropdownMenuItems = DropdownMenuItem[] | DropdownMenuItem[][]
 /**
  * Пропсы компонента BaseDropdownMenu
  */
-export interface BaseDropdownMenuProps extends BaseComponentProps<DropdownMenuVariant, 'root' | 'trigger' | 'panel' | 'item' | 'label' | 'separator'> {
+export interface BaseDropdownMenuProps extends BaseComponentProps<
+	DropdownMenuVariant,
+	'root' | 'trigger' | 'panel' | 'item' | 'label' | 'separator'
+> {
 	/** Пункты меню: список или группы */
 	items: DropdownMenuItems
 	/** Меню открыто (`v-model:is-open`). Без пропа меню открывается и закрывается само */

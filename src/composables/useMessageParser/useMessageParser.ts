@@ -1,19 +1,12 @@
 /** Composable: разбор текста сообщения на сегменты */
-import type {
-	MessageToken,
-	TextPart,
-	UseMessageParserOptions,
-	UseMessageParserReturn,
-} from './useMessageParser.types'
+import type { MessageToken, TextPart, UseMessageParserOptions, UseMessageParserReturn } from './useMessageParser.types'
 
 /**
  * Composable для разбора текста сообщения на сегменты: упоминания, команды, ссылки, текст.
  */
 function useMessageParser(options: UseMessageParserOptions = {}): UseMessageParserReturn {
 	const rawSearchQuery = options.searchQuery
-	const getSearchQuery: () => string = typeof rawSearchQuery === 'function'
-		? rawSearchQuery
-		: () => rawSearchQuery ?? ''
+	const getSearchQuery: () => string = typeof rawSearchQuery === 'function' ? rawSearchQuery : () => rawSearchQuery ?? ''
 
 	function getHighlightedParts(text: string): TextPart[] {
 		const searchQuery = getSearchQuery()

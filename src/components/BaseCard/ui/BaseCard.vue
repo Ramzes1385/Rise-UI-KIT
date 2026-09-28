@@ -59,19 +59,30 @@ import { usePadding } from '@composables/usePadding'
 import '../styles/BaseCard.style.scss'
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
 
-const props = withDefaults(defineProps<BaseCardProps>(), kitDefaults('BaseCard', {
-	variant: DEFAULT_VARIANT,
-	isHoverable: false,
-	padding: undefined,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	scroll: false,
-}))
+const props = withDefaults(
+	defineProps<BaseCardProps>(),
+	kitDefaults('BaseCard', {
+		variant: DEFAULT_VARIANT,
+		isHoverable: false,
+		padding: undefined,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		scroll: false,
+	}),
+)
 
 defineSlots<BaseCardSlots>()
 
 const height = computed(() => props.height)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-card', props, ['root', 'header', 'title', 'subtitle', 'actions', 'body', 'footer'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-card', props, [
+	'root',
+	'header',
+	'title',
+	'subtitle',
+	'actions',
+	'body',
+	'footer',
+])
 const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad' })
 /** Без пропа padding отступы секций берутся из стилей (16px 20px), inline-переменные не пишутся. */
 const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))

@@ -107,7 +107,10 @@ export const Vertical: Story = {
 export const WithSplitButton: Story = {
 	render: args => ({
 		components: { BaseButtonGroup, BaseButton, BaseSplitButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['ariaLabel']), items: [{ label: 'Сохранить как шаблон' }, { label: 'Сохранить копию' }] }),
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['ariaLabel']),
+			items: [{ label: 'Сохранить как шаблон' }, { label: 'Сохранить копию' }],
+		}),
 		template: `
 			<BaseButtonGroup v-bind="props" aria-label="Документ">
 				<BaseButton variant="outline">Отмена</BaseButton>

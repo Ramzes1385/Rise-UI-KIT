@@ -23,14 +23,20 @@ import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseFooter.style.scss'
 import type { BaseFooterProps, BaseFooterSlots } from '../model/BaseFooter.types'
 
-const props = withDefaults(defineProps<BaseFooterProps>(), kitDefaults('BaseFooter', {
-	variant: DEFAULT_VARIANT,
-	containerSize: 'full',
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseFooterProps>(),
+	kitDefaults('BaseFooter', {
+		variant: DEFAULT_VARIANT,
+		containerSize: 'full',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 defineSlots<BaseFooterSlots>()
 const slots = useSlots()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-footer', props, ['root', 'inner'])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-footer', props, [
+	'root',
+	'inner',
+])
 </script>

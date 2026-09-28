@@ -71,7 +71,11 @@ describe('createIconPlugin', () => {
 	it('icons заменяет иконки кита: другим символом или полным адресом', () => {
 		const wrapper = mount(
 			{ render: () => [h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'home' })] },
-			{ global: { plugins: [createIconPlugin({ spritePath: '/assets/icons.svg', icons: { close: 'x-mark', home: '/brand.svg#house' } })] } },
+			{
+				global: {
+					plugins: [createIconPlugin({ spritePath: '/assets/icons.svg', icons: { close: 'x-mark', home: '/brand.svg#house' } })],
+				},
+			},
 		)
 
 		expect(wrapper.findAll('use').map(use => use.attributes('href'))).toEqual(['/assets/icons.svg#x-mark', '/brand.svg#house'])

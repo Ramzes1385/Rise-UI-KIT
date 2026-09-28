@@ -137,7 +137,9 @@ describe('BaseEditor integration', () => {
 
 		it('показывает modelValue без скриптов и обработчиков событий', () => {
 			const { container } = render(BaseEditor, {
-				props: { modelValue: '<p>Фото<img src="https://example.com/a.png" onerror="alert(1)" alt="фото"><script>alert(2)</script></p>' },
+				props: {
+					modelValue: '<p>Фото<img src="https://example.com/a.png" onerror="alert(1)" alt="фото"><script>alert(2)</script></p>',
+				},
 			})
 			const content = getContent(container)
 
@@ -165,7 +167,10 @@ describe('BaseEditor integration', () => {
 		it('вставляет HTML из буфера обмена очищенным', () => {
 			const execCommand = mockExecCommand()
 			const { container } = render(BaseEditor, { props: { modelValue: '' } })
-			const event = createPasteEvent({ 'text/html': '<!--StartFragment--><b onmouseover="alert(1)">жирный</b><style>p{}</style>', 'text/plain': 'жирный' })
+			const event = createPasteEvent({
+				'text/html': '<!--StartFragment--><b onmouseover="alert(1)">жирный</b><style>p{}</style>',
+				'text/plain': 'жирный',
+			})
 
 			getContent(container).dispatchEvent(event)
 
@@ -230,7 +235,9 @@ describe('BaseEditor integration', () => {
 		})
 
 		it('функция html => html отключает очистку для доверенного HTML', () => {
-			const { container } = render(BaseEditor, { props: { modelValue: '<p class="lead" data-id="1">Текст</p>', sanitize: (html: string) => html } })
+			const { container } = render(BaseEditor, {
+				props: { modelValue: '<p class="lead" data-id="1">Текст</p>', sanitize: (html: string) => html },
+			})
 
 			expect(getContent(container).innerHTML).toBe('<p class="lead" data-id="1">Текст</p>')
 		})

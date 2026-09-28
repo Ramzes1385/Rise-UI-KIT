@@ -90,10 +90,7 @@ describe('BaseBreadcrumbs integration', () => {
 
 	describe('внешние ссылки', () => {
 		it('должен эмитить navigate с href при клике на внешнюю крошку', async () => {
-			const itemsWithHref: BreadcrumbItem[] = [
-				{ label: 'Внешний сайт', href: 'https://example.com' },
-				{ label: 'Текущая страница' },
-			]
+			const itemsWithHref: BreadcrumbItem[] = [{ label: 'Внешний сайт', href: 'https://example.com' }, { label: 'Текущая страница' }]
 			const { emitted, container } = render(BaseBreadcrumbs, { props: { items: itemsWithHref } })
 
 			const link = container.querySelector('.base-breadcrumbs__link') as HTMLElement
@@ -210,7 +207,9 @@ describe('BaseBreadcrumbs integration', () => {
 
 		it('небезопасный адрес: ссылка без href, клик не сообщает о переходе', async () => {
 			vi.spyOn(console, 'warn').mockImplementation(() => {})
-			const { emitted } = render(BaseBreadcrumbs, { props: { items: [{ label: 'Отчёт', href: 'javascript:alert(1)' }, { label: 'Страница' }] } })
+			const { emitted } = render(BaseBreadcrumbs, {
+				props: { items: [{ label: 'Отчёт', href: 'javascript:alert(1)' }, { label: 'Страница' }] },
+			})
 
 			const link = screen.getByRole('link', { name: 'Отчёт' })
 			expect(link).not.toHaveAttribute('href')

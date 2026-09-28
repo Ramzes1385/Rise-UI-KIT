@@ -12,7 +12,12 @@
 			@click="emit('click', $event)">
 			<slot>{{ label }}</slot>
 		</BaseButton>
-		<BaseDropdownMenu class="base-split-button__menu" :items="items" position="bottom-end" :aria-label="menuLabel ?? UI_ARIA.MORE_ACTIONS" @select="(item, event) => emit('select', item, event)">
+		<BaseDropdownMenu
+			class="base-split-button__menu"
+			:items="items"
+			position="bottom-end"
+			:aria-label="menuLabel ?? UI_ARIA.MORE_ACTIONS"
+			@select="(item, event) => emit('select', item, event)">
 			<BaseButton
 				class="base-split-button__toggle"
 				:custom-class="{ root: classes.toggle }"
@@ -40,12 +45,15 @@ import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseSplitButton.style.scss'
 import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../model/BaseSplitButton.types'
 
-const props = withDefaults(defineProps<BaseSplitButtonProps>(), kitDefaults('BaseSplitButton', {
-	variant: DEFAULT_VARIANT,
-	isDisabled: false,
-	isLoading: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseSplitButtonProps>(),
+	kitDefaults('BaseSplitButton', {
+		variant: DEFAULT_VARIANT,
+		isDisabled: false,
+		isLoading: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseSplitButtonEmits>()
 defineSlots<BaseSplitButtonSlots>()

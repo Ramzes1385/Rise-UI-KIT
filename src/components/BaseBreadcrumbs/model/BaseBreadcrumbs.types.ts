@@ -29,7 +29,23 @@ export type BreadcrumbSeparator = 'slash' | 'chevron' | 'dot' | 'arrow'
  * Пропсы компонента BaseBreadcrumbs
  */
 
-export interface BaseBreadcrumbsProps extends BaseComponentProps<(typeof BREADCRUMBS_VARIANTS)[number], 'root' | 'list' | 'item' | 'ellipsisBtn' | 'link' | 'current' | 'separator' | 'separatorIcon' | 'separatorText' | 'homeIcon' | 'itemIcon' | 'itemText' | 'currentIcon' | 'currentText'> {
+export interface BaseBreadcrumbsProps extends BaseComponentProps<
+	(typeof BREADCRUMBS_VARIANTS)[number],
+	| 'root'
+	| 'list'
+	| 'item'
+	| 'ellipsisBtn'
+	| 'link'
+	| 'current'
+	| 'separator'
+	| 'separatorIcon'
+	| 'separatorText'
+	| 'homeIcon'
+	| 'itemIcon'
+	| 'itemText'
+	| 'currentIcon'
+	| 'currentText'
+> {
 	/** Элементы крошек */
 	items: BreadcrumbItem[]
 	/** Разделитель */

@@ -308,7 +308,10 @@ describe('BaseTooltip: доступность и край окна', () => {
 
 	it('кнопка описана подсказкой, пока та на экране; пустой текст не показывается', async () => {
 		vi.useFakeTimers()
-		const { rerender } = render(BaseTooltip, { props: { text: 'Сохранить черновик' }, slots: { default: '<button type="button">Сохранить</button>' } })
+		const { rerender } = render(BaseTooltip, {
+			props: { text: 'Сохранить черновик' },
+			slots: { default: '<button type="button">Сохранить</button>' },
+		})
 		const button = screen.getByRole('button', { name: 'Сохранить' })
 		expect(button).not.toHaveAttribute('aria-describedby')
 
@@ -325,7 +328,10 @@ describe('BaseTooltip: доступность и край окна', () => {
 
 	it('указатель на подсказке не даёт ей скрыться, уход с подсказки скрывает', async () => {
 		vi.useFakeTimers()
-		const { container } = render(BaseTooltip, { props: { text: 'Подсказка' }, slots: { default: '<button type="button">Цель</button>' } })
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка' },
+			slots: { default: '<button type="button">Цель</button>' },
+		})
 		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
 		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
 		await vi.advanceTimersByTimeAsync(200)
@@ -349,7 +355,8 @@ describe('BaseTooltip: доступность и край окна', () => {
 			slots: { default: '<button type="button">≡</button>' },
 		})
 		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
-		wrapper.getBoundingClientRect = () => ({ top: 4, left: 0, width: 20, height: 20, bottom: 24, right: 20, x: 0, y: 4, toJSON: () => ({}) }) as DOMRect
+		wrapper.getBoundingClientRect = () =>
+			({ top: 4, left: 0, width: 20, height: 20, bottom: 24, right: 20, x: 0, y: 4, toJSON: () => ({}) }) as DOMRect
 		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
 		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
 

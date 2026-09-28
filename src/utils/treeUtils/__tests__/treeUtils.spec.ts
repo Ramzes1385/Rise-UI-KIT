@@ -4,11 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import {
-	buildDescendantsCache,
-	collectDescendantIdsInto,
-	collectExpandableIds,
-} from '../treeUtils'
+import { buildDescendantsCache, collectDescendantIdsInto, collectExpandableIds } from '../treeUtils'
 import type { TreeNode } from '@components/BaseTree/model/BaseTree.types'
 
 const leaf: TreeNode = { id: 'leaf1', label: 'Leaf' }
@@ -23,9 +19,7 @@ const deepTree: TreeNode = {
 		{
 			id: 'b',
 			label: 'B',
-			children: [
-				{ id: 'c', label: 'C', children: [{ id: 'd', label: 'D' }] },
-			],
+			children: [{ id: 'c', label: 'C', children: [{ id: 'd', label: 'D' }] }],
 		},
 	],
 }

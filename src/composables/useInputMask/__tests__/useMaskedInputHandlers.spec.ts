@@ -21,8 +21,12 @@ function createOptions(overrides: Record<string, unknown> = {}) {
 			getMask: () => (overrides.mask as string) ?? '###-###',
 			getValue: () => (overrides.value as string | number | null) ?? '',
 			isPassword: () => (overrides.isPassword as boolean) ?? false,
-			emit: (event: string, value: string) => { emitted.push({ event, value }) },
-			onKeydown: (e: KeyboardEvent) => { keydownEvents.push(e) },
+			emit: (event: string, value: string) => {
+				emitted.push({ event, value })
+			},
+			onKeydown: (e: KeyboardEvent) => {
+				keydownEvents.push(e)
+			},
 			inputRef,
 		},
 	}

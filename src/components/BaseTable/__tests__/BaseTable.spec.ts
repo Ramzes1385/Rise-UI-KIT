@@ -215,7 +215,6 @@ describe('BaseTable unit', () => {
 
 			expect(container.querySelector('.base-table__search')).not.toBeInTheDocument()
 		})
-
 	})
 
 	describe('пропс sizeScale', () => {
@@ -378,9 +377,7 @@ describe('BaseTable unit', () => {
 			await fireEvent.click(addBtn)
 
 			expect(emitted()).toHaveProperty('filter')
-			expect((emitted() as Record<string, unknown[][]>).filter[0][0]).toEqual([
-				{ key: 'name', operator: 'contains', value: 'Иван' },
-			])
+			expect((emitted() as Record<string, unknown[][]>).filter[0][0]).toEqual([{ key: 'name', operator: 'contains', value: 'Иван' }])
 		})
 
 		it('должен эмитить search после дебаунса', async () => {
@@ -774,9 +771,7 @@ describe('BaseTable unit', () => {
 			expect(container.querySelector('.base-table__table td')?.classList.contains('custom-td')).toBe(true)
 			expect(container.querySelector('.base-table__footer-bar')?.classList.contains('custom-footer-bar')).toBe(true)
 			expect(container.querySelector('.base-table__page-size')?.classList.contains('custom-page-size')).toBe(true)
-			expect(
-				container.querySelector('.base-table__pagination-info')?.classList.contains('custom-pagination-info'),
-			).toBe(true)
+			expect(container.querySelector('.base-table__pagination-info')?.classList.contains('custom-pagination-info')).toBe(true)
 			expect(container.querySelector('.base-table__footer')?.classList.contains('custom-footer')).toBe(true)
 		})
 	})
@@ -847,9 +842,7 @@ describe('BaseTable unit', () => {
 		}
 
 		/** Стабы без BaseCheckbox: нужен реальный чекбокс, отображающий modelValue */
-		const stubsWithRealCheckbox = Object.fromEntries(
-			Object.entries(globalConfig.stubs).filter(([name]) => name !== 'BaseCheckbox'),
-		)
+		const stubsWithRealCheckbox = Object.fromEntries(Object.entries(globalConfig.stubs).filter(([name]) => name !== 'BaseCheckbox'))
 
 		afterEach(() => {
 			document.body.style.cursor = ''
@@ -950,7 +943,12 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			await rerender({ columns: [{ ...columns[0], isHidden: true }, { ...columns[1], width: '120px' }] })
+			await rerender({
+				columns: [
+					{ ...columns[0], isHidden: true },
+					{ ...columns[1], width: '120px' },
+				],
+			})
 
 			expect(screen.queryByRole('columnheader', { name: 'Имя' })).not.toBeInTheDocument()
 			expect(container.querySelector<HTMLElement>('colgroup col')?.style.width).toBe('120px')

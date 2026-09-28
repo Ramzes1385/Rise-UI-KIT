@@ -92,7 +92,11 @@ export const Default: Story = {
 export const Variants: Story = {
 	parameters: {
 		controls: { include: ['sizeScale', 'total', 'pageSize'] },
-		docs: { source: { code: PAGINATION_VARIANTS.map(variant => `<BasePagination v-model="page" :total="120" variant="${variant}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: PAGINATION_VARIANTS.map(variant => `<BasePagination v-model="page" :total="120" variant="${variant}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BasePagination },
@@ -116,7 +120,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	parameters: {
 		controls: { include: ['variant'] },
-		docs: { source: { code: SIZE_PRESETS.map(p => `<BasePagination v-model="page" :total="120" :size-scale="${p.sizeScale}" />`).join('\n') } },
+		docs: {
+			source: {
+				code: SIZE_PRESETS.map(p => `<BasePagination v-model="page" :total="120" :size-scale="${p.sizeScale}" />`).join('\n'),
+			},
+		},
 	},
 	render: args => ({
 		components: { BasePagination },

@@ -3,7 +3,15 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты оформления — как у BaseInput: теги стоят внутри рамки поля перед строкой ввода */
-export const INPUT_TAGS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const satisfies readonly InputVariant[]
+export const INPUT_TAGS_VARIANTS = [
+	'default',
+	'ghost',
+	'outline',
+	'shadow',
+	'soft',
+	'filled',
+	'underline',
+] as const satisfies readonly InputVariant[]
 
 /**
  * Пропсы компонента BaseInputTags

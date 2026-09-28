@@ -20,9 +20,7 @@ async function openPanel(): Promise<HTMLElement> {
 
 /** Найти кнопку дня текущего месяца по числу */
 function getCurrentMonthDay(panel: HTMLElement, day: number): HTMLButtonElement {
-	const buttons = Array.from(
-		panel.querySelectorAll<HTMLButtonElement>('.base-calendar__day:not(.base-calendar__day--other)'),
-	)
+	const buttons = Array.from(panel.querySelectorAll<HTMLButtonElement>('.base-calendar__day:not(.base-calendar__day--other)'))
 	const button = buttons.find(item => item.textContent?.trim() === String(day))
 	if (!button) throw new Error(`День ${day} не найден в сетке`)
 	return button

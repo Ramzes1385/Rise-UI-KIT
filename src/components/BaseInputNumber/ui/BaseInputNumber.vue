@@ -68,16 +68,19 @@ import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '
 import '../styles/BaseInputNumber.style.scss'
 import type { BaseInputNumberEmits, BaseInputNumberProps } from '../model/BaseInputNumber.types'
 
-const props = withDefaults(defineProps<BaseInputNumberProps>(), kitDefaults('BaseInputNumber', {
-	variant: DEFAULT_VARIANT,
-	modelValue: null,
-	step: 1,
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	hasControls: true,
-	sizeScale: SIZE_SCALE_DEFAULT,
-}))
+const props = withDefaults(
+	defineProps<BaseInputNumberProps>(),
+	kitDefaults('BaseInputNumber', {
+		variant: DEFAULT_VARIANT,
+		modelValue: null,
+		step: 1,
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		hasControls: true,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseInputNumberEmits>()
 

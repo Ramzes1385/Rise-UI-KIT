@@ -110,7 +110,10 @@ describe('useTriggerAttributes', () => {
 		render(
 			defineComponent({
 				setup() {
-					api = useTriggerAttributes(() => null, () => ({ 'aria-expanded': 'false' }))
+					api = useTriggerAttributes(
+						() => null,
+						() => ({ 'aria-expanded': 'false' }),
+					)
 					return () => h('div')
 				},
 			}),
