@@ -33,24 +33,40 @@ function copyCalendarProp<Key extends keyof BaseDatePickerCalendarProps>(
 	target[name] = source[name]
 }
 
-export function pickDatePickerCalendarConfig(source: BaseDatePickerCalendarProps): BaseDatePickerCalendarConfig {
+function calendarDefaults(): BaseDatePickerCalendarConfig {
+	const kitLocale = getLocale()
 	return {
-		minDate: source.minDate ?? null,
-		maxDate: source.maxDate ?? null,
-		disabledDates: source.disabledDates ?? [],
-		disabledWeekdays: source.disabledWeekdays ?? [],
-		disableFrom: source.disableFrom ?? null,
-		disableTo: source.disableTo ?? null,
-		highlights: source.highlights ?? [],
-		weekends: source.weekends ?? null,
+		minDate: null,
+		maxDate: null,
+		disabledDates: [],
+		disabledWeekdays: [],
+		disableFrom: null,
+		disableTo: null,
+		highlights: [],
+		weekends: null,
 		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
-		firstDayOfWeek: source.firstDayOfWeek ?? (getLocale().firstDayOfWeek as CalendarWeekday),
-		locale: source.locale ?? getLocale().intl,
-		showTime: source.showTime ?? false,
-		showSeconds: source.showSeconds ?? false,
-		is24Hour: source.is24Hour ?? true,
-		showWeekNumber: source.showWeekNumber ?? false,
+		firstDayOfWeek: kitLocale.firstDayOfWeek as CalendarWeekday,
+		locale: kitLocale.intl,
+		showTime: false,
+		showSeconds: false,
+		is24Hour: true,
+		showWeekNumber: false,
 	}
+}
+
+function assignDefined<Key extends keyof BaseDatePickerCalendarConfig>(
+	target: BaseDatePickerCalendarConfig,
+	source: BaseDatePickerCalendarProps,
+	name: Key,
+): void {
+	const value = source[name]
+	if (value !== undefined && value !== null) target[name] = value as BaseDatePickerCalendarConfig[Key]
+}
+
+export function pickDatePickerCalendarConfig(source: BaseDatePickerCalendarProps): BaseDatePickerCalendarConfig {
+	const config = calendarDefaults()
+	for (const name of EXPLICIT_CALENDAR_PROPS) assignDefined(config, source, name)
+	return config
 }
 
 export function resolveDatePickerCalendarConfig(

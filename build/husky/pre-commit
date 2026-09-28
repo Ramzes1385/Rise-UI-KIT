@@ -1,4 +1,5 @@
 npm run lint
+npm run lint:new
 npm run lint:styles
 npm run lint:unused
 npm run format:check

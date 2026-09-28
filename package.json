@@ -69,6 +69,7 @@
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
     "lint:styles": "stylelint \"src/**/*.scss\"",
     "lint:unused": "knip --no-config-hints",
+    "lint:new": "node scripts/lint-new-files.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "storybook": "node scripts/storybook-dev.mjs",

@@ -510,10 +510,12 @@ src/components/BaseComponent/
   в `types/` ESLint тоже не пропустит.
 - Тест `build/tests/structure.spec.ts` проверяет, что все `*.types.ts` лежат в папках `types/`.
 
-### Логика в `model/` (пилот)
+### Логика в `model/`
 
-В BaseInputNumber, BaseSplitter и BaseInplace `<script setup>` содержит только макросы (`defineProps`, `defineEmits`,
-`defineSlots`, `defineExpose`), импорты для шаблона и вызов `useBaseX(props, emit)` из `model/useBaseX.ts`.
+`<script setup>` компонента содержит только макросы (`defineProps`, `defineEmits`, `defineSlots`, `defineExpose`),
+импорты для шаблона и вызов `useBaseX(props, emit)` из `model/useBaseX.ts`. Компоненты переводятся на эту схему
+группами (docs/v2/PLAN.md, С.9); переведённые перечислены в `MODEL_COMPONENTS` в `eslint.config.js`, и для них ESLint
+не пропускает в `.vue` функции, `let`, `computed`, `watch`, хуки жизненного цикла и composables не из `model/`.
 
 - Пропсы после `withDefaults` описывает тип `PropsWithDefaults<BaseXProps, 'ключи со значениями по умолчанию'>`
   из `@composables/useDefaults`.
@@ -652,7 +654,7 @@ Vite, плагины semantic-release — строками в его конфи�
 | `max-lines-per-function` | до 50 строк без пустых и комментариев | предупреждение |
 | `max-lines` | до 400 строк в файле | предупреждение |
 
-Предупреждения не блокируют коммит: существующий код доводится до порогов по компонентам, новый пишется сразу в них. В тестах и stories метрики размера не проверяются.
+Новый код пишется сразу в пороги: в `model/` компонентов они — ошибки, а новые файлы `src/` pre-commit проверяет без единого предупреждения (`npm run lint:new`). В старом коде это пока предупреждения, он доводится до порогов по компонентам. В тестах и stories метрики размера не проверяются.
 
 **Stylelint.** Классы — по БЭМ в kebab-case: `base-button__icon--active`. Ключевые слова — строчными (`currentcolor`), медиа-запросы — через `min-width` и `max-width`. Отключить правило можно только для строки и с причиной:
 

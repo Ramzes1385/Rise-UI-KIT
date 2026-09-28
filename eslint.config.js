@@ -5,6 +5,37 @@ import tseslint from 'typescript-eslint'
 import globals from 'globals'
 import prettierConfig from 'eslint-config-prettier/flat'
 
+const TYPES_OUTSIDE_TYPES_FOLDER = {
+	selector: 'TSInterfaceDeclaration, TSTypeAliasDeclaration, TSEnumDeclaration',
+	message: 'Типы объявляются в types/<имя>.types.ts',
+}
+
+const LOGIC_IN_MODEL = 'Логика компонента — в model/useBaseX.ts (docs/CONTRIBUTING.md, раздел 9)'
+
+// Компоненты, логика которых уже в model/: в <script setup> только макросы, импорты для шаблона и вызов useBaseX
+const MODEL_COMPONENTS = [
+	'BaseAnimation',
+	'BaseAvatarGroup',
+	'BaseBadge',
+	'BaseButtonGroup',
+	'BaseColorModeButton',
+	'BaseContainer',
+	'BaseEmpty',
+	'BaseFooter',
+	'BaseInplace',
+	'BaseInputNumber',
+	'BaseSplitButton',
+	'BaseSplitter',
+	'BaseUser',
+]
+
+const CLEAN_CODE_SIZE_RULES = {
+	complexity: ['error', 10],
+	'max-statements': ['error', 15],
+	'max-lines-per-function': ['error', { max: 50, skipBlankLines: true, skipComments: true }],
+	'max-lines': ['error', { max: 400, skipBlankLines: true, skipComments: true }],
+}
+
 export default tseslint.config(
 	{
 		ignores: ['dist/**', 'coverage/**', 'storybook-static/**', 'node_modules/**', '**/*.d.ts', 'build/**', 'scripts/**'],
@@ -79,11 +110,32 @@ export default tseslint.config(
 		files: ['src/**/*.{ts,vue}'],
 		ignores: ['src/**/types/*.types.ts', 'src/**/__tests__/**', 'src/**/*.stories.ts', 'src/**/*.d.ts'],
 		rules: {
+			'no-restricted-syntax': ['error', TYPES_OUTSIDE_TYPES_FOLDER],
+		},
+	},
+
+	{
+		files: ['src/components/**/model/**/*.ts'],
+		rules: CLEAN_CODE_SIZE_RULES,
+	},
+
+	{
+		files: MODEL_COMPONENTS.map(name => `src/components/${name}/ui/**/*.vue`),
+		rules: {
 			'no-restricted-syntax': [
 				'error',
+				TYPES_OUTSIDE_TYPES_FOLDER,
+				{ selector: 'Program > FunctionDeclaration', message: LOGIC_IN_MODEL },
+				{ selector: 'Program > VariableDeclaration[kind="let"]', message: LOGIC_IN_MODEL },
+				{ selector: 'Program > VariableDeclaration > VariableDeclarator[init.type!="CallExpression"]', message: LOGIC_IN_MODEL },
 				{
-					selector: 'TSInterfaceDeclaration, TSTypeAliasDeclaration, TSEnumDeclaration',
-					message: 'Типы объявляются в types/<имя>.types.ts',
+					selector:
+						'CallExpression[callee.name=/^(computed|ref|shallowRef|reactive|readonly|toRef|toRefs|watch|watchEffect|provide|inject|nextTick|useSlots|useAttrs|useId|useTemplateRef|onBeforeMount|onMounted|onBeforeUpdate|onUpdated|onBeforeUnmount|onUnmounted|onActivated|onDeactivated)$/]',
+					message: LOGIC_IN_MODEL,
+				},
+				{
+					selector: 'ImportDeclaration[source.value!=/\\/model\\//] > ImportSpecifier[imported.name=/^use[A-Z]/]',
+					message: LOGIC_IN_MODEL,
 				},
 			],
 		},
