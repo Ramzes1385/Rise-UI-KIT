@@ -89,23 +89,23 @@ describe('tableUtils', () => {
 
 	describe('calcTotalColumns', () => {
 		it('возвращает только видимые колонки', () => {
-			expect(calcTotalColumns(5, false, false, false)).toBe(5)
+			expect(calcTotalColumns(5, {})).toBe(5)
 		})
 
 		it('добавляет колонку для чекбоксов', () => {
-			expect(calcTotalColumns(5, true, false, false)).toBe(6)
+			expect(calcTotalColumns(5, { isSelectable: true })).toBe(6)
 		})
 
 		it('добавляет колонку для номеров строк', () => {
-			expect(calcTotalColumns(5, false, true, false)).toBe(6)
+			expect(calcTotalColumns(5, { hasRowNumber: true })).toBe(6)
 		})
 
 		it('добавляет колонку для раскрывающихся строк', () => {
-			expect(calcTotalColumns(5, false, false, true)).toBe(6)
+			expect(calcTotalColumns(5, { hasExpandableRows: true })).toBe(6)
 		})
 
 		it('добавляет все дополнительные колонки', () => {
-			expect(calcTotalColumns(5, true, true, true)).toBe(8)
+			expect(calcTotalColumns(5, { isSelectable: true, hasRowNumber: true, hasExpandableRows: true })).toBe(8)
 		})
 	})
 

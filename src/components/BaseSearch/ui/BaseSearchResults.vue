@@ -79,9 +79,9 @@
 <script setup lang="ts">
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
+import { BaseImage } from '@components/BaseImage'
 import { getSearchOptionId } from '../model/BaseSearch.types'
 import type { SearchResult } from '../model/BaseSearch.types'
 import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../model/BaseSearchResults.types'

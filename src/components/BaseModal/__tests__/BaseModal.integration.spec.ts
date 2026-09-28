@@ -7,10 +7,10 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { defineComponent, nextTick, ref } from 'vue'
-import { BaseSlideover } from '@components/BaseSlideover'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { useImageZoom } from '@composables/useImageZoom'
+import { BaseSlideover } from '@components/BaseSlideover'
 import BaseModal from '../ui/BaseModal.vue'
 
 /** Хост: кнопка-триггер и модалка с полем ввода и двумя кнопками в футере */

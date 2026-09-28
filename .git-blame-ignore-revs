@@ -1,0 +1,4 @@
+# Коммиты только с форматированием: git blame их пропускает (git config blame.ignoreRevsFile .git-blame-ignore-revs)
+
+# style: format code with prettier
+72c7e42057b033b0d8bbee899425f3de8ddc0c30

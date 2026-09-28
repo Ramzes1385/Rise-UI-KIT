@@ -5,8 +5,8 @@
  * состояния (пусто, ошибка, disabled) → сценарии (скрытый ввод, вставка кода) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -18,8 +18,8 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { PIN_VARIANTS } from '../model/BasePin.types'
 import BasePin from '../ui/BasePin.vue'
+import { PIN_VARIANTS } from '../model/BasePin.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

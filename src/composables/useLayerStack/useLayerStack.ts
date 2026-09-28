@@ -3,8 +3,8 @@
  * слой, открытый позже, отрисовывается выше
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { LayerEntry, LayerOptions } from './useLayerStack.types'
 import type { ComputedRef } from 'vue'
+import type { LayerEntry, LayerOptions } from './useLayerStack.types'
 
 /** Зарегистрированные слои всех компонентов страницы */
 const layers = new Set<LayerEntry>()

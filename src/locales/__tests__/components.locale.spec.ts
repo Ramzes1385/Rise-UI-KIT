@@ -4,14 +4,14 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
+import { render, screen } from '@testing-library/vue'
 import { createUiKitPlugin } from '@/plugin'
 import { BaseApp } from '@components/BaseApp'
-import { BaseCalendar } from '@components/BaseCalendar'
-import { BaseConfirm } from '@components/BaseConfirm'
 import { BaseModal } from '@components/BaseModal'
+import { BaseConfirm } from '@components/BaseConfirm'
+import { BaseCalendar } from '@components/BaseCalendar'
 import { BasePagination } from '@components/BasePagination'
 import { getLocale, setLocale } from '../state'
 

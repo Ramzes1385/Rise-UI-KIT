@@ -1,6 +1,6 @@
-import type { InputVariant } from '@components/BaseInput/model/BaseInput.types'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { InputVariant } from '@components/BaseInput/model/BaseInput.types'
 
 /** Варианты оформления — как у BaseInput: теги стоят внутри рамки поля перед строкой ввода */
 export const INPUT_TAGS_VARIANTS = [

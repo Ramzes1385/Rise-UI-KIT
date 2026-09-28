@@ -1,6 +1,6 @@
-import type { InputVariant } from '@components/BaseInput/model/BaseInput.types'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { InputVariant } from '@components/BaseInput/model/BaseInput.types'
 
 /** Варианты оформления — как у BaseInput */
 export const TIME_PICKER_VARIANTS = [

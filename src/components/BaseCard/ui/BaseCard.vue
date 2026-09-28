@@ -52,10 +52,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { usePadding } from '@composables/usePadding'
+import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
-import { usePadding } from '@composables/usePadding'
 import '../styles/BaseCard.style.scss'
 import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
 

@@ -3,8 +3,8 @@
  * Проверяют каскадное позиционирование flyout: вправо, flip влево, прижатие по вертикали.
  */
 
-import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import { useFlyoutPosition } from '../useFlyoutPosition'
 
 function withSetup<T>(composable: () => T): { result: T; wrapper: ReturnType<typeof mount> } {

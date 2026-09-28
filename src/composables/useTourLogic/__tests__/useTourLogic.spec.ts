@@ -7,10 +7,13 @@
 import '@testing-library/jest-dom/vitest'
 import { effectScope } from 'vue'
 import { resolvePlacement, useTourLogic } from '../useTourLogic'
-import type { BaseTourProps } from '@components/BaseTour/model/BaseTour.types'
 import type { EffectScope } from 'vue'
+import type { BaseTourProps } from '@components/BaseTour/model/BaseTour.types'
 
-function rectAt(top: number, left: number, width = 60, height = 40): DOMRect {
+/** Прямоугольник элемента 60×40 в точке (top, left) */
+function rectAt(top: number, left: number): DOMRect {
+	const width = 60
+	const height = 40
 	return {
 		top,
 		left,

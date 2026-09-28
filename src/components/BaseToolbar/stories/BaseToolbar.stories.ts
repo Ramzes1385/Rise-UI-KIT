@@ -6,14 +6,14 @@
  */
 
 import { expect } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { TOOLBAR_VARIANTS } from '../model/BaseToolbar.types'
+import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseToolbar from '../ui/BaseToolbar.vue'
+import { TOOLBAR_VARIANTS } from '../model/BaseToolbar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Кнопки форматирования: иконка и имя */

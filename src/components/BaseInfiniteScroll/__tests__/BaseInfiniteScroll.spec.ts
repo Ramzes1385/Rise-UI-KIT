@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { nextTick, ref } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseInfiniteScroll from '../ui/BaseInfiniteScroll.vue'
 import type { BaseInfiniteScrollExpose, InfiniteScrollLoadEvent } from '../model/BaseInfiniteScroll.types'
 

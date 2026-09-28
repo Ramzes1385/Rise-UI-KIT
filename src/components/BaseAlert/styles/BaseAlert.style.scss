@@ -10,8 +10,8 @@
 	--alert-role-text: var(--rise-info-text);
 	--alert-role-border: var(--rise-info-border);
 	// Цвет иконки и кольца фокуса кнопок. На заливке роли — цвет текста: основное кольцо может слиться с фоном.
-	--alert-icon: currentColor;
-	--alert-ring: currentColor;
+	--alert-icon: currentcolor;
+	--alert-ring: currentcolor;
 
 	display: flex;
 	align-items: flex-start;
@@ -123,10 +123,10 @@
 	// Кнопка 24px (иконка 16px + отступы 3px + рамка) занимает по высоте строку заголовка (20px),
 	// а иконка стоит на линии правого отступа алерта. max-width: none — иначе отрицательный отступ сужает кнопку.
 	& &__close {
-		--custom-text: currentColor;
+		--custom-text: currentcolor;
 		--custom-bg: transparent;
-		--custom-bg-hover: color-mix(in srgb, currentColor 12%, transparent);
-		--custom-bg-active: color-mix(in srgb, currentColor 18%, transparent);
+		--custom-bg-hover: color-mix(in srgb, currentcolor 12%, transparent);
+		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
 
 		max-width: none;
 		margin: sz(-2px) sz(-4px) sz(-2px) 0;

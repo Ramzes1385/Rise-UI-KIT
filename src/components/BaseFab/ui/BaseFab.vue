@@ -22,9 +22,9 @@
 import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
 import { calcIconScale } from '@utils/iconUtils'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseFab.style.scss'
 import type { BaseFabEmits, BaseFabProps } from '../model/BaseFab.types'
 

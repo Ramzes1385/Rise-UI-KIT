@@ -3,9 +3,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import { ref } from 'vue'
 import BaseTimePicker from '../ui/BaseTimePicker.vue'
 
 function renderModel(initial: string | null = null, props: Record<string, unknown> = {}) {

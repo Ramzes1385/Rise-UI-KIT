@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты отображения текстового поля */
 export const TEXTAREA_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

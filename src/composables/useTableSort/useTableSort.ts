@@ -3,6 +3,13 @@ import { ref } from 'vue'
 import type { UseTableSortOptions, UseTableSortReturn } from './useTableSort.types'
 import type { SortDirection, SortState, TableColumn } from '@components/BaseTable/model/BaseTable.types'
 
+/** Следующее направление по клику: по возрастанию → по убыванию → без сортировки → снова по возрастанию */
+function nextSortDirection(current: SortDirection): SortDirection {
+	if (current === 'asc') return 'desc'
+	if (current === 'desc') return null
+	return 'asc'
+}
+
 /**
  * Composable для управления сортировкой таблицы.
  */
@@ -33,7 +40,7 @@ function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 
 		if (existingIndex >= 0) {
 			const currentDir = sortStates.value[existingIndex].direction
-			nextDirection = currentDir === 'asc' ? 'desc' : currentDir === 'desc' ? null : 'asc'
+			nextDirection = nextSortDirection(currentDir)
 		}
 
 		if (isMultiSort()) {

@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import { UI_CHAT_TEXT } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
+import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../model/chatScale'
 import type { ChatFilePreviewEmits, ChatFilePreviewProps } from './ChatFilePreview.types'
 

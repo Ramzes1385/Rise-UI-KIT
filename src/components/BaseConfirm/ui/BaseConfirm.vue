@@ -36,13 +36,13 @@
 <script setup lang="ts">
 import { useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseModal } from '@components/BaseModal'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseConfirm.style.scss'
-import type { BaseConfirmEmits, BaseConfirmProps } from '../model/BaseConfirm.types'
 import type { CustomColor } from '@composables/useCustomColor'
+import type { BaseConfirmEmits, BaseConfirmProps } from '../model/BaseConfirm.types'
 
 const props = withDefaults(
 	defineProps<BaseConfirmProps>(),

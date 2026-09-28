@@ -1,5 +1,5 @@
-import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 import type { Ref } from 'vue'
+import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 
 /**
  * Возвращаемое значение composable useChatReply.

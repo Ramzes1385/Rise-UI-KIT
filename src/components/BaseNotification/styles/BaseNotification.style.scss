@@ -14,8 +14,7 @@
 	max-width: 100%;
 	max-height: 100%;
 	padding: sz(16px);
-	overflow-x: hidden;
-	overflow-y: auto;
+	overflow: hidden auto;
 	// Пустые участки контейнера не перехватывают клики по странице; карточки — перехватывают.
 	pointer-events: none;
 	@include scrollbar-thin;

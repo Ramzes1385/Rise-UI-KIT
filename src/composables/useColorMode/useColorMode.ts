@@ -50,10 +50,15 @@ export function createColorMode(options: ColorModeOptions = {}): ColorModeInstan
 		return isSystemDark.value ? 'dark' : 'light'
 	})
 
+	/** Элемент с атрибутом темы: из опций или `<html>`; без window — нет */
+	function resolveTarget(): HTMLElement | null | undefined {
+		if (options.target) return options.target()
+		return hasWindow ? document.documentElement : null
+	}
+
 	function apply(value: ColorMode): void {
-		const target = options.target ? options.target() : hasWindow ? document.documentElement : null
 		// data-theme="system" переключает токены сам (CSS prefers-color-scheme): тема верна и до загрузки скриптов
-		target?.setAttribute('data-theme', value)
+		resolveTarget()?.setAttribute('data-theme', value)
 	}
 
 	function handleSystemChange(event: MediaQueryListEvent): void {

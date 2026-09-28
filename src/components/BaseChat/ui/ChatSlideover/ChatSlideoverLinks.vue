@@ -24,9 +24,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
-import { BaseIcon } from '@components/BaseIcon'
 import { CHAT_SCALE } from '../../model/chatScale'
 import type { ChatMessage } from '../../model/BaseChat.types'
 import type { ChatSlideoverLinksProps } from '../../model/ChatSlideoverLinks.types'

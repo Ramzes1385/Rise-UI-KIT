@@ -1,5 +1,5 @@
-import type { BaseDatePickerCalendarConfig } from './BaseDatePickerCalendar.types'
 import type { CalendarVariant } from '@components/BaseCalendar'
+import type { BaseDatePickerCalendarConfig } from './BaseDatePickerCalendar.types'
 
 export interface DatePickerRangePanelMonthItem {
 	key: string

@@ -5,13 +5,13 @@
  * состояния (переполнение, скрытие нуля, длинный текст) → сценарий «счётчик корзины».
  */
 
-import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
+import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { CHIP_VARIANTS } from '../model/BaseChip.types'
+import { BaseButton } from '@components/BaseButton'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseChip from '../ui/BaseChip.vue'
+import { CHIP_VARIANTS } from '../model/BaseChip.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const PLACEMENTS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'] as const

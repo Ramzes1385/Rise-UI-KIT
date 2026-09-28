@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { openExternalUrl } from '@utils/navigationUtils'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
 

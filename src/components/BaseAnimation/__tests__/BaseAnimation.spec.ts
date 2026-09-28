@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
+import { render, screen } from '@testing-library/vue'
 import BaseAnimation from '../ui/BaseAnimation.vue'
 
 describe('BaseAnimation unit', () => {

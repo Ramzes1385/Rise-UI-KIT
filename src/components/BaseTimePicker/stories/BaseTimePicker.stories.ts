@@ -7,8 +7,8 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { TIME_PICKER_VARIANTS } from '../model/BaseTimePicker.types'
 import BaseTimePicker from '../ui/BaseTimePicker.vue'
+import { TIME_PICKER_VARIANTS } from '../model/BaseTimePicker.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

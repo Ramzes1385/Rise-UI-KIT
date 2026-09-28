@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import { LINK_COMPONENT_KEY, resolveLink, useLinkComponent } from '../useLink'
-import type { LinkComponent } from '../useLink.types'
 import type { Component } from 'vue'
+import type { LinkComponent } from '../useLink.types'
 
 const RouterLinkStub = defineComponent({ name: 'RouterLinkStub', render: () => h('a') })
 const NuxtLinkStub = defineComponent({ name: 'NuxtLinkStub', render: () => h('a') })

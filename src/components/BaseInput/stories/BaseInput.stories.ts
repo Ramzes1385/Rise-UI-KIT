@@ -6,12 +6,12 @@
  * сценарии (типы, пароль, маска, фильтр символов) → клавиатура.
  */
 
-import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { INPUT_VARIANTS } from '../model/BaseInput.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInput from '../ui/BaseInput.vue'
+import { INPUT_VARIANTS } from '../model/BaseInput.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

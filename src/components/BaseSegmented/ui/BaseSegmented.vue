@@ -66,12 +66,12 @@
 
 <script setup lang="ts">
 import { computed, useId } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
-import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import { calcIconScale } from '@utils/iconUtils'
+import { kitDefaults } from '@composables/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseSegmented.style.scss'
 import type { BaseSegmentedEmits, BaseSegmentedProps } from '../model/BaseSegmented.types'
 

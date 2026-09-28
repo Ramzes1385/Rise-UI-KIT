@@ -104,10 +104,10 @@ describe('BaseDrawer unit', () => {
 	})
 
 	it.each([
-		['top', 'clientY', -120, 'translateY(-120px)'],
-		['left', 'clientX', -60, 'translateX(-60px)'],
-		['right', 'clientX', 60, 'translateX(60px)'],
-	] as const)('край %s: тянется к своему краю', async (direction, axis, delta, transform) => {
+		{ direction: 'top', axis: 'clientY', delta: -120, transform: 'translateY(-120px)' },
+		{ direction: 'left', axis: 'clientX', delta: -60, transform: 'translateX(-60px)' },
+		{ direction: 'right', axis: 'clientX', delta: 60, transform: 'translateX(60px)' },
+	] as const)('край $direction: тянется к своему краю', async ({ direction, axis, delta, transform }) => {
 		const { emitted } = setup({ direction })
 		Object.defineProperty(panel(), 'offsetWidth', { value: 300, configurable: true })
 		await fireEvent.pointerDown(document.querySelector('.base-drawer__handle') as HTMLElement, { button: 0, [axis]: 200 })

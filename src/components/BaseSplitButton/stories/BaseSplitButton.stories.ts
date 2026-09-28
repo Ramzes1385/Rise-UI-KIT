@@ -6,10 +6,10 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { SPLIT_BUTTON_VARIANTS } from '../model/BaseSplitButton.types'
 import BaseSplitButton from '../ui/BaseSplitButton.vue'
-import type { DropdownMenuItems } from '@components/BaseDropdownMenu'
+import { SPLIT_BUTTON_VARIANTS } from '../model/BaseSplitButton.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { DropdownMenuItems } from '@components/BaseDropdownMenu'
 
 const ITEMS: DropdownMenuItems = [
 	[{ label: 'Сохранить как черновик', icon: 'file' }, { label: 'Сохранить и закрыть' }],

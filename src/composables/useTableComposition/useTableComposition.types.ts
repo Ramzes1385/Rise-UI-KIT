@@ -1,5 +1,5 @@
-import type { BaseTableEmits, TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 import type { ComputedRef, Slots } from 'vue'
+import type { BaseTableEmits, TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
 
 export interface UseTableCompositionOptions {
 	rows: ComputedRef<TableRow[]>

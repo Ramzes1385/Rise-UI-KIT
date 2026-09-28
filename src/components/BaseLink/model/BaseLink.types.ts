@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { LinkComponent, LinkTo } from '@composables/useLink'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
  * Варианты BaseLink: `default` — цвет ссылки (primary) и тонкое подчёркивание, для ссылок в тексте;

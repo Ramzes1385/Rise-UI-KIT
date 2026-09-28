@@ -5,13 +5,13 @@
  * не найдено) → сценарии (свой вариант, загрузка с сервера, описание и отключённые варианты) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { AUTOCOMPLETE_VARIANTS } from '../model/BaseAutocomplete.types'
 import BaseAutocomplete from '../ui/BaseAutocomplete.vue'
-import type { AutocompleteOption } from '../model/BaseAutocomplete.types'
+import { AUTOCOMPLETE_VARIANTS } from '../model/BaseAutocomplete.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { AutocompleteOption } from '../model/BaseAutocomplete.types'
 
 /** Города доставки */
 const CITIES: AutocompleteOption[] = [

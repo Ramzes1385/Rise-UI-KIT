@@ -153,10 +153,10 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, useId, watch } from 'vue'
+import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useChatInputState } from '@composables/useChatInputState'
 import { CHAT_SCALE } from '../../model/chatScale'

@@ -1,5 +1,5 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
 import type { CustomColor } from '@composables/useCustomColor'
+import type { CustomClassProp } from '@composables/useCustomClass'
 
 export interface UseBaseComponentOptions {
 	block: string

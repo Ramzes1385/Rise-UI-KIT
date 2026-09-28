@@ -16,8 +16,8 @@ import {
 	slotArgType,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { TEXT_TAGS, TEXT_WEIGHT } from '../model/BaseText.types'
 import BaseText from '../ui/BaseText.vue'
+import { TEXT_TAGS, TEXT_WEIGHT } from '../model/BaseText.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const LONG_TEXT =

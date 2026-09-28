@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
+import { render, screen } from '@testing-library/vue'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
 

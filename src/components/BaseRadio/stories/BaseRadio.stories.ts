@@ -5,8 +5,8 @@
  * состояния (disabled, ошибка, длинные подписи) → сценарии (слот option) → клавиатура.
  */
 
-import { expect, fn, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -18,10 +18,10 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { RADIO_VARIANTS } from '../model/BaseRadio.types'
 import BaseRadio from '../ui/BaseRadio.vue'
-import type { BaseRadioOption } from '../model/BaseRadio.types'
+import { RADIO_VARIANTS } from '../model/BaseRadio.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseRadioOption } from '../model/BaseRadio.types'
 
 const DELIVERY_OPTIONS: BaseRadioOption[] = [
 	{ value: 'courier', label: 'Курьером' },

@@ -207,7 +207,7 @@ $light-main-shade: (
 	color-scheme: light;
 
 	// Фон
-	--rise-bg: #ffffff;
+	--rise-bg: #fff;
 	--rise-bg-muted: #{palette('neutral', 50)};
 	--rise-bg-elevated: #{palette('neutral', 100)};
 	--rise-bg-accented: #{palette('neutral', 200)};
@@ -220,7 +220,7 @@ $light-main-shade: (
 	--rise-text-toned: #{palette('neutral', 600)};
 	--rise-text: #{palette('neutral', 700)};
 	--rise-text-highlighted: #{palette('neutral', 900)};
-	--rise-text-inverted: #ffffff;
+	--rise-text-inverted: #fff;
 
 	// Рамки
 	--rise-border: #{palette('neutral', 200)};
@@ -234,7 +234,7 @@ $light-main-shade: (
 
 		--rise-#{$role}: #{palette($role, $main)};
 		--rise-#{$role}-hover: #{palette($role, $main + 100)};
-		--rise-on-#{$role}: #ffffff;
+		--rise-on-#{$role}: #fff;
 		--rise-#{$role}-soft: #{palette($role, 50)};
 		--rise-#{$role}-soft-hover: #{palette($role, 100)};
 		--rise-#{$role}-text: #{palette($role, 800)};
@@ -246,11 +246,11 @@ $light-main-shade: (
 	// Подложка модальных окон и выезжающих панелей
 	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
 
-	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
+	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
+	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
+	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
 }
 
 @mixin dark-tokens {
@@ -260,19 +260,19 @@ $light-main-shade: (
 	--rise-bg-muted: #{palette('neutral', 800)};
 	--rise-bg-elevated: #{palette('neutral', 800)};
 	--rise-bg-accented: #{palette('neutral', 700)};
-	--rise-bg-inverted: #ffffff;
+	--rise-bg-inverted: #fff;
 
 	--rise-text-dimmed: #{palette('neutral', 500)};
 	--rise-text-muted: #{palette('neutral', 400)};
 	--rise-text-toned: #{palette('neutral', 300)};
 	--rise-text: #{palette('neutral', 200)};
-	--rise-text-highlighted: #ffffff;
+	--rise-text-highlighted: #fff;
 	--rise-text-inverted: #{palette('neutral', 900)};
 
 	--rise-border: #{palette('neutral', 800)};
 	--rise-border-muted: #{palette('neutral', 700)};
 	--rise-border-accented: #{palette('neutral', 700)};
-	--rise-border-inverted: #ffffff;
+	--rise-border-inverted: #fff;
 
 	// В тёмной теме роли светлее (оттенок 400), а текст на заливке — тёмный: так контраст выше 4.5:1.
 	@each $role in $roles {
@@ -288,11 +288,11 @@ $light-main-shade: (
 	--rise-focus-ring: var(--rise-primary);
 	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
 
-	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
-	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
-	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
-	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 30%);
+	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 40%), 0 1px 2px -1px rgb(0 0 0 / 40%);
+	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -2px rgb(0 0 0 / 40%);
+	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 50%), 0 4px 6px -4px rgb(0 0 0 / 50%);
+	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 60%), 0 8px 10px -6px rgb(0 0 0 / 60%);
 }
 
 /// Совместимость с переменными 1.x (`--color-*`, `--shadow-*`, `--border-radius-*`, `--transition-*`, `--font-family-*`).
@@ -314,7 +314,7 @@ $light-main-shade: (
 	--color-surface: var(--rise-bg);
 	--color-surface-muted: var(--rise-bg-elevated);
 	--color-bg-soft: var(--rise-bg-muted);
-	--color-text-inverse: #ffffff;
+	--color-text-inverse: #fff;
 	--color-primary-soft: var(--rise-primary-soft);
 	--color-primary-soft-hover: var(--rise-primary-soft-hover);
 

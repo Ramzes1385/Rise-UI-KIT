@@ -53,11 +53,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { UI_CHAT_TEXT } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
 import { getFileIconName } from '@utils/fileUtils'
+import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../../model/chatScale'
 import type { ChatMessageAttachment } from '../../../model/BaseChat.types'
 import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../model/ChatMessageAttachments.types'

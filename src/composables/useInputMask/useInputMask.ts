@@ -71,30 +71,31 @@ function applyMask(value: string, mask: string): string {
 			continue
 		}
 
-		// Токен
-		if (isToken(maskChar)) {
-			if (isGreedy(maskChar)) {
-				// Жадный токен: забираем все подходящие символы
-				while (valueIndex < cleanValue.length && matchesToken(cleanValue[valueIndex], maskChar)) {
-					result += cleanValue[valueIndex]
-					valueIndex++
-				}
-				i++
-			} else {
-				// Фиксированный токен: ровно 1 символ
-				/* istanbul ignore else — defensive: stripMask уже отфильтровал символы, не подходящие под matchesToken, поэтому else-ветка недостижима через публичный API */
-				if (matchesToken(cleanValue[valueIndex], maskChar)) {
-					result += cleanValue[valueIndex]
-					valueIndex++
-					i++
-				} else {
-					valueIndex++
-				}
-			}
-		} else {
-			// Литерал
+		// Литерал
+		if (!isToken(maskChar)) {
 			result += maskChar
 			i++
+			continue
+		}
+
+		// Жадный токен: забираем все подходящие символы
+		if (isGreedy(maskChar)) {
+			while (valueIndex < cleanValue.length && matchesToken(cleanValue[valueIndex], maskChar)) {
+				result += cleanValue[valueIndex]
+				valueIndex++
+			}
+			i++
+			continue
+		}
+
+		// Фиксированный токен: ровно 1 символ
+		/* istanbul ignore else — defensive: stripMask уже отфильтровал символы, не подходящие под matchesToken, поэтому else-ветка недостижима через публичный API */
+		if (matchesToken(cleanValue[valueIndex], maskChar)) {
+			result += cleanValue[valueIndex]
+			valueIndex++
+			i++
+		} else {
+			valueIndex++
 		}
 	}
 
@@ -121,28 +122,27 @@ function stripMask(value: string, mask: string): string {
 			continue
 		}
 
-		// Токен
-		if (isToken(maskChar)) {
-			if (isGreedy(maskChar)) {
-				while (i < value.length && matchesToken(value[i], maskChar)) {
-					result += value[i]
-					i++
-				}
-				maskIndex++
-			} else {
-				if (matchesToken(value[i], maskChar)) {
-					result += value[i]
-				}
-				i++
-				maskIndex++
-			}
-		} else {
-			// Литерал: пропускаем в value если совпадает
-			if (value[i] === maskChar) {
+		// Литерал: пропускаем в value, если совпадает
+		if (!isToken(maskChar)) {
+			if (value[i] === maskChar) i++
+			maskIndex++
+			continue
+		}
+
+		// Жадный токен: все подходящие символы подряд
+		if (isGreedy(maskChar)) {
+			while (i < value.length && matchesToken(value[i], maskChar)) {
+				result += value[i]
 				i++
 			}
 			maskIndex++
+			continue
 		}
+
+		// Фиксированный токен: один символ
+		if (matchesToken(value[i], maskChar)) result += value[i]
+		i++
+		maskIndex++
 	}
 
 	return result
@@ -195,25 +195,26 @@ function getMaskPosition(valueIndex: number, mask: string): number {
 			continue
 		}
 
-		if (isToken(maskChar)) {
-			if (isGreedy(maskChar)) {
-				pos = i + 1
-				while (i + 1 < mask.length && !isToken(mask[i + 1]) && mask[i + 1] !== '\\') {
-					i++
-					pos = i + 1
-				}
-				i++
-			} else {
-				if (vi < valueIndex) {
-					vi++
-				}
-				pos = i + 1
-				i++
-			}
-		} else {
+		if (!isToken(maskChar)) {
 			pos = i + 1
 			i++
+			continue
 		}
+
+		// Жадный токен: курсор — за литералами, которые идут сразу после него
+		if (isGreedy(maskChar)) {
+			pos = i + 1
+			while (i + 1 < mask.length && !isToken(mask[i + 1]) && mask[i + 1] !== '\\') {
+				i++
+				pos = i + 1
+			}
+			i++
+			continue
+		}
+
+		if (vi < valueIndex) vi++
+		pos = i + 1
+		i++
 	}
 
 	return pos

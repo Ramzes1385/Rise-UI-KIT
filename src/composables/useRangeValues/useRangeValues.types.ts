@@ -1,5 +1,5 @@
-import type { BaseRangeEmits, BaseRangeProps } from '@components/BaseRange/model/BaseRange.types'
 import type { ComputedRef } from 'vue'
+import type { BaseRangeEmits, BaseRangeProps } from '@components/BaseRange/model/BaseRange.types'
 
 export type RangeMode = 'single' | 'range' | 'points'
 

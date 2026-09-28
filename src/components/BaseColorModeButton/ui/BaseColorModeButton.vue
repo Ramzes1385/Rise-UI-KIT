@@ -18,12 +18,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useColorMode } from '@composables/useColorMode'
-import { kitDefaults } from '@composables/useDefaults'
 import { calcIconScale } from '@utils/iconUtils'
+import { BaseButton } from '@components/BaseButton'
+import { kitDefaults } from '@composables/useDefaults'
+import { useColorMode } from '@composables/useColorMode'
+import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseColorModeButton.style.scss'
 import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../model/BaseColorModeButton.types'
 

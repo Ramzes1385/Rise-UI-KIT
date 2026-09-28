@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import { ref } from 'vue'
+import { fireEvent, render } from '@testing-library/vue'
 import BaseScrollArea from '../ui/BaseScrollArea.vue'
 import type { BaseScrollAreaExpose } from '../model/BaseScrollArea.types'
 

@@ -47,9 +47,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'
 import type { ChatMessage } from '../../model/BaseChat.types'

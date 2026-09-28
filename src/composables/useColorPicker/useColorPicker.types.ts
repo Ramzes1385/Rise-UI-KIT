@@ -1,5 +1,5 @@
-import type { HsvColor } from '@utils/colorUtils'
 import type { Ref } from 'vue'
+import type { HsvColor } from '@utils/colorUtils'
 
 /** Опции composable useColorPicker */
 export interface UseColorPickerOptions {

@@ -1,6 +1,6 @@
 import type { InputVariant } from '@components/BaseInput'
-import type { CustomClassProp } from '@composables/useCustomClass'
 import type { CustomColor } from '@composables/useCustomColor'
+import type { CustomClassProp } from '@composables/useCustomClass'
 
 /**
  * Пропсы компонента DatePickerField

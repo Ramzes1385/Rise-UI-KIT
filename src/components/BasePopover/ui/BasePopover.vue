@@ -29,12 +29,12 @@
 
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue'
-import { BaseDropdown } from '@components/BaseDropdown'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
-import '../styles/BasePopover.style.scss'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { useCustomClass } from '@composables/useCustomClass'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import '../styles/BasePopover.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
 
 const props = withDefaults(

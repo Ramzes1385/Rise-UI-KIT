@@ -47,12 +47,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
+import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import { calcIconScale } from '@utils/iconUtils'
 import type { BaseSearchInputEmits, BaseSearchInputProps } from '../model/BaseSearchInput.types'
 
 /**

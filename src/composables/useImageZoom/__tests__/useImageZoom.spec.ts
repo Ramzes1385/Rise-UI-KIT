@@ -3,8 +3,8 @@
  * Проверяют масштаб, поворот, сброс и мини-карту.
  */
 
-import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { useImageZoom } from '../useImageZoom'
 
 // Блокировка прокрутки общая для всех экземпляров: незакрытые зумы из прошлых тестов держали бы её
@@ -49,20 +49,20 @@ function withSetupFull<T>(composable: () => T): { result: T; wrapper: ReturnType
 	return { result: result!, wrapper }
 }
 
-/** Создать мок HTMLImageElement с заданными размерами */
-function createMockImgEl(natW: number, natH: number, offW: number, offH: number): HTMLImageElement {
+/** Создать мок HTMLImageElement: собственный размер картинки и размер элемента на странице */
+function createMockImgEl(natural: { width: number; height: number }, offset: { width: number; height: number }): HTMLImageElement {
 	const img = document.createElement('img')
-	Object.defineProperty(img, 'naturalWidth', { value: natW, configurable: true })
-	Object.defineProperty(img, 'naturalHeight', { value: natH, configurable: true })
-	Object.defineProperty(img, 'offsetWidth', { value: offW, configurable: true })
-	Object.defineProperty(img, 'offsetHeight', { value: offH, configurable: true })
+	Object.defineProperty(img, 'naturalWidth', { value: natural.width, configurable: true })
+	Object.defineProperty(img, 'naturalHeight', { value: natural.height, configurable: true })
+	Object.defineProperty(img, 'offsetWidth', { value: offset.width, configurable: true })
+	Object.defineProperty(img, 'offsetHeight', { value: offset.height, configurable: true })
 	return img
 }
 
 /** Создать zoom с мок-изображениями для тестов мини-карты */
 function createZoomWithMocks(overrides: Record<string, unknown> = {}) {
-	const mockZoomImg = createMockImgEl(7680, 4320, 3840, 2160)
-	const mockMinimapImg = createMockImgEl(7680, 4320, 200, 150)
+	const mockZoomImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 3840, height: 2160 })
+	const mockMinimapImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 200, height: 150 })
 	const zoom = withSetup(() =>
 		useImageZoom(
 			createOptions({
@@ -378,8 +378,8 @@ describe('useImageZoom', () => {
 	// --- syncSizes ---
 
 	it('должен обновлять размеры при syncSizes с мок-изображениями', () => {
-		const mockZoomImg = createMockImgEl(800, 600, 400, 300)
-		const mockMinimapImg = createMockImgEl(800, 600, 200, 150)
+		const mockZoomImg = createMockImgEl({ width: 800, height: 600 }, { width: 400, height: 300 })
+		const mockMinimapImg = createMockImgEl({ width: 800, height: 600 }, { width: 200, height: 150 })
 		const zoom = withSetup(() =>
 			useImageZoom(
 				createOptions({
@@ -430,8 +430,8 @@ describe('useImageZoom', () => {
 		Object.defineProperty(window, 'innerWidth', { value: 0, configurable: true })
 		Object.defineProperty(window, 'innerHeight', { value: 0, configurable: true })
 
-		const mockZoomImg = createMockImgEl(7680, 4320, 3840, 2160)
-		const mockMinimapImg = createMockImgEl(7680, 4320, 200, 150)
+		const mockZoomImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 3840, height: 2160 })
+		const mockMinimapImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 200, height: 150 })
 		const zoom = withSetup(() =>
 			useImageZoom(
 				createOptions({
@@ -461,7 +461,7 @@ describe('useImageZoom', () => {
 		// minimapImg отсутствует → mmContentWidth/Height остаются 200/150 (дефолт),
 		// но если выставить через addEventListener и НЕ вызвать syncSizes для minimap,
 		// то ветка ":1" не пройдёт. Создаём ZoomImg с natural=0 для очистки.
-		const mockZoomImg = createMockImgEl(0, 0, 0, 0)
+		const mockZoomImg = createMockImgEl({ width: 0, height: 0 }, { width: 0, height: 0 })
 		const zoom = withSetup(() =>
 			useImageZoom(
 				createOptions({
@@ -497,7 +497,7 @@ describe('useImageZoom', () => {
 		// zoom без minimapImg → mmContentWidth дефолтно 200 — нужно занулить через syncSizes
 		// с minimapImg без naturalWidth: тогда блок mmContentWidth не обновится.
 		// Альтернатива: задать zoomContentW > 0 (через mockZoom), но НЕ обновлять mm.
-		const mockZoomImg = createMockImgEl(800, 600, 400, 300)
+		const mockZoomImg = createMockImgEl({ width: 800, height: 600 }, { width: 400, height: 300 })
 		const zoom = withSetup(() =>
 			useImageZoom(
 				createOptions({
@@ -612,8 +612,8 @@ describe('useImageZoom', () => {
 
 	it('должен корректно рассчитывать contain для широкого изображения', () => {
 		// Широкое изображение 1920×400 в узком контейнере 300×300
-		const mockZoomImg = createMockImgEl(1920, 400, 300, 300)
-		const mockMinimapImg = createMockImgEl(1920, 400, 200, 150)
+		const mockZoomImg = createMockImgEl({ width: 1920, height: 400 }, { width: 300, height: 300 })
+		const mockMinimapImg = createMockImgEl({ width: 1920, height: 400 }, { width: 200, height: 150 })
 		const zoom = withSetup(() =>
 			useImageZoom(
 				createOptions({
@@ -635,7 +635,7 @@ describe('useImageZoom', () => {
 	// --- clampPosition: scale > 1 и изображение шире/выше контейнера ---
 
 	it('должен ограничивать translate при scale > 1 и большом изображении', () => {
-		const mockZoomImg = createMockImgEl(7680, 4320, 3840, 2160)
+		const mockZoomImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 3840, height: 2160 })
 		const zoom = withSetup(() =>
 			useImageZoom(
 				createOptions({

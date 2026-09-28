@@ -70,18 +70,26 @@ describe('tooltipUtils', () => {
 		const size = { width: 120, height: 24 }
 
 		it('остаётся на выбранной стороне, если там хватает места или не хватает и напротив; до измерения — тоже', () => {
-			expect(resolveTooltipPlacement('top', { top: 300, left: 400, width: 80, height: 32 }, size, viewport)).toBe('top')
-			expect(resolveTooltipPlacement('top', { top: 4, left: 400, width: 80, height: 760 }, size, viewport)).toBe('top')
-			expect(resolveTooltipPlacement('top', { top: 4, left: 400, width: 80, height: 32 }, { width: 0, height: 0 }, viewport)).toBe(
-				'top',
-			)
+			expect(resolveTooltipPlacement('top', { coords: { top: 300, left: 400, width: 80, height: 32 }, size, viewport })).toBe('top')
+			expect(resolveTooltipPlacement('top', { coords: { top: 4, left: 400, width: 80, height: 760 }, size, viewport })).toBe('top')
+			expect(
+				resolveTooltipPlacement('top', {
+					coords: { top: 4, left: 400, width: 80, height: 32 },
+					size: { width: 0, height: 0 },
+					viewport,
+				}),
+			).toBe('top')
 		})
 
 		it('переворачивается на противоположную сторону, если там помещается', () => {
-			expect(resolveTooltipPlacement('top', { top: 4, left: 400, width: 80, height: 32 }, size, viewport)).toBe('bottom')
-			expect(resolveTooltipPlacement('bottom', { top: 740, left: 400, width: 80, height: 24 }, size, viewport)).toBe('top')
-			expect(resolveTooltipPlacement('left', { top: 300, left: 10, width: 40, height: 32 }, size, viewport)).toBe('right')
-			expect(resolveTooltipPlacement('right', { top: 300, left: 980, width: 40, height: 32 }, size, viewport, 4)).toBe('left')
+			expect(resolveTooltipPlacement('top', { coords: { top: 4, left: 400, width: 80, height: 32 }, size, viewport })).toBe('bottom')
+			expect(resolveTooltipPlacement('bottom', { coords: { top: 740, left: 400, width: 80, height: 24 }, size, viewport })).toBe(
+				'top',
+			)
+			expect(resolveTooltipPlacement('left', { coords: { top: 300, left: 10, width: 40, height: 32 }, size, viewport })).toBe('right')
+			expect(resolveTooltipPlacement('right', { coords: { top: 300, left: 980, width: 40, height: 32 }, size, viewport }, 4)).toBe(
+				'left',
+			)
 		})
 	})
 
@@ -89,18 +97,44 @@ describe('tooltipUtils', () => {
 		const viewport = { width: 1024, height: 768 }
 
 		it('без сдвига, если подсказка помещается, и до измерения', () => {
-			expect(calcTooltipShift('top', { top: 300, left: 400, width: 80, height: 32 }, { width: 120, height: 24 }, viewport)).toBe(0)
-			expect(calcTooltipShift('top', { top: 300, left: 0, width: 10, height: 32 }, { width: 0, height: 0 }, viewport)).toBe(0)
+			expect(
+				calcTooltipShift('top', {
+					coords: { top: 300, left: 400, width: 80, height: 32 },
+					size: { width: 120, height: 24 },
+					viewport,
+				}),
+			).toBe(0)
+			expect(
+				calcTooltipShift('top', { coords: { top: 300, left: 0, width: 10, height: 32 }, size: { width: 0, height: 0 }, viewport }),
+			).toBe(0)
 		})
 
 		it('у левого и правого края сдвигает внутрь с отступом 8px', () => {
 			// центр 10, половина 60 → левый край подсказки должен быть на 8: центр 68
-			expect(calcTooltipShift('bottom', { top: 300, left: 0, width: 20, height: 32 }, { width: 120, height: 24 }, viewport)).toBe(58)
-			expect(calcTooltipShift('top', { top: 300, left: 1004, width: 20, height: 32 }, { width: 120, height: 24 }, viewport)).toBe(-58)
+			expect(
+				calcTooltipShift('bottom', {
+					coords: { top: 300, left: 0, width: 20, height: 32 },
+					size: { width: 120, height: 24 },
+					viewport,
+				}),
+			).toBe(58)
+			expect(
+				calcTooltipShift('top', {
+					coords: { top: 300, left: 1004, width: 20, height: 32 },
+					size: { width: 120, height: 24 },
+					viewport,
+				}),
+			).toBe(-58)
 		})
 
 		it('для left/right сдвигает по вертикали', () => {
-			expect(calcTooltipShift('right', { top: 0, left: 300, width: 40, height: 10 }, { width: 120, height: 40 }, viewport)).toBe(23)
+			expect(
+				calcTooltipShift('right', {
+					coords: { top: 0, left: 300, width: 40, height: 10 },
+					size: { width: 120, height: 40 },
+					viewport,
+				}),
+			).toBe(23)
 		})
 	})
 })

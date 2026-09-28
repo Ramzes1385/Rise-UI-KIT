@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
 import { useIcon } from '@composables/useIcon'
+import { kitDefaults } from '@composables/useDefaults'
+import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseIcon.style.scss'
 import type { BaseIconProps } from '../model/BaseIcon.types'
 

@@ -7,8 +7,8 @@
 
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { INPUT_TAGS_VARIANTS } from '../model/BaseInputTags.types'
 import BaseInputTags from '../ui/BaseInputTags.vue'
+import { INPUT_TAGS_VARIANTS } from '../model/BaseInputTags.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

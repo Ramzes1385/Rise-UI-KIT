@@ -1,5 +1,5 @@
-import type { BaseChatEmits, ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 import type { Ref } from 'vue'
+import type { BaseChatEmits, ChatMessage } from '@components/BaseChat/model/BaseChat.types'
 
 export interface MessageListExposed {
 	scrollToMessage: (messageId: string) => void

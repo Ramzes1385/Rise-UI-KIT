@@ -3,9 +3,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
-import { nextTick, ref } from 'vue'
 import { BaseForm } from '@components/BaseForm'
 import BaseAutocomplete from '../ui/BaseAutocomplete.vue'
 import type { AutocompleteOption } from '../model/BaseAutocomplete.types'
@@ -96,6 +96,22 @@ describe('BaseAutocomplete integration', () => {
 		expect(field).not.toHaveAttribute('aria-activedescendant')
 		await user.keyboard('{Tab}')
 		expect(field).toHaveAttribute('aria-expanded', 'false')
+	})
+
+	it('в открытом списке без активного варианта ↓ выбирает первый доступный, ↑ — последний', async () => {
+		const user = userEvent.setup()
+		const { field } = renderModel()
+
+		field.focus()
+		await user.keyboard('{Alt>}{ArrowDown}{/Alt}')
+		expect(field).not.toHaveAttribute('aria-activedescendant')
+		await user.keyboard('{ArrowDown}')
+		expect(field).toHaveAttribute('aria-activedescendant', options()[0].id)
+
+		await user.keyboard('{Alt>}{ArrowUp}{/Alt}{Alt>}{ArrowDown}{/Alt}')
+		expect(field).not.toHaveAttribute('aria-activedescendant')
+		await user.keyboard('{ArrowUp}')
+		expect(field).toHaveAttribute('aria-activedescendant', options()[4].id)
 	})
 
 	it('Escape: открытый список закрывает (событие не уходит дальше), закрытый — очищает поле', async () => {

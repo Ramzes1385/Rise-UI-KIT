@@ -1,5 +1,5 @@
-import type { BUTTON_VARIANTS } from '@components/BaseButton/model/BaseButton.types'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BUTTON_VARIANTS } from '@components/BaseButton/model/BaseButton.types'
 import type { ColorModeController, ResolvedColorMode } from '@composables/useColorMode'
 
 /**

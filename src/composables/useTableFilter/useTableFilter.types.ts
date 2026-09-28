@@ -1,5 +1,5 @@
-import type { ColumnFilter, TableColumn } from '@components/BaseTable/model/BaseTable.types'
 import type { Ref } from 'vue'
+import type { ColumnFilter, TableColumn } from '@components/BaseTable/model/BaseTable.types'
 
 /**
  * Опции composable useTableFilter

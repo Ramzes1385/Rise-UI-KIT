@@ -7,8 +7,8 @@
 
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { FAB_VARIANTS } from '../model/BaseFab.types'
 import BaseFab from '../ui/BaseFab.vue'
+import { FAB_VARIANTS } from '../model/BaseFab.types'
 import type { FabPosition } from '../model/BaseFab.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
 import type { DropdownMenuItem, DropdownMenuItems } from '../model/BaseDropdownMenu.types'
 

@@ -6,8 +6,11 @@
  * сценарии (активный пункт по ключу, действия, раскладка приложения) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseButton } from '@components/BaseButton'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -20,13 +23,10 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { BaseAvatar } from '@components/BaseAvatar'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
 import BaseSideBar from '../ui/BaseSideBar.vue'
-import type { SideBarItem } from '../model/BaseSideBar.types'
+import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { SideBarItem } from '../model/BaseSideBar.types'
 
 const BASIC_ITEMS: SideBarItem[] = [
 	{ key: 'dashboard', label: 'Главная', icon: 'home', to: '/dashboard' },

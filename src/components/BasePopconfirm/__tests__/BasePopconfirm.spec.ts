@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, within } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { fireEvent, render, screen, within } from '@testing-library/vue'
 import BasePopconfirm from '../ui/BasePopconfirm.vue'
 
 function renderConfirm(props: Record<string, unknown> = {}) {

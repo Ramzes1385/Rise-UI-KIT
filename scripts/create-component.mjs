@@ -729,14 +729,10 @@ function registerInBarrel(n, changes) {
 function registerInPlugin(n, changes) {
 	const path = join(ROOT, 'src/plugin.ts')
 	let source = readFileSync(path, 'utf-8')
-	const importPattern = /^import \{ Base\w+ \} from '\.\/components\/Base\w+'$/gm
-	const imports = source.match(importPattern) ?? []
-	const lastImport = imports.at(-1)
-	if (!lastImport) fail('В src/plugin.ts не найдены импорты компонентов')
-	const sortedImports = [...imports, `import { ${n.name} } from './components/${n.name}'`].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
-	const start = source.indexOf(imports[0])
-	const end = source.indexOf(lastImport) + lastImport.length
-	source = source.slice(0, start) + sortedImports.join('\n') + source.slice(end)
+	const firstImport = source.match(/^import \{ Base\w+ \} from '\.\/components\/Base\w+'$/m)?.[0]
+	if (!firstImport) fail('В src/plugin.ts не найдены импорты компонентов')
+	// Новый импорт — рядом с первым импортом компонента; порядок («лесенку») расставляет eslint --fix
+	source = source.replace(firstImport, `${firstImport}\nimport { ${n.name} } from './components/${n.name}'`)
 
 	const block = source.match(/const UI_COMPONENTS: Record<string, Component> = \{\n([\s\S]*?)\n\}/)
 	if (!block) fail('В src/plugin.ts не найден объект UI_COMPONENTS')
@@ -822,6 +818,9 @@ function main() {
 	for (const [path, content] of changes) writeFileSync(path, content)
 
 	if (options.lint) {
+		// Сначала Prettier: он переносит длинные строки, и от этого зависит длина импортов, по которой ESLint их сортирует
+		const formattable = [...created, ...changes].map(([path]) => path)
+		execFileSync('npx', ['prettier', '--write', '--log-level', 'warn', ...formattable], { stdio: 'inherit', cwd: ROOT })
 		const lintable = [
 			...created.map(([path]) => path).filter(path => /\.(ts|vue)$/.test(path)),
 			join(ROOT, 'src/plugin.ts'),

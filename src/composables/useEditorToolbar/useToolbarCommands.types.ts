@@ -1,5 +1,5 @@
-import type { EditorActiveStates } from './useEditorToolbar.types'
 import type { Ref } from 'vue'
+import type { EditorActiveStates } from './useEditorToolbar.types'
 
 export interface UseToolbarCommandsOptions {
 	editorRef: Ref<HTMLDivElement | null>

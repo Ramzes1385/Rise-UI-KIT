@@ -5,10 +5,10 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import ChatMessageList from '../ui/ChatMessageList.vue'
 import type { ChatMessage } from '../../../model/BaseChat.types'
 

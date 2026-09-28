@@ -5,13 +5,13 @@
  * Stories с открытой панелью в play видны только в сайдбаре: в Docs панель закрыла бы страницу.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
-import { DRAWER_DIRECTIONS } from '../model/BaseDrawer.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseDrawer from '../ui/BaseDrawer.vue'
+import { DRAWER_DIRECTIONS } from '../model/BaseDrawer.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const STATUSES = [

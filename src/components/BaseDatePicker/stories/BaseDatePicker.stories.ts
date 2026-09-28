@@ -7,8 +7,11 @@
  * Все даты — вокруг STORY_TODAY (15 мая 2025).
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
+import { INPUT_VARIANTS } from '@components/BaseInput'
+import { CALENDAR_VARIANTS } from '@components/BaseCalendar'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -21,9 +24,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { CALENDAR_VARIANTS } from '@components/BaseCalendar'
-import { BaseIcon } from '@components/BaseIcon'
-import { INPUT_VARIANTS } from '@components/BaseInput'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

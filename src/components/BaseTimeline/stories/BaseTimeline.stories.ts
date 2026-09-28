@@ -6,12 +6,12 @@
  */
 
 import { expect } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseBadge } from '@components/BaseBadge'
-import { TIMELINE_VARIANTS } from '../model/BaseTimeline.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseTimeline from '../ui/BaseTimeline.vue'
-import type { TimelineItem } from '../model/BaseTimeline.types'
+import { TIMELINE_VARIANTS } from '../model/BaseTimeline.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { TimelineItem } from '../model/BaseTimeline.types'
 
 /** Этапы заказа: даты фиксированы, чтобы снимки не зависели от текущего дня */
 const ORDER: TimelineItem[] = [

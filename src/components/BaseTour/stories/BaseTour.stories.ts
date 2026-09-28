@@ -6,14 +6,14 @@
  * Открытый тур закрывает всю страницу, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { TOUR_PLACEMENTS } from '../model/BaseTour.types'
+import { BaseButton } from '@components/BaseButton'
+import { ARG_GROUP, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseTour from '../ui/BaseTour.vue'
+import { TOUR_PLACEMENTS } from '../model/BaseTour.types'
 import type { TourStep } from '../model/BaseTour.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

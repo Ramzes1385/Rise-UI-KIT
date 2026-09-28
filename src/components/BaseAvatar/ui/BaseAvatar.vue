@@ -26,8 +26,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
 

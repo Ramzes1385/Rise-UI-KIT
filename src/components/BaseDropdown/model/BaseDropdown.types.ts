@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { PaddingProp } from '@composables/usePadding'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
  * Варианты отображения панели:

@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { nextTick, ref } from 'vue'
+import { render, screen } from '@testing-library/vue'
 import BaseToolbar from '../ui/BaseToolbar.vue'
 
 describe('BaseToolbar', () => {

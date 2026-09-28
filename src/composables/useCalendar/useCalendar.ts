@@ -1,8 +1,8 @@
 /** Composable: управление состоянием календаря — навигация, переключение вида, выбор дат */
 import { ref, watch } from 'vue'
 import { buildDateWithTime as buildDateWithTimeUtil, getWeekNumber, isSameDay } from '@utils/dateUtils'
-import { useCalendarDateState } from './useCalendarDateState'
 import { useCalendarGrid } from './useCalendarGrid'
+import { useCalendarDateState } from './useCalendarDateState'
 import { useCalendarViewNavigation } from './useCalendarViewNavigation'
 import type { CalendarView, UseCalendarOptions } from './useCalendar.types'
 

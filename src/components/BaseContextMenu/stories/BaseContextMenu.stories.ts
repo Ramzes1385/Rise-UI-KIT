@@ -7,12 +7,12 @@
  */
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseText } from '@components/BaseText'
-import { CONTEXT_MENU_VARIANTS } from '../model/BaseContextMenu.types'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseContextMenu from '../ui/BaseContextMenu.vue'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
+import { CONTEXT_MENU_VARIANTS } from '../model/BaseContextMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 
 /** Действия с серией в сетке сезона */
 const EPISODE_ACTIONS: DropdownMenuItem[][] = [

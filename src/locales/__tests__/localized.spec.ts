@@ -3,9 +3,9 @@
  */
 
 import { computed } from 'vue'
+import { setLocale } from '../state'
 import { localized } from '../localized'
 import { UI_ARIA, UI_TEXT } from '../messages'
-import { setLocale } from '../state'
 
 afterEach(() => {
 	setLocale('ru')

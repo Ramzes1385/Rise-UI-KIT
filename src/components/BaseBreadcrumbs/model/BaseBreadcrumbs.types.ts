@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { LinkComponent } from '@composables/useLink'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты отображения хлебных крошек */
 export const BREADCRUMBS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

@@ -1,8 +1,8 @@
 /** Composable: управление состоянием загрузки файлов (валидация, drag-and-drop, прогресс) */
 import { computed, onBeforeUnmount, ref } from 'vue'
+import { generateId } from '@utils/idUtils'
 import { UI_TEXT } from '@/locales/messages'
 import { createImagePreview, getExtension, validateFile } from '@utils/fileUtils'
-import { generateId } from '@utils/idUtils'
 import type { UseFileUploadStateOptions } from './useFileUploadState.types'
 import type { UploadedFile } from '@components/BaseFileUpload/model/BaseFileUpload.types'
 

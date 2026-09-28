@@ -45,12 +45,12 @@
 import { computed, ref, useId } from 'vue'
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
-import { FormFieldError } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
+import { FormFieldError } from '@components/BaseFormField'
 import '../styles/BasePin.style.scss'
-import { toHTMLInputElement } from '@utils/domUtils'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'
 
 const props = withDefaults(

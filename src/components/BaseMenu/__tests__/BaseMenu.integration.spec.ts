@@ -4,9 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { vi } from 'vitest'
 import BaseMenu from '../ui/BaseMenu.vue'
 import type { BaseMenuItem } from '../model/BaseMenu.types'
 

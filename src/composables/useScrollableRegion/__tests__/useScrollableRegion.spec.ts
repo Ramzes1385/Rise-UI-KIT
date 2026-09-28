@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { defineComponent, nextTick, ref } from 'vue'
+import { render, screen } from '@testing-library/vue'
 import { useScrollableRegion } from '../useScrollableRegion'
 
 /** Экземпляры подменённого ResizeObserver: колбэк, наблюдаемые элементы и вызовы disconnect */

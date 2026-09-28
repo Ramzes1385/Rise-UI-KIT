@@ -115,12 +115,12 @@
 
 <script setup lang="ts">
 import { computed, inject, ref, useId, watch } from 'vue'
-import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { calcIconScale } from '@utils/iconUtils'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import BaseTreeChildren from './BaseTreeChildren.vue'
+import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import type { TreeContext } from '../model/BaseTree.types'
 import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../model/BaseTreeNode.types'
 import '../styles/BaseTree.style.scss'

@@ -7,8 +7,13 @@
  * Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { computed, ref } from 'vue'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { BaseText } from '@components/BaseText'
+import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
+import { BaseSelect } from '@components/BaseSelect'
+import { BasePopover } from '@components/BasePopover'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -20,13 +25,8 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { BaseInput } from '@components/BaseInput'
-import { BasePopover } from '@components/BasePopover'
-import { BaseSelect } from '@components/BaseSelect'
-import { BaseText } from '@components/BaseText'
-import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import BaseModal from '../ui/BaseModal.vue'
+import { MODAL_VARIANTS } from '../model/BaseModal.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */

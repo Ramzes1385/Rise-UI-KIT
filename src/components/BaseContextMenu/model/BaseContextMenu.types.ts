@@ -1,5 +1,5 @@
-import type { DropdownMenuItem, DropdownMenuItems } from '@components/BaseDropdownMenu/model/BaseDropdownMenu.types'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { DropdownMenuItem, DropdownMenuItems } from '@components/BaseDropdownMenu/model/BaseDropdownMenu.types'
 
 /** Варианты панели меню — те же, что у BaseDropdownMenu */
 export const CONTEXT_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

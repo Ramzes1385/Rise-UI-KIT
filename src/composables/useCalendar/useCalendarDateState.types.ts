@@ -1,5 +1,5 @@
-import type { CalendarHighlight, CalendarSelectionMode, CalendarWeekday, CalendarWeekends } from './useCalendar.types'
 import type { Ref } from 'vue'
+import type { CalendarHighlight, CalendarSelectionMode, CalendarWeekday, CalendarWeekends } from './useCalendar.types'
 
 export interface UseCalendarDateStateOptions {
 	internalValue: Ref<Date | null>

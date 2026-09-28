@@ -7,6 +7,7 @@
  */
 
 import { expect, fn, within } from 'storybook/test'
+import { BaseText } from '@components/BaseText'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -19,9 +20,8 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { BaseText } from '@components/BaseText'
-import { LINK_VARIANTS } from '../model/BaseLink.types'
 import BaseLink from '../ui/BaseLink.vue'
+import { LINK_VARIANTS } from '../model/BaseLink.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

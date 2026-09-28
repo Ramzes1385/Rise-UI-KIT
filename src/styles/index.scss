@@ -6,7 +6,7 @@
 :where(body, button, input, textarea, select, [class^='base-'], [class*=' base-']) {
 	font-family: var(--rise-font-sans);
 	font-synthesis: none;
-	text-rendering: optimizeLegibility;
+	text-rendering: optimizelegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }

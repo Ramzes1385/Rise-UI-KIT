@@ -5,8 +5,8 @@
 
 import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '@composables/useIcon/useIcon'
-import type { IconPluginOptions } from './iconPlugin.types'
 import type { App, Plugin } from 'vue'
+import type { IconPluginOptions } from './iconPlugin.types'
 
 function createIconPlugin(options?: IconPluginOptions): Plugin {
 	const name = options?.componentName ?? 'BaseIcon'

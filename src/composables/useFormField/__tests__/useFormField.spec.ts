@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
 import { ref, nextTick } from 'vue'
+import { describe, it, expect } from 'vitest'
 import { UI_TEXT } from '@/locales/messages'
 import { useFormField } from '../useFormField'
 

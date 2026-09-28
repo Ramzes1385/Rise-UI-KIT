@@ -4,9 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { markRaw } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
-import { markRaw } from 'vue'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
 import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 

@@ -28,8 +28,7 @@
 	gap: sz(var(--chat-list-gap));
 	min-height: 0;
 	padding: sz(12px) sz(8px);
-	overflow-y: auto;
-	overflow-x: hidden;
+	overflow: hidden auto;
 	@include scrollbar-thin;
 
 	// ─── Сообщение ───────────────────────────────────────────────────────────────

@@ -10,6 +10,13 @@ export interface RowNumberOptions {
 	loadMode: string
 }
 
+/** Служебные колонки таблицы: выбор строк, номер строки, раскрытие */
+export interface TableServiceColumns {
+	isSelectable?: boolean
+	hasRowNumber?: boolean
+	hasExpandableRows?: boolean
+}
+
 /** Параметры для стиля колонки */
 export interface ColumnStyleOptions {
 	/** Минимальная ширина */

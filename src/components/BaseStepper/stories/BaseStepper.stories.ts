@@ -5,14 +5,14 @@
  * состояния (отключённый шаг, длинные подписи) → содержимое (иконки, слоты) → сценарии (пошаговая форма) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn, waitFor } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
-import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../model/BaseStepper.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseStepper from '../ui/BaseStepper.vue'
-import type { BaseStepperStep } from '../model/BaseStepper.types'
+import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../model/BaseStepper.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseStepperStep } from '../model/BaseStepper.types'
 
 const STEPS: BaseStepperStep[] = [
 	{ label: 'Корзина', description: 'Проверьте товары' },

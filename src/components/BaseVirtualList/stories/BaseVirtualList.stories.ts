@@ -7,9 +7,9 @@
 import { expect, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseVirtualList from '../ui/BaseVirtualList.vue'
-import type { BaseVirtualListProps } from '../model/BaseVirtualList.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { ConcreteComponent } from 'vue'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseVirtualListProps } from '../model/BaseVirtualList.types'
 
 /** 10 000 заказов: номер, город и сумма */
 const CITIES = ['Москва', 'Казань', 'Волгоград', 'Самара', 'Пермь']

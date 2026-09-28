@@ -6,12 +6,12 @@
  * тема страницы задаётся кнопкой «Тема» на панели инструментов.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { onBeforeUnmount, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { BUTTON_VARIANTS } from '@components/BaseButton/model/BaseButton.types'
+import { expect, fn, waitFor } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
 import { createColorMode } from '@composables/useColorMode'
+import { BUTTON_VARIANTS } from '@components/BaseButton/model/BaseButton.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseColorModeButton from '../ui/BaseColorModeButton.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

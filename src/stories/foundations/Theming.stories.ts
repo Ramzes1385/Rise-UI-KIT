@@ -2,14 +2,14 @@
  * Foundations / Theming — светлая и тёмная тема, перекраска бренда и скругления через токены.
  */
 
-import { expect } from 'storybook/test'
 import { ref } from 'vue'
+import { expect } from 'storybook/test'
 import { BaseAlert } from '@components/BaseAlert'
 import { BaseBadge } from '@components/BaseBadge'
-import { BaseButton } from '@components/BaseButton'
-import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import { BaseSwitch } from '@components/BaseSwitch'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import './foundations.scss'
 

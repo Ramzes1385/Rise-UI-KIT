@@ -72,10 +72,10 @@
 
 <script setup lang="ts">
 import { ref, useId } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
 

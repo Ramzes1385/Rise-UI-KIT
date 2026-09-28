@@ -35,13 +35,13 @@
 
 <script setup lang="ts">
 import { UI_ARIA } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
-import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
-import { kitDefaults } from '@composables/useDefaults'
 import { calcIconScale } from '@utils/iconUtils'
+import { BaseButton } from '@components/BaseButton'
+import { kitDefaults } from '@composables/useDefaults'
+import { useCustomClass } from '@composables/useCustomClass'
+import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseSplitButton.style.scss'
 import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../model/BaseSplitButton.types'
 

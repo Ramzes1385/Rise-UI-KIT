@@ -1,9 +1,9 @@
 /** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
 import { ref } from 'vue'
 import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
+import type { Component } from 'vue'
 import type { UseSideBarNavigationOptions } from './useSideBarNavigation.types'
 import type { BaseSideBarItemSlotProps, SideBarItem, SideBarItemKey, SideBarItemTo } from '@components/BaseSideBar/model/BaseSideBar.types'
-import type { Component } from 'vue'
 
 /** Описание: обеспечивает навигацию сайдбара — раскрытие/сворачивание групп, определение активного пункта, генерация пропсов и обработка кликов */
 function useSideBarNavigation(options: UseSideBarNavigationOptions) {

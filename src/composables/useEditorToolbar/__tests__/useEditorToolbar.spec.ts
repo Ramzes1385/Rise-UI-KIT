@@ -3,8 +3,8 @@
  * Проверяют состояние тулбара, форматирование и оба режима (визуальный/код).
  */
 
-import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import { useEditorToolbar } from '../useEditorToolbar'
 
 /** Обёртка для вызова composable внутри Vue-контекста */

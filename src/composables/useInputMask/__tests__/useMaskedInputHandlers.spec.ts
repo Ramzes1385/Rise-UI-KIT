@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
 import { ref } from 'vue'
+import { describe, it, expect, vi } from 'vitest'
 import { useMaskedInputHandlers } from '../useMaskedInputHandlers'
 
 function createInput(value = ''): HTMLInputElement {

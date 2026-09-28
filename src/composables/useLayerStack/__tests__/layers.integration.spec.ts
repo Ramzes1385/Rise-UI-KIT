@@ -4,15 +4,15 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { createUiKitPlugin } from '@/plugin'
 import { BaseApp } from '@components/BaseApp'
+import { BaseModal } from '@components/BaseModal'
+import { BaseEditor } from '@components/BaseEditor'
+import { BaseDropdown } from '@components/BaseDropdown'
 import ChatEmojiPicker from '@components/BaseChat/ui/ChatInput/ChatEmojiPicker.vue'
 import ChatMessageContextMenu from '@components/BaseChat/ui/ChatMessageList/ui/ChatMessageContextMenu.vue'
-import { BaseDropdown } from '@components/BaseDropdown'
-import { BaseEditor } from '@components/BaseEditor'
-import { BaseModal } from '@components/BaseModal'
 
 /** Окно со списком внутри: состояния открытия снаружи */
 function renderModalWithList() {

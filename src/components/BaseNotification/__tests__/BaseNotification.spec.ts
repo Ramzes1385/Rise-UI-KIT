@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseNotification from '../ui/BaseNotification.vue'
 
 /** Получить элемент уведомления из teleport */

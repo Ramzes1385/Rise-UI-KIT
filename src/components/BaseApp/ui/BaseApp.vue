@@ -23,8 +23,8 @@
 import { onBeforeUnmount, provide, watch } from 'vue'
 import { setLocale } from '@/locales/state'
 import { BaseNotification } from '@components/BaseNotification'
-import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
+import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
 import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
 import type { BaseAppProps, BaseAppSlots } from '../model/BaseApp.types'
 

@@ -1,7 +1,7 @@
 /** Composable: значения props по умолчанию для всего приложения */
 import { hasInjectionContext, inject } from 'vue'
-import type { UiKitDefaults } from './useDefaults.types'
 import type { InjectionKey } from 'vue'
+import type { UiKitDefaults } from './useDefaults.types'
 
 /**
  * Ключ provide/inject значений по умолчанию (`createUiKitPlugin({ defaults })`). Symbol.for — как у пути

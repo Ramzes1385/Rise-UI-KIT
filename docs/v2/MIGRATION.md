@@ -377,6 +377,20 @@
   Папки `src/constants` и алиаса `@constants` больше нет: строки — в `src/locales/messages.ts`, остальные значения — рядом
   с кодом, который их использует (docs/CONTRIBUTING.md, раздел «Константы»).
 
+## Утилиты: объект вместо длинного списка параметров (порция С.5)
+
+**Что изменилось.** Функции с четырьмя и больше параметрами принимают объект:
+
+| Было | Стало |
+|---|---|
+| `calcTotalColumns(count, isSelectable, hasRowNumber, hasExpandableRows)` | `calcTotalColumns(count, { isSelectable, hasRowNumber, hasExpandableRows })` |
+| `resolveTooltipPlacement(position, coords, size, viewport, gap?)` | `resolveTooltipPlacement(position, { coords, size, viewport }, gap?)` |
+| `calcTooltipShift(placement, coords, size, viewport)` | `calcTooltipShift(placement, { coords, size, viewport })` |
+
+Новые типы: `TableServiceColumns` и `TooltipLayout`.
+
+**Что сделать.** Если приложение вызывает эти функции из `utils`, передайте поля объектом, как в таблице.
+
 ## Новые утилиты
 
 | Функция | Назначение |

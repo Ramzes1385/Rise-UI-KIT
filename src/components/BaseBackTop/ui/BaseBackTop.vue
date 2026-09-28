@@ -25,9 +25,9 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseFab } from '@components/BaseFab'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
+import { useCustomClass } from '@composables/useCustomClass'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseBackTop.style.scss'
 import type { BaseBackTopEmits, BaseBackTopProps } from '../model/BaseBackTop.types'
 

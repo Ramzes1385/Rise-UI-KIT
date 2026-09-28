@@ -6,9 +6,9 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
-import ChatMessageAttachments from '@components/BaseChat/ui/ChatMessageList/ui/ChatMessageAttachments.vue'
-import ChatSlideoverMedia from '@components/BaseChat/ui/ChatSlideover/ChatSlideoverMedia.vue'
 import BaseSlider from '@components/BaseSlider/ui/BaseSlider.vue'
+import ChatSlideoverMedia from '@components/BaseChat/ui/ChatSlideover/ChatSlideoverMedia.vue'
+import ChatMessageAttachments from '@components/BaseChat/ui/ChatMessageList/ui/ChatMessageAttachments.vue'
 import BaseImage from '../ui/BaseImage.vue'
 
 describe('BaseImage integration', () => {

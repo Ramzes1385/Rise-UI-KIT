@@ -7,8 +7,9 @@
  * Панель результатов и окна modal/sidebar телепортируются в body, поэтому в Docs такие примеры — в отдельном фрейме.
  */
 
-import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, screen, waitFor } from 'storybook/test'
+import { BaseButton } from '@components/BaseButton'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -20,11 +21,10 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
 import BaseSearch from '../ui/BaseSearch.vue'
-import type { SearchResult } from '../model/BaseSearch.types'
+import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { SearchResult } from '../model/BaseSearch.types'
 
 /** Материалы проекта студии: иконка — тип файла, категория — справа. */
 const FILES: SearchResult[] = [

@@ -5,15 +5,15 @@
  * содержимое (слоты icon, default, actions) → сценарии (пустой блок в карточке, поиск без результатов).
  */
 
-import { expect } from 'storybook/test'
 import { computed, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
+import { expect } from 'storybook/test'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
-import { EMPTY_VARIANTS } from '../model/BaseEmpty.types'
+import { BaseButton } from '@components/BaseButton'
+import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseEmpty from '../ui/BaseEmpty.vue'
+import { EMPTY_VARIANTS } from '../model/BaseEmpty.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const PROJECTS = ['Ребрендинг', 'Мобильное приложение', 'Справочный центр', 'Интеграция с платёжным сервисом']

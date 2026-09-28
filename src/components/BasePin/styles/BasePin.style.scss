@@ -31,11 +31,13 @@
 		// Без стрелок у type="number": ячейка вмещает один символ.
 		&::-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
+			/* stylelint-disable-next-line property-no-vendor-prefix -- псевдоэлемент только WebKit */
 			-webkit-appearance: none;
 			margin: 0;
 		}
 
 		&[type='number'] {
+			/* stylelint-disable-next-line property-no-vendor-prefix -- Firefox до 80 */
 			-moz-appearance: textfield;
 			appearance: textfield;
 		}

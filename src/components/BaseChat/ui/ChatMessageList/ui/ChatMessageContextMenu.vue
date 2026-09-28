@@ -65,10 +65,10 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
-import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useLayerIndex } from '@composables/useLayerStack'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { CHAT_SCALE } from '../../../model/chatScale'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'

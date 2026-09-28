@@ -6,8 +6,8 @@
  * слот day) → сценарий смены вида → клавиатура. Все даты — вокруг STORY_TODAY (15 мая 2025).
  */
 
-import { expect, fn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -21,10 +21,10 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { CALENDAR_VARIANTS } from '../model/BaseCalendar.types'
 import BaseCalendar from '../ui/BaseCalendar.vue'
-import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
+import { CALENDAR_VARIANTS } from '../model/BaseCalendar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
 
 type Canvas = ReturnType<typeof within>
 

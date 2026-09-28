@@ -1,7 +1,7 @@
 /** Composable: управление выбором строк таблицы */
 import { computed, ref, watch } from 'vue'
-import type { UseTableSelectionOptions, UseTableSelectionReturn } from './useTableSelection.types'
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { UseTableSelectionOptions, UseTableSelectionReturn } from './useTableSelection.types'
 
 /**
  * Composable для управления выбором строк таблицы.

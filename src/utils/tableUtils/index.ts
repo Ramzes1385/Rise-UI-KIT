@@ -1,2 +1,2 @@
 export { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey } from './tableUtils'
-export type { ColumnStyleOptions, RowNumberOptions, TableSortKey, TableSortRank } from './tableUtils.types'
+export type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSortKey, TableSortRank } from './tableUtils.types'

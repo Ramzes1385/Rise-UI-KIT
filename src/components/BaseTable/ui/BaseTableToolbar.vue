@@ -106,15 +106,15 @@
 
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
-import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
+import { BaseIcon } from '@components/BaseIcon'
+import { calcIconScale } from '@utils/iconUtils'
 import { BaseBadge } from '@components/BaseBadge'
+import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
+import { BaseSelect } from '@components/BaseSelect'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
-import { BaseSelect } from '@components/BaseSelect'
-import { calcIconScale } from '@utils/iconUtils'
+import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps, BaseTableToolbarSlots } from '../model/BaseTableToolbar.types'
 
 const props = defineProps<BaseTableToolbarProps>()

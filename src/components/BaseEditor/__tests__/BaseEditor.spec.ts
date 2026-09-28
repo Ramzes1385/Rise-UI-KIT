@@ -5,8 +5,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import BaseEditor from '../ui/BaseEditor.vue'
 
 /** Стабаем дочерние компоненты для изоляции */

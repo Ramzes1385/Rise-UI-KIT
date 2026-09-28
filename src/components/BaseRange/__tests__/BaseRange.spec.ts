@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/vue'
 import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'

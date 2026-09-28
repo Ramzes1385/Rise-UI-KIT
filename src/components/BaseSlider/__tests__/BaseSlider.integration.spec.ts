@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
 import { render } from '@testing-library/vue'
+import userEvent from '@testing-library/user-event'
 import BaseSlider from '../ui/BaseSlider.vue'
 import type { SliderItem } from '../model/BaseSlider.types'
 

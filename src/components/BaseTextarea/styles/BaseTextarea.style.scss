@@ -115,8 +115,7 @@
 	// Счётчик «введено/максимум»: 12/16, приглушённый, цифры одной ширины — строка не прыгает при вводе.
 	&__counter {
 		grid-column: 2;
-		align-self: baseline;
-		justify-self: end;
+		place-self: baseline end;
 		@include text-size(xs);
 		color: var(--rise-text-muted);
 		font-variant-numeric: tabular-nums;

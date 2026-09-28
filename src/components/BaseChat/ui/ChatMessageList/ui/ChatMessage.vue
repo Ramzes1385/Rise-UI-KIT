@@ -139,19 +139,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
-import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseIcon } from '@components/BaseIcon'
 import { BaseLoader } from '@components/BaseLoader'
-import { CHAT_SCALE } from '../../../model/chatScale'
-import ChatMessageAttachments from './ChatMessageAttachments.vue'
-import ChatMessageReactions from './ChatMessageReactions.vue'
-import ChatMessageReply from './ChatMessageReply.vue'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import ChatMessageText from './ChatMessageText.vue'
-import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../model/BaseChat.types'
+import { CHAT_SCALE } from '../../../model/chatScale'
+import ChatMessageReply from './ChatMessageReply.vue'
+import ChatMessageReactions from './ChatMessageReactions.vue'
+import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import type { ChatMessageItemEmits, ChatMessageItemProps } from '../model/ChatMessageItem.types'
+import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../model/BaseChat.types'
 
 const props = withDefaults(defineProps<ChatMessageItemProps>(), {
 	isGroup: false,

@@ -6,6 +6,7 @@
  */
 
 import { expect, fn, within } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -17,11 +18,10 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { BaseIcon } from '@components/BaseIcon'
-import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
-import type { BreadcrumbItem, BreadcrumbSeparator } from '../model/BaseBreadcrumbs.types'
+import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BreadcrumbItem, BreadcrumbSeparator } from '../model/BaseBreadcrumbs.types'
 
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },

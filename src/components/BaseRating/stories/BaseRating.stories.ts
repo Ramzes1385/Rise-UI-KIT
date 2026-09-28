@@ -6,8 +6,9 @@
  * сценарии (половинки звёзд, предпросмотр при наведении) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor } from 'storybook/test'
+import { BaseFormField } from '@components/BaseFormField'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -19,9 +20,8 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { BaseFormField } from '@components/BaseFormField'
-import { RATING_VARIANTS } from '../model/BaseRating.types'
 import BaseRating from '../ui/BaseRating.vue'
+import { RATING_VARIANTS } from '../model/BaseRating.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Звезда рейтинга по номеру с нуля: у звёзд нет роли, поэтому — по классу внутри слайдера или изображения. */

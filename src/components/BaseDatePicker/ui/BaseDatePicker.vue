@@ -48,16 +48,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { useFormField } from '@composables/useFormField'
+import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDatePickerState } from '@composables/useDatePickerState'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { useFormField } from '@composables/useFormField'
-import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseDatePicker.style.scss'
-import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
+import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
 import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../model/BaseDatePicker.types'
 
 // Дефолты резолвятся через useExplicitPropDetection, а не withDefaults:

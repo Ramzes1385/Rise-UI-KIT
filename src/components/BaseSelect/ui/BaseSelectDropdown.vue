@@ -102,10 +102,10 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
-import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import type { BaseSelectDropdownEmits, BaseSelectDropdownProps, BaseSelectDropdownSlots } from '../model/BaseSelectDropdown.types'
 
 const props = defineProps<BaseSelectDropdownProps>()

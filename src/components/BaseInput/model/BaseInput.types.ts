@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты отображения инпута */
 export const INPUT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const

@@ -1,5 +1,5 @@
-import type { BaseTreeEmits, TreeNode, TreeSelectionMode } from '@components/BaseTree/model/BaseTree.types'
 import type { ComputedRef, Ref } from 'vue'
+import type { BaseTreeEmits, TreeNode, TreeSelectionMode } from '@components/BaseTree/model/BaseTree.types'
 
 export interface UseTreeStateOptions {
 	items: Ref<TreeNode[]>

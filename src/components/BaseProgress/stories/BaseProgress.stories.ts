@@ -5,12 +5,12 @@
  * состояния (неопределённый режим) → содержимое (подпись) → сценарии (событие complete).
  */
 
-import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
+import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
-import { PROGRESS_ANIMATIONS, PROGRESS_SHAPES } from '../model/BaseProgress.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseProgress from '../ui/BaseProgress.vue'
+import { PROGRESS_ANIMATIONS, PROGRESS_SHAPES } from '../model/BaseProgress.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

@@ -123,15 +123,15 @@
 import { computed, ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
-import { resolveLink, useLinkComponent } from '@composables/useLink'
 import { calcIconScale } from '@utils/iconUtils'
+import { kitDefaults } from '@composables/useDefaults'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
+import { resolveLink, useLinkComponent } from '@composables/useLink'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import '../styles/BaseBreadcrumbs.style.scss'
-import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 import type { ResolvedLink } from '@composables/useLink'
+import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
 
 const props = withDefaults(
 	defineProps<BaseBreadcrumbsProps>(),

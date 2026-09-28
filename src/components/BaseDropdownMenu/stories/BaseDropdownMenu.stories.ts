@@ -6,15 +6,15 @@
  * Открытое меню телепортируется в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { DROPDOWN_MENU_VARIANTS } from '../model/BaseDropdownMenu.types'
+import { BaseButton } from '@components/BaseButton'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
-import type { DropdownMenuItem } from '../model/BaseDropdownMenu.types'
+import { DROPDOWN_MENU_VARIANTS } from '../model/BaseDropdownMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { DropdownMenuItem } from '../model/BaseDropdownMenu.types'
 
 /** Действия с серией: три группы, подменю экспорта, опасное действие последним */
 const EPISODE_ACTIONS: DropdownMenuItem[][] = [

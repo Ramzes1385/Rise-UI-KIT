@@ -319,8 +319,7 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		justify-content: flex-start;
 		margin: sz(-4px) 0;
 		padding: sz(4px) sz(4px) sz(4px) 0;
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: hidden auto;
 	}
 
 	&__thumb {

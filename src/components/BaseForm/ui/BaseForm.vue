@@ -33,13 +33,13 @@
 import { computed, nextTick, provide, ref, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseLoader } from '@components/BaseLoader'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { FORM_CONTEXT_KEY } from '@composables/useFormContext'
 import { issuesToErrors, validateSchema } from '@utils/formUtils'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseForm.style.scss'
-import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
 import type { FormValidationResult } from '@utils/formUtils'
+import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
 
 const props = withDefaults(
 	defineProps<BaseFormProps>(),

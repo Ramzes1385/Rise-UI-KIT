@@ -44,16 +44,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { calcIconScale } from '@utils/iconUtils'
+import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
-import { calcIconScale } from '@utils/iconUtils'
-import '../styles/BasePagination.style.scss'
+import { useCustomClass } from '@composables/useCustomClass'
+import { useCustomColor } from '@composables/useCustomColor'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
+import '../styles/BasePagination.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../model/BasePagination.types'
 
 const props = withDefaults(

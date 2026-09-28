@@ -18,10 +18,10 @@ function toTokens(value: string | null): string[] {
 	return value ? value.split(/\s+/).filter(Boolean) : []
 }
 
-/** Добавить или убрать свой id в списке, остальные id остаются */
-function updateTokens(element: Element, name: string, previous: string | undefined, next: string | undefined): void {
-	const tokens = toTokens(element.getAttribute(name)).filter(token => token !== previous)
-	if (next && !tokens.includes(next)) tokens.push(next)
+/** Добавить или убрать свой id в списке, остальные id остаются: `previous` убирается, `next` добавляется */
+function updateTokens(element: Element, name: string, change: { previous?: string; next?: string }): void {
+	const tokens = toTokens(element.getAttribute(name)).filter(token => token !== change.previous)
+	if (change.next && !tokens.includes(change.next)) tokens.push(change.next)
 	if (tokens.length) element.setAttribute(name, tokens.join(' '))
 	else element.removeAttribute(name)
 }
@@ -58,7 +58,7 @@ export function useTriggerAttributes(
 
 	function remove(target: NonNullable<typeof applied>): void {
 		for (const [name, value] of Object.entries(target.attributes)) {
-			if (TOKEN_ATTRIBUTES.has(name)) updateTokens(target.element, name, value, undefined)
+			if (TOKEN_ATTRIBUTES.has(name)) updateTokens(target.element, name, { previous: value })
 			else target.element.removeAttribute(name)
 		}
 		if (target.ownId) target.element.removeAttribute('id')
@@ -78,7 +78,7 @@ export function useTriggerAttributes(
 		const attributes = getAttributes()
 		const previous = applied?.attributes ?? {}
 		for (const [name, value] of Object.entries(attributes)) {
-			if (TOKEN_ATTRIBUTES.has(name)) updateTokens(element, name, previous[name], value)
+			if (TOKEN_ATTRIBUTES.has(name)) updateTokens(element, name, { previous: previous[name], next: value })
 			else if (value === undefined) element.removeAttribute(name)
 			else element.setAttribute(name, value)
 		}

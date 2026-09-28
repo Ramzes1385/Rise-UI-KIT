@@ -4,8 +4,8 @@
  */
 
 import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseEmpty from '../ui/BaseEmpty.vue'

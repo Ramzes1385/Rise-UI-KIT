@@ -6,8 +6,10 @@
  * сценарий «интерактивные карточки» с клавиатурой.
  */
 
-import { expect } from 'storybook/test'
 import { ref } from 'vue'
+import { expect } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -20,10 +22,8 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { CARD_VARIANTS } from '../model/BaseCard.types'
 import BaseCard from '../ui/BaseCard.vue'
+import { CARD_VARIANTS } from '../model/BaseCard.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const BODY = 'Выручка выросла на 12% к апрелю, средний чек — на 4%. Больше всего заказов пришло из мобильного приложения.'

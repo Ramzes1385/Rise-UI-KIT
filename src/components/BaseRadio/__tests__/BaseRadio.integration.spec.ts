@@ -4,9 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { h } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { h } from 'vue'
 import { BaseText } from '@components/BaseText'
 import BaseRadio from '../ui/BaseRadio.vue'
 import type { BaseRadioOption } from '../model/BaseRadio.types'

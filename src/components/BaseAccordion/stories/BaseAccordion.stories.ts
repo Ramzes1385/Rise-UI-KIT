@@ -7,10 +7,10 @@
 
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { ACCORDION_VARIANTS } from '../model/BaseAccordion.types'
 import BaseAccordion from '../ui/BaseAccordion.vue'
-import type { BaseAccordionItem } from '../model/BaseAccordion.types'
+import { ACCORDION_VARIANTS } from '../model/BaseAccordion.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseAccordionItem } from '../model/BaseAccordion.types'
 
 const ITEMS: BaseAccordionItem[] = [
 	{

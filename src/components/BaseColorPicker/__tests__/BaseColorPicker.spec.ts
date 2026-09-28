@@ -5,12 +5,12 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { UI_COLOR_PICKER } from '@/locales/messages'
-import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
+import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
 
 /** Мок размеров SV-области (200×140 в начале координат) */
 function mockAreaRect(): void {

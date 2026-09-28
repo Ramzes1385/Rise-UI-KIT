@@ -1,5 +1,5 @@
-import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
 import type { Ref } from 'vue'
+import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
 
 /**
  * Опции composable useDropdownPosition

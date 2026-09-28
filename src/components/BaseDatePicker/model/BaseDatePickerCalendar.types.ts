@@ -37,13 +37,29 @@ export interface BaseDatePickerCalendarProps {
 
 export type BaseDatePickerCalendarConfig = Required<BaseDatePickerCalendarProps>
 
-function applyExplicitCalendarProp<Key extends keyof BaseDatePickerCalendarProps>(
+/** Пропсы календаря, которые перекрывают `config`, если переданы явно */
+const EXPLICIT_CALENDAR_PROPS = [
+	'minDate',
+	'maxDate',
+	'disabledDates',
+	'disabledWeekdays',
+	'disableFrom',
+	'disableTo',
+	'highlights',
+	'weekends',
+	'firstDayOfWeek',
+	'locale',
+	'showTime',
+	'showSeconds',
+	'is24Hour',
+	'showWeekNumber',
+] as const satisfies readonly (keyof BaseDatePickerCalendarProps)[]
+
+function copyCalendarProp<Key extends keyof BaseDatePickerCalendarProps>(
 	target: BaseDatePickerCalendarProps,
 	source: BaseDatePickerCalendarProps,
-	wasPropPassed: (name: string) => boolean,
 	name: Key,
 ): void {
-	if (!wasPropPassed(name)) return
 	target[name] = source[name]
 }
 
@@ -74,20 +90,9 @@ export function resolveDatePickerCalendarConfig(
 ): BaseDatePickerCalendarConfig {
 	const merged: BaseDatePickerCalendarProps = { ...(config ?? {}) }
 
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'minDate')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'maxDate')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disabledDates')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disabledWeekdays')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disableFrom')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'disableTo')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'highlights')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'weekends')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'firstDayOfWeek')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'locale')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showTime')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showSeconds')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'is24Hour')
-	applyExplicitCalendarProp(merged, source, wasPropPassed, 'showWeekNumber')
+	for (const name of EXPLICIT_CALENDAR_PROPS) {
+		if (wasPropPassed(name)) copyCalendarProp(merged, source, name)
+	}
 
 	return pickDatePickerCalendarConfig(merged)
 }

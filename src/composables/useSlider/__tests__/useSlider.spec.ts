@@ -3,8 +3,8 @@
  * Проверяют навигацию, autoplay, loop и trackStyle.
  */
 
-import { mount } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import { useSlider } from '../useSlider'
 import type { UseSliderReturn } from '../useSlider.types'
 

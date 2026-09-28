@@ -63,10 +63,7 @@
 
 	// На телефоне карточка — внизу экрана во всю ширину.
 	&--mobile {
-		top: auto;
-		right: sz(12px);
-		bottom: sz(12px);
-		left: sz(12px);
+		inset: auto sz(12px) sz(12px);
 		width: auto;
 		max-width: none;
 		transform: none;

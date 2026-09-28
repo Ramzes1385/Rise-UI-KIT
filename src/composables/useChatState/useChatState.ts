@@ -1,11 +1,11 @@
 /** Composable: оркестратор состояния чата */
 import { computed, ref } from 'vue'
-import { useChatInfoPanel } from '@composables/useChatInfoPanel'
 import { useChatReply } from '@composables/useChatReply'
 import { useChatSearch } from '@composables/useChatSearch'
+import { useChatInfoPanel } from '@composables/useChatInfoPanel'
 import { useChatSelection } from '@composables/useChatSelection'
-import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from './useChatState.types'
 import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
+import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from './useChatState.types'
 
 /** Оркестратор состояния чата — объединяет поиск, выделение, панель информации, ответ, закреплённые сообщения. */
 function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options: UseChatStateOptions = {}) {
@@ -34,19 +34,11 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 	})
 
 	// Глобальный массив картинок для Telegram-like скролла галереи
-	const allImagesUrls = computed((): string[] => {
-		const urls: string[] = []
-		for (const message of props.messages) {
-			if (message.attachments) {
-				for (const attachment of message.attachments) {
-					if (attachment.type === 'image') {
-						urls.push(attachment.url)
-					}
-				}
-			}
-		}
-		return urls
-	})
+	const allImagesUrls = computed((): string[] =>
+		props.messages.flatMap(message =>
+			(message.attachments ?? []).filter(attachment => attachment.type === 'image').map(attachment => attachment.url),
+		),
+	)
 
 	/** Перелистывание закрепов */
 	function handleNextPinned(): void {

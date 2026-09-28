@@ -1,6 +1,6 @@
 import type { LocaleInput } from '@/locales/state'
-import type { NOTIFICATION_VARIANTS, NotificationPosition } from '@components/BaseNotification/model/BaseNotification.types'
 import type { TeleportTarget } from '@composables/useTeleportTarget'
+import type { NOTIFICATION_VARIANTS, NotificationPosition } from '@components/BaseNotification/model/BaseNotification.types'
 
 /** Настройки уведомлений `useToast()` */
 export interface BaseAppToasterOptions {

@@ -1,5 +1,5 @@
-import type { useImageGallery } from '@composables/useImageGallery'
 import type { useImageZoom } from '@composables/useImageZoom'
+import type { useImageGallery } from '@composables/useImageGallery'
 
 /** Props компонента BaseImageZoom */
 export interface BaseImageZoomProps {

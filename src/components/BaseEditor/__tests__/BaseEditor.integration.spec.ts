@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { fireEvent, render } from '@testing-library/vue'
 import BaseEditor from '../ui/BaseEditor.vue'
 
 /** Получить contenteditable-область редактора */

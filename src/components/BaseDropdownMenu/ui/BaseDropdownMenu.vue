@@ -36,11 +36,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch } from 'vue'
-import { BaseDropdown } from '@components/BaseDropdown'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { useCustomClass } from '@composables/useCustomClass'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import DropdownMenuContent from './DropdownMenuContent.vue'
 import '../styles/BaseDropdownMenu.style.scss'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, BaseDropdownMenuSlots, DropdownMenuItem } from '../model/BaseDropdownMenu.types'
@@ -123,8 +123,14 @@ function handleTriggerClick(): void {
 }
 
 /** Кнопка меню по APG: Enter, Space и стрелка вниз открывают меню на первом пункте, стрелка вверх — на последнем */
+function focusTargetFor(key: string): FocusTarget | null {
+	if (['Enter', ' ', 'ArrowDown'].includes(key)) return 'first'
+	if (key === 'ArrowUp') return 'last'
+	return null
+}
+
 function handleTriggerKeydown(event: KeyboardEvent): void {
-	const focus: FocusTarget | null = ['Enter', ' ', 'ArrowDown'].includes(event.key) ? 'first' : event.key === 'ArrowUp' ? 'last' : null
+	const focus = focusTargetFor(event.key)
 	if (!focus) return
 	// preventDefault: иначе Enter и Space ещё и кликнут по кнопке и закроют только что открытое меню
 	event.preventDefault()

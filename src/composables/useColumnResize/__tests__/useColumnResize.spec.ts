@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { defineComponent, ref } from 'vue'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useColumnResize } from '../useColumnResize'
 import type { Ref } from 'vue'
 

@@ -57,17 +57,17 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
-import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
-import { kitDefaults } from '@composables/useDefaults'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import { calcIconScale } from '@utils/iconUtils'
+import { BaseButton } from '@components/BaseButton'
+import { kitDefaults } from '@composables/useDefaults'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { useCustomClass } from '@composables/useCustomClass'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BasePopconfirm.style.scss'
-import type { BasePopconfirmEmits, BasePopconfirmProps, BasePopconfirmSlots } from '../model/BasePopconfirm.types'
 import type { CustomColor } from '@composables/useCustomColor'
+import type { BasePopconfirmEmits, BasePopconfirmProps, BasePopconfirmSlots } from '../model/BasePopconfirm.types'
 
 defineOptions({ name: 'BasePopconfirm' })
 
@@ -158,12 +158,17 @@ function handleDropdownUpdate(value: boolean): void {
 	if (!value && isOpenLocal.value) finish(false)
 }
 
+/** Предыдущая кнопка по кругу; без фокуса на кнопке — последняя */
+function previousIndex(index: number, count: number): number {
+	return index <= 0 ? count - 1 : index - 1
+}
+
 /** Tab и Shift+Tab ходят между кнопками по кругу: панель в конце body, и фокус не должен уйти за неё */
 function handleKeydown(event: KeyboardEvent): void {
 	if (event.key !== 'Tab' || !dialogRef.value) return
 	const buttons = [...dialogRef.value.querySelectorAll<HTMLElement>('button:not(:disabled)')]
 	const index = buttons.indexOf(document.activeElement as HTMLElement)
-	const next = event.shiftKey ? (index <= 0 ? buttons.length - 1 : index - 1) : (index + 1) % buttons.length
+	const next = event.shiftKey ? previousIndex(index, buttons.length) : (index + 1) % buttons.length
 	event.preventDefault()
 	buttons[next]?.focus()
 }

@@ -1,6 +1,6 @@
 /** Утилиты: позиционирование тултипа относительно триггера, переворот и сдвиг у края окна */
 
-import type { TooltipCoords, TooltipPosition, TooltipPositionOptions, TooltipSize } from './tooltipUtils.types'
+import type { TooltipLayout, TooltipPosition, TooltipPositionOptions } from './tooltipUtils.types'
 
 /** Отступ подсказки от края окна при сдвиге, px */
 const TOOLTIP_VIEWPORT_MARGIN = 8
@@ -48,7 +48,8 @@ function calcTooltipPosition(options: TooltipPositionOptions): Record<string, st
 }
 
 /** Свободное место от триггера до края окна со стороны `side` */
-function spaceOn(side: TooltipPosition, coords: TooltipCoords, viewport: TooltipSize, gap: number): number {
+function spaceOn(side: TooltipPosition, layout: TooltipLayout, gap: number): number {
+	const { coords, viewport } = layout
 	switch (side) {
 		case 'top':
 			return coords.top - gap
@@ -66,18 +67,14 @@ function spaceOn(side: TooltipPosition, coords: TooltipCoords, viewport: Tooltip
  * Пока размер подсказки не измерен (0), остаётся выбранная.
  *
  * @example
- * resolveTooltipPlacement('top', { top: 4, left: 100, width: 80, height: 32 }, { width: 120, height: 24 }, { width: 1024, height: 768 }) // 'bottom'
+ * const coords = { top: 4, left: 100, width: 80, height: 32 }
+ * resolveTooltipPlacement('top', { coords, size: { width: 120, height: 24 }, viewport: { width: 1024, height: 768 } }) // 'bottom'
  */
-function resolveTooltipPlacement(
-	position: TooltipPosition,
-	coords: TooltipCoords,
-	size: TooltipSize,
-	viewport: TooltipSize,
-	gap = 8,
-): TooltipPosition {
+function resolveTooltipPlacement(position: TooltipPosition, layout: TooltipLayout, gap = 8): TooltipPosition {
+	const { size } = layout
 	if (!size.width || !size.height) return position
 	const need = (isVertical(position) ? size.height : size.width) + TOOLTIP_VIEWPORT_MARGIN
-	const fits = (side: TooltipPosition): boolean => spaceOn(side, coords, viewport, gap) >= need
+	const fits = (side: TooltipPosition): boolean => spaceOn(side, layout, gap) >= need
 	return fits(position) || !fits(OPPOSITE[position]) ? position : OPPOSITE[position]
 }
 
@@ -85,7 +82,8 @@ function resolveTooltipPlacement(
  * Сдвиг подсказки вдоль края окна, px: подсказка по центру триггера не выходит за окно (отступ 8px).
  * Для top/bottom — по горизонтали, для left/right — по вертикали; стрелку стили сдвигают обратно на столько же.
  */
-function calcTooltipShift(placement: TooltipPosition, coords: TooltipCoords, size: TooltipSize, viewport: TooltipSize): number {
+function calcTooltipShift(placement: TooltipPosition, layout: TooltipLayout): number {
+	const { coords, size, viewport } = layout
 	if (!size.width || !size.height) return 0
 	const vertical = isVertical(placement)
 	const center = vertical ? coords.left + coords.width / 2 : coords.top + coords.height / 2

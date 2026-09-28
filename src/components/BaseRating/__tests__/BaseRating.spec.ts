@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseRating from '../ui/BaseRating.vue'
 
 /** Зафиксировать геометрию звезды для предсказуемого расчёта позиции клика */

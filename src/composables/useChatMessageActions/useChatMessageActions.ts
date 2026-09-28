@@ -1,7 +1,7 @@
 /** Composable: действия над сообщениями чата */
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { useClickOutside } from '@composables/useClickOutside'
 import { copyTextToClipboard } from '@utils/clipboardUtils'
+import { useClickOutside } from '@composables/useClickOutside'
 import type { UseChatMessageActionsOptions } from './useChatMessageActions.types'
 import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
 import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/model/ChatMessageContextMenu.types'

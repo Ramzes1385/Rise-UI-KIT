@@ -5,12 +5,12 @@
  * сценарии (список с добавлением и удалением, раскрывающийся блок).
  */
 
-import { expect, fn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, hiddenArgTypes, propGroup, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
-import { ANIMATION_MODES, ANIMATION_NAMES } from '../model/BaseAnimation.types'
+import { ARG_GROUP, hiddenArgTypes, propGroup, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseAnimation from '../ui/BaseAnimation.vue'
+import { ANIMATION_MODES, ANIMATION_NAMES } from '../model/BaseAnimation.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Анимации одиночного элемента; `list` — для списков (story List). */

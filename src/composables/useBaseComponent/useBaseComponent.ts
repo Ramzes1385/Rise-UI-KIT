@@ -1,8 +1,8 @@
+import { useVariant } from '@composables/useVariant'
 /** Composable: базовая логика UI-компонента (размер, вариант, цвет, классы) */
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { SIZE_SCALE_DEFAULT, useSizeScale } from '@composables/useSizeScale'
-import { useVariant } from '@composables/useVariant'
 import type { BaseComponentProps } from './useBaseComponent.types'
 import type { UseBaseComponentOptions } from './useBaseComponent.types'
 

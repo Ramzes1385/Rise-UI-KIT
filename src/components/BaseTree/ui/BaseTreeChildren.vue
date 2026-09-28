@@ -38,8 +38,8 @@
 
 <script setup lang="ts">
 import { inject } from 'vue'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
+import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../model/BaseTreeChildren.types'
 import '../styles/BaseTree.style.scss'
 

@@ -6,14 +6,14 @@
  * Большинство примеров — в режиме isContained: список уведомлений в потоке страницы, без телепорта.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { computed, onMounted, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
-import { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '../model/BaseNotification.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseNotification from '../ui/BaseNotification.vue'
-import type { BaseNotificationExpose, BaseNotificationProps } from '../model/BaseNotification.types'
+import { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '../model/BaseNotification.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseNotificationExpose, BaseNotificationProps } from '../model/BaseNotification.types'
 
 /** Показ «надолго» для примеров: уведомление не исчезает, пока его смотрят (по умолчанию — 3 секунды). */
 const STORY_DURATION = 600_000

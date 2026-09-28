@@ -42,8 +42,8 @@
 
 <script setup lang="ts">
 import { inject } from 'vue'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import BaseTable from './BaseTable.vue'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
 import type { BaseTableNestedRowProps, BaseTableNestedRowSlots } from '../model/BaseTableNestedRow.types'
 
 defineProps<BaseTableNestedRowProps>()

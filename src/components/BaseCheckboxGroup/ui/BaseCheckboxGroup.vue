@@ -56,11 +56,11 @@
 <script setup lang="ts">
 import { computed, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { kitDefaults } from '@composables/useDefaults'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
 import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseCheckboxGroup.style.scss'
 import type { BaseCheckboxGroupEmits, BaseCheckboxGroupProps } from '../model/BaseCheckboxGroup.types'
 

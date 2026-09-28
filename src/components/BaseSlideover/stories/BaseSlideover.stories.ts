@@ -7,8 +7,11 @@
  * Stories с панелью поверх всей страницы видны только в сайдбаре: в Docs они закрыли бы страницу.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { BaseText } from '@components/BaseText'
+import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -20,9 +23,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { BaseInput } from '@components/BaseInput'
-import { BaseText } from '@components/BaseText'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

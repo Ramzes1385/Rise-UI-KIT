@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCustomClass } from '@composables/useCustomClass'
 import { kitDefaults } from '@composables/useDefaults'
+import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
 

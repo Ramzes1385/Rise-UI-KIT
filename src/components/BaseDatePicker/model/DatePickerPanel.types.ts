@@ -1,6 +1,6 @@
-import type { BaseDatePickerCalendarConfig, BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
-import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { CustomClassProp } from '@composables/useCustomClass'
+import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
+import type { BaseDatePickerCalendarConfig, BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
 
 /**
  * Пропсы компонента DatePickerPanel

@@ -5,11 +5,11 @@
  */
 
 import { expect } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import { CONTAINER_SIZES } from '@components/BaseContainer'
 import { BaseLink } from '@components/BaseLink'
-import { FOOTER_VARIANTS } from '../model/BaseFooter.types'
+import { CONTAINER_SIZES } from '@components/BaseContainer'
+import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseFooter from '../ui/BaseFooter.vue'
+import { FOOTER_VARIANTS } from '../model/BaseFooter.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const TEMPLATE = `

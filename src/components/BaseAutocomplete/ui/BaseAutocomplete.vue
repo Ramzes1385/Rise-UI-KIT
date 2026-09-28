@@ -92,13 +92,13 @@
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { getLocale, pluralize } from '@/locales/state'
-import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseInput } from '@components/BaseInput'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
+import { getLocale, pluralize } from '@/locales/state'
 import { kitDefaults } from '@composables/useDefaults'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { useCustomClass } from '@composables/useCustomClass'
 import { useFormDisabled } from '@composables/useFormContext'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseAutocomplete.style.scss'
 import type {
 	AutocompleteOption,
@@ -220,13 +220,16 @@ function firstEnabled(from: number, direction: 1 | -1): number {
 	return -1
 }
 
+/** Откуда искать следующий вариант: от активного или, если его нет, с края списка */
+function moveOrigin(direction: 1 | -1, count: number): number {
+	if (activeIndex.value !== -1) return activeIndex.value + direction
+	return direction === 1 ? 0 : count - 1
+}
+
 function move(direction: 1 | -1): void {
 	const count = visibleOptions.value.length
 	if (count === 0) return
-	activeIndex.value = firstEnabled(
-		activeIndex.value === -1 ? (direction === 1 ? 0 : count - 1) : activeIndex.value + direction,
-		direction,
-	)
+	activeIndex.value = firstEnabled(moveOrigin(direction, count), direction)
 }
 
 function setValue(value: string | number | null): void {

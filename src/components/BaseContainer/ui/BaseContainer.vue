@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseContainer.style.scss'
 import type { BaseContainerProps, BaseContainerSlots } from '../model/BaseContainer.types'
 

@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { defineComponent, h, ref } from 'vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { BaseApp } from '@components/BaseApp'
 import { getActiveOverlayStore, OVERLAY_DESTROY_DELAY } from '@composables/useOverlay'
 import { useConfirm } from '../useConfirm'

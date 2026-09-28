@@ -4,9 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { createEvent, fireEvent, render, screen } from '@testing-library/vue'
-import { defineComponent, ref } from 'vue'
 import BaseInput from '../ui/BaseInput.vue'
 
 interface InputRef {

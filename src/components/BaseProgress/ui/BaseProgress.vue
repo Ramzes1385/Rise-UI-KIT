@@ -60,11 +60,11 @@ import { computed, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import '../styles/BaseProgress.style.scss'
 
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
 import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
+import { useCustomClass } from '@composables/useCustomClass'
+import { useCustomColor } from '@composables/useCustomColor'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
 
 /** Радиус круга в системе координат viewBox 120×120 */

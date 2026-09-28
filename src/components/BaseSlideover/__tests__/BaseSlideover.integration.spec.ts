@@ -7,8 +7,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { defineComponent, nextTick, ref } from 'vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 
 /** Хост: кнопка-триггер и панель с полем ввода и кнопкой в футере */

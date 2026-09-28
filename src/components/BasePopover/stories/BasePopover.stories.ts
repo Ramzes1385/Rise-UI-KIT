@@ -6,15 +6,15 @@
  * Открытые поповеры телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { BaseInput } from '@components/BaseInput'
-import { BaseSelect } from '@components/BaseSelect'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
-import { POPOVER_VARIANTS } from '../model/BasePopover.types'
+import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
+import { BaseSelect } from '@components/BaseSelect'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BasePopover from '../ui/BasePopover.vue'
+import { POPOVER_VARIANTS } from '../model/BasePopover.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */

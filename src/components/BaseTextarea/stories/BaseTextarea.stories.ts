@@ -5,8 +5,8 @@
  * состояния (пусто, ошибка, disabled, readonly, длинный текст) → сценарии (rows, autosize, maxlength) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -18,8 +18,8 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
 import BaseTextarea from '../ui/BaseTextarea.vue'
+import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const LONG_TEXT = [

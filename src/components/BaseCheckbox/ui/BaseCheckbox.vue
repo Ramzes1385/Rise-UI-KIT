@@ -57,13 +57,13 @@
 
 <script setup lang="ts">
 import { ref, useId } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { calcIconScale } from '@utils/iconUtils'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { calcIconScale } from '@utils/iconUtils'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseCheckbox.style.scss'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
 

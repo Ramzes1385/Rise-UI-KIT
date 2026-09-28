@@ -1,10 +1,18 @@
 /** Composable: управление состоянием ввода чата */
 import { computed, nextTick, ref, watch } from 'vue'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { formatFileSize } from '@utils/fileUtils'
 import { generateId } from '@utils/idUtils'
-import type { UseChatInputStateOptions, BaseInputExposed } from './useChatInputState.types'
+import { formatFileSize } from '@utils/fileUtils'
+import { toHTMLInputElement } from '@utils/domUtils'
 import type { ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
+import type { UseChatInputStateOptions, BaseInputExposed } from './useChatInputState.types'
+
+/** Список подсказок у поля: участники после @ или команды после / */
+interface SuggestionList {
+	items: { name: string }[]
+	prefix: string
+	/** Показан ли список: Escape его закрывает */
+	isShown: { value: boolean }
+}
 
 /** Описание: управляет состоянием ввода чата — текст, вложения, автокомплит упоминаний/команд, навигация по подсказкам и отправка сообщений */
 function useChatInputState(options: UseChatInputStateOptions) {
@@ -141,12 +149,9 @@ function useChatInputState(options: UseChatInputStateOptions) {
 		})
 	}
 
-	function handleSuggestionNavigation(
-		event: KeyboardEvent,
-		items: { name: string }[],
-		prefix: string,
-		showFlag: { value: boolean },
-	): boolean {
+	/** Стрелки, Enter и Escape в списке подсказок; true — клавиша обработана */
+	function handleSuggestionNavigation(event: KeyboardEvent, list: SuggestionList): boolean {
+		const { items, prefix, isShown } = list
 		if (items.length === 0) return false
 
 		if (event.key === 'ArrowDown') {
@@ -176,7 +181,7 @@ function useChatInputState(options: UseChatInputStateOptions) {
 
 		if (event.key === 'Escape') {
 			event.preventDefault()
-			showFlag.value = false
+			isShown.value = false
 			return true
 		}
 
@@ -186,8 +191,10 @@ function useChatInputState(options: UseChatInputStateOptions) {
 	function handleKeyDown(event: KeyboardEvent): void {
 		// Enter во время IME-композиции (японский, китайский, корейский) подтверждает ввод, а не отправляет сообщение
 		if (event.isComposing || event.keyCode === 229) return
-		if (showMentions.value && handleSuggestionNavigation(event, filteredMembers.value, '@', showMentions)) return
-		if (showCommands.value && handleSuggestionNavigation(event, filteredCommands.value, '/', showCommands)) return
+		if (showMentions.value && handleSuggestionNavigation(event, { items: filteredMembers.value, prefix: '@', isShown: showMentions }))
+			return
+		if (showCommands.value && handleSuggestionNavigation(event, { items: filteredCommands.value, prefix: '/', isShown: showCommands }))
+			return
 
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault()

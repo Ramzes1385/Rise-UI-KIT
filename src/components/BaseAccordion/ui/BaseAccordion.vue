@@ -61,9 +61,9 @@
 <script setup lang="ts">
 import { onMounted, ref, useId } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
 import { calcIconScale } from '@utils/iconUtils'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../model/BaseAccordion.types'
 

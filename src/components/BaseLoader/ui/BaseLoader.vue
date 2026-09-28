@@ -42,11 +42,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
 import { kitDefaults } from '@composables/useDefaults'
 import { useSizeScale } from '@composables/useSizeScale'
+import { useCustomClass } from '@composables/useCustomClass'
+import { useCustomColor } from '@composables/useCustomColor'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../model/BaseLoader.types'
 

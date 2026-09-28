@@ -37,13 +37,14 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { BaseText } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useEscapeKey } from '@composables/useEscapeKey'
-import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/tooltipUtils'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTooltip.style.scss'
+import type { TooltipLayout } from '@utils/tooltipUtils'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
 
 /** Отступ подсказки от элемента, px */
@@ -142,12 +143,17 @@ function stopUpdateLoop(): void {
 	}
 }
 
+/** Триггер, подсказка и окно — для выбора стороны и сдвига у края */
+function currentLayout(): TooltipLayout {
+	return { coords: coords.value, size: popupSize.value, viewport: getViewport() }
+}
+
 /** Сторона подсказки: выбранная или противоположная, если у края окна не хватает места */
-const placement = computed(() => resolveTooltipPlacement(props.position, coords.value, popupSize.value, getViewport(), GAP))
+const placement = computed(() => resolveTooltipPlacement(props.position, currentLayout(), GAP))
 
 /** Координаты со сдвигом от края окна; стрелка сдвигается обратно и смотрит на триггер */
 const tooltipStyle = computed((): Record<string, string> => {
-	const shift = calcTooltipShift(placement.value, coords.value, popupSize.value, getViewport())
+	const shift = calcTooltipShift(placement.value, currentLayout())
 	return {
 		...calcTooltipPosition({ position: placement.value, coords: coords.value, gap: GAP, shift }),
 		'--tooltip-arrow-offset': `${-shift}px`,

@@ -5,14 +5,14 @@
  * сценарии (контрол кита внутри, связь подписи с полем через `for`).
  */
 
-import { expect } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
-import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseInput } from '@components/BaseInput'
+import { expect } from 'storybook/test'
 import { BasePin } from '@components/BasePin'
-import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
+import { BaseInput } from '@components/BaseInput'
+import { BaseCheckbox } from '@components/BaseCheckbox'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseFormField from '../ui/BaseFormField.vue'
+import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

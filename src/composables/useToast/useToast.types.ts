@@ -1,5 +1,5 @@
-import type { NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '@components/BaseNotification/model/BaseNotification.types'
 import type { Ref } from 'vue'
+import type { NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '@components/BaseNotification/model/BaseNotification.types'
 
 /** Идентификатор уведомления: свой (строка или число) или выданный хранилищем */
 export type ToastId = string | number

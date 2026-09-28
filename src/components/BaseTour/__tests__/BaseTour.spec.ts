@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { h } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTour from '../ui/BaseTour.vue'
 import type { BaseTourSlotContext, TourStep } from '../model/BaseTour.types'
 

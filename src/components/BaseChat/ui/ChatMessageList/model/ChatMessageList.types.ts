@@ -1,5 +1,5 @@
-import type { ChatMessage, ChatMessageAttachment } from '../../../model/BaseChat.types'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { ChatMessage, ChatMessageAttachment } from '../../../model/BaseChat.types'
 
 export interface ChatMessageListProps extends BaseComponentProps<string, 'root'> {
 	/** Список сообщений */

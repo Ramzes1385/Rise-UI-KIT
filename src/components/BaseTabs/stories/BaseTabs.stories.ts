@@ -6,11 +6,11 @@
  * сценарии (прокрутка) → клавиатура (стрелки, Home/End, roving tabindex).
  */
 
-import { expect, fn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { TABS_VARIANTS } from '../model/BaseTabs.types'
 import BaseTabs from '../ui/BaseTabs.vue'
+import { TABS_VARIANTS } from '../model/BaseTabs.types'
 import type { TabItem } from '../model/BaseTabs.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

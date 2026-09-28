@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import ChatMessageItem from '../ui/ChatMessage.vue'
 import type { ChatMessage } from '../../../model/BaseChat.types'
 

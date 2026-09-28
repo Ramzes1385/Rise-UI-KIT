@@ -1,8 +1,8 @@
 /** Composable: ссылки кита через RouterLink приложения или `<a href>` */
 import { getCurrentInstance, hasInjectionContext, inject } from 'vue'
 import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
-import type { LinkComponent, LinkOptions, ResolvedLink } from './useLink.types'
 import type { InjectionKey } from 'vue'
+import type { LinkComponent, LinkOptions, ResolvedLink } from './useLink.types'
 
 /** Ключ provide/inject компонента ссылок: `createUiKitPlugin({ linkComponent: RouterLink })` */
 export const LINK_COMPONENT_KEY: InjectionKey<LinkComponent> = Symbol.for('rise-ui-kit.link-component')

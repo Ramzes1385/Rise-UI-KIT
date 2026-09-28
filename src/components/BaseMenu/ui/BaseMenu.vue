@@ -43,11 +43,11 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseSeparator } from '@components/BaseSeparator'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
-import '../styles/BaseMenu.style.scss'
 import { calcIconScale } from '@utils/iconUtils'
+import { kitDefaults } from '@composables/useDefaults'
+import { BaseSeparator } from '@components/BaseSeparator'
+import '../styles/BaseMenu.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../model/BaseMenu.types'
 
 const props = withDefaults(

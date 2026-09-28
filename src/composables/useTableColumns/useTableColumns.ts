@@ -1,8 +1,8 @@
 /** Composable: управление колонками таблицы */
 import { computed, ref, toRaw, watch } from 'vue'
 import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
-import type { UseTableColumnsOptions, UseTableColumnsReturn } from './useTableColumns.types'
 import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { UseTableColumnsOptions, UseTableColumnsReturn } from './useTableColumns.types'
 
 /** Строк скелетона, когда размер страницы не задан */
 const DEFAULT_SKELETON_ROWS = 5
@@ -69,7 +69,11 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 	})
 
 	const totalCols = computed((): number => {
-		return calcTotalColumns(visibleColumns.value.length, isSelectable(), hasRowNumber(), hasExpandableRows.value)
+		return calcTotalColumns(visibleColumns.value.length, {
+			isSelectable: isSelectable(),
+			hasRowNumber: hasRowNumber(),
+			hasExpandableRows: hasExpandableRows.value,
+		})
 	})
 
 	function isColumnResizable(column: TableColumn): boolean {

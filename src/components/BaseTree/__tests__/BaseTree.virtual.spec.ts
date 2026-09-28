@@ -5,8 +5,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../model/BaseTree.types'
 

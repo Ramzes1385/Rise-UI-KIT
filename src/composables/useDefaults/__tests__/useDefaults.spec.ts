@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { defineComponent, h, provide } from 'vue'
+import { render, screen } from '@testing-library/vue'
 import { BaseButton } from '@components/BaseButton'
 import { DEFAULTS_KEY, kitDefaults, useDefaults } from '../useDefaults'
 import type { UiKitDefaults } from '../useDefaults.types'

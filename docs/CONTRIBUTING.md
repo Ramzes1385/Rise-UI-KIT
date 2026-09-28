@@ -216,8 +216,10 @@ feat: add component          ← какой компонент?
 ### 3.4. Локальная проверка перед push
 
 ```bash
-# 1. Lint
+# 1. Lint, стили и форматирование
 npm run lint
+npm run lint:styles
+npm run format:check
 
 # 2. Unit-тесты (для конкретного компонента)
 npm run test:unit -- src/components/BaseSideBar
@@ -228,7 +230,7 @@ npm run test:e2e -- src/components/BaseSideBar
 # 4. Build
 npm run build
 
-# 5. Базовая CI-валидация: lint, типы, unit-тесты, сухая сборка пакета
+# 5. Базовая CI-валидация: lint, стили, форматирование, типы, unit-тесты, сухая сборка пакета
 #    (пороги покрытия, stories/a11y-гейты и e2e/visual CI запускает отдельными job)
 npm run ci:validate
 
@@ -417,7 +419,7 @@ git push -u origin feat/sidebar-disclosure-groups
 ### Перед созданием PR
 
 - [ ] Все коммиты следуют Conventional Commits
-- [ ] `npm run lint` проходит без ошибок
+- [ ] `npm run lint`, `npm run lint:styles` и `npm run format:check` проходят без ошибок
 - [ ] `npm run typecheck` проходит (типы исходников и тестов)
 - [ ] `npm run test:unit` проходит
 - [ ] `npm run test:e2e` проходит (если затронуты компоненты с e2e)
@@ -579,3 +581,42 @@ import type { ... } from './xxxUtils.types'
 - Между заголовком и первым `import` — **пустая строка**
 - Язык — **русский**
 - Импурные функции (сайд-эффекты, недетерминизм) — **помечать явно** в заголовке файла
+
+## 11. Стиль кода и линтеры
+
+| Инструмент | Что проверяет | Команды |
+|---|---|---|
+| Prettier | Форматирование `ts`, `vue`, `js`, `scss`: табы, одинарные кавычки, без `;`, строка до 140 символов. Настройки — `package.json` → `prettier`; документы, JSON и YAML не форматируются (`.prettierignore`) | `npm run format`, проверка — `npm run format:check` |
+| ESLint | Ошибки кода, порядок импортов, правила «чистого кода» | `npm run lint`, исправление — `npm run lint:fix` |
+| Stylelint | SCSS по `stylelint-config-standard-scss`, классы по БЭМ. Настройки — `package.json` → `stylelint` | `npm run lint:styles` |
+
+Все три запускает git-хук pre-commit и CI.
+
+**Импорты — «лесенкой».** Внутри группы каждая следующая строка не короче предыдущей, при равной длине — по алфавиту. Группы идут так: внешние пакеты → алиасы (`@/`, `@components`, `@composables`…) → относительные → `import type`. Импорт стилей (`import '../styles/X.style.scss'`) не переставляется: от его места зависит порядок CSS. Порядок расставляет `npm run lint:fix`.
+
+**«Чистый код» (Р. Мартин).**
+
+| Правило | Порог | Уровень |
+|---|---|---|
+| `max-params` | 3 параметра; больше — объект с именованными полями | ошибка |
+| `max-depth` | 3 уровня вложенных блоков; глубже — ранний `continue`/`return` или отдельная функция | ошибка |
+| `max-nested-callbacks` | 3 уровня колбэков | ошибка |
+| `no-nested-ternary` | без вложенных тернарников — функция с `if` | ошибка |
+| `no-param-reassign` | параметры не переприсваиваются | ошибка |
+| `no-else-return` | после `return` нет `else` | ошибка |
+| `@typescript-eslint/no-unused-vars` | неиспользуемое удаляется; намеренно неиспользуемое начинается с `_` | ошибка |
+| `complexity` | сложность функции до 10 | предупреждение |
+| `max-statements` | до 15 операторов в функции | предупреждение |
+| `max-lines-per-function` | до 50 строк без пустых и комментариев | предупреждение |
+| `max-lines` | до 400 строк в файле | предупреждение |
+
+Предупреждения не блокируют коммит: существующий код доводится до порогов по компонентам, новый пишется сразу в них. В тестах и stories метрики размера не проверяются.
+
+**Stylelint.** Классы — по БЭМ в kebab-case: `base-button__icon--active`. Ключевые слова — строчными (`currentcolor`), медиа-запросы — через `min-width` и `max-width`. Отключить правило можно только для строки и с причиной:
+
+```scss
+/* stylelint-disable-next-line property-no-vendor-prefix -- псевдоэлемент только WebKit */
+-webkit-appearance: none;
+```
+
+**git blame.** Переформатирование Prettier — отдельный коммит, он записан в `.git-blame-ignore-revs`. GitHub пропускает его в blame сам, локально — после `git config blame.ignoreRevsFile .git-blame-ignore-revs`.

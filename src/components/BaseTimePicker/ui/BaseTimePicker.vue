@@ -32,13 +32,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { kitDefaults } from '@composables/useDefaults'
+import { useCustomClass } from '@composables/useCustomClass'
 import { BaseAutocomplete } from '@components/BaseAutocomplete'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useCustomClass } from '@composables/useCustomClass'
-import { kitDefaults } from '@composables/useDefaults'
 import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/timeUtils'
-import type { BaseTimePickerEmits, BaseTimePickerProps } from '../model/BaseTimePicker.types'
 import type { AutocompleteOption } from '@components/BaseAutocomplete'
+import type { BaseTimePickerEmits, BaseTimePickerProps } from '../model/BaseTimePicker.types'
 
 const props = withDefaults(
 	defineProps<BaseTimePickerProps>(),

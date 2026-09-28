@@ -5,8 +5,9 @@
  * содержимое (своя иконка, действия, длинный текст) → сценарий «закрытие» → клавиатура.
  */
 
-import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn } from 'storybook/test'
+import { BaseButton } from '@components/BaseButton'
 import {
 	ARG_GROUP,
 	avatarImage,
@@ -18,9 +19,8 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { ALERT_TYPES, ALERT_VARIANTS } from '../model/BaseAlert.types'
 import BaseAlert from '../ui/BaseAlert.vue'
+import { ALERT_TYPES, ALERT_VARIANTS } from '../model/BaseAlert.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Реалистичные тексты для каждого типа */

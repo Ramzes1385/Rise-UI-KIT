@@ -6,8 +6,8 @@
 
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import { CONTAINER_SIZES } from '../model/BaseContainer.types'
 import BaseContainer from '../ui/BaseContainer.vue'
+import { CONTAINER_SIZES } from '../model/BaseContainer.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Рамка, по которой видно ширину контейнера */

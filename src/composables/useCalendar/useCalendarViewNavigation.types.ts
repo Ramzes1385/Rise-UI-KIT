@@ -1,5 +1,5 @@
-import type { CalendarView } from './useCalendar.types'
 import type { Ref } from 'vue'
+import type { CalendarView } from './useCalendar.types'
 
 export interface UseCalendarViewNavigationOptions {
 	currentMonth: Ref<number>

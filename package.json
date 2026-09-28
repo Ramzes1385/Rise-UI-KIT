@@ -67,6 +67,7 @@
     "prepare": "husky build/husky",
     "lint": "eslint \"src/**/*.{ts,vue}\"",
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
+    "lint:styles": "stylelint \"src/**/*.scss\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "storybook": "node scripts/storybook-dev.mjs",
@@ -100,7 +101,7 @@
     "pack:dry": "npm run build:lib && npm pack --dry-run",
     "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
     "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
-    "ci:validate": "npm run lint && npm run typecheck && npm run test:unit && npm run pack:dry",
+    "ci:validate": "npm run lint && npm run lint:styles && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry",
     "ci:release": "npm run release"
   },
   "dependencies": {
@@ -156,6 +157,8 @@
     "semantic-release": "^25.0.5",
     "start-server-and-test": "^3.0.5",
     "storybook": "^10.4.1",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "tsc-alias": "^1.8.17",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.60.0",
@@ -184,5 +187,33 @@
     "arrowParens": "avoid",
     "bracketSameLine": true,
     "endOfLine": "lf"
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard-scss"
+    ],
+    "rules": {
+      "selector-class-pattern": [
+        "^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$",
+        {
+          "message": "Класс по БЭМ: block__element--modifier в kebab-case"
+        }
+      ],
+      "value-keyword-case": [
+        "lower",
+        {
+          "ignoreProperties": [
+            "/^--rise-font-/"
+          ]
+        }
+      ],
+      "media-feature-range-notation": "prefix",
+      "at-rule-empty-line-before": null,
+      "declaration-empty-line-before": null,
+      "custom-property-empty-line-before": null,
+      "scss/double-slash-comment-empty-line-before": null,
+      "scss/comment-no-empty": null,
+      "scss/at-if-no-null": null
+    }
   }
 }

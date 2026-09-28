@@ -1,5 +1,5 @@
-import type { MODAL_VARIANTS } from '@components/BaseModal/model/BaseModal.types'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { MODAL_VARIANTS } from '@components/BaseModal/model/BaseModal.types'
 
 /**
  * Пропсы компонента BaseConfirm

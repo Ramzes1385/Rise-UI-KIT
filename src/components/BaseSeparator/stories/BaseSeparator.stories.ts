@@ -6,8 +6,8 @@
  */
 
 import { expect } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseIcon } from '@components/BaseIcon'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSeparator from '../ui/BaseSeparator.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

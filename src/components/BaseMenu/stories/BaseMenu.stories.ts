@@ -7,10 +7,10 @@
 
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import { MENU_VARIANTS } from '../model/BaseMenu.types'
 import BaseMenu from '../ui/BaseMenu.vue'
-import type { BaseMenuItem } from '../model/BaseMenu.types'
+import { MENU_VARIANTS } from '../model/BaseMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseMenuItem } from '../model/BaseMenu.types'
 
 const ITEMS: BaseMenuItem[][] = [
 	[

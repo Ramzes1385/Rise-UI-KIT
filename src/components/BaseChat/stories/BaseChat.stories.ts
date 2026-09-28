@@ -7,8 +7,8 @@
  * упоминания и команды) → клавиатура.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref, watch } from 'vue'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -22,10 +22,10 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { CHAT_VARIANTS } from '../model/BaseChat.types'
 import BaseChat from '../ui/BaseChat.vue'
-import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment, ChatMessageReaction } from '../model/BaseChat.types'
+import { CHAT_VARIANTS } from '../model/BaseChat.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment, ChatMessageReaction } from '../model/BaseChat.types'
 
 // ─── Данные ────────────────────────────────────────────────────────────────────
 // Даты — от STORY_TODAY (15 мая 2025), люди — STORY_USERS, картинки — STORY_IMAGES: скриншоты не зависят от дня и сети.

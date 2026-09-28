@@ -6,15 +6,15 @@
  * раскрытием, навигация по ссылкам) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { BaseBadge } from '@components/BaseBadge'
-import { BaseButton } from '@components/BaseButton'
-import { BaseEmpty } from '@components/BaseEmpty'
+import { expect, fn, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { TREE_VARIANTS } from '../model/BaseTree.types'
+import { BaseBadge } from '@components/BaseBadge'
+import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseButton } from '@components/BaseButton'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseTree from '../ui/BaseTree.vue'
+import { TREE_VARIANTS } from '../model/BaseTree.types'
 import type { TreeNode } from '../model/BaseTree.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

@@ -44,11 +44,11 @@
 
 <script setup lang="ts">
 import { computed, provide, ref, shallowRef, useId } from 'vue'
-import { BaseAnimation } from '@components/BaseAnimation'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
+import { BaseAnimation } from '@components/BaseAnimation'
+import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseFormField.style.scss'
 import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
 

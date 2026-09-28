@@ -215,11 +215,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch } from 'vue'
+import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { getLocale, pluralize } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
+import { getLocale, pluralize } from '@/locales/state'
 import { BaseSlideover } from '@components/BaseSlideover'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'

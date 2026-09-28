@@ -6,8 +6,8 @@
 
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import { BACK_TOP_VARIANTS } from '../model/BaseBackTop.types'
 import BaseBackTop from '../ui/BaseBackTop.vue'
+import { BACK_TOP_VARIANTS } from '../model/BaseBackTop.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Лента новостей для прокрутки */

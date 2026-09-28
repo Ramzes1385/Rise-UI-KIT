@@ -6,8 +6,14 @@
  * закреплённые шапка и колонки, ресайз, свои ячейки) → клавиатура.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseBadge } from '@components/BaseBadge'
+import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseButton } from '@components/BaseButton'
+import { BaseProgress } from '@components/BaseProgress'
 import {
 	ARG_GROUP,
 	avatarImage,
@@ -20,16 +26,10 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { BaseAvatar } from '@components/BaseAvatar'
-import { BaseBadge } from '@components/BaseBadge'
-import { BaseButton } from '@components/BaseButton'
-import { BaseEmpty } from '@components/BaseEmpty'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseProgress } from '@components/BaseProgress'
-import { TABLE_VARIANTS } from '../model/BaseTable.types'
 import BaseTable from '../ui/BaseTable.vue'
-import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import { TABLE_VARIANTS } from '../model/BaseTable.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
 
 // ─── Данные ────────────────────────────────────────────────────────────────────
 

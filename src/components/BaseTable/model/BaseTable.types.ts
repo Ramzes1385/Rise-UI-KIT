@@ -1,7 +1,7 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { PaddingProp } from '@composables/usePadding'
-import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
 import type { InjectionKey } from 'vue'
+import type { PaddingProp } from '@composables/usePadding'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
 
 /** Варианты отображения таблицы */
 export const TABLE_VARIANTS = ['default', 'bordered', 'striped'] as const

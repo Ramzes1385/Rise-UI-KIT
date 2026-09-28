@@ -24,8 +24,8 @@ import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseImage } from '@components/BaseImage'
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 import type { ChatSlideoverMediaProps } from '../../model/ChatSlideoverMedia.types'
+import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
 
 interface SharedAttachment extends ChatMessageAttachment {
 	publishedAt: string

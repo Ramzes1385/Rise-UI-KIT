@@ -3,9 +3,9 @@
  * Проверяют рендер, CSS-модификаторы и базовое поведение.
  */
 
-import { fireEvent, render, waitFor } from '@testing-library/vue'
-import '@testing-library/jest-dom/vitest'
 import { nextTick, reactive } from 'vue'
+import '@testing-library/jest-dom/vitest'
+import { fireEvent, render, waitFor } from '@testing-library/vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import BaseSearch from '../ui/BaseSearch.vue'
 

@@ -168,6 +168,7 @@ Vitest
 Storybook
 ESLint
 Prettier
+Stylelint
 Husky
 Commitlint
 semantic-release
@@ -2837,6 +2838,8 @@ npm publish
 
 ```bash
 npm run lint
+npm run lint:styles
+npm run format:check
 npm run typecheck
 npm run test:unit
 npm run build:lib

@@ -5,12 +5,12 @@
  * состояния (disabled, ошибка, частичный выбор, длинная подпись) → сценарии (слот ошибки, согласие перед отправкой) → клавиатура.
  */
 
-import { expect, fn } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
-import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
+import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

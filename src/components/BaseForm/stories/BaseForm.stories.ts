@@ -5,15 +5,15 @@
  * сценарии (валидация при отправке, проверка по схеме, отправка с загрузкой) → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { reactive, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
-import { BaseFormField } from '@components/BaseFormField'
+import { expect, fn, waitFor } from 'storybook/test'
 import { BaseInput } from '@components/BaseInput'
-import { FORM_VARIANTS } from '../model/BaseForm.types'
+import { BaseButton } from '@components/BaseButton'
+import { BaseFormField } from '@components/BaseFormField'
+import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
+import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseForm from '../ui/BaseForm.vue'
+import { FORM_VARIANTS } from '../model/BaseForm.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { StandardSchemaIssue, StandardSchemaV1 } from '@utils/formUtils'
 

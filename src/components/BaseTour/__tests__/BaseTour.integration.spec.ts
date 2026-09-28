@@ -4,9 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
-import { defineComponent, ref } from 'vue'
 import BaseTour from '../ui/BaseTour.vue'
 import type { TourStep } from '../model/BaseTour.types'
 

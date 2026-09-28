@@ -1,5 +1,5 @@
-import type { COLOR_MODES } from './useColorMode'
 import type { ComputedRef, Ref } from 'vue'
+import type { COLOR_MODES } from './useColorMode'
 
 /** Режим темы: светлая, тёмная или как в системе */
 export type ColorMode = (typeof COLOR_MODES)[number]

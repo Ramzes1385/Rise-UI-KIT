@@ -1,7 +1,7 @@
 /** Composable: контекст формы (блокировка, ошибки схемы) и поля (подпись, описание, ошибка) для контролов кита */
 import { computed, inject, onScopeDispose, provide, useId } from 'vue'
-import type { FieldControlAria, FormContext, FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from './useFormContext.types'
 import type { ComputedRef, InjectionKey } from 'vue'
+import type { FieldControlAria, FormContext, FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from './useFormContext.types'
 
 /** Ключ контекста BaseForm */
 export const FORM_CONTEXT_KEY: InjectionKey<FormContext> = Symbol.for('rise-ui-kit.form')

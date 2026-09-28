@@ -7,10 +7,10 @@
 
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { SEGMENTED_VARIANTS } from '../model/BaseSegmented.types'
 import BaseSegmented from '../ui/BaseSegmented.vue'
-import type { SegmentedOption } from '../model/BaseSegmented.types'
+import { SEGMENTED_VARIANTS } from '../model/BaseSegmented.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { SegmentedOption } from '../model/BaseSegmented.types'
 
 /** Период отчёта */
 const PERIODS: SegmentedOption[] = [

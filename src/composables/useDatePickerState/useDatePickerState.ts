@@ -1,11 +1,11 @@
 /** Composable: управление состоянием дейтпикера — открытие/закрытие, значения, форматирование, позиционирование панели */
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useClickOutside } from '@composables/useClickOutside'
-import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { formatDatePickerValue } from '@utils/dateUtils'
-import type { UseDatePickerStateOptions } from './useDatePickerState.types'
+import { useClickOutside } from '@composables/useClickOutside'
+import { useDropdownPosition } from '@composables/useDropdownPosition'
 import type { Ref } from 'vue'
+import type { UseDatePickerStateOptions } from './useDatePickerState.types'
 
 /** Предел высоты панели: календарь не прокручивается внутри панели, пока помещается в окно */
 const PANEL_MAX_HEIGHT = 'calc(100vh - 16px)'

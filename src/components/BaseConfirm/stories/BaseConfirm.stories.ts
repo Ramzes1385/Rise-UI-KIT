@@ -6,15 +6,15 @@
  * Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу.
  */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { defineComponent, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseApp } from '@components/BaseApp'
+import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import { MODAL_VARIANTS } from '@components/BaseModal/model/BaseModal.types'
-import { BaseText } from '@components/BaseText'
-import BaseConfirm from '../ui/BaseConfirm.vue'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import { useConfirm } from '../useConfirm'
+import BaseConfirm from '../ui/BaseConfirm.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

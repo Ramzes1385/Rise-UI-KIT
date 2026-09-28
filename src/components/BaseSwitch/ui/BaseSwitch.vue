@@ -71,12 +71,12 @@
 
 <script setup lang="ts">
 import { ref, useId } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { BaseText } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { useFormField } from '@composables/useFormField'
-import { toHTMLInputElement } from '@utils/domUtils'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseSwitch.style.scss'
 import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../model/BaseSwitch.types'
 

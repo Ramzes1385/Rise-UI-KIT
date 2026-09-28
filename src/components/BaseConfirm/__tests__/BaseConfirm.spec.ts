@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { BaseModal } from '@components/BaseModal'
 import BaseConfirm from '../ui/BaseConfirm.vue'
 

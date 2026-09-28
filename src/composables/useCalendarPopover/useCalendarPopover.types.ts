@@ -1,5 +1,5 @@
-import type { CalendarHighlight } from '@components/BaseCalendar/model/BaseCalendar.types'
 import type { ComputedRef, Ref } from 'vue'
+import type { CalendarHighlight } from '@components/BaseCalendar/model/BaseCalendar.types'
 
 export interface UseCalendarPopoverOptions {
 	getEvents: (date: Date) => CalendarHighlight[]

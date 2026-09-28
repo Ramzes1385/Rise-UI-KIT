@@ -6,10 +6,10 @@
 
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, useArgsWithoutSlots } from '@/stories/helpers'
-import { AVATAR_GROUP_VARIANTS } from '../model/BaseAvatarGroup.types'
 import BaseAvatarGroup from '../ui/BaseAvatarGroup.vue'
-import type { AvatarGroupItem } from '../model/BaseAvatarGroup.types'
+import { AVATAR_GROUP_VARIANTS } from '../model/BaseAvatarGroup.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { AvatarGroupItem } from '../model/BaseAvatarGroup.types'
 
 /** Участники проекта: у пятерых есть фото, у двоих — инициалы */
 const PEOPLE: AvatarGroupItem[] = [

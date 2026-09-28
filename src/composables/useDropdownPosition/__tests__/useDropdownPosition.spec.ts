@@ -3,14 +3,14 @@
  * слушатели только у открытой панели. Окно jsdom — 1024 × 768.
  */
 
-import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import { useDropdownPosition, VIEWPORT_MARGIN } from '../useDropdownPosition'
 import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
 
 const GAP = 4
 
-function rect(top: number, left: number, width = 200, height = 40): DOMRect {
+function rect(top: number, left: number, { width = 200, height = 40 } = {}): DOMRect {
 	return { top, left, width, height, bottom: top + height, right: left + width, x: left, y: top, toJSON: () => ({}) } as DOMRect
 }
 
@@ -22,7 +22,7 @@ function createWrapper(triggerRect: DOMRect | null): HTMLElement {
 		trigger.getBoundingClientRect = () => triggerRect
 		wrapper.append(trigger)
 	} else {
-		wrapper.getBoundingClientRect = () => rect(10, 20, 30, 10)
+		wrapper.getBoundingClientRect = () => rect(10, 20, { width: 30, height: 10 })
 	}
 	return wrapper
 }
@@ -105,7 +105,7 @@ describe('useDropdownPosition', () => {
 	})
 
 	it('справа нет места — панель переворачивается влево', () => {
-		const { api } = setup({ position: 'right', trigger: rect(300, 900, 100) })
+		const { api } = setup({ position: 'right', trigger: rect(300, 900, { width: 100 }) })
 
 		expect(api.placement.value).toBe('left')
 		expect(api.coords.value.left).toBe(900 - GAP - 100)
@@ -118,8 +118,10 @@ describe('useDropdownPosition', () => {
 	})
 
 	it('у края окна панель сдвигается вдоль него', () => {
-		expect(setup({ position: 'bottom-start', trigger: rect(300, 980, 40) }).api.coords.value.left).toBe(1024 - 100 - VIEWPORT_MARGIN)
-		expect(setup({ position: 'bottom-end', trigger: rect(300, 10, 40) }).api.coords.value.left).toBe(VIEWPORT_MARGIN)
+		expect(setup({ position: 'bottom-start', trigger: rect(300, 980, { width: 40 }) }).api.coords.value.left).toBe(
+			1024 - 100 - VIEWPORT_MARGIN,
+		)
+		expect(setup({ position: 'bottom-end', trigger: rect(300, 10, { width: 40 }) }).api.coords.value.left).toBe(VIEWPORT_MARGIN)
 		expect(setup({ position: 'right-start', trigger: rect(740, 400) }).api.coords.value.top).toBe(768 - 50 - VIEWPORT_MARGIN)
 	})
 
@@ -127,11 +129,13 @@ describe('useDropdownPosition', () => {
 		vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(1000)
 		vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(700)
 
-		expect(setup({ position: 'bottom-start', trigger: rect(300, 980, 40) }).api.coords.value.left).toBe(1000 - 100 - VIEWPORT_MARGIN)
+		expect(setup({ position: 'bottom-start', trigger: rect(300, 980, { width: 40 }) }).api.coords.value.left).toBe(
+			1000 - 100 - VIEWPORT_MARGIN,
+		)
 	})
 
 	it('до отрисовки панели (размер неизвестен) — без переворота и сдвига', () => {
-		const { api } = setup({ position: 'bottom-end', trigger: rect(700, 10, 40), panel: null })
+		const { api } = setup({ position: 'bottom-end', trigger: rect(700, 10, { width: 40 }), panel: null })
 
 		expect(api.placement.value).toBe('bottom-end')
 		expect(api.coords.value).toEqual({ top: 744, left: 50 })

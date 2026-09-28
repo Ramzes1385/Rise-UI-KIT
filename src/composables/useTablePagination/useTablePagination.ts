@@ -1,9 +1,9 @@
 /** Composable: управление пагинацией таблицы */
 import { computed, ref, watch } from 'vue'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
-import type { UseTablePaginationOptions, UseTablePaginationReturn } from './useTablePagination.types'
 import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
 import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
+import type { UseTablePaginationOptions, UseTablePaginationReturn } from './useTablePagination.types'
 
 /** Размер страницы, когда он не задан */
 const DEFAULT_PAGE_SIZE = 5

@@ -2,15 +2,15 @@
  * Foundations / Sizing — масштаб компонентов (sizeScale) и плотность интерфейса.
  */
 
-import { expect } from 'storybook/test'
 import { ref } from 'vue'
-import { SIZE_PRESETS, sizeLabel } from '@/stories/helpers'
+import { expect } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
-import { BaseButton } from '@components/BaseButton'
-import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseSwitch } from '@components/BaseSwitch'
+import { BaseCheckbox } from '@components/BaseCheckbox'
+import { SIZE_PRESETS, sizeLabel } from '@/stories/helpers'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import './foundations.scss'
 

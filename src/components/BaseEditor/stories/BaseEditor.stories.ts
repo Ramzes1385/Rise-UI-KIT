@@ -6,8 +6,9 @@
  * сценарии (форматирование через тулбар, ссылки и медиа, режим HTML-кода) → клавиатура.
  */
 
-import { expect, fn, screen, spyOn, waitFor, within } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, screen, spyOn, waitFor, within } from 'storybook/test'
+import { BaseButton } from '@components/BaseButton'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -19,9 +20,8 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
-import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
 import BaseEditor from '../ui/BaseEditor.vue'
+import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 // ─── Данные ────────────────────────────────────────────────────────────────────

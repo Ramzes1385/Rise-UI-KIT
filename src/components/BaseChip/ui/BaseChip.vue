@@ -15,8 +15,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../model/BaseChip.types'
 

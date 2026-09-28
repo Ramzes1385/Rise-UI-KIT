@@ -62,8 +62,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { UI_CALENDAR } from '@/locales/messages'
-import { useClickOutside } from '@composables/useClickOutside'
 import { formatPopoverDate } from '@utils/dateUtils'
+import { useClickOutside } from '@composables/useClickOutside'
 import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../model/BaseCalendarDays.types'
 
 const props = defineProps<BaseCalendarDaysProps>()
@@ -90,6 +90,13 @@ const dayLabelFormat = computed(
 )
 
 /** Состояние ячеек сетки: считается один раз на перерисовку, а не отдельными вызовами из шаблона */
+/** Выравнивание popover по колонке: слева направо от ячейки, справа — налево, в середине — по центру */
+function popoverClassFor(column: number): string | undefined {
+	if (column < 3) return 'base-calendar__popover--start'
+	if (column > 3) return 'base-calendar__popover--end'
+	return undefined
+}
+
 const cells = computed(() =>
 	props.calendarDays.map((date, index) => {
 		const dayClassMap = props.dayClasses(date, hasDaySlot.value)
@@ -99,8 +106,7 @@ const cells = computed(() =>
 		return {
 			key: index,
 			date,
-			// Выравнивание popover по колонке: слева направо от ячейки, справа — налево, в середине — по центру
-			popoverClass: column < 3 ? 'base-calendar__popover--start' : column > 3 ? 'base-calendar__popover--end' : undefined,
+			popoverClass: popoverClassFor(column),
 			classes: dayClassMap,
 			weekNumber: props.showWeekNumber && index % 7 === 0 ? props.getRowWeekNumber(index) : null,
 			isToday: props.isToday(date),

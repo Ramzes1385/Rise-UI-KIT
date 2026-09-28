@@ -77,9 +77,9 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
+import { calcIconScale } from '@utils/iconUtils'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../model/BaseMegaMenuNode.types'
 

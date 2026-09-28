@@ -34,12 +34,12 @@
 
 <script setup lang="ts" generic="T">
 import { computed, ref } from 'vue'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useVirtualList } from '@composables/useVirtualList'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseVirtualList.style.scss'
-import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../model/BaseVirtualList.types'
 import type { VirtualKey } from '@composables/useVirtualList'
+import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../model/BaseVirtualList.types'
 
 const props = withDefaults(
 	defineProps<BaseVirtualListProps<T>>(),

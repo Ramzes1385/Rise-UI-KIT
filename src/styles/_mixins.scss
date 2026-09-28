@@ -249,6 +249,7 @@
 	padding: 0;
 	margin: -1px;
 	overflow: hidden;
+	/* stylelint-disable-next-line property-no-deprecated -- clip скрывает и в браузерах без clip-path */
 	clip: rect(0, 0, 0, 0);
 	white-space: nowrap;
 	border: 0;

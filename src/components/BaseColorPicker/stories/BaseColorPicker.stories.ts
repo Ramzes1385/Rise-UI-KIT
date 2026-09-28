@@ -6,12 +6,12 @@
  * Панель телепортируется в body, поэтому в Docs примеры с открытой панелью показываются в отдельном фрейме.
  */
 
-import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ref } from 'vue'
-import { ARG_GROUP, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import { expect, fn, screen, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { COLOR_PICKER_POSITIONS } from '../model/BaseColorPicker.types'
+import { ARG_GROUP, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
+import { COLOR_PICKER_POSITIONS } from '../model/BaseColorPicker.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Фирменная палитра студии для примера своих пресетов. */

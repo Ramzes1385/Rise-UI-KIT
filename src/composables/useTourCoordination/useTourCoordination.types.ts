@@ -1,5 +1,5 @@
-import type { BaseTourEmits, BaseTourProps, TourGeometry, TourStep } from '@components/BaseTour/model/BaseTour.types'
 import type { ComputedRef, Ref } from 'vue'
+import type { BaseTourEmits, BaseTourProps, TourGeometry, TourStep } from '@components/BaseTour/model/BaseTour.types'
 
 export interface UseTourCoordinationOptions {
 	props: BaseTourProps

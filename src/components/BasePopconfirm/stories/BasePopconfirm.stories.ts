@@ -7,10 +7,10 @@
  */
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
-import { POPCONFIRM_VARIANTS } from '../model/BasePopconfirm.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BasePopconfirm from '../ui/BasePopconfirm.vue'
+import { POPCONFIRM_VARIANTS } from '../model/BasePopconfirm.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 function docsFrame(height: number) {

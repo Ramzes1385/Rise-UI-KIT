@@ -68,10 +68,15 @@ function useSelect({ props, emit, onBlur, isDisabled = () => Boolean(props.isDis
 		return selectedIndex === -1 ? findEnabledIndex(0, 1) : selectedIndex
 	}
 
+	/** Откуда искать следующую опцию: от активной или, если её нет, с края списка */
+	function moveOrigin(step: 1 | -1): number {
+		if (activeIndex.value !== -1) return activeIndex.value + step
+		return step === 1 ? 0 : filteredOptions.value.length - 1
+	}
+
 	/** Сдвиг активной опции стрелками: без зацикливания, отключённые опции пропускаются */
 	function moveActive(step: 1 | -1): void {
-		const start = activeIndex.value === -1 ? (step === 1 ? 0 : filteredOptions.value.length - 1) : activeIndex.value + step
-		const next = findEnabledIndex(start, step)
+		const next = findEnabledIndex(moveOrigin(step), step)
 		if (next !== -1) activeIndex.value = next
 	}
 

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { mount } from '@vue/test-utils'
 import { createApp, h } from 'vue'
+import { mount } from '@vue/test-utils'
 import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 import { createIconPlugin } from '../iconPlugin'
 

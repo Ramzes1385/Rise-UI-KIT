@@ -6,19 +6,19 @@
  * Открытые панели телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
  */
 
-import { expect, fn, screen, waitFor } from 'storybook/test'
 import { computed, ref } from 'vue'
-import { ARG_GROUP, baseArgTypes, propGroup, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { BaseButton } from '@components/BaseButton'
+import { expect, fn, screen, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseInput } from '@components/BaseInput'
 import { BaseMenu } from '@components/BaseMenu'
 import { BaseText } from '@components/BaseText'
-import { DROPDOWN_VARIANTS } from '../model/BaseDropdown.types'
+import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
+import { ARG_GROUP, baseArgTypes, propGroup, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseDropdown from '../ui/BaseDropdown.vue'
-import type { DropdownPosition } from '../model/BaseDropdown.types'
+import { DROPDOWN_VARIANTS } from '../model/BaseDropdown.types'
 import type { BaseMenuItem } from '@components/BaseMenu'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { DropdownPosition } from '../model/BaseDropdown.types'
 
 /** Все позиции панели относительно триггера. */
 const POSITIONS: DropdownPosition[] = [

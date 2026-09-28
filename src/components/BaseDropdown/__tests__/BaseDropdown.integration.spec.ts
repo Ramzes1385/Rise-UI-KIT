@@ -6,9 +6,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { defineComponent, ref } from 'vue'
 import { BaseSelect } from '@components/BaseSelect'
 import BaseDropdown from '../ui/BaseDropdown.vue'
 

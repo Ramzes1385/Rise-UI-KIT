@@ -3,8 +3,8 @@
  * Проверяют автопрокрутку контейнера к низу.
  */
 
-import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import { useAutoScroll } from '../useAutoScroll'
 
 /** Обёртка для вызова composable внутри Vue-контекста */

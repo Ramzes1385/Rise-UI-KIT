@@ -1,7 +1,7 @@
 /** Composable: работа с SVG-иконками из спрайта */
 import { hasInjectionContext, inject } from 'vue'
-import type { IconMap, ResolvedIcon, UseIconReturn } from './useIcon.types'
 import type { InjectionKey } from 'vue'
+import type { IconMap, ResolvedIcon, UseIconReturn } from './useIcon.types'
 
 /** Путь к SVG-спрайту по умолчанию — файл рядом со страницей; экспортируется из `/icons` */
 export const ICON_SPRITE_PATH = 'icons.svg'

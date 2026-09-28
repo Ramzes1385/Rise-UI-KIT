@@ -30,32 +30,44 @@ export default tseslint.config(
 			},
 		},
 		rules: {
-			'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+			// Мёртвый код не оставляем: неиспользуемое удаляется, намеренно неиспользуемое начинается с `_`.
+			'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
 			'@typescript-eslint/no-explicit-any': 'off',
 			'vue/multi-word-component-names': 'off',
 			'no-undef': 'error',
 			eqeqeq: ['error', 'smart'],
 			'no-var': 'error',
-			'prefer-const': 'warn',
+			'prefer-const': 'error',
 
-			// Единый порядок импортов: builtin/external → internal (@-алиасы) → relative → type → style (scss).
+			// Импорты — «лесенкой»: внутри группы строка не короче предыдущей, при равной длине — по алфавиту.
+			// Группы: builtin/external → внутренние (@-алиасы) → относительные → типы. Импорт стилей не переставляется:
+			// от его места зависит порядок CSS.
 			'perfectionist/sort-imports': [
 				'error',
 				{
-					type: 'alphabetical',
+					type: 'line-length',
 					order: 'asc',
+					fallbackSort: { type: 'alphabetical', order: 'asc' },
 					newlinesBetween: 0,
 					internalPattern: ['^@/', '^@components(/|$)', '^@composables(/|$)', '^@utils(/|$)', '^@icons(/|$)', '^@styles(/|$)'],
 					groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index'], 'type', 'style', 'unknown'],
 				},
 			],
-			// Форматирование шаблонов контролируется стилем проекта (табы), не ESLint.
-			'vue/html-indent': 'off',
-			'vue/max-attributes-per-line': 'off',
-			'vue/html-closing-bracket-newline': 'off',
-			'vue/singleline-html-element-content-newline': 'off',
-			'vue/multiline-html-element-content-newline': 'off',
-			'vue/html-self-closing': 'off',
+
+			// «Чистый код» (Р. Мартин): мало аргументов, неглубокая вложенность, без вложенных тернарников,
+			// параметры не переприсваиваются, после return нет else.
+			'max-params': ['error', 3],
+			'max-depth': ['error', 3],
+			'max-nested-callbacks': ['error', 3],
+			'no-nested-ternary': 'error',
+			'no-param-reassign': 'error',
+			'no-else-return': ['error', { allowElseIf: false }],
+			// Размер и сложность — предупреждения: существующий код доводится до них по компонентам.
+			complexity: ['warn', 10],
+			'max-statements': ['warn', 15],
+			'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
+			'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
+
 			'vue/attributes-order': 'off',
 			'vue/one-component-per-file': 'off',
 			// v-html используется осознанно (JSON-LD, SVG-иконки) с защитой от XSS.
@@ -82,6 +94,12 @@ export default tseslint.config(
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-unused-vars': 'off',
 			'no-undef': 'off',
+			// describe → it → колбэки и длинные сценарии в тестах и stories — норма.
+			complexity: 'off',
+			'max-statements': 'off',
+			'max-lines-per-function': 'off',
+			'max-lines': 'off',
+			'max-nested-callbacks': 'off',
 		},
 	},
 	{

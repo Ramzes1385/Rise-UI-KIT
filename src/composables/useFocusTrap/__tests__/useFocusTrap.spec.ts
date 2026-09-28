@@ -5,8 +5,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { render, screen, waitFor } from '@testing-library/vue'
 import { defineComponent, onMounted, ref } from 'vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import { useFocusTrap } from '../useFocusTrap'
 import type { Component } from 'vue'
 

@@ -4,9 +4,9 @@
  */
 
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { nextTick } from 'vue'
 import BaseTable from '../ui/BaseTable.vue'
 import type { ColumnFilter, TableColumn, TableRow } from '../model/BaseTable.types'
 

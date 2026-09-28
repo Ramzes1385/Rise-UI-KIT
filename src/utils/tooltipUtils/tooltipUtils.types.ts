@@ -15,6 +15,16 @@ interface TooltipSize {
 	height: number
 }
 
+/** Геометрия подсказки: триггер, размер подсказки и окна */
+interface TooltipLayout {
+	/** Координаты и размеры триггера */
+	coords: TooltipCoords
+	/** Размер подсказки; 0, пока не измерен */
+	size: TooltipSize
+	/** Размер окна */
+	viewport: TooltipSize
+}
+
 /** Параметры для расчёта позиции тултипа */
 interface TooltipPositionOptions {
 	/** Позиция тултипа */
@@ -27,4 +37,4 @@ interface TooltipPositionOptions {
 	shift?: number
 }
 
-export type { TooltipCoords, TooltipPosition, TooltipPositionOptions, TooltipSize }
+export type { TooltipCoords, TooltipLayout, TooltipPosition, TooltipPositionOptions, TooltipSize }

@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseHeader from '../ui/BaseHeader.vue'
 
 function resizeTo(width: number): void {

@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
+import { render } from '@testing-library/vue'
 import { createUiKitPlugin } from '@/plugin'
 import BaseIcon from '../ui/BaseIcon.vue'
 

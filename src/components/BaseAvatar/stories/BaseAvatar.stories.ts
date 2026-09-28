@@ -6,6 +6,7 @@
  */
 
 import { expect, fn, waitFor } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -16,9 +17,8 @@ import {
 	STORY_USERS,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import { BaseIcon } from '@components/BaseIcon'
-import { AVATAR_SHAPES, AVATAR_VARIANTS } from '../model/BaseAvatar.types'
 import BaseAvatar from '../ui/BaseAvatar.vue'
+import { AVATAR_SHAPES, AVATAR_VARIANTS } from '../model/BaseAvatar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const [anna, ivan, maria, oleg] = STORY_USERS

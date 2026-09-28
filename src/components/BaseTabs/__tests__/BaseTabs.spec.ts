@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { render, screen } from '@testing-library/vue'
 
 /** Мок ResizeObserver для jsdom */
 global.ResizeObserver = class ResizeObserver {

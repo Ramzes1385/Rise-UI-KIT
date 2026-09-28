@@ -54,9 +54,9 @@
 <script setup lang="ts">
 import { ref, useId, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseSplitter.style.scss'
 import type { BaseSplitterEmits, BaseSplitterProps, BaseSplitterSlots } from '../model/BaseSplitter.types'
 

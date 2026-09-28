@@ -37,9 +37,9 @@
 import { computed } from 'vue'
 import { getLocale } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
 import { calcIconScale } from '@utils/iconUtils'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTimeline.style.scss'
 import type { BaseTimelineProps, BaseTimelineSlots } from '../model/BaseTimeline.types'
 

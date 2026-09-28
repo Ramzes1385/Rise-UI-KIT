@@ -1,7 +1,7 @@
 /** Утилиты: нумерация строк, стилизация колонок и сортировка значений таблицы */
 
-import type { ColumnStyleOptions, RowNumberOptions, TableSortKey } from './tableUtils.types'
 import type { SortDirection, SortType } from '@components/BaseTable/model/BaseTable.types'
+import type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSortKey } from './tableUtils.types'
 
 /** numeric: «Item 2» < «Item 10», а числа в строковой колонке сравниваются как числа, а не посимвольно */
 const SORT_COLLATOR = new Intl.Collator(undefined, { numeric: true })
@@ -34,13 +34,9 @@ function getColumnStyle(options: ColumnStyleOptions): Record<string, string> {
 	return styles
 }
 
-/** Рассчитать общее количество колонок с учётом доп. столбцов */
-function calcTotalColumns(visibleCount: number, isSelectable: boolean, hasRowNumber: boolean, hasExpandableRows: boolean): number {
-	let count = visibleCount
-	if (isSelectable) count++
-	if (hasRowNumber) count++
-	if (hasExpandableRows) count++
-	return count
+/** Число колонок таблицы: видимые колонки и служебные (выбор, номер строки, раскрытие) */
+function calcTotalColumns(visibleCount: number, service: TableServiceColumns): number {
+	return visibleCount + [service.isSelectable, service.hasRowNumber, service.hasExpandableRows].filter(Boolean).length
 }
 
 /** Рассчитать ширины колонок для colgroup с учётом flex */

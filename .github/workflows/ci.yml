@@ -31,6 +31,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Stylelint
+        run: npm run lint:styles
+
+      - name: Format check
+        run: npm run format:check
+
       # vue-tsc -b: исходники вместе с тестами и stories (tsconfig.app.json) и конфиги сборки (tsconfig.node.json).
       # Сборка ниже проверяет только tsconfig.lib.json (без *.spec.ts), поэтому ошибки типов в тестах туда не попадают.
       - name: Type check (app, tests, build configs)

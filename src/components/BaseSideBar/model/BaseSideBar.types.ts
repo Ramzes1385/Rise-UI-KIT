@@ -1,6 +1,6 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { PaddingProp } from '@composables/usePadding'
 import type { Component } from 'vue'
+import type { PaddingProp } from '@composables/usePadding'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты отображения сайдбара */
 export const SIDEBAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

@@ -33,12 +33,12 @@
 import { computed, ref } from 'vue'
 import { UI_RATING } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormDisabled } from '@composables/useFormContext'
 import { useFormField } from '@composables/useFormField'
-import '../styles/BaseRating.style.scss'
+import { useFormDisabled } from '@composables/useFormContext'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
+import '../styles/BaseRating.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../model/BaseRating.types'
 
 const props = withDefaults(

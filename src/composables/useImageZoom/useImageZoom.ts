@@ -5,6 +5,12 @@ import { useScrollLock } from '@composables/useScrollLock'
 import { MINIMAP_HEIGHT, MINIMAP_WIDTH, useZoomMinimap } from './useZoomMinimap'
 import type { UseImageZoomOptions } from './useImageZoom.types'
 
+/** Ширина и высота, px */
+interface Size {
+	width: number
+	height: number
+}
+
 /** Поворот за одно нажатие, градусы */
 const ROTATION_STEP_DEG = 90
 const FULL_TURN_DEG = 360
@@ -38,22 +44,18 @@ function useImageZoom(options: UseImageZoomOptions) {
 		transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${currentScale.value}) rotate(${rotation.value}deg)`,
 	}))
 
-	function calcContain(
-		natW: number,
-		natH: number,
-		elW: number,
-		elH: number,
-	): { width: number; height: number; offX: number; offY: number } {
-		const imgAspect = natW / natH
-		const elAspect = elW / elH
+	/** Изображение, вписанное в рамку с сохранением пропорций (object-fit: contain): размер и отступы внутри рамки */
+	function calcContain(natural: Size, frame: Size): { width: number; height: number; offX: number; offY: number } {
+		const imgAspect = natural.width / natural.height
+		const elAspect = frame.width / frame.height
 		if (imgAspect > elAspect) {
-			const width = elW
-			const height = elW / imgAspect
-			return { width, height, offX: 0, offY: (elH - height) / 2 }
+			const width = frame.width
+			const height = frame.width / imgAspect
+			return { width, height, offX: 0, offY: (frame.height - height) / 2 }
 		}
-		const height = elH
-		const width = elH * imgAspect
-		return { width, height, offX: (elW - width) / 2, offY: 0 }
+		const height = frame.height
+		const width = frame.height * imgAspect
+		return { width, height, offX: (frame.width - width) / 2, offY: 0 }
 	}
 
 	function clampPosition(): void {
@@ -89,13 +91,19 @@ function useImageZoom(options: UseImageZoomOptions) {
 		const minimapImg = options.getMinimapImgEl?.()
 
 		if (zoomImg && zoomImg instanceof HTMLImageElement && zoomImg.naturalWidth > 0) {
-			const contained = calcContain(zoomImg.naturalWidth, zoomImg.naturalHeight, zoomImg.offsetWidth, zoomImg.offsetHeight)
+			const contained = calcContain(
+				{ width: zoomImg.naturalWidth, height: zoomImg.naturalHeight },
+				{ width: zoomImg.offsetWidth, height: zoomImg.offsetHeight },
+			)
 			zoomContentW.value = contained.width
 			zoomContentH.value = contained.height
 		}
 
 		if (minimapImg && minimapImg instanceof HTMLImageElement && minimapImg.naturalWidth > 0) {
-			const contained = calcContain(minimapImg.naturalWidth, minimapImg.naturalHeight, MINIMAP_WIDTH, MINIMAP_HEIGHT)
+			const contained = calcContain(
+				{ width: minimapImg.naturalWidth, height: minimapImg.naturalHeight },
+				{ width: MINIMAP_WIDTH, height: MINIMAP_HEIGHT },
+			)
 			mmContentWidth.value = contained.width
 			mmContentHeight.value = contained.height
 			mmContentOffsetX.value = contained.offX

@@ -6,11 +6,11 @@
  * клавиатура.
  */
 
-import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { RANGE_VARIANTS } from '../model/BaseRange.types'
 import BaseRange from '../ui/BaseRange.vue'
+import { RANGE_VARIANTS } from '../model/BaseRange.types'
 import type { RangeMark } from '../model/BaseRange.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

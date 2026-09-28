@@ -5,8 +5,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import ChatSlideover from '../ui/ChatSlideover/ChatSlideover.vue'
 import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
 

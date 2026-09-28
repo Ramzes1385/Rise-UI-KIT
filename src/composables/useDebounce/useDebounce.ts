@@ -11,8 +11,9 @@ import { customRef, onBeforeUnmount } from 'vue'
  * watch(debouncedQuery, (val) => { emit('search', val) })
  * ```
  */
-function useDebounce<T>(value: T, delay: number) {
+function useDebounce<T>(initialValue: T, delay: number) {
 	let timeout: ReturnType<typeof setTimeout> | null = null
+	let value = initialValue
 
 	const debouncedRef = customRef<T>((track, trigger) => {
 		return {

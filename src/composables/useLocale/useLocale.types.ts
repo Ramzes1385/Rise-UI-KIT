@@ -1,6 +1,6 @@
+import type { ComputedRef } from 'vue'
 import type { LocaleInput } from '@/locales/state'
 import type { PluralForms, UiKitLocale } from '@/locales/types'
-import type { ComputedRef } from 'vue'
 
 /** Язык кита и форматирование по его правилам */
 export interface UseLocaleReturn {

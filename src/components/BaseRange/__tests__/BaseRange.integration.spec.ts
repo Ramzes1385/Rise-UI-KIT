@@ -3,8 +3,8 @@
  * Проверяют взаимодействие: клик по треку, перетаскивание, клавиатура.
  */
 
-import { fireEvent, render } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
+import { fireEvent, render } from '@testing-library/vue'
 import { BaseText } from '@components/BaseText'
 import '@testing-library/jest-dom/vitest'
 import { BaseTooltip } from '@components/BaseTooltip'

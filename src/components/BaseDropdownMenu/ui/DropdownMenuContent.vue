@@ -107,11 +107,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
-import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { calcIconScale } from '@utils/iconUtils'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { findTypeaheadIndex, toMenuGroups } from '@utils/menuUtils'
 import type { DropdownMenuItem, DropdownMenuItems, DropdownMenuVariant } from '../model/BaseDropdownMenu.types'
 
@@ -340,12 +340,17 @@ function handlePointerMove(item: DropdownMenuItem, key: string, event: PointerEv
 	}, SUBMENU_HOVER_DELAY)
 }
 
+/** Откуда отсчитывать сдвиг: от пункта в фокусе или, если его нет, из-за края списка */
+function focusOrigin(offset: number, count: number): number {
+	const index = currentIndex()
+	if (index !== -1) return index
+	return offset > 0 ? -1 : count
+}
+
 function moveFocus(offset: number): void {
 	const count = navigable.value.length
 	if (!count) return
-	const index = currentIndex()
-	const start = index === -1 ? (offset > 0 ? -1 : count) : index
-	focusAt((start + offset + count) % count)
+	focusAt((focusOrigin(offset, count) + offset + count) % count)
 }
 
 function handleTypeahead(char: string): void {

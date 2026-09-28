@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { PaddingProp } from '@composables/usePadding'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Типы кнопки */
 export const BUTTON_TYPES = ['button', 'submit', 'reset'] as const

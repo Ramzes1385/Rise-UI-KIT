@@ -4,12 +4,12 @@
  * Разделы: Default (лента в прокручиваемом блоке) → кнопка «Загрузить еще» → ошибка и повтор → клавиатура.
  */
 
-import { expect, fn, waitFor } from 'storybook/test'
 import { ref } from 'vue'
+import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseInfiniteScroll from '../ui/BaseInfiniteScroll.vue'
-import type { InfiniteScrollLoadEvent } from '../model/BaseInfiniteScroll.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { InfiniteScrollLoadEvent } from '../model/BaseInfiniteScroll.types'
 
 /** Сколько заказов в одной подгрузке и всего */
 const PAGE = 10

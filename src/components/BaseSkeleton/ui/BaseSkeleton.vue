@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BaseSkeleton.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSkeletonProps } from '../model/BaseSkeleton.types'
 
 // Заглушка декоративная (aria-hidden): о загрузке сообщает контейнер (aria-busy) или текст статуса, а не скелетон.

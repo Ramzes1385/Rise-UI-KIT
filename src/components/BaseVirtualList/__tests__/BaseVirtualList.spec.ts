@@ -4,8 +4,8 @@
  */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { nextTick, ref } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseVirtualList from '../ui/BaseVirtualList.vue'
 import type { BaseVirtualListExpose } from '../model/BaseVirtualList.types'
 

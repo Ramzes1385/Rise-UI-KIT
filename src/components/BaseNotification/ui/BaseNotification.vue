@@ -83,13 +83,13 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import { kitDefaults } from '@composables/useDefaults'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { calcIconScale } from '@utils/iconUtils'
+import { BaseButton } from '@components/BaseButton'
+import { kitDefaults } from '@composables/useDefaults'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseNotification.style.scss'
 import type {
 	BaseNotificationEmits,

@@ -35,20 +35,50 @@ function getViewport(): Size {
 	return { width: root.clientWidth || window.innerWidth, height: root.clientHeight || window.innerHeight }
 }
 
+/** Всё для расчёта позиции: прямоугольник триггера, размер панели, окно и отступ панели от триггера */
+interface Geometry {
+	rect: DOMRect
+	size: Size
+	viewport: Size
+	gap: number
+}
+
+/** Край триггера вдоль стороны, у которой стоит панель: начало, конец и середина */
+interface Edge {
+	start: number
+	end: number
+	middle: number
+}
+
+function horizontalEdge(rect: DOMRect): Edge {
+	return { start: rect.left, end: rect.right, middle: rect.left + rect.width / 2 }
+}
+
+function verticalEdge(rect: DOMRect): Edge {
+	return { start: rect.top, end: rect.bottom, middle: rect.top + rect.height / 2 }
+}
+
+/** Начало панели вдоль края: у начала края, у конца или по центру */
+function alignAlong(align: Align, edge: Edge, size: number): number {
+	if (align === 'start') return edge.start
+	if (align === 'end') return edge.end - size
+	return edge.middle - size / 2
+}
+
 /** Левый верхний угол панели для стороны и выравнивания относительно триггера */
-function place(rect: DOMRect, side: Side, align: Align, size: Size, gap: number): { top: number; left: number } {
+function place(geometry: Geometry, side: Side, align: Align): { top: number; left: number } {
+	const { rect, size, gap } = geometry
 	if (side === 'top' || side === 'bottom') {
 		const top = side === 'bottom' ? rect.bottom + gap : rect.top - gap - size.height
-		const left = align === 'start' ? rect.left : align === 'end' ? rect.right - size.width : rect.left + rect.width / 2 - size.width / 2
-		return { top, left }
+		return { top, left: alignAlong(align, horizontalEdge(rect), size.width) }
 	}
 	const left = side === 'right' ? rect.right + gap : rect.left - gap - size.width
-	const top = align === 'start' ? rect.top : align === 'end' ? rect.bottom - size.height : rect.top + rect.height / 2 - size.height / 2
-	return { top, left }
+	return { top: alignAlong(align, verticalEdge(rect), size.height), left }
 }
 
 /** Помещается ли панель со стороны триггера */
-function fits(side: Side, rect: DOMRect, size: Size, gap: number, viewport: Size): boolean {
+function fits(geometry: Geometry, side: Side): boolean {
+	const { rect, size, gap, viewport } = geometry
 	switch (side) {
 		case 'bottom':
 			return viewport.height - rect.bottom - gap >= size.height + VIEWPORT_MARGIN
@@ -111,11 +141,12 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		let { side } = parsePosition(position())
 
 		const isMeasured = size.width > 0 && size.height > 0
-		if (isMeasured && !fits(side, rect, size, gapValue, viewport) && fits(OPPOSITE[side], rect, size, gapValue, viewport)) {
+		const geometry: Geometry = { rect, size, viewport, gap: gapValue }
+		if (isMeasured && !fits(geometry, side) && fits(geometry, OPPOSITE[side])) {
 			side = OPPOSITE[side]
 		}
 
-		let { top, left } = place(rect, side, align, size, gapValue)
+		let { top, left } = place(geometry, side, align)
 		if (isMeasured) {
 			if (side === 'top' || side === 'bottom') left = clamp(left, VIEWPORT_MARGIN, viewport.width - size.width - VIEWPORT_MARGIN)
 			else top = clamp(top, VIEWPORT_MARGIN, viewport.height - size.height - VIEWPORT_MARGIN)
