@@ -60,62 +60,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { UI_CALENDAR } from '@/locales/messages'
 import { formatPopoverDate } from '@utils/dateUtils'
-import { useClickOutside } from '@composables/useClickOutside'
+import { useBaseCalendarDays } from '../model/useBaseCalendarDays'
 import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../types/BaseCalendarDays.types'
 
 const props = defineProps<BaseCalendarDaysProps>()
 
 const emit = defineEmits<BaseCalendarDaysEmits>()
 
-const slots = defineSlots<BaseCalendarDaysSlots>()
+defineSlots<BaseCalendarDaysSlots>()
 
-const popoverRef = ref<HTMLElement | null>(null)
-
-useClickOutside({
-	targets: [popoverRef],
-	callback: () => props.closePopover(),
-	isActive: () => !!props.popoverDate,
-	isCapture: true,
-})
-
-/** Слот day заменяет содержимое ячейки: тогда имя кнопки даёт содержимое слота, а не полная дата */
-const hasDaySlot = computed((): boolean => !!slots.day)
-
-/** Полная дата для доступного имени дня: один форматтер на локаль, а не toLocaleDateString на каждую ячейку */
-const dayLabelFormat = computed(
-	() => new Intl.DateTimeFormat(props.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
-)
-
-/** Состояние ячеек сетки: считается один раз на перерисовку, а не отдельными вызовами из шаблона */
-/** Выравнивание popover по колонке: слева направо от ячейки, справа — налево, в середине — по центру */
-function popoverClassFor(column: number): string | undefined {
-	if (column < 3) return 'base-calendar__popover--start'
-	if (column > 3) return 'base-calendar__popover--end'
-	return undefined
-}
-
-const cells = computed(() =>
-	props.calendarDays.map((date, index) => {
-		const dayClassMap = props.dayClasses(date, hasDaySlot.value)
-		const highlight = props.getHighlight(date)
-		const label = dayLabelFormat.value.format(date)
-		const column = index % 7
-		return {
-			key: index,
-			date,
-			popoverClass: popoverClassFor(column),
-			classes: dayClassMap,
-			weekNumber: props.showWeekNumber && index % 7 === 0 ? props.getRowWeekNumber(index) : null,
-			isToday: props.isToday(date),
-			isDisabled: props.isDayDisabled(date),
-			// Выбранный день, концы и дни внутри диапазона — «нажатые» кнопки (только в текущем месяце, как и подсветка)
-			isPressed: !!(dayClassMap['base-calendar__day--selected'] || dayClassMap['base-calendar__day--range']),
-			highlight,
-			label: highlight?.label ? `${label}, ${highlight.label}` : label,
-		}
-	}),
-)
+const { popoverRef, hasDaySlot, cells } = useBaseCalendarDays(props)
 </script>

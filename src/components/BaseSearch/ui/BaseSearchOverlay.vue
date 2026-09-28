@@ -98,19 +98,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
-import { useEscapeKey } from '@composables/useEscapeKey'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { useScrollLock } from '@composables/useScrollLock'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
+import { useBaseSearchOverlay } from '../model/useBaseSearchOverlay'
 import type {
 	BaseSearchOverlayEmits,
 	BaseSearchOverlayExpose,
@@ -118,57 +113,34 @@ import type {
 	BaseSearchOverlaySlots,
 } from '../types/BaseSearchOverlay.types'
 
-/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
-const teleportTarget = useTeleportTarget()
-
 const props = defineProps<BaseSearchOverlayProps>()
 
 const emit = defineEmits<BaseSearchOverlayEmits>()
 
 defineSlots<BaseSearchOverlaySlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle } = useStandardBaseComponent('base-search', props)
+const {
+	teleportTarget,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	isOpen,
+	layerStyle,
+	inputRef,
+	prefix,
+	overlayClass,
+	panelClass,
+	headerClass,
+	inputClass,
+	closeBtnClass,
+	closeBtnCustomClass,
+	closeIconCustomClass,
+	resultsClass,
+	open,
+	close,
+	exposed,
+} = useBaseSearchOverlay(props, emit)
 
-const isOpen = ref(false)
-const layerStyle = useLayerIndex(() => isOpen.value)
-const inputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
-
-const { lock: lockScroll, unlock: unlockScroll } = useScrollLock()
-
-useEscapeKey({
-	isActive: () => isOpen.value,
-	callback: () => close(),
-})
-
-const prefix = computed(() => props.panel)
-
-const overlayClass = computed(() => `base-search__${prefix.value}-overlay`)
-const panelClass = computed(() => [`base-search__${prefix.value}`, props.classes[prefix.value]])
-const headerClass = computed(() => [`base-search__${prefix.value}-header`, props.classes[`${prefix.value}Header`]])
-const inputClass = computed(() => props.classes[`${prefix.value}Input`])
-const closeBtnClass = computed(() => `base-search__${prefix.value}-close`)
-const closeBtnCustomClass = computed(() => props.classes[`${prefix.value}Close`])
-const closeIconCustomClass = computed(() => props.classes[`${prefix.value}CloseIcon`])
-const resultsClass = computed(() => [`base-search__${prefix.value}-results`, props.classes[`${prefix.value}Results`]])
-
-function open(): void {
-	if (props.isDisabled) return
-	isOpen.value = true
-	lockScroll()
-	nextTick(() => {
-		inputRef.value?.focus()
-	})
-}
-
-function close(): void {
-	isOpen.value = false
-	unlockScroll()
-	emit('close')
-}
-
-function focus(): void {
-	inputRef.value?.focus()
-}
-
-defineExpose<BaseSearchOverlayExpose>({ focus, open, close })
+defineExpose<BaseSearchOverlayExpose>(exposed)
 </script>

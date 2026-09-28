@@ -101,11 +101,11 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { useBaseSelectDropdown } from '../model/useBaseSelectDropdown'
 import type { BaseSelectDropdownEmits, BaseSelectDropdownProps, BaseSelectDropdownSlots } from '../types/BaseSelectDropdown.types'
 
 const props = defineProps<BaseSelectDropdownProps>()
@@ -116,23 +116,5 @@ defineSlots<BaseSelectDropdownSlots>()
 
 const searchQuery = defineModel<string>('searchQuery', { default: '' })
 
-const listRef = ref<HTMLElement | null>(null)
-const searchRef = ref<HTMLInputElement | null>(null)
-
-/** Панель с поиском открылась — фокус сразу в поле поиска: можно печатать запрос, стрелки и Enter управляют списком */
-onMounted(() => {
-	searchRef.value?.focus({ preventScroll: true })
-})
-
-/** Активная опция, выбранная стрелками, прокручивается в видимую область списка */
-watch(
-	() => props.activeIndex,
-	async index => {
-		if (index < 0) return
-		await nextTick()
-		const option = listRef.value?.children.item(index)
-		// scrollIntoView нет в jsdom — вызов необязательный
-		option?.scrollIntoView?.({ block: 'nearest' })
-	},
-)
+const { listRef, searchRef } = useBaseSelectDropdown(props)
 </script>

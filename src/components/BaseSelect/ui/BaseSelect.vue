@@ -166,20 +166,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseBadge } from '@components/BaseBadge'
-import { useSelect } from '@composables/useSelect'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import '../styles/BaseSelect.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSelect } from '../model/useBaseSelect'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
 import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../types/BaseSelect.types'
 
@@ -197,76 +194,25 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
-const resolvedPlaceholder = computed(() => props.placeholder ?? UI_TEXT.SELECT_PLACEHOLDER)
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
-	'root',
-	'dropdown',
-	'label',
-	'required',
-	'trigger',
-	'values',
-	'tag',
-	'tagText',
-	'tagClose',
-	'placeholder',
-	'icon',
-	'valueText',
-	'arrow',
-	'errorText',
-	'dropdownContent',
-	'search',
-	'searchInput',
-	'options',
-	'option',
-	'checkbox',
-	'optionIcon',
-	'optionContent',
-	'optionLabel',
-	'optionDesc',
-	'noResults',
-])
-
 const emit = defineEmits<BaseSelectEmits>()
 defineSlots<BaseSelectSlots>()
 
-/** id подписи, ошибки и списка: подпись — имя триггера, ошибка — его описание, список — его popup (aria-controls) */
-const baseId = useId()
-const labelId = `${baseId}-label`
-const errorId = `${baseId}-error`
-const listboxId = `${baseId}-listbox`
-
-/** id опции по индексу в отфильтрованном списке — для aria-activedescendant */
-function getOptionId(index: number): string {
-	return `${listboxId}-option-${index}`
-}
-
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-/** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы не блокирует combobox на div) */
-const isControlDisabled = useFormDisabled(() => props.isDisabled)
-
-/**
- * Триггер и BaseFormField вокруг: подпись обёртки называет триггер через aria-labelledby (`for` к div не применим),
- * её описание или ошибка — в aria-describedby, aria-invalid и aria-required
- */
-const control = useFieldControl({
-	isLabelable: false,
-	describedBy: () => (formField.error ? errorId : undefined),
-	hasError: () => Boolean(formField.error),
-	isRequired: () => props.isRequired,
-})
-
-const triggerLabelledBy = computed(() => (props.label ? labelId : control.fieldLabelId.value))
-
-const selectRef = ref<HTMLDivElement | null>(null)
-
 const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	labelId,
+	errorId,
+	listboxId,
+	formField,
+	isControlDisabled,
+	control,
+	getOptionId,
+	triggerLabelledBy,
+	resolvedPlaceholder,
+	selectRef,
 	isOpen,
 	searchQuery,
 	activeIndex,
@@ -275,110 +221,18 @@ const {
 	selectedItems,
 	selectedLabels,
 	filteredOptions,
-	openDropdown,
 	toggleDropdown,
 	handleClose,
 	isSelected,
 	handleSelect,
-	selectActive,
-	moveActive,
-	setActiveEdge,
 	setActive,
-	typeaheadActive,
-	isTypingAhead,
 	removeValue,
-} = useSelect({
-	props,
-	emit,
-	onBlur: formField.onBlur,
-	isDisabled: () => isControlDisabled.value,
-})
+	hasTags,
+	focusTrigger,
+	handleTriggerKeydown,
+	handleSearchKeydown,
+	exposed,
+} = useBaseSelect(props, emit)
 
-/** В мультивыборе есть выбранные значения — они показаны бейджами */
-const hasTags = computed(() => props.isMultiple && Array.isArray(props.modelValue) && props.modelValue.length > 0)
-
-function focusTrigger(): void {
-	if (!isControlDisabled.value) selectRef.value?.focus()
-}
-
-/** Печатный символ без модификаторов — для поиска по буквам */
-function isPrintableKey(event: KeyboardEvent): boolean {
-	return event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey
-}
-
-/**
- * Клавиатура на триггере по APG «select-only combobox»: Enter/Space открывают список или выбирают активную опцию,
- * стрелки открывают список и двигают активную опцию, Home/End открывают список на первой/последней опции,
- * буквы открывают список и ищут опцию по началу подписи (без поля поиска), Tab закрывает список.
- * Escape закрывает BaseDropdown.
- */
-function handleTriggerKeydown(event: KeyboardEvent): void {
-	if (isControlDisabled.value) return
-	// Пробел посреди набираемого слова — часть поиска, а не выбор
-	if (event.key === ' ' && isTypingAhead()) {
-		event.preventDefault()
-		typeaheadActive(' ')
-		return
-	}
-	switch (event.key) {
-		case 'Enter':
-		case ' ':
-			event.preventDefault()
-			if (isOpen.value && activeIndex.value >= 0) selectActive()
-			else toggleDropdown()
-			break
-		case 'ArrowDown':
-		case 'ArrowUp':
-			event.preventDefault()
-			if (isOpen.value) moveActive(event.key === 'ArrowDown' ? 1 : -1)
-			else openDropdown()
-			break
-		case 'Home':
-		case 'End':
-			event.preventDefault()
-			openDropdown()
-			setActiveEdge(event.key === 'Home' ? 'first' : 'last')
-			break
-		case 'Tab':
-			if (isOpen.value) closeDropdown()
-			break
-		default:
-			if (props.isSearchable || !isPrintableKey(event)) return
-			event.preventDefault()
-			openDropdown()
-			typeaheadActive(event.key)
-	}
-}
-
-/**
- * Клавиши в поле поиска панели: стрелки двигают активную опцию, Enter выбирает её, Tab закрывает список
- * (фокус возвращается на триггер); остальное — ввод текста.
- */
-function handleSearchKeydown(event: KeyboardEvent): void {
-	if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-		event.preventDefault()
-		moveActive(event.key === 'ArrowDown' ? 1 : -1)
-	} else if (event.key === 'Enter') {
-		event.preventDefault()
-		selectActive()
-	} else if (event.key === 'Tab') {
-		event.preventDefault()
-		closeDropdown()
-	}
-}
-
-/** Закрытие с клавиатуры: как закрытие кликом снаружи — сброс поиска и проверка обязательности */
-function closeDropdown(): void {
-	isOpen.value = false
-	handleClose()
-}
-
-defineExpose({
-	rootRef: selectRef,
-	selectRef,
-	focus: () => selectRef.value?.focus(),
-	blur: () => selectRef.value?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

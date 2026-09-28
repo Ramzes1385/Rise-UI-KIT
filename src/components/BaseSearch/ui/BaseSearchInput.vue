@@ -45,14 +45,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { useBaseSearchInput } from '../model/useBaseSearchInput'
 import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
 /**
@@ -63,39 +62,7 @@ const props = defineProps<BaseSearchInputProps>()
 
 const emit = defineEmits<BaseSearchInputEmits>()
 
-const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
+const { inputRef, handleInput, handleKeydown, handleFocus, handleBlur, handleClear, exposed } = useBaseSearchInput(props, emit)
 
-/** Поле — combobox (APG «combobox with listbox popup»): атрибуты ставятся на сам <input> внутри BaseInput */
-useTriggerAttributes(
-	() => inputRef.value?.$el as HTMLElement | undefined,
-	() => props.comboboxAttributes ?? {},
-)
-
-function handleInput(value: string): void {
-	emit('update:modelValue', value)
-}
-
-function handleKeydown(e: KeyboardEvent): void {
-	emit('keydown', e)
-}
-
-function handleFocus(): void {
-	emit('focus')
-}
-
-function handleBlur(): void {
-	emit('blur')
-}
-
-function handleClear(): void {
-	emit('clear')
-}
-
-function focus(): void {
-	inputRef.value?.focus()
-}
-
-defineExpose<BaseSearchInputExpose>({
-	focus,
-})
+defineExpose<BaseSearchInputExpose>(exposed)
 </script>

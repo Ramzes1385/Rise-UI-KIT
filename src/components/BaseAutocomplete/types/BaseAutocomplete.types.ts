@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
@@ -79,3 +80,5 @@ export interface BaseAutocompleteSlots {
 	/** Текст, когда ничего не найдено */
 	empty?: () => unknown
 }
+
+export type AutocompleteProps = PropsWithDefaults<BaseAutocompleteProps, 'modelValue'>

@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const SEARCH_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
@@ -109,3 +110,8 @@ export interface BaseSearchSlots {
 	/** Состояние загрузки */
 	loading?: () => unknown
 }
+
+export type SearchProps = PropsWithDefaults<
+	BaseSearchProps,
+	'modelValue' | 'mode' | 'results' | 'isRemote' | 'isInstant' | 'debounceMs' | 'maxResults' | 'isAutofocus'
+>

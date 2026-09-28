@@ -83,8 +83,8 @@ import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseImage } from '@components/BaseImage'
 import { getSearchOptionId } from '../model/searchOptionId'
-import type { SearchResult } from '../types/BaseSearch.types'
-import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots, TextPart } from '../types/BaseSearchResults.types'
+import { useBaseSearchResults } from '../model/useBaseSearchResults'
+import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../types/BaseSearchResults.types'
 
 const props = defineProps<BaseSearchResultsProps>()
 
@@ -92,31 +92,5 @@ const emit = defineEmits<BaseSearchResultsEmits>()
 
 defineSlots<BaseSearchResultsSlots>()
 
-/**
- * Делит текст на части по вхождениям запроса без учёта регистра. Если запрос пуст или нижний регистр меняет
- * длину строки (редкие символы вроде «İ»), индексы не совпали бы с исходным текстом — текст возвращается целиком.
- */
-function splitByQuery(text: string): TextPart[] {
-	const query = props.query.trim().toLowerCase()
-	const lowerText = text.toLowerCase()
-	if (!query || lowerText.length !== text.length) return [{ text, isMatch: false }]
-
-	const parts: TextPart[] = []
-	let from = 0
-	for (let index = lowerText.indexOf(query); index !== -1; index = lowerText.indexOf(query, from)) {
-		if (index > from) parts.push({ text: text.slice(from, index), isMatch: false })
-		parts.push({ text: text.slice(index, index + query.length), isMatch: true })
-		from = index + query.length
-	}
-	if (from < text.length) parts.push({ text: text.slice(from), isMatch: false })
-	return parts
-}
-
-function handleSelect(item: SearchResult): void {
-	emit('select', item)
-}
-
-function handleHighlight(index: number): void {
-	emit('highlight', index)
-}
+const { splitByQuery, handleSelect, handleHighlight } = useBaseSearchResults(props, emit)
 </script>

@@ -105,73 +105,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import './DatePickerPanel.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { BaseCalendar } from '@components/BaseCalendar'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { useDatePickerPanelNavigation } from '@composables/useDatePickerPanelNavigation'
+import { useDatePickerPanel } from '../../model/useDatePickerPanel'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
-import { pickDatePickerCalendarConfig, toBaseCalendarProps, withoutTimeBlock } from '../../model/datePickerCalendarConfig'
 import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../types/DatePickerPanel.types'
 
-/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
-const teleportTarget = useTeleportTarget()
-
 const props = defineProps<DatePickerPanelProps>()
-const { resolveBooleanPropDefault } = useExplicitPropDetection()
-
-const resolvedProps = computed(() => ({
-	isOpen: props.isOpen ?? false,
-	selectionMode: props.selectionMode ?? 'single',
-	calendarVariant: props.calendarVariant ?? 'ghost',
-	sizeScale: props.sizeScale ?? 100,
-	selectedDates: props.selectedDates ?? [],
-	monthsCount: props.monthsCount ?? 1,
-	panelStyle: props.panelStyle ?? {},
-	theme: props.theme ?? null,
-}))
 
 const emit = defineEmits<DatePickerPanelEmits>()
 
-/** Место панели среди открытых слоёв: календарь в окне — над окном */
-const layerStyle = useLayerIndex(() => resolvedProps.value.isOpen)
-
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'header',
-		'navGroupPrev',
-		'navGroupNext',
-		'navBtn',
-		'navBtnDouble',
-		'navIcon',
-		'yearTitle',
-		'yearText',
-		'calendar',
-	],
-})
-
-/** Ref на элемент панели (для useClickOutside из родителя) */
-const panelRef = ref<HTMLElement | null>(null)
-
-const resolvedCalendarConfig = computed(
-	() =>
-		props.calendarConfig ??
-		pickDatePickerCalendarConfig({
-			...props,
-			is24Hour: resolveBooleanPropDefault('is24Hour', props.is24Hour, true),
-		}),
-)
-
 const {
+	teleportTarget,
+	resolvedProps,
+	layerStyle,
+	classes,
+	panelRef,
 	safeMonthsCount,
 	displayYear,
 	monthItems,
@@ -181,40 +134,15 @@ const {
 	handleNextRange,
 	handlePrevYear,
 	handleNextYear,
-} = useDatePickerPanelNavigation({
-	isOpen: () => props.isOpen,
-	modelValue: () => props.modelValue,
-	modelValueEnd: () => props.modelValueEnd,
-	selectedDates: () => resolvedProps.value.selectedDates,
-	monthsCount: () => resolvedProps.value.monthsCount,
-})
+	resolvedCalendarConfig,
+	calendarBindings,
+	secondaryCalendarBindings,
+	handleModelUpdate,
+	handleModelEndUpdate,
+	handleSelectedUpdate,
+	handleRangeSelect,
+	exposed,
+} = useDatePickerPanel(props, emit)
 
-/** Props BaseCalendar (single/multiple): год и «Сегодня» — только в одиночном месяце */
-const calendarBindings = computed(() =>
-	toBaseCalendarProps(resolvedCalendarConfig.value, {
-		showYear: safeMonthsCount.value === 1,
-		showTodayButton: safeMonthsCount.value === 1,
-	}),
-)
-
-/** Календари после первого — без блока времени: он один на всё значение */
-const secondaryCalendarBindings = computed(() => withoutTimeBlock(calendarBindings.value))
-
-function handleModelUpdate(value: Date | null): void {
-	emit('model-update', value)
-}
-
-function handleModelEndUpdate(value: Date | null): void {
-	emit('model-end-update', value)
-}
-
-function handleSelectedUpdate(value: Date[]): void {
-	emit('selected-update', value)
-}
-
-function handleRangeSelect(start: Date, end: Date): void {
-	emit('range-select', start, end)
-}
-
-defineExpose({ panelRef })
+defineExpose(exposed)
 </script>

@@ -57,71 +57,21 @@
 
 <script setup lang="ts">
 import './DatePickerField.style.scss'
-import { computed, ref, watchPostEffect } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { useDatePickerField } from '../../model/useDatePickerField'
 import type { DatePickerFieldEmits, DatePickerFieldProps, DatePickerFieldSlots } from '../../types/DatePickerField.types'
 
 const props = defineProps<DatePickerFieldProps>()
-const { resolveBooleanPropDefault } = useExplicitPropDetection()
-
-const resolvedProps = computed(() => ({
-	label: props.label ?? '',
-	error: props.error ?? '',
-	isDisabled: props.isDisabled ?? false,
-	isReadonly: resolveBooleanPropDefault('isReadonly', props.isReadonly, true),
-	isRequired: props.isRequired ?? false,
-	isClearable: props.isClearable ?? false,
-	isOpen: props.isOpen ?? false,
-	hasValue: props.hasValue ?? false,
-	sizeScale: props.sizeScale ?? 100,
-}))
 
 const emit = defineEmits<DatePickerFieldEmits>()
 defineSlots<DatePickerFieldSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'input', 'clearBtn', 'clearIcon', 'iconBtn', 'calendarIcon'],
-})
-
-const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
-
-/**
- * isReadonly (по умолчанию true) только запрещает ручной ввод: дату выбирают в панели. Поэтому поле получает нативный
- * readonly, но не оформление readonly-поля BaseInput (приглушённый фон) — оно выглядит как обычное поле своего варианта.
- */
-watchPostEffect(() => {
-	const input = inputRef.value?.inputRef
-	if (input) input.readOnly = resolvedProps.value.isReadonly
-})
-
-function handleFieldClick(): void {
-	emit('field-click')
-}
-
-function handleClearClick(): void {
-	emit('clear-click')
-}
-
-function handleIconClick(): void {
-	emit('icon-click')
-}
-
-/**
- * Открытие с клавиатуры (Enter / ↓ / Alt+↓, как в APG date picker): поле по умолчанию readonly,
- * а кнопка-иконка исключена из Tab-порядка — без этого выбрать дату без мыши было невозможно.
- */
-function handleFieldKeydown(event: KeyboardEvent): void {
-	if (resolvedProps.value.isDisabled) return
-	if (event.key !== 'Enter' && event.key !== 'ArrowDown') return
-	// Enter в поле внутри формы иначе отправил бы форму, ↓ — прокрутил бы страницу
-	event.preventDefault()
-	emit('keyboard-open')
-}
+const { resolvedProps, classes, inputRef, handleFieldClick, handleClearClick, handleIconClick, handleFieldKeydown } = useDatePickerField(
+	props,
+	emit,
+)
 </script>

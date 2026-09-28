@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const SELECT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'underline'] as const
@@ -80,3 +81,5 @@ export interface BaseSelectSlots {
 	empty?: () => unknown
 	footer?: () => unknown
 }
+
+export type SelectProps = PropsWithDefaults<BaseSelectProps, 'modelValue' | 'isRequired'>

@@ -134,22 +134,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
-import { UI_ARIA, UI_TEXT } from '@/locales/messages'
-import { useCalendar } from '@composables/useCalendar'
-import { isolateFormField } from '@composables/useFormContext'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { useCalendarPopover } from '@composables/useCalendarPopover'
-import { useCalendarInteraction } from '@composables/useCalendarInteraction'
-import { useCalendarResolvedProps } from '@composables/useCalendarResolvedProps'
 import '../styles/BaseCalendar.style.scss'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'
+import { useBaseCalendar } from '../model/useBaseCalendar'
 import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '../types/BaseCalendar.types'
 
 // Дефолты резолвятся в useCalendarResolvedProps, а не через withDefaults:
@@ -158,45 +152,18 @@ import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '..
 // См. useCalendarResolvedProps — единый источник дефолтов.
 const props = defineProps<BaseCalendarProps>()
 
-// Поля часов и минут — служебные: они не становятся полем BaseFormField вокруг календаря (или BaseDatePicker)
-isolateFormField()
-const resolvedProps = useCalendarResolvedProps(props)
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useBaseComponent({
-	block: 'base-calendar',
-	getVariant: () => resolvedProps.value.variant,
-	getSizeScale: () => resolvedProps.value.sizeScale,
-	getColor: () => resolvedProps.value.color,
-	getClass: () => resolvedProps.value.customClass,
-	elementKeys: ['root', 'header', 'weekdays', 'grid', 'dayWrapper', 'day', 'popover', 'months', 'years', 'time', 'footer'],
-})
-
 const emit = defineEmits<BaseCalendarEmits>()
 defineSlots<BaseCalendarSlots>()
 
 const isAm = defineModel<boolean>('isAm', { default: true })
 
-const calendar = useCalendar({
-	selectionMode: () => resolvedProps.value.selectionMode,
-	modelValue: () => resolvedProps.value.modelValue,
-	modelValueEnd: () => resolvedProps.value.modelValueEnd,
-	selectedDates: () => resolvedProps.value.selectedDates,
-	minDate: () => resolvedProps.value.minDate,
-	maxDate: () => resolvedProps.value.maxDate,
-	disabledDates: () => resolvedProps.value.disabledDates,
-	disabledWeekdays: () => resolvedProps.value.disabledWeekdays,
-	disableFrom: () => resolvedProps.value.disableFrom,
-	disableTo: () => resolvedProps.value.disableTo,
-	highlights: () => resolvedProps.value.highlights,
-	weekends: () => resolvedProps.value.weekends ?? null,
-	firstDayOfWeek: () => resolvedProps.value.firstDayOfWeek,
-	locale: () => resolvedProps.value.locale,
-	initialMonth: () => resolvedProps.value.initialMonth,
-	initialYear: () => resolvedProps.value.initialYear,
-	showYear: () => resolvedProps.value.showYear,
-})
-
 const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	resolvedProps,
 	currentMonth,
 	currentYear,
 	currentView,
@@ -214,11 +181,6 @@ const {
 	isDayDisabled,
 	isWeekend,
 	getHighlight,
-	getEvents,
-	isCurrentMonth,
-	isRangeStart,
-	isRangeEnd,
-	isOutOfRange,
 	getRowWeekNumber,
 	canPrev,
 	canNext,
@@ -228,53 +190,16 @@ const {
 	selectMonth,
 	selectYear,
 	isSameDay,
-} = calendar
-
-const { popoverDate, popoverStyle, popoverHighlights, closePopover, dayClasses } = useCalendarPopover({
-	getEvents,
-	isCurrentMonth,
-	isToday,
-	isSelected,
-	isInRange,
-	isWeekend,
-	isDayDisabled,
-	isRangeStart,
-	isRangeEnd,
-	isOutOfRange,
-})
-
-const { isAmResolved, handleDayClick, toggleAmPm, handleTimeChange, handleTodayClick } = useCalendarInteraction({
-	calendar,
-	popover: {
-		popoverDate,
-		popoverStyle,
-		popoverHighlights,
-		closePopover,
-		dayClasses,
-	},
-	getSelectionMode: () => resolvedProps.value.selectionMode,
-	getShowTime: () => resolvedProps.value.showTime,
-	getIsDisabled: () => resolvedProps.value.isDisabled,
-	getShowDatePopover: () => resolvedProps.value.showDatePopover,
-	isAm,
-	emit,
-})
-
-/**
- * Диапазон выбран целиком (есть начало и конец): только тогда у концов рисуется полоса к соседним дням.
- * Пока выбрано одно начало, оно выглядит как обычный выбранный день.
- */
-const isRangeComplete = computed(
-	(): boolean => resolvedProps.value.selectionMode === 'range' && !!calendar.internalValue.value && !!calendar.internalValueEnd.value,
-)
-
-/**
- * Доступные имена кнопок навигации: в них только иконка (aria-hidden), без подписи
- * скринридер объявлял их просто «кнопка». Шаг навигации зависит от вида.
- */
-const navLabels = computed((): { prev: string; next: string } => {
-	if (currentView.value === 'months') return { prev: UI_ARIA.PREV_YEAR, next: UI_ARIA.NEXT_YEAR }
-	if (currentView.value === 'years') return { prev: UI_ARIA.PREV_YEARS, next: UI_ARIA.NEXT_YEARS }
-	return { prev: UI_ARIA.PREV_MONTH, next: UI_ARIA.NEXT_MONTH }
-})
+	popoverDate,
+	popoverHighlights,
+	closePopover,
+	dayClasses,
+	isAmResolved,
+	handleDayClick,
+	toggleAmPm,
+	handleTimeChange,
+	handleTodayClick,
+	isRangeComplete,
+	navLabels,
+} = useBaseCalendar(props, emit, isAm)
 </script>

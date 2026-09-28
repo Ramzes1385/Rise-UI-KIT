@@ -1,5 +1,6 @@
 import type { DateFormat } from '@utils/dateUtils'
 import type { InputVariant } from '@components/BaseInput'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
@@ -59,3 +60,5 @@ export interface BaseDatePickerSlots {
 	/** Кастомная иконка в инпуте */
 	icon?: () => unknown
 }
+
+export type DatePickerProps = PropsWithDefaults<BaseDatePickerProps, 'isRequired'>

@@ -46,18 +46,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
-import { useFormField } from '@composables/useFormField'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useDatePickerState } from '@composables/useDatePickerState'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseDatePicker.style.scss'
+import { useBaseDatePicker } from '../model/useBaseDatePicker'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
-import { resolveDatePickerCalendarConfig } from '../model/datePickerCalendarConfig'
 import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../types/BaseDatePicker.types'
 
 // Дефолты резолвятся через useExplicitPropDetection, а не withDefaults:
@@ -65,46 +57,17 @@ import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } fr
 // 2) календарные под-пропы (locale, firstDayOfWeek и др.) явно пробрасываются в calendarConfig
 //    только если родитель их передал — иначе дефолты конфига не перезаписываются.
 const props = defineProps<BaseDatePickerProps>()
-const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
-
-const resolvedProps = computed(() => ({
-	selectionMode: props.selectionMode ?? 'single',
-	placeholder: props.placeholder ?? UI_TEXT.SELECT_DATE,
-	dateFormat: props.dateFormat ?? 'dd.MM.yyyy',
-	inputVariant: props.inputVariant ?? 'default',
-	calendarVariant: props.calendarVariant ?? 'ghost',
-	sizeScale: props.sizeScale ?? 100,
-	isDisabled: props.isDisabled ?? false,
-	isReadonly: resolveBooleanPropDefault('isReadonly', props.isReadonly, true),
-	isRequired: props.isRequired ?? false,
-	isClearable: props.isClearable ?? false,
-	closeOnClickOutside: resolveBooleanPropDefault('closeOnClickOutside', props.closeOnClickOutside, true),
-	closeOnEscape: resolveBooleanPropDefault('closeOnEscape', props.closeOnEscape, true),
-	gap: props.gap ?? 4,
-	label: props.label ?? '',
-	error: props.error ?? '',
-	isMultiMonth: props.isMultiMonth ?? false,
-}))
-
-const formField = useFormField({
-	value: () => props.modelValue ?? null,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'field', 'panel'],
-})
 
 const emit = defineEmits<BaseDatePickerEmits>()
 defineSlots<BaseDatePickerSlots>()
 
-const calendarConfig = computed(() => resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig))
-
 const {
+	resolvedProps,
+	formField,
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	calendarConfig,
 	isOpen,
 	currentTheme,
 	wrapperRef,
@@ -123,16 +86,8 @@ const {
 	handleModelEndUpdate,
 	handleSelectedDatesUpdate,
 	handleRangeSelect,
-} = useDatePickerState({
-	props,
-	resolvedProps,
-	emit,
-	calendarConfig,
-})
+	exposed,
+} = useBaseDatePicker(props, emit)
 
-defineExpose({
-	rootRef: wrapperRef,
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

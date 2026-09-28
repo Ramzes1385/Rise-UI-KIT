@@ -122,19 +122,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
-import { getLocale, pluralize } from '@/locales/state'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { useFormField } from '@composables/useFormField'
-import { useSearchState } from '@composables/useSearchState'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BaseSearchInput from './BaseSearchInput.vue'
 import '../styles/BaseSearch.style.scss'
+import { useBaseSearch } from '../model/useBaseSearch'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
-import { getSearchOptionId } from '../model/searchOptionId'
 import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../types/BaseSearch.types'
 
 const props = withDefaults(
@@ -157,65 +152,19 @@ const props = withDefaults(
 		error: '',
 	}),
 )
-
 const emit = defineEmits<BaseSearchEmits>()
 defineSlots<BaseSearchSlots>()
 
-const rootRef = ref<HTMLElement | null>(null)
-
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-search', props, [
-	'root',
-	'trigger',
-	'icon',
-	'modalOverlay',
-	'modal',
-	'modalHeader',
-	'modalInput',
-	'clear',
-	'clearIcon',
-	'loading',
-	'modalClose',
-	'modalCloseIcon',
-	'modalResults',
-	'result',
-	'resultImage',
-	'resultIcon',
-	'resultContent',
-	'resultTitle',
-	'resultDesc',
-	'resultCategory',
-	'empty',
-	'emptyText',
-	'sidebarOverlay',
-	'sidebar',
-	'sidebarHeader',
-	'sidebarInput',
-	'sidebarClose',
-	'sidebarCloseIcon',
-	'sidebarResults',
-	'dropdown',
-	'input',
-])
-
-const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
-const overlayRef = ref<InstanceType<typeof BaseSearchOverlay> | null>(null)
-const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_TEXT.SEARCH_PLACEHOLDER)
-
-function focusActiveInput(): void {
-	if (props.mode === 'modal' || props.mode === 'sidebar') overlayRef.value?.focus()
-	else baseInputRef.value?.focus()
-}
-
-function closeOverlay(): void {
-	overlayRef.value?.close()
-}
-
 const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	rootRef,
+	baseInputRef,
+	overlayRef,
+	resolvedPlaceholder,
 	query,
 	isOpen,
 	visibleResults,
@@ -229,63 +178,11 @@ const {
 	handleBlur,
 	handleClose,
 	handleOverlayClose,
-} = useSearchState({
-	modelValue: () => props.modelValue,
-	mode: () => props.mode,
-	results: () => props.results,
-	isRemote: () => props.isRemote,
-	isInstant: () => props.isInstant,
-	debounceMs: () => props.debounceMs,
-	maxResults: () => props.maxResults,
-	isAutofocus: () => props.isAutofocus,
-	emit: {
-		search: value => emit('search', value),
-		select: item => emit('select', item),
-		updateModelValue: value => emit('update:modelValue', value),
-		clear: () => emit('clear'),
-	},
-	focusActiveInput,
-	closeOverlay,
-})
+	listboxId,
+	comboboxAttributes,
+	resultsStatus,
+	exposed,
+} = useBaseSearch(props, emit)
 
-const listboxId = `rise-search-${useId()}-listbox`
-
-/** Список результатов на экране: в режиме по умолчанию — открытая панель, в окне и панели — блок результатов */
-const hasListbox = computed((): boolean => {
-	const isShown = props.mode === 'modal' || props.mode === 'sidebar' ? shouldShowResults.value && Boolean(query.value) : isOpen.value
-	return isShown && visibleResults.value.length > 0
-})
-
-/** Поле — combobox по APG «combobox with listbox popup»: фокус в поле, подсвеченный результат — aria-activedescendant */
-const comboboxAttributes = computed(() => ({
-	role: 'combobox',
-	'aria-autocomplete': 'list',
-	'aria-expanded': hasListbox.value ? 'true' : 'false',
-	'aria-controls': hasListbox.value ? listboxId : undefined,
-	'aria-activedescendant':
-		hasListbox.value && highlightedIndex.value >= 0 ? getSearchOptionId(listboxId, highlightedIndex.value) : undefined,
-}))
-
-/** Статус для скринридера: сколько найдено по запросу; пока идёт загрузка — пусто */
-const resultsStatus = computed((): string => {
-	if (!query.value || props.isLoading) return ''
-	const count = visibleResults.value.length
-	return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
-})
-
-defineExpose({
-	rootRef,
-	focus: focusActiveInput,
-	blur: () => {
-		if (props.mode === 'modal' || props.mode === 'sidebar') {
-			if (document.activeElement instanceof HTMLElement) {
-				document.activeElement.blur()
-			}
-		} else {
-			rootRef.value?.querySelector<HTMLElement>('.base-input')?.blur()
-		}
-	},
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>
