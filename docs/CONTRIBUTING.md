@@ -482,7 +482,8 @@ src/components/BaseComponent/
 ├── ui/
 │   └── BaseComponent.vue          # Основной компонент
 ├── model/
-│   └── BaseComponent.types.ts     # Типы, интерфейсы, константы
+│   ├── BaseComponent.types.ts     # Типы, интерфейсы, константы
+│   └── useBaseComponent.ts        # Логика компонента (пилот: BaseInputNumber, BaseSplitter, BaseInplace)
 ├── styles/
 │   └── BaseComponent.style.scss   # Стили
 ├── stories/
@@ -493,6 +494,18 @@ src/components/BaseComponent/
 │   └── BaseComponent.test-utils.ts # Стабы и хелперы
 └── index.ts                       # Публичный экспорт
 ```
+
+### Логика в `model/` (пилот)
+
+В BaseInputNumber, BaseSplitter и BaseInplace `<script setup>` содержит только макросы (`defineProps`, `defineEmits`,
+`defineSlots`, `defineExpose`), импорты для шаблона и вызов `useBaseX(props, emit)` из `model/useBaseX.ts`.
+
+- Пропсы после `withDefaults` описывает тип `PropsWithDefaults<BaseXProps, 'ключи со значениями по умолчанию'>`
+  из `@composables/useDefaults`.
+- Логика делится на небольшие функции по задачам (значение, клавиатура, перетаскивание), чтобы каждая проходила пороги
+  «чистого кода» (раздел 11).
+- Composable возвращает всё, что нужно шаблону, включая template ref и методы для `defineExpose`.
+- Тесты — по-прежнему через компонент; покрытие `model/use*.ts` проверяет `npm run test:components:coverage`.
 
 ### Правила компонентов
 

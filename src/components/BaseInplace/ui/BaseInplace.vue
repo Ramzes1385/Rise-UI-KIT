@@ -34,12 +34,11 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, useId } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormDisabled } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseInplace } from '../model/useBaseInplace'
 import '../styles/BaseInplace.style.scss'
 import type { BaseInplaceEmits, BaseInplaceProps, BaseInplaceSlots } from '../model/BaseInplace.types'
 
@@ -58,66 +57,23 @@ const props = withDefaults(
 const emit = defineEmits<BaseInplaceEmits>()
 defineSlots<BaseInplaceSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-inplace', props, [
-	'root',
-	'display',
-	'field',
-])
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	hintId,
+	displayRef,
+	inputRef,
+	isEditing,
+	draft,
+	isControlDisabled,
+	actions,
+	edit,
+	handleKeydown,
+	handleBlur,
+} = useBaseInplace(props, emit)
 
-const hintId = `${useId()}-hint`
-const displayRef = ref<HTMLButtonElement | null>(null)
-const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
-const isEditing = ref(false)
-const draft = ref('')
-
-/** Блокировка: свой isDisabled или неактивная BaseForm вокруг */
-const isControlDisabled = useFormDisabled(() => props.isDisabled)
-
-/** Режим правки: поле с текущим текстом, фокус и выделение в нём */
-async function edit(): Promise<void> {
-	if (isControlDisabled.value) return
-	draft.value = props.modelValue
-	isEditing.value = true
-	await nextTick()
-	inputRef.value?.focus()
-	inputRef.value?.inputRef?.select()
-}
-
-async function finish(): Promise<void> {
-	isEditing.value = false
-	await nextTick()
-	displayRef.value?.focus()
-}
-
-async function save(): Promise<void> {
-	if (!isEditing.value) return
-	const value = draft.value.trim()
-	if (value !== props.modelValue) emit('update:modelValue', value)
-	emit('save', value)
-	await finish()
-}
-
-async function cancel(): Promise<void> {
-	if (!isEditing.value) return
-	emit('cancel')
-	await finish()
-}
-
-function handleKeydown(event: KeyboardEvent): void {
-	if (event.key === 'Enter') {
-		event.preventDefault()
-		void save()
-	} else if (event.key === 'Escape') {
-		// preventDefault: Escape отменяет правку и не закрывает окно вокруг
-		event.preventDefault()
-		void cancel()
-	}
-}
-
-function handleBlur(): void {
-	if (props.isSaveOnBlur) void save()
-	else void cancel()
-}
-
-defineExpose({ edit, save, cancel })
+defineExpose(actions)
 </script>

@@ -372,7 +372,8 @@
   `useBaseComponent` (namespace `composables`); папки `src/types` больше нет.
 - Типы для `import '@ramzes1385/rise-ui-kit/styles'` теперь в `dist/styles.d.ts` (раньше — `types/styles.d.ts` в корне пакета).
 - Новые экспорты: `TEXT_WEIGHT` из BaseText — начертания кита (400 — текст, 500 — подписи, 600 — заголовки, 700 — акценты);
-  `DEFAULT_VARIANT` и `SIZE_SCALE_DEFAULT` из composables — значения по умолчанию для своих компонентов на `useBaseComponent`.
+  `DEFAULT_VARIANT` и `SIZE_SCALE_DEFAULT` из composables — значения по умолчанию для своих компонентов на `useBaseComponent`;
+  тип `PropsWithDefaults` — пропсы после `withDefaults` для логики компонента в отдельном composable.
 - Для разработчиков кита: тесты лежат в `__tests__` своей папки, тесты пакета целиком — в `build/tests/`.
   Папки `src/constants` и алиаса `@constants` больше нет: строки — в `src/locales/messages.ts`, остальные значения — рядом
   с кодом, который их использует (docs/CONTRIBUTING.md, раздел «Константы»).

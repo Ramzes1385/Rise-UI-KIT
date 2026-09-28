@@ -52,11 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSplitter } from '../model/useBaseSplitter'
 import '../styles/BaseSplitter.style.scss'
 import type { BaseSplitterEmits, BaseSplitterProps, BaseSplitterSlots } from '../model/BaseSplitter.types'
 
@@ -77,105 +76,22 @@ const props = withDefaults(
 const emit = defineEmits<BaseSplitterEmits>()
 defineSlots<BaseSplitterSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-splitter', props, [
-	'root',
-	'pane',
-	'separator',
-])
-
-const startId = useId()
-const rootRef = ref<HTMLElement | null>(null)
-const startRef = ref<HTMLElement | null>(null)
-const endRef = ref<HTMLElement | null>(null)
-
-/** Панели с прокруткой получают tabindex, чтобы их можно было прокрутить с клавиатуры */
-const { isScrollable: isStartScrollable } = useScrollableRegion({ elementRef: startRef })
-const { isScrollable: isEndScrollable } = useScrollableRegion({ elementRef: endRef })
-
-/** Размер первой панели: работает и без v-model */
-const size = ref(props.modelValue)
-watch(
-	() => props.modelValue,
-	value => {
-		size.value = value
-	},
-)
-
-/** Размер до сворачивания по Enter: к нему разделитель вернётся */
-let restoreSize = props.modelValue
-
-function clamp(value: number): number {
-	return Math.min(props.max, Math.max(props.min, value))
-}
-
-function setSize(value: number, isFinal: boolean): void {
-	const next = clamp(value)
-	if (next !== size.value) {
-		size.value = next
-		emit('update:modelValue', next)
-	}
-	if (isFinal) emit('change', next)
-}
-
-function handleKeydown(event: KeyboardEvent): void {
-	const isHorizontal = props.orientation === 'horizontal'
-	let next: number
-	switch (event.key) {
-		case isHorizontal ? 'ArrowLeft' : 'ArrowUp':
-			next = size.value - props.step
-			break
-		case isHorizontal ? 'ArrowRight' : 'ArrowDown':
-			next = size.value + props.step
-			break
-		case 'Home':
-			next = props.min
-			break
-		case 'End':
-			next = props.max
-			break
-		case 'Enter':
-			// Свёрнута — вернуть прежний размер, иначе запомнить его и свернуть до минимума
-			if (size.value > props.min) {
-				restoreSize = size.value
-				next = props.min
-			} else {
-				next = restoreSize
-			}
-			break
-		default:
-			return
-	}
-	event.preventDefault()
-	setSize(next, true)
-}
-
-// ─── Перетаскивание ────────────────────────────────────────────────────────────
-
-const isDragging = ref(false)
-
-function handlePointerdown(event: PointerEvent): void {
-	if (props.isDisabled || event.button !== 0) return
-	event.preventDefault()
-	const separator = event.currentTarget as HTMLElement
-	separator.setPointerCapture?.(event.pointerId)
-	separator.focus()
-	isDragging.value = true
-}
-
-/** Размер из положения указателя внутри компонента, с точностью до десятой процента */
-function handlePointermove(event: PointerEvent): void {
-	if (!isDragging.value) return
-	const rect = (rootRef.value as HTMLElement).getBoundingClientRect()
-	const isHorizontal = props.orientation === 'horizontal'
-	const length = isHorizontal ? rect.width : rect.height
-	if (length <= 0) return
-	const offset = isHorizontal ? event.clientX - rect.left : event.clientY - rect.top
-	setSize(Math.round((offset / length) * 1000) / 10, false)
-}
-
-function handlePointerup(): void {
-	if (!isDragging.value) return
-	isDragging.value = false
-	emit('change', size.value)
-}
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	classes,
+	startId,
+	rootRef,
+	startRef,
+	endRef,
+	isStartScrollable,
+	isEndScrollable,
+	size,
+	isDragging,
+	handleKeydown,
+	handlePointerdown,
+	handlePointermove,
+	handlePointerup,
+} = useBaseSplitter(props, emit)
 </script>
