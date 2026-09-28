@@ -51,11 +51,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { usePadding } from '@composables/usePadding'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseCard } from '../model/useBaseCard'
 import '../styles/BaseCard.style.scss'
 import type { BaseCardProps, BaseCardSlots } from '../types/BaseCard.types'
 
@@ -72,23 +71,5 @@ const props = withDefaults(
 
 defineSlots<BaseCardSlots>()
 
-const height = computed(() => props.height)
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-card', props, [
-	'root',
-	'header',
-	'title',
-	'subtitle',
-	'actions',
-	'body',
-	'footer',
-])
-const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad' })
-/** Без пропа padding отступы секций берутся из стилей (16px 20px), inline-переменные не пишутся. */
-const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
-
-const cardStyle = computed(() => ({
-	...paddingStyle.value,
-	'--card-height': height.value || 'auto',
-}))
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, cardStyle } = useBaseCard(props)
 </script>

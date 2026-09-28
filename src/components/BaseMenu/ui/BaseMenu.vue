@@ -47,8 +47,9 @@ import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseSeparator } from '@components/BaseSeparator'
 import '../styles/BaseMenu.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../types/BaseMenu.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseMenu } from '../model/useBaseMenu'
+import type { BaseMenuEmits, BaseMenuProps, BaseMenuSlots } from '../types/BaseMenu.types'
 
 const props = withDefaults(
 	defineProps<BaseMenuProps>(),
@@ -58,26 +59,8 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, [
-	'root',
-	'group',
-	'item',
-	'icon',
-	'label',
-	'divider',
-])
-
 const emit = defineEmits<BaseMenuEmits>()
-
 defineSlots<BaseMenuSlots>()
 
-function handleItemClick(item: BaseMenuItem): void {
-	if (item.isDisabled) return
-
-	if (item.click) {
-		item.click()
-	}
-
-	emit('select', item)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, handleItemClick } = useBaseMenu(props, emit)
 </script>

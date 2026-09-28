@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseLayout } from '../model/useBaseLayout'
 import '../styles/BaseLayout.style.scss'
 import type { BaseLayoutProps, BaseLayoutSlots } from '../types/BaseLayout.types'
 
@@ -56,38 +56,6 @@ const props = withDefaults(
 )
 
 defineSlots<BaseLayoutSlots>()
-const slots = useSlots()
 
-const { sizeScaleStyle, classes } = useStandardBaseComponent('base-layout', props, ['root', 'header', 'sidebar', 'main', 'footer'])
-
-const generatedId = useId()
-const resolvedMainId = computed(() => props.mainId ?? `main-${generatedId}`)
-
-const headerRef = ref<HTMLElement | null>(null)
-const mainRef = ref<HTMLElement | null>(null)
-
-/** Высота шапки: прилипшее боковое меню встаёт под неё, а переход к <main> не прячет начало под шапкой */
-const headerHeight = ref(0)
-
-const headerOffsetStyle = computed(() => ({ '--base-layout-header-height': `${headerHeight.value}px` }))
-
-function measureHeader(): void {
-	headerHeight.value = headerRef.value?.offsetHeight ?? 0
-}
-
-let observer: ResizeObserver | null = null
-
-onMounted(() => {
-	measureHeader()
-	if (!headerRef.value) return
-	observer = new ResizeObserver(measureHeader)
-	observer.observe(headerRef.value)
-})
-
-onBeforeUnmount(() => observer?.disconnect())
-
-/** Ссылка «Перейти к содержимому»: фокус в <main> без смены адреса (hash-режим роутера не срабатывает) */
-function focusMain(): void {
-	mainRef.value?.focus()
-}
+const { sizeScaleStyle, classes, slots, resolvedMainId, headerRef, mainRef, headerOffsetStyle, focusMain } = useBaseLayout(props)
 </script>

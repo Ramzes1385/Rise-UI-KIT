@@ -36,13 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseLoader } from '../model/useBaseLoader'
 import '../styles/BaseLoader.style.scss'
 import type { BaseLoaderProps } from '../types/BaseLoader.types'
 
@@ -55,19 +51,6 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'animation', 'spinner', 'label'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-/**
- * Доступное имя статуса берётся из label, чтобы кастомная подпись («Сохранение…»)
- * не расходилась с фиксированным «Загрузка». Завершающее многоточие — визуальный
- * признак процесса, в имени оно лишнее; пустой label даёт имя по умолчанию.
- */
-const resolvedLabel = computed((): string => props.label ?? UI_TEXT.LOADING)
-
-const accessibleName = computed((): string => resolvedLabel.value.replace(/[.…\s]+$/, '') || UI_TEXT.LOADING_ARIA)
+const { classes, sizeScaleStyle, customColorStyle, resolvedLabel, accessibleName } = useBaseLoader(props)
 </script>

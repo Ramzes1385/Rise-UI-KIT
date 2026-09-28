@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
@@ -28,3 +29,5 @@ export interface BaseChipSlots {
 	/** Элемент, над углом которого стоит индикатор: кнопка, аватар, иконка */
 	default?: () => unknown
 }
+
+export type ChipProps = PropsWithDefaults<BaseChipProps, 'maxValue'>

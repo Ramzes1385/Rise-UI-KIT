@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseChip } from '../model/useBaseChip'
 import '../styles/BaseChip.style.scss'
 import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../types/BaseChip.types'
 
@@ -32,34 +32,11 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-chip', props, [
-	'root',
-	'badge',
-])
-
 const emit = defineEmits<BaseChipEmits>()
 defineSlots<BaseChipSlots>()
 
-const numericValue = computed((): number | null => {
-	if (typeof props.content === 'number') return props.content
-	const parsed = Number(props.content)
-	return Number.isNaN(parsed) ? null : parsed
-})
-
-const isVisible = computed((): boolean => {
-	if (props.content === undefined || props.content === '') return false
-	if (props.isHiddenOnZero && numericValue.value === 0) return false
-	return true
-})
-
-const displayContent = computed((): string => {
-	if (numericValue.value !== null && props.hasOverflow && numericValue.value > props.maxValue) {
-		return `${props.maxValue}+`
-	}
-	return String(props.content)
-})
-
-function handleBadgeClick(): void {
-	emit('click-badge')
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isVisible, displayContent, handleBadgeClick } = useBaseChip(
+	props,
+	emit,
+)
 </script>

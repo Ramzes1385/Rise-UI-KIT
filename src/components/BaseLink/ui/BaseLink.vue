@@ -16,11 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { resolveLink, useLinkComponent } from '@composables/useLink'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseLink } from '../model/useBaseLink'
 import '../styles/BaseLink.style.scss'
 import type { BaseLinkEmits, BaseLinkProps, BaseLinkSlots } from '../types/BaseLink.types'
 
@@ -36,28 +35,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseLinkEmits>()
 defineSlots<BaseLinkSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-link', props, [
-	'root',
-	'external',
-])
-
-/** Компонент ссылок приложения: проп, плагин или RouterLink — определяется один раз */
-const appLinkComponent = useLinkComponent()
-
-const link = computed(() =>
-	resolveLink(
-		{ to: props.to, href: props.href, target: props.target, rel: props.rel, isDisabled: props.isDisabled },
-		props.linkComponent ?? appLinkComponent,
-	),
-)
-
-const isNewTab = computed(() => link.value.hasTarget && props.target === '_blank')
-
-function handleClick(event: MouseEvent): void {
-	if (!link.value.hasTarget) {
-		event.preventDefault()
-		return
-	}
-	emit('click', event)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, link, isNewTab, handleClick } = useBaseLink(props, emit)
 </script>

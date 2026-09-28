@@ -26,10 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useIcon } from '@composables/useIcon'
 import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseIcon } from '../model/useBaseIcon'
 import '../styles/BaseIcon.style.scss'
 import type { BaseIconProps } from '../types/BaseIcon.types'
 
@@ -44,26 +43,6 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-const { sizeScaleStyle, classes } = useStandardBaseComponent('base-icon', props, ['root', 'svg'])
 
-const { resolveIcon } = useIcon()
-
-/** Символ спрайта или замена из плагина (`icons`) */
-const icon = computed(() => resolveIcon(props.name))
-
-const isDecorative = computed(() => !props.ariaLabel)
-
-const iconStyle = computed(() => {
-	const styles: Record<string, string> = {}
-
-	if (props.color) styles.color = props.color
-
-	const transforms: string[] = []
-	if (props.rotate) transforms.push(`rotate(${props.rotate}deg)`)
-	if (props.isFlipX) transforms.push('scaleX(-1)')
-	if (props.isFlipY) transforms.push('scaleY(-1)')
-	if (transforms.length) styles.transform = transforms.join(' ')
-
-	return styles
-})
+const { sizeScaleStyle, classes, icon, isDecorative, iconStyle } = useBaseIcon(props)
 </script>

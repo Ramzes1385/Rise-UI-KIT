@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
@@ -19,3 +20,5 @@ export type BaseLoaderEmits = Record<string, never>
 export interface BaseLoaderSlots {
 	default?: () => unknown
 }
+
+export type LoaderProps = PropsWithDefaults<BaseLoaderProps, 'sizeScale'>

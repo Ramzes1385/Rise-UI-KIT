@@ -23,7 +23,7 @@
 			</BaseButton>
 			<BaseButton
 				:size-scale="sizeScale"
-				:color="isDanger ? DANGER_COLOR : undefined"
+				:color="isDanger ? dangerColor : undefined"
 				:custom-class="classes.confirm"
 				:autofocus="!isDanger"
 				@click="finish(true)">
@@ -34,14 +34,13 @@
 </template>
 
 <script setup lang="ts">
-import { useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseConfirm } from '../model/useBaseConfirm'
 import '../styles/BaseConfirm.style.scss'
-import type { CustomColor } from '@composables/useCustomColor'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../types/BaseConfirm.types'
 
 const props = withDefaults(
@@ -55,21 +54,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseConfirmEmits>()
 
-const { classes } = useStandardBaseComponent('base-confirm', props, ['root', 'description', 'cancel', 'confirm'])
-
-const DANGER_COLOR: CustomColor = {
-	bg: { base: 'var(--rise-error)', hover: 'var(--rise-error-hover)' },
-	text: { base: 'var(--rise-on-error)' },
-}
-
-const descriptionId = useId()
-
-/** Закрывает окно с результатом. `close` идёт первым: по нему BaseApp разрешает промис useConfirm() */
-function finish(result: boolean): void {
-	if (!props.isOpen) return
-	emit('close', result)
-	emit('update:isOpen', false)
-	if (result) emit('confirm')
-	else emit('cancel')
-}
+const { classes, dangerColor, descriptionId, finish } = useBaseConfirm(props, emit)
 </script>

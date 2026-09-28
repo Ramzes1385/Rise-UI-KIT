@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { getLocale, setLocale } from '@/locales/state'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { getActiveToastStore, useToast } from '@composables/useToast'
 import { getActiveOverlayStore, useOverlay } from '@composables/useOverlay'
 import BaseApp from '../ui/BaseApp.vue'
@@ -51,6 +53,30 @@ describe('BaseApp', () => {
 
 		expect(container.firstElementChild?.tagName).toBe('MAIN')
 		expect(document.querySelector('.lost, [data-x]')).not.toBeInTheDocument()
+	})
+
+	it('передаёт цель телепорта из пропа teleportTo компонентам внутри', () => {
+		const layer = document.createElement('div')
+		document.body.append(layer)
+		let target: unknown
+		const Child = defineComponent({
+			setup() {
+				target = useTeleportTarget()
+				return () => h('main', 'Приложение')
+			},
+		})
+		const { unmount } = render(BaseApp, { props: { teleportTo: layer }, slots: { default: () => h(Child) } })
+
+		expect(target).toBe(layer)
+		unmount()
+		layer.remove()
+	})
+
+	it('ставит язык кита из пропа locale', () => {
+		render(BaseApp, { props: { locale: 'en' }, slots: { default: () => h('main', 'Приложение') } })
+
+		expect(getLocale().code).toBe('en')
+		setLocale('ru')
 	})
 
 	describe('уведомления', () => {
