@@ -1,7 +1,4 @@
-// Проп color красит только фон окна и заголовок — кнопки, поля и аватары внутри не красятся (reset-custom-color на __body); вариант меняет оформление сообщений через --chat-bubble-* (значения по умолчанию — в _list.scss).
 .base-chat {
-	// Цвет заголовка окна: text из пропа color или --rise-text-highlighted. Вычисляется здесь, на корне, где заданы
-	// --custom-*, и наследуется готовым цветом: сброс --custom-* на __body его не затрагивает.
 	--chat-title-color: var(--custom-text, var(--rise-text-highlighted));
 
 	position: relative;

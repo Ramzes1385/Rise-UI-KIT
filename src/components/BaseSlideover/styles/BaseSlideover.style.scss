@@ -1,23 +1,18 @@
-// Панель у края экрана (подложка overlay, тень xl, радиус lg со стороны экрана); ширина 420px×width/100, на телефоне — весь экран; отступы 16/20 через проп padding.
-
 .base-slideover {
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 	background-color: var(--rise-overlay);
 
-	// Внутри контейнера: подложка и панель ограничены родителем (position: relative), а не экраном.
 	&--contained {
 		position: absolute;
 	}
 
-	// Без затемнения подложка прозрачная, но по-прежнему перехватывает клики: панель остаётся модальной.
 	&--no-overlay {
 		background-color: transparent;
 	}
 
 	&__panel {
-		// Отступы секций по умолчанию. Проп padding переопределяет их inline-переменными --slideover-pad-*.
 		--slideover-pad-top: 16px;
 		--slideover-pad-right: 20px;
 		--slideover-pad-bottom: 16px;
@@ -37,7 +32,6 @@
 		@include custom-text(color, var(--rise-text));
 		@include text-size(sm);
 		box-shadow: var(--rise-shadow-xl);
-		// Без фокусируемых элементов ловушка фокуса ставит фокус на саму панель — рамка фокуса ей не нужна.
 		outline: none;
 
 		&--right {
@@ -54,8 +48,6 @@
 			width: 100%;
 			border-radius: 0;
 		}
-
-		// На телефоне панель занимает весь экран.
 		@include respond-below('mobile') {
 			width: 100%;
 			border-radius: 0;
@@ -71,7 +63,6 @@
 		border-bottom: 1px solid var(--rise-border);
 	}
 
-	// Заголовок — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
 	&__title.base-text {
 		flex: 1;
 		min-width: 0;
@@ -81,7 +72,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// Кнопка закрытия — квадратная ghost-кнопка 32×32 у правого края шапки (и после содержимого слота header).
 	&__close.base-button {
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
@@ -98,7 +88,6 @@
 		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
 		overflow-y: auto;
 		@include scrollbar-thin;
-		// Тело с прокруткой фокусируется с клавиатуры (tabindex): кольцо внутри, панель обрезает всё снаружи.
 		@include focus-ring(-2px);
 		@include reset-custom-color;
 	}

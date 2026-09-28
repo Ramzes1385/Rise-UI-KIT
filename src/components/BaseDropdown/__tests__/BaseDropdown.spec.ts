@@ -1,5 +1,3 @@
-/** Компонент использует teleport to="body" — поиск в document. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseDropdown from '../ui/BaseDropdown.vue'
 import { render, screen } from '@testing-library/vue'
@@ -13,7 +11,6 @@ vi.mock('@composables/useClickOutside', () => ({
 	useClickOutside: (options: { callback: () => void; isActive: () => boolean }) => {
 		clickOutsideMock.callback = options.callback
 		clickOutsideMock.isActive = options.isActive
-		// Вызываем геттеры для coverage
 		options.isActive()
 	},
 }))
@@ -21,7 +18,6 @@ vi.mock('@composables/useEscapeKey', () => ({
 	useEscapeKey: (options: { callback: () => void; isActive: () => boolean }) => {
 		escapeKeyMock.callback = options.callback
 		escapeKeyMock.isActive = options.isActive
-		// Вызываем геттер для coverage
 		options.isActive()
 	},
 }))
@@ -33,7 +29,6 @@ vi.mock('@composables/useDropdownPosition', () => ({
 		maxHeight: () => string
 		isOpen: () => boolean
 	}) => {
-		// Вызываем все геттеры для coverage стрелочных функций
 		options.position()
 		options.gap()
 		options.matchWidth()

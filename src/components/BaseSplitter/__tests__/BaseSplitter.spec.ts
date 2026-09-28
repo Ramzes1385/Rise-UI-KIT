@@ -72,7 +72,6 @@ describe('BaseSplitter unit', () => {
 		await fireEvent.pointerDown(separator, { button: 0, pointerId: 1 })
 		expect(container.querySelector('.base-splitter')).toHaveClass('base-splitter--dragging')
 		expect(separator).toHaveFocus()
-		// Корень в jsdom — 100px шириной (мок getBoundingClientRect): указатель на 30px — 30%
 		await fireEvent.pointerMove(separator, { clientX: 30 })
 		await fireEvent.pointerMove(separator, { clientX: 99.5 })
 		await fireEvent.pointerUp(separator)
@@ -85,7 +84,6 @@ describe('BaseSplitter unit', () => {
 		const { container, separator, updates } = setup({ orientation: 'vertical' })
 		const root = container.querySelector('.base-splitter') as HTMLElement
 		await fireEvent.pointerDown(separator, { button: 0 })
-		// Высота корня в моке — 20px: указатель на 5px — 25%
 		await fireEvent.pointerMove(separator, { clientY: 5 })
 		root.getBoundingClientRect = () => ({ width: 0, height: 0, top: 0, left: 0 }) as DOMRect
 		await fireEvent.pointerMove(separator, { clientY: 10 })

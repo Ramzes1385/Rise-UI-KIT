@@ -1,9 +1,4 @@
 <template>
-	<!--
-		Дерево по образцу APG Tree View: один узел в порядке Tab (roving tabindex), стрелки вверх и вниз — по видимым
-		узлам, вправо — раскрыть или к первому ребёнку, влево — свернуть или к родителю, Home/End, `*` — раскрыть соседей,
-		буквы — поиск по началу подписи, Enter — действие узла (ссылка, выбор, раскрытие), Space — выбор.
-	-->
 	<div
 		ref="rootRef"
 		class="base-tree"
@@ -12,10 +7,6 @@
 		role="tree"
 		:aria-label="ariaLabel"
 		@keydown="handleKeydown">
-		<!--
-			Виртуальная прокрутка: плоский список видимых узлов, в DOM только видимые и запас. Узел в порядке Tab
-			остаётся в DOM и вне видимой области; стрелки к неотрисованному узлу сначала прокручивают к нему
-		-->
 		<div v-if="isVirtual" class="base-tree__virtual" role="none" :style="{ height: `${totalSize}px` }">
 			<div
 				v-for="entry in virtualItems"

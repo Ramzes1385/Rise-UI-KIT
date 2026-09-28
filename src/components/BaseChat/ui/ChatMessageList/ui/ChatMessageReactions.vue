@@ -5,7 +5,6 @@
 		:class="`base-chat-message-list__reactions-display--${sender}`"
 		role="group"
 		:aria-label="UI_CHAT_TEXT.REACTIONS_ARIA">
-		<!-- Своя реакция — нажатая кнопка (aria-pressed): повторное нажатие снимает её -->
 		<button
 			v-for="reaction in reactions"
 			:key="reaction.emoji"

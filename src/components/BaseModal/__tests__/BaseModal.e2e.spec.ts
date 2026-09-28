@@ -56,7 +56,6 @@ test('модалка: длинный контент прокручивается
 	await page.setViewportSize({ width: 800, height: 600 })
 	await page.goto('/iframe.html?id=overlay-basemodal--long-content')
 
-	// Story открывает окно сразу (isOpen: true)
 	const footerButton = page.locator('.base-modal__footer').getByRole('button', { name: 'Понятно' })
 	await expect(footerButton).toBeInViewport({ timeout: 25000 })
 

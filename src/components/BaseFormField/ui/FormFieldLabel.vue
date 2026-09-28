@@ -1,5 +1,4 @@
 <template>
-	<!-- Начертание задано явно: BaseText пишет font-weight inline-стилем, и без weight подпись была бы 400, а не medium (field-label) -->
 	<BaseText
 		:tag="tag"
 		:for="tag === 'label' ? forId : undefined"

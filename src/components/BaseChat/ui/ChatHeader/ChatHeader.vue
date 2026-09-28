@@ -18,7 +18,6 @@
 			</div>
 		</div>
 
-		<!-- Поле поиска (когда активен поиск): Escape закрывает поиск -->
 		<div v-else class="base-chat-header__search-container">
 			<div class="base-chat-header__search-input">
 				<BaseIcon name="search" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-header__search-icon" />

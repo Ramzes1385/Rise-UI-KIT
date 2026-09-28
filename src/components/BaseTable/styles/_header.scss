@@ -3,7 +3,6 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// Шапка закреплена сверху: при height строки прокручиваются под ней. Фон непрозрачный, нижняя линия — рамка ячейки.
 	&__th {
 		position: sticky;
 		top: 0;
@@ -26,7 +25,6 @@
 			text-align: right;
 		}
 
-		// Закреплённые колонки: над остальными заголовками при горизонтальной прокрутке, отделены линией-тенью.
 		&--sticky-left {
 			left: 0;
 			z-index: 3;
@@ -45,8 +43,6 @@
 		@include truncate;
 	}
 
-	// Сортируемый заголовок — кнопка во всю подпись: ghost-подсветка при наведении, иконка направления справа.
-	// Отрицательные поля компенсируют внутренний отступ: текст стоит на одной линии с текстом ячеек.
 	&__sort-btn {
 		display: inline-flex;
 		align-items: center;
@@ -86,20 +82,17 @@
 		@include transition-colors;
 	}
 
-	// Отсортированная колонка: иконка направления основного цвета (двойной класс перекрывает цвет при наведении).
 	&__th--sorted &__sort-icon,
 	&__th--sorted &__sort-btn:hover &__sort-icon {
 		color: var(--rise-primary);
 	}
 
-	// Номер колонки в мультисортировке.
 	&__sort-index {
 		@include text-size(xs);
 		font-weight: var(--rise-font-weight-semibold);
 		font-variant-numeric: tabular-nums;
 	}
 
-	// Ручка ресайза у правого края заголовка: короткая линия-подсказка, при наведении — линия основного цвета.
 	&__resizer {
 		position: absolute;
 		top: 0;
@@ -111,7 +104,6 @@
 		touch-action: none;
 		user-select: none;
 
-		// Линия по центру высоты заголовка: top/bottom 0 и margin auto при заданной высоте.
 		&::after {
 			content: '';
 			position: absolute;

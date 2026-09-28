@@ -1,12 +1,9 @@
-// Тип задаёт цветовую роль (info/success/warning/error), вариант — как роль применяется (default/soft/outline/ghost/shadow — у shadow цвет только у иконки).
 .base-alert {
-	// Токены роли по типу. info — по умолчанию (и для неизвестного типа, как и иконка).
 	--alert-role: var(--rise-info);
 	--alert-on-role: var(--rise-on-info);
 	--alert-soft: var(--rise-info-soft);
 	--alert-role-text: var(--rise-info-text);
 	--alert-role-border: var(--rise-info-border);
-	// Цвет иконки и кольца фокуса кнопок. На заливке роли — цвет текста: основное кольцо может слиться с фоном.
 	--alert-icon: currentcolor;
 	--alert-ring: currentcolor;
 
@@ -76,7 +73,6 @@
 		overflow-wrap: break-word;
 	}
 
-	// Заголовок и описание — BaseText со своим цветом по умолчанию: здесь они берут цвет алерта.
 	& &__title,
 	& &__text {
 		color: inherit;
@@ -91,7 +87,6 @@
 	}
 
 	&__description {
-		// Пустое описание (нет description и слота) не добавляет отступ под заголовком.
 		&:empty {
 			display: none;
 		}
@@ -112,9 +107,6 @@
 		outline-color: var(--alert-ring);
 	}
 
-	// Кнопка закрытия — ghost-кнопка цвета текста алерта: наведение — полупрозрачная подложка того же цвета.
-	// Кнопка 24px (иконка 16px + отступы 3px + рамка) занимает по высоте строку заголовка (20px),
-	// а иконка стоит на линии правого отступа алерта. max-width: none — иначе отрицательный отступ сужает кнопку.
 	& &__close {
 		--custom-text: currentcolor;
 		--custom-bg: transparent;
@@ -125,7 +117,6 @@
 		margin: sz(-2px) sz(-4px) sz(-2px) 0;
 	}
 
-	// Размер иконки — от масштаба кнопки (он же масштаб алерта), без собственного sizeScale.
 	&__close .base-icon__svg {
 		width: sz(16px);
 		height: sz(16px);

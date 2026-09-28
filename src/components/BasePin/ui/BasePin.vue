@@ -1,5 +1,4 @@
 <template>
-	<!-- Группа ячеек: имя группе даёт aria-label на компоненте или подпись обёртки BaseFormField -->
 	<div
 		ref="rootRef"
 		class="base-pin"

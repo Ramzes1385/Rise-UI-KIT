@@ -35,11 +35,6 @@
 				</span>
 			</div>
 
-			<!--
-				Закрытая панель схлопнута только визуально (grid 0fr + opacity), поэтому inert убирает её из фокуса
-				и дерева доступности; атрибуты меняются сразу и не мешают CSS-анимации.
-				undefined вместо false: там, где у элемента нет DOM-свойства inert, Vue записал бы атрибут inert="false".
-			-->
 			<div
 				:id="getPanelId(index)"
 				class="base-accordion__collapse"

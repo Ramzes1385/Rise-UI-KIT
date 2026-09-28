@@ -60,7 +60,6 @@
 				<template #left><BaseIcon name="chevron-right" :size-scale="sizeScale" /></template>
 			</BaseButton>
 		</div>
-		<!-- Роль tabpanel только при наличии контента: пустой элемент с tabindex=0 стал бы лишней остановкой Tab -->
 		<div
 			:id="panelId"
 			class="base-tabs__content"

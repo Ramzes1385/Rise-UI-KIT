@@ -166,7 +166,6 @@ describe('BaseChip unit', () => {
 			const chip = container.querySelector('.base-chip') as HTMLElement
 			expect(badge.style.getPropertyValue('--custom-bg')).toBe('var(--rise-error)')
 			expect(badge.style.getPropertyValue('--custom-text')).toBe('var(--rise-on-error)')
-			// С корня переменные --custom-* унаследовали бы кнопки и другие компоненты в слоте
 			expect(chip.style.getPropertyValue('--custom-bg')).toBe('')
 		})
 	})
@@ -200,8 +199,6 @@ describe('BaseChip unit', () => {
 		it('должен вернуть null когда content не передан (undefined)', () => {
 			const { container } = render(BaseChip, { props: { sizeScale: 100 } })
 
-			// Индикатор не должен рендериться — isVisible вернёт false,
-			// потому что numericValue = null и content = undefined
 			expect(container.querySelector('.base-chip__badge')).not.toBeInTheDocument()
 		})
 
@@ -210,7 +207,6 @@ describe('BaseChip unit', () => {
 				props: { content: 'hello-world', hasOverflow: true, maxValue: 99 },
 			})
 
-			// Индикатор отображается с оригинальной строкой, не обрабатывая overflow
 			expect(container.querySelector('.base-chip__badge')).toBeInTheDocument()
 		})
 	})

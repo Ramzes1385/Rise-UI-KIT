@@ -1,4 +1,3 @@
-// Чекбоксы, подписи и действия из слотов кастомный цвет дерева не наследуют.
 .base-tree {
 	display: flex;
 	flex-direction: column;
@@ -45,7 +44,6 @@
 		}
 	}
 
-	// Выбранный узел: мягкий фон основного цвета, шеврон и иконка — цвета текста.
 	&__node--selected > &__header {
 		background-color: var(--rise-primary-soft);
 		color: var(--rise-primary-text);
@@ -61,7 +59,6 @@
 		}
 	}
 
-	// Отключённый узел: приглушена только его строка; aria-disabled исключает её из проверки контраста.
 	&__node--disabled > &__header {
 		@include disabled-state;
 	}
@@ -81,18 +78,15 @@
 		}
 	}
 
-	// У листа шеврона нет, но место под него сохраняется: подписи соседних узлов на одной линии.
 	&__node--leaf > &__header &__arrow {
 		visibility: hidden;
 	}
 
-	// Флажок — только вид (inert): клик проходит к заголовку узла
 	&__checkbox-wrap {
 		display: inline-flex;
 		flex-shrink: 0;
 	}
 
-	// Подпись-ссылка (BaseLink ghost): кегль подписи узла — sizeScale дерева уже учтён в нём
 	&__label &__link {
 		font-size: inherit;
 	}
@@ -114,7 +108,6 @@
 		@include truncate;
 	}
 
-	// Действия: отрицательные поля — кнопки до 28px не увеличивают высоту строки 32px.
 	&__actions {
 		@include reset-custom-color;
 		display: flex;
@@ -135,14 +128,11 @@
 		opacity: 1;
 	}
 
-	// Подпись чекбокса — только для скринридера. Двойной класс: подпись — BaseText внутри BaseCheckbox.
 	&__visually-hidden,
 	&__visually-hidden.base-text {
 		@include visually-hidden;
 	}
 
-	// Уровень: отступ 20px = 15px до линии + линия 1px + 4px. Линия стоит под центром шеврона родителя.
-	// Сворачивание — через grid 0fr → 1fr: высота анимируется без измерений в JS.
 	&__children {
 		display: grid;
 		grid-template-rows: 0fr;
@@ -163,8 +153,6 @@
 		overflow: hidden;
 	}
 }
-
-// Отступ уровня — 20px, как у вложенной группы; линии уровней — фоном в отступе (на 15px от начала уровня)
 
 .base-tree--virtual {
 	position: relative;

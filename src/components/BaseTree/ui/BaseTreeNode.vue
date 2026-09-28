@@ -4,7 +4,6 @@
 		:class="[nodeClasses, treeContext.classes.value.node]"
 		:style="isFlat ? { '--base-tree-depth': depth } : undefined"
 		role="none">
-		<!-- Заголовок — treeitem: уровень, позиция, раскрытие и выбор; фокус и клавиши — у корня дерева -->
 		<div
 			:ref="setHeaderElement"
 			class="base-tree__header"
@@ -31,10 +30,6 @@
 					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 				</slot>
 			</span>
-			<!--
-				Флажок — только вид: отметку объявляет aria-checked узла, клик по флажку — клик по узлу.
-				inert убирает его из порядка Tab и дерева доступности, указатель проходит сквозь него к заголовку
-			-->
 			<span v-if="treeContext.selectionMode.value === 'multiple'" class="base-tree__checkbox-wrap" aria-hidden="true" inert>
 				<BaseCheckbox
 					class="base-tree__checkbox"
@@ -52,10 +47,8 @@
 					:custom-class="treeContext.classes.value.icon"
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</slot>
-			<!-- Имя узла — только подпись: кнопки слота actions в имя не попадают -->
 			<span :id="labelId" class="base-tree__label" :class="treeContext.classes.value.label">
 				<slot name="label" :node="node" :depth="depth" :is-selected="isSelected" :is-expanded="isExpanded">
-					<!-- Узел с адресом — ссылка (BaseLink): клик и Enter переходят по ней, фокус остаётся у узла -->
 					<BaseLink
 						v-if="(node.to || node.href) && !node.isDisabled"
 						class="base-tree__link"

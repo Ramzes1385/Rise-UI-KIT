@@ -1,5 +1,3 @@
-/** Слайды — SVG data URI из фикстур stories, поэтому снимки детерминированы и не ждут сеть. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

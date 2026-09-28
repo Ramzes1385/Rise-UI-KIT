@@ -1,10 +1,7 @@
-// Классы без префикса base- (fade-enter-active и т.д.) — публичный API для пропа name; при prefers-reduced-motion токены длительности обнуляются.
-
 $enter: var(--rise-duration) var(--rise-ease-out);
 $enter-slow: var(--rise-duration-slow) var(--rise-ease-out);
 $leave: var(--rise-duration-fast) var(--rise-ease-in);
 
-// Список (isGroup): уходящий элемент позиционируется абсолютно внутри списка, остальные плавно сдвигаются.
 .base-animation--group {
 	position: relative;
 }
@@ -196,9 +193,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	opacity: 0;
 	transform: scale(0);
 }
-
-// interpolate-size разрешает анимировать до height: auto (Chromium 129+). В других браузерах высота меняется сразу,
-// а прозрачность — плавно.
 
 .collapse-enter-active,
 .collapse-leave-active {

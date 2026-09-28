@@ -1,4 +1,3 @@
-/** Composable: логика BaseButtonGroup — классы и размер группы */
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseButtonGroupProps } from '../types/BaseButtonGroup.types'
 

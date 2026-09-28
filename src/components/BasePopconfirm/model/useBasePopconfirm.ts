@@ -1,26 +1,21 @@
 import type { ComputedRef, Ref } from 'vue'
 import { calcIconScale } from '@utils/iconUtils'
-/** Composable: логика BasePopconfirm — открытие, фокус в панели и ответ */
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import type { CustomColor } from '@composables/useCustomColor'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BasePopconfirmEmits, PopconfirmProps } from '../types/BasePopconfirm.types'
 
-/** Кнопка необратимого действия — цвет ошибки из токенов темы, как у BaseConfirm */
 const DANGER_COLOR: CustomColor = {
 	bg: { base: 'var(--rise-error)', hover: 'var(--rise-error-hover)' },
 	text: { base: 'var(--rise-on-error)' },
 }
-/** Кнопки в панели компактнее основных: размер sm при sizeScale = 100 */
 const BUTTON_SCALE_RATIO = 0.875
 
-/** Предыдущая кнопка по кругу; без фокуса на кнопке — последняя */
 function previousIndex(index: number, count: number): number {
 	return index <= 0 ? count - 1 : index - 1
 }
 
-/** Tab и Shift+Tab ходят между кнопками по кругу: панель в конце body, и фокус не должен уйти за неё */
 function cycleFocus(event: KeyboardEvent, dialog: HTMLElement): void {
 	const buttons = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled)')]
 	const index = buttons.indexOf(document.activeElement as HTMLElement)
@@ -75,7 +70,6 @@ function usePopconfirmTrigger(isOpenState: ComputedRef<boolean>, dialogId: strin
 	return { triggerRef, triggerAttributes, getTrigger }
 }
 
-/** При открытии фокус — на «Отмене» для необратимых действий, иначе на подтверждении (кнопка с data-autofocus) */
 function useAutofocus(isOpen: Ref<boolean>, dialogRef: Ref<HTMLElement | null>): void {
 	watch(isOpen, async value => {
 		if (!value) return
@@ -92,7 +86,6 @@ export function useBasePopconfirm(props: PopconfirmProps, emit: BasePopconfirmEm
 	const { triggerRef, triggerAttributes, getTrigger } = usePopconfirmTrigger(isOpenState, dialogId)
 	useAutofocus(isOpenLocal, dialogRef)
 
-	/** Ответ: закрыть панель, вернуть фокус на кнопку и сообщить результат */
 	const finish = (isConfirmed: boolean): void => {
 		setOpen(false)
 		getTrigger()?.focus()
@@ -114,7 +107,6 @@ export function useBasePopconfirm(props: PopconfirmProps, emit: BasePopconfirmEm
 			if (isOpenLocal.value) finish(false)
 			else setOpen(true)
 		},
-		/** Escape и клик снаружи — отмена */
 		handleDropdownUpdate(value: boolean): void {
 			if (!value && isOpenLocal.value) finish(false)
 		},

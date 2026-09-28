@@ -1,4 +1,3 @@
-// variant по умолчанию — нейтральный ghost; текущая страница — заливка основным цветом (или custom bg/text active).
 .base-pagination {
 	display: flex;
 	flex-wrap: wrap;
@@ -13,8 +12,6 @@
 		gap: sz(4px);
 	}
 
-	// Номер страницы: не уже квадрата 32×32, узкие боковые отступы — трёхзначные номера не раздувают кнопку.
-	// Двойной класс перекрывает отступы BaseButton по умолчанию независимо от порядка CSS.
 	&__page.base-button {
 		--btn-pad-left: 6px;
 		--btn-pad-right: 6px;
@@ -23,7 +20,6 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	// Текущая страница: заливка основным цветом или `color.bg.active` / `color.text.active`.
 	&__page--current.base-button {
 		background-color: var(--custom-bg-active, var(--rise-primary));
 		color: var(--custom-text-active, var(--rise-on-primary));
@@ -34,7 +30,6 @@
 		}
 	}
 
-	// Стрелки — квадратные кнопки 32×32 с иконкой 20px.
 	&__arrow.base-button {
 		--btn-pad-left: var(--rise-control-padding-y);
 		--btn-pad-right: var(--rise-control-padding-y);

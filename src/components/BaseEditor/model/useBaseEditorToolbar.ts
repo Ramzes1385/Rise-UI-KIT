@@ -1,11 +1,9 @@
-/** Composable: логика BaseEditorToolbar — группы кнопок форматирования, селект заголовка и цвета текста и фона */
 import { computed, ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { calcIconScale } from '@utils/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import type { BaseEditorToolbarProps, ToolbarButton } from '../types/BaseEditorToolbar.types'
 
-/** Начертание и выравнивание; подписи из текущей локали */
 function inlineGroups(): { key: string; items: ToolbarButton[] }[] {
 	return [
 		{
@@ -41,7 +39,6 @@ function inlineGroups(): { key: string; items: ToolbarButton[] }[] {
 	]
 }
 
-/** Списки, цитата и блок кода; подписи из текущей локали */
 function blockGroups(): { key: string; items: ToolbarButton[] }[] {
 	return [
 		{
@@ -78,11 +75,8 @@ export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
 		headingValue: ref<string | number>('p'),
 		textColorModel: ref(props.textColor),
 		backgroundColorModel: ref(props.backgroundColor),
-		// Иконки кнопок — 16px при sizeScale = 100 (размер sm шкалы иконок)
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
-		// Селект «Формат» — размер sm (28px), как кнопки тулбара
 		controlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
-		// customClass.colorPicker редактора — класс кнопки-триггера пикера цвета
 		colorPickerClasses: computed(() => ({ swatch: props.classes.colorPicker })),
 		buttonGroups: computed(() => [...inlineGroups(), ...blockGroups()]),
 	}

@@ -5,7 +5,6 @@
 		</div>
 	</Transition>
 
-	<!-- Список: дочерние элементы (с key) — прямые потомки тега tag, каждый анимируется отдельно -->
 	<TransitionGroup
 		v-else
 		:name="name"

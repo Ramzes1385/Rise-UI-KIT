@@ -1,5 +1,3 @@
-/** jsdom не считает раскладку: высота области подменяется через clientHeight. */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import BaseVirtualList from '../ui/BaseVirtualList.vue'
@@ -17,7 +15,6 @@ beforeAll(() => {
 	})
 })
 
-/** Подмена снимается: clientHeight снова берётся у Element.prototype */
 afterAll(() => {
 	delete (HTMLElement.prototype as { clientHeight?: number }).clientHeight
 })
@@ -38,7 +35,6 @@ describe('BaseVirtualList unit', () => {
 		const { list } = setup()
 		await nextTick()
 		const rows = screen.getAllByRole('listitem')
-		// 100px области по 40px — строки 0–2 и 5 строк запаса снизу
 		expect(rows).toHaveLength(8)
 		expect(rows[0]).toHaveAttribute('aria-setsize', '1000')
 		expect(rows[0]).toHaveAttribute('aria-posinset', '1')

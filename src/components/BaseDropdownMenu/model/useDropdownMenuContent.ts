@@ -1,14 +1,11 @@
 import type { ComputedRef, Ref } from 'vue'
 import { calcIconScale } from '@utils/iconUtils'
 import { findTypeaheadIndex, toMenuGroups } from '@utils/menuUtils'
-/** Composable: логика DropdownMenuContent — меню по APG Menu: roving tabindex, стрелки, поиск по буквам, подменю и отметки */
 import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
 import type { DropdownMenuItem } from '../types/BaseDropdownMenu.types'
 import type { DropdownMenuContentEmits, MenuContentProps } from '../types/DropdownMenuContent.types'
 
-/** Задержка открытия подменю и переключения между подменю при наведении, мс */
 const SUBMENU_HOVER_DELAY = 120
-/** Пауза, после которой набранные буквы сбрасываются, мс */
 const TYPEAHEAD_RESET = 500
 
 function keyOf(groupIndex: number, itemIndex: number): string {
@@ -29,20 +26,17 @@ function itemRole(item: DropdownMenuItem): string {
 	return 'menuitem'
 }
 
-/** Флажок переключается, переключатель только включается */
 function updateChecked(item: DropdownMenuItem): void {
 	if (item.type === 'checkbox') item.onUpdateChecked?.(!item.isChecked)
 	else if (item.type === 'radio' && !item.isChecked) item.onUpdateChecked?.(true)
 }
 
-/** Элементы пунктов (для фокуса) и содержимое подменю (для фокуса на его первом пункте) по ключу пункта */
 function createRegistry() {
 	const itemElements = new Map<string, HTMLElement>()
 	const submenuContents = new Map<string, { focusFirst: () => void }>()
 	return {
 		itemElements,
 		submenuContents,
-		/** Элемент пункта: div или корень BaseLink */
 		registerItem(key: string, element: unknown): void {
 			const node = element && typeof element === 'object' && '$el' in element ? (element as { $el: unknown }).$el : element
 			if (node instanceof HTMLElement) itemElements.set(key, node)
@@ -64,14 +58,12 @@ function useItemView(props: MenuContentProps, baseId: string) {
 		itemRole,
 		itemId: (groupIndex: number, itemIndex: number): string => `${baseId}-item-${keyOf(groupIndex, itemIndex)}`,
 		labelId,
-		/** Группа называется подписью, если подпись идёт первой */
 		groupLabelId: (group: DropdownMenuItem[], groupIndex: number): string | undefined =>
 			group[0]?.type === 'label' ? labelId(groupIndex, 0) : undefined,
 		itemClasses: (item: DropdownMenuItem): (string | Record<string, boolean | undefined>)[] => [
 			{ 'base-dropdown-menu__item--disabled': item.isDisabled, 'base-dropdown-menu__item--danger': item.isDanger },
 			props.classes.item ?? '',
 		],
-		/** Props ссылки: BaseLink рендерит RouterLink приложения или `<a href>` */
 		linkProps(item: DropdownMenuItem): Record<string, unknown> {
 			if (!isLink(item)) return {}
 			return {
@@ -86,13 +78,11 @@ function useItemView(props: MenuContentProps, baseId: string) {
 	}
 }
 
-/** Фокус по пунктам: стрелки ходят по доступным пунктам без подписей и разделителей, с переходом через край */
 function useMenuNavigation(
 	groups: ComputedRef<DropdownMenuItem[][]>,
 	registry: ReturnType<typeof createRegistry>,
 	menuRef: Ref<HTMLElement | null>,
 ) {
-	// Пункт с tabindex="0" (roving tabindex): последний с фокусом, иначе первый доступный. Остальные — -1
 	const activeKey = ref<string | null>(null)
 	const navigable = computed(() =>
 		groups.value.flatMap((group, groupIndex) =>
@@ -106,7 +96,6 @@ function useMenuNavigation(
 		const entry = navigable.value[index]
 		if (entry) registry.itemElements.get(entry.key)?.focus()
 	}
-	// Откуда отсчитывать сдвиг: от пункта в фокусе или, если его нет, из-за края списка
 	const focusOrigin = (offset: number, count: number): number => {
 		const index = currentIndex()
 		if (index !== -1) return index
@@ -119,11 +108,8 @@ function useMenuNavigation(
 		currentIndex,
 		focusAt,
 		tabIndexOf: (key: string): number => (key === (activeKey.value ?? navigable.value[0]?.key) ? 0 : -1),
-		/** Первый пункт — при открытии с клавиатуры (Enter, Space, стрелка вниз) */
 		focusFirst: (): void => focusAt(0),
-		/** Последний пункт — при открытии стрелкой вверх */
 		focusLast: (): void => focusAt(navigable.value.length - 1),
-		/** Само меню — при открытии мышью: стрелки начнут с первого пункта */
 		focusMenu: (): void => menuRef.value?.focus(),
 		moveFocus(offset: number): void {
 			const count = navigable.value.length
@@ -133,7 +119,6 @@ function useMenuNavigation(
 	}
 }
 
-/** Подменю: открытие кликом, стрелкой вправо или наведением с задержкой; закрытие может вернуть фокус на пункт */
 function useSubmenus(registry: ReturnType<typeof createRegistry>) {
 	const openSubmenu = ref<string | null>(null)
 	let pointerTimer: ReturnType<typeof setTimeout> | null = null
@@ -160,11 +145,9 @@ function useSubmenus(registry: ReturnType<typeof createRegistry>) {
 		clearPointerTimer,
 		openSubmenuAt,
 		closeSubmenu,
-		/** Подменю закрылось само: Escape или нажатие вне */
 		handleSubmenuUpdate(isOpen: boolean): void {
 			if (!isOpen) closeSubmenu(false)
 		},
-		/** После паузы открыть подменю под указателем (target) или закрыть открытое */
 		scheduleSubmenu(target: string | null): void {
 			clearPointerTimer()
 			pointerTimer = setTimeout(() => {
@@ -176,7 +159,6 @@ function useSubmenus(registry: ReturnType<typeof createRegistry>) {
 	}
 }
 
-/** Поиск пункта по первым буквам; набранное сбрасывается после паузы TYPEAHEAD_RESET */
 function useTypeahead(nav: ReturnType<typeof useMenuNavigation>) {
 	let typeahead = ''
 	let typeaheadTimer: ReturnType<typeof setTimeout> | null = null
@@ -200,7 +182,6 @@ function useTypeahead(nav: ReturnType<typeof useMenuNavigation>) {
 	}
 }
 
-/** Выбор пунктов; клавиша активации запоминается: Enter закрывает меню и на флажке, Space и клик — нет */
 function useActivation(
 	emit: DropdownMenuContentEmits,
 	nav: ReturnType<typeof useMenuNavigation>,
@@ -236,7 +217,6 @@ function useActivation(
 	}
 }
 
-/** Наведение мышью: пункт получает фокус (стрелки продолжат от него), подменю открывается с задержкой */
 function createPointerMove(registry: ReturnType<typeof createRegistry>, submenus: ReturnType<typeof useSubmenus>) {
 	const focusUnderPointer = (item: DropdownMenuItem, key: string): void => {
 		const element = registry.itemElements.get(key)
@@ -254,7 +234,6 @@ function createPointerMove(registry: ReturnType<typeof createRegistry>, submenus
 	}
 }
 
-/** Клавиши меню; false — клавиша не обработана и не отменяется */
 function createKeyActions(
 	props: MenuContentProps,
 	emit: DropdownMenuContentEmits,
@@ -294,9 +273,7 @@ function createKeyActions(
 			},
 		],
 		['Enter', handled(() => activation.activateCurrent('Enter'))],
-		// Пробел внутри набираемого слова — часть поиска, иначе — выбор пункта
 		[' ', handled(() => (typeahead.isTyping() ? typeahead.handleTypeahead(' ') : activation.activateCurrent(' ')))],
-		// Меню не входит в порядок Tab: фокус остаётся в меню до выбора или Escape
 		['Tab', () => true],
 	])
 }
@@ -316,7 +293,6 @@ export function useDropdownMenuContent(props: MenuContentProps, emit: DropdownMe
 		menuRef,
 		groups,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
-		// Колонка отметок нужна, если в меню есть флажок или переключатель: подписи пунктов выравниваются
 		hasIndicators: computed(() => groups.value.some(group => group.some(isCheckable))),
 		...useItemView(props, baseId),
 		registerItem: registry.registerItem,
@@ -335,7 +311,6 @@ export function useDropdownMenuContent(props: MenuContentProps, emit: DropdownMe
 		},
 		handlePointerMove: createPointerMove(registry, submenus),
 		handleKeydown(event: KeyboardEvent): void {
-			// Клавиши из поля ввода внутри пункта — не для меню
 			if (event.defaultPrevented) return
 			const action = keyActions.get(event.key)
 			if (action) {

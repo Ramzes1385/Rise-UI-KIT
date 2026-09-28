@@ -1,4 +1,3 @@
-// Имя и подпись обрезаются многоточием; vertical — аватар над текстом по центру.
 .base-user {
 	display: inline-flex;
 	align-items: center;
@@ -35,7 +34,6 @@
 		@include truncate;
 	}
 
-	// Ссылка: вид блока, а не текста — без подчёркивания; при наведении подчёркнуто только имя
 	&--link.base-link {
 		display: inline-flex;
 		font-size: inherit;

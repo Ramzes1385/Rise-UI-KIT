@@ -8,10 +8,6 @@
 		</div>
 
 		<div class="base-stepper__items" :class="classes.items">
-			<!--
-				Шаг — кнопка перехода к нему: Enter и Space работают как клик, отключённый шаг выведен из порядка Tab.
-				Текущий шаг помечен aria-current="step".
-			-->
 			<div
 				v-for="(step, index) in items"
 				:key="index"

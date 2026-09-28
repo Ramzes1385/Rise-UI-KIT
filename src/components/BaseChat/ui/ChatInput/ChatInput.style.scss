@@ -1,4 +1,3 @@
-// Textarea поля растёт с текстом до 6 строк; подсказки @упоминаний, /команд и панель эмодзи — плавающие панели (floating-surface).
 @use '../../styles/chat' as *;
 
 .base-chat-input {
@@ -156,7 +155,6 @@
 		overflow-y: auto;
 		@include scrollbar-thin;
 
-		// Плейсхолдер в одну строку: в узком поле он не переносится и не растягивает пустое поле по высоте.
 		&::placeholder {
 			color: var(--rise-text-dimmed);
 			opacity: 1;
@@ -226,7 +224,6 @@
 		@include menu-item;
 		gap: sz(8px);
 
-		// Пункт, выбранный стрелками, подсвечен как при наведении.
 		&--active {
 			background-color: var(--rise-bg-elevated);
 			color: var(--rise-text-highlighted);
@@ -256,7 +253,6 @@
 		@include truncate;
 	}
 
-	// На подсвеченном пункте (bg-elevated) muted не даёт 4.5:1 — вторичный текст toned.
 	&__autocomplete-sub {
 		@include text-size(xs);
 		color: var(--rise-text-toned);

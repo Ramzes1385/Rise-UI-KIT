@@ -1,5 +1,3 @@
-/** jsdom не считает раскладку: высота области и смещения строк подменяются. */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import BaseTable from '../ui/BaseTable.vue'
@@ -18,7 +16,6 @@ function makeRows(count: number): TableRow[] {
 	}))
 }
 
-/** ResizeObserver с записью наблюдаемых элементов: колбэк наблюдателя tbody вызывается вручную */
 let observers: { callback: () => void; targets: Element[]; disconnect: ReturnType<typeof vi.fn> }[] = []
 
 class ResizeObserverMock {
@@ -69,7 +66,6 @@ describe('BaseTable: виртуальная прокрутка', () => {
 			props: { columns: COLUMNS, rows: makeRows(1000), height: '300px', isVirtual: true, features: { rowNumber: true } },
 		})
 		await nextTick()
-		// 300px области по 44px — строки 0–6 и 5 строк запаса снизу
 		expect(dataRows()).toHaveLength(12)
 		expect(screen.getByRole('table')).toHaveAttribute('aria-rowcount', '1001')
 		expect(screen.getAllByRole('row')[0]).toHaveAttribute('aria-rowindex', '1')
@@ -107,7 +103,6 @@ describe('BaseTable: виртуальная прокрутка', () => {
 		const tbodyObserver = observers.find(observer => observer.targets.includes(tbody))
 		tbodyObserver?.callback()
 		await nextTick()
-		// Строки по 60px: в 300px помещаются 0–5, с запасом — 11 строк
 		expect(dataRows()).toHaveLength(11)
 		expect(spacers()[1]).toHaveStyle({ height: `${12 * 60 + 988 * 44 - 11 * 60}px` })
 	})

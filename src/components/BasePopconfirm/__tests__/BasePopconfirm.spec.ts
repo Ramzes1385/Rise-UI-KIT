@@ -85,7 +85,6 @@ describe('BasePopconfirm', () => {
 		await fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true })
 		expect(confirm).toHaveFocus()
 
-		// Фокус вне кнопок (например, после клика по тексту): Shift+Tab — на последнюю, Tab — на первую
 		confirm.blur()
 		await fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true })
 		expect(confirm).toHaveFocus()

@@ -22,7 +22,6 @@
 				classes.root,
 			]"
 			:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-			<!-- Подпись — имя триггера (aria-labelledby); клик по ней ставит фокус на триггер, как у нативного select -->
 			<FormFieldLabel
 				v-if="label"
 				:id="labelId"
@@ -36,7 +35,6 @@
 				:size-scale="sizeScale"
 				@click="focusTrigger" />
 
-			<!-- Триггер — combobox по шаблону APG «select-only»: фокус остаётся на нём, активная опция — aria-activedescendant -->
 			<div
 				ref="selectRef"
 				class="base-select__trigger"
@@ -72,7 +70,6 @@
 										:size-scale="sizeScale"
 										>{{ item.label }}</BaseText
 									>
-									<!-- Мышью убирает значение; с клавиатуры то же делает повторный выбор опции в списке -->
 									<button
 										v-if="!isControlDisabled"
 										type="button"

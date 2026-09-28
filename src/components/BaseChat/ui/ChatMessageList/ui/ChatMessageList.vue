@@ -6,7 +6,6 @@
 		role="log"
 		:aria-label="UI_CHAT_TEXT.MESSAGES_ARIA"
 		@scroll="handleListScroll">
-		<!-- role="log": скринридер вежливо (aria-live="polite") зачитывает новые сообщения -->
 		<ChatMessageItem
 			v-for="message in messages"
 			:key="message.id"
@@ -29,7 +28,6 @@
 			@command-click="handleCommandClick"
 			@reaction-toggle="handleToggleReaction(message.id, $event)" />
 
-		<!-- Пусто: в ленте ещё нет сообщений или поиск ничего не нашёл -->
 		<BaseEmpty
 			v-if="messages.length === 0 && !isTyping"
 			variant="ghost"

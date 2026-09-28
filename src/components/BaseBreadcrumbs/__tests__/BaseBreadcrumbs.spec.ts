@@ -63,7 +63,6 @@ describe('BaseBreadcrumbs unit', () => {
 
 			const slashSeps = container.querySelectorAll('.base-breadcrumbs__sep')
 			expect(slashSeps.length).toBeGreaterThan(0)
-			// Должно содержать несколько слэшей (после дома, после многоточия и между видимыми элементами)
 			const slashes = container.textContent?.match(/\//g)
 			expect(slashes?.length).toBeGreaterThanOrEqual(3)
 		})
@@ -196,7 +195,6 @@ describe('BaseBreadcrumbs unit', () => {
 			})
 
 			const links = container.querySelectorAll('.base-breadcrumbs__link')
-			// Первый элемент - "Главная" с to: '/'
 			const firstLink = links[0] as HTMLElement
 			firstLink.dispatchEvent(new Event('click'))
 
@@ -335,16 +333,12 @@ describe('BaseBreadcrumbs unit', () => {
 				props: { items: itemsWithIcons },
 			})
 
-			// Должно быть две иконки (одна в ссылке, одна в текущем элементе)
 			const icons = container.querySelectorAll('.base-breadcrumbs__icon')
 			expect(icons).toHaveLength(2)
 		})
 
 		it('не должен выполнять навигацию, если у элемента нет to и href', async () => {
-			const itemsWithoutNav: BreadcrumbItem[] = [
-				{ label: 'Главная' }, // Не текущий, но без путей навигации
-				{ label: 'Каталог' }, // Текущий
-			]
+			const itemsWithoutNav: BreadcrumbItem[] = [{ label: 'Главная' }, { label: 'Каталог' }]
 			const { emitted, container } = render(BaseBreadcrumbs, {
 				props: { items: itemsWithoutNav },
 			})

@@ -1,11 +1,9 @@
-/** Composable: логика BaseTimePicker — варианты времени, разбор ввода и методы поля */
 import { computed, ref } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import type { TimePickerProps } from '../types/BaseTimePicker.types'
 import type { AutocompleteOption, BaseAutocomplete } from '@components/BaseAutocomplete'
 import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/timeUtils'
 
-/** Набранное время → `HH:MM` в границах minTime–maxTime; иначе `null` (значение не меняется) */
 function normalizeTime(props: TimePickerProps, text: string): string | null {
 	const time = parseTimeInput(text)
 	if (!time) return null
@@ -25,7 +23,6 @@ export function useBaseTimePicker(props: TimePickerProps) {
 		options: computed((): AutocompleteOption[] =>
 			buildTimeOptions(props.step, props.minTime, props.maxTime).map(time => ({ value: time, label: time })),
 		),
-		/** Вариант подходит, если начинается с набранного: «9» — 09:… и 9…, «9:3» — 09:3… */
 		filterTime: (option: AutocompleteOption, query: string): boolean =>
 			timePrefixes(query).some(prefix => option.label.startsWith(prefix)),
 		normalizeTime: (text: string) => normalizeTime(props, text),

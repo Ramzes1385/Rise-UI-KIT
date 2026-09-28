@@ -1,6 +1,5 @@
 <template>
 	<div v-if="attachments.length > 0" class="base-chat-message-list__attachments">
-		<!-- Коллаж изображений: до 4 превью, на четвёртом — «+N» -->
 		<div
 			v-if="images.length > 0"
 			class="base-chat-message-list__collage"
@@ -26,7 +25,6 @@
 			</div>
 		</div>
 
-		<!-- Файлы: карточка открывает файл, кнопка справа — скачивает -->
 		<div v-if="files.length > 0" class="base-chat-message-list__files-list">
 			<div v-for="file in files" :key="file.id" class="base-chat-message-list__attached-file">
 				<button type="button" class="base-chat-message-list__attached-file-main" @click.stop="handleFileClick(file)">

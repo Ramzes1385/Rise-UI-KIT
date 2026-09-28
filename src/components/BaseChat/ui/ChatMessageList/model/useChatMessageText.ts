@@ -1,4 +1,3 @@
-/** Composable: логика ChatMessageText — текст сообщения по токенам: ссылки, упоминания, команды и совпадения поиска */
 import { computed } from 'vue'
 import { useMessageParser } from '@composables/useMessageParser'
 import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../types/ChatMessageText.types'
@@ -12,7 +11,6 @@ export function useChatMessageText(props: ChatMessageTextProps, emit: ChatMessag
 				highlightedParts: token.type === 'text' ? getHighlightedParts(token.value) : [],
 			})),
 		),
-		// В событие уходит имя без префикса @ или /
 		handleMentionClick: (mention: string): void => emit('mention-click', mention.slice(1)),
 		handleCommandClick: (command: string): void => emit('command-click', command.slice(1)),
 	}

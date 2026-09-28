@@ -11,7 +11,6 @@ describe('BaseProgress integration', () => {
 
 			const status = container.querySelector('.base-progress__status') as HTMLElement
 			expect(status).toHaveTextContent('50%')
-			// Подпись идёт перед треком и ширина её области равна проценту — текст стоит у конца заливки
 			expect(status.nextElementSibling).toHaveClass('base-progress__track')
 			expect(status.style.width).toBe('50%')
 			expect(screen.getByRole('progressbar')).toHaveTextContent('50%')

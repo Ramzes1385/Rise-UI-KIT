@@ -1,4 +1,3 @@
-/** Composable: логика BaseSplitButton — классы частей; вид, размер и цвет задают сами кнопки */
 import { useCustomClass } from '@composables/useCustomClass'
 import type { BaseSplitButtonProps } from '../types/BaseSplitButton.types'
 

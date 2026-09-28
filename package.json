@@ -211,7 +211,38 @@
       "scss/double-slash-comment-empty-line-before": null,
       "scss/comment-no-empty": null,
       "scss/at-if-no-null": null
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/components/**/*.scss"
+        ],
+        "rules": {
+          "comment-pattern": [
+            "(?!)",
+            {
+              "message": "Комментариев в стилях компонентов нет"
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/components/BasePin/styles/BasePin.style.scss"
+        ],
+        "rules": {
+          "property-no-vendor-prefix": [
+            true,
+            {
+              "ignoreProperties": [
+                "-webkit-appearance",
+                "-moz-appearance"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
   "allowScripts": {
     "esbuild": true,

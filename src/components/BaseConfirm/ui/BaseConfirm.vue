@@ -12,7 +12,6 @@
 		@after-leave="emit('after-leave')">
 		<p v-if="description" :id="descriptionId" class="base-confirm__description" :class="classes.description">{{ description }}</p>
 		<template #footer>
-			<!-- Фокус при открытии: на «Отмене» для необратимых действий, иначе на подтверждении -->
 			<BaseButton
 				variant="outline"
 				:size-scale="sizeScale"

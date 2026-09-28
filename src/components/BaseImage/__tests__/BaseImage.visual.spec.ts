@@ -1,5 +1,3 @@
-/** Изображения — SVG data URI из фикстур, снимки не зависят от сети; галерея снимается с открытым просмотром (телепорт в body) — вся страница */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

@@ -11,10 +11,6 @@
 				</slot>
 			</template>
 
-			<!--
-				Одна кнопка в обоих состояниях: при сворачивании она не пересоздаётся, и фокус клавиатуры остаётся на ней.
-				Подсказка повторяет её имя: «Свернуть» / «Развернуть».
-			-->
 			<BaseTooltip v-if="isCollapsible" :text="toggleLabel" position="right" class="base-side-bar__toggle-tooltip">
 				<BaseButton
 					variant="ghost"

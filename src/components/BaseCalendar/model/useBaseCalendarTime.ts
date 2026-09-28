@@ -1,4 +1,3 @@
-/** Composable: логика BaseCalendarTime — поля часов, минут и секунд с черновиками ввода и 12-часовым форматом */
 import { computed, ref, useId } from 'vue'
 import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../types/BaseCalendarTime.types'
 
@@ -13,21 +12,12 @@ function from12h(h: number, am: boolean): number {
 	return h === 12 ? 12 : h + 12
 }
 
-/**
- * Разобрать ввод поля времени и ограничить его диапазоном.
- * Без ограничения buildDateWithTime переносит «лишнее» на соседние часы/сутки (99 ч → +4 дня).
- * Пустое или нечисловое значение → null: время не меняется, пока не введена цифра
- */
 function parseTimeField(value: string, min: number, max: number): number | null {
 	const parsed = parseInt(value, 10)
 	if (Number.isNaN(parsed)) return null
 	return Math.min(Math.max(parsed, min), max)
 }
 
-/**
- * Поле с черновиком ввода: пока поле редактируется, в нём остаётся набранный текст, а не нормализованное значение.
- * Иначе очистка поля сразу подставляла «0»/«12», и следующая цифра дописывалась к нему («12» + «3» → 123 ч)
- */
 function useDraftField(read: () => string, write: (value: string) => void) {
 	const draft = ref<string | null>(null)
 	return {
@@ -68,10 +58,8 @@ function useTimeFields(props: BaseCalendarTimeProps, emit: BaseCalendarTimeEmits
 }
 
 export function useBaseCalendarTime(props: BaseCalendarTimeProps, emit: BaseCalendarTimeEmits) {
-	// id подписи «Время»: группа полей называется по ней
 	const captionId = useId()
 	const { hours, minutes, seconds } = useTimeFields(props, emit)
-	// Поля снова показывают нормализованное значение (например, «99» → «23»)
 	const resetDrafts = (): void => {
 		hours.draft.value = null
 		minutes.draft.value = null
@@ -84,7 +72,6 @@ export function useBaseCalendarTime(props: BaseCalendarTimeProps, emit: BaseCale
 		minutesModel: minutes.model,
 		secondsModel: seconds.model,
 		resetDrafts,
-		/** Завершение ввода (change): нормализовать отображение и применить время к выбранной дате */
 		commitTime(): void {
 			resetDrafts()
 			emit('timeChange')

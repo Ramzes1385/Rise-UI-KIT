@@ -1,19 +1,16 @@
 import type { ComputedRef, Ref } from 'vue'
-/** Composable: логика BaseDropdownMenu — кнопка меню (APG Menu Button): открытие с клавиатуры, фокус и выбор пункта */
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import type DropdownMenuContent from '../ui/DropdownMenuContent.vue'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, DropdownMenuItem, FocusTarget } from '../types/BaseDropdownMenu.types'
 
-/** Кнопка меню по APG: Enter, Space и стрелка вниз открывают меню на первом пункте, стрелка вверх — на последнем */
 function focusTargetFor(key: string): FocusTarget | null {
 	if (['Enter', ' ', 'ArrowDown'].includes(key)) return 'first'
 	if (key === 'ArrowUp') return 'last'
 	return null
 }
 
-/** Открытие: своё состояние, синхронизация с v-model:isOpen и куда поставить фокус после отрисовки */
 function useMenuOpen(props: BaseDropdownMenuProps, emit: BaseDropdownMenuEmits) {
 	const isOpenLocal = ref(props.isOpen ?? false)
 	let pendingFocus: FocusTarget = 'menu'
@@ -53,7 +50,6 @@ function useMenuTrigger(isOpenState: ComputedRef<boolean>, menuId: string) {
 	return { triggerRef, triggerAttributes, triggerId, getTrigger }
 }
 
-/** Фокус в меню после его отрисовки: с клавиатуры — на первый или последний пункт, мышью — на само меню */
 function useMenuFocus(
 	isOpen: Ref<boolean>,
 	contentRef: Ref<InstanceType<typeof DropdownMenuContent> | null>,
@@ -62,7 +58,6 @@ function useMenuFocus(
 	watch(isOpen, async value => {
 		if (!value) return
 		await nextTick()
-		// Меню могли закрыть раньше, чем оно отрисовалось: тогда фокус не трогаем
 		const content = contentRef.value
 		const focus = getPendingFocus()
 		if (focus === 'first') content?.focusFirst()
@@ -95,7 +90,6 @@ export function useBaseDropdownMenu(props: BaseDropdownMenuProps, emit: BaseDrop
 		handleTriggerKeydown(event: KeyboardEvent): void {
 			const focus = focusTargetFor(event.key)
 			if (!focus) return
-			// preventDefault: иначе Enter и Space ещё и кликнут по кнопке и закроют только что открытое меню
 			event.preventDefault()
 			if (!isOpenLocal.value) {
 				setOpen(true, focus)
@@ -104,7 +98,6 @@ export function useBaseDropdownMenu(props: BaseDropdownMenuProps, emit: BaseDrop
 			if (focus === 'first') contentRef.value?.focusFirst()
 			else contentRef.value?.focusLast()
 		},
-		/** Выбор пункта: обычный пункт закрывает меню и возвращает фокус на кнопку */
 		handleSelect(item: DropdownMenuItem, event: Event, shouldClose: boolean): void {
 			emit('select', item, event)
 			if (!shouldClose) return

@@ -1,4 +1,3 @@
-/** Composable: логика BaseSearchOverlay — поиск в окне или боковой панели: открытие, закрытие, фокус и классы слоя */
 import { computed, nextTick, ref } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useLayerIndex } from '@composables/useLayerStack'
@@ -8,7 +7,6 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseSearchOverlayExpose, BaseSearchOverlayProps } from '../types/BaseSearchOverlay.types'
 
-/** Классы слоя по виду панели (modal или sidebar): свои и из customClass */
 function useLayerClasses(props: BaseSearchOverlayProps) {
 	const prefix = computed(() => props.panel)
 	return {
@@ -25,7 +23,6 @@ function useLayerClasses(props: BaseSearchOverlayProps) {
 }
 
 export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event: 'close') => void) {
-	// Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo)
 	const teleportTarget = useTeleportTarget()
 	const { sizeScaleStyle, variantClass, variantStyle, customColorStyle } = useStandardBaseComponent('base-search', props)
 	const isOpen = ref(false)

@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseInputNumber — текст поля, шаги кнопками и клавишами, атрибуты spinbutton */
 import { computed, ref, watch } from 'vue'
 import { formatNumber } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
@@ -22,7 +21,6 @@ function useNumberDraft(props: InputNumberProps): NumberDraft {
 }
 
 function useNumberCommit(props: InputNumberProps, emit: BaseInputNumberEmits, text: NumberDraft): NumberCommit {
-	/** Последнее подтверждённое значение: `change` приходит, только если итог отличается от него */
 	let committedValue = props.modelValue
 
 	function commit(value: number | null): void {
@@ -33,7 +31,6 @@ function useNumberCommit(props: InputNumberProps, emit: BaseInputNumberEmits, te
 		committedValue = next
 	}
 
-	/** Значение, от которого шагают кнопки и стрелки: набранное число, иначе v-model, иначе min или 0 */
 	function currentValue(): number {
 		const typed = parseNumberInput(text.draft.value)
 		if (typeof typed === 'number') return typed
@@ -54,7 +51,6 @@ function useNumberCommit(props: InputNumberProps, emit: BaseInputNumberEmits, te
 }
 
 function useNumberKeyboard(props: InputNumberProps, actions: NumberCommit): (event: KeyboardEvent) => void {
-	/** Действие клавиши: шаг или граница по Home/End; `undefined` — клавиша не наша */
 	function stepFor(key: string): (() => void) | undefined {
 		const { min, max } = props
 		if (key in STEP_KEYS) return () => actions.stepBy(STEP_KEYS[key])
@@ -75,7 +71,6 @@ function useNumberKeyboard(props: InputNumberProps, actions: NumberCommit): (eve
 	}
 }
 
-/** Семантика spinbutton на нативном поле; атрибуты приложения — первыми */
 function useSpinbuttonAttrs(props: InputNumberProps, precision: Readonly<Ref<number>>) {
 	return computed(() => ({
 		...props.inputAttrs,
@@ -89,9 +84,6 @@ function useSpinbuttonAttrs(props: InputNumberProps, precision: Readonly<Ref<num
 	}))
 }
 
-/**
- * Поле числа по образцу APG Spinbutton: текст поля, шаги кнопками и клавишами, подтверждение по Enter и выходу из поля.
- */
 export function useBaseInputNumber(props: InputNumberProps, emit: BaseInputNumberEmits) {
 	const text = useNumberDraft(props)
 	const actions = useNumberCommit(props, emit, text)
@@ -105,7 +97,6 @@ export function useBaseInputNumber(props: InputNumberProps, emit: BaseInputNumbe
 		},
 	)
 
-	/** Ввод: допустимое число в границах сразу уходит в v-model, остальное ждёт выхода из поля */
 	function handleInput(input: string | number): void {
 		text.draft.value = String(input)
 		const value = parseNumberInput(text.draft.value)
@@ -115,7 +106,6 @@ export function useBaseInputNumber(props: InputNumberProps, emit: BaseInputNumbe
 
 	return {
 		inputRef,
-		/** Методы для ref компонента: всё делает поле BaseInput */
 		exposed: {
 			focus: () => inputRef.value?.focus(),
 			blur: () => inputRef.value?.blur(),

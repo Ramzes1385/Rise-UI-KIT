@@ -1,15 +1,10 @@
 import type { Ref } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
-/** Composable: логика ChatSlideover — панель «Информация»: вкладки, профиль участника, меню администратора и возврат фокуса */
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import type { ChatInfoTab, ChatMember } from '../types/BaseChat.types'
 import type { ChatSlideoverEmits, ChatSlideoverPanelProps } from '../types/ChatSlideover.types'
 
-/**
- * Панель «Информация» — BaseSlideover внутри окна чата (isContained): перекрывает ленту, закрывается крестиком,
- * Escape и кликом по подложке. Ширина — в процентах от 420px: 80 → 336px; в узком окне чата — на всю ширину
- */
 const SLIDEOVER_WIDTH = 80
 
 function detectOnlineStatus(text: string): 'online' | 'offline' {
@@ -22,10 +17,6 @@ function getMemberRoleLabel(member: ChatMember): string {
 	return member.status === 'online' ? UI_CHAT_TEXT.ONLINE : UI_CHAT_TEXT.OFFLINE
 }
 
-/**
- * Фокус: панель немодальная (внутри окна чата), поэтому ловушки фокуса нет. При открытии фокус переходит
- * на выбранную вкладку (или первую кнопку профиля), при закрытии — возвращается туда, откуда панель открыли
- */
 function usePanelFocus(props: ChatSlideoverPanelProps, contentRef: Ref<HTMLElement | null>, onClose: () => void): void {
 	let returnFocusTarget: HTMLElement | null = null
 	watch(
@@ -47,7 +38,6 @@ function usePanelFocus(props: ChatSlideoverPanelProps, contentRef: Ref<HTMLEleme
 	)
 }
 
-/** Меню администратора у участника: одно открытое меню за раз */
 function useAdminMenu(emit: ChatSlideoverEmits) {
 	const activeAdminMenuId = ref<string | null>(null)
 	const adminTriggerRefs = new Map<string, { focus: () => void }>()
@@ -64,7 +54,6 @@ function useAdminMenu(emit: ChatSlideoverEmits) {
 		toggleAdminMenu(memberId: string): void {
 			activeAdminMenuId.value = activeAdminMenuId.value === memberId ? null : memberId
 		},
-		/** Escape в открытом меню участника закрывает только меню и возвращает фокус на его кнопку; панель остаётся открытой */
 		handleAdminMenuEscape(event: KeyboardEvent, memberId: string): void {
 			if (activeAdminMenuId.value !== memberId) return
 			event.stopPropagation()
@@ -86,7 +75,6 @@ function useAdminMenu(emit: ChatSlideoverEmits) {
 	}
 }
 
-/** Вкладки панели; клавиатура APG Tabs с автоматической активацией: стрелки — соседняя вкладка по кругу, Home/End — крайние */
 function usePanelTabs(props: ChatSlideoverPanelProps, emit: ChatSlideoverEmits, idPrefix: string) {
 	const availableTabs = computed(() => [
 		{ id: 'info' as const, label: props.isGroup ? UI_CHAT_TEXT.PARTICIPANTS : UI_CHAT_TEXT.INFO_TAB },
@@ -112,7 +100,6 @@ function usePanelTabs(props: ChatSlideoverPanelProps, emit: ChatSlideoverEmits, 
 function usePanelMember(props: ChatSlideoverPanelProps) {
 	return {
 		titleText: computed((): string => (props.activeTab === 'profile' ? UI_CHAT_TEXT.PROFILE : UI_CHAT_TEXT.INFORMATION)),
-		// «12 участников» по правилам языка: 1 участник, 3 участника, 5 участников
 		membersCountLabel: computed(() => pluralize(getLocale().plural.PARTICIPANTS, props.members.length)),
 		selectedMember: computed((): ChatMember | null => {
 			if (!props.isGroup) {

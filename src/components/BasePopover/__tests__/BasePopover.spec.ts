@@ -1,5 +1,3 @@
-/** Компонент использует BaseDropdown с teleport to="body" — поиск в document. */
-
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
 import BasePopover from '../ui/BasePopover.vue'
@@ -211,7 +209,6 @@ describe('BasePopover unit', () => {
 				slots: SLOTS,
 			})
 
-			// Клик вне дропдауна вызывает handleClose в BaseDropdown
 			await fireEvent.mouseDown(document.body)
 
 			const updateEvents = emitted()['update:isOpen'] as boolean[][]

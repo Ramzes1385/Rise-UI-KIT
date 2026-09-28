@@ -1,6 +1,4 @@
-// Поле BaseInput с кнопками справа («Очистить», «Открыть календарь») — ghost-кнопки 24px, как кнопка пароля у BaseInput; клик по полю открывает панель.
 .date-picker-field {
-	// Кнопки — вложенные BaseButton: проп color красит поле, но не их.
 	&__suffix {
 		@include reset-custom-color;
 		display: flex;
@@ -10,7 +8,6 @@
 		padding-right: sz(4px);
 	}
 
-	// Двойной класс перекрывает отступы и цвет BaseButton по умолчанию независимо от порядка CSS.
 	&__clear-btn.base-button,
 	&__icon-btn.base-button {
 		--btn-pad-top: 3px;
@@ -26,7 +23,6 @@
 		}
 	}
 
-	// Поле открывает панель по клику — курсор-указатель вместо текстового.
 	&:not(&--disabled) .base-input__field {
 		cursor: pointer;
 	}

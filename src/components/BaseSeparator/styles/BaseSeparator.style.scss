@@ -1,4 +1,3 @@
-// Линия 1px цвета border (isDashed — пунктир); подпись 12/16 medium text-muted между линиями; цвет — через color.bg/color.text.
 .base-separator {
 	display: flex;
 	align-items: center;
@@ -8,7 +7,6 @@
 		width: 100%;
 	}
 
-	// В ряду flex вертикальный разделитель тянется на высоту ряда.
 	&--vertical {
 		flex-direction: column;
 		align-self: stretch;
@@ -16,7 +14,6 @@
 		min-height: sz(20px);
 	}
 
-	// Линия — рамка элемента: пунктир и толщина работают одинаково в обеих ориентациях.
 	&__line {
 		flex: 1 1 0;
 		border: 0 solid;
@@ -37,7 +34,6 @@
 		border-style: dashed;
 	}
 
-	// Отступы подписи по умолчанию; проп spacing переопределяет их inline-переменными на этом элементе.
 	&__content {
 		--sep-pad-y: 0px;
 		--sep-pad-x: 12px;

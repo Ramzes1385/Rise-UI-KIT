@@ -1,4 +1,3 @@
-// Цвета: предыдущие крошки — text-muted (при наведении — text), текущая — text-highlighted medium, разделители — text-dimmed.
 .base-breadcrumbs {
 	--breadcrumbs-gap: #{sz(6px)};
 
@@ -38,7 +37,6 @@
 		font: inherit;
 		font-weight: var(--rise-font-weight-medium);
 		text-align: left;
-		// Крошки — ссылки <a>: подчёркивание браузера убрано, вид как у прежних кнопок
 		text-decoration: none;
 		cursor: pointer;
 		@include transition-colors;
@@ -85,7 +83,6 @@
 		text-align: center;
 	}
 
-	// ghost: крошки-кнопки — отступы и подсветка фоном, как у ghost-кнопок.
 	&--ghost {
 		--breadcrumbs-gap: #{sz(2px)};
 	}
@@ -103,7 +100,6 @@
 		}
 	}
 
-	// outline, shadow, soft: крошки в контейнере высотой с контрол (32px при sizeScale = 100).
 	&--outline,
 	&--shadow,
 	&--soft {

@@ -26,7 +26,6 @@ describe('BaseAlert unit', () => {
 			const { container } = render(BaseAlert)
 
 			expect(container.querySelector('.base-alert__title')).not.toBeInTheDocument()
-			// Пустой блок описания скрывают стили (:empty), поэтому в нём не должно быть элементов
 			expect(container.querySelector('.base-alert__description')?.children).toHaveLength(0)
 		})
 	})
@@ -117,7 +116,6 @@ describe('BaseAlert unit', () => {
 			expect(closeButton.style.getPropertyValue('--btn-pad-top')).toBe('3px')
 			expect(closeButton.style.getPropertyValue('--btn-pad-left')).toBe('3px')
 			expect(closeButton.style.getPropertyValue('--size-scale')).toBe('1.25')
-			// Иконка без своего sizeScale наследует масштаб кнопки (calcIconScale('sm', 125) = 100 не выставил бы переменную)
 			expect((closeButton.querySelector('.base-icon') as HTMLElement).style.getPropertyValue('--size-scale')).toBe('')
 		})
 

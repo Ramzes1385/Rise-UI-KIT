@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-/** Composable: логика BaseRange — значения ползунков, перетаскивание и их доступные имена */
 import { computed, ref, useSlots } from 'vue'
 import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
@@ -47,7 +46,6 @@ function useThumbDrag(props: RangeProps, values: UseRangeValuesReturn, track: { 
 }
 
 export function useBaseRange(props: RangeProps, emit: BaseRangeEmits) {
-	// Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля)
 	const isControlDisabled = useFormDisabled(() => props.isDisabled)
 	const standard = useStandardBaseComponent('base-range', props, RANGE_ELEMENTS)
 	const slots = useSlots()
@@ -64,7 +62,6 @@ export function useBaseRange(props: RangeProps, emit: BaseRangeEmits) {
 		trackRef,
 		hasThumbSlot: computed((): boolean => Boolean(slots.thumb)),
 		...values,
-		/** Доступное имя ползунка: у диапазона и точек — с ролью ползунка, чтобы скринридер различал их («Цена: минимум», «Точка 2») */
 		thumbLabel(index: number): string {
 			if (values.mode.value === 'single') return props.ariaLabel || UI_ARIA.RANGE_VALUE
 			let role: string = `${UI_ARIA.RANGE_POINT} ${index + 1}`

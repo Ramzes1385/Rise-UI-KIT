@@ -1,4 +1,3 @@
-/** Composable: логика ChatMessage — сообщение: отправитель, статус доставки, галерея вложений и события действий */
 import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import type { ChatMessageItemEmits, MessageItemProps } from '../types/ChatMessageItem.types'
@@ -9,7 +8,6 @@ function getMessageImageUrls(message: ChatMessage): string[] {
 }
 
 function useSender(props: MessageItemProps) {
-	// Доступные названия статусов доставки: галочки передают статус не только цветом
 	const statusLabels: Record<Exclude<ChatMessageStatus, 'sending'>, string> = {
 		sent: UI_CHAT_TEXT.STATUS_SENT,
 		delivered: UI_CHAT_TEXT.STATUS_DELIVERED,
@@ -35,10 +33,6 @@ function createRelays(emit: ChatMessageItemEmits) {
 		handleAvatarClick: (): void => emit('avatar-click'),
 		handleReplyAction: (): void => emit('reply-action'),
 		handleContextMenu: (payload: MouseEvent): void => emit('context-menu', payload),
-		/**
-		 * Кнопка «Другие действия» открывает то же меню, что и правый клик. При нажатии с клавиатуры у события нет координат
-		 * указателя, поэтому меню ставится под кнопкой
-		 */
 		handleMoreClick(event: MouseEvent): void {
 			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 			emit('context-menu', new MouseEvent('contextmenu', { clientX: rect.left, clientY: rect.bottom + 4 }))

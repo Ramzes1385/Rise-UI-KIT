@@ -7,16 +7,11 @@ import { useExpandTransition } from '@composables/useExpandTransition'
 import { useTableComposition } from '@composables/useTableComposition'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseTableEmits, TableProps } from '../types/BaseTable.types'
-/** Composable: логика BaseTable — сортировка, фильтры, поиск, выбор и раскрытие строк, пагинация и виртуальная прокрутка */
 import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
 
-/** Наибольшая высота панели настроек колонок */
 const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
-/** Номеров страниц в пагинации, не считая крайних */
 const PAGINATION_MAX_VISIBLE = 4
-/** Длительность раскрытия и сворачивания строки, мс */
 const EXPAND_DURATION_MS = 300
-/** Расстояние до низа таблицы, px, с которого подгружаются следующие строки */
 const INFINITE_SCROLL_THRESHOLD = 50
 const TABLE_ELEMENTS = [
 	'root',
@@ -42,7 +37,6 @@ const TABLE_ELEMENTS = [
 	'footer',
 ]
 
-/** Раскрытие строк: одна анимация высоты на всю таблицу, строки берут её колбэки через provide */
 function useRowExpand() {
 	const expand = useExpandTransition({ duration: EXPAND_DURATION_MS })
 	provide(TABLE_EXPAND_TRANSITION_KEY, {
@@ -91,12 +85,6 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 	})
 }
 
-/**
- * Область таблицы прокручивается (задан height или таблица шире контейнера). Прокручиваемой области без фокусируемых
- * элементов нужен tabindex, иначе её не прокрутить с клавиатуры (WCAG 2.1.1, правило axe scrollable-region-focusable).
- * Постоянный tabindex добавил бы лишнюю остановку Tab, поэтому он ставится только при прокрутке. Признак пересчитывается
- * при изменении размеров области и самой таблицы (новые строки, скрытые колонки)
- */
 function useScrollable(wrapperRef: Ref<HTMLElement | null>): Ref<boolean> {
 	const isScrollable = ref(false)
 	let scrollObserver: ResizeObserver | null = null
@@ -107,7 +95,6 @@ function useScrollable(wrapperRef: Ref<HTMLElement | null>): Ref<boolean> {
 
 	onMounted(() => {
 		const wrapper = wrapperRef.value
-		/* istanbul ignore if -- defensive: обёртка рендерится всегда, ref заполнен к onMounted */
 		if (!wrapper) return
 		scrollObserver = new ResizeObserver(updateScrollable)
 		scrollObserver.observe(wrapper)
@@ -122,10 +109,6 @@ function useScrollable(wrapperRef: Ref<HTMLElement | null>): Ref<boolean> {
 	return isScrollable
 }
 
-/**
- * Высота строки — от её начала до начала следующей: так в неё входят вложенные и раскрытые строки.
- * У последней отрисованной строки следующей служит нижняя распорка
- */
 function measureRows(wrapper: HTMLElement, measure: (index: number, size: number) => void): void {
 	const rowElements = [...wrapper.querySelectorAll<HTMLElement>('tr[data-virtual-index]')]
 	const end = wrapper.querySelector<HTMLElement>('.base-table__spacer--end') as HTMLElement
@@ -135,7 +118,6 @@ function measureRows(wrapper: HTMLElement, measure: (index: number, size: number
 	})
 }
 
-/** Замер после каждой отрисовки строк и при изменении высоты tbody (раскрытие строки, загрузка картинок) */
 function useRowMeasure(
 	wrapperRef: Ref<HTMLElement | null>,
 	sources: [ComputedRef<boolean>, ComputedRef<unknown[]>],
@@ -158,7 +140,6 @@ function useRowMeasure(
 	onBeforeUnmount(() => rowsObserver?.disconnect())
 }
 
-/** Виртуальный режим: нужен height — без своей области прокрутки таблица растёт на все строки */
 function useTableVirtual(
 	props: TableProps,
 	displayedRows: ReturnType<typeof useTableComposition>['displayedRows'],
@@ -171,7 +152,6 @@ function useTableVirtual(
 		scrollElement: computed(() => (isVirtualMode.value ? wrapperRef.value : null)),
 		getKey: index => displayedRows.value[index].id,
 	})
-	// Строки для tbody: в виртуальном режиме — видимая часть с запасом
 	const bodyRows = computed(() =>
 		isVirtualMode.value ? displayedRows.value.slice(virtual.range.value.start, virtual.range.value.end) : displayedRows.value,
 	)
@@ -180,7 +160,6 @@ function useTableVirtual(
 }
 
 export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
-	// Поиск, фильтры и выбор строк — служебные поля: они не становятся полем BaseFormField вокруг таблицы
 	isolateFormField()
 	const standard = useStandardBaseComponent('base-table', props, TABLE_ELEMENTS)
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad' })
@@ -194,7 +173,6 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 		...standard,
 		settingsMaxHeight: SETTINGS_MAX_HEIGHT,
 		paginationMaxVisible: PAGINATION_MAX_VISIBLE,
-		// Без пропа padding отступы ячеек берутся из стилей (12px 16px), inline-переменные не пишутся
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		expand,
 		...features,

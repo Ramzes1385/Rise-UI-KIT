@@ -3,10 +3,6 @@ import { nextTick } from 'vue'
 import BaseTextarea from '../ui/BaseTextarea.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-/**
- * Эмулирует scrollHeight браузера (jsdom всегда отдаёт 0): при `height: auto` — высота текста,
- * при заданной высоте — не меньше её. Так видно, сбрасывает ли компонент высоту перед измерением.
- */
 function emulateScrollHeight(textarea: HTMLTextAreaElement, getContentHeight: () => number): void {
 	Object.defineProperty(textarea, 'scrollHeight', {
 		configurable: true,
@@ -411,7 +407,6 @@ describe('BaseTextarea unit', () => {
 				props: { modelValue: '', isAutosize: true },
 			})
 
-			// Получаем expose через внутренний механизм Vue 3 на корневом элементе
 			const root = container.firstElementChild as HTMLElement & {
 				__vueParentComponent?: {
 					exposed?: {
@@ -424,10 +419,8 @@ describe('BaseTextarea unit', () => {
 			const exposed = root.__vueParentComponent?.exposed
 			expect(exposed).toBeDefined()
 
-			// Явно обнуляем ref чтобы проверить guard-ветку !el
 			exposed!.textareaRef.value = null
 
-			// Вызов adjustHeight не должен падать — ветка !el просто делает return
 			expect(() => exposed!.adjustHeight()).not.toThrow()
 		})
 	})

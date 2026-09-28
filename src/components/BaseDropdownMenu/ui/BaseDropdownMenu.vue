@@ -9,7 +9,6 @@
 		panel-class="base-dropdown-menu__panel"
 		:custom-class="{ root: rootClass, panel: classes.panel }"
 		@update:is-open="setOpen">
-		<!-- Кнопка — из слота. Кит ставит ей aria-haspopup, aria-expanded и aria-controls и слушает клик и клавиши -->
 		<span
 			ref="triggerRef"
 			class="base-dropdown-menu__trigger"

@@ -1,6 +1,5 @@
 <template>
 	<span class="base-icon" :class="classes.root" :style="sizeScaleStyle">
-		<!-- Иконка, заменённая компонентом через плагин (icons): компонент рисует свой <svg> -->
 		<component
 			:is="icon.component"
 			v-if="icon.component"

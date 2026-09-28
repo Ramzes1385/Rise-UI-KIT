@@ -50,7 +50,6 @@
 				:aria-label="UI_CHAT_TEXT.FILE_SELECT_ARIA"
 				@change="handleFileChange" />
 
-			<!-- Кнопка команд (как в Telegram) — появляется только если есть команды -->
 			<BaseButton
 				v-if="hasCommands"
 				variant="ghost"
@@ -66,8 +65,6 @@
 			<ChatEmojiPicker :size-scale="sizeScale" @select="insertEmoji" />
 
 			<div class="base-chat-input__field-container">
-				<!-- Подсказки упоминаний (@) и команд (/): список связан с полем через aria-controls и aria-activedescendant,
-					стрелки выбирают пункт, Enter подставляет, Escape закрывает -->
 				<div
 					v-if="showMentions && filteredMembers.length > 0"
 					:id="suggestionsId"
@@ -120,7 +117,6 @@
 					</div>
 				</div>
 
-				<!-- Поле сообщения: Enter — отправить, Shift+Enter — новая строка; высота растёт с текстом -->
 				<textarea
 					:ref="setTextareaRef"
 					v-model="text"

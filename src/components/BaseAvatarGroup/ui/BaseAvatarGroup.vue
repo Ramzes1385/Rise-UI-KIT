@@ -1,5 +1,4 @@
 <template>
-	<!-- Группа — список: аватары скрыты от скринридера, имя человека — скрытым текстом, остаток — «и ещё N» -->
 	<ul class="base-avatar-group" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]" :aria-label="ariaLabel">
 		<li v-for="(item, index) in visibleItems" :key="`${item.name}-${index}`" class="base-avatar-group__item" :class="classes.item">
 			<BaseAvatar

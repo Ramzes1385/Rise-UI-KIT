@@ -4,8 +4,6 @@ async function loadSlider(page: import('@playwright/test').Page, storyId: string
 	await page.goto(`/iframe.html?id=${storyId}`)
 	await page.waitForSelector('.base-slider__dot', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 500 })
-	// Ждём, пока woff2 прогрузятся и layout устаканится. Без этого на throttled CI-runner
-	// Inter Variable может прийти ПОСЛЕ клика, и reflow отменит/съест click на 6px-точке.
 	await page.waitForLoadState('networkidle')
 }
 

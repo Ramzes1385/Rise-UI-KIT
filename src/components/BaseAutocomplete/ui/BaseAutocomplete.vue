@@ -1,8 +1,4 @@
 <template>
-	<!--
-		Поле с подсказками по образцу APG Combobox (autocomplete list): фокус остаётся в поле, ↓/↑ ведут по вариантам
-		(aria-activedescendant), Enter выбирает, Escape закрывает список, а при закрытом — очищает поле
-	-->
 	<div class="base-autocomplete" :class="classes.root">
 		<BaseDropdown
 			v-model:is-open="isOpen"
@@ -84,7 +80,6 @@
 				</div>
 			</template>
 		</BaseDropdown>
-		<!-- Число вариантов для скринридера: список открылся или изменился по вводу -->
 		<span class="base-autocomplete__status" role="status">{{ statusText }}</span>
 	</div>
 </template>

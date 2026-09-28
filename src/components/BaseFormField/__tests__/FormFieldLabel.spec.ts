@@ -1,5 +1,3 @@
-/** Общая подпись полей: BaseInput, BaseTextarea, BaseSelect, BaseCheckbox, BaseRadio, BaseSwitch */
-
 import '@testing-library/jest-dom/vitest'
 import FormFieldLabel from '../ui/FormFieldLabel.vue'
 import { render, screen } from '@testing-library/vue'

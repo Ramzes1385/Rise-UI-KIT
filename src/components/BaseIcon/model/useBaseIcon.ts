@@ -1,4 +1,3 @@
-/** Composable: логика BaseIcon — символ, доступность и трансформации */
 import { computed } from 'vue'
 import { useIcon } from '@composables/useIcon'
 import type { BaseIconProps } from '../types/BaseIcon.types'
@@ -17,7 +16,6 @@ export function useBaseIcon(props: BaseIconProps) {
 
 	return {
 		...useStandardBaseComponent('base-icon', props, ['root', 'svg']),
-		/** Символ спрайта или замена из плагина (`icons`) */
 		icon: computed(() => resolveIcon(props.name)),
 		isDecorative: computed(() => !props.ariaLabel),
 		iconStyle: computed(() => {

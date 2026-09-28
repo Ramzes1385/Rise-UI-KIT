@@ -1,5 +1,4 @@
 import { setLocale } from '@/locales/state'
-/** Composable: логика BaseApp — свои хранилища уведомлений и оверлеев, язык и цель телепорта */
 import { onBeforeUnmount, provide, watch } from 'vue'
 import type { BaseAppProps } from '../types/BaseApp.types'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
@@ -7,11 +6,9 @@ import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActive
 import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
 
 export function useBaseApp(props: BaseAppProps) {
-	// У каждого BaseApp свои хранилища: вложенный BaseApp не показывает уведомления внешнего второй раз
 	const toasts = createToastStore({ max: () => props.toaster?.max ?? TOAST_MAX })
 	const overlays = createOverlayStore()
 
-	// Язык ставится до создания дочерних компонентов: они сразу рендерят строки на нём
 	watch(
 		() => props.locale,
 		locale => {
@@ -20,7 +17,6 @@ export function useBaseApp(props: BaseAppProps) {
 		{ immediate: true },
 	)
 
-	// Цель телепорта для компонентов внутри BaseApp и его уведомлений. Задаётся при монтировании
 	if (props.teleportTo) provide(TELEPORT_TARGET_KEY, props.teleportTo)
 
 	provide(TOAST_STORE_KEY, toasts)
@@ -29,7 +25,6 @@ export function useBaseApp(props: BaseAppProps) {
 	setActiveOverlayStore(overlays)
 
 	onBeforeUnmount(() => {
-		// Ожидающие открытия промисы разрешаются undefined: код после await не зависает
 		overlays.closeAll()
 		if (getActiveToastStore() === toasts) setActiveToastStore(null)
 		if (getActiveOverlayStore() === overlays) setActiveOverlayStore(null)
@@ -38,7 +33,6 @@ export function useBaseApp(props: BaseAppProps) {
 	return {
 		toasts,
 		overlays,
-		/** Компонент закрылся сам (update:isOpen = false) без результата */
 		handleOpenChange(id: number, value: boolean): void {
 			if (!value) overlays.close(id)
 		},

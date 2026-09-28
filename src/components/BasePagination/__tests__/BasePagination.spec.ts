@@ -17,7 +17,6 @@ describe('BasePagination unit', () => {
 				props: { modelValue: 1, total: 50, pageSize: 10 },
 			})
 
-			// 5 страниц без многоточий: 1, 2, 3, 4, 5
 			expect(screen.getByText('1')).toBeInTheDocument()
 			expect(screen.getByText('5')).toBeInTheDocument()
 		})
@@ -46,7 +45,6 @@ describe('BasePagination unit', () => {
 				props: { modelValue: 1, total: 25, pageSize: 10 },
 			})
 
-			// 25 / 10 = 3 страницы
 			expect(screen.getByText('3')).toBeInTheDocument()
 		})
 	})
@@ -57,7 +55,6 @@ describe('BasePagination unit', () => {
 				props: { modelValue: 1, total: 50 },
 			})
 
-			// Кнопки навигации с иконками (chevron-left / chevron-right)
 			const svgs = container.querySelectorAll('svg')
 			expect(svgs.length).toBeGreaterThanOrEqual(2)
 		})
@@ -155,7 +152,6 @@ describe('BasePagination unit', () => {
 				},
 			})
 
-			// Находим первую кнопку (Prev) и эмитим клик, когда она отключена
 			const prevButton = wrapper.findComponent({ name: 'BaseButton' })
 			await prevButton.vm.$emit('click')
 

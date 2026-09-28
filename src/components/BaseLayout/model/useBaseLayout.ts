@@ -1,10 +1,8 @@
 import type { Ref } from 'vue'
 import type { BaseLayoutProps } from '../types/BaseLayout.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-/** Composable: логика BaseLayout — переход к содержимому и высота шапки */
 import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
 
-/** Высота шапки: прилипшее боковое меню встаёт под неё, а переход к <main> не прячет начало под шапкой */
 function useHeaderHeight(headerRef: Ref<HTMLElement | null>): Ref<number> {
 	const headerHeight = ref(0)
 	const measure = (): void => {
@@ -36,7 +34,6 @@ export function useBaseLayout(props: BaseLayoutProps) {
 		headerRef,
 		mainRef,
 		headerOffsetStyle: computed(() => ({ '--base-layout-header-height': `${headerHeight.value}px` })),
-		/** Ссылка «Перейти к содержимому»: фокус в <main> без смены адреса (hash-режим роутера не срабатывает) */
 		focusMain: () => mainRef.value?.focus(),
 	}
 }

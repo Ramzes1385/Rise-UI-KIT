@@ -1,4 +1,3 @@
-// Два режима (layout: columns/dropdown); на узком экране (--accordion) оба раскрываются вниз в потоке; dropdown-панели всегда плавающие.
 .base-mega-menu {
 	box-sizing: border-box;
 	width: 100%;
@@ -48,7 +47,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// Стрелка колонки нужна только в аккордеоне (узкий экран): на десктопе колонки всегда раскрыты.
 	&__title-arrow {
 		display: none;
 		flex-shrink: 0;
@@ -70,7 +68,6 @@
 		list-style: none;
 	}
 
-	// Вложенный уровень по умолчанию — аккордеон вниз в потоке, с линией слева.
 	&__sub-list {
 		display: flex;
 		flex-direction: column;
@@ -81,8 +78,6 @@
 		list-style: none;
 	}
 
-	// Каскадная flyout-панель (dropdown на десктопе). Координаты (position: fixed; top/left) задаёт
-	// useFlyoutPosition inline-стилем, с переносом влево при нехватке места справа.
 	&__sub-list--flyout {
 		z-index: var(--rise-z-overlay);
 		min-width: sz(220px);
@@ -112,8 +107,6 @@
 		}
 	}
 
-	// Лист-ссылка (BaseLink) выглядит как остальные пункты: блок на всю ширину, текст sm, без подчёркивания.
-	// Двойной класс перекрывает стили BaseLink независимо от порядка CSS.
 	&__node-header.base-link {
 		display: flex;
 		@include text-size(sm);
@@ -146,7 +139,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// Аккордеон: стрелка смотрит вниз, у раскрытого узла — вверх.
 	&__node-arrow {
 		flex-shrink: 0;
 		color: var(--rise-text-muted);
@@ -158,7 +150,6 @@
 		transform: rotate(-90deg);
 	}
 
-	// Описание выравнивается по тексту узла: отступ пункта, а при иконке — ещё иконка и промежуток.
 	&__node-desc {
 		margin: 0 0 sz(4px);
 		padding: 0 sz(8px);
@@ -183,7 +174,6 @@
 		position: relative;
 	}
 
-	// Пункт навигации — ghost-кнопка; двойной класс перекрывает её фон и цвет независимо от порядка CSS.
 	&__nav-link.base-button {
 		background-color: transparent;
 		@include custom-text(color, var(--rise-text));
@@ -193,7 +183,6 @@
 			color: var(--rise-text-highlighted);
 		}
 
-		// Иконка, текст и стрелка лежат в одной обёртке слота BaseButton.
 		.base-button__label {
 			display: inline-flex;
 			align-items: center;
@@ -232,7 +221,6 @@
 		@include custom-bg(background-color, var(--rise-bg));
 	}
 
-	// На десктопе вложенные уровни dropdown — каскад вбок, поэтому стрелка узла смотрит вправо.
 	&--dropdown:not(&--accordion) &__node-arrow,
 	&--dropdown:not(&--accordion) &__node--open > &__node-header &__node-arrow {
 		transform: none;
@@ -259,8 +247,6 @@
 		box-shadow: none;
 		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 	}
-
-	// Боковой flyout на узком экране невозможен: колонки встают в столбец, подменю раскрываются вниз в потоке.
 
 	&--accordion {
 		max-width: 100%;

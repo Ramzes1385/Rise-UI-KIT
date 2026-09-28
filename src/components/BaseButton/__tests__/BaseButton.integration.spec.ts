@@ -38,8 +38,6 @@ describe('BaseButton integration', () => {
 			expect(emitted()).not.toHaveProperty('click')
 		})
 
-		// Кнопка в loading остаётся без нативного disabled (чтобы не терять фокус),
-		// но клик по ней, как и раньше, не должен доходить до кликабельного предка (строка таблицы, карточка)
 		it.each([
 			{ isLoading: true, reaches: 'нет', expectedParentClicks: 0 },
 			{ isLoading: false, reaches: 'да', expectedParentClicks: 1 },

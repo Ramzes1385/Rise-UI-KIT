@@ -1,19 +1,15 @@
-// Цель подсвечена кольцом --rise-primary, остальная страница затемнена подложкой --rise-overlay.
-
 .base-tour {
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 }
 
-// Прозрачный слой на весь экран: клик по нему пропускает тур (behavior.closeOnOverlayClick).
 .base-tour__overlay {
 	position: fixed;
 	inset: 0;
 	cursor: pointer;
 }
 
-// Подсветка цели: кольцо 2px основного цвета и подложка на всю страницу вокруг — огромная тень.
 .base-tour__spotlight {
 	position: fixed;
 	box-sizing: border-box;
@@ -24,8 +20,6 @@
 	@include transition(top, left, width, height, border-radius);
 }
 
-// При открытии подсветка съезжается с экрана на цель. Длительность — как задержка показа карточки
-// в useTourCoordination (UI_TIMING.TOUR_FOCUS_DURATION = 450 мс = 1.5 × --rise-duration-slow); при reduced motion — 0.
 .base-tour__spotlight--focusing {
 	transition-duration: calc(var(--rise-duration-slow) * 1.5);
 	transition-timing-function: var(--rise-ease-out);
@@ -86,7 +80,6 @@
 	margin-bottom: sz(4px);
 }
 
-// Заголовок и текст — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
 .base-tour__title.base-text {
 	flex: 1;
 	min-width: 0;
@@ -103,7 +96,6 @@
 	overflow-wrap: anywhere;
 }
 
-// «Пропустить тур» — квадратная ghost-кнопка 24×24 в углу карточки; отрицательные отступы выравнивают иконку по тексту.
 .base-tour__close.base-button {
 	--btn-pad-top: 3px;
 	--btn-pad-right: 3px;
@@ -145,7 +137,6 @@
 	}
 }
 
-// Полоса прогресса — вместо точек, когда шагов больше восьми.
 .base-tour__progress-bar {
 	flex: 1 1 auto;
 	min-width: sz(40px);

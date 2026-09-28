@@ -7,7 +7,6 @@
 		:variant="toaster?.variant"
 		:size-scale="toaster?.sizeScale"
 		@remove="toasts.remove" />
-	<!-- Оверлеи useOverlay() и useConfirm(): компонент получает props и isOpen, закрывается событием close или update:isOpen -->
 	<component
 		:is="overlay.component"
 		v-for="overlay in overlays.entries.value"
@@ -24,7 +23,6 @@ import { useBaseApp } from '../model/useBaseApp'
 import { BaseNotification } from '@components/BaseNotification'
 import type { BaseAppProps, BaseAppSlots } from '../types/BaseApp.types'
 
-// Корень — фрагмент: BaseApp не добавляет обёртку и не влияет на раскладку приложения
 defineOptions({ inheritAttrs: false })
 
 const props = defineProps<BaseAppProps>()

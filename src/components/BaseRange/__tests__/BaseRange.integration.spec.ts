@@ -214,7 +214,6 @@ describe('BaseRange integration', () => {
 			const track = container.querySelector('.base-range__track-wrapper')
 			if (!track) throw new Error('Track not found')
 
-			// clientX=35 → ratio=35/200=0.175 → raw=17.5 → snap к 20
 			await fireEvent.mouseDown(track, { clientX: 35 })
 			await fireEvent.mouseUp(document)
 
@@ -232,7 +231,6 @@ describe('BaseRange integration', () => {
 			const thumb = container.querySelector('.base-range__thumb')
 			if (!thumb) throw new Error('Thumb not found')
 
-			// clientX=90 → ratio=90/200=0.45 → raw=45 → snap к 50
 			await fireEvent.mouseDown(thumb, { clientX: 0 })
 			await fireEvent.mouseMove(document, { clientX: 90 })
 			await fireEvent.mouseUp(document)
@@ -316,8 +314,6 @@ describe('BaseRange integration', () => {
 				const track = container.querySelector('.base-range__track-wrapper')
 				if (!track) throw new Error('Track not found')
 
-				// clientY=50, height=20 → ratio=1-(50-0)/20=1-2.5=-1.5 → clamped к 0 → value=0
-				// Но нам нужно clientY внутри трека: clientY=10 → ratio=1-10/20=0.5 → value=50
 				await fireEvent.mouseDown(track, { clientY: 10 })
 				await fireEvent.mouseUp(document)
 
@@ -427,7 +423,6 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 2) throw new Error('Thumbs not found')
 
-				// clientX=100 при ширине трека 200 → ratio=0.5 → value=50
 				await fireEvent.mouseDown(thumbs[0], { clientX: 0 })
 				await fireEvent.mouseMove(document, { clientX: 100 })
 				await fireEvent.mouseUp(document)
@@ -446,7 +441,6 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 2) throw new Error('Thumbs not found')
 
-				// clientX=200 при ширине трека 200 → ratio=1 → value=100
 				await fireEvent.mouseDown(thumbs[1], { clientX: 0 })
 				await fireEvent.mouseMove(document, { clientX: 200 })
 				await fireEvent.mouseUp(document)
@@ -497,14 +491,12 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 2) throw new Error('Thumbs not found')
 
-				// Пытаемся перетащить первый ползунок за второй
 				await fireEvent.mouseDown(thumbs[0], { clientX: 0 })
-				await fireEvent.mouseMove(document, { clientX: 180 }) // > 80% от 200px
+				await fireEvent.mouseMove(document, { clientX: 180 })
 				await fireEvent.mouseUp(document)
 
 				expect(emitted()).toHaveProperty('update:rangeValue')
 				const events = emitted('update:rangeValue') as number[][][]
-				// Первое значение должно быть ограничено вторым (80)
 				expect(events[0][0][0]).toBe(80)
 				expect(events[0][0][1]).toBe(80)
 			})
@@ -518,14 +510,12 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 2) throw new Error('Thumbs not found')
 
-				// Пытаемся перетащить второй ползунок за первый
 				await fireEvent.mouseDown(thumbs[1], { clientX: 0 })
-				await fireEvent.mouseMove(document, { clientX: 10 }) // < 20% от 200px
+				await fireEvent.mouseMove(document, { clientX: 10 })
 				await fireEvent.mouseUp(document)
 
 				expect(emitted()).toHaveProperty('update:rangeValue')
 				const events = emitted('update:rangeValue') as number[][][]
-				// Второе значение должно быть ограничено первым (20)
 				expect(events[0][0][0]).toBe(20)
 				expect(events[0][0][1]).toBe(20)
 			})
@@ -619,7 +609,6 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 3) throw new Error('Thumbs not found')
 
-				// clientX=120 при ширине трека 200 → ratio=0.6 → value=60
 				await fireEvent.mouseDown(thumbs[1], { clientX: 0 })
 				await fireEvent.mouseMove(document, { clientX: 120 })
 				await fireEvent.mouseUp(document)
@@ -638,7 +627,6 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 3) throw new Error('Thumbs not found')
 
-				// Тащим средний за левого соседа (20) → ограничится 20
 				await fireEvent.mouseDown(thumbs[1], { clientX: 0 })
 				await fireEvent.mouseMove(document, { clientX: 0 })
 				await fireEvent.mouseUp(document)
@@ -656,7 +644,6 @@ describe('BaseRange integration', () => {
 				const thumbs = container.querySelectorAll('.base-range__thumb')
 				if (thumbs.length < 3) throw new Error('Thumbs not found')
 
-				// Тащим средний за правого соседа (80) → ограничится 80
 				await fireEvent.mouseDown(thumbs[1], { clientX: 0 })
 				await fireEvent.mouseMove(document, { clientX: 200 })
 				await fireEvent.mouseUp(document)

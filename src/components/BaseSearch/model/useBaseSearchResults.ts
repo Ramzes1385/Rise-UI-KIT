@@ -1,11 +1,6 @@
-/** Composable: логика BaseSearchResults — подсветка совпадений с запросом и события выбора */
 import type { SearchResult } from '../types/BaseSearch.types'
 import type { BaseSearchResultsEmits, BaseSearchResultsProps, TextPart } from '../types/BaseSearchResults.types'
 
-/**
- * Делит текст на части по вхождениям запроса без учёта регистра. Если запрос пуст или нижний регистр меняет
- * длину строки (редкие символы вроде «İ»), индексы не совпали бы с исходным текстом — текст возвращается целиком
- */
 function splitTextByQuery(text: string, rawQuery: string): TextPart[] {
 	const query = rawQuery.trim().toLowerCase()
 	const lowerText = text.toLowerCase()

@@ -1,6 +1,4 @@
-// spinner крутится всегда, даже при prefers-reduced-motion (иначе выглядит зависанием); dots/pulse/bars при reduced-motion статичны.
 .base-loader {
-	// Цвет индикатора читают все части: так color.text одинаково перекрашивает любой вид.
 	@include custom-text('--loader-color', var(--rise-primary));
 
 	display: inline-flex;
@@ -31,7 +29,6 @@
 		stroke: var(--rise-bg-accented);
 	}
 
-	// Дуга в четверть окружности (длина окружности r=20 — 125.7 единиц viewBox).
 	&__spinner-fill {
 		stroke: var(--loader-color);
 		stroke-dasharray: 31.4px 125.7px;
@@ -49,7 +46,6 @@
 		background-color: var(--loader-color);
 	}
 
-	// Точка в центре; расходящееся кольцо (::before) — только без prefers-reduced-motion.
 	&__pulse {
 		position: relative;
 		width: sz(12px);
@@ -113,8 +109,6 @@
 		}
 	}
 
-	// Требует позиционированного родителя (position: relative). Подложка — фон страницы 80%: содержимое под ней
-	// остаётся различимым, но не спорит с индикатором.
 	&--overlay {
 		position: absolute;
 		inset: 0;
@@ -123,7 +117,6 @@
 		background-color: color-mix(in srgb, var(--rise-bg) 80%, transparent);
 	}
 
-	// Сквозь подложку просвечивает содержимое, поэтому подпись контрастнее обычной.
 	&--overlay &__label {
 		color: var(--rise-text-toned);
 	}

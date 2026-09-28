@@ -1,5 +1,3 @@
-/** Панель телепортируется — поиск в document. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseDrawer from '../ui/BaseDrawer.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

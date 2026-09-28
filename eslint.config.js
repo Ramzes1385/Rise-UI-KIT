@@ -12,6 +12,28 @@ const TYPES_OUTSIDE_TYPES_FOLDER = {
 
 const LOGIC_IN_MODEL = 'Логика компонента — в model/useBaseX.ts (docs/CONTRIBUTING.md, раздел 9)'
 
+// Комментарии в коде компонентов запрещены: в скриптах и в шаблонах .vue
+const RISE = {
+	rules: {
+		'no-comments': {
+			meta: {
+				type: 'suggestion',
+				schema: [],
+				messages: { comment: 'Комментариев в коде компонентов нет: описания — в stories (docs/CONTRIBUTING.md, раздел 11)' },
+			},
+			create(context) {
+				return {
+					Program() {
+						const { sourceCode } = context
+						const comments = [...sourceCode.getAllComments(), ...(sourceCode.ast.templateBody?.comments ?? [])]
+						for (const comment of comments) context.report({ loc: comment.loc, messageId: 'comment' })
+					},
+				}
+			},
+		},
+	},
+}
+
 const CLEAN_CODE_SIZE_RULES = {
 	complexity: ['error', 10],
 	'max-statements': ['error', 15],
@@ -84,6 +106,8 @@ export default tseslint.config(
 			'vue/one-component-per-file': 'off',
 			// v-html используется осознанно (JSON-LD, SVG-иконки) с защитой от XSS.
 			'vue/no-v-html': 'off',
+			// JSON-LD крошек — <component :is="'script'"> с v-html: это элемент script, а не компонент.
+			'vue/no-v-text-v-html-on-component': ['error', { allow: ['component'] }],
 		},
 	},
 
@@ -105,6 +129,13 @@ export default tseslint.config(
 	{
 		files: ['src/components/**/model/**/*.ts'],
 		rules: CLEAN_CODE_SIZE_RULES,
+	},
+
+	{
+		files: ['src/components/**/*.{ts,vue}'],
+		ignores: ['src/components/**/types/*.types.ts'],
+		plugins: { rise: RISE },
+		rules: { 'rise/no-comments': 'error' },
 	},
 
 	// Логика компонентов — в model/: в <script setup> только макросы, импорты для шаблона и вызов useBaseX

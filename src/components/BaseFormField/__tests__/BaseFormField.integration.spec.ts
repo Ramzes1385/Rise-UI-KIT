@@ -22,7 +22,6 @@ describe('BaseFormField integration', () => {
 	})
 })
 
-/** Контекст поля: контрол кита внутри получает id, описание, ошибку и обязательность обёртки */
 describe('BaseFormField: контрол кита внутри', () => {
 	it('подпись связана с BaseInput через for, описание обёртки описывает поле, группы нет', async () => {
 		const { container } = render({

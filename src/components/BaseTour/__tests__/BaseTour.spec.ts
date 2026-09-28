@@ -1,5 +1,3 @@
-/** Компонент использует Teleport to="body" — содержимое ищем в document. */
-
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
 import BaseTour from '../ui/BaseTour.vue'

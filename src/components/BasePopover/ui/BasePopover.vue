@@ -12,14 +12,12 @@
 		:size-scale="sizeScale"
 		:custom-class="{ root: rootClass, panel: classes.panel }"
 		@close="handleClose">
-		<!-- Кнопка — из слота: кит ставит ей aria-haspopup, aria-expanded и aria-controls сам -->
 		<div ref="triggerRef" class="base-popover__trigger" :class="classes.trigger" @click="toggle">
 			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
 		<template #dropdown>
 			<div class="base-popover__arrow" :class="[`base-popover__arrow--${position}`, classes.arrow]"></div>
-			<!-- Немодальный диалог с именем кнопки: фокус остаётся на кнопке, Tab идёт в поля поповера -->
 			<div :id="panelId" class="base-popover__inner" :class="classes.inner" role="dialog" :aria-labelledby="triggerId">
 				<slot />
 			</div>

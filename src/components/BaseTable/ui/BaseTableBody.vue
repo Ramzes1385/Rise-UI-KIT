@@ -1,9 +1,7 @@
 <template>
 	<tbody class="base-table__tbody" :class="tbodyClass">
-		<!-- Загрузка без данных: строки-скелетоны той же высоты, что и строки таблицы -->
 		<template v-if="isLoading && !rows.length">
 			<tr v-for="skeletonRow in skeletonRows" :key="skeletonRow" class="base-table__tr--skeleton" :class="trClass">
-				<!-- Без sizeScale у скелетонов: ширины в процентах не масштабируются, высота берёт --size-scale таблицы -->
 				<td v-if="isSelectable" class="base-table__td base-table__td--check" :class="tdClass">
 					<span class="base-table__skeleton">
 						<BaseSkeleton shape="rect" class="base-table__skeleton-box" />
@@ -36,7 +34,6 @@
 		</tr>
 
 		<template v-else>
-			<!-- Виртуальная прокрутка: распорка высотой строк выше видимых -->
 			<tr v-if="isVirtual" class="base-table__spacer" aria-hidden="true">
 				<td :colspan="totalColumns" class="base-table__spacer-cell" :style="{ height: `${paddingStart}px` }"></td>
 			</tr>
@@ -96,7 +93,6 @@
 					</template>
 				</BaseTableExpandedRow>
 			</template>
-			<!-- Распорка ниже видимых строк: по её началу замеряется высота последней отрисованной строки -->
 			<tr v-if="isVirtual" class="base-table__spacer base-table__spacer--end" aria-hidden="true">
 				<td :colspan="totalColumns" class="base-table__spacer-cell" :style="{ height: `${paddingEnd}px` }"></td>
 			</tr>

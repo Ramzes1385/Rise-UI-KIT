@@ -11,15 +11,12 @@
 			classes.root,
 		]">
 		<div v-if="label" class="base-form-field__header" :class="classes.header">
-			<!-- Звёздочка — только знак: обязательность объявляет aria-required поля -->
 			<label :id="labelId" :for="controlId" class="base-form-field__label" :class="classes.label"
 				>{{ label
 				}}<span v-if="isRequired" class="base-form-field__required" :class="classes.required" aria-hidden="true">*</span></label
 			>
 		</div>
 
-		<!-- Контрол кита внутри сообщает свой id (подпись связана с ним через for) и сам берёт описание и ошибку.
-			Без контрола и без for содержимое — группа с именем из подписи, описание или ошибка описывают группу -->
 		<div
 			class="base-form-field__content"
 			:class="classes.content"
@@ -33,7 +30,6 @@
 			{{ description }}
 		</p>
 
-		<!-- Обёртка анимации рендерится только вместе с ошибкой: так появление ошибки плавное, а без ошибки нет пустого элемента -->
 		<BaseAnimation v-if="error" name="fade" :size-scale="sizeScale" :custom-class="classes.animation">
 			<p :id="errorId" class="base-form-field__error" :class="classes.error">
 				{{ error }}

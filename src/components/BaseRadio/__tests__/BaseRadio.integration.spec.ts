@@ -87,7 +87,6 @@ describe('BaseRadio integration', () => {
 	})
 
 	describe('слот option', () => {
-		/** Кастомная подпись опции: отмечает выбранную опцию галочкой */
 		const OPTION_SLOT = {
 			option: ({ option, isChecked }: { option: BaseRadioOption; isChecked: boolean }) =>
 				h('span', { class: 'custom-option' }, `${option.label}${isChecked ? ' ✓' : ''}`),

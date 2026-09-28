@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseSearch — поле поиска (APG combobox with listbox popup) в строке, окне или боковой панели */
 import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { getSearchOptionId } from './searchOptionId'
@@ -45,7 +44,6 @@ const SEARCH_ELEMENTS = [
 	'input',
 ]
 
-/** Окно и боковая панель показывают поле поиска в своём слое */
 function isOverlayMode(props: SearchProps): boolean {
 	return props.mode === 'modal' || props.mode === 'sidebar'
 }
@@ -95,10 +93,8 @@ function useSearch(props: SearchProps, emit: BaseSearchEmits, inputs: ReturnType
 	})
 }
 
-/** Поле — combobox: подсвеченный результат — aria-activedescendant; статус для скринридера — сколько найдено */
 function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearchState>) {
 	const listboxId = `rise-search-${useId()}-listbox`
-	// Список на экране: в режиме по умолчанию — открытая панель, в окне и панели — блок результатов
 	const hasListbox = computed((): boolean => {
 		const isShown = isOverlayMode(props) ? search.shouldShowResults.value && Boolean(search.query.value) : search.isOpen.value
 		return isShown && search.visibleResults.value.length > 0
@@ -116,7 +112,6 @@ function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearchSt
 					? getSearchOptionId(listboxId, search.highlightedIndex.value)
 					: undefined,
 		})),
-		// Пока идёт загрузка — пусто
 		resultsStatus: computed((): string => {
 			if (!search.query.value || props.isLoading) return ''
 			const count = search.visibleResults.value.length

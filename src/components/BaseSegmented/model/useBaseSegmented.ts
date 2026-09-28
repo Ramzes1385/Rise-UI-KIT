@@ -1,4 +1,3 @@
-/** Composable: логика BaseSegmented — имя группы, связь с BaseFormField и выбор */
 import { computed, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
@@ -8,7 +7,6 @@ export function useBaseSegmented(props: BaseSegmentedProps, emit: BaseSegmentedE
 	const ownId = useId()
 	const labelId = `${ownId}-label`
 	const errorId = `${ownId}-error`
-	// Группа в BaseFormField: подпись обёртки называет группу, её описание или ошибка описывают группу
 	const control = useFieldControl({
 		isLabelable: false,
 		describedBy: () => (props.error ? errorId : undefined),
@@ -20,7 +18,6 @@ export function useBaseSegmented(props: BaseSegmentedProps, emit: BaseSegmentedE
 		labelId,
 		errorId,
 		radioName: computed(() => props.name ?? `rise-segmented-${ownId}`),
-		/** Блокировка: свой isDisabled или неактивная BaseForm вокруг */
 		isControlDisabled: useFormDisabled(() => props.isDisabled),
 		control,
 		labelledBy: computed(() => (props.label ? labelId : control.fieldLabelId.value)),

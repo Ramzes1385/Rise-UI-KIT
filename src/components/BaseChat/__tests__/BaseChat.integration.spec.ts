@@ -94,7 +94,6 @@ describe('BaseChat integration', () => {
 			const searchInput = container.querySelector('.base-chat-header__search-input input') as HTMLInputElement
 			await user.type(searchInput, 'Привет')
 
-			// При активном поиске текст разбивается на span-ы подсветки, поэтому проверяем через DOM
 			expect(container.querySelectorAll('.base-chat-message-list__item').length).toBe(1)
 			expect(screen.queryByText('Здравствуйте')).toBeNull()
 			expect(container.querySelector('.base-chat-message-list__highlight')).toBeInTheDocument()
@@ -265,7 +264,6 @@ describe('BaseChat integration', () => {
 
 			await enterSelection()
 
-			// Панель ввода скрыта (display: none), но остаётся смонтированной, чтобы не терять черновик
 			expect(screen.getByPlaceholderText('Напишите сообщение...')).not.toBeVisible()
 			expect(screen.getByText('Отмена')).toBeInTheDocument()
 		})
@@ -325,7 +323,6 @@ describe('BaseChat integration', () => {
 
 			expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
 
-			// Отмена внутри окна подтверждения (закрытие по кресту модалки)
 			const modalClose = container.querySelector('.base-modal__close') as HTMLElement
 			await fireEvent.click(modalClose)
 
@@ -336,9 +333,7 @@ describe('BaseChat integration', () => {
 		it('показывает множественный текст и эмитит все id при удалении нескольких сообщений', async () => {
 			const { container, emitted } = renderChat()
 
-			// Первое сообщение — вход в режим выбора через action-кнопку
 			await enterSelection()
-			// Второе сообщение — клик по item в режиме выбора
 			const items = container.querySelectorAll('.base-chat-message-list__item')
 			await fireEvent.click(items[1] as HTMLElement)
 
@@ -434,7 +429,6 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(memberMain)
 			await fireEvent.click(screen.getByText('Написать сообщение'))
 
-			// BaseChat пробрасывает write-message наружу как avatar-click (переход в личку)
 			const events = emitted()['avatar-click'] as Array<[string]>
 			expect(events.at(-1)?.[0]).toBe('a1')
 		})
@@ -475,11 +469,9 @@ describe('BaseChat integration', () => {
 
 			await openInfo()
 			await fireEvent.click(screen.getByText('Файлы'))
-			// Карточка файла — кнопка с именем файла; кнопка «Скачать файл …» рядом
 			const fileButton = container.querySelector('.base-chat-slideover__file-main') as HTMLElement
 			await fireEvent.click(fileButton)
 
-			// file-click внутри слайдовера пробрасывается наружу как download-file
 			expect(emitted()['download-file']).toBeTruthy()
 		})
 

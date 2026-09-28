@@ -1,5 +1,3 @@
-/** Компонент использует teleport to="body" — поиск в document. */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import BaseDropdown from '../ui/BaseDropdown.vue'
@@ -7,7 +5,6 @@ import { BaseSelect } from '@components/BaseSelect'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Хост: кнопка-триггер и панель с полем ввода и некликабельным пунктом (preventMousedown по умолчанию) */
 function renderDropdownWithInput() {
 	const Host = defineComponent({
 		components: { BaseDropdown },

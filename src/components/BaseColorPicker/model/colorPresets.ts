@@ -1,4 +1,3 @@
-/** Набор пресетов по умолчанию */
 export const DEFAULT_COLOR_PRESETS = [
 	'#f97316',
 	'#ef4444',

@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseImage — загрузка с запасным источником, форматы и просмотр с зумом и галереей */
 import { computed, ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import type BaseImageZoom from '../ui/BaseImageZoom.vue'
@@ -92,8 +91,6 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 		customColorStyle,
 		resolvedHasZoom,
 		resolvedShowMinimap: computed((): boolean => props.zoomConfig?.showMinimap ?? true),
-		// Имя кнопки-обёртки зума даёт alt изображения внутри; у декоративного изображения (alt="") имени нет —
-		// тогда кнопка называется «Просмотр изображения»
 		zoomTriggerAttrs: computed(() => {
 			if (!resolvedHasZoom.value) return undefined
 			return { type: 'button', 'aria-haspopup': 'dialog', 'aria-label': props.alt ? undefined : UI_ARIA.IMAGE_VIEWER }
@@ -103,7 +100,6 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 		gallery,
 		zoom,
 		...state,
-		// Радиус из пропа borderRadius (в px, масштабируется); без пропа — радиус md из стилей
 		radiusStyle: computed(() => (props.borderRadius === undefined ? undefined : borderRadiusStyle.value)),
 		handleImageClick(): void {
 			if (!resolvedHasZoom.value) return

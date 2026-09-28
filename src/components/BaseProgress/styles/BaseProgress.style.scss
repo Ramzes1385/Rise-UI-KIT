@@ -1,10 +1,6 @@
-// При prefers-reduced-motion анимации (striped/pulse/glow) отключены — неопределённый прогресс становится статичной бледной заливкой.
-
-// Полосы striped — цвет текста на заливке роли, 20%: светлые на светлой теме, тёмные на тёмной.
 $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 
 .base-progress {
-	// Цвет заливки читают полоса, кольцо и свечение: color.bg, запасной — color.text, иначе основной цвет.
 	@include custom-bg('--progress-color', var(--custom-text, var(--rise-primary)));
 
 	position: relative;
@@ -16,7 +12,6 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 		width: 100%;
 	}
 
-	// Ширина подписи = проценту: текст прижат к концу заливки, а в начале шкалы не уходит за левый край.
 	&__status {
 		display: flex;
 		justify-content: flex-end;
@@ -43,7 +38,6 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 		@include transition(width);
 	}
 
-	// Ширина по кольцу: в колонке flex кольцо не растягивается на всю строку.
 	&--circle {
 		display: inline-flex;
 		align-items: center;
@@ -54,7 +48,6 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 	&__svg {
 		width: sz(64px);
 		height: sz(64px);
-		// Отсчёт от 12 часов
 		transform: rotate(-90deg);
 	}
 
@@ -93,7 +86,6 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 		box-shadow: 0 0 8px color-mix(in srgb, var(--progress-color) 60%, transparent);
 	}
 
-	// При prefers-reduced-motion: бледная заливка во всю длину (кольцо целиком) — «идёт работа», без движения.
 	&--indeterminate &__track {
 		overflow: hidden;
 	}
@@ -122,14 +114,12 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 			animation: base-progress-glow 2s var(--rise-ease) infinite;
 		}
 
-		// Бегущий отрезок в 40% длины трека
 		&--indeterminate &__fill {
 			width: 40%;
 			opacity: 1;
 			animation: base-progress-indeterminate 1.5s var(--rise-ease) infinite;
 		}
 
-		// Вращающаяся дуга в четверть окружности (длина окружности r=52 — 326.7 единиц viewBox)
 		&--indeterminate &__fill-circle {
 			stroke-dashoffset: 245px;
 			opacity: 1;

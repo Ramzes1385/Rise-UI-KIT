@@ -10,7 +10,6 @@ import type { BaseAppToasterOptions } from '../types/BaseApp.types'
 import { getActiveToastStore, useToast } from '@composables/useToast'
 import { getActiveOverlayStore, useOverlay } from '@composables/useOverlay'
 
-/** Простой оверлей: показывает props, закрывается своими событиями. Кнопка «Анимация…» видна и после закрытия */
 const TestDialog = defineComponent({
 	name: 'TestDialog',
 	props: { isOpen: Boolean, name: { type: String, default: '' } },
@@ -30,7 +29,6 @@ const TestDialog = defineComponent({
 	},
 })
 
-/** Рендерит BaseApp со страницей, которая получает API toast и overlay */
 function renderApp(toaster?: BaseAppToasterOptions) {
 	const api = {} as { toast: UseToastReturn; overlay: UseOverlayReturn }
 	const Page = defineComponent({

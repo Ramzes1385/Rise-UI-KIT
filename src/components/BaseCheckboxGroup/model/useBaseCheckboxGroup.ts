@@ -1,4 +1,3 @@
-/** Composable: логика BaseCheckboxGroup — отмеченные значения, «Выбрать все» и связь с BaseFormField */
 import { computed, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
@@ -10,7 +9,6 @@ function useGroupField(props: CheckboxGroupProps) {
 	const ownId = useId()
 	const labelId = `${ownId}-label`
 	const errorId = `${ownId}-error`
-	// Группа в BaseFormField: подпись обёртки называет группу, её описание или ошибка описывают группу
 	const control = useFieldControl({
 		isLabelable: false,
 		describedBy: () => (props.error ? errorId : undefined),
@@ -20,7 +18,6 @@ function useGroupField(props: CheckboxGroupProps) {
 	return {
 		labelId,
 		errorId,
-		/** Блокировка: свой isDisabled или неактивная BaseForm вокруг */
 		isControlDisabled: useFormDisabled(() => props.isDisabled),
 		control,
 		labelledBy: computed(() => (props.label ? labelId : control.fieldLabelId.value)),
@@ -29,11 +26,9 @@ function useGroupField(props: CheckboxGroupProps) {
 
 function useCheckedValues(props: CheckboxGroupProps, emit: BaseCheckboxGroupEmits) {
 	const checkedSet = computed(() => new Set(props.modelValue))
-	/** Значения доступных вариантов: их отмечает и снимает «Выбрать все» */
 	const enabledValues = computed(() => props.options.filter(option => !option.isDisabled).map(option => option.value))
 	const isAllChecked = computed(() => enabledValues.value.length > 0 && enabledValues.value.every(value => checkedSet.value.has(value)))
 
-	/** Новый набор в порядке вариантов; отмеченные значения вне вариантов сохраняются в конце */
 	const update = (next: Set<string | number>): void => {
 		const known = new Set(props.options.map(option => option.value))
 		const value = [
@@ -55,7 +50,6 @@ function useCheckedValues(props: CheckboxGroupProps, emit: BaseCheckboxGroupEmit
 			else next.delete(value)
 			update(next)
 		},
-		/** «Выбрать все»: отмечает доступные варианты, а если все уже отмечены — снимает их; недоступные не трогает */
 		handleSelectAll(): void {
 			const next = new Set(checkedSet.value)
 			for (const value of enabledValues.value) {

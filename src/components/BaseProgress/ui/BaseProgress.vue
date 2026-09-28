@@ -13,7 +13,6 @@
 		:aria-valuenow="isIndeterminate ? undefined : percent"
 		aria-valuemin="0"
 		aria-valuemax="100">
-		<!-- Линейный прогресс: подпись над полосой движется вместе с концом заливки -->
 		<template v-if="shape === 'line'">
 			<div v-if="isLabelVisible" class="base-progress__status" :class="classes.tooltipTrigger" :style="{ width: `${percent}%` }">
 				<span class="base-progress__status-text" :class="classes.tooltipAnchor">

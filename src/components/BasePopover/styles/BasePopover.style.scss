@@ -1,16 +1,12 @@
-// Обёртка строчная и по размеру триггера: панель и стрелка центрируются по триггеру, а не по всей строке.
 .base-popover {
 	display: inline-flex;
 	vertical-align: middle;
 
-	// flex убирает строку вокруг кнопки в слоте: размеры триггера — это размеры кнопки, без межстрочного зазора.
 	&__trigger {
 		display: flex;
 		cursor: pointer;
 	}
 
-	// Панель — это .base-dropdown__panel: двойной класс перекрывает его стили независимо от порядка CSS.
-	// Стрелка выходит за край панели, поэтому прокручивается не панель (overflow: visible), а содержимое.
 	&__panel.base-dropdown__panel {
 		display: flex;
 		flex-direction: column;
@@ -25,7 +21,6 @@
 		overflow-wrap: anywhere;
 		@include scrollbar-thin;
 
-		// Внешние отступы первого и последнего блока (абзацы, заголовки) не складываются с отступами панели.
 		> :first-child {
 			margin-top: 0;
 		}
@@ -35,8 +30,6 @@
 		}
 	}
 
-	// Стрелка — повёрнутый квадрат цвета панели (--dd-bg, --dd-border из BaseDropdown): видны две стороны рамки,
-	// обращённые к триггеру, а фон перекрывает рамку панели под стрелкой.
 	&__arrow {
 		position: absolute;
 		box-sizing: border-box;
@@ -45,7 +38,6 @@
 		border: 1px solid var(--dd-border);
 		background-color: var(--dd-bg);
 
-		// Панель под триггером — стрелка на верхнем крае
 		&--bottom {
 			top: 0;
 			left: 50%;
@@ -54,7 +46,6 @@
 			transform: translate(-50%, -50%) rotate(45deg);
 		}
 
-		// Панель над триггером — стрелка на нижнем крае
 		&--top {
 			bottom: 0;
 			left: 50%;
@@ -63,7 +54,6 @@
 			transform: translate(-50%, 50%) rotate(45deg);
 		}
 
-		// Панель слева от триггера — стрелка на правом крае
 		&--left {
 			top: 50%;
 			right: 0;
@@ -72,7 +62,6 @@
 			transform: translate(50%, -50%) rotate(45deg);
 		}
 
-		// Панель справа от триггера — стрелка на левом крае
 		&--right {
 			top: 50%;
 			left: 0;

@@ -1,4 +1,3 @@
-// Пустое состояние списка/таблицы/поиска, всё по центру (иконка dimmed, заголовок highlighted, описание muted), отступ 32px 24px; ghost — без фона, рамки и отступов (для карточки/таблицы/списка).
 .base-empty {
 	display: flex;
 	flex-direction: column;
@@ -39,7 +38,6 @@
 		overflow-wrap: break-word;
 	}
 
-	// Заголовок и описание — BaseText (по умолчанию --rise-text): здесь свои цвета.
 	& &__title {
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
@@ -48,7 +46,6 @@
 		color: inherit;
 	}
 
-	// Дополнительный текст из слота — под описанием, чуть дальше, чем описание от заголовка.
 	&__body {
 		margin-top: sz(4px);
 	}

@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { ColumnFilter, TableColumn, TableRow } from '../types/BaseTable.types'
 
-/** Стабаем дочерние компоненты для изоляции */
 const globalConfig = {
 	stubs: {
 		BaseInput: {
@@ -817,7 +816,6 @@ describe('BaseTable unit', () => {
 	})
 
 	describe('регрессии аудита', () => {
-		/** Свежие колонки на каждый тест: проверяем, что таблица не мутирует объекты из props */
 		function createColumns(extra: Partial<TableColumn> = {}): TableColumn[] {
 			return [
 				{ key: 'name', label: 'Имя', ...extra },
@@ -825,12 +823,10 @@ describe('BaseTable unit', () => {
 			]
 		}
 
-		/** Значения колонки «Возраст» в порядке отображения строк */
 		function renderedAges(container: Element): string[] {
 			return Array.from(container.querySelectorAll('tbody tr')).map(row => row.querySelectorAll('td')[1]?.textContent?.trim() ?? '')
 		}
 
-		/** Стабы без BaseCheckbox: нужен реальный чекбокс, отображающий modelValue */
 		const stubsWithRealCheckbox = Object.fromEntries(Object.entries(globalConfig.stubs).filter(([name]) => name !== 'BaseCheckbox'))
 
 		afterEach(() => {
@@ -867,7 +863,6 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			// «Мария» выбрана до поиска и затем скрыта им
 			await fireEvent.click(container.querySelectorAll('.base-table__td--check input')[1])
 			await fireEvent.update(container.querySelector('.base-table__search .base-input-stub')!, 'иван')
 			const selectAll = container.querySelector('.base-table__th--check input')!
@@ -921,7 +916,6 @@ describe('BaseTable unit', () => {
 			await fireEvent.click(nameSettingsItem().querySelector('input')!)
 
 			expect(screen.queryByRole('columnheader', { name: 'Имя' })).not.toBeInTheDocument()
-			// Галочка BaseCheckbox рендерится только при modelValue=true
 			expect(nameSettingsItem().querySelector('.base-checkbox__icon')).not.toBeInTheDocument()
 		})
 
@@ -1010,7 +1004,6 @@ describe('BaseTable unit', () => {
 	})
 
 	describe('доступные имена и клавиатура', () => {
-		/** Стабы без BaseCheckbox и BaseButton: нужны настоящие подписи чекбоксов и атрибуты кнопок */
 		const realControlStubs = Object.fromEntries(
 			Object.entries(globalConfig.stubs).filter(([name]) => name !== 'BaseCheckbox' && name !== 'BaseButton'),
 		)

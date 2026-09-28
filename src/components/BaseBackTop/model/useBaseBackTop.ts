@@ -1,5 +1,4 @@
 import { useCustomClass } from '@composables/useCustomClass'
-/** Composable: логика BaseBackTop — видимость по прокрутке и возврат наверх */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { BackTopProps, BaseBackTopEmits } from '../types/BaseBackTop.types'
 
@@ -11,7 +10,6 @@ function getScrollTop(target: HTMLElement | Window): number {
 	return target === window ? window.scrollY : (target as HTMLElement).scrollTop
 }
 
-/** Фокус в начало: элемент без tabindex получает tabindex="-1" до потери фокуса */
 function focusTop(target: HTMLElement | Window, focusTarget: string | HTMLElement | undefined): void {
 	const fallback = target === window ? (document.querySelector<HTMLElement>('main') ?? document.body) : (target as HTMLElement)
 	const element = focusTarget ? resolveElement(focusTarget) : fallback
@@ -23,7 +21,6 @@ function focusTop(target: HTMLElement | Window, focusTarget: string | HTMLElemen
 	element.focus({ preventScroll: true })
 }
 
-/** Подписка на прокрутку окна или контейнера из target (контейнер по селектору ищется после монтирования) */
 function useScrollVisibility(props: BackTopProps) {
 	const isVisible = ref(false)
 	let scrollTarget: HTMLElement | Window | null = null
@@ -53,7 +50,6 @@ export function useBaseBackTop(props: BackTopProps, emit: BaseBackTopEmits) {
 	const { isVisible, getScrollTarget } = useScrollVisibility(props)
 
 	return {
-		// Классы по элементам (customClass): оформление задаёт BaseFab
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'icon', 'label'] }),
 		isVisible,
 		handleClick(event: MouseEvent): void {

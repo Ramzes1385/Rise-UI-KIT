@@ -1,4 +1,3 @@
-// Переключатель сегментами 32px (дорожка 2px, сегмент 28px, текст 14/20); варианты default/soft/outline, фокус — кольцо, isBlock — во всю ширину, цвет — через color.bg/color.text.
 .base-segmented {
 	--segment-checked-bg: var(--custom-bg, var(--rise-bg));
 	--segment-checked-text: var(--custom-text, var(--rise-text-highlighted));
@@ -38,7 +37,6 @@
 		padding: sz(4px 12px);
 		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-sm));
-		// Невыбранный сегмент — цвет text: приглушённый text-muted на дорожке bg-elevated не проходит контраст 4.5:1
 		color: var(--rise-text);
 		white-space: nowrap;
 		cursor: pointer;
@@ -61,14 +59,12 @@
 			@include disabled-state;
 		}
 
-		// Кольцо фокуса с клавиатуры: сам radio прозрачный, кольцо рисует сегмент
 		&:has(.base-segmented__input:focus-visible) {
 			outline: 2px solid var(--rise-focus-ring);
 			outline-offset: 1px;
 		}
 	}
 
-	// Нативный radio лежит поверх сегмента: получает клик, фокус и стрелки, но не виден
 	&__input {
 		position: absolute;
 		inset: 0;

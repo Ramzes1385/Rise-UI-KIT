@@ -1,15 +1,11 @@
-// Обёртка триггера и плавающая панель в body (использует BasePopover/BaseSelect/BaseSearch), отступ 4px; варианты default/outline/shadow/soft/ghost меняют фон, рамку и тень панели.
-
 .base-dropdown {
 	position: relative;
 
 	&__panel {
-		// Отступы по умолчанию. Проп padding переопределяет их inline-переменными --dd-pad-*.
 		--dd-pad-top: 4px;
 		--dd-pad-right: 4px;
 		--dd-pad-bottom: 4px;
 		--dd-pad-left: 4px;
-		// Фон и рамка — переменные: варианты перекрашивают через них панель, а стрелка BasePopover повторяет её цвета.
 		@include custom-bg(--dd-bg, var(--rise-bg));
 		--dd-border: var(--rise-border);
 

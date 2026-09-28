@@ -1,4 +1,3 @@
-/** Composable: логика BaseMenu — классы и выбор пункта */
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../types/BaseMenu.types'
 

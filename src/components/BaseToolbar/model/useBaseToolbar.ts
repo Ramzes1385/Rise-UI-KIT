@@ -1,20 +1,16 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseToolbar — один элемент в порядке Tab и стрелки между элементами (APG Toolbar) */
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import type { BaseToolbarProps } from '../types/BaseToolbar.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
-/** Элементы панели: фокусируемые и не отключённые; помеченные панелью — даже с tabindex="-1" */
 const ITEM_SELECTOR = 'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [data-toolbar-item]'
 const NON_TEXT_INPUT_TYPES = ['button', 'checkbox', 'radio', 'submit', 'reset', 'image']
 
-/** Текстовое поле: стрелки в нём двигают курсор, а не фокус панели */
 function isTextEntry(element: HTMLElement): boolean {
 	if (element.matches('textarea, [contenteditable]:not([contenteditable="false"])')) return true
 	return element instanceof HTMLInputElement && !NON_TEXT_INPUT_TYPES.includes(element.type)
 }
 
-/** Индекс элемента после клавиши; undefined — клавиша панели не касается */
 function nextIndex(key: string, position: { index: number; count: number }, isVertical: boolean): number | undefined {
 	const { index, count } = position
 	const moves = new Map([
@@ -26,7 +22,6 @@ function nextIndex(key: string, position: { index: number; count: number }, isVe
 	return moves.get(key)
 }
 
-/** Один элемент в порядке Tab: последний с фокусом (или первый), остальные — tabindex="-1" */
 function useRovingTabIndex(rootRef: Ref<HTMLElement | null>) {
 	let active: HTMLElement | null = null
 	let observer: MutationObserver | null = null
@@ -44,7 +39,6 @@ function useRovingTabIndex(rootRef: Ref<HTMLElement | null>) {
 		}
 	}
 
-	// Кнопки появляются, исчезают и отключаются — порядок Tab пересчитывается
 	onMounted(() => {
 		syncTabIndex()
 		observer = new MutationObserver(syncTabIndex)
@@ -81,7 +75,6 @@ export function useBaseToolbar(props: BaseToolbarProps) {
 			setActive(items[targetIndex])
 			items[targetIndex].focus()
 		},
-		/** Фокус пришёл мышью или Tab'ом — этот элемент становится элементом в порядке Tab */
 		handleFocusin(event: FocusEvent): void {
 			const target = event.target as HTMLElement
 			if (getItems().includes(target) && !isActive(target)) setActive(target)

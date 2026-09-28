@@ -38,7 +38,6 @@
 						</BaseButton>
 					</div>
 
-					<!-- Тело: с прокруткой получает tabindex, чтобы его можно было прокрутить с клавиатуры -->
 					<div ref="bodyRef" class="base-slideover__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>

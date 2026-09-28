@@ -1,5 +1,4 @@
 <template>
-	<!-- Подвал сайта или приложения (<footer> — ориентир contentinfo): начало, середина и конец; на узком экране — столбиком -->
 	<footer class="base-footer" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseContainer :size="containerSize" class="base-footer__inner" :custom-class="{ root: classes.inner }" :size-scale="sizeScale">
 			<div v-if="slots.start" class="base-footer__start">

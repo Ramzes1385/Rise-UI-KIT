@@ -3,8 +3,6 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// Ячейка: 14/20, отступ 12/16 (проп padding). Линия между строками — верхняя рамка ячейки: у первой строки её нет
-	// (под шапкой своя линия), у строки после свёрнутого содержимого раскрытия она не удваивается.
 	&__td {
 		padding: sz(var(--tbl-pad-top)) sz(var(--tbl-pad-right)) sz(var(--tbl-pad-bottom)) sz(var(--tbl-pad-left));
 		border-top: 1px solid var(--rise-border);
@@ -23,7 +21,6 @@
 			text-align: right;
 		}
 
-		// Закреплённые колонки: непрозрачный фон строки и линия-разделитель со стороны прокрутки.
 		&--sticky-left {
 			position: sticky;
 			left: 0;
@@ -40,7 +37,6 @@
 			box-shadow: inset 1px 0 0 var(--rise-border);
 		}
 
-		// Пустое состояние (BaseEmpty) и строка подгрузки — по центру всей ширины таблицы.
 		&--empty {
 			padding: sz(32px 16px);
 			text-align: center;
@@ -51,8 +47,6 @@
 			text-align: center;
 		}
 
-		// Строки вложенной таблицы и раскрытого содержимого: линию рисует содержимое, пока оно показано,
-		// поэтому у свёрнутой строки нет ни отступов, ни рамки.
 		&--nested,
 		&--expanded {
 			padding: 0;
@@ -64,7 +58,6 @@
 		border-top: 0;
 	}
 
-	// Служебные ячейки (выбор, номер, раскрытие): отступ справа не нужен — его даёт следующая колонка.
 	&__th--check,
 	&__td--check,
 	&__th--number,
@@ -79,13 +72,10 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	// На мягком фоне выбранной строки приглушённому тексту не хватает контраста — номер темнее.
 	&__tr--selected &__td--number {
 		color: var(--rise-text-toned);
 	}
 
-	// Кнопка раскрытия 24×24 (ghost) в строке высотой 44px: отрицательные поля сохраняют высоту строки.
-	// Двойной класс перекрывает раскладку и цвет BaseButton независимо от порядка CSS.
 	&__expand-btn.base-button {
 		display: flex;
 		margin: sz(-2px) 0;
@@ -96,7 +86,6 @@
 		}
 	}
 
-	// Фиксированная раскладка (заданы ширины колонок): длинный текст обрезается многоточием.
 	&__table--fixed &__td,
 	&__table--fixed &__th {
 		overflow: hidden;
@@ -111,7 +100,6 @@
 		overflow: hidden;
 	}
 
-	// Содержимое слота expanded-content — с отступами ячейки.
 	&__expanded-wrapper {
 		padding: sz(var(--tbl-pad-top)) sz(var(--tbl-pad-right)) sz(var(--tbl-pad-bottom)) sz(var(--tbl-pad-left));
 		@include reset-custom-color;
@@ -128,14 +116,12 @@
 		color: var(--rise-text-highlighted);
 	}
 
-	// Скелетон занимает строку высотой 20px — строки-заглушки той же высоты, что и строки данных.
 	&__skeleton {
 		display: flex;
 		align-items: center;
 		height: sz(20px);
 	}
 
-	// Скелетон выровнен как данные колонки.
 	&__td--center &__skeleton {
 		justify-content: center;
 	}
@@ -150,7 +136,6 @@
 		border-radius: sz(var(--rise-radius-sm));
 	}
 
-	// Подгрузка в режиме infinite: спиннер 20px и подпись в одну строку.
 	&__loading-more.base-loader {
 		flex-direction: row;
 	}

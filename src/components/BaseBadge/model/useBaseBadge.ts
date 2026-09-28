@@ -1,4 +1,3 @@
-/** Composable: логика BaseBadge — классы, стили и событие клика */
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseBadgeEmits, BaseBadgeProps } from '../types/BaseBadge.types'
 

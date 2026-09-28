@@ -1,4 +1,3 @@
-// Оформление пузыря задают переменные --chat-bubble-* (варианты BaseChat переопределяют их в BaseChat.style.scss).
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
 @use '../../../styles/chat' as *;
@@ -29,7 +28,6 @@
 	overflow: hidden auto;
 	@include scrollbar-thin;
 
-	// Строка на всю ширину: фон выделения и подсветки занимает её целиком, содержимое прижато к своей стороне.
 	&__item {
 		position: relative;
 		display: flex;
@@ -40,12 +38,10 @@
 		border-radius: sz(var(--chat-item-radius));
 		@include transition-colors(var(--rise-duration-slow));
 
-		// Фон выделения отличается и от своих (primary-soft), и от чужих (bg-elevated) пузырей.
 		&--selected {
 			background-color: var(--rise-primary-soft-hover);
 		}
 
-		// Сообщение с открытым контекстным меню и подсветка после перехода по цитате или закрепу
 		&--context-active,
 		&--highlighted {
 			background-color: var(--rise-bg-muted);
@@ -70,7 +66,6 @@
 		}
 	}
 
-	// На фоне выделения время и статус — toned: у muted там контраст ниже 4.5:1.
 	&__item--selected .base-chat-message-list__meta {
 		color: var(--rise-text-toned);
 	}
@@ -82,7 +77,6 @@
 		min-height: sz(32px);
 	}
 
-	// Подпись чекбокса нужна только скринридеру: визуально выбор показывает сам квадрат.
 	&__checkbox .base-checkbox__label {
 		@include visually-hidden;
 	}
@@ -157,8 +151,6 @@
 		min-height: sz(36px);
 	}
 
-	// Панель на верхней кромке пузыря. Видна при наведении и при фокусе внутри сообщения (клавиатура):
-	// кнопки всегда в порядке Tab, скрыта только их отрисовка. На сенсорных экранах панель не перехватывает касания.
 	&__actions {
 		position: absolute;
 		top: sz(-16px);

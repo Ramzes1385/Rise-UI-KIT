@@ -1,11 +1,8 @@
-/** Рендерятся реальные дочерние компоненты без stub'ов: регрессия 1.2.2 — панель передавала удалённые плоские props, которые уходили в $attrs. */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
-/** Открыть панель кликом по полю ввода */
 async function openPanel(): Promise<HTMLElement> {
 	await fireEvent.click(screen.getByPlaceholderText('Выберите дату'))
 	const panel = document.body.querySelector<HTMLElement>('.date-picker-panel')
@@ -44,7 +41,6 @@ describe('BaseDatePicker + реальный BaseCalendar', () => {
 			props: {
 				modelValue: new Date(2026, 8, 10),
 				maxDate: new Date(2026, 8, 20),
-				// 13.09.2026 — воскресенье
 				disabledWeekdays: [0],
 			},
 		})
@@ -95,7 +91,6 @@ describe('BaseDatePicker + реальный BaseCalendar', () => {
 
 		const panel = await openPanel()
 
-		// Навигация по месяцам/годам — только кнопки шапки панели
 		expect(panel.querySelectorAll('.base-calendar__nav-btn')).toHaveLength(0)
 		expect(panel.querySelectorAll('.base-calendar__title-btn')).toHaveLength(0)
 		expect(panel.querySelectorAll('.date-picker-panel__nav-btn')).toHaveLength(4)

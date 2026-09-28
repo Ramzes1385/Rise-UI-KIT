@@ -1,5 +1,3 @@
-// Боковая панель (фон bg, рамка справа); шапка 56px, пункт навигации 32px с иконкой 20px (текущий — bg-elevated и primary-иконка); варианты default/ghost/outline/shadow/soft; отступы — --sidebar-pad-*, ширина и gap — inline px; цвет — через bg.base/text.base/bg.hover/text.hover.
-
 .base-side-bar,
 .base-side-bar *,
 .base-side-bar *::before,
@@ -51,7 +49,6 @@
 		margin-left: auto;
 	}
 
-	// Кнопка сворачивания — квадратная ghost-кнопка 32×32 с иконкой 20px.
 	&__toggle.base-button {
 		--btn-pad-left: var(--rise-control-padding-y);
 		--btn-pad-right: var(--rise-control-padding-y);
@@ -189,7 +186,6 @@
 		min-width: 0;
 	}
 
-	// В свёрнутой панели пункт обёрнут подсказкой: центрируем его по ширине панели.
 	&__item > .base-tooltip,
 	&__tooltip-trigger {
 		display: flex;
@@ -242,7 +238,6 @@
 			}
 		}
 
-		// Свёрнутая панель: квадратный пункт 32×32 с иконкой 20px.
 		&--collapsed {
 			justify-content: center;
 			width: sz(32px);
@@ -273,7 +268,6 @@
 		@include truncate;
 	}
 
-	// Бейдж — мягкий фон основного цвета. Двойной класс перекрывает оформление BaseBadge независимо от порядка CSS.
 	&__badge.base-badge {
 		flex-shrink: 0;
 		min-width: sz(20px);
@@ -303,7 +297,6 @@
 		}
 	}
 
-	// Вложенный уровень: линия под центром иконки родителя (отступ пункта 8px + половина иконки 10px).
 	&__children {
 		margin: sz(2px) 0 0 sz(18px);
 		padding-left: sz(8px);

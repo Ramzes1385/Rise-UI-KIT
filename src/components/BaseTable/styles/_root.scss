@@ -2,15 +2,12 @@
 @use '@styles/mixins' as *;
 @use '@styles/functions' as *;
 
-// Таблица (рамка border, радиус lg); шапка 14/20 semibold с нижней линией, ячейки 14/20, отступ 12/16; варианты default/bordered/striped; кастомный цвет — на корне, внутри таблицы --custom-* сбрасывается.
 .base-table {
-	// Отступы ячеек по умолчанию. Проп padding переопределяет их inline-переменными --tbl-pad-*.
 	--tbl-pad-top: 12px;
 	--tbl-pad-right: 16px;
 	--tbl-pad-bottom: 12px;
 	--tbl-pad-left: 16px;
 	@include custom-bg(--tbl-bg, var(--rise-bg));
-	// Без fallback: если color.bg.hover не задан, переменная недействительна и строки берут цвет наведения из токенов.
 	--tbl-hover: var(--custom-bg-hover);
 	@include custom-text(--tbl-text, var(--rise-text));
 	@include custom-text(--tbl-head-text, var(--rise-text-highlighted));
@@ -31,7 +28,6 @@
 		overflow: hidden;
 	}
 
-	// Слоты header и footer — секции контейнера с отступами ячеек, отделённые линией.
 	&__header {
 		padding: sz(12px 16px);
 		border-bottom: 1px solid var(--rise-border);
@@ -43,14 +39,11 @@
 		background-color: var(--rise-bg-muted);
 	}
 
-	// Текст только для скринридера: подписи чекбоксов и полей тулбара, заголовок колонки раскрытия.
-	// Двойной класс: подписи — BaseText внутри BaseCheckbox/BaseInput, их собственные стили не должны вернуть видимость.
 	&__visually-hidden,
 	&__visually-hidden.base-text {
 		@include visually-hidden;
 	}
 
-	// bordered — сетка: вертикальные линии между колонками в шапке и строках.
 	&--bordered {
 		.base-table__th + .base-table__th,
 		.base-table__td + .base-table__td {
@@ -58,8 +51,6 @@
 		}
 	}
 
-	// striped — чётные строки на bg-muted вместо линий между строками. Чётность считает шаблон (--even), а не
-	// :nth-child: служебные строки раскрытия не сбивают чередование.
 	&--striped {
 		.base-table__tr {
 			--tbl-row-hover: var(--tbl-hover, color-mix(in srgb, var(--rise-bg-accented) 60%, var(--rise-bg-muted)));

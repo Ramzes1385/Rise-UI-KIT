@@ -2,14 +2,11 @@ import type { Ref } from 'vue'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
 import { useFormField } from '@composables/useFormField'
 import { useFieldControl } from '@composables/useFormContext'
-/** Composable: логика BaseTextarea — связь с BaseFormField, счётчик символов и высота по тексту */
 import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseTextareaEmits, TextareaProps } from '../types/BaseTextarea.types'
 
-/** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */
 function useTextareaControl(props: TextareaProps) {
-	// id текста ошибки и счётчика: поле описано ими через aria-describedby
 	const ownId = useId()
 	const errorId = `${ownId}-error`
 	const counterId = `${ownId}-counter`
@@ -17,7 +14,6 @@ function useTextareaControl(props: TextareaProps) {
 	const hasCounter = computed(() => Boolean(props.maxlength && props.maxlength > 0))
 	const control = useFieldControl({
 		id: () => props.inputAttrs?.id as string | undefined,
-		// Что описывает поле: текст ошибки, счётчик символов и описание из inputAttrs
 		describedBy: () =>
 			[formField.error ? errorId : '', hasCounter.value ? counterId : '', props.inputAttrs?.['aria-describedby']]
 				.filter(Boolean)
@@ -34,7 +30,6 @@ function useTextareaControl(props: TextareaProps) {
 		control,
 		textareaId: control.id,
 		characterCount: computed(() => props.modelValue?.length ?? 0),
-		// Атрибуты нативного поля: inputAttrs, имя без подписи (ariaLabel) и aria-состояния поля и обёртки
 		nativeAttrs: computed(() => ({
 			...props.inputAttrs,
 			...(props.name ? { name: props.name } : {}),
@@ -44,14 +39,9 @@ function useTextareaControl(props: TextareaProps) {
 	}
 }
 
-/**
- * Высота по тексту (isAutosize). Высота сначала сбрасывается в auto: иначе scrollHeight не меньше текущей высоты
- * и поле только растёт. У поля box-sizing: border-box, поэтому к scrollHeight (текст + отступы) добавляются рамки
- */
 function useAutosize(props: TextareaProps, textareaRef: Ref<HTMLTextAreaElement | null>) {
 	const adjustHeight = (): void => {
 		const el = textareaRef.value
-		/* istanbul ignore next -- el всегда существует после mount, ветка !el — защитный guard */
 		if (!el || !props.isAutosize) return
 		el.style.height = 'auto'
 		const { borderTopWidth, borderBottomWidth } = getComputedStyle(el)
@@ -63,7 +53,6 @@ function useAutosize(props: TextareaProps, textareaRef: Ref<HTMLTextAreaElement 
 	}
 
 	watch(() => props.modelValue, scheduleAdjust)
-	// Включение autosize подгоняет высоту сразу, выключение возвращает высоту по rows (и ручное изменение размера)
 	watch(
 		() => props.isAutosize,
 		isAutosize => {

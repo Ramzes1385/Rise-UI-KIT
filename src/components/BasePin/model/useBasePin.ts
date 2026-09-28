@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 import { formatMessage } from '@/locales'
-/** Composable: логика BasePin — ячейки кода, переходы между ними и вставка */
 import { computed, ref, useId } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { toHTMLInputElement } from '@utils/domUtils'
@@ -8,12 +7,10 @@ import { useFormField } from '@composables/useFormField'
 import type { BasePinEmits, PinProps } from '../types/BasePin.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
-/** Значение фиксированной длины: пробел — пустая ячейка */
 function normalizeValue(value: string, length: number): string[] {
 	return Array.from({ length }, (_, index) => value[index] || ' ')
 }
 
-/** Ввод символа переводит фокус в следующую ячейку; вставка заполняет код целиком */
 function useCellInput(props: PinProps, emit: BasePinEmits, inputRefs: Ref<HTMLInputElement[]>) {
 	return {
 		handleInput(e: Event, index: number): void {
@@ -29,7 +26,6 @@ function useCellInput(props: PinProps, emit: BasePinEmits, inputRefs: Ref<HTMLIn
 		},
 		handlePaste(e: ClipboardEvent): void {
 			e.preventDefault()
-			/* istanbul ignore next -- defensive `|| ''`: clipboardData всегда установлен в paste-событии, fallback недостижим */
 			const data = e.clipboardData?.getData('text') || ''
 			const val = data.replace(/\s/g, '').slice(0, props.length)
 			emit('update:modelValue', val)
@@ -38,7 +34,6 @@ function useCellInput(props: PinProps, emit: BasePinEmits, inputRefs: Ref<HTMLIn
 	}
 }
 
-/** Backspace стирает ячейку, а в пустой — предыдущую; стрелки переходят к соседней ячейке */
 function useCellKeys(props: PinProps, emit: BasePinEmits, inputRefs: Ref<HTMLInputElement[]>) {
 	const focusCell = (index: number): void => inputRefs.value[index]?.focus()
 	const erase = (index: number): void => {
@@ -73,7 +68,6 @@ function useCellKeys(props: PinProps, emit: BasePinEmits, inputRefs: Ref<HTMLInp
 
 export function useBasePin(props: PinProps, emit: BasePinEmits) {
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error })
-	// id текста ошибки: каждая ячейка связана с ним через aria-describedby
 	const errorId = `${useId()}-error`
 	const standard = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])
 	const inputRefs = ref<HTMLInputElement[]>([])
@@ -86,9 +80,7 @@ export function useBasePin(props: PinProps, emit: BasePinEmits) {
 		errorId,
 		inputRefs,
 		rootRef,
-		/** Доступное имя ячейки: «Символ 2 из 4» — скринридер сообщает позицию в коде */
 		cellLabel: (position: number): string => formatMessage(UI_ARIA.PIN_CELL, { position, length: props.length }),
-		// Пустые строки вместо пробелов-заполнителей
 		cells: computed(() => normalizeValue(props.modelValue, props.length).map(char => (char === ' ' ? '' : char))),
 		...useCellInput(props, emit, inputRefs),
 		...useCellKeys(props, emit, inputRefs),

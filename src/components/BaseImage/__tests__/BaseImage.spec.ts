@@ -2,10 +2,8 @@ import '@testing-library/jest-dom/vitest'
 import BaseImage from '../ui/BaseImage.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Проп timeout по умолчанию, мс */
 const LOAD_TIMEOUT = 5000
 
-/** Управляемая замена IntersectionObserver: в jsdom его нет, а тесту нужно «прокрутить» страницу к изображению */
 class FakeIntersectionObserver {
 	static instances: FakeIntersectionObserver[] = []
 	readonly callback: IntersectionObserverCallback
@@ -86,7 +84,6 @@ describe('BaseImage unit', () => {
 	})
 
 	describe('пропс borderRadius', () => {
-		// Радиус по умолчанию — md темы из стилей (--rise-radius-md): inline-стиль пишется только при явном пропе
 		it('не пишет inline border-radius без пропа borderRadius', () => {
 			const { container } = render(BaseImage, {
 				props: { src: 'test.jpg', alt: 'Тест' },

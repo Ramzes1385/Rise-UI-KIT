@@ -1,5 +1,3 @@
-/** Play-функции этих stories переключают видимость (скрыть → показать, добавить → удалить); openStory ждёт завершения play, поэтому в кадр попадает конечное состояние. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

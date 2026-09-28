@@ -1,4 +1,3 @@
-// Плавающая панель (телепорт в body, отступ 4px): шапка с ghost-кнопками 32px и годом по центру, календари BaseCalendar ghost, при нескольких месяцах — в ряд поровну; data-theme на панели только пересчитывает токены.
 .date-picker-panel {
 	position: fixed;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
@@ -30,7 +29,6 @@
 		}
 	}
 
-	// Квадратные ghost-кнопки 32×32: иконка 20px и отступы 5px.
 	&__nav-btn.base-button {
 		--btn-pad-top: var(--rise-control-padding-y);
 		--btn-pad-right: var(--rise-control-padding-y);
@@ -40,7 +38,6 @@
 		flex: none;
 	}
 
-	// Двойная стрелка «год»: две иконки 16px внахлёст занимают 20px — кнопка того же размера, что и «месяц».
 	&__nav-btn--double .base-button__label {
 		display: flex;
 	}
@@ -63,8 +60,6 @@
 		gap: sz(8px);
 	}
 
-	// Календарь в панели — часть её поверхности: отступ 4px вместо 12px; при нескольких месяцах колонки делят ширину
-	// поровну (сетка календаря растягивается, дни остаются 32px). Тройной класс перекрывает стили BaseCalendar/BaseCard.
 	&__calendar.base-calendar.base-card {
 		--card-pad-top: 4px;
 		--card-pad-right: 4px;

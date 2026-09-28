@@ -1,5 +1,4 @@
 <template>
-	<!-- Группа радиокнопок: имя — из заголовка (label) или из aria-label на компоненте, ошибка описывает группу -->
 	<div
 		ref="rootRef"
 		class="base-radio"
@@ -40,7 +39,6 @@
 					},
 					classes.radio,
 				]">
-				<!-- Нативный radio и индикатор вне слота: кастомная подпись не должна отнимать выбор, клавиатуру и роль radio -->
 				<span class="base-radio-item__wrapper" :class="classes.wrapper">
 					<input
 						type="radio"

@@ -2,7 +2,6 @@ import '@testing-library/jest-dom/vitest'
 import BaseIcon from '../ui/BaseIcon.vue'
 import { render } from '@testing-library/vue'
 
-/** Мокаем useIcon — разрыв циклической зависимости */
 vi.mock('@composables/useIcon', () => ({
 	useIcon: () => ({
 		resolveIcon: (name: string) => ({ url: `icons.svg#${name}` }),
@@ -34,7 +33,6 @@ describe('BaseIcon', () => {
 	it('должен рендерить корень как span: иконку можно вкладывать в кнопки, ссылки и абзацы', () => {
 		render(BaseIcon, { props: { name: 'close' } })
 
-		// <div> внутри <button>/<p> — невалидная разметка (ломает гидратацию при SSR)
 		expect(getIconRoot()?.tagName).toBe('SPAN')
 	})
 

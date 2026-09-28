@@ -1,5 +1,4 @@
 <template>
-	<!-- Группа флажков: имя — заголовок (или подпись BaseFormField вокруг), ошибка и описание описывают группу -->
 	<div
 		class="base-checkbox-group"
 		:class="[variantClass, classes.root, { 'base-checkbox-group--error': control.hasError.value }]"

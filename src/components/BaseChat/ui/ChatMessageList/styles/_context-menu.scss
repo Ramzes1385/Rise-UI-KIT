@@ -1,4 +1,3 @@
-// Меню — телепорт в body (floating-surface); пункт «Удалить» окрашен --rise-error.
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
 @use '../../../styles/chat' as *;
@@ -55,7 +54,6 @@
 		color: var(--rise-text-muted);
 	}
 
-	// Опасный пункт: текст --rise-error, при наведении — мягкий фон ошибки и текст --rise-error-text (контраст AA).
 	&__item--danger,
 	&__item--danger &__icon {
 		color: var(--rise-error);

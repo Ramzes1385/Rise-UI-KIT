@@ -1,6 +1,5 @@
 import type { ComputedRef } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-/** Composable: логика BaseAutocomplete — поле с подсказками (APG Combobox): фильтр, выбор, свой вариант и клавиатура */
 import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
@@ -12,7 +11,6 @@ function defaultFilter(option: AutocompleteOption, text: string): boolean {
 	return option.label.toLocaleLowerCase(getLocale().intl).includes(text.toLocaleLowerCase(getLocale().intl))
 }
 
-/** Подпись варианта по частям: совпадение с запросом выделяется */
 function highlightParts(label: string, text: string, isFiltering: boolean): { text: string; isMatch: boolean }[] {
 	const start = isFiltering && text ? label.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) : -1
 	if (start === -1) return [{ text: label, isMatch: false }]
@@ -23,16 +21,13 @@ function highlightParts(label: string, text: string, isFiltering: boolean): { te
 	].filter(part => part.text)
 }
 
-/** Откуда искать следующий вариант: от активного или, если его нет, с края списка */
 function moveOrigin(activeIndex: number, direction: 1 | -1, count: number): number {
 	if (activeIndex !== -1) return activeIndex + direction
 	return direction === 1 ? 0 : count - 1
 }
 
-/** Запрос в поле и варианты: после выбора в поле подпись значения, после ввода список фильтруется по запросу */
 function useQuery(props: AutocompleteProps) {
 	const selectedOption = computed(() => props.options.find(option => option.value === props.modelValue))
-	// Текст значения в поле: подпись выбранного варианта или свой вариант
 	const valueText = (): string => {
 		if (selectedOption.value) return selectedOption.value.label
 		return props.modelValue === null ? '' : String(props.modelValue)
@@ -51,7 +46,6 @@ function useQuery(props: AutocompleteProps) {
 		query,
 		isFiltering,
 		valueText,
-		// С сервера — как есть, иначе — по запросу (после выбора — все), не больше maxResults
 		visibleOptions: computed(() => {
 			const text = query.value.trim()
 			const filter = props.filter ?? defaultFilter
@@ -62,7 +56,6 @@ function useQuery(props: AutocompleteProps) {
 	}
 }
 
-/** Активный вариант (aria-activedescendant): стрелки пропускают недоступные и переходят через край */
 function useActiveOption(visibleOptions: ComputedRef<AutocompleteOption[]>) {
 	const activeIndex = ref(-1)
 	const firstEnabled = (from: number, direction: 1 | -1): number => {
@@ -97,7 +90,6 @@ function useListOpen(
 	const isOpen = ref(false)
 	return {
 		isOpen,
-		/** Открыть список; edge — активный вариант: выбранный, иначе первый или последний доступный */
 		open(edge?: 'first' | 'last'): void {
 			if (!canOpen.value) return
 			isOpen.value = true
@@ -129,10 +121,6 @@ function useSelection(props: AutocompleteProps, emit: BaseAutocompleteEmits, sta
 			setValue(option.value)
 			state.close()
 		},
-		/**
-		 * Итог ввода (выход из поля, Enter без выбора): подпись варианта — выбор, пусто — очистка,
-		 * свой вариант — значение после normalize, иначе текст возвращается к выбранному значению
-		 */
 		commitQuery(): void {
 			if (!state.isFiltering.value) return
 			state.isFiltering.value = false
@@ -156,7 +144,6 @@ function useAutocompleteState(props: AutocompleteProps, emit: BaseAutocompleteEm
 	return { canOpen, ...query, ...active, ...list, ...useSelection(props, emit, { ...query, close: list.close }) }
 }
 
-// Открытый список закрывается (preventDefault — стек слоёв не закроет ещё и окно вокруг), при закрытом — очищается поле
 function handleEscape(event: KeyboardEvent, ctx: ReturnType<typeof useAutocompleteState>): void {
 	if (ctx.isOpen.value) {
 		event.preventDefault()
@@ -180,7 +167,6 @@ function handleEnter(event: KeyboardEvent, ctx: ReturnType<typeof useAutocomplet
 	}
 }
 
-/** Клавиатура APG Combobox: стрелки открывают список и ходят по вариантам, Alt+↓/↑ — открыть без выбора и закрыть */
 function createKeyActions(ctx: ReturnType<typeof useAutocompleteState>): Map<string, (event: KeyboardEvent) => void> {
 	return new Map<string, (event: KeyboardEvent) => void>([
 		[
@@ -242,7 +228,6 @@ function useAutocompleteView(props: AutocompleteProps, ctx: ReturnType<typeof us
 			const count = ctx.visibleOptions.value.length
 			return count > 0 ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
 		}),
-		// Семантика combobox на нативном поле; атрибуты приложения — первыми
 		comboboxAttrs: computed(() => ({
 			...props.inputAttrs,
 			role: 'combobox',
@@ -256,11 +241,9 @@ function useAutocompleteView(props: AutocompleteProps, ctx: ReturnType<typeof us
 }
 
 export function useBaseAutocomplete(props: AutocompleteProps, emit: BaseAutocompleteEmits) {
-	// Классы по элементам (customClass): вид поля, размер и цвет задаёт BaseInput
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option', 'empty'] })
 	const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
 	const listboxId = `rise-autocomplete-${useId()}-listbox`
-	// Блокировка: свой isDisabled или неактивная BaseForm вокруг
 	const isControlDisabled = useFormDisabled(() => props.isDisabled)
 	const ctx = useAutocompleteState(
 		props,

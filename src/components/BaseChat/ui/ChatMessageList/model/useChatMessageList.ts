@@ -1,4 +1,3 @@
-/** Composable: логика ChatMessageList — лента сообщений: автопрокрутка, выбор, контекстное меню и индикатор набора */
 import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useAutoScroll } from '@composables/useAutoScroll'
@@ -18,7 +17,6 @@ export function useChatMessageList(props: MessageListProps, emit: ChatMessageLis
 		selectedSet: computed(() => new Set(props.selectedMessageIds)),
 		activeContextMessageId: computed(() => actions.contextMenu.value.message?.id ?? null),
 		isSelectionMode: computed(() => props.selectedMessageIds.length > 0),
-		// Доступное имя индикатора набора: «Анна печатает» или «Печатает»
 		typingLabel: computed(() =>
 			props.typingUsername ? `${props.typingUsername} ${UI_CHAT_TEXT.TYPING_SUFFIX}` : UI_CHAT_TEXT.TYPING_LABEL,
 		),

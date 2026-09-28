@@ -1,4 +1,3 @@
-/** Composable: логика BaseAvatar — инициалы и запасной вариант при ошибке изображения */
 import { computed, ref, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseAvatarEmits, BaseAvatarProps } from '../types/BaseAvatar.types'

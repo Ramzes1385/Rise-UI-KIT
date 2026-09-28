@@ -1,8 +1,4 @@
 <template>
-	<!--
-		Время — BaseAutocomplete: список с шагом `step` и свой ввод. Набранное «930», «9:30», «9.30» становится 09:30
-		при выходе из поля или Enter; время вне minTime–maxTime и не время не принимаются
-	-->
 	<BaseAutocomplete
 		ref="autocompleteRef"
 		class="base-time-picker"

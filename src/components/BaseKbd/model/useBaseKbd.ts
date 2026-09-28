@@ -1,10 +1,8 @@
-/** Composable: логика BaseKbd — символ клавиши и её название для скринридера */
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { KbdKeyLabel, KbdKeySpec, KbdProps } from '../types/BaseKbd.types'
 
-/** Модификаторы на macOS — символы с названием, на других системах — текст */
 const MAC_MODIFIERS = new Map<string, KbdKeySpec>([
 	['meta', ['⌘', 'KEY_COMMAND']],
 	['ctrl', ['⌃', 'KEY_CONTROL']],
@@ -33,7 +31,6 @@ const KEYS = new Map<string, KbdKeySpec>([
 	['space', ['Space']],
 ])
 
-/** macOS: ⌘ и ⌥ вместо Ctrl и Alt */
 function detectMac(): boolean {
 	if (typeof navigator === 'undefined') return false
 	return /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent)
@@ -52,7 +49,6 @@ export function useBaseKbd(props: KbdProps) {
 
 	return {
 		...useStandardBaseComponent('base-kbd', props, ['root']),
-		/** Показ клавиши: текст на экране и название для скринридера (у символов) */
 		key: computed(() => resolveKey(props.value, isMac.value)),
 	}
 }

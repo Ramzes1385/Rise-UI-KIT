@@ -1,9 +1,4 @@
 <template>
-	<!--
-		Поле тегов: Enter или разделитель (запятая) добавляет тег, вставка списка — несколько тегов. Теги — список перед
-		строкой ввода, у каждого кнопка «Удалить» вне порядка Tab: с клавиатуры к тегам ведут ← и Backspace в пустой строке,
-		между тегами — ←/→, удаление — Backspace, Delete, Enter
-	-->
 	<div class="base-input-tags" :class="[{ 'base-input-tags--has-tags': modelValue.length > 0 }, classes.root]">
 		<BaseInput
 			ref="inputRef"
@@ -26,7 +21,6 @@
 			@focus="emit('focus', $event)"
 			@paste="handlePaste">
 			<template v-if="modelValue.length > 0" #prefix>
-				<!-- У отключённого поля теги — часть неактивного элемента: aria-disabled (и исключение из проверки контраста) -->
 				<ul
 					class="base-input-tags__list"
 					:class="classes.list"
@@ -51,7 +45,6 @@
 				</ul>
 			</template>
 		</BaseInput>
-		<!-- Добавление и удаление тегов для скринридера -->
 		<span class="base-input-tags__status" role="status">{{ announcement }}</span>
 	</div>
 </template>

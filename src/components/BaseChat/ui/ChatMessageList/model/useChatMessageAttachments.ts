@@ -1,4 +1,3 @@
-/** Composable: логика ChatMessageAttachments — вложения сообщения: изображения отдельно от файлов, скачивание и открытие */
 import { computed } from 'vue'
 import type { ChatMessageAttachment } from '../../../types/BaseChat.types'
 import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../types/ChatMessageAttachments.types'

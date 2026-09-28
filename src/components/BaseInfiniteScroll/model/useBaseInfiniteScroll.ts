@@ -1,6 +1,5 @@
 import { UI_TEXT } from '@/locales/messages'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-/** Composable: логика BaseInfiniteScroll — подгрузка у конца списка и строка состояния */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
 	BaseInfiniteScrollEmits,
@@ -23,7 +22,6 @@ function statusMessage(status: InfiniteScrollStatus, props: BaseInfiniteScrollPr
 	}
 }
 
-/** Наблюдатель за меткой конца списка; null — режим manual, метки нет или нет IntersectionObserver */
 function createObserver(
 	props: BaseInfiniteScrollProps,
 	sentinel: HTMLElement | null,
@@ -41,7 +39,6 @@ function createObserver(
 	return observer
 }
 
-/** Состояние подгрузки: событие load получает done(), повторный вызов done() игнорируется */
 function useLoading(emit: BaseInfiniteScrollEmits, onLoaded: () => void) {
 	const status = ref<InfiniteScrollStatus>('idle')
 
@@ -67,8 +64,6 @@ export function useBaseInfiniteScroll(props: BaseInfiniteScrollProps, emit: Base
 	const sentinelRef = ref<HTMLElement | null>(null)
 	let observer: IntersectionObserver | null = null
 
-	// Наблюдатель создаётся заново и после каждой успешной подгрузки: он сразу сообщает, видна ли метка, — если новых
-	// строк не хватило, чтобы заполнить область, подгрузка продолжится
 	const observe = (): void => {
 		observer?.disconnect()
 		observer = createObserver(props, sentinelRef.value, () => {
@@ -91,7 +86,6 @@ export function useBaseInfiniteScroll(props: BaseInfiniteScrollProps, emit: Base
 		status,
 		sentinelRef,
 		message: computed(() => statusMessage(status.value, props)),
-		// Ждём конца списка в режиме intersect: строке состояния нечего показать, она не занимает места
 		isFooterEmpty: computed(() => status.value === 'idle' && props.mode === 'intersect'),
 		load,
 		exposed: { reset, load } satisfies BaseInfiniteScrollExpose,

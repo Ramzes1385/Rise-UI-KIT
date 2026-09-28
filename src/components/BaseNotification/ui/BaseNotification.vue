@@ -1,6 +1,5 @@
 <template>
 	<Teleport defer :to="teleportTarget" :disabled="isContained">
-		<!-- Пока указатель над уведомлениями или фокус внутри, они не закрываются и прогресс стоит (WCAG 2.2.1) -->
 		<div
 			ref="containerRef"
 			class="base-notification"
@@ -17,7 +16,6 @@
 			@focusin="isFocusWithin = true"
 			@focusout="handleFocusOut">
 			<TransitionGroup name="base-notification" tag="div" class="base-notification-list">
-				<!-- Ошибка объявляется скринридером сразу (alert), остальное — вежливо, без прерывания (status) -->
 				<div
 					v-for="notification in list"
 					:key="notification.id"
@@ -67,7 +65,6 @@
 						@click="remove(notification.id)">
 						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
 					</BaseButton>
-					<!-- Ключ по таймеру: при смене длительности полоса начинается заново -->
 					<div
 						v-if="!notification.isPersistent"
 						:key="getTimerKey(notification)"

@@ -1,4 +1,3 @@
-// Отступы секций по умолчанию 16px 20px; проп padding переопределяет их inline-переменными --card-pad-*.
 .base-card {
 	--card-pad-top: 16px;
 	--card-pad-right: 20px;
@@ -70,7 +69,6 @@
 		overflow-wrap: break-word;
 	}
 
-	// Заголовок и подзаголовок — BaseText (по умолчанию 14/20 --rise-text): здесь свой кегль и цвет.
 	& &__title {
 		@include text-size(base);
 		@include custom-text(color, var(--rise-text-highlighted));
@@ -80,8 +78,6 @@
 		@include custom-text(color, var(--rise-text-muted));
 	}
 
-	// Кнопки высотой 32px стоят по центру строки заголовка (24px) и не увеличивают высоту шапки.
-	// Слоты actions, body и footer — пользовательское содержимое: проп color красит карточку, но не вложенные кнопки и поля.
 	&__actions {
 		@include reset-custom-color;
 		display: flex;
@@ -98,7 +94,6 @@
 		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
 		overflow-wrap: break-word;
 
-		// Карточка только с шапкой (например, карточка-ссылка): пустое тело не оставляет пустую полосу.
 		&:empty {
 			display: none;
 		}
@@ -116,16 +111,12 @@
 		border-top: 1px solid var(--rise-border);
 	}
 
-	// height + scroll: тело прокручивается, шапка и подвал остаются на месте.
-	// Тело фокусируемо (tabindex) — кольцо фокуса внутри, карточка обрезает всё, что снаружи.
 	&--scroll &__body {
 		overflow-y: auto;
 		@include scrollbar-thin;
 		@include focus-ring(-2px);
 	}
 
-	// height без scroll: текст тела обрезается до трёх строк. Тело не растягивается на всю высоту, а нижний отступ —
-	// margin: overflow обрезает по краю padding, и строки после многоточия иначе видны в растянутом блоке или в отступе.
 	&--truncate &__body {
 		display: -webkit-box;
 		flex: 0 1 auto;

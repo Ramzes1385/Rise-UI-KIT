@@ -1,4 +1,3 @@
-/** Composable: логика BaseDatePicker — значения по умолчанию, поле с датой и панель календаря */
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { useFormField } from '@composables/useFormField'
@@ -24,7 +23,6 @@ function resolveDisplayProps(props: DatePickerProps) {
 	}
 }
 
-/** isReadonly, closeOnClickOutside и closeOnEscape по умолчанию true: значение пропа учитывается, только если его передали */
 function resolveFlagProps(
 	props: DatePickerProps,
 	resolveBoolean: ReturnType<typeof useExplicitPropDetection>['resolveBooleanPropDefault'],
@@ -47,7 +45,6 @@ export function useBaseDatePicker(props: DatePickerProps, emit: BaseDatePickerEm
 	const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
 	const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel'] })
-	// Календарные под-пропы (locale, firstDayOfWeek и др.) попадают в calendarConfig, только если их передали явно
 	const calendarConfig = computed(() => resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig))
 	const state = useDatePickerState({ props, resolvedProps, emit, calendarConfig })
 

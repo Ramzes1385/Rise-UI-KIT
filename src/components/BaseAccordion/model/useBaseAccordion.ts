@@ -1,4 +1,3 @@
-/** Composable: логика BaseAccordion — раскрытые пункты и id заголовков и панелей */
 import { onMounted, ref, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseAccordionEmits, BaseAccordionProps } from '../types/BaseAccordion.types'
@@ -34,7 +33,6 @@ function useOpenItems(props: BaseAccordionProps, emit: BaseAccordionEmits) {
 }
 
 export function useBaseAccordion(props: BaseAccordionProps, emit: BaseAccordionEmits) {
-	// Префикс id экземпляра связывает заголовок и панель через aria-controls/aria-labelledby без коллизий между аккордеонами
 	const baseId = useId()
 
 	return {

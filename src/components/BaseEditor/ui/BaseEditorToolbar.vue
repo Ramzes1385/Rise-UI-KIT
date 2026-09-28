@@ -1,5 +1,4 @@
 <template>
-	<!-- mousedown.prevent: клик по кнопке не уводит фокус и выделение из области текста -->
 	<div
 		v-if="hasToolbar && !isReadonly"
 		class="base-editor__toolbar"
@@ -24,7 +23,6 @@
 			</div>
 
 			<div class="base-editor__group" :class="classes.group">
-				<!-- role="group" с именем: кнопка пикера озвучивается только выбранным цветом, группа говорит, какой это цвет -->
 				<BaseTooltip :text="UI_EDITOR.TEXT_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="textColorModel"
@@ -93,7 +91,6 @@
 						<BaseIcon name="link" :size-scale="iconScale" />
 					</BaseButton>
 				</BaseTooltip>
-				<!-- Загрузка файла: input скрыт визуально, но остаётся в порядке Tab; кольцо фокуса рисует label -->
 				<BaseTooltip :text="UI_EDITOR.IMAGE" position="top" :size-scale="sizeScale">
 					<label class="base-editor__btn base-editor__btn--file" :class="classes.btn" @mousedown.stop>
 						<BaseIcon name="image" :size-scale="iconScale" />

@@ -1,8 +1,5 @@
-// Общие миксины стилей BaseChat и его частей (шапка, лента, поле ввода, панели).
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
-
-/// Сброс оформления нативной кнопки: кликабельные аватары, имена, цитаты, карточки файлов.
 @mixin chat-button-reset {
 	margin: 0;
 	padding: 0;
@@ -13,10 +10,6 @@
 	text-align: inherit;
 	cursor: pointer;
 }
-
-/// Квадратная иконочная BaseButton: одинаковый отступ со всех сторон вместо 5/10 у кнопки с текстом.
-/// Отступ 5px + иконка 20px + рамка 1px → 32px; отступ 3px + иконка 16px (sizeScale × 0.8) → 24px.
-/// Двойной класс перекрывает отступы BaseButton независимо от порядка CSS.
 @mixin chat-icon-button($pad: 5px) {
 	&.base-button {
 		--btn-pad-top: #{$pad};
@@ -27,8 +20,6 @@
 		flex: none;
 	}
 }
-
-/// Разделитель секций окна чата (шапка, закрепы, поле ввода).
 @mixin chat-section-border($side: bottom) {
 	border-#{$side}: 1px solid var(--rise-border);
 }

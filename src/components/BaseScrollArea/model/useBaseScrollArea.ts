@@ -1,16 +1,12 @@
 import type { Ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-/** Composable: логика BaseScrollArea — свои полосы прокрутки: размер и положение ползунка, клик по полосе, перетаскивание */
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import type { Axis, BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps } from '../types/BaseScrollArea.types'
 
 const AXES: Axis[] = ['y', 'x']
-/** Наименьшая длина ползунка, px: за короткий ползунок трудно ухватиться */
 const MIN_THUMB = 20
-/** Сколько полосы остаются видны после прокрутки в режиме hover, мс */
 const SCROLL_IDLE_DELAY = 800
 
-/** Размеры области по оси: видимая длина, полная длина содержимого, прокрутка */
 function measure(viewport: HTMLElement, axis: Axis): { client: number; total: number; position: number } {
 	return axis === 'y'
 		? { client: viewport.clientHeight, total: viewport.scrollHeight, position: viewport.scrollTop }
@@ -22,7 +18,6 @@ function setScroll(viewport: HTMLElement, axis: Axis, position: number): void {
 	else viewport.scrollLeft = position
 }
 
-/** Полосы: видна ли, длина ползунка и его смещение — в процентах длины полосы */
 function useBars(props: BaseScrollAreaProps, viewportRef: Ref<HTMLElement | null>) {
 	const bars = reactive({
 		x: { isVisible: false, size: 0, offset: 0 },
@@ -51,7 +46,6 @@ function useBars(props: BaseScrollAreaProps, viewportRef: Ref<HTMLElement | null
 	}
 }
 
-/** Перетаскивание ползунка: смещение указателя переводится в прокрутку пропорционально свободному ходу ползунка */
 function useThumbDrag(viewportRef: Ref<HTMLElement | null>, bars: Record<Axis, { size: number }>) {
 	const dragAxis = ref<Axis | null>(null)
 	let dragStartPointer = 0
@@ -85,7 +79,6 @@ function useThumbDrag(viewportRef: Ref<HTMLElement | null>, bars: Record<Axis, {
 	}
 }
 
-/** Признак прокрутки: в режиме hover полосы остаются видны ещё SCROLL_IDLE_DELAY после неё */
 function useScrollingFlag() {
 	const isScrolling = ref(false)
 	let idleTimer: ReturnType<typeof setTimeout> | undefined
@@ -100,7 +93,6 @@ function useScrollingFlag() {
 	}
 }
 
-/** Размеры области и содержимого отслеживаются: полосы пересчитываются при любом изменении */
 function useResizeUpdate(viewportRef: Ref<HTMLElement | null>, contentRef: Ref<HTMLElement | null>, update: () => void): void {
 	let observer: ResizeObserver | null = null
 	onMounted(() => {
@@ -138,7 +130,6 @@ export function useBaseScrollArea(props: BaseScrollAreaProps, emit: BaseScrollAr
 			markScrolling()
 			emit('scroll', event)
 		},
-		/** Клик по полосе мимо ползунка: ползунок встаёт серединой под указатель */
 		handleTrackPointerdown(axis: Axis, event: PointerEvent): void {
 			const viewport = viewportRef.value as HTMLElement
 			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()

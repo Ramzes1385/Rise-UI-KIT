@@ -1,9 +1,4 @@
 <template>
-	<!--
-		Меню по образцу APG Menu: фокус переходит по пунктам стрелками (roving tabindex: tabindex="0" только у текущего
-		пункта), Home/End — первый и последний, буквы — поиск по началу подписи, Enter/Space — выбор, стрелка вправо —
-		подменю, влево — назад. Escape закрывает верхнее меню через стек слоёв.
-	-->
 	<div
 		:id="id"
 		ref="menuRef"
@@ -32,7 +27,6 @@
 						:class="classes.label">
 						{{ item.label }}
 					</div>
-					<!-- Пункт с подменю: подменю — вложенная панель, в стеке слоёв она выше меню -->
 					<BaseDropdown
 						v-else-if="item.children?.length"
 						:is-open="openSubmenu === keyOf(groupIndex, itemIndex)"

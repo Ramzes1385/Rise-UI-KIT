@@ -1,6 +1,5 @@
 import { UI_TEXT } from '@/locales/messages'
 import { usePadding } from '@composables/usePadding'
-/** Composable: логика BaseSideBar — свёрнутое состояние (своё или через v-model), размеры и секции панели */
 import { computed, ref, useSlots, watch } from 'vue'
 import { useLinkComponent } from '@composables/useLink'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -9,7 +8,6 @@ import type { BaseSideBarEmits, SideBarItem, SideBarProps } from '../types/BaseS
 
 const SIDEBAR_ELEMENTS = ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed']
 
-/** Свёрнута ли панель: проп isCollapsed, если его передали, иначе своё состояние */
 function useCollapsedState(props: SideBarProps, emit: BaseSideBarEmits) {
 	const { wasPropPassed } = useExplicitPropDetection()
 	const internalCollapsed = ref(false)
@@ -37,11 +35,9 @@ function useCollapsedState(props: SideBarProps, emit: BaseSideBarEmits) {
 	}
 }
 
-/** Размеры панели — CSS-переменные в px */
 function useSideBarLayout(props: SideBarProps) {
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--sidebar-pad' })
 	return {
-		// Без пропа padding отступы берутся из стилей (8px 12px): inline-переменные --sidebar-pad-* пишутся только для явного значения
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		widthStyle: computed(() => ({ '--sidebar-width': `${props.width}px` })),
 		collapsedWidthStyle: computed(() => ({ '--sidebar-collapsed-width': `${props.collapsedWidth}px` })),
@@ -64,7 +60,6 @@ function useSideBarSections(props: SideBarProps) {
 
 export function useBaseSideBar(props: SideBarProps, emit: BaseSideBarEmits) {
 	const collapsed = useCollapsedState(props, emit)
-	// Компонент ссылок: проп, `linkComponent` из плагина, RouterLink приложения или `a`
 	const appLinkComponent = useLinkComponent()
 
 	return {

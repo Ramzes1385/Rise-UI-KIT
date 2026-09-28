@@ -33,7 +33,6 @@
 		<div v-if="isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
 			<slot name="actions" />
 
-			<!-- Квадратная ghost-кнопка 24px: иконка 16px + отступы 3px + рамка 1px -->
 			<BaseButton
 				v-if="isClosable"
 				variant="ghost"

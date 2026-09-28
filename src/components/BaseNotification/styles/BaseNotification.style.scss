@@ -1,7 +1,3 @@
-// Цвет типа (success/error/warning/info) — только у иконки и полосы прогресса; заголовок и текст остаются нейтральными.
-
-// Отступ 16px от края экрана — внутренний: в нём помещается тень карточек, которую иначе обрезала бы прокрутка списка.
-
 .base-notification {
 	position: fixed;
 	z-index: var(--rise-z-toast);
@@ -11,7 +7,6 @@
 	max-height: 100%;
 	padding: sz(16px);
 	overflow: hidden auto;
-	// Пустые участки контейнера не перехватывают клики по странице; карточки — перехватывают.
 	pointer-events: none;
 	@include scrollbar-thin;
 
@@ -47,7 +42,6 @@
 		translate: -50% 0;
 	}
 
-	// Внутри страницы (Storybook, встроенный режим): в потоке, без отступов и прокрутки.
 	&--contained {
 		position: relative;
 		inset: auto;
@@ -59,8 +53,6 @@
 		overflow: visible;
 		translate: none;
 	}
-
-	// На телефоне уведомления во всю ширину экрана.
 	@include respond-below('mobile') {
 		&:not(.base-notification--contained) {
 			right: 0;
@@ -79,7 +71,6 @@
 }
 
 .base-notification-item {
-	// Цвета типа: основной (иконка, прогресс), мягкий фон, текст на мягком фоне, рамка. По умолчанию — info.
 	--notification-color: var(--rise-info);
 	--notification-soft: var(--rise-info-soft);
 	--notification-text: var(--rise-info-text);
@@ -132,7 +123,6 @@
 		min-width: 0;
 	}
 
-	// Заголовок и текст — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
 	&__title.base-text {
 		margin: 0;
 		@include text-size(sm);
@@ -147,7 +137,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// Кнопка закрытия — квадратная ghost-кнопка 24×24; отрицательные отступы выравнивают иконку по строке заголовка.
 	&__close.base-button {
 		--btn-pad-top: 3px;
 		--btn-pad-right: 3px;
@@ -158,7 +147,6 @@
 		margin: sz(-2px) sz(-4px) sz(-2px) 0;
 	}
 
-	// Кнопки действий под текстом: размер sm, отступ 12px от описания
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -166,7 +154,6 @@
 		margin-top: sz(12px);
 	}
 
-	// Полоса прогресса: сжимается за время показа. При prefers-reduced-motion — неподвижная полоса.
 	&__progress {
 		position: absolute;
 		right: 0;
@@ -230,13 +217,11 @@
 	transform: scale(0.96);
 }
 
-// Удаляемая карточка выходит из потока, чтобы соседние сдвигались сразу (move-переход).
 .base-notification-leave-active {
 	position: absolute;
 	width: 100%;
 }
 
-// Пауза: указатель над уведомлениями или фокус внутри — полоса прогресса останавливается вместе с таймером
 .base-notification--paused .base-notification-item__progress {
 	animation-play-state: paused;
 }

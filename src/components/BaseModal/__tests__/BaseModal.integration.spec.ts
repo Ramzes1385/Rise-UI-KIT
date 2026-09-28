@@ -1,5 +1,3 @@
-/** Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка; teleport to="body", поиск в document */
-
 import '@testing-library/jest-dom/vitest'
 import BaseModal from '../ui/BaseModal.vue'
 import userEvent from '@testing-library/user-event'
@@ -8,7 +6,6 @@ import { useImageZoom } from '@composables/useImageZoom'
 import { BaseSlideover } from '@components/BaseSlideover'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
-/** Хост: кнопка-триггер и модалка с полем ввода и двумя кнопками в футере */
 function renderModalHost(modalProps: Record<string, unknown> = {}) {
 	const Host = defineComponent({
 		components: { BaseModal },
@@ -218,7 +215,6 @@ describe('BaseModal integration', () => {
 			await user.tab()
 			expect(screen.getByRole('button', { name: 'Сохранить' })).toHaveFocus()
 
-			// С последнего элемента — на первый, не на страницу под оверлеем
 			await user.tab()
 			expect(closeButton).toHaveFocus()
 
@@ -237,7 +233,6 @@ describe('BaseModal integration', () => {
 		})
 
 		it('тело с прокруткой получает tabindex="0": без полей и кнопок его можно прокрутить с клавиатуры', async () => {
-			// jsdom не считает раскладку: содержимое выше тела задаётся подменой размеров
 			vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(900)
 			vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(300)
 			render(BaseModal, { props: { isOpen: true, title: 'Условия' }, slots: { default: '<p>Длинный текст</p>' } })

@@ -1,4 +1,3 @@
-// В режиме поиска вместо названия показывается поле ввода 32px; статус «печатает» окрашен цветом primary.
 @use '../../styles/chat' as *;
 
 .base-chat-header {
@@ -52,7 +51,6 @@
 		color: var(--rise-primary);
 	}
 
-	// Многоточие «печатает…» мерцает; при prefers-reduced-motion — статично.
 	&__dots {
 		@include motion-safe {
 			animation: base-chat-header-typing 1.4s ease-in-out infinite;
@@ -92,7 +90,6 @@
 			opacity: 1;
 		}
 
-		// Крестик очистки браузера не нужен: поиск закрывает кнопка справа и Escape.
 		&::-webkit-search-cancel-button {
 			appearance: none;
 		}

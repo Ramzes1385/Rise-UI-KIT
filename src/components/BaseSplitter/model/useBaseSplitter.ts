@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseSplitter — размер первой панели, клавиши и перетаскивание разделителя */
 import { ref, useId, watch } from 'vue'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -26,19 +25,15 @@ function useSplitterSize(props: SplitterProps, emit: BaseSplitterEmits): Splitte
 	return { size, setSize }
 }
 
-/** Клавиши по APG Window Splitter: стрелки — шаг, Home/End — границы, Enter сворачивает и возвращает панель */
 function useSplitterKeyboard(props: SplitterProps, state: SplitterSize): (event: KeyboardEvent) => void {
-	/** Размер до сворачивания по Enter: к нему разделитель вернётся */
 	let restoreSize = props.modelValue
 
-	/** Enter: свёрнутая панель возвращает прежний размер, иначе размер запоминается и панель сворачивается */
 	function toggleCollapsed(): number {
 		if (state.size.value <= props.min) return restoreSize
 		restoreSize = state.size.value
 		return props.min
 	}
 
-	/** Размер для клавиши; `undefined` — клавиша не наша */
 	function sizeFor(key: string): number | undefined {
 		const isHorizontal = props.orientation === 'horizontal'
 		if (key === (isHorizontal ? 'ArrowLeft' : 'ArrowUp')) return state.size.value - props.step
@@ -57,7 +52,6 @@ function useSplitterKeyboard(props: SplitterProps, state: SplitterSize): (event:
 	}
 }
 
-/** Перетаскивание разделителя мышью и пальцем: размер — из положения указателя внутри компонента */
 function useSplitterDrag(props: SplitterProps, emit: BaseSplitterEmits, state: SplitterSize & { rootRef: Ref<HTMLElement | null> }) {
 	const isDragging = ref(false)
 
@@ -70,7 +64,6 @@ function useSplitterDrag(props: SplitterProps, emit: BaseSplitterEmits, state: S
 		isDragging.value = true
 	}
 
-	/** Размер с точностью до десятой процента */
 	function handlePointermove(event: PointerEvent): void {
 		if (!isDragging.value) return
 		const rect = (state.rootRef.value as HTMLElement).getBoundingClientRect()
@@ -90,10 +83,6 @@ function useSplitterDrag(props: SplitterProps, emit: BaseSplitterEmits, state: S
 	return { isDragging, handlePointerdown, handlePointermove, handlePointerup }
 }
 
-/**
- * Две панели с разделителем по образцу APG Window Splitter: размер первой панели в процентах,
- * клавиши, перетаскивание и прокручиваемые панели.
- */
 export function useBaseSplitter(props: SplitterProps, emit: BaseSplitterEmits) {
 	const rootRef = ref<HTMLElement | null>(null)
 	const startRef = ref<HTMLElement | null>(null)
@@ -106,7 +95,6 @@ export function useBaseSplitter(props: SplitterProps, emit: BaseSplitterEmits) {
 		rootRef,
 		startRef,
 		endRef,
-		/** Панели с прокруткой получают tabindex, чтобы их можно было прокрутить с клавиатуры */
 		isStartScrollable: useScrollableRegion({ elementRef: startRef }).isScrollable,
 		isEndScrollable: useScrollableRegion({ elementRef: endRef }).isScrollable,
 		size: state.size,

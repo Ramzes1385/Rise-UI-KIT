@@ -30,7 +30,6 @@ describe('BaseRating integration', () => {
 		const { container } = render(Host)
 		const star = stars(container)[3]
 		mockStarRect(star)
-		// clientX: 20 дает ratio = 1.0, что для 4-й звезды (index 3) дает значение 4
 		await fireEvent.click(star, { clientX: 20 })
 
 		expect(screen.getByTestId('value')).toHaveTextContent('4')

@@ -3,11 +3,9 @@ import BaseTooltip from '../ui/BaseTooltip.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
 
-/** Задержки показа и скрытия подсказки, мс — как в BaseTooltip */
 const SHOW_DELAY = 100
 const HIDE_DELAY = 150
 
-/** Пауза дольше заданной задержки: отложенный показ или скрытие успели бы сработать. */
 function waitLongerThan(delay: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, delay * 2))
 }
@@ -111,7 +109,6 @@ describe('BaseTooltip integration', () => {
 
 			await user.tab()
 			expect(await screen.findByRole('tooltip')).toBeInTheDocument()
-			// повторное наведение запускает новый таймер показа
 			await user.hover(screen.getByRole('button', { name: 'Цель' }))
 			await user.keyboard('{Escape}')
 			await waitFor(() => {
@@ -133,7 +130,6 @@ describe('BaseTooltip integration', () => {
 			await user.tab()
 			expect(await screen.findByRole('tooltip')).toBeInTheDocument()
 			await user.hover(trigger)
-			// уход курсора запускает таймер скрытия, фокус остаётся на триггере
 			await user.unhover(trigger)
 			await user.keyboard('{Escape}')
 			await waitFor(() => {

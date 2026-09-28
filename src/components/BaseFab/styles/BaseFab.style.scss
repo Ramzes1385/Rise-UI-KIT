@@ -1,4 +1,3 @@
-// Плавающая круглая кнопка 56px в углу окна (отступ 24px + safe area, тень lg), слой ниже окон/панелей (z-overlay − 1); isExtended — высота 48px с подписью, isContained — в углу контейнера вместо окна.
 .base-fab {
 	--fab-offset: #{sz(24px)};
 	position: fixed;

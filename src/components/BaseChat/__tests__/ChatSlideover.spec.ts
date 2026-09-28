@@ -18,7 +18,6 @@ const MESSAGES_WITH_LINKS: ChatMessage[] = [
 	{ id: '5', text: '', sender: 'me', time: '10:04' },
 ]
 
-/** Демо-данные, которые раньше были зашиты в компонент и показывались в любом чате */
 const DEMO_DATA_PATTERN = /Металл-Арт|ведущий скульптор|\+7 \(999\) 123-45-67|info@metal-art\.ru/
 
 function baseProps(overrides: Record<string, unknown> = {}) {
@@ -38,7 +37,6 @@ describe('ChatSlideover unit', () => {
 		it('должен показывать панель-диалог «Информация» только когда isOpen=true', async () => {
 			const { rerender } = render(ChatSlideover, { props: baseProps() })
 
-			// Панель — BaseSlideover внутри окна чата: немодальный диалог, закрытая панель не остаётся в DOM и в порядке Tab
 			const dialog = screen.getByRole('dialog', { name: 'Информация' })
 			expect(dialog).not.toHaveAttribute('aria-modal')
 
@@ -94,7 +92,6 @@ describe('ChatSlideover unit', () => {
 		it('должен показывать список участников и количество', () => {
 			render(ChatSlideover, { props: baseProps({ isGroup: true, members: MEMBERS }) })
 
-			// Число участников — по правилам множественного числа: 1 участник, 3 участника, 5 участников
 			expect(screen.getByText('3 участника')).toBeInTheDocument()
 			expect(screen.getByText('Участники группы')).toBeInTheDocument()
 		})
@@ -262,7 +259,6 @@ describe('ChatSlideover unit', () => {
 				props: baseProps({ activeTab: 'profile', isGroup: true, selectedMemberId: null, members: MEMBERS }),
 			})
 
-			// Профильная панель не рендерится (selectedMember === null)
 			expect(container.querySelector('.base-chat-slideover__profile-summary')).toBeNull()
 		})
 
@@ -471,7 +467,6 @@ describe('ChatSlideover unit', () => {
 		it('должен извлекать уникальные ссылки из текста сообщений', () => {
 			render(ChatSlideover, { props: baseProps({ activeTab: 'links', messages: MESSAGES_WITH_LINKS }) })
 
-			// Дубликат https://example.com убран
 			expect(screen.getAllByText('https://example.com')).toHaveLength(1)
 			expect(screen.getByText('http://test.ru')).toBeInTheDocument()
 		})

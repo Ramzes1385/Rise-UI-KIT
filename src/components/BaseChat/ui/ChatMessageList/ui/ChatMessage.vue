@@ -22,8 +22,6 @@
 				@update:model-value="handleSelect" />
 		</div>
 
-		<!-- Аватар открывает профиль отправителя. Если рядом есть кнопка с именем, аватар дублирует её
-			и не попадает в порядок Tab -->
 		<button
 			v-if="hasAvatar"
 			type="button"
@@ -40,7 +38,6 @@
 			</button>
 
 			<div class="base-chat-message-list__bubble">
-				<!-- Действия появляются при наведении и при фокусе внутри сообщения (клавиатура) -->
 				<div
 					v-if="!isSelectionMode"
 					class="base-chat-message-list__actions"

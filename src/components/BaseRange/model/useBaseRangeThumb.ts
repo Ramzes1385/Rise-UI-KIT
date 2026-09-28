@@ -1,4 +1,3 @@
-/** Composable: логика BaseRangeThumb — события ползунка вместе с его индексом */
 import type { BaseRangeThumbEmits, BaseRangeThumbProps } from '../types/BaseRangeThumb.types'
 
 export function useBaseRangeThumb(props: BaseRangeThumbProps, emit: BaseRangeThumbEmits) {

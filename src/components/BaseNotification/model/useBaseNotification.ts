@@ -1,6 +1,5 @@
 import type { ComputedRef } from 'vue'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-/** Composable: логика BaseNotification — список уведомлений, автозакрытие с паузой и действия */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import type {
@@ -12,11 +11,8 @@ import type {
 	NotificationItem,
 } from '../types/BaseNotification.types'
 
-/** Длительность показа по умолчанию, мс */
 export const DEFAULT_DURATION = 3000
-/** Наибольшая задержка setTimeout (2³¹−1 мс, почти 25 дней): большее значение сработало бы сразу */
 const MAX_TIMEOUT = 2_147_483_647
-/** Кнопки действий — размер sm (28px при sizeScale = 100), компактнее кнопок форм */
 const ACTION_SCALE_RATIO = 0.875
 const TYPE_ICONS: Record<string, string> = {
 	success: 'check-circle',
@@ -26,11 +22,6 @@ const TYPE_ICONS: Record<string, string> = {
 }
 const NOTIFICATION_ELEMENTS = ['root', 'notification', 'icon', 'content', 'title', 'description', 'actions', 'close', 'progress']
 
-/**
- * Длительность показа (мс): положительное конечное число (не больше MAX_TIMEOUT), иначе значение по умолчанию.
- * Единая точка для таймера и прогресс-бара: 0, NaN, отрицательные и Infinity (переполнение setTimeout)
- * иначе удаляли бы уведомление сразу, пока прогресс-бар показывает 3 секунды
- */
 function resolveDuration(duration: number | undefined): number {
 	if (duration !== undefined && Number.isFinite(duration) && duration > 0) return Math.min(duration, MAX_TIMEOUT)
 	return DEFAULT_DURATION
@@ -40,10 +31,8 @@ function useNotificationView(props: BaseNotificationProps) {
 	const getDuration = (notification: NotificationItem): number => resolveDuration(notification.duration ?? props.duration)
 	return {
 		getDuration,
-		/** Ключ таймера: при смене длительности или режима показа таймер запускается заново */
 		getTimerKey: (notification: NotificationItem): string =>
 			`${notification.id}:${notification.isPersistent ? 'persistent' : getDuration(notification)}`,
-		/** Вариант из add(), иначе проп variant компонента: в одном контейнере — уведомления разного оформления */
 		getVariantClass(notification: NotificationItem): string | undefined {
 			const variant = notification.variant ?? props.variant
 			if (!variant || variant === DEFAULT_VARIANT) return undefined
@@ -52,7 +41,6 @@ function useNotificationView(props: BaseNotificationProps) {
 	}
 }
 
-/** Таймеры автозакрытия по id уведомления; на паузе хранят остаток времени */
 function createTimers(onExpire: (id: NotificationId) => void) {
 	const timers = new Map<NotificationId, AutoCloseTimer>()
 	const schedule = (id: NotificationId, timer: AutoCloseTimer): void => {
@@ -87,7 +75,6 @@ function createTimers(onExpire: (id: NotificationId) => void) {
 	}
 }
 
-/** Автозакрытие: пауза, пока указатель над уведомлениями или фокус внутри; таймеры снимаются при размонтировании */
 function useAutoClose(
 	list: ComputedRef<NotificationItem[]>,
 	view: ReturnType<typeof useNotificationView>,
@@ -103,7 +90,6 @@ function useAutoClose(
 		clock.timers.set(notification.id, timer)
 		if (!isPaused.value) clock.schedule(notification.id, timer)
 	}
-	/** Запускает таймеры новых уведомлений, перезапускает изменённые и снимает таймеры закрытых */
 	const syncTimers = (): void => {
 		const visible = new Set(list.value.map(notification => notification.id))
 		for (const notification of list.value) {
@@ -115,7 +101,6 @@ function useAutoClose(
 		for (const id of [...clock.timers.keys()]) {
 			if (!visible.has(id)) clock.clearTimer(id)
 		}
-		// Когда список опустел, mouseleave и focusout могут не прийти: новые уведомления не должны стартовать на паузе
 		if (list.value.length === 0) {
 			isHovered.value = false
 			isFocusWithin.value = false
@@ -129,7 +114,6 @@ function useAutoClose(
 	return { isHovered, isFocusWithin, isPaused, syncTimers, clearTimer: clock.clearTimer }
 }
 
-/** Собственный список: уведомления из `add()` и из пропсов; при пропе items показывается он */
 function useNotificationList(props: BaseNotificationProps, emit: BaseNotificationEmits) {
 	const internalItems = ref<NotificationItem[]>([])
 	let nextId = 0
@@ -149,7 +133,6 @@ function useNotificationList(props: BaseNotificationProps, emit: BaseNotificatio
 }
 
 export function useBaseNotification(props: BaseNotificationProps, emit: BaseNotificationEmits) {
-	// Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo)
 	const teleportTarget = useTeleportTarget()
 	const standard = useStandardBaseComponent('base-notification-item', props, NOTIFICATION_ELEMENTS)
 	const { list, push, drop } = useNotificationList(props, emit)
@@ -162,19 +145,16 @@ export function useBaseNotification(props: BaseNotificationProps, emit: BaseNoti
 		autoClose.clearTimer(id)
 		emit('remove', id)
 		drop(id)
-		// Кнопка закрытия исчезает вместе с уведомлением, и focusout может не прийти
 		nextTick(() => {
 			if (isFocusWithin.value && !containerRef.value?.contains(document.activeElement)) isFocusWithin.value = false
 		})
 	}
-	/** Добавляет уведомление. Без своего `duration` оно показывается столько, сколько задано пропом компонента */
 	const add = (notification: BaseNotificationProps): NotificationId => {
 		const id = push(notification)
 		autoClose.syncTimers()
 		return id
 	}
 
-	// Декларативное использование (через v-if); variant не копируется: уведомление из пропсов следует за текущим пропом variant
 	onMounted(() => {
 		if (props.title && !props.items)
 			add({ ...props, variant: undefined, title: props.title, type: props.type, position: props.position, duration: props.duration })
@@ -191,7 +171,6 @@ export function useBaseNotification(props: BaseNotificationProps, emit: BaseNoti
 		isHovered: autoClose.isHovered,
 		isFocusWithin,
 		isPaused: autoClose.isPaused,
-		/** Фокус ушёл из области уведомлений (а не перешёл между кнопками внутри) — автозакрытие продолжается */
 		handleFocusOut(event: FocusEvent): void {
 			const container = event.currentTarget as HTMLElement
 			if (!container.contains(event.relatedTarget as Node | null)) isFocusWithin.value = false

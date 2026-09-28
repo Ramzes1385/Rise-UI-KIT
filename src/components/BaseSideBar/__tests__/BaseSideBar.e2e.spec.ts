@@ -100,7 +100,6 @@ test.describe('BaseSideBar e2e', () => {
 		await expect(sidebar.locator('.base-side-bar-nav__icon').first()).toBeVisible()
 		await expect(sidebar.locator('.base-side-bar__footer')).toBeVisible()
 		await expect(sidebar.locator('.base-side-bar__footer .base-avatar')).toBeVisible()
-		// Подвал сохраняется, но в свёрнутой панели в нём остаётся только аватар — имя пользователя, как и названия пунктов, скрыто
 		await expect(sidebar.getByText('Анна Смирнова')).toHaveCount(0)
 	})
 

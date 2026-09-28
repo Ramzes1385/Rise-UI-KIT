@@ -596,7 +596,6 @@ describe('BaseSlider unit', () => {
 		})
 
 		it('должен распределять объект классов по внутренним элементам', () => {
-			// Два слайда: с одним листать нечего, и стрелки с навигацией не выводятся
 			const itemsWithCaption: SliderItem[] = [
 				{ src: 'slide1.jpg', alt: 'Слайд 1', type: 'image', title: 'Заголовок', description: 'Описание' },
 				{ src: 'slide2.jpg', alt: 'Слайд 2', type: 'image' },

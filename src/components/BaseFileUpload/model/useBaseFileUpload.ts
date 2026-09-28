@@ -1,4 +1,3 @@
-/** Composable: логика BaseFileUpload — выбор и перетаскивание файлов, ошибки и превью */
 import { computed, ref, useId } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { toHTMLInputElement } from '@utils/domUtils'
@@ -31,7 +30,6 @@ const FILE_UPLOAD_ELEMENTS = [
 	'errorItem',
 ]
 
-/** Иконка файла без превью: по MIME-типу — изображение, видео или документ */
 function fileIconName(item: UploadedFile): string {
 	if (item.type.startsWith('image/')) return 'image'
 	if (item.type.startsWith('video/')) return 'video'
@@ -50,7 +48,6 @@ function useUploadState(props: FileUploadProps, emit: BaseFileUploadEmits) {
 	})
 }
 
-/** Отключённое состояние не может полагаться только на CSS pointer-events: drop и клавиатура его обходят */
 function useDropzone(
 	state: ReturnType<typeof useFileUploadState>,
 	isDisabled: ComputedRef<boolean>,
@@ -78,7 +75,6 @@ function useDropzone(
 	}
 }
 
-/** Явный previewSize (px) масштабируется вместе с компонентом; без пропа размер задают стили */
 function previewStyleOf(props: FileUploadProps): { width: string; height: string } | undefined {
 	if (props.previewSize === undefined) return undefined
 	const size = `${Math.round((props.previewSize * props.sizeScale) / 100)}px`
@@ -86,7 +82,6 @@ function previewStyleOf(props: FileUploadProps): { width: string; height: string
 }
 
 export function useBaseFileUpload(props: FileUploadProps, emit: BaseFileUploadEmits) {
-	// Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля)
 	const isControlDisabled = useFormDisabled(() => props.isDisabled)
 	const standard = useStandardBaseComponent('base-file-upload', props, FILE_UPLOAD_ELEMENTS)
 	const formField = useFormField({ value: () => undefined, error: () => props.error })

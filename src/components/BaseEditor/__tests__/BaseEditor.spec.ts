@@ -1,5 +1,3 @@
-/** Компонент сложный — тестируем базовый рендер. */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import BaseEditor from '../ui/BaseEditor.vue'
@@ -406,10 +404,8 @@ describe('BaseEditor unit', () => {
 			expect(within(toolbar).getByRole('button', { name: 'Жирный' })).toHaveAttribute('aria-pressed', 'false')
 			expect(within(toolbar).getByRole('button', { name: 'Цитата' })).toHaveAttribute('aria-pressed', 'false')
 			expect(within(toolbar).getByRole('button', { name: 'Ссылка' })).not.toHaveAttribute('aria-pressed')
-			// Поля загрузки файлов доступны с клавиатуры и названы
 			expect(within(toolbar).getByLabelText('Изображение')).toHaveAttribute('type', 'file')
 			expect(within(toolbar).getByLabelText('Видео')).toHaveAttribute('type', 'file')
-			// Пикеры цвета сгруппированы с именем: кнопка пикера озвучивает только выбранный цвет
 			expect(within(toolbar).getByRole('group', { name: 'Цвет текста' })).toBeInTheDocument()
 			expect(within(toolbar).getByRole('group', { name: 'Цвет фона' })).toBeInTheDocument()
 		})

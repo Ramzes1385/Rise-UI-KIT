@@ -7,7 +7,6 @@ function getNotification() {
 	return document.querySelector('.base-notification-item')
 }
 
-/** Область уведомлений — на ней пауза автозакрытия */
 function getRegion() {
 	return screen.getByRole('region', { name: 'Уведомления' })
 }
@@ -95,7 +94,6 @@ describe('BaseNotification unit', () => {
 
 			const progress = document.querySelector('.base-notification-item__progress') as HTMLElement
 			expect(progress).toBeInTheDocument()
-			// 0 || 3000 = 3000ms
 			expect(progress.style.animationDuration).toBe('3000ms')
 		})
 
@@ -363,7 +361,6 @@ describe('BaseNotification unit', () => {
 			})
 
 			expect(wrapper.emitted()).not.toHaveProperty('close')
-			// Телепортированный контейнер не должен оставаться в body для следующих тестов
 			wrapper.unmount()
 		})
 
@@ -401,7 +398,6 @@ describe('BaseNotification unit', () => {
 
 			expect(emitted().remove).toEqual([['saved']])
 			expect(emitted().close).toBeUndefined()
-			// Список ведёт родитель: пока он не убрал уведомление, оно на месте
 			expect(screen.getByRole('status')).toHaveTextContent('Сохранено')
 		})
 
@@ -480,7 +476,6 @@ describe('BaseNotification unit', () => {
 			await vi.advanceTimersByTimeAsync(1000)
 			await fireEvent.mouseEnter(getRegion())
 			expect(getRegion()).toHaveClass('base-notification--paused')
-			// Пришедшее во время паузы уведомление тоже ждёт
 			await rerender({
 				items: [
 					{ id: 'b', title: 'B', duration: 500 },
@@ -542,7 +537,6 @@ describe('BaseNotification unit', () => {
 			await vi.advanceTimersByTimeAsync(0)
 			expect(firstId).toBe(0)
 
-			// Список: Третье, Второе, Первое. Фокус на «Первом», закрываем «Третье» — фокус внутри, пауза остаётся
 			const [third, , first] = Array.from(document.querySelectorAll<HTMLElement>('.base-notification-item__close'))
 			first.focus()
 			await fireEvent.focusIn(first)
@@ -550,7 +544,6 @@ describe('BaseNotification unit', () => {
 			await vi.advanceTimersByTimeAsync(5000)
 			expect(document.querySelectorAll('.base-notification-item')).toHaveLength(2)
 
-			// Закрываем «Первое» с фокусом: кнопка исчезла без focusout — пауза снимается
 			await fireEvent.click(first)
 			await vi.advanceTimersByTimeAsync(0)
 			expect(getRegion()).not.toHaveClass('base-notification--paused')

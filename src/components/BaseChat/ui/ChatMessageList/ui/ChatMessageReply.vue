@@ -10,7 +10,6 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useChatMessageReply } from '../model/useChatMessageReply'
 import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../types/ChatMessageReply.types'
 
-/** Цитата сообщения, на которое ответили: клик прокручивает ленту к оригиналу */
 const props = defineProps<ChatMessageReplyProps>()
 const emit = defineEmits<ChatMessageReplyEmits>()
 

@@ -1,4 +1,3 @@
-// Ячейки — 32px с зазором 6px; варианты те же, что у BaseInput (default/outline/soft/ghost/shadow).
 .base-pin {
 	display: inline-flex;
 	flex-direction: column;
@@ -25,16 +24,13 @@
 		outline: none;
 		@include field-box;
 
-		// Без стрелок у type="number": ячейка вмещает один символ.
 		&::-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
-			/* stylelint-disable-next-line property-no-vendor-prefix -- псевдоэлемент только WebKit */
 			-webkit-appearance: none;
 			margin: 0;
 		}
 
 		&[type='number'] {
-			/* stylelint-disable-next-line property-no-vendor-prefix -- Firefox до 80 */
 			-moz-appearance: textfield;
 			appearance: textfield;
 		}
@@ -62,7 +58,6 @@
 		}
 	}
 
-	// Фокус в ячейке без рамки (soft, ghost): фон как при наведении, плюс кольцо.
 	&--soft &__input:focus,
 	&--ghost &__input:focus {
 		@include custom-bg(background-color, var(--rise-bg-elevated));
@@ -81,7 +76,6 @@
 		@include disabled-state;
 	}
 
-	// Двойной селектор: текст ошибки — BaseText, его собственный цвет не должен перебивать цвет ошибки.
 	& &__error-text {
 		@include field-error;
 	}

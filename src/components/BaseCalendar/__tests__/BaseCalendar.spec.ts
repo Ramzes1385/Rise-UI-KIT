@@ -1,5 +1,3 @@
-/** Дочерние UI-компоненты заменены stub'ами; мокаются только DOM-зависимые composables. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import { fireEvent, render } from '@testing-library/vue'
@@ -245,9 +243,7 @@ describe('BaseCalendar unit', () => {
 				})
 
 				const titleBtn = container.querySelector('.base-calendar__title-btn') as HTMLElement
-				// days → months
 				await fireEvent.click(titleBtn)
-				// months → years
 				await fireEvent.click(titleBtn)
 
 				const yearBtn = container.querySelector('.base-calendar__year-btn') as HTMLElement

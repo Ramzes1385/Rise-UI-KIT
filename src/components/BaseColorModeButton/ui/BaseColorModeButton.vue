@@ -1,5 +1,4 @@
 <template>
-	<!-- Кнопка-переключатель тёмной темы: имя постоянное, нажата — тёмная тема (aria-pressed) -->
 	<BaseButton
 		class="base-color-mode-button"
 		:variant="variant"

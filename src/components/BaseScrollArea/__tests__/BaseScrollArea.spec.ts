@@ -117,13 +117,11 @@ describe('BaseScrollArea unit', () => {
 		expect(viewport.scrollTop).toBe(0)
 		await fireEvent.pointerDown(thumbY, { button: 0, clientY: 0, pointerId: 1 })
 		expect(container.querySelector('.base-scroll-area')).toHaveClass('base-scroll-area--active')
-		// Ход ползунка 75px на 300px прокрутки: 30px указателя — 120px
 		await fireEvent.pointerMove(thumbY, { clientY: 30 })
 		expect(viewport.scrollTop).toBe(120)
 		await fireEvent.pointerUp(thumbY)
 		const thumbX = thumb(container, 'x')
 		await fireEvent.pointerDown(thumbX, { button: 0, clientX: 0 })
-		// Ход 50px на 100px прокрутки: 10px указателя — 20px
 		await fireEvent.pointerMove(thumbX, { clientX: 10 })
 		await fireEvent.pointerCancel(thumbX)
 		expect(viewport.scrollLeft).toBe(20)

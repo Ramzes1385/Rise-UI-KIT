@@ -1,4 +1,3 @@
-// Область нажатия вокруг трека — 20px, шире самого трека (6px), для удобного попадания курсором.
 .base-range {
 	display: flex;
 	flex-direction: column;
@@ -6,7 +5,6 @@
 	width: 100%;
 	user-select: none;
 
-	// Приглушается только трек с ползунками, как коробка поля у BaseInput: подписи и деления остаются читаемыми.
 	&--disabled &__track-wrapper {
 		@include disabled-state;
 	}
@@ -18,7 +16,6 @@
 		gap: sz(8px);
 	}
 
-	// Двойные классы перекрывают кегль и цвет BaseText по умолчанию независимо от порядка CSS.
 	&__label &__label-min,
 	&__label &__label-max {
 		color: var(--rise-text-muted);
@@ -100,7 +97,6 @@
 		@include focus-ring;
 	}
 
-	// Центр бегунка (фон внутри кольца); ключ customClass.thumbDot красит его.
 	&__thumb-dot {
 		width: 100%;
 		height: 100%;
@@ -108,8 +104,6 @@
 		background-color: inherit;
 	}
 
-	// Свой бегунок из слота thumb: без кольца и фона, фокус — то же кольцо focus-ring.
-	// Содержимое слота — пользовательское: цвет слайдера (color) на вложенные компоненты не переходит.
 	&__thumb--custom {
 		width: auto;
 		height: auto;
@@ -121,7 +115,6 @@
 		@include reset-custom-color;
 	}
 
-	// Высота: линия major 8px + отступ 4px + подпись 16px (деления и подписи позиционированы абсолютно).
 	&__marks {
 		position: relative;
 		width: 100%;

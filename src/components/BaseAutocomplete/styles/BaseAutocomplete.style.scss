@@ -1,4 +1,3 @@
-// Панель BaseDropdown не уже поля, список до 240px с прокруткой; совпадение с запросом выделяется полужирным, без фона.
 .base-autocomplete {
 	display: block;
 	width: 100%;
@@ -25,7 +24,6 @@
 		list-style: none;
 		@include scrollbar-thin;
 
-		// Пустой список остаётся в DOM (на него ссылается aria-controls), но места не занимает
 		&--empty {
 			padding: 0;
 		}

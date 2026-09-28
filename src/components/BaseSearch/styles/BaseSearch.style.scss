@@ -1,20 +1,16 @@
-// В режимах modal/sidebar поле — только триггер открытия; окно поиска стилизовано как BaseModal или как BaseSlideover.
 .base-search {
 	display: flex;
 	width: 100%;
 	@include custom-text(color, var(--rise-text-highlighted));
 
-	// Обёртка BaseDropdown занимает ширину поля: панель результатов той же ширины (matchWidth).
 	.base-dropdown {
 		width: 100%;
 	}
 
-	// Подпись поля (текст плейсхолдера) — только для скринридеров: имя поля остаётся и после ввода запроса.
 	&__field .base-input__label {
 		@include visually-hidden;
 	}
 
-	// Иконка в поле: отступ слева как у текста поля, до текста — 6px (у поля с префиксом свой отступ 4px).
 	&__icon {
 		flex-shrink: 0;
 		padding-left: sz(var(--rise-control-padding-x));
@@ -22,8 +18,6 @@
 		color: var(--rise-text-muted);
 	}
 
-	// Индикатор загрузки и кнопка очистки — вложенные компоненты: цвет поиска (color) их не перекрашивает.
-	// underline — поле без боковых отступов: иконка у самого края, как текст.
 	&--underline &__icon {
 		padding-left: 0;
 	}
@@ -39,13 +33,10 @@
 	}
 
 	&__loading {
-		// Спиннер 16px — в ячейке 24px, как кнопка очистки рядом.
 		width: sz(24px);
 		justify-content: center;
 	}
 
-	// Кнопка очистки — квадратная ghost-кнопка 24px (иконка 16px + отступы 3px + рамка), как кнопка пароля BaseInput.
-	// Двойной класс — чтобы отступы перекрыли значения по умолчанию из стилей BaseButton независимо от порядка CSS.
 	&__clear.base-button {
 		--btn-pad-top: 3px;
 		--btn-pad-right: 3px;
@@ -56,13 +47,11 @@
 		color: var(--rise-text-muted);
 	}
 
-	// Триггер режимов modal/sidebar: поле только открывает окно поиска.
 	&--modal &__trigger .base-input__field,
 	&--sidebar &__trigger .base-input__field {
 		cursor: pointer;
 	}
 
-	// Статус для скринридера (число результатов) — виден только ему
 	&__live {
 		@include visually-hidden;
 	}
@@ -95,7 +84,6 @@
 		min-width: 0;
 	}
 
-	// Двойные классы перекрывают кегль и цвет BaseText по умолчанию независимо от порядка CSS.
 	&__result-content &__result-title {
 		display: block;
 		color: inherit;
@@ -117,7 +105,6 @@
 		@include text-size(xs);
 	}
 
-	// Вторичный текст на фоне bg-elevated (наведение, подсветка) — toned: у muted там контраст ниже 4.5:1.
 	&__result--highlighted &__result-desc,
 	&__result--highlighted &__result-category {
 		color: var(--rise-text-toned);
@@ -130,7 +117,6 @@
 		}
 	}
 
-	// Совпадение с запросом: мягкий фон основного цвета, текст highlighted, без подчёркивания.
 	&__match {
 		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--rise-primary-soft);
@@ -196,7 +182,6 @@
 		border-bottom: 1px solid var(--rise-border);
 	}
 
-	// Кнопка закрытия — квадратная ghost-кнопка 32×32 (иконка 20px и отступы 5px), как у BaseModal.
 	&__modal-close.base-button,
 	&__sidebar-close.base-button {
 		--btn-pad-top: 5px;

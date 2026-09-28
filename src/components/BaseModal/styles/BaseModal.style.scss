@@ -1,5 +1,3 @@
-// Шапка/тело/подвал разделены линией --rise-border, отступы 16/20; заголовок 16/24 semibold, закрытие — ghost-кнопка 32×32.
-
 .base-modal {
 	position: fixed;
 	inset: 0;
@@ -11,12 +9,10 @@
 	padding: sz(16px);
 	background-color: var(--rise-overlay);
 
-	// Внутри контейнера: подложка и окно ограничены родителем (position: relative), а не экраном.
 	&--contained {
 		position: absolute;
 	}
 
-	// Без затемнения подложка прозрачная, но по-прежнему перехватывает клики: окно остаётся модальным.
 	&--no-overlay {
 		background-color: transparent;
 	}
@@ -27,7 +23,6 @@
 		box-sizing: border-box;
 		width: 100%;
 		max-width: sz(500px);
-		// Высота ограничена подложкой (экраном или контейнером): длинное тело прокручивается, шапка и подвал видны.
 		max-height: 100%;
 		overflow: hidden;
 		border: 1px solid var(--rise-border);
@@ -36,7 +31,6 @@
 		@include custom-text(color, var(--rise-text));
 		@include text-size(sm);
 		box-shadow: var(--rise-shadow-xl);
-		// Без фокусируемых элементов ловушка фокуса ставит фокус на само окно — рамка фокуса ему не нужна.
 		outline: none;
 	}
 
@@ -67,7 +61,6 @@
 		min-width: 0;
 	}
 
-	// Заголовок — BaseText: двойной класс перекрывает его базовый кегль и цвет независимо от порядка CSS.
 	&__title.base-text {
 		margin: 0;
 		@include text-size(base);
@@ -75,7 +68,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// Кнопка закрытия — квадратная ghost-кнопка 32×32: иконка 20px и отступы 5px.
 	&__close.base-button {
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
@@ -86,13 +78,11 @@
 	}
 
 	&__body {
-		// min-height: 0 позволяет телу сжаться меньше содержимого — иначе overflow-y не срабатывает.
 		flex: 1 1 auto;
 		min-height: 0;
 		padding: sz(16px) sz(20px);
 		overflow-y: auto;
 		@include scrollbar-thin;
-		// Тело с прокруткой фокусируется с клавиатуры (tabindex): кольцо внутри, окно обрезает всё снаружи.
 		@include focus-ring(-2px);
 		@include reset-custom-color;
 	}

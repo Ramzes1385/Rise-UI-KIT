@@ -31,7 +31,6 @@
 				:aria-sort="getAriaSort(column)"
 				@click="emit('sort', column)">
 				<slot :name="`header-${column.key}`" :column="column">
-					<!-- Кнопка без собственного обработчика: Enter/Space вызывают click, который всплывает к th — одна точка сортировки для мыши и клавиатуры -->
 					<template v-if="column.isSortable">
 						<button
 							type="button"
@@ -43,7 +42,6 @@
 								<span v-if="getSortPriority(column)" class="base-table__sort-index">{{ getSortPriority(column) }}</span>
 							</span>
 						</button>
-						<!-- Приоритет мультисортировки описывает кнопку (aria-describedby), но не входит в имя кнопки и заголовка -->
 						<span v-if="getSortPriority(column)" :id="`${idPrefix}-${column.key}-priority`" hidden>
 							{{ TABLE_TEXT.SORT_PRIORITY }}: {{ getSortPriority(column) }}
 						</span>

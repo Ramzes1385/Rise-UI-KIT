@@ -13,7 +13,6 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<label class="base-checkbox__label-wrapper" :class="classes.labelWrapper">
 			<span class="base-checkbox__wrapper" :class="classes.wrapper">
-				<!-- Нативный checkbox лежит поверх квадрата: он получает клик, фокус и клавиатуру, квадрат только рисует состояние -->
 				<input
 					type="checkbox"
 					class="base-checkbox__input"
@@ -41,8 +40,6 @@
 				:custom-class="classes.label"
 				:size-scale="sizeScale" />
 		</label>
-		<!-- Ошибка — текст или разметка слота error — лежит в обёртке с id: чекбокс описан ею через aria-describedby
-			в обоих случаях. Без ошибки обёртка пуста и скрыта (:empty), лишнего отступа нет -->
 		<div :id="errorId" class="base-checkbox__error">
 			<slot name="error">
 				<FormFieldError

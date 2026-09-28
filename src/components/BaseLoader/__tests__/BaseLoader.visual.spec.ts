@@ -1,5 +1,3 @@
-/** Анимации на скриншоте отключены, индикаторы снимаются в исходной позе */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

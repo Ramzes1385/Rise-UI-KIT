@@ -42,7 +42,6 @@ describe('BaseDropdownMenu', () => {
 		expect(screen.getAllByRole('separator')).toHaveLength(1)
 		expect(within(menu).getByText('F2')).toHaveAttribute('aria-hidden', 'true')
 
-		// Правый клик в меню не открывает меню браузера поверх
 		const contextMenu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
 		menu.dispatchEvent(contextMenu)
 		expect(contextMenu.defaultPrevented).toBe(true)

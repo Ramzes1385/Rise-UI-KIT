@@ -43,9 +43,7 @@
 				</template>
 			</BaseTableToolbar>
 
-			<!-- Область таблицы: подложка загрузки перекрывает только её, а не тулбар и подвал -->
 			<div class="base-table__content">
-				<!-- Область с прокруткой получает tabindex, только когда прокручивается: иначе её нельзя прокрутить с клавиатуры -->
 				<div
 					ref="tableWrapperRef"
 					class="base-table__wrapper"

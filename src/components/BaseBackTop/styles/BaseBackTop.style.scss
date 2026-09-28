@@ -1,4 +1,3 @@
-// BaseBackTop: оформление и положение — у BaseFab; здесь только появление (проявление и сдвиг на 8px снизу).
 .base-back-top-enter-active,
 .base-back-top-leave-active {
 	@include transition(opacity, transform);

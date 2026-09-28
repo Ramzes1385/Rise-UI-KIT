@@ -5,7 +5,6 @@ import { useTourLogic } from '@composables/useTourLogic'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useScrollLock } from '@composables/useScrollLock'
-/** Composable: логика BaseTour — шаги, подсветка элемента, блокировка прокрутки и фокус в карточке */
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
@@ -52,17 +51,12 @@ function useTourSteps(props: TourProps, emit: BaseTourEmits, internalIndex: Ref<
 	return { activeIndex, isMobile, logic, coordination }
 }
 
-/**
- * Тур — модальный диалог: когда карточка шага появилась (после анимации подсветки), фокус переходит в неё (на кнопку
- * «Далее» с autofocus), Tab не уходит на страницу под затемнением, после закрытия фокус возвращается на кнопку запуска
- */
 function useCardFocus(props: TourProps): Ref<HTMLElement | null> {
 	const cardRef = ref<HTMLElement | null>(null)
 	useFocusTrap({ containerRef: cardRef, isActive: () => props.isOpen && cardRef.value !== null })
 	return cardRef
 }
 
-/** Открытие: шаг из пропа, блокировка прокрутки, слушатели положения и фокус; закрытие снимает всё это */
 function useTourOpen(props: TourProps, internalIndex: Ref<number>, steps: ReturnType<typeof useTourSteps>): void {
 	const { lock, unlock } = useScrollLock()
 	const { attachListeners, detachListeners } = steps.logic
@@ -90,7 +84,6 @@ function useTourOpen(props: TourProps, internalIndex: Ref<number>, steps: Return
 		},
 		{ immediate: true },
 	)
-	// Размонтирование открытого тура (смена маршрута, v-if) не проходит через watch isOpen — блокировка снимается явно
 	onBeforeUnmount(() => {
 		stopFocus()
 		unlock()
@@ -98,9 +91,7 @@ function useTourOpen(props: TourProps, internalIndex: Ref<number>, steps: Return
 }
 
 export function useBaseTour(props: TourProps, emit: BaseTourEmits) {
-	// Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo)
 	const teleportTarget = useTeleportTarget()
-	// Место тура среди открытых слоёв: тур, запущенный из окна, — над ним
 	const layerStyle = useLayerIndex(() => props.isOpen)
 	const internalIndex = ref(props.step)
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: TOUR_ELEMENTS })

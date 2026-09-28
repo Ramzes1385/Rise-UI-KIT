@@ -12,7 +12,6 @@ const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Ворота' },
 ]
 
-// jsdom не умеет переходить по ссылкам и пишет об этом в консоль: в тестах переход по клику отменяется
 function preventNavigation(event: Event): void {
 	event.preventDefault()
 }

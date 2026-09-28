@@ -1,6 +1,4 @@
-// Высота при sizeScale = 100: 32px = рамка 1 + отступ 5 + строка 20.
 .base-button {
-	// Отступы по умолчанию — из токенов контрола. Проп padding переопределяет их inline-переменными --btn-pad-*.
 	--btn-pad-top: var(--rise-control-padding-y);
 	--btn-pad-right: var(--rise-control-padding-x);
 	--btn-pad-bottom: var(--rise-control-padding-y);
@@ -59,7 +57,6 @@
 	&--loading {
 		cursor: progress;
 
-		// Текст скрыт только визуально (opacity): доступное имя кнопки сохраняется для скринридеров.
 		.base-button__content {
 			opacity: 0;
 		}

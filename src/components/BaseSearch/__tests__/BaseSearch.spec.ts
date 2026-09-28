@@ -8,7 +8,6 @@ vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
 vi.mock('@composables/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
 
-/** Стабаем дочерние компоненты для изоляции */
 const globalConfig = {
 	stubs: {
 		BaseDropdown: {
@@ -434,7 +433,6 @@ describe('BaseSearch unit', () => {
 				global: globalConfig,
 			})
 
-			/** BaseInput стаб эмитит keydown наверх */
 			const input = container.querySelector('.base-input-stub')!
 			await fireEvent.keyDown(input, { key: 'Enter' })
 			expect(emitted()).toHaveProperty('search')
@@ -709,7 +707,6 @@ describe('BaseSearch unit', () => {
 			const input = container.querySelector('.base-input-stub')!
 			await fireEvent.focus(input)
 
-			// После фокуса с query — dropdown должен открыться
 			const dropdown = container.querySelector('.base-dropdown-stub')
 			expect(dropdown?.getAttribute('data-is-open')).toBe('true')
 		})
@@ -874,7 +871,6 @@ describe('BaseSearch unit', () => {
 
 			await rerender({ modelValue: 'новый запрос' })
 
-			// После обновления modelValue, query должен обновиться и отобразиться в инпуте
 			const input = container.querySelector('.base-input-stub')
 			expect(input?.getAttribute('data-placeholder')).toBeTruthy()
 		})
@@ -942,16 +938,13 @@ describe('BaseSearch unit', () => {
 				global: instantConfig,
 			})
 
-			// Сначала фокусируемся, чтобы isFocused=true
 			const input = container.querySelector('.base-input-stub')!
 			await fireEvent.focus(input)
 
-			// До Enter — результаты не показываются (dropdown закрыт)
 			expect(container.querySelector('.base-search__result')).not.toBeInTheDocument()
 
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
-			// После Enter — isSearchTriggered=true, результаты показываются
 			expect(container.querySelector('.base-search__result')).toBeInTheDocument()
 		})
 	})
@@ -985,7 +978,6 @@ describe('BaseSearch unit', () => {
 
 			vi.advanceTimersByTime(300)
 
-			// После unmount таймер должен быть отменён
 			expect(emitted()).not.toHaveProperty('search')
 
 			vi.useRealTimers()
@@ -1027,7 +1019,6 @@ describe('BaseSearch unit', () => {
 	})
 
 	describe('подсветка при изменении списка результатов', () => {
-		/** Реальный ввод, фокус и клавиатура через стаб BaseInput; дропдаун рендерит панель только когда открыт */
 		const navigationConfig = {
 			stubs: {
 				...globalConfig.stubs,
@@ -1132,14 +1123,12 @@ describe('BaseSearch unit', () => {
 			const input = container.querySelector('.base-input-stub')!
 			await highlightFourth(input)
 
-			// Мутация на месте без ожидания ре-рендера: сброс подсветки (watch) ещё не выполнен
 			results.splice(1)
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
 			expect(errorHandler).not.toHaveBeenCalled()
 			expect(emitted().select).toBeUndefined()
 
-			// После пересчёта подсветка сброшена — Enter снова запускает поиск по запросу
 			await fireEvent.keyDown(input, { key: 'Enter' })
 			expect(emitted().search).toEqual([['тест']])
 		})

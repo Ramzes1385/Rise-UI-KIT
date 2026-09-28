@@ -1,5 +1,4 @@
 <template>
-	<!-- Плавающая кнопка главного действия страницы: круглая с иконкой (имя — aria-label) или широкая с подписью -->
 	<component
 		:is="isLink ? BaseLink : 'button'"
 		class="base-fab"

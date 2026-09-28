@@ -6,7 +6,6 @@ import type { ConfirmOptions } from '../types/BaseConfirm.types'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { getActiveOverlayStore, OVERLAY_DESTROY_DELAY } from '@composables/useOverlay'
 
-/** Кнопка «Удалить», которая спрашивает подтверждение и показывает ответ */
 function renderApp(options: ConfirmOptions) {
 	const Page = defineComponent({
 		setup() {
@@ -63,7 +62,6 @@ describe('useConfirm в BaseApp', () => {
 		await fireEvent.click(screen.getByRole('button', { name: 'Отмена' }))
 		expect(getActiveOverlayStore()?.entries.value).toHaveLength(1)
 
-		// В тестах анимация отключена и after-leave не приходит — окно удаляет запасной таймер
 		await vi.advanceTimersByTimeAsync(OVERLAY_DESTROY_DELAY)
 		expect(getActiveOverlayStore()?.entries.value).toHaveLength(0)
 

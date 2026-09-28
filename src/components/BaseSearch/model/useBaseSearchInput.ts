@@ -1,4 +1,3 @@
-/** Composable: логика BaseSearchInput — атрибуты combobox на нативном поле и события поля поиска */
 import { ref } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
@@ -6,7 +5,6 @@ import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps 
 
 export function useBaseSearchInput(props: BaseSearchInputProps, emit: BaseSearchInputEmits) {
 	const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
-	// Поле — combobox (APG «combobox with listbox popup»): атрибуты ставятся на сам <input> внутри BaseInput
 	useTriggerAttributes(
 		() => inputRef.value?.$el as HTMLElement | undefined,
 		() => props.comboboxAttributes ?? {},

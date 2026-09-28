@@ -1,5 +1,3 @@
-/** Stories с открытой панелью результатов или окном поиска снимаются целой страницей: они телепортируются в body. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

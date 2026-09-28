@@ -1,4 +1,3 @@
-/** Composable: логика BaseRating — предпросмотр под указателем, выбор кликом и клавишами слайдера */
 import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
 import { UI_RATING } from '@/locales/messages'
@@ -8,20 +7,12 @@ import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseRatingEmits, RatingProps } from '../types/BaseRating.types'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 
-function pointerRatio(event: MouseEvent, target: EventTarget | null): number {
-	/* istanbul ignore next — defensive: currentTarget звезды всегда HTMLElement */
-	if (!(target instanceof HTMLElement)) return 1
-	const rect = target.getBoundingClientRect()
-	/* istanbul ignore next — defensive: отрисованная звезда всегда имеет ненулевую ширину */
+function pointerRatio(event: MouseEvent): number {
+	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 	if (rect.width === 0) return 1
 	return (event.clientX - rect.left) / rect.width
 }
 
-/**
- * ARIA корня. Интерактивный и отключённый рейтинг — slider: значение, границы и текст «3 из 5»; отключённый —
- * aria-disabled и без tabindex (не получает фокус ни с клавиатуры, ни кликом). Только чтение — изображение
- * с оценкой в имени («Оценка 4.5 из 5»): менять его нельзя
- */
 function ratingAria(props: RatingProps, isDisabled: boolean) {
 	const valueText = `${props.modelValue} ${UI_RATING.OF} ${props.max}`
 	if (props.isReadonly && !isDisabled) return { role: 'img', 'aria-label': `${UI_RATING.LABEL} ${valueText}` }
@@ -37,7 +28,6 @@ function ratingAria(props: RatingProps, isDisabled: boolean) {
 	}
 }
 
-/** Клавиши слайдера: стрелки — шаг step (вправо/вверх — больше), Home — 0, End — максимум */
 function createKeyActions(props: RatingProps, commit: (value: number) => void): Record<string, () => void> {
 	const changeBy = (direction: number): void => commit(snapRating(props.modelValue + direction * props.step, props.step, props.max))
 	return {
@@ -50,16 +40,13 @@ function createKeyActions(props: RatingProps, commit: (value: number) => void): 
 	}
 }
 
-/** Оценка по позиции указателя в звезде: клик — всегда с привязкой к step, предпросмотр при isHoverSmooth — попиксельно */
 function usePointerValue(props: RatingProps) {
 	const steppedValueAt = (event: MouseEvent, star: number): number =>
-		valueFromPointer({ star, ratio: pointerRatio(event, event.currentTarget), step: props.step, max: props.max })
+		valueFromPointer({ star, ratio: pointerRatio(event), step: props.step, max: props.max })
 	return {
 		steppedValueAt,
 		previewValueAt: (event: MouseEvent, star: number): number =>
-			props.isHoverSmooth
-				? rawValueFromPointer(star, pointerRatio(event, event.currentTarget), props.max)
-				: steppedValueAt(event, star),
+			props.isHoverSmooth ? rawValueFromPointer(star, pointerRatio(event), props.max) : steppedValueAt(event, star),
 	}
 }
 
@@ -77,7 +64,6 @@ function useRatingInput(props: RatingProps, emit: BaseRatingEmits, isInteractive
 		handleClick(event: MouseEvent, star: number): void {
 			if (!isInteractive.value) return
 			const value = steppedValueAt(event, star)
-			// Сразу показываем зафиксированную оценку, иначе до движения курсора видна плавная заливка предпросмотра
 			hoverValue.value = value
 			commit(value)
 		},
@@ -98,7 +84,6 @@ function useRatingInput(props: RatingProps, emit: BaseRatingEmits, isInteractive
 }
 
 export function useBaseRating(props: RatingProps, emit: BaseRatingEmits) {
-	// Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля)
 	const isControlDisabled = useFormDisabled(() => props.isDisabled)
 	const rootRef = ref<HTMLElement | null>(null)
 	const formField = useFormField({ value: () => props.modelValue })
@@ -112,7 +97,6 @@ export function useBaseRating(props: RatingProps, emit: BaseRatingEmits) {
 		isControlDisabled,
 		rootRef,
 		isInteractive,
-		// Заполненная иконка: явный iconFilled; для звезды по умолчанию — сплошная звезда (форма, а не только цвет), иначе та же icon
 		filledIcon: computed((): string => props.iconFilled || (props.icon === 'star' ? 'star-filled' : props.icon)),
 		ariaAttrs: computed(() => ratingAria(props, isControlDisabled.value)),
 		fillPercent: (star: number): number => starFillPercent(star, displayValue.value),

@@ -7,7 +7,6 @@ import type {
 	DatePickerCalendarDisplay,
 } from '../types/BaseDatePickerCalendar.types'
 
-/** Пропсы календаря, которые перекрывают `config`, если переданы явно */
 const EXPLICIT_CALENDAR_PROPS = [
 	'minDate',
 	'maxDate',
@@ -44,7 +43,6 @@ function calendarDefaults(): BaseDatePickerCalendarConfig {
 		disableTo: null,
 		highlights: [],
 		weekends: null,
-		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
 		firstDayOfWeek: kitLocale.firstDayOfWeek as CalendarWeekday,
 		locale: kitLocale.intl,
 		showTime: false,
@@ -83,12 +81,6 @@ export function resolveDatePickerCalendarConfig(
 	return pickDatePickerCalendarConfig(merged)
 }
 
-/**
- * Преобразует плоскую конфигурацию date picker в props BaseCalendar.
- * С 1.2.2 BaseCalendar принимает ограничения, время и отображение только группами
- * (constraints/timeConfig/displayConfig): плоские ключи уходили бы в $attrs и молча игнорировались.
- * Навигация и смена вида календаря отключены — их выполняет шапка панели.
- */
 export function toBaseCalendarProps(config: BaseDatePickerCalendarConfig, display: DatePickerCalendarDisplay): DatePickerCalendarBindings {
 	return {
 		constraints: {
@@ -118,10 +110,6 @@ export function toBaseCalendarProps(config: BaseDatePickerCalendarConfig, displa
 	}
 }
 
-/**
- * Props календаря без блока времени. Время относится к выбранному значению, а не к месяцу:
- * при нескольких месяцах блок показывается только под первым календарём — иначе N копий правят одно значение.
- */
 export function withoutTimeBlock(bindings: DatePickerCalendarBindings): DatePickerCalendarBindings {
 	return { ...bindings, timeConfig: { ...bindings.timeConfig, showTime: false } }
 }

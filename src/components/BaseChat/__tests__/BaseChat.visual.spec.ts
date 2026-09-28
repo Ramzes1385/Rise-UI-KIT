@@ -1,5 +1,3 @@
-/** Play открывает профиль отправителя в групповом чате и оставляет панель «Информация» открытой; openStory ждёт завершения play перед снимком. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

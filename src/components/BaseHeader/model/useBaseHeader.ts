@@ -1,5 +1,4 @@
 import { UI_ARIA } from '@/locales/messages'
-/** Composable: логика BaseHeader — выдвижное меню на узком экране */
 import { computed, ref, useSlots, watch } from 'vue'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import type { BaseHeaderProps } from '../types/BaseHeader.types'
@@ -12,7 +11,6 @@ export function useBaseHeader(props: BaseHeaderProps) {
 		isMenuOpen.value = false
 	}
 
-	// Окно стало шире 768px — навигация снова в шапке, выдвижное меню закрывается
 	const { isMobile } = useBreakpoint()
 	watch(isMobile, value => {
 		if (!value) closeMenu()

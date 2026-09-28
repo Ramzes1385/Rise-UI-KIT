@@ -5,7 +5,6 @@ import { BaseCalendar } from '@components/BaseCalendar'
 import type { DatePickerRangePanelProps } from '../types/DatePickerRangePanel.types'
 import DatePickerRangePanel from '../ui/DatePickerRangePanel/DatePickerRangePanel.vue'
 
-/** Stub повторяет настоящий контракт: прежний список с showYear/showTodayButton/showNavigation скрывал, что эти props не существуют. */
 const BASE_CALENDAR_PROP_NAMES = Object.keys((BaseCalendar as unknown as { props: Record<string, unknown> }).props)
 
 const DEFAULT_PROPS: DatePickerRangePanelProps = {

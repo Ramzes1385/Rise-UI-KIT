@@ -115,7 +115,6 @@ describe('BaseTour integration', () => {
 		await screen.findByText('Первый')
 		expect(document.body.style.overflow).toBe('hidden')
 
-		// Например, смена маршрута при открытом туре
 		await userEvent.click(screen.getByTestId('unmount'))
 
 		expect(document.querySelector('.base-tour')).not.toBeInTheDocument()
@@ -123,7 +122,6 @@ describe('BaseTour integration', () => {
 	})
 
 	describe('фокус с клавиатуры (модальный диалог)', () => {
-		/** Страница с кнопкой запуска и туром через v-model */
 		const Page = defineComponent({
 			components: { BaseTour },
 			setup() {
@@ -147,7 +145,6 @@ describe('BaseTour integration', () => {
 			const next = await screen.findByRole('button', { name: 'Далее' })
 			await waitFor(() => expect(next).toHaveFocus())
 
-			// С последней кнопки карточки Tab возвращается на первую, а не на страницу под затемнением
 			await user.tab()
 			expect(screen.getByRole('button', { name: 'Пропустить тур' })).toHaveFocus()
 

@@ -1,6 +1,4 @@
-// bordered — опции-кнопки 32px без круга, выбранная — мягкий фон и рамка основного цвета, в отличие от остальных вариантов.
 .base-radio {
-	// Цвета круга. Варианты и состояния переопределяют только эти переменные.
 	--radio-border: var(--rise-border-accented);
 	--radio-bg: var(--rise-bg);
 	--radio-bg-hover: var(--rise-bg-elevated);
@@ -14,7 +12,6 @@
 	align-items: flex-start;
 	gap: sz(6px);
 
-	// Двойной селектор: заголовок и ошибка — BaseText, их собственный цвет не должен перебивать цвет группы.
 	& &__label {
 		@include field-label;
 	}
@@ -57,8 +54,6 @@
 		box-shadow: var(--rise-shadow-xs);
 	}
 
-	// Опции-кнопки: круг скрыт визуально (нативный radio остаётся в дереве доступности и принимает фокус),
-	// фокус с клавиатуры — кольцо вокруг опции.
 	&--bordered {
 		.base-radio__options {
 			gap: sz(8px);
@@ -106,8 +101,6 @@
 	}
 }
 
-// Опция группы: круг и подпись. Кликабельна только опция, а не вся ширина строки.
-// Кегль и цвет заданы на опции: их наследует и стандартная подпись, и разметка из слота option.
 .base-radio-item {
 	display: inline-flex;
 	align-items: flex-start;
@@ -118,7 +111,6 @@
 	cursor: pointer;
 	user-select: none;
 
-	// Контейнер высотой в строку подписи: круг выровнен по первой строке.
 	&__wrapper {
 		position: relative;
 		display: flex;
@@ -127,7 +119,6 @@
 		height: sz(var(--rise-line-height-sm));
 	}
 
-	// Нативный radio невидим, но занимает место круга: принимает клик, фокус и стрелки.
 	&__input {
 		position: absolute;
 		inset: 0;

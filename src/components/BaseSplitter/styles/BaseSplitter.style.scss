@@ -1,4 +1,3 @@
-// Две панели и разделитель 9px (линия 1px, ручка 4×24px), доля первой панели — --base-splitter-ratio; default — линия с ручкой, ghost — линия при наведении/фокусе/перетаскивании.
 .base-splitter {
 	--base-splitter-bar: #{sz(9px)};
 

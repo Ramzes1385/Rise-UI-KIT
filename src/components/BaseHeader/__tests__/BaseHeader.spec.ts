@@ -10,7 +10,6 @@ function resizeTo(width: number): void {
 
 afterEach(() => resizeTo(1024))
 
-/** Кнопку «Меню» показывает только медиазапрос узкого экрана — в jsdom она скрыта, поэтому ищем её по классу */
 function toggleButton(): HTMLElement {
 	return document.querySelector('.base-header__toggle') as HTMLElement
 }

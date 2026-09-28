@@ -3,14 +3,11 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// Область таблицы: контейнер подложки загрузки. isolation — z-index шапки, закреплённых колонок и подложки
-	// не выходят за пределы таблицы (не перекрывают выпадающие панели страницы).
 	&__content {
 		position: relative;
 		isolation: isolate;
 	}
 
-	// Прокрутка по обеим осям: height ограничивает высоту (шапка закреплена), широкая таблица прокручивается вбок.
 	&__wrapper {
 		overflow: auto;
 		@include scrollbar-thin;

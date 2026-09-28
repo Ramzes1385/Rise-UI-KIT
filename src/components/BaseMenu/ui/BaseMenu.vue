@@ -2,11 +2,6 @@
 	<div class="base-menu" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div v-for="(group, gIndex) in items" :key="gIndex" class="base-menu__group" :class="classes.group">
 			<template v-for="(item, iIndex) in group" :key="iIndex">
-				<!--
-					Пункт — действие (select / item.click), поэтому role="button" с Enter/Space.
-					role="menu/menuitem" не используется: он обещает стрелочную навигацию APG Menu,
-					которой здесь нет, и неверен, когда BaseMenu служит навигационным списком.
-				-->
 				<div
 					class="base-menu__item"
 					role="button"
@@ -29,7 +24,6 @@
 						:size-scale="calcIconScale('sm', sizeScale)" />
 					<span class="base-menu__label" :class="classes.label">{{ item.label }}</span>
 				</div>
-				<!-- Разделитель после пункта. После последнего пункта группы линию уже рисует разделитель групп -->
 				<BaseSeparator
 					v-if="item.hasDivider && iIndex < group.length - 1"
 					class="base-menu__divider"

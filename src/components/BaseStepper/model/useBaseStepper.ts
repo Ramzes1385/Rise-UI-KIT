@@ -1,4 +1,3 @@
-/** Composable: логика BaseStepper — линия прогресса и выбор шага */
 import { computed } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseStepperEmits, BaseStepperProps } from '../types/BaseStepper.types'

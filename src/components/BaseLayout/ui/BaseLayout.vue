@@ -1,8 +1,4 @@
 <template>
-	<!--
-		Каркас страницы: ссылка «Перейти к содержимому», шапка, боковое меню, основное содержимое (<main>) и подвал.
-		Шапка прилипает к верху, боковое меню стоит под ней и прокручивается отдельно, подвал прижат к низу окна
-	-->
 	<div
 		class="base-layout"
 		:class="[
@@ -24,7 +20,6 @@
 				<slot name="sidebar" />
 			</div>
 			<div class="base-layout__content">
-				<!-- tabindex="-1": на <main> переводит фокус ссылка «Перейти к содержимому» -->
 				<main :id="resolvedMainId" ref="mainRef" class="base-layout__main" :class="classes.main" tabindex="-1">
 					<slot />
 				</main>

@@ -2,7 +2,6 @@
 	<div class="base-context-menu" :class="classes.root" @contextmenu="handleContextMenu" @keydown="handleKeydown">
 		<slot />
 
-		<!-- Меню привязано к невидимой точке у указателя (или у элемента с фокусом) и сдвигается от края окна -->
 		<BaseDropdown
 			:is-open="isOpen"
 			position="bottom-start"

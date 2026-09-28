@@ -1,11 +1,9 @@
-// Флажки — в строку с переносом (8px/16px) или столбиком (8px); «Выбрать все» — первый флажок, indeterminate при части отмеченных; вариант передаётся каждому BaseCheckbox.
 .base-checkbox-group {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	gap: sz(6px);
 
-	// Двойной селектор: заголовок и ошибка — BaseText, их собственный цвет не должен перебивать цвет группы.
 	& &__label {
 		@include field-label;
 	}
@@ -31,7 +29,6 @@
 		@include field-error;
 	}
 
-	// Ошибка группы (своя или BaseFormField вокруг): рамка флажков — цвет ошибки, как у BaseCheckbox с error
 	&--error .base-checkbox {
 		--checkbox-border: var(--rise-error);
 	}

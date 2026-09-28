@@ -1,15 +1,11 @@
-// Подсказка телепортируется в body, поэтому вариант, масштаб и кастомный цвет задаются на ней самой, а не на обёртке.
-
 .base-tooltip {
 	position: relative;
 	display: inline-block;
 }
 
 .base-tooltip-popup {
-	// Фон и рамка — переменные: варианты перекрашивают через них подсказку, а стрелка повторяет её цвета.
 	@include custom-bg(--tooltip-bg, var(--rise-bg-inverted));
 	--tooltip-border: transparent;
-	// Зазор между стрелкой и триггером сверх отступа позиционирования (8px).
 	--tooltip-offset: #{sz(2px)};
 
 	position: fixed;
@@ -20,22 +16,18 @@
 	padding: sz(4px) sz(8px);
 	border-radius: sz(var(--rise-radius-sm));
 	background-color: var(--tooltip-bg);
-	// Рамка вариантов — внутренней тенью: подсказки с рамкой и без неё одной высоты (24px).
 	box-shadow: inset 0 0 0 1px var(--tooltip-border);
 	@include custom-text(color, var(--rise-text-inverted));
 	@include text-size(xs);
 	white-space: pre-wrap;
 	overflow-wrap: break-word;
 
-	// Текст — BaseText: наследует цвет и кегль подсказки.
 	.base-text {
 		color: inherit;
 		font-size: inherit;
 		line-height: inherit;
 	}
 
-	// Стрелка — повёрнутый квадрат цвета подсказки: видны две стороны рамки, обращённые к триггеру.
-	// z-index: -1 внутри контекста наложения подсказки: стрелка поверх фона, но под текстом.
 	&::after {
 		content: '';
 		position: absolute;
@@ -47,8 +39,6 @@
 		background-color: var(--tooltip-bg);
 	}
 
-	// Позиция: координаты задают точку у триггера, translate ставит подсказку по нужную сторону от неё.
-	// У края окна подсказка сдвигается, а стрелка — обратно на --tooltip-arrow-offset и смотрит на триггер.
 	&--top {
 		translate: -50% calc(-100% - var(--tooltip-offset));
 

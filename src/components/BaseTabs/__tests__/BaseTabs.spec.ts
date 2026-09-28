@@ -2,7 +2,6 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { render, screen } from '@testing-library/vue'
 
-/** Мок ResizeObserver для jsdom */
 global.ResizeObserver = class ResizeObserver {
 	observe() {}
 	unobserve() {}
@@ -183,7 +182,6 @@ describe('BaseTabs unit', () => {
 				Object.keys(metrics).map(key => [key, Object.getOwnPropertyDescriptor(HTMLElement.prototype, key)]),
 			)
 
-			// jsdom не считает layout: подменяем метрики, чтобы обе кнопки прокрутки отрендерились
 			for (const [key, value] of Object.entries(metrics)) {
 				Object.defineProperty(HTMLElement.prototype, key, { configurable: true, get: () => value })
 			}
@@ -250,7 +248,6 @@ describe('BaseTabs unit', () => {
 			const originalScrollWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollWidth')
 			const originalClientWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth')
 
-			// Мокаем свойства прокрутки, чтобы кнопки прокрутки отрендерились
 			Object.defineProperty(HTMLElement.prototype, 'scrollLeft', {
 				configurable: true,
 				get() {

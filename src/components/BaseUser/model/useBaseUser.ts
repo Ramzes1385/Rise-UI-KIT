@@ -1,4 +1,3 @@
-/** Composable: логика BaseUser — классы и ссылка профиля */
 import { computed } from 'vue'
 import type { BaseUserProps } from '../types/BaseUser.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'

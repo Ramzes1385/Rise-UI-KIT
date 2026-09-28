@@ -1,8 +1,4 @@
 <template>
-	<!--
-		Шапка сайта или приложения (<header> — ориентир banner): название, навигация, действия. Со слотом menu на экране
-		уже 768px навигация прячется, а кнопка «Меню» открывает её в выдвижной панели (BaseDrawer)
-	-->
 	<header
 		class="base-header"
 		:class="[variantClass, { 'base-header--sticky': isSticky, 'base-header--has-menu': hasMenu }, classes.root]"

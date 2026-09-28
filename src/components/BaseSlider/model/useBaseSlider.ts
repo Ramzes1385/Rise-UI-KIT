@@ -1,13 +1,11 @@
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
-/** Composable: логика BaseSlider — листание, видимость слайдов и перелистывание при зажатой стрелке */
 import { computed, onBeforeUnmount } from 'vue'
 import { useSlider } from '@composables/useSlider'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'
 import type { BaseSliderEmits, SliderProps } from '../types/BaseSlider.types'
 
-/** Шаг перелистывания, пока стрелка зажата, мс */
 const HOLD_INTERVAL_MS = 150
 const SLIDER_ELEMENTS = [
 	'root',
@@ -44,7 +42,6 @@ function useSliderState(props: SliderProps, emit: BaseSliderEmits) {
 	})
 }
 
-/** Перелистывание, пока стрелка зажата; таймер останавливается и при размонтировании */
 function useHold(goNext: () => void, goPrev: () => void) {
 	let holdTimer: ReturnType<typeof setInterval> | null = null
 	const stopHold = (): void => {
@@ -74,16 +71,13 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 		classes,
 		...slider,
 		hasNavigation: computed(() => props.navigation !== 'none'),
-		// Есть что листать: слайдов больше, чем помещается в область. Иначе стрелки и навигация не нужны
 		canNavigate: computed(() => slider.maxIndex.value > 0),
 		arrowVariant: computed(() => (props.arrowsPosition === 'center' ? 'shadow' : 'outline')),
 		perGroup: computed(() => Math.max(1, props.slidesPerGroup)),
-		/** Слайд виден: в режиме slide — одно из perView окон начиная с текущего, в fade/scale/flip — только текущий */
 		isSlideVisible(index: number): boolean {
 			if (props.animation !== 'slide') return index === slider.currentIndex.value
 			return index >= slider.currentIndex.value && index < slider.currentIndex.value + perView.value
 		},
-		/** «Слайд 2 из 6»: имя точки и миниатюры — номер слайда, к которому они ведут */
 		slideLabel: (index: number): string => formatMessage(UI_ARIA.SLIDE_POSITION, { current: index + 1, total: props.items.length }),
 		...useHold(slider.goNext, slider.goPrev),
 	}

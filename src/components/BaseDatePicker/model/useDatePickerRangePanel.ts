@@ -1,10 +1,8 @@
-/** Composable: логика DatePickerRangePanel — календари диапазона по месяцам и события выбора */
 import { computed } from 'vue'
 import { toBaseCalendarProps, withoutTimeBlock } from './datePickerCalendarConfig'
 import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from '../types/DatePickerRangePanel.types'
 
 export function useDatePickerRangePanel(props: DatePickerRangePanelProps, emit: DatePickerRangePanelEmits) {
-	// Props BaseCalendar: год и «Сегодня» — только в одиночном месяце
 	const calendarBindings = computed(() =>
 		toBaseCalendarProps(props.calendarConfig, {
 			showYear: props.monthItems.length === 1,
@@ -14,7 +12,6 @@ export function useDatePickerRangePanel(props: DatePickerRangePanelProps, emit: 
 
 	return {
 		calendarBindings,
-		// Календари после первого — без блока времени: он один на всё значение
 		secondaryCalendarBindings: computed(() => withoutTimeBlock(calendarBindings.value)),
 		handleModelUpdate: (value: Date | null): void => emit('model-update', value),
 		handleModelEndUpdate: (value: Date | null): void => emit('model-end-update', value),

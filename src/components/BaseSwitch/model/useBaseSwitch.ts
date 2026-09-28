@@ -1,4 +1,3 @@
-/** Composable: логика BaseSwitch — id поля и ошибки, изменение и проверка */
 import { ref, useId } from 'vue'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { useFormField } from '@composables/useFormField'
@@ -8,7 +7,6 @@ import type { BaseSwitchEmits, SwitchProps } from '../types/BaseSwitch.types'
 const SWITCH_ELEMENTS = ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText']
 
 export function useBaseSwitch(props: SwitchProps, emit: BaseSwitchEmits) {
-	// Подпись связана с переключателем через for, ошибка (текст error или слот error) — через aria-describedby
 	const inputId = useId()
 	const rootRef = ref<HTMLElement | null>(null)
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })

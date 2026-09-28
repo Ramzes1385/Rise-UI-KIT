@@ -1,4 +1,3 @@
-// На экране уже 768px боковое меню скрыто (isSidebarVisibleOnMobile); ссылка «Перейти к содержимому» видна только в фокусе.
 .base-layout {
 	--base-layout-sticky-top: 0px;
 
@@ -76,7 +75,6 @@
 		flex: 1 0 auto;
 		scroll-margin-top: var(--base-layout-sticky-top);
 
-		// Фокус на <main> ставит только ссылка «Перейти к содержимому»: рамка вокруг всей страницы не нужна
 		&:focus {
 			outline: none;
 		}

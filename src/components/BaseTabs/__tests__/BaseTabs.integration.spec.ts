@@ -50,7 +50,6 @@ describe('BaseTabs integration', () => {
 	})
 
 	describe('клавиатура (APG Tabs)', () => {
-		/** Набор, где отключённая вкладка стоит внутри списка, а последняя доступна */
 		const KEYBOARD_TABS: TabItem[] = [
 			{ id: 'a', label: 'Первая' },
 			{ id: 'b', label: 'Вторая', isDisabled: true },
@@ -94,7 +93,6 @@ describe('BaseTabs integration', () => {
 			screen.getByRole('tab', { name: 'Третья' }).focus()
 			await user.keyboard('{ArrowLeft}')
 
-			// «Вторая» отключена — фокус уходит на «Первую»
 			expect(screen.getByRole('tab', { name: 'Первая' })).toHaveFocus()
 			await user.keyboard('{ArrowLeft}')
 

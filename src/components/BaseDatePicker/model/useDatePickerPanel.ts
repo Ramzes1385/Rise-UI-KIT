@@ -1,4 +1,3 @@
-/** Composable: логика DatePickerPanel — навигация по месяцам и годам, настройки календарей и события выбора */
 import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
 import { useLayerIndex } from '@composables/useLayerStack'
@@ -45,7 +44,6 @@ function useNavigation(props: DatePickerPanelProps, resolvedProps: ComputedRef<R
 	})
 }
 
-/** Настройки календарей: calendarConfig или плоские пропсы; год и «Сегодня» — только в одиночном месяце */
 function useCalendarBindings(props: DatePickerPanelProps, isSingleMonth: () => boolean) {
 	const { resolveBooleanPropDefault } = useExplicitPropDetection()
 	const resolvedCalendarConfig = computed(
@@ -59,7 +57,6 @@ function useCalendarBindings(props: DatePickerPanelProps, isSingleMonth: () => b
 	return {
 		resolvedCalendarConfig,
 		calendarBindings,
-		// Календари после первого — без блока времени: он один на всё значение
 		secondaryCalendarBindings: computed(() => withoutTimeBlock(calendarBindings.value)),
 	}
 }
@@ -74,13 +71,10 @@ function createRelays(emit: DatePickerPanelEmits) {
 }
 
 export function useDatePickerPanel(props: DatePickerPanelProps, emit: DatePickerPanelEmits) {
-	// Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo)
 	const teleportTarget = useTeleportTarget()
 	const resolvedProps = computed(() => resolvePanelProps(props))
-	// Место панели среди открытых слоёв: календарь в окне — над окном
 	const layerStyle = useLayerIndex(() => resolvedProps.value.isOpen)
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: PANEL_ELEMENTS })
-	// Элемент панели — для useClickOutside в родителе
 	const panelRef = ref<HTMLElement | null>(null)
 	const navigation = useNavigation(props, resolvedProps)
 

@@ -104,7 +104,6 @@ describe('BaseSelect integration', () => {
 
 			await user.click(screen.getByRole('combobox', { name: 'Материал' }))
 			await user.keyboard('прозрачн')
-			// «прозрачн» есть только в описании стекла
 			expect(screen.getAllByRole('option')).toHaveLength(1)
 			expect(screen.getByRole('option', { name: /Стекло/ })).toBeInTheDocument()
 
@@ -205,7 +204,6 @@ describe('BaseSelect integration', () => {
 			const options = screen.getAllByRole('option')
 			expect(trigger).toHaveAttribute('aria-activedescendant', options[0]?.id)
 
-			// Камень — последняя доступная: Керамика отключена и пропускается
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}')
 			expect(trigger).toHaveAttribute('aria-activedescendant', options[2]?.id)
 			await user.keyboard('{Home}')
@@ -253,7 +251,6 @@ describe('BaseSelect integration', () => {
 			expect(trigger).toHaveAttribute('aria-expanded', 'true')
 			expect(activeLabel()).toBe('Камень')
 			await fireEvent.keyDown(trigger, { key: 'к' })
-			// Керамика отключена и пропускается
 			expect(activeLabel()).toBe('Кирпич')
 			vi.advanceTimersByTime(600)
 
@@ -326,7 +323,6 @@ describe('BaseSelect integration', () => {
 			const search = screen.getByRole('textbox', { name: 'Поиск' })
 			expect(search).toHaveFocus()
 			await user.keyboard('ка')
-			// «ка» — в «Камень» и «Керамика» (недоступна): активна первая, стрелка вниз недоступную пропускает
 			const stone = screen.getByRole('option', { name: 'Камень' })
 			expect(screen.getAllByRole('option')).toHaveLength(2)
 			expect(search).toHaveAttribute('aria-activedescendant', stone.id)

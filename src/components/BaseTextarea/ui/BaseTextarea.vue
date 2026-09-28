@@ -24,7 +24,6 @@
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<!-- Атрибуты поля — первыми: id, значение и состояние кита их перекрывают (свой id и описание учтены в них) -->
 		<textarea
 			v-bind="nativeAttrs"
 			:id="textareaId"
@@ -48,7 +47,6 @@
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 
-		<!-- Счётчик символов при maxlength: стоит справа в строке под полем (слева — ошибка), поле описано им через aria-describedby -->
 		<span v-if="hasCounter" :id="counterId" class="base-textarea__counter">{{ characterCount }}/{{ maxlength }}</span>
 	</div>
 </template>

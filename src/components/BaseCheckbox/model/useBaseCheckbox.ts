@@ -1,4 +1,3 @@
-/** Composable: логика BaseCheckbox — изменение, частичный выбор и проверка */
 import { ref, useId } from 'vue'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { useFormField } from '@composables/useFormField'
@@ -13,7 +12,6 @@ export function useBaseCheckbox(props: CheckboxProps, emit: BaseCheckboxEmits) {
 
 	return {
 		...useStandardBaseComponent('base-checkbox', props, CHECKBOX_ELEMENTS),
-		/** id обёртки ошибки: чекбокс связан с ней через aria-describedby (и для текста error, и для слота error) */
 		errorId: `${useId()}-error`,
 		formField,
 		rootRef,
@@ -22,7 +20,6 @@ export function useBaseCheckbox(props: CheckboxProps, emit: BaseCheckboxEmits) {
 			if (!target) return
 			emit('update:modelValue', target.checked)
 			emit('change', target.checked)
-			// Клик снимает indeterminate у элемента; вернуть его, если родитель оставил частичный выбор
 			target.indeterminate = props.isIndeterminate
 		},
 		exposed: {

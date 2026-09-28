@@ -7,7 +7,6 @@
 		v-bind="link.attrs"
 		@click="handleClick">
 		<slot>{{ label }}</slot>
-		<!-- Ссылка в новой вкладке: скринридер предупреждает об этом, зрячие видят стрелку -->
 		<span v-if="isNewTab" class="base-link__external" :class="classes.external">
 			<span aria-hidden="true">↗</span>
 			<span class="base-link__hint"> {{ UI_ARIA.OPENS_IN_NEW_TAB }}</span>

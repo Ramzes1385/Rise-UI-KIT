@@ -1,4 +1,3 @@
-/** Composable: логика BaseChat — состояние чата, выбор и удаление сообщений, действия с сообщениями и участниками */
 import { ref } from 'vue'
 import { useChatState } from '@composables/useChatState'
 import { useChatActions } from '@composables/useChatActions'

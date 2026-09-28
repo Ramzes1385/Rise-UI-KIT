@@ -1,5 +1,4 @@
 <template>
-	<!-- Склеенные кнопки: общие углы, рамки соседей совпадают; группа с именем для скринридера -->
 	<div
 		class="base-button-group"
 		:class="[`base-button-group--${orientation}`, classes.root]"

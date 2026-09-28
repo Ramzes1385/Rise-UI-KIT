@@ -1,4 +1,3 @@
-// Подсветка сообщения после перехода — фоновым transition в _list.scss, отдельные @keyframes не нужны; при prefers-reduced-motion анимация отключена.
 @use '@styles/mixins' as *;
 
 .base-chat-context-menu {

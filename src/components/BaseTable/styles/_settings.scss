@@ -3,14 +3,12 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// Кнопка «Колонки» — справа в тулбаре.
 	&__settings {
 		display: flex;
 		align-items: center;
 		margin-left: auto;
 	}
 
-	// Панель BaseDropdown (телепортирована в body): список чекбоксов колонок.
 	&__settings-panel {
 		min-width: sz(200px);
 	}
@@ -20,8 +18,6 @@
 		flex-direction: column;
 	}
 
-	// Строка чекбокса — пункт меню на всю ширину панели (menu-item): кликабельна вся строка, подсветка при наведении.
-	// Двойной селектор перекрывает раскладку подписи BaseCheckbox.
 	&__settings-item &__settings-option {
 		@include menu-item;
 		box-sizing: border-box;

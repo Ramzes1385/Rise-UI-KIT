@@ -1,7 +1,6 @@
 <template>
 	<div class="base-chip" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]">
 		<slot />
-		<!-- Кастомный цвет — только на индикаторе: с корня --custom-* унаследовало бы содержимое слота (кнопка, аватар) -->
 		<span
 			v-if="isVisible"
 			class="base-chip__badge"

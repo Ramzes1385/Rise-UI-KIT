@@ -1,4 +1,3 @@
-/** Composable: логика ChatSlideoverMedia — изображения из сообщений чата для вкладки «Медиа» и её галереи */
 import { computed } from 'vue'
 import { collectAttachments } from './sharedContent'
 import type { ChatSlideoverMediaProps } from '../types/ChatSlideoverMedia.types'

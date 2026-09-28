@@ -32,7 +32,6 @@ test('дерево: выбирает узел в режиме single', async ({ 
 	await expect(selectedNodes).toHaveCount(1)
 })
 
-// Stories без play (Variants) или узлы, которых play не касается: play выполняется при открытии story
 test('дерево: в порядке Tab один узел — выбранный, по дереву ходят стрелки, Tab переходит к следующему дереву', async ({ page }) => {
 	await page.goto('/iframe.html?id=data-basetree--variants')
 	await page.waitForSelector('.base-tree', { timeout: 25000 })
@@ -47,7 +46,6 @@ test('дерево: в порядке Tab один узел — выбранны
 	await page.keyboard.press('End')
 	await expect(first.getByRole('treeitem', { name: 'README.md' })).toBeFocused()
 
-	// Остальные узлы вне порядка Tab: Tab — к следующему дереву, Shift+Tab — обратно на последний узел
 	await page.keyboard.press('Tab')
 	await expect(second.getByRole('treeitem', { name: 'UserCard.vue' })).toBeFocused()
 	await page.keyboard.press('Shift+Tab')
@@ -63,7 +61,6 @@ test('дерево: флажок в режиме multiple — клик по не
 	const packageItem = multipleTree.getByRole('treeitem', { name: 'package.json' })
 	await expect(packageItem).toHaveAttribute('aria-checked', 'false')
 
-	// Настоящий клик мышью в точку флажка: флажок inert, клик получает строка узла
 	const box = await packageItem.locator('.base-tree__checkbox').boundingBox()
 	if (!box) throw new Error('Флажок узла package.json не отрисован')
 	await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)

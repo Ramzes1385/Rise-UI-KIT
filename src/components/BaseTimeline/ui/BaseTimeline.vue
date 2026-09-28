@@ -1,5 +1,4 @@
 <template>
-	<!-- Лента — упорядоченный список: порядок событий слышен скринридеру, текущее событие — aria-current="step" -->
 	<ol
 		class="base-timeline"
 		:class="[variantClass, `base-timeline--${orientation}`, classes.root]"

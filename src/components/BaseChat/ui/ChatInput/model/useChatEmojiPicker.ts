@@ -1,4 +1,3 @@
-/** Composable: логика ChatEmojiPicker — панель эмодзи: открытие, выбор и закрытие по Escape или клику снаружи */
 import { ref } from 'vue'
 import { useClickOutside } from '@composables/useClickOutside'
 import type { ChatEmojiPickerEmits } from '../types/ChatEmojiPicker.types'
@@ -54,7 +53,6 @@ export function useChatEmojiPicker(emit: ChatEmojiPickerEmits) {
 			emit('select', emoji)
 			isEmojiOpen.value = false
 		},
-		/** Escape закрывает панель; preventDefault — чтобы слой ниже (окно, панель с чатом) не закрылся тем же нажатием */
 		handleEscape(event: KeyboardEvent): void {
 			if (!isEmojiOpen.value) return
 			event.preventDefault()

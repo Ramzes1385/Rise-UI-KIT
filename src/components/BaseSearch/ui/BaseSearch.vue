@@ -116,7 +116,6 @@
 				</BaseSearchResults>
 			</template>
 		</BaseDropdown>
-		<!-- Статус для скринридера: число результатов или «Ничего не найдено» -->
 		<span class="base-search__live" role="status">{{ resultsStatus }}</span>
 	</div>
 </template>

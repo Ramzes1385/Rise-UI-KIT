@@ -1,4 +1,3 @@
-/** Composable: логика BasePopover — открытие, атрибуты кнопки и классы панели */
 import { computed, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
@@ -15,7 +14,6 @@ function usePopoverOpen(props: PopoverProps, emit: BasePopoverEmits) {
 
 	return {
 		isOpenLocal,
-		/** Клик по кнопке открывает и закрывает поповер; закрытие кнопкой — такое же закрытие, как Escape: с `close` */
 		toggle(): void {
 			isOpenLocal.value = !isOpenLocal.value
 			emit('update:isOpen', isOpenLocal.value)
@@ -51,7 +49,6 @@ export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 		panelId,
 		triggerAttributes,
 		triggerId,
-		/** Корень — строчная обёртка BaseDropdown по размеру триггера: панель и стрелка центрируются по триггеру, а не по строке */
 		rootClass: computed(() => ['base-popover', classes.value.root].filter(Boolean).join(' ')),
 		panelClasses: computed(() => `base-popover__panel base-popover__panel--${props.variant}`),
 	}

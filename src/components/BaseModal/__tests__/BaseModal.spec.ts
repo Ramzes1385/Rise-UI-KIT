@@ -1,5 +1,3 @@
-/** Teleport to="body" — поиск в document */
-
 import '@testing-library/jest-dom/vitest'
 import BaseModal from '../ui/BaseModal.vue'
 import { render, screen, waitFor } from '@testing-library/vue'
@@ -28,7 +26,6 @@ vi.mock('@composables/usePopup', () => ({
 	}) => {
 		popupMock.onClose = options.onClose
 		popupMock.lastOptions = options as unknown as Record<string, () => unknown>
-		// Вызываем геттеры — нужно для coverage функций-стрелок
 		options.isOpen()
 		options.closeOnOverlay()
 		options.closeOnEscape()
@@ -248,8 +245,7 @@ describe('BaseModal unit', () => {
 
 		it('должен возвращать true когда closeOnOverlay=null (ветка ?? true)', () => {
 			render(BaseModal, {
-				// @ts-expect-error — проверяем рантайм-ветку `?? true` при null
-				props: { isOpen: true, closeOnOverlay: null },
+				props: { isOpen: true, closeOnOverlay: null as unknown as boolean },
 			})
 
 			expect(popupMock.lastOptions?.closeOnOverlay()).toBe(true)
@@ -277,7 +273,6 @@ describe('BaseModal unit', () => {
 		it('не должен устанавливать --size-scale когда sizeScale=100', () => {
 			render(BaseModal, { props: { isOpen: true } })
 
-			// В style остаётся только место окна среди открытых слоёв
 			const modal = document.querySelector('.base-modal') as HTMLElement
 			expect(modal.style.getPropertyValue('--size-scale')).toBe('')
 			expect(modal.getAttribute('style')).toBe('--rise-layer-index: 1;')

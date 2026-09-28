@@ -1,4 +1,3 @@
-/** Composable: логика BaseCalendar — дни, месяцы и годы, выбор даты или диапазона, время и подсказка дня */
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
@@ -67,7 +66,6 @@ function useInteraction(
 	})
 }
 
-/** Доступные имена кнопок навигации (в них только иконка): шаг навигации зависит от вида */
 function navLabelsFor(view: string): { prev: string; next: string } {
 	if (view === 'months') return { prev: UI_ARIA.PREV_YEAR, next: UI_ARIA.NEXT_YEAR }
 	if (view === 'years') return { prev: UI_ARIA.PREV_YEARS, next: UI_ARIA.NEXT_YEARS }
@@ -75,7 +73,6 @@ function navLabelsFor(view: string): { prev: string; next: string } {
 }
 
 export function useBaseCalendar(props: BaseCalendarProps, emit: BaseCalendarEmits, isAm: Ref<boolean>) {
-	// Поля часов и минут — служебные: они не становятся полем BaseFormField вокруг календаря (или BaseDatePicker)
 	isolateFormField()
 	const resolvedProps = useCalendarResolvedProps(props)
 	const standard = useBaseComponent({
@@ -96,8 +93,6 @@ export function useBaseCalendar(props: BaseCalendarProps, emit: BaseCalendarEmit
 		...calendar,
 		...popover,
 		...useInteraction(resolvedProps, calendar, { popover, isAm, emit }),
-		// Диапазон выбран целиком (есть начало и конец): только тогда у концов рисуется полоса к соседним дням.
-		// Пока выбрано одно начало, оно выглядит как обычный выбранный день
 		isRangeComplete: computed(
 			(): boolean =>
 				resolvedProps.value.selectionMode === 'range' && !!calendar.internalValue.value && !!calendar.internalValueEnd.value,

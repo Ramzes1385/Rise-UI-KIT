@@ -1,4 +1,3 @@
-/** Composable: логика BaseChip — значение бейджа и его видимость */
 import { computed } from 'vue'
 import type { BaseChipEmits, ChipProps } from '../types/BaseChip.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'

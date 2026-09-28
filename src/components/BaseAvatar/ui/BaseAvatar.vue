@@ -18,7 +18,6 @@
 				<span v-else class="base-avatar__initials" :class="classes.initials">{{ initials }}</span>
 			</slot>
 		</div>
-		<!-- Статус передаётся не только цветом: у точки есть доступное имя -->
 		<span v-if="isOnline" class="base-avatar__online" :class="classes.online" role="img" :aria-label="UI_CHAT_TEXT.ONLINE"></span>
 	</div>
 </template>

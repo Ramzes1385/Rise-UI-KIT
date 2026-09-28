@@ -11,7 +11,6 @@ const BASE_MESSAGES: ChatMessage[] = [
 	{ id: '2', text: 'Здравствуйте', sender: 'me', time: '10:01', status: 'read' },
 ]
 
-/** Прокрутка ленты: в jsdom нет раскладки, поэтому scrollTop задаётся напрямую, затем приходит событие scroll */
 async function scrollListTo(list: HTMLElement, scrollTop: number): Promise<void> {
 	Object.defineProperty(list, 'scrollTop', { value: scrollTop, configurable: true, writable: true })
 	await fireEvent.scroll(list)
@@ -224,7 +223,6 @@ describe('ChatMessageList unit', () => {
 				props: { messages: [imageMsg], allImagesUrls: [] },
 			})
 
-			// Коллаж с изображением отрендерен — getMessageImagesUrls вызван для gallery
 			expect(container.querySelector('.base-chat-message-list__attached-image')).toBeInTheDocument()
 		})
 
@@ -248,7 +246,6 @@ describe('ChatMessageList unit', () => {
 		it('должен эмитить file-click при клике по карточке файла', async () => {
 			const { container, emitted } = render(ChatMessageList, { props: { messages: [fileMsg] } })
 
-			// Карточка файла: основная часть — кнопка с именем и размером, «Скачать» — отдельная кнопка
 			const fileCard = container.querySelector('.base-chat-message-list__attached-file-main') as HTMLElement
 			await fireEvent.click(fileCard)
 
@@ -613,7 +610,6 @@ describe('ChatMessageList unit', () => {
 		it('не должен реагировать на клик снаружи когда меню закрыто (isActive=false)', async () => {
 			render(ChatMessageList, { props: { messages: [ctxMsg] } })
 
-			// меню не открыто — isActive() возвращает false, callback не вызывается
 			await fireEvent.mouseDown(document.body)
 
 			expect(screen.queryByText('Ответить')).toBeNull()

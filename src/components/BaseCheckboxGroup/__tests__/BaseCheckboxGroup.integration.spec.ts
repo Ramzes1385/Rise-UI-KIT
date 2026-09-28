@@ -64,11 +64,9 @@ describe('BaseCheckboxGroup integration', () => {
 			`,
 		})
 
-		// Обёртка узнаёт о контроле при его монтировании и перерисовывается в следующем тике
 		await nextTick()
 		const group = screen.getByRole('group', { name: 'Каналы' })
 		expect(group).toHaveAccessibleDescription('Можно выбрать несколько')
-		// Обёртка не добавляет свою группу: группа одна
 		expect(screen.getAllByRole('group')).toHaveLength(1)
 	})
 

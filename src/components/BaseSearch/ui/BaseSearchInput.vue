@@ -26,7 +26,6 @@
 					:custom-class="classes.loading"
 					variant="spinner"
 					:size-scale="sizeScale / 2" />
-				<!-- Очистка не уводит фокус из поля (mousedown.prevent) и не встаёт в порядок Tab — как кнопка пароля BaseInput -->
 				<BaseButton
 					v-if="hasClear && modelValue"
 					variant="ghost"
@@ -54,10 +53,6 @@ import { BaseLoader } from '@components/BaseLoader'
 import { useBaseSearchInput } from '../model/useBaseSearchInput'
 import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
-/**
- * Поле поиска — BaseInput: иконка поиска слева, справа индикатор загрузки и ghost-кнопка очистки 24px.
- * Подпись поля — текст плейсхолдера, скрытый визуально: у поля есть доступное имя и после ввода текста.
- */
 const props = defineProps<BaseSearchInputProps>()
 
 const emit = defineEmits<BaseSearchInputEmits>()

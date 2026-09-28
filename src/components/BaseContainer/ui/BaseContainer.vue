@@ -1,5 +1,4 @@
 <template>
-	<!-- Контейнер страницы: ограничивает ширину содержимого, центрирует его и даёт боковые отступы -->
 	<component :is="tag" class="base-container" :class="[`base-container--${size}`, classes.root]" :style="sizeScaleStyle">
 		<slot />
 	</component>

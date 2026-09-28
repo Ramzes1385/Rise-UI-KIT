@@ -3,8 +3,6 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// Тулбар над таблицей: поля и кнопки библиотеки высотой 32px в один ряд (при нехватке места — перенос),
-	// отступы как у ячеек, нижняя линия --rise-border.
 	&__toolbar {
 		display: flex;
 		flex-wrap: wrap;
@@ -20,7 +18,6 @@
 		max-width: sz(320px);
 	}
 
-	// Иконка поиска внутри поля (слот prefix BaseInput): отступ поля слева, цвет префиксов полей.
 	&__search-icon {
 		display: flex;
 		align-items: center;
@@ -35,7 +32,6 @@
 		gap: sz(8px);
 	}
 
-	// Поля фильтра фиксированной ширины. Двойной селектор перекрывает ширину 100% у BaseInput/BaseSelect.
 	&__filters &__filter-field {
 		width: sz(144px);
 	}
@@ -48,7 +44,6 @@
 		width: sz(136px);
 	}
 
-	// Активные фильтры — отдельной строкой под полями: метка условия и кнопка удаления.
 	&__active-filters {
 		display: flex;
 		flex-wrap: wrap;

@@ -1,5 +1,4 @@
 <template>
-	<!-- Группа «Время»: у каждого поля своё доступное имя (подпись скрыта визуально), разделители — декоративные -->
 	<div class="base-calendar__time" :class="classes.time" role="group" :aria-labelledby="captionId">
 		<span :id="captionId" class="base-calendar__time-caption">{{ UI_CALENDAR.TIME }}</span>
 		<div class="base-calendar__time-fields">

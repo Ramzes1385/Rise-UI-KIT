@@ -1,4 +1,3 @@
-/** Composable: логика BaseContextMenu — открытие в точке, клавиатура и возврат фокуса */
 import { computed, nextTick, ref } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import type DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
@@ -9,7 +8,6 @@ function useMenuOpening(emit: BaseContextMenuEmits) {
 	const contentRef = ref<InstanceType<typeof DropdownMenuContent> | null>(null)
 	const isOpen = ref(false)
 	const point = ref({ x: 0, y: 0 })
-	// Элемент с фокусом до открытия: после выбора пункта фокус возвращается на него
 	let returnFocus: HTMLElement | null = null
 
 	const setOpen = (value: boolean): void => {
@@ -23,7 +21,6 @@ function useMenuOpening(emit: BaseContextMenuEmits) {
 		isOpen,
 		point,
 		setOpen,
-		/** Открыть меню в точке окна; с клавиатуры фокус — на первом пункте, мышью — на самом меню */
 		async openAt(x: number, y: number, focusFirst = false): Promise<void> {
 			returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
 			point.value = { x, y }
@@ -52,7 +49,6 @@ export function useBaseContextMenu(props: BaseContextMenuProps, emit: BaseContex
 			event.preventDefault()
 			void openAt(event.clientX, event.clientY)
 		},
-		/** Клавиша «Меню» и Shift+F10 — как правый клик: меню у элемента с фокусом */
 		handleKeydown(event: KeyboardEvent): void {
 			const isMenuKey = event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)
 			if (!isMenuKey || props.isDisabled) return

@@ -1,7 +1,5 @@
-// Тег (tag) задаёт только семантику; визуальный размер и начертание — sizeScale и weight, а не сам тег.
 .base-text {
 	margin: 0;
-	// Шрифт задан явно: dist/styles.css не задаёт шрифт странице, а текст библиотеки должен быть её шрифтом.
 	font-family: var(--rise-font-sans);
 	@include text-size(sm);
 	@include custom-text(color, var(--rise-text));
@@ -10,7 +8,6 @@
 		white-space: nowrap;
 	}
 
-	// Одна строка с многоточием. Несколько строк (maxLines > 1) обрезает -webkit-line-clamp из инлайн-стиля компонента.
 	&--truncate {
 		@include truncate;
 	}

@@ -1,5 +1,3 @@
-/** Компонент использует teleport — поиск в document. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 import { render, screen } from '@testing-library/vue'

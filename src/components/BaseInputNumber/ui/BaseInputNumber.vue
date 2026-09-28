@@ -1,8 +1,4 @@
 <template>
-	<!--
-		Поле числа по образцу APG Spinbutton: поле — role="spinbutton" с aria-valuenow/min/max, ↑/↓ — шаг,
-		PageUp/PageDown — десять шагов, Home/End — границы. Кнопки −/+ вне порядка Tab: с клавиатуры шагают стрелки
-	-->
 	<BaseInput
 		ref="inputRef"
 		class="base-input-number"

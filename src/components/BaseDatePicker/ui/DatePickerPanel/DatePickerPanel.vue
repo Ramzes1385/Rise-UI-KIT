@@ -1,7 +1,6 @@
 <template>
 	<Teleport defer :to="teleportTarget">
 		<Transition name="date-picker-panel">
-			<!-- data-theme копируется с ближайшего контейнера поля: панель в body иначе взяла бы токены темы страницы -->
 			<div
 				v-if="resolvedProps.isOpen"
 				ref="panelRef"
@@ -11,7 +10,6 @@
 				:class="[{ 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
 				:style="[resolvedProps.panelStyle, layerStyle]"
 				:data-theme="resolvedProps.theme">
-				<!-- Общая навигация: год и месяц(ы) для всех календарей панели -->
 				<div class="date-picker-panel__header">
 					<div class="date-picker-panel__nav-group">
 						<BaseButton

@@ -2,7 +2,6 @@ import '@testing-library/jest-dom/vitest'
 import BaseTooltip from '../ui/BaseTooltip.vue'
 import { render, screen, waitFor } from '@testing-library/vue'
 
-/** Опции рендера без заглушек Transition и Teleport */
 const renderOptions = {
 	global: {
 		stubs: {
@@ -357,7 +356,6 @@ describe('BaseTooltip: доступность и край окна', () => {
 
 		await waitFor(() => expect(screen.getByRole('tooltip')).toHaveClass('base-tooltip-popup--bottom'))
 		const tooltip = screen.getByRole('tooltip')
-		// центр триггера 10, половина подсказки 60, отступ от края 8 → точка 68, сдвиг 58
 		expect(tooltip.style.left).toBe('68px')
 		expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset')).toBe('-58px')
 	})

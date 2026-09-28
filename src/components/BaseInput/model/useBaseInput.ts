@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseInput — связь с BaseFormField, маска, видимость пароля и его правила */
 import { computed, ref, toRef, useId } from 'vue'
 import { useFormField } from '@composables/useFormField'
 import { useFieldControl } from '@composables/useFormContext'
@@ -28,9 +27,7 @@ function toText(value: InputProps['modelValue']): string {
 	return value == null ? '' : String(value)
 }
 
-/** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */
 function useInputControl(props: InputProps) {
-	// id текста ошибки: поле описано ею через aria-describedby
 	const errorId = `${useId()}-error`
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
 	const control = useFieldControl({
@@ -46,7 +43,6 @@ function useInputControl(props: InputProps) {
 		formField,
 		control,
 		inputId: control.id,
-		// Атрибуты нативного поля: inputAttrs, имя без подписи (ariaLabel) и aria-состояния поля и обёртки
 		nativeAttrs: computed(() => ({
 			...props.inputAttrs,
 			...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
@@ -103,9 +99,7 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 		exposed: {
 			rootRef: inputRef,
 			inputRef,
-			/* istanbul ignore next — defensive: optional chaining для public API на unmount */
 			focus: () => inputRef.value?.focus(),
-			/* istanbul ignore next — defensive: optional chaining для public API на unmount */
 			blur: () => inputRef.value?.blur(),
 			validate: field.formField.validate,
 			reset: field.formField.reset,

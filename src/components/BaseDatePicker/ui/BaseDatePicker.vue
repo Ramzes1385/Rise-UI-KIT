@@ -52,10 +52,6 @@ import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
 import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../types/BaseDatePicker.types'
 
-// Дефолты резолвятся через useExplicitPropDetection, а не withDefaults:
-// 1) boolean-пропы с дефолтом true (isReadonly, closeOnClickOutside, closeOnEscape) требуют wasPropPassed
-// 2) календарные под-пропы (locale, firstDayOfWeek и др.) явно пробрасываются в calendarConfig
-//    только если родитель их передал — иначе дефолты конфига не перезаписываются.
 const props = defineProps<BaseDatePickerProps>()
 
 const emit = defineEmits<BaseDatePickerEmits>()

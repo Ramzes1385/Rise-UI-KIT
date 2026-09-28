@@ -252,21 +252,18 @@ const VARIANT_STYLES = {
 
 function variantBlocks(variants, selector, indent) {
 	return variants
-		.filter(variant => variant !== 'default')
-		.flatMap(variant => {
-			const body = VARIANT_STYLES[variant] ?? [`// ${TODO}: стили варианта ${variant}.`]
-			return ['', `${indent}${selector(variant)} {`, ...body.map(line => `${indent}\t${line}`), `${indent}}`]
-		})
+		.filter(variant => VARIANT_STYLES[variant])
+		.flatMap(variant => [
+			'',
+			`${indent}${selector(variant)} {`,
+			...VARIANT_STYLES[variant].map(line => `${indent}\t${line}`),
+			`${indent}}`,
+		])
 }
 
 function styleTemplate(n, kind, variants) {
-	const header = [
-		`// ${n.name}. ${TODO}: назначение и размеры при sizeScale = 100 (высота, отступы, текст, радиус).`,
-		`// Варианты: ${variants.join(', ')}. ${TODO}: чем отличается каждый.`,
-	]
 	if (kind === 'form') {
 		return [
-			...header,
 			`.${n.kebab} {`,
 			'\tdisplay: flex;',
 			'\tflex-direction: column;',
@@ -278,7 +275,6 @@ function styleTemplate(n, kind, variants) {
 			'\t\t@include field-label;',
 			'\t}',
 			'',
-			'\t// Поле высотой 32px при sizeScale = 100: рамка 1px + отступ 5px + строка 20px.',
 			'\t&__control {',
 			'\t\tbox-sizing: border-box;',
 			'\t\twidth: 100%;',
@@ -315,7 +311,6 @@ function styleTemplate(n, kind, variants) {
 	}
 	const interactive = kind === 'interactive'
 	return [
-		...header,
 		`.${n.kebab} {`,
 		'\tdisplay: inline-flex;',
 		'\talign-items: center;',
@@ -599,10 +594,6 @@ function unitSpecTemplate(n, kind) {
 	const labelProps = kind === 'form' ? "{ label: 'Название' }" : "{ label: 'Пример' }"
 	const rootSelector = `.${n.kebab}`
 	const lines = [
-		'/**',
-		` * Unit-тесты ${n.name}: рендер, варианты, масштаб, классы${kind === 'form' ? ', связь подписи и ошибки с полем' : ''}.`,
-		' */',
-		'',
 		"import '@testing-library/jest-dom/vitest'",
 		`import { ${kind === 'display' ? '' : 'fireEvent, '}render, screen } from '@testing-library/vue'`,
 		`import ${n.name} from '../ui/${n.name}.vue'`,
@@ -695,10 +686,6 @@ function unitSpecTemplate(n, kind) {
 function integrationSpecTemplate(n, kind) {
 	if (kind === 'display') return null
 	const lines = [
-		'/**',
-		` * Integration-тесты ${n.name}: работа с клавиатуры через user-event.`,
-		' */',
-		'',
 		"import '@testing-library/jest-dom/vitest'",
 		"import userEvent from '@testing-library/user-event'",
 		"import { render, screen } from '@testing-library/vue'",
@@ -734,10 +721,6 @@ function integrationSpecTemplate(n, kind) {
 function visualSpecTemplate(n, kind) {
 	const stories = ['variants', 'sizes', ...(kind === 'form' ? ['disabled', 'with-error'] : [])]
 	return [
-		'/**',
-		` * Visual regression ${n.name}: ключевые stories в светлой и тёмной теме.`,
-		' */',
-		'',
 		"import { test } from '@playwright/test'",
 		"import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'",
 		'',

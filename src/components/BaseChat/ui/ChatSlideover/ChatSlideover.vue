@@ -8,7 +8,6 @@
 		:custom-class="{ root: 'base-chat-slideover', panel: 'base-chat-slideover__panel', body: 'base-chat-slideover__body' }"
 		@update:is-open="emit('update:isOpen', $event)">
 		<div ref="contentRef" class="base-chat-slideover__content">
-			<!-- Вкладки (кроме режима профиля): стрелки ←/→, Home, End переключают вкладку -->
 			<div
 				v-if="activeTab !== 'profile'"
 				class="base-chat-slideover__tabs"
@@ -47,11 +46,9 @@
 						<span class="base-chat-slideover__status">
 							{{ isGroup ? membersCountLabel : subtitle || UI_CHAT_TEXT.ONLINE }}
 						</span>
-						<!-- Только данные приложения: демо-тексты библиотеки показывались бы в каждом чате -->
 						<p v-if="description" class="base-chat-slideover__description">{{ description }}</p>
 					</div>
 
-					<!-- Список участников для групп -->
 					<section
 						v-if="isGroup && members.length > 0"
 						class="base-chat-slideover__members-list"
@@ -73,7 +70,6 @@
 									</span>
 								</button>
 
-								<!-- Админ-действия над участником: меню закрывается выбором пункта, повторным нажатием и Escape -->
 								<div
 									v-if="currentUserRole === 'admin' && member.id !== 'me'"
 									class="base-chat-slideover__member-actions"

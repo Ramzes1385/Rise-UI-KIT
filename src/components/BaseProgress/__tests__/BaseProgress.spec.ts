@@ -333,7 +333,6 @@ describe('BaseProgress unit', () => {
 			})
 
 			const circle = container.querySelector('.base-progress__fill-circle')
-			// stroke-dashoffset должен быть равен circumference (2 * Math.PI * 52 ≈ 326.73)
 			const dashoffset = circle?.getAttribute('stroke-dashoffset')
 			const expectedOffset = (2 * Math.PI * 52).toFixed(2)
 			expect(parseFloat(dashoffset || '0')).toBeCloseTo(parseFloat(expectedOffset), 1)
@@ -389,7 +388,6 @@ describe('BaseProgress unit', () => {
 			expect(container.querySelector('.base-progress')).toHaveClass('custom-root')
 			expect(container.querySelector('.base-progress__track')).toHaveClass('custom-track')
 			expect(container.querySelector('.base-progress__fill')).toHaveClass('custom-fill')
-			// Ключи tooltipTrigger/tooltipAnchor относятся к подписи над полосой и её тексту
 			expect(container.querySelector('.base-progress__status')).toHaveClass('custom-tooltip-trigger')
 			expect(container.querySelector('.base-progress__status-text')).toHaveClass('custom-tooltip-anchor')
 		})

@@ -1,4 +1,3 @@
-// Тело карточки сбрасывает --custom-* (reset-custom-color), поэтому цвета дней считаются на корне в переменные --calendar-* и наследуются уже вычисленными.
 .base-calendar {
 	--calendar-text: var(--custom-text, var(--rise-text));
 	--calendar-heading: var(--custom-text, var(--rise-text-highlighted));
@@ -9,8 +8,6 @@
 
 	user-select: none;
 
-	// Корень — это .base-card: двойной класс перекрывает отступы и overflow карточки независимо от порядка CSS.
-	// overflow: visible — popover даты выходит за край календаря.
 	&.base-card {
 		--card-pad-top: 12px;
 		--card-pad-right: 12px;
@@ -35,7 +32,6 @@
 		}
 	}
 
-	// Квадратные ghost-кнопки 32×32: иконка 20px и отступы 5px.
 	&__nav-btn.base-button {
 		--btn-pad-top: var(--rise-control-padding-y);
 		--btn-pad-right: var(--rise-control-padding-y);
@@ -63,13 +59,11 @@
 		text-align: center;
 		@include truncate;
 
-		// «май 2025» → «Май 2025»: заглавная только первая буква (capitalize подняла бы каждое слово)
 		&::first-letter {
 			text-transform: uppercase;
 		}
 	}
 
-	// Колонки не уже 36px (день 32px + просвет) и растягиваются, если календарю дали больше места (панель date picker).
 	&__weekdays,
 	&__grid {
 		display: grid;
@@ -89,7 +83,6 @@
 		row-gap: sz(4px);
 	}
 
-	// Дни недели и номера недель — 12/16 muted (dimmed не проходит контраст 4.5:1 для текста).
 	&__weekday,
 	&__week-num-header,
 	&__week-num {
@@ -110,7 +103,6 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	// Ячейка: фон ячейки — полоса диапазона, сама кнопка дня — круг по центру.
 	&__day-wrapper {
 		position: relative;
 		display: flex;
@@ -148,7 +140,6 @@
 			cursor: not-allowed;
 		}
 
-		// Порядок модификаторов задаёт приоритет: выходной < соседний месяц < сегодня < диапазон < недоступный < выбранный.
 		&--weekend {
 			color: var(--rise-error);
 		}
@@ -164,8 +155,6 @@
 
 		&--range {
 			color: var(--rise-primary-text);
-
-			// Круг наведения поверх полосы — полоса плюс 15% основного цвета
 			@include hover {
 				background-color: color-mix(in srgb, var(--rise-primary) 15%, transparent);
 			}
@@ -184,7 +173,6 @@
 			}
 		}
 
-		// Ячейка со слотом day: занимает всю колонку и растёт по содержимому (например, цена под числом).
 		&--custom {
 			width: 100%;
 			height: auto;
@@ -194,8 +182,6 @@
 		}
 	}
 
-	// Полоса диапазона: дни внутри — фон ячейки, у концов — половина ячейки в сторону диапазона.
-	// Цвет — soft-hover: полоса из нескольких дней на светлом фоне с soft (оттенок 50) почти не видна.
 	&__day-wrapper:has(> .base-calendar__day--range) {
 		background-color: var(--rise-primary-soft-hover);
 	}
@@ -212,7 +198,6 @@
 		background-image: none;
 	}
 
-	// Маркер события (highlights): точка под числом; цвет — из данных или акцентный, на выбранном дне — цвет текста.
 	&__day-dot {
 		position: absolute;
 		bottom: sz(3px);
@@ -228,9 +213,6 @@
 		background-color: currentcolor;
 	}
 
-	// Плавающая панель под днём: дата и события дня. У дней левой части недели панель выровнена по левому краю ячейки,
-	// правой — по правому, в середине — по центру: так она не выходит за календарь. Стрелка всегда над центром дня
-	// (18px — половина колонки 36px).
 	&__popover {
 		@include reset-custom-color;
 		position: absolute;
@@ -257,7 +239,6 @@
 		}
 	}
 
-	// Стрелка к дню: повёрнутый квадрат цвета панели, видны две стороны рамки.
 	&__popover-arrow {
 		position: absolute;
 		top: 0;
@@ -319,7 +300,6 @@
 		background-color: var(--calendar-dot-color, var(--calendar-accent));
 	}
 
-	// Сетка 3 × 4 по высоте вида дней (дни недели 24 + 4 + шесть строк по 32 с просветом 4 = 240px): календарь не прыгает.
 	&__months,
 	&__years {
 		display: grid;
@@ -377,7 +357,6 @@
 		gap: sz(4px);
 	}
 
-	// Поле времени — BaseInput шириной под две цифры; подпись поля скрыта визуально, но остаётся его доступным именем.
 	&__time-input.base-input {
 		flex: none;
 		width: sz(44px);
@@ -419,7 +398,6 @@
 		border-top: 1px solid var(--rise-border);
 	}
 
-	// Прозрачность — у всего календаря; вложенные кнопки и поля не приглушаются второй раз.
 	&--disabled {
 		@include disabled-state;
 

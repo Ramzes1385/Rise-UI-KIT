@@ -26,7 +26,6 @@
 					@click="prevMonth">
 					<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
 				</BaseButton>
-				<!-- Заголовок — кнопка смены вида (дни → месяцы → годы) или просто текст, если смена вида выключена -->
 				<BaseButton
 					v-if="resolvedProps.canSwitchView"
 					variant="ghost"
@@ -147,10 +146,6 @@ import BaseCalendarMonths from './BaseCalendarMonths.vue'
 import { useBaseCalendar } from '../model/useBaseCalendar'
 import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '../types/BaseCalendar.types'
 
-// Дефолты резолвятся в useCalendarResolvedProps, а не через withDefaults:
-// 1) boolean-пропы с дефолтом true требуют wasPropPassed (?? не работает для false ?? true)
-// 2) вложенные config-объекты (timeConfig, displayConfig, constraints) дают тройной приоритет
-// См. useCalendarResolvedProps — единый источник дефолтов.
 const props = defineProps<BaseCalendarProps>()
 
 const emit = defineEmits<BaseCalendarEmits>()

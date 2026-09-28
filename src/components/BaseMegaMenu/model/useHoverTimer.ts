@@ -1,4 +1,3 @@
-/** Composable: таймер закрытия меню после ухода курсора (trigger=hover); снимается при размонтировании */
 import { onBeforeUnmount } from 'vue'
 
 export function useHoverTimer() {

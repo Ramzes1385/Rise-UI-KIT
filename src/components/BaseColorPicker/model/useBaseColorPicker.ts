@@ -1,25 +1,21 @@
 import type { Ref } from 'vue'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
-/** Composable: логика BaseColorPicker — SV-область, оттенок, HEX и пресеты */
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useFormField } from '@composables/useFormField'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
 import type { BaseColorPickerEmits, BaseColorPickerProps } from '../types/BaseColorPicker.types'
 
-/** Шаг стрелок в SV-области: 1% насыщенности или яркости, с Shift — 10% */
 const AREA_STEP = 0.01
 const AREA_STEP_LARGE = 0.1
 
-/** SV-область: выбор указателем с захватом перемещения и стрелками (влево/вправо — насыщенность, вверх/вниз — яркость) */
 function useSaturationArea(picker: ReturnType<typeof useColorPicker>) {
 	const areaRef = ref<HTMLElement | null>(null)
 	let stopAreaDrag: (() => void) | null = null
 
 	const applyAreaPoint = (clientX: number, clientY: number): void => {
 		const area = areaRef.value
-		/* istanbul ignore next -- defensive: pointerdown невозможен без смонтированного areaRef */
 		if (!area) return
 		const rect = area.getBoundingClientRect()
 		picker.setSaturationValue({ x: (clientX - rect.left) / rect.width, y: (clientY - rect.top) / rect.height })
@@ -58,7 +54,6 @@ function useSaturationArea(picker: ReturnType<typeof useColorPicker>) {
 	}
 }
 
-/** Оттенок и HEX из полей; пресет и сброс завершают выбор — панель закрывается */
 function useColorInputs(picker: ReturnType<typeof useColorPicker>, emit: BaseColorPickerEmits, isOpen: Ref<boolean>) {
 	return {
 		handleHueInput(event: Event): void {
@@ -94,7 +89,6 @@ export function useBaseColorPicker(props: BaseColorPickerProps, emit: BaseColorP
 			emit('change', hex)
 		},
 	})
-	// Цвет swatch и поля HEX — нормализованное значение модели (источник истины)
 	const swatchColor = computed(() => normalizeHex(props.modelValue) ?? picker.hex.value)
 
 	return {
@@ -104,7 +98,6 @@ export function useBaseColorPicker(props: BaseColorPickerProps, emit: BaseColorP
 		picker,
 		swatchColor,
 		...useSaturationArea(picker),
-		/** Пресет совпадает с текущим цветом (сравнение нормализованных HEX: #FFF и #ffffff — один цвет) */
 		isPresetSelected: (preset: string): boolean => normalizeHex(preset) === swatchColor.value,
 		...useColorInputs(picker, emit, isOpen),
 		exposed: {

@@ -12,7 +12,6 @@
 			variantClass,
 			classes.root,
 		]">
-		<!-- Скрытый input открывается только программно: единственная точка входа с клавиатуры — зона загрузки -->
 		<input
 			:id="inputId"
 			ref="fileInput"
@@ -32,7 +31,6 @@
 			:custom-class="classes.label"
 			:size-scale="sizeScale" />
 
-		<!-- Зона загрузки — кнопка: клик, Enter и Space открывают выбор файла; ошибки связаны через aria-describedby -->
 		<div
 			class="base-file-upload__dropzone"
 			role="button"
@@ -56,7 +54,6 @@
 			</slot>
 		</div>
 
-		<!-- Список файлов: строки-карточки; цвет компонента (color) их не перекрашивает -->
 		<ul v-if="uploadedFiles.length > 0" class="base-file-upload__list" :class="classes.list">
 			<li
 				v-for="item in uploadedFiles"
@@ -153,7 +150,6 @@ const props = withDefaults(
 		maxSize: 5,
 		maxCount: 10,
 		label: '',
-		// Без пропа размер превью берётся из стилей (40px, масштабируется sizeScale): inline-размер — только при явном значении
 		previewSize: undefined,
 		allowPreview: true,
 		emptyText: () => UI_TEXT.FILE_DROP,

@@ -1,4 +1,3 @@
-// default — подчёркивание видно даже без цвета (WCAG 1.4.1); ghost — подчёркивание только при наведении, для навигации и списков ссылок.
 .base-link {
 	display: inline;
 	font-size: calc(1em * var(--size-scale, 1));
@@ -26,7 +25,6 @@
 		}
 	}
 
-	// Отключённая ссылка: без адреса, наведение ничего не меняет (миксин hover пропускает --disabled)
 	&--disabled {
 		@include disabled-state;
 	}

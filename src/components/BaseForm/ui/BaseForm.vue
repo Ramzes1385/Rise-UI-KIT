@@ -13,14 +13,11 @@
 		]"
 		:aria-busy="isLoading || undefined"
 		@submit.prevent="handleSubmit">
-		<!-- Оверлей загрузки: вне загрузки скрыт через visibility — лоадер со статусом «Загрузка» не виден и скринридеру -->
 		<div class="base-form__overlay" :class="[{ 'base-form__overlay--visible': isLoading }, classes.overlay]">
 			<BaseLoader variant="spinner" :has-label="true" :label="UI_TEXT.LOADING" :size-scale="sizeScale" />
 		</div>
 
 		<div class="base-form__content" :class="classes.content">
-			<!-- fieldset[disabled] отключает все нативные контролы: pointer-events блокирует только мышь, но не клавиатуру.
-				role="presentation" — обёртка чисто поведенческая, скринридеру не нужна лишняя группа -->
 			<fieldset class="base-form__fieldset" :disabled="isLocked" role="presentation">
 				<slot />
 			</fieldset>

@@ -1,5 +1,3 @@
-/** Тур телепортируется в body, поэтому снимается вся страница; карточка появляется после анимации подсветки (задержка в JS, 450 мс) — снимок делается, когда она видна. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

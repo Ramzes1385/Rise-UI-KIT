@@ -46,7 +46,6 @@ describe('ChatInput unit', () => {
 			await user.click(input)
 			await user.type(input, '@admin')
 
-			// admin совпадает только с ролью Анны (ветка member.role.toLowerCase().includes)
 			expect(await screen.findByText('Анна')).toBeInTheDocument()
 			expect(screen.queryByText('Борис')).toBeNull()
 		})
@@ -176,7 +175,6 @@ describe('ChatInput unit', () => {
 
 			await fireEvent.keyDown(input, { key: 'ArrowDown' })
 			await fireEvent.keyDown(input, { key: 'ArrowUp' })
-			// Enter одновременно выбирает упоминание (handleKeyDown) и отправляет (keydown.enter)
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
 			const sendEvents = emitted().send as Array<[{ text: string }]>
@@ -195,7 +193,6 @@ describe('ChatInput unit', () => {
 			expect(input).toHaveAttribute('aria-activedescendant', firstOption.id)
 			expect(firstOption).toHaveAttribute('aria-selected', 'true')
 
-			// Реальное нажатие: keydown закрывает список, keyup не должен открыть его снова
 			await user.keyboard('{Escape}')
 
 			expect(screen.queryByRole('listbox')).toBeNull()
@@ -245,7 +242,6 @@ describe('ChatInput unit', () => {
 			await user.type(input, '/')
 			await screen.findByText('/help')
 
-			// Нейтральная клавиша — ветка Escape оценивается как ложная, список остаётся
 			await fireEvent.keyDown(input, { key: 'Tab' })
 			expect(container.querySelector('.base-chat-input__autocomplete--commands')).toBeInTheDocument()
 
@@ -455,7 +451,6 @@ describe('ChatInput unit', () => {
 			const popover = container.querySelector('.base-chat-input__emoji-popover') as HTMLElement
 			expect(popover).toBeInTheDocument()
 
-			// mousedown по элементу внутри wrapper не считается внешним кликом
 			await fireEvent.mouseDown(popover)
 
 			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()

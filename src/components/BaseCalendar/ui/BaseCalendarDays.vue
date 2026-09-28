@@ -7,7 +7,6 @@
 		<template v-for="cell in cells" :key="cell.key">
 			<span v-if="cell.weekNumber !== null" class="base-calendar__week-num">{{ cell.weekNumber }}</span>
 			<div class="base-calendar__day-wrapper" :class="classes.dayWrapper">
-				<!-- Имя кнопки — полная дата («четверг, 15 мая 2025 г.»): одно число без месяца скринридеру ничего не говорит -->
 				<button
 					type="button"
 					class="base-calendar__day"

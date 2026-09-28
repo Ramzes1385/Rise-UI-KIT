@@ -548,7 +548,6 @@ describe('BaseInput unit', () => {
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
 			const pending = fireEvent.update(input, '12')
-			// Следующий символ введён раньше, чем Vue обновил DOM: прежняя позиция устарела
 			input.value = '123'
 			input.setSelectionRange(3, 3)
 			await pending

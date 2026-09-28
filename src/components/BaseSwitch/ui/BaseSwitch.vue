@@ -14,9 +14,6 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<label class="base-switch__row" :class="classes.row" :for="inputId">
 			<span class="base-switch__wrapper" :class="classes.wrapper">
-				<!-- role="switch" допустим на checkbox (ARIA in HTML); состояние aria-checked браузер берёт из нативного checked,
-					поэтому явный aria-checked не дублируем — он мог бы разойтись с checked.
-					Нативный input лежит поверх трека: он получает клик, фокус и клавиатуру, трек только рисует состояние -->
 				<input
 					:id="inputId"
 					type="checkbox"
@@ -55,8 +52,6 @@
 				<slot />
 			</span>
 		</label>
-		<!-- Ошибка — текст или разметка слота error — лежит в обёртке с id: переключатель описан ею через aria-describedby
-			в обоих случаях. Без ошибки обёртка пуста и скрыта (:empty), лишнего отступа нет -->
 		<div :id="errorId" class="base-switch__error">
 			<slot name="error">
 				<FormFieldError

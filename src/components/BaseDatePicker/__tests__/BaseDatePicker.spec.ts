@@ -270,7 +270,6 @@ describe('BaseDatePicker unit', () => {
 				global: { stubs },
 			})
 
-			/** Панель не открыта по умолчанию — проверяем через открытие */
 			const field = container.querySelector('.date-picker-field-stub')
 			expect(field).toBeInTheDocument()
 		})
@@ -387,7 +386,6 @@ describe('BaseDatePicker unit', () => {
 				global: { stubs },
 			})
 			const input = screen.getByPlaceholderText('Выберите дату') as HTMLInputElement
-			// В 12-часовом формате 14:30 отображается как 2:30 PM
 			expect(input.value).toMatch(/PM|pm/i)
 		})
 	})
@@ -401,7 +399,6 @@ describe('BaseDatePicker unit', () => {
 
 			const field = container.querySelector('.date-picker-field-stub')
 			expect(field).toBeInTheDocument()
-			// Stub рендерит input с readonly, проверяем что он есть
 			const input = field?.querySelector('input')
 			expect(input?.hasAttribute('readonly')).toBe(true)
 		})

@@ -18,7 +18,6 @@
 		@focusout="onFocusOut">
 		<slot name="header" />
 
-		<!-- Сцена: область слайдов и стрелки, отцентрованные по ней (а не по всему слайдеру с навигацией) -->
 		<div class="base-slider__stage">
 			<div v-if="hasArrows && canNavigate" class="base-slider__arrows" :class="classes.arrows">
 				<BaseButton
@@ -64,7 +63,6 @@
 				@click.capture="onClickCapture"
 				@dragstart.prevent>
 				<div class="base-slider__track" :class="classes.track" :style="trackStyle">
-					<!-- Невидимые слайды inert: их ссылки, видео и кнопки зума не попадают в Tab и не читаются скринридером -->
 					<div
 						v-for="(item, index) in items"
 						:key="index"

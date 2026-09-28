@@ -1,5 +1,3 @@
-/** В stories со списком play дожидается статуса «Загружено» (прогресс имитируется, FU-2) — снимок конечный. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

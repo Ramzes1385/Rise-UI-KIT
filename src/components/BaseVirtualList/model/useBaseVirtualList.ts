@@ -1,12 +1,10 @@
 import type { Ref } from 'vue'
-/** Composable: логика BaseVirtualList — ключи строк, фокус в строке и прокрутка */
 import { computed, ref } from 'vue'
 import { useVirtualList } from '@composables/useVirtualList'
 import type { VirtualKey } from '@composables/useVirtualList'
 import type { VirtualListProps } from '../types/BaseVirtualList.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
-/** Ключ строки: функция, поле из itemKey, поле id, иначе индекс */
 function keyOf<T>(props: VirtualListProps<T>, index: number): VirtualKey {
 	const item = props.items[index]
 	if (typeof props.itemKey === 'function') return props.itemKey(item, index)
@@ -15,7 +13,6 @@ function keyOf<T>(props: VirtualListProps<T>, index: number): VirtualKey {
 	return typeof value === 'string' || typeof value === 'number' ? value : index
 }
 
-/** Строка, в которой фокус: она не уходит из DOM при прокрутке */
 function useFocusedRow(viewportRef: Ref<HTMLElement | null>) {
 	const focusedIndex = ref<number>()
 	return {
@@ -51,7 +48,6 @@ export function useBaseVirtualList<T>(props: VirtualListProps<T>) {
 		virtualItems: items,
 		totalSize,
 		measureElement,
-		/** Содержимое выше области — её можно прокрутить с клавиатуры, поэтому она в порядке Tab */
 		isScrollable: computed(() => totalSize.value > viewportSize.value),
 		exposed: { scrollToIndex, getViewport: () => viewportRef.value },
 	}

@@ -1,4 +1,3 @@
-/** Composable: логика BaseRadio — id подписи и ошибки, проверка и выбор */
 import { ref, useId } from 'vue'
 import { useFormField } from '@composables/useFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -8,7 +7,6 @@ const RADIO_ELEMENTS = ['root', 'label', 'options', 'radio', 'wrapper', 'input',
 
 export function useBaseRadio(props: RadioProps, emit: BaseRadioEmits) {
 	const rootRef = ref<HTMLElement | null>(null)
-	// Заголовок — имя группы (aria-labelledby), текст ошибки — её описание (aria-describedby)
 	const groupId = useId()
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
 

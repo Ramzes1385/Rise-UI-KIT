@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
 import DatePickerPanel from '../ui/DatePickerPanel/DatePickerPanel.vue'
 
-/** Stub обязан повторять настоящий контракт: прежний stub объявлял удалённые в 1.2.2 плоские props (minDate, showTime, showNavigation…) и тем самым скрывал, что панель передаёт их в пустоту. */
 const BASE_CALENDAR_PROP_NAMES = Object.keys((BaseCalendar as unknown as { props: Record<string, unknown> }).props)
 
 const GLOBAL_STUBS = {
@@ -67,7 +66,6 @@ const DEFAULT_PROPS = {
 	theme: null,
 }
 
-/** Стабы с отключённым Teleport */
 const STUBS = { ...GLOBAL_STUBS, teleport: true }
 
 describe('DatePickerPanel', () => {
@@ -187,7 +185,6 @@ describe('DatePickerPanel', () => {
 			expect(calendar).toHaveAttribute('data-min-date', '20')
 			expect(calendar).toHaveAttribute('data-show-time', 'true')
 			expect(calendar).toHaveAttribute('data-show-week-number', 'true')
-			// Навигацию выполняет шапка панели — собственная навигация календаря скрыта
 			expect(calendar).toHaveAttribute('data-show-navigation', 'false')
 		})
 
@@ -463,7 +460,6 @@ describe('DatePickerPanel', () => {
 				global: { stubs: STUBS },
 			})
 
-			/** panelRef — template ref на корневой элемент панели */
 			const panel = container.querySelector('.date-picker-panel')
 			expect(panel).toBeInTheDocument()
 		})

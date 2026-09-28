@@ -1,8 +1,6 @@
-// Панель «Информация» — содержимое BaseSlideover: вкладки-пилюли, профиль (аватар 48px), участники (аватар 32px), меню админа, медиа/файлы — карточки с рамкой и радиусом md.
 @use '../../styles/chat' as *;
 
 .base-chat-slideover {
-	// Тело без отступов слева/справа у вкладок: отступы задаёт содержимое.
 	&__content {
 		display: flex;
 		flex-direction: column;
@@ -18,7 +16,6 @@
 		background-color: var(--rise-bg-elevated);
 	}
 
-	// Ширина вкладки — по подписи, свободное место делится поровну: длинная «Участники» не обрезается.
 	&__tab-btn {
 		@include chat-button-reset;
 		flex: 1 1 auto;
@@ -141,7 +138,6 @@
 		@include truncate;
 	}
 
-	// Строка участника подсвечивается фоном bg-elevated при наведении: вторичный текст — toned (контраст AA).
 	&__member-role {
 		@include text-size(xs);
 		color: var(--rise-text-toned);
@@ -209,7 +205,6 @@
 		background-color: var(--rise-bg-muted);
 	}
 
-	// Строка «иконка + подпись» (dt), значение (dd) — под подписью, с отступом на ширину иконки.
 	&__info-item {
 		display: flex;
 		flex-direction: column;

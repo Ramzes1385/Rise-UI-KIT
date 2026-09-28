@@ -3,7 +3,6 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// separate + spacing 0: рамки принадлежат ячейкам и двигаются вместе с закреплёнными шапкой и колонками.
 	&__table {
 		width: 100%;
 		border-collapse: separate;
@@ -15,7 +14,6 @@
 		}
 	}
 
-	// Служебные колонки: отступ слева как у ячеек, справа — без отступа; ширина = отступ + содержимое.
 	&__col--check {
 		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(16px)});
 	}

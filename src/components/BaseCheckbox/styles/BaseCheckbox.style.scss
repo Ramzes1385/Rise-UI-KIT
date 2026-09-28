@@ -1,6 +1,4 @@
-// Квадрат 16px стоит по центру первой строки подписи 14/20, поэтому длинная подпись переносится, а чекбокс остаётся у её начала; color.bg красит квадрат, color.text — галочку.
 .base-checkbox {
-	// Цвета квадрата. Варианты и состояния переопределяют только эти переменные.
 	--checkbox-border: var(--rise-border-accented);
 	--checkbox-bg: var(--rise-bg);
 	--checkbox-bg-hover: var(--rise-bg-elevated);
@@ -14,7 +12,6 @@
 	align-items: flex-start;
 	gap: sz(4px);
 
-	// Кликабельна только строка «квадрат + подпись», а не вся ширина контейнера.
 	&__label-wrapper {
 		display: inline-flex;
 		align-items: flex-start;
@@ -24,7 +21,6 @@
 		user-select: none;
 	}
 
-	// Контейнер высотой в строку подписи: квадрат выровнен по первой строке.
 	&__wrapper {
 		position: relative;
 		display: flex;
@@ -33,7 +29,6 @@
 		height: sz(var(--rise-line-height-sm));
 	}
 
-	// Нативный checkbox невидим, но занимает место квадрата: принимает клик, фокус и клавиатуру.
 	&__input {
 		position: absolute;
 		inset: 0;
@@ -73,18 +68,15 @@
 		color: var(--checkbox-icon);
 	}
 
-	// Двойной селектор: подпись и ошибка — BaseText, их собственный цвет не должен перебивать цвет чекбокса.
 	& &__label {
 		@include text-size(sm);
 		color: var(--rise-text);
 	}
 
-	// Обёртка ошибки (текст error или слот error): без ошибки в ней только комментарий v-if — скрываем, чтобы не было отступа.
 	&__error:empty {
 		display: none;
 	}
 
-	// Ошибка под подписью: отступ = квадрат 16px + зазор 8px.
 	& &__error-text {
 		display: block;
 		padding-left: sz(24px);

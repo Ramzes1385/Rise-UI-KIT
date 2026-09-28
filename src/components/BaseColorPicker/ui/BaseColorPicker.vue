@@ -20,7 +20,6 @@
 		</template>
 
 		<div class="base-color-picker__panel" :class="classes.panel">
-			<!-- Область насыщенности (по горизонтали) и яркости (по вертикали): мышью и стрелками, Shift — шаг 10 -->
 			<div
 				ref="areaRef"
 				class="base-color-picker__area"

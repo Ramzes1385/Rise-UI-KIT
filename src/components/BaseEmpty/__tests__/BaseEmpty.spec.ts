@@ -5,15 +5,8 @@ import BaseEmpty from '../ui/BaseEmpty.vue'
 import { dirname, resolve } from 'node:path'
 import { render, screen } from '@testing-library/vue'
 
-/** Исходник стилей компонента: jsdom не вычисляет calc()/var(), формулы считаются в тесте */
-// Путь строится через node:path: в jsdom-окружении глобальный URL — реализация jsdom, и fs не принимает такой объект
 const STYLES = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../styles/BaseEmpty.style.scss'), 'utf-8')
 
-/**
- * Значения в px из объявления `sz(32px 24px)` так же, как их считает браузер: sz() из src/styles/_functions.scss
- * раскрывает каждое значение в calc(X * var(--size-scale, 1)), а --size-scale — коэффициент (1.5 = 150%),
- * который компонент выставил на корне. Пустая строка — переменная не задана, действует fallback 1.
- */
 function resolvePx(declaration: string, sizeScale: string): number[] {
 	const values = declaration.match(/^sz\(([^)]+)\)$/)?.[1]
 	if (!values) throw new Error(`Ожидалось значение через sz(): ${declaration}`)
@@ -24,7 +17,6 @@ function resolvePx(declaration: string, sizeScale: string): number[] {
 		.map(value => Number.parseFloat(value) * factor)
 }
 
-/** Объявление свойства в корневом блоке .base-empty (строки с одним отступом табуляцией, без вложенных блоков) */
 function rootDeclaration(property: string): string {
 	const match = STYLES.match(new RegExp(`\\n\\t${property}:\\s*([^;]+);`))
 	if (!match?.[1]) throw new Error(`Свойство ${property} не найдено в корне .base-empty`)

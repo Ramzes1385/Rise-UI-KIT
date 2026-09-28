@@ -1,12 +1,9 @@
-/** jsdom не считает раскладку: высота области подменяется. */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../types/BaseTree.types'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** 200 папок, у первой — два файла */
 const ITEMS: TreeNode[] = Array.from({ length: 200 }, (_, index) => ({
 	id: `folder-${index}`,
 	label: `Папка ${index + 1}`,
@@ -45,7 +42,6 @@ describe('BaseTree: виртуальная прокрутка', () => {
 		expect(tree).toHaveStyle({ height: '400px' })
 		expect(tree.querySelector('[role="group"]')).not.toBeInTheDocument()
 		const items = screen.getAllByRole('treeitem')
-		// 100px области по 36px — узлы 0–2 и 5 узлов запаса снизу
 		expect(items).toHaveLength(8)
 		expect(items[1]).toHaveAccessibleName('Акт.pdf')
 		expect(items[1]).toHaveAttribute('aria-level', '2')

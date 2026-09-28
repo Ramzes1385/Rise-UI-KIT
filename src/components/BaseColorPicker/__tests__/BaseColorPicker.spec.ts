@@ -6,7 +6,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Мок размеров SV-области (200×140 в начале координат) */
 function mockAreaRect(): void {
 	Element.prototype.getBoundingClientRect = vi.fn(() => ({
 		width: 200,
@@ -21,7 +20,6 @@ function mockAreaRect(): void {
 	}))
 }
 
-/** Открыть панель кликом по swatch и вернуть её корень из body */
 async function openPanel(container: ParentNode): Promise<HTMLElement> {
 	const swatch = container.querySelector('.base-color-picker__swatch')
 	if (!swatch) throw new Error('Swatch не найден')
@@ -219,7 +217,6 @@ describe('BaseColorPicker — unit', () => {
 			expect(area).toHaveAttribute('aria-valuenow', '10')
 			await fireEvent.keyDown(area, { key: 'ArrowLeft' })
 			expect(area).toHaveAttribute('aria-valuenow', '9')
-			// #808080: яркость 50% → стрелка вверх 51%, вниз с Shift — 41%
 			await fireEvent.keyDown(area, { key: 'ArrowUp' })
 			await fireEvent.keyDown(area, { key: 'ArrowDown', shiftKey: true })
 			await fireEvent.keyDown(area, { key: 'Enter' })

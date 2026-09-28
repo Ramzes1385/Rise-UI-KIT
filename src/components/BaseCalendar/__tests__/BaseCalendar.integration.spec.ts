@@ -1,5 +1,3 @@
-/** Дочерние UI-компоненты заменены stub'ами со слотами; мокаются только DOM-зависимые composables. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

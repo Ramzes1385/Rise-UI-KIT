@@ -1,5 +1,4 @@
 <template>
-	<!-- Аватар скрыт от скринридера: имя написано рядом, статус «в сети» — скрытым текстом. С to/href весь блок — ссылка -->
 	<component
 		:is="isLink ? BaseLink : 'div'"
 		class="base-user"

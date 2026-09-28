@@ -1,6 +1,4 @@
-// Дробная оценка — слой заливки, обрезанный по ширине звезды, а не отдельные закрашенные и пустые звёзды.
 .base-rating {
-	// Цвета звёзд. Состояния переопределяют только эти переменные.
 	--rating-empty: var(--rise-border-accented);
 	@include custom-text(--rating-fill, var(--rise-primary));
 	--rating-fill-hover: var(--custom-text-hover, var(--custom-text, var(--rise-primary-hover)));
@@ -21,7 +19,6 @@
 		color: var(--rating-empty);
 	}
 
-	// Слой заливки поверх пустой звезды: ширина в процентах — доля оценки в этой звезде.
 	&__star-fill {
 		position: absolute;
 		top: 0;
@@ -40,7 +37,6 @@
 		cursor: pointer;
 	}
 
-	// Предпросмотр под курсором — цвет наведения основного цвета.
 	&--interactive {
 		@include hover {
 			--rating-fill: var(--rating-fill-hover);
@@ -74,7 +70,6 @@
 		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 	}
 
-	// Наведение на интерактивный рейтинг без рамки — фон bg-elevated, как у полей soft и ghost.
 	&--soft.base-rating--interactive,
 	&--ghost.base-rating--interactive {
 		@include custom-bg-hover(background-color, var(--rise-bg-elevated));

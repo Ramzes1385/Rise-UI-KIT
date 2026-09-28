@@ -1,5 +1,4 @@
 <template>
-	<!-- Основное действие и меню остальных: две кнопки в группе; кнопка меню — APG Menu Button (BaseDropdownMenu) -->
 	<div class="base-split-button" :class="[`base-split-button--${variant}`, classes.root]" role="group" :aria-label="label">
 		<BaseButton
 			class="base-split-button__main"

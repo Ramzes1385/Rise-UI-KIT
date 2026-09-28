@@ -1,8 +1,6 @@
-// При sizeScale = 100 и rows = 1 высота 32px, как у инпута и кнопки; каждая следующая строка добавляет 20px.
 .base-textarea {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
-	// Лишняя высота корня (если её задало приложение) остаётся снизу, строки сетки не растягиваются.
 	align-content: start;
 	gap: sz(6px 12px);
 	width: 100%;
@@ -42,7 +40,6 @@
 		}
 	}
 
-	// Autosize: высоту задаёт компонент по тексту, ручное изменение размера и прокрутка не нужны.
 	&--autosize &__field {
 		resize: none;
 		overflow: hidden;
@@ -70,7 +67,6 @@
 		}
 	}
 
-	// Фокус в поле без рамки (soft, ghost): фон как при наведении, плюс кольцо.
 	&--soft &__field:focus,
 	&--ghost &__field:focus {
 		@include custom-bg(background-color, var(--rise-bg-elevated));
@@ -95,14 +91,12 @@
 		resize: none;
 	}
 
-	// Ошибка и счётчик выровнены по базовой линии первой строки: кегль у них разный (14 и 12).
 	&__error-text {
 		grid-column: 1;
 		align-self: baseline;
 		@include field-error;
 	}
 
-	// Счётчик «введено/максимум»: 12/16, приглушённый, цифры одной ширины — строка не прыгает при вводе.
 	&__counter {
 		grid-column: 2;
 		place-self: baseline end;

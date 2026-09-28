@@ -9,10 +9,6 @@ function getContent(container: Element): HTMLElement {
 	return content
 }
 
-/**
- * Имитирует ввод символа в конец текстового узла: браузер сначала меняет текст,
- * ставит каретку после введённого символа, затем генерирует событие input.
- */
 async function typeAtEnd(content: HTMLElement, textNode: Text, char: string): Promise<void> {
 	textNode.textContent = `${textNode.textContent ?? ''}${char}`
 	const range = document.createRange()
@@ -25,7 +21,6 @@ async function typeAtEnd(content: HTMLElement, textNode: Text, char: string): Pr
 	await fireEvent.input(content)
 }
 
-/** Элементы редактора с inline-обработчиками событий (onerror, onclick и т.п.) */
 function findElementsWithHandlers(root: HTMLElement): Element[] {
 	return Array.from(root.querySelectorAll('*')).filter(element =>
 		Array.from(element.attributes).some(attribute => attribute.name.toLowerCase().startsWith('on')),
@@ -110,7 +105,6 @@ describe('BaseEditor integration', () => {
 	})
 
 	describe('очистка HTML', () => {
-		/** Событие вставки с содержимым буфера обмена: в jsdom нет DataTransfer и ClipboardEvent с данными */
 		function createPasteEvent(data: Record<string, string>): Event {
 			const event = new Event('paste', { bubbles: true, cancelable: true })
 			Object.defineProperty(event, 'clipboardData', { value: { getData: (type: string) => data[type] ?? '' } })
@@ -239,7 +233,6 @@ describe('BaseEditor integration', () => {
 
 	describe('горячие клавиши', () => {
 		it('Ctrl+B в области текста делает текст жирным вместо действия браузера и отправляет v-model', async () => {
-			// execCommand в jsdom нет: проверяем, что редактор вызывает нужную команду
 			const execCommand = vi.fn(() => true)
 			Object.defineProperty(document, 'execCommand', { configurable: true, value: execCommand })
 			const { container, emitted } = render(BaseEditor, { props: { modelValue: '<p>Текст</p>' } })
@@ -268,7 +261,6 @@ describe('BaseEditor integration', () => {
 			const isDefaultAllowed = image.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true }))
 			await nextTick()
 
-			// Нативное меню браузера («Сохранить изображение») остаётся доступным
 			expect(isDefaultAllowed).toBe(true)
 			expect(document.body.querySelector('.base-editor__context-menu')).toBeNull()
 			expect(getContent(container).querySelector('img')).not.toBeNull()

@@ -12,7 +12,6 @@
 			<BaseIcon name="smile" :size-scale="sizeScale" />
 		</BaseButton>
 
-		<!-- Немодальная панель: Tab переходит от кнопки к эмодзи, Escape закрывает и возвращает фокус на кнопку -->
 		<div v-if="isEmojiOpen" class="base-chat-input__emoji-popover" role="dialog" :aria-label="UI_CHAT_TEXT.EMOJI_LIST">
 			<div class="base-chat-input__emoji-list">
 				<button

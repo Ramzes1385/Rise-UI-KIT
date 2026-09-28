@@ -42,7 +42,6 @@
 			</template>
 		</BaseEditorToolbar>
 
-		<!-- Область редактирования: role="textbox" + aria-multiline — так её озвучивают как многострочное поле -->
 		<div
 			v-if="!isCodeMode"
 			ref="editorRef"
@@ -67,7 +66,6 @@
 			@keydown="handleKeyDown"
 			@contextmenu="handleContextMenu"></div>
 
-		<!-- Режим кода: подпись поля скрыта визуально, но задаёт доступное имя; высота растёт по тексту до --editor-max-height -->
 		<BaseTextarea
 			v-if="isCodeMode"
 			ref="codeTextareaRef"
@@ -83,7 +81,6 @@
 			@blur="handleBlur" />
 
 		<Teleport defer :to="teleportTarget">
-			<!-- Меню размера медиа (правый клик по изображению или видео). В body масштаб не наследуется — задаём его сами -->
 			<div
 				v-if="contextMenu.isVisible"
 				ref="contextMenuRef"

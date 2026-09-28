@@ -52,9 +52,6 @@
 				@mention-click="handleMentionClick"
 				@command-click="handleCommandClick" />
 
-			<!-- Панель ввода или тулбар массовых действий.
-				v-show, а не v-if: черновик и вложения живут в состоянии ChatInput,
-				и размонтирование при входе в режим выделения стирало бы их. -->
 			<ChatInput
 				v-show="selectedMessageIds.length === 0"
 				:size-scale="sizeScale"

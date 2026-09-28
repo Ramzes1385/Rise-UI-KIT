@@ -1,7 +1,3 @@
-// Скругление md (проп borderRadius — инлайн-стилем); загрузка — плейсхолдер с шиммером (без prefers-reduced-motion); ошибка — иконка и подпись на bg-elevated, в миниатюрах — только иконка; с зумом — кнопка (zoom-in), просмотр на тёмной подложке.
-
-// Цвета просмотра — не тема, а фон для фотографии: снимки смотрят на тёмной подложке и в светлой, и в тёмной теме,
-// поэтому здесь чёрный и белый с прозрачностью, а не семантические токены.
 $media-backdrop: color-mix(in srgb, black 88%, transparent);
 $media-surface: color-mix(in srgb, black 60%, transparent);
 $media-surface-hover: color-mix(in srgb, black 80%, transparent);
@@ -16,11 +12,8 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	display: inline-block;
 	overflow: hidden;
 	border-radius: sz(var(--rise-radius-md));
-	// Фон под изображением виден при fit="contain" и у прозрачных изображений; задаётся пропом color.bg
 	@include custom-bg(background-color, transparent);
 
-	// Обёртка изображения. С зумом это кнопка: без собственного оформления, скругление как у изображения,
-	// кольцо фокуса внутри — снаружи его обрезал бы overflow корня (и viewport слайдера).
 	&__frame {
 		display: block;
 		width: 100%;
@@ -67,7 +60,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		object-fit: none;
 	}
 
-	// Обёртки слотов placeholder и error: цвет изображения (color) не перекрашивает вложенные компоненты
 	&__placeholder {
 		position: absolute;
 		inset: 0;
@@ -79,7 +71,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		@include reset-custom-color;
 	}
 
-	// Шиммер — полоса --rise-bg-accented: в светлой теме чуть темнее фона, в тёмной — светлее (как у BaseSkeleton)
 	&__shimmer {
 		position: absolute;
 		inset: 0;
@@ -108,7 +99,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-dimmed);
 		text-align: center;
-		// Контейнер для запроса ниже: в миниатюрах подпись не помещается и скрывается
 		container-type: inline-size;
 		@include reset-custom-color;
 	}
@@ -133,8 +123,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	}
 }
 
-// Телепортирован в body: --size-scale изображения сюда не наследуется, размеры — базовые.
-
 .base-image__zoom {
 	position: fixed;
 	inset: 0;
@@ -146,7 +134,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	color: $media-text;
 	font-family: var(--rise-font-sans);
 
-	// Панель инструментов: полупрозрачная «пилюля» над изображением
 	&-toolbar {
 		position: absolute;
 		top: sz(16px);
@@ -162,8 +149,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		transform: translateX(-50%);
 	}
 
-	// Кнопки просмотра — ghost BaseButton, перекрашенные переменными --custom-*: BaseButton читает их для фона и цвета.
-	// Круглые 32×32 (иконка 20px + отступы 5px), белая иконка, подсветка белым при наведении и нажатии.
 	&-btn.base-button,
 	&-nav.base-button {
 		--custom-bg: transparent;
@@ -195,8 +180,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		background-color: $media-border;
 	}
 
-	// Стрелки галереи — отдельные круглые кнопки 40×40 у краёв: тёмный фон и тонкая светлая обводка,
-	// чтобы читались и поверх светлого снимка, и на подложке
 	&-nav.base-button {
 		--custom-bg: #{$media-surface};
 		--custom-bg-hover: #{$media-surface-hover};
@@ -221,8 +204,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		right: sz(16px);
 	}
 
-	// Поле под изображение: сверху место под панель, по бокам — под стрелки, снизу — под ленту миниатюр.
-	// Увеличенное изображение выходит в эти поля: overflow обрезает его только по краю экрана.
 	&-container {
 		box-sizing: border-box;
 		display: flex;
@@ -271,7 +252,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		scrollbar-width: none;
 	}
 
-	// Миниатюра — кнопка 48×48 с радиусом md; неактивные приглушены, у активной — кольцо основного цвета
 	&-thumb {
 		position: relative;
 		flex: none;
@@ -287,7 +267,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		@include transition-colors;
 		@include focus-ring;
 
-		// Кольцо поверх снимка: inset-тень самой кнопки закрыло бы изображение
 		&::after {
 			content: '';
 			position: absolute;
@@ -344,7 +323,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	opacity: 0.7;
 }
 
-// Видимая область — рамка основного цвета с лёгкой заливкой
 .base-image__minimap-viewport {
 	position: absolute;
 	top: 0;

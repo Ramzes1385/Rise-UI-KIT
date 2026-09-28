@@ -1,5 +1,3 @@
-// Сверху вниз: подпись → зона загрузки (пунктир, иконка/заголовок/подсказка) → список файлов → ошибки (8px между блоками); наведение/drag — фон elevated и рамка primary; файл — карточка с превью 40px, метой через точку и прогрессом.
-
 .base-file-upload {
 	display: flex;
 	flex-direction: column;
@@ -9,7 +7,6 @@
 		display: none;
 	}
 
-	// Подпись вне зоны: цвет компонента (color.text) красит заголовок зоны, но не подпись
 	&__label {
 		@include field-label;
 		@include reset-custom-color;
@@ -33,19 +30,16 @@
 		@include hover {
 			border-color: var(--rise-primary);
 
-			// На bg-elevated вторичный текст — toned: у muted там контраст 4.40:1
 			.base-file-upload__hint {
 				@include custom-text(color, var(--rise-text-toned));
 			}
 		}
 	}
 
-	// Отключённая зона приглушена; подпись остаётся читаемой, кнопки удаления файлов отключены сами
 	&--disabled &__dropzone {
 		@include disabled-state;
 	}
 
-	// Иконка, заголовок и подсказка зоны перекрашиваются color.text — под свой фон зоны (color.bg)
 	&__icon {
 		margin-bottom: sz(4px);
 		@include custom-text(color, var(--rise-text-dimmed));
@@ -57,7 +51,6 @@
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
-	// Подсказка — форматы и предельный размер через точку-разделитель
 	&__hint {
 		display: flex;
 		flex-wrap: wrap;
@@ -98,7 +91,6 @@
 		box-shadow: var(--rise-shadow-sm);
 	}
 
-	// Перетаскивание файла над зоной — как наведение, во всех вариантах
 	&--dragover &__dropzone {
 		border-color: var(--rise-primary);
 		background-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-bg-elevated)));
@@ -108,7 +100,6 @@
 		@include custom-text(color, var(--rise-text-toned));
 	}
 
-	// Ошибка: рамка цвета ошибки, в том числе при наведении и у вариантов без рамки
 	&--error &__dropzone {
 		border-color: var(--rise-error);
 
@@ -117,7 +108,6 @@
 		}
 	}
 
-	// Обёртка вложенных компонентов (превью, прогресс, кнопки): цвет компонента (color) их не перекрашивает
 	&__list {
 		display: flex;
 		flex-direction: column;
@@ -138,7 +128,6 @@
 		background-color: var(--rise-bg);
 	}
 
-	// Превью изображения или иконка типа файла — плитка 40px (проп previewSize задаёт свой размер)
 	&__preview {
 		@include flex-center;
 		flex: none;
@@ -171,7 +160,6 @@
 		@include truncate;
 	}
 
-	// Расширение, размер и статус — через точку-разделитель
 	&__meta {
 		display: flex;
 		flex-wrap: wrap;
@@ -207,7 +195,6 @@
 		margin-top: sz(4px);
 	}
 
-	// Удаление — ghost-кнопка 28×28 (иконка 16px + отступы 5px), иконка приглушённая
 	&__remove.base-button {
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;

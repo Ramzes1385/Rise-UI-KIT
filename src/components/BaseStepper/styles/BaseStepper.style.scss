@@ -1,4 +1,3 @@
-// Шаги с индикатором 28px и подписью (horizontal — под, vertical — справа); пройденный — заливка primary, текущий — кольцо, будущий — bg-elevated; формы circle/square/diamond/empty; цвет — через bg.base/text.base.
 .base-stepper {
 	--stepper-size: #{sz(28px)};
 	--stepper-line: #{sz(2px)};
@@ -65,7 +64,6 @@
 		gap: sz(12px);
 	}
 
-	// Отключённый шаг: приглушены номер и подпись, фон индикатора остаётся непрозрачным — линия под ним не просвечивает.
 	&__step--disabled {
 		cursor: not-allowed;
 	}
@@ -106,7 +104,6 @@
 		}
 	}
 
-	// Номер текущего шага — text-highlighted: цвет роли в кольце, а текст контрастен при любом кастомном цвете.
 	&__step--active &__indicator {
 		border-color: var(--stepper-accent);
 		background-color: var(--rise-bg);
@@ -149,7 +146,6 @@
 		text-align: center;
 	}
 
-	// По центру индикатора: (28 − 20) / 2 = 4px сверху; снизу — отступ до следующего шага.
 	&--vertical &__content {
 		padding: sz(4px) 0 sz(20px);
 	}
@@ -188,7 +184,6 @@
 		background-color: var(--rise-border-accented);
 	}
 
-	// Заполнение ограничено длиной линии: modelValue вне диапазона не выводит его за последний шаг.
 	&--horizontal &__items::after {
 		width: calc((100% - 2 * var(--stepper-line-offset, 0%) - var(--stepper-size)) * clamp(0, var(--stepper-progress-scale, 0), 1));
 		background-color: var(--stepper-accent);
@@ -214,7 +209,6 @@
 		border-radius: sz(var(--rise-radius-md));
 	}
 
-	// Ромб: квадрат со стороной 70% повёрнут на 45° — его диагональ равна размеру индикатора.
 	&--diamond &__indicator {
 		width: 70%;
 		height: 70%;
@@ -226,7 +220,6 @@
 		}
 	}
 
-	// empty: без индикатора — остаётся линия прогресса над подписями.
 	&--empty {
 		--stepper-size: #{sz(8px)};
 	}

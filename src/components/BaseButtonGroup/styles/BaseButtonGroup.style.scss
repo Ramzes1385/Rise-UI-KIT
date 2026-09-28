@@ -1,4 +1,3 @@
-// Соседние рамки перекрываются на 1px (единая линия у outline-кнопок); кнопка в фокусе или под указателем — поверх соседей, чтобы кольцо фокуса не обрезалось.
 .base-button-group {
 	display: inline-flex;
 	align-items: stretch;
@@ -15,7 +14,6 @@
 		}
 	}
 
-	// Вложенные кнопки (BaseSplitButton, BaseDropdownMenu): углы задаёт группа
 	> * .base-button {
 		border-radius: 0;
 	}

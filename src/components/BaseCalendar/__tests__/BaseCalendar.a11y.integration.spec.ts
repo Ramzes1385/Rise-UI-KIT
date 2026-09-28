@@ -1,10 +1,7 @@
-/** Проверки перенесены из play-функций прежних stories (CustomSlotsInteractive, DatePopover*, InteractiveStates). */
-
 import '@testing-library/jest-dom/vitest'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
 
-/** Полная дата — доступное имя кнопки дня */
 const dayName = (date: Date): string =>
 	new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date)
 
@@ -121,7 +118,6 @@ describe('BaseCalendar: popover даты', () => {
 		const popover = container.querySelector<HTMLElement>('.base-calendar__popover')!
 		expect(popover).toHaveTextContent('вторник, 20 мая 2025 г.')
 		expect(within(popover).getByText('Сдача монтажа')).toBeInTheDocument()
-		// Событие без подписи — текст по умолчанию
 		expect(within(popover).getByText('Событие')).toBeInTheDocument()
 
 		await fireEvent.mouseDown(popover)

@@ -1,11 +1,9 @@
-// Контейнер формы без собственной раскладки (поля располагает содержимое); загрузка — подложка цвета фона с лоадером по центру, отключённая форма приглушена целиком.
 .base-form {
 	position: relative;
 	box-sizing: border-box;
 	width: 100%;
 	@include custom-bg(background-color, transparent);
 
-	// Мышь заблокирована и для кастомных виджетов, которые fieldset[disabled] не отключает.
 	&--loading,
 	&--disabled {
 		pointer-events: none;
@@ -15,9 +13,6 @@
 		opacity: var(--rise-disabled-opacity);
 	}
 
-	// fieldset нужен только ради disabled и не должен влиять на раскладку: display: contents оставляет
-	// поля прямыми участниками раскладки __content (flex/grid из customClass.content продолжают работать).
-	// Сброс UA-стилей (рамка, отступы, min-inline-size: min-content) — запасной вариант, если contents не применится
 	&__fieldset {
 		display: contents;
 		min-width: 0;
@@ -27,8 +22,6 @@
 		border: 0;
 	}
 
-	// Подложка загрузки. Вне загрузки — visibility: hidden (а не только прозрачность): так она не перехватывает
-	// клики и не попадает в дерево доступности; при появлении и скрытии плавно меняется прозрачность.
 	&__overlay {
 		position: absolute;
 		inset: 0;

@@ -20,7 +20,6 @@ import { useBaseSkeleton } from '../model/useBaseSkeleton'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSkeletonProps } from '../types/BaseSkeleton.types'
 
-// Заглушка декоративная (aria-hidden): о загрузке сообщает контейнер (aria-busy) или текст статуса, а не скелетон.
 const props = withDefaults(
 	defineProps<BaseSkeletonProps>(),
 	kitDefaults('BaseSkeleton', {

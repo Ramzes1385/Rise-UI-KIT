@@ -4,7 +4,6 @@ import BaseLink from '../ui/BaseLink.vue'
 import { LINK_COMPONENT_KEY } from '@composables/useLink'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Как RouterLink: получает to и рендерит <a> */
 const RouterLinkStub = defineComponent({
 	name: 'RouterLinkStub',
 	props: { to: { type: [String, Object], required: true } },

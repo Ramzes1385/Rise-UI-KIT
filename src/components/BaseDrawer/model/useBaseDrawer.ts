@@ -2,18 +2,15 @@ import type { Ref } from 'vue'
 import { usePopup } from '@composables/usePopup'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useLayerIndex } from '@composables/useLayerStack'
-/** Composable: логика BaseDrawer — закрытие, перетаскивание панели к краю и ловушка фокуса */
 import { computed, ref, useId, useSlots, watch } from 'vue'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseDrawerEmits, DrawerProps } from '../types/BaseDrawer.types'
 
-/** Доля размера панели: отпущенная дальше панель закрывается, ближе — возвращается */
 const CLOSE_RATIO = 0.25
 const DRAWER_ELEMENTS = ['root', 'panel', 'handle', 'header', 'title', 'body', 'footer']
 
-/** Тянуть можно за ручку и шапку, но не за кнопки и поля в них */
 function isDragHandle(target: HTMLElement): boolean {
 	return Boolean(target.closest('.base-drawer__handle, .base-drawer__header')) && !target.closest('button, a, input, select, textarea')
 }
@@ -33,11 +30,9 @@ function useDrawerClose(props: DrawerProps, emit: BaseDrawerEmits) {
 
 function useDragOffset(props: DrawerProps) {
 	const isVertical = computed(() => props.direction === 'bottom' || props.direction === 'top')
-	// Знак смещения к краю: вниз для нижней панели, вверх для верхней, вправо для правой, влево для левой
 	const closeSign = computed(() => (props.direction === 'bottom' || props.direction === 'right' ? 1 : -1))
 	const isDragging = ref(false)
 	const dragOffset = ref(0)
-	// Панель отпущена за порогом: уезжает к краю вместе с исчезающим затемнением
 	const isDismissing = ref(false)
 
 	return {
@@ -46,7 +41,6 @@ function useDragOffset(props: DrawerProps) {
 		isDragging,
 		dragOffset,
 		isDismissing,
-		// Смещение панели: при перетаскивании — за указателем, при закрытии перетаскиванием — за край
 		dragStyle: computed(() => {
 			const axis = isVertical.value ? 'Y' : 'X'
 			if (isDismissing.value) return { transform: `translate${axis}(${closeSign.value * 100}%)` }
@@ -65,7 +59,6 @@ function useDrawerDrag(props: DrawerProps, panelRef: Ref<HTMLElement | null>, on
 	let dragStart = 0
 	const pointerPosition = (event: PointerEvent): number => (drag.isVertical.value ? event.clientY : event.clientX)
 
-	// Родитель не закрыл панель или открыл её снова — она возвращается на место
 	watch(
 		() => props.isOpen,
 		() => {
@@ -122,7 +115,6 @@ export function useBaseDrawer(props: DrawerProps, emit: BaseDrawerEmits) {
 		titleId,
 		descriptionId,
 		hasHeader: computed(() => Boolean(slots.header) || Boolean(props.title)),
-		// Заголовок из title рендерится только без слота header — иначе aria-labelledby ссылался бы на несуществующий id
 		hasDefaultTitle: computed(() => Boolean(props.title) && !slots.header),
 		...close,
 		panelRef,

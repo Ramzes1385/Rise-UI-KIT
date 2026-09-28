@@ -47,15 +47,10 @@ const DISABLED_ITEMS: TreeNode[] = [
 
 const DEFAULT_SLOT = `<template #label="{ node }">{{ node.label }}</template>`
 
-/**
- * Видимая метка узла. В режиме multiple та же подпись есть у флажка (скрыта визуально и от скринридера),
- * поэтому поиск по тексту уточняется классом метки.
- */
 function nodeLabel(text: string): HTMLElement {
 	return screen.getByText(text, { selector: '.base-tree__label' })
 }
 
-/** Узел (treeitem) по подписи — в том числе в свёрнутой ветке */
 function treeItem(name: string): HTMLElement {
 	return screen.getByRole('treeitem', { name, hidden: true })
 }
@@ -296,7 +291,6 @@ describe('BaseTree integration', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			// Сначала раскрываем родителя, чтобы дочерний узел отрендерился
 			await user.click(screen.getByText('Группа'))
 
 			const disabledNode = container.querySelector('.base-tree__node--disabled')
@@ -314,7 +308,6 @@ describe('BaseTree integration', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			// Родитель уже раскрыт через expandedIds — disabled-узел в DOM
 			const disabledNode = container.querySelector('.base-tree__node--disabled')
 			expect(disabledNode).toBeInTheDocument()
 			expect(disabledNode?.classList.contains('base-tree__node--selected')).toBe(false)
@@ -355,7 +348,6 @@ describe('BaseTree integration', () => {
 		})
 	})
 
-	// Порядок Tab по образцу APG Tree View: в нём один узел (roving tabindex), стрелки ходят по видимым узлам
 	describe('порядок Tab', () => {
 		it('в порядке Tab один узел — первый видимый; следующий Tab уходит из дерева', async () => {
 			const user = userEvent.setup()
@@ -404,7 +396,6 @@ describe('BaseTree integration', () => {
 			expect(treeItem('Дерево')).toHaveAttribute('tabindex', '0')
 		})
 
-		// Регрессия TRE-3: свёрнутая ветка остаётся в DOM (ленивый рендер), но её узлы скрыты и вне порядка Tab
 		it('узлы свёрнутой после раскрытия ветки скрыты и не получают tabindex 0', async () => {
 			const user = userEvent.setup()
 			const { container } = render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT } })
@@ -434,7 +425,6 @@ describe('BaseTree integration', () => {
 			expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
 			expect(treeItem('Металл')).toHaveAttribute('aria-checked', 'false')
 
-			// Клик по флажку — клик по узлу: отметка переключается, фокус — на узле
 			await user.click(treeItem('Металл').querySelector('.base-tree__checkbox') as HTMLElement)
 			expect(treeItem('Металл')).toHaveAttribute('aria-checked', 'true')
 			expect(treeItem('Дерево')).toHaveAttribute('aria-checked', 'false')
@@ -489,7 +479,6 @@ describe('BaseTree integration', () => {
 	})
 
 	describe('клавиатура', () => {
-		/** Корзина: вложенность в два уровня, отключённая папка и лист в корне */
 		const FOOD: TreeNode[] = [
 			{
 				id: 'fruits',
@@ -629,7 +618,6 @@ describe('BaseTree integration', () => {
 			expect(treeItem('Ягоды')).toHaveAttribute('aria-expanded', 'false')
 			expect(treeItem('Фрукты')).toHaveFocus()
 
-			// Все соседи уже раскрыты — событий нет
 			await user.keyboard('*')
 			expect(emitted()['update:expandedIds']).toHaveLength(1)
 		})
@@ -653,7 +641,6 @@ describe('BaseTree integration', () => {
 			expect(treeItem('Ягоды')).toHaveFocus()
 			vi.advanceTimersByTime(600)
 
-			// Нет совпадения, клавиши с Ctrl/Alt/Meta — не поиск
 			await fireEvent.keyDown(treeItem('Ягоды'), { key: 'щ' })
 			await fireEvent.keyDown(treeItem('Ягоды'), { key: 'ф', ctrlKey: true })
 			expect(treeItem('Ягоды')).toHaveFocus()
@@ -742,7 +729,6 @@ describe('BaseTree integration', () => {
 			{ id: 'draft', label: 'Черновик', to: '/draft', isDisabled: true },
 		]
 
-		/** jsdom не умеет переходить по ссылкам: отменяем переход, считаем клики */
 		function trackLinkClicks(): ReturnType<typeof vi.fn> {
 			const clicks = vi.fn()
 			for (const link of document.querySelectorAll('.base-tree__link')) {
@@ -799,7 +785,6 @@ describe('BaseTree integration', () => {
 			await user.click(screen.getByRole('link', { name: 'Введение' }))
 			expect(screen.getByRole('treeitem', { name: 'Введение' })).toHaveFocus()
 
-			// Средняя кнопка (открыть в новой вкладке) — поведение браузера по умолчанию
 			const middle = new MouseEvent('mousedown', { button: 1, bubbles: true, cancelable: true })
 			screen.getByRole('link', { name: /GitHub/ }).dispatchEvent(middle)
 			expect(middle.defaultPrevented).toBe(false)

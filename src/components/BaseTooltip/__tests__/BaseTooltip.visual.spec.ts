@@ -1,5 +1,3 @@
-/** Подсказки телепортируются в body, поэтому снимается вся страница. */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

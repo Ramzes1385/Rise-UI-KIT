@@ -1,8 +1,4 @@
 <template>
-	<!--
-		Текст, который редактируется на месте: в просмотре — кнопка (имя — «что: значение», подсказка «Нажмите, чтобы
-		изменить»), по клику, Enter или пробелу — поле. Enter сохраняет, Escape отменяет; фокус возвращается на кнопку
-	-->
 	<span
 		class="base-inplace"
 		:class="[variantClass, { 'base-inplace--editing': isEditing }, classes.root]"

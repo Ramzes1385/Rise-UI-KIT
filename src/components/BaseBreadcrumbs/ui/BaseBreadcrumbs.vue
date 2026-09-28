@@ -1,12 +1,9 @@
 <template>
-	<!-- nav, а не div: aria-label на элементе без роли не озвучивается, и ориентир навигации не появлялся -->
 	<nav
 		class="base-breadcrumbs"
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="UI_ARIA.BREADCRUMBS_NAV">
-		<!-- Schema.org JSON-LD для SEO. v-html безопасен: schemaJson экранирует </script> (см. schemaUtils). -->
-		<!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
 		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
 
 		<ol class="base-breadcrumbs__list" :class="classes.list" itemscope itemtype="https://schema.org/BreadcrumbList">
@@ -18,7 +15,6 @@
 				itemscope
 				itemtype="https://schema.org/ListItem">
 				<slot name="home">
-					<!-- Ссылка содержит только декоративную иконку, имя берём у крошки, на которую она ведёт -->
 					<component
 						:is="getLink(items[0]!).is"
 						v-bind="getLink(items[0]!).attrs"
@@ -73,7 +69,6 @@
 				itemscope
 				itemtype="https://schema.org/ListItem">
 				<slot name="item" :item="item" :index="realIndex(index)">
-					<!-- Крошка с адресом — ссылка (RouterLink приложения или <a href>), без адреса — кнопка с событием item-click -->
 					<component
 						:is="getLink(item).is"
 						v-if="!isCurrent(index)"

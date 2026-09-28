@@ -1,5 +1,4 @@
 <template>
-	<!-- Клавиша: символ служебной клавиши скрыт от скринридера, её название — скрытым текстом -->
 	<kbd class="base-kbd" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<slot>
 			<template v-if="key.name">

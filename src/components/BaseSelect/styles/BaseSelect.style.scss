@@ -1,4 +1,3 @@
-// Триггер — поле как у BaseInput (32px при sizeScale=100); варианты default/outline/soft/ghost/shadow/underline; панель — BaseDropdown с поиском и опциями-пунктами меню, мультивыбор — чекбоксы и бейджи.
 .base-select__dropdown {
 	width: 100%;
 }
@@ -36,14 +35,11 @@
 		@include field-box;
 	}
 
-	// Открытый список держит рамку и кольцо фокуса, даже когда фокус ушёл в поле поиска панели.
 	&--open &__trigger {
 		border-color: var(--rise-primary);
 		box-shadow: 0 0 0 1px var(--rise-primary);
 	}
 
-	// Значения: текст, бейджи и слоты selected/tag. Цвет селекта (color) красит триггер, но не вложенные компоненты
-	// (бейджи, иконки из слотов): текст значения берёт цвет через color: inherit.
 	&__values {
 		display: flex;
 		flex: 1;
@@ -54,21 +50,18 @@
 		@include reset-custom-color;
 	}
 
-	// Двойной класс: цвет значения и плейсхолдера перекрывает цвет BaseText по умолчанию независимо от порядка CSS.
 	&__values &__value-text {
 		min-width: 0;
 		color: inherit;
 		@include truncate;
 	}
 
-	// Плейсхолдер — обычный текст (не ::placeholder), поэтому muted: dimmed не проходит контраст 4.5:1.
 	&__values &__placeholder {
 		min-width: 0;
 		color: var(--rise-text-muted);
 		@include truncate;
 	}
 
-	// Иконка-символ (₽, €, эмодзи) — в ячейке 16px по центру: подписи опций с разными символами стоят ровно.
 	&__values &__icon,
 	&__option-icon {
 		display: inline-flex;
@@ -89,7 +82,6 @@
 		transform: rotate(180deg);
 	}
 
-	// Слева отступ как сверху: бейдж 20px стоит в поле 32px с равными полями.
 	&--has-tags &__trigger {
 		padding-left: sz(var(--rise-control-padding-y));
 	}
@@ -105,7 +97,6 @@
 		@include truncate;
 	}
 
-	// Крестик бейджа: квадрат 16px, наведение — фон мягкого основного цвета темнее.
 	&__tag-close {
 		display: inline-flex;
 		align-items: center;
@@ -149,7 +140,6 @@
 		}
 	}
 
-	// Фокус и открытый список в вариантах без рамки: фон как при наведении, плюс кольцо.
 	&--soft &__trigger:focus-within,
 	&--ghost &__trigger:focus-within,
 	&--soft.base-select--open &__trigger,
@@ -196,16 +186,12 @@
 		@include disabled-state;
 	}
 
-	// Содержимое панели BaseDropdown (телепорт в body): отступы задаёт сам селект, у панели padding 0 —
-	// так линия под поиском доходит до краёв панели.
-
 	&__dropdown-content {
 		display: flex;
 		flex-direction: column;
 		@include text-size(sm);
 	}
 
-	// Поиск: поле без рамки и фона (ghost) с иконкой, линия снизу; в фокусе линия — основного цвета.
 	&__search {
 		display: flex;
 		align-items: center;
@@ -261,13 +247,11 @@
 		list-style: none;
 		@include scrollbar-thin;
 
-		// Пустой список остаётся в DOM (на него ссылается aria-controls), но места не занимает.
 		&--empty {
 			padding: 0;
 		}
 	}
 
-	// Опция — пункт меню: 6/8, радиус md, наведение и активная (клавиатура) — фон bg-elevated.
 	&__option {
 		@include menu-item;
 
@@ -298,7 +282,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// Описание приглушено; на фоне bg-elevated (наведение, активная опция) — toned для контраста 4.5:1.
 	&__option-content &__option-desc {
 		color: var(--rise-text-muted);
 		@include text-size(xs);
@@ -314,14 +297,12 @@
 		}
 	}
 
-	// Галочка выбранной опции справа — основного цвета.
 	&__check {
 		flex-shrink: 0;
 		margin-left: auto;
 		color: var(--rise-primary);
 	}
 
-	// Чекбокс мультивыбора — как BaseCheckbox: квадрат 16px, радиус sm; отмечен — заливка primary.
 	&__checkbox {
 		display: inline-flex;
 		align-items: center;

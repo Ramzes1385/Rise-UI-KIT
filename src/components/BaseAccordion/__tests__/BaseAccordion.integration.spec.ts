@@ -163,7 +163,6 @@ describe('BaseAccordion integration', () => {
 				slots: { contacts: '<a href="#phone">Позвонить</a>' },
 			})
 
-			// jsdom не реализует inert, поэтому фокусную часть проверяем по DOM, а доступность — через дерево ролей
 			expect(screen.queryByRole('link', { name: 'Позвонить' })).toBeNull()
 			expect(screen.getByText('Позвонить').closest('[inert]')).not.toBeNull()
 

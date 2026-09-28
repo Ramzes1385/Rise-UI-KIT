@@ -1,9 +1,4 @@
 <template>
-	<!--
-		Выдвижная панель: модальный диалог у края окна — снизу (лист на телефоне), сверху или сбоку. Закрывается кнопкой,
-		Escape, кликом по затемнению и перетаскиванием за ручку или шапку к краю. Фокус заперт в панели и возвращается
-		к кнопке, которая её открыла
-	-->
 	<teleport defer :to="teleportTarget">
 		<transition name="base-drawer">
 			<div
@@ -47,7 +42,6 @@
 						</BaseButton>
 					</div>
 					<p v-if="description" :id="descriptionId" class="base-drawer__description">{{ description }}</p>
-					<!-- Тело с прокруткой получает tabindex, чтобы его можно было прокрутить с клавиатуры -->
 					<div ref="bodyRef" class="base-drawer__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>

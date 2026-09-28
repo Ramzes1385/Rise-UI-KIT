@@ -38,12 +38,10 @@
 			</div>
 		</div>
 
-		<!-- Прокручиваемое тело фокусируемо: его можно прокрутить с клавиатуры (WCAG 2.1.1) -->
 		<div class="base-card__body" :class="classes.body" :tabindex="scroll ? 0 : undefined">
 			<slot :size-scale="sizeScale" />
 		</div>
 
-		<!-- div, а не footer: <footer> вне main/article/section — ориентир contentinfo, и несколько карточек дают дубли ориентиров -->
 		<div v-if="$slots.footer" class="base-card__footer" :class="classes.footer">
 			<slot name="footer" :size-scale="sizeScale" />
 		</div>

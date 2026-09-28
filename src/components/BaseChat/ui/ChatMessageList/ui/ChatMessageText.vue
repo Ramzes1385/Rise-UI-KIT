@@ -35,10 +35,6 @@
 import { useChatMessageText } from '../model/useChatMessageText'
 import type { ChatMessageTextEmits, ChatMessageTextProps } from '../types/ChatMessageText.types'
 
-/*
- * Токены в шаблоне записаны в одну строку, без пробелов между тегами: текст сообщения выводится с white-space: pre-wrap,
- * и любой пробел из разметки стал бы виден. Совпадения поиска — <mark>, ссылки — <a>, упоминания и команды — кнопки.
- */
 const props = defineProps<ChatMessageTextProps>()
 const emit = defineEmits<ChatMessageTextEmits>()
 

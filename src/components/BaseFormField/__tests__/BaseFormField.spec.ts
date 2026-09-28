@@ -135,7 +135,6 @@ describe('BaseFormField unit', () => {
 	})
 
 	describe('defineExpose: validate/reset', () => {
-		/** Монтирует поле с заполненным дочерним input и возвращает публичный API обёртки */
 		function mountField(props: Record<string, unknown>) {
 			const wrapper = mount(BaseFormField, {
 				props,

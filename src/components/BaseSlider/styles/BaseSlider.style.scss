@@ -1,7 +1,3 @@
-// Карусель: стрелки — круглые кнопки 32px, точки 8px (активная — пилюля 24px primary), миниатюры 64×48 с кольцом у активной; переход — --rise-duration-slow, мгновенный при prefers-reduced-motion.
-
-// Затемнение под подписью и значком «видео» — фон для текста поверх фотографии, одинаковый в обеих темах,
-// поэтому чёрный с прозрачностью, а не токен темы.
 $media-scrim: color-mix(in srgb, black 64%, transparent);
 $media-scrim-light: color-mix(in srgb, black 32%, transparent);
 $media-text: white;
@@ -43,7 +39,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		cursor: grabbing;
 	}
 
-	// С отступами между слайдами скругляется каждый слайд, а промежутки прозрачные
 	&--gapped &__viewport {
 		border-radius: 0;
 		background-color: transparent;
@@ -81,8 +76,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		overflow: hidden;
 	}
 
-	// fade/scale/flip: слайды лежат друг на друге. Неактивные не только прозрачные, но и скрыты (visibility)
-	// и не ловят клики — иначе клик по видимому слайду получал последний невидимый (видео, ссылки, зум).
 	&--fade &__slide,
 	&--scale &__slide,
 	&--flip &__slide {
@@ -122,7 +115,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		transform: none;
 	}
 
-	// Изображение и видео заполняют слайд целиком: скругление даёт область слайдов
 	&__image.base-image {
 		display: block;
 		width: 100%;
@@ -136,7 +128,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		object-fit: cover;
 	}
 
-	// Обёртка слота caption: цвет компонента (color) не перекрашивает вложенные компоненты
 	&__caption {
 		position: absolute;
 		right: 0;
@@ -149,7 +140,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		@include reset-custom-color;
 	}
 
-	// Заголовок и описание — до двух строк: длинная подпись не закрывает снимок
 	&__title,
 	&__desc {
 		display: -webkit-box;
@@ -172,7 +162,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		color: $media-text-muted;
 	}
 
-	// Контейнер не перехватывает указатель: перетаскивание слайдов работает и под ним
 	&__arrows {
 		position: absolute;
 		z-index: 1;
@@ -181,7 +170,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		pointer-events: none;
 	}
 
-	// Круглая кнопка 32×32: иконка 20px и отступы 5px
 	&__arrow.base-button {
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
@@ -193,7 +181,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		pointer-events: auto;
 	}
 
-	// center — по бокам области слайдов, по центру её высоты (в вертикальном режиме — сверху и снизу)
 	&--arrows-center &__arrows {
 		inset: 0 sz(12px);
 		align-items: center;
@@ -205,7 +192,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		flex-direction: column;
 	}
 
-	// Угловые позиции — снаружи области слайдов, над ней или под ней: оставьте для них место
 	&--arrows-top-left &__arrows,
 	&--arrows-top-right &__arrows {
 		bottom: calc(100% + #{sz(8px)});
@@ -264,7 +250,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		@include transition(width, height, background-color);
 		@include focus-ring;
 
-		// Зона нажатия шире самой точки
 		&::after {
 			content: '';
 			position: absolute;
@@ -290,8 +275,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		height: sz(24px);
 	}
 
-	// Лента миниатюр прокручивается, если не помещается. Поля по 4px сбоку — место для кольца фокуса,
-	// отрицательный отступ выравнивает ленту по краю области слайдов.
 	&__thumbs {
 		display: flex;
 		justify-content: safe center;
@@ -325,7 +308,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		@include transition-colors;
 		@include focus-ring;
 
-		// Кольцо поверх снимка: inset-тень самой кнопки закрыло бы изображение
 		&::after {
 			content: '';
 			position: absolute;
@@ -353,7 +335,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		height: 100%;
 	}
 
-	// Значок «видео» на миниатюре: белая иконка на лёгком затемнении
 	&__thumb-play {
 		position: absolute;
 		inset: 0;

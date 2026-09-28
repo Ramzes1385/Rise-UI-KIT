@@ -1,13 +1,11 @@
 <template>
 	<slot name="results" :results="visibleResults" :query="query" :is-loading="isLoading">
-		<!-- Загрузка без результатов: строка статуса вместо пустой панели (слот loading её заменяет) -->
 		<slot v-if="isLoading" name="loading">
 			<div v-if="visibleResults.length === 0" class="base-search__status" role="status">
 				<BaseText tag="span" :size-scale="sizeScale">{{ UI_TEXT.LOADING }}</BaseText>
 			</div>
 		</slot>
 		<slot name="result-before" :results="visibleResults" :query="query" />
-		<!-- Список — listbox: фокус остаётся в поле, подсвеченный результат — aria-activedescendant поля -->
 		<div v-if="visibleResults.length > 0" :id="listboxId" class="base-search__listbox" role="listbox" :aria-label="listboxLabel">
 			<div
 				v-for="(item, index) in visibleResults"
@@ -35,7 +33,6 @@
 						:custom-class="classes.resultIcon"
 						:size-scale="calcIconScale('sm', sizeScale)" />
 					<div class="base-search__result-content" :class="classes.resultContent">
-						<!-- Совпадения с запросом выделены <mark>: видно, почему результат попал в список -->
 						<BaseText tag="span" class="base-search__result-title" :custom-class="classes.resultTitle" :size-scale="sizeScale">
 							<template v-for="(part, partIndex) in splitByQuery(item.title)" :key="partIndex">
 								<mark v-if="part.isMatch" class="base-search__match">{{ part.text }}</mark>

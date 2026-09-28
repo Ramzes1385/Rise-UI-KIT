@@ -32,7 +32,6 @@ describe('BaseForm integration', () => {
 				slots: { default: '<button type="submit">Отправить</button>' },
 			})
 
-			/** pointer-events: none блокирует userEvent, используем fireEvent */
 			const form = container.querySelector('form') as HTMLFormElement
 			await fireEvent.submit(form)
 
@@ -80,7 +79,6 @@ describe('BaseForm integration', () => {
 			expect(container.querySelector('form')).toHaveAttribute('aria-busy', 'true')
 		})
 
-		/** Кнопка вне формы — для сценариев, где фокус находится или уходит за пределы формы */
 		function createOutsideButton(): HTMLButtonElement {
 			const button = document.createElement('button')
 			button.dataset.outside = ''
@@ -88,10 +86,6 @@ describe('BaseForm integration', () => {
 			return button
 		}
 
-		/**
-		 * Эмулирует focus fixup браузера: фокус с поля, ставшего disabled, уходит на body.
-		 * jsdom этого не делает, а blur() у уже отключённого поля игнорирует — переводим фокус через временную кнопку.
-		 */
 		function emulateFocusFixup(): void {
 			const probe = createOutsideButton()
 			probe.focus()
@@ -154,7 +148,6 @@ describe('BaseForm integration', () => {
 	})
 })
 
-/** Схема для тестов: имя обязательно, возраст — от 18; `delay` — асинхронная проверка */
 function profileSchema(delay?: number): StandardSchemaV1 {
 	const check = (value: unknown): StandardSchemaResult<unknown> => {
 		const data = value as { name: string; age: number }

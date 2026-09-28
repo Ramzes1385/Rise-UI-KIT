@@ -1,6 +1,5 @@
 <template>
 	<div v-if="pinnedMessages && pinnedMessages.length > 0" class="base-chat-pinned-panel">
-		<!-- Клик по панели прокручивает ленту к закреплённому сообщению -->
 		<button type="button" class="base-chat-pinned-panel__content" @click="handlePanelClick">
 			<BaseIcon name="pin" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<span class="base-chat-pinned-panel__text-wrapper">

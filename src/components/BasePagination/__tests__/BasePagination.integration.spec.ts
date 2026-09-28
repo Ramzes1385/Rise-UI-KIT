@@ -37,7 +37,6 @@ describe('BasePagination integration', () => {
 				props: { modelValue: 1, total: 50, pageSize: 10 },
 			})
 
-			// Кнопка «вперед» — последняя кнопка в пагинации
 			const buttons = container.querySelectorAll('.base-button')
 			const nextButton = buttons[buttons.length - 1] as HTMLElement
 			await user.click(nextButton)
@@ -54,7 +53,6 @@ describe('BasePagination integration', () => {
 				props: { modelValue: 3, total: 50, pageSize: 10 },
 			})
 
-			// Кнопка «назад» — первая кнопка в пагинации
 			const buttons = container.querySelectorAll('.base-button')
 			const prevButton = buttons[0] as HTMLElement
 			await user.click(prevButton)
@@ -90,7 +88,6 @@ describe('BasePagination integration', () => {
 				props: { modelValue: 2, total: 50, pageSize: 10 },
 			})
 
-			// Оформление кнопки целиком задаётся её классами (вариантом BaseButton)
 			const currentButton = screen.getByText('2').closest('button')
 			const otherButton = screen.getByText('3').closest('button')
 			expect(currentButton?.className).not.toBe(otherButton?.className)
@@ -104,7 +101,6 @@ describe('BasePagination integration', () => {
 				props: { modelValue: 5, total: 30, pageSize: 10 },
 			})
 
-			// Кнопки «назад»/«вперёд» — прямые потомки корня, номера страниц — внутри __pages
 			const [prevButton] = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
 			await user.click(prevButton)
 
@@ -156,7 +152,6 @@ describe('BasePagination integration', () => {
 			const ellipsis = container.querySelector('.base-pagination__ellipsis') as HTMLElement
 			if (ellipsis) {
 				await user.click(ellipsis)
-				// Клик по многоточию не должен вызывать emits
 				expect(emitted()).not.toHaveProperty('update:modelValue')
 			}
 		})
@@ -164,7 +159,6 @@ describe('BasePagination integration', () => {
 		it('два многоточия не дают предупреждения Vue о дублирующихся ключах', async () => {
 			const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 			try {
-				// 7 страниц без многоточий → 50 страниц с двумя: оба «…» попадают в keyed-diff одного обновления
 				const { container, rerender } = render(BasePagination, {
 					props: { modelValue: 10, total: 70, pageSize: 10 },
 				})

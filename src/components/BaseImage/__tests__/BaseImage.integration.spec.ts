@@ -166,7 +166,6 @@ describe('BaseImage integration', () => {
 			expect(container.querySelector('.base-image__error')).toBeInTheDocument()
 		})
 
-		// IMG-11: вместе с <img> пропадал alt, а эмодзи-иконка зачитывалась скринридером
 		it('сохраняет alt доступным: иконка ошибки названа alt, подпись видна', async () => {
 			render(BaseImage, { props: { src: 'broken.jpg', alt: 'Фото профиля' } })
 
@@ -361,7 +360,6 @@ describe('BaseImage integration', () => {
 			})
 			const image = container.querySelector('.base-slider__slide .base-image__img')!
 
-			// Браузер после mouseup на том же элементе отправляет click — повторяем эту последовательность
 			await fireEvent.mouseDown(image, { clientX: 300, clientY: 100 })
 			await fireEvent.mouseMove(document, { clientX: 120, clientY: 100 })
 			await fireEvent.mouseUp(document, { clientX: 120, clientY: 100 })
@@ -369,7 +367,6 @@ describe('BaseImage integration', () => {
 
 			expect(document.body.querySelector('.base-image__zoom')).not.toBeInTheDocument()
 
-			// Следующий обычный клик (без перетаскивания) открывает зум
 			await fireEvent.mouseDown(image, { clientX: 300, clientY: 100 })
 			await fireEvent.mouseUp(document, { clientX: 300, clientY: 100 })
 			await fireEvent.click(image)

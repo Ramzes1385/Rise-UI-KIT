@@ -11,7 +11,6 @@ test('уведомление: рендерится с заголовком', asy
 
 test('уведомление: закрывается по кнопке', async ({ page }) => {
 	await page.goto('/iframe.html?id=overlay-basenotification--show-from-code')
-	// Пустой список не имеет высоты — ждём, что контейнер появился в DOM
 	await page.waitForSelector('.base-notification', { state: 'attached', timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 

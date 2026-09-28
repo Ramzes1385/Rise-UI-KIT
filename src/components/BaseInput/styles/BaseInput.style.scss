@@ -1,4 +1,3 @@
-// Высота 32px при sizeScale = 100 = рамка 1px + отступ 5px + строка 20px; фокус во всех вариантах — кольцо (при ошибке — цвет ошибки).
 .base-input {
 	display: flex;
 	flex-direction: column;
@@ -42,7 +41,6 @@
 		}
 	}
 
-	// Префикс и постфикс — текст внутри поля («https://», «₽»), приглушённый и без собственного фона.
 	&__prefix,
 	&__postfix {
 		display: flex;
@@ -123,7 +121,6 @@
 		padding-right: 0;
 	}
 
-	// Фокус внутри поля без рамки (soft, ghost): фон как при наведении, плюс кольцо.
 	&--soft &__wrapper:focus-within,
 	&--ghost &__wrapper:focus-within {
 		@include custom-bg(background-color, var(--rise-bg-elevated));
@@ -158,8 +155,6 @@
 		@include field-error;
 	}
 
-	// Кнопка показа пароля — квадратная ghost-кнопка 24px внутри поля справа (иконка 16px + отступы 3px + рамка).
-	// Двойной класс — чтобы отступы перекрыли значения по умолчанию из стилей BaseButton независимо от порядка CSS.
 	&__password-toggle.base-button {
 		--btn-pad-top: 3px;
 		--btn-pad-right: 3px;

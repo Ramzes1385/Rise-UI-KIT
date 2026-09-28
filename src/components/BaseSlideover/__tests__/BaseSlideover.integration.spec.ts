@@ -1,12 +1,9 @@
-/** Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка; компонент использует teleport — поиск в document. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 import userEvent from '@testing-library/user-event'
 import { defineComponent, nextTick, ref } from 'vue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
-/** Хост: кнопка-триггер и панель с полем ввода и кнопкой в футере */
 function renderSlideoverHost() {
 	const Host = defineComponent({
 		components: { BaseSlideover },
@@ -249,7 +246,6 @@ describe('BaseSlideover integration', () => {
 			expect(document.querySelector('.base-slideover__body')).not.toHaveAttribute('tabindex')
 			unmount()
 
-			// jsdom не считает раскладку: содержимое выше тела задаётся подменой размеров
 			vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(900)
 			vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(300)
 			render(BaseSlideover, { props: { isOpen: true, title: 'Длинная' } })

@@ -1,4 +1,3 @@
-/** Composable: логика BaseEmpty — классы, стили и иконка */
 import { computed } from 'vue'
 import type { BaseEmptyProps } from '../types/BaseEmpty.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'

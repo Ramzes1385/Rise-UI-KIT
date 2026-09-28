@@ -1,6 +1,5 @@
 <template>
 	<div class="base-select__dropdown-content" :class="classes.dropdownContent" :style="sizeScaleStyle">
-		<!-- Поиск — поле без рамки над списком, отделено линией; стрелки и Enter в нём управляют списком -->
 		<div v-if="isSearchable" class="base-select__search" :class="classes.search">
 			<BaseIcon name="search" class="base-select__search-icon" :size-scale="calcIconScale('sm', sizeScale)" />
 			<input

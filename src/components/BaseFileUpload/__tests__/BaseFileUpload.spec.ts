@@ -163,7 +163,6 @@ describe('BaseFileUpload unit', () => {
 			})
 
 			expect(container.querySelector('.base-file-upload__error-item')).toBeInTheDocument()
-			// Ошибки выводятся строками списка без нумерации «1.»
 			expect(screen.getByText('Ошибка загрузки')).toBeInTheDocument()
 		})
 

@@ -76,10 +76,6 @@
 									<BaseButton v-if="!isFirst" variant="ghost" :custom-class="classes.prevButton" @click="goPrev">{{
 										resolvedPrevLabel
 									}}</BaseButton>
-									<!--
-										Одна кнопка для «Далее» и «Завершить»: на последнем шаге меняются подпись и действие,
-										а элемент остаётся тем же — фокус с клавиатуры не теряется. autofocus — начальный фокус карточки.
-									-->
 									<BaseButton
 										autofocus
 										:custom-class="isLast ? classes.finishButton : classes.nextButton"

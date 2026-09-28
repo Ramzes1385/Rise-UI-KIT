@@ -3,8 +3,6 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	// Фон строки задаёт переменная --tbl-row-bg: её читают ячейки, в том числе закреплённые (им нужен непрозрачный фон).
-	// Наведение — строки данных; служебные строки (вложенная таблица, раскрытое содержимое, дочерние) не подсвечиваются.
 	&__tr {
 		--tbl-row-hover: var(--tbl-hover, var(--rise-bg-muted));
 
@@ -14,13 +12,11 @@
 			}
 		}
 
-		// Двойной класс: выбор важнее чередования striped и цвета наведения из color.
 		&.base-table__tr--selected {
 			--tbl-row-bg: var(--rise-primary-soft);
 			--tbl-row-hover: var(--rise-primary-soft-hover);
 		}
 
-		// aria-disabled на строке исключает её из проверки контраста: неактивный элемент приглушён намеренно.
 		&--disabled {
 			@include disabled-state;
 		}
@@ -29,7 +25,6 @@
 			cursor: pointer;
 		}
 
-		// Дочерние строки раскрытой строки: фон bg-muted, первая ячейка данных с отступом уровня.
 		&--child {
 			--tbl-row-bg: var(--rise-bg-muted);
 		}

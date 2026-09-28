@@ -1,4 +1,3 @@
-/** Composable: логика BaseSkeleton — размеры и цвет с учётом масштаба */
 import { computed } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import type { SkeletonProps } from '../types/BaseSkeleton.types'
@@ -15,7 +14,6 @@ function skeletonStyles(props: SkeletonProps): Record<string, string> {
 	if (props.width) styles.width = scaleDimension(props.width, scale)
 	if (props.height) styles.height = scaleDimension(props.height, scale)
 	if (props.color) styles.backgroundColor = props.color
-	// Для SCSS sz(): скругление и размеры фигуры по умолчанию
 	if (scale !== 1) styles['--size-scale'] = String(scale)
 	return styles
 }

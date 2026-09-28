@@ -18,7 +18,6 @@ function options(): HTMLElement[] {
 	return [...document.querySelectorAll<HTMLElement>('[role="option"]')]
 }
 
-/** Поле с рабочим v-model */
 function renderModel(initial: string | number | null = null, props: Record<string, unknown> = {}) {
 	const model = ref<string | number | null>(initial)
 	const onChange = vi.fn()

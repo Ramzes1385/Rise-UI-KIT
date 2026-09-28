@@ -9,7 +9,6 @@
 		@mouseenter="handleEnter"
 		@mouseleave="handleLeave">
 		<slot name="item" :item="item" :level="level">
-			<!-- Лист с адресом — ссылка (BaseLink): RouterLink приложения или <a href>, открывается и в новой вкладке -->
 			<BaseLink
 				v-if="isLink"
 				class="base-mega-menu__node-header"
@@ -23,7 +22,6 @@
 				<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__node-icon" />
 				<span class="base-mega-menu__node-label">{{ item.label }}</span>
 			</BaseLink>
-			<!-- Узел без адреса — кнопка: раскрывает вложенный уровень (Enter/Space — как клик) -->
 			<div
 				v-else
 				ref="anchorRef"

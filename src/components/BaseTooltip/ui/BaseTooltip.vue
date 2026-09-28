@@ -1,5 +1,4 @@
 <template>
-	<!-- Обёртка — span: подсказку можно поставить на кнопку внутри абзаца или строки таблицы -->
 	<span
 		ref="wrapperRef"
 		class="base-tooltip"
@@ -12,10 +11,6 @@
 
 		<Teleport defer :to="teleportTarget">
 			<Transition name="base-tooltip">
-				<!--
-					Подсказка в body не наследует стили обёртки: вариант, масштаб и цвет задаются на ней самой.
-					На подсказку можно навести указатель (WCAG 1.4.13): она не пропадает, пока указатель над ней.
-				-->
 				<div
 					v-if="isShown"
 					:id="tooltipId"

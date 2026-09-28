@@ -4,15 +4,12 @@ import { useTreeState } from '@composables/useTreeState'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
 import { useVirtualList } from '@composables/useVirtualList'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-/** Composable: логика BaseTree — дерево (APG Tree View): раскрытие, выбор, клавиатура, поиск по буквам и виртуальная прокрутка */
 import { computed, nextTick, onBeforeUnmount, provide, ref, toRef } from 'vue'
 import type { BaseTreeEmits, TreeNode, TreeProps, VisibleNode } from '../types/BaseTree.types'
 
 const TREE_ELEMENTS = ['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children']
-/** Пауза, после которой набранные буквы сбрасываются, мс */
 const TYPEAHEAD_RESET = 500
 
-/** Видимые узлы сверху вниз — по ним ходят стрелки и поиск по буквам */
 function collectVisible(items: TreeNode[], expanded: Set<string>): VisibleNode[] {
 	const result: VisibleNode[] = []
 	const walk = (nodes: TreeNode[], parentId: string | null, depth: number): void => {
@@ -36,9 +33,7 @@ function useTreeModel(props: TreeProps, emit: BaseTreeEmits) {
 	})
 }
 
-/** Узел в порядке Tab: последний с фокусом, иначе первый выбранный, иначе первый видимый */
 function useTabbable(visibleNodes: ComputedRef<VisibleNode[]>, tree: ReturnType<typeof useTreeModel>) {
-	// Узел, на котором стоит фокус (или стоял последним)
 	const activeId = ref<string | null>(null)
 	const tabbableId = computed((): string | undefined => {
 		const visible = visibleNodes.value
@@ -48,7 +43,6 @@ function useTabbable(visibleNodes: ComputedRef<VisibleNode[]>, tree: ReturnType<
 	return {
 		activeId,
 		tabbableId,
-		// Узел в порядке Tab остаётся в DOM: иначе Tab проскочил бы дерево, а фокус терялся бы при прокрутке
 		tabbableIndex: computed(() => visibleNodes.value.findIndex(({ node }) => node.id === tabbableId.value)),
 		currentIndex: (): number => visibleNodes.value.findIndex(({ node }) => node.id === activeId.value),
 	}
@@ -70,7 +64,6 @@ function useTreeVirtual(props: TreeProps, visibleNodes: ComputedRef<VisibleNode[
 	return { rootRef, virtualStyle, ...virtual }
 }
 
-/** Заголовки узлов по id: фокус и действие; узел вне DOM (виртуальная прокрутка) получает фокус после прокрутки к нему */
 function useHeaders(props: TreeProps, visibleNodes: ComputedRef<VisibleNode[]>, scrollToIndex: (index: number) => void) {
 	const headers = new Map<string, HTMLElement>()
 	let pendingFocusId: string | null = null
@@ -89,13 +82,11 @@ function useHeaders(props: TreeProps, visibleNodes: ComputedRef<VisibleNode[]>, 
 			headers.set(id, element)
 			if (id !== pendingFocusId) return
 			pendingFocusId = null
-			// ref вызывается до вставки строки в документ: фокус — после отрисовки
 			void nextTick(() => element.focus())
 		},
 		unregisterHeader(id: string, element: HTMLElement): void {
 			if (headers.get(id) === element) headers.delete(id)
 		},
-		/** Действие узла — как клик по заголовку: ссылка, выбор или раскрытие */
 		activate(entry: VisibleNode): void {
 			const header = headers.get(entry.node.id)
 			const link = header?.querySelector<HTMLElement>('.base-tree__link')
@@ -162,7 +153,6 @@ function provideTreeContext(
 	})
 }
 
-/** Стрелка вправо: раскрыть свёрнутую ветку или перейти к первому дочернему узлу */
 function arrowRight(entry: VisibleNode, tree: ReturnType<typeof useTreeModel>, focusNode: (id: string | undefined) => void): void {
 	const { node } = entry
 	if (!node.children?.length) return
@@ -170,7 +160,6 @@ function arrowRight(entry: VisibleNode, tree: ReturnType<typeof useTreeModel>, f
 	else if (!node.isDisabled) tree.toggleNode(node.id)
 }
 
-/** Стрелка влево: свернуть раскрытую ветку или перейти к родителю */
 function arrowLeft(entry: VisibleNode, tree: ReturnType<typeof useTreeModel>, focusNode: (id: string | undefined) => void): void {
 	const { node } = entry
 	const isOpenBranch = Boolean(node.children?.length) && tree.expandedSet.value.has(node.id)
@@ -178,7 +167,6 @@ function arrowLeft(entry: VisibleNode, tree: ReturnType<typeof useTreeModel>, fo
 	else focusNode(entry.parentId ?? undefined)
 }
 
-/** Клавиатура APG Tree View: стрелки и Home/End, * раскрывает соседние ветки, Enter — действие узла, Space — выбор */
 function createTreeKeys(
 	tree: ReturnType<typeof useTreeModel>,
 	headers: ReturnType<typeof useHeaders>,
@@ -204,7 +192,6 @@ function createTreeKeys(
 				),
 		],
 		['Enter', ({ entry }) => headers.activate(entry)],
-		// Пробел внутри набираемого слова — часть поиска, иначе — выбор узла
 		[' ', ({ entry }) => (typeahead.isTyping() ? typeahead.handleTypeahead(' ') : headers.headers.get(entry.node.id)?.click())],
 	])
 }
@@ -232,7 +219,6 @@ export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 			const visible = visibleNodes.value
 			const index = tab.currentIndex()
 			const entry = visible[index]
-			// Клавиши из полей и кнопок внутри узла (слот actions) дереву не нужны
 			if (!entry || event.target !== headers.headers.get(entry.node.id)) return
 			const action = keys.get(event.key)
 			if (action) action({ visible, index, entry })

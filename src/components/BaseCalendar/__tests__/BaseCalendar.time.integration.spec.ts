@@ -1,22 +1,17 @@
-/** Регрессии: в 12h-режиме PM-время показывалось как AM (isAm жил отдельно от часов); ввод часов/минут без ограничения диапазона сдвигал дату (99 ч → +4 дня); очистка поля часов подставляла «12», и следующая цифра дописывалась к нему. */
-
 import '@testing-library/jest-dom/vitest'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render } from '@testing-library/vue'
 
-/** Поля времени календаря: [часы, минуты, секунды?] */
 function getTimeInputs(container: Element): HTMLInputElement[] {
 	return Array.from(container.querySelectorAll<HTMLInputElement>('.base-calendar__time input'))
 }
 
-/** Последнее значение, отправленное через update:modelValue */
 function lastEmittedDate(emitted: Record<string, unknown[]>): Date {
 	const updates = emitted['update:modelValue'] as [Date][]
 	return updates.at(-1)![0]
 }
 
-/** Ввести значение так, как это делает пользователь: очистить поле, набрать, завершить ввод */
 async function typeTime(input: HTMLInputElement, value: string): Promise<void> {
 	const user = userEvent.setup()
 	await user.clear(input)

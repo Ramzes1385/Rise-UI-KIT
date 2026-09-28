@@ -1,4 +1,3 @@
-// Раскрытие — анимация высоты через grid (0fr → 1fr); кастомный цвет: text.base — заголовки, bg.base/bg.hover — фон заголовка и наведение.
 .base-accordion {
 	--accordion-pad-x: 0px;
 	--accordion-divider: var(--rise-border);
@@ -112,7 +111,6 @@
 		border-radius: sz(var(--rise-radius-lg));
 	}
 
-	// В контейнере с overflow: hidden внешнее кольцо обрезалось бы — рисуем его внутри заголовка.
 	&--outline &__header,
 	&--shadow &__header,
 	&--soft &__header {

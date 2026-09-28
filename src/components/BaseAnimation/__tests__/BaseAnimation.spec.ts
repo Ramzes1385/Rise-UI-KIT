@@ -60,7 +60,6 @@ describe('BaseAnimation unit', () => {
 				slots: { default: '<p>Контент</p>' },
 			})
 
-			// Transition name применяется через CSS-классы Vue
 			expect(container.querySelector('.base-animation')).toBeInTheDocument()
 		})
 	})
@@ -148,8 +147,6 @@ describe('BaseAnimation unit', () => {
 
 	describe('emit after-leave', () => {
 		it('должен эмитить after-leave при скрытии', async () => {
-			// Transition в jsdom не вызывает after-leave хук автоматически
-			// Используем mount для доступа к Transition stub и эмитим событие
 			const wrapper = mount(BaseAnimation, {
 				props: { show: true },
 				slots: { default: '<p>Контент</p>' },
