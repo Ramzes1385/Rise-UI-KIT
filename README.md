@@ -110,6 +110,10 @@
 - `BaseVirtualList` — список на тысячи строк (в DOM только видимые) и composable `useVirtualList`; виртуальная прокрутка в `BaseTable` (`isVirtual`, `rowHeight`) и `BaseTree` (`isVirtual`, `height`, `itemSize`) — порция 2.4.
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
 
+**Медиа**
+
+- `BaseMediaPlayer` — видеоплеер со своей панелью поверх `<video>`: перемотка с загруженными отрезками, время, звук и громкость, полноэкранный режим, горячие клавиши в любой раскладке, ошибка с «Повторить», отказ автозапуска (порция 4.1). Компонент экспериментальный: до выхода 2.0 в него добавятся меню скорости и качества, аудио, субтитры, а API может меняться. Позже плеер выйдет отдельным входом пакета.
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -1618,6 +1622,34 @@ const slides = [
 	<BaseSlider :items="slides" has-caption />
 </template>
 ```
+
+---
+
+## BaseMediaPlayer
+
+Видеоплеер со своей панелью управления. Играет первый источник из `sources`, который поддерживает браузер; абсолютные адреса — только `http:`, `https:` и `blob:` (`allowed-protocols`). Ошибки загрузки и отказ автозапуска показываются в плеере и приходят событием `error`.
+
+```vue
+<script setup lang="ts">
+import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit'
+import type { MediaPlayerError } from '@ramzes1385/rise-ui-kit'
+
+const sources = [
+	{ src: '/video/intro.webm', type: 'video/webm; codecs="vp9, opus"' },
+	{ src: '/video/intro.mp4', type: 'video/mp4' },
+]
+
+function handleError(error: MediaPlayerError): void {
+	console.warn('Видео не воспроизводится:', error.code)
+}
+</script>
+
+<template>
+	<BaseMediaPlayer :sources="sources" title="Знакомство с сервисом" poster="/video/intro.webp" @error="handleError" />
+</template>
+```
+
+Клавиши работают, пока фокус внутри плеера: Space/K — пуск и пауза, ←/→ — 5 с (`seek-step`), J/L — 10 с (`seek-step-large`), 0–9 — переход к доле записи, ↑/↓ — громкость, M — звук, F — полный экран, Shift+. и Shift+, — скорость. Отключаются `:has-keyboard-shortcuts="false"`.
 
 ---
 

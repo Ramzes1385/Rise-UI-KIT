@@ -105,6 +105,7 @@ const preview: Preview = {
 					'Overlay',
 					'Chat',
 					'Editor',
+					'Media',
 				],
 			},
 		},

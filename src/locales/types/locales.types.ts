@@ -27,6 +27,7 @@ export interface UiKitLocale {
 	calendar: Section<'calendar'>
 	colorPicker: Section<'colorPicker'>
 	rating: Section<'rating'>
+	player: Section<'player'>
 	chat: Section<'chat'>
 	editor: Section<'editor'>
 	table: Section<'table'>

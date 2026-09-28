@@ -86,6 +86,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseBackTop',
 	'BaseInfiniteScroll',
 	'BaseVirtualList',
+	'BaseMediaPlayer',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */

@@ -48,6 +48,8 @@
 		"../../src/**/*.spec.ts",
 		"../../src/**/*.stories.ts",
 		"../../src/**/*.stories.tsx",
+		"../../src/**/stories/**",
+		"../../src/**/__tests__/**",
 
 		"../../tests",
 		"../../node_modules",
