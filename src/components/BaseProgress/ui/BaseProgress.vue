@@ -65,7 +65,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
+import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../types/BaseProgress.types'
 
 /** Радиус круга в системе координат viewBox 120×120 */
 const CIRCLE_RADIUS = 52

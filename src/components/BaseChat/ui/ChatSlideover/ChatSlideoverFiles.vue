@@ -39,12 +39,9 @@ import { BaseEmpty } from '@components/BaseEmpty'
 import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../model/chatScale'
-import type { ChatMessage, ChatMessageAttachment } from '../../model/BaseChat.types'
-import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../model/ChatSlideoverFiles.types'
-
-interface SharedAttachment extends ChatMessageAttachment {
-	publishedAt: string
-}
+import type { ChatMessage } from '../../types/BaseChat.types'
+import type { SharedAttachment } from '../../types/ChatSlideover.types'
+import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../types/ChatSlideoverFiles.types'
 
 const props = defineProps<ChatSlideoverFilesProps>()
 

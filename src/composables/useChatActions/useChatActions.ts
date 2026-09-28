@@ -1,7 +1,7 @@
 /** Composable: обработчики действий чата */
 import { downloadFile } from '@utils/fileUtils'
-import type { UseChatActionsOptions } from './useChatActions.types'
-import type { ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
+import type { UseChatActionsOptions } from './types/useChatActions.types'
+import type { ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 
 /** Описание: предоставляет обработчики действий чата — отправка, ответ, вложение, реакции, пин/удаление, аватар и команды */
 function useChatActions(options: UseChatActionsOptions) {

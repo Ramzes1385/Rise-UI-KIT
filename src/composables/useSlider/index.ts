@@ -1,2 +1,2 @@
 export { useSlider } from './useSlider'
-export type { UseSliderOptions, UseSliderReturn } from './useSlider.types'
+export type { UseSliderOptions, UseSliderReturn } from './types/useSlider.types'

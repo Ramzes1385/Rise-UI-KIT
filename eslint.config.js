@@ -76,6 +76,33 @@ export default tseslint.config(
 	},
 
 	{
+		files: ['src/**/*.{ts,vue}'],
+		ignores: ['src/**/types/*.types.ts', 'src/**/__tests__/**', 'src/**/*.stories.ts', 'src/**/*.d.ts'],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector: 'TSInterfaceDeclaration, TSTypeAliasDeclaration, TSEnumDeclaration',
+					message: 'Типы объявляются в types/<имя>.types.ts',
+				},
+			],
+		},
+	},
+
+	{
+		files: ['src/**/types/*.types.ts'],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector: 'FunctionDeclaration, FunctionExpression, ArrowFunctionExpression, ClassDeclaration',
+					message: 'В types/ только типы и константы, из которых они выводятся; логика — в model/',
+				},
+			],
+		},
+	},
+
+	{
 		files: ['**/*.spec.ts', '**/*.stories.ts'],
 		languageOptions: {
 			globals: {

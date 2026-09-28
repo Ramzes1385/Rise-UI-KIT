@@ -1,6 +1,6 @@
 /** Composable: навигация по списку клавишами ArrowUp/ArrowDown/Enter/Escape */
 import { ref, type Ref } from 'vue'
-import type { UseListNavigationOptions } from './useListNavigation.types'
+import type { UseListNavigationOptions } from './types/useListNavigation.types'
 
 /**
  * Composable для навигации по списку клавишами ArrowUp/ArrowDown/Enter/Escape.

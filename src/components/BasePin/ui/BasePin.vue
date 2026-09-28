@@ -51,7 +51,7 @@ import { useFormField } from '@composables/useFormField'
 import { FormFieldError } from '@components/BaseFormField'
 import '../styles/BasePin.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BasePinEmits, BasePinProps, BasePinSlots } from '../model/BasePin.types'
+import type { BasePinEmits, BasePinProps, BasePinSlots } from '../types/BasePin.types'
 
 const props = withDefaults(
 	defineProps<BasePinProps>(),

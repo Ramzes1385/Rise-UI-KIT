@@ -74,7 +74,7 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseModal.style.scss'
-import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../model/BaseModal.types'
+import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../types/BaseModal.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

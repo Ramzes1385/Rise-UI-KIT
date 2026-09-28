@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick } from 'vue'
-import { BREAKPOINTS } from '../useBreakpoint.types'
+import { BREAKPOINTS } from '../types/useBreakpoint.types'
 import { getViewportWidth, useBreakpoint } from '../useBreakpoint'
-import type { UseBreakpointReturn } from '../useBreakpoint.types'
+import type { UseBreakpointReturn } from '../types/useBreakpoint.types'
 
 function mountComposable(): { api: UseBreakpointReturn; unmount: () => void } {
 	let api!: UseBreakpointReturn

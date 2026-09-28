@@ -143,7 +143,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
-import type { BaseImageZoomProps } from '../model/BaseImageZoom.types'
+import type { BaseImageZoomProps } from '../types/BaseImageZoom.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

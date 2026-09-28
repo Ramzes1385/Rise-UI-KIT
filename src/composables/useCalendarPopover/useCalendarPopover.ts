@@ -1,6 +1,6 @@
 /** Composable: управление поповером дня календаря — позиционирование, подсветка, открытие/закрытие */
 import { computed, ref } from 'vue'
-import type { UseCalendarPopoverOptions, UseCalendarPopoverReturn } from './useCalendarPopover.types'
+import type { UseCalendarPopoverOptions, UseCalendarPopoverReturn } from './types/useCalendarPopover.types'
 
 /** Composable для управления поповером дня календаря — позиционирование, подсветка, открытие/закрытие. */
 function useCalendarPopover(options: UseCalendarPopoverOptions): UseCalendarPopoverReturn {

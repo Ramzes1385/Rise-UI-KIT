@@ -6,6 +6,6 @@ export type {
 	MegaMenuItem,
 	MegaMenuLayout,
 	MegaMenuTrigger,
-} from './model/BaseMegaMenu.types'
-export { MEGA_MENU_VARIANTS } from './model/BaseMegaMenu.types'
+} from './types/BaseMegaMenu.types'
+export { MEGA_MENU_VARIANTS } from './types/BaseMegaMenu.types'
 export { default as BaseMegaMenu } from './ui/BaseMegaMenu.vue'

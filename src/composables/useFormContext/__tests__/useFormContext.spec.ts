@@ -9,7 +9,7 @@ import {
 	useFormContext,
 	useFormDisabled,
 } from '../useFormContext'
-import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../useFormContext.types'
+import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../types/useFormContext.types'
 
 /** Смонтировать composable внутри провайдеров формы и поля */
 function withProviders<T>(

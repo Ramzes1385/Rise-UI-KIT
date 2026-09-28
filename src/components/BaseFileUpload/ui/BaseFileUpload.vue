@@ -145,7 +145,7 @@ import { useFormDisabled } from '@composables/useFormContext'
 import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
 import { useFileUploadState } from '@composables/useFileUploadState'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots, UploadedFile } from '../model/BaseFileUpload.types'
+import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots, UploadedFile } from '../types/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
 const props = withDefaults(

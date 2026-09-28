@@ -1,6 +1,6 @@
 import { effectScope, nextTick } from 'vue'
 import { useChatSearch } from '../useChatSearch'
-import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
+import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 
 function message(id: string, overrides: Partial<ChatMessage> = {}): ChatMessage {
 	return {

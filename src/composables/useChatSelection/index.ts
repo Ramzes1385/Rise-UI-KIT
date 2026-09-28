@@ -1,2 +1,2 @@
 export { useChatSelection } from './useChatSelection'
-export type { UseChatSelectionOptions } from './useChatSelection.types'
+export type { UseChatSelectionOptions } from './types/useChatSelection.types'

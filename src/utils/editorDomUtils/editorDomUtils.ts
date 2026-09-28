@@ -1,6 +1,6 @@
 /** Утилиты: инспекция DOM для contenteditable-редактора */
 
-import type { TypedInlineTagMatch } from './editorDomUtils.types'
+import type { TypedInlineTagMatch } from './types/editorDomUtils.types'
 
 /** Блочные теги для определения родительского блока */
 const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DIV', 'BLOCKQUOTE', 'PRE', 'ADDRESS', 'LI'])

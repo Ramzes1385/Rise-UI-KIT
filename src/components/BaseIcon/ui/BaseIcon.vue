@@ -31,7 +31,7 @@ import { useIcon } from '@composables/useIcon'
 import { kitDefaults } from '@composables/useDefaults'
 import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseIcon.style.scss'
-import type { BaseIconProps } from '../model/BaseIcon.types'
+import type { BaseIconProps } from '../types/BaseIcon.types'
 
 const props = withDefaults(
 	defineProps<BaseIconProps>(),

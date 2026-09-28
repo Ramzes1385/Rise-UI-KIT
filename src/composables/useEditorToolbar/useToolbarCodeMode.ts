@@ -1,6 +1,6 @@
 /** Composable: переключение режима кода/HTML в редакторе и синхронизация содержимого */
 import { nextTick, ref } from 'vue'
-import type { UseToolbarCodeModeOptions } from './useToolbarCodeMode.types'
+import type { UseToolbarCodeModeOptions } from './types/useToolbarCodeMode.types'
 
 /**
  * Composable для переключения режима кода/HTML в редакторе и синхронизации содержимого.

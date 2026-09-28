@@ -59,8 +59,8 @@ import { BaseImage } from '@components/BaseImage'
 import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../../model/chatScale'
-import type { ChatMessageAttachment } from '../../../model/BaseChat.types'
-import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../model/ChatMessageAttachments.types'
+import type { ChatMessageAttachment } from '../../../types/BaseChat.types'
+import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../types/ChatMessageAttachments.types'
 
 const props = defineProps<ChatMessageAttachmentsProps>()
 const emit = defineEmits<ChatMessageAttachmentsEmits>()

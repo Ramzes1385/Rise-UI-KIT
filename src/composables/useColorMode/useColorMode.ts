@@ -1,6 +1,6 @@
 /** Composable: светлая, тёмная или системная тема приложения */
 import { computed, effectScope, ref, watch } from 'vue'
-import type { ColorMode, ColorModeController, ColorModeInstance, ColorModeOptions, ResolvedColorMode } from './useColorMode.types'
+import type { ColorMode, ColorModeController, ColorModeInstance, ColorModeOptions, ResolvedColorMode } from './types/useColorMode.types'
 
 /** Режимы темы */
 export const COLOR_MODES = ['light', 'dark', 'system'] as const

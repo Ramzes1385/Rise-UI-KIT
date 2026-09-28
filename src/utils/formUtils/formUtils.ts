@@ -1,5 +1,5 @@
 /** Утилиты: проверка данных формы по схеме Standard Schema и ошибки по именам полей */
-import type { FormIssue, FormValidationResult, StandardSchemaIssue, StandardSchemaV1 } from './formUtils.types'
+import type { FormIssue, FormValidationResult, StandardSchemaIssue, StandardSchemaV1 } from './types/formUtils.types'
 
 /** Путь ошибки схемы — имя поля через точку: `['address', 'city']` → `address.city`, `['tags', 0]` → `tags.0` */
 function issueName(issue: StandardSchemaIssue): string {

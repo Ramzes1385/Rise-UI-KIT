@@ -92,13 +92,14 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseNotification.style.scss'
 import type {
+	AutoCloseTimer,
 	BaseNotificationEmits,
 	BaseNotificationProps,
 	BaseNotificationSlots,
 	NotificationAction,
 	NotificationId,
 	NotificationItem,
-} from '../model/BaseNotification.types'
+} from '../types/BaseNotification.types'
 
 /** Длительность показа по умолчанию, мс */
 const DEFAULT_DURATION = 3000
@@ -185,14 +186,6 @@ function getVariantClass(notification: NotificationItem): string | undefined {
 }
 
 // ─── Автозакрытие с паузой ────────────────────────────────────────────────────
-
-interface AutoCloseTimer {
-	key: string
-	/** Сколько осталось показывать, мс */
-	remaining: number
-	startedAt: number
-	timeout: ReturnType<typeof setTimeout> | null
-}
 
 /** Таймеры автозакрытия по id уведомления — очищаются при закрытии и размонтировании */
 const timers = new Map<NotificationId, AutoCloseTimer>()

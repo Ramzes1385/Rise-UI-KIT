@@ -45,7 +45,7 @@ import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTooltip.style.scss'
 import type { TooltipLayout } from '@utils/tooltipUtils'
-import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
+import type { BaseTooltipProps, BaseTooltipSlots } from '../types/BaseTooltip.types'
 
 /** Отступ подсказки от элемента, px */
 const GAP = 8

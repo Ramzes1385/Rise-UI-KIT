@@ -1,2 +1,2 @@
 export { useSwipe } from './useSwipe'
-export type { UseSwipeOptions } from './useSwipe.types'
+export type { UseSwipeOptions } from './types/useSwipe.types'

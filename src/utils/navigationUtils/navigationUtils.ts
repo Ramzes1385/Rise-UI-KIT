@@ -1,7 +1,7 @@
 /** Утилиты: навигация и открытие внешних ссылок */
 
 import { isSafeUrl } from '@utils/urlUtils'
-import type { NavigateOptions } from './navigationUtils.types'
+import type { NavigateOptions } from './types/navigationUtils.types'
 
 /**
  * Ссылки приходят из данных (пункты меню, CMS, API). `javascript:` в href исполнился бы

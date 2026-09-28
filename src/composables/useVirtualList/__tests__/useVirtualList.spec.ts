@@ -6,7 +6,7 @@
 import { render } from '@testing-library/vue'
 import { defineComponent, nextTick, ref } from 'vue'
 import { useVirtualList } from '../useVirtualList'
-import type { UseVirtualListOptions, UseVirtualListReturn } from '../useVirtualList.types'
+import type { UseVirtualListOptions, UseVirtualListReturn } from '../types/useVirtualList.types'
 
 /** Экземпляры подменённого ResizeObserver: колбэк и вызовы */
 interface ObserverRecord {

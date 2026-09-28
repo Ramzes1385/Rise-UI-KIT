@@ -1,0 +1,214 @@
+import { defineAsyncComponent } from 'vue'
+import { setLocale } from '../locales/state'
+import { BaseApp } from '../components/BaseApp'
+import { BaseFab } from '../components/BaseFab'
+import { BaseKbd } from '../components/BaseKbd'
+import { BasePin } from '../components/BasePin'
+import { BaseCard } from '../components/BaseCard'
+import { BaseChip } from '../components/BaseChip'
+import { BaseForm } from '../components/BaseForm'
+import { BaseIcon } from '../components/BaseIcon'
+import { BaseLink } from '../components/BaseLink'
+import { BaseMenu } from '../components/BaseMenu'
+import { BaseTabs } from '../components/BaseTabs'
+import { BaseText } from '../components/BaseText'
+import { BaseTour } from '../components/BaseTour'
+import { BaseTree } from '../components/BaseTree'
+import { BaseUser } from '../components/BaseUser'
+import { BaseAlert } from '../components/BaseAlert'
+import { BaseBadge } from '../components/BaseBadge'
+import { BaseEmpty } from '../components/BaseEmpty'
+import { BaseImage } from '../components/BaseImage'
+import { BaseInput } from '../components/BaseInput'
+import { BaseModal } from '../components/BaseModal'
+import { BaseRadio } from '../components/BaseRadio'
+import { BaseRange } from '../components/BaseRange'
+import { BaseAvatar } from '../components/BaseAvatar'
+import { BaseButton } from '../components/BaseButton'
+import { BaseDrawer } from '../components/BaseDrawer'
+import { BaseFooter } from '../components/BaseFooter'
+import { BaseHeader } from '../components/BaseHeader'
+import { BaseLayout } from '../components/BaseLayout'
+import { BaseLoader } from '../components/BaseLoader'
+import { BaseRating } from '../components/BaseRating'
+import { BaseSearch } from '../components/BaseSearch'
+import { BaseSelect } from '../components/BaseSelect'
+import { BaseSlider } from '../components/BaseSlider'
+import { BaseSwitch } from '../components/BaseSwitch'
+import { BaseBackTop } from '../components/BaseBackTop'
+import { BaseConfirm } from '../components/BaseConfirm'
+import { BaseInplace } from '../components/BaseInplace'
+import { BasePopover } from '../components/BasePopover'
+import { BaseSideBar } from '../components/BaseSideBar'
+import { BaseStepper } from '../components/BaseStepper'
+import { BaseToolbar } from '../components/BaseToolbar'
+import { BaseTooltip } from '../components/BaseTooltip'
+import { BaseCheckbox } from '../components/BaseCheckbox'
+import { BaseDropdown } from '../components/BaseDropdown'
+import { BaseMegaMenu } from '../components/BaseMegaMenu'
+import { BaseProgress } from '../components/BaseProgress'
+import { BaseSkeleton } from '../components/BaseSkeleton'
+import { BaseSplitter } from '../components/BaseSplitter'
+import { BaseTextarea } from '../components/BaseTextarea'
+import { BaseTimeline } from '../components/BaseTimeline'
+// Точечные импорты обходят top-level barrel src/components/index.ts —
+// иначе sub-barrel ./components/BaseChat/index.ts тянул бы тяжёлый BaseChat.vue
+// статически через цепочку re-export, ломая физический split на async-чанки
+// (см. defineAsyncComponent ниже и HEAVY_APP_CHUNKS в build/config/build.ts).
+import { BaseAccordion } from '../components/BaseAccordion'
+import { BaseAnimation } from '../components/BaseAnimation'
+import { BaseContainer } from '../components/BaseContainer'
+import { BaseFormField } from '../components/BaseFormField'
+import { BaseInputTags } from '../components/BaseInputTags'
+import { BaseSegmented } from '../components/BaseSegmented'
+import { BaseSeparator } from '../components/BaseSeparator'
+import { BaseSlideover } from '../components/BaseSlideover'
+import { BasePagination } from '../components/BasePagination'
+import { BasePopconfirm } from '../components/BasePopconfirm'
+import { BaseScrollArea } from '../components/BaseScrollArea'
+import { BaseTimePicker } from '../components/BaseTimePicker'
+import { BaseAvatarGroup } from '../components/BaseAvatarGroup'
+import { BaseBreadcrumbs } from '../components/BaseBreadcrumbs'
+import { BaseButtonGroup } from '../components/BaseButtonGroup'
+import { BaseColorPicker } from '../components/BaseColorPicker'
+import { BaseContextMenu } from '../components/BaseContextMenu'
+import { BaseInputNumber } from '../components/BaseInputNumber'
+import { BaseSplitButton } from '../components/BaseSplitButton'
+import { BaseVirtualList } from '../components/BaseVirtualList'
+import { BaseAutocomplete } from '../components/BaseAutocomplete'
+import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
+import { BaseNotification } from '../components/BaseNotification'
+import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
+import { LINK_COMPONENT_KEY } from '../composables/useLink/useLink'
+import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
+import { DEFAULTS_KEY } from '../composables/useDefaults/useDefaults'
+import { BaseColorModeButton } from '../components/BaseColorModeButton'
+import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '../composables/useIcon/useIcon'
+import { TELEPORT_TARGET_KEY } from '../composables/useTeleportTarget/useTeleportTarget'
+import type { App, Component, Plugin } from 'vue'
+import type { UiKitPluginOptions } from './types/plugin.types'
+
+// Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
+const BaseChat = defineAsyncComponent(() => import('../components/BaseChat/ui/BaseChat.vue'))
+const BaseEditor = defineAsyncComponent(() => import('../components/BaseEditor/ui/BaseEditor.vue'))
+const BaseDatePicker = defineAsyncComponent(() => import('../components/BaseDatePicker/ui/BaseDatePicker.vue'))
+const BaseCalendar = defineAsyncComponent(() => import('../components/BaseCalendar/ui/BaseCalendar.vue'))
+const BaseTable = defineAsyncComponent(() => import('../components/BaseTable/ui/BaseTable.vue'))
+const BaseFileUpload = defineAsyncComponent(() => import('../components/BaseFileUpload/ui/BaseFileUpload.vue'))
+
+const UI_COMPONENTS: Record<string, Component> = {
+	BaseAccordion,
+	BaseAlert,
+	BaseAnimation,
+	BaseApp,
+	BaseAutocomplete,
+	BaseAvatar,
+	BaseAvatarGroup,
+	BaseBackTop,
+	BaseBadge,
+	BaseBreadcrumbs,
+	BaseButton,
+	BaseButtonGroup,
+	BaseCalendar,
+	BaseCard,
+	BaseChat,
+	BaseCheckbox,
+	BaseCheckboxGroup,
+	BaseChip,
+	BaseColorModeButton,
+	BaseColorPicker,
+	BaseConfirm,
+	BaseContainer,
+	BaseContextMenu,
+	BaseDatePicker,
+	BaseDrawer,
+	BaseDropdown,
+	BaseDropdownMenu,
+	BaseEditor,
+	BaseEmpty,
+	BaseFab,
+	BaseFileUpload,
+	BaseFooter,
+	BaseForm,
+	BaseFormField,
+	BaseHeader,
+	BaseIcon,
+	BaseImage,
+	BaseInfiniteScroll,
+	BaseInplace,
+	BaseInput,
+	BaseInputNumber,
+	BaseInputTags,
+	BaseKbd,
+	BaseLayout,
+	BaseLink,
+	BaseLoader,
+	BaseMegaMenu,
+	BaseMenu,
+	BaseModal,
+	BaseNotification,
+	BasePagination,
+	BasePin,
+	BasePopconfirm,
+	BasePopover,
+	BaseProgress,
+	BaseRadio,
+	BaseRange,
+	BaseRating,
+	BaseScrollArea,
+	BaseSearch,
+	BaseSegmented,
+	BaseSelect,
+	BaseSeparator,
+	BaseSideBar,
+	BaseSkeleton,
+	BaseSlideover,
+	BaseSlider,
+	BaseSplitButton,
+	BaseSplitter,
+	BaseStepper,
+	BaseSwitch,
+	BaseTable,
+	BaseTabs,
+	BaseText,
+	BaseTextarea,
+	BaseTimePicker,
+	BaseTimeline,
+	BaseToolbar,
+	BaseTooltip,
+	BaseTour,
+	BaseTree,
+	BaseUser,
+	BaseVirtualList,
+}
+
+function getName(name: string, prefix?: string): string {
+	if (!prefix) return name
+	return `${prefix}${name}`
+}
+
+function installItems(app: App, options?: UiKitPluginOptions): void {
+	Object.entries(UI_COMPONENTS).forEach(([name, component]) => {
+		app.component(getName(name, options?.prefix), component)
+	})
+}
+
+export function createUiKitPlugin(options?: UiKitPluginOptions): Plugin {
+	return {
+		install(app: App): void {
+			installItems(app, options)
+			if (options?.iconSpritePath) app.provide(ICON_SPRITE_PATH_KEY, options.iconSpritePath)
+			if (options?.defaults) app.provide(DEFAULTS_KEY, options.defaults)
+			if (options?.icons) app.provide(ICON_MAP_KEY, options.icons)
+			if (options?.linkComponent) app.provide(LINK_COMPONENT_KEY, options.linkComponent)
+			if (options?.locale) setLocale(options.locale)
+			if (options?.teleportTo) app.provide(TELEPORT_TARGET_KEY, options.teleportTo)
+		},
+	}
+}
+
+export const uiKitPlugin = createUiKitPlugin()
+
+export { UI_COMPONENTS }
+
+export default uiKitPlugin

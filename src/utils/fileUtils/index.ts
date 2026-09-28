@@ -8,4 +8,4 @@ export {
 	getFileIconName,
 	validateFile,
 } from './fileUtils'
-export type { FileValidationOptions, FileValidationResult } from './fileUtils.types'
+export type { FileValidationOptions, FileValidationResult } from './types/fileUtils.types'

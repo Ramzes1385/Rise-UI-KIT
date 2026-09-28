@@ -1,7 +1,7 @@
 /** Composable: поиск по сообщениям чата */
 import { computed, ref, watch } from 'vue'
-import type { UseChatSearchOptions } from './useChatSearch.types'
-import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
+import type { UseChatSearchOptions } from './types/useChatSearch.types'
+import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 
 /** Composable для поиска по сообщениям чата — строка запроса, флаг поиска, отфильтрованный список. */
 function useChatSearch(options: UseChatSearchOptions) {

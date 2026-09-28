@@ -10,7 +10,7 @@ import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
-import { CHECKBOX_VARIANTS } from '../model/BaseCheckbox.types'
+import { CHECKBOX_VARIANTS } from '../types/BaseCheckbox.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

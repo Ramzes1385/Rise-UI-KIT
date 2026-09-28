@@ -8,4 +8,4 @@
 export { createIconPlugin } from '@icons/iconPlugin'
 export type { IconPluginOptions } from '@icons/iconPlugin'
 export { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
-export type { IconMap, ResolvedIcon, UseIconReturn } from './useIcon.types'
+export type { IconMap, ResolvedIcon, UseIconReturn } from './types/useIcon.types'

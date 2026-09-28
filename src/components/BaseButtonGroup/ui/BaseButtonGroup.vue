@@ -14,7 +14,7 @@
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseButtonGroup.style.scss'
-import type { BaseButtonGroupProps, BaseButtonGroupSlots } from '../model/BaseButtonGroup.types'
+import type { BaseButtonGroupProps, BaseButtonGroupSlots } from '../types/BaseButtonGroup.types'
 
 const props = withDefaults(
 	defineProps<BaseButtonGroupProps>(),

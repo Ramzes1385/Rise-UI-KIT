@@ -3,7 +3,7 @@ import { useToolbarCodeMode } from './useToolbarCodeMode'
 import { useToolbarCommands } from './useToolbarCommands'
 import { useToolbarMediaMenu } from './useToolbarMediaMenu'
 import { useToolbarSelection } from './useToolbarSelection'
-import type { UseEditorToolbarOptions } from './useEditorToolbar.types'
+import type { UseEditorToolbarOptions } from './types/useEditorToolbar.types'
 
 /** Composable для тулбара редактора — объединяет отслеживание выделения, код-режим, медиа-меню, команды форматирования. */
 function useEditorToolbar(options: UseEditorToolbarOptions) {

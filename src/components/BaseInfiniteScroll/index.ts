@@ -1,4 +1,4 @@
-export { INFINITE_SCROLL_VARIANTS } from './model/BaseInfiniteScroll.types'
+export { INFINITE_SCROLL_VARIANTS } from './types/BaseInfiniteScroll.types'
 export type {
 	BaseInfiniteScrollEmits,
 	BaseInfiniteScrollExpose,
@@ -8,5 +8,5 @@ export type {
 	InfiniteScrollMode,
 	InfiniteScrollResult,
 	InfiniteScrollStatus,
-} from './model/BaseInfiniteScroll.types'
+} from './types/BaseInfiniteScroll.types'
 export { default as BaseInfiniteScroll } from './ui/BaseInfiniteScroll.vue'

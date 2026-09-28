@@ -1,2 +1,2 @@
 export { useListNavigation } from './useListNavigation'
-export type { UseListNavigationOptions } from './useListNavigation.types'
+export type { UseListNavigationOptions } from './types/useListNavigation.types'

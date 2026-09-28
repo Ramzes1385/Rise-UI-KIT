@@ -77,7 +77,7 @@ import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseRadio.style.scss'
-import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
+import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../types/BaseRadio.types'
 
 const props = withDefaults(
 	defineProps<BaseRadioProps>(),

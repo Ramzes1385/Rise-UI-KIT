@@ -1,7 +1,7 @@
 /** Composable: ответ на сообщение в чате */
 import { ref } from 'vue'
-import type { UseChatReplyReturn } from './useChatReply.types'
-import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
+import type { UseChatReplyReturn } from './types/useChatReply.types'
+import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 
 /** Composable для ответа на сообщение в чате — хранит сообщение-цитату и обработчики. */
 function useChatReply(): UseChatReplyReturn {

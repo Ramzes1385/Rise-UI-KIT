@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseStepper from '../ui/BaseStepper.vue'
-import type { BaseStepperStep } from '../model/BaseStepper.types'
+import type { BaseStepperStep } from '../types/BaseStepper.types'
 
 const ITEMS: BaseStepperStep[] = [
 	{ label: 'Данные' },

@@ -21,7 +21,7 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseRating from '../ui/BaseRating.vue'
-import { RATING_VARIANTS } from '../model/BaseRating.types'
+import { RATING_VARIANTS } from '../types/BaseRating.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Звезда рейтинга по номеру с нуля: у звёзд нет роли, поэтому — по классу внутри слайдера или изображения. */

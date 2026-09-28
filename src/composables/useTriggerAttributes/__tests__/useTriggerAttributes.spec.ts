@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { useTriggerAttributes } from '../useTriggerAttributes'
-import type { TriggerAttributes } from '../useTriggerAttributes'
+import type { TriggerAttributes } from '../types/useTriggerAttributes.types'
 
 function mountTrigger(attributes: () => TriggerAttributes, content: () => ReturnType<typeof h>[], withId = true) {
 	let api!: ReturnType<typeof useTriggerAttributes>

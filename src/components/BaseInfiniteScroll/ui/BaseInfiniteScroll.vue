@@ -37,7 +37,7 @@ import type {
 	BaseInfiniteScrollSlots,
 	InfiniteScrollResult,
 	InfiniteScrollStatus,
-} from '../model/BaseInfiniteScroll.types'
+} from '../types/BaseInfiniteScroll.types'
 
 const props = withDefaults(
 	defineProps<BaseInfiniteScrollProps>(),

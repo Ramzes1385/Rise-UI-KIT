@@ -63,7 +63,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
-import type { BaseTableRowEmits, BaseTableRowProps, BaseTableRowSlots } from '../model/BaseTableRow.types'
+import type { BaseTableRowEmits, BaseTableRowProps, BaseTableRowSlots } from '../types/BaseTableRow.types'
 
 const props = defineProps<BaseTableRowProps>()
 

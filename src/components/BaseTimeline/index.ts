@@ -1,3 +1,3 @@
-export { TIMELINE_VARIANTS } from './model/BaseTimeline.types'
-export type { BaseTimelineProps, BaseTimelineSlots, TimelineColor, TimelineItem } from './model/BaseTimeline.types'
+export { TIMELINE_VARIANTS } from './types/BaseTimeline.types'
+export type { BaseTimelineProps, BaseTimelineSlots, TimelineColor, TimelineItem } from './types/BaseTimeline.types'
 export { default as BaseTimeline } from './ui/BaseTimeline.vue'

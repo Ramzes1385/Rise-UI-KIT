@@ -8,7 +8,7 @@ import { fireEvent, render } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import BaseTreeNode from '../ui/BaseTreeNode.vue'
 import BaseTreeChildren from '../ui/BaseTreeChildren.vue'
-import type { TreeNode } from '../model/BaseTree.types'
+import type { TreeNode } from '../types/BaseTree.types'
 
 const NESTED_ITEMS: TreeNode[] = [
 	{

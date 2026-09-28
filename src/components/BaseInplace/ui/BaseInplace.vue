@@ -40,7 +40,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseInplace } from '../model/useBaseInplace'
 import '../styles/BaseInplace.style.scss'
-import type { BaseInplaceEmits, BaseInplaceProps, BaseInplaceSlots } from '../model/BaseInplace.types'
+import type { BaseInplaceEmits, BaseInplaceProps, BaseInplaceSlots } from '../types/BaseInplace.types'
 
 const props = withDefaults(
 	defineProps<BaseInplaceProps>(),

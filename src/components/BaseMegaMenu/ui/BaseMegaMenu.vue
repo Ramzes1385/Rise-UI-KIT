@@ -121,7 +121,7 @@ import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
 import '../styles/BaseMegaMenu.style.scss'
-import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../model/BaseMegaMenu.types'
+import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../types/BaseMegaMenu.types'
 
 const props = withDefaults(
 	defineProps<BaseMegaMenuProps>(),

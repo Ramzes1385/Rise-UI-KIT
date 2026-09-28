@@ -7,7 +7,7 @@ import '@testing-library/jest-dom/vitest'
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import ChatMessageItem from '../ui/ChatMessage.vue'
-import type { ChatMessage } from '../../../model/BaseChat.types'
+import type { ChatMessage } from '../../../types/BaseChat.types'
 
 const BASE_MESSAGE: ChatMessage = {
 	id: '1',

@@ -14,7 +14,7 @@ import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseButton from '../ui/BaseButton.vue'
-import { BUTTON_TYPES, BUTTON_VARIANTS } from '../model/BaseButton.types'
+import { BUTTON_TYPES, BUTTON_VARIANTS } from '../types/BaseButton.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

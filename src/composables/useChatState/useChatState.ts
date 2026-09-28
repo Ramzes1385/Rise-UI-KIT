@@ -4,8 +4,8 @@ import { useChatReply } from '@composables/useChatReply'
 import { useChatSearch } from '@composables/useChatSearch'
 import { useChatInfoPanel } from '@composables/useChatInfoPanel'
 import { useChatSelection } from '@composables/useChatSelection'
-import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
-import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from './useChatState.types'
+import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
+import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from './types/useChatState.types'
 
 /** Оркестратор состояния чата — объединяет поиск, выделение, панель информации, ответ, закреплённые сообщения. */
 function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options: UseChatStateOptions = {}) {

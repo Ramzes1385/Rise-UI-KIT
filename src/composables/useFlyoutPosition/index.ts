@@ -1,2 +1,2 @@
 export { useFlyoutPosition } from './useFlyoutPosition'
-export type { UseFlyoutPositionOptions, UseFlyoutPositionReturn } from './useFlyoutPosition.types'
+export type { UseFlyoutPositionOptions, UseFlyoutPositionReturn } from './types/useFlyoutPosition.types'

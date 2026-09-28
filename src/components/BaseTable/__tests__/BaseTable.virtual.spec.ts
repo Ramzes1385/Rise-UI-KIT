@@ -8,7 +8,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTable from '../ui/BaseTable.vue'
-import type { TableColumn, TableRow } from '../model/BaseTable.types'
+import type { TableColumn, TableRow } from '../types/BaseTable.types'
 
 const COLUMNS: TableColumn[] = [
 	{ key: 'title', label: 'Заказ' },

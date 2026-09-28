@@ -8,7 +8,7 @@
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseKbd from '../ui/BaseKbd.vue'
-import { KBD_VARIANTS } from '../model/BaseKbd.types'
+import { KBD_VARIANTS } from '../types/BaseKbd.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

@@ -1,6 +1,6 @@
 /** Composable: определение явно переданных пропсов и разрешение дефолтов булевых значений */
 import { getCurrentInstance } from 'vue'
-import type { UseExplicitPropDetectionReturn } from './useExplicitPropDetection.types'
+import type { UseExplicitPropDetectionReturn } from './types/useExplicitPropDetection.types'
 
 function toKebabCase(value: string): string {
 	return value.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)

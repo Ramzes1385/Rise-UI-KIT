@@ -57,7 +57,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseCard.style.scss'
-import type { BaseCardProps, BaseCardSlots } from '../model/BaseCard.types'
+import type { BaseCardProps, BaseCardSlots } from '../types/BaseCard.types'
 
 const props = withDefaults(
 	defineProps<BaseCardProps>(),

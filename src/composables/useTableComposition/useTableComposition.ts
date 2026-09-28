@@ -9,8 +9,8 @@ import { useColumnResize } from '@composables/useColumnResize'
 import { useTableColumns } from '@composables/useTableColumns'
 import { useTableToolbar } from '@composables/useTableToolbar'
 import { useTableSelection } from '@composables/useTableSelection'
-import type { UseTableCompositionOptions } from './useTableComposition.types'
-import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { UseTableCompositionOptions } from './types/useTableComposition.types'
+import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
 /** Наименьшая ширина колонки при изменении размера, px */
 const MIN_COL_WIDTH = 50

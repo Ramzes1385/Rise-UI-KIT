@@ -74,7 +74,7 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseDrawer.style.scss'
-import type { BaseDrawerEmits, BaseDrawerProps, BaseDrawerSlots } from '../model/BaseDrawer.types'
+import type { BaseDrawerEmits, BaseDrawerProps, BaseDrawerSlots } from '../types/BaseDrawer.types'
 
 const props = withDefaults(
 	defineProps<BaseDrawerProps>(),

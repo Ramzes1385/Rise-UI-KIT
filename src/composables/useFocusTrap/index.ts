@@ -1,2 +1,2 @@
 export { useFocusTrap } from './useFocusTrap'
-export type { UseFocusTrapOptions } from './useFocusTrap.types'
+export type { UseFocusTrapOptions } from './types/useFocusTrap.types'

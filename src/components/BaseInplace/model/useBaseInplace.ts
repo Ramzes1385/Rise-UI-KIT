@@ -2,22 +2,7 @@
 import { nextTick, ref, useId } from 'vue'
 import { useFormDisabled } from '@composables/useFormContext'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
-import type { BaseInput } from '@components/BaseInput'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseInplaceEmits, BaseInplaceProps } from './BaseInplace.types'
-
-/** Пропсы BaseInplace после значений по умолчанию */
-export type InplaceProps = PropsWithDefaults<BaseInplaceProps, 'modelValue' | 'placeholder' | 'isDisabled' | 'isSaveOnBlur'>
-
-/** Состояние правки: режим, текст поля и элементы, между которыми переходит фокус */
-interface InplaceState {
-	isEditing: Ref<boolean>
-	draft: Ref<string>
-	displayRef: Ref<HTMLButtonElement | null>
-	inputRef: Ref<InstanceType<typeof BaseInput> | null>
-	isControlDisabled: Readonly<Ref<boolean>>
-}
+import type { BaseInplaceEmits, InplaceProps, InplaceState } from '../types/BaseInplace.types'
 
 function useInplaceActions(props: InplaceProps, emit: BaseInplaceEmits, state: InplaceState) {
 	/** Режим правки: поле с текущим текстом, фокус и выделение в нём */

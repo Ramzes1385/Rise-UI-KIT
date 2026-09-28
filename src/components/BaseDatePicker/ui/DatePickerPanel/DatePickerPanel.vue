@@ -118,8 +118,8 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useDatePickerPanelNavigation } from '@composables/useDatePickerPanelNavigation'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
-import { pickDatePickerCalendarConfig, toBaseCalendarProps, withoutTimeBlock } from '../../model/BaseDatePickerCalendar.types'
-import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../model/DatePickerPanel.types'
+import { pickDatePickerCalendarConfig, toBaseCalendarProps, withoutTimeBlock } from '../../model/datePickerCalendarConfig'
+import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../types/DatePickerPanel.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

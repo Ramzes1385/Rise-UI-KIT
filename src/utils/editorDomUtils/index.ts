@@ -12,4 +12,4 @@ export {
 	toHTMLElement,
 	TYPED_INLINE_TAGS,
 } from './editorDomUtils'
-export type { TypedInlineTagMatch } from './editorDomUtils.types'
+export type { TypedInlineTagMatch } from './types/editorDomUtils.types'

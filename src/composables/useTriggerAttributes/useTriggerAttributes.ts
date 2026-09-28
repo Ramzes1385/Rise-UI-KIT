@@ -1,9 +1,7 @@
 /** Composable: ARIA-атрибуты на элементе-триггере из слота (кнопка внутри обёртки компонента) */
 import { onBeforeUnmount, onMounted, onUpdated, ref, useId, watch } from 'vue'
 import type { Ref } from 'vue'
-
-/** Значение атрибута; `undefined` — атрибута нет */
-export type TriggerAttributes = Record<string, string | undefined>
+import type { TriggerAttributes } from './types/useTriggerAttributes.types'
 
 /**
  * Фокусируемые элементы: триггером считается первый из них внутри обёртки. Ссылки — только `a` и `area`:

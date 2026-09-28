@@ -113,7 +113,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { findTypeaheadIndex, toMenuGroups } from '@utils/menuUtils'
-import type { DropdownMenuItem, DropdownMenuItems, DropdownMenuVariant } from '../model/BaseDropdownMenu.types'
+import type { DropdownMenuItem, DropdownMenuItems, DropdownMenuVariant } from '../types/BaseDropdownMenu.types'
 
 defineOptions({ name: 'DropdownMenuContent' })
 

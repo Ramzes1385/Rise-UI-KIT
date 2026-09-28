@@ -6,7 +6,7 @@
 import { h, nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useSlider } from '../useSlider'
-import type { UseSliderReturn } from '../useSlider.types'
+import type { UseSliderReturn } from '../types/useSlider.types'
 
 /** Захват callbacks из useSwipe для тестирования handleDragEnd */
 const swipeCallbacks = vi.hoisted(() => ({

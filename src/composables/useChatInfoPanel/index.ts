@@ -1,2 +1,2 @@
 export { useChatInfoPanel } from './useChatInfoPanel'
-export type { UseChatInfoPanelOptions } from './useChatInfoPanel.types'
+export type { UseChatInfoPanelOptions } from './types/useChatInfoPanel.types'

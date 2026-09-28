@@ -65,7 +65,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseAccordion.style.scss'
-import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../model/BaseAccordion.types'
+import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../types/BaseAccordion.types'
 
 const props = withDefaults(
 	defineProps<BaseAccordionProps>(),

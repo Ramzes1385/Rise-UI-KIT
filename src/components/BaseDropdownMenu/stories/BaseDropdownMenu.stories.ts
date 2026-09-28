@@ -12,9 +12,9 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
-import { DROPDOWN_MENU_VARIANTS } from '../model/BaseDropdownMenu.types'
+import { DROPDOWN_MENU_VARIANTS } from '../types/BaseDropdownMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { DropdownMenuItem } from '../model/BaseDropdownMenu.types'
+import type { DropdownMenuItem } from '../types/BaseDropdownMenu.types'
 
 /** Действия с серией: три группы, подменю экспорта, опасное действие последним */
 const EPISODE_ACTIONS: DropdownMenuItem[][] = [

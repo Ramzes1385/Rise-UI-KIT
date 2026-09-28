@@ -7,7 +7,7 @@
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSplitButton from '../ui/BaseSplitButton.vue'
-import { SPLIT_BUTTON_VARIANTS } from '../model/BaseSplitButton.types'
+import { SPLIT_BUTTON_VARIANTS } from '../types/BaseSplitButton.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { DropdownMenuItems } from '@components/BaseDropdownMenu'
 

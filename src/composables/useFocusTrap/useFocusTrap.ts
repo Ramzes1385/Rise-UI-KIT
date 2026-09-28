@@ -1,6 +1,6 @@
 /** Composable: удержание фокуса внутри модального окна */
 import { onBeforeUnmount, onMounted, watch } from 'vue'
-import type { UseFocusTrapOptions } from './useFocusTrap.types'
+import type { UseFocusTrapOptions } from './types/useFocusTrap.types'
 
 /** Элементы, которые могут получить фокус с клавиатуры */
 const FOCUSABLE_SELECTOR = [

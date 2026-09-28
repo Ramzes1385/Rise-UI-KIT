@@ -38,7 +38,7 @@ import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'
 import './ChatSelectionToolbar.style.scss'
 
-import type { ChatSelectionToolbarEmits, ChatSelectionToolbarProps } from '../../model/ChatSelectionToolbar.types'
+import type { ChatSelectionToolbarEmits, ChatSelectionToolbarProps } from '../../types/ChatSelectionToolbar.types'
 
 withDefaults(defineProps<ChatSelectionToolbarProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,

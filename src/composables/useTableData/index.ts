@@ -1,2 +1,2 @@
 export { useTableData } from './useTableData'
-export type { UseTableDataOptions } from './useTableData.types'
+export type { UseTableDataOptions } from './types/useTableData.types'

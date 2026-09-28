@@ -35,7 +35,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import '../styles/BasePopover.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
+import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../types/BasePopover.types'
 
 const props = withDefaults(
 	defineProps<BasePopoverProps>(),

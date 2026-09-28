@@ -2,13 +2,10 @@
 import { shallowRef } from 'vue'
 import { en } from './en'
 import { ru } from './ru'
-import type { LocaleOverrides, UiKitLocale } from './types'
+import type { LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
 /** Встроенные языки */
 export const LOCALES = { ru: ru as UiKitLocale, en } as const
-
-/** Код встроенного языка или словарь */
-export type LocaleInput = keyof typeof LOCALES | UiKitLocale
 
 /** Текущий язык: shallowRef — компоненты перерисовываются при смене языка */
 export const currentLocale = shallowRef<UiKitLocale>(LOCALES.ru)

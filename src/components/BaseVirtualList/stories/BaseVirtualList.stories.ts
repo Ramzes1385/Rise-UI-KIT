@@ -9,7 +9,7 @@ import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWitho
 import BaseVirtualList from '../ui/BaseVirtualList.vue'
 import type { ConcreteComponent } from 'vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { BaseVirtualListProps } from '../model/BaseVirtualList.types'
+import type { BaseVirtualListProps } from '../types/BaseVirtualList.types'
 
 /** 10 000 заказов: номер, город и сумма */
 const CITIES = ['Москва', 'Казань', 'Волгоград', 'Самара', 'Пермь']

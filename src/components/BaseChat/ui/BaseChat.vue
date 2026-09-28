@@ -137,12 +137,7 @@ import { ChatSlideover } from './ChatSlideover'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
-import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../model/BaseChat.types'
-
-/** Публичные методы ChatMessageList, экспонированные через defineExpose */
-interface MessageListExposed {
-	scrollToMessage: (messageId: string) => void
-}
+import type { BaseChatEmits, BaseChatProps, BaseChatSlots, MessageListExposed } from '../types/BaseChat.types'
 
 const props = withDefaults(
 	defineProps<BaseChatProps>(),

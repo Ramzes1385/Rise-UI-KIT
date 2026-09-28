@@ -4,7 +4,7 @@
 
 import { ref } from 'vue'
 import { useTableFilter } from '../useTableFilter'
-import type { TableColumn } from '@components/BaseTable/model/BaseTable.types'
+import type { TableColumn } from '@components/BaseTable/types/BaseTable.types'
 
 const testColumns = ref<TableColumn[]>([
 	{ key: 'name', label: 'Имя' },

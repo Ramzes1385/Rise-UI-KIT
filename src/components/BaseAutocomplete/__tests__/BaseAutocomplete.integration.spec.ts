@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
 import { BaseForm } from '@components/BaseForm'
 import BaseAutocomplete from '../ui/BaseAutocomplete.vue'
-import type { AutocompleteOption } from '../model/BaseAutocomplete.types'
+import type { AutocompleteOption } from '../types/BaseAutocomplete.types'
 
 const CITIES: AutocompleteOption[] = [
 	{ value: 'msk', label: 'Москва' },

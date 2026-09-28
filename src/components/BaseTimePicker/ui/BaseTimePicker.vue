@@ -38,7 +38,7 @@ import { BaseAutocomplete } from '@components/BaseAutocomplete'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/timeUtils'
 import type { AutocompleteOption } from '@components/BaseAutocomplete'
-import type { BaseTimePickerEmits, BaseTimePickerProps } from '../model/BaseTimePicker.types'
+import type { BaseTimePickerEmits, BaseTimePickerProps } from '../types/BaseTimePicker.types'
 
 const props = withDefaults(
 	defineProps<BaseTimePickerProps>(),

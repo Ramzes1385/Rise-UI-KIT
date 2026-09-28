@@ -3,8 +3,8 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { generateId } from '@utils/idUtils'
 import { UI_TEXT } from '@/locales/messages'
 import { createImagePreview, getExtension, validateFile } from '@utils/fileUtils'
-import type { UseFileUploadStateOptions } from './useFileUploadState.types'
-import type { UploadedFile } from '@components/BaseFileUpload/model/BaseFileUpload.types'
+import type { UseFileUploadStateOptions } from './types/useFileUploadState.types'
+import type { UploadedFile } from '@components/BaseFileUpload/types/BaseFileUpload.types'
 
 /** Имитация загрузки: прибавка прогресса за шаг — от PROGRESS_STEP_MIN до PROGRESS_STEP_MIN + PROGRESS_STEP_RANGE, % */
 const PROGRESS_STEP_MIN = 5

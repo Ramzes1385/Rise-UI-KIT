@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import type { FormFieldLabelProps } from '../model/FormFieldLabel.types'
+import type { FormFieldLabelProps } from '../types/FormFieldLabel.types'
 
 withDefaults(defineProps<FormFieldLabelProps>(), {
 	tag: 'label',

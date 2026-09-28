@@ -113,7 +113,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useTourCoordination } from '@composables/useTourCoordination'
 import '../styles/BaseTour.style.scss'
-import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../model/BaseTour.types'
+import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../types/BaseTour.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

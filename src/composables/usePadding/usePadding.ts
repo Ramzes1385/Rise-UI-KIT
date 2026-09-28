@@ -1,17 +1,8 @@
 /** Composable: разрешение padding (число/объект) в отступы по четырём сторонам */
 import { computed } from 'vue'
-import type { PaddingProp, PaddingValue, ResolvedPadding, ResolvedPaddingSides, UsePaddingOptions } from './usePadding.types'
+import type { PaddingProp, PaddingValue, ResolvedPaddingSides, ResolvePaddingResult, UsePaddingOptions } from './types/usePadding.types'
 
 const ALL_SIDES_SET: ResolvedPaddingSides = { top: true, right: true, bottom: true, left: true }
-
-/**
- * Результат разрешения padding: значения по сторонам и признак того,
- * какие стороны выведены из входных данных.
- */
-export interface ResolvePaddingResult {
-	values: ResolvedPadding
-	sides: ResolvedPaddingSides
-}
 
 /**
  * Разрешает значение padding (число или объект) в отступы по четырём сторонам.

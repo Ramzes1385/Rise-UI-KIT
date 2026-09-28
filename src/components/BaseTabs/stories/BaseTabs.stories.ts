@@ -10,8 +10,8 @@ import { ref } from 'vue'
 import { expect, fn, waitFor, within } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseTabs from '../ui/BaseTabs.vue'
-import { TABS_VARIANTS } from '../model/BaseTabs.types'
-import type { TabItem } from '../model/BaseTabs.types'
+import { TABS_VARIANTS } from '../types/BaseTabs.types'
+import type { TabItem } from '../types/BaseTabs.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const TABS: TabItem[] = [

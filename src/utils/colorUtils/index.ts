@@ -1,2 +1,2 @@
 export { channelToHex, clamp, hexToHsv, hexToRgb, hsvToHex, hsvToRgb, isValidHex, normalizeHex, rgbToHex, rgbToHsv } from './colorUtils'
-export type { HsvColor, RgbColor } from './colorUtils.types'
+export type { HsvColor, RgbColor } from './types/colorUtils.types'

@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { BaseCalendar } from '@components/BaseCalendar'
-import { toBaseCalendarProps, withoutTimeBlock } from '../../model/BaseDatePickerCalendar.types'
-import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from '../../model/DatePickerRangePanel.types'
+import { toBaseCalendarProps, withoutTimeBlock } from '../../model/datePickerCalendarConfig'
+import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from '../../types/DatePickerRangePanel.types'
 
 const props = defineProps<DatePickerRangePanelProps>()
 

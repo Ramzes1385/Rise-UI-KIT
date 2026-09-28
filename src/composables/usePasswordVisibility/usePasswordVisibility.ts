@@ -1,6 +1,6 @@
 /** Composable: управление видимостью пароля в инпуте */
 import { computed, ref } from 'vue'
-import type { UsePasswordVisibilityOptions } from './usePasswordVisibility.types'
+import type { UsePasswordVisibilityOptions } from './types/usePasswordVisibility.types'
 
 /**
  * Composable для управления видимостью пароля в инпуте

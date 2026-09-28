@@ -19,9 +19,9 @@ import {
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
-import { BREADCRUMBS_VARIANTS } from '../model/BaseBreadcrumbs.types'
+import { BREADCRUMBS_VARIANTS } from '../types/BaseBreadcrumbs.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { BreadcrumbItem, BreadcrumbSeparator } from '../model/BaseBreadcrumbs.types'
+import type { BreadcrumbItem, BreadcrumbSeparator } from '../types/BaseBreadcrumbs.types'
 
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },

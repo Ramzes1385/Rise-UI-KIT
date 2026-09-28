@@ -14,7 +14,7 @@
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseBadge.style.scss'
-import type { BaseBadgeEmits, BaseBadgeProps, BaseBadgeSlots } from '../model/BaseBadge.types'
+import type { BaseBadgeEmits, BaseBadgeProps, BaseBadgeSlots } from '../types/BaseBadge.types'
 
 const props = withDefaults(
 	defineProps<BaseBadgeProps>(),

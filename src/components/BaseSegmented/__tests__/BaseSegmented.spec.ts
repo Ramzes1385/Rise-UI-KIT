@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseSegmented from '../ui/BaseSegmented.vue'
-import type { SegmentedOption } from '../model/BaseSegmented.types'
+import type { SegmentedOption } from '../types/BaseSegmented.types'
 
 const OPTIONS: SegmentedOption[] = [
 	{ value: 'day', label: 'День', icon: 'calendar' },

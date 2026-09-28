@@ -14,7 +14,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BasePopover from '../ui/BasePopover.vue'
-import { POPOVER_VARIANTS } from '../model/BasePopover.types'
+import { POPOVER_VARIANTS } from '../types/BasePopover.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */

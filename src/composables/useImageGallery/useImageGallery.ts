@@ -1,6 +1,6 @@
 /** Composable: управление галереей изображений (навигация, текущий src) */
 import { computed, ref } from 'vue'
-import type { UseImageGalleryOptions, UseImageGalleryReturn } from './useImageGallery.types'
+import type { UseImageGalleryOptions, UseImageGalleryReturn } from './types/useImageGallery.types'
 
 /** Описание: управляет галереей изображений — навигация вперёд/назад, переход к конкретному индексу и текущий src с учётом zoom */
 function useImageGallery(options: UseImageGalleryOptions): UseImageGalleryReturn {

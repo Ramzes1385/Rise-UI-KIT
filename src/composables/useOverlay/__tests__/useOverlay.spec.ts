@@ -8,7 +8,7 @@ import {
 	setActiveOverlayStore,
 	useOverlay,
 } from '../useOverlay'
-import type { OverlayStore, UseOverlayReturn } from '../useOverlay.types'
+import type { OverlayStore, UseOverlayReturn } from '../types/useOverlay.types'
 
 const Dialog = defineComponent({ name: 'TestDialog', render: () => null })
 

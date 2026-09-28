@@ -33,7 +33,7 @@ import { BaseAvatar } from '@components/BaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseUser.style.scss'
-import type { BaseUserProps, BaseUserSlots } from '../model/BaseUser.types'
+import type { BaseUserProps, BaseUserSlots } from '../types/BaseUser.types'
 
 const props = withDefaults(
 	defineProps<BaseUserProps>(),

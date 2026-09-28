@@ -13,8 +13,8 @@ import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseTour from '../ui/BaseTour.vue'
-import { TOUR_PLACEMENTS } from '../model/BaseTour.types'
-import type { TourStep } from '../model/BaseTour.types'
+import { TOUR_PLACEMENTS } from '../types/BaseTour.types'
+import type { TourStep } from '../types/BaseTour.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Шаги тура по панели инструментов из DEMO_TOOLBAR. */

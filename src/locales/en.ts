@@ -1,4 +1,4 @@
-import type { UiKitLocale } from './types'
+import type { UiKitLocale } from './types/locales.types'
 
 /** Английский словарь кита. Ключи и места для значений — как в русском (`ru.ts`) */
 export const en: UiKitLocale = {

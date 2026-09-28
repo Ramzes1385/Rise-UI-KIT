@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseCalendarMonthsEmits, BaseCalendarMonthsProps } from '../model/BaseCalendarMonths.types'
+import type { BaseCalendarMonthsEmits, BaseCalendarMonthsProps } from '../types/BaseCalendarMonths.types'
 
 defineProps<BaseCalendarMonthsProps>()
 

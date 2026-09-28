@@ -81,7 +81,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
 import '../styles/BaseMegaMenu.style.scss'
-import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../model/BaseMegaMenuNode.types'
+import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../types/BaseMegaMenuNode.types'
 
 const props = defineProps<BaseMegaMenuNodeProps>()
 const emit = defineEmits<BaseMegaMenuNodeEmits>()

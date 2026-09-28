@@ -39,7 +39,7 @@ import { useFormDisabled } from '@composables/useFormContext'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 import '../styles/BaseRating.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../model/BaseRating.types'
+import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../types/BaseRating.types'
 
 const props = withDefaults(
 	defineProps<BaseRatingProps>(),

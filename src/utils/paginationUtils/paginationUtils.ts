@@ -2,7 +2,7 @@
 
 import { UI_TEXT } from '@/locales/messages'
 import { formatMessage, formatNumber } from '@/locales/state'
-import type { PageInfoOptions, VisiblePageItem, VisiblePagesOptions } from './paginationUtils.types'
+import type { PageInfoOptions, VisiblePageItem, VisiblePagesOptions } from './types/paginationUtils.types'
 
 /** Рассчитать общее количество страниц */
 function calcTotalPages(total: number, pageSize: number): number {

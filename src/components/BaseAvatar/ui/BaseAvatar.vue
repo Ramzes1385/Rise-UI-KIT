@@ -29,7 +29,7 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseAvatar.style.scss'
-import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
+import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../types/BaseAvatar.types'
 
 const props = withDefaults(
 	defineProps<BaseAvatarProps>(),

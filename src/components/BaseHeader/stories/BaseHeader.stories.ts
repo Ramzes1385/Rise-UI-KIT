@@ -11,7 +11,7 @@ import { DRAWER_DIRECTIONS } from '@components/BaseDrawer'
 import { CONTAINER_SIZES } from '@components/BaseContainer'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseHeader from '../ui/BaseHeader.vue'
-import { HEADER_VARIANTS } from '../model/BaseHeader.types'
+import { HEADER_VARIANTS } from '../types/BaseHeader.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const NAV = `

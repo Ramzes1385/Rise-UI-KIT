@@ -1,2 +1,2 @@
 export { useColorPicker } from './useColorPicker'
-export type { RelativePoint, UseColorPickerOptions, UseColorPickerReturn } from './useColorPicker.types'
+export type { RelativePoint, UseColorPickerOptions, UseColorPickerReturn } from './types/useColorPicker.types'

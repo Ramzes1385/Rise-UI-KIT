@@ -15,7 +15,7 @@ import { BaseSelect } from '@components/BaseSelect'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseFileUpload } from '@components/BaseFileUpload'
 import BaseForm from '../ui/BaseForm.vue'
-import type { BaseFormExpose } from '../model/BaseForm.types'
+import type { BaseFormExpose } from '../types/BaseForm.types'
 import type { StandardSchemaResult, StandardSchemaV1 } from '@utils/formUtils'
 
 describe('BaseForm integration', () => {

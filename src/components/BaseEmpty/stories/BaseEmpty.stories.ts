@@ -13,7 +13,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseEmpty from '../ui/BaseEmpty.vue'
-import { EMPTY_VARIANTS } from '../model/BaseEmpty.types'
+import { EMPTY_VARIANTS } from '../types/BaseEmpty.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const PROJECTS = ['Ребрендинг', 'Мобильное приложение', 'Справочный центр', 'Интеграция с платёжным сервисом']

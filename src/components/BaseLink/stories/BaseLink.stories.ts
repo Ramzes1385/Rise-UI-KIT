@@ -21,7 +21,7 @@ import {
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
 import BaseLink from '../ui/BaseLink.vue'
-import { LINK_VARIANTS } from '../model/BaseLink.types'
+import { LINK_VARIANTS } from '../types/BaseLink.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

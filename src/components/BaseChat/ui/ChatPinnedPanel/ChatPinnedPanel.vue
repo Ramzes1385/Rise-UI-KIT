@@ -52,8 +52,8 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'
-import type { ChatMessage } from '../../model/BaseChat.types'
-import type { ChatPinnedPanelEmits, ChatPinnedPanelProps } from '../../model/ChatPinnedPanel.types'
+import type { ChatMessage } from '../../types/BaseChat.types'
+import type { ChatPinnedPanelEmits, ChatPinnedPanelProps } from '../../types/ChatPinnedPanel.types'
 import './ChatPinnedPanel.style.scss'
 
 const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {

@@ -1,0 +1,31 @@
+/** Параметры composable useImageZoom */
+interface UseImageZoomOptions {
+	/** Начальный масштаб */
+	initialScale: () => number
+	/** Шаг изменения масштаба */
+	zoomStep: () => number
+	/** Минимальный масштаб */
+	minScale: () => number
+	/** Максимальный масштаб */
+	maxScale: () => number
+	/** Закрывать по клику на оверлей */
+	closeOnOverlay: () => boolean
+	/** Callback при изменении масштаба */
+	onZoom?: (scale: number) => void
+	/** Zoom-изображение (img) для расчёта viewport */
+	getZoomImgEl?: () => HTMLElement | null
+	/** Изображение мини-карты (img) для расчёта viewport */
+	getMinimapImgEl?: () => HTMLElement | null
+	/** Callback при нажатии стрелки влево (навигация галереи) */
+	onArrowLeft?: () => void
+	/** Callback при нажатии стрелки вправо (навигация галереи) */
+	onArrowRight?: () => void
+}
+
+export type { UseImageZoomOptions }
+
+/** Ширина и высота, px */
+export interface Size {
+	width: number
+	height: number
+}

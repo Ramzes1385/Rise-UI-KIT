@@ -1,6 +1,6 @@
 /** Утилиты: обход и сбор данных из древовидных структур */
 
-import type { TreeNode } from '@components/BaseTree/model/BaseTree.types'
+import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'
 
 /** Собрать id потомков в массив без создания промежуточных массивов */
 export function collectDescendantIdsInto(children: TreeNode[], ids: string[]): void {

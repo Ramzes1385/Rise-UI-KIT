@@ -1,6 +1,6 @@
 /** Composable: признак прокрутки у области с overflow — чтобы сделать её доступной с клавиатуры */
 import { onBeforeUnmount, ref, watch } from 'vue'
-import type { UseScrollableRegionOptions, UseScrollableRegionReturn } from './useScrollableRegion.types'
+import type { UseScrollableRegionOptions, UseScrollableRegionReturn } from './types/useScrollableRegion.types'
 
 /**
  * Следит, прокручивается ли элемент: содержимое выше видимой области (scrollHeight > clientHeight).

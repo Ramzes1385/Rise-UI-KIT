@@ -120,9 +120,9 @@ import { BaseLink } from '@components/BaseLink'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import BaseTreeChildren from './BaseTreeChildren.vue'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import type { TreeContext } from '../model/BaseTree.types'
-import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../model/BaseTreeNode.types'
+import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
+import type { TreeContext } from '../types/BaseTree.types'
+import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../types/BaseTreeNode.types'
 import '../styles/BaseTree.style.scss'
 
 const props = defineProps<BaseTreeNodeProps>()

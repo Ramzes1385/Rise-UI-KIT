@@ -4,7 +4,7 @@
 
 import { computed, nextTick, ref } from 'vue'
 import { useTableSelection } from '../useTableSelection'
-import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 
 describe('useTableSelection', () => {
 	it('синхронизирует selectedIds из row.isSelected', async () => {

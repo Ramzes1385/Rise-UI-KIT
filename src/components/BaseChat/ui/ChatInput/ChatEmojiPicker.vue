@@ -35,7 +35,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { useClickOutside } from '@composables/useClickOutside'
-import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './ChatEmojiPicker.types'
+import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './types/ChatEmojiPicker.types'
 
 defineProps<ChatEmojiPickerProps>()
 

@@ -29,7 +29,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { useCustomClass } from '@composables/useCustomClass'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseBackTop.style.scss'
-import type { BaseBackTopEmits, BaseBackTopProps } from '../model/BaseBackTop.types'
+import type { BaseBackTopEmits, BaseBackTopProps } from '../types/BaseBackTop.types'
 
 const props = withDefaults(
 	defineProps<BaseBackTopProps>(),

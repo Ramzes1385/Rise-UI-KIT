@@ -9,9 +9,9 @@ import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseAutocomplete from '../ui/BaseAutocomplete.vue'
-import { AUTOCOMPLETE_VARIANTS } from '../model/BaseAutocomplete.types'
+import { AUTOCOMPLETE_VARIANTS } from '../types/BaseAutocomplete.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { AutocompleteOption } from '../model/BaseAutocomplete.types'
+import type { AutocompleteOption } from '../types/BaseAutocomplete.types'
 
 /** Города доставки */
 const CITIES: AutocompleteOption[] = [

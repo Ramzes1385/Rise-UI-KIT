@@ -1,4 +1,4 @@
-export { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from './model/BaseNotification.types'
+export { NOTIFICATION_POSITIONS, NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from './types/BaseNotification.types'
 export type {
 	BaseNotificationEmits,
 	BaseNotificationExpose,
@@ -8,5 +8,5 @@ export type {
 	NotificationId,
 	NotificationItem,
 	NotificationPosition,
-} from './model/BaseNotification.types'
+} from './types/BaseNotification.types'
 export { default as BaseNotification } from './ui/BaseNotification.vue'

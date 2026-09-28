@@ -23,8 +23,8 @@
 
 <script setup lang="ts">
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import type { ChatMessageReaction } from '../../../model/BaseChat.types'
-import type { ChatMessageReactionsEmits, ChatMessageReactionsProps } from '../model/ChatMessageReactions.types'
+import type { ChatMessageReaction } from '../../../types/BaseChat.types'
+import type { ChatMessageReactionsEmits, ChatMessageReactionsProps } from '../types/ChatMessageReactions.types'
 
 defineProps<ChatMessageReactionsProps>()
 const emit = defineEmits<ChatMessageReactionsEmits>()

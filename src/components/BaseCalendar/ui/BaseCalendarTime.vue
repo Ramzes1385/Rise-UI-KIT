@@ -52,7 +52,7 @@ import { computed, ref, useId } from 'vue'
 import { UI_CALENDAR } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
-import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../model/BaseCalendarTime.types'
+import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../types/BaseCalendarTime.types'
 
 const props = defineProps<BaseCalendarTimeProps>()
 

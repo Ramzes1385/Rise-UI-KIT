@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import type { FormFieldErrorProps } from '../model/FormFieldError.types'
+import type { FormFieldErrorProps } from '../types/FormFieldError.types'
 
 defineProps<FormFieldErrorProps>()
 </script>

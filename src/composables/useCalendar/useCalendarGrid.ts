@@ -1,7 +1,7 @@
 /** Composable: вычисление сетки дней календаря, названий месяцев, дней недели и диапазонов годов */
 import { computed } from 'vue'
 import { daysInMonth, getWeekNumber, getWeekday } from '@utils/dateUtils'
-import type { UseCalendarGridOptions } from './useCalendarGrid.types'
+import type { UseCalendarGridOptions } from './types/useCalendarGrid.types'
 
 /** Ячеек в сетке месяца: 6 недель по 7 дней — высота сетки не меняется от месяца к месяцу */
 const GRID_CELLS = 42

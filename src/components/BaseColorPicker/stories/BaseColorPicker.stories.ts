@@ -11,7 +11,7 @@ import { expect, fn, screen, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { ARG_GROUP, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
-import { COLOR_PICKER_POSITIONS } from '../model/BaseColorPicker.types'
+import { COLOR_PICKER_POSITIONS } from '../types/BaseColorPicker.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Фирменная палитра студии для примера своих пресетов. */

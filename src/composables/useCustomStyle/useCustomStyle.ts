@@ -1,9 +1,7 @@
 /** Composable: вычисление объекта стилей компонента */
 import { computed } from 'vue'
 import { hasElementKeys, isObject } from '@utils/typeUtils'
-import type { CustomStyleProp, UseCustomStyleOptions } from './useCustomStyle.types'
-
-type StyleResultValue = string | number | Record<string, string | number | undefined> | undefined
+import type { CustomStyleProp, StyleResultValue, UseCustomStyleOptions } from './types/useCustomStyle.types'
 
 /**
  * Composable для вычисления объекта стилей компонента.

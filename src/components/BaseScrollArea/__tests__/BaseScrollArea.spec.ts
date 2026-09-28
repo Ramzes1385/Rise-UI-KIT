@@ -7,7 +7,7 @@ import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { fireEvent, render } from '@testing-library/vue'
 import BaseScrollArea from '../ui/BaseScrollArea.vue'
-import type { BaseScrollAreaExpose } from '../model/BaseScrollArea.types'
+import type { BaseScrollAreaExpose } from '../types/BaseScrollArea.types'
 
 interface Size {
 	clientHeight?: number

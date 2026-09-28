@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import { effectScope, nextTick } from 'vue'
 import { useChatState } from '../useChatState'
-import type { ChatMessage } from '@components/BaseChat/model/BaseChat.types'
+import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 
 type Emit = Parameters<typeof useChatState>[1]
 

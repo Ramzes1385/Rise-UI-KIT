@@ -64,7 +64,7 @@ import { computed, ref } from 'vue'
 import { UI_CALENDAR } from '@/locales/messages'
 import { formatPopoverDate } from '@utils/dateUtils'
 import { useClickOutside } from '@composables/useClickOutside'
-import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../model/BaseCalendarDays.types'
+import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../types/BaseCalendarDays.types'
 
 const props = defineProps<BaseCalendarDaysProps>()
 

@@ -1,6 +1,6 @@
 /** Composable: выделение сообщений в чате */
 import { ref } from 'vue'
-import type { UseChatSelectionOptions } from './useChatSelection.types'
+import type { UseChatSelectionOptions } from './types/useChatSelection.types'
 
 /** Composable для выделения сообщений в чате — toggle, сброс, emit событий. */
 function useChatSelection(options: UseChatSelectionOptions) {

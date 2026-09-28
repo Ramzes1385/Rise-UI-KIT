@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
-import type { TreeNode } from '../model/BaseTree.types'
+import type { TreeNode } from '../types/BaseTree.types'
 
 /** Простые узлы без вложенности */
 const FLAT_ITEMS: TreeNode[] = [

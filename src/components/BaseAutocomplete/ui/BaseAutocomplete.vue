@@ -105,7 +105,7 @@ import type {
 	BaseAutocompleteEmits,
 	BaseAutocompleteProps,
 	BaseAutocompleteSlots,
-} from '../model/BaseAutocomplete.types'
+} from '../types/BaseAutocomplete.types'
 
 const props = withDefaults(
 	defineProps<BaseAutocompleteProps>(),

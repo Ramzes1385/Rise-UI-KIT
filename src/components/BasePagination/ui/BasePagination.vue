@@ -54,7 +54,7 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import '../styles/BasePagination.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../model/BasePagination.types'
+import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../types/BasePagination.types'
 
 const props = withDefaults(
 	defineProps<BasePaginationProps>(),

@@ -57,8 +57,8 @@ import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseDatePicker.style.scss'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
-import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
-import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../model/BaseDatePicker.types'
+import { resolveDatePickerCalendarConfig } from '../model/datePickerCalendarConfig'
+import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../types/BaseDatePicker.types'
 
 // Дефолты резолвятся через useExplicitPropDetection, а не withDefaults:
 // 1) boolean-пропы с дефолтом true (isReadonly, closeOnClickOutside, closeOnEscape) требуют wasPropPassed

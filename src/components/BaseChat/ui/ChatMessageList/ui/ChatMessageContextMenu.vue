@@ -71,7 +71,7 @@ import { useLayerIndex } from '@composables/useLayerStack'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { CHAT_SCALE } from '../../../model/chatScale'
-import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../model/ChatMessageContextMenu.types'
+import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

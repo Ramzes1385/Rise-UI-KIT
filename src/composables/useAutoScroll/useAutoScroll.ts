@@ -1,6 +1,6 @@
 /** Composable: автопрокрутка контейнера к низу */
 import { nextTick, onMounted, watch } from 'vue'
-import type { UseAutoScrollOptions } from './useAutoScroll.types'
+import type { UseAutoScrollOptions } from './types/useAutoScroll.types'
 
 /**
  * Composable для автопрокрутки контейнера к низу.

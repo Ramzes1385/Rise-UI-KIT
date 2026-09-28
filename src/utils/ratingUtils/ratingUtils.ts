@@ -1,6 +1,6 @@
 /** Утилиты: расчёт значения рейтинга по позиции указателя */
 
-import type { PointerValueOptions } from './ratingUtils.types'
+import type { PointerValueOptions } from './types/ratingUtils.types'
 
 /** Привязать оценку к ближайшему шагу в диапазоне [0, max] */
 function snapRating(value: number, step: number, max: number): number {

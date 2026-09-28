@@ -3,7 +3,7 @@ import { render } from '@testing-library/vue'
 import userEvent from '@testing-library/user-event'
 import { BaseCalendar } from '@components/BaseCalendar'
 import DatePickerRangePanel from '../ui/DatePickerRangePanel/DatePickerRangePanel.vue'
-import type { DatePickerRangePanelProps } from '../model/DatePickerRangePanel.types'
+import type { DatePickerRangePanelProps } from '../types/DatePickerRangePanel.types'
 
 /**
  * Имена props реального BaseCalendar: stub повторяет настоящий контракт

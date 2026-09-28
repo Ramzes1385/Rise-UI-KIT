@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/vue'
 import { BaseForm } from '@components/BaseForm'
 import { BaseFormField } from '@components/BaseFormField'
 import BaseSegmented from '../ui/BaseSegmented.vue'
-import type { SegmentedOption } from '../model/BaseSegmented.types'
+import type { SegmentedOption } from '../types/BaseSegmented.types'
 
 const OPTIONS: SegmentedOption[] = [
 	{ value: 'day', label: 'День' },

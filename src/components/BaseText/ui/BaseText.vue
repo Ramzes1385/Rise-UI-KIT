@@ -16,8 +16,8 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import '../styles/BaseText.style.scss'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { TEXT_WEIGHT } from '../model/BaseText.types'
-import type { BaseTextProps, BaseTextSlots } from '../model/BaseText.types'
+import { TEXT_WEIGHT } from '../model/textWeight'
+import type { BaseTextProps, BaseTextSlots } from '../types/BaseText.types'
 
 const props = withDefaults(
 	defineProps<BaseTextProps>(),

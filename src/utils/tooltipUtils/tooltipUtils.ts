@@ -1,6 +1,6 @@
 /** Утилиты: позиционирование тултипа относительно триггера, переворот и сдвиг у края окна */
 
-import type { TooltipLayout, TooltipPosition, TooltipPositionOptions } from './tooltipUtils.types'
+import type { TooltipLayout, TooltipPosition, TooltipPositionOptions } from './types/tooltipUtils.types'
 
 /** Отступ подсказки от края окна при сдвиге, px */
 const TOOLTIP_VIEWPORT_MARGIN = 8

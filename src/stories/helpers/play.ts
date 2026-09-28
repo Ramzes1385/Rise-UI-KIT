@@ -4,8 +4,7 @@
  */
 
 import { expect, userEvent as defaultUserEvent } from 'storybook/test'
-
-type UserEvent = Pick<typeof defaultUserEvent, 'tab'>
+import type { UserEvent } from './types/helpers.types'
 
 /**
  * Переводит фокус клавишей Tab на element (не больше maxSteps нажатий) и проверяет, что он получил фокус.

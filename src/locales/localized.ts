@@ -3,7 +3,7 @@
  * Чтение идёт через shallowRef, поэтому шаблоны и computed перерисовываются при смене языка (`setLocale`).
  */
 import { currentLocale } from './state'
-import type { LocaleSection, UiKitLocale } from './types'
+import type { LocaleSection, UiKitLocale } from './types/locales.types'
 
 export function localized<K extends LocaleSection>(section: K): Readonly<UiKitLocale[K]> {
 	const messages = (): Record<string, string> => currentLocale.value[section] as Record<string, string>

@@ -1,7 +1,7 @@
 /** Composable: отслеживание клика вне заданных элементов */
 import { useLayer } from '@composables/useLayerStack'
 import type { ComponentPublicInstance } from 'vue'
-import type { UseClickOutsideOptions } from './useClickOutside.types'
+import type { UseClickOutsideOptions } from './types/useClickOutside.types'
 
 function isComponentInstance(value: unknown): value is ComponentPublicInstance {
 	return typeof value === 'object' && value !== null && '$el' in value

@@ -12,7 +12,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseFormField from '../ui/BaseFormField.vue'
-import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
+import { FORM_FIELD_VARIANTS } from '../types/BaseFormField.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

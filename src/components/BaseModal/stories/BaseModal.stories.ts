@@ -26,7 +26,7 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseModal from '../ui/BaseModal.vue'
-import { MODAL_VARIANTS } from '../model/BaseModal.types'
+import { MODAL_VARIANTS } from '../types/BaseModal.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */

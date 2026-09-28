@@ -2,7 +2,7 @@
 import { onUnmounted, watch } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
-import type { UsePopupOptions } from './usePopup.types'
+import type { UsePopupOptions } from './types/usePopup.types'
 
 /**
  * Composable для паттерна popup: оверлей, Escape, блокировка скролла.

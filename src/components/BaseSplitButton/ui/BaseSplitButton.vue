@@ -43,7 +43,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseSplitButton.style.scss'
-import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../model/BaseSplitButton.types'
+import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../types/BaseSplitButton.types'
 
 const props = withDefaults(
 	defineProps<BaseSplitButtonProps>(),

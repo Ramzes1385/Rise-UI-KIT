@@ -1,18 +1,10 @@
 /** Composable: позиционирование выпадающей панели с переворотом и сдвигом у края окна */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { UseDropdownPositionOptions } from './useDropdownPosition.types'
-import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
+import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
+import type { Align, Edge, Geometry, Side, Size, UseDropdownPositionOptions } from './types/useDropdownPosition.types'
 
 /** Отступ панели от края окна при сдвиге, px */
 export const VIEWPORT_MARGIN = 8
-
-type Side = 'top' | 'bottom' | 'left' | 'right'
-type Align = 'start' | 'end' | 'center'
-
-interface Size {
-	width: number
-	height: number
-}
 
 const OPPOSITE: Record<Side, Side> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
 
@@ -33,21 +25,6 @@ function clamp(value: number, min: number, max: number): number {
 function getViewport(): Size {
 	const root = document.documentElement
 	return { width: root.clientWidth || window.innerWidth, height: root.clientHeight || window.innerHeight }
-}
-
-/** Всё для расчёта позиции: прямоугольник триггера, размер панели, окно и отступ панели от триггера */
-interface Geometry {
-	rect: DOMRect
-	size: Size
-	viewport: Size
-	gap: number
-}
-
-/** Край триггера вдоль стороны, у которой стоит панель: начало, конец и середина */
-interface Edge {
-	start: number
-	end: number
-	middle: number
 }
 
 function horizontalEdge(rect: DOMRect): Edge {

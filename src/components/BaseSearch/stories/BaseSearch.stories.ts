@@ -22,9 +22,9 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseSearch from '../ui/BaseSearch.vue'
-import { SEARCH_VARIANTS } from '../model/BaseSearch.types'
+import { SEARCH_VARIANTS } from '../types/BaseSearch.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { SearchResult } from '../model/BaseSearch.types'
+import type { SearchResult } from '../types/BaseSearch.types'
 
 /** Материалы проекта студии: иконка — тип файла, категория — справа. */
 const FILES: SearchResult[] = [

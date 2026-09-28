@@ -39,8 +39,8 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 import BaseTreeNode from './BaseTreeNode.vue'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../model/BaseTreeChildren.types'
+import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
+import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../types/BaseTreeChildren.types'
 import '../styles/BaseTree.style.scss'
 
 defineProps<BaseTreeChildrenProps>()

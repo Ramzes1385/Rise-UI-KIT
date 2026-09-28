@@ -12,9 +12,9 @@ import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSelect from '../ui/BaseSelect.vue'
-import { SELECT_VARIANTS } from '../model/BaseSelect.types'
+import { SELECT_VARIANTS } from '../types/BaseSelect.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { BaseSelectOption } from '../model/BaseSelect.types'
+import type { BaseSelectOption } from '../types/BaseSelect.types'
 
 /** Города доставки. Екатеринбург недоступен — на нём видно отключённую опцию. */
 const CITIES: BaseSelectOption[] = [

@@ -68,7 +68,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useFormDisabled } from '@composables/useFormContext'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseInputTags.style.scss'
-import type { BaseInputTagsEmits, BaseInputTagsProps } from '../model/BaseInputTags.types'
+import type { BaseInputTagsEmits, BaseInputTagsProps } from '../types/BaseInputTags.types'
 
 const props = withDefaults(
 	defineProps<BaseInputTagsProps>(),

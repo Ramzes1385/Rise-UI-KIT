@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { BaseText } from '@components/BaseText'
-import type { BaseRangeMarksProps } from '../model/BaseRangeMarks.types'
+import type { BaseRangeMarksProps } from '../types/BaseRangeMarks.types'
 
 defineProps<BaseRangeMarksProps>()
 </script>

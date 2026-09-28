@@ -1,7 +1,7 @@
 /** Composable: управление состоянием изображения (загрузка, fallback, оптимизированные src) */
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { buildOptimizedSrc, buildSrcset, replaceExtension } from '@utils/imageUtils'
-import type { UseImageStateOptions } from './useImageState.types'
+import type { UseImageStateOptions } from './types/useImageState.types'
 
 /** Высота заглушки, пока размер изображения неизвестен */
 const LOADING_MIN_HEIGHT = '120px'

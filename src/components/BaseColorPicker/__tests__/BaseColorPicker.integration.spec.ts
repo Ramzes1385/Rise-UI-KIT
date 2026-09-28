@@ -10,7 +10,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { UI_COLOR_PICKER } from '@/locales/messages'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
-import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
+import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'
 
 const Host = defineComponent({
 	components: { BaseColorPicker },

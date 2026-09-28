@@ -22,7 +22,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { resolveLink, useLinkComponent } from '@composables/useLink'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseLink.style.scss'
-import type { BaseLinkEmits, BaseLinkProps, BaseLinkSlots } from '../model/BaseLink.types'
+import type { BaseLinkEmits, BaseLinkProps, BaseLinkSlots } from '../types/BaseLink.types'
 
 const props = withDefaults(
 	defineProps<BaseLinkProps>(),

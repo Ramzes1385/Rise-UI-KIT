@@ -1,2 +1,2 @@
 export { useTableSearch } from './useTableSearch'
-export type { UseTableSearchOptions, UseTableSearchReturn } from './useTableSearch.types'
+export type { UseTableSearchOptions, UseTableSearchReturn } from './types/useTableSearch.types'

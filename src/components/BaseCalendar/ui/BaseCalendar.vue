@@ -150,7 +150,7 @@ import '../styles/BaseCalendar.style.scss'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'
-import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '../model/BaseCalendar.types'
+import type { BaseCalendarEmits, BaseCalendarProps, BaseCalendarSlots } from '../types/BaseCalendar.types'
 
 // Дефолты резолвятся в useCalendarResolvedProps, а не через withDefaults:
 // 1) boolean-пропы с дефолтом true требуют wasPropPassed (?? не работает для false ?? true)

@@ -1,6 +1,6 @@
 /** Composable: управление вариантом отображения компонента (БЭМ-модификатор, CSS-переменная) */
 import { computed } from 'vue'
-import type { UseVariantOptions } from './useVariant.types'
+import type { UseVariantOptions } from './types/useVariant.types'
 
 /** Вариант по умолчанию: без БЭМ-модификатора и без `--variant` */
 export const DEFAULT_VARIANT = 'default' as const

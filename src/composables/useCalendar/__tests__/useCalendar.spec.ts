@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import { useCalendar } from '../useCalendar'
-import type { CalendarWeekday, UseCalendarOptions } from '../useCalendar.types'
+import type { CalendarWeekday, UseCalendarOptions } from '../types/useCalendar.types'
 
 /** Фабрика опций по умолчанию */
 function createOptions(overrides: Partial<UseCalendarOptions> = {}): UseCalendarOptions {

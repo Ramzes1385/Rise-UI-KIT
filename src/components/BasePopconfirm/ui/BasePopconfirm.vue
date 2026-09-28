@@ -67,7 +67,7 @@ import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BasePopconfirm.style.scss'
 import type { CustomColor } from '@composables/useCustomColor'
-import type { BasePopconfirmEmits, BasePopconfirmProps, BasePopconfirmSlots } from '../model/BasePopconfirm.types'
+import type { BasePopconfirmEmits, BasePopconfirmProps, BasePopconfirmSlots } from '../types/BasePopconfirm.types'
 
 defineOptions({ name: 'BasePopconfirm' })
 

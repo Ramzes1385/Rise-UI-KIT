@@ -65,8 +65,8 @@ import { useVirtualList } from '@composables/useVirtualList'
 import '../styles/BaseTree.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseTreeNode from './BaseTreeNode.vue'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots, TreeNode } from '../model/BaseTree.types'
+import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
+import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots, TreeNode, VisibleNode } from '../types/BaseTree.types'
 
 const props = withDefaults(
 	defineProps<BaseTreeProps>(),
@@ -105,15 +105,6 @@ const { expandedIds, selectedIds, expandedSet, selectedSet, toggleNode, expandNo
 	isDefaultExpandAll: toRef(props, 'isDefaultExpandAll'),
 	emit,
 })
-
-/** Видимый узел: раскрыты все его предки. Уровень и позиция — для плоского списка виртуальной прокрутки */
-interface VisibleNode {
-	node: TreeNode
-	parentId: string | null
-	depth: number
-	setSize: number
-	posInSet: number
-}
 
 /** Видимые узлы сверху вниз — по ним ходят стрелки и поиск по буквам */
 const visibleNodes = computed((): VisibleNode[] => {

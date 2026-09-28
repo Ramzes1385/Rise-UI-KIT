@@ -1,6 +1,6 @@
 /** Composable: состояние редактора (фокус, цвет текста/фона, пустой контент) */
 import { ref } from 'vue'
-import type { UseEditorStateOptions } from './useEditorState.types'
+import type { UseEditorStateOptions } from './types/useEditorState.types'
 
 /** Цвета текста и фона, выбранные в палитре до первого выбора */
 const DEFAULT_TEXT_COLOR = '#000000'

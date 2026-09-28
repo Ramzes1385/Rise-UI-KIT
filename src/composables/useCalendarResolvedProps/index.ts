@@ -1,2 +1,2 @@
 export { useCalendarResolvedProps } from './useCalendarResolvedProps'
-export type { ResolvedCalendarProps } from './useCalendarResolvedProps.types'
+export type { ResolvedCalendarProps } from './types/useCalendarResolvedProps.types'

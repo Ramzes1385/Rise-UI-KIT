@@ -460,17 +460,17 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ```txt
 src/
-  components/      # UI-компоненты: index.ts, model/, ui/, styles/, stories/, __tests__/
-  composables/     # Vue composables
+  components/      # UI-компоненты: index.ts, ui/, types/, model/, styles/, stories/, __tests__/
+  composables/     # Vue composables: useX.ts, types/, __tests__/
   icons/           # SVG-иконки, спрайт и createIconPlugin
   locales/         # словари ru и en
   stories/         # вводная страница и Foundations в Storybook, хелперы stories
   styles/          # глобальные стили и токены
   utils/           # утилиты
-  plugin.ts        # Vue-плагин createUiKitPlugin
+  plugin/          # Vue-плагин createUiKitPlugin
   index.ts         # главный публичный API
 
-Тесты лежат в `__tests__` своей папки; тесты пакета целиком (границы входов, плагин) — в `build/tests/`.
+Типы лежат в `types/` своей папки, тесты — в `__tests__`; тесты пакета целиком (границы входов, плагин, структура) — в `build/tests/`.
 
 build/
   config/          # общие части Vite-конфигов: алиасы, SCSS, сборка библиотеки

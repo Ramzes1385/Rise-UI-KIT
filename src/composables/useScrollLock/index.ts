@@ -1,2 +1,2 @@
 export { useScrollLock } from './useScrollLock'
-export type { UseScrollLockReturn } from './useScrollLock.types'
+export type { UseScrollLockReturn } from './types/useScrollLock.types'

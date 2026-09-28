@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseTableResizeHandleEmits } from '../model/BaseTableResizeHandle.types'
+import type { BaseTableResizeHandleEmits } from '../types/BaseTableResizeHandle.types'
 
 const emit = defineEmits<BaseTableResizeHandleEmits>()
 </script>

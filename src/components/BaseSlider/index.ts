@@ -5,5 +5,5 @@ export type {
 	SliderAnimation,
 	SliderItem,
 	SliderNavigation,
-} from './model/BaseSlider.types'
+} from './types/BaseSlider.types'
 export { default as BaseSlider } from './ui/BaseSlider.vue'

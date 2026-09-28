@@ -7,4 +7,4 @@ export type {
 	CalendarHighlight,
 	CalendarWeekends,
 	UseCalendarOptions,
-} from './useCalendar.types'
+} from './types/useCalendar.types'

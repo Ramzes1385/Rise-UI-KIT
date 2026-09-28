@@ -19,7 +19,7 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseTextarea from '../ui/BaseTextarea.vue'
-import { TEXTAREA_VARIANTS } from '../model/BaseTextarea.types'
+import { TEXTAREA_VARIANTS } from '../types/BaseTextarea.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const LONG_TEXT = [

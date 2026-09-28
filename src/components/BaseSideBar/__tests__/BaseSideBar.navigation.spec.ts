@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
 import BaseSideBarNavigation from '../ui/BaseSideBarNavigation.vue'
-import type { BaseSideBarItemSlotProps } from '../model/BaseSideBar.types'
+import type { BaseSideBarItemSlotProps } from '../types/BaseSideBar.types'
 
 describe('BaseSideBar navigation items', () => {
 	describe('безопасность адресов', () => {

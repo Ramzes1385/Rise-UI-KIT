@@ -5,7 +5,7 @@ import { formatDatePickerValue } from '@utils/dateUtils'
 import { useClickOutside } from '@composables/useClickOutside'
 import { useDropdownPosition } from '@composables/useDropdownPosition'
 import type { Ref } from 'vue'
-import type { UseDatePickerStateOptions } from './useDatePickerState.types'
+import type { UseDatePickerStateOptions } from './types/useDatePickerState.types'
 
 /** Предел высоты панели: календарь не прокручивается внутри панели, пока помещается в окно */
 const PANEL_MAX_HEIGHT = 'calc(100vh - 16px)'

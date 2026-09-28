@@ -7,6 +7,7 @@
  */
 
 import type { ArgTypes } from '@storybook/vue3-vite'
+import type { ArgGroup, BaseArgTypesOptions } from './types/helpers.types'
 
 /** Смысловые группы props (подкатегории таблицы в Docs). */
 export const ARG_GROUP = {
@@ -17,16 +18,9 @@ export const ARG_GROUP = {
 	a11y: 'Доступность',
 } as const
 
-type ArgGroup = (typeof ARG_GROUP)[keyof typeof ARG_GROUP]
-
 /** Настройка таблицы для prop: категория `props`, подкатегория — смысловая группа. */
 export function propGroup(group: ArgGroup): { category: 'props'; subcategory: ArgGroup } {
 	return { category: 'props', subcategory: group }
-}
-
-interface BaseArgTypesOptions {
-	/** Допустимые варианты оформления (константа `<X>_VARIANTS`). Без них контрол variant не создаётся. */
-	variants?: readonly string[]
 }
 
 /**

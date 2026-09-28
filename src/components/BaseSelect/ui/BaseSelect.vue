@@ -181,7 +181,7 @@ import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import '../styles/BaseSelect.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
-import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model/BaseSelect.types'
+import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../types/BaseSelect.types'
 
 const props = withDefaults(
 	defineProps<BaseSelectProps>(),

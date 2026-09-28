@@ -1,6 +1,6 @@
 /** Composable: drag-взаимодействие ползунков range-слайдера */
 import { onBeforeUnmount, ref } from 'vue'
-import type { UseRangeDragOptions, UseRangeDragReturn } from './useRangeDrag.types'
+import type { UseRangeDragOptions, UseRangeDragReturn } from './types/useRangeDrag.types'
 
 /** Описание: обрабатывает drag-взаимодействие ползунков range-слайдера — mouse/touch перетаскивание, клик по треку и клавиатурная навигация */
 function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {

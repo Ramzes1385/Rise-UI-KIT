@@ -1,5 +1,5 @@
 /** Composable: блокировка скролла body с компенсацией скроллбара */
-import type { UseScrollLockReturn } from './useScrollLock.types'
+import type { UseScrollLockReturn } from './types/useScrollLock.types'
 
 /**
  * Состояние блокировки общее для всех экземпляров: модалка, slideover, тур и зум

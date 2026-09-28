@@ -1,2 +1,2 @@
 export { createIconPlugin } from './iconPlugin'
-export type { IconPluginOptions } from './iconPlugin.types'
+export type { IconPluginOptions } from './types/iconPlugin.types'

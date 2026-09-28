@@ -109,7 +109,7 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseInput.style.scss'
-import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../model/BaseInput.types'
+import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../types/BaseInput.types'
 
 const props = withDefaults(
 	defineProps<BaseInputProps>(),

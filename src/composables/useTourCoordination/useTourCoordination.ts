@@ -2,8 +2,8 @@
 import { computed, nextTick, ref } from 'vue'
 import { UI_TOUR } from '@/locales/messages'
 import { DEFAULT_RADIUS } from '../useTourLogic'
-import type { UseTourCoordinationOptions } from './useTourCoordination.types'
-import type { BaseTourSlotContext } from '@components/BaseTour/model/BaseTour.types'
+import type { UseTourCoordinationOptions } from './types/useTourCoordination.types'
+import type { BaseTourSlotContext } from '@components/BaseTour/types/BaseTour.types'
 
 /** Время на прокрутку к шагу до переноса фокуса, мс */
 const FOCUS_DURATION_MS = 450

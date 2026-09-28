@@ -39,7 +39,7 @@ import { useVirtualList } from '@composables/useVirtualList'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseVirtualList.style.scss'
 import type { VirtualKey } from '@composables/useVirtualList'
-import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../model/BaseVirtualList.types'
+import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../types/BaseVirtualList.types'
 
 const props = withDefaults(
 	defineProps<BaseVirtualListProps<T>>(),

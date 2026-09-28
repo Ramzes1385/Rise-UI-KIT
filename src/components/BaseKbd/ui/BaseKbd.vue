@@ -17,7 +17,7 @@ import { UI_ARIA } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseKbd.style.scss'
-import type { BaseKbdProps, BaseKbdSlots } from '../model/BaseKbd.types'
+import type { BaseKbdProps, BaseKbdSlots } from '../types/BaseKbd.types'
 
 const props = withDefaults(
 	defineProps<BaseKbdProps>(),

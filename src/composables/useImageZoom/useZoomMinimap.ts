@@ -1,7 +1,7 @@
 /** Composable: миникарта зума (отображение viewport, навигация кликом) */
 import { computed, ref } from 'vue'
 import { toHTMLElement } from '@utils/domUtils'
-import type { UseZoomMinimapOptions } from './useZoomMinimap.types'
+import type { UseZoomMinimapOptions } from './types/useZoomMinimap.types'
 
 /** Размер мини-карты, px */
 export const MINIMAP_WIDTH = 200

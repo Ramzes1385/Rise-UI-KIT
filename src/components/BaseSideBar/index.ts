@@ -1,4 +1,4 @@
-export { SIDEBAR_VARIANTS } from './model/BaseSideBar.types'
+export { SIDEBAR_VARIANTS } from './types/BaseSideBar.types'
 
 export type {
 	BaseSideBarEmits,
@@ -12,6 +12,6 @@ export type {
 	SideBarItem,
 	SideBarItemKey,
 	SideBarItemTo,
-} from './model/BaseSideBar.types'
+} from './types/BaseSideBar.types'
 
 export { default as BaseSideBar } from './ui/BaseSideBar.vue'

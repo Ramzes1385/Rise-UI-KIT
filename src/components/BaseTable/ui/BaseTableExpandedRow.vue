@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { inject } from 'vue'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
-import type { BaseTableExpandedRowProps, BaseTableExpandedRowSlots } from '../model/BaseTableExpandedRow.types'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
+import type { BaseTableExpandedRowProps, BaseTableExpandedRowSlots } from '../types/BaseTableExpandedRow.types'
 
 defineProps<BaseTableExpandedRowProps>()
 

@@ -26,7 +26,7 @@ import { BaseNotification } from '@components/BaseNotification'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
 import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
-import type { BaseAppProps, BaseAppSlots } from '../model/BaseApp.types'
+import type { BaseAppProps, BaseAppSlots } from '../types/BaseApp.types'
 
 // Корень — фрагмент: BaseApp не добавляет обёртку и не влияет на раскладку приложения
 defineOptions({ inheritAttrs: false })

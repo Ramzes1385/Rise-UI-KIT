@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMessageParser } from '@composables/useMessageParser'
-import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../model/ChatMessageText.types'
+import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../types/ChatMessageText.types'
 
 /*
  * Токены в шаблоне записаны в одну строку, без пробелов между тегами: текст сообщения выводится с white-space: pre-wrap,

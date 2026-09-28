@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { useScrollLock } from '../useScrollLock'
-import type { UseScrollLockReturn } from '../useScrollLock.types'
+import type { UseScrollLockReturn } from '../types/useScrollLock.types'
 
 /** Экземпляры, созданные в тесте: блокировки общие для модуля, поэтому снимаем их после каждого теста */
 const createdLocks: UseScrollLockReturn[] = []

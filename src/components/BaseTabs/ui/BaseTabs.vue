@@ -82,7 +82,7 @@ import { BaseButton } from '@components/BaseButton'
 import '../styles/BaseTabs.style.scss'
 import { kitDefaults } from '@composables/useDefaults'
 import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../model/BaseTabs.types'
+import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../types/BaseTabs.types'
 
 const props = withDefaults(
 	defineProps<BaseTabsProps>(),

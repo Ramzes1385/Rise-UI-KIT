@@ -57,7 +57,7 @@ import { BaseContainer } from '@components/BaseContainer'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseHeader.style.scss'
-import type { BaseHeaderProps, BaseHeaderSlots } from '../model/BaseHeader.types'
+import type { BaseHeaderProps, BaseHeaderSlots } from '../types/BaseHeader.types'
 
 const props = withDefaults(
 	defineProps<BaseHeaderProps>(),

@@ -1,7 +1,7 @@
 /** Composable: управление полем формы (touched/dirty, валидация, reset) */
 import { computed, ref, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import type { UseFormFieldOptions, UseFormFieldReturn, ValidationRule } from './useFormField.types'
+import type { UseFormFieldOptions, UseFormFieldReturn, ValidationRule } from './types/useFormField.types'
 
 /** Composable для управления полем формы — touched/dirty, валидация, обработчики blur/change, reset. */
 function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {

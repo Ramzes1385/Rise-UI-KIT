@@ -1,9 +1,7 @@
 /** Composable: куда телепортируются окна, панели и тултипы, и какую тему они наследуют */
 import { hasInjectionContext, inject, onMounted, ref, watch } from 'vue'
 import type { InjectionKey, Ref } from 'vue'
-
-/** Цель телепорта: CSS-селектор или элемент */
-export type TeleportTarget = string | HTMLElement
+import type { TeleportTarget } from './types/useTeleportTarget.types'
 
 /**
  * Ключ provide/inject цели телепорта: `createUiKitPlugin({ teleportTo })` и `<BaseApp teleport-to>`.

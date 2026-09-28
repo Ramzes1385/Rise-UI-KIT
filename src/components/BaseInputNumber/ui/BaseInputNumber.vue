@@ -62,7 +62,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseInputNumber } from '../model/useBaseInputNumber'
 import '../styles/BaseInputNumber.style.scss'
-import type { BaseInputNumberEmits, BaseInputNumberProps } from '../model/BaseInputNumber.types'
+import type { BaseInputNumberEmits, BaseInputNumberProps } from '../types/BaseInputNumber.types'
 
 const props = withDefaults(
 	defineProps<BaseInputNumberProps>(),

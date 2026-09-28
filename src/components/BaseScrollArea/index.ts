@@ -1,4 +1,4 @@
-export { SCROLL_AREA_VARIANTS } from './model/BaseScrollArea.types'
+export { SCROLL_AREA_VARIANTS } from './types/BaseScrollArea.types'
 export type {
 	BaseScrollAreaEmits,
 	BaseScrollAreaExpose,
@@ -6,5 +6,5 @@ export type {
 	BaseScrollAreaSlots,
 	ScrollAreaOrientation,
 	ScrollAreaScrollbar,
-} from './model/BaseScrollArea.types'
+} from './types/BaseScrollArea.types'
 export { default as BaseScrollArea } from './ui/BaseScrollArea.vue'

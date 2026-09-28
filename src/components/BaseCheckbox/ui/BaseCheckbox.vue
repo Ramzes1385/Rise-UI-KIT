@@ -65,7 +65,7 @@ import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseCheckbox.style.scss'
-import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
+import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../types/BaseCheckbox.types'
 
 const props = withDefaults(
 	defineProps<BaseCheckboxProps>(),

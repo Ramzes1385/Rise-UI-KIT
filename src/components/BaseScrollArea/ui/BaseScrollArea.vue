@@ -52,9 +52,13 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseScrollArea.style.scss'
-import type { BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps, BaseScrollAreaSlots } from '../model/BaseScrollArea.types'
-
-type Axis = 'x' | 'y'
+import type {
+	Axis,
+	BaseScrollAreaEmits,
+	BaseScrollAreaExpose,
+	BaseScrollAreaProps,
+	BaseScrollAreaSlots,
+} from '../types/BaseScrollArea.types'
 
 const AXES: Axis[] = ['y', 'x']
 

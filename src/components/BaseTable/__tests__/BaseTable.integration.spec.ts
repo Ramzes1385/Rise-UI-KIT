@@ -6,7 +6,7 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import BaseTable from '../ui/BaseTable.vue'
-import type { TableColumn } from '../model/BaseTable.types'
+import type { TableColumn } from '../types/BaseTable.types'
 
 const globalConfig = {
 	stubs: {

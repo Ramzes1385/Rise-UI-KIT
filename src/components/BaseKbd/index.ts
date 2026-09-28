@@ -1,3 +1,3 @@
-export { KBD_VARIANTS } from './model/BaseKbd.types'
-export type { BaseKbdProps, BaseKbdSlots } from './model/BaseKbd.types'
+export { KBD_VARIANTS } from './types/BaseKbd.types'
+export type { BaseKbdProps, BaseKbdSlots } from './types/BaseKbd.types'
 export { default as BaseKbd } from './ui/BaseKbd.vue'

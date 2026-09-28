@@ -1,2 +1,2 @@
 export { useFileUploadState } from './useFileUploadState'
-export type { UseFileUploadStateOptions } from './useFileUploadState.types'
+export type { UseFileUploadStateOptions } from './types/useFileUploadState.types'

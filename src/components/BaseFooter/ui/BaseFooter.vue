@@ -21,7 +21,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseFooter.style.scss'
-import type { BaseFooterProps, BaseFooterSlots } from '../model/BaseFooter.types'
+import type { BaseFooterProps, BaseFooterSlots } from '../types/BaseFooter.types'
 
 const props = withDefaults(
 	defineProps<BaseFooterProps>(),

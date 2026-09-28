@@ -39,7 +39,7 @@ import { issuesToErrors, validateSchema } from '@utils/formUtils'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseForm.style.scss'
 import type { FormValidationResult } from '@utils/formUtils'
-import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../model/BaseForm.types'
+import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../types/BaseForm.types'
 
 const props = withDefaults(
 	defineProps<BaseFormProps>(),

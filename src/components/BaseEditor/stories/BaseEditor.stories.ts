@@ -21,7 +21,7 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseEditor from '../ui/BaseEditor.vue'
-import { EDITOR_VARIANTS } from '../model/BaseEditor.types'
+import { EDITOR_VARIANTS } from '../types/BaseEditor.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 // ─── Данные ────────────────────────────────────────────────────────────────────

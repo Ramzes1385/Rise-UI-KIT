@@ -59,7 +59,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseAlert.style.scss'
-import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/BaseAlert.types'
+import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../types/BaseAlert.types'
 
 /** Отступы кнопки закрытия: квадрат 24px при sizeScale = 100 */
 const CLOSE_BUTTON_PADDING = { x: 3, y: 3 } as const

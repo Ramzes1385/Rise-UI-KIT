@@ -135,9 +135,9 @@ import { isolateFormField, useFormDisabled } from '@composables/useFormContext'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
-import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
+import { EDITOR_MENU_SCALE_RATIO } from '../model/editorScale'
 import type { BaseSelectOption } from '@components/BaseSelect'
-import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../model/BaseEditor.types'
+import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../types/BaseEditor.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

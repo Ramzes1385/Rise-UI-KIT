@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseMenu from '../ui/BaseMenu.vue'
-import type { BaseMenuItem } from '../model/BaseMenu.types'
+import type { BaseMenuItem } from '../types/BaseMenu.types'
 
 const ITEMS: BaseMenuItem[][] = [
 	[

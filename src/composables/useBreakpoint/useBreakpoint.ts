@@ -1,7 +1,7 @@
 /** Composable: реактивное отслеживание ширины окна и флагов брейкпоинтов */
 import { computed, onBeforeUnmount, onMounted, readonly, ref } from 'vue'
-import { BREAKPOINTS } from './useBreakpoint.types'
-import type { BreakpointName, UseBreakpointReturn } from './useBreakpoint.types'
+import { BREAKPOINTS } from './types/useBreakpoint.types'
+import type { BreakpointName, UseBreakpointReturn } from './types/useBreakpoint.types'
 
 const SERVER_FALLBACK_WIDTH = BREAKPOINTS.lg
 

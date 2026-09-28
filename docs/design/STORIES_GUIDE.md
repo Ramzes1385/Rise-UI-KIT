@@ -12,7 +12,7 @@ Stories — одновременно документация (вкладка Do
 
 import { … } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, … } from '@/stories/helpers'
-import { X_VARIANTS } from '../model/BaseX.types'
+import { X_VARIANTS } from '../types/BaseX.types'
 import BaseX from '../ui/BaseX.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 

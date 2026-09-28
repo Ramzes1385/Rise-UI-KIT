@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../model/ChatMessageReply.types'
+import type { ChatMessageReplyEmits, ChatMessageReplyProps } from '../types/ChatMessageReply.types'
 
 /** Цитата сообщения, на которое ответили: клик прокручивает ленту к оригиналу */
 const props = defineProps<ChatMessageReplyProps>()

@@ -10,7 +10,7 @@ import { getActiveOverlayStore, useOverlay } from '@composables/useOverlay'
 import BaseApp from '../ui/BaseApp.vue'
 import type { UseToastReturn } from '@composables/useToast'
 import type { UseOverlayReturn } from '@composables/useOverlay'
-import type { BaseAppToasterOptions } from '../model/BaseApp.types'
+import type { BaseAppToasterOptions } from '../types/BaseApp.types'
 
 /** Простой оверлей: показывает props, закрывается своими событиями. Кнопка «Анимация…» видна и после закрытия */
 const TestDialog = defineComponent({

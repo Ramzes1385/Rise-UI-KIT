@@ -69,7 +69,7 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseSlideover.style.scss'
-import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../model/BaseSlideover.types'
+import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../types/BaseSlideover.types'
 
 const props = withDefaults(
 	defineProps<BaseSlideoverProps>(),

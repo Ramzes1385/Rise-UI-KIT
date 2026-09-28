@@ -1,5 +1,5 @@
 /** Composable: разбор текста сообщения на сегменты */
-import type { MessageToken, TextPart, UseMessageParserOptions, UseMessageParserReturn } from './useMessageParser.types'
+import type { MessageToken, TextPart, UseMessageParserOptions, UseMessageParserReturn } from './types/useMessageParser.types'
 
 /**
  * Composable для разбора текста сообщения на сегменты: упоминания, команды, ссылки, текст.

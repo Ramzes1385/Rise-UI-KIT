@@ -1,6 +1,6 @@
 /** Тесты утилит проверки формы по Standard Schema */
 import { issueName, issuesToErrors, validateSchema } from '../formUtils'
-import type { StandardSchemaResult, StandardSchemaV1 } from '../formUtils.types'
+import type { StandardSchemaResult, StandardSchemaV1 } from '../types/formUtils.types'
 
 /** Схема для тестов: имя обязательно, возраст — число от 18 */
 function userSchema(isAsync = false): StandardSchemaV1<unknown, { name: string; age: number }> {

@@ -8,7 +8,7 @@ import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { useColorPicker } from '../useColorPicker'
-import type { UseColorPickerReturn } from '../useColorPicker.types'
+import type { UseColorPickerReturn } from '../types/useColorPicker.types'
 
 interface HostResult {
 	api: UseColorPickerReturn

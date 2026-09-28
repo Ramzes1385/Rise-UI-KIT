@@ -1,7 +1,7 @@
 /** Composable: навигация по календарю — переключение месяцев, лет и видов отображения */
 import { computed } from 'vue'
 import { toDateOnly } from '@utils/dateUtils'
-import type { UseCalendarViewNavigationOptions } from './useCalendarViewNavigation.types'
+import type { UseCalendarViewNavigationOptions } from './types/useCalendarViewNavigation.types'
 
 /**
  * Composable для навигации по календарю: переключение месяцев, лет и видов отображения.

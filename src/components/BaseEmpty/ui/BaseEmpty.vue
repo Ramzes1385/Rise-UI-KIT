@@ -45,7 +45,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseEmpty.style.scss'
-import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'
+import type { BaseEmptyProps, BaseEmptySlots } from '../types/BaseEmpty.types'
 
 const props = withDefaults(
 	defineProps<BaseEmptyProps>(),

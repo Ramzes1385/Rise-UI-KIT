@@ -6,4 +6,11 @@ export {
 	setActiveOverlayStore,
 	useOverlay,
 } from './useOverlay'
-export type { OverlayCreateOptions, OverlayEntry, OverlayHandle, OverlayProps, OverlayStore, UseOverlayReturn } from './useOverlay.types'
+export type {
+	OverlayCreateOptions,
+	OverlayEntry,
+	OverlayHandle,
+	OverlayProps,
+	OverlayStore,
+	UseOverlayReturn,
+} from './types/useOverlay.types'

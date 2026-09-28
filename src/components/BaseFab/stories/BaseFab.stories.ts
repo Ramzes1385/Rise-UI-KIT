@@ -8,8 +8,8 @@
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseFab from '../ui/BaseFab.vue'
-import { FAB_VARIANTS } from '../model/BaseFab.types'
-import type { FabPosition } from '../model/BaseFab.types'
+import { FAB_VARIANTS } from '../types/BaseFab.types'
+import type { FabPosition } from '../types/BaseFab.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Рамка «экрана» для кнопки в углу */

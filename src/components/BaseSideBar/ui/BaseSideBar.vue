@@ -94,7 +94,7 @@ import { useLinkComponent } from '@composables/useLink'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
-import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../model/BaseSideBar.types'
+import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../types/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
 
 defineOptions({

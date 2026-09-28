@@ -1,7 +1,7 @@
 /** Утилиты: нумерация строк, стилизация колонок и сортировка значений таблицы */
 
-import type { SortDirection, SortType } from '@components/BaseTable/model/BaseTable.types'
-import type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSortKey } from './tableUtils.types'
+import type { SortDirection, SortType } from '@components/BaseTable/types/BaseTable.types'
+import type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSortKey } from './types/tableUtils.types'
 
 /** numeric: «Item 2» < «Item 10», а числа в строковой колонке сравниваются как числа, а не посимвольно */
 const SORT_COLLATOR = new Intl.Collator(undefined, { numeric: true })

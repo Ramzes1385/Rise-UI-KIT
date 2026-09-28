@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { buildDescendantsCache, collectDescendantIdsInto, collectExpandableIds } from '../treeUtils'
-import type { TreeNode } from '@components/BaseTree/model/BaseTree.types'
+import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'
 
 const leaf: TreeNode = { id: 'leaf1', label: 'Leaf' }
 const childWithLeaf: TreeNode = { id: 'child1', label: 'Child', children: [leaf] }

@@ -1,6 +1,6 @@
 /** Composable: назначение кастомного цвета компоненту через CSS-переменные */
 import { computed } from 'vue'
-import type { ColorStates, CustomColor, UseCustomColorOptions } from './useCustomColor.types'
+import type { ColorStates, CustomColor, UseCustomColorOptions } from './types/useCustomColor.types'
 
 /**
  * Префиксы для CSS-переменных

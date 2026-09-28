@@ -73,7 +73,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseStepper.style.scss'
-import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'
+import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../types/BaseStepper.types'
 
 const props = withDefaults(
 	defineProps<BaseStepperProps>(),

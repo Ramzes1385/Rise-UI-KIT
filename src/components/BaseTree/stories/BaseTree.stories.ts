@@ -14,8 +14,8 @@ import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseTree from '../ui/BaseTree.vue'
-import { TREE_VARIANTS } from '../model/BaseTree.types'
-import type { TreeNode } from '../model/BaseTree.types'
+import { TREE_VARIANTS } from '../types/BaseTree.types'
+import type { TreeNode } from '../types/BaseTree.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 // ─── Данные ────────────────────────────────────────────────────────────────────

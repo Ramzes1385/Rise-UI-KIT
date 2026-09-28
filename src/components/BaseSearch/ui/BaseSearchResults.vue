@@ -82,21 +82,15 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseImage } from '@components/BaseImage'
-import { getSearchOptionId } from '../model/BaseSearch.types'
-import type { SearchResult } from '../model/BaseSearch.types'
-import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../model/BaseSearchResults.types'
+import { getSearchOptionId } from '../model/searchOptionId'
+import type { SearchResult } from '../types/BaseSearch.types'
+import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots, TextPart } from '../types/BaseSearchResults.types'
 
 const props = defineProps<BaseSearchResultsProps>()
 
 const emit = defineEmits<BaseSearchResultsEmits>()
 
 defineSlots<BaseSearchResultsSlots>()
-
-/** Часть текста результата: совпадение с запросом (выделяется <mark>) или обычный текст */
-interface TextPart {
-	text: string
-	isMatch: boolean
-}
 
 /**
  * Делит текст на части по вхождениям запроса без учёта регистра. Если запрос пуст или нижний регистр меняет

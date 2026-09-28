@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/vue'
 import { BaseForm } from '@components/BaseForm'
 import { BaseFormField } from '@components/BaseFormField'
 import BaseCheckboxGroup from '../ui/BaseCheckboxGroup.vue'
-import type { CheckboxGroupOption } from '../model/BaseCheckboxGroup.types'
+import type { CheckboxGroupOption } from '../types/BaseCheckboxGroup.types'
 
 const OPTIONS: CheckboxGroupOption[] = [
 	{ value: 'email', label: 'Почта' },

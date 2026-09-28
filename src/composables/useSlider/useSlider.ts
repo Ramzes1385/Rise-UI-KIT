@@ -1,7 +1,7 @@
 /** Composable: логика слайдера (навигация, autoplay, drag, snap) */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useSwipe } from '@composables/useSwipe'
-import type { UseSliderOptions, UseSliderReturn } from './useSlider.types'
+import type { UseSliderOptions, UseSliderReturn } from './types/useSlider.types'
 
 /** Медиазапрос системной настройки «уменьшить движение» */
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'

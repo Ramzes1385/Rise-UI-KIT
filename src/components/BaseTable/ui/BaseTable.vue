@@ -205,8 +205,8 @@ import '../styles/BaseTable.style.scss'
 import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
 import BaseTableToolbar from './BaseTableToolbar.vue'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../model/BaseTable.types'
-import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../model/BaseTable.types'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
+import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../types/BaseTable.types'
 
 /** Наибольшая высота панели настроек колонок */
 const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'

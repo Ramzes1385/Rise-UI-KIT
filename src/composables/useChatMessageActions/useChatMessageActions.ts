@@ -2,9 +2,9 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { copyTextToClipboard } from '@utils/clipboardUtils'
 import { useClickOutside } from '@composables/useClickOutside'
-import type { UseChatMessageActionsOptions } from './useChatMessageActions.types'
-import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
-import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/model/ChatMessageContextMenu.types'
+import type { UseChatMessageActionsOptions } from './types/useChatMessageActions.types'
+import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
+import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/types/ChatMessageContextMenu.types'
 
 /** Размер контекстного меню сообщения, px: меню не выходит за край окна */
 const CONTEXT_MENU_WIDTH = 200

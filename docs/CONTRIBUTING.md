@@ -145,7 +145,7 @@ npm run create:component -- InputNumber --group=Form --kind=form --long
 | `--loading`, `--empty`, `--long` | Включить проверку состояний Loading, Empty, LongContent и создать заготовки этих stories |
 | `--dry-run` | Показать, что будет создано, ничего не записывая |
 
-Скрипт создаёт `index.ts`, модель с типами, компонент, стили, stories, unit-, integration- и visual-тесты. Экспорт добавляется в `src/components/index.ts`, регистрация — в `src/plugin.ts`, имя компонента — в наборы `scripts/check-a11y-coverage.mjs`.
+Скрипт создаёт `index.ts`, типы `types/BaseX.types.ts`, компонент, стили, stories, unit-, integration- и visual-тесты. Экспорт добавляется в `src/components/index.ts`, регистрация — в `src/plugin/plugin.ts`, имя компонента — в наборы `scripts/check-a11y-coverage.mjs`.
 
 Заготовка сразу проходит lint, проверку типов, тесты с покрытием 100% и прогон stories в обеих темах. Назначение, размеры и различия вариантов автор описывает сам: эти места помечены `TODO(scaffold)`, и `npm run test:a11y:coverage` не пройдёт, пока метки остаются.
 
@@ -481,8 +481,9 @@ git push origin develop
 src/components/BaseComponent/
 ├── ui/
 │   └── BaseComponent.vue          # Основной компонент
+├── types/
+│   └── BaseComponent.types.ts     # Типы и константы, из которых они выводятся
 ├── model/
-│   ├── BaseComponent.types.ts     # Типы, интерфейсы, константы
 │   └── useBaseComponent.ts        # Логика компонента (пилот: BaseInputNumber, BaseSplitter, BaseInplace)
 ├── styles/
 │   └── BaseComponent.style.scss   # Стили
@@ -495,6 +496,19 @@ src/components/BaseComponent/
 └── index.ts                       # Публичный экспорт
 ```
 
+### Типы
+
+Типы лежат в папке `types/` рядом с кодом: `BaseX/types/BaseX.types.ts`, `useX/types/useX.types.ts`,
+`xUtils/types/xUtils.types.ts`, `src/locales/types/locales.types.ts`, `src/plugin/types/plugin.types.ts`. У составного
+компонента файлов может быть несколько: `BaseChat/types/ChatSlideover.types.ts`.
+
+- В коде (`.ts`, `.vue`) `interface`, `type` и `enum` не объявляются: ESLint требует вынести их в `types/`.
+  Исключения — тесты, stories и `*.d.ts`.
+- В `types/` — только типы и константы, из которых они выводятся (`X_VARIANTS` → `XVariant`) или которые их связывают
+  (ключи `provide`/`inject`). Функции и остальные константы — в `model/` или в модуле, который их использует; функции
+  в `types/` ESLint тоже не пропустит.
+- Тест `build/tests/structure.spec.ts` проверяет, что все `*.types.ts` лежат в папках `types/`.
+
 ### Логика в `model/` (пилот)
 
 В BaseInputNumber, BaseSplitter и BaseInplace `<script setup>` содержит только макросы (`defineProps`, `defineEmits`,
@@ -505,6 +519,7 @@ src/components/BaseComponent/
 - Логика делится на небольшие функции по задачам (значение, клавиатура, перетаскивание), чтобы каждая проходила пороги
   «чистого кода» (раздел 11).
 - Composable возвращает всё, что нужно шаблону, включая template ref и методы для `defineExpose`.
+- Типы composable (`NumberDraft`, `SplitterSize`) — в `types/BaseX.types.ts` вместе с типами компонента.
 - Тесты — по-прежнему через компонент; покрытие `model/use*.ts` проверяет `npm run test:components:coverage`.
 
 ### Правила компонентов
@@ -564,7 +579,7 @@ import { ... } from 'vue'
 ```ts
 /** Утилиты: <краткое назначение на русском>[(содержит <сайд-эффект|недетерминизм> — <причина>)] */
 
-import type { ... } from './xxxUtils.types'
+import type { ... } from './types/xxxUtils.types'
 ```
 
 Примеры:
@@ -582,7 +597,7 @@ import type { ... } from './xxxUtils.types'
   `const HOLD_INTERVAL_MS = 150` в BaseSlider.
 - Значение пропа по умолчанию пишется прямо в `kitDefaults(...)`: имя пропа уже объясняет число.
 - Общее для частей одного компонента — в его `model/`: `CHAT_SCALE` в `BaseChat/model/chatScale.ts`,
-  `TEXT_WEIGHT` в типах BaseText.
+  `TEXT_WEIGHT` в `BaseText/model/textWeight.ts`. Массив вариантов, из которого выводится тип, — в `types/`.
 - Общее для всех компонентов — в composable, который это значение толкует: `DEFAULT_VARIANT` в `useVariant`,
   `SIZE_SCALE_DEFAULT` в `useSizeScale`. Компоненты импортируют оба из `@composables/useBaseComponent`.
 

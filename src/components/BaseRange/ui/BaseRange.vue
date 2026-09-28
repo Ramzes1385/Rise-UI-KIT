@@ -98,7 +98,7 @@ import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/useBaseC
 import BaseRangeMarks from './BaseRangeMarks.vue'
 import { BaseRangeThumb } from './BaseRangeThumb'
 import '../styles/BaseRange.style.scss'
-import type { BaseRangeEmits, BaseRangeProps, BaseRangeSlots } from '../model/BaseRange.types'
+import type { BaseRangeEmits, BaseRangeProps, BaseRangeSlots } from '../types/BaseRange.types'
 
 const props = withDefaults(
 	defineProps<BaseRangeProps>(),

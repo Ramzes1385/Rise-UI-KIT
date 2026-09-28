@@ -1,8 +1,8 @@
 /** Composable: управление состоянием выделения в редакторе и определение активных форматов */
 import { reactive } from 'vue'
 import { FORMAT_CONFIG, getBlockAlign, getFormatBlock, isInsideList, isInsideTags } from '@utils/editorDomUtils'
-import type { EditorActiveStates } from './useEditorToolbar.types'
-import type { UseToolbarSelectionOptions } from './useToolbarSelection.types'
+import type { EditorActiveStates } from './types/useEditorToolbar.types'
+import type { UseToolbarSelectionOptions } from './types/useToolbarSelection.types'
 
 /**
  * Composable для управления состоянием выделения в редакторе и определения активных форматов.

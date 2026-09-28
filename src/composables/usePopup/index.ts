@@ -1,2 +1,2 @@
 export { usePopup } from './usePopup'
-export type { UsePopupOptions } from './usePopup.types'
+export type { UsePopupOptions } from './types/usePopup.types'

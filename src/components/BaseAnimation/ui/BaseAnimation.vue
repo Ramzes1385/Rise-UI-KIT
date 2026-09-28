@@ -23,7 +23,7 @@
 import { kitDefaults } from '@composables/useDefaults'
 import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BaseAnimation.style.scss'
-import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
+import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../types/BaseAnimation.types'
 
 const props = withDefaults(
 	defineProps<BaseAnimationProps>(),

@@ -13,5 +13,4 @@ export {
 	isToday,
 	toDateOnly,
 } from './dateUtils'
-export type { DateFormat, DatePickerSelectionMode, FormatDatePickerValueOptions } from './dateUtils'
-export type { BuildDateOptions, Weekday } from './dateUtils.types'
+export type { BuildDateOptions, DateFormat, DatePickerSelectionMode, FormatDatePickerValueOptions, Weekday } from './types/dateUtils.types'

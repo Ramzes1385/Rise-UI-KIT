@@ -50,7 +50,7 @@ import { BaseAnimation } from '@components/BaseAnimation'
 import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseFormField.style.scss'
-import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
+import type { BaseFormFieldProps, BaseFormFieldSlots } from '../types/BaseFormField.types'
 
 const props = withDefaults(
 	defineProps<BaseFormFieldProps>(),

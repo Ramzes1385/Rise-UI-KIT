@@ -4,7 +4,7 @@ import { buildDateWithTime as buildDateWithTimeUtil, getWeekNumber, isSameDay } 
 import { useCalendarGrid } from './useCalendarGrid'
 import { useCalendarDateState } from './useCalendarDateState'
 import { useCalendarViewNavigation } from './useCalendarViewNavigation'
-import type { CalendarView, UseCalendarOptions } from './useCalendar.types'
+import type { CalendarView, UseCalendarOptions } from './types/useCalendar.types'
 
 /** Composable для управления состоянием календаря — навигация, переключение вида, выбор дат. */
 function useCalendar(options: UseCalendarOptions) {

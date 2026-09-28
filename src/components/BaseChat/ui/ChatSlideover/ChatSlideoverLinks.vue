@@ -28,13 +28,8 @@ import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { CHAT_SCALE } from '../../model/chatScale'
-import type { ChatMessage } from '../../model/BaseChat.types'
-import type { ChatSlideoverLinksProps } from '../../model/ChatSlideoverLinks.types'
-
-interface SharedLink {
-	url: string
-	publishedAt: string
-}
+import type { ChatMessage } from '../../types/BaseChat.types'
+import type { ChatSlideoverLinksProps, SharedLink } from '../../types/ChatSlideoverLinks.types'
 
 const props = defineProps<ChatSlideoverLinksProps>()
 

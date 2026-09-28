@@ -4,7 +4,7 @@
 
 import { computed, nextTick, ref } from 'vue'
 import { useTablePagination } from '../useTablePagination'
-import type { TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 
 const testRows = computed((): TableRow[] => [
 	{ id: '1', data: { name: 'Анна' } },

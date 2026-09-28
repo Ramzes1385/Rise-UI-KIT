@@ -9,7 +9,7 @@
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseContainer.style.scss'
-import type { BaseContainerProps, BaseContainerSlots } from '../model/BaseContainer.types'
+import type { BaseContainerProps, BaseContainerSlots } from '../types/BaseContainer.types'
 
 const props = withDefaults(
 	defineProps<BaseContainerProps>(),

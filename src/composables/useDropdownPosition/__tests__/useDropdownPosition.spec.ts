@@ -6,7 +6,7 @@
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useDropdownPosition, VIEWPORT_MARGIN } from '../useDropdownPosition'
-import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
+import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 
 const GAP = 4
 

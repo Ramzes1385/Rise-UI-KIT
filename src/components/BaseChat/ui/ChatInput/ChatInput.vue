@@ -163,7 +163,7 @@ import { CHAT_SCALE } from '../../model/chatScale'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import ChatFilePreview from './ChatFilePreview.vue'
 import './ChatInput.style.scss'
-import type { ChatInputEmits, ChatInputProps } from './ChatInput.types'
+import type { ChatInputEmits, ChatInputProps } from './types/ChatInput.types'
 
 /** Быстрые ответы — пилюли размера sm (28px) */
 const QUICK_REPLY_SCALE = 0.875

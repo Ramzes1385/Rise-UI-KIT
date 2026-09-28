@@ -62,7 +62,7 @@ import { useFieldControl } from '@composables/useFormContext'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import '../styles/BaseTextarea.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../model/BaseTextarea.types'
+import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../types/BaseTextarea.types'
 
 const props = withDefaults(
 	defineProps<BaseTextareaProps>(),

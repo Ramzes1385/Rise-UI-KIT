@@ -3,16 +3,8 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { generateId } from '@utils/idUtils'
 import { formatFileSize } from '@utils/fileUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
-import type { ChatMessageAttachment } from '@components/BaseChat/model/BaseChat.types'
-import type { UseChatInputStateOptions, BaseInputExposed } from './useChatInputState.types'
-
-/** Список подсказок у поля: участники после @ или команды после / */
-interface SuggestionList {
-	items: { name: string }[]
-	prefix: string
-	/** Показан ли список: Escape его закрывает */
-	isShown: { value: boolean }
-}
+import type { ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
+import type { BaseInputExposed, SuggestionList, UseChatInputStateOptions } from './types/useChatInputState.types'
 
 /** Описание: управляет состоянием ввода чата — текст, вложения, автокомплит упоминаний/команд, навигация по подсказкам и отправка сообщений */
 function useChatInputState(options: UseChatInputStateOptions) {

@@ -30,7 +30,7 @@ import { BaseAvatar } from '@components/BaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseAvatarGroup.style.scss'
-import type { BaseAvatarGroupProps } from '../model/BaseAvatarGroup.types'
+import type { BaseAvatarGroupProps } from '../types/BaseAvatarGroup.types'
 
 const props = withDefaults(
 	defineProps<BaseAvatarGroupProps>(),

@@ -131,7 +131,7 @@ import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import '../styles/BaseBreadcrumbs.style.scss'
 import type { ResolvedLink } from '@composables/useLink'
-import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
+import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../types/BaseBreadcrumbs.types'
 
 const props = withDefaults(
 	defineProps<BaseBreadcrumbsProps>(),

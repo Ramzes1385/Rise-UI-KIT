@@ -1,7 +1,10 @@
 /** Composable: реестр раскрытия дерева мега-меню (provide/inject) */
 import { inject, provide, readonly, ref } from 'vue'
-import { MEGA_MENU_PATH_SEPARATOR, MEGA_MENU_TREE_KEY } from './useMegaMenuTree.types'
-import type { MegaMenuTree } from './useMegaMenuTree.types'
+import { MEGA_MENU_TREE_KEY } from './types/useMegaMenuTree.types'
+import type { MegaMenuTree } from './types/useMegaMenuTree.types'
+
+/** Разделитель сегментов пути узла */
+export const MEGA_MENU_PATH_SEPARATOR = '/'
 
 /** Является ли path префиксом-сегментом active (или равен ему) */
 function isAncestorPath(path: string, active: string): boolean {

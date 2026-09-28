@@ -11,7 +11,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseDrawer from '../ui/BaseDrawer.vue'
-import { DRAWER_DIRECTIONS } from '../model/BaseDrawer.types'
+import { DRAWER_DIRECTIONS } from '../types/BaseDrawer.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const STATUSES = [

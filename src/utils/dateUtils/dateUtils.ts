@@ -1,7 +1,14 @@
 /** Утилиты: работа с датами — сравнение, парсинг, форматирование */
 
 import { getLocale, pluralize } from '@/locales/state'
-import type { BuildDateOptions } from './dateUtils.types'
+import type {
+	BuildDateOptions,
+	FormatDateOptions,
+	FormatDatePickerValueOptions,
+	FormatMultipleOptions,
+	FormatPopoverDateOptions,
+	FormatRangeOptions,
+} from './types/dateUtils.types'
 
 const MS_PER_DAY = 86_400_000
 
@@ -59,62 +66,6 @@ function isDateInRange(date: Date, start: Date, end: Date): boolean {
 
 /** Поддерживаемые форматы даты */
 export const DATE_FORMATS = ['dd.MM.yyyy', 'dd.MM.yyyy HH:mm', 'dd.MM.yyyy HH:mm:ss'] as const
-
-/** Тип формата даты */
-export type DateFormat = (typeof DATE_FORMATS)[number]
-
-/** Параметры форматирования одиночной даты */
-export interface FormatDateOptions {
-	date: Date
-	dateFormat: DateFormat
-	showTime: boolean
-	showSeconds: boolean
-	is24Hour: boolean
-	locale: string
-}
-
-/** Параметры форматирования диапазона */
-export interface FormatRangeOptions {
-	start: Date | null
-	end: Date | null
-	dateFormat: DateFormat
-	showTime: boolean
-	showSeconds: boolean
-	is24Hour: boolean
-	locale: string
-}
-
-/** Параметры форматирования множественного выбора */
-export interface FormatMultipleOptions {
-	dates: Date[]
-	dateFormat: DateFormat
-	showTime: boolean
-	showSeconds: boolean
-	is24Hour: boolean
-	locale: string
-}
-
-/** Режим выбора значения date picker */
-export type DatePickerSelectionMode = 'single' | 'range' | 'multiple'
-
-/** Параметры форматирования значения date picker */
-export interface FormatDatePickerValueOptions {
-	selectionMode: DatePickerSelectionMode
-	date: Date | null
-	endDate: Date | null
-	dates: Date[]
-	dateFormat: DateFormat
-	showTime: boolean
-	showSeconds: boolean
-	is24Hour: boolean
-	locale: string
-}
-
-/** Параметры форматирования даты для popover календаря */
-export interface FormatPopoverDateOptions {
-	date: Date
-	locale: string
-}
 
 /** Форматировать одну дату в строку */
 function formatDate(options: FormatDateOptions): string {

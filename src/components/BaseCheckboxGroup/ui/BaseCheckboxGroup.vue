@@ -62,7 +62,7 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseCheckboxGroup.style.scss'
-import type { BaseCheckboxGroupEmits, BaseCheckboxGroupProps } from '../model/BaseCheckboxGroup.types'
+import type { BaseCheckboxGroupEmits, BaseCheckboxGroupProps } from '../types/BaseCheckboxGroup.types'
 
 const props = withDefaults(
 	defineProps<BaseCheckboxGroupProps>(),

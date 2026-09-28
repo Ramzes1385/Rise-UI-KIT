@@ -86,7 +86,7 @@ import ChatMessageItem from './ChatMessage.vue'
 import { CHAT_SCALE } from '../../../model/chatScale'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 import '../styles/ChatMessageList.style.scss'
-import type { ChatMessageListEmits, ChatMessageListProps } from '../model/ChatMessageList.types'
+import type { ChatMessageListEmits, ChatMessageListProps } from '../types/ChatMessageList.types'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,

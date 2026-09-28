@@ -41,7 +41,7 @@ import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTimeline.style.scss'
-import type { BaseTimelineProps, BaseTimelineSlots } from '../model/BaseTimeline.types'
+import type { BaseTimelineProps, BaseTimelineSlots } from '../types/BaseTimeline.types'
 
 const props = withDefaults(
 	defineProps<BaseTimelineProps>(),

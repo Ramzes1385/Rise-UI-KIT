@@ -3,7 +3,7 @@ import { defineComponent, h, provide } from 'vue'
 import { render, screen } from '@testing-library/vue'
 import { BaseButton } from '@components/BaseButton'
 import { DEFAULTS_KEY, kitDefaults, useDefaults } from '../useDefaults'
-import type { UiKitDefaults } from '../useDefaults.types'
+import type { UiKitDefaults } from '../types/useDefaults.types'
 
 // Значения по умолчанию подставляются в опции props так же, как их собирает компилятор
 // из withDefaults(defineProps<…>(), kitDefaults(…))

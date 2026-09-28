@@ -48,7 +48,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseSeparator } from '@components/BaseSeparator'
 import '../styles/BaseMenu.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../model/BaseMenu.types'
+import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../types/BaseMenu.types'
 
 const props = withDefaults(
 	defineProps<BaseMenuProps>(),

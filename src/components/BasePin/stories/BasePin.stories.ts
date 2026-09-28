@@ -19,7 +19,7 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BasePin from '../ui/BasePin.vue'
-import { PIN_VARIANTS } from '../model/BasePin.types'
+import { PIN_VARIANTS } from '../types/BasePin.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

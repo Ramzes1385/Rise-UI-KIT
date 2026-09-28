@@ -1,2 +1,2 @@
 export { useDropdownPosition } from './useDropdownPosition'
-export type { UseDropdownPositionOptions } from './useDropdownPosition.types'
+export type { UseDropdownPositionOptions } from './types/useDropdownPosition.types'

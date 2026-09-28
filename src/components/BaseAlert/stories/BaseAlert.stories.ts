@@ -20,7 +20,7 @@ import {
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
 import BaseAlert from '../ui/BaseAlert.vue'
-import { ALERT_TYPES, ALERT_VARIANTS } from '../model/BaseAlert.types'
+import { ALERT_TYPES, ALERT_VARIANTS } from '../types/BaseAlert.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Реалистичные тексты для каждого типа */

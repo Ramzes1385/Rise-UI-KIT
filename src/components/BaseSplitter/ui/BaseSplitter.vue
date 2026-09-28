@@ -57,7 +57,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseSplitter } from '../model/useBaseSplitter'
 import '../styles/BaseSplitter.style.scss'
-import type { BaseSplitterEmits, BaseSplitterProps, BaseSplitterSlots } from '../model/BaseSplitter.types'
+import type { BaseSplitterEmits, BaseSplitterProps, BaseSplitterSlots } from '../types/BaseSplitter.types'
 
 const props = withDefaults(
 	defineProps<BaseSplitterProps>(),

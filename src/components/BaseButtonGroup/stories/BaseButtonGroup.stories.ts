@@ -8,10 +8,10 @@ import { expect } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSplitButton } from '@components/BaseSplitButton'
-import { BUTTON_VARIANTS } from '@components/BaseButton/model/BaseButton.types'
+import { BUTTON_VARIANTS } from '@components/BaseButton/types/BaseButton.types'
 import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseButtonGroup from '../ui/BaseButtonGroup.vue'
-import { BUTTON_GROUP_VARIANTS } from '../model/BaseButtonGroup.types'
+import { BUTTON_GROUP_VARIANTS } from '../types/BaseButtonGroup.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

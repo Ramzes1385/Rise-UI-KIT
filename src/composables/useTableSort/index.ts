@@ -1,2 +1,2 @@
 export { useTableSort } from './useTableSort'
-export type { UseTableSortOptions, UseTableSortReturn } from './useTableSort.types'
+export type { UseTableSortOptions, UseTableSortReturn } from './types/useTableSort.types'

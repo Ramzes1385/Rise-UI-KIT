@@ -1,2 +1,2 @@
 export { useTablePagination } from './useTablePagination'
-export type { UseTablePaginationOptions, UseTablePaginationReturn } from './useTablePagination.types'
+export type { UseTablePaginationOptions, UseTablePaginationReturn } from './types/useTablePagination.types'

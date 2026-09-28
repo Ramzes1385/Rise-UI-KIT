@@ -1,7 +1,7 @@
 /** Composable: уведомления из любого места приложения через BaseApp */
 import { computed, getCurrentInstance, inject, ref } from 'vue'
 import type { InjectionKey } from 'vue'
-import type { ToastId, ToastItem, ToastOptions, ToastStore, ToastStoreOptions, UseToastReturn } from './useToast.types'
+import type { ToastId, ToastItem, ToastOptions, ToastStore, ToastStoreOptions, UseToastReturn } from './types/useToast.types'
 
 /** Сколько уведомлений видно одновременно по умолчанию */
 export const TOAST_MAX = 5

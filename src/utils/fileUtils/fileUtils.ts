@@ -3,7 +3,7 @@
 import { UI_TEXT } from '@/locales/messages'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/urlUtils'
-import type { FileValidationOptions, FileValidationResult } from './fileUtils.types'
+import type { FileValidationOptions, FileValidationResult } from './types/fileUtils.types'
 
 /** Получить расширение файла из имени */
 function getExtension(name: string): string {

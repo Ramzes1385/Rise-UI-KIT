@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseCheckboxGroup from '../ui/BaseCheckboxGroup.vue'
-import type { CheckboxGroupOption } from '../model/BaseCheckboxGroup.types'
+import type { CheckboxGroupOption } from '../types/BaseCheckboxGroup.types'
 
 const OPTIONS: CheckboxGroupOption[] = [
 	{ value: 'email', label: 'Почта' },

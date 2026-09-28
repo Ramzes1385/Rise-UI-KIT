@@ -1,6 +1,6 @@
 /** Composable: закрытие по клавише Escape */
 import { useLayer } from '@composables/useLayerStack'
-import type { UseEscapeKeyOptions } from './useEscapeKey.types'
+import type { UseEscapeKeyOptions } from './types/useEscapeKey.types'
 
 /**
  * Composable для закрытия по клавише Escape. Компонент становится слоем (`useLayer`):

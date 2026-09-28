@@ -6,4 +6,4 @@ export type {
 	StandardSchemaProps,
 	StandardSchemaResult,
 	StandardSchemaV1,
-} from './formUtils.types'
+} from './types/formUtils.types'

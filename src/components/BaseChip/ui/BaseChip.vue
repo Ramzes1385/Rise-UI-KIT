@@ -18,7 +18,7 @@ import { computed } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseChip.style.scss'
-import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../model/BaseChip.types'
+import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../types/BaseChip.types'
 
 const props = withDefaults(
 	defineProps<BaseChipProps>(),

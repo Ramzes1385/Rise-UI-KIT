@@ -6,8 +6,8 @@ import { useTableSearch } from '@composables/useTableSearch'
 import { compareSortKeys, toSortKey } from '@utils/tableUtils'
 import { useTablePagination } from '@composables/useTablePagination'
 import type { Ref } from 'vue'
-import type { UseTableDataOptions, UseTableDataReturn } from './useTableData.types'
-import type { TableColumn, TableRow } from '@components/BaseTable/model/BaseTable.types'
+import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
+import type { UseTableDataOptions, UseTableDataReturn } from './types/useTableData.types'
 
 /**
  * Composable для сортировки, фильтрации, пагинации и поиска таблицы.

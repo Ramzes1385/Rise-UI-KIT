@@ -150,8 +150,8 @@ import { CHAT_SCALE } from '../../../model/chatScale'
 import ChatMessageReply from './ChatMessageReply.vue'
 import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
-import type { ChatMessageItemEmits, ChatMessageItemProps } from '../model/ChatMessageItem.types'
-import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../model/BaseChat.types'
+import type { ChatMessageItemEmits, ChatMessageItemProps } from '../types/ChatMessageItem.types'
+import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../types/BaseChat.types'
 
 const props = withDefaults(defineProps<ChatMessageItemProps>(), {
 	isGroup: false,

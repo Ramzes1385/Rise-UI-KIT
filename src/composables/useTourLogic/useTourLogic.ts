@@ -1,7 +1,7 @@
 /** Composable: guided tour — навигация по шагам, геометрия подсветки, размещение тултипа */
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import type { UseTourLogicOptions, UseTourLogicReturn } from './useTourLogic.types'
-import type { TourGeometry, TourPlacement, TourStep } from '@components/BaseTour/model/BaseTour.types'
+import type { UseTourLogicOptions, UseTourLogicReturn } from './types/useTourLogic.types'
+import type { TourGeometry, TourPlacement, TourStep } from '@components/BaseTour/types/BaseTour.types'
 
 const DEFAULT_GAP = 12
 const DEFAULT_PADDING = 8

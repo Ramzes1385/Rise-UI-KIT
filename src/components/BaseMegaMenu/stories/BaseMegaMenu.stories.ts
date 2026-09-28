@@ -9,9 +9,9 @@
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
-import { MEGA_MENU_VARIANTS } from '../model/BaseMegaMenu.types'
+import { MEGA_MENU_VARIANTS } from '../types/BaseMegaMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { MegaMenuColumn, MegaMenuItem } from '../model/BaseMegaMenu.types'
+import type { MegaMenuColumn, MegaMenuItem } from '../types/BaseMegaMenu.types'
 
 const COLUMNS: MegaMenuColumn[] = [
 	{

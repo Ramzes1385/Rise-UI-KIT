@@ -39,8 +39,8 @@ import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseCompone
 import DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
 import '@components/BaseDropdownMenu/styles/BaseDropdownMenu.style.scss'
 import '../styles/BaseContextMenu.style.scss'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu/model/BaseDropdownMenu.types'
-import type { BaseContextMenuEmits, BaseContextMenuProps, BaseContextMenuSlots } from '../model/BaseContextMenu.types'
+import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
+import type { BaseContextMenuEmits, BaseContextMenuProps, BaseContextMenuSlots } from '../types/BaseContextMenu.types'
 
 defineOptions({ name: 'BaseContextMenu' })
 

@@ -1,5 +1,5 @@
 /** Composable: применение маски ввода к значениям полей */
-import type { NearestTokenResult, UseInputMaskOptions } from './useInputMask.types'
+import type { NearestTokenResult, UseInputMaskOptions } from './types/useInputMask.types'
 
 /**
  * Фиксированные токены (ровно 1 символ)

@@ -1,8 +1,8 @@
 /** Composable: управление фильтрами колонок таблицы */
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import type { ColumnFilter } from '@components/BaseTable/model/BaseTable.types'
-import type { UseTableFilterOptions, UseTableFilterReturn } from './useTableFilter.types'
+import type { ColumnFilter } from '@components/BaseTable/types/BaseTable.types'
+import type { UseTableFilterOptions, UseTableFilterReturn } from './types/useTableFilter.types'
 
 /**
  * Composable для управления фильтрами колонок таблицы.

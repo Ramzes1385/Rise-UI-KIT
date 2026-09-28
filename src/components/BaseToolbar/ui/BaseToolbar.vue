@@ -22,7 +22,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseToolbar.style.scss'
-import type { BaseToolbarProps, BaseToolbarSlots } from '../model/BaseToolbar.types'
+import type { BaseToolbarProps, BaseToolbarSlots } from '../types/BaseToolbar.types'
 
 const props = withDefaults(
 	defineProps<BaseToolbarProps>(),

@@ -226,8 +226,8 @@ import { CHAT_SCALE } from '../../model/chatScale'
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
-import type { ChatInfoTab, ChatMember } from '../../model/BaseChat.types'
-import type { ChatSlideoverEmits, ChatSlideoverProps } from '../../model/ChatSlideover.types'
+import type { ChatInfoTab, ChatMember } from '../../types/BaseChat.types'
+import type { ChatSlideoverEmits, ChatSlideoverProps } from '../../types/ChatSlideover.types'
 import './ChatSlideover.style.scss'
 
 /**

@@ -88,8 +88,8 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { UI_COLOR_PICKER, UI_TEXT } from '@/locales/messages'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseColorPicker.style.scss'
-import { DEFAULT_COLOR_PRESETS } from '../model/BaseColorPicker.types'
-import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../model/BaseColorPicker.types'
+import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'
+import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../types/BaseColorPicker.types'
 
 const props = withDefaults(
 	defineProps<BaseColorPickerProps>(),

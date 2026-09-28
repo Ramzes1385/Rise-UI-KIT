@@ -160,7 +160,7 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseSlider.style.scss'
-import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
+import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../types/BaseSlider.types'
 
 /** Шаг перелистывания, пока стрелка зажата, мс */
 const HOLD_INTERVAL_MS = 150

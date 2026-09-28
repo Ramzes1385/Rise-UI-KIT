@@ -22,9 +22,9 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseCalendar from '../ui/BaseCalendar.vue'
-import { CALENDAR_VARIANTS } from '../model/BaseCalendar.types'
+import { CALENDAR_VARIANTS } from '../types/BaseCalendar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { CalendarHighlight, CalendarWeekends } from '../model/BaseCalendar.types'
+import type { CalendarHighlight, CalendarWeekends } from '../types/BaseCalendar.types'
 
 type Canvas = ReturnType<typeof within>
 

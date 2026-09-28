@@ -5,4 +5,4 @@ export type {
 	ValidationRule,
 	UseFormFieldOptions,
 	UseFormFieldReturn,
-} from './useFormField.types'
+} from './types/useFormField.types'

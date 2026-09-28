@@ -1,6 +1,6 @@
 /** Composable: виртуальный список — отрисовка только видимых строк длинного списка */
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { UseVirtualListOptions, UseVirtualListReturn, VirtualAlign, VirtualItem, VirtualKey } from './useVirtualList.types'
+import type { UseVirtualListOptions, UseVirtualListReturn, VirtualAlign, VirtualItem, VirtualKey } from './types/useVirtualList.types'
 
 /** Строк сверх видимых сверху и снизу по умолчанию: хватает на быстрый прокрут колесом */
 const DEFAULT_OVERSCAN = 5

@@ -1,4 +1,4 @@
-export { INPUT_VARIANTS } from './model/BaseInput.types'
+export { INPUT_VARIANTS } from './types/BaseInput.types'
 export type {
 	BaseInputEmits,
 	BaseInputProps,
@@ -6,5 +6,5 @@ export type {
 	InputVariant,
 	PasswordRule,
 	PasswordRuleResult,
-} from './model/BaseInput.types'
+} from './types/BaseInput.types'
 export { default as BaseInput } from './ui/BaseInput.vue'

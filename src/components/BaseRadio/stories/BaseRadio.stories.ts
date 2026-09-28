@@ -19,9 +19,9 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseRadio from '../ui/BaseRadio.vue'
-import { RADIO_VARIANTS } from '../model/BaseRadio.types'
+import { RADIO_VARIANTS } from '../types/BaseRadio.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { BaseRadioOption } from '../model/BaseRadio.types'
+import type { BaseRadioOption } from '../types/BaseRadio.types'
 
 const DELIVERY_OPTIONS: BaseRadioOption[] = [
 	{ value: 'courier', label: 'Курьером' },

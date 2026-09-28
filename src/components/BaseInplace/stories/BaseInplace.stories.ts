@@ -8,7 +8,7 @@
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInplace from '../ui/BaseInplace.vue'
-import { INPLACE_VARIANTS } from '../model/BaseInplace.types'
+import { INPLACE_VARIANTS } from '../types/BaseInplace.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {

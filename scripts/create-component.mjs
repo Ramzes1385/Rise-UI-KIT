@@ -14,9 +14,9 @@
  *   interactive — кнопкоподобный элемент: нативная <button>, событие click, isDisabled.
  *   form        — поле формы: подпись, нативное поле, v-model, isDisabled, error с aria-describedby.
  *
- * Что создаётся (src/components/Base<Имя>/): index.ts, model/*.types.ts, ui/*.vue, styles/*.style.scss,
+ * Что создаётся (src/components/Base<Имя>/): index.ts, types/*.types.ts, ui/*.vue, styles/*.style.scss,
  * stories/*.stories.ts, __tests__/*.spec.ts (+ integration для interactive и form) и *.visual.spec.ts.
- * Регистрация: src/components/index.ts, src/plugin.ts, наборы в scripts/check-a11y-coverage.mjs.
+ * Регистрация: src/components/index.ts, src/plugin/plugin.ts, наборы в scripts/check-a11y-coverage.mjs.
  *
  * Заготовка рабочая: проходит lint, типы, тесты и покрытие. Места, которые автор обязан заполнить
  * (назначение, варианты, размеры), помечены TODO(scaffold) — проверка stories не пройдёт, пока они остаются.
@@ -138,8 +138,8 @@ function indexTemplate(n, kind) {
 	if (kind !== 'display') types.unshift(`${n.name}Emits`)
 	if (kind !== 'form') types.push(`${n.name}Slots`)
 	return [
-		`export { ${n.constName} } from './model/${n.name}.types'`,
-		`export type { ${types.join(', ')} } from './model/${n.name}.types'`,
+		`export { ${n.constName} } from './types/${n.name}.types'`,
+		`export type { ${types.join(', ')} } from './types/${n.name}.types'`,
 		`export { default as ${n.name} } from './ui/${n.name}.vue'`,
 		'',
 	].join('\n')
@@ -154,7 +154,7 @@ function vueTemplate(n, kind) {
 		...(kind === 'form' ? ["import { computed, useId } from 'vue'"] : []),
 		"import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'",
 		`import '../styles/${n.name}.style.scss'`,
-		`import type { ${[kind !== 'display' && `${n.name}Emits`, `${n.name}Props`, kind !== 'form' && `${n.name}Slots`].filter(Boolean).join(', ')} } from '../model/${n.name}.types'`,
+		`import type { ${[kind !== 'display' && `${n.name}Emits`, `${n.name}Props`, kind !== 'form' && `${n.name}Slots`].filter(Boolean).join(', ')} } from '../types/${n.name}.types'`,
 	]
 	const keys = kind === 'form' ? "['root', 'label', 'control', 'error']" : "['root']"
 	const setup = [
@@ -399,7 +399,7 @@ function storiesTemplate(n, kind, variants, flags) {
 		'',
 		`import { expect${kind === 'interactive' ? ', fn' : ''} } from 'storybook/test'`,
 		`import { ${helpers.join(', ')} } from '@/stories/helpers'`,
-		`import { ${n.constName} } from '../model/${n.name}.types'`,
+		`import { ${n.constName} } from '../types/${n.name}.types'`,
 		`import ${n.name} from '../ui/${n.name}.vue'`,
 		"import type { Meta, StoryObj } from '@storybook/vue3-vite'",
 		'',
@@ -727,15 +727,15 @@ function registerInBarrel(n, changes) {
 }
 
 function registerInPlugin(n, changes) {
-	const path = join(ROOT, 'src/plugin.ts')
+	const path = join(ROOT, 'src/plugin/plugin.ts')
 	let source = readFileSync(path, 'utf-8')
-	const firstImport = source.match(/^import \{ Base\w+ \} from '\.\/components\/Base\w+'$/m)?.[0]
-	if (!firstImport) fail('В src/plugin.ts не найдены импорты компонентов')
+	const firstImport = source.match(/^import \{ Base\w+ \} from '\.\.\/components\/Base\w+'$/m)?.[0]
+	if (!firstImport) fail('В src/plugin/plugin.ts не найдены импорты компонентов')
 	// Новый импорт — рядом с первым импортом компонента; порядок («лесенку») расставляет eslint --fix
-	source = source.replace(firstImport, `${firstImport}\nimport { ${n.name} } from './components/${n.name}'`)
+	source = source.replace(firstImport, `${firstImport}\nimport { ${n.name} } from '../components/${n.name}'`)
 
 	const block = source.match(/const UI_COMPONENTS: Record<string, Component> = \{\n([\s\S]*?)\n\}/)
-	if (!block) fail('В src/plugin.ts не найден объект UI_COMPONENTS')
+	if (!block) fail('В src/plugin/plugin.ts не найден объект UI_COMPONENTS')
 	const entries = block[1]
 		.split('\n')
 		.concat(`\t${n.name},`)
@@ -756,9 +756,10 @@ function registerInA11yGate(n, kind, flags, changes) {
 		flags.long && 'LONG_CONTENT_COMPONENTS',
 	].filter(Boolean)
 	for (const set of sets) {
-		const pattern = new RegExp(`(const ${set} = new Set\\(\\[\\n[\\s\\S]*?)(\\n\\]\\))`)
+		// Набор бывает в одну строку и в несколько; перенос строк расставит Prettier
+		const pattern = new RegExp(`(const ${set} = new Set\\(\\[[\\s\\S]*?),?\\s*(\\]\\))`)
 		if (!pattern.test(source)) fail(`В scripts/check-a11y-coverage.mjs не найден набор ${set}`)
-		source = source.replace(pattern, `$1\n  '${n.name}',$2`)
+		source = source.replace(pattern, (_, head, tail) => `${head}${head.endsWith('[') ? '' : ', '}'${n.name}'${tail}`)
 	}
 	if (sets.length) changes.set(path, source)
 	return sets
@@ -790,7 +791,7 @@ function main() {
 	const flags = { loading: options.loading, empty: options.empty, long: options.long }
 	const files = new Map([
 		[join(dir, 'index.ts'), indexTemplate(n, options.kind)],
-		[join(dir, `model/${n.name}.types.ts`), typesTemplate(n, options.kind, variants)],
+		[join(dir, `types/${n.name}.types.ts`), typesTemplate(n, options.kind, variants)],
 		[join(dir, `ui/${n.name}.vue`), vueTemplate(n, options.kind)],
 		[join(dir, `styles/${n.name}.style.scss`), styleTemplate(n, options.kind, variants)],
 		[join(dir, `stories/${n.name}.stories.ts`), storiesTemplate(n, options.kind, variants, flags)],
@@ -823,7 +824,7 @@ function main() {
 		execFileSync('npx', ['prettier', '--write', '--log-level', 'warn', ...formattable], { stdio: 'inherit', cwd: ROOT })
 		const lintable = [
 			...created.map(([path]) => path).filter(path => /\.(ts|vue)$/.test(path)),
-			join(ROOT, 'src/plugin.ts'),
+			join(ROOT, 'src/plugin/plugin.ts'),
 			join(COMPONENTS_DIR, 'index.ts'),
 		]
 		try {
@@ -834,7 +835,9 @@ function main() {
 	}
 
 	console.log(`\n✅ Создан ${n.name} (${options.kind}) в разделе Storybook «${options.group}».`)
-	console.log(`   Регистрация: src/components/index.ts, src/plugin.ts${sets.length ? `, check-a11y-coverage (${sets.join(', ')})` : ''}.`)
+	console.log(
+		`   Регистрация: src/components/index.ts, src/plugin/plugin.ts${sets.length ? `, check-a11y-coverage (${sets.join(', ')})` : ''}.`,
+	)
 	console.log(`\nДальше:`)
 	console.log(`  1. Заполните места с пометкой ${TODO} — без этого проверка stories не пройдёт.`)
 	console.log('  2. Реализуйте компонент, дополните stories (состояния, сценарии) и тесты.')

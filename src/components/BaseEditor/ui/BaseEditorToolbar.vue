@@ -169,13 +169,13 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { BaseColorPicker } from '@components/BaseColorPicker'
-import { EDITOR_MENU_SCALE_RATIO } from '../model/BaseEditor.types'
+import { EDITOR_MENU_SCALE_RATIO } from '../model/editorScale'
 import type {
 	BaseEditorToolbarEmits,
 	BaseEditorToolbarProps,
 	BaseEditorToolbarSlots,
-	EditorActiveStates,
-} from '../model/BaseEditorToolbar.types'
+	ToolbarButton,
+} from '../types/BaseEditorToolbar.types'
 
 const props = defineProps<BaseEditorToolbarProps>()
 
@@ -193,14 +193,6 @@ const controlScale = computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO)
 
 /** customClass.colorPicker редактора — класс кнопки-триггера пикера цвета */
 const colorPickerClasses = computed(() => ({ swatch: props.classes.colorPicker }))
-
-interface ToolbarButton {
-	icon: string
-	label: string
-	activeKey: keyof EditorActiveStates
-	action: string
-	type: 'format' | 'block'
-}
 
 const buttonGroups = computed(() => [
 	{

@@ -136,8 +136,8 @@ import BaseSearchInput from './BaseSearchInput.vue'
 import '../styles/BaseSearch.style.scss'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
-import { getSearchOptionId } from '../model/BaseSearch.types'
-import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../model/BaseSearch.types'
+import { getSearchOptionId } from '../model/searchOptionId'
+import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../types/BaseSearch.types'
 
 const props = withDefaults(
 	defineProps<BaseSearchProps>(),

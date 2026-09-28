@@ -22,7 +22,7 @@ import {
 } from '@/stories/helpers'
 import BaseSlider from '../ui/BaseSlider.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { SliderItem } from '../model/BaseSlider.types'
+import type { SliderItem } from '../types/BaseSlider.types'
 
 const TOURS = [
 	{ title: 'Рассвет на плато', description: 'Однодневный маршрут · 12 км' },

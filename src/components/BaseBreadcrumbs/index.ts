@@ -1,9 +1,9 @@
-export { BREADCRUMBS_VARIANTS } from './model/BaseBreadcrumbs.types'
+export { BREADCRUMBS_VARIANTS } from './types/BaseBreadcrumbs.types'
 export type {
 	BaseBreadcrumbsEmits,
 	BaseBreadcrumbsProps,
 	BaseBreadcrumbsSlots,
 	BreadcrumbItem,
 	BreadcrumbSeparator,
-} from './model/BaseBreadcrumbs.types'
+} from './types/BaseBreadcrumbs.types'
 export { default as BaseBreadcrumbs } from './ui/BaseBreadcrumbs.vue'

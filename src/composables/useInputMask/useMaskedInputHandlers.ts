@@ -1,7 +1,7 @@
 /** Composable: обработчики ввода для маскированных полей */
 import { nextTick } from 'vue'
 import { useInputMask } from './useInputMask'
-import type { AllowedCharsFilter, UseMaskedInputHandlersOptions, UseMaskedInputHandlersReturn } from './useMaskedInputHandlers.types'
+import type { AllowedCharsFilter, UseMaskedInputHandlersOptions, UseMaskedInputHandlersReturn } from './types/useMaskedInputHandlers.types'
 
 /** Недопустимые символы для каждого фильтра (\p{L} — буква любого алфавита) */
 const DISALLOWED_CHARS: Record<AllowedCharsFilter, RegExp> = {

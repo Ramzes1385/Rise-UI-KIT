@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseTimeline from '../ui/BaseTimeline.vue'
-import type { TimelineItem } from '../model/BaseTimeline.types'
+import type { TimelineItem } from '../types/BaseTimeline.types'
 
 const ITEMS: TimelineItem[] = [
 	{ id: 1, title: 'Создан', date: new Date(2026, 4, 12, 10, 24), icon: 'check', color: 'success', description: 'Автор — Анна' },

@@ -1,6 +1,6 @@
 /** Утилиты: масштабирование иконок по типовым размерам */
 
-import type { IconScale } from './iconUtils.types'
+import type { IconScale } from './types/iconUtils.types'
 
 /** Масштаб иконки (sizeScale) для типовых размеров */
 export const ICON_SCALE = {

@@ -1,6 +1,6 @@
 /** Утилиты: расчёт позиции и привязка к шагу для range/slider компонентов */
 
-import type { RangeScaleOptions, SnapToStepOptions } from './rangeUtils.types'
+import type { RangeScaleOptions, SnapToStepOptions } from './types/rangeUtils.types'
 
 /** Максимальное число знаков, которое принимает Number.prototype.toFixed */
 const MAX_FRACTION_DIGITS = 100

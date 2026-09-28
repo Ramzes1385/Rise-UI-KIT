@@ -5,7 +5,7 @@
 
 import '@testing-library/jest-dom/vitest'
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey } from '../tableUtils'
-import type { SortType } from '@components/BaseTable/model/BaseTable.types'
+import type { SortType } from '@components/BaseTable/types/BaseTable.types'
 
 describe('tableUtils', () => {
 	// ── calcRowNumber ──

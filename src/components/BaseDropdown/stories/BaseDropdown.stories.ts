@@ -15,10 +15,10 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { ARG_GROUP, baseArgTypes, propGroup, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseDropdown from '../ui/BaseDropdown.vue'
-import { DROPDOWN_VARIANTS } from '../model/BaseDropdown.types'
+import { DROPDOWN_VARIANTS } from '../types/BaseDropdown.types'
 import type { BaseMenuItem } from '@components/BaseMenu'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { DropdownPosition } from '../model/BaseDropdown.types'
+import type { DropdownPosition } from '../types/BaseDropdown.types'
 
 /** Все позиции панели относительно триггера. */
 const POSITIONS: DropdownPosition[] = [

@@ -4,7 +4,7 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ComputedRef } from 'vue'
-import type { LayerEntry, LayerOptions } from './useLayerStack.types'
+import type { LayerEntry, LayerOptions } from './types/useLayerStack.types'
 
 /** Зарегистрированные слои всех компонентов страницы */
 const layers = new Set<LayerEntry>()

@@ -63,8 +63,8 @@ import { calcIconScale } from '@utils/iconUtils'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
-import type { TableColumn } from '../model/BaseTable.types'
-import type { BaseTableHeaderEmits, BaseTableHeaderProps, BaseTableHeaderSlots } from '../model/BaseTableHeader.types'
+import type { TableColumn } from '../types/BaseTable.types'
+import type { BaseTableHeaderEmits, BaseTableHeaderProps, BaseTableHeaderSlots } from '../types/BaseTableHeader.types'
 
 const props = defineProps<BaseTableHeaderProps>()
 

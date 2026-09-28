@@ -78,7 +78,7 @@ import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseSwitch.style.scss'
-import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../model/BaseSwitch.types'
+import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../types/BaseSwitch.types'
 
 const props = withDefaults(
 	defineProps<BaseSwitchProps>(),

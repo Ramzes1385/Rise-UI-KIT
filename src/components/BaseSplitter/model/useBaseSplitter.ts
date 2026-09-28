@@ -3,18 +3,7 @@ import { ref, useId, watch } from 'vue'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { Ref } from 'vue'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseSplitterEmits, BaseSplitterProps } from './BaseSplitter.types'
-
-/** Пропсы BaseSplitter после значений по умолчанию */
-export type SplitterProps = PropsWithDefaults<BaseSplitterProps, 'modelValue' | 'orientation' | 'min' | 'max' | 'step' | 'isDisabled'>
-
-/** Размер первой панели, %: работает и без v-model */
-interface SplitterSize {
-	size: Ref<number>
-	/** Новый размер в границах min и max; `isFinal` — итог движения, для события `change` */
-	setSize: (value: number, isFinal: boolean) => void
-}
+import type { BaseSplitterEmits, SplitterProps, SplitterSize } from '../types/BaseSplitter.types'
 
 function useSplitterSize(props: SplitterProps, emit: BaseSplitterEmits): SplitterSize {
 	const size = ref(props.modelValue)

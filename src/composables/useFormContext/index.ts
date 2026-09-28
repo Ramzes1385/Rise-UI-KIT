@@ -13,4 +13,4 @@ export type {
 	FormFieldContext,
 	UseFieldControlOptions,
 	UseFieldControlReturn,
-} from './useFormContext.types'
+} from './types/useFormContext.types'

@@ -19,7 +19,7 @@ import {
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
-import { FILE_UPLOAD_VARIANTS } from '../model/BaseFileUpload.types'
+import { FILE_UPLOAD_VARIANTS } from '../types/BaseFileUpload.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Изображение для загрузки: SVG-иллюстрация из фикстур stories (детерминированная, без сети). */

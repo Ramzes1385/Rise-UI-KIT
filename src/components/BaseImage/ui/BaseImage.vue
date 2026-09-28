@@ -80,7 +80,7 @@ import { useCustomColor } from '@composables/useCustomColor'
 import { useImageGallery } from '@composables/useImageGallery'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BaseImageZoom from './BaseImageZoom.vue'
-import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../model/BaseImage.types'
+import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
 
 const props = withDefaults(
 	defineProps<BaseImageProps>(),

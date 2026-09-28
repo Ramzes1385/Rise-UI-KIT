@@ -18,7 +18,7 @@ import {
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
 import BaseAvatar from '../ui/BaseAvatar.vue'
-import { AVATAR_SHAPES, AVATAR_VARIANTS } from '../model/BaseAvatar.types'
+import { AVATAR_SHAPES, AVATAR_VARIANTS } from '../types/BaseAvatar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const [anna, ivan, maria, oleg] = STORY_USERS

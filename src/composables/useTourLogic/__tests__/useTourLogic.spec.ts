@@ -8,7 +8,7 @@ import '@testing-library/jest-dom/vitest'
 import { effectScope } from 'vue'
 import { resolvePlacement, useTourLogic } from '../useTourLogic'
 import type { EffectScope } from 'vue'
-import type { BaseTourProps } from '@components/BaseTour/model/BaseTour.types'
+import type { BaseTourProps } from '@components/BaseTour/types/BaseTour.types'
 
 /** Прямоугольник элемента 60×40 в точке (top, left) */
 function rectAt(top: number, left: number): DOMRect {

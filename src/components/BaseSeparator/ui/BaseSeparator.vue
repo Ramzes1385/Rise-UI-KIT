@@ -38,7 +38,7 @@ import { useCustomColor } from '@composables/useCustomColor'
 import '../styles/BaseSeparator.style.scss'
 
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import type { BaseSeparatorProps, BaseSeparatorSlots } from '../model/BaseSeparator.types'
+import type { BaseSeparatorProps, BaseSeparatorSlots } from '../types/BaseSeparator.types'
 
 const props = withDefaults(
 	defineProps<BaseSeparatorProps>(),

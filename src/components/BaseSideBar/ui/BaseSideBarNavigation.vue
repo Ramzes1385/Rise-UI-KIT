@@ -121,7 +121,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { useSideBarNavigation } from '@composables/useSideBarNavigation'
-import type { BaseSideBarNavigationEmits, BaseSideBarNavigationProps, BaseSideBarNavigationSlots } from '../model/BaseSideBar.types'
+import type { BaseSideBarNavigationEmits, BaseSideBarNavigationProps, BaseSideBarNavigationSlots } from '../types/BaseSideBar.types'
 
 defineOptions({
 	name: 'BaseSideBarNavigation',

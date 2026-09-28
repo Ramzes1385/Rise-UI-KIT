@@ -25,7 +25,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { useColorMode } from '@composables/useColorMode'
 import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseColorModeButton.style.scss'
-import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../model/BaseColorModeButton.types'
+import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../types/BaseColorModeButton.types'
 
 const props = withDefaults(
 	defineProps<BaseColorModeButtonProps>(),

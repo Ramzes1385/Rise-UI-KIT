@@ -10,7 +10,7 @@ import { afterEach, beforeEach, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseChat from '../ui/BaseChat.vue'
-import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
+import type { ChatMember, ChatMessage } from '../types/BaseChat.types'
 
 const MESSAGES: ChatMessage[] = [
 	{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна' },

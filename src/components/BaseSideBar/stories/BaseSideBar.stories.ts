@@ -24,9 +24,9 @@ import {
 	useModelArg,
 } from '@/stories/helpers'
 import BaseSideBar from '../ui/BaseSideBar.vue'
-import { SIDEBAR_VARIANTS } from '../model/BaseSideBar.types'
+import { SIDEBAR_VARIANTS } from '../types/BaseSideBar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { SideBarItem } from '../model/BaseSideBar.types'
+import type { SideBarItem } from '../types/BaseSideBar.types'
 
 const BASIC_ITEMS: SideBarItem[] = [
 	{ key: 'dashboard', label: 'Главная', icon: 'home', to: '/dashboard' },

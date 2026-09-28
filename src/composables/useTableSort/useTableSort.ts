@@ -1,7 +1,7 @@
 /** Composable: управление сортировкой таблицы */
 import { ref } from 'vue'
-import type { UseTableSortOptions, UseTableSortReturn } from './useTableSort.types'
-import type { SortDirection, SortState, TableColumn } from '@components/BaseTable/model/BaseTable.types'
+import type { UseTableSortOptions, UseTableSortReturn } from './types/useTableSort.types'
+import type { SortDirection, SortState, TableColumn } from '@components/BaseTable/types/BaseTable.types'
 
 /** Следующее направление по клику: по возрастанию → по убыванию → без сортировки → снова по возрастанию */
 function nextSortDirection(current: SortDirection): SortDirection {

@@ -1,4 +1,4 @@
-export { TABLE_VARIANTS } from './model/BaseTable.types'
+export { TABLE_VARIANTS } from './types/BaseTable.types'
 export type {
 	BaseTableEmits,
 	BaseTableProps,
@@ -18,5 +18,5 @@ export type {
 	TableFeaturesConfig,
 	TableRow,
 	TableVariant,
-} from './model/BaseTable.types'
+} from './types/BaseTable.types'
 export { default as BaseTable } from './ui/BaseTable.vue'

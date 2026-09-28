@@ -48,7 +48,7 @@ import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseLoader.style.scss'
-import type { BaseLoaderProps } from '../model/BaseLoader.types'
+import type { BaseLoaderProps } from '../types/BaseLoader.types'
 
 const props = withDefaults(
 	defineProps<BaseLoaderProps>(),

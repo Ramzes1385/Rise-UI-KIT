@@ -73,7 +73,7 @@ import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseSegmented.style.scss'
-import type { BaseSegmentedEmits, BaseSegmentedProps } from '../model/BaseSegmented.types'
+import type { BaseSegmentedEmits, BaseSegmentedProps } from '../types/BaseSegmented.types'
 
 const props = withDefaults(
 	defineProps<BaseSegmentedProps>(),

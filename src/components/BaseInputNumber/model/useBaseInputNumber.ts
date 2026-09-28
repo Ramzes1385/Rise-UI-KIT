@@ -6,32 +6,7 @@ import { useFormDisabled } from '@composables/useFormContext'
 import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '@utils/numberInputUtils'
 import type { Ref } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseInputNumberEmits, BaseInputNumberProps } from './BaseInputNumber.types'
-
-/** Пропсы BaseInputNumber после значений по умолчанию */
-export type InputNumberProps = PropsWithDefaults<BaseInputNumberProps, 'modelValue' | 'step' | 'isDisabled' | 'isReadonly' | 'hasControls'>
-
-/** Текст поля и его формат */
-interface NumberDraft {
-	/** Текст в поле: пока пользователь печатает — его текст, иначе — значение в формате языка */
-	draft: Ref<string>
-	/** Знаков после запятой: из пропа или по шагу */
-	precision: Readonly<Ref<number>>
-	/** Число в формате языка без разделителей разрядов: `1,5` по-русски */
-	format: (value: number | null) => string
-}
-
-/** Запись значения: округление, границы, v-model и `change` */
-interface NumberCommit {
-	commit: (value: number | null) => void
-	/** Набранный текст: число округляется и ограничивается, нечисло возвращает прежнее значение */
-	commitDraft: () => void
-	/** Шаг кнопкой или клавишей */
-	stepBy: (multiplier: number) => void
-	/** Фокус в поле: `change` сравнивается со значением на входе */
-	rememberCommitted: () => void
-}
+import type { BaseInputNumberEmits, InputNumberProps, NumberCommit, NumberDraft } from '../types/BaseInputNumber.types'
 
 /** Клавиши шага: стрелки — один шаг, PageUp/PageDown — десять */
 const STEP_KEYS: Record<string, number> = { ArrowUp: 1, ArrowDown: -1, PageUp: 10, PageDown: -10 }

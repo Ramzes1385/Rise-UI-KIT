@@ -43,11 +43,15 @@ import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import DropdownMenuContent from './DropdownMenuContent.vue'
 import '../styles/BaseDropdownMenu.style.scss'
-import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, BaseDropdownMenuSlots, DropdownMenuItem } from '../model/BaseDropdownMenu.types'
+import type {
+	BaseDropdownMenuEmits,
+	BaseDropdownMenuProps,
+	BaseDropdownMenuSlots,
+	DropdownMenuItem,
+	FocusTarget,
+} from '../types/BaseDropdownMenu.types'
 
 defineOptions({ name: 'BaseDropdownMenu' })
-
-type FocusTarget = 'first' | 'last' | 'menu'
 
 const props = withDefaults(
 	defineProps<BaseDropdownMenuProps>(),

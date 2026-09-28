@@ -27,9 +27,9 @@ import {
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
 import BaseTable from '../ui/BaseTable.vue'
-import { TABLE_VARIANTS } from '../model/BaseTable.types'
+import { TABLE_VARIANTS } from '../types/BaseTable.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { NestedTableConfig, TableColumn, TableRow } from '../model/BaseTable.types'
+import type { NestedTableConfig, TableColumn, TableRow } from '../types/BaseTable.types'
 
 // ─── Данные ────────────────────────────────────────────────────────────────────
 

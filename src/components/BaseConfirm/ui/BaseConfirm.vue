@@ -42,7 +42,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseConfirm.style.scss'
 import type { CustomColor } from '@composables/useCustomColor'
-import type { BaseConfirmEmits, BaseConfirmProps } from '../model/BaseConfirm.types'
+import type { BaseConfirmEmits, BaseConfirmProps } from '../types/BaseConfirm.types'
 
 const props = withDefaults(
 	defineProps<BaseConfirmProps>(),

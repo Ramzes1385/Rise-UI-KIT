@@ -9,7 +9,7 @@ import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { BaseText } from '@components/BaseText'
 import BaseRadio from '../ui/BaseRadio.vue'
-import type { BaseRadioOption } from '../model/BaseRadio.types'
+import type { BaseRadioOption } from '../types/BaseRadio.types'
 
 const OPTIONS: BaseRadioOption[] = [
 	{ value: 'metal', label: 'Металл' },

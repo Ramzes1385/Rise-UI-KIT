@@ -33,7 +33,7 @@ import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseDropdown.style.scss'
-import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
+import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../types/BaseDropdown.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()

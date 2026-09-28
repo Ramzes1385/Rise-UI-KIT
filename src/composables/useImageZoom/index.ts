@@ -1,2 +1,2 @@
 export { useImageZoom } from './useImageZoom'
-export type { UseImageZoomOptions } from './useImageZoom.types'
+export type { UseImageZoomOptions } from './types/useImageZoom.types'

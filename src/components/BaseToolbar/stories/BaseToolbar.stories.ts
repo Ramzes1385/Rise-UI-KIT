@@ -13,7 +13,7 @@ import { BaseSeparator } from '@components/BaseSeparator'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseToolbar from '../ui/BaseToolbar.vue'
-import { TOOLBAR_VARIANTS } from '../model/BaseToolbar.types'
+import { TOOLBAR_VARIANTS } from '../types/BaseToolbar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Кнопки форматирования: иконка и имя */

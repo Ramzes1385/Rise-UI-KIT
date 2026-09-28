@@ -1,6 +1,6 @@
 /** Утилиты: генерация Schema.org JSON-LD разметки */
 
-import type { SchemaBreadcrumbItem } from './schemaUtils.types'
+import type { SchemaBreadcrumbItem } from './types/schemaUtils.types'
 
 /** Построить Schema.org JSON-LD для BreadcrumbList */
 function buildBreadcrumbsSchema(items: SchemaBreadcrumbItem[]): string {
