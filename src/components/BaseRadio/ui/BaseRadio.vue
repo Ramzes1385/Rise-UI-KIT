@@ -71,11 +71,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseRadio } from '../model/useBaseRadio'
 import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../types/BaseRadio.types'
 
@@ -90,45 +89,22 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio', props, [
-	'root',
-	'label',
-	'options',
-	'radio',
-	'wrapper',
-	'input',
-	'circle',
-	'dot',
-	'optionLabel',
-	'errorText',
-])
-
-const rootRef = ref<HTMLElement | null>(null)
-
-/** id заголовка и текста ошибки: заголовок — имя группы (aria-labelledby), ошибка — её описание (aria-describedby) */
-const groupId = useId()
-const labelId = `${groupId}-label`
-const errorId = `${groupId}-error`
-
 const emit = defineEmits<BaseRadioEmits>()
 defineSlots<BaseRadioSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-function handleChange(value: string | number): void {
-	emit('update:modelValue', value)
-	emit('change', value)
-}
-
-defineExpose({
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
 	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	labelId,
+	errorId,
+	formField,
+	handleChange,
+	exposed,
+} = useBaseRadio(props, emit)
+
+defineExpose(exposed)
 </script>

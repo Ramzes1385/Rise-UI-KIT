@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Типы оповещений: определяют цвет (роль), иконку и срочность озвучивания (error/warning — role="alert") */
@@ -43,3 +44,5 @@ export interface BaseAlertSlots {
 	/** Кастомные действия справа (например, кнопки) */
 	actions?: () => unknown
 }
+
+export type AlertProps = PropsWithDefaults<BaseAlertProps, 'type'>

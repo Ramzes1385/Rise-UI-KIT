@@ -32,7 +32,7 @@
 					:class="classes.trackCircle"
 					cx="60"
 					cy="60"
-					:r="CIRCLE_RADIUS"
+					:r="circleRadius"
 					fill="none"
 					stroke-width="8" />
 				<circle
@@ -40,7 +40,7 @@
 					:class="classes.fillCircle"
 					cx="60"
 					cy="60"
-					:r="CIRCLE_RADIUS"
+					:r="circleRadius"
 					fill="none"
 					stroke-width="8"
 					:stroke-dasharray="circumference"
@@ -55,19 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import '../styles/BaseProgress.style.scss'
 
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseProgress } from '../model/useBaseProgress'
 import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../types/BaseProgress.types'
-
-/** Радиус круга в системе координат viewBox 120×120 */
-const CIRCLE_RADIUS = 52
 
 const props = withDefaults(
 	defineProps<BaseProgressProps>(),
@@ -84,38 +78,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseProgressEmits>()
 defineSlots<BaseProgressSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'track', 'fill', 'tooltipTrigger', 'tooltipAnchor', 'svg', 'trackCircle', 'fillCircle', 'circleLabel'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const percent = computed((): number => {
-	if (props.isIndeterminate) return 0
-	// Некорректный max (0, отрицательный, NaN, Infinity) или value=NaN давали деление
-	// 0/0 или NaN → «NaN%» в подписи и aria-valuenow; такой прогресс считаем нулевым.
-	if (!Number.isFinite(props.max) || props.max <= 0 || Number.isNaN(props.value)) return 0
-	const clamped = Math.min(Math.max(props.value, 0), props.max)
-	return Math.round((clamped / props.max) * 100)
-})
-
-/** В неопределённом режиме значение неизвестно: «0%» не показываем. */
-const isLabelVisible = computed((): boolean => props.hasLabel && !props.isIndeterminate)
-
-/** Ширину заливки в неопределённом режиме задают стили (бегущая или статичная полоса), а не значение. */
-const fillStyle = computed(() => (props.isIndeterminate ? undefined : { width: `${percent.value}%` }))
-
-const circumference = computed((): number => {
-	return 2 * Math.PI * CIRCLE_RADIUS
-})
-
-const circleOffset = computed((): number => {
-	if (props.isIndeterminate) return circumference.value
-	return circumference.value * (1 - percent.value / 100)
-})
-
-watch(percent, value => {
-	if (value >= 100) emit('complete')
-})
+const { classes, sizeScaleStyle, customColorStyle, percent, isLabelVisible, fillStyle, circleRadius, circumference, circleOffset } =
+	useBaseProgress(props, emit)
 </script>

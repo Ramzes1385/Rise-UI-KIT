@@ -33,12 +33,10 @@
 </template>
 
 <script setup lang="ts" generic="T">
-import { computed, ref } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { useVirtualList } from '@composables/useVirtualList'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseVirtualList } from '../model/useBaseVirtualList'
 import '../styles/BaseVirtualList.style.scss'
-import type { VirtualKey } from '@composables/useVirtualList'
 import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../types/BaseVirtualList.types'
 
 const props = withDefaults(
@@ -54,53 +52,21 @@ const props = withDefaults(
 
 defineSlots<BaseVirtualListSlots<T>>()
 
-const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-virtual-list', props, ['root', 'item'])
-
-const viewportRef = ref<HTMLElement | null>(null)
-
-const viewportStyle = computed(() => ({ height: typeof props.height === 'number' ? `${props.height}px` : props.height }))
-
-/** Ключ строки: функция, поле из itemKey, поле id, иначе индекс */
-function keyOf(index: number): VirtualKey {
-	const item = props.items[index]
-	if (typeof props.itemKey === 'function') return props.itemKey(item, index)
-	const field = props.itemKey ?? 'id'
-	const value = item !== null && typeof item === 'object' ? (item as Record<string, unknown>)[field] : undefined
-	return typeof value === 'string' || typeof value === 'number' ? value : index
-}
-
-/** Строка, в которой фокус: она не уходит из DOM при прокрутке */
-const focusedIndex = ref<number>()
-
-function handleFocusin(event: FocusEvent): void {
-	const row = (event.target as HTMLElement).closest<HTMLElement>('.base-virtual-list__item')
-	focusedIndex.value = row ? Number(row.dataset.index) : undefined
-}
-
-function handleFocusout(event: FocusEvent): void {
-	if (!viewportRef.value?.contains(event.relatedTarget as Node | null)) focusedIndex.value = undefined
-}
-
 const {
-	items: virtualItems,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	classes,
+	viewportRef,
+	viewportStyle,
+	handleFocusin,
+	handleFocusout,
+	virtualItems,
 	totalSize,
-	viewportSize,
 	measureElement,
-	scrollToIndex,
-} = useVirtualList({
-	count: () => props.items.length,
-	estimateSize: () => props.itemSize,
-	overscan: () => props.overscan,
-	scrollElement: viewportRef,
-	getKey: keyOf,
-	pinnedIndex: () => focusedIndex.value,
-})
+	isScrollable,
+	exposed,
+} = useBaseVirtualList(props)
 
-/** Содержимое выше области — её можно прокрутить с клавиатуры, поэтому она в порядке Tab */
-const isScrollable = computed(() => totalSize.value > viewportSize.value)
-
-defineExpose<BaseVirtualListExpose>({
-	scrollToIndex,
-	getViewport: () => viewportRef.value,
-})
+defineExpose<BaseVirtualListExpose>(exposed)
 </script>

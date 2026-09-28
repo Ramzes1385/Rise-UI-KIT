@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const RADIO_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'bordered'] as const
@@ -38,3 +39,5 @@ export interface BaseRadioSlots {
 	/** Кастомная подпись опции. Нативный radio и индикатор рендерит компонент, поэтому выбор, клавиатура и роль radio сохраняются */
 	option?: (props: { option: BaseRadioOption; isChecked: boolean }) => unknown
 }
+
+export type RadioProps = PropsWithDefaults<BaseRadioProps, 'isRequired'>

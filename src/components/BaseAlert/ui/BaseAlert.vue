@@ -38,7 +38,7 @@
 				v-if="isClosable"
 				variant="ghost"
 				:size-scale="sizeScale"
-				:padding="CLOSE_BUTTON_PADDING"
+				:padding="closeButtonPadding"
 				class="base-alert__close"
 				:custom-class="classes.close"
 				:aria-label="UI_ARIA.CLOSE"
@@ -50,19 +50,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseAlert } from '../model/useBaseAlert'
 import '../styles/BaseAlert.style.scss'
 import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../types/BaseAlert.types'
-
-/** Отступы кнопки закрытия: квадрат 24px при sizeScale = 100 */
-const CLOSE_BUTTON_PADDING = { x: 3, y: 3 } as const
 
 const props = withDefaults(
 	defineProps<BaseAlertProps>(),
@@ -77,39 +74,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseAlertEmits>()
 defineSlots<BaseAlertSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, [
-	'root',
-	'iconWrapper',
-	'icon',
-	'content',
-	'title',
-	'description',
-	'text',
-	'actions',
-	'close',
-	'closeIcon',
-])
-
-/**
- * Роль live-региона по срочности: error/warning прерывают озвучивание (alert = assertive),
- * info/success объявляются вежливо (status = polite). Явный aria-live не ставится,
- * чтобы не переопределять неявную вежливость роли.
- */
-const liveRole = computed((): 'alert' | 'status' => (props.type === 'error' || props.type === 'warning' ? 'alert' : 'status'))
-
-const alertIcon = computed((): string => {
-	if (props.icon) return props.icon
-
-	const icons: Record<string, string> = {
-		info: 'info',
-		success: 'check-circle',
-		warning: 'alert-triangle',
-		error: 'x-circle',
-	}
-	return icons[props.type] || 'info'
-})
-
-function handleClose(): void {
-	emit('close')
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, closeButtonPadding, liveRole, alertIcon, handleClose } =
+	useBaseAlert(props, emit)
 </script>

@@ -70,13 +70,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
 import { BaseText } from '@components/BaseText'
-import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSwitch } from '../model/useBaseSwitch'
 import '../styles/BaseSwitch.style.scss'
 import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../types/BaseSwitch.types'
 
@@ -92,44 +90,22 @@ const props = withDefaults(
 	}),
 )
 
-/** id переключателя и обёртки ошибки: подпись связана через for, ошибка (текст error или слот error) — через aria-describedby */
-const inputId = useId()
-const errorId = `${inputId}-error`
-const rootRef = ref<HTMLElement | null>(null)
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, [
-	'root',
-	'row',
-	'wrapper',
-	'input',
-	'slider',
-	'handle',
-	'content',
-	'label',
-	'required',
-	'errorText',
-])
-
 const emit = defineEmits<BaseSwitchEmits>()
 defineSlots<BaseSwitchSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-function handleChange(e: Event): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	emit('update:modelValue', target.checked)
-	emit('change', target.checked)
-}
-
-defineExpose({
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	inputId,
+	errorId,
 	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	formField,
+	handleChange,
+	exposed,
+} = useBaseSwitch(props, emit)
+
+defineExpose(exposed)
 </script>

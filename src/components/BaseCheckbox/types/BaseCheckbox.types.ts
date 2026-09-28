@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const CHECKBOX_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -30,3 +31,5 @@ export interface BaseCheckboxSlots {
 	/** Кастомный текст ошибки */
 	error?: () => unknown
 }
+
+export type CheckboxProps = PropsWithDefaults<BaseCheckboxProps, 'isIndeterminate'>

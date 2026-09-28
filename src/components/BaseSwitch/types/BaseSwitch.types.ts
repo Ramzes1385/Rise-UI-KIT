@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
@@ -33,3 +34,5 @@ export interface BaseSwitchSlots {
 	/** Кастомный текст ошибки */
 	error?: () => unknown
 }
+
+export type SwitchProps = PropsWithDefaults<BaseSwitchProps, 'isRequired'>

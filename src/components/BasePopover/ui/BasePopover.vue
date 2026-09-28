@@ -28,13 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId, watch } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import '../styles/BasePopover.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBasePopover } from '../model/useBasePopover'
 import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../types/BasePopover.types'
 
 const props = withDefaults(
@@ -50,53 +48,6 @@ const props = withDefaults(
 const emit = defineEmits<BasePopoverEmits>()
 defineSlots<BasePopoverSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'trigger', 'arrow', 'inner', 'panel'],
-})
-
-const isOpenLocal = ref(props.isOpen)
-const triggerRef = ref<HTMLElement | null>(null)
-const panelId = `rise-popover-${useId()}`
-
-const triggerAttributes = computed(() => ({
-	'aria-haspopup': 'dialog',
-	'aria-expanded': isOpenLocal.value ? 'true' : 'false',
-	'aria-controls': isOpenLocal.value ? panelId : undefined,
-}))
-
-const { triggerId } = useTriggerAttributes(
-	() => triggerRef.value,
-	() => triggerAttributes.value,
-	{ withId: true },
-)
-
-watch(
-	() => props.isOpen,
-	isOpen => {
-		isOpenLocal.value = isOpen
-	},
-)
-
-/**
- * Корень — обёртка BaseDropdown с классом base-popover: строчная, по размеру триггера.
- * Поэтому панель и стрелка центрируются по триггеру, а не по всей строке.
- */
-const rootClass = computed((): string => ['base-popover', classes.value.root].filter(Boolean).join(' '))
-
-const panelClasses = computed((): string => {
-	return `base-popover__panel base-popover__panel--${props.variant}`
-})
-
-/** Клик по кнопке открывает и закрывает поповер; закрытие кнопкой — такое же закрытие, как Escape: с `close` */
-function toggle(): void {
-	isOpenLocal.value = !isOpenLocal.value
-	emit('update:isOpen', isOpenLocal.value)
-	if (!isOpenLocal.value) emit('close')
-}
-
-function handleClose(): void {
-	emit('update:isOpen', false)
-	emit('close')
-}
+const { classes, isOpenLocal, toggle, handleClose, triggerRef, panelId, triggerAttributes, triggerId, rootClass, panelClasses } =
+	useBasePopover(props, emit)
 </script>

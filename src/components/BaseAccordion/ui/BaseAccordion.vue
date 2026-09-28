@@ -59,11 +59,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useId } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseAccordion } from '../model/useBaseAccordion'
 import '../styles/BaseAccordion.style.scss'
 import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../types/BaseAccordion.types'
 
@@ -79,58 +79,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseAccordionEmits>()
 defineSlots<BaseAccordionSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-accordion', props, [
-	'root',
-	'item',
-	'header',
-	'icon',
-	'label',
-	'arrow',
-	'arrowIcon',
-	'collapse',
-	'content',
-	'contentText',
-])
-
-const openIndexes = ref<number[]>([])
-
-/** Префикс id экземпляра: связывает заголовок и панель через aria-controls/aria-labelledby без коллизий между аккордеонами */
-const baseId = useId()
-
-function getHeaderId(index: number): string {
-	return `${baseId}-header-${index}`
-}
-
-function getPanelId(index: number): string {
-	return `${baseId}-panel-${index}`
-}
-
-function isOpen(index: number): boolean {
-	return openIndexes.value.includes(index)
-}
-
-onMounted(() => {
-	props.items.forEach((item, index) => {
-		if (item.defaultOpen) {
-			openIndexes.value.push(index)
-		}
-	})
-})
-
-function toggleItem(index: number): void {
-	if (props.items[index].isDisabled) return
-
-	const pos = openIndexes.value.indexOf(index)
-	if (pos > -1) {
-		openIndexes.value.splice(pos, 1)
-		emit('toggle', index, false)
-	} else {
-		if (props.isMultiple) {
-			openIndexes.value.push(index)
-		} else {
-			openIndexes.value = [index]
-		}
-		emit('toggle', index, true)
-	}
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isOpen, toggleItem, getHeaderId, getPanelId } =
+	useBaseAccordion(props, emit)
 </script>

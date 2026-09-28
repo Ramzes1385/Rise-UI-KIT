@@ -42,18 +42,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
 import '../styles/BasePagination.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBasePagination } from '../model/useBasePagination'
 import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../types/BasePagination.types'
 
 const props = withDefaults(
@@ -67,50 +63,10 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'prev', 'next', 'pages', 'button', 'ellipsis'],
-})
-
 const emit = defineEmits<BasePaginationEmits>()
 
 defineSlots<BasePaginationSlots>()
 
-const totalPages = computed(() => calcTotalPages(props.total, props.pageSize))
-
-const pages = computed(() =>
-	calcVisiblePages({
-		current: props.modelValue,
-		total: totalPages.value,
-		maxVisible: props.maxVisible,
-		showLastPage: props.showLastPage,
-	}),
-)
-
-/**
- * Вариант стрелок и неактивных страниц. Текущая страница всегда рисуется вариантом по умолчанию (заливка основным
- * цветом), поэтому при variant='default' остальным нужен нейтральный ghost — иначе текущую страницу не отличить.
- */
-const inactivePageVariant = computed(() => (props.variant === DEFAULT_VARIANT ? 'ghost' : props.variant))
-
-/**
- * Границы сравниваются через <=/>=, а не ===: modelValue может оказаться вне диапазона
- * (total уменьшился после фильтрации или ещё равен 0 до загрузки), и тогда кнопки не должны выглядеть активными.
- */
-const isPrevDisabled = computed(() => props.modelValue <= 1 || totalPages.value < 1)
-const isNextDisabled = computed(() => props.modelValue >= totalPages.value)
-
-function changePage(page: number): void {
-	if (page >= 1 && page <= totalPages.value) {
-		emit('update:modelValue', page)
-		emit('change', page)
-	}
-}
-
-/** Со страницы за пределами диапазона «назад» ведёт на последнюю существующую, иначе changePage отбросил бы modelValue - 1 */
-function goToPrevPage(): void {
-	changePage(Math.min(props.modelValue - 1, totalPages.value))
-}
+const { sizeScaleStyle, customColorStyle, classes, pages, inactivePageVariant, isPrevDisabled, isNextDisabled, changePage, goToPrevPage } =
+	useBasePagination(props, emit)
 </script>

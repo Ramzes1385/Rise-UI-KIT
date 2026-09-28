@@ -14,6 +14,8 @@ const LOGIC_IN_MODEL = 'Логика компонента — в model/useBaseX.
 
 // Компоненты, логика которых уже в model/: в <script setup> только макросы, импорты для шаблона и вызов useBaseX
 const MODEL_COMPONENTS = [
+	'BaseAccordion',
+	'BaseAlert',
 	'BaseAnimation',
 	'BaseApp',
 	'BaseAvatar',
@@ -22,6 +24,7 @@ const MODEL_COMPONENTS = [
 	'BaseButton',
 	'BaseButtonGroup',
 	'BaseCard',
+	'BaseCheckbox',
 	'BaseChip',
 	'BaseColorModeButton',
 	'BaseConfirm',
@@ -33,20 +36,27 @@ const MODEL_COMPONENTS = [
 	'BaseIcon',
 	'BaseInplace',
 	'BaseInputNumber',
+	'BaseKbd',
 	'BaseLayout',
 	'BaseLink',
 	'BaseLoader',
 	'BaseMenu',
+	'BasePagination',
+	'BasePopover',
+	'BaseProgress',
+	'BaseRadio',
 	'BaseSegmented',
 	'BaseSeparator',
 	'BaseSkeleton',
 	'BaseSplitButton',
 	'BaseSplitter',
 	'BaseStepper',
+	'BaseSwitch',
 	'BaseText',
 	'BaseTimePicker',
 	'BaseTimeline',
 	'BaseUser',
+	'BaseVirtualList',
 ]
 
 const CLEAN_CODE_SIZE_RULES = {

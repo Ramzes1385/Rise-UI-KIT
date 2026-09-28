@@ -56,14 +56,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
-import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormField } from '@composables/useFormField'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseCheckbox } from '../model/useBaseCheckbox'
 import '../styles/BaseCheckbox.style.scss'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../types/BaseCheckbox.types'
 
@@ -82,41 +80,8 @@ const props = withDefaults(
 const emit = defineEmits<BaseCheckboxEmits>()
 defineSlots<BaseCheckboxSlots>()
 
-/** id обёртки ошибки: чекбокс связан с ней через aria-describedby (и для текста error, и для слота error) */
-const errorId = `${useId()}-error`
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, errorId, formField, rootRef, handleChange, exposed } =
+	useBaseCheckbox(props, emit)
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox', props, [
-	'root',
-	'labelWrapper',
-	'wrapper',
-	'input',
-	'box',
-	'icon',
-	'label',
-	'errorText',
-])
-
-const rootRef = ref<HTMLElement | null>(null)
-
-function handleChange(e: Event): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	emit('update:modelValue', target.checked)
-	emit('change', target.checked)
-	// Клик снимает indeterminate у элемента; вернуть его, если родитель оставил частичный выбор
-	target.indeterminate = props.isIndeterminate
-}
-
-defineExpose({
-	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

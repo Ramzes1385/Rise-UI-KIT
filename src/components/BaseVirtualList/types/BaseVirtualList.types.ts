@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { VirtualAlign, VirtualKey } from '@composables/useVirtualList'
 
@@ -30,3 +31,5 @@ export interface BaseVirtualListExpose {
 	/** Прокручиваемый элемент */
 	getViewport: () => HTMLElement | null
 }
+
+export type VirtualListProps<T> = PropsWithDefaults<BaseVirtualListProps<T>, 'itemSize' | 'overscan'>

@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
@@ -20,4 +21,29 @@ export interface BaseKbdProps extends BaseComponentProps<(typeof KBD_VARIANTS)[n
 export interface BaseKbdSlots {
 	/** Своё содержимое клавиши вместо value */
 	default?: () => unknown
+}
+
+export type KbdProps = PropsWithDefaults<BaseKbdProps, 'value'>
+
+/** Название клавиши в словаре кита */
+type KbdAriaKey =
+	| 'KEY_COMMAND'
+	| 'KEY_CONTROL'
+	| 'KEY_OPTION'
+	| 'KEY_SHIFT'
+	| 'KEY_ENTER'
+	| 'KEY_BACKSPACE'
+	| 'KEY_DELETE'
+	| 'KEY_UP'
+	| 'KEY_DOWN'
+	| 'KEY_LEFT'
+	| 'KEY_RIGHT'
+
+/** Символ клавиши и, у символов, ключ её названия */
+export type KbdKeySpec = readonly [text: string, aria?: KbdAriaKey]
+
+/** Показ клавиши: текст на экране и название для скринридера */
+export interface KbdKeyLabel {
+	text: string
+	name?: string
 }

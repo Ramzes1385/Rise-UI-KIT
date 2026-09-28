@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const PAGINATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -26,3 +27,5 @@ export interface BasePaginationEmits {
 export interface BasePaginationSlots {
 	default?: () => unknown
 }
+
+export type PaginationProps = PropsWithDefaults<BasePaginationProps, 'pageSize' | 'maxVisible' | 'showLastPage' | 'sizeScale'>

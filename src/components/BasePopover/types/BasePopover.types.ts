@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
@@ -33,3 +34,5 @@ export interface BasePopoverSlots {
 	/** Содержимое поповера */
 	default?: () => unknown
 }
+
+export type PopoverProps = PropsWithDefaults<BasePopoverProps, 'isOpen'>

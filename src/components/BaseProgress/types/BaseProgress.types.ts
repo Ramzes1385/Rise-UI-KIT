@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const PROGRESS_SHAPES = ['line', 'circle'] as const
@@ -40,3 +41,5 @@ export interface BaseProgressSlots {
 	/** Содержимое подписи при `hasLabel` (по умолчанию «N%»): `value` — значение, `percent` — процент 0–100. */
 	default?: (props: { value: number; percent: number }) => unknown
 }
+
+export type ProgressProps = PropsWithDefaults<BaseProgressProps, 'max' | 'sizeScale'>
