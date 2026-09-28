@@ -2,8 +2,17 @@
 	<div
 		ref="rootRef"
 		class="base-media-player"
-		:class="[variantClass, { 'base-media-player--idle': isIdle, 'base-media-player--fullscreen': isFullscreen }, classes.root]"
+		:class="[
+			variantClass,
+			{
+				'base-media-player--idle': isIdle,
+				'base-media-player--fullscreen': isFullscreen,
+				'base-media-player--theater': isTheater,
+			},
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, rootStyle]"
+		data-theme="dark"
 		role="region"
 		tabindex="-1"
 		:aria-label="title">
@@ -23,11 +32,32 @@
 			@play="onMediaEvent.play"
 			@pause="onMediaEvent.pause"
 			@ended="onMediaEvent.ended"></video>
-		<div v-if="error" class="base-media-player__overlay" :class="classes.overlay" role="alert">
-			<slot name="error" :error="error" :retry="actions.retry">
+		<div v-if="hasTitle || logoSrc" class="base-media-player__top" :class="`base-media-player__top--logo-${logoPosition}`">
+			<span v-if="hasTitle" class="base-media-player__title" :class="classes.title">{{ title }}</span>
+			<a
+				v-if="logoSrc && logoLink"
+				class="base-media-player__logo"
+				:class="classes.logo"
+				:href="logoLink"
+				target="_blank"
+				rel="noopener noreferrer"
+				:aria-label="logoAlt">
+				<img class="base-media-player__logo-image" :src="logoSrc" alt="" />
+			</a>
+			<img v-else-if="logoSrc" class="base-media-player__logo" :class="classes.logo" :src="logoSrc" :alt="logoAlt ?? ''" />
+		</div>
+		<BaseLoader v-if="isBuffering" class="base-media-player__loader" :label="UI_PLAYER.LOADING" />
+		<div v-if="isStartScreen" class="base-media-player__start">
+			<button type="button" class="base-media-player__big-play" tabindex="-1" aria-hidden="true" @click="actions.play">
+				<BaseIcon name="play" />
+			</button>
+			<p v-if="isAutoplayBlocked" class="base-media-player__hint" role="status">{{ errorMessage }}</p>
+		</div>
+		<div v-if="overlayError" class="base-media-player__overlay" :class="classes.overlay" role="alert">
+			<slot name="error" :error="overlayError" :retry="actions.retry">
 				<p class="base-media-player__message">{{ errorMessage }}</p>
-				<BaseButton v-if="errorAction" variant="soft" :size-scale="sizeScale" @click="errorAction.run">
-					{{ errorAction.label }}
+				<BaseButton v-if="canRetry" variant="soft" :size-scale="sizeScale" @click="actions.retry">
+					{{ UI_TEXT.RETRY }}
 				</BaseButton>
 			</slot>
 		</div>
@@ -48,7 +78,7 @@
 					<template #left><BaseIcon :name="state.isPaused ? 'play' : 'pause'" /></template>
 				</BaseButton>
 				<BaseButton variant="ghost" class="base-media-player__button" :aria-label="muteLabel" @click="actions.toggleMute">
-					<template #left><BaseIcon :name="isSilent ? 'volume-off' : 'volume'" /></template>
+					<template #left><MediaVolumeIcon :volume="state.volume" :is-muted="state.isMuted" /></template>
 				</BaseButton>
 				<MediaSlider
 					class="base-media-player__volume"
@@ -61,6 +91,21 @@
 					:value-text="volumeValueText"
 					@update:model-value="actions.setVolume" />
 				<span class="base-media-player__time" :class="classes.time">{{ currentTimeText }} / {{ durationText }}</span>
+				<MediaSettingsMenu
+					:rates="rates"
+					:rate="state.playbackRate"
+					:qualities="qualities"
+					:active-src="src"
+					@select-rate="actions.setPlaybackRate"
+					@select-quality="selectQuality" />
+				<BaseButton
+					v-if="!isFullscreen"
+					variant="ghost"
+					class="base-media-player__button"
+					:aria-label="theaterLabel"
+					@click="toggleTheater">
+					<template #left><BaseIcon :name="isTheater ? 'theater-exit' : 'theater'" /></template>
+				</BaseButton>
 				<BaseButton
 					v-if="isFullscreenSupported"
 					variant="ghost"
@@ -77,10 +122,13 @@
 <script setup lang="ts">
 import '../styles/BaseMediaPlayer.style.scss'
 import MediaSlider from './MediaSlider.vue'
-import { UI_PLAYER } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import MediaVolumeIcon from './MediaVolumeIcon.vue'
 import { BaseButton } from '@components/BaseButton'
+import { BaseLoader } from '@components/BaseLoader'
 import { kitDefaults } from '@composables/useDefaults'
+import MediaSettingsMenu from './MediaSettingsMenu.vue'
+import { UI_PLAYER, UI_TEXT } from '@/locales/messages'
 import { useBaseMediaPlayer } from '../model/useBaseMediaPlayer'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type {
@@ -103,6 +151,13 @@ const props = withDefaults(
 		volumeStep: 0.05,
 		playbackRates: () => [0.5, 0.75, 1, 1.25, 1.5, 2],
 		idleTimeout: 3000,
+		hasTitle: true,
+		logoPosition: 'top-right',
+		currentTime: undefined,
+		volume: undefined,
+		isMuted: undefined,
+		playbackRate: undefined,
+		isTheater: undefined,
 	}),
 )
 const emit = defineEmits<BaseMediaPlayerEmits>()
@@ -118,19 +173,29 @@ const {
 	controlsRef,
 	state,
 	actions,
-	error,
 	isIdle,
 	togglePlay,
+	toggleFullscreen,
 	isFullscreen,
 	isFullscreenSupported,
-	toggleFullscreen,
 	fullscreenLabel,
+	theaterLabel,
+	isTheater,
+	toggleTheater,
 	src,
 	posterSrc,
-	errorMessage,
-	errorAction,
+	logoSrc,
+	logoLink,
 	rootStyle,
-	isSilent,
+	rates,
+	qualities,
+	selectQuality,
+	overlayError,
+	isAutoplayBlocked,
+	errorMessage,
+	canRetry,
+	isBuffering,
+	isStartScreen,
 	playLabel,
 	muteLabel,
 	currentTimeText,

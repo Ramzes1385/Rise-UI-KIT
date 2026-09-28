@@ -1,2 +1,6 @@
 export { Default } from './Default'
+export { Settings } from './Settings'
+export { TitleAndLogo } from './TitleAndLogo'
+export { Theater } from './Theater'
+export { Autoplay } from './Autoplay'
 export { WithError } from './WithError'

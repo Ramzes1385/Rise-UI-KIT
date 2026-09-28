@@ -67,6 +67,8 @@ export interface MediaActions {
 	setVolume: (volume: number) => void
 	/** Выключить или включить звук */
 	toggleMute: () => void
+	/** Выключить (true) или включить (false) звук */
+	setMuted: (isMuted: boolean) => void
 	/** Скорость воспроизведения */
 	setPlaybackRate: (rate: number) => void
 	/** Загрузить источник заново и продолжить с той же позиции */
@@ -90,6 +92,8 @@ interface MediaHotkeyActions {
 	changeVolume: (delta: number) => void
 	toggleMute: () => void
 	toggleFullscreen: () => void
+	/** Широкий экран или обычный режим */
+	toggleTheater: () => void
 	/** Сменить скорость на соседнюю: 1 — быстрее, -1 — медленнее */
 	stepPlaybackRate: (direction: 1 | -1) => void
 }

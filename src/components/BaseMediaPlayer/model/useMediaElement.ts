@@ -140,6 +140,9 @@ function createActions(state: MediaState, media: MediaElementRef): MediaActions 
 		toggleMute() {
 			if (media.value) media.value.muted = !media.value.muted
 		},
+		setMuted(isMuted) {
+			if (media.value) media.value.muted = isMuted
+		},
 		setPlaybackRate(rate) {
 			if (media.value) media.value.playbackRate = rate
 		},

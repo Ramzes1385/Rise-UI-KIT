@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
-import { MEDIA_PRELOAD_MODES } from '../types/BaseMediaPlayer.types'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup } from '@/stories/helpers'
+import { MEDIA_LOGO_POSITIONS, MEDIA_PRELOAD_MODES } from '../types/BaseMediaPlayer.types'
 
 export const argTypes = {
 	...baseArgTypes(),
@@ -9,6 +9,16 @@ export const argTypes = {
 	sources: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	title: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	poster: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	hasTitle: { control: 'boolean', table: propGroup(ARG_GROUP.content) },
+	logo: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	logoAlt: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	logoHref: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	logoPosition: { control: 'inline-radio', options: [...MEDIA_LOGO_POSITIONS], table: propGroup(ARG_GROUP.appearance) },
+	currentTime: { control: 'number', table: propGroup(ARG_GROUP.state) },
+	volume: { control: { type: 'range', min: 0, max: 1, step: 0.05 }, table: propGroup(ARG_GROUP.state) },
+	isMuted: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	playbackRate: { control: 'number', table: propGroup(ARG_GROUP.state) },
+	isTheater: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	preload: { control: 'inline-radio', options: [...MEDIA_PRELOAD_MODES], table: propGroup(ARG_GROUP.behavior) },
 	crossorigin: { control: 'inline-radio', options: ['anonymous', 'use-credentials'], table: propGroup(ARG_GROUP.behavior) },

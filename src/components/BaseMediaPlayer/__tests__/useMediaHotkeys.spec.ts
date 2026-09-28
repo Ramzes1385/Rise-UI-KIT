@@ -13,6 +13,7 @@ function setup() {
 		changeVolume: vi.fn(),
 		toggleMute: vi.fn(),
 		toggleFullscreen: vi.fn(),
+		toggleTheater: vi.fn(),
 		stepPlaybackRate: vi.fn(),
 	}
 	const isEnabled = ref(true)
@@ -56,6 +57,7 @@ describe('useMediaHotkeys', () => {
 		['ArrowDown', 'changeVolume', [-0.05]],
 		['KeyM', 'toggleMute', []],
 		['KeyF', 'toggleFullscreen', []],
+		['KeyT', 'toggleTheater', []],
 	] as const)('%s → %s', (code, action, args) => {
 		const { actions, press } = setup()
 

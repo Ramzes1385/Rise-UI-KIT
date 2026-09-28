@@ -27,6 +27,7 @@ function hotkeyMap(options: MediaHotkeysOptions): Map<string, () => void> {
 		['ArrowDown', () => actions.changeVolume(-options.volumeStep())],
 		['KeyM', actions.toggleMute],
 		['KeyF', actions.toggleFullscreen],
+		['KeyT', actions.toggleTheater],
 		['Shift+Comma', () => actions.stepPlaybackRate(-1)],
 		['Shift+Period', () => actions.stepPlaybackRate(1)],
 	])

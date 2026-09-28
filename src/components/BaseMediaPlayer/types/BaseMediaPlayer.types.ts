@@ -7,20 +7,35 @@ export const MEDIA_PLAYER_VARIANTS = ['default'] as const
 
 export const MEDIA_PRELOAD_MODES = ['none', 'metadata', 'auto'] as const
 
+export const MEDIA_LOGO_POSITIONS = ['top-left', 'top-right'] as const
+
+/** Угол кадра с логотипом */
+export type MediaLogoPosition = (typeof MEDIA_LOGO_POSITIONS)[number]
+
 /** Что загружать до запуска: ничего, только длительность и первый кадр или запись целиком */
 export type MediaPreload = (typeof MEDIA_PRELOAD_MODES)[number]
 
 export interface BaseMediaPlayerProps extends BaseComponentProps<
 	(typeof MEDIA_PLAYER_VARIANTS)[number],
-	'root' | 'media' | 'overlay' | 'controls' | 'seek' | 'volume' | 'time'
+	'root' | 'media' | 'overlay' | 'controls' | 'seek' | 'volume' | 'time' | 'title' | 'logo'
 > {
 	/**
 	 * Источник: адрес или список с MIME. Играет первый источник, который поддерживает браузер (`canPlayType`).
 	 * Абсолютные адреса — только со схемами из `allowedProtocols`.
 	 */
 	sources: MediaSourceItem[] | string
-	/** Доступное имя плеера для скринридеров: название записи */
+	/** Название записи: доступное имя плеера и подпись поверх кадра */
 	title: string
+	/** Показывать название поверх кадра вместе с панелью управления */
+	hasTitle?: boolean
+	/** Логотип в углу кадра: относительный адрес или http:, https:, blob:, data:; виден и при скрытой панели */
+	logo?: string
+	/** Текст логотипа для скринридера; без него логотип декоративный */
+	logoAlt?: string
+	/** Ссылка логотипа (http: или https:), открывается в новой вкладке */
+	logoHref?: string
+	/** Угол кадра с логотипом */
+	logoPosition?: MediaLogoPosition
 	/** Кадр до запуска: относительный адрес или http:, https:, blob:, data: */
 	poster?: string
 	/** Запустить без звука сразу после загрузки: браузеры разрешают автозапуск только без звука */
@@ -33,7 +48,7 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	crossorigin?: 'anonymous' | 'use-credentials'
 	/** Пропорции кадра — значение CSS `aspect-ratio` */
 	aspectRatio?: string
-	/** Горячие клавиши, пока фокус внутри плеера: Space/K, ←/→, J/L, Home/End, 0–9, ↑/↓, M, F, Shift+, и Shift+. */
+	/** Горячие клавиши, пока фокус внутри плеера: Space/K, ←/→, J/L, Home/End, 0–9, ↑/↓, M, F, T, Shift+, и Shift+. */
 	hasKeyboardShortcuts?: boolean
 	/** Шаг перемотки стрелками ←/→, секунды */
 	seekStep?: number
@@ -47,6 +62,16 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	idleTimeout?: number
 	/** Разрешённые схемы адресов источников; по умолчанию http:, https:, blob: */
 	allowedProtocols?: readonly string[]
+	/** Позиция в секундах (`v-model:current-time`): обновляется не чаще 4 раз в секунду и сразу после перемотки */
+	currentTime?: number
+	/** Громкость от 0 до 1 (`v-model:volume`) */
+	volume?: number
+	/** Звук выключен (`v-model:is-muted`) */
+	isMuted?: boolean
+	/** Скорость воспроизведения (`v-model:playback-rate`) */
+	playbackRate?: number
+	/** Широкий экран (`v-model:is-theater`): раскладку страницы меняет приложение, плеер — свою кнопку и вид */
+	isTheater?: boolean
 }
 
 export interface BaseMediaPlayerEmits {
@@ -58,6 +83,13 @@ export interface BaseMediaPlayerEmits {
 	(event: 'ended'): void
 	/** Ошибка загрузки или запуска: код и исходная ошибка */
 	(event: 'error', error: MediaPlayerError): void
+	(event: 'update:currentTime', value: number): void
+	(event: 'update:volume', value: number): void
+	(event: 'update:isMuted', value: boolean): void
+	(event: 'update:playbackRate', value: number): void
+	(event: 'update:isTheater', value: boolean): void
+	/** Плеер развернулся на весь экран или свернулся */
+	(event: 'fullscreen-change', isFullscreen: boolean): void
 }
 
 export interface BaseMediaPlayerSlots {
@@ -74,5 +106,29 @@ export interface BaseMediaPlayerExpose extends MediaActions {
 
 export type MediaPlayerProps = PropsWithDefaults<
 	BaseMediaPlayerProps,
-	'preload' | 'aspectRatio' | 'hasKeyboardShortcuts' | 'seekStep' | 'seekStepLarge' | 'volumeStep' | 'playbackRates' | 'idleTimeout'
+	| 'preload'
+	| 'aspectRatio'
+	| 'hasKeyboardShortcuts'
+	| 'seekStep'
+	| 'seekStepLarge'
+	| 'volumeStep'
+	| 'playbackRates'
+	| 'idleTimeout'
+	| 'hasTitle'
+	| 'logoPosition'
 >
+
+/** Связь `v-model` плеера со значением медиаэлемента */
+export interface PlayerModelSync<T> {
+	/** Значение из props; undefined — плеер не управляется снаружи */
+	prop: () => T | undefined
+	/** Значение медиаэлемента */
+	current: () => T
+	/** Передать значение элементу */
+	apply: (value: T) => void
+	/** Сообщить новое значение элемента */
+	emit: (value: T) => void
+	isSame: (a: T, b: T) => boolean
+	/** Не передавать значение из props при монтировании */
+	skipOnMount?: () => boolean
+}

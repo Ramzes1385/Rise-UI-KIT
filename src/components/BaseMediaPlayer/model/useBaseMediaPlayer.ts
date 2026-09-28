@@ -1,29 +1,29 @@
 import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import { formatMediaTime } from './mediaTime'
+import { UI_PLAYER } from '@/locales/messages'
 import { useIdleControls } from './useIdleControls'
 import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
 import { useMediaSources } from './useMediaSources'
-import { computed, onMounted, ref, watch } from 'vue'
-import { UI_PLAYER, UI_TEXT } from '@/locales/messages'
+import { usePlayerModels } from './usePlayerModels'
+import { usePlayerOverlays } from './usePlayerOverlays'
 import { useMediaFullscreen } from './useMediaFullscreen'
 import { formatMessage, formatNumber } from '@/locales/state'
+import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
+import type { MediaState, MediaActions } from '../types/MediaCore.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import type { BaseMediaPlayerEmits, BaseMediaPlayerExpose, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
-import type { MediaState, MediaActions, MediaErrorCode, MediaSourceItem, MediaPlayerError } from '../types/MediaCore.types'
 
-const POSTER_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
+const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
 
-const NO_SOURCE_ERROR: MediaPlayerError = { code: 'unsupported' }
+const LINK_PROTOCOLS = ['http:', 'https:'] as const
 
-const ERROR_MESSAGES: Record<MediaErrorCode, () => string> = {
-	aborted: () => UI_PLAYER.ERROR_ABORTED,
-	network: () => UI_PLAYER.ERROR_NETWORK,
-	decode: () => UI_PLAYER.ERROR_DECODE,
-	unsupported: () => UI_PLAYER.ERROR_UNSUPPORTED,
-	'autoplay-blocked': () => UI_PLAYER.ERROR_AUTOPLAY,
-	unknown: () => UI_PLAYER.ERROR_UNKNOWN,
+const CLASS_KEYS = ['root', 'media', 'overlay', 'controls', 'seek', 'volume', 'time', 'title', 'logo']
+
+function safeUrl(url: string | undefined, protocols: readonly string[]): string | undefined {
+	return url && isSafeUrl(url, protocols) ? url : undefined
 }
 
 function nextRate(rates: number[], current: number, direction: 1 | -1): number | undefined {
@@ -32,11 +32,9 @@ function nextRate(rates: number[], current: number, direction: 1 | -1): number |
 }
 
 function useLabels(state: Readonly<MediaState>) {
-	const isSilent = computed(() => state.isMuted || state.volume === 0)
 	return {
-		isSilent,
 		playLabel: computed(() => (state.isPaused ? UI_PLAYER.PLAY : UI_PLAYER.PAUSE)),
-		muteLabel: computed(() => (isSilent.value ? UI_PLAYER.UNMUTE : UI_PLAYER.MUTE)),
+		muteLabel: computed(() => (state.isMuted || state.volume === 0 ? UI_PLAYER.UNMUTE : UI_PLAYER.MUTE)),
 		currentTimeText: computed(() => formatMediaTime(state.currentTime, state.duration)),
 		durationText: computed(() => formatMediaTime(state.duration)),
 		seekValueText: computed(() =>
@@ -50,11 +48,25 @@ function useLabels(state: Readonly<MediaState>) {
 	}
 }
 
+function usePlayerView(props: MediaPlayerProps, sources: ReturnType<typeof useMediaSources>) {
+	return {
+		src: computed(() => sources.activeSource.value?.src),
+		posterSrc: computed(() => safeUrl(props.poster, IMAGE_PROTOCOLS)),
+		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
+		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
+		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
+		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
+		qualities: computed(() => sources.playableSources.value.filter(source => source.label)),
+		selectQuality: sources.setSource,
+	}
+}
+
 function usePlayerHotkeys(
 	target: Readonly<Ref<HTMLElement | null>>,
 	props: MediaPlayerProps,
-	{ state, actions, toggleFullscreen }: { state: Readonly<MediaState>; actions: MediaActions; toggleFullscreen: () => void },
+	media: { state: Readonly<MediaState>; actions: MediaActions; toggleFullscreen: () => void; toggleTheater: () => void },
 ): void {
+	const { state, actions } = media
 	useMediaHotkeys(target, {
 		isEnabled: () => props.hasKeyboardShortcuts,
 		seekStep: () => props.seekStep,
@@ -66,7 +78,8 @@ function usePlayerHotkeys(
 			seekToFraction: fraction => actions.seek(state.duration * fraction),
 			changeVolume: delta => actions.setVolume(state.volume + delta),
 			toggleMute: actions.toggleMute,
-			toggleFullscreen,
+			toggleFullscreen: media.toggleFullscreen,
+			toggleTheater: media.toggleTheater,
 			stepPlaybackRate(direction) {
 				const rate = nextRate(props.playbackRates, state.playbackRate, direction)
 				if (rate !== undefined) actions.setPlaybackRate(rate)
@@ -75,54 +88,84 @@ function usePlayerHotkeys(
 	})
 }
 
-function usePlayerErrors(
-	state: Readonly<MediaState>,
-	actions: MediaActions,
-	activeSource: Readonly<Ref<MediaSourceItem | null | undefined>>,
-) {
-	const error = computed(() => state.error ?? (activeSource.value === null ? NO_SOURCE_ERROR : null))
+function useTeleportLayer(root: Readonly<Ref<HTMLElement | null>>): HTMLElement | null {
+	const layer = typeof document === 'undefined' ? null : document.createElement('div')
+	layer?.classList.add('base-media-player__layer')
+	provide(TELEPORT_TARGET_KEY, layer ?? 'body')
+	onMounted(() => layer && root.value?.append(layer))
+	onBeforeUnmount(() => layer?.remove())
+	return layer
+}
+
+function usePlayerElements() {
+	const rootRef = ref<HTMLElement | null>(null)
 	return {
-		error,
-		errorMessage: computed(() => error.value && ERROR_MESSAGES[error.value.code]()),
-		errorAction: computed(() => {
-			if (!state.error || !activeSource.value) return null
-			if (state.error.code === 'autoplay-blocked') return { label: UI_PLAYER.PLAY, run: () => void actions.play() }
-			return { label: UI_TEXT.RETRY, run: actions.retry }
-		}),
+		rootRef,
+		mediaRef: ref<HTMLVideoElement | null>(null),
+		controlsRef: ref<HTMLElement | null>(null),
+		layer: useTeleportLayer(rootRef),
+	}
+}
+
+function usePlayerEvents(
+	props: MediaPlayerProps,
+	emit: BaseMediaPlayerEmits,
+	player: {
+		src: () => string | undefined
+		actions: MediaActions
+		overlays: ReturnType<typeof usePlayerOverlays>
+		fullscreen: ReturnType<typeof useMediaFullscreen>
+	},
+) {
+	watch(player.overlays.error, value => value && emit('error', value), { immediate: true })
+	watch(player.fullscreen.isFullscreen, value => emit('fullscreen-change', value))
+	let hasAutoplayed = false
+	watch(
+		player.src,
+		src => {
+			if (!src || hasAutoplayed || !props.isAutoplay) return
+			hasAutoplayed = true
+			void player.actions.play()
+		},
+		{ flush: 'post' },
+	)
+	return {
+		play: () => {
+			player.overlays.markStarted()
+			emit('play')
+		},
+		pause: () => emit('pause'),
+		ended: () => emit('ended'),
 	}
 }
 
 export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
-	const rootRef = ref<HTMLElement | null>(null)
-	const mediaRef = ref<HTMLVideoElement | null>(null)
-	const controlsRef = ref<HTMLElement | null>(null)
-	const { state, actions } = useMediaElement(mediaRef)
-	const { activeSource } = useMediaSources({
+	const elements = usePlayerElements()
+	const { state, actions } = useMediaElement(elements.mediaRef)
+	const sources = useMediaSources({
 		sources: () => props.sources,
 		allowedProtocols: () => props.allowedProtocols,
-		media: mediaRef,
+		media: elements.mediaRef,
 	})
-	const fullscreen = useMediaFullscreen(rootRef, mediaRef)
+	const fullscreen = useMediaFullscreen(elements.rootRef, elements.mediaRef)
 	const toggleFullscreen = (): void => void fullscreen.toggle()
-	const { isIdle } = useIdleControls(rootRef, {
+	const isFocusInPanel = (): boolean =>
+		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
+	const { isIdle } = useIdleControls(elements.rootRef, {
 		timeout: () => props.idleTimeout,
-		canHide: () => !state.isPaused && !controlsRef.value?.contains(document.activeElement),
+		canHide: () => !state.isPaused && !isFocusInPanel(),
 	})
-	const errors = usePlayerErrors(state, actions, activeSource)
-
-	usePlayerHotkeys(rootRef, props, { state, actions, toggleFullscreen })
-	watch(errors.error, value => value && emit('error', value), { immediate: true })
-	onMounted(() => {
-		if (props.isAutoplay) void actions.play()
-	})
+	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource })
+	const models = usePlayerModels(props, emit, { state, actions })
+	usePlayerHotkeys(elements.rootRef, props, { state, actions, toggleFullscreen, toggleTheater: models.toggleTheater })
 
 	return {
-		...useStandardBaseComponent('base-media-player', props, ['root', 'media', 'overlay', 'controls', 'seek', 'volume', 'time']),
+		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
 		...useLabels(state),
-		...errors,
-		rootRef,
-		mediaRef,
-		controlsRef,
+		...usePlayerView(props, sources),
+		...overlays,
+		...models,
+		...elements,
 		state,
 		actions,
 		isIdle,
@@ -131,10 +174,8 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		isFullscreen: fullscreen.isFullscreen,
 		isFullscreenSupported: fullscreen.isSupported,
 		fullscreenLabel: computed(() => (fullscreen.isFullscreen.value ? UI_PLAYER.EXIT_FULLSCREEN : UI_PLAYER.FULLSCREEN)),
-		src: computed(() => activeSource.value?.src),
-		posterSrc: computed(() => (props.poster && isSafeUrl(props.poster, POSTER_PROTOCOLS) ? props.poster : undefined)),
-		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
-		exposed: { ...actions, state, getMediaElement: () => mediaRef.value } satisfies BaseMediaPlayerExpose,
-		onMediaEvent: { play: () => emit('play'), pause: () => emit('pause'), ended: () => emit('ended') },
+		theaterLabel: computed(() => (models.isTheater.value ? UI_PLAYER.EXIT_THEATER : UI_PLAYER.THEATER)),
+		exposed: { ...actions, state, getMediaElement: () => elements.mediaRef.value } satisfies BaseMediaPlayerExpose,
+		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}
 }

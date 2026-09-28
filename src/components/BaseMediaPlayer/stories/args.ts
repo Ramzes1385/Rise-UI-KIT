@@ -6,6 +6,8 @@ import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 export const args = {
 	sources: DEMO_SOURCES,
 	title: 'Демо-ролик Rise UI Kit',
+	hasTitle: true,
+	logoPosition: 'top-right',
 	poster: DEMO_POSTER,
 	preload: 'metadata',
 	aspectRatio: '16 / 9',
@@ -21,4 +23,6 @@ export const args = {
 	onPause: fn(),
 	onEnded: fn(),
 	onError: fn(),
+	'onFullscreen-change': fn(),
+	'onUpdate:isTheater': fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

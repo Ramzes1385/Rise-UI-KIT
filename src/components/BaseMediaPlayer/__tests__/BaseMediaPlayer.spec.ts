@@ -127,22 +127,23 @@ describe('BaseMediaPlayer', () => {
 		expect(emitted('error')?.[0]).toEqual([{ code: 'unsupported' }])
 	})
 
-	it('автозапуск без звука; отказ браузера — сообщение и кнопка «Воспроизвести»', async () => {
+	it('автозапуск без звука; отказ браузера — подсказка и большая кнопка «Воспроизвести»', async () => {
 		const { play } = stubMediaPrototype()
 		play.mockRejectedValueOnce(domException('NotAllowedError'))
-		const { container } = render(BaseMediaPlayer, { props: { sources: SOURCE, title: 'Демо', isAutoplay: true } })
+		const { container, emitted } = render(BaseMediaPlayer, { props: { sources: SOURCE, title: 'Демо', isAutoplay: true } })
 		const video = container.querySelector('video') as HTMLVideoElement
 		await flushPromises()
 
 		expect(video.muted).toBe(true)
 		expect(play).toHaveBeenCalledOnce()
-		const alert = screen.getByRole('alert')
-		expect(alert).toHaveTextContent('Браузер не разрешил автозапуск. Нажмите «Воспроизвести»')
+		expect(screen.queryByRole('alert')).toBeNull()
+		expect(screen.getByRole('status')).toHaveTextContent('Браузер не разрешил автозапуск. Нажмите «Воспроизвести»')
+		expect(emitted('error')?.[0]).toEqual([expect.objectContaining({ code: 'autoplay-blocked' })])
 
 		const fake = fakeMedia(video, { duration: 60 })
-		await fireEvent.click(within(alert).getByRole('button', { name: 'Воспроизвести' }))
+		await fireEvent.click(container.querySelector('.base-media-player__big-play') as HTMLElement)
 		expect(fake.play).toHaveBeenCalledOnce()
-		expect(screen.queryByRole('alert')).toBeNull()
+		expect(container.querySelector('.base-media-player__start')).toBeNull()
 	})
 
 	it('слот error заменяет сообщение', async () => {
