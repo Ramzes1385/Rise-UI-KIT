@@ -5,9 +5,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export type LoaderVariant = 'spinner' | 'dots' | 'pulse' | 'bars'
 
-/**
- * Пропсы компонента BaseLoader
- */
 export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant, 'root' | 'animation' | 'spinner' | 'label'> {
 	/** Показывать подпись `label` под индикатором. */
 	hasLabel?: boolean
@@ -17,14 +14,8 @@ export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant, 'root
 	isOverlay?: boolean
 }
 
-/**
- * События компонента BaseLoader
- */
 export type BaseLoaderEmits = Record<string, never>
 
-/**
- * Слоты компонента BaseLoader
- */
 export interface BaseLoaderSlots {
 	default?: () => unknown
 }

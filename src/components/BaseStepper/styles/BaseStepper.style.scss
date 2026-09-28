@@ -1,10 +1,4 @@
-// BaseStepper. Шаги с индикатором 28px и подписью: под индикатором (horizontal) или справа от него (vertical).
-// Индикатор: пройденный шаг — заливка primary и галочка on-primary; текущий — кольцо primary (рамка 2px);
-// будущий — фон bg-elevated и номер text-toned. Линия — border-accented, пройденная часть — primary.
-// Подпись 14/20 medium (у текущего шага — text-highlighted), описание 12/16 text-muted.
-// Формы индикатора: circle, square (радиус md), diamond (повёрнутый квадрат), empty (без индикатора, только линия).
-// Вариант animated плавно заполняет линию при смене шага.
-// Кастомный цвет: bg.base (и bg.hover) — пройденные шаги, кольцо текущего и линия прогресса; text.base — галочка на заливке.
+// Шаги с индикатором 28px и подписью (horizontal — под, vertical — справа); пройденный — заливка primary, текущий — кольцо, будущий — bg-elevated; формы circle/square/diamond/empty; цвет — через bg.base/text.base.
 .base-stepper {
 	--stepper-size: #{sz(28px)};
 	--stepper-line: #{sz(2px)};
@@ -41,8 +35,6 @@
 	&--vertical &__items {
 		flex-direction: column;
 	}
-
-	// ─── Шаг ─────────────────────────────────────────────────────────────────────
 
 	&__step {
 		position: relative;
@@ -82,8 +74,6 @@
 	&__step--disabled &__indicator > * {
 		opacity: var(--rise-disabled-opacity);
 	}
-
-	// ─── Индикатор ───────────────────────────────────────────────────────────────
 
 	&__indicator-wrapper {
 		display: flex;
@@ -146,8 +136,6 @@
 		}
 	}
 
-	// ─── Подпись ─────────────────────────────────────────────────────────────────
-
 	&__content {
 		display: flex;
 		flex-direction: column;
@@ -184,8 +172,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	// ─── Линия: горизонтальная — общая полоса с заполнением (--stepper-progress-scale задаёт компонент) ─────────
-
 	&--horizontal &__items::before,
 	&--horizontal &__items::after {
 		content: '';
@@ -208,8 +194,6 @@
 		background-color: var(--stepper-accent);
 	}
 
-	// ─── Линия: вертикальная — отрезок под каждым шагом, кроме последнего ─────────────────────────────────────────
-
 	&--vertical &__step:not(:last-child)::after {
 		content: '';
 		position: absolute;
@@ -225,8 +209,6 @@
 	&--vertical &__step--completed:not(:last-child)::after {
 		background-color: var(--stepper-accent);
 	}
-
-	// ─── Формы индикатора ────────────────────────────────────────────────────────
 
 	&--square &__indicator {
 		border-radius: sz(var(--rise-radius-md));
@@ -253,8 +235,6 @@
 	&--empty &__step--completed &__label {
 		color: var(--rise-text-highlighted);
 	}
-
-	// ─── Вариант animated ────────────────────────────────────────────────────────
 
 	&--animated.base-stepper--horizontal &__items::after {
 		transition: width var(--rise-duration-slow) var(--rise-ease);

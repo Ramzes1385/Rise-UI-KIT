@@ -1,10 +1,3 @@
-/**
- * BaseAutocomplete — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты) → состояния (отключено, ошибка, ничего
- * не найдено) → сценарии (свой вариант, загрузка с сервера, описание и отключённые варианты) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
@@ -13,7 +6,6 @@ import { AUTOCOMPLETE_VARIANTS } from '../types/BaseAutocomplete.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { AutocompleteOption } from '../types/BaseAutocomplete.types'
 
-/** Города доставки */
 const CITIES: AutocompleteOption[] = [
 	{ value: 'msk', label: 'Москва' },
 	{ value: 'spb', label: 'Санкт-Петербург' },

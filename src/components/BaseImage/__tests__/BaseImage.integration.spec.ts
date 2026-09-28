@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseImage.
- * Проверяют взаимодействие с useImageZoom, gallery и overlay.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'

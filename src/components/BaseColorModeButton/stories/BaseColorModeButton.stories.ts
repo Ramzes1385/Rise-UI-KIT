@@ -1,10 +1,4 @@
-/**
- * BaseColorModeButton — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет) → состояния → сценарии.
- * Каждый пример переключает тему своей рамки (`createColorMode({ target })`), а не всей страницы Storybook:
- * тема страницы задаётся кнопкой «Тема» на панели инструментов.
- */
+/** Каждый пример переключает тему своей рамки (createColorMode({ target })), а не всей страницы Storybook — тема страницы задаётся кнопкой «Тема» на панели инструментов. */
 
 import { onBeforeUnmount, ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'

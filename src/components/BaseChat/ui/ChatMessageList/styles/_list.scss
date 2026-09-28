@@ -1,11 +1,9 @@
-// Лента сообщений: чужие — слева с аватаром 32px и именем 12/16 medium, свои — справа.
 // Оформление пузыря задают переменные --chat-bubble-* (варианты BaseChat переопределяют их в BaseChat.style.scss).
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
 @use '../../../styles/chat' as *;
 
 .base-chat-message-list {
-	// Вариант bubble (по умолчанию): свои — primary-soft, чужие — bg-elevated, радиус lg.
 	--chat-bubble-padding-y: 8px;
 	--chat-bubble-padding-x: 12px;
 	--chat-bubble-radius: var(--rise-radius-lg);
@@ -31,8 +29,6 @@
 	overflow: hidden auto;
 	@include scrollbar-thin;
 
-	// ─── Сообщение ───────────────────────────────────────────────────────────────
-
 	// Строка на всю ширину: фон выделения и подсветки занимает её целиком, содержимое прижато к своей стороне.
 	&__item {
 		position: relative;
@@ -56,7 +52,6 @@
 		}
 	}
 
-	// Вариант flat: сообщения разделены линией.
 	&__item + &__item {
 		border-top: var(--chat-item-separator);
 	}
@@ -103,7 +98,6 @@
 		flex: none;
 	}
 
-	// Колонка сообщения: имя, пузырь, реакции и время.
 	&__bubble-wrapper {
 		display: flex;
 		flex-direction: column;
@@ -158,13 +152,10 @@
 		background-color: var(--chat-bubble-me-bg);
 	}
 
-	// Индикатор «печатает»: пузырь с тремя точками.
 	&__bubble--typing {
 		justify-content: center;
 		min-height: sz(36px);
 	}
-
-	// ─── Действия при наведении ──────────────────────────────────────────────────
 
 	// Панель на верхней кромке пузыря. Видна при наведении и при фокусе внутри сообщения (клавиатура):
 	// кнопки всегда в порядке Tab, скрыта только их отрисовка. На сенсорных экранах панель не перехватывает касания.
@@ -204,8 +195,6 @@
 		@include chat-icon-button(3px);
 	}
 
-	// ─── Реакции и время под пузырём ─────────────────────────────────────────────
-
 	&__footer {
 		display: flex;
 		flex-wrap: wrap;
@@ -217,8 +206,6 @@
 	&__item--me &__footer {
 		justify-content: flex-end;
 	}
-
-	// ─── Пустая лента ────────────────────────────────────────────────────────────
 
 	&__empty {
 		margin: auto;

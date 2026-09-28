@@ -2,9 +2,6 @@
 import { nextTick, ref } from 'vue'
 import type { UseToolbarCodeModeOptions } from './types/useToolbarCodeMode.types'
 
-/**
- * Composable для переключения режима кода/HTML в редакторе и синхронизации содержимого.
- */
 function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 	const { editorRef, codeTextareaRef, onInput, sanitize = (html: string) => html } = options
 

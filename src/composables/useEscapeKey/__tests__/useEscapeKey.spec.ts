@@ -3,7 +3,6 @@ import { defineComponent, h } from 'vue'
 import { render } from '@testing-library/vue'
 import { useEscapeKey } from '../useEscapeKey'
 
-/** Создать тестовый компонент с useEscapeKey */
 function createTestComponent(options: { isActive: () => boolean; callback: () => void }) {
 	return defineComponent({
 		setup() {
@@ -16,7 +15,6 @@ function createTestComponent(options: { isActive: () => boolean; callback: () =>
 	})
 }
 
-/** Создать событие клавиши */
 function createKeyboardEvent(key: string): KeyboardEvent {
 	return new KeyboardEvent('keydown', { key, bubbles: true })
 }

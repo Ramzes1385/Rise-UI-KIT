@@ -1,7 +1,3 @@
-/**
- * Интеграция useConfirm() + BaseApp: окно открывается из кода, промис получает ответ пользователя.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h, ref } from 'vue'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'

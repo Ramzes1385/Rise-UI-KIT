@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseHeader: ориентир banner, название-ссылка, зоны, меню для узкого экрана в BaseDrawer.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

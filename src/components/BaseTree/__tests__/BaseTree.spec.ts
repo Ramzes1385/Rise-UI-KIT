@@ -1,21 +1,14 @@
-/**
- * Unit-тесты для BaseTree.
- * Проверяют рендер, пропсы, CSS-модификаторы и слоты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../types/BaseTree.types'
 
-/** Простые узлы без вложенности */
 const FLAT_ITEMS: TreeNode[] = [
 	{ id: 'item-1', label: 'Первый' },
 	{ id: 'item-2', label: 'Второй' },
 	{ id: 'item-3', label: 'Третий' },
 ]
 
-/** Узлы с вложенностью */
 const NESTED_ITEMS: TreeNode[] = [
 	{
 		id: 'parent',
@@ -28,19 +21,16 @@ const NESTED_ITEMS: TreeNode[] = [
 	{ id: 'leaf', label: 'Лист' },
 ]
 
-/** Узлы с иконками */
 const ICON_ITEMS: TreeNode[] = [
 	{ id: 'home', label: 'Главная', icon: 'home' },
 	{ id: 'search', label: 'Поиск', icon: 'search' },
 ]
 
-/** Узлы с отключёнными элементами */
 const DISABLED_ITEMS: TreeNode[] = [
 	{ id: 'ok', label: 'Доступный' },
 	{ id: 'no', label: 'Отключённый', isDisabled: true },
 ]
 
-/** Слот для рендера текста узлов */
 const DEFAULT_SLOT = `<template #label="{ node }">{{ node.label }}</template>`
 
 describe('BaseTree unit', () => {

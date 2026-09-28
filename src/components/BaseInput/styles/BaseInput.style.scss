@@ -1,7 +1,4 @@
-// BaseInput. Поле высотой 32px при sizeScale = 100 (как кнопка): рамка 1px + отступ 5px + строка 20px.
-// Варианты: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
-// ghost — без фона и рамки до наведения; shadow — как default с тенью; filled — фон bg-elevated с рамкой;
-// underline — только нижняя линия. Фокус во всех вариантах — кольцо основного цвета (ошибка — цвет ошибки).
+// Высота 32px при sizeScale = 100 = рамка 1px + отступ 5px + строка 20px; фокус во всех вариантах — кольцо (при ошибке — цвет ошибки).
 .base-input {
 	display: flex;
 	flex-direction: column;
@@ -16,8 +13,6 @@
 	&__required {
 		@include field-required;
 	}
-
-	// ─── Коробка поля: рамка, фон, фокус ─────────────────────────────────────────
 
 	&__wrapper {
 		position: relative;
@@ -74,8 +69,6 @@
 	&--has-postfix &__field {
 		padding-right: sz(4px);
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--outline &__wrapper {
 		@include custom-bg(background-color, transparent);
@@ -136,8 +129,6 @@
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
-	// ─── Состояния ───────────────────────────────────────────────────────────────
-
 	&--error &__wrapper {
 		border-color: var(--rise-error);
 		@include field-focus(var(--rise-error));
@@ -166,8 +157,6 @@
 	&__error-text {
 		@include field-error;
 	}
-
-	// ─── Пароль ──────────────────────────────────────────────────────────────────
 
 	// Кнопка показа пароля — квадратная ghost-кнопка 24px внутри поля справа (иконка 16px + отступы 3px + рамка).
 	// Двойной класс — чтобы отступы перекрыли значения по умолчанию из стилей BaseButton независимо от порядка CSS.

@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseSkeleton: ключевые stories в светлой и тёмной теме.
- * Анимации на скриншоте остановлены (`animations: 'disabled'`): шиммер и мерцание не попадают в снимок.
- */
+/** Анимации на скриншоте остановлены (animations: 'disabled'): шиммер и мерцание не попадают в снимок. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

@@ -1,11 +1,3 @@
-/**
- * BaseRating — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (только чтение, disabled) → содержимое (свои иконки, рейтинг в поле формы) →
- * сценарии (половинки звёзд, предпросмотр при наведении) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { BaseFormField } from '@components/BaseFormField'

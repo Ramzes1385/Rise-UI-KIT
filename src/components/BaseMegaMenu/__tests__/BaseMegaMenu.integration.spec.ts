@@ -1,7 +1,3 @@
-/**
- * Integration-тесты для BaseMegaMenu.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 import { nextTick } from 'vue'

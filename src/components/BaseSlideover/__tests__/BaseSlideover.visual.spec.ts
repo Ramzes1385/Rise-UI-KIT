@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseSlideover: ключевые stories в светлой и тёмной теме.
- * Витрины показывают панели внутри рамок (isContained), длинный текст — панель поверх страницы, поэтому снимается вся страница.
- */
+/** Витрины показывают панели внутри рамок (isContained), длинный текст — панель поверх страницы, поэтому снимается вся страница. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

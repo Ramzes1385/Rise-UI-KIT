@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseKbd: разметка kbd, служебные клавиши и платформа.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import BaseKbd from '../ui/BaseKbd.vue'

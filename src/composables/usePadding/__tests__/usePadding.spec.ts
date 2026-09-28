@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable usePadding.
- * Проверяют разрешение number|object в четыре стороны и CSS-переменные.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { resolvePadding, usePadding } from '../usePadding'

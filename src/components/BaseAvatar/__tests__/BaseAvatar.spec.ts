@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseAvatar.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseAvatar from '../ui/BaseAvatar.vue'

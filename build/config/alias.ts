@@ -1,15 +1,10 @@
-/**
- * Псевдонимы путей UI-библиотеки — единый источник для сборки библиотеки, Storybook и Vitest.
- * TypeScript читает свою копию: paths в tsconfig.app.json (держать в соответствии).
- */
+/** TypeScript читает свою копию алиасов в paths tsconfig.app.json — держать в соответствии. */
 
 import type { AliasOptions } from 'vite'
 import { resolveFromRoot } from '../utils/helpers'
 
-/** Каталог исходников библиотеки */
 const SOURCE_DIR = 'src'
 
-/** Создаёт карту alias для resolve.alias в Vite. */
 export function createAliasConfig(): AliasOptions {
 	const srcPath = resolveFromRoot(SOURCE_DIR)
 

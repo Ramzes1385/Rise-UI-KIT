@@ -36,7 +36,6 @@
 				class="base-chat-slideover__pane"
 				:role="activeTab !== 'profile' ? 'tabpanel' : undefined"
 				:aria-labelledby="activeTab !== 'profile' ? `${idPrefix}-tab-${activeTab}` : undefined">
-				<!-- Вкладка: Информация / Участники -->
 				<template v-if="activeTab === 'info'">
 					<div class="base-chat-slideover__profile-summary">
 						<BaseAvatar
@@ -136,7 +135,6 @@
 					</section>
 				</template>
 
-				<!-- Вкладка: Профиль пользователя (при клике на участника) -->
 				<template v-if="activeTab === 'profile' && selectedMember">
 					<div class="base-chat-slideover__profile-summary">
 						<BaseAvatar
@@ -195,10 +193,8 @@
 					</div>
 				</template>
 
-				<!-- Вкладка: Медиа -->
 				<ChatSlideoverMedia v-if="activeTab === 'media'" :messages="messages" :size-scale="sizeScale" />
 
-				<!-- Вкладка: Файлы -->
 				<ChatSlideoverFiles
 					v-if="activeTab === 'files'"
 					:messages="messages"
@@ -206,7 +202,6 @@
 					@file-click="emit('file-click', $event)"
 					@download-file="emit('download-file', $event)" />
 
-				<!-- Вкладка: Ссылки -->
 				<ChatSlideoverLinks v-if="activeTab === 'links'" :messages="messages" :size-scale="sizeScale" />
 			</div>
 		</div>

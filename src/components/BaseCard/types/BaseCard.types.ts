@@ -8,9 +8,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const CARD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseCard
- */
 export interface BaseCardProps extends BaseComponentProps<
 	(typeof CARD_VARIANTS)[number],
 	'root' | 'header' | 'title' | 'subtitle' | 'actions' | 'body' | 'footer'
@@ -37,17 +34,11 @@ export interface BaseCardProps extends BaseComponentProps<
 	scroll?: boolean
 }
 
-/**
- * Привязки слотов компонента BaseCard
- */
 interface BaseCardSlotBindings {
 	/** Масштаб размера */
 	sizeScale: number
 }
 
-/**
- * Слоты компонента BaseCard
- */
 export interface BaseCardSlots {
 	/** Содержимое (тело) карточки */
 	default?: (props: BaseCardSlotBindings) => unknown
@@ -59,7 +50,4 @@ export interface BaseCardSlots {
 	actions?: (props: BaseCardSlotBindings) => unknown
 }
 
-/**
- * События компонента BaseCard
- */
 export type BaseCardEmits = Record<string, never>

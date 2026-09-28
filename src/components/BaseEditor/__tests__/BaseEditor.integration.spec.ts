@@ -1,13 +1,8 @@
-/**
- * Integration-тесты для BaseEditor.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render } from '@testing-library/vue'
 import BaseEditor from '../ui/BaseEditor.vue'
 
-/** Получить contenteditable-область редактора */
 function getContent(container: Element): HTMLElement {
 	const content = container.querySelector('.base-editor__content')
 	if (!(content instanceof HTMLElement)) throw new Error('Editor content not found')
@@ -122,7 +117,6 @@ describe('BaseEditor integration', () => {
 			return event
 		}
 
-		/** Событие drop с HTML из другой страницы */
 		function createDropEvent(html: string): Event {
 			const event = new Event('drop', { bubbles: true, cancelable: true })
 			Object.defineProperty(event, 'dataTransfer', { value: { getData: (type: string) => (type === 'text/html' ? html : '') } })

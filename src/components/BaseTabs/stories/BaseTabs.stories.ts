@@ -1,11 +1,3 @@
-/**
- * BaseTabs — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, на всю ширину, цвет) →
- * состояния (отключённая вкладка, пусто, длинные названия) → содержимое (иконки, панель) →
- * сценарии (прокрутка) → клавиатура (стрелки, Home/End, roving tabindex).
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor, within } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'

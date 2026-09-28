@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useVirtualList.
- * Проверяют диапазон видимых строк, замеры высот, закреплённую строку, прокрутку к строке и подписки на элемент.
- */
-
 import { render } from '@testing-library/vue'
 import { defineComponent, nextTick, ref } from 'vue'
 import { useVirtualList } from '../useVirtualList'

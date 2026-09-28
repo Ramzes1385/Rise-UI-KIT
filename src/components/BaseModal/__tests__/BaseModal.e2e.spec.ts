@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseModal.
- * Проверяет: открытие/закрытие, блокировку скролла, закрытие по Escape.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('модалка: открывается и закрывается по кнопке', async ({ page }) => {

@@ -79,7 +79,6 @@ function normalizeTime(text: string): string | null {
 	return time
 }
 
-/** Значение автодополнения — строка времени или null */
 function toTime(value: string | number | null): string | null {
 	return value === null ? null : String(value)
 }

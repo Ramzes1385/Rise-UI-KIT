@@ -6,9 +6,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const KBD_VARIANTS = ['default', 'outline', 'soft', 'ghost'] as const
 
-/**
- * Пропсы компонента BaseKbd
- */
 export interface BaseKbdProps extends BaseComponentProps<(typeof KBD_VARIANTS)[number], 'root'> {
 	/**
 	 * Клавиша: текст («K», «Ctrl») или имя служебной клавиши — `meta`, `ctrl`, `alt`, `shift`, `enter`, `backspace`,
@@ -20,9 +17,6 @@ export interface BaseKbdProps extends BaseComponentProps<(typeof KBD_VARIANTS)[n
 	platform?: 'mac' | 'other'
 }
 
-/**
- * Слоты компонента BaseKbd
- */
 export interface BaseKbdSlots {
 	/** Своё содержимое клавиши вместо value */
 	default?: () => unknown

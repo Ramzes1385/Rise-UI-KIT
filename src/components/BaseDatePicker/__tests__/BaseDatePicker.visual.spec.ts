@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseDatePicker: ключевые stories в светлой и тёмной теме.
- * Панель телепортируется в body, поэтому снимается вся страница. Время браузера зафиксировано на STORY_TODAY.
- */
+/** Панель телепортируется в body, поэтому снимается вся страница. Время браузера зафиксировано на STORY_TODAY. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для treeUtils.
- * Покрывают: collectDescendantIdsInto, buildDescendantsCache, collectExpandableIds.
- */
-
 import { describe, it, expect } from 'vitest'
 import { buildDescendantsCache, collectDescendantIdsInto, collectExpandableIds } from '../treeUtils'
 import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'

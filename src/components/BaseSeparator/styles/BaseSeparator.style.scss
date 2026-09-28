@@ -1,6 +1,4 @@
-// BaseSeparator. Линия толщиной 1px (проп thickness) цвета --rise-border, пунктир — isDashed.
-// Подпись или слот между двумя линиями: 12/16 medium --rise-text-muted, отступы 0 12px (у вертикального — 12px 0).
-// Проп color: color.bg — цвет линии, color.text — цвет подписи.
+// Линия 1px цвета border (isDashed — пунктир); подпись 12/16 medium text-muted между линиями; цвет — через color.bg/color.text.
 .base-separator {
 	display: flex;
 	align-items: center;

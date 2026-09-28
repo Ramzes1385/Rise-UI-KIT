@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseSegmented: группа radio, имя, варианты и состояния.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseSegmented from '../ui/BaseSegmented.vue'

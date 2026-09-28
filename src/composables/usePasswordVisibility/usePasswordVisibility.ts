@@ -2,9 +2,6 @@
 import { computed, ref } from 'vue'
 import type { UsePasswordVisibilityOptions } from './types/usePasswordVisibility.types'
 
-/**
- * Composable для управления видимостью пароля в инпуте
- */
 function usePasswordVisibility(options: UsePasswordVisibilityOptions) {
 	const isPasswordVisible = ref(false)
 

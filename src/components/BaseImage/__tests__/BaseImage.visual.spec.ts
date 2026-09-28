@@ -1,8 +1,4 @@
-/**
- * Visual regression BaseImage: ключевые stories в светлой и тёмной теме.
- * Изображения — SVG data URI из фикстур stories: снимки не зависят от сети. Галерея снимается с открытым
- * просмотром (телепорт в body), поэтому для неё — вся страница.
- */
+/** Изображения — SVG data URI из фикстур, снимки не зависят от сети; галерея снимается с открытым просмотром (телепорт в body) — вся страница */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

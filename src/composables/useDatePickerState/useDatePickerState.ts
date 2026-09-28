@@ -156,7 +156,6 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 		if (shouldRestoreFocus) focusField()
 	}
 
-	/** Вернуть фокус в поле ввода */
 	function focusField(): void {
 		wrapperRef.value?.querySelector<HTMLInputElement>('input')?.focus()
 	}

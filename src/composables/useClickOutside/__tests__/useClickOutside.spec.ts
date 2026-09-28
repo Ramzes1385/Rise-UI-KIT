@@ -6,7 +6,6 @@ import type { ComponentPublicInstance, Ref } from 'vue'
 
 type Target = HTMLElement | ComponentPublicInstance | (HTMLElement | null)[] | null
 
-/** Тестовый компонент с useClickOutside */
 function createTestComponent(options: { targets: Ref<Target>[]; callback: () => void; isActive?: () => boolean; isCapture?: boolean }) {
 	return defineComponent({
 		setup() {

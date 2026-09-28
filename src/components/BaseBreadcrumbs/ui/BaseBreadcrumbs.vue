@@ -10,7 +10,6 @@
 		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
 
 		<ol class="base-breadcrumbs__list" :class="classes.list" itemscope itemtype="https://schema.org/BreadcrumbList">
-			<!-- Иконка дома -->
 			<li
 				v-if="showHome && items.length"
 				class="base-breadcrumbs__item base-breadcrumbs__item--home"
@@ -42,7 +41,6 @@
 				</span>
 			</li>
 
-			<!-- Скрытые элементы (многоточие) -->
 			<template v-if="collapsedItems.length > 0">
 				<li class="base-breadcrumbs__item base-breadcrumbs__item--ellipsis" :class="classes.item">
 					<button
@@ -66,7 +64,6 @@
 				</li>
 			</template>
 
-			<!-- Видимые элементы -->
 			<li
 				v-for="(item, index) in visibleItems"
 				:key="`${item?.label ?? ''}-${index}`"
@@ -188,7 +185,6 @@ const collapsedItems = computed<BreadcrumbItem[]>(() => {
 	return trailItems.value.slice(0, -props.maxItems)
 })
 
-/** Schema.org JSON-LD для SEO */
 const schemaJson = computed((): string => buildBreadcrumbsSchema(props.items))
 
 function isCurrent(index: number): boolean {

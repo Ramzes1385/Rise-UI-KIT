@@ -1,10 +1,4 @@
-// BaseChat — окно чата на BaseCard: фон --rise-bg, рамка --rise-border, радиус lg, текст 14/20.
-// Сверху вниз: шапка, панель закреплённых, лента сообщений, поле ввода (или тулбар выделения).
-// Проп color красит фон окна и заголовок (--chat-title-color); кнопки, поля и аватары внутри — нет
-// (reset-custom-color на __body).
-// Вариант меняет только оформление сообщений — переменными --chat-bubble-* ленты (значения по умолчанию — в _list.scss):
-// bubble — мягкие пузыри (свои — primary-soft, чужие — bg-elevated); flat — без пузырей, сообщения разделены линией
-// --rise-border; modern — карточки с рамкой --rise-border (свои — фон bg-muted).
+// Проп color красит только фон окна и заголовок — кнопки, поля и аватары внутри не красятся (reset-custom-color на __body); вариант меняет оформление сообщений через --chat-bubble-* (значения по умолчанию — в _list.scss).
 .base-chat {
 	// Цвет заголовка окна: text из пропа color или --rise-text-highlighted. Вычисляется здесь, на корне, где заданы
 	// --custom-*, и наследуется готовым цветом: сброс --custom-* на __body его не затрагивает.
@@ -23,7 +17,6 @@
 		@include reset-custom-color;
 	}
 
-	// Окно подтверждения удаления: текст и красная кнопка «Удалить» (BaseButton, цвет — через её переменные).
 	&__confirm-text {
 		margin: 0;
 		@include text-size(sm);
@@ -36,8 +29,6 @@
 		--custom-bg-active: var(--rise-error-hover);
 		--custom-text: var(--rise-on-error);
 	}
-
-	// ─── Варианты оформления сообщений ───────────────────────────────────────────
 
 	&--flat .base-chat-message-list {
 		--chat-bubble-padding-y: 0px;

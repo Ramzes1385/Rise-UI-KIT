@@ -1,7 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import type { SliderAnimation } from '@components/BaseSlider/types/BaseSlider.types'
 
-/** Параметры composable useSlider */
 interface UseSliderOptions {
 	/** Количество элементов (геттер) */
 	itemCount: () => number
@@ -33,7 +32,6 @@ interface UseSliderOptions {
 	onPrev?: () => void
 }
 
-/** Возвращаемое значение composable useSlider */
 interface UseSliderReturn {
 	/** Текущий индекс слайда */
 	currentIndex: Ref<number>

@@ -3,9 +3,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** Вариант оформления один: вид задают кнопки внутри */
 export const BUTTON_GROUP_VARIANTS = ['default'] as const
 
-/**
- * Пропсы компонента BaseButtonGroup
- */
 export interface BaseButtonGroupProps extends BaseComponentProps<(typeof BUTTON_GROUP_VARIANTS)[number], 'root'> {
 	/** Направление: кнопки в ряд или столбиком */
 	orientation?: 'horizontal' | 'vertical'
@@ -13,9 +10,6 @@ export interface BaseButtonGroupProps extends BaseComponentProps<(typeof BUTTON_
 	ariaLabel?: string
 }
 
-/**
- * Слоты компонента BaseButtonGroup
- */
 export interface BaseButtonGroupSlots {
 	/** Кнопки (BaseButton, BaseSplitButton, BaseDropdownMenu с кнопкой) */
 	default?: () => unknown

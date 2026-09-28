@@ -1,9 +1,6 @@
 import type { Ref } from 'vue'
 import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 
-/**
- * Опции composable useDropdownPosition
- */
 export interface UseDropdownPositionOptions {
 	/** Ref на wrapper-элемент (содержит триггер) */
 	wrapperRef: Ref<HTMLElement | null>

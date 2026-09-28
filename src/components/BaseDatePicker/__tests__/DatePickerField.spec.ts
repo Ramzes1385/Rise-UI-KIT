@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для DatePickerField.
- * Проверяют рендер, пропсы, условный рендеринг и эмиты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import DatePickerField from '../ui/DatePickerField/DatePickerField.vue'
 
-/** Общие стабы для UI Kit компонентов */
 const GLOBAL_STUBS = {
 	BaseInput: {
 		template: '<div class="base-input" @click="$emit(\'click\')"><slot /><slot name="suffix" /></div>',
@@ -21,7 +15,6 @@ const GLOBAL_STUBS = {
 	BaseIcon: { template: '<i />' },
 }
 
-/** Полный набор обязательных пропсов */
 const DEFAULT_PROPS = {
 	displayValue: '01.01.2026',
 	placeholder: 'Выберите дату',

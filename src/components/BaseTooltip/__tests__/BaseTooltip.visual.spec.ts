@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseTooltip: ключевые stories в светлой и тёмной теме.
- * Подсказки телепортируются в body, поэтому снимается вся страница.
- */
+/** Подсказки телепортируются в body, поэтому снимается вся страница. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

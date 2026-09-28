@@ -1,11 +1,3 @@
-/**
- * BaseTable — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, цвет, отступы) → состояния (пусто, загрузка,
- * длинный текст) → сценарии (сортировка, выбор строк, тулбар, пагинация, подгрузка, раскрытие строк, вложенная таблица,
- * закреплённые шапка и колонки, ресайз, свои ячейки) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
@@ -30,8 +22,6 @@ import BaseTable from '../ui/BaseTable.vue'
 import { TABLE_VARIANTS } from '../types/BaseTable.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { NestedTableConfig, TableColumn, TableRow } from '../types/BaseTable.types'
-
-// ─── Данные ────────────────────────────────────────────────────────────────────
 
 /** Сумма в рублях: «12 490 ₽». Перед знаком рубля — неразрывный пробел: сумма не переносится по строкам */
 function formatRub(value: unknown): string {
@@ -1028,7 +1018,6 @@ export const CustomCells: Story = {
 		await userEvent.click(canvas.getByRole('button', { name: 'Удалить заказ З-1042' }))
 		await expect(canvas.queryByText('Иван Петров')).not.toBeInTheDocument()
 		await expect(canvas.getByText('Заказов: 3', { exact: false })).toBeVisible()
-		// Клик по кнопке в ячейке не всплыл до строки
 		await expect(args['onRow-click']).not.toHaveBeenCalled()
 	},
 }

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseFileUpload.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'

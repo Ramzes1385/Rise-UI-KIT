@@ -1,9 +1,4 @@
-/**
- * Unit-тесты для BaseDropdown.
- * Проверяют рендер, пропсы, CSS-модификаторы, эмит update:isOpen,
- * preventMousedown и sizeScale.
- * Компонент использует teleport to="body" — поиск в document.
- */
+/** Компонент использует teleport to="body" — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'

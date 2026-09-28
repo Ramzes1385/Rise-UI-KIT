@@ -1,9 +1,4 @@
-/**
- * BaseDrawer — stories.
- *
- * Разделы: Default (песочница: панель открывается кнопкой, isOpen синхронизирован с Controls) → края окна → клавиатура.
- * Stories с открытой панелью в play видны только в сайдбаре: в Docs панель закрыла бы страницу.
- */
+/** Stories с открытой панелью в play видны только в сайдбаре: в Docs панель закрыла бы страницу. */
 
 import { ref } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'

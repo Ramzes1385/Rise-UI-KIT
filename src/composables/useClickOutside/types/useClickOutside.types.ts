@@ -1,8 +1,5 @@
 import type { ComponentPublicInstance, Ref } from 'vue'
 
-/**
- * Опции composable useClickOutside
- */
 export interface UseClickOutsideOptions {
 	/** Массив ref-ов на отслеживаемые элементы (HTMLElement, ComponentPublicInstance, или массивы элементов) */
 	targets: Ref<HTMLElement | ComponentPublicInstance | (HTMLElement | null)[] | null>[]

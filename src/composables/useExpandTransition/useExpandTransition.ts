@@ -15,9 +15,6 @@ function applyTransition(el: HTMLElement, duration: number): void {
 	el.style.transition = `height ${duration}ms ease, opacity ${duration}ms ease`
 }
 
-/**
- * Composable для Vue transition-хуков анимации expand/collapse.
- */
 function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpandTransitionReturn {
 	const duration = options.duration ?? DEFAULT_DURATION
 

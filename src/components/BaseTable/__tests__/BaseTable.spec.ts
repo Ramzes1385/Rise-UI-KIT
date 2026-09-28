@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseTable.
- * Проверяют рендер, CSS-модификаторы, пропсы, эмиты и слоты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import userEvent from '@testing-library/user-event'
@@ -363,16 +358,13 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			// Выбрать колонку фильтра
 			const columnSelect = container.querySelector('.base-table__filters .base-select-stub')! as HTMLSelectElement
 			columnSelect.value = 'name'
 			await fireEvent.change(columnSelect)
 
-			// Ввести значение фильтра
 			const valueInput = container.querySelector('.base-table__filters .base-input-stub')! as HTMLInputElement
 			await fireEvent.update(valueInput, 'Иван')
 
-			// Нажать кнопку добавления
 			const addBtn = container.querySelector('.base-table__filter-add-btn')!
 			await fireEvent.click(addBtn)
 
@@ -391,10 +383,8 @@ describe('BaseTable unit', () => {
 			const searchInput = container.querySelector('.base-table__search .base-input-stub')!
 			await fireEvent.update(searchInput, 'Иван')
 
-			// До дебаунса — эвента нет
 			expect(emitted().search).toBeUndefined()
 
-			// После дебаунса — эвент есть
 			vi.advanceTimersByTime(150)
 
 			expect(emitted()).toHaveProperty('search')
@@ -433,7 +423,6 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			// Клик на кнопку страницы 2 в стабе пагинации
 			const pageBtn = container.querySelector('.base-pagination-stub button')!
 			await fireEvent.click(pageBtn)
 

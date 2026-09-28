@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseForm.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseForm from '../ui/BaseForm.vue'

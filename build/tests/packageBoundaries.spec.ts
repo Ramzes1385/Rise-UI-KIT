@@ -1,11 +1,4 @@
-/**
- * Границы npm-пакета: код, достижимый из публичных входов сборки (build/config/build.lib.ts),
- * может импортировать извне только peerDependencies/dependencies.
- *
- * Регрессия: utils/index.ts реэкспортировал storybookUtils с runtime-импортом 'storybook/test',
- * и lib-сборка (external: ['vue']) вшивала тестовый рантайм Storybook в dist/utils (~600 КБ),
- * который подгружался при импорте корня пакета.
- */
+/** Регрессия: utils/index.ts реэкспортировал storybookUtils с runtime-импортом 'storybook/test' — lib-сборка вшивала тестовый рантайм Storybook (~600 КБ) в dist/utils, подгружаемый при импорте корня пакета. */
 
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'

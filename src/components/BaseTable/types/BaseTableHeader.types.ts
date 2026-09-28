@@ -1,6 +1,5 @@
 import type { SortDirection, TableColumn } from './BaseTable.types'
 
-/** Props компонента BaseTableHeader */
 export interface BaseTableHeaderProps {
 	/** Виртуальная прокрутка: строка заголовка получает aria-rowindex="1" */
 	isVirtual?: boolean
@@ -34,14 +33,12 @@ export interface BaseTableHeaderProps {
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 }
 
-/** Emits компонента BaseTableHeader */
 export interface BaseTableHeaderEmits {
 	(event: 'toggle-all'): void
 	(event: 'sort', column: TableColumn): void
 	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
 }
 
-/** Слоты компонента BaseTableHeader */
 export interface BaseTableHeaderSlots {
 	/** Кастомный рендер заголовка колонки (`header-<columnKey>`) */
 	[name: `header-${string}`]: (props: { column: TableColumn }) => unknown

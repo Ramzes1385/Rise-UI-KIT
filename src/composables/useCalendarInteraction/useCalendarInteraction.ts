@@ -2,7 +2,6 @@
 import { computed, watch } from 'vue'
 import type { UseCalendarInteractionOptions } from './types/useCalendarInteraction.types'
 
-/** Описание: обрабатывает клики по дням календаря, переключение AM/PM и кнопки «Сегодня», возвращает обработчики */
 function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 	const { calendar, popover, getSelectionMode, getShowTime, getIsDisabled, getShowDatePopover, isAm, emit } = options
 

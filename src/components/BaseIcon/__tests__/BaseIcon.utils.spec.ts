@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для утилит BaseIcon.
- * Проверяют calcIconScale и ICON_SCALE.
- */
-
 import { calcIconScale, ICON_SCALE } from '@utils/iconUtils'
 
 describe('ICON_SCALE', () => {

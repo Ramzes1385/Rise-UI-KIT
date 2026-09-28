@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseFab: имя, широкая кнопка, углы, ссылка, отключение.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseFab from '../ui/BaseFab.vue'

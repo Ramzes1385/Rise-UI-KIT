@@ -1,6 +1,5 @@
 import type { BaseRangeProps } from './BaseRange.types'
 
-/** Props компонента BaseRangeMarks */
 export interface BaseRangeMarksProps {
 	/** Метки на шкале */
 	marks: NonNullable<BaseRangeProps['marks']>

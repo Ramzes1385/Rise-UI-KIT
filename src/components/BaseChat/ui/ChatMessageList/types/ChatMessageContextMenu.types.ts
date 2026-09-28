@@ -21,9 +21,6 @@ export interface ChatMessageContextMenuEmits {
 	(event: 'close'): void
 }
 
-/**
- * Публичный API компонента ChatMessageContextMenu
- */
 export interface ChatMessageContextMenuExpose {
 	/** Ref на DOM-элемент меню */
 	menuRef: HTMLElement | null

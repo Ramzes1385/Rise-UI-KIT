@@ -1,10 +1,3 @@
-/**
- * BaseFormField — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры) → состояния (ошибка, длинный текст) →
- * сценарии (контрол кита внутри, связь подписи с полем через `for`).
- */
-
 import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BasePin } from '@components/BasePin'

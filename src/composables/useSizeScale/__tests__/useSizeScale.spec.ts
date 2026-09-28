@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable useSizeScale.
- * Проверяют вычисление CSS-переменной --size-scale.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { useSizeScale } from '../useSizeScale'

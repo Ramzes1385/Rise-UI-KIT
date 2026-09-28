@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseBackTop: появление после прокрутки окна или контейнера, прокрутка к началу, перенос фокуса.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseBackTop from '../ui/BaseBackTop.vue'

@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseNotification.
- * Проверяют рендер и базовую логику.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 import { render } from '@testing-library/vue'

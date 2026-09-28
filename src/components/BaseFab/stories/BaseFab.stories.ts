@@ -1,9 +1,4 @@
-/**
- * BaseFab — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, широкая, углы, размеры) → состояния (отключено) → сценарии
- * (ссылка) → клавиатура. Кнопки в примерах стоят в углу рамки (`isContained`), а не окна.
- */
+/** Кнопки в примерах стоят в углу рамки (`isContained`), а не окна. */
 
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
@@ -12,7 +7,6 @@ import { FAB_VARIANTS } from '../types/BaseFab.types'
 import type { FabPosition } from '../types/BaseFab.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Рамка «экрана» для кнопки в углу */
 const FRAME = 'position: relative; height: 180px; border: 1px dashed var(--rise-border-accented); border-radius: 8px;'
 
 const meta = {

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// Удаляет устаревший общий отчёт перед частичным прогоном, чтобы он не показывал
-// старые цифры. Отчёты отдельных прогонов (coverage/<zone>/) не трогает.
+// Удаляет устаревший общий отчёт перед частичным прогоном; отчёты отдельных зон в coverage/<zone>/ не трогает.
 
 import { existsSync, readdirSync, rmSync } from 'node:fs'
 import { resolve } from 'node:path'

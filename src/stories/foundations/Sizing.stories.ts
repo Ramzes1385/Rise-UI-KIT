@@ -1,7 +1,3 @@
-/**
- * Foundations / Sizing — масштаб компонентов (sizeScale) и плотность интерфейса.
- */
-
 import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'

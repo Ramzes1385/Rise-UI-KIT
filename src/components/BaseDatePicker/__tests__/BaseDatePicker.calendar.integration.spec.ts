@@ -1,9 +1,4 @@
-/**
- * Интеграционные тесты связки BaseDatePicker → DatePickerPanel → BaseCalendar.
- * Рендерятся реальные дочерние компоненты (без stub'ов и моков): проверяется, что
- * календарные настройки date picker действительно доходят до BaseCalendar
- * (регрессия 1.2.2 — панель передавала удалённые плоские props, которые уходили в $attrs).
- */
+/** Рендерятся реальные дочерние компоненты без stub'ов: регрессия 1.2.2 — панель передавала удалённые плоские props, которые уходили в $attrs. */
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
@@ -18,7 +13,6 @@ async function openPanel(): Promise<HTMLElement> {
 	return panel
 }
 
-/** Найти кнопку дня текущего месяца по числу */
 function getCurrentMonthDay(panel: HTMLElement, day: number): HTMLButtonElement {
 	const buttons = Array.from(panel.querySelectorAll<HTMLButtonElement>('.base-calendar__day:not(.base-calendar__day--other)'))
 	const button = buttons.find(item => item.textContent?.trim() === String(day))

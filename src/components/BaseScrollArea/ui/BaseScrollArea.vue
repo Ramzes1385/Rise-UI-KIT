@@ -132,8 +132,6 @@ function thumbStyle(axis: Axis): Record<string, string> {
 	return axis === 'y' ? { height: `${size}%`, top: `${offset}%` } : { width: `${size}%`, left: `${offset}%` }
 }
 
-// ─── Прокрутка ─────────────────────────────────────────────────────────────────
-
 const isScrolling = ref(false)
 let idleTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -191,8 +189,6 @@ function handleThumbPointermove(event: PointerEvent): void {
 function handleThumbPointerup(): void {
 	dragAxis.value = null
 }
-
-// ─── Размеры ───────────────────────────────────────────────────────────────────
 
 let observer: ResizeObserver | null = null
 

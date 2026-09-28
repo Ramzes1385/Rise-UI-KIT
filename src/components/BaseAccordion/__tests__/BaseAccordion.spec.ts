@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseAccordion.
- * Проверяют рендер, пропсы, вычисления и простые ветки логики.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen, waitFor } from '@testing-library/vue'
 import BaseAccordion from '../ui/BaseAccordion.vue'
 import type { BaseAccordionItem } from '../types/BaseAccordion.types'
 
-/** Стандартный набор элементов для тестов */
 const ITEMS: BaseAccordionItem[] = [
 	{ label: 'Материалы', content: 'Работаем с металлом' },
 	{ label: 'Доставка', content: 'Доставка по всей России' },

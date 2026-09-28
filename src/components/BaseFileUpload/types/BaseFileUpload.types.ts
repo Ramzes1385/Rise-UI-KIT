@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения загрузки файлов */
 export const FILE_UPLOAD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Загруженный файл
- */
 export interface UploadedFile {
 	/** Уникальный идентификатор */
 	id: string
@@ -27,9 +23,6 @@ export interface UploadedFile {
 	progress: number
 }
 
-/**
- * Пропсы компонента BaseFileUpload
- */
 export interface BaseFileUploadProps extends BaseComponentProps<
 	(typeof FILE_UPLOAD_VARIANTS)[number],
 	| 'root'
@@ -79,18 +72,12 @@ export interface BaseFileUploadProps extends BaseComponentProps<
 	error?: string
 }
 
-/**
- * События компонента BaseFileUpload
- */
 export interface BaseFileUploadEmits {
 	(event: 'change', files: File[]): void
 	(event: 'error', message: string): void
 	(event: 'remove', file: UploadedFile): void
 }
 
-/**
- * Слоты компонента BaseFileUpload
- */
 export interface BaseFileUploadSlots {
 	default?: () => unknown
 	/** Кастомная зона загрузки */

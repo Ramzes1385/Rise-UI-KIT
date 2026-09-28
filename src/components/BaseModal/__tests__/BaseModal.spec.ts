@@ -1,8 +1,4 @@
-/**
- * Unit-тесты для BaseModal.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- * Компонент использует teleport to="body" — поиск в document.
- */
+/** Teleport to="body" — поиск в document */
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen, waitFor } from '@testing-library/vue'

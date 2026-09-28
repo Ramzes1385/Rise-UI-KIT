@@ -4,7 +4,6 @@ import { defineComponent, h, nextTick, shallowRef } from 'vue'
 import { usePopup } from '../usePopup'
 import type { Ref } from 'vue'
 
-/** Создать тестовый компонент с usePopup */
 function createTestComponent(options: {
 	isOpenRef: Ref<boolean>
 	closeOnOverlay: () => boolean

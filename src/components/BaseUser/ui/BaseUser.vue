@@ -56,6 +56,5 @@ const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('
 
 const isLink = computed(() => Boolean(props.to || props.href))
 
-/** Пропсы ссылки: адрес и target; без адреса — пусто */
 const linkProps = computed(() => (isLink.value ? { to: props.to, href: props.href, target: props.target, variant: 'ghost' } : {}))
 </script>

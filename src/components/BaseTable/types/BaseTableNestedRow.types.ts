@@ -1,6 +1,5 @@
 import type { NestedTableConfig, TableColumn, TableRow } from './BaseTable.types'
 
-/** Props компонента BaseTableNestedRow */
 export interface BaseTableNestedRowProps {
 	/** Родительская строка (может содержать children) */
 	row: TableRow
@@ -28,7 +27,6 @@ export interface BaseTableNestedRowProps {
 	formatCellValue: (column: TableColumn, row: TableRow) => string
 }
 
-/** Слоты компонента BaseTableNestedRow */
 export interface BaseTableNestedRowSlots {
 	/** Кастомный рендер ячейки вложенной строки по ключу колонки (`cell-<columnKey>`) */
 	[name: `cell-${string}`]: (props: { row: TableRow; value: unknown; column: TableColumn }) => unknown

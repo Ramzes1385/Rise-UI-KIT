@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseInputNumber: семантика spinbutton, формат числа, кнопки и границы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseInputNumber from '../ui/BaseInputNumber.vue'

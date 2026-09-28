@@ -1,7 +1,4 @@
-// BaseAvatar. Размер при sizeScale = 100: 32px (как контрол), инициалы 16px medium — пропорции аватара md в Nuxt UI.
-// Варианты: default — нейтральный фон bg-elevated; soft — мягкий фон основного цвета; outline — фон bg и рамка;
-// ghost — без фона; shadow — фон bg, тонкая рамка и тень. Формы: circle — круг, square — радиус md.
-// Проп color перекрашивает фон (color.bg) и инициалы (color.text).
+// Размер и пропорции — как у аватара md в Nuxt UI; проп color красит фон (color.bg) и инициалы (color.text).
 .base-avatar {
 	position: relative;
 	display: inline-flex;
@@ -43,8 +40,6 @@
 		object-fit: cover;
 	}
 
-	// ─── Варианты ────────────────────────────────────────────────────────────────
-
 	&--soft &__content {
 		@include custom-bg(background-color, var(--rise-primary-soft));
 		@include custom-text(color, var(--rise-primary-text));
@@ -70,8 +65,6 @@
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text-muted));
 	}
-
-	// ─── Статус «в сети» ─────────────────────────────────────────────────────────
 
 	// Точка цвета success в правом нижнем углу; кольцо цвета фона отделяет её от изображения.
 	&__online {

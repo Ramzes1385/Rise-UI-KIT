@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseDropdown.
- * Проверяет: открытие → выбор → клик вне.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('дропдаун: открывается по клику на триггер', async ({ page }) => {

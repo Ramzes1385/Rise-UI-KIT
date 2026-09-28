@@ -16,9 +16,6 @@ export const BREAKPOINTS = {
 
 export type BreakpointName = keyof typeof BREAKPOINTS
 
-/**
- * Результат composable useBreakpoint
- */
 export interface UseBreakpointReturn {
 	/** Реактивная ширина окна в пикселях */
 	width: Readonly<Ref<number>>

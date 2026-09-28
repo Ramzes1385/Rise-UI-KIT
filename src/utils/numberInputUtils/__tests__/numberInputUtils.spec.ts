@@ -1,4 +1,3 @@
-/** Тесты утилит поля числа */
 import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '../numberInputUtils'
 
 describe('numberInputUtils', () => {

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для ChatPinnedPanel.
- * Панель закреплённых сообщений: навигация, открепление и превью текста.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import ChatPinnedPanel from '../ui/ChatPinnedPanel/ChatPinnedPanel.vue'

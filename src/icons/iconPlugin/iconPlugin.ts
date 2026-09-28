@@ -1,7 +1,4 @@
-/**
- * Плагин: глобальная регистрация BaseIcon через app.use().
- * Нужен, когда проекту удобнее подключить иконку один раз на уровне приложения.
- */
+/** Плагин: глобальная регистрация BaseIcon через app.use() — когда удобнее подключить иконку один раз на уровне приложения. */
 
 import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '@composables/useIcon/useIcon'

@@ -55,7 +55,6 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
 
 const hasImageError = ref(false)
 
-// Сбрасываем ошибку при изменении src
 watch(
 	() => props.src,
 	() => {

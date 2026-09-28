@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseContainer: ширина, тег, масштаб, классы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseContainer from '../ui/BaseContainer.vue'

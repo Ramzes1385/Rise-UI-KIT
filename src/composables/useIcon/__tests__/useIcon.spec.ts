@@ -89,7 +89,6 @@ describe('useIcon', () => {
 		})
 
 		it('возвращает имена иконок из спрайта', () => {
-			// Создаём мок спрайта в DOM
 			const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 			svg.setAttribute('href', 'icons.svg')
 
@@ -105,7 +104,6 @@ describe('useIcon', () => {
 			const { getIconNames } = useIcon()
 			expect(getIconNames()).toEqual(['close', 'menu'])
 
-			// Очистка
 			document.body.removeChild(svg)
 		})
 
@@ -119,7 +117,6 @@ describe('useIcon', () => {
 			// link[href] найден, но link не содержит symbol — возвращается пустой массив
 			expect(getIconNames()).toEqual([])
 
-			// Очистка
 			document.body.removeChild(link)
 		})
 	})

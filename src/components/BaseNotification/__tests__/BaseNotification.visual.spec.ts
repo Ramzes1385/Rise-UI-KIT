@@ -1,8 +1,4 @@
-/**
- * Visual regression BaseNotification: ключевые stories в светлой и тёмной теме.
- * Снимается вся страница: в Positions контейнер закреплён у края экрана (без isContained).
- * Анимации при снимке отключены — полоса прогресса досчитана до конца и не видна.
- */
+/** Снимается вся страница: в Positions контейнер закреплён у края экрана (без isContained); анимации отключены, полоса прогресса не видна */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

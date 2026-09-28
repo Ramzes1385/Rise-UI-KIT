@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для ratingUtils.
- * Покрывают: snapRating, valueFromPointer, rawValueFromPointer, starFillPercent.
- */
-
 import { describe, it, expect } from 'vitest'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../ratingUtils'
 

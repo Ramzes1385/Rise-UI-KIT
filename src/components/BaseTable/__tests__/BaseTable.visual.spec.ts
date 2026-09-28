@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseTable: ключевые stories в светлой и тёмной теме.
- * Ширина 1100px: тулбар (поиск, фильтр, «Колонки») помещается в один ряд.
- */
+/** Ширина 1100px: тулбар (поиск, фильтр, «Колонки») помещается в один ряд. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

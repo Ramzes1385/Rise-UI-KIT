@@ -9,9 +9,6 @@ import type { Size, UseImageZoomOptions } from './types/useImageZoom.types'
 const ROTATION_STEP_DEG = 90
 const FULL_TURN_DEG = 360
 
-/**
- * Composable для зума изображений: панорамирование, вращение, масштабирование и миникарта.
- */
 function useImageZoom(options: UseImageZoomOptions) {
 	const isZoomOpen = ref(false)
 	const currentScale = ref(options.initialScale())

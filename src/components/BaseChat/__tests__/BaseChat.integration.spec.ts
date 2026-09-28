@@ -1,10 +1,3 @@
-/**
- * Integration-тесты для BaseChat.
- * Проверяют сквозное взаимодействие composed-подкомпонентов (ChatInput,
- * ChatMessageList, ChatSelectionToolbar) и проброс событий наружу через
- * публичный API BaseChat.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { afterEach, beforeEach, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
@@ -315,7 +308,6 @@ describe('BaseChat integration', () => {
 			await enterSelection()
 			await fireEvent.click(screen.getByText('Удалить'))
 
-			// До подтверждения событие не эмитится
 			expect(emitted()['delete-messages']).toBeUndefined()
 			expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
 
@@ -385,7 +377,6 @@ describe('BaseChat integration', () => {
 			openMenu(container, 1)
 			await fireEvent.click(await screen.findByText('Удалить'))
 
-			// До подтверждения событие не эмитится, показывается окно
 			expect(emitted()['delete-messages']).toBeUndefined()
 			expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
 

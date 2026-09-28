@@ -1,9 +1,4 @@
-// BaseAnimation — классы переходов для <Transition>/<TransitionGroup>. Vue добавляет классы по пропу name:
-// `fade-enter-active`, `fade-enter-from`… Поэтому имена классов без префикса base- — это публичный API
-// (проп name), а `.list-*` использует ещё и BaseNotification.
-//
-// Длительности и кривые — токены: появление — --rise-duration (крупные эффекты — --rise-duration-slow) с --rise-ease-out,
-// исчезновение — --rise-duration-fast с --rise-ease-in. При prefers-reduced-motion токены обнуляются — переходы мгновенные.
+// Классы без префикса base- (fade-enter-active и т.д.) — публичный API для пропа name; при prefers-reduced-motion токены длительности обнуляются.
 
 $enter: var(--rise-duration) var(--rise-ease-out);
 $enter-slow: var(--rise-duration-slow) var(--rise-ease-out);
@@ -13,8 +8,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 .base-animation--group {
 	position: relative;
 }
-
-// ─── Fade ────────────────────────────────────────────────────────────────────────
 
 .fade-enter-active {
 	transition: opacity $enter;
@@ -28,8 +21,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 .fade-leave-to {
 	opacity: 0;
 }
-
-// ─── Slide: появление со сдвигом, исчезновение дальше в ту же сторону ─────────────
 
 .slide-up-enter-active,
 .slide-down-enter-active,
@@ -89,8 +80,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	transform: translateX(sz(16px));
 }
 
-// ─── Scale: лёгкое увеличение из 95%, как у всплывающих панелей ────────────────────
-
 .scale-enter-active {
 	transition:
 		opacity $enter,
@@ -108,8 +97,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	opacity: 0;
 	transform: scale(0.95);
 }
-
-// ─── Bounce: появление с отскоком ─────────────────────────────────────────────────
 
 .bounce-enter-active {
 	animation: base-animation-bounce-in $enter-slow;
@@ -148,8 +135,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	}
 }
 
-// ─── Rotate ─────────────────────────────────────────────────────────────────────
-
 .rotate-enter-active {
 	transition:
 		opacity $enter-slow,
@@ -171,8 +156,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	opacity: 0;
 	transform: rotate(90deg) scale(0.8);
 }
-
-// ─── Flip: поворот вокруг вертикальной оси ──────────────────────────────────────────
 
 .flip-enter-active {
 	transition:
@@ -196,8 +179,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	transform: perspective(sz(600px)) rotateY(-90deg);
 }
 
-// ─── Zoom: из точки ───────────────────────────────────────────────────────────────
-
 .zoom-enter-active {
 	transition:
 		opacity $enter-slow,
@@ -216,7 +197,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	transform: scale(0);
 }
 
-// ─── Collapse: высота от 0 до содержимого ─────────────────────────────────────────
 // interpolate-size разрешает анимировать до height: auto (Chromium 129+). В других браузерах высота меняется сразу,
 // а прозрачность — плавно.
 
@@ -243,8 +223,6 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	height: 0;
 	opacity: 0;
 }
-
-// ─── List (TransitionGroup): элементы въезжают справа, уходят вправо, соседи сдвигаются ─
 
 .list-move {
 	transition: transform $enter;

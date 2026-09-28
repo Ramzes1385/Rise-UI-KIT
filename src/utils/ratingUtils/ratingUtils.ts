@@ -2,7 +2,6 @@
 
 import type { PointerValueOptions } from './types/ratingUtils.types'
 
-/** Привязать оценку к ближайшему шагу в диапазоне [0, max] */
 function snapRating(value: number, step: number, max: number): number {
 	const steps = Math.round(value / step)
 	const snapped = steps * step

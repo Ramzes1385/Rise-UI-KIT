@@ -8,7 +8,6 @@ import type { Ref } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
 import type { BaseInputNumberEmits, InputNumberProps, NumberCommit, NumberDraft } from '../types/BaseInputNumber.types'
 
-/** Клавиши шага: стрелки — один шаг, PageUp/PageDown — десять */
 const STEP_KEYS: Record<string, number> = { ArrowUp: 1, ArrowDown: -1, PageUp: 10, PageDown: -10 }
 
 function useNumberDraft(props: InputNumberProps): NumberDraft {

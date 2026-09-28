@@ -4,9 +4,6 @@ import { FORMAT_CONFIG, getBlockAlign, getFormatBlock, isInsideList, isInsideTag
 import type { EditorActiveStates } from './types/useEditorToolbar.types'
 import type { UseToolbarSelectionOptions } from './types/useToolbarSelection.types'
 
-/**
- * Composable для управления состоянием выделения в редакторе и определения активных форматов.
- */
 function useToolbarSelection(options: UseToolbarSelectionOptions) {
 	const { editorRef } = options
 

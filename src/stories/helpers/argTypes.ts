@@ -1,10 +1,4 @@
-/**
- * argTypes для stories: группировка таблицы props в Docs и контролы общих props.
- *
- * Категории таблицы (`table.category`) оставляем стандартными — `props`, `events`, `slots`: по категории `slots`
- * рендерер Storybook для Vue понимает, что arg нужно передать как содержимое слота, а не как атрибут.
- * Смысловую группу prop — за что он отвечает — задаём подкатегорией через `propGroup()`.
- */
+/** argTypes для stories: группировка props в Docs. Категория `slots` обязательна — по ней Storybook для Vue передаёт arg как содержимое слота, а не как атрибут. */
 
 import type { ArgTypes } from '@storybook/vue3-vite'
 import type { ArgGroup, BaseArgTypesOptions } from './types/helpers.types'
@@ -18,7 +12,6 @@ export const ARG_GROUP = {
 	a11y: 'Доступность',
 } as const
 
-/** Настройка таблицы для prop: категория `props`, подкатегория — смысловая группа. */
 export function propGroup(group: ArgGroup): { category: 'props'; subcategory: ArgGroup } {
 	return { category: 'props', subcategory: group }
 }

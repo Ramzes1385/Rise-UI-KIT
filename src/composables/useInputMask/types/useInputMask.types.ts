@@ -8,9 +8,6 @@ export interface NearestTokenResult {
 	valueIndex: number
 }
 
-/**
- * Опции composable useInputMask
- */
 export interface UseInputMaskOptions {
 	/** Маска ввода */
 	getMask: () => string

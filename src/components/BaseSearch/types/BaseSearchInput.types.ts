@@ -24,9 +24,6 @@ export interface BaseSearchInputEmits {
 	(event: 'clear'): void
 }
 
-/**
- * Публичный контракт BaseSearchInput (defineExpose)
- */
 export interface BaseSearchInputExpose {
 	/** Устанавливает фокус на поле ввода */
 	focus: () => void

@@ -1,9 +1,3 @@
-/**
- * BaseButtonGroup — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты кнопок, вертикально) → сценарии (с кнопкой меню).
- */
-
 import { expect } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'

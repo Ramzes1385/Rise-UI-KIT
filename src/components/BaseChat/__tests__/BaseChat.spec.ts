@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseChat.
- * Проверяют рендер, пропсы и базовую структуру.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseChat from '../ui/BaseChat.vue'

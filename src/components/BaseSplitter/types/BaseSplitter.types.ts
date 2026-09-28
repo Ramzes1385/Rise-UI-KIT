@@ -8,10 +8,7 @@ export const SPLITTER_VARIANTS = ['default', 'ghost'] as const
 /** Расположение панелей: `horizontal` — рядом (разделитель вертикальный), `vertical` — одна над другой */
 export type SplitterOrientation = 'horizontal' | 'vertical'
 
-/**
- * Пропсы компонента BaseSplitter.
- * `sizeScale` масштабирует толщину разделителя и ручку; `color` не используется.
- */
+/** `sizeScale` масштабирует толщину разделителя и ручку; `color` не используется. */
 export interface BaseSplitterProps extends BaseComponentProps<(typeof SPLITTER_VARIANTS)[number], 'root' | 'pane' | 'separator'> {
 	/** Размер первой панели в процентах (v-model) */
 	modelValue?: number
@@ -29,9 +26,6 @@ export interface BaseSplitterProps extends BaseComponentProps<(typeof SPLITTER_V
 	isDisabled?: boolean
 }
 
-/**
- * События компонента BaseSplitter
- */
 export interface BaseSplitterEmits {
 	/** Размер первой панели при каждом движении */
 	(event: 'update:modelValue', value: number): void
@@ -39,9 +33,6 @@ export interface BaseSplitterEmits {
 	(event: 'change', value: number): void
 }
 
-/**
- * Слоты компонента BaseSplitter
- */
 export interface BaseSplitterSlots {
 	/** Первая панель (слева или сверху) */
 	start?: () => unknown
@@ -49,7 +40,6 @@ export interface BaseSplitterSlots {
 	end?: () => unknown
 }
 
-/** Пропсы BaseSplitter после значений по умолчанию */
 export type SplitterProps = PropsWithDefaults<BaseSplitterProps, 'modelValue' | 'orientation' | 'min' | 'max' | 'step' | 'isDisabled'>
 
 /** Размер первой панели, %: работает и без v-model */

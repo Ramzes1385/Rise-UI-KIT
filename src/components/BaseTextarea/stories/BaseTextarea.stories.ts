@@ -1,10 +1,3 @@
-/**
- * BaseTextarea — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (пусто, ошибка, disabled, readonly, длинный текст) → сценарии (rows, autosize, maxlength) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import {

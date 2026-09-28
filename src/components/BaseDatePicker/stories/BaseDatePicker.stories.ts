@@ -1,11 +1,4 @@
-/**
- * BaseDatePicker — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты поля, размеры, цвет) → состояния (пусто,
- * ошибка, disabled, очистка) → режимы (диапазон на двух месяцах, несколько дат, время, ограничения, номера недель,
- * своя иконка) → клавиатура. Панель телепортируется в body: примеры с открытой панелью в Docs показываются во фрейме.
- * Все даты — вокруг STORY_TODAY (15 мая 2025).
- */
+/** Панель телепортируется в body: примеры с открытой панелью в Docs показываются во фрейме. Все даты — вокруг STORY_TODAY (15 мая 2025). */
 
 import { ref } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
@@ -325,7 +318,6 @@ export const RangeSelection: Story = {
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 		await expect(field).toHaveValue('19.05.2025 — 03.06.2025')
 
-		// Снова открываем: панель показывает новый диапазон
 		await userEvent.click(field)
 		const reopened = await findPanel()
 		await expect(within(reopened).getByRole('button', { name: dayName(6) })).toHaveAttribute('aria-pressed', 'true')

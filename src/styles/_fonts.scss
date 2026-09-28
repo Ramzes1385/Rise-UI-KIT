@@ -1,13 +1,4 @@
-/**
- * @font-face declarations for Inter Variable + JetBrains Mono Variable.
- * Только нужные unicode-подсеты: Inter покрывает латиницу + кириллицу (UI Kit на русском),
- * JetBrains Mono — только латиницу (моноширинный шрифт для идентификаторов и кода).
- *
- * Полный пакет @fontsource-variable/inter/wght.css грузит 7 подсетов (~360 KB);
- * этот файл — 5 @font-face (~120 KB raw woff2). Экономия ~240 KB raw / ~80 KB gzipped.
- *
- * Держим в синхроне с импортом в src/main.ts и build/storybook/preview.ts.
- */
+/** Держим в синхроне с импортом шрифтов в src/main.ts и build/storybook/preview.ts. */
 
 /* inter-latin-wght-normal */
 @font-face {

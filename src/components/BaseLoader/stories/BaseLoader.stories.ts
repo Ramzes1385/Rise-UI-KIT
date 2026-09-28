@@ -1,10 +1,3 @@
-/**
- * BaseLoader — stories.
- *
- * Разделы: Default (песочница) → внешний вид (виды, размеры, кастомный цвет) → содержимое (подпись) →
- * сценарии (оверлей над контейнером).
- */
-
 import { expect } from 'storybook/test'
 import { UI_TEXT } from '@/locales/messages'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'

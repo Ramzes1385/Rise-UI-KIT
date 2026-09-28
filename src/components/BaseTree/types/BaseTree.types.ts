@@ -1,18 +1,12 @@
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Режим выбора в дереве */
 export type TreeSelectionMode = 'none' | 'single' | 'multiple'
 
-/** Позиция стрелки раскрытия */
 export type TreeArrowPosition = 'left' | 'right'
 
-/** Варианты отображения дерева */
 export const TREE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Узел дерева
- */
 export interface TreeNode {
 	/** Уникальный идентификатор */
 	id: string
@@ -64,12 +58,8 @@ export interface TreeContext {
 	unregisterHeader: (id: string, element: HTMLElement) => void
 }
 
-/** Ключ для provide/inject контекста дерева */
 export const TREE_CONTEXT_KEY: InjectionKey<TreeContext> = Symbol('tree-context')
 
-/**
- * Пропсы компонента BaseTree
- */
 export interface BaseTreeProps extends BaseComponentProps<
 	(typeof TREE_VARIANTS)[number],
 	'root' | 'node' | 'header' | 'arrow' | 'checkbox' | 'icon' | 'label' | 'actions' | 'children'
@@ -99,9 +89,6 @@ export interface BaseTreeProps extends BaseComponentProps<
 	itemSize?: number
 }
 
-/**
- * События компонента BaseTree
- */
 export interface BaseTreeEmits {
 	(event: 'update:expandedIds', value: string[]): void
 	(event: 'update:selectedIds', value: string[]): void
@@ -109,9 +96,6 @@ export interface BaseTreeEmits {
 	(event: 'select', nodeId: string, isSelected: boolean): void
 }
 
-/**
- * Слоты компонента BaseTree
- */
 export interface BaseTreeSlots {
 	/** Кастомная иконка узла */
 	icon?: (props: { node: TreeNode }) => unknown

@@ -93,7 +93,6 @@ function calcTooltipShift(placement: TooltipPosition, layout: TooltipLayout): nu
 	return clamped - center
 }
 
-/** Получить имя CSS-перехода по позиции тултипа */
 function getTooltipTransition(position: string): string {
 	return `tooltip-${position}`
 }

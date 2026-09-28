@@ -9,10 +9,7 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const HEADER_VARIANTS = ['default', 'soft', 'ghost'] as const
 
-/**
- * Пропсы компонента BaseHeader.
- * `sizeScale` масштабирует высоту, отступы и кегль; `color` задаёт фон и текст.
- */
+/** `sizeScale` масштабирует высоту, отступы и кегль; `color` задаёт фон и текст. */
 export interface BaseHeaderProps extends BaseComponentProps<(typeof HEADER_VARIANTS)[number], 'root' | 'inner' | 'title' | 'toggle'> {
 	/** Название сайта или приложения в начале шапки (заменяется слотом start) */
 	title?: string
@@ -30,9 +27,6 @@ export interface BaseHeaderProps extends BaseComponentProps<(typeof HEADER_VARIA
 	menuDirection?: DrawerDirection
 }
 
-/**
- * Слоты компонента BaseHeader
- */
 export interface BaseHeaderSlots {
 	/** Навигация посередине. Если есть слот menu, на экране уже 768px она скрыта */
 	default?: () => unknown

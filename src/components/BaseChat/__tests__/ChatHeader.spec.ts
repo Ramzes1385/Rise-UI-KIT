@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для ChatHeader.
- * Шапка чата: заголовок, статусы (печатает/подзаголовок), поиск и действия.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'

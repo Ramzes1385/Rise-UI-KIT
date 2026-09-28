@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseSlider.
- * Проверяют взаимодействие: навигация.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import userEvent from '@testing-library/user-event'
@@ -23,14 +18,11 @@ describe('BaseSlider integration', () => {
 				props: { items: ITEMS, navigation: 'dots' },
 			})
 
-			/** Первый слайд активен по умолчанию */
 			expect(container.querySelector('.base-slider__slide--active')).toBeInTheDocument()
 
-			/** Кликаем на вторую точку */
 			const dots = container.querySelectorAll('.base-slider__dot')
 			await user.click(dots[1])
 
-			/** Второй слайд должен стать активным */
 			const activeSlide = container.querySelector('.base-slider__slide--active')
 			expect(activeSlide).toBeInTheDocument()
 		})

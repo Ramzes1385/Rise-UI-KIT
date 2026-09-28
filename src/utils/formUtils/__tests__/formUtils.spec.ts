@@ -1,4 +1,3 @@
-/** Тесты утилит проверки формы по Standard Schema */
 import { issueName, issuesToErrors, validateSchema } from '../formUtils'
 import type { StandardSchemaResult, StandardSchemaV1 } from '../types/formUtils.types'
 

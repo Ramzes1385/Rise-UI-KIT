@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useScrollableRegion.
- * Проверяют признак прокрутки при появлении элемента, пересчёт по ResizeObserver и отключение наблюдателя.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, nextTick, ref } from 'vue'
 import { render, screen } from '@testing-library/vue'

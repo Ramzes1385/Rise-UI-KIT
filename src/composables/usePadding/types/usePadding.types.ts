@@ -1,9 +1,4 @@
-/**
- * Объектное значение padding.
- * Оси (x/y) задают пары сторон НАПРЯМУЮ, без умножения (например { x: 25, y: 43 } → 43px по вертикали, 25px по горизонтали).
- * Точечные стороны (top/right/bottom/left) переопределяют оси.
- * Все значения в пикселях.
- */
+/** Оси x/y задают стороны напрямую без умножения (в отличие от PaddingProp); точечные стороны переопределяют оси; значения в px */
 export interface PaddingValue {
 	/** Горизонтальные отступы (left + right) напрямую, px */
 	x?: number
@@ -19,15 +14,9 @@ export interface PaddingValue {
 	left?: number
 }
 
-/**
- * Значение пропа padding: число (шорткат) или объект PaddingValue.
- * Число: вертикаль = значение, горизонталь = значение × axisMultiplier.
- */
+/** Число: вертикаль = значение, горизонталь = значение × axisMultiplier */
 export type PaddingProp = number | PaddingValue
 
-/**
- * Опции composable usePadding
- */
 export interface UsePaddingOptions {
 	/** Геттер значения padding (число, объект или undefined) */
 	getPadding: () => PaddingProp | undefined
@@ -65,10 +54,6 @@ export interface ResolvedPaddingSides {
 	left: boolean
 }
 
-/**
- * Результат разрешения padding: значения по сторонам и признак того,
- * какие стороны выведены из входных данных.
- */
 export interface ResolvePaddingResult {
 	values: ResolvedPadding
 	sides: ResolvedPaddingSides

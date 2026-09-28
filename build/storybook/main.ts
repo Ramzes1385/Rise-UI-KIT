@@ -1,12 +1,4 @@
-/**
- * Конфигурация Storybook для Vue 3 + Vite.
- *
- * Где что лежит:
- * - src/stories/            — вводная страница, Foundations (токены, типографика, размеры, темы) и общие хелперы stories;
- * - src/components/<X>/stories/<X>.stories.ts — stories компонентов;
- * - build/storybook/preview.ts  — глобальные параметры, тема (toolbar «Тема»), a11y;
- * - build/storybook/manager.ts  — оформление интерфейса Storybook.
- */
+/** Структура: src/stories/ — вводная и Foundations; src/components/<X>/stories/ — stories компонентов; preview.ts — тема и a11y; manager.ts — интерфейс Storybook. */
 
 import type { StorybookConfig } from '@storybook/vue3-vite'
 import vue from '@vitejs/plugin-vue'

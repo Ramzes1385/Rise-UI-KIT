@@ -1,9 +1,6 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { MODAL_VARIANTS } from '@components/BaseModal/types/BaseModal.types'
 
-/**
- * Пропсы компонента BaseConfirm
- */
 export interface BaseConfirmProps extends BaseComponentProps<
 	(typeof MODAL_VARIANTS)[number],
 	'root' | 'description' | 'cancel' | 'confirm'
@@ -25,9 +22,6 @@ export interface BaseConfirmProps extends BaseComponentProps<
 	isDanger?: boolean
 }
 
-/**
- * События компонента BaseConfirm
- */
 export interface BaseConfirmEmits {
 	/** Результат: true — подтвердили, false — отменили (кнопкой, Escape, крестиком или кликом по фону) */
 	(event: 'close', result: boolean): void

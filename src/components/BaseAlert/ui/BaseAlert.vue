@@ -97,7 +97,6 @@ const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } 
  */
 const liveRole = computed((): 'alert' | 'status' => (props.type === 'error' || props.type === 'warning' ? 'alert' : 'status'))
 
-/** Иконка оповещения по умолчанию на основе типа */
 const alertIcon = computed((): string => {
 	if (props.icon) return props.icon
 
@@ -110,7 +109,6 @@ const alertIcon = computed((): string => {
 	return icons[props.type] || 'info'
 })
 
-/** Обработка клика по кнопке закрытия */
 function handleClose(): void {
 	emit('close')
 }

@@ -1,11 +1,4 @@
-/**
- * Скрипт для проверки покрытия компонентов UI KIT файлами stories.
- * Поддерживает старую структуру:
- * src/components/BaseComponent/BaseComponent.stories.ts
- *
- * И новую структуру:
- * src/components/BaseComponent/stories/BaseComponent.stories.ts
- */
+/** Поддерживает и старую структуру (BaseComponent/BaseComponent.stories.ts), и новую (BaseComponent/stories/BaseComponent.stories.ts). */
 
 import { existsSync, readdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'

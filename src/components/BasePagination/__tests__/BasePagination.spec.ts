@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BasePagination.
- * Проверяют рендер, пропсы и вычисления.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BasePagination from '../ui/BasePagination.vue'

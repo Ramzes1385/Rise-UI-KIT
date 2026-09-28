@@ -1,8 +1,4 @@
-// BaseTimeline. Лента событий: маркер 24px (круг) и линия 2px цвета border между маркерами; справа (или снизу у
-// горизонтальной) — дата 12/16 приглушённая, заголовок 14/20 medium, описание 14/20 приглушённое. Между событиями 24px.
-// Цвет маркера — роль события (primary по умолчанию). default — заливка цветом, иконка или точка 8px цвета on-primary;
-// soft — мягкий фон (15% цвета) и иконка цвета события; outline — кольцо 2px цвета события на фоне страницы.
-// Текущее событие — заголовок text-highlighted; предстоящие — маркер нейтральный, текст приглушённый.
+// Цвет маркера — роль события; soft — мягкий фон 15% цвета, outline — кольцо 2px цвета события.
 .base-timeline {
 	display: flex;
 	flex-direction: column;
@@ -65,7 +61,6 @@
 		background-color: currentcolor;
 	}
 
-	// Линия от маркера до следующего события: от низа маркера до верха следующего
 	&__line {
 		position: absolute;
 		top: sz(24px);
@@ -107,8 +102,6 @@
 		color: var(--rise-text-muted);
 	}
 
-	// ─── Варианты ────────────────────────────────────────────────────────────────
-
 	&--soft &__marker {
 		background-color: color-mix(in srgb, var(--timeline-color) 15%, var(--rise-bg));
 		color: var(--timeline-color);
@@ -119,8 +112,6 @@
 		background-color: var(--rise-bg);
 		color: var(--timeline-color);
 	}
-
-	// ─── Горизонтальная лента ────────────────────────────────────────────────────
 
 	&--horizontal {
 		flex-direction: row;

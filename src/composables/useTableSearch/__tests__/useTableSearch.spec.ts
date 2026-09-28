@@ -1,7 +1,3 @@
-/**
- * Unit-тесты для useTableSearch.
- */
-
 import { createApp, h } from 'vue'
 import { useTableSearch } from '../useTableSearch'
 

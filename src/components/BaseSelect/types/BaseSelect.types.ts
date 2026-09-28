@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения селекта */
 export const SELECT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'underline'] as const
 
-/**
- * Опция выбора
- */
 export interface BaseSelectOption {
 	/** Значение */
 	value: string | number
@@ -19,14 +15,8 @@ export interface BaseSelectOption {
 	isDisabled?: boolean
 }
 
-/**
- * Вариант отображения
- */
 type BaseSelectVariant = (typeof SELECT_VARIANTS)[number]
 
-/**
- * Пропсы компонента BaseSelect
- */
 export interface BaseSelectProps extends BaseComponentProps<
 	BaseSelectVariant,
 	| 'root'
@@ -75,17 +65,11 @@ export interface BaseSelectProps extends BaseComponentProps<
 	error?: string
 }
 
-/**
- * События компонента BaseSelect
- */
 export interface BaseSelectEmits {
 	(event: 'update:modelValue', value: string | number | (string | number)[]): void
 	(event: 'change', value: string | number | (string | number)[]): void
 }
 
-/**
- * Слоты компонента BaseSelect
- */
 export interface BaseSelectSlots {
 	default?: () => unknown
 	trigger?: (props: { isOpen: boolean; selectedLabel: string; selectedLabels: string[] }) => unknown

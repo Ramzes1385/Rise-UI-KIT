@@ -1,6 +1,4 @@
-/**
- * Unit-тесты FormFieldLabel — общей подписи полей (BaseInput, BaseTextarea, BaseSelect, BaseCheckbox, BaseRadio, BaseSwitch).
- */
+/** Общая подпись полей: BaseInput, BaseTextarea, BaseSelect, BaseCheckbox, BaseRadio, BaseSwitch */
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'

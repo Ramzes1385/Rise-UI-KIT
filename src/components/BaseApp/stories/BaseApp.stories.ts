@@ -1,10 +1,4 @@
-/**
- * BaseApp — stories.
- *
- * Разделы: Default (песочница: настройки уведомлений в Controls) → уведомления из кода (обновление на месте,
- * кнопки действий) → окно из кода (useOverlay) → контейнер слоёв. Подтверждение через useConfirm() — в stories BaseConfirm.
- * Уведомления и окна телепортируются в body: play-функции ищут их через screen.
- */
+/** Подтверждение — в stories BaseConfirm; уведомления и окна телепортируются в body, play-функции ищут их через screen. */
 
 import { defineComponent, ref } from 'vue'
 import { expect, screen, waitFor, within } from 'storybook/test'
@@ -21,7 +15,6 @@ import BaseApp from '../ui/BaseApp.vue'
 import type { ToastOptions } from '@composables/useToast'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Примеры уведомлений каждого типа с подписью кнопки, которая их показывает */
 const TOAST_EXAMPLES: { label: string; toast: ToastOptions }[] = [
 	{ label: 'Успех', toast: { type: 'success', title: 'Серия опубликована', description: 'Серия 3 доступна подписчикам сообщества.' } },
 	{ label: 'Ошибка', toast: { type: 'error', title: 'Не удалось загрузить видео', description: 'Файл больше 4 ГБ.' } },
@@ -29,7 +22,6 @@ const TOAST_EXAMPLES: { label: string; toast: ToastOptions }[] = [
 	{ label: 'Информация', toast: { type: 'info', title: 'Доступно обновление', description: 'Новая версия редактора субтитров.' } },
 ]
 
-/** Кнопки, которые показывают уведомления через useToast() */
 const ToastButtons = defineComponent({
 	components: { BaseButton },
 	setup() {
@@ -99,8 +91,6 @@ export const Default: Story = {
 		await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument())
 	},
 }
-
-// ─── Уведомления из кода ───────────────────────────────────────────────────────
 
 /** Выгрузка отчёта: одно уведомление меняется на месте — «Готовим отчёт…» без автозакрытия, затем «Отчёт готов» */
 const ReportExport = defineComponent({
@@ -215,8 +205,6 @@ export const Actions: Story = {
 	},
 }
 
-// ─── Окна из кода ──────────────────────────────────────────────────────────────
-
 /** Окно переименования: результат — новое название в `emit('close', name)`, отмена — `emit('close')` */
 const RenameProjectModal = defineComponent({
 	components: { BaseModal, BaseInput, BaseButton },
@@ -299,8 +287,6 @@ export const OverlayFromCode: Story = {
 		await expect(trigger).toHaveFocus()
 	},
 }
-
-// ─── Контейнер слоёв ───────────────────────────────────────────────────────────
 
 /** Плеер: меню качества открывается в контейнере слоёв внутри плеера */
 const PlayerDemo = defineComponent({

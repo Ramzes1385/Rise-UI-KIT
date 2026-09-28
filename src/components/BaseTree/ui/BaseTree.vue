@@ -232,8 +232,6 @@ function handleKeydown(event: KeyboardEvent): void {
 	event.preventDefault()
 }
 
-// ─── Виртуальная прокрутка ─────────────────────────────────────────────────────
-
 const rootRef = ref<HTMLElement | null>(null)
 
 const virtualStyle = computed(() => {

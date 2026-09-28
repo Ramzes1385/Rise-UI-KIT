@@ -12,7 +12,6 @@ export function collectDescendantIdsInto(children: TreeNode[], ids: string[]): v
 	}
 }
 
-/** Построить кэш потомков для всех узлов */
 export function buildDescendantsCache(nodes: TreeNode[], cache: Map<string, string[]>): void {
 	for (const node of nodes) {
 		if (node.children?.length) {
@@ -24,7 +23,6 @@ export function buildDescendantsCache(nodes: TreeNode[], cache: Map<string, stri
 	}
 }
 
-/** Собрать все идентификаторы узлов с детьми */
 export function collectExpandableIds(nodes: TreeNode[]): string[] {
 	const ids: string[] = []
 	for (const node of nodes) {

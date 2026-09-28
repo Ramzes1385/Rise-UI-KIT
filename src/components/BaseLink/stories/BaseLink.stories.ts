@@ -1,10 +1,4 @@
-/**
- * BaseLink — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет) → состояния (отключённая,
- * длинный текст) → сценарии (внешняя ссылка, небезопасный адрес) → клавиатура.
- * Маршруты рендерит StoryRouterLink — как RouterLink, но без перехода со страницы Storybook.
- */
+/** Маршруты рендерит StoryRouterLink — как RouterLink, но без перехода со страницы Storybook. */
 
 import { expect, fn, within } from 'storybook/test'
 import { BaseText } from '@components/BaseText'

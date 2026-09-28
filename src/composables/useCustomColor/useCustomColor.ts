@@ -2,15 +2,9 @@
 import { computed } from 'vue'
 import type { ColorStates, UseCustomColorOptions } from './types/useCustomColor.types'
 
-/**
- * Префиксы для CSS-переменных
- */
 const PREFIX_BG = '--custom-bg'
 const PREFIX_TEXT = '--custom-text'
 
-/**
- * Преобразует ColorStates в CSS-переменные с заданным префиксом
- */
 function mapStates(styles: Record<string, string>, prefix: string, states: ColorStates): void {
 	if (states.base) styles[prefix] = states.base
 	if (states.hover) styles[`${prefix}-hover`] = states.hover

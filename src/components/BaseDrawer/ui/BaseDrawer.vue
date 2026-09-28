@@ -131,8 +131,6 @@ useFocusTrap({ containerRef: panelRef, isActive: () => props.isOpen })
 
 const { isScrollable: isBodyScrollable } = useScrollableRegion({ elementRef: bodyRef })
 
-// ─── Перетаскивание к краю ─────────────────────────────────────────────────────
-
 /** Доля размера панели: отпущенная дальше панель закрывается, ближе — возвращается */
 const CLOSE_RATIO = 0.25
 

@@ -1,10 +1,3 @@
-/**
- * BaseInputTags — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты) → состояния (отключено, ошибка, только
- * чтение) → сценарии (вставка списка, проверка и лимит) → клавиатура.
- */
-
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInputTags from '../ui/BaseInputTags.vue'

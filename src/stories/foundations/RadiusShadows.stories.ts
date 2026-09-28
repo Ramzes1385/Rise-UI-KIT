@@ -1,7 +1,3 @@
-/**
- * Foundations / Radius & Shadows — скругления и тени.
- */
-
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import './foundations.scss'
 

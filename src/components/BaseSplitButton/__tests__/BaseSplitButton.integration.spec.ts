@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseSplitButton: основное действие и выбор пункта меню.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'

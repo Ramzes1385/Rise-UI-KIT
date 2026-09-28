@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseTreeChildren и BaseTreeNode.
- * Проверяют выброс ошибки при отсутствии контекста и работу с дефолтным слотом.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'

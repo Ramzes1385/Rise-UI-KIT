@@ -13,12 +13,10 @@
 		role="separator"
 		:aria-orientation="orientation"
 		:aria-labelledby="label || $slots.default ? contentId : undefined">
-		<!-- Линия без контента -->
 		<template v-if="!label && !$slots.default">
 			<div class="base-separator__line" :class="classes.line"></div>
 		</template>
 
-		<!-- Линия с контентом (метка или слот) -->
 		<template v-if="label || $slots.default">
 			<div class="base-separator__line base-separator__line--before" :class="classes.line"></div>
 			<span :id="contentId" class="base-separator__content" :style="spacingStyle" :class="classes.content">

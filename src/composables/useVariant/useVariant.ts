@@ -34,7 +34,6 @@ function useVariant(options: UseVariantOptions) {
 		return `${options.block}--${variant}`
 	})
 
-	/** CSS-переменная --variant для каскадного наследования */
 	const variantStyle = computed(() => {
 		const variant = options.getVariant()
 		if (!variant || variant === DEFAULT_VARIANT) return undefined

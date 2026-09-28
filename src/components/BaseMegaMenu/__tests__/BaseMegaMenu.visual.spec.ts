@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseMegaMenu: ключевые stories в светлой и тёмной теме.
- * Dropdown снимается после play: открыта панель «Продукты» и каскадный уровень «Аналитика».
- */
+/** Dropdown снимается после play: открыта панель «Продукты» и каскадный уровень «Аналитика» */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

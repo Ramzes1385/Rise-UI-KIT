@@ -1,8 +1,5 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Пропсы компонента BaseSkeleton
- */
 export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
 	/** Ширина: число — пиксели, строка — любая длина CSS (`'100%'`, `'12rem'`). Масштабируется `sizeScale`. */
 	width?: string | number
@@ -18,14 +15,8 @@ export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root
 	isPulse?: boolean
 }
 
-/**
- * События компонента BaseSkeleton
- */
 export type BaseSkeletonEmits = Record<string, never>
 
-/**
- * Слоты компонента BaseSkeleton
- */
 export interface BaseSkeletonSlots {
 	default?: () => unknown
 }

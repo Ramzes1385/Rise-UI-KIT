@@ -8,7 +8,6 @@ body.sb-show-main,
 	font-family: var(--rise-font-sans);
 }
 
-// ─── Раскладки примеров ─────────────────────────────────────────────────────────
 // Используются в шаблонах stories вместо inline-стилей: `<div class="story-row">…</div>`.
 
 /** Ряд элементов с переносом: варианты кнопок, бейджей, чипов. */
@@ -50,7 +49,6 @@ body.sb-show-main,
 	color: var(--rise-text-muted);
 }
 
-/** Ограничение ширины примера. */
 .story-narrow {
 	width: 100%;
 	max-width: 360px;

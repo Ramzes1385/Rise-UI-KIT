@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable useCustomColor.
- * Проверяют вычисление CSS-переменных кастомного цвета (bg/text).
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { useCustomColor } from '../useCustomColor'

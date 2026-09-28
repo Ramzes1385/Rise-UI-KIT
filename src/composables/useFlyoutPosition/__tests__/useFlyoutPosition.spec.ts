@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useFlyoutPosition.
- * Проверяют каскадное позиционирование flyout: вправо, flip влево, прижатие по вертикали.
- */
-
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useFlyoutPosition } from '../useFlyoutPosition'

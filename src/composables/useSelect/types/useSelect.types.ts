@@ -1,6 +1,5 @@
 import type { BaseSelectEmits, BaseSelectProps } from '@components/BaseSelect/types/BaseSelect.types'
 
-/** Опции composable useSelect */
 export interface UseSelectOptions {
 	props: BaseSelectProps
 	emit: BaseSelectEmits

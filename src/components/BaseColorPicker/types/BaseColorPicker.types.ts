@@ -5,7 +5,6 @@ export const COLOR_PICKER_POSITIONS = ['top', 'bottom', 'left', 'right'] as cons
 
 export type ColorPickerPosition = (typeof COLOR_PICKER_POSITIONS)[number]
 
-/** Пропсы компонента BaseColorPicker */
 export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' | 'swatch' | 'panel' | 'preset' | 'reset'> {
 	/** Цвет в HEX (v-model): `#rrggbb` или `#rgb`; выбранный пресет и введённый HEX приходят в модель без искажений */
 	modelValue: string
@@ -27,7 +26,6 @@ export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' 
 	isDisabled?: boolean
 }
 
-/** События компонента BaseColorPicker */
 export interface BaseColorPickerEmits {
 	/** Новый цвет (v-model) */
 	(event: 'update:modelValue', value: string): void
@@ -37,7 +35,6 @@ export interface BaseColorPickerEmits {
 	(event: 'reset'): void
 }
 
-/** Слоты компонента BaseColorPicker */
 export interface BaseColorPickerSlots {
 	/** Содержимое образца-триггера (например, иконка при `hasTransparentSwatch`) */
 	trigger?: () => unknown

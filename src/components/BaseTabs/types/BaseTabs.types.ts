@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения табов */
 export const TABS_VARIANTS = ['underline', 'pills', 'rounded', 'arc'] as const
 
-/**
- * Элемент таба
- */
 export interface TabItem {
 	/** Идентификатор таба */
 	id: string
@@ -17,14 +13,8 @@ export interface TabItem {
 	isDisabled?: boolean
 }
 
-/**
- * Вариант отображения табов
- */
 export type TabsVariant = (typeof TABS_VARIANTS)[number]
 
-/**
- * Пропсы компонента BaseTabs
- */
 export interface BaseTabsProps extends BaseComponentProps<
 	TabsVariant,
 	'root' | 'nav' | 'scrollBtn' | 'list' | 'tab' | 'icon' | 'label' | 'content'
@@ -39,17 +29,11 @@ export interface BaseTabsProps extends BaseComponentProps<
 	isScrollable?: boolean
 }
 
-/**
- * События компонента BaseTabs
- */
 export interface BaseTabsEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'change', value: string): void
 }
 
-/**
- * Слоты компонента BaseTabs
- */
 export interface BaseTabsSlots {
 	default?: () => unknown
 }

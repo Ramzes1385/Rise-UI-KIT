@@ -7,7 +7,6 @@ import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdo
  */
 export const DROPDOWN_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/** Вариант панели меню */
 export type DropdownMenuVariant = (typeof DROPDOWN_MENU_VARIANTS)[number]
 
 /**
@@ -16,7 +15,6 @@ export type DropdownMenuVariant = (typeof DROPDOWN_MENU_VARIANTS)[number]
  */
 export type DropdownMenuItemType = 'item' | 'checkbox' | 'radio' | 'label' | 'separator'
 
-/** Пункт меню */
 export interface DropdownMenuItem {
 	/** Подпись пункта */
 	label?: string
@@ -49,9 +47,6 @@ export interface DropdownMenuItem {
 /** Пункты меню: список или группы (группы разделены линией) */
 export type DropdownMenuItems = DropdownMenuItem[] | DropdownMenuItem[][]
 
-/**
- * Пропсы компонента BaseDropdownMenu
- */
 export interface BaseDropdownMenuProps extends BaseComponentProps<
 	DropdownMenuVariant,
 	'root' | 'trigger' | 'panel' | 'item' | 'label' | 'separator'
@@ -66,9 +61,6 @@ export interface BaseDropdownMenuProps extends BaseComponentProps<
 	ariaLabel?: string
 }
 
-/**
- * События компонента BaseDropdownMenu
- */
 export interface BaseDropdownMenuEmits {
 	(event: 'update:isOpen', value: boolean): void
 	/** Выбор пункта (и в подменю). Событие — клик или нажатие клавиши */
@@ -77,7 +69,6 @@ export interface BaseDropdownMenuEmits {
 	(event: 'close'): void
 }
 
-/** Данные слота кнопки */
 export interface DropdownMenuTriggerSlotProps {
 	/** Меню открыто */
 	isOpen: boolean
@@ -88,17 +79,11 @@ export interface DropdownMenuTriggerSlotProps {
 	triggerProps: Record<string, string | undefined>
 }
 
-/**
- * Слоты компонента BaseDropdownMenu
- */
 export interface BaseDropdownMenuSlots {
 	/** Кнопка, открывающая меню */
 	default?: (props: DropdownMenuTriggerSlotProps) => unknown
 }
 
-/**
- * Публичный API компонента BaseDropdownMenu
- */
 export interface BaseDropdownMenuExpose {
 	/** Открыть меню; `focus` — куда поставить фокус: первый пункт, последний или само меню */
 	open: (focus?: 'first' | 'last' | 'menu') => void

@@ -119,7 +119,6 @@ defineOptions({ name: 'DropdownMenuContent' })
 
 const props = withDefaults(
 	defineProps<{
-		/** Пункты меню */
 		items: DropdownMenuItems
 		/** id меню (для aria-controls кнопки) */
 		id?: string

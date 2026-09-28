@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseSplitButton: две кнопки в группе, имя кнопки меню, состояния.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseSplitButton from '../ui/BaseSplitButton.vue'

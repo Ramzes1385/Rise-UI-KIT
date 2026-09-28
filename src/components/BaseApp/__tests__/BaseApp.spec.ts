@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseApp: слот без обёртки, свои хранилища, настройки уведомлений, рендер оверлеев.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

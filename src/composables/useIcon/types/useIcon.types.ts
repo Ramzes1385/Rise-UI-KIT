@@ -14,9 +14,6 @@ export interface ResolvedIcon {
 	url: string
 }
 
-/**
- * Возвращаемое значение composable useIcon.
- */
 export interface UseIconReturn {
 	/** Путь к SVG-спрайту */
 	spritePath: string

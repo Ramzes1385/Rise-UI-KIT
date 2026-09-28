@@ -1,6 +1,5 @@
 import type { BaseSelectOption } from './BaseSelect.types'
 
-/** Props компонента BaseSelectDropdown */
 export interface BaseSelectDropdownProps {
 	/** Отфильтрованные опции */
 	filteredOptions: BaseSelectOption[]
@@ -28,7 +27,6 @@ export interface BaseSelectDropdownProps {
 	getOptionId: (index: number) => string
 }
 
-/** Emits компонента BaseSelectDropdown */
 export interface BaseSelectDropdownEmits {
 	(event: 'select', option: BaseSelectOption): void
 	/** Указатель над опцией — она становится активной */
@@ -37,7 +35,6 @@ export interface BaseSelectDropdownEmits {
 	(event: 'search-keydown', e: KeyboardEvent): void
 }
 
-/** Слоты компонента BaseSelectDropdown */
 export interface BaseSelectDropdownSlots {
 	header?: () => unknown
 	option?: (props: { option: BaseSelectOption; isSelected: boolean }) => unknown

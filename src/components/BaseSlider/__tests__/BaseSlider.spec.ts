@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseSlider.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSlider from '../ui/BaseSlider.vue'

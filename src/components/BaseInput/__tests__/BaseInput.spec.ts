@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseInput.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseInput from '../ui/BaseInput.vue'

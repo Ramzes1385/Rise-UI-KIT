@@ -1,6 +1,5 @@
 import type { ColumnFilter, TableColumn } from './BaseTable.types'
 
-/** Props компонента BaseTableToolbar */
 export interface BaseTableToolbarProps {
 	/** Показывать тулбар */
 	showToolbar: boolean
@@ -46,7 +45,6 @@ export interface BaseTableToolbarProps {
 	getFilterLabel: (filter: ColumnFilter) => string
 }
 
-/** Emits компонента BaseTableToolbar */
 export interface BaseTableToolbarEmits {
 	(event: 'search-input', value: string): void
 	(event: 'update:filter-column', value: string | number | (string | number)[]): void
@@ -59,7 +57,6 @@ export interface BaseTableToolbarEmits {
 	(event: 'toggle-column-visibility', column: TableColumn): void
 }
 
-/** Слоты компонента BaseTableToolbar */
 export interface BaseTableToolbarSlots {
 	/** Контент перед элементами тулбара */
 	'toolbar-prepend'?: () => unknown

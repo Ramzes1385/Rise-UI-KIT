@@ -1,10 +1,3 @@
-/**
- * BaseSwitch — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (disabled, ошибка, длинная подпись) → сценарии (подпись слева, слоты) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'

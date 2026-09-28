@@ -7,9 +7,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const TOOLTIP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseTooltip
- */
 export interface BaseTooltipProps extends BaseComponentProps<(typeof TOOLTIP_VARIANTS)[number], 'root' | 'tooltip' | 'text'> {
 	/** Текст подсказки */
 	text: string
@@ -19,14 +16,8 @@ export interface BaseTooltipProps extends BaseComponentProps<(typeof TOOLTIP_VAR
 	isAlwaysVisible?: boolean
 }
 
-/**
- * События компонента BaseTooltip
- */
 export type BaseTooltipEmits = Record<string, never>
 
-/**
- * Слоты компонента BaseTooltip
- */
 export interface BaseTooltipSlots {
 	/**
 	 * Триггер тултипа. Кит сам ставит `aria-describedby` на первый фокусируемый элемент в слоте;

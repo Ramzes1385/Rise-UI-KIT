@@ -1,11 +1,3 @@
-/**
- * BaseRange — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) → состояния (disabled) →
- * режимы (диапазон, несколько точек, вертикальный) → содержимое (подсказки, деления, дробный шаг, свой бегунок) →
- * клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, screen, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'

@@ -7,9 +7,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const CHIP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseChip
- */
 export interface BaseChipProps extends BaseComponentProps<(typeof CHIP_VARIANTS)[number], 'root' | 'badge'> {
 	/** Содержимое индикатора (число или текст) */
 	content?: number | string
@@ -23,16 +20,10 @@ export interface BaseChipProps extends BaseComponentProps<(typeof CHIP_VARIANTS)
 	maxValue?: number
 }
 
-/**
- * События компонента BaseChip
- */
 export interface BaseChipEmits {
 	(event: 'click-badge'): void
 }
 
-/**
- * Слоты компонента BaseChip
- */
 export interface BaseChipSlots {
 	/** Элемент, над углом которого стоит индикатор: кнопка, аватар, иконка */
 	default?: () => unknown

@@ -1,10 +1,3 @@
-/**
- * BaseAlert — stories.
- *
- * Разделы: Default (песочница) → внешний вид (типы, варианты, размеры, кастомный цвет) →
- * содержимое (своя иконка, действия, длинный текст) → сценарий «закрытие» → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
@@ -23,7 +16,6 @@ import BaseAlert from '../ui/BaseAlert.vue'
 import { ALERT_TYPES, ALERT_VARIANTS } from '../types/BaseAlert.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Реалистичные тексты для каждого типа */
 const MESSAGES = {
 	info: { title: 'Доступно обновление', description: 'Версия 2.4 ускоряет загрузку таблиц и исправляет импорт отчётов.' },
 	success: { title: 'Изменения сохранены', description: 'Участники проекта увидят новый срок в своих задачах.' },

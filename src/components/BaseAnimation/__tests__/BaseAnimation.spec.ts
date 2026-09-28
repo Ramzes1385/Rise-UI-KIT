@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseAnimation.
- * Проверяют рендер, пропсы и видимость.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
 import { render, screen } from '@testing-library/vue'
@@ -160,7 +155,6 @@ describe('BaseAnimation unit', () => {
 				slots: { default: '<p>Контент</p>' },
 			})
 
-			// Находим Transition stub и вызываем after-leave обработчик
 			const transition = wrapper.findComponent({ name: 'Transition' })
 			await transition.vm.$emit('after-leave')
 

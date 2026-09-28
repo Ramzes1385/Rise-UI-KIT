@@ -1,8 +1,3 @@
-/**
- * Интеграционные тесты для BaseTour.
- * Проверяют связку с v-model:isOpen / v-model:step и кастомным слотом в составе родителя.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

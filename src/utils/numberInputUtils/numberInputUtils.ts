@@ -22,7 +22,6 @@ function roundToPrecision(value: number, precision: number): number {
 	return Number(value.toFixed(precision))
 }
 
-/** Ограничить значение границами (любая из них может отсутствовать) */
 function clampNumber(value: number, min?: number, max?: number): number {
 	if (max !== undefined && value > max) return max
 	if (min !== undefined && value < min) return min

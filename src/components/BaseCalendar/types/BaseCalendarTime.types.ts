@@ -20,7 +20,6 @@ export interface BaseCalendarTimeProps {
 	classes: Record<string, string | undefined>
 }
 
-/** Emits компонента BaseCalendarTime */
 export interface BaseCalendarTimeEmits {
 	(event: 'update:hours', value: number): void
 	(event: 'update:minutes', value: number): void

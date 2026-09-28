@@ -10,7 +10,7 @@ const FOCUS_DURATION_MS = 450
 
 const MAX_DOTS = 8
 
-/** Описание: координирует пошаговый тур — переходы вперёд/назад, фокусировка на шаге, стили подсветки и карточки, разрешённые лейблы и поведение */
+/** Также определяет разрешённые лейблы шагов и их поведение */
 function useTourCoordination(options: UseTourCoordinationOptions) {
 	const { props, emit, internalIndex, activeIndex, currentStep, isFirst, isLast, total, geometry, isMobile, recalculate } = options
 

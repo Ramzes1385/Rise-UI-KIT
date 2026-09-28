@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseTimePicker: фильтр по началу времени, свой ввод, границы, очистка.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import userEvent from '@testing-library/user-event'

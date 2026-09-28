@@ -198,7 +198,6 @@ const props = withDefaults(
 	}),
 )
 
-/** Подсказка пустого поля: своя или «Выберите...» на текущем языке */
 const resolvedPlaceholder = computed(() => props.placeholder ?? UI_TEXT.SELECT_PLACEHOLDER)
 
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
@@ -263,7 +262,6 @@ const control = useFieldControl({
 	isRequired: () => props.isRequired,
 })
 
-/** Имя триггера: своя подпись, иначе подпись BaseFormField */
 const triggerLabelledBy = computed(() => (props.label ? labelId : control.fieldLabelId.value))
 
 const selectRef = ref<HTMLDivElement | null>(null)

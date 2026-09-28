@@ -1,7 +1,3 @@
-/**
- * Foundations / Theming — светлая и тёмная тема, перекраска бренда и скругления через токены.
- */
-
 import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BaseAlert } from '@components/BaseAlert'

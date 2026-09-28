@@ -1,9 +1,3 @@
-/**
- * BaseInfiniteScroll — stories.
- *
- * Разделы: Default (лента в прокручиваемом блоке) → кнопка «Загрузить еще» → ошибка и повтор → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'

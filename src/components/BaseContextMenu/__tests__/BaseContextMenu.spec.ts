@@ -1,7 +1,3 @@
-/**
- * BaseContextMenu: меню по правому клику у указателя, клавиша «Меню» и Shift+F10, выбор и возврат фокуса.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { h, nextTick } from 'vue'
 import { fireEvent, render, screen, within } from '@testing-library/vue'

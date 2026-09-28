@@ -8,10 +8,7 @@ export const CONTAINER_SIZES = ['sm', 'md', 'lg', 'xl', 'full'] as const
 
 export type ContainerSize = (typeof CONTAINER_SIZES)[number]
 
-/**
- * Пропсы компонента BaseContainer.
- * `sizeScale` масштабирует боковые отступы; `variant` и `color` не используются.
- */
+/** `sizeScale` масштабирует боковые отступы; `variant` и `color` не используются. */
 export interface BaseContainerProps extends BaseComponentProps<(typeof CONTAINER_VARIANTS)[number], 'root'> {
 	/** Наибольшая ширина: `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px, `full` — во всю ширину родителя */
 	size?: ContainerSize
@@ -19,9 +16,6 @@ export interface BaseContainerProps extends BaseComponentProps<(typeof CONTAINER
 	tag?: string
 }
 
-/**
- * Слоты компонента BaseContainer
- */
 export interface BaseContainerSlots {
 	/** Содержимое */
 	default?: () => unknown

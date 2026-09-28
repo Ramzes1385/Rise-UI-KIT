@@ -1,9 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 
-/**
- * Опции composable useTableSelection
- */
 export interface UseTableSelectionOptions {
 	/** Строки данных */
 	rows: Ref<TableRow[]>
@@ -16,9 +13,6 @@ export interface UseTableSelectionOptions {
 	onSelect?: (rows: TableRow[]) => void
 }
 
-/**
- * Результат composable useTableSelection
- */
 export interface UseTableSelectionReturn {
 	/** ID выбранных строк */
 	selectedIds: Ref<Set<string | number>>

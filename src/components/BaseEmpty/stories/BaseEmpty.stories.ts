@@ -1,10 +1,3 @@
-/**
- * BaseEmpty — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет) →
- * содержимое (слоты icon, default, actions) → сценарии (пустой блок в карточке, поиск без результатов).
- */
-
 import { computed, ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BaseCard } from '@components/BaseCard'

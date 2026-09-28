@@ -1,7 +1,4 @@
-/**
- * useDropdownPosition: координаты панели у триггера, переворот на противоположную сторону, сдвиг у края окна,
- * слушатели только у открытой панели. Окно jsdom — 1024 × 768.
- */
+/** Окно jsdom — 1024 × 768. */
 
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
@@ -14,7 +11,6 @@ function rect(top: number, left: number, { width = 200, height = 40 } = {}): DOM
 	return { top, left, width, height, bottom: top + height, right: left + width, x: left, y: top, toJSON: () => ({}) } as DOMRect
 }
 
-/** Обёртка с триггером заданного положения */
 function createWrapper(triggerRect: DOMRect | null): HTMLElement {
 	const wrapper = document.createElement('div')
 	if (triggerRect) {
@@ -27,7 +23,6 @@ function createWrapper(triggerRect: DOMRect | null): HTMLElement {
 	return wrapper
 }
 
-/** Панель заданного размера */
 function createPanel(width = 100, height = 50): HTMLElement {
 	const panel = document.createElement('div')
 	Object.defineProperty(panel, 'offsetWidth', { value: width })

@@ -7,9 +7,6 @@ import type { UseZoomMinimapOptions } from './types/useZoomMinimap.types'
 export const MINIMAP_WIDTH = 200
 export const MINIMAP_HEIGHT = 150
 
-/**
- * Composable для миникарты зума: отображение viewport и навигация кликом.
- */
 function useZoomMinimap(options: UseZoomMinimapOptions) {
 	const {
 		currentScale,

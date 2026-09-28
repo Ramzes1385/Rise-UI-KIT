@@ -3,7 +3,6 @@ import type { Component } from 'vue'
 /** Адрес маршрута: строка или объект для RouterLink (`{ name: 'user', params: { id } }`) */
 export type LinkTo = string | Record<string, unknown>
 
-/** Что нужно для ссылки */
 export interface LinkOptions {
 	/** Маршрут приложения: рендерится компонентом ссылок (RouterLink) или `<a href>` */
 	to?: LinkTo
@@ -17,7 +16,6 @@ export interface LinkOptions {
 	isDisabled?: boolean
 }
 
-/** Тег или компонент и атрибуты ссылки */
 export interface ResolvedLink {
 	/** `a` или компонент ссылок (RouterLink, NuxtLink) */
 	is: string | Component
@@ -27,5 +25,4 @@ export interface ResolvedLink {
 	hasTarget: boolean
 }
 
-/** Компонент ссылок: имя тега или компонент */
 export type LinkComponent = string | Component

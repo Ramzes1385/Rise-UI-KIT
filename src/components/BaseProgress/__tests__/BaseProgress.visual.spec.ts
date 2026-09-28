@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseProgress: ключевые stories в светлой и тёмной теме.
- * Анимации на скриншоте остановлены (`animations: 'disabled'`): бегущая полоса и дуга снимаются в исходной позе.
- */
+/** Анимации на скриншоте остановлены (animations: 'disabled'): бегущая полоса и дуга снимаются в исходной позе. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

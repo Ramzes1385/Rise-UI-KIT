@@ -1,9 +1,3 @@
-/**
- * Unit-тесты для fileUtils.
- * Покрывают: getExtension, formatFileSize, getFileIcon,
- * validateFile, formatAcceptHint, createImagePreview.
- */
-
 import { setLocale } from '@/locales/state'
 import '@testing-library/jest-dom/vitest'
 import {
@@ -18,8 +12,6 @@ import {
 } from '../fileUtils'
 
 describe('fileUtils', () => {
-	// ── getExtension ──
-
 	describe('getExtension', () => {
 		it('возвращает расширение файла', () => {
 			expect(getExtension('document.pdf')).toBe('pdf')
@@ -37,8 +29,6 @@ describe('fileUtils', () => {
 			expect(getExtension('.gitignore')).toBe('gitignore')
 		})
 	})
-
-	// ── formatFileSize ──
 
 	describe('formatFileSize', () => {
 		it('форматирует байты', () => {
@@ -73,8 +63,6 @@ describe('fileUtils', () => {
 			expect(formatFileSize(1048576)).toBe('1,0 МБ')
 		})
 	})
-
-	// ── getFileIcon ──
 
 	describe('getFileIcon', () => {
 		it('возвращает иконку для PDF', () => {
@@ -115,8 +103,6 @@ describe('fileUtils', () => {
 			expect(getFileIconName('README')).toBe('file-config')
 		})
 	})
-
-	// ── validateFile ──
 
 	describe('validateFile', () => {
 		function createFile(name: string, size: number, type: string): File {
@@ -200,8 +186,6 @@ describe('fileUtils', () => {
 		})
 	})
 
-	// ── formatAcceptHint ──
-
 	describe('formatAcceptHint', () => {
 		it('форматирует допустимые типы', () => {
 			expect(formatAcceptHint('.pdf,.doc')).toBe('.PDF, .DOC')
@@ -211,8 +195,6 @@ describe('fileUtils', () => {
 			expect(formatAcceptHint('')).toBe('')
 		})
 	})
-
-	// ── createImagePreview ──
 
 	describe('createImagePreview', () => {
 		it('возвращает null для не-изображения', async () => {
@@ -253,7 +235,6 @@ describe('fileUtils', () => {
 			vi.stubGlobal('FileReader', OriginalFileReader)
 		})
 	})
-	// ── downloadFile ──
 	describe('downloadFile', () => {
 		it('кликает по временной ссылке с download для безопасного URL и удаляет её', () => {
 			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {

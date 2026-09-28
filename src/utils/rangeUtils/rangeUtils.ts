@@ -5,24 +5,19 @@ import type { RangeScaleOptions, SnapToStepOptions } from './types/rangeUtils.ty
 /** Максимальное число знаков, которое принимает Number.prototype.toFixed */
 const MAX_FRACTION_DIGITS = 100
 
-/** Рассчитать процент значения на шкале (0–100) */
 function toPercent(options: RangeScaleOptions): number {
 	const range = options.max - options.min
 	if (range === 0) return 0
 	return ((options.value - options.min) / range) * 100
 }
 
-/**
- * Количество знаков после запятой в записи числа (учитывает экспоненциальную форму, например 1e-7).
- * NaN и Infinity записываются без точки и экспоненты, поэтому дают 0 без отдельной проверки.
- */
+/** Учитывает экспоненциальную форму числа (например, 1e-7); NaN и Infinity дают 0, так как записываются без точки и экспоненты. */
 function countDecimals(value: number): number {
 	const [mantissa, exponent = '0'] = String(value).toLowerCase().split('e')
 	const fractionLength = mantissa.split('.')[1]?.length ?? 0
 	return Math.min(Math.max(fractionLength - Number(exponent), 0), MAX_FRACTION_DIGITS)
 }
 
-/** Привязать значение к ближайшему шагу в допустимом диапазоне */
 function snapToStep(options: SnapToStepOptions): number {
 	const steps = Math.round((options.value - options.min) / options.step)
 	// min + steps * step даёт хвосты плавающей точки (3 * 0.1 = 0.30000000000000004),

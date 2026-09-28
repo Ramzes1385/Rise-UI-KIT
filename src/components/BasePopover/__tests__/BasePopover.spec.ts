@@ -1,15 +1,10 @@
-/**
- * Unit-тесты для BasePopover.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- * Компонент использует BaseDropdown с teleport to="body" — поиск в document.
- */
+/** Компонент использует BaseDropdown с teleport to="body" — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BasePopover from '../ui/BasePopover.vue'
 
-/** Общие слоты для рендера */
 const SLOTS = {
 	trigger: '<button>Триггер</button>',
 	default: '<p>Контент</p>',

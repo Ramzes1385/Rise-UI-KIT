@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseAutocomplete: фильтр, выбор мышью и клавишами, свой вариант, сервер, форма.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

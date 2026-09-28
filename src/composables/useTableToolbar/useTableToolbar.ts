@@ -14,7 +14,7 @@ const getFilterOperatorOptions = () => [
 	{ value: 'lte', label: '≤' },
 ]
 
-/** Composable для тулбара таблицы — фильтры, настройки колонок, видимость тулбара. */
+/** Также управляет видимостью тулбара */
 function useTableToolbar(options: UseTableToolbarOptions): UseTableToolbarReturn {
 	const { filterableColumns, hasSearch, hasFilters, hasColumnSettings, slots, addFilter, removeFilter } = options
 

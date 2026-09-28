@@ -20,7 +20,6 @@
 				@toggle-search="isSearching = !isSearching"
 				@info-click="handleInfoClick" />
 
-			<!-- Панель закрепленных сообщений (несколько закрепов) -->
 			<ChatPinnedPanel
 				:pinned-messages="pinnedMessages"
 				v-model:current-index="currentPinnedIndex"
@@ -77,7 +76,6 @@
 				@delete="handleDeleteSelected"
 				@cancel="handleCancelSelection" />
 
-			<!-- Окно подтверждения удаления сообщений -->
 			<BaseModal
 				:is-open="deleteConfirm.isOpen"
 				:is-contained="true"
@@ -95,7 +93,6 @@
 				</template>
 			</BaseModal>
 
-			<!-- Слайдовер информации, медиа, файлов и админ-панели -->
 			<ChatSlideover
 				v-model:is-open="isInfoOpen"
 				v-model:active-tab="activeTab"

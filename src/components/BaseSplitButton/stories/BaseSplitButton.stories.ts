@@ -1,9 +1,3 @@
-/**
- * BaseSplitButton — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры) → состояния (отключено, загрузка) → клавиатура.
- */
-
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSplitButton from '../ui/BaseSplitButton.vue'

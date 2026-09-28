@@ -13,9 +13,6 @@ export const TIME_PICKER_VARIANTS = [
 	'underline',
 ] as const satisfies readonly InputVariant[]
 
-/**
- * Пропсы компонента BaseTimePicker
- */
 export interface BaseTimePickerProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'panel' | 'option'> {
 	/** Время `HH:MM` (v-model); `null` — не выбрано */
 	modelValue?: string | null
@@ -43,9 +40,6 @@ export interface BaseTimePickerProps extends BaseComponentProps<InputVariant, 'r
 	inputAttrs?: FieldInputAttrs
 }
 
-/**
- * События компонента BaseTimePicker
- */
 export interface BaseTimePickerEmits {
 	/** Новое время `HH:MM` или `null` */
 	(event: 'update:modelValue', value: string | null): void

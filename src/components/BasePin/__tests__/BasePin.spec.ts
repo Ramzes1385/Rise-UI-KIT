@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BasePin.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BasePin from '../ui/BasePin.vue'

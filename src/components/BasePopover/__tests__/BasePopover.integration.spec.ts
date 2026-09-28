@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BasePopover.
- * Проверяют взаимодействие: переключение видимости.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'

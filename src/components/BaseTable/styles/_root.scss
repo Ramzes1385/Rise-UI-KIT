@@ -2,13 +2,7 @@
 @use '@styles/mixins' as *;
 @use '@styles/functions' as *;
 
-// BaseTable — таблица в духе Nuxt UI Table. Контейнер: рамка --rise-border, радиус lg, фон --rise-bg.
-// Шапка 14/20 semibold --rise-text-highlighted с нижней линией border-accented; ячейки 14/20 --rise-text, отступ 12/16;
-// строки разделены линией --rise-border, наведение — bg-muted, выбранная строка — primary-soft.
-// Варианты: default — линии между строками; bordered — ещё и между колонками; striped — чётные строки bg-muted без линий.
-// Кастомный цвет: color.bg.base — фон таблицы, color.bg.hover — фон строки при наведении, color.text.base — текст шапки
-// и ячеек. Цвета вычисляются на корне, а внутри таблицы --custom-* сбрасываются: проп color не перекрашивает
-// кнопки, поля и чекбоксы внутри таблицы.
+// Таблица (рамка border, радиус lg); шапка 14/20 semibold с нижней линией, ячейки 14/20, отступ 12/16; варианты default/bordered/striped; кастомный цвет — на корне, внутри таблицы --custom-* сбрасывается.
 .base-table {
 	// Отступы ячеек по умолчанию. Проп padding переопределяет их inline-переменными --tbl-pad-*.
 	--tbl-pad-top: 12px;
@@ -55,8 +49,6 @@
 	&__visually-hidden.base-text {
 		@include visually-hidden;
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	// bordered — сетка: вертикальные линии между колонками в шапке и строках.
 	&--bordered {

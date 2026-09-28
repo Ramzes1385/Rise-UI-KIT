@@ -1,12 +1,3 @@
-/**
- * BaseChat — stories.
- *
- * Разделы: Default (песочница: чат ведёт себя как в приложении — отправленное сообщение, реакция, удаление и закреп
- * сразу видны в ленте) → внешний вид (варианты, размеры, цвет) → состояния (пусто, ожидание, длинный контент) →
- * сценарии (группа, ответ, удаление, вложения, реакции, закрепы, поиск, выделение, панель «Информация»,
- * упоминания и команды) → клавиатура.
- */
-
 import { ref, watch } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import {
@@ -27,7 +18,6 @@ import { CHAT_VARIANTS } from '../types/BaseChat.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment, ChatMessageReaction } from '../types/BaseChat.types'
 
-// ─── Данные ────────────────────────────────────────────────────────────────────
 // Даты — от STORY_TODAY (15 мая 2025), люди — STORY_USERS, картинки — STORY_IMAGES: скриншоты не зависят от дня и сети.
 
 const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
@@ -198,7 +188,6 @@ const SHOWCASE_MESSAGES: ChatMessage[] = [
 	{ ...PRIVATE_MESSAGES[3], replyToId: 'p1', replyToText: PRIVATE_MESSAGES[0].text, id: 's3' },
 ]
 
-// ─── «Приложение» вокруг чата ─────────────────────────────────────────────────
 // BaseChat не хранит историю: отправка, реакции, удаление и закрепы приходят событиями, а список сообщений обновляет
 // приложение. В примерах это делает useStoryMessages: копия messages из args в ref и обработчики событий.
 // Копия, а не запись в args: обновление args перезапускает story и сбрасывает счётчики вызовов fn() в play.

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для компонента BaseIcon.
- * Проверяет рендеринг, пропсы, трансформации и доступность.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import BaseIcon from '../ui/BaseIcon.vue'
@@ -15,12 +10,10 @@ vi.mock('@composables/useIcon', () => ({
 	createIconPlugin: () => ({ install: () => {} }),
 }))
 
-/** Получить корневой элемент иконки из DOM */
 function getIconRoot(): HTMLElement | null {
 	return document.querySelector('.base-icon')
 }
 
-/** Получить SVG-элемент иконки из DOM */
 function getIconSvg(): SVGSVGElement | null {
 	return document.querySelector('.base-icon__svg') as SVGSVGElement | null
 }

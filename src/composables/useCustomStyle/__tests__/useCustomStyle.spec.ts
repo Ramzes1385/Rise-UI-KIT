@@ -1,9 +1,3 @@
-/**
- * Unit-тесты для useCustomStyle.
- * Покрывают все ветки: строки, плоские объекты, вложенные объекты по ключам,
- * массивы (StyleValue), undefined, null, пустые значения.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { useCustomStyle } from '../useCustomStyle'

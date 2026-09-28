@@ -2,9 +2,6 @@ import type { InputVariant } from '@components/BaseInput'
 import type { CustomColor } from '@composables/useCustomColor'
 import type { CustomClassProp } from '@composables/useCustomClass'
 
-/**
- * Пропсы компонента DatePickerField
- */
 export interface DatePickerFieldProps {
 	/** Отображаемое значение в инпуте */
 	displayValue: string
@@ -36,9 +33,6 @@ export interface DatePickerFieldProps {
 	customClass?: CustomClassProp
 }
 
-/**
- * События компонента DatePickerField
- */
 export interface DatePickerFieldEmits {
 	(event: 'field-click'): void
 	(event: 'clear-click'): void
@@ -47,9 +41,6 @@ export interface DatePickerFieldEmits {
 	(event: 'keyboard-open'): void
 }
 
-/**
- * Слоты компонента DatePickerField
- */
 export interface DatePickerFieldSlots {
 	/** Кастомная иконка */
 	icon?: () => unknown

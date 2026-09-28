@@ -61,10 +61,8 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		return Math.max(0, itemCount() - getPerView())
 	}
 
-	/** Максимальный индекс (реактивный) */
 	const maxIndex = computed(() => getMaxIndexValue())
 
-	/** Количество страниц навигации */
 	const pageCount = computed(() => {
 		const group = getPerGroup()
 		const max = getMaxIndexValue()
@@ -77,7 +75,6 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		return Math.floor(currentIndex.value / group)
 	})
 
-	/** Клампинг индекса в допустимый диапазон */
 	function clampIndex(index: number): number {
 		return Math.max(0, Math.min(index, getMaxIndexValue()))
 	}
@@ -116,7 +113,6 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		else goPrev()
 	}
 
-	/** Composable для свайпа */
 	const swipe = useSwipe({
 		isVertical,
 		threshold: 50,
@@ -169,7 +165,6 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		}
 	})
 
-	/** Переход к слайду */
 	function goTo(index: number): void {
 		const max = getMaxIndexValue()
 		if (index < 0 || index > max) return
@@ -203,7 +198,6 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		onPrev?.()
 	}
 
-	/** Переход к странице навигации */
 	function goToPage(page: number): void {
 		const group = getPerGroup()
 		const targetIndex = page * group
@@ -216,7 +210,6 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		autoplayTimer = setInterval(goNext, autoplayInterval())
 	}
 
-	/** Пауза автопроигрывания */
 	function pauseAutoplay(): void {
 		if (autoplayTimer) {
 			clearInterval(autoplayTimer)
@@ -224,7 +217,6 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		}
 	}
 
-	/** Возобновление автопроигрывания */
 	function resumeAutoplay(): void {
 		pauseAutoplay()
 		startAutoplay()

@@ -2,9 +2,6 @@
 import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
 import type { UseTableSearchOptions, UseTableSearchReturn } from './types/useTableSearch.types'
 
-/**
- * Composable для управления поиском по таблице с дебаунсом.
- */
 function useTableSearch(options: UseTableSearchOptions): UseTableSearchReturn {
 	const { searchDebounce, onSearch } = options
 

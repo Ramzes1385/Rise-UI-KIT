@@ -1,10 +1,3 @@
-/**
- * BaseTimeline — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, горизонтальная лента) → сценарии (текущий этап
- * заказа, свой слот события).
- */
-
 import { expect } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'

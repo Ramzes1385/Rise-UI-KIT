@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения аккордеона */
 export const ACCORDION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Элемент аккордеона
- */
 export interface BaseAccordionItem {
 	/** Заголовок */
 	label: string
@@ -21,9 +17,6 @@ export interface BaseAccordionItem {
 	defaultOpen?: boolean
 }
 
-/**
- * Пропсы компонента BaseAccordion
- */
 export interface BaseAccordionProps extends BaseComponentProps<
 	(typeof ACCORDION_VARIANTS)[number],
 	'root' | 'item' | 'header' | 'icon' | 'label' | 'arrow' | 'arrowIcon' | 'collapse' | 'content' | 'contentText'
@@ -34,16 +27,10 @@ export interface BaseAccordionProps extends BaseComponentProps<
 	isMultiple?: boolean
 }
 
-/**
- * События компонента BaseAccordion
- */
 export interface BaseAccordionEmits {
 	(event: 'toggle', index: number, isOpen: boolean): void
 }
 
-/**
- * Слоты компонента BaseAccordion
- */
 export interface BaseAccordionSlots {
 	/** Контент элемента аккордеона */
 	default?: (props: { item: BaseAccordionItem }) => unknown

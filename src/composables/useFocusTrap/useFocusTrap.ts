@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted, watch } from 'vue'
 import type { UseFocusTrapOptions } from './types/useFocusTrap.types'
 
-/** Элементы, которые могут получить фокус с клавиатуры */
 const FOCUSABLE_SELECTOR = [
 	'a[href]',
 	'area[href]',

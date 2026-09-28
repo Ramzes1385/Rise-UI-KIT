@@ -1,11 +1,3 @@
-/**
- * BaseEditor — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (пусто, только чтение, загрузка, длинный документ) → содержимое (типографика, режимы тулбара) →
- * сценарии (форматирование через тулбар, ссылки и медиа, режим HTML-кода) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, screen, spyOn, waitFor, within } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
@@ -24,9 +16,6 @@ import BaseEditor from '../ui/BaseEditor.vue'
 import { EDITOR_VARIANTS } from '../types/BaseEditor.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-// ─── Данные ────────────────────────────────────────────────────────────────────
-
-/** Короткая заметка: песочница и витрины. */
 const NOTE_HTML = [
 	'<h3>План релиза 1.4</h3>',
 	'<p>Обновить <strong>дизайн компонентов</strong> и переписать <em>stories</em>: из примера должно быть понятно, что за что отвечает.</p>',
@@ -427,7 +416,6 @@ export const MediaAndLinks: Story = {
 	play: async ({ canvas, userEvent }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 
-		// Адрес ссылки вместо диалога браузера
 		spyOn(window, 'prompt').mockReturnValue('/docs/design')
 		await userEvent.tripleClick(within(textbox).getByText('Макеты главной страницы'))
 		await userEvent.click(canvas.getByRole('button', { name: 'Ссылка' }))

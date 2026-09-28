@@ -1,5 +1,4 @@
 <template>
-	<!-- Режим: модальное окно / боковая панель -->
 	<template v-if="mode === 'modal' || mode === 'sidebar'">
 		<BaseSearchOverlay
 			ref="overlayRef"
@@ -50,7 +49,6 @@
 		</BaseSearchOverlay>
 	</template>
 
-	<!-- Режим: по умолчанию (inline dropdown) -->
 	<div
 		v-else
 		ref="rootRef"

@@ -1,9 +1,3 @@
-/**
- * Unit-тесты для useColorPicker.
- * Покрывают: инициализацию, setHue, setSaturationValue, setHex,
- * клампинг, реактивный hueColor/markerStyle и внешнюю синхронизацию value.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'

@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseConfirm: семантика alertdialog, подписи, порядок событий, опасное действие.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
@@ -91,7 +87,6 @@ describe('BaseConfirm', () => {
 	})
 
 	describe('результат', () => {
-		/** Рендерит окно и записывает порядок событий */
 		function renderWithLog() {
 			const log: string[] = []
 			const utils = render(BaseConfirm, {

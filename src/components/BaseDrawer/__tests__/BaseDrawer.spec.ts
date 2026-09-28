@@ -1,7 +1,4 @@
-/**
- * Unit-тесты BaseDrawer: диалог и его имя, закрытие (кнопка, затемнение, Escape), края окна,
- * перетаскивание к краю. Панель телепортируется — поиск в document.
- */
+/** Панель телепортируется — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'

@@ -77,7 +77,6 @@ const menuId = `rise-menu-${useId()}`
 const triggerRef = ref<HTMLElement | null>(null)
 const contentRef = ref<InstanceType<typeof DropdownMenuContent> | null>(null)
 
-/** Открыто ли меню. Без пропа isOpen состояние хранит компонент */
 const isOpenLocal = ref(props.isOpen ?? false)
 const isOpenState = computed(() => isOpenLocal.value)
 
@@ -88,7 +87,6 @@ watch(
 	},
 )
 
-/** Куда поставить фокус после открытия */
 let pendingFocus: FocusTarget = 'menu'
 
 const triggerAttributes = computed(() => ({

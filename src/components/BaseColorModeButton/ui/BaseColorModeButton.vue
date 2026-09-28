@@ -43,7 +43,6 @@ const { classes } = useStandardBaseComponent('base-color-mode-button', props, ['
 // Экземпляр выбирается один раз: кнопка управляет одной и той же темой всё время жизни
 const { isDark, resolvedMode, toggle } = props.colorMode ?? useColorMode()
 
-/** Подпись: своя или «Тёмная тема» на текущем языке */
 const resolvedLabel = computed(() => props.label ?? UI_ARIA.DARK_THEME)
 
 /** Иконка 16px при sizeScale = 100, как в других кнопках-иконках */

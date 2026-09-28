@@ -1,7 +1,4 @@
-/**
- * Unit-тесты для BaseTour.
- * Компонент использует Teleport to="body" — содержимое ищем в document.
- */
+/** Компонент использует Teleport to="body" — содержимое ищем в document. */
 
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'

@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseSeparator.
- * Проверяют рендер с реальными дочерними компонентами и слотами.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseSeparator from '../ui/BaseSeparator.vue'

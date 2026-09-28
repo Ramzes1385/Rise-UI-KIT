@@ -4,10 +4,6 @@ import type { VirtualAlign, VirtualKey } from '@composables/useVirtualList'
 /** У списка одно оформление: строки рисует слот */
 export const VIRTUAL_LIST_VARIANTS = ['default'] as const
 
-/**
- * Пропсы компонента BaseVirtualList.
- * `variant` и `color` не используются: оформление строк задаёт слот.
- */
 export interface BaseVirtualListProps<T = unknown> extends BaseComponentProps<(typeof VIRTUAL_LIST_VARIANTS)[number], 'root' | 'item'> {
 	/** Элементы списка */
 	items: T[]
@@ -23,17 +19,11 @@ export interface BaseVirtualListProps<T = unknown> extends BaseComponentProps<(t
 	ariaLabel?: string
 }
 
-/**
- * Слоты компонента BaseVirtualList
- */
 export interface BaseVirtualListSlots<T = unknown> {
 	/** Строка списка */
 	default?: (props: { item: T; index: number }) => unknown
 }
 
-/**
- * Методы BaseVirtualList (ref)
- */
 export interface BaseVirtualListExpose {
 	/** Прокрутить к строке: `auto` — к ближнему краю, только если строка не видна */
 	scrollToIndex: (index: number, align?: VirtualAlign) => void

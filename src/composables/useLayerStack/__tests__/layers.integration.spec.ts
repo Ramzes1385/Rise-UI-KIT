@@ -1,8 +1,3 @@
-/**
- * Слои с настоящими компонентами: Escape закрывает только верхний, вложенный список не закрывает родителя,
- * слои телепортируются в заданный контейнер и наследуют тему блока.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

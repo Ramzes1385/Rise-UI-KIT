@@ -1,7 +1,4 @@
-/**
- * Конфигурация Playwright для Storybook smoke и Visual Regression тестов.
- * Все текущие сценарии используют Storybook iframe.
- */
+/** Все текущие сценарии используют Storybook iframe. */
 
 import { defineConfig, devices } from '@playwright/test'
 

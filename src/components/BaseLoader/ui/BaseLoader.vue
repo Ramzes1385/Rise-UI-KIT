@@ -6,7 +6,6 @@
 		role="status"
 		:aria-label="accessibleName">
 		<div class="base-loader__animation" :class="classes.animation" aria-hidden="true">
-			<!-- Spinner -->
 			<template v-if="variant === 'spinner'">
 				<svg class="base-loader__spinner" :class="classes.spinner" viewBox="0 0 50 50">
 					<circle class="base-loader__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
@@ -14,19 +13,16 @@
 				</svg>
 			</template>
 
-			<!-- Dots -->
 			<template v-if="variant === 'dots'">
 				<span class="base-loader__dot"></span>
 				<span class="base-loader__dot"></span>
 				<span class="base-loader__dot"></span>
 			</template>
 
-			<!-- Pulse -->
 			<template v-if="variant === 'pulse'">
 				<span class="base-loader__pulse"></span>
 			</template>
 
-			<!-- Bars -->
 			<template v-if="variant === 'bars'">
 				<span class="base-loader__bar"></span>
 				<span class="base-loader__bar"></span>
@@ -71,7 +67,6 @@ const { customColorStyle } = useCustomColor({ getColor: () => props.color })
  * не расходилась с фиксированным «Загрузка». Завершающее многоточие — визуальный
  * признак процесса, в имени оно лишнее; пустой label даёт имя по умолчанию.
  */
-/** Подпись: своя или «Загрузка...» на текущем языке */
 const resolvedLabel = computed((): string => props.label ?? UI_TEXT.LOADING)
 
 const accessibleName = computed((): string => resolvedLabel.value.replace(/[.…\s]+$/, '') || UI_TEXT.LOADING_ARIA)

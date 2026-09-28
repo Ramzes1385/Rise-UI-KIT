@@ -11,7 +11,6 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<!-- Метка значения -->
 		<div v-if="hasLabel" class="base-range__label" :class="classes.label">
 			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ min }}</BaseText>
 			<BaseText tag="span" class="base-range__label-value" :weight="TEXT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
@@ -22,7 +21,6 @@
 
 		<div class="base-range__body" :class="classes.body">
 			<div class="base-range__track-wrapper" :class="classes.trackWrapper" ref="trackRef" @mousedown.prevent="handleTrackDown">
-				<!-- Трек -->
 				<div class="base-range__track" :class="classes.track">
 					<div
 						v-for="(segment, index) in fillSegments"
@@ -32,7 +30,6 @@
 						:style="segment"></div>
 				</div>
 
-				<!-- Ползунки -->
 				<div
 					v-for="(value, index) in pointValues"
 					:key="index"

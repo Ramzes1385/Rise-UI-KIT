@@ -1,8 +1,5 @@
 import type { Ref } from 'vue'
 
-/**
- * Опции composable useFlyoutPosition
- */
 export interface UseFlyoutPositionOptions {
 	/** Ref на якорь (шапку узла) — задаёт вертикальное выравнивание панели */
 	anchorRef: Ref<HTMLElement | null>
@@ -23,9 +20,6 @@ export interface UseFlyoutPositionOptions {
 	minWidth?: number
 }
 
-/**
- * Результат composable useFlyoutPosition
- */
 export interface UseFlyoutPositionReturn {
 	/** Готовые fixed-стили панели (top/left + width) */
 	panelStyle: Readonly<Ref<Record<string, string>>>

@@ -22,7 +22,6 @@ function useAutoScroll(options: UseAutoScrollOptions): {
 } {
 	const { container, enabled, watchSource } = options
 
-	/** Прокрутить контейнер к низу */
 	function scrollToBottom(): void {
 		if (!enabled() || !container.value) return
 		nextTick(() => {
@@ -32,12 +31,10 @@ function useAutoScroll(options: UseAutoScrollOptions): {
 		})
 	}
 
-	/** Автопрокрутка при изменении данных */
 	watch(watchSource, () => {
 		scrollToBottom()
 	})
 
-	/** Прокрутка при монтировании */
 	onMounted(() => {
 		scrollToBottom()
 	})

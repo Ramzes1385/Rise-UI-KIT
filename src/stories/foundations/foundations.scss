@@ -33,7 +33,6 @@
 	}
 }
 
-// Карточка токена: образец + имя + назначение
 .fnd-token {
 	display: flex;
 	align-items: center;
@@ -76,7 +75,6 @@
 	}
 }
 
-// Палитра: 11 оттенков в ряд
 .fnd-palette {
 	display: grid;
 	grid-template-columns: 96px repeat(11, minmax(0, 1fr));
@@ -106,7 +104,6 @@
 	}
 }
 
-// Роль: заливка, мягкий фон, текст
 .fnd-role {
 	display: flex;
 	flex-direction: column;
@@ -135,7 +132,6 @@
 	}
 }
 
-// Типографика
 .fnd-type {
 	display: grid;
 	grid-template-columns: 180px 1fr;
@@ -156,7 +152,6 @@
 	}
 }
 
-// Радиусы и тени
 .fnd-box {
 	display: flex;
 	flex-direction: column;
@@ -177,7 +172,6 @@
 	}
 }
 
-// Сравнение тем
 .fnd-themes {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

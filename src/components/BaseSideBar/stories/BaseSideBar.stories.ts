@@ -1,11 +1,3 @@
-/**
- * BaseSideBar — stories.
- *
- * Разделы: Default (песочница с рабочим v-model:isCollapsed) → внешний вид (варианты, размеры, свёрнутая панель, цвет) →
- * состояния (загрузка, длинные названия, без сворачивания) → содержимое (слоты) →
- * сценарии (активный пункт по ключу, действия, раскладка приложения) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'

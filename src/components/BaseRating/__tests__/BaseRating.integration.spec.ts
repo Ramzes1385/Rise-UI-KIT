@@ -1,9 +1,3 @@
-/**
- * Integration-тесты для BaseRating.
- * Проверяют двусторонний v-model через родителя, дробный выбор и реакцию
- * на внешнее изменение значения.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

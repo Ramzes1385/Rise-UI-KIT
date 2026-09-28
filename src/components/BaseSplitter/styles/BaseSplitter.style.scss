@@ -1,6 +1,4 @@
-// BaseSplitter: две панели и разделитель толщиной 9px (видимая линия 1px, ручка 4×24px) при sizeScale = 100.
-// Первая панель занимает долю --base-splitter-ratio от ширины (высоты) без разделителя, вторая — остаток. Варианты: default — линия с ручкой,
-// ghost — линия проявляется при наведении, в фокусе и при перетаскивании.
+// Две панели и разделитель 9px (линия 1px, ручка 4×24px), доля первой панели — --base-splitter-ratio; default — линия с ручкой, ghost — линия при наведении/фокусе/перетаскивании.
 .base-splitter {
 	--base-splitter-bar: #{sz(9px)};
 
@@ -44,7 +42,6 @@
 		outline: none;
 		touch-action: none;
 
-		// Линия разделителя
 		&::before {
 			position: absolute;
 			background-color: var(--rise-border);

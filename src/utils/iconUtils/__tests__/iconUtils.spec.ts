@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для iconUtils.
- * Покрывают: ICON_SCALE, calcIconScale.
- */
-
 import { describe, it, expect } from 'vitest'
 import { calcIconScale, ICON_SCALE } from '../iconUtils'
 

@@ -1,10 +1,3 @@
-/**
- * BaseSplitter — stories.
- *
- * Разделы: Default (песочница с v-model) → внешний вид (одна над другой, варианты) → состояния (отключено) →
- * клавиатура.
- */
-
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSplitter from '../ui/BaseSplitter.vue'

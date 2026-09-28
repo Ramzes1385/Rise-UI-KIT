@@ -3,10 +3,7 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** У каркаса одно оформление: фон и рамки задают шапка, меню и подвал внутри */
 export const LAYOUT_VARIANTS = ['default'] as const
 
-/**
- * Пропсы компонента BaseLayout.
- * `sizeScale` масштабирует ссылку «Перейти к содержимому»; `variant` и `color` не используются.
- */
+/** `sizeScale` масштабирует ссылку «Перейти к содержимому»; `variant` и `color` не используются. */
 export interface BaseLayoutProps extends BaseComponentProps<
 	(typeof LAYOUT_VARIANTS)[number],
 	'root' | 'header' | 'sidebar' | 'main' | 'footer'
@@ -23,9 +20,6 @@ export interface BaseLayoutProps extends BaseComponentProps<
 	isSidebarVisibleOnMobile?: boolean
 }
 
-/**
- * Слоты компонента BaseLayout
- */
 export interface BaseLayoutSlots {
 	/** Основное содержимое — внутри `<main>` */
 	default?: () => unknown

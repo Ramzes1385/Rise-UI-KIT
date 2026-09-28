@@ -6,9 +6,6 @@ export const POPCONFIRM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'so
 /** Сторона от кнопки; у края окна панель переворачивается и сдвигается */
 export type PopconfirmPosition = 'top' | 'bottom' | 'left' | 'right'
 
-/**
- * Пропсы компонента BasePopconfirm
- */
 export interface BasePopconfirmProps extends BaseComponentProps<
 	(typeof POPCONFIRM_VARIANTS)[number],
 	'root' | 'trigger' | 'panel' | 'title' | 'description' | 'cancel' | 'confirm'
@@ -32,9 +29,6 @@ export interface BasePopconfirmProps extends BaseComponentProps<
 	position?: PopconfirmPosition
 }
 
-/**
- * События компонента BasePopconfirm
- */
 export interface BasePopconfirmEmits {
 	(event: 'update:isOpen', value: boolean): void
 	/** Подтвердили */
@@ -43,7 +37,6 @@ export interface BasePopconfirmEmits {
 	(event: 'cancel'): void
 }
 
-/** Данные слота кнопки */
 export interface PopconfirmTriggerSlotProps {
 	/** Вопрос открыт */
 	isOpen: boolean
@@ -51,9 +44,6 @@ export interface PopconfirmTriggerSlotProps {
 	triggerProps: Record<string, string | undefined>
 }
 
-/**
- * Слоты компонента BasePopconfirm
- */
 export interface BasePopconfirmSlots {
 	/** Кнопка действия, которое нужно подтвердить */
 	default?: (props: PopconfirmTriggerSlotProps) => unknown

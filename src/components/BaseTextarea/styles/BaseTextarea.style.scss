@@ -1,8 +1,4 @@
-// BaseTextarea. Многострочное поле в стиле BaseInput: коробка поля (field-box), отступы и шрифт контрола.
 // При sizeScale = 100 и rows = 1 высота 32px, как у инпута и кнопки; каждая следующая строка добавляет 20px.
-// Варианты: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
-// ghost — без фона и рамки до наведения; shadow — как default с тенью. Фокус — кольцо основного цвета (ошибка — цвет ошибки).
-// Раскладка — сетка: подпись и поле на всю ширину, под полем ошибка слева и счётчик символов (при maxlength) справа.
 .base-textarea {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
@@ -24,8 +20,6 @@
 	&__required {
 		@include field-required;
 	}
-
-	// ─── Коробка поля: рамка, фон, фокус ─────────────────────────────────────────
 
 	&__field {
 		grid-column: 1 / -1;
@@ -53,8 +47,6 @@
 		resize: none;
 		overflow: hidden;
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--outline &__field {
 		@include custom-bg(background-color, transparent);
@@ -87,8 +79,6 @@
 	&--shadow &__field {
 		box-shadow: var(--rise-shadow-xs);
 	}
-
-	// ─── Состояния ───────────────────────────────────────────────────────────────
 
 	&--error &__field {
 		border-color: var(--rise-error);

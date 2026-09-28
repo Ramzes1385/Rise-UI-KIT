@@ -1,8 +1,4 @@
-// BaseImage. Изображение со скруглением md (--rise-radius-md; проп borderRadius задаёт своё inline-стилем), без рамки.
-// Загрузка — плейсхолдер --rise-bg-elevated, шиммер только без prefers-reduced-motion. Ошибка — иконка --rise-text-dimmed
-// и подпись 12/16 --rise-text-toned на --rise-bg-elevated; в маленьких контейнерах (миниатюры) остаётся только иконка.
-// С зумом изображение — кнопка (курсор zoom-in, кольцо фокуса внутри), по клику открывается просмотр: тёмная медиа-подложка,
-// полупрозрачные круглые кнопки с белыми иконками, миниатюры галереи и мини-карта.
+// Скругление md (проп borderRadius — инлайн-стилем); загрузка — плейсхолдер с шиммером (без prefers-reduced-motion); ошибка — иконка и подпись на bg-elevated, в миниатюрах — только иконка; с зумом — кнопка (zoom-in), просмотр на тёмной подложке.
 
 // Цвета просмотра — не тема, а фон для фотографии: снимки смотрят на тёмной подложке и в светлой, и в тёмной теме,
 // поэтому здесь чёрный и белый с прозрачностью, а не семантические токены.
@@ -55,8 +51,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		opacity: 1;
 	}
 
-	// ─── Режимы заполнения ───────────────────────────────────────────────────────
-
 	&--cover &__img {
 		object-fit: cover;
 	}
@@ -72,8 +66,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	&--none &__img {
 		object-fit: none;
 	}
-
-	// ─── Загрузка ────────────────────────────────────────────────────────────────
 
 	// Обёртки слотов placeholder и error: цвет изображения (color) не перекрашивает вложенные компоненты
 	&__placeholder {
@@ -103,8 +95,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 			animation: base-image-shimmer 1.5s ease-in-out infinite;
 		}
 	}
-
-	// ─── Ошибка ──────────────────────────────────────────────────────────────────
 
 	&__error {
 		position: absolute;
@@ -143,7 +133,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	}
 }
 
-// ─── Просмотр (зум) ──────────────────────────────────────────────────────────
 // Телепортирован в body: --size-scale изображения сюда не наследуется, размеры — базовые.
 
 .base-image__zoom {
@@ -258,8 +247,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		will-change: transform;
 	}
 
-	// ─── Галерея ─────────────────────────────────────────────────────────────────
-
 	&-gallery {
 		position: absolute;
 		bottom: sz(16px);
@@ -335,8 +322,6 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		font-variant-numeric: tabular-nums;
 	}
 }
-
-// ─── Мини-карта ──────────────────────────────────────────────────────────────
 
 .base-image__minimap {
 	position: absolute;

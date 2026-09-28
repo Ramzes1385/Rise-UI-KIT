@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseAvatar.
- * Проверяют изображение, запасные инициалы, статус и emit click.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseAvatar from '../ui/BaseAvatar.vue'

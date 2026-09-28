@@ -22,7 +22,6 @@ function toDateOnly(d: Date): Date {
 	return new Date(d.getFullYear(), d.getMonth(), d.getDate())
 }
 
-/** Получить количество дней в месяце */
 function daysInMonth(year: number, month: number): number {
 	return new Date(year, month + 1, 0).getDate()
 }
@@ -41,7 +40,6 @@ function getWeekNumber(date: Date): number {
 	return Math.ceil(((d.getTime() - yearStart.getTime()) / MS_PER_DAY + 1) / 7)
 }
 
-/** Собрать новую дату с указанным временем */
 function buildDateWithTime(options: BuildDateOptions): Date {
 	return new Date(
 		options.date.getFullYear(),
@@ -53,7 +51,6 @@ function buildDateWithTime(options: BuildDateOptions): Date {
 	)
 }
 
-/** Проверить, является ли дата сегодняшней */
 function isToday(date: Date): boolean {
 	return isSameDay(date, new Date())
 }
@@ -64,10 +61,8 @@ function isDateInRange(date: Date, start: Date, end: Date): boolean {
 	return d > toDateOnly(start) && d < toDateOnly(end)
 }
 
-/** Поддерживаемые форматы даты */
 export const DATE_FORMATS = ['dd.MM.yyyy', 'dd.MM.yyyy HH:mm', 'dd.MM.yyyy HH:mm:ss'] as const
 
-/** Форматировать одну дату в строку */
 function formatDate(options: FormatDateOptions): string {
 	const { date, showTime, showSeconds, is24Hour, locale } = options
 
@@ -90,7 +85,6 @@ function formatDate(options: FormatDateOptions): string {
 	})
 }
 
-/** Форматировать диапазон дат */
 function formatRange(options: FormatRangeOptions): string {
 	const { start, end, dateFormat, showTime, showSeconds, is24Hour, locale } = options
 	const baseOpts = { dateFormat, showTime, showSeconds, is24Hour, locale }
@@ -103,7 +97,6 @@ function formatRange(options: FormatRangeOptions): string {
 	return `${startStr} — ${endStr}`
 }
 
-/** Форматировать множественный выбор дат */
 function formatMultiple(options: FormatMultipleOptions): string {
 	const { dates, dateFormat, showTime, showSeconds, is24Hour, locale } = options
 	if (dates.length === 0) return ''
@@ -143,7 +136,6 @@ function formatDatePickerValue(options: FormatDatePickerValueOptions): string {
 	return formatDate({ ...baseOpts, date: options.date })
 }
 
-/** Форматировать дату для popover календаря */
 function formatPopoverDate(options: FormatPopoverDateOptions): string {
 	return options.date.toLocaleDateString(options.locale, {
 		day: 'numeric',

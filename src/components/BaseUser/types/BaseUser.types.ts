@@ -3,9 +3,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** Вариант оформления один: вид задают аватар и текст */
 export const USER_VARIANTS = ['default'] as const
 
-/**
- * Пропсы компонента BaseUser
- */
 export interface BaseUserProps extends BaseComponentProps<(typeof USER_VARIANTS)[number], 'root' | 'avatar' | 'name' | 'description'> {
 	/** Имя: текст и инициалы в аватаре */
 	name: string
@@ -25,9 +22,6 @@ export interface BaseUserProps extends BaseComponentProps<(typeof USER_VARIANTS)
 	target?: '_blank' | '_self'
 }
 
-/**
- * Слоты компонента BaseUser
- */
 export interface BaseUserSlots {
 	/** Своя подпись под именем вместо description */
 	description?: () => unknown

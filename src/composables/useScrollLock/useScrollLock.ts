@@ -29,7 +29,6 @@ let initialPaddingRight = ''
 function useScrollLock(): UseScrollLockReturn {
 	let isLocked = false
 
-	/** Заблокировать скролл body */
 	function lock(): void {
 		if (isLocked) return
 		isLocked = true
@@ -45,7 +44,6 @@ function useScrollLock(): UseScrollLockReturn {
 		}
 	}
 
-	/** Разблокировать скролл body */
 	function unlock(): void {
 		if (!isLocked) return
 		isLocked = false

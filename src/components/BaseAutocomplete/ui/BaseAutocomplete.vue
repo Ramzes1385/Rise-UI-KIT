@@ -175,7 +175,6 @@ watch(visibleOptions, options => {
 	if (activeIndex.value >= options.length) activeIndex.value = -1
 })
 
-/** Подпись варианта с выделенным запросом */
 function highlight(label: string): { text: string; isMatch: boolean }[] {
 	const text = query.value.trim()
 	const start = isFiltering.value && text ? label.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) : -1

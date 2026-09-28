@@ -15,7 +15,6 @@ const probeDefaults = kitDefaults('Probe', {
 	format: (value: string) => value,
 })
 
-/** Компонент с kitDefaults, как в библиотеке */
 const Probe = defineComponent({
 	name: 'Probe',
 	props: {

@@ -21,7 +21,6 @@
 					:aria-modal="isModal ? 'true' : undefined"
 					:aria-labelledby="title ? titleId : undefined"
 					:aria-describedby="ariaDescribedby">
-					<!-- Заголовок -->
 					<div v-if="title" class="base-modal__header" :class="classes.header">
 						<div class="base-modal__header-left" :class="classes.headerLeft">
 							<BaseText
@@ -50,7 +49,6 @@
 						<slot />
 					</div>
 
-					<!-- Подвал -->
 					<footer v-if="hasFooter" class="base-modal__footer" :class="classes.footer">
 						<slot name="footer" />
 					</footer>

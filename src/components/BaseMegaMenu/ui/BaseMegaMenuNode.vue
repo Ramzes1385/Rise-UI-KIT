@@ -89,17 +89,13 @@ defineSlots<BaseMegaMenuNodeSlots>()
 
 /** Реестр дерева: открыт только один узел на уровень во всей ветви */
 const tree = useMegaMenuTree()
-/** Уникальный путь узла = путь родителя + его label */
 const nodePath = computed(() => `${props.parentPath}${MEGA_MENU_PATH_SEPARATOR}${props.item.label}`)
-/** Открыт ли узел (его путь — на активной ветви дерева) */
 const isOpen = computed(() => tree.isPathOpen(nodePath.value))
 /** Якорь для каскадного flyout (шапка узла) — задаёт вертикальное выравнивание */
 const anchorRef = ref<HTMLElement | null>(null)
 /** Панель-контейнер узла — flyout встаёт встык к её краю, без наезда */
 const boundaryRef = ref<HTMLElement | null>(null)
-/** Сама flyout-панель (sub-list) */
 const panelRef = ref<HTMLElement | null>(null)
-/** Есть ли дочерние узлы */
 const hasChildren = computed(() => Boolean(props.item.children && props.item.children.length > 0))
 /** Лист с адресом — ссылка, переход выполняет она сама */
 const isLink = computed(() => !hasChildren.value && Boolean(props.item.to || props.item.href))
@@ -111,7 +107,6 @@ const isLink = computed(() => !hasChildren.value && Boolean(props.item.to || pro
  */
 const isFlyout = computed(() => props.layout === 'dropdown' && !props.isMobile)
 
-/** Каскадное позиционирование flyout-панели (только в dropdown-режиме) */
 const { panelStyle, isFlipped } = useFlyoutPosition({
 	anchorRef,
 	panelRef,
@@ -128,7 +123,6 @@ const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
 
 let hoverTimer: ReturnType<typeof setTimeout> | null = null
 
-/** Очистить таймер hover */
 function clearTimer(): void {
 	if (hoverTimer) {
 		clearTimeout(hoverTimer)

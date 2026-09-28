@@ -33,13 +33,10 @@ export interface UiKitLocale {
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 
-/** Разделы словаря со строками */
 export type LocaleSection = Exclude<keyof UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek' | 'plural'>
 
-/** Словарь с частью строк: для `defineLocale()` */
 export type LocaleOverrides = Partial<Pick<UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek'>> & {
 	[K in LocaleSection | 'plural']?: Partial<UiKitLocale[K]>
 }
 
-/** Код встроенного языка или словарь */
 export type LocaleInput = keyof typeof LOCALES | UiKitLocale

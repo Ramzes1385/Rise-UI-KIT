@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseAlert.
- * Проверяют рендер, пропсы, слоты и события.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseAlert from '../ui/BaseAlert.vue'

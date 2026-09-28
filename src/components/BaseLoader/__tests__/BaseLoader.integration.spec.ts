@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseLoader.
- * Проверяют: isOverlay оверлей, hasLabel текст, варианты анимации.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseLoader from '../ui/BaseLoader.vue'

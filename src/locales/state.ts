@@ -4,7 +4,6 @@ import { en } from './en'
 import { ru } from './ru'
 import type { LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
-/** Встроенные языки */
 export const LOCALES = { ru: ru as UiKitLocale, en } as const
 
 /** Текущий язык: shallowRef — компоненты перерисовываются при смене языка */
@@ -21,7 +20,6 @@ export function setLocale(locale: LocaleInput): void {
 	else console.warn(`[rise-ui-kit] Неизвестный язык «${locale}». Встроенные: ${Object.keys(LOCALES).join(', ')}; свой — defineLocale()`)
 }
 
-/** Текущий язык */
 export function getLocale(): UiKitLocale {
 	return currentLocale.value
 }

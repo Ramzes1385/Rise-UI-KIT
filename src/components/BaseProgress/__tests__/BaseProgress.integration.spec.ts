@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseProgress.
- * Проверяют подпись с процентом, слот и emit complete.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseProgress from '../ui/BaseProgress.vue'

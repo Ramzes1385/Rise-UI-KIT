@@ -1,7 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import type { COLOR_MODES } from '../useColorMode'
 
-/** Режим темы: светлая, тёмная или как в системе */
 export type ColorMode = (typeof COLOR_MODES)[number]
 
 /** Тема, которая действует сейчас */
@@ -17,7 +16,6 @@ export interface ColorModeOptions {
 	initialMode?: ColorMode
 }
 
-/** Управление темой приложения */
 export interface ColorModeController {
 	/** Выбранный режим; присвоение меняет тему и сохраняет выбор */
 	mode: Ref<ColorMode>

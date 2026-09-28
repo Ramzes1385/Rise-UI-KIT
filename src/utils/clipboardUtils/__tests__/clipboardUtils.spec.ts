@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для clipboardUtils.
- * Покрывают copyTextToClipboard.
- */
-
 import { copyTextToClipboard } from '../clipboardUtils'
 
 describe('clipboardUtils', () => {

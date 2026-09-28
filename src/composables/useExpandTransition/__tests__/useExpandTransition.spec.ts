@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable useExpandTransition.
- * Проверяют анимацию раскрытия/сворачивания через Transition-хуки Vue.
- */
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useExpandTransition } from '../useExpandTransition'
 

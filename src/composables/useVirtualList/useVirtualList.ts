@@ -26,7 +26,7 @@ function useVirtualList(options: UseVirtualListOptions): UseVirtualListReturn {
 	const scrollTop = ref(0)
 	const viewportSize = ref(0)
 
-	/** Замеренные высоты по ключу; version пересчитывает смещения после замера */
+	/** version пересчитывает смещения после замера */
 	const sizes = new Map<VirtualKey, number>()
 	const version = ref(0)
 

@@ -12,7 +12,6 @@ export interface LayerOptions {
 	isCapture?: boolean
 }
 
-/** Зарегистрированный слой */
 export interface LayerEntry extends LayerOptions {
 	/** Порядок открытия: у слоя, открытого позже, — больше */
 	order: number

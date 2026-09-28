@@ -1,7 +1,4 @@
-/**
- * Тема интерфейса Storybook (боковая панель, панель инструментов, страницы Docs) в цветах Rise UI Kit.
- * Цвета — значения токенов светлой темы из src/styles/_tokens.scss.
- */
+/** Цвета — значения токенов светлой темы из src/styles/_tokens.scss. */
 
 import { create } from 'storybook/theming'
 

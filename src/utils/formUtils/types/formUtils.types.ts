@@ -1,12 +1,8 @@
-/**
- * Standard Schema v1 (https://standardschema.dev): общий интерфейс схем Zod, Valibot, ArkType и других.
- * Типы скопированы из спецификации — кит проверяет данные любой такой схемой без зависимости от библиотеки.
- */
+/** Standard Schema v1 (standardschema.dev) — общий интерфейс схем Zod/Valibot/ArkType; типы скопированы из спецификации, чтобы не зависеть от библиотеки */
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
 	readonly '~standard': StandardSchemaProps<Input, Output>
 }
 
-/** Свойства схемы по спецификации Standard Schema v1 */
 export interface StandardSchemaProps<Input = unknown, Output = Input> {
 	readonly version: 1
 	readonly vendor: string

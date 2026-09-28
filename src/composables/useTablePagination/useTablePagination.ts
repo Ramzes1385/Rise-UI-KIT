@@ -5,19 +5,14 @@ import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { VisiblePageItem } from '@utils/paginationUtils/types/paginationUtils.types'
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './types/useTablePagination.types'
 
-/** Размер страницы, когда он не задан */
 const DEFAULT_PAGE_SIZE = 5
 
-/**
- * Composable для управления пагинацией и подгрузкой таблицы.
- */
 function useTablePagination(options: UseTablePaginationOptions): UseTablePaginationReturn {
 	const { processedRows, loadMode, pageSize, onPageSizeChange } = options
 
 	const currentPage = ref(1)
 	const localPageSize = ref(pageSize.value)
 
-	/** Эффективный размер страницы (с учётом default) */
 	const effectivePageSize = computed((): number => {
 		return localPageSize.value || DEFAULT_PAGE_SIZE
 	})
@@ -33,7 +28,6 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		},
 	)
 
-	/** Отображаемые строки (с учётом пагинации) */
 	const displayedRows = computed((): TableRow[] => {
 		const mode = loadMode()
 		if (mode === 'pagination') {
@@ -47,7 +41,6 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		return processedRows.value
 	})
 
-	/** Есть ли ещё данные для подгрузки */
 	const hasMoreRows = computed((): boolean => {
 		const mode = loadMode()
 		if (mode === 'button' || mode === 'infinite') {
@@ -56,22 +49,18 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		return false
 	})
 
-	/** Подгрузить ещё данные */
 	function loadMore(): void {
 		loadedCount.value += effectivePageSize.value
 	}
 
-	/** Общее количество страниц */
 	const totalPages = computed((): number => {
 		return calcTotalPages(processedRows.value.length, localPageSize.value)
 	})
 
-	/** Видимые номера страниц */
 	const visiblePages = computed((): VisiblePageItem[] => {
 		return calcVisiblePages({ current: currentPage.value, total: totalPages.value })
 	})
 
-	/** Обработчик изменения размера страницы */
 	function handlePageSizeChange(value: string | number | (string | number)[]): void {
 		const newSize = Number(Array.isArray(value) ? value[0] : value)
 		if (newSize !== localPageSize.value) {
@@ -91,7 +80,6 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		}
 	}
 
-	/** Синхронизация localPageSize с пропсом */
 	watch(pageSize, newSize => {
 		localPageSize.value = newSize
 	})

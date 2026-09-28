@@ -51,7 +51,6 @@ function useSwipe(options: UseSwipeOptions) {
 		})
 	}
 
-	/** Отменить запланированный RAF */
 	function cancelRaf(): void {
 		if (rafId !== null) {
 			cancelAnimationFrame(rafId)
@@ -59,7 +58,6 @@ function useSwipe(options: UseSwipeOptions) {
 		}
 	}
 
-	/** Обработка начала касания */
 	function onTouchStart(event: TouchEvent): void {
 		dragStartX = event.touches[0].clientX
 		dragStartY = event.touches[0].clientY
@@ -67,7 +65,6 @@ function useSwipe(options: UseSwipeOptions) {
 		dragOffset.value = 0
 	}
 
-	/** Обработка движения касания */
 	function onTouchMove(event: TouchEvent): void {
 		if (!isDragging.value) return
 		const currentX = event.touches[0].clientX
@@ -76,7 +73,6 @@ function useSwipe(options: UseSwipeOptions) {
 		scheduleOffsetUpdate(offset)
 	}
 
-	/** Обработка окончания касания */
 	function onTouchEnd(event: TouchEvent): void {
 		if (!isDragging.value) return
 		cancelRaf()
@@ -91,7 +87,6 @@ function useSwipe(options: UseSwipeOptions) {
 		options.onDragOffset?.(0)
 	}
 
-	/** Обработка начала перетаскивания мышью */
 	function onDragStart(event: MouseEvent): void {
 		dragStartX = event.clientX
 		dragStartY = event.clientY
@@ -162,7 +157,6 @@ function useSwipe(options: UseSwipeOptions) {
 		event.preventDefault()
 	}
 
-	/** Очистка активных слушателей мыши */
 	function cleanupMouseListeners(): void {
 		if (activeMouseMove) {
 			document.removeEventListener('mousemove', activeMouseMove)

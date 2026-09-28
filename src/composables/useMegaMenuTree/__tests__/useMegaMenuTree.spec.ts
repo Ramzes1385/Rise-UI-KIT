@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useMegaMenuTree.
- * Проверяют реестр раскрытия: открыт только один путь, соседи закрываются.
- */
-
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import { useMegaMenuTree, useMegaMenuTreeProvider } from '../useMegaMenuTree'

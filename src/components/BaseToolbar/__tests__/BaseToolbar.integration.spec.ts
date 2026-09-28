@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseToolbar: стрелки, Home/End, текстовое поле, клик, вертикальная панель.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'

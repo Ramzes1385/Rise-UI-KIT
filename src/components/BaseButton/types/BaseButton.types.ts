@@ -1,7 +1,6 @@
 import type { PaddingProp } from '@composables/usePadding'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Типы кнопки */
 export const BUTTON_TYPES = ['button', 'submit', 'reset'] as const
 
 /**
@@ -11,9 +10,6 @@ export const BUTTON_TYPES = ['button', 'submit', 'reset'] as const
  */
 export const BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseButton
- */
 export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIANTS)[number], 'root'> {
 	/** Тип кнопки */
 	type?: (typeof BUTTON_TYPES)[number]
@@ -30,16 +26,10 @@ export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIA
 	isDisabled?: boolean
 }
 
-/**
- * События компонента BaseButton
- */
 export interface BaseButtonEmits {
 	(event: 'click', e: MouseEvent): void
 }
 
-/**
- * Слоты компонента BaseButton
- */
 export interface BaseButtonSlots {
 	/** Основной контент кнопки */
 	default?: () => unknown

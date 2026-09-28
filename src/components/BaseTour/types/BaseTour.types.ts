@@ -3,10 +3,8 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** Сторона размещения карточки-подсказки относительно подсвеченного элемента */
 export const TOUR_PLACEMENTS = ['top', 'bottom', 'left', 'right', 'auto'] as const
 
-/** Сторона размещения карточки-подсказки */
 export type TourPlacement = (typeof TOUR_PLACEMENTS)[number]
 
-/** Описание одного шага тура */
 export interface TourStep {
 	/** CSS-селектор целевого элемента, который нужно подсветить */
 	target: string
@@ -28,9 +26,6 @@ export interface TourGeometry {
 	placement: Exclude<TourPlacement, 'auto'>
 }
 
-/**
- * Подписи кнопок тура
- */
 export interface TourLabels {
 	/** Текст кнопки перехода к следующему шагу */
 	next?: string
@@ -42,9 +37,6 @@ export interface TourLabels {
 	skip?: string
 }
 
-/**
- * Настройки поведения тура
- */
 export interface TourBehavior {
 	/** Закрывать тур при клике по затемнённому фону */
 	closeOnOverlayClick?: boolean
@@ -56,9 +48,6 @@ export interface TourBehavior {
 	scrollIntoView?: boolean
 }
 
-/**
- * Пропсы компонента BaseTour
- */
 export interface BaseTourProps extends BaseComponentProps<
 	string,
 	| 'root'
@@ -125,9 +114,6 @@ export interface BaseTourSlotContext {
 	finish: () => void
 }
 
-/**
- * События компонента BaseTour
- */
 export interface BaseTourEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'update:step', value: number): void
@@ -139,9 +125,6 @@ export interface BaseTourEmits {
 	(event: 'close'): void
 }
 
-/**
- * Слоты компонента BaseTour
- */
 export interface BaseTourSlots {
 	/** Полностью кастомное содержимое карточки. Получает контекст текущего шага */
 	default?: (props: BaseTourSlotContext) => unknown

@@ -1,15 +1,8 @@
-/**
- * Unit-тесты для paginationUtils.
- * Покрывают: calcTotalPages, calcVisiblePages, calcPageInfo.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { setLocale } from '@/locales/state'
 import { calcPageInfo, calcTotalPages, calcVisiblePages } from '../paginationUtils'
 
 describe('paginationUtils', () => {
-	// ── calcTotalPages ──
-
 	describe('calcTotalPages', () => {
 		it('рассчитывает общее количество страниц', () => {
 			expect(calcTotalPages(100, 10)).toBe(10)
@@ -36,8 +29,6 @@ describe('paginationUtils', () => {
 			expect(calcTotalPages(-5, 10) + 0).toBe(0)
 		})
 	})
-
-	// ── calcVisiblePages ──
 
 	describe('calcVisiblePages', () => {
 		it('возвращает пустой массив при total = 0', () => {
@@ -123,8 +114,6 @@ describe('paginationUtils', () => {
 			expect(result).not.toContain(20)
 		})
 	})
-
-	// ── calcPageInfo ──
 
 	describe('calcPageInfo', () => {
 		it('числа и связка — на языке кита', () => {

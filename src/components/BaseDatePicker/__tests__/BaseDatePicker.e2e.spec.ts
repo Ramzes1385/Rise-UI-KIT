@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseDatePicker.
- * Проверяет ключевой сценарий: открытие панели, выбор даты, закрытие.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('datepicker: открывает панель и выбирает дату', async ({ page }) => {

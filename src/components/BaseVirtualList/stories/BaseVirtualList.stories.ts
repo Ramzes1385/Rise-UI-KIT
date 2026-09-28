@@ -1,9 +1,3 @@
-/**
- * BaseVirtualList — stories.
- *
- * Разделы: Default (10 000 строк) → строки разной высоты → клавиатура.
- */
-
 import { expect, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseVirtualList from '../ui/BaseVirtualList.vue'

@@ -1,8 +1,5 @@
 import type { MegaMenuItem, MegaMenuLayout, MegaMenuTrigger } from './BaseMegaMenu.types'
 
-/**
- * Пропсы рекурсивного узла BaseMegaMenuNode.
- */
 export interface BaseMegaMenuNodeProps {
 	/** Данные узла */
 	item: MegaMenuItem
@@ -22,17 +19,11 @@ export interface BaseMegaMenuNodeProps {
 	sizeScale: number
 }
 
-/**
- * События узла BaseMegaMenuNode.
- */
 export interface BaseMegaMenuNodeEmits {
 	(event: 'navigate', url: string): void
 	(event: 'item-click', item: MegaMenuItem): void
 }
 
-/**
- * Слоты узла BaseMegaMenuNode.
- */
 export interface BaseMegaMenuNodeSlots {
 	/** Кастомный рендер пункта меню */
 	item?: (props: { item: MegaMenuItem; level: number }) => unknown

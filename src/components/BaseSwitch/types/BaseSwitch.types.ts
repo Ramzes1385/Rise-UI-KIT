@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения переключателя */
 export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
 
-/**
- * Пропсы компонента BaseSwitch
- */
 export interface BaseSwitchProps extends BaseComponentProps<
 	(typeof SWITCH_VARIANTS)[number],
 	'root' | 'row' | 'wrapper' | 'input' | 'slider' | 'handle' | 'content' | 'label' | 'required' | 'errorText'
@@ -24,17 +20,11 @@ export interface BaseSwitchProps extends BaseComponentProps<
 	reverse?: boolean
 }
 
-/**
- * События компонента BaseSwitch
- */
 export interface BaseSwitchEmits {
 	(event: 'update:modelValue', value: boolean): void
 	(event: 'change', value: boolean): void
 }
 
-/**
- * Слоты компонента BaseSwitch
- */
 export interface BaseSwitchSlots {
 	/** Контент рядом с переключателем */
 	default?: () => unknown

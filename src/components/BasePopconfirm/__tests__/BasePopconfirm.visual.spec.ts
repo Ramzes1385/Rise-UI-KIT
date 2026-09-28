@@ -1,7 +1,3 @@
-/**
- * Visual regression BasePopconfirm: ключевые stories в светлой и тёмной теме.
- */
-
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 

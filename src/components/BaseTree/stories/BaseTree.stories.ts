@@ -1,11 +1,3 @@
-/**
- * BaseTree — stories.
- *
- * Разделы: Default (песочница с v-model раскрытых и выбранных узлов) → внешний вид (варианты, размеры, цвет, стрелка
- * справа) → состояния (отключённый узел, пусто, длинные метки) → сценарии (режимы выбора, слоты, управление
- * раскрытием, навигация по ссылкам) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
@@ -18,9 +10,6 @@ import { TREE_VARIANTS } from '../types/BaseTree.types'
 import type { TreeNode } from '../types/BaseTree.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-// ─── Данные ────────────────────────────────────────────────────────────────────
-
-/** Структура проекта: папки и файлы с иконками */
 const FILES: TreeNode[] = [
 	{
 		id: 'src',
@@ -119,7 +108,6 @@ const DOCS_NAV: TreeNode[] = [
 	{ id: 'github', label: 'Исходный код', icon: 'link', href: 'https://github.com', target: '_blank' },
 ]
 
-/** Длинные названия и глубокая вложенность */
 const DEEP: TreeNode[] = [
 	{
 		id: 'l1',
@@ -628,8 +616,6 @@ export const Links: Story = {
 		await expect(args.onSelect).toHaveBeenLastCalledWith('components', true)
 	},
 }
-
-// ─── Виртуальная прокрутка ─────────────────────────────────────────────────────
 
 /** 60 отделов по 80 сотрудников: 4860 узлов при раскрытии всех */
 const STAFF: TreeNode[] = Array.from({ length: 60 }, (_, department) => ({

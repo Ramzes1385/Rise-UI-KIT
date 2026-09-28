@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseBreadcrumbs.
- * Проверяют рендер, пропсы, collapsed-логику и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
 import type { BreadcrumbItem } from '../types/BaseBreadcrumbs.types'
 
-/** Стандартный набор элементов для тестов */
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },
 	{ label: 'Каталог', to: '/catalog' },
@@ -126,7 +120,6 @@ describe('BaseBreadcrumbs unit', () => {
 				props: { items: ITEMS, maxItems: 2 },
 			})
 
-			// Должен быть ellipsis + видимые элементы
 			const ellipsis = container.querySelector('.base-breadcrumbs__item--ellipsis')
 			expect(ellipsis).toBeInTheDocument()
 		})
@@ -360,7 +353,6 @@ describe('BaseBreadcrumbs unit', () => {
 			const firstLink = links[0] as HTMLElement
 			firstLink.dispatchEvent(new Event('click'))
 
-			// Должен быть эмитирован клик, но не навигация
 			expect(emitted()).toHaveProperty('item-click')
 			expect(emitted()).not.toHaveProperty('navigate')
 		})
@@ -375,7 +367,6 @@ describe('BaseBreadcrumbs unit', () => {
 				},
 			})
 
-			// Должны быть chevron-разделители (иконки)
 			const sepIcon = container.querySelector('.base-breadcrumbs__sep use')
 			expect(sepIcon).toBeInTheDocument()
 			expect(sepIcon?.getAttribute('href')).toBe('icons.svg#chevron-right')
@@ -393,7 +384,6 @@ describe('BaseBreadcrumbs unit', () => {
 			expect(homeBtn).toBeInTheDocument()
 			homeBtn.dispatchEvent(new Event('click'))
 
-			// Навигация не должна быть вызвана
 			expect(emitted()).not.toHaveProperty('navigate')
 		})
 	})

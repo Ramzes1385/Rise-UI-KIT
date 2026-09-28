@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseNotification.
- * Проверяет: появление, закрытие.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('уведомление: рендерится с заголовком', async ({ page }) => {

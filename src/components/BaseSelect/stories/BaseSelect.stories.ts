@@ -1,11 +1,4 @@
-/**
- * BaseSelect — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (пустой список, ошибка, disabled, длинные значения) → содержимое (иконки и описания, слоты) →
- * сценарии (мультивыбор, поиск, недоступные опции) → клавиатура.
- * Открытый список телепортируется в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
- */
+/** Открытый список телепортируется в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
@@ -25,7 +18,6 @@ const CITIES: BaseSelectOption[] = [
 	{ value: 'ekb', label: 'Екатеринбург', isDisabled: true },
 ]
 
-/** Длинный список городов для поиска. */
 const ALL_CITIES: BaseSelectOption[] = [
 	'Москва',
 	'Санкт-Петербург',
@@ -49,7 +41,6 @@ const CURRENCIES: BaseSelectOption[] = [
 	{ value: 'cny', label: 'Китайский юань', icon: '¥', description: 'CNY' },
 ]
 
-/** Жанры для мультивыбора. */
 const GENRES: BaseSelectOption[] = [
 	{ value: 'drama', label: 'Драма' },
 	{ value: 'comedy', label: 'Комедия' },
@@ -67,7 +58,6 @@ const STATUSES: (BaseSelectOption & { color: string })[] = [
 	{ value: 'done', label: 'Готово', color: 'var(--rise-success)' },
 ]
 
-/** Проекты с длинными названиями. */
 const PROJECTS: BaseSelectOption[] = [
 	{ value: 'north', label: 'Сериал «Северный ветер», сезон 2, серии 1–12 — русский дубляж и субтитры' },
 	{ value: 'fox', label: 'Аниме «Лисья тропа» — закадровый перевод' },

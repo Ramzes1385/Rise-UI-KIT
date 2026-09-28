@@ -7,13 +7,9 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const POPOVER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/** Вариант popover */
 export type PopoverVariant = (typeof POPOVER_VARIANTS)[number]
 
-/** Позиция popover */
 export type PopoverPosition = 'top' | 'bottom' | 'left' | 'right'
-
-/** Пропсы компонента BasePopover */
 
 export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'root' | 'trigger' | 'arrow' | 'inner' | 'panel'> {
 	/** Состояние открытия */
@@ -22,16 +18,12 @@ export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'ro
 	position?: PopoverPosition
 }
 
-/** События компонента BasePopover */
 export interface BasePopoverEmits {
 	(event: 'update:isOpen', value: boolean): void
 	/** Поповер закрыт: кнопкой, Escape или кликом снаружи */
 	(event: 'close'): void
 }
 
-/**
- * Слоты компонента BasePopover
- */
 export interface BasePopoverSlots {
 	/**
 	 * Триггер. Кит ставит `aria-haspopup`, `aria-expanded` и `aria-controls` на первый фокусируемый элемент в слоте;

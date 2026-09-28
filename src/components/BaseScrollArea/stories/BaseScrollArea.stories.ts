@@ -1,15 +1,8 @@
-/**
- * BaseScrollArea — stories.
- *
- * Разделы: Default (список с ограниченной высотой) → внешний вид (горизонтально, полоса всегда видна) → клавиатура.
- */
-
 import { expect, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseScrollArea from '../ui/BaseScrollArea.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Журнал склада для длинного списка */
 const EVENTS = Array.from(
 	{ length: 30 },
 	(_, index) =>

@@ -8,9 +8,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const DROPDOWN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Позиция выпадающего списка
- */
 export type DropdownPosition =
 	| 'bottom-start'
 	| 'bottom-end'
@@ -25,9 +22,6 @@ export type DropdownPosition =
 	| 'right-end'
 	| 'right'
 
-/**
- * Пропсы компонента BaseDropdown
- */
 export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number], 'root' | 'panel'> {
 	/** Открыт ли список */
 	isOpen?: boolean
@@ -54,17 +48,11 @@ export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_V
 	padding?: PaddingProp
 }
 
-/**
- * События компонента BaseDropdown
- */
 export interface BaseDropdownEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
 }
 
-/**
- * Слоты компонента BaseDropdown
- */
 export interface BaseDropdownSlots {
 	/** Триггер (кнопка или другой элемент) */
 	default?: () => unknown
@@ -72,9 +60,6 @@ export interface BaseDropdownSlots {
 	dropdown?: () => unknown
 }
 
-/**
- * Публичный API компонента BaseDropdown
- */
 export interface BaseDropdownExpose {
 	/** Обновить позицию панели вручную */
 	updatePosition: () => void

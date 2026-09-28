@@ -3,9 +3,6 @@ import { computed, ref, watch } from 'vue'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { UseTableSelectionOptions, UseTableSelectionReturn } from './types/useTableSelection.types'
 
-/**
- * Composable для управления выбором строк таблицы.
- */
 function useTableSelection(options: UseTableSelectionOptions): UseTableSelectionReturn {
 	const { rows, filteredRows = rows, onSelect } = options
 
@@ -22,12 +19,10 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 
 	watch(() => rows.value, syncFromRows, { immediate: true })
 
-	/** Выбрана ли строка */
 	function isSelected(row: TableRow): boolean {
 		return selectedIds.value.has(row.id)
 	}
 
-	/** Выбранные строки */
 	const selectedRows = computed((): TableRow[] => {
 		return rows.value.filter(row => selectedIds.value.has(row.id))
 	})
@@ -43,7 +38,6 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 		return selectable.length > 0 && selectable.every(r => selectedIds.value.has(r.id))
 	})
 
-	/** Переключить выбор строки */
 	function toggleRow(row: TableRow): void {
 		const next = new Set(selectedIds.value)
 		if (next.has(row.id)) {

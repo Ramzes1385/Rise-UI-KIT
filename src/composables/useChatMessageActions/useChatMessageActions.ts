@@ -62,7 +62,6 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 
 	/** Элемент с фокусом до открытия меню (кнопка «Другие действия»): после закрытия из меню фокус возвращается на него */
 	let returnFocusTarget: HTMLElement | null = null
-	/** Прокрутка ленты в момент открытия меню */
 	let scrollTopAtOpen = 0
 	const contextMenu = ref({
 		isOpen: false,

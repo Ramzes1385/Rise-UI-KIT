@@ -1,9 +1,3 @@
-/**
- * Integration-тесты для BaseColorPicker.
- * Проверяют v-model в составе родителя: пресет обновляет модель,
- * внешнее изменение модели отражается на swatch.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

@@ -1,6 +1,5 @@
 import type { BaseSelectOption } from '@components/BaseSelect'
 
-/** Состояния активности кнопок форматирования */
 interface EditorActiveStates {
 	isBold: boolean
 	isItalic: boolean
@@ -16,7 +15,6 @@ interface EditorActiveStates {
 	isPre: boolean
 }
 
-/** Props компонента BaseEditorToolbar */
 export interface BaseEditorToolbarProps {
 	/** Состояния активности кнопок форматирования */
 	activeStates: EditorActiveStates
@@ -42,7 +40,6 @@ export interface BaseEditorToolbarProps {
 	isBackgroundColorActive: boolean
 }
 
-/** Emits компонента BaseEditorToolbar */
 export interface BaseEditorToolbarEmits {
 	(event: 'applyFormat', command: string): void
 	(event: 'applyBlock', tag: string): void
@@ -60,7 +57,6 @@ export interface BaseEditorToolbarEmits {
 	(event: 'resetBackgroundColor'): void
 }
 
-/** Слоты компонента BaseEditorToolbar */
 export interface BaseEditorToolbarSlots {
 	toolbar?: () => unknown
 }

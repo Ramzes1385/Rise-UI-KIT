@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 
-/** Активные состояния кнопок тулбара */
 export interface EditorActiveStates {
 	isBold: boolean
 	isItalic: boolean
@@ -17,7 +16,6 @@ export interface EditorActiveStates {
 	formatBlock: string
 }
 
-/** Состояние контекстного меню медиа */
 export interface MediaContextMenuState {
 	isVisible: boolean
 	x: number
@@ -27,7 +25,6 @@ export interface MediaContextMenuState {
 	height: string
 }
 
-/** Опции composable useEditorToolbar */
 export interface UseEditorToolbarOptions {
 	editorRef: Ref<HTMLDivElement | null>
 	codeTextareaRef: Ref<HTMLTextAreaElement | { textareaRef: HTMLTextAreaElement | null } | null>

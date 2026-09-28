@@ -102,7 +102,6 @@ const formField = useFormField({
 	isRequired: () => props.isRequired,
 })
 
-/** Счётчик «введено/максимум» показывается, когда задан maxlength */
 const hasCounter = computed(() => Boolean(props.maxlength && props.maxlength > 0))
 const characterCount = computed(() => props.modelValue?.length ?? 0)
 

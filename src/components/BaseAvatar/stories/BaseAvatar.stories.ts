@@ -1,10 +1,3 @@
-/**
- * BaseAvatar — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, формы, кастомный цвет) →
- * содержимое (изображение, запасные инициалы, слот) → сценарии (статус «в сети», группа аватаров).
- */
-
 import { expect, fn, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import {

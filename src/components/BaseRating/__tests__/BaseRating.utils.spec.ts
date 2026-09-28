@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для математики BaseRating.
- * Граничные значения, округление к шагу, заливка звезды.
- */
-
 import { describe, expect, it } from 'vitest'
 import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 

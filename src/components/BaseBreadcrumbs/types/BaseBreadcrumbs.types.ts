@@ -1,12 +1,8 @@
 import type { LinkComponent } from '@composables/useLink'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения хлебных крошек */
 export const BREADCRUMBS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Элемент хлебных крошек
- */
 export interface BreadcrumbItem {
 	/** Заголовок */
 	label: string
@@ -20,14 +16,7 @@ export interface BreadcrumbItem {
 	icon?: string
 }
 
-/**
- * Разделитель хлебных крошек
- */
 export type BreadcrumbSeparator = 'slash' | 'chevron' | 'dot' | 'arrow'
-
-/**
- * Пропсы компонента BaseBreadcrumbs
- */
 
 export interface BaseBreadcrumbsProps extends BaseComponentProps<
 	(typeof BREADCRUMBS_VARIANTS)[number],
@@ -60,9 +49,6 @@ export interface BaseBreadcrumbsProps extends BaseComponentProps<
 	linkComponent?: LinkComponent
 }
 
-/**
- * События компонента BaseBreadcrumbs
- */
 export interface BaseBreadcrumbsEmits {
 	/** Переход по крошке с адресом: переходит сама ссылка, событие — для аналитики и закрытия меню */
 	(event: 'navigate', url: string): void
@@ -70,9 +56,6 @@ export interface BaseBreadcrumbsEmits {
 	(event: 'item-click', item: BreadcrumbItem): void
 }
 
-/**
- * Слоты компонента BaseBreadcrumbs
- */
 export interface BaseBreadcrumbsSlots {
 	/** Кастомный элемент крошки */
 	item?: (props: { item: BreadcrumbItem; index: number }) => unknown

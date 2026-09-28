@@ -1,10 +1,3 @@
-/**
- * BaseSegmented — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, во всю ширину, с иконками) →
- * состояния (отключено, ошибка) → клавиатура.
- */
-
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSegmented from '../ui/BaseSegmented.vue'
@@ -12,7 +5,6 @@ import { SEGMENTED_VARIANTS } from '../types/BaseSegmented.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { SegmentedOption } from '../types/BaseSegmented.types'
 
-/** Период отчёта */
 const PERIODS: SegmentedOption[] = [
 	{ value: 'day', label: 'День' },
 	{ value: 'week', label: 'Неделя' },
@@ -20,7 +12,6 @@ const PERIODS: SegmentedOption[] = [
 	{ value: 'year', label: 'Год', isDisabled: true },
 ]
 
-/** Вид списка — с иконками */
 const VIEWS: SegmentedOption[] = [
 	{ value: 'list', label: 'Список', icon: 'list-bullet' },
 	{ value: 'cards', label: 'Карточки', icon: 'image' },

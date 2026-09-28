@@ -8,7 +8,6 @@ interface RangeScaleOptions {
 	value: number
 }
 
-/** Параметры для привязки к шагу */
 interface SnapToStepOptions {
 	/** Значение для привязки */
 	value: number

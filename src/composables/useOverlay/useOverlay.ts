@@ -10,7 +10,6 @@ import type {
 	UseOverlayReturn,
 } from './types/useOverlay.types'
 
-/** Ключ provide/inject хранилища оверлеев BaseApp */
 export const OVERLAY_STORE_KEY: InjectionKey<OverlayStore> = Symbol('rise-overlay-store')
 
 /**

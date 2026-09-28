@@ -13,9 +13,6 @@ export const INPUT_TAGS_VARIANTS = [
 	'underline',
 ] as const satisfies readonly InputVariant[]
 
-/**
- * Пропсы компонента BaseInputTags
- */
 export interface BaseInputTagsProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'list' | 'tag' | 'remove'> {
 	/** Теги (v-model) */
 	modelValue?: string[]
@@ -47,9 +44,6 @@ export interface BaseInputTagsProps extends BaseComponentProps<InputVariant, 'ro
 	inputAttrs?: FieldInputAttrs
 }
 
-/**
- * События компонента BaseInputTags
- */
 export interface BaseInputTagsEmits {
 	/** Новый список тегов */
 	(event: 'update:modelValue', value: string[]): void

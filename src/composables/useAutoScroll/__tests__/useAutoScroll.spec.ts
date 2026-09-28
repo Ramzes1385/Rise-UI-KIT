@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useAutoScroll.
- * Проверяют автопрокрутку контейнера к низу.
- */
-
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useAutoScroll } from '../useAutoScroll'
@@ -144,9 +139,9 @@ describe('useAutoScroll', () => {
 		)
 
 		scrollToBottom()
-		container.value = null // обнуляем до nextTick
+		container.value = null
 		await nextTick()
 
-		expect(el.scrollTop).toBe(0) // не прокрутился
+		expect(el.scrollTop).toBe(0)
 	})
 })

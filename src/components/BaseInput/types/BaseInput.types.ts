@@ -1,22 +1,12 @@
 import type { FieldInputAttrs } from '@composables/useFormContext'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения инпута */
 export const INPUT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const
 
-/**
- * Вариант отображения инпута
- */
 export type InputVariant = (typeof INPUT_VARIANTS)[number]
 
-/**
- * Фильтр допустимых символов
- */
 type AllowedChars = 'digits' | 'letters' | 'alphanumeric'
 
-/**
- * Правило валидации пароля
- */
 export interface PasswordRule {
 	/** Ключ правила */
 	key: string
@@ -26,18 +16,12 @@ export interface PasswordRule {
 	validate: (value: string) => boolean
 }
 
-/**
- * Результат проверки правила пароля
- */
 export interface PasswordRuleResult {
 	key: string
 	label: string
 	isValid: boolean
 }
 
-/**
- * Пропсы компонента BaseInput
- */
 export interface BaseInputProps extends BaseComponentProps<
 	InputVariant,
 	| 'root'
@@ -105,9 +89,6 @@ export interface BaseInputProps extends BaseComponentProps<
 	passwordRules?: PasswordRule[]
 }
 
-/**
- * События компонента BaseInput
- */
 export interface BaseInputEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'blur', e: FocusEvent): void
@@ -115,9 +96,6 @@ export interface BaseInputEmits {
 	(event: 'keydown', e: KeyboardEvent): void
 }
 
-/**
- * Слоты компонента BaseInput
- */
 export interface BaseInputSlots {
 	/** Кастомный префикс */
 	prefix?: () => unknown

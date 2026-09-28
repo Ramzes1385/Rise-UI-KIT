@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable useCustomClass.
- * Проверяют нормализацию и маппинг кастомных классов.
- */
-
 import { useCustomClass } from '../useCustomClass'
 
 describe('useCustomClass', () => {

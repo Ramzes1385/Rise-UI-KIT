@@ -1,8 +1,3 @@
-/**
- * Unit-тесты BaseInfiniteScroll: подгрузка при появлении метки, итоги done (ok, empty, error), режим manual,
- * контейнер прокрутки, reset и load из ref.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

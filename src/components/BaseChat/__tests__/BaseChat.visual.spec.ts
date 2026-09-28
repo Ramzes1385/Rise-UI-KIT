@@ -1,8 +1,4 @@
-/**
- * Visual regression BaseChat: ключевые stories в светлой и тёмной теме.
- * Варианты оформления, групповой чат (play открывает профиль отправителя), вложения (коллаж, файлы, отправленный
- * файл), пустая лента, панель «Информация» (play оставляет её открытой). openStory ждёт окончания play.
- */
+/** Play открывает профиль отправителя в групповом чате и оставляет панель «Информация» открытой; openStory ждёт завершения play перед снимком. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

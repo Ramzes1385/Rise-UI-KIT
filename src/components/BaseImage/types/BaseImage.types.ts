@@ -1,18 +1,9 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Режим заполнения изображения
- */
 export type ImageFit = 'cover' | 'contain' | 'fill' | 'none'
 
-/**
- * Режим ленивой загрузки
- */
 export type ImageLoading = 'lazy' | 'eager'
 
-/**
- * Конфигурация зума изображения
- */
 export interface ImageZoomConfig {
 	/** Включить зум по клику */
 	hasZoom?: boolean
@@ -30,9 +21,6 @@ export interface ImageZoomConfig {
 	showMinimap?: boolean
 }
 
-/**
- * Пропсы компонента BaseImage
- */
 export interface BaseImageProps extends BaseComponentProps<
 	string,
 	| 'root'
@@ -102,18 +90,12 @@ export interface BaseImageProps extends BaseComponentProps<
 	gallery?: string[]
 }
 
-/**
- * События компонента BaseImage
- */
 export interface BaseImageEmits {
 	(event: 'load'): void
 	(event: 'error'): void
 	(event: 'zoom', scale: number): void
 }
 
-/**
- * Слоты компонента BaseImage
- */
 export interface BaseImageSlots {
 	placeholder?: () => unknown
 	error?: () => unknown

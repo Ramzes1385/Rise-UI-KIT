@@ -1,9 +1,6 @@
 import type { Ref } from 'vue'
 import type { ColumnFilter, TableColumn } from '@components/BaseTable/types/BaseTable.types'
 
-/**
- * Опции composable useTableFilter
- */
 export interface UseTableFilterOptions {
 	/** Колонки */
 	columns: Ref<TableColumn[]>
@@ -11,9 +8,6 @@ export interface UseTableFilterOptions {
 	onFilter?: (filters: ColumnFilter[]) => void
 }
 
-/**
- * Результат composable useTableFilter
- */
 export interface UseTableFilterReturn {
 	/** Активные фильтры */
 	activeFilters: Ref<ColumnFilter[]>

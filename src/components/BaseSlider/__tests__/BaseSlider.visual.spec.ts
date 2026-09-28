@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseSlider: ключевые stories в светлой и тёмной теме.
- * Слайды — SVG data URI из фикстур stories, поэтому снимки детерминированы и не ждут сеть.
- */
+/** Слайды — SVG data URI из фикстур stories, поэтому снимки детерминированы и не ждут сеть. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

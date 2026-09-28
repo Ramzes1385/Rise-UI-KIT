@@ -34,9 +34,6 @@ export interface BaseSearchOverlayEmits {
 	close: []
 }
 
-/**
- * Публичный контракт BaseSearchOverlay (defineExpose)
- */
 export interface BaseSearchOverlayExpose {
 	/** Устанавливает фокус на поле ввода оверлея */
 	focus: () => void

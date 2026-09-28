@@ -1,7 +1,4 @@
-// BaseLoader. Индикатор 32×32px при sizeScale = 100 цвета --rise-primary; color.text перекрашивает все виды.
-// Виды: spinner — дуга на треке, крутится всегда (в том числе при prefers-reduced-motion: иначе загрузка выглядит
-// как зависание); dots, pulse, bars — декоративная пульсация только без prefers-reduced-motion, иначе статичная фигура.
-// Подпись — 14/20 --rise-text-muted под индикатором. isOverlay — подложка на весь позиционированный контейнер.
+// spinner крутится всегда, даже при prefers-reduced-motion (иначе выглядит зависанием); dots/pulse/bars при reduced-motion статичны.
 .base-loader {
 	// Цвет индикатора читают все части: так color.text одинаково перекрашивает любой вид.
 	@include custom-text('--loader-color', var(--rise-primary));
@@ -24,8 +21,6 @@
 		color: var(--rise-text-muted);
 	}
 
-	// ─── Spinner ─────────────────────────────────────────────────────────────────
-
 	&__spinner {
 		width: 100%;
 		height: 100%;
@@ -43,8 +38,6 @@
 		stroke-linecap: round;
 	}
 
-	// ─── Dots ────────────────────────────────────────────────────────────────────
-
 	&--dots &__animation {
 		gap: sz(4px);
 	}
@@ -55,8 +48,6 @@
 		border-radius: var(--rise-radius-full);
 		background-color: var(--loader-color);
 	}
-
-	// ─── Pulse ───────────────────────────────────────────────────────────────────
 
 	// Точка в центре; расходящееся кольцо (::before) — только без prefers-reduced-motion.
 	&__pulse {
@@ -76,8 +67,6 @@
 		}
 	}
 
-	// ─── Bars ────────────────────────────────────────────────────────────────────
-
 	&--bars &__animation {
 		gap: sz(4px);
 	}
@@ -89,8 +78,6 @@
 		background-color: var(--loader-color);
 		transform: scaleY(0.5);
 	}
-
-	// ─── Анимации видов dots, pulse, bars ────────────────────────────────────────
 
 	@include motion-safe {
 		&__dot {
@@ -125,8 +112,6 @@
 			}
 		}
 	}
-
-	// ─── Оверлей ─────────────────────────────────────────────────────────────────
 
 	// Требует позиционированного родителя (position: relative). Подложка — фон страницы 80%: содержимое под ней
 	// остаётся различимым, но не спорит с индикатором.

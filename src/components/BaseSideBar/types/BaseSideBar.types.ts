@@ -2,10 +2,8 @@ import type { Component } from 'vue'
 import type { PaddingProp } from '@composables/usePadding'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения сайдбара */
 export const SIDEBAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/** Уникальный ключ пункта меню */
 export type SideBarItemKey = string | number
 
 /**
@@ -16,12 +14,8 @@ export type SideBarItemKey = string | number
  */
 export type SideBarItemTo = string | Record<string, unknown>
 
-/** Режим определения активного пункта */
 export type SideBarActiveMatch = 'exact' | 'startsWith'
 
-/**
- * Элемент навигации сайдбара
- */
 export interface SideBarItem {
 	/** Уникальный ключ пункта */
 	key?: SideBarItemKey
@@ -80,9 +74,6 @@ export interface BaseSideBarItemSlotProps extends BaseComponentProps<(typeof SID
 	onClick: (event: MouseEvent) => void
 }
 
-/**
- * Пропсы компонента BaseSideBar
- */
 export interface BaseSideBarProps extends BaseComponentProps<
 	(typeof SIDEBAR_VARIANTS)[number],
 	'root' | 'header' | 'title' | 'toggle' | 'navigation' | 'loading' | 'body' | 'footer' | 'collapsed'
@@ -163,9 +154,6 @@ export interface BaseSideBarProps extends BaseComponentProps<
 	linkComponent?: string | Component
 }
 
-/**
- * События компонента BaseSideBar
- */
 export interface BaseSideBarEmits {
 	/** Обновление v-model:isCollapsed */
 	(event: 'update:isCollapsed', value: boolean): void
@@ -180,9 +168,6 @@ export interface BaseSideBarEmits {
 	(event: 'itemClick', item: SideBarItem, nativeEvent: MouseEvent): void
 }
 
-/**
- * Слоты компонента BaseSideBar
- */
 export interface BaseSideBarSlots {
 	/** Основной контент */
 	default?: () => unknown
@@ -216,9 +201,6 @@ export interface BaseSideBarSlots {
 	badge?: (props: BaseSideBarItemSlotProps) => unknown
 }
 
-/**
- * Пропсы внутреннего компонента навигации BaseSideBarNavigation
- */
 export interface BaseSideBarNavigationProps extends BaseComponentProps<(typeof SIDEBAR_VARIANTS)[number], 'root'> {
 	/** Элементы навигации */
 	items?: SideBarItem[]
@@ -242,17 +224,11 @@ export interface BaseSideBarNavigationProps extends BaseComponentProps<(typeof S
 	isCollapsed?: boolean
 }
 
-/**
- * События внутреннего компонента навигации BaseSideBarNavigation
- */
 export interface BaseSideBarNavigationEmits {
 	/** Клик по пункту навигации */
 	(event: 'itemClick', item: SideBarItem, nativeEvent: MouseEvent): void
 }
 
-/**
- * Слоты внутреннего компонента навигации BaseSideBarNavigation
- */
 export interface BaseSideBarNavigationSlots {
 	/** Кастомный рендер всего пункта */
 	item?: (props: BaseSideBarItemSlotProps) => unknown

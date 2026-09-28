@@ -2,9 +2,6 @@ import type { ComputedRef, Ref } from 'vue'
 import type { VisiblePageItem } from '@utils/paginationUtils/types/paginationUtils.types'
 import type { ColumnFilter, SortState, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
-/**
- * Опции composable useTableData
- */
 export interface UseTableDataOptions {
 	/** Строки данных */
 	rows: Ref<TableRow[]>
@@ -28,9 +25,6 @@ export interface UseTableDataOptions {
 	onPageSizeChange?: (size: number) => void
 }
 
-/**
- * Результат composable useTableData
- */
 export interface UseTableDataReturn {
 	/** Поисковый запрос */
 	searchQuery: Ref<string>

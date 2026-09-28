@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseTimeline: список, текущее событие, даты, цвета, горизонтальная лента.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseTimeline from '../ui/BaseTimeline.vue'

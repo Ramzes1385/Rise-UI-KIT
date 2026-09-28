@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseFileUpload.
- * Проверяет: рендер, отключённое состояние.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('загрузка файлов: рендерит зону загрузки', async ({ page }) => {

@@ -1,9 +1,4 @@
-/**
- * Integration-тесты для BaseDropdown.
- * Проверяют взаимодействие: закрытие по Escape, click-outside,
- * сохранение фокуса при preventMousedown.
- * Компонент использует teleport to="body" — поиск в document.
- */
+/** Компонент использует teleport to="body" — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'

@@ -1,15 +1,9 @@
-/**
- * Unit-тесты для BaseSearch.
- * Проверяют рендер, CSS-модификаторы и базовое поведение.
- */
-
 import { nextTick, reactive } from 'vue'
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, waitFor } from '@testing-library/vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import BaseSearch from '../ui/BaseSearch.vue'
 
-/** Мокаем DOM-зависимые композаблы */
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
 vi.mock('@composables/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
@@ -913,7 +907,6 @@ describe('BaseSearch unit', () => {
 
 			vi.advanceTimersByTime(300)
 
-			// Не должен эмитить search автоматически
 			expect(emitted()).not.toHaveProperty('search')
 
 			vi.useRealTimers()
@@ -956,7 +949,6 @@ describe('BaseSearch unit', () => {
 			// До Enter — результаты не показываются (dropdown закрыт)
 			expect(container.querySelector('.base-search__result')).not.toBeInTheDocument()
 
-			// Нажимаем Enter
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
 			// После Enter — isSearchTriggered=true, результаты показываются

@@ -7,9 +7,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const LINK_VARIANTS = ['default', 'ghost'] as const
 
-/**
- * Пропсы компонента BaseLink
- */
 export interface BaseLinkProps extends BaseComponentProps<(typeof LINK_VARIANTS)[number], 'root' | 'external'> {
 	/** Маршрут приложения: строка или объект для RouterLink. Внешний адрес (`https://…`) открывается обычной ссылкой */
 	to?: LinkTo
@@ -27,17 +24,11 @@ export interface BaseLinkProps extends BaseComponentProps<(typeof LINK_VARIANTS)
 	linkComponent?: LinkComponent
 }
 
-/**
- * События компонента BaseLink
- */
 export interface BaseLinkEmits {
 	/** Клик по ссылке (у отключённой не приходит) */
 	(event: 'click', e: MouseEvent): void
 }
 
-/**
- * Слоты компонента BaseLink
- */
 export interface BaseLinkSlots {
 	/** Содержимое вместо label */
 	default?: () => unknown

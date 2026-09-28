@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useSlider.
- * Проверяют навигацию, autoplay, loop и trackStyle.
- */
-
 import { h, nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useSlider } from '../useSlider'
@@ -40,7 +35,6 @@ beforeAll(() => {
 	vi.stubGlobal('ResizeObserver', MockResizeObserver)
 })
 
-/** Обёртка для вызова composable внутри Vue-контекста */
 function withSetup<T>(composable: () => T): T {
 	let result: T
 	mount({
@@ -76,7 +70,6 @@ function withSetupDOM(composable: () => UseSliderReturn): UseSliderReturn {
 	return result!
 }
 
-/** Создать мок options */
 function createOptions(overrides: Record<string, unknown> = {}) {
 	return {
 		itemCount: () => 5,
@@ -383,8 +376,6 @@ describe('useSlider', () => {
 		})
 	})
 
-	// --- dragOffset и isDragging ---
-
 	it('должен возвращать dragOffset равным 0 по умолчанию', () => {
 		const slider = withSetup(() => useSlider(createOptions()))
 
@@ -397,23 +388,17 @@ describe('useSlider', () => {
 		expect(slider.isDragging.value).toBe(false)
 	})
 
-	// --- viewportRef ---
-
 	it('должен возвращать viewportRef равным null по умолчанию', () => {
 		const slider = withSetup(() => useSlider(createOptions()))
 
 		expect(slider.viewportRef.value).toBeNull()
 	})
 
-	// --- onDragStart ---
-
 	it('должен иметь обработчик onDragStart', () => {
 		const slider = withSetup(() => useSlider(createOptions()))
 
 		expect(slider.onDragStart).toBeTypeOf('function')
 	})
-
-	// --- watch initialIndex ---
 
 	it('должен обновлять currentIndex при изменении initialIndex', async () => {
 		const initialIndex = ref(0)
@@ -427,8 +412,6 @@ describe('useSlider', () => {
 		expect(slider.currentIndex.value).toBe(3)
 	})
 
-	// --- watch itemCount ---
-
 	it('должен клампить currentIndex при уменьшении itemCount', async () => {
 		const itemCount = ref(5)
 		const slider = withSetup(() => useSlider(createOptions({ itemCount: () => itemCount.value, initialIndex: () => 4 })))
@@ -440,8 +423,6 @@ describe('useSlider', () => {
 
 		expect(slider.currentIndex.value).toBe(2)
 	})
-
-	// --- onBeforeUnmount ---
 
 	it('должен останавливать autoplay при размонтировании', () => {
 		vi.useFakeTimers()
@@ -794,7 +775,6 @@ describe('useSlider', () => {
 			swipeCallbacks.isDragging.value = true
 			const slider = withSetup(() => useSlider(createOptions()))
 			expect(slider.trackStyle.value.transition).toBe('none')
-			// Восстановление для последующих тестов
 			swipeCallbacks.isDragging.value = false
 		})
 	})

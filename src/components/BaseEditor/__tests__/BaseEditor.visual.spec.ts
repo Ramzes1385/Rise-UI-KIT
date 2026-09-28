@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseEditor: ключевые stories в светлой и тёмной теме.
- * Витрины с несколькими редакторами высокие, поэтому окно выше стандартного.
- */
+/** Витрины с несколькими редакторами высокие, поэтому окно выше стандартного. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

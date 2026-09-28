@@ -1,13 +1,4 @@
-/**
- * Vite-плагин генерации SVG-спрайта из src/icons/svg.
- *
- * Production: спрайт эмитится в dist/icons.svg через this.emitFile() — без записи в public/.
- * Development: спрайт раздаётся middleware-ом по адресу /icons.svg (in-memory, без файла на диске).
- * HMR: при изменении SVG отправляется full-reload, спрайт пересобирается лениво при следующем запросе.
- *
- * Путь SPRITE_PATH относительный — корректно работает в любом base:
- * Vite dev, Storybook dev, Storybook build под подпапкой (GH Pages: /Rise-UI-KIT/).
- */
+/** Production: спрайт эмитится в dist через emitFile(); dev: раздаётся middleware в памяти. Путь относительный, чтобы работать под любым base (в т.ч. Storybook на GH Pages). */
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -101,7 +92,6 @@ function attachDevMiddleware(server: ViteDevServer): void {
 	})
 }
 
-/** Создаёт плагин генерации SVG-спрайта. */
 export function createSpritePlugin(): Plugin {
 	return {
 		name: 'svg-sprite-generator',

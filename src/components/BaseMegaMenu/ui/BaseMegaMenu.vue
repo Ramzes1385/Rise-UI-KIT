@@ -10,7 +10,6 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<!-- ── Columns layout ── -->
 		<div v-if="layout === 'columns'" class="base-mega-menu__container" :class="classes.container">
 			<div
 				v-for="column in columns"
@@ -53,7 +52,6 @@
 			</div>
 		</div>
 
-		<!-- ── Dropdown layout ── -->
 		<ul v-else class="base-mega-menu__nav" :class="classes.nav">
 			<li
 				v-for="item in items"
@@ -167,7 +165,6 @@ const openNavItems = ref<string[]>([])
 
 let hoverTimer: ReturnType<typeof setTimeout> | null = null
 
-/** Очистить таймер hover */
 function clearTimer(): void {
 	if (hoverTimer) {
 		clearTimeout(hoverTimer)
@@ -177,7 +174,6 @@ function clearTimer(): void {
 
 onBeforeUnmount(clearTimer)
 
-/** Есть ли у узла дочерние элементы */
 function hasChildren(item: MegaMenuItem): boolean {
 	return Boolean(item.children && item.children.length > 0)
 }
@@ -185,8 +181,6 @@ function hasChildren(item: MegaMenuItem): boolean {
 function navigate(to?: string, href?: string, target?: '_blank' | '_self'): void {
 	navigateAndEmit({ to, href, target }, url => emit('navigate', url))
 }
-
-// ── Columns ──
 
 function toggleColumn(title: string): void {
 	if (effectiveTrigger.value === 'hover') return
@@ -220,8 +214,6 @@ function handleColumnLeave(): void {
 		openColumns.value = []
 	}, props.hoverDelay)
 }
-
-// ── Dropdown ──
 
 function handleNavClick(item: MegaMenuItem): void {
 	/* istanbul ignore next -- defensive: disabled-элементы не вызывают click в template */

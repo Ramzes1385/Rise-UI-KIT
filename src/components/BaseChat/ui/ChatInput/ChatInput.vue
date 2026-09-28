@@ -1,6 +1,5 @@
 <template>
 	<div class="base-chat-input">
-		<!-- Панель быстрых ответов -->
 		<div v-if="quickReplies && quickReplies.length > 0" class="base-chat-input__quick-replies">
 			<BaseButton
 				v-for="reply in quickReplies"
@@ -14,7 +13,6 @@
 			</BaseButton>
 		</div>
 
-		<!-- Панель ответа на сообщение -->
 		<div v-if="replyingTo" class="base-chat-input__reply-bar">
 			<BaseIcon name="reply" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-input__reply-icon" />
 			<div class="base-chat-input__reply-content">
@@ -31,7 +29,6 @@
 			</BaseButton>
 		</div>
 
-		<!-- Список выбранных файлов (превью) -->
 		<ChatFilePreview v-if="attachments.length > 0" :attachments="attachments" :size-scale="sizeScale" @remove="removeAttachment" />
 
 		<div class="base-chat-input__controls">

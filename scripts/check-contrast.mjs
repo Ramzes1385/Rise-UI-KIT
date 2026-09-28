@@ -1,14 +1,4 @@
-/**
- * Проверка контраста дизайн-токенов (WCAG 2.2, уровень AA).
- *
- * Компилирует src/styles/_tokens.scss, вычисляет значения семантических токенов в светлой и тёмной теме
- * (включая color-mix) и сверяет пары «текст/фон» и «графика/фон» с порогами:
- * - текст — 4.5:1 (1.4.3 Contrast Minimum);
- * - графика, границы активных элементов, кольцо фокуса — 3:1 (1.4.11 Non-text Contrast).
- * Пары с пометкой «справочно» выводятся, но не валят проверку (плейсхолдеры, декоративные рамки).
- *
- * Запуск: node scripts/check-contrast.mjs [--markdown docs/design/contrast.md]
- */
+/** WCAG 2.2 AA: текст — 4.5:1 (1.4.3), графика/границы/кольцо фокуса — 3:1 (1.4.11); пары «справочно» не валят проверку. */
 
 import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -18,8 +8,6 @@ const ROOT = resolve(process.cwd())
 const ROLES = ['primary', 'success', 'info', 'warning', 'error']
 const TEXT = 4.5
 const GRAPHIC = 3
-
-// ─── 1. Значения токенов ────────────────────────────────────────────────────────
 
 const { css } = sass.compileString('@use "tokens";', { loadPaths: [resolve(ROOT, 'src/styles')], style: 'expanded' })
 
@@ -53,8 +41,6 @@ function themeVariables(theme) {
 	}
 	return vars
 }
-
-// ─── 2. Вычисление цветов ───────────────────────────────────────────────────────
 
 function parseHex(hex) {
 	const value = hex.replace('#', '')
@@ -115,8 +101,6 @@ const toHex = c =>
 		.slice(0, 3)
 		.map(x => Math.round(x).toString(16).padStart(2, '0'))
 		.join('')
-
-// ─── 3. Пары ────────────────────────────────────────────────────────────────────
 
 /** [передний план, фон, порог, описание, справочно?] */
 function pairs() {

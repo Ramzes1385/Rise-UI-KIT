@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseCard.
- * Проверяют рендер, пропсы, слоты и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseCard from '../ui/BaseCard.vue'

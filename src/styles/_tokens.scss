@@ -1,22 +1,7 @@
 @use 'sass:map';
 
-/// Дизайн-токены Rise UI Kit.
-///
-/// Три уровня, как в Nuxt UI:
-/// 1. Палитры `--rise-color-{роль}-{50…950}` — сырые цвета. Роли: primary, neutral, success, info, warning, error.
-/// 2. Семантические токены `--rise-*` — что именно красится: фон, текст, рамка, заливка роли, мягкий фон роли…
-///    Значения зависят от темы: `:root` / `[data-theme='light']` — светлая, `[data-theme='dark']` — тёмная,
-///    `[data-theme='system']` — как в системе (prefers-color-scheme).
-/// 3. Компоненты используют только семантические токены (никаких HEX в стилях компонентов).
-///
-/// Перекраска:
-/// - всего приложения — переопределите палитру роли на `:root`, например `--rise-color-primary-700`;
-/// - части интерфейса — задайте элементу `data-theme="light"` (или `dark`) и переопределите палитру на нём:
-///   семантические токены пересчитываются на каждом элементе с `data-theme`.
-///
-/// Контраст (WCAG 2.2 AA) проверен для пар «текст/фон» светлой и тёмной темы: `docs/design/contrast.md`.
+// Перекраска всего приложения — палитра роли на :root; части интерфейса — data-theme на элементе.
 
-// ─── 1. Палитры ────────────────────────────────────────────────────────────────
 // Значения — палитры Tailwind CSS: orange (primary), zinc (neutral), green, blue, amber, red.
 
 $palettes: (
@@ -117,8 +102,6 @@ $light-main-shade: (
 	@return var(--rise-color-#{$role}-#{$shade});
 }
 
-// ─── 2. Семантические токены ───────────────────────────────────────────────────
-
 /// Токены, не зависящие от темы: типографика, радиусы, размеры контролов, анимации.
 @mixin static-tokens {
 	// Шрифты. @font-face для Inter Variable / JetBrains Mono Variable подключает приложение (см. README → «Шрифты»).
@@ -206,7 +189,6 @@ $light-main-shade: (
 @mixin light-tokens {
 	color-scheme: light;
 
-	// Фон
 	--rise-bg: #fff;
 	--rise-bg-muted: #{palette('neutral', 50)};
 	--rise-bg-elevated: #{palette('neutral', 100)};
@@ -222,7 +204,6 @@ $light-main-shade: (
 	--rise-text-highlighted: #{palette('neutral', 900)};
 	--rise-text-inverted: #fff;
 
-	// Рамки
 	--rise-border: #{palette('neutral', 200)};
 	--rise-border-muted: #{palette('neutral', 200)};
 	--rise-border-accented: #{palette('neutral', 300)};
@@ -363,8 +344,6 @@ $light-main-shade: (
 	--shadow-lg: var(--rise-shadow-lg);
 	--shadow-xl: var(--rise-shadow-xl);
 }
-
-// ─── 3. Вывод ──────────────────────────────────────────────────────────────────
 
 :root {
 	@include palette-tokens;

@@ -1,7 +1,4 @@
-/**
- * Unit-тесты BaseVirtualList: отрисовка видимой части, семантика списка, ключи строк, строка с фокусом, методы.
- * jsdom не считает раскладку: высота области подменяется через clientHeight.
- */
+/** jsdom не считает раскладку: высота области подменяется через clientHeight. */
 
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'

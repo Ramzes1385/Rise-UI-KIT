@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseTabs.
- * Проверяет: переключение → disabled вкладка.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('табы: переключают активную вкладку по клику', async ({ page }) => {

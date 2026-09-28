@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseTabs.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { render, screen } from '@testing-library/vue'
@@ -251,7 +246,6 @@ describe('BaseTabs unit', () => {
 		})
 
 		it('должен распределять объект классов по внутренним элементам', async () => {
-			// Сохраняем оригинальные дескрипторы свойств
 			const originalScrollLeft = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollLeft')
 			const originalScrollWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollWidth')
 			const originalClientWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth')
@@ -295,7 +289,6 @@ describe('BaseTabs unit', () => {
 					},
 				})
 
-				// Ждем выполнения nextTick для обновления состояния прокрутки
 				await nextTick()
 				await nextTick()
 
@@ -308,7 +301,6 @@ describe('BaseTabs unit', () => {
 				expect(container.querySelector('.base-tabs__label')?.classList.contains('custom-label')).toBe(true)
 				expect(container.querySelector('.base-tabs__content')?.classList.contains('custom-content')).toBe(true)
 			} finally {
-				// Восстанавливаем оригинальные дескрипторы
 				if (originalScrollLeft) {
 					Object.defineProperty(HTMLElement.prototype, 'scrollLeft', originalScrollLeft)
 				} else {

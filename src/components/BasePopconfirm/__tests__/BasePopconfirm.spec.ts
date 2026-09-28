@@ -1,7 +1,3 @@
-/**
- * BasePopconfirm: вопрос у кнопки — ARIA, фокус, ответы, отмена Escape и кликом снаружи, Tab по кругу.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { fireEvent, render, screen, within } from '@testing-library/vue'

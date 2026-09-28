@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseInput.
- * Проверяют взаимодействие: ввод, v-model, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

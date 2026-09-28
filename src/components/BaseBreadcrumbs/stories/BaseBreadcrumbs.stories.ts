@@ -1,10 +1,3 @@
-/**
- * BaseBreadcrumbs — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, разделители, цвет) →
- * состояния (пусто, длинные названия) → содержимое (иконки, «домой», слоты) → сценарии (сворачивание) → клавиатура.
- */
-
 import { expect, fn, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import {

@@ -2,10 +2,8 @@
 import { computed, effectScope, ref, watch } from 'vue'
 import type { ColorMode, ColorModeController, ColorModeInstance, ColorModeOptions, ResolvedColorMode } from './types/useColorMode.types'
 
-/** Режимы темы */
 export const COLOR_MODES = ['light', 'dark', 'system'] as const
 
-/** Ключ localStorage для выбранного режима */
 export const COLOR_MODE_STORAGE_KEY = 'rise-color-mode'
 
 const DARK_QUERY = '(prefers-color-scheme: dark)'

@@ -1,7 +1,3 @@
-/**
- * Unit-тесты для BaseChip.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseChip from '../ui/BaseChip.vue'
@@ -210,7 +206,6 @@ describe('BaseChip unit', () => {
 		})
 
 		it('должен вернуть null для нечисловой строки в numericValue', () => {
-			// Проверяем что нечисловая строка не ломает numericValue
 			const { container } = render(BaseChip, {
 				props: { content: 'hello-world', hasOverflow: true, maxValue: 99 },
 			})

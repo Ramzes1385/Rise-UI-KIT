@@ -1,9 +1,3 @@
-/**
- * Unit-тесты для BaseColorPicker.
- * Покрывают: рендер swatch, открытие панели, выбор тона, ручной ввод HEX,
- * выбор пресета, выбор в SV-области, состояние disabled и кастомные пресеты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'

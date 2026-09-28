@@ -1,10 +1,3 @@
-/**
- * Unit-тесты для dateUtils.
- * Покрывают: isSameDay, toDateOnly, daysInMonth, getWeekday,
- * getWeekNumber, buildDateWithTime, isToday, isDateInRange,
- * formatDate, formatRange, formatMultiple.
- */
-
 import { setLocale } from '@/locales/state'
 import '@testing-library/jest-dom/vitest'
 import {
@@ -24,8 +17,6 @@ import {
 } from '../dateUtils'
 
 describe('dateUtils', () => {
-	// ── isSameDay ──
-
 	describe('isSameDay', () => {
 		it('возвращает true для одинаковых дат', () => {
 			const a = new Date(2025, 0, 15)
@@ -58,8 +49,6 @@ describe('dateUtils', () => {
 		})
 	})
 
-	// ── toDateOnly ──
-
 	describe('toDateOnly', () => {
 		it('обнуляет время', () => {
 			const d = new Date(2025, 5, 10, 14, 30, 45, 500)
@@ -79,8 +68,6 @@ describe('dateUtils', () => {
 		})
 	})
 
-	// ── daysInMonth ──
-
 	describe('daysInMonth', () => {
 		it('возвращает 31 для января', () => {
 			expect(daysInMonth(2025, 0)).toBe(31)
@@ -99,8 +86,6 @@ describe('dateUtils', () => {
 		})
 	})
 
-	// ── getWeekday ──
-
 	describe('getWeekday', () => {
 		it('возвращает 0 для воскресенья', () => {
 			const sunday = new Date(2025, 0, 5)
@@ -112,8 +97,6 @@ describe('dateUtils', () => {
 			expect(getWeekday(monday)).toBe(1)
 		})
 	})
-
-	// ── getWeekNumber ──
 
 	describe('getWeekNumber', () => {
 		it('возвращает 1 для начала года', () => {
@@ -137,8 +120,6 @@ describe('dateUtils', () => {
 		})
 	})
 
-	// ── buildDateWithTime ──
-
 	describe('buildDateWithTime', () => {
 		it('собирает дату с указанным временем', () => {
 			const date = new Date(2025, 5, 10)
@@ -151,8 +132,6 @@ describe('dateUtils', () => {
 		})
 	})
 
-	// ── isToday ──
-
 	describe('isToday', () => {
 		it('возвращает true для текущей даты', () => {
 			expect(isToday(new Date())).toBe(true)
@@ -164,8 +143,6 @@ describe('dateUtils', () => {
 			expect(isToday(yesterday)).toBe(false)
 		})
 	})
-
-	// ── isDateInRange ──
 
 	describe('isDateInRange', () => {
 		it('возвращает true для даты внутри диапазона', () => {
@@ -203,8 +180,6 @@ describe('dateUtils', () => {
 			expect(isDateInRange(date, start, end)).toBe(true)
 		})
 	})
-
-	// ── formatDate ──
 
 	describe('formatDate', () => {
 		const base = {
@@ -252,8 +227,6 @@ describe('dateUtils', () => {
 		})
 	})
 
-	// ── formatRange ──
-
 	describe('formatRange', () => {
 		const base = {
 			dateFormat: 'dd.MM.yyyy' as const,
@@ -288,8 +261,6 @@ describe('dateUtils', () => {
 			expect(result).not.toContain('...')
 		})
 	})
-
-	// ── formatMultiple ──
 
 	describe('formatMultiple', () => {
 		const base = {
@@ -326,8 +297,6 @@ describe('dateUtils', () => {
 			expect(formatMultiple({ ...base, dates })).toBe('4 dates selected')
 		})
 	})
-
-	// ── formatDatePickerValue ──
 
 	describe('formatDatePickerValue', () => {
 		const base = {
@@ -386,8 +355,6 @@ describe('dateUtils', () => {
 			expect(result).toContain(',')
 		})
 	})
-
-	// ── formatPopoverDate ──
 
 	describe('formatPopoverDate', () => {
 		it('форматирует дату с днём недели, месяцем и годом', () => {

@@ -28,7 +28,6 @@ export interface FormFieldContext {
 	register: (getId: () => string, isLabelable: boolean) => (() => void) | undefined
 }
 
-/** Настройки контрола поля */
 export interface UseFieldControlOptions {
 	/** Свой id элемента (`inputAttrs.id`); без него — сгенерированный */
 	id?: () => string | undefined
@@ -42,14 +41,12 @@ export interface UseFieldControlOptions {
 	isRequired?: () => boolean
 }
 
-/** ARIA-атрибуты контрола поля */
 export interface FieldControlAria {
 	'aria-invalid': 'true' | undefined
 	'aria-required': 'true' | undefined
 	'aria-describedby': string | undefined
 }
 
-/** Результат useFieldControl */
 export interface UseFieldControlReturn {
 	/** id элемента контрола */
 	id: ComputedRef<string>

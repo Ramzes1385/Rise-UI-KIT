@@ -130,7 +130,6 @@ defineSlots<BaseSearchOverlaySlots>()
 const { sizeScaleStyle, variantClass, variantStyle, customColorStyle } = useStandardBaseComponent('base-search', props)
 
 const isOpen = ref(false)
-/** Место окна поиска среди открытых слоёв */
 const layerStyle = useLayerIndex(() => isOpen.value)
 const inputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 

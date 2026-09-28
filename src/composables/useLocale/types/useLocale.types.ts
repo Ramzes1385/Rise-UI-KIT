@@ -1,7 +1,6 @@
 import type { ComputedRef } from 'vue'
 import type { LocaleInput, PluralForms, UiKitLocale } from '@/locales/types/locales.types'
 
-/** Язык кита и форматирование по его правилам */
 export interface UseLocaleReturn {
 	/** Код текущего языка: `ru`, `en` */
 	locale: ComputedRef<string>

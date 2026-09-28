@@ -6,9 +6,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** Варианты: default — текст с пунктирным подчёркиванием, наведение — фон; ghost — только текст, наведение — фон */
 export const INPLACE_VARIANTS = ['default', 'ghost'] as const
 
-/**
- * Пропсы компонента BaseInplace
- */
 export interface BaseInplaceProps extends BaseComponentProps<(typeof INPLACE_VARIANTS)[number], 'root' | 'display' | 'field'> {
 	/** Текст (v-model) */
 	modelValue?: string
@@ -22,9 +19,6 @@ export interface BaseInplaceProps extends BaseComponentProps<(typeof INPLACE_VAR
 	isSaveOnBlur?: boolean
 }
 
-/**
- * События компонента BaseInplace
- */
 export interface BaseInplaceEmits {
 	/** Новый текст после сохранения */
 	(event: 'update:modelValue', value: string): void
@@ -34,9 +28,6 @@ export interface BaseInplaceEmits {
 	(event: 'cancel'): void
 }
 
-/**
- * Слоты компонента BaseInplace
- */
 export interface BaseInplaceSlots {
 	/** Свой вид текста в режиме просмотра */
 	display?: (props: { value: string }) => unknown

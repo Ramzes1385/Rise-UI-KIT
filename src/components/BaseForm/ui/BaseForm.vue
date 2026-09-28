@@ -18,7 +18,6 @@
 			<BaseLoader variant="spinner" :has-label="true" :label="UI_TEXT.LOADING" :size-scale="sizeScale" />
 		</div>
 
-		<!-- Контент формы -->
 		<div class="base-form__content" :class="classes.content">
 			<!-- fieldset[disabled] отключает все нативные контролы: pointer-events блокирует только мышь, но не клавиатуру.
 				role="presentation" — обёртка чисто поведенческая, скринридеру не нужна лишняя группа -->
@@ -62,10 +61,8 @@ defineSlots<BaseFormSlots>()
 
 const formRef = ref<HTMLFormElement | null>(null)
 
-/** Поля заблокированы: форма отключена или отправляется */
 const isLocked = computed(() => props.isLoading || props.isDisabled)
 
-/** Элемент формы, который был в фокусе перед блокировкой */
 let focusedBeforeLock: HTMLElement | null = null
 
 // flush 'pre': запоминаем фокус до патча DOM — после disabled браузер переводит фокус на body

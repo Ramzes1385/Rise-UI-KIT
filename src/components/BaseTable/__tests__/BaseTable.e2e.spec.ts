@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseTable.
- * Проверяет: сортировка, пагинация.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('таблица: рендерит строки и заголовки', async ({ page }) => {

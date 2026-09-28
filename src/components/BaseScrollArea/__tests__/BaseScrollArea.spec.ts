@@ -1,8 +1,3 @@
-/**
- * Unit-тесты BaseScrollArea: полосы по размерам области, прокрутка, клик по полосе, перетаскивание ползунка,
- * tabindex и имя области, методы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { fireEvent, render } from '@testing-library/vue'

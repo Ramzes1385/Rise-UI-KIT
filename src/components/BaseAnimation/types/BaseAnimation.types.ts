@@ -17,7 +17,6 @@ export const ANIMATION_NAMES = [
 /** Режимы анимации */
 export const ANIMATION_MODES = ['out-in', 'in-out', 'default'] as const
 
-/** Тип имени анимации */
 export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
 import type { BaseComponentProps } from '@composables/useBaseComponent'
@@ -41,9 +40,6 @@ export interface BaseAnimationProps extends BaseComponentProps<string, 'root'> {
 	tag?: string
 }
 
-/**
- * События компонента BaseAnimation
- */
 export interface BaseAnimationEmits {
 	/** Анимация появления завершилась (в режиме `isGroup` — для каждого элемента списка). */
 	(event: 'after-enter'): void
@@ -51,9 +47,6 @@ export interface BaseAnimationEmits {
 	(event: 'after-leave'): void
 }
 
-/**
- * Слоты компонента BaseAnimation
- */
 export interface BaseAnimationSlots {
 	/** Анимируемое содержимое; в режиме `isGroup` — элементы списка с `key`. */
 	default?: () => unknown

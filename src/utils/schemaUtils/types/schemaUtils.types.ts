@@ -1,4 +1,3 @@
-/** Элемент хлебных крошек для Schema.org */
 export interface SchemaBreadcrumbItem {
 	/** Название элемента */
 	label: string

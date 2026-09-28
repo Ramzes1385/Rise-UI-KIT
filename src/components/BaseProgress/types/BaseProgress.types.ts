@@ -1,24 +1,13 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Формы прогресс-бара */
 export const PROGRESS_SHAPES = ['line', 'circle'] as const
 
-/** Режимы анимации */
 export const PROGRESS_ANIMATIONS = ['none', 'striped', 'pulse', 'glow'] as const
 
-/**
- * Форма прогресс-бара
- */
 export type ProgressShape = (typeof PROGRESS_SHAPES)[number]
 
-/**
- * Режим анимации
- */
 export type ProgressAnimation = (typeof PROGRESS_ANIMATIONS)[number]
 
-/**
- * Пропсы компонента BaseProgress
- */
 export interface BaseProgressProps extends BaseComponentProps<
 	string,
 	'root' | 'track' | 'fill' | 'tooltipTrigger' | 'tooltipAnchor' | 'svg' | 'trackCircle' | 'fillCircle' | 'circleLabel'
@@ -42,17 +31,11 @@ export interface BaseProgressProps extends BaseComponentProps<
 	ariaLabel?: string
 }
 
-/**
- * События компонента BaseProgress
- */
 export interface BaseProgressEmits {
 	/** Прогресс достиг 100%. */
 	(event: 'complete'): void
 }
 
-/**
- * Слоты компонента BaseProgress
- */
 export interface BaseProgressSlots {
 	/** Содержимое подписи при `hasLabel` (по умолчанию «N%»): `value` — значение, `percent` — процент 0–100. */
 	default?: (props: { value: number; percent: number }) => unknown

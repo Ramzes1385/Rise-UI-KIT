@@ -16,5 +16,4 @@ export interface MegaMenuTree {
 	close: (path: string) => void
 }
 
-/** Ключ inject для реестра дерева мега-меню */
 export const MEGA_MENU_TREE_KEY: InjectionKey<MegaMenuTree> = Symbol('megaMenuTree')

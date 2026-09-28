@@ -1,7 +1,4 @@
-/**
- * Конфигурация Vitest для unit и integration тестов.
- * Alias и SCSS-настройки — общие со сборкой библиотеки (build/config/alias.ts, build/config/css.ts).
- */
+/** Alias и SCSS-настройки — общие со сборкой библиотеки (build/config/alias.ts, build/config/css.ts). */
 
 /// <reference types="vitest" />
 
@@ -18,11 +15,9 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 /** Корень проекта: build/tests/ → на два уровня выше. */
 const ROOT = path.resolve(dirname, '../..')
 
-/** Базовая зона покрытия для общего прогона Vitest. */
 const BASE_COVERAGE_INCLUDE = ['src/utils/**/*.ts', 'src/composables/**/*.ts', 'src/components/**/*.vue', 'src/components/**/model/use*.ts']
 
-/** Зона покрытия для components-прогона — UI-компоненты и их логика в `model/use*.ts`.
- * Точечные include/exclude передаются поверх через CLI (--coverage.include). */
+/** Точечные include/exclude передаются поверх через CLI (--coverage.include). */
 const COMPONENT_COVERAGE_INCLUDE = ['src/components/**/*.vue', 'src/components/**/model/use*.ts']
 
 const COVERAGE_MODE = process.env.COVERAGE_MODE ?? ''

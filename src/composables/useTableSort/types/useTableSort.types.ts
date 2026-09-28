@@ -1,9 +1,6 @@
 import type { Ref } from 'vue'
 import type { SortState, TableColumn } from '@components/BaseTable/types/BaseTable.types'
 
-/**
- * Опции composable useTableSort
- */
 export interface UseTableSortOptions {
 	/** Множественная сортировка */
 	isMultiSort: () => boolean
@@ -11,9 +8,6 @@ export interface UseTableSortOptions {
 	onSort?: (states: SortState[]) => void
 }
 
-/**
- * Результат composable useTableSort
- */
 export interface UseTableSortReturn {
 	/** Текущие состояния сортировки */
 	sortStates: Ref<SortState[]>

@@ -1,7 +1,6 @@
 import type { Ref } from 'vue'
 import type { HsvColor } from '@utils/colorUtils'
 
-/** Опции composable useColorPicker */
 export interface UseColorPickerOptions {
 	/** Текущее значение цвета в формате HEX (геттер из внешнего состояния) */
 	getValue: () => string
@@ -15,7 +14,6 @@ export interface RelativePoint {
 	y: number
 }
 
-/** Возвращаемое значение composable useColorPicker */
 export interface UseColorPickerReturn {
 	/** Текущее HSV-состояние */
 	hsv: Ref<HsvColor>

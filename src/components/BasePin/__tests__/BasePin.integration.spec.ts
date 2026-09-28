@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BasePin.
- * Проверяют взаимодействие: ввод, навигация, вставка, Backspace.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import { render } from '@testing-library/vue'
@@ -90,7 +85,6 @@ describe('BasePin integration', () => {
 			})
 
 			const inputs = container.querySelectorAll<HTMLInputElement>('.base-pin__input')
-			// Фокус на второй позиции (пустая)
 			inputs[1]?.focus()
 			await user.keyboard('{Backspace}')
 
@@ -110,7 +104,6 @@ describe('BasePin integration', () => {
 			await user.keyboard('{Backspace}')
 
 			const events = emitted()['update:modelValue'] as string[][]
-			// Должен остаться пустым
 			expect(events.at(-1)?.[0]).toBe('')
 		})
 	})
@@ -201,7 +194,6 @@ describe('BasePin integration', () => {
 			const firstInput = container.querySelector<HTMLInputElement>('.base-pin__input')
 			firstInput?.focus()
 
-			// Эмулируем paste события
 			await user.paste('1234')
 
 			const events = emitted()['update:modelValue'] as string[][]

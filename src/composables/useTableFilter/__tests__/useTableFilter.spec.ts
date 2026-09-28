@@ -1,7 +1,3 @@
-/**
- * Unit-тесты для useTableFilter.
- */
-
 import { ref } from 'vue'
 import { useTableFilter } from '../useTableFilter'
 import type { TableColumn } from '@components/BaseTable/types/BaseTable.types'

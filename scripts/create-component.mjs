@@ -1,26 +1,4 @@
-/**
- * Создаёт заготовку нового компонента по структуре библиотеки и регистрирует его.
- *
- * Использование:
- *   npm run create:component -- <Имя> --group=<Раздел Storybook> [--kind=display|interactive|form]
- *     [--variants=default,soft,outline,ghost] [--loading] [--empty] [--long] [--no-lint] [--dry-run]
- *
- * Примеры:
- *   npm run create:component -- Kbd --group=Element
- *   npm run create:component -- InputNumber --group=Form --kind=form --long
- *
- * Виды:
- *   display     — отображение без взаимодействия: корень div, слот default или label.
- *   interactive — кнопкоподобный элемент: нативная <button>, событие click, isDisabled.
- *   form        — поле формы: подпись, нативное поле, v-model, isDisabled, error с aria-describedby.
- *
- * Что создаётся (src/components/Base<Имя>/): index.ts, types/*.types.ts, ui/*.vue, styles/*.style.scss,
- * stories/*.stories.ts, __tests__/*.spec.ts (+ integration для interactive и form) и *.visual.spec.ts.
- * Регистрация: src/components/index.ts, src/plugin/plugin.ts, наборы в scripts/check-a11y-coverage.mjs.
- *
- * Заготовка рабочая: проходит lint, типы, тесты и покрытие. Места, которые автор обязан заполнить
- * (назначение, варианты, размеры), помечены TODO(scaffold) — проверка stories не пройдёт, пока они остаются.
- */
+/** Заготовка рабочая (проходит lint, типы, тесты), но проверка stories не пройдёт, пока не заполнены места, помеченные TODO(scaffold). */
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -31,8 +9,6 @@ const COMPONENTS_DIR = join(ROOT, 'src/components')
 const TODO = 'TODO(scaffold)'
 const KINDS = ['display', 'interactive', 'form']
 const KNOWN_VARIANTS = ['default', 'soft', 'outline', 'ghost', 'shadow']
-
-// ─── Аргументы ────────────────────────────────────────────────────────────────
 
 function fail(message) {
 	console.error(`❌ ${message}`)
@@ -65,8 +41,6 @@ function readStoryGroups() {
 	return [...order[1].matchAll(/^\t*'([^']+)',/gm)].map(match => match[1])
 }
 
-// ─── Имена ────────────────────────────────────────────────────────────────────
-
 function buildNames(rawName, group) {
 	const short = rawName.replace(/^Base/, '')
 	if (!/^[A-Z][A-Za-z0-9]*$/.test(short)) fail(`Имя должно быть в PascalCase без пробелов: ${rawName}`)
@@ -81,8 +55,6 @@ function buildNames(rawName, group) {
 		storyId: `${group.toLowerCase()}-${name.toLowerCase()}`,
 	}
 }
-
-// ─── Шаблоны: модель ──────────────────────────────────────────────────────────
 
 function typesTemplate(n, kind, variants) {
 	const props = {
@@ -144,8 +116,6 @@ function indexTemplate(n, kind) {
 		'',
 	].join('\n')
 }
-
-// ─── Шаблоны: компонент ───────────────────────────────────────────────────────
 
 function vueTemplate(n, kind) {
 	const root = '[variantClass, classes.root]'
@@ -246,8 +216,6 @@ function vueTemplate(n, kind) {
 		'',
 	].join('\n')
 }
-
-// ─── Шаблоны: стили ───────────────────────────────────────────────────────────
 
 const VARIANT_STYLES = {
 	soft: ['border-color: transparent;', '@include custom-bg(background-color, var(--rise-bg-elevated));'],
@@ -355,8 +323,6 @@ function styleTemplate(n, kind, variants) {
 		'',
 	].join('\n')
 }
-
-// ─── Шаблоны: stories ─────────────────────────────────────────────────────────
 
 function storiesTemplate(n, kind, variants, flags) {
 	const helpers = ['ARG_GROUP', 'baseArgTypes', 'propGroup', 'SIZE_PRESETS', 'sizeLabel', 'useArgsWithoutSlots']
@@ -551,8 +517,6 @@ function storiesTemplate(n, kind, variants, flags) {
 	return lines.join('\n')
 }
 
-// ─── Шаблоны: тесты ───────────────────────────────────────────────────────────
-
 function unitSpecTemplate(n, kind) {
 	const variantToCheck = 'soft'
 	const labelProps = kind === 'form' ? "{ label: 'Название' }" : "{ label: 'Пример' }"
@@ -716,8 +680,6 @@ function visualSpecTemplate(n, kind) {
 	].join('\n')
 }
 
-// ─── Регистрация ──────────────────────────────────────────────────────────────
-
 function registerInBarrel(n, changes) {
 	const path = join(COMPONENTS_DIR, 'index.ts')
 	const lines = readFileSync(path, 'utf-8').split('\n').filter(Boolean)
@@ -764,8 +726,6 @@ function registerInA11yGate(n, kind, flags, changes) {
 	if (sets.length) changes.set(path, source)
 	return sets
 }
-
-// ─── Запуск ───────────────────────────────────────────────────────────────────
 
 function main() {
 	const options = parseArgs(process.argv.slice(2))

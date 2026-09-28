@@ -3,32 +3,16 @@ import type { PaddingProp } from '@composables/usePadding'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { VisiblePageItem } from '@utils/paginationUtils/types/paginationUtils.types'
 
-/** Варианты отображения таблицы */
 export const TABLE_VARIANTS = ['default', 'bordered', 'striped'] as const
 
-/**
- * Направление сортировки
- */
 export type SortDirection = 'asc' | 'desc' | null
 
-/**
- * Тип сортировки
- */
 export type SortType = 'string' | 'number' | 'date'
 
-/**
- * Оператор фильтра
- */
 export type FilterOperator = 'eq' | 'ne' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | 'between' | 'in'
 
-/**
- * Тип фильтра колонки
- */
 export type ColumnFilterType = 'text' | 'select' | 'range' | 'date' | 'multi-select'
 
-/**
- * Опция фильтра-селекта
- */
 export interface FilterOption {
 	/** Значение */
 	value: string
@@ -36,9 +20,6 @@ export interface FilterOption {
 	label: string
 }
 
-/**
- * Настройки фильтра колонки
- */
 export interface ColumnFilterConfig {
 	/** Тип фильтра */
 	type: ColumnFilterType
@@ -48,9 +29,6 @@ export interface ColumnFilterConfig {
 	placeholder?: string
 }
 
-/**
- * Определение колонки
- */
 export interface TableColumn {
 	/** Уникальный ключ */
 	key: string
@@ -86,9 +64,6 @@ export interface TableColumn {
 	formatter?: (value: unknown, row: TableRow) => string
 }
 
-/**
- * Состояние сортировки
- */
 export interface SortState {
 	/** Ключ колонки */
 	key: string
@@ -96,9 +71,6 @@ export interface SortState {
 	direction: SortDirection
 }
 
-/**
- * Фильтр колонки
- */
 export interface ColumnFilter {
 	/** Ключ колонки */
 	key: string
@@ -110,9 +82,6 @@ export interface ColumnFilter {
 	valueTo?: string
 }
 
-/**
- * Определение вложенной таблицы
- */
 export interface NestedTableConfig {
 	/** Колонки вложенной таблицы */
 	columns: TableColumn[]
@@ -122,9 +91,6 @@ export interface NestedTableConfig {
 	title?: string
 }
 
-/**
- * Определение строки (с поддержкой вложенности)
- */
 export interface TableRow {
 	/** Уникальный ID */
 	id: string | number
@@ -146,14 +112,8 @@ export interface TableRow {
 	_depth?: number
 }
 
-/**
- * Вариант таблицы
- */
 export type TableVariant = (typeof TABLE_VARIANTS)[number]
 
-/**
- * Режим подгрузки данных
- */
 export type LoadMode = 'pagination' | 'infinite' | 'button'
 
 /**
@@ -184,9 +144,6 @@ export interface TableBehaviorConfig {
 	resizable?: boolean
 }
 
-/**
- * Пропсы компонента BaseTable
- */
 export interface BaseTableProps extends BaseComponentProps<
 	TableVariant,
 	| 'root'
@@ -252,9 +209,6 @@ export interface BaseTableProps extends BaseComponentProps<
 	rowHeight?: number
 }
 
-/**
- * События компонента BaseTable
- */
 export interface BaseTableEmits {
 	(event: 'sort', state: SortState[]): void
 	(event: 'filter', filters: ColumnFilter[]): void
@@ -281,12 +235,8 @@ export interface TableExpandTransitionCallbacks {
 	onCollapseAfterLeave: (el: Element) => void
 }
 
-/** Ключ provide/inject для transition-колбэков раскрытия строк */
 export const TABLE_EXPAND_TRANSITION_KEY = Symbol('TABLE_EXPAND_TRANSITION') as InjectionKey<TableExpandTransitionCallbacks>
 
-/**
- * Слоты компонента BaseTable
- */
 export interface BaseTableSlots {
 	default?: () => unknown
 	header?: () => unknown

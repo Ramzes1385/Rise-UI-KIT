@@ -1,6 +1,5 @@
 import type { HTMLAttributes } from 'vue'
 
-/** Пропсы ползунка BaseRange */
 export interface BaseRangeThumbProps {
 	/** Текущее значение ползунка */
 	value: number
@@ -24,13 +23,11 @@ export interface BaseRangeThumbProps {
 	dotClass?: HTMLAttributes['class']
 }
 
-/** События ползунка BaseRange */
 export interface BaseRangeThumbEmits {
 	(event: 'down', payload: { event: MouseEvent | TouchEvent; index: number }): void
 	(event: 'keydown', payload: { event: KeyboardEvent; index: number }): void
 }
 
-/** Слоты ползунка BaseRange */
 export interface BaseRangeThumbSlots {
 	default?: (props: { value: number; index: number }) => unknown
 }

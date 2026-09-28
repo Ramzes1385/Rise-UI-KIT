@@ -15,9 +15,6 @@ export const INPUT_NUMBER_VARIANTS = [
 	'underline',
 ] as const satisfies readonly InputVariant[]
 
-/**
- * Пропсы компонента BaseInputNumber
- */
 export interface BaseInputNumberProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'button'> {
 	/** Число (v-model); `null` — поле пустое */
 	modelValue?: number | null
@@ -51,9 +48,6 @@ export interface BaseInputNumberProps extends BaseComponentProps<InputVariant, '
 	formatValueText?: (value: number) => string
 }
 
-/**
- * События компонента BaseInputNumber
- */
 export interface BaseInputNumberEmits {
 	/** Новое значение: при вводе допустимого числа, кнопками и клавишами, при выходе из поля */
 	(event: 'update:modelValue', value: number | null): void
@@ -66,7 +60,6 @@ export interface BaseInputNumberEmits {
 /** Пропсы BaseInputNumber после значений по умолчанию */
 export type InputNumberProps = PropsWithDefaults<BaseInputNumberProps, 'modelValue' | 'step' | 'isDisabled' | 'isReadonly' | 'hasControls'>
 
-/** Текст поля и его формат */
 export interface NumberDraft {
 	/** Текст в поле: пока пользователь печатает — его текст, иначе — значение в формате языка */
 	draft: Ref<string>

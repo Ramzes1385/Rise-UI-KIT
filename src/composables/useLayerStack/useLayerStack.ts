@@ -1,7 +1,4 @@
-/**
- * Composable: стек открытых слоёв — Escape и нажатие вне получает верхний слой, вложенные не закрывают родителя,
- * слой, открытый позже, отрисовывается выше
- */
+/** Стек открытых слоёв: Escape и клик вне действует на верхний слой, вложенные не закрывают родителя, слой открытый позже — выше */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ComputedRef } from 'vue'
 import type { LayerEntry, LayerOptions } from './types/useLayerStack.types'

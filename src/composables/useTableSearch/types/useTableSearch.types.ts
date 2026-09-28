@@ -8,9 +8,6 @@ export interface UseTableSearchOptions {
 	onSearch?: (query: string) => void
 }
 
-/**
- * Результат composable useTableSearch
- */
 export interface UseTableSearchReturn {
 	/** Поисковый запрос */
 	searchQuery: import('vue').Ref<string>

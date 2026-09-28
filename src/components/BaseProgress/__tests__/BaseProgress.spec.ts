@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseProgress.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseProgress from '../ui/BaseProgress.vue'

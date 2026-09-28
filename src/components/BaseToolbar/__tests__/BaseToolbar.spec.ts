@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseToolbar: роль, один элемент в порядке Tab, пересчёт при изменениях.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import { render, screen } from '@testing-library/vue'

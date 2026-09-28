@@ -8,10 +8,7 @@ export const DRAWER_DIRECTIONS = ['bottom', 'top', 'left', 'right'] as const
 
 export type DrawerDirection = (typeof DRAWER_DIRECTIONS)[number]
 
-/**
- * Пропсы компонента BaseDrawer.
- * `sizeScale` масштабирует отступы, кегль и ширину боковой панели; `color` задаёт фон и текст панели.
- */
+/** `sizeScale` масштабирует отступы, кегль и ширину боковой панели; `color` задаёт фон и текст панели. */
 export interface BaseDrawerProps extends BaseComponentProps<
 	(typeof DRAWER_VARIANTS)[number],
 	'root' | 'panel' | 'handle' | 'header' | 'title' | 'body' | 'footer'
@@ -38,17 +35,11 @@ export interface BaseDrawerProps extends BaseComponentProps<
 	hasOverlay?: boolean
 }
 
-/**
- * События компонента BaseDrawer
- */
 export interface BaseDrawerEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
 }
 
-/**
- * Слоты компонента BaseDrawer
- */
 export interface BaseDrawerSlots {
 	/** Содержимое панели */
 	default?: () => unknown

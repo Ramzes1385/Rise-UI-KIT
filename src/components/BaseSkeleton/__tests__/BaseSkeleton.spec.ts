@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseSkeleton.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'

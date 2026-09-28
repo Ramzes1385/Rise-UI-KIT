@@ -1,22 +1,12 @@
-/**
- * Unit-тесты для DatePickerPanel.
- * Проверяют рендер, навигацию, инициализацию, эмиты и expose.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
 import DatePickerPanel from '../ui/DatePickerPanel/DatePickerPanel.vue'
 
-/**
- * Имена props реального BaseCalendar. Stub обязан повторять настоящий контракт:
- * прежний stub объявлял удалённые в 1.2.2 плоские props (minDate, showTime, showNavigation…)
- * и тем самым скрывал, что панель передаёт их в пустоту.
- */
+/** Stub обязан повторять настоящий контракт: прежний stub объявлял удалённые в 1.2.2 плоские props (minDate, showTime, showNavigation…) и тем самым скрывал, что панель передаёт их в пустоту. */
 const BASE_CALENDAR_PROP_NAMES = Object.keys((BaseCalendar as unknown as { props: Record<string, unknown> }).props)
 
-/** Стабы для UI Kit компонентов */
 const GLOBAL_STUBS = {
 	BaseButton: {
 		template: '<button class="base-button" :title="title" @click="$emit(\'click\')"><slot /></button>',
@@ -50,7 +40,6 @@ const GLOBAL_STUBS = {
 	BaseText: { template: '<span class="base-text"><slot /></span>', props: ['tag', 'weight', 'sizeScale'] },
 }
 
-/** Полный набор обязательных пропсов */
 const DEFAULT_PROPS = {
 	isOpen: true,
 	modelValue: new Date(2026, 0, 15),

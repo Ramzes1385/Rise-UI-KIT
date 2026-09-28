@@ -20,7 +20,6 @@ export type UseFormFieldReturn = {
 	onBlur: () => void
 }
 
-/** Единый контракт defineExpose для form-field компонентов */
 export interface FormFieldExpose {
 	/** Ref на корневой элемент компонента */
 	rootRef: HTMLElement | null

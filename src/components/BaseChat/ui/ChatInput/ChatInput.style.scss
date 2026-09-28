@@ -1,7 +1,4 @@
-// Поле ввода чата. Ряд 32px: ghost-кнопки 32px (вложение, команды, эмодзи), поле — коробка field-box с textarea
-// (высота растёт с текстом до 6 строк), отправка — solid-кнопка primary 32px. Над рядом по необходимости:
-// быстрые ответы (outline-пилюли 28px), панель ответа (bg-muted, линия primary слева), превью вложений (карточки
-// с рамкой, радиус md). Подсказки @упоминаний и /команд и панель эмодзи — плавающие панели (floating-surface).
+// Textarea поля растёт с текстом до 6 строк; подсказки @упоминаний, /команд и панель эмодзи — плавающие панели (floating-surface).
 @use '../../styles/chat' as *;
 
 .base-chat-input {
@@ -13,8 +10,6 @@
 	padding: sz(12px) sz(12px) sz(12px) sz(16px);
 	@include chat-section-border(top);
 
-	// ─── Быстрые ответы ──────────────────────────────────────────────────────────
-
 	&__quick-replies {
 		display: flex;
 		flex-wrap: wrap;
@@ -24,8 +19,6 @@
 	&__quick-reply-btn.base-button {
 		border-radius: var(--rise-radius-full);
 	}
-
-	// ─── Ответ на сообщение ──────────────────────────────────────────────────────
 
 	&__reply-bar {
 		display: flex;
@@ -63,8 +56,6 @@
 	&__reply-cancel {
 		@include chat-icon-button(3px);
 	}
-
-	// ─── Превью вложений ─────────────────────────────────────────────────────────
 
 	&__previews {
 		display: flex;
@@ -117,8 +108,6 @@
 		@include chat-icon-button(3px);
 	}
 
-	// ─── Ряд ввода ───────────────────────────────────────────────────────────────
-
 	&__controls {
 		display: flex;
 		align-items: flex-end;
@@ -132,7 +121,6 @@
 		@include chat-icon-button(5px);
 	}
 
-	// Кнопка команд при открытом списке команд — нажатое состояние.
 	&__commands-btn--active.base-button {
 		--custom-bg: var(--rise-bg-elevated);
 	}
@@ -152,7 +140,6 @@
 		min-width: 0;
 	}
 
-	// Коробка поля: рамка accented, фон bg, радиус md, фокус — рамка и кольцо primary. 32px на одну строку.
 	&__field {
 		box-sizing: border-box;
 		flex: 1;
@@ -178,8 +165,6 @@
 			text-overflow: ellipsis;
 		}
 	}
-
-	// ─── Эмодзи ──────────────────────────────────────────────────────────────────
 
 	&__emoji-wrapper {
 		position: relative;
@@ -220,8 +205,6 @@
 			background-color: var(--rise-bg-elevated);
 		}
 	}
-
-	// ─── Подсказки @упоминаний и /команд ─────────────────────────────────────────
 
 	&__autocomplete {
 		position: absolute;

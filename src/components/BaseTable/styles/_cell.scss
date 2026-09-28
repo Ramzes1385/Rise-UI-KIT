@@ -104,8 +104,6 @@
 		white-space: nowrap;
 	}
 
-	// ─── Раскрытие строк ─────────────────────────────────────────────────────────
-
 	&__expanded-wrapper,
 	&__nested-wrapper {
 		border-top: 1px solid var(--rise-border);
@@ -129,8 +127,6 @@
 		font-weight: var(--rise-font-weight-semibold);
 		color: var(--rise-text-highlighted);
 	}
-
-	// ─── Загрузка ────────────────────────────────────────────────────────────────
 
 	// Скелетон занимает строку высотой 20px — строки-заглушки той же высоты, что и строки данных.
 	&__skeleton {

@@ -1,7 +1,4 @@
-/**
- * Агрегатор плагинов сборки библиотеки: Vue, SVG-компоненты, спрайт иконок.
- * `--analyze` добавляет отчёт о размере бандла (stats.html).
- */
+/** `--analyze` добавляет отчёт о размере бандла (stats.html). */
 
 import { visualizer } from 'rollup-plugin-visualizer'
 import type { PluginOption } from 'vite'
@@ -9,7 +6,6 @@ import { createSpritePlugin } from './sprite'
 import { createSvgPlugin } from './svg'
 import { createVuePlugin } from './vue'
 
-/** Создаёт массив плагинов для режима сборки. */
 export function createPlugins(mode: string): PluginOption[] {
 	const plugins: PluginOption[] = [createVuePlugin(mode), createSvgPlugin(), createSpritePlugin()]
 

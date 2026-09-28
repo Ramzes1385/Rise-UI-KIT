@@ -1,9 +1,3 @@
-/**
- * BaseHeader — stories.
- *
- * Разделы: Default (песочница) → варианты → меню для узкого экрана → клавиатура.
- */
-
 import { expect, screen, waitFor, within } from 'storybook/test'
 import { BaseLink } from '@components/BaseLink'
 import { BaseButton } from '@components/BaseButton'

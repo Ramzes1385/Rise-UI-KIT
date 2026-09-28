@@ -1,24 +1,4 @@
-/**
- * Прогон всех stories собранного Storybook в браузере: рендер, play-функция, проверка доступности (axe).
- *
- * Использование (Storybook должен быть собран и раздаваться):
- *   npm run build-storybook
- *   node scripts/serve-storybook-static.mjs &
- *   npm run test:stories -- [--url=http://localhost:6006] [--themes=light,dark] [--filter=<regexp id>]
- *                           [--concurrency=4] [--report=test-results/stories-report.json]
- *
- * Story считается упавшей, если:
- * - рендер или play-функция завершились ошибкой (или не завершились за 30 с);
- * - на странице было необработанное исключение или console.error;
- * - запрос к Storybook вернул ошибку (404 и т. п.). Исключение — адреса с `__story-missing`: так stories
- *   намеренно показывают состояние ошибки загрузки (`BROKEN_IMAGE_SRC` в src/stories/helpers/fixtures.ts);
- * - story обращается к внешним адресам (stories должны работать без сети);
- * - axe нашёл нарушения. Правила уровня страницы отключены, как в build/storybook/preview.ts;
- *   story может отключить правило через `parameters.a11y.config.rules` или проверку целиком — `a11y.test: 'off'`.
- *
- * Stories с тегом `!test` пропускаются. Зависимостей, кроме уже установленных Playwright и axe-core
- * из @storybook/addon-a11y, нет.
- */
+/** Story падает при ошибке рендера/play, необработанном исключении, console.error, внешних запросах или нарушениях axe; `__story-missing` — намеренное исключение, stories с тегом `!test` пропускаются. */
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'

@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseTooltip.
- * Проверяют взаимодействие: наведение, скрытие.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'

@@ -148,7 +148,6 @@ defineSlots<BaseNotificationSlots>()
 
 /** Собственный список: уведомления из `add()` и из props */
 const internalItems = ref<NotificationItem[]>([])
-/** Показанный список: управляемый (`items`) или собственный */
 const list = computed(() => props.items ?? internalItems.value)
 let nextId = 0
 
@@ -165,7 +164,6 @@ function resolveDuration(duration: number | undefined): number {
 	return DEFAULT_DURATION
 }
 
-/** Длительность показа уведомления: своя или длительность компонента */
 function getDuration(notification: NotificationItem): number {
 	return resolveDuration(notification.duration ?? props.duration)
 }
@@ -184,8 +182,6 @@ function getVariantClass(notification: NotificationItem): string | undefined {
 	if (!variant || variant === DEFAULT_VARIANT) return undefined
 	return `base-notification-item--${variant}`
 }
-
-// ─── Автозакрытие с паузой ────────────────────────────────────────────────────
 
 /** Таймеры автозакрытия по id уведомления — очищаются при закрытии и размонтировании */
 const timers = new Map<NotificationId, AutoCloseTimer>()
@@ -248,8 +244,6 @@ function handleFocusOut(event: FocusEvent): void {
 	const container = event.currentTarget as HTMLElement
 	if (!container.contains(event.relatedTarget as Node | null)) isFocusWithin.value = false
 }
-
-// ─── Добавление и закрытие ────────────────────────────────────────────────────
 
 /** Добавляет уведомление. Без своего `duration` оно показывается столько, сколько задано пропом компонента */
 function add(notification: BaseNotificationProps): NotificationId {

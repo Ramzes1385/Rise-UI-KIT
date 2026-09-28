@@ -1,7 +1,3 @@
-/**
- * Разделы словаря (`localized`) читают строки текущего языка и следуют его смене.
- */
-
 import { computed } from 'vue'
 import { setLocale } from '../state'
 import { localized } from '../localized'

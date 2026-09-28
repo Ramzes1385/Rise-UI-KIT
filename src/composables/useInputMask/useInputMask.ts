@@ -11,17 +11,14 @@ const FIXED_TOKENS = '#@*'
  */
 const GREEDY_TOKENS = 'NAX'
 
-/** Проверяет, является ли символ токеном */
 function isToken(char: string): boolean {
 	return FIXED_TOKENS.includes(char) || GREEDY_TOKENS.includes(char)
 }
 
-/** Проверяет, является ли токен жадным */
 function isGreedy(token: string): boolean {
 	return GREEDY_TOKENS.includes(token)
 }
 
-/** Проверяет, соответствует ли символ токену */
 function matchesToken(char: string, token: string): boolean {
 	switch (token) {
 		case '#':
@@ -63,7 +60,6 @@ function applyMask(value: string, mask: string): string {
 		iterations++
 		const maskChar = mask[i]
 
-		// Экранирование: \x
 		if (maskChar === '\\') {
 			/* istanbul ignore next — defensive `|| ''`: цикл applyMask всегда выходит на vi==cleanValue.length до достижения `\` без следующего символа */
 			result += mask[i + 1] || ''
@@ -71,7 +67,6 @@ function applyMask(value: string, mask: string): string {
 			continue
 		}
 
-		// Литерал
 		if (!isToken(maskChar)) {
 			result += maskChar
 			i++
@@ -88,7 +83,6 @@ function applyMask(value: string, mask: string): string {
 			continue
 		}
 
-		// Фиксированный токен: ровно 1 символ
 		/* istanbul ignore else — defensive: stripMask уже отфильтровал символы, не подходящие под matchesToken, поэтому else-ветка недостижима через публичный API */
 		if (matchesToken(cleanValue[valueIndex], maskChar)) {
 			result += cleanValue[valueIndex]
@@ -102,10 +96,6 @@ function applyMask(value: string, mask: string): string {
 	return result
 }
 
-/**
- * Убирает литералы маски из значения.
- * Поддерживает фиксированные и жадные токены.
- */
 function stripMask(value: string, mask: string): string {
 	if (!mask) return value
 
@@ -116,7 +106,6 @@ function stripMask(value: string, mask: string): string {
 	while (i < value.length && maskIndex < mask.length) {
 		const maskChar = mask[maskIndex]
 
-		// Экранирование
 		if (maskChar === '\\') {
 			maskIndex += 2
 			continue
@@ -139,7 +128,6 @@ function stripMask(value: string, mask: string): string {
 			continue
 		}
 
-		// Фиксированный токен: один символ
 		if (matchesToken(value[i], maskChar)) result += value[i]
 		i++
 		maskIndex++
@@ -220,13 +208,9 @@ function getMaskPosition(valueIndex: number, mask: string): number {
 	return pos
 }
 
-/**
- * Находит ближайший индекс токена слева от позиции в маске.
- */
 function findNearestTokenLeft(maskPos: number, mask: string): NearestTokenResult {
 	let i = maskPos - 1
 
-	// Пропускаем литералы
 	while (i >= 0 && !isToken(mask[i]) && mask[i] !== '\\') {
 		i--
 	}
@@ -235,7 +219,6 @@ function findNearestTokenLeft(maskPos: number, mask: string): NearestTokenResult
 		return { maskPos: 0, valueIndex: 0 }
 	}
 
-	// Если это жадный токен — ищем ближайший фиксированный токен слева
 	if (isGreedy(mask[i])) {
 		i--
 		while (i >= 0 && !isToken(mask[i]) && mask[i] !== '\\') {
@@ -246,7 +229,6 @@ function findNearestTokenLeft(maskPos: number, mask: string): NearestTokenResult
 		}
 	}
 
-	// Считаем количество токенов до него
 	let tokenCount = 0
 	let j = 0
 	while (j < i) {
@@ -276,38 +258,31 @@ function findNearestTokenLeft(maskPos: number, mask: string): NearestTokenResult
  * ```
  */
 function useInputMask(options: UseInputMaskOptions) {
-	/** Текущая маска */
 	function getMask(): string {
 		return options.getMask()
 	}
 
-	/** Применяет текущую маску к значению */
 	function maskValue(value: string): string {
 		return applyMask(value, getMask())
 	}
 
-	/** Снимает текущую маску со значения */
 	function unmaskValue(value: string): string {
 		return stripMask(value, getMask())
 	}
 
-	/** Ограничивает длину значения по маске */
 	function limitValue(value: string): string {
 		const maxTokens = getMaxTokenCount(getMask())
 		return value.length > maxTokens ? value.slice(0, maxTokens) : value
 	}
 
-	/** Вычисляет позицию курсора после ввода */
 	function cursorAfterInput(cleanLength: number): number {
 		return getMaskPosition(cleanLength, getMask())
 	}
 
-	/** Вычисляет позицию курсора после Backspace */
 	function cursorAfterBackspace(cursorPos: number): NearestTokenResult {
 		return findNearestTokenLeft(cursorPos, getMask())
 	}
 
-	/** Вычисляет позицию курсора после Delete */
 	function cursorAfterDelete(cursorPos: number): NearestTokenResult {
 		return findNearestTokenLeft(cursorPos + 1, getMask())
 	}

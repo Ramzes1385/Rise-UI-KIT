@@ -1,4 +1,3 @@
-/** Параметры для расчёта номера строки */
 export interface RowNumberOptions {
 	/** Индекс строки в текущей странице */
 	index: number
@@ -17,7 +16,6 @@ export interface TableServiceColumns {
 	hasExpandableRows?: boolean
 }
 
-/** Параметры для стиля колонки */
 export interface ColumnStyleOptions {
 	/** Минимальная ширина */
 	minWidth?: string

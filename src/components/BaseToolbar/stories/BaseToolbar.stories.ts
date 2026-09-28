@@ -1,10 +1,3 @@
-/**
- * BaseToolbar — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, вертикальная) → состояния (отключённые кнопки) → сценарии
- * (поле и меню в панели) → клавиатура.
- */
-
 import { expect } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
@@ -16,7 +9,6 @@ import BaseToolbar from '../ui/BaseToolbar.vue'
 import { TOOLBAR_VARIANTS } from '../types/BaseToolbar.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Кнопки форматирования: иконка и имя */
 const FORMAT_BUTTONS = [
 	{ icon: 'bold', label: 'Полужирный' },
 	{ icon: 'italic', label: 'Курсив' },

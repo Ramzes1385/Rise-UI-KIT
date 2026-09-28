@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseColorModeButton: имя и состояние кнопки, переключение темы, оформление.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { createColorMode } from '@composables/useColorMode'

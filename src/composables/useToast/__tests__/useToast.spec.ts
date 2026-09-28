@@ -69,7 +69,6 @@ describe('createToastStore', () => {
 })
 
 describe('useToast', () => {
-	/** Вызывает useToast в компоненте внутри провайдера хранилища */
 	function mountWithStore(store: ToastStore): UseToastReturn {
 		let api!: UseToastReturn
 		const Child = defineComponent({

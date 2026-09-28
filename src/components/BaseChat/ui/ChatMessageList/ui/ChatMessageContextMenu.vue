@@ -107,7 +107,6 @@ function getItems(): HTMLElement[] {
 	return Array.from(menuRef.value?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
 }
 
-/** При открытии фокус переходит на первый пункт меню */
 watch(
 	() => props.isOpen,
 	isOpen => {

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseStepper.
- * Проверяют рендер, пропсы, CSS-модификаторы и слоты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseStepper from '../ui/BaseStepper.vue'

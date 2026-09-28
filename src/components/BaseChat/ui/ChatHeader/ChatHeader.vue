@@ -1,6 +1,5 @@
 <template>
 	<div class="base-chat-header">
-		<!-- Название и статус чата (когда не ищем) -->
 		<div v-if="!isSearching" class="base-chat-header__info">
 			<button
 				v-if="avatar"
@@ -35,7 +34,6 @@
 			</div>
 		</div>
 
-		<!-- Кнопки управления -->
 		<div class="base-chat-header__actions">
 			<BaseButton
 				ref="searchToggleRef"
@@ -96,17 +94,14 @@ watch(
 	},
 )
 
-/** Обработка клика по аватару */
 function handleAvatarClick(): void {
 	emit('avatar-click')
 }
 
-/** Переключение режима поиска */
 function handleToggleSearch(): void {
 	emit('toggle-search')
 }
 
-/** Ввод поискового запроса */
 function handleSearchInput(event: Event): void {
 	emit('update:searchQuery', (event.target as HTMLInputElement).value)
 }
@@ -117,7 +112,6 @@ function handleSearchEscape(): void {
 	nextTick(() => searchToggleRef.value?.focus())
 }
 
-/** Клик по кнопке информации */
 function handleInfoClick(): void {
 	emit('info-click')
 }

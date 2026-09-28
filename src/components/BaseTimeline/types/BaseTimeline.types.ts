@@ -6,10 +6,8 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const TIMELINE_VARIANTS = ['default', 'soft', 'outline'] as const
 
-/** Цвет маркера события */
 export type TimelineColor = 'primary' | 'success' | 'warning' | 'error' | 'info' | 'neutral'
 
-/** Событие ленты */
 export interface TimelineItem {
 	/** Уникальный ключ */
 	id: string | number
@@ -25,9 +23,6 @@ export interface TimelineItem {
 	color?: TimelineColor
 }
 
-/**
- * Пропсы компонента BaseTimeline
- */
 export interface BaseTimelineProps extends BaseComponentProps<(typeof TIMELINE_VARIANTS)[number], 'root' | 'item' | 'marker' | 'content'> {
 	/** События сверху вниз (или слева направо) */
 	items: TimelineItem[]
@@ -39,9 +34,6 @@ export interface BaseTimelineProps extends BaseComponentProps<(typeof TIMELINE_V
 	dateFormat?: Intl.DateTimeFormatOptions
 }
 
-/**
- * Слоты компонента BaseTimeline
- */
 export interface BaseTimelineSlots {
 	/** Своё содержимое события (маркер и линию рисует компонент) */
 	item?: (props: { item: TimelineItem; index: number; isCurrent: boolean; isUpcoming: boolean }) => unknown

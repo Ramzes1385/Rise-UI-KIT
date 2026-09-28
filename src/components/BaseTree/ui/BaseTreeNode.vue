@@ -189,7 +189,6 @@ const checkboxClasses = computed(function getCheckboxClasses() {
 /** Узел был раскрыт хотя бы раз — для ленивого рендеринга детей */
 const wasExpanded = ref(isExpanded.value)
 
-/** Запомнить что узел раскрывался */
 watch(isExpanded, function handleExpandedWatch(expanded) {
 	if (expanded && !wasExpanded.value) {
 		wasExpanded.value = true
@@ -230,7 +229,6 @@ function handleLinkClick(event: MouseEvent): void {
 	if (treeContext.selectionMode.value === 'single' && !isSelected.value) treeContext.selectNode(props.node.id)
 }
 
-/** Клик по заголовку узла */
 function handleHeaderClick(): void {
 	if (props.node.isDisabled) {
 		return

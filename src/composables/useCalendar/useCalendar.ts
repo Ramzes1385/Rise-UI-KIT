@@ -6,7 +6,6 @@ import { useCalendarDateState } from './useCalendarDateState'
 import { useCalendarViewNavigation } from './useCalendarViewNavigation'
 import type { CalendarView, UseCalendarOptions } from './types/useCalendar.types'
 
-/** Composable для управления состоянием календаря — навигация, переключение вида, выбор дат. */
 function useCalendar(options: UseCalendarOptions) {
 	const currentMonth = ref(options.initialMonth?.() ?? new Date().getMonth())
 	const currentYear = ref(options.initialYear?.() ?? new Date().getFullYear())

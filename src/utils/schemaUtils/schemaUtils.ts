@@ -2,7 +2,6 @@
 
 import type { SchemaBreadcrumbItem } from './types/schemaUtils.types'
 
-/** Построить Schema.org JSON-LD для BreadcrumbList */
 function buildBreadcrumbsSchema(items: SchemaBreadcrumbItem[]): string {
 	const elements = items.map((item, index) => ({
 		'@type': 'ListItem',

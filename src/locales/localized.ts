@@ -1,7 +1,4 @@
-/**
- * Раздел словаря текущего языка как объект со строками: `localized('aria').CLOSE` возвращает строку текущего языка.
- * Чтение идёт через shallowRef, поэтому шаблоны и computed перерисовываются при смене языка (`setLocale`).
- */
+/** Раздел словаря текущего языка как объект строк, напр. `localized('aria').CLOSE`; читается через shallowRef, поэтому шаблоны и computed обновляются при смене языка (`setLocale`). */
 import { currentLocale } from './state'
 import type { LocaleSection, UiKitLocale } from './types/locales.types'
 

@@ -10,9 +10,6 @@ export interface UseBaseComponentOptions {
 	elementKeys?: string[]
 }
 
-/**
- * Общие props всех компонентов библиотеки.
- */
 export interface BaseComponentProps<V extends string = string, K extends string = string> {
 	/** Вариант оформления. Допустимые значения — в константе компонента (например, `BUTTON_VARIANTS`). */
 	variant?: V

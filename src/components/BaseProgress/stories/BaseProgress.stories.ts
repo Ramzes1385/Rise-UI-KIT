@@ -1,10 +1,3 @@
-/**
- * BaseProgress — stories.
- *
- * Разделы: Default (песочница) → внешний вид (размеры, круг, кастомный цвет, оформление заливки) →
- * состояния (неопределённый режим) → содержимое (подпись) → сценарии (событие complete).
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'

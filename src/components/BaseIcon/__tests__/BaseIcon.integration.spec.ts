@@ -1,7 +1,4 @@
-/**
- * Integration-тесты для BaseIcon.
- * Проверяют рендер с реальным useIcon (без мока).
- */
+/** Рендер проверяется с реальным useIcon (без мока) */
 
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'

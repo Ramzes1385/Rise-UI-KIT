@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseRating.
- * Проверяют рендер звёзд, дробную заливку, выбор по шагу, emits, клавиатуру и a11y.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseRating from '../ui/BaseRating.vue'
 
-/** Зафиксировать геометрию звезды для предсказуемого расчёта позиции клика */
 function mockStarRect(star: HTMLElement, width = 20): void {
 	vi.spyOn(star, 'getBoundingClientRect').mockReturnValue({
 		left: 0,

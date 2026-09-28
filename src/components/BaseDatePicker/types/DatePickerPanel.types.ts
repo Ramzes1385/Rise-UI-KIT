@@ -2,9 +2,6 @@ import type { CustomClassProp } from '@composables/useCustomClass'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { BaseDatePickerCalendarConfig, BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
 
-/**
- * Пропсы компонента DatePickerPanel
- */
 export interface DatePickerPanelProps extends BaseDatePickerCalendarProps {
 	/** Панель открыта */
 	isOpen: boolean
@@ -32,9 +29,6 @@ export interface DatePickerPanelProps extends BaseDatePickerCalendarProps {
 	calendarConfig?: BaseDatePickerCalendarConfig
 }
 
-/**
- * События компонента DatePickerPanel
- */
 export interface DatePickerPanelEmits {
 	(event: 'model-update', value: Date | null): void
 	(event: 'model-end-update', value: Date | null): void

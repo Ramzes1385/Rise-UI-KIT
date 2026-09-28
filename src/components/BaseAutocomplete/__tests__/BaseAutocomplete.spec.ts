@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseAutocomplete: семантика combobox, подпись выбранного значения, атрибуты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseAutocomplete from '../ui/BaseAutocomplete.vue'

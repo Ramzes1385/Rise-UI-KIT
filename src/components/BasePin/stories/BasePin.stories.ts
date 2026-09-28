@@ -1,10 +1,3 @@
-/**
- * BasePin — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (пусто, ошибка, disabled) → сценарии (скрытый ввод, вставка кода) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import {

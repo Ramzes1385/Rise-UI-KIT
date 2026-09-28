@@ -1,10 +1,3 @@
-/**
- * BaseInputNumber — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры) → состояния (отключено, ошибка,
- * только чтение) → сценарии (дробный шаг, значение для скринридера) → клавиатура.
- */
-
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInputNumber from '../ui/BaseInputNumber.vue'

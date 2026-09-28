@@ -3,7 +3,6 @@
 // гарантированно попадают в dist/styles.css вместе с первым же компонентом; дубли схлопываются при сборке.
 @use './tokens';
 
-// Breakpoints
 $breakpoint-xs: 320px;
 $breakpoint-sm: 480px;
 $breakpoint-mobile: 640px;

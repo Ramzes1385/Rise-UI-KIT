@@ -1,5 +1,4 @@
-// BaseIcon — иконка из SVG-спрайта. Размер 20px при sizeScale = 100 (sz): calcIconScale даёт 12/16/20/28/36px
-// для xs/sm/md/lg/xl. Цвет — currentColor (наследуется от текста) или проп color.
+// Иконка из SVG-спрайта, 20px по умолчанию: calcIconScale даёт 12/16/20/28/36px для xs–xl; цвет — currentColor или проп color.
 .base-icon {
 	display: flex;
 	align-items: center;

@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseNotification.
- * Проверяют рендер контейнера, пропсы type/description/duration, emit close.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseNotification from '../ui/BaseNotification.vue'
 
-/** Получить элемент уведомления из teleport */
 function getNotification() {
 	return document.querySelector('.base-notification-item')
 }
@@ -352,7 +346,6 @@ describe('BaseNotification unit', () => {
 				expect(document.querySelector('.base-notification-item')).toBeInTheDocument()
 			})
 
-			// Добавляем второе уведомление через метод add
 			wrapper.vm.add({ title: 'Второе', duration: 0 })
 
 			await waitFor(() => {
@@ -360,7 +353,6 @@ describe('BaseNotification unit', () => {
 				expect(notifications.length).toBe(2)
 			})
 
-			// Удаляем первое уведомление
 			const closeButtons = document.querySelectorAll('.base-notification-item__close')
 			const firstCloseBtn = closeButtons[0] as HTMLElement
 			firstCloseBtn.click()

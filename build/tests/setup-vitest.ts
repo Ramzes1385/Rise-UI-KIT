@@ -1,10 +1,5 @@
 /// <reference types="vitest/globals" />
-/**
- * Глобальная настройка Vitest.
- * Очистка DOM и восстановление моков после каждого теста.
- * Матчеры jest-dom подключаются в каждом тест-файле индивидуально
- * через import '@testing-library/jest-dom/vitest'.
- */
+/** Jest-dom матчеры подключаются в каждом тест-файле отдельно (import '@testing-library/jest-dom/vitest'), а не здесь. */
 
 import { cleanup } from '@testing-library/vue'
 import { setLocale } from '@/locales/state'

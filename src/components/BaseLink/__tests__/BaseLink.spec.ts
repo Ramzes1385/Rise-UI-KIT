@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseLink: маршрут и внешний адрес, компонент ссылок, новая вкладка, отключённая и небезопасная ссылка.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

@@ -1,6 +1,5 @@
 import type { CalendarHighlight } from './BaseCalendar.types'
 
-/** Props компонента BaseCalendarDays */
 export interface BaseCalendarDaysProps {
 	/** Показывать номера недель */
 	showWeekNumber: boolean
@@ -40,12 +39,10 @@ export interface BaseCalendarDaysProps {
 	closePopover: () => void
 }
 
-/** Emits компонента BaseCalendarDays */
 export interface BaseCalendarDaysEmits {
 	dayClick: [date: Date]
 }
 
-/** Slots компонента BaseCalendarDays */
 export interface BaseCalendarDaysSlots {
 	day?(props: { date: Date; isToday: boolean; isSelected: boolean; isDisabled: boolean; isWeekend: boolean; isInRange: boolean }): unknown
 	'date-popover'?(props: { date: Date; close: () => void; highlights: CalendarHighlight[] }): unknown

@@ -1,12 +1,6 @@
-/**
- * Unit-тесты для useSwipe.
- * 100% покрытие: все ветки, функции, строки.
- */
-
 import { mount } from '@vue/test-utils'
 import { useSwipe } from '../useSwipe'
 
-/** Обёртка для вызова composable внутри Vue-контекста */
 function withSetup<T>(composable: () => T): T {
 	let result: T
 	mount({
@@ -30,7 +24,6 @@ function withSetupFull<T>(composable: () => T): { result: T; wrapper: ReturnType
 	return { result: result!, wrapper }
 }
 
-/** Создать мок TouchEvent */
 function createTouchEvent(type: string, touches: { clientX: number; clientY: number }[]): TouchEvent {
 	return {
 		type,
@@ -40,7 +33,6 @@ function createTouchEvent(type: string, touches: { clientX: number; clientY: num
 	} as unknown as TouchEvent
 }
 
-/** Создать мок MouseEvent */
 function createMouseEvent(type: string, clientX: number, clientY: number): MouseEvent {
 	return {
 		type,
@@ -51,8 +43,6 @@ function createMouseEvent(type: string, clientX: number, clientY: number): Mouse
 }
 
 describe('useSwipe', () => {
-	// --- Базовые возвращаемые значения ---
-
 	it('должен возвращать обработчики событий и реактивные свойства', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 
@@ -63,8 +53,6 @@ describe('useSwipe', () => {
 		expect(swipe.onTouchEnd).toBeTypeOf('function')
 		expect(swipe.onDragStart).toBeTypeOf('function')
 	})
-
-	// --- Порог по умолчанию ---
 
 	it('должен использовать порог 50 по умолчанию если threshold не передан', () => {
 		const onSwipeNext = vi.fn()
@@ -90,8 +78,6 @@ describe('useSwipe', () => {
 		expect(onSwipePrev).not.toHaveBeenCalled()
 	})
 
-	// --- onTouchStart ---
-
 	it('должен устанавливать isDragging=true при touchStart', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 
@@ -108,8 +94,6 @@ describe('useSwipe', () => {
 
 		expect(swipe.dragOffset.value).toBe(0)
 	})
-
-	// --- onTouchMove ---
 
 	it('должен вызывать onDragOffset через RAF при touchMove (горизонтальный)', () => {
 		const onDragOffset = vi.fn()
@@ -170,7 +154,6 @@ describe('useSwipe', () => {
 
 		const rafSpy = vi.spyOn(window, 'requestAnimationFrame')
 
-		// Вызываем touchMove без touchStart — isDragging=false
 		swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 150, clientY: 100 }]))
 
 		expect(onDragOffset).not.toHaveBeenCalled()
@@ -205,15 +188,12 @@ describe('useSwipe', () => {
 			return 0
 		})
 
-		// Не должно выбросить ошибку при отсутствии onDragOffset
 		swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 150, clientY: 100 }]))
 
 		expect(swipe.dragOffset.value).toBe(50)
 
 		rafSpy.mockRestore()
 	})
-
-	// --- onTouchEnd ---
 
 	it('должен сбрасывать isDragging=false при touchEnd', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
@@ -249,7 +229,6 @@ describe('useSwipe', () => {
 		swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 100, clientY: 100 }]))
 		swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 200, clientY: 100 }]))
 
-		// onDragOffset вызывается с 0 в конце touchEnd
 		expect(onDragOffset).toHaveBeenCalledWith(0)
 	})
 
@@ -259,7 +238,6 @@ describe('useSwipe', () => {
 		const onDragOffset = vi.fn()
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50, onDragEnd, onSwipeNext, onDragOffset }))
 
-		// Вызываем touchEnd без touchStart — isDragging=false
 		swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 200, clientY: 100 }]))
 
 		expect(onDragEnd).not.toHaveBeenCalled()
@@ -291,7 +269,6 @@ describe('useSwipe', () => {
 	it('не должен вызывать onDragEnd если колбэк не передан (touchEnd)', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 
-		// Не должно выбросить ошибку при отсутствии onDragEnd
 		swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 100, clientY: 100 }]))
 		swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 200, clientY: 100 }]))
 
@@ -314,8 +291,6 @@ describe('useSwipe', () => {
 		rafSpy.mockRestore()
 	})
 
-	// --- resolveSwipe: горизонтальные свайпы ---
-
 	it('должен вызывать onSwipeNext при горизонтальном свайпе влево', () => {
 		const onSwipeNext = vi.fn()
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50, onSwipeNext }))
@@ -336,8 +311,6 @@ describe('useSwipe', () => {
 		expect(onSwipePrev).toHaveBeenCalled()
 	})
 
-	// --- resolveSwipe: вертикальные свайпы ---
-
 	it('должен вызывать onSwipeNext при вертикальном свайпе вверх', () => {
 		const onSwipeNext = vi.fn()
 		const swipe = withSetup(() => useSwipe({ isVertical: () => true, threshold: 50, onSwipeNext }))
@@ -357,8 +330,6 @@ describe('useSwipe', () => {
 
 		expect(onSwipePrev).toHaveBeenCalled()
 	})
-
-	// --- resolveSwipe: порог и перпендикулярность ---
 
 	it('не должен вызывать callback при свайпе меньше порога', () => {
 		const onSwipeNext = vi.fn()
@@ -386,14 +357,11 @@ describe('useSwipe', () => {
 	it('не должен вызывать onSwipeNext/onSwipePrev если колбэки не переданы', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 
-		// Не должно выбросить ошибку при отсутствии колбэков
 		swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 200, clientY: 100 }]))
 		swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 100, clientY: 100 }]))
 
 		expect(swipe.isDragging.value).toBe(false)
 	})
-
-	// --- onDragStart (mouse) ---
 
 	it('должен устанавливать isDragging=true при dragStart', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
@@ -423,8 +391,6 @@ describe('useSwipe', () => {
 		addSpy.mockRestore()
 	})
 
-	// --- Mouse drag: полный цикл (горизонтальный) ---
-
 	it('должен обрабатывать полный цикл mouse drag с onDragEnd (горизонтальный)', () => {
 		const onDragEnd = vi.fn()
 		const onSwipePrev = vi.fn()
@@ -448,8 +414,6 @@ describe('useSwipe', () => {
 		rafSpy.mockRestore()
 	})
 
-	// --- Mouse drag: полный цикл (вертикальный) ---
-
 	it('должен обрабатывать вертикальный mouse drag', () => {
 		const onDragEnd = vi.fn()
 		const onSwipeNext = vi.fn()
@@ -472,8 +436,6 @@ describe('useSwipe', () => {
 
 		rafSpy.mockRestore()
 	})
-
-	// --- Mouse drag: onDragOffset ---
 
 	it('должен вызывать onDragOffset при mouse move', () => {
 		const onDragOffset = vi.fn()
@@ -520,7 +482,6 @@ describe('useSwipe', () => {
 		swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
 		document.dispatchEvent(new MouseEvent('mouseup', { clientX: 200, clientY: 100 }))
 
-		// Последний вызов onDragOffset — с 0
 		expect(onDragOffset).toHaveBeenLastCalledWith(0)
 
 		rafSpy.mockRestore()
@@ -543,8 +504,6 @@ describe('useSwipe', () => {
 		rafSpy.mockRestore()
 	})
 
-	// --- Mouse drag: handleMouseMove early return ---
-
 	it('не должен обновлять смещение при mousemove если isDragging=false', () => {
 		const onDragOffset = vi.fn()
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50, onDragOffset }))
@@ -553,7 +512,6 @@ describe('useSwipe', () => {
 
 		swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
 
-		// Ручной сброс isDragging
 		swipe.isDragging.value = false
 
 		document.dispatchEvent(new MouseEvent('mousemove', { clientX: 200, clientY: 100 }))
@@ -563,8 +521,6 @@ describe('useSwipe', () => {
 
 		rafSpy.mockRestore()
 	})
-
-	// --- Mouse drag: handleMouseUp early return ---
 
 	it('не должен обрабатывать mouseup если isDragging=false', () => {
 		const onDragEnd = vi.fn()
@@ -579,7 +535,6 @@ describe('useSwipe', () => {
 
 		swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
 
-		// Ручной сброс isDragging
 		swipe.isDragging.value = false
 
 		document.dispatchEvent(new MouseEvent('mouseup', { clientX: 200, clientY: 100 }))
@@ -589,8 +544,6 @@ describe('useSwipe', () => {
 
 		rafSpy.mockRestore()
 	})
-
-	// --- Mouse drag: RAF dedup (scheduleUpdate) ---
 
 	it('не должен планировать второй RAF если первый ещё не выполнен (mouse)', () => {
 		const onDragOffset = vi.fn()
@@ -608,8 +561,6 @@ describe('useSwipe', () => {
 		rafSpy.mockRestore()
 	})
 
-	// --- Mouse drag: без колбэков ---
-
 	it('не должен вызывать onDragEnd если колбэк не передан (mouse up)', () => {
 		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 
@@ -621,7 +572,6 @@ describe('useSwipe', () => {
 		swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
 		document.dispatchEvent(new MouseEvent('mouseup', { clientX: 200, clientY: 100 }))
 
-		// Не должно выбросить ошибку
 		expect(swipe.isDragging.value).toBe(false)
 
 		rafSpy.mockRestore()
@@ -655,13 +605,10 @@ describe('useSwipe', () => {
 		swipe.onDragStart(createMouseEvent('mousedown', 200, 100))
 		document.dispatchEvent(new MouseEvent('mouseup', { clientX: 100, clientY: 100 }))
 
-		// Не должно выбросить ошибку
 		expect(swipe.isDragging.value).toBe(false)
 
 		rafSpy.mockRestore()
 	})
-
-	// --- cleanupMouseListeners ---
 
 	it('должен удалять слушатели mousemove/mouseup при mouse up', () => {
 		const removeSpy = vi.spyOn(document, 'removeEventListener')
@@ -691,14 +638,11 @@ describe('useSwipe', () => {
 		const { wrapper } = withSetupFull(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 		wrapper.unmount()
 
-		// removeEventListener не вызывался для mousemove/mouseup
 		expect(removeSpy).not.toHaveBeenCalledWith('mousemove', expect.any(Function))
 		expect(removeSpy).not.toHaveBeenCalledWith('mouseup', expect.any(Function))
 
 		removeSpy.mockRestore()
 	})
-
-	// --- cancelRaf ---
 
 	it('не должен вызывать cancelAnimationFrame если rafId=null', () => {
 		const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame')
@@ -713,8 +657,6 @@ describe('useSwipe', () => {
 
 		cancelSpy.mockRestore()
 	})
-
-	// --- onBeforeUnmount ---
 
 	it('должен отменять RAF при размонтировании', () => {
 		const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame')
@@ -760,7 +702,6 @@ describe('useSwipe', () => {
 		const { wrapper } = withSetupFull(() => useSwipe({ isVertical: () => false, threshold: 50 }))
 		wrapper.unmount()
 
-		// Нет активного RAF и нет слушателей мыши
 		expect(cancelSpy).not.toHaveBeenCalled()
 		expect(removeSpy).not.toHaveBeenCalledWith('mousemove', expect.any(Function))
 		expect(removeSpy).not.toHaveBeenCalledWith('mouseup', expect.any(Function))
@@ -768,8 +709,6 @@ describe('useSwipe', () => {
 		cancelSpy.mockRestore()
 		removeSpy.mockRestore()
 	})
-
-	// --- Click после перетаскивания мышью ---
 
 	describe('onClickCapture', () => {
 		/** Click-событие со шпионами stopPropagation/preventDefault */

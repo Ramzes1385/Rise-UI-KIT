@@ -38,14 +38,12 @@ function usePopup(options: UsePopupOptions): {
 		onClose()
 	}
 
-	/** Клик по оверлею */
 	function handleOverlayClick(): void {
 		if (closeOnOverlay()) {
 			close()
 		}
 	}
 
-	/** Закрытие по Escape */
 	useEscapeKey({
 		isActive: () => isOpen() && closeOnEscape(),
 		callback: close,

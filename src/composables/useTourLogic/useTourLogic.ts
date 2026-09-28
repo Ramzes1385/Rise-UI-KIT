@@ -41,7 +41,6 @@ function computeCardPosition(rect: DOMRect, placement: Exclude<TourPlacement, 'a
 	return { top: centerY, left: rect.right + gap }
 }
 
-/** Composable для guided tour — навигация по шагам, геометрия подсветки, размещение тултипа. */
 function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 	const { props, getIndex } = options
 

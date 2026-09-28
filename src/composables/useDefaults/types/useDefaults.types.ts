@@ -1,11 +1,4 @@
-/**
- * Значения props по умолчанию для всего приложения: `createUiKitPlugin({ defaults })`.
- * `global` — для всех компонентов (например, `sizeScale`), по имени компонента — только для него.
- * Значение компонента важнее `global`, а props, переданные в шаблоне, важнее обоих.
- *
- * @example
- * { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' }, BaseModal: { closeOnOverlay: false } }
- */
+/** Задаются через `createUiKitPlugin({ defaults })`: `global` — для всех компонентов, по имени компонента — только для него; приоритет: props в шаблоне > значение компонента > `global`. */
 export interface UiKitDefaults {
 	/** Для всех компонентов, у которых есть такой проп */
 	global?: Record<string, unknown>

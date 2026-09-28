@@ -1,9 +1,3 @@
-/**
- * BaseFooter — stories.
- *
- * Разделы: Default (песочница) → варианты.
- */
-
 import { expect } from 'storybook/test'
 import { BaseLink } from '@components/BaseLink'
 import { CONTAINER_SIZES } from '@components/BaseContainer'

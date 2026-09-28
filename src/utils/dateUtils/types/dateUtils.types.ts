@@ -3,7 +3,6 @@ import type { DATE_FORMATS } from '../dateUtils'
 /** День недели: 0 = воскресенье, 1 = понедельник, ..., 6 = суббота */
 type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
-/** Параметры для сборки даты с временем */
 interface BuildDateOptions {
 	/** Исходная дата */
 	date: Date
@@ -17,10 +16,8 @@ interface BuildDateOptions {
 
 export type { BuildDateOptions, Weekday }
 
-/** Тип формата даты */
 export type DateFormat = (typeof DATE_FORMATS)[number]
 
-/** Параметры форматирования одиночной даты */
 export interface FormatDateOptions {
 	date: Date
 	dateFormat: DateFormat
@@ -30,7 +27,6 @@ export interface FormatDateOptions {
 	locale: string
 }
 
-/** Параметры форматирования диапазона */
 export interface FormatRangeOptions {
 	start: Date | null
 	end: Date | null
@@ -41,7 +37,6 @@ export interface FormatRangeOptions {
 	locale: string
 }
 
-/** Параметры форматирования множественного выбора */
 export interface FormatMultipleOptions {
 	dates: Date[]
 	dateFormat: DateFormat
@@ -51,10 +46,8 @@ export interface FormatMultipleOptions {
 	locale: string
 }
 
-/** Режим выбора значения date picker */
 export type DatePickerSelectionMode = 'single' | 'range' | 'multiple'
 
-/** Параметры форматирования значения date picker */
 export interface FormatDatePickerValueOptions {
 	selectionMode: DatePickerSelectionMode
 	date: Date | null
@@ -67,7 +60,6 @@ export interface FormatDatePickerValueOptions {
 	locale: string
 }
 
-/** Параметры форматирования даты для popover календаря */
 export interface FormatPopoverDateOptions {
 	date: Date
 	locale: string

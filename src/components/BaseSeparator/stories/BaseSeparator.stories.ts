@@ -1,10 +1,3 @@
-/**
- * BaseSeparator — stories.
- *
- * Разделы: Default (песочница) → внешний вид (подпись, вертикальный, пунктир, толщина, кастомный цвет) →
- * содержимое (слот, отступы подписи).
- */
-
 import { expect } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'

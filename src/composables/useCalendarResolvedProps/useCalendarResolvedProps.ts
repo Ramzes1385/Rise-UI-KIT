@@ -5,7 +5,6 @@ import type { ComputedRef } from 'vue'
 import type { ResolvedCalendarProps } from './types/useCalendarResolvedProps.types'
 import type { BaseCalendarProps, CalendarWeekday } from '@components/BaseCalendar/types/BaseCalendar.types'
 
-/** Описание: вычисляет нормализованные пропсы календаря с дефолтами и поддержкой constraints/timeConfig/displayConfig, возвращает computed-объект */
 function useCalendarResolvedProps(props: BaseCalendarProps): ComputedRef<ResolvedCalendarProps> {
 	return computed(() => ({
 		modelValue: props.modelValue ?? null,

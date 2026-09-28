@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseUser: имя, подпись, статус, ссылка на профиль.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseUser from '../ui/BaseUser.vue'

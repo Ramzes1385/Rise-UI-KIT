@@ -1,20 +1,12 @@
-/**
- * Конфигурация стилей UI-библиотеки.
- * Глобальные SCSS-модули (variables/mixins/functions) автоматически инжектятся
- * во все компонентные стили через prelude, кроме самих модулей-источников
- * (иначе Sass-ошибка «Module loop: this module is already being loaded»).
- * Sass компилируется современным API (в Vite 8 другого нет). CSS-трансформ/минификация: Lightning CSS.
- */
+/** Глобальный prelude инжектится во все стили компонентов, кроме самих модулей-источников — иначе Sass-ошибка «Module loop». */
 
 import type { CSSOptions } from 'vite'
 import { isProductionMode } from '../utils/helpers'
 
-/** Глобальный prelude — автоматически инжектится во все .scss-entry компонентов. */
 const GLOBAL_SCSS_PRELUDE = ['@use "@styles/variables" as *;', '@use "@styles/mixins" as *;', '@use "@styles/functions" as *;', ''].join(
 	'\n',
 )
 
-/** Глобальные SCSS-файлы — не должны импортировать сами себя (защита от module loop). */
 const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
 
 function shouldSkipImport(filename: string): boolean {
@@ -34,7 +26,6 @@ export function createScssOptions() {
 	}
 }
 
-/** Создаёт конфигурацию CSS для сборки библиотеки. */
 export function createCssConfig(mode: string): CSSOptions {
 	const isProduction = isProductionMode(mode)
 

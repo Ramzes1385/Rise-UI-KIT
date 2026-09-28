@@ -1,7 +1,4 @@
-// BaseCheckboxGroup. Группа флажков: заголовок группы (field-label), флажки BaseCheckbox в строку с переносом
-// (зазор 8px по вертикали и 16px по горизонтали) или столбиком (8px), ошибка под флажками — как у BaseRadio.
-// «Выбрать все» — первый флажок, при части отмеченных вариантов — с чертой (indeterminate).
-// Варианты: default, ghost, outline, shadow, soft — вариант получает каждый флажок (см. BaseCheckbox).
+// Флажки — в строку с переносом (8px/16px) или столбиком (8px); «Выбрать все» — первый флажок, indeterminate при части отмеченных; вариант передаётся каждому BaseCheckbox.
 .base-checkbox-group {
 	display: flex;
 	flex-direction: column;

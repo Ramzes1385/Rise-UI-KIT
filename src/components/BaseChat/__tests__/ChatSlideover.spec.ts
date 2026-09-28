@@ -1,9 +1,3 @@
-/**
- * Unit/Integration-тесты для ChatSlideover.
- * Покрывают вкладки (инфо/медиа/файлы/ссылки/профиль), личный и групповой
- * режимы, админ-действия над участниками и извлечение ссылок из сообщений.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'

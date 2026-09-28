@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { buildDescendantsCache, collectExpandableIds } from '@utils/treeUtils'
 import type { UseTreeStateOptions, UseTreeStateResult } from './types/useTreeState.types'
 
-/** Composable для состояния дерева — expand/collapse, выбор (single/multi/checkbox), кэш потомков. */
+/** Поддерживает режимы выбора single/multi/checkbox */
 function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 	const { items, selectionMode, expandedIds: propExpandedIds, selectedIds: propSelectedIds, isDefaultExpandAll, emit } = options
 

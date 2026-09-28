@@ -1,9 +1,4 @@
-// BaseRange. Трек 6px (радиус full) цвета --rise-bg-accented, заполнение --rise-primary; бегунок 16px — фон страницы,
-// кольцо 2px основного цвета и тень sm, фокус с клавиатуры — кольцо focus-ring. Область нажатия вокруг трека — 20px.
-// Подсказки значений (hasTooltip) — BaseTooltip (инвертированный фон); подпись (hasLabel) — минимум и максимум 12/16
-// --rise-text-muted, значение 14/20 --rise-text-highlighted; деления — линии --rise-border-accented, подписи 12/16 muted.
-// Варианты: default — трек bg-accented; soft — трек мягкого основного цвета; outline — трек-контур;
-// ghost — без трека, видно только заполнение; shadow — бегунок с тенью md.
+// Область нажатия вокруг трека — 20px, шире самого трека (6px), для удобного попадания курсором.
 .base-range {
 	display: flex;
 	flex-direction: column;
@@ -15,8 +10,6 @@
 	&--disabled &__track-wrapper {
 		@include disabled-state;
 	}
-
-	// ─── Подпись: минимум, значение, максимум ────────────────────────────────────
 
 	&__label {
 		display: flex;
@@ -37,8 +30,6 @@
 		@include custom-text(color, var(--rise-text-highlighted));
 		font-variant-numeric: tabular-nums;
 	}
-
-	// ─── Трек и заполнение ───────────────────────────────────────────────────────
 
 	&__body {
 		position: relative;
@@ -78,8 +69,6 @@
 		border-radius: var(--rise-radius-full);
 		@include custom-bg(background-color, var(--rise-primary));
 	}
-
-	// ─── Бегунок ─────────────────────────────────────────────────────────────────
 
 	&__thumb-container {
 		position: absolute;
@@ -132,8 +121,6 @@
 		@include reset-custom-color;
 	}
 
-	// ─── Деления ─────────────────────────────────────────────────────────────────
-
 	// Высота: линия major 8px + отступ 4px + подпись 16px (деления и подписи позиционированы абсолютно).
 	&__marks {
 		position: relative;
@@ -169,8 +156,6 @@
 		white-space: nowrap;
 		@include text-size(xs);
 	}
-
-	// ─── Вертикальный ────────────────────────────────────────────────────────────
 
 	&--vertical {
 		display: inline-flex;
@@ -236,8 +221,6 @@
 		width: sz(4px);
 		height: 1px;
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--soft &__track {
 		background-color: var(--rise-primary-soft);

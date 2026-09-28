@@ -16,21 +16,12 @@ export interface SliderItem {
 	description?: string
 }
 
-/**
- * Режим анимации слайдера
- */
 export type SliderAnimation = 'slide' | 'fade' | 'scale' | 'flip'
 
-/**
- * Режим навигации слайдера
- */
 export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Пропсы компонента BaseSlider
- */
 export interface BaseSliderProps extends BaseComponentProps<
 	string,
 	| 'root'
@@ -82,18 +73,12 @@ export interface BaseSliderProps extends BaseComponentProps<
 	isZoomable?: boolean
 }
 
-/**
- * События компонента BaseSlider
- */
 export interface BaseSliderEmits {
 	(event: 'change', index: number): void
 	(event: 'next'): void
 	(event: 'prev'): void
 }
 
-/**
- * Слоты компонента BaseSlider
- */
 export interface BaseSliderSlots {
 	default?: (props: { item: SliderItem; index: number }) => unknown
 	caption?: (props: { item: SliderItem; index: number }) => unknown

@@ -1,7 +1,3 @@
-/**
- * Словари и помощники языка: одинаковые ключи в ru и en, смена языка, свой язык, подстановка и множественное число.
- */
-
 import { en } from '../en'
 import { ru } from '../ru'
 import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'

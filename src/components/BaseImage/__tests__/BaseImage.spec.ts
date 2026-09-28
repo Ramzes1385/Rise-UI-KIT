@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseImage.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseImage from '../ui/BaseImage.vue'
@@ -35,7 +30,6 @@ class FakeIntersectionObserver {
 		return []
 	}
 
-	/** Сообщить, что наблюдаемое изображение попало в зону видимости */
 	enterViewport(): void {
 		if (!this.target) return
 		const entry = { isIntersecting: true, target: this.target } as IntersectionObserverEntry

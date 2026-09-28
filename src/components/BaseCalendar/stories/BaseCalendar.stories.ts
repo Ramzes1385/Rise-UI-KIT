@@ -1,10 +1,4 @@
-/**
- * BaseCalendar — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) → состояния (disabled,
- * ограничения дат) → режимы выбора (диапазон, несколько дат) → время → содержимое (номера недель, локаль, события,
- * слот day) → сценарий смены вида → клавиатура. Все даты — вокруг STORY_TODAY (15 мая 2025).
- */
+/** Все даты в примерах — вокруг STORY_TODAY (15 мая 2025). */
 
 import { ref } from 'vue'
 import { expect, fn, waitFor, within } from 'storybook/test'
@@ -55,7 +49,6 @@ const HIGHLIGHTS: CalendarHighlight[] = [
 	{ date: storyDate(12), color: 'var(--rise-error)', label: 'Релиз серии' },
 ]
 
-/** Выходные — суббота и воскресенье, праздники — 1 и 9 мая. */
 const WEEKENDS: CalendarWeekends = {
 	days: [0, 6],
 	holidays: [storyDate(-14), storyDate(-6)],

@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения радиокнопки */
 export const RADIO_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'bordered'] as const
 
-/**
- * Пропсы компонента BaseRadio
- */
 export interface BaseRadioOption {
 	value: string | number
 	label: string
@@ -32,17 +28,11 @@ export interface BaseRadioProps extends BaseComponentProps<
 	error?: string
 }
 
-/**
- * События компонента BaseRadio
- */
 export interface BaseRadioEmits {
 	(event: 'update:modelValue', value: string | number): void
 	(event: 'change', value: string | number): void
 }
 
-/**
- * Слоты компонента BaseRadio
- */
 export interface BaseRadioSlots {
 	default?: () => unknown
 	/** Кастомная подпись опции. Нативный radio и индикатор рендерит компонент, поэтому выбор, клавиатура и роль radio сохраняются */

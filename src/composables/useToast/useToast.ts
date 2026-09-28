@@ -6,7 +6,6 @@ import type { ToastId, ToastItem, ToastOptions, ToastStore, ToastStoreOptions, U
 /** Сколько уведомлений видно одновременно по умолчанию */
 export const TOAST_MAX = 5
 
-/** Ключ provide/inject хранилища уведомлений BaseApp */
 export const TOAST_STORE_KEY: InjectionKey<ToastStore> = Symbol('rise-toast-store')
 
 /**
@@ -56,7 +55,6 @@ export function setActiveToastStore(store: ToastStore | null): void {
 	activeStore = store
 }
 
-/** Хранилище, которое сейчас показывает уведомления, или null */
 export function getActiveToastStore(): ToastStore | null {
 	return activeStore
 }

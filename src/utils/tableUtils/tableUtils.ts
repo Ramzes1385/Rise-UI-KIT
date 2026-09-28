@@ -85,7 +85,6 @@ function parseIsoDate(value: string): number | null {
 	return date.getTime() - parseZoneOffset(zone) * MS_IN_MINUTE
 }
 
-/** Число для числовой колонки или null, если значение нельзя однозначно считать числом */
 function toSortNumber(value: unknown): number | null {
 	if (typeof value === 'number') return Number.isFinite(value) ? value : null
 	if (typeof value === 'bigint') return Number(value)

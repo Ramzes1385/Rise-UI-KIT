@@ -10,7 +10,6 @@ export interface BaseCalendarMonthsProps {
 	classes: Record<string, string | undefined>
 }
 
-/** Emits компонента BaseCalendarMonths */
 export interface BaseCalendarMonthsEmits {
 	(event: 'select', index: number): void
 }

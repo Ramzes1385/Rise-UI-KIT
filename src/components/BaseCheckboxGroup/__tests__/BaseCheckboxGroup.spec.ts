@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseCheckboxGroup: разметка группы, имя и описание, варианты, «Выбрать все».
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseCheckboxGroup from '../ui/BaseCheckboxGroup.vue'

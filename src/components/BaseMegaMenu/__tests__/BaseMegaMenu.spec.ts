@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseMegaMenu.
- * Проверяют рендер, пропсы, рекурсивную вложенность и навигацию.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

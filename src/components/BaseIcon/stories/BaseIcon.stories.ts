@@ -1,10 +1,3 @@
-/**
- * BaseIcon — stories.
- *
- * Разделы: Default (песочница) → галерея всех иконок спрайта → внешний вид (размеры, цвет) →
- * трансформации (поворот, отражение) → доступность (декоративная и информативная иконка).
- */
-
 import { expect } from 'storybook/test'
 import { ICON_SCALE } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'

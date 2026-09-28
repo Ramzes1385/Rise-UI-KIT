@@ -19,14 +19,12 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 	})
 	const { replyingTo, handleMessageReply, handleCancelReply } = useChatReply()
 
-	// Управление закрепленными сообщениями (несколько закрепов)
 	const currentPinnedIndex = ref(0)
 	const pinnedMessages = computed((): ChatMessage[] => {
 		return props.messages.filter(message => message.isPinned)
 	})
 	const currentPinnedMessage = computed((): ChatMessage | null => {
 		if (pinnedMessages.value.length === 0) return null
-		// Корректируем индекс если он вышел за границы
 		if (currentPinnedIndex.value >= pinnedMessages.value.length) {
 			currentPinnedIndex.value = Math.max(0, pinnedMessages.value.length - 1)
 		}
@@ -40,7 +38,6 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 		),
 	)
 
-	/** Перелистывание закрепов */
 	function handleNextPinned(): void {
 		if (pinnedMessages.value.length <= 1) return
 		currentPinnedIndex.value = (currentPinnedIndex.value + 1) % pinnedMessages.value.length
@@ -51,7 +48,6 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 		currentPinnedIndex.value = (currentPinnedIndex.value - 1 + pinnedMessages.value.length) % pinnedMessages.value.length
 	}
 
-	/** Скролл к закрепленному сообщению */
 	function handleScrollToPinned(messageId: string): void {
 		options.scrollToMessage?.(messageId)
 	}

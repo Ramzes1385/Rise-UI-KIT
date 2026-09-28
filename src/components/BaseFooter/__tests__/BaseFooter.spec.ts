@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseFooter: ориентир contentinfo, зоны, ширина содержимого, варианты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseFooter from '../ui/BaseFooter.vue'

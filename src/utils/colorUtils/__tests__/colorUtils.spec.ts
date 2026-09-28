@@ -1,9 +1,3 @@
-/**
- * Unit-тесты для colorUtils.
- * Покрывают: normalizeHex, isValidHex, channelToHex, hexToRgb, rgbToHex,
- * rgbToHsv, hsvToRgb, hexToHsv, hsvToHex и round-trip конверсии.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { channelToHex, hexToHsv, hexToRgb, hsvToHex, hsvToRgb, isValidHex, normalizeHex, rgbToHex, rgbToHsv } from '../colorUtils'
 

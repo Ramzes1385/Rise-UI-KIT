@@ -1,10 +1,3 @@
-/**
- * BaseChip — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, расположение, кастомный цвет) →
- * состояния (переполнение, скрытие нуля, длинный текст) → сценарий «счётчик корзины».
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'

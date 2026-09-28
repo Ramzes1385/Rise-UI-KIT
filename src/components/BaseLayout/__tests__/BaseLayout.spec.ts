@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseLayout: ссылка «Перейти к содержимому», <main>, зоны каркаса, модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseLayout from '../ui/BaseLayout.vue'

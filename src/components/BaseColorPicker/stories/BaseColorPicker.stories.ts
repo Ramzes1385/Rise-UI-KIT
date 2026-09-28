@@ -1,10 +1,4 @@
-/**
- * BaseColorPicker — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (размеры) → состояния (disabled) →
- * содержимое (свои пресеты, минимальная панель, свой триггер) → сценарии (ввод HEX, сброс цвета) → клавиатура.
- * Панель телепортируется в body, поэтому в Docs примеры с открытой панелью показываются в отдельном фрейме.
- */
+/** Панель телепортируется в body, поэтому в Docs примеры с открытой панелью показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
 import { expect, fn, screen, waitFor } from 'storybook/test'
@@ -14,7 +8,6 @@ import BaseColorPicker from '../ui/BaseColorPicker.vue'
 import { COLOR_PICKER_POSITIONS } from '../types/BaseColorPicker.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Фирменная палитра студии для примера своих пресетов. */
 const BRAND_PRESETS = [
 	'#0f172a',
 	'#1d4ed8',
@@ -36,7 +29,6 @@ const BRAND_PRESETS = [
  */
 const CENTERED = 'display: flex; justify-content: center;'
 
-/** Панель телепортируется в body и перекрыла бы страницу Docs — пример с открытой панелью показывается во фрейме. */
 function docsFrame(height: number) {
 	return { story: { inline: false, height: `${height}px` } }
 }

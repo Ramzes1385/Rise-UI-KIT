@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseBadge.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseBadge from '../ui/BaseBadge.vue'

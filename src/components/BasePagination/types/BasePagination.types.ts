@@ -1,11 +1,6 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения пагинации */
 export const PAGINATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
-
-/**
- * Пропсы компонента BasePagination
- */
 
 export interface BasePaginationProps extends BaseComponentProps<
 	(typeof PAGINATION_VARIANTS)[number],
@@ -23,17 +18,11 @@ export interface BasePaginationProps extends BaseComponentProps<
 	showLastPage?: boolean
 }
 
-/**
- * События компонента BasePagination
- */
 export interface BasePaginationEmits {
 	(event: 'update:modelValue', value: number): void
 	(event: 'change', value: number): void
 }
 
-/**
- * Слоты компонента BasePagination
- */
 export interface BasePaginationSlots {
 	default?: () => unknown
 }

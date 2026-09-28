@@ -1,10 +1,3 @@
-/**
- * BaseBadge — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет) →
- * содержимое (иконка, длинный текст) → сценарии (статусы через токены ролей, счётчик в кнопке).
- */
-
 import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'

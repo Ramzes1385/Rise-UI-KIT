@@ -1,15 +1,9 @@
-/**
- * Integration-тесты для BaseFileUpload.
- * Проверяют взаимодействие: клик, drag-and-drop, удаление файлов.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
 import type { UploadedFile } from '../types/BaseFileUpload.types'
 
-/** Создание мок-файла */
 function createFile(name: string, size: number, type: string): File {
 	const file = new File(['x'.repeat(size)], name, { type })
 	return file

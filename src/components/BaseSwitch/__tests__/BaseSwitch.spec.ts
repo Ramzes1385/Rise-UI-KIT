@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseSwitch.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseSwitch from '../ui/BaseSwitch.vue'
@@ -321,7 +316,6 @@ describe('BaseSwitch unit', () => {
 			expect(container.querySelector('.base-switch__handle')?.classList.contains('custom-handle')).toBe(true)
 			expect(container.querySelector('.base-switch__content')?.classList.contains('custom-content')).toBe(true)
 
-			// Проверяем классы на BaseText компонентах
 			expect(container.querySelector('.base-switch__label')?.classList.contains('custom-label')).toBe(true)
 			expect(container.querySelector('.base-switch__required')?.classList.contains('custom-required')).toBe(true)
 			expect(container.querySelector('.base-switch__error-text')?.classList.contains('custom-error-text')).toBe(true)

@@ -3,7 +3,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** Варианты оформления: те же, что у BaseCheckbox, — вариант получает каждый флажок группы */
 export const CHECKBOX_GROUP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/** Вариант выбора в группе */
 export interface CheckboxGroupOption {
 	/** Значение: попадает в массив v-model, когда флажок отмечен */
 	value: string | number
@@ -13,9 +12,6 @@ export interface CheckboxGroupOption {
 	isDisabled?: boolean
 }
 
-/**
- * Пропсы компонента BaseCheckboxGroup
- */
 export interface BaseCheckboxGroupProps extends BaseComponentProps<
 	(typeof CHECKBOX_GROUP_VARIANTS)[number],
 	'root' | 'label' | 'required' | 'options' | 'checkbox' | 'error'
@@ -40,9 +36,6 @@ export interface BaseCheckboxGroupProps extends BaseComponentProps<
 	selectAllLabel?: string
 }
 
-/**
- * События компонента BaseCheckboxGroup
- */
 export interface BaseCheckboxGroupEmits {
 	/** Новый набор отмеченных значений */
 	(event: 'update:modelValue', value: (string | number)[]): void

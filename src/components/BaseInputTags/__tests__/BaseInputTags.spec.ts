@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseInputTags: список тегов, кнопки удаления, состояния.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseInputTags from '../ui/BaseInputTags.vue'

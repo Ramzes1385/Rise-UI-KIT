@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseRange.
- * Проверяют взаимодействие: клик по треку, перетаскивание, клавиатура.
- */
-
 import { defineComponent, ref } from 'vue'
 import { fireEvent, render } from '@testing-library/vue'
 import { BaseText } from '@components/BaseText'
@@ -10,10 +5,8 @@ import '@testing-library/jest-dom/vitest'
 import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'
 
-/** Общие глобальные компоненты для всех тестов */
 const globalComponents = { components: { BaseText, BaseTooltip } }
 
-/** Мок getBoundingClientRect для трека */
 function mockTrackRect(width = 200, height = 20): void {
 	Element.prototype.getBoundingClientRect = vi.fn(() => ({
 		width,

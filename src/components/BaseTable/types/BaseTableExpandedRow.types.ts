@@ -1,6 +1,5 @@
 import type { TableRow } from './BaseTable.types'
 
-/** Props компонента BaseTableExpandedRow */
 export interface BaseTableExpandedRowProps {
 	/** Данные строки */
 	row: TableRow
@@ -14,7 +13,6 @@ export interface BaseTableExpandedRowProps {
 	isExpanded: (row: TableRow) => boolean
 }
 
-/** Слоты компонента BaseTableExpandedRow */
 export interface BaseTableExpandedRowSlots {
 	/** Контент раскрытой строки */
 	'expanded-content'?: (props: { row: TableRow }) => unknown

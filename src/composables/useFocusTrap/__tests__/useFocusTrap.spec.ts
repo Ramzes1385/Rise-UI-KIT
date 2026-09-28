@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useFocusTrap.
- * Проверяют перевод фокуса внутрь, циклический Tab/Shift+Tab и возврат фокуса.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { defineComponent, onMounted, ref } from 'vue'

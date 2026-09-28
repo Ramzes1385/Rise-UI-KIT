@@ -1,7 +1,3 @@
-/**
- * Foundations / Typography — шрифты, шкала размеров и начертания.
- */
-
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import './foundations.scss'
 

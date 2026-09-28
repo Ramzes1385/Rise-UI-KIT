@@ -45,7 +45,6 @@ function useColorPicker(options: UseColorPickerOptions): UseColorPickerReturn {
 		top: `${MAX_PERCENT - hsv.value.v}%`,
 	}))
 
-	/** Передать текущий HEX наружу */
 	function emitChange(): void {
 		onChange(exactHex.value)
 	}
@@ -57,12 +56,10 @@ function useColorPicker(options: UseColorPickerOptions): UseColorPickerReturn {
 		emitChange()
 	}
 
-	/** Установить тон */
 	function setHue(hue: number): void {
 		applyHsv({ ...hsv.value, h: clamp(hue, 0, MAX_HUE) })
 	}
 
-	/** Установить saturation/value по относительной точке области */
 	function setSaturationValue(point: RelativePoint): void {
 		applyHsv({
 			...hsv.value,

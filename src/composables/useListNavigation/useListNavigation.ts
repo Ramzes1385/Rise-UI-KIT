@@ -23,7 +23,6 @@ function useListNavigation(options: UseListNavigationOptions): {
 
 	const highlightedIndex = ref(-1)
 
-	/** Подсветить следующий элемент */
 	function highlightNext(): void {
 		const count = itemCount()
 		if (count === 0) return
@@ -35,7 +34,6 @@ function useListNavigation(options: UseListNavigationOptions): {
 		}
 	}
 
-	/** Подсветить предыдущий элемент */
 	function highlightPrev(): void {
 		const count = itemCount()
 		if (count === 0) return
@@ -47,19 +45,16 @@ function useListNavigation(options: UseListNavigationOptions): {
 		}
 	}
 
-	/** Выбрать подсвеченный элемент */
 	function selectHighlighted(): void {
 		if (highlightedIndex.value >= 0) {
 			onSelect(highlightedIndex.value)
 		}
 	}
 
-	/** Сбросить подсветку */
 	function reset(): void {
 		highlightedIndex.value = -1
 	}
 
-	/** Обработчик клавиш */
 	function handleKeydown(e: KeyboardEvent): void {
 		if (e.key === 'ArrowDown') {
 			e.preventDefault()

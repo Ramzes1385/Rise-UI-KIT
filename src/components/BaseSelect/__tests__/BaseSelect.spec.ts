@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseSelect.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSelect from '../ui/BaseSelect.vue'
 import type { BaseSelectOption } from '../types/BaseSelect.types'
 
-/** Стандартный набор опций для тестов */
 const OPTIONS: BaseSelectOption[] = [
 	{ value: 'metal', label: 'Металл' },
 	{ value: 'wood', label: 'Дерево' },

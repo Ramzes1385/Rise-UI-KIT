@@ -1,15 +1,10 @@
-/**
- * Unit-тесты для BaseEditor.
- * Проверяют рендер и CSS-модификаторы.
- * Компонент сложный — тестируем базовый рендер.
- */
+/** Компонент сложный — тестируем базовый рендер. */
 
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import BaseEditor from '../ui/BaseEditor.vue'
 
-/** Стабаем дочерние компоненты для изоляции */
 const globalConfig = {
 	stubs: {
 		BaseTooltip: {

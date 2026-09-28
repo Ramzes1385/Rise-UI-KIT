@@ -1,10 +1,3 @@
-/**
- * BaseImage — stories.
- *
- * Разделы: Default (песочница) → внешний вид (заполнение, скругление, цвет фона) → состояния (ошибка, резервное
- * изображение) → просмотр (зум, галерея) → клавиатура.
- */
-
 import { expect, fn, screen, waitFor } from 'storybook/test'
 import {
 	ARG_GROUP,

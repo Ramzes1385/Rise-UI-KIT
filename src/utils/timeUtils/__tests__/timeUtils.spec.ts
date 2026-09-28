@@ -1,4 +1,3 @@
-/** Тесты утилит времени */
 import { buildTimeOptions, minutesToTime, parseTimeInput, timePrefixes, timeToMinutes } from '../timeUtils'
 
 describe('timeUtils', () => {

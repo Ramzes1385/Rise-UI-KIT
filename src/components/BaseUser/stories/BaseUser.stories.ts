@@ -1,10 +1,3 @@
-/**
- * BaseUser — stories.
- *
- * Разделы: Default (песочница) → внешний вид (размеры, вертикально, без фото, длинные тексты) → сценарии (ссылка
- * на профиль, в сети, своя подпись).
- */
-
 import { expect } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, useArgsWithoutSlots } from '@/stories/helpers'

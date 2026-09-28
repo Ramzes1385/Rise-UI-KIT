@@ -1,8 +1,4 @@
-/**
- * Интеграционные тесты BaseCalendar с реальными дочерними компонентами (без stub'ов и моков):
- * доступность сетки дней и блока времени, слоты header/day/date-popover, popover даты и полоса диапазона.
- * Проверки перенесены из play-функций прежних stories (CustomSlotsInteractive, DatePopover*, InteractiveStates).
- */
+/** Проверки перенесены из play-функций прежних stories (CustomSlotsInteractive, DatePopover*, InteractiveStates). */
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen, within } from '@testing-library/vue'

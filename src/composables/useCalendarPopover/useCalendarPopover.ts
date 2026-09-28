@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import type { UseCalendarPopoverOptions, UseCalendarPopoverReturn } from './types/useCalendarPopover.types'
 
-/** Composable для управления поповером дня календаря — позиционирование, подсветка, открытие/закрытие. */
 function useCalendarPopover(options: UseCalendarPopoverOptions): UseCalendarPopoverReturn {
 	const { getEvents, isCurrentMonth, isToday, isSelected, isInRange, isWeekend, isDayDisabled, isRangeStart, isRangeEnd, isOutOfRange } =
 		options

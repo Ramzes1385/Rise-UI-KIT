@@ -1,9 +1,4 @@
-/**
- * Integration-тесты для BaseSlideover.
- * Проверяют взаимодействие: закрытие, оверлей, семантику диалога и управление фокусом.
- * Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка.
- * Компонент использует teleport — поиск в document.
- */
+/** Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка; компонент использует teleport — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'

@@ -1,7 +1,3 @@
-/**
- * Integration-тесты для BaseFormField.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import userEvent from '@testing-library/user-event'

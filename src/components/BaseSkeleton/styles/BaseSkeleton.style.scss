@@ -1,7 +1,4 @@
-// BaseSkeleton. Заглушка на месте загружаемого содержимого: фон --rise-bg-elevated (проп color — свой фон).
-// Формы: text — строка высотой 16px, радиус sm; rect — радиус md; circle — круг. Размеры задают width/height.
-// Движение — только без prefers-reduced-motion: isAnimated — полоса-шиммер, isPulse — мерцание. Иначе заглушка статична.
-// Шиммер — полоса цвета --rise-bg-accented: в светлой теме чуть темнее фона, в тёмной — светлее; отдельных правил темы нет.
+// Заглушка загрузки (фон bg-elevated, проп color — свой фон); формы text/rect/circle; isAnimated — шиммер, isPulse — мерцание, отключены при prefers-reduced-motion.
 .base-skeleton {
 	position: relative;
 	overflow: hidden;

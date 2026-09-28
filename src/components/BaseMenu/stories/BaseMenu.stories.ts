@@ -1,10 +1,3 @@
-/**
- * BaseMenu — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, цвет) → состояния (отключённый пункт, пусто,
- * длинные названия) → содержимое (разделители) → сценарии (обработчик пункта) → клавиатура.
- */
-
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseMenu from '../ui/BaseMenu.vue'

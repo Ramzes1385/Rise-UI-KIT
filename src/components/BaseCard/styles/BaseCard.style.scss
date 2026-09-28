@@ -1,8 +1,4 @@
-// BaseCard — поверхность для группы контента: фон --rise-bg, рамка --rise-border, радиус lg, текст 14/20.
-// Шапка (заголовок 16/24 semibold, подзаголовок 14/20 muted), тело и подвал разделены линией --rise-border.
 // Отступы секций по умолчанию 16px 20px; проп padding переопределяет их inline-переменными --card-pad-*.
-// Варианты: default — рамка; outline — рамка accented; soft — фон bg-elevated 50% без рамки;
-// ghost — без фона и рамки; shadow — рамка и тень. isHoverable — рамка accented и тень при наведении.
 .base-card {
 	--card-pad-top: 16px;
 	--card-pad-right: 20px;
@@ -20,8 +16,6 @@
 	@include custom-bg(background-color, var(--rise-bg));
 	@include custom-text(color, var(--rise-text));
 	@include transition-colors;
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--outline {
 		border-color: var(--rise-border-accented);
@@ -41,8 +35,6 @@
 		box-shadow: var(--rise-shadow-sm);
 	}
 
-	// ─── Интерактивная карточка ──────────────────────────────────────────────────
-
 	&--hoverable {
 		cursor: pointer;
 		@include focus-ring;
@@ -58,8 +50,6 @@
 			box-shadow: var(--rise-shadow-md);
 		}
 	}
-
-	// ─── Секции ──────────────────────────────────────────────────────────────────
 
 	&__header {
 		display: flex;
@@ -125,8 +115,6 @@
 		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
 		border-top: 1px solid var(--rise-border);
 	}
-
-	// ─── Высота ──────────────────────────────────────────────────────────────────
 
 	// height + scroll: тело прокручивается, шапка и подвал остаются на месте.
 	// Тело фокусируемо (tabindex) — кольцо фокуса внутри, карточка обрезает всё, что снаружи.

@@ -1,15 +1,8 @@
-/**
- * Unit-тесты для tableUtils.
- * Покрывают: calcRowNumber, getColumnStyle, calcTotalColumns, calcColumnWidths, toSortKey, compareSortKeys.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey } from '../tableUtils'
 import type { SortType } from '@components/BaseTable/types/BaseTable.types'
 
 describe('tableUtils', () => {
-	// ── calcRowNumber ──
-
 	describe('calcRowNumber', () => {
 		it('рассчитывает номер строки в режиме pagination', () => {
 			const result = calcRowNumber({
@@ -62,8 +55,6 @@ describe('tableUtils', () => {
 		})
 	})
 
-	// ── getColumnStyle ──
-
 	describe('getColumnStyle', () => {
 		it('возвращает пустой объект без параметров', () => {
 			expect(getColumnStyle({})).toEqual({})
@@ -84,8 +75,6 @@ describe('tableUtils', () => {
 			expect(result).toEqual({ minWidth: '100px', maxWidth: '200px' })
 		})
 	})
-
-	// ── calcTotalColumns ──
 
 	describe('calcTotalColumns', () => {
 		it('возвращает только видимые колонки', () => {
@@ -108,8 +97,6 @@ describe('tableUtils', () => {
 			expect(calcTotalColumns(5, { isSelectable: true, hasRowNumber: true, hasExpandableRows: true })).toBe(8)
 		})
 	})
-
-	// ── calcColumnWidths ──
 
 	describe('calcColumnWidths', () => {
 		it('возвращает auto для колонок без width и flex', () => {
@@ -158,8 +145,6 @@ describe('tableUtils', () => {
 			expect(result[2]).toBe('25%')
 		})
 	})
-
-	// ── toSortKey / compareSortKeys ──
 
 	describe('toSortKey', () => {
 		it('пустые значения получают ранг 2 для любого типа', () => {

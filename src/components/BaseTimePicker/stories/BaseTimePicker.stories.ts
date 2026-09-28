@@ -1,10 +1,3 @@
-/**
- * BaseTimePicker — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты) → состояния (отключено, ошибка) →
- * сценарии (рабочие часы и шаг, ввод без двоеточия) → клавиатура.
- */
-
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseTimePicker from '../ui/BaseTimePicker.vue'

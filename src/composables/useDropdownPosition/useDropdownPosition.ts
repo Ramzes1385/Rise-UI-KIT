@@ -53,7 +53,6 @@ function place(geometry: Geometry, side: Side, align: Align): { top: number; lef
 	return { top: alignAlong(align, verticalEdge(rect), size.height), left }
 }
 
-/** Помещается ли панель со стороны триггера */
 function fits(geometry: Geometry, side: Side): boolean {
 	const { rect, size, gap, viewport } = geometry
 	switch (side) {
@@ -180,14 +179,12 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		listen()
 	})
 
-	/** Пересчёт при изменении gap, position, matchWidth */
 	watch([gap, position, matchWidth], () => {
 		updatePosition()
 		nextTick(updatePosition)
 	})
 
 	onMounted(() => {
-		/** Панель, открытая при монтировании */
 		if (isOpen()) {
 			updatePosition()
 			nextTick(updatePosition)

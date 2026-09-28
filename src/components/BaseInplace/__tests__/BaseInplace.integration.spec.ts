@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseInplace: правка, сохранение, отмена, фокус, форма.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import userEvent from '@testing-library/user-event'

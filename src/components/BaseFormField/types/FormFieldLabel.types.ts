@@ -1,6 +1,5 @@
 import type { CustomClassProp } from '@composables/useCustomClass'
 
-/** Props компонента FormFieldLabel */
 export interface FormFieldLabelProps {
 	/** Текст метки */
 	label: string

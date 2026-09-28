@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseSegmented: выбор кликом, BaseFormField и BaseForm вокруг.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

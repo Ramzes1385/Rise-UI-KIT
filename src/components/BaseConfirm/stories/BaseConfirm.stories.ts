@@ -1,10 +1,4 @@
-/**
- * BaseConfirm — stories.
- *
- * Разделы: Default (песочница: окно открывается кнопкой, isOpen синхронизирован с Controls) → открытое окно,
- * необратимое действие и длинный текст → вызов из кода (useConfirm) → клавиатура.
- * Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу.
- */
+/** Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу. */
 
 import { defineComponent, ref } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
@@ -158,8 +152,6 @@ export const LongContent: Story = {
 		await expect(confirm.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight)
 	},
 }
-
-// ─── Сценарии ──────────────────────────────────────────────────────────────────
 
 /** Кнопка удаления со своим подтверждением: так выглядит вызов `useConfirm()` в компоненте приложения. */
 const DeleteProjectButton = defineComponent({

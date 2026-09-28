@@ -1,10 +1,3 @@
-/**
- * BaseInplace — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, в заголовке) → состояния (отключено, пусто) →
- * сценарии (отмена при выходе) → клавиатура.
- */
-
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInplace from '../ui/BaseInplace.vue'

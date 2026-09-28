@@ -1,8 +1,5 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Шаг степпера
- */
 export interface BaseStepperStep {
 	/** Заголовок */
 	label: string
@@ -14,7 +11,6 @@ export interface BaseStepperStep {
 	isDisabled?: boolean
 }
 
-/** Данные scoped-слота item */
 export interface BaseStepperItemSlot {
 	/** Данные шага */
 	item: BaseStepperStep
@@ -30,27 +26,18 @@ export interface BaseStepperItemSlot {
 	isDisabled: boolean
 }
 
-/** Формы индикатора шага */
 export const STEPPER_SHAPES = ['circle', 'square', 'diamond', 'empty'] as const
 
-/** Тип формы индикатора */
 export type StepperShape = (typeof STEPPER_SHAPES)[number]
 
-/** Варианты отображения */
 export const STEPPER_VARIANTS = ['default', 'animated'] as const
 
-/** Тип варианта отображения */
 export type StepperVariant = (typeof STEPPER_VARIANTS)[number]
 
-/** Ориентации степпера */
 export const STEPPER_ORIENTATIONS = ['horizontal', 'vertical'] as const
 
-/** Тип ориентации */
 export type StepperOrientation = (typeof STEPPER_ORIENTATIONS)[number]
 
-/**
- * Пропсы компонента BaseStepper
- */
 export interface BaseStepperProps extends BaseComponentProps<
 	StepperVariant,
 	'root' | 'header' | 'items' | 'step' | 'indicatorWrapper' | 'indicator' | 'check' | 'content' | 'label' | 'description' | 'footer'
@@ -65,17 +52,11 @@ export interface BaseStepperProps extends BaseComponentProps<
 	shape?: StepperShape
 }
 
-/**
- * События компонента BaseStepper
- */
 export interface BaseStepperEmits {
 	(event: 'update:modelValue', value: number): void
 	(event: 'change', value: number): void
 }
 
-/**
- * Слоты компонента BaseStepper
- */
 export interface BaseStepperSlots {
 	default?: () => unknown
 	/** Заголовок степпера */

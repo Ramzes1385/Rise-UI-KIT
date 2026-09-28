@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseRange: ключевые stories в светлой и тёмной теме.
- * Подсказка значения телепортируется в body, поэтому story с ней снимается целой страницей.
- */
+/** Подсказка значения телепортируется в body, поэтому story с ней снимается целой страницей. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

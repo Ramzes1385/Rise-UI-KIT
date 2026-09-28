@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseSwitch.
- * Проверяют взаимодействие: переключение, v-model, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'

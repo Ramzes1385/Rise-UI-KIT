@@ -1,14 +1,8 @@
 import type { StyleValue } from 'vue'
 
-/**
- * Тип для пропса customStyle.
- * Может быть строкой, плоским объектом стилей или вложенным объектом стилей по ключам элементов.
- */
+/** Может быть строкой, плоским объектом стилей или вложенным объектом стилей по ключам элементов. */
 export type CustomStyleProp = string | Record<string, string | number | undefined> | StyleValue
 
-/**
- * Параметры для composable useCustomStyle
- */
 export interface UseCustomStyleOptions {
 	/**
 	 * Функция для получения значения пропса customStyle

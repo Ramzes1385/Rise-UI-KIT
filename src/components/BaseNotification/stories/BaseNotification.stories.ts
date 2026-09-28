@@ -1,10 +1,4 @@
-/**
- * BaseNotification — stories.
- *
- * Разделы: Default (песочница: одно уведомление из props) → внешний вид (типы, варианты, кастомный цвет) →
- * длинный текст → сценарии (позиция на экране, вызов из кода, автозакрытие) → клавиатура.
- * Большинство примеров — в режиме isContained: список уведомлений в потоке страницы, без телепорта.
- */
+/** Большинство примеров — в режиме isContained: список уведомлений в потоке страницы, без телепорта. */
 
 import { computed, onMounted, ref } from 'vue'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
@@ -26,7 +20,6 @@ const TYPE_EXAMPLES: BaseNotificationProps[] = [
 	{ type: 'info', title: 'Доступно обновление', description: 'Новая версия редактора субтитров вышла сегодня.' },
 ]
 
-/** Подписи кнопок в примере вызова из кода. */
 const TYPE_LABELS: Record<(typeof NOTIFICATION_TYPES)[number], string> = {
 	success: 'Успех',
 	error: 'Ошибка',

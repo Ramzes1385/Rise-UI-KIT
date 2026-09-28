@@ -6,9 +6,6 @@ export type VirtualKey = string | number
 /** Выравнивание строки при прокрутке к ней: `auto` — только если строка не видна целиком */
 export type VirtualAlign = 'start' | 'center' | 'end' | 'auto'
 
-/**
- * Опции composable useVirtualList
- */
 export interface UseVirtualListOptions {
 	/** Число строк */
 	count: () => number
@@ -32,9 +29,6 @@ export interface VirtualItem {
 	size: number
 }
 
-/**
- * Возвращаемое значение composable useVirtualList
- */
 export interface UseVirtualListReturn {
 	/** Строки для отрисовки: видимые, запас и закреплённая */
 	items: ComputedRef<VirtualItem[]>

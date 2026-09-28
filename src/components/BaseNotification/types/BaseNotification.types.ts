@@ -1,6 +1,5 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Типы уведомления */
 export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as const
 
 /**
@@ -10,26 +9,18 @@ export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as con
  */
 export const NOTIFICATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/** Позиция контейнера уведомлений на экране */
 export const NOTIFICATION_POSITIONS = ['top-left', 'top-right', 'top-center', 'bottom-left', 'bottom-right', 'bottom-center'] as const
 
-/** Тип позиции уведомлений */
 export type NotificationPosition = (typeof NOTIFICATION_POSITIONS)[number]
 
-/** Идентификатор уведомления */
 export type NotificationId = string | number
 
-/** Кнопка действия в уведомлении */
 export interface NotificationAction {
 	/** Текст кнопки */
 	label: string
 	/** Обработчик нажатия. После него уведомление закрывается */
 	onClick?: () => void
 }
-
-/**
- * Пропсы компонента BaseNotification
- */
 
 export interface BaseNotificationProps extends BaseComponentProps<
 	(typeof NOTIFICATION_VARIANTS)[number],
@@ -63,16 +54,10 @@ export interface BaseNotificationProps extends BaseComponentProps<
 	notificationKey?: string | number
 }
 
-/**
- * Элемент списка уведомлений
- */
 export interface NotificationItem extends Omit<BaseNotificationProps, 'items'> {
 	id: NotificationId
 }
 
-/**
- * События компонента BaseNotification
- */
 export interface BaseNotificationEmits {
 	/** Список опустел (только без `items`: управляемым списком распоряжается владелец) */
 	(event: 'close'): void
@@ -80,16 +65,10 @@ export interface BaseNotificationEmits {
 	(event: 'remove', id: NotificationId): void
 }
 
-/**
- * Слоты компонента BaseNotification
- */
 export interface BaseNotificationSlots {
 	default?: () => unknown
 }
 
-/**
- * Публичный API компонента BaseNotification
- */
 export interface BaseNotificationExpose {
 	/** Добавить уведомление программно и получить его id. `variant` из аргумента задаёт оформление этого уведомления, иначе — проп компонента */
 	add: (notification: BaseNotificationProps) => NotificationId

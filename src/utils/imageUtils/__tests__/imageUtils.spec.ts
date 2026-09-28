@@ -1,14 +1,7 @@
-/**
- * Unit-тесты для imageUtils.
- * Покрывают: isExternalImage, replaceExtension, buildOptimizedSrc, buildSrcset.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '../imageUtils'
 
 describe('imageUtils', () => {
-	// ── isExternalImage ──
-
 	describe('isExternalImage', () => {
 		it('распознаёт https URL', () => {
 			expect(isExternalImage('https://example.com/img.png')).toBe(true)
@@ -38,8 +31,6 @@ describe('imageUtils', () => {
 			expect(isExternalImage('')).toBe(false)
 		})
 	})
-
-	// ── replaceExtension ──
 
 	describe('replaceExtension', () => {
 		it('заменяет расширение файла', () => {
@@ -83,8 +74,6 @@ describe('imageUtils', () => {
 		})
 	})
 
-	// ── buildOptimizedSrc ──
-
 	describe('buildOptimizedSrc', () => {
 		it('добавляет параметр ширины', () => {
 			expect(buildOptimizedSrc('img.png', 400)).toBe('img.png?w=400')
@@ -102,8 +91,6 @@ describe('imageUtils', () => {
 			expect(buildOptimizedSrc('img.png', 0)).toBe('img.png')
 		})
 	})
-
-	// ── buildSrcset ──
 
 	describe('buildSrcset', () => {
 		it('строит srcset с 1x и 2x', () => {

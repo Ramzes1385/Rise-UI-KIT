@@ -142,7 +142,6 @@ function isPresetSelected(preset: string): boolean {
 	return normalizeHex(preset) === swatchColor.value
 }
 
-/** Установить saturation/value по координатам указателя в области */
 function applyAreaPoint(clientX: number, clientY: number): void {
 	const area = areaRef.value
 	/* istanbul ignore next -- defensive: pointerdown невозможен без смонтированного areaRef */
@@ -186,14 +185,12 @@ function handleAreaKeydown(event: KeyboardEvent): void {
 	picker.setSaturationValue({ x: s / 100 + offset[0], y: 1 - v / 100 + offset[1] })
 }
 
-/** Изменение тона через слайдер */
 function handleHueInput(event: Event): void {
 	const target = toHTMLInputElement(event.target)
 	if (!target) return
 	picker.setHue(Number(target.value))
 }
 
-/** Ручной ввод HEX */
 function handleHexChange(event: Event): void {
 	const target = toHTMLInputElement(event.target)
 	if (!target) return

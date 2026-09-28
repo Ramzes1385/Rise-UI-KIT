@@ -1,9 +1,3 @@
-/**
- * BaseAvatarGroup — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, квадратные) → сценарии (остаток «+N»).
- */
-
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseAvatarGroup from '../ui/BaseAvatarGroup.vue'

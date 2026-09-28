@@ -1,9 +1,3 @@
-/**
- * Unit/Integration-тесты для ChatInput.
- * Покрывают автодополнение упоминаний (@) и команд (/), вложения файлов,
- * отправку, эмодзи-поповер и быстрые ответы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
@@ -163,7 +157,6 @@ describe('ChatInput unit', () => {
 			await user.type(getInput(), 'Привет')
 			await fireEvent.click(screen.getByLabelText('Показать команды'))
 
-			// Симулируем последующее взаимодействие с полем — список должен остаться открытым
 			await fireEvent.keyUp(getInput())
 			await fireEvent.click(getInput())
 

@@ -1,6 +1,5 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения мега-меню */
 export const MEGA_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 /**
@@ -42,19 +41,10 @@ export interface MegaMenuColumn {
 	items: MegaMenuItem[]
 }
 
-/**
- * Режим раскрытия подменю
- */
 export type MegaMenuTrigger = 'click' | 'hover'
 
-/**
- * Режим отображения мега-меню
- */
 export type MegaMenuLayout = 'columns' | 'dropdown'
 
-/**
- * Пропсы компонента BaseMegaMenu
- */
 export interface BaseMegaMenuProps extends BaseComponentProps<
 	(typeof MEGA_MENU_VARIANTS)[number],
 	'root' | 'container' | 'column' | 'title' | 'list' | 'nav' | 'navItem' | 'navLink' | 'dropdown'
@@ -71,18 +61,12 @@ export interface BaseMegaMenuProps extends BaseComponentProps<
 	hoverDelay?: number
 }
 
-/**
- * События компонента BaseMegaMenu
- */
 export interface BaseMegaMenuEmits {
 	(event: 'navigate', url: string): void
 	(event: 'item-click', item: MegaMenuItem): void
 	(event: 'column-click', column: MegaMenuColumn): void
 }
 
-/**
- * Слоты компонента BaseMegaMenu
- */
 export interface BaseMegaMenuSlots {
 	/** Кастомный заголовок колонки */
 	'column-title'?: (props: { column: MegaMenuColumn }) => unknown

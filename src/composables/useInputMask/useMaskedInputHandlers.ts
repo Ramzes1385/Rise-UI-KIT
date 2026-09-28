@@ -35,7 +35,6 @@ function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMask
 		})
 	}
 
-	/** Текст, который поле должно показывать для текущего modelValue */
 	function getDisplayValue(): string {
 		const currentMask = options.getMask()
 		const rawValue = getRawValue()

@@ -13,7 +13,6 @@ export interface OverlayEntry {
 	destroyOnClose: boolean
 }
 
-/** Параметры `useOverlay().create()` */
 export interface OverlayCreateOptions {
 	/** Начальные props компонента */
 	props?: OverlayProps
@@ -21,7 +20,6 @@ export interface OverlayCreateOptions {
 	destroyOnClose?: boolean
 }
 
-/** Управление одним оверлеем */
 export interface OverlayHandle<TResult = unknown> {
 	/** Открыт ли оверлей сейчас */
 	readonly isOpen: boolean
@@ -55,7 +53,6 @@ export interface OverlayStore {
 	isOpen: (id: number) => boolean
 }
 
-/** API `useOverlay()` */
 export interface UseOverlayReturn {
 	/**
 	 * Создаёт управляемый оверлей из компонента. Компонент получает props и `isOpen`,

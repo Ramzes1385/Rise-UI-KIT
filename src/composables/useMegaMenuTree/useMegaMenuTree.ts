@@ -3,7 +3,6 @@ import { inject, provide, readonly, ref } from 'vue'
 import { MEGA_MENU_TREE_KEY } from './types/useMegaMenuTree.types'
 import type { MegaMenuTree } from './types/useMegaMenuTree.types'
 
-/** Разделитель сегментов пути узла */
 export const MEGA_MENU_PATH_SEPARATOR = '/'
 
 /** Является ли path префиксом-сегментом active (или равен ему) */
@@ -12,7 +11,6 @@ function isAncestorPath(path: string, active: string): boolean {
 	return active === path || active.startsWith(`${path}${MEGA_MENU_PATH_SEPARATOR}`)
 }
 
-/** Путь родителя: всё до последнего разделителя */
 function parentPath(path: string): string {
 	const index = path.lastIndexOf(MEGA_MENU_PATH_SEPARATOR)
 	return index === -1 ? '' : path.slice(0, index)

@@ -1,12 +1,4 @@
-/**
- * Глобальная конфигурация Storybook: стили, тема, порядок разделов, a11y.
- *
- * Тема переключается кнопкой «Тема» на панели инструментов (глобальная переменная `theme`).
- * Декоратор ставит `data-theme` на <html> iframe — так токены `--rise-*` переключаются и в canvas,
- * и на странице Docs, и в телепортированных оверлеях (Modal, Dropdown, Tooltip…).
- * Для скриншотов и ссылок тему можно задать в URL: `iframe.html?id=…&globals=theme:dark`.
- * Язык компонентов — кнопка «Язык» (глобальная переменная `locale`, `&globals=locale:en`): декоратор вызывает setLocale.
- */
+/** Тема (`data-theme` на <html> iframe) и язык переключаются глобальными переменными Storybook `theme`/`locale`; для скриншотов — `?globals=theme:dark`. */
 
 import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'

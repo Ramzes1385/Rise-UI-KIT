@@ -1,7 +1,4 @@
-/**
- * Visual regression BasePopover: ключевые stories в светлой и тёмной теме.
- * Поповер телепортируется в body, поэтому снимается вся страница.
- */
+/** Поповер телепортируется в body, поэтому снимается вся страница. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

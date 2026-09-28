@@ -8,7 +8,6 @@
 		class="base-chat-slideover__empty" />
 	<ul v-else class="base-chat-slideover__links-list">
 		<li v-for="link in links" :key="link.url">
-			<!-- Настоящая ссылка: открывается в новой вкладке, доступна с клавиатуры, её можно скопировать -->
 			<a :href="link.url" target="_blank" rel="noopener noreferrer" class="base-chat-slideover__link-item">
 				<span class="base-chat-slideover__link-icon" aria-hidden="true">
 					<BaseIcon name="link" :size-scale="sizeScale * CHAT_SCALE.SMALL" />

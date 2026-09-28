@@ -1,9 +1,3 @@
-/**
- * BaseLayout — stories.
- *
- * Разделы: Default (каркас приложения: шапка, меню, содержимое, подвал) → короткая страница → клавиатура.
- */
-
 import { expect } from 'storybook/test'
 import { BaseLink } from '@components/BaseLink'
 import { BaseFooter } from '@components/BaseFooter'

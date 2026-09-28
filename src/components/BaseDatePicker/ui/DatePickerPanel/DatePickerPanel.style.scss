@@ -1,7 +1,4 @@
-// DatePickerPanel — плавающая панель date picker (телепорт в body): floating-surface, отступ 4px.
-// Шапка — ghost-кнопки 32px (год — двойная стрелка, месяц — одинарная) и год 14/20 semibold по центру.
-// Ниже — календари BaseCalendar (по умолчанию ghost — без своей рамки), при нескольких месяцах — в ряд поровну.
-// Тема — токенами: data-theme на панели (копия с контейнера поля) только пересчитывает их, отдельных правил нет.
+// Плавающая панель (телепорт в body, отступ 4px): шапка с ghost-кнопками 32px и годом по центру, календари BaseCalendar ghost, при нескольких месяцах — в ряд поровну; data-theme на панели только пересчитывает токены.
 .date-picker-panel {
 	position: fixed;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
@@ -77,8 +74,6 @@
 		flex: 1 1 0;
 	}
 }
-
-// ─── Появление: короткое проявление из 95%, как у панели BaseDropdown ──────────
 
 .date-picker-panel-enter-active,
 .date-picker-panel-leave-active {

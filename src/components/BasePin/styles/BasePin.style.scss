@@ -1,7 +1,4 @@
-// BasePin. Ряд ячеек-полей 32×32 при sizeScale = 100 (коробка поля field-box) с зазором 6px, символ по центру 14/20 medium.
-// Фокус — рамка и кольцо основного цвета (field-focus), ошибка — цвет ошибки. Текст ошибки под ячейками.
-// Варианты, как у BaseInput: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
-// ghost — без фона и рамки до наведения; shadow — как default с тенью.
+// Ячейки — 32px с зазором 6px; варианты те же, что у BaseInput (default/outline/soft/ghost/shadow).
 .base-pin {
 	display: inline-flex;
 	flex-direction: column;
@@ -43,8 +40,6 @@
 		}
 	}
 
-	// ─── Варианты ────────────────────────────────────────────────────────────────
-
 	&--outline &__input {
 		@include custom-bg(background-color, transparent);
 	}
@@ -76,8 +71,6 @@
 	&--shadow &__input {
 		box-shadow: var(--rise-shadow-xs);
 	}
-
-	// ─── Состояния ───────────────────────────────────────────────────────────────
 
 	&--error &__input {
 		border-color: var(--rise-error);

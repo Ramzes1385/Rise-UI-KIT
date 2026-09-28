@@ -1,10 +1,3 @@
-/**
- * BaseCheckboxGroup — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, столбиком) → состояния (отключено,
- * ошибка) → сценарии («Выбрать все», группа в BaseFormField) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseFormField } from '@components/BaseFormField'

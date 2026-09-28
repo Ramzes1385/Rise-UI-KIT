@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseModal: ключевые stories в светлой и тёмной теме.
- * Окно телепортируется в body, поэтому снимается вся страница.
- */
+/** Окно телепортируется в body, поэтому снимается вся страница */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

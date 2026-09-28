@@ -1,11 +1,6 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения пин-кода */
 export const PIN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
-
-/**
- * Пропсы компонента BasePin
- */
 
 export interface BasePinProps extends BaseComponentProps<(typeof PIN_VARIANTS)[number], 'root' | 'cells' | 'input' | 'errorText'> {
 	/** Значение */
@@ -20,17 +15,11 @@ export interface BasePinProps extends BaseComponentProps<(typeof PIN_VARIANTS)[n
 	error?: string
 }
 
-/**
- * События компонента BasePin
- */
 export interface BasePinEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'complete', value: string): void
 }
 
-/**
- * Слоты компонента BasePin
- */
 export interface BasePinSlots {
 	default?: () => unknown
 }

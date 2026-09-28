@@ -1,10 +1,3 @@
-/**
- * BaseFileUpload — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, цвет) → состояния (пусто, ошибка, disabled, загрузка) →
- * сценарии (несколько файлов, только изображения, перетаскивание) → клавиатура.
- */
-
 import { expect, fireEvent, fn, waitFor } from 'storybook/test'
 import {
 	ARG_GROUP,
@@ -111,7 +104,6 @@ type Story = StoryObj<typeof meta>
 /** Песочница: выберите файл кликом по зоне или перетащите его. Выбранный файл появляется в списке, `change` отдаёт его. */
 export const Default: Story = {
 	play: async ({ canvas, userEvent, args }) => {
-		// Подпись связана с полем выбора файла
 		await userEvent.upload(canvas.getByLabelText('Вложения'), documentFile('Отчёт за май.pdf', 248))
 		await expect(await canvas.findByText('Отчёт за май.pdf')).toBeVisible()
 		await expect(canvas.getByText('248,0 КБ')).toBeVisible()

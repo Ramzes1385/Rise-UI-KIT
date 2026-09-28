@@ -1,11 +1,4 @@
-/**
- * Скрипт проверки покрытия UI Kit компонентов accessibility-тестами.
- * Проверяет:
- * 1. Наличие .stories.ts для каждого Base* компонента
- * 2. Наличие обязательных story-состояний (Default, Disabled, Error)
- * 3. Наличие play-функций для интерактивных компонентов
- * 4. Наличие keyboard navigation в play-функциях
- */
+/** Проверяет покрытие компонентов accessibility: наличие stories, обязательных состояний (Default/Disabled/Error), play-функций и keyboard navigation. */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -137,10 +130,8 @@ const FORM_COMPONENTS = new Set([
 	'BaseSegmented',
 ])
 
-/** Компоненты с состоянием Loading */
 const LOADING_COMPONENTS = new Set(['BaseButton', 'BaseSearch', 'BaseFileUpload', 'BaseTable', 'BaseEditor', 'BaseChat', 'BaseSlider'])
 
-/** Компоненты с состоянием Empty */
 const EMPTY_COMPONENTS = new Set([
 	'BaseInput',
 	'BaseTextarea',
@@ -162,7 +153,6 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseChat',
 ])
 
-/** Компоненты с состоянием LongContent */
 const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseInput',
 	'BaseTextarea',
@@ -197,19 +187,14 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseConfirm',
 ])
 
-/** Обязательные story-состояния для интерактивных компонентов с Disabled */
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']
 
-/** Обязательные story-состояния для интерактивных компонентов без Disabled */
 const REQUIRED_STORIES_INTERACTIVE_NO_DISABLED = ['Default']
 
-/** Обязательные story-состояния для формовых компонентов */
 const REQUIRED_STORIES_FORM = ['Default', 'Disabled', 'Error']
 
-/** Признаки keyboard navigation в play-функциях */
 const KEYBOARD_PATTERNS = ['userEvent.tab', 'userEvent.keyboard', 'userEvent.type', 'fireEvent.keyDown', 'fireEvent.keyUp']
 
-/** Признаки Focused/Keyboard состояния в play-функции */
 const KEYBOARD_FOCUS_PATTERNS = [
 	'userEvent.tab',
 	'userEvent.keyboard',
@@ -230,7 +215,6 @@ const STATE_ALIASES = {
 /** Метка незаполненных мест заготовки scripts/create-component.mjs: пока она есть, компонент не готов. */
 const SCAFFOLD_TODO = 'TODO(scaffold)'
 
-/** Файлы компонентов, в которых остались незаполненные места заготовки. */
 function findScaffoldTodos() {
 	return readdirSync(COMPONENTS_DIR, { recursive: true, withFileTypes: true })
 		.filter(entry => entry.isFile() && /\.(ts|vue|scss)$/.test(entry.name))
@@ -287,13 +271,11 @@ function checkA11yCoverage() {
 		const isInteractive = INTERACTIVE_COMPONENTS.has(component)
 		const isForm = FORM_COMPONENTS.has(component)
 
-		// Проверка play-функций для интерактивных компонентов
 		if (isInteractive) {
 			// Граница слова: иначе `display:` в стилях шаблона засчитывался бы как play-функция
 			const hasPlay = /\bplay\s*[:=]/.test(content)
 			if (hasPlay) {
 				results.hasPlay++
-				// Проверка keyboard navigation
 				const hasKeyboard = KEYBOARD_PATTERNS.some(p => content.includes(p))
 				if (hasKeyboard) {
 					results.hasKeyboard++
@@ -305,7 +287,6 @@ function checkA11yCoverage() {
 			}
 		}
 
-		// Проверка обязательных story-состояний
 		const hasDisabledState = INTERACTIVE_WITH_DISABLED.has(component)
 		const requiredStates = isForm
 			? REQUIRED_STORIES_FORM
@@ -324,35 +305,30 @@ function checkA11yCoverage() {
 			results.missingStates.push({ component, states: missingStates })
 		}
 
-		// Проверка Loading stories
 		if (LOADING_COMPONENTS.has(component)) {
 			const aliases = STATE_ALIASES.Loading || ['Loading']
 			const hasLoading = aliases.some(a => content.includes(`export const ${a}`))
 			if (!hasLoading) results.missingLoading.push(component)
 		}
 
-		// Проверка Empty stories
 		if (EMPTY_COMPONENTS.has(component)) {
 			const aliases = STATE_ALIASES.Empty || ['Empty']
 			const hasEmpty = aliases.some(a => content.includes(`export const ${a}`))
 			if (!hasEmpty) results.missingEmpty.push(component)
 		}
 
-		// Проверка LongContent stories
 		if (LONG_CONTENT_COMPONENTS.has(component)) {
 			const aliases = STATE_ALIASES.LongContent || ['LongContent']
 			const hasLong = aliases.some(a => content.includes(`export const ${a}`))
 			if (!hasLong) results.missingLongContent.push(component)
 		}
 
-		// Проверка Focused/Keyboard в Default story
 		if (isInteractive) {
 			const hasFocus = KEYBOARD_FOCUS_PATTERNS.some(p => content.includes(p))
 			if (!hasFocus) results.missingKeyboardFocus.push(component)
 		}
 	}
 
-	// Вывод результатов
 	console.log('=== Результаты проверки ===')
 	console.log(`Всего компонентов: ${results.total}`)
 	console.log(`Покрыто stories: ${results.hasStory}/${results.total}`)

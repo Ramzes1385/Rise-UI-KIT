@@ -1,6 +1,5 @@
 import type { TableColumn, TableRow } from './BaseTable.types'
 
-/** Props компонента BaseTableRow */
 export interface BaseTableRowProps {
 	/** Данные строки */
 	row: TableRow
@@ -32,14 +31,12 @@ export interface BaseTableRowProps {
 	formatCellValue: (column: TableColumn, row: TableRow) => string
 }
 
-/** Emits компонента BaseTableRow */
 export interface BaseTableRowEmits {
 	(event: 'row-click', row: TableRow): void
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
 }
 
-/** Слоты компонента BaseTableRow */
 export interface BaseTableRowSlots {
 	/** Кастомный рендер ячейки по ключу колонки (`cell-<columnKey>`) */
 	[name: `cell-${string}`]: (props: { row: TableRow; value: unknown; column: TableColumn; index: number }) => unknown

@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseInputNumber: кнопки, клавиши APG Spinbutton, ввод и подтверждение, форма.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import userEvent from '@testing-library/user-event'
@@ -9,7 +5,6 @@ import { render, screen } from '@testing-library/vue'
 import { BaseForm } from '@components/BaseForm'
 import BaseInputNumber from '../ui/BaseInputNumber.vue'
 
-/** Поле с рабочим v-model */
 function renderModel(initial: number | null, props: Record<string, unknown> = {}) {
 	const model = ref<number | null>(initial)
 	const onChange = vi.fn()

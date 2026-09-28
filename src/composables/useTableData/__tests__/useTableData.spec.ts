@@ -1,19 +1,9 @@
-/**
- * Unit-тесты для composable useTableData.
- * Покрывает все публичные методы и computed-свойства.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { computed, createApp, h, nextTick, ref } from 'vue'
 import { useTableData } from '../useTableData'
 import type { UseTableDataOptions } from '../types/useTableData.types'
 import type { ColumnFilter, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
-// ============================================================
-// Фикстура
-// ============================================================
-
-/** Строки для большинства тестов */
 const testRows = computed((): TableRow[] => [
 	{ id: 1, data: { name: 'Анна', age: 25, city: 'Москва' }, isSelected: false },
 	{ id: 2, data: { name: 'Борис', age: 30, city: 'Питер' }, isSelected: false },
@@ -21,14 +11,12 @@ const testRows = computed((): TableRow[] => [
 	{ id: 4, data: { name: 'Глеб', age: 35, city: 'Москва' }, isSelected: false, isDisabled: true },
 ])
 
-/** Колонки для большинства тестов */
 const testColumns = ref<TableColumn[]>([
 	{ key: 'name', label: 'Имя', isSortable: true, sortType: 'string' },
 	{ key: 'age', label: 'Возраст', isSortable: true, sortType: 'number' },
 	{ key: 'city', label: 'Город', isSortable: true, sortType: 'string' },
 ])
 
-/** Создать опции по умолчанию для useTableData */
 function createDefaultOptions(overrides: Partial<UseTableDataOptions> = {}): UseTableDataOptions {
 	return {
 		rows: testRows,
@@ -58,15 +46,7 @@ function withSetup<T>(composable: () => T): [T, () => void] {
 	return [result!, unmount]
 }
 
-// ============================================================
-// Тесты
-// ============================================================
-
 describe('useTableData', () => {
-	// ============================================================
-	// Поиск
-	// ============================================================
-
 	describe('Поиск (handleSearchInput, searchQuery)', () => {
 		it('фильтрует строки по поисковому запросу (case-insensitive)', () => {
 			const { processedRows, handleSearchInput } = useTableData(createDefaultOptions())
@@ -134,10 +114,6 @@ describe('useTableData', () => {
 			vi.useRealTimers()
 		})
 	})
-
-	// ============================================================
-	// Фильтры
-	// ============================================================
 
 	describe('Фильтры (addFilter, removeFilter, activeFilters, getFilterLabel)', () => {
 		it('addFilter с operator=eq фильтрует точное совпадение', () => {
@@ -228,10 +204,6 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
-	// Пагинация
-	// ============================================================
-
 	describe('Пагинация (currentPage, totalPages, visiblePages, displayedRows)', () => {
 		it('при loadMode=pagination и pageSize=2 отображает 2 строки на странице 1', () => {
 			const { displayedRows } = useTableData(
@@ -302,10 +274,6 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
-	// Подгрузка
-	// ============================================================
-
 	describe('Подгрузка (loadMore, hasMoreRows)', () => {
 		it('при loadMode=button отображает первые effectivePageSize строк', () => {
 			const { displayedRows } = useTableData(
@@ -362,10 +330,6 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
-	// Сортировка
-	// ============================================================
-
 	describe('Сортировка (handleSort, getSortDirection, getSortIndex)', () => {
 		it('handleSort переключает asc → desc → null (удаление)', () => {
 			const { sortStates, handleSort } = useTableData(createDefaultOptions())
@@ -419,10 +383,10 @@ describe('useTableData', () => {
 
 			expect(getSortDirection('name')).toBe(null)
 
-			handleSort(testColumns.value[0]) // asc
+			handleSort(testColumns.value[0])
 			expect(getSortDirection('name')).toBe('asc')
 
-			handleSort(testColumns.value[0]) // desc
+			handleSort(testColumns.value[0])
 			expect(getSortDirection('name')).toBe('desc')
 		})
 
@@ -484,10 +448,6 @@ describe('useTableData', () => {
 			expect(processedRows.value[2].data.date).toBe('2024-06-20')
 		})
 	})
-
-	// ============================================================
-	// Размер страницы
-	// ============================================================
 
 	describe('Размер страницы (handlePageSizeChange, resetPage)', () => {
 		it('handlePageSizeChange устанавливает localPageSize и сбрасывает currentPage', () => {
@@ -552,10 +512,6 @@ describe('useTableData', () => {
 			expect(displayedRows.value).toHaveLength(2)
 		})
 	})
-
-	// ============================================================
-	// Жизненный цикл
-	// ============================================================
 
 	describe('Жизненный цикл (watchers, onBeforeUnmount)', () => {
 		it('изменение rows.value.length сбрасывает loadedCount', async () => {
@@ -697,9 +653,7 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
 	// Недостающее покрытие: операторы lt, lte, gte, default, val undefined
-	// ============================================================
 
 	describe('Фильтры — недостающие операторы', () => {
 		it('addFilter с operator=lt возвращает строки меньше значения', () => {
@@ -733,9 +687,7 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
 	// Недостающее покрытие: строковая сортировка, cmp===0
-	// ============================================================
 
 	describe('Сортировка — недостающие ветки', () => {
 		it('сортировка по sortType=string — строковое сравнение', () => {
@@ -758,9 +710,7 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
 	// Недостающее покрытие: getSortIndex без multiSort
-	// ============================================================
 
 	describe('getSortIndex без multiSort', () => {
 		it('getSortIndex возвращает 0 когда isMultiSort=false', () => {
@@ -772,7 +722,7 @@ describe('useTableData', () => {
 		it('getSortIndex возвращает 0 когда sortStates.length <= 1 в multiSort', () => {
 			const { getSortIndex, handleSort } = useTableData(createDefaultOptions({ isMultiSort: () => true }))
 			handleSort(testColumns.value[0])
-			expect(getSortIndex('name')).toBe(0) // только 1 состояние
+			expect(getSortIndex('name')).toBe(0)
 		})
 	})
 
@@ -780,7 +730,6 @@ describe('useTableData', () => {
 		it('processedRows: сортировка пропускает sort без direction', () => {
 			// Покрывает useTableData.ts:112 — `if (!sort.direction) continue`.
 			const { processedRows, sortStates } = useTableData(createDefaultOptions({ isMultiSort: () => true }))
-			// Вручную вставим sort с direction=null + sort с direction='asc'
 			sortStates.value = [
 				{ key: 'name', direction: null },
 				{ key: 'age', direction: 'asc' },
@@ -863,14 +812,13 @@ describe('useTableData', () => {
 			const onPageSizeChange = vi.fn()
 			const { localPageSize, handlePageSizeChange } = useTableData(createDefaultOptions({ pageSize: ref(10), onPageSizeChange }))
 			expect(localPageSize.value).toBe(10)
-			handlePageSizeChange(10) // совпадает с текущим → callback НЕ вызывается
+			handlePageSizeChange(10)
 			expect(onPageSizeChange).not.toHaveBeenCalled()
 		})
 
 		it("handleSort: currentDir === null → nextDirection 'asc' (мульти, существующая запись)", () => {
 			// Покрывает useTableData.ts:227 — `currentDir === 'desc' ? null : 'asc'` ветка 'asc'.
 			const { sortStates, handleSort } = useTableData(createDefaultOptions({ isMultiSort: () => true }))
-			// Вручную вставим запись с direction=null
 			sortStates.value = [{ key: 'name', direction: null }]
 			handleSort(testColumns.value[0])
 			// currentDir=null → 'asc' → multiSort: nextDirection не null, existingIndex>=0 → обновление существующей
@@ -878,9 +826,7 @@ describe('useTableData', () => {
 		})
 	})
 
-	// ============================================================
 	// Регрессия TBL-1/TBL-20: пустые и нераспознанные значения при сортировке
-	// ============================================================
 
 	describe('Сортировка: пустые и нераспознанные значения', () => {
 		/** Строки с одним полем value; id совпадает с исходной позицией */
@@ -888,7 +834,6 @@ describe('useTableData', () => {
 			return computed((): TableRow[] => values.map((value, index) => ({ id: index, data: { value } })))
 		}
 
-		/** Отсортировать строки по полю value и вернуть значения в итоговом порядке */
 		function sortValues(values: unknown[], sortType: TableColumn['sortType'], direction: 'asc' | 'desc'): unknown[] {
 			const columns = ref<TableColumn[]>([{ key: 'value', label: 'Значение', isSortable: true, sortType }])
 			const { processedRows, sortStates } = useTableData(createDefaultOptions({ rows: createValueRows(values), columns }))

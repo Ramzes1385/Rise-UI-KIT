@@ -5,13 +5,11 @@ import { formatMessage, formatNumber } from '@/locales/state'
 import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/urlUtils'
 import type { FileValidationOptions, FileValidationResult } from './types/fileUtils.types'
 
-/** Получить расширение файла из имени */
 function getExtension(name: string): string {
 	const parts = name.split('.')
 	return parts.length > 1 ? parts.pop()! : ''
 }
 
-/** Форматировать размер файла в человекочитаемый вид */
 function formatFileSize(bytes: number): string {
 	if (bytes < 1024) return `${formatNumber(bytes)} ${UI_TEXT.SIZE_B}`
 	const fraction = { minimumFractionDigits: 1, maximumFractionDigits: 1 }
@@ -87,7 +85,6 @@ const FILE_ICON_NAME_MAP: Record<string, string> = {
 	'7z': 'file-lock',
 }
 
-/** Получить имя SVG-иконки по имени файла */
 function getFileIconName(filename: string): string {
 	const ext = getExtension(filename).toLowerCase()
 	return FILE_ICON_NAME_MAP[ext] || 'file-config'
@@ -119,7 +116,6 @@ function validateFile(file: File, options: FileValidationOptions): FileValidatio
 	return { isValid: errors.length === 0, errors }
 }
 
-/** Сформировать подсказку по допустимым форматам */
 function formatAcceptHint(accept: string): string {
 	if (!accept) return ''
 	const parts = accept.split(',').map(s => s.trim().toUpperCase())

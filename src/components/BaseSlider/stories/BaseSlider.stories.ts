@@ -1,11 +1,3 @@
-/**
- * BaseSlider — stories.
- *
- * Разделы: Default (песочница) → навигация и стрелки (миниатюры, позиции стрелок) → режимы (fade, автопрокрутка,
- * без зацикливания, вертикальный, несколько слайдов, зум) → содержимое (свои слайды) → состояния (пусто, загрузка,
- * длинные подписи) → клавиатура.
- */
-
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseCard } from '@components/BaseCard'
 import { BaseButton } from '@components/BaseButton'

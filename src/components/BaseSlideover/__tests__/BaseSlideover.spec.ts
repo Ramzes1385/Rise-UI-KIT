@@ -1,8 +1,4 @@
-/**
- * Unit-тесты для BaseSlideover.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- * Компонент использует teleport — поиск в document.
- */
+/** Компонент использует teleport — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'

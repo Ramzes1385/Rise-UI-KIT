@@ -1,9 +1,3 @@
-/**
- * Integration-тесты для BaseAlert.
- * Проверяют композицию с BaseButton/BaseIcon/BaseText, проброс события close
- * сквозь родителя и взаимодействие со слотом actions.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

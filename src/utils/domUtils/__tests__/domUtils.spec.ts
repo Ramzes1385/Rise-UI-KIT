@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для domUtils.
- * Покрывают: toHTMLElement, toHTMLInputElement, toHTMLTextAreaElement, getActiveElement.
- */
-
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 import { getActiveElement, toHTMLElement, toHTMLInputElement, toHTMLTextAreaElement } from '../domUtils'

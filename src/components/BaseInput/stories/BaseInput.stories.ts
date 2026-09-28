@@ -1,11 +1,3 @@
-/**
- * BaseInput — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (пусто, ошибка, disabled, readonly, длинное значение) → содержимое (префикс/постфикс, слоты) →
- * сценарии (типы, пароль, маска, фильтр символов) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'

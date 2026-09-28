@@ -1,8 +1,4 @@
-// BaseSlider (карусель). Область слайдов — радиус lg, фон --rise-bg-elevated виден, пока слайдов нет или снимок грузится.
-// Стрелки — круглые кнопки 32px: поверх слайдов (center) — BaseButton shadow, снаружи в углах — outline.
-// Точки 8px --rise-bg-accented, активная — «пилюля» 24px --rise-primary; миниатюры 64×48 с радиусом md,
-// у активной — кольцо --rise-primary. Подпись — белый текст на затемнении снизу слайда.
-// Слайды сменяются за --rise-duration-slow; при prefers-reduced-motion переходы мгновенные (токены длительности).
+// Карусель: стрелки — круглые кнопки 32px, точки 8px (активная — пилюля 24px primary), миниатюры 64×48 с кольцом у активной; переход — --rise-duration-slow, мгновенный при prefers-reduced-motion.
 
 // Затемнение под подписью и значком «видео» — фон для текста поверх фотографии, одинаковый в обеих темах,
 // поэтому чёрный с прозрачностью, а не токен темы.
@@ -19,8 +15,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 	&--vertical {
 		flex-direction: row;
 	}
-
-	// ─── Сцена и область слайдов ─────────────────────────────────────────────────
 
 	&__stage {
 		position: relative;
@@ -142,8 +136,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		object-fit: cover;
 	}
 
-	// ─── Подпись ─────────────────────────────────────────────────────────────────
-
 	// Обёртка слота caption: цвет компонента (color) не перекрашивает вложенные компоненты
 	&__caption {
 		position: absolute;
@@ -179,8 +171,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		@include text-size(sm);
 		color: $media-text-muted;
 	}
-
-	// ─── Стрелки ─────────────────────────────────────────────────────────────────
 
 	// Контейнер не перехватывает указатель: перетаскивание слайдов работает и под ним
 	&__arrows {
@@ -235,8 +225,6 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 	&--arrows-bottom-right &__arrows {
 		right: 0;
 	}
-
-	// ─── Навигация: точки и миниатюры ────────────────────────────────────────────
 
 	&__navigation {
 		display: flex;

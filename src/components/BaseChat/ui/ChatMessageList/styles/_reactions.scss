@@ -1,5 +1,4 @@
-// Реакции — пилюли 24px: фон bg-elevated, эмодзи и счётчик 12/16 medium. Своя реакция (aria-pressed) —
-// фон primary-soft, рамка primary-border, текст primary-text.
+// Реакции — пилюли 24px (bg-elevated, 12/16 medium); своя реакция (aria-pressed) — фон primary-soft, рамка и текст primary.
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
 @use '../../../styles/chat' as *;

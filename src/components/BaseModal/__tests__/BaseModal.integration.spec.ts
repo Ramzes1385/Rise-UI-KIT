@@ -1,9 +1,4 @@
-/**
- * Integration-тесты для BaseModal.
- * Проверяют взаимодействие: закрытие, оверлей, contained-режим, блокировку прокрутки.
- * Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка.
- * Компонент использует teleport to="body" — поиск в document.
- */
+/** Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка; teleport to="body", поиск в document */
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
@@ -178,7 +173,6 @@ describe('BaseModal integration', () => {
 			await user.click(screen.getByText('Открыть зум'))
 			await user.click(screen.getByText('Закрыть зум'))
 
-			// Модалка ещё открыта — страница под ней не должна прокручиваться
 			expect(document.body.style.overflow).toBe('hidden')
 
 			await user.click(document.querySelector('.base-modal__close') as HTMLElement)

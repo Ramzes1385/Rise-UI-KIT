@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseColorPicker: ключевые stories в светлой и тёмной теме.
- * Stories с открытой панелью снимаются целой страницей: панель телепортируется в body.
- */
+/** Stories с открытой панелью снимаются целой страницей: панель телепортируется в body. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

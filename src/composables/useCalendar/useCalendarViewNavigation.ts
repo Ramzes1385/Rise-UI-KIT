@@ -3,9 +3,6 @@ import { computed } from 'vue'
 import { toDateOnly } from '@utils/dateUtils'
 import type { UseCalendarViewNavigationOptions } from './types/useCalendarViewNavigation.types'
 
-/**
- * Composable для навигации по календарю: переключение месяцев, лет и видов отображения.
- */
 function useCalendarViewNavigation(options: UseCalendarViewNavigationOptions) {
 	const { currentMonth, currentYear, currentView, minDate, maxDate, disableFrom, disableTo } = options
 

@@ -1,10 +1,3 @@
-/**
- * BaseKbd — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры) → сценарии (сочетания клавиш, служебные клавиши на
- * macOS и других системах, подсказка в тексте).
- */
-
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseKbd from '../ui/BaseKbd.vue'

@@ -1,13 +1,6 @@
-/**
- * Детерминированные данные для stories: изображения, даты, люди.
- *
- * Внешние URL, `new Date()` без аргументов и `Math.random()` в stories не используются: скриншоты и play-проверки
- * должны давать одинаковый результат на любой машине, без сети и в любой день.
- */
+/** Детерминированные данные для stories: без внешних URL, new Date() без аргументов и Math.random() — скриншоты и play-проверки должны давать одинаковый результат на любой машине и в любой день. */
 
 import type { PlaceholderOptions } from './types/helpers.types'
-
-// ─── Изображения ───────────────────────────────────────────────────────────────
 
 /**
  * Иллюстрация-пейзаж в виде SVG data URI: градиентное небо, солнце и два слоя гор.
@@ -55,8 +48,6 @@ export function avatarImage(hue = 24): string {
 	return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 }
 
-// ─── Даты ──────────────────────────────────────────────────────────────────────
-
 /** «Сегодня» для stories: 15 мая 2025, 10:30. Используйте вместо new Date(). */
 export const STORY_TODAY = new Date(2025, 4, 15, 10, 30)
 
@@ -64,8 +55,6 @@ export const STORY_TODAY = new Date(2025, 4, 15, 10, 30)
 export function storyDate(days: number, hours = 10, minutes = 30): Date {
 	return new Date(STORY_TODAY.getFullYear(), STORY_TODAY.getMonth(), STORY_TODAY.getDate() + days, hours, minutes)
 }
-
-// ─── Люди ──────────────────────────────────────────────────────────────────────
 
 /** Пользователи для аватаров, чатов, таблиц. */
 export const STORY_USERS = [

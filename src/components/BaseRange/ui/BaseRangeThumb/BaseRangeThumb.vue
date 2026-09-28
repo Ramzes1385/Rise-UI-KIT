@@ -26,12 +26,10 @@ const props = defineProps<BaseRangeThumbProps>()
 const emit = defineEmits<BaseRangeThumbEmits>()
 defineSlots<BaseRangeThumbSlots>()
 
-/** Начало перетаскивания ползунка */
 function emitDown(event: MouseEvent | TouchEvent): void {
 	emit('down', { event, index: props.index })
 }
 
-/** Клавиатурное управление ползунком */
 function emitKeydown(event: KeyboardEvent): void {
 	emit('keydown', { event, index: props.index })
 }

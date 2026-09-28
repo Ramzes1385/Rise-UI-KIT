@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable useVariant.
- * Проверяют вычисление БЭМ-модификатора и CSS-переменной --variant.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import { useVariant } from '../useVariant'

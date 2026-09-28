@@ -361,10 +361,8 @@ const {
 	slots,
 })
 
-/** Выбор размера страницы в подвале */
 const hasPageSizeControl = computed(() => hasPageSizeSelector.value && props.pageSizeOptions.length > 0)
 
-/** Пагинация в подвале: режим pagination, задан размер страницы и страниц больше одной */
 const hasPagination = computed(() => props.loadMode === 'pagination' && localPageSize.value > 0 && totalPages.value > 1)
 
 const tableWrapperRef = ref<HTMLElement | null>(null)
@@ -397,8 +395,6 @@ onBeforeUnmount(() => {
 	scrollObserver?.disconnect()
 	scrollObserver = null
 })
-
-// ─── Виртуальная прокрутка ─────────────────────────────────────────────────────
 
 /** Виртуальный режим: нужен height — без своей области прокрутки таблица растёт на все строки */
 const isVirtualMode = computed(() => props.isVirtual && Boolean(props.height))

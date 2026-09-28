@@ -1,10 +1,4 @@
-/**
- * BaseContextMenu — stories.
- *
- * Разделы: Default (песочница: меню карточки серии по правому клику) → внешний вид (кастомный цвет) →
- * состояния (отключённое меню) → клавиатура (клавиша «Меню» и Shift+F10).
- * Меню телепортируется в body, поэтому в Docs примеры показываются в отдельном фрейме.
- */
+/** Меню телепортируется в body, поэтому в Docs примеры показываются в отдельном фрейме. */
 
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
@@ -14,7 +8,6 @@ import { CONTEXT_MENU_VARIANTS } from '../types/BaseContextMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 
-/** Действия с серией в сетке сезона */
 const EPISODE_ACTIONS: DropdownMenuItem[][] = [
 	[
 		{ label: 'Открыть', icon: 'play' },

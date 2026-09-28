@@ -1,8 +1,5 @@
 import type { Ref } from 'vue'
 
-/**
- * Опции composable useFocusTrap
- */
 export interface UseFocusTrapOptions {
 	/** Контейнер, внутри которого удерживается фокус (элемент с role="dialog") */
 	containerRef: Ref<HTMLElement | null>

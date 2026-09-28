@@ -1,11 +1,3 @@
-/**
- * BaseMegaMenu — stories.
- *
- * Разделы: Default (песочница, раскладка columns) → внешний вид (варианты, размеры, цвет) →
- * состояния (отключённые пункты, пусто, длинные тексты) → сценарии (выпадающее меню, наведение, глубокая вложенность) →
- * клавиатура.
- */
-
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'

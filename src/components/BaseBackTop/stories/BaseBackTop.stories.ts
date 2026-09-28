@@ -1,16 +1,9 @@
-/**
- * BaseBackTop — stories.
- *
- * Разделы: Default (кнопка в углу прокручиваемого блока) → с подписью → клавиатура.
- */
-
 import { expect, fn, waitFor } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseBackTop from '../ui/BaseBackTop.vue'
 import { BACK_TOP_VARIANTS } from '../types/BaseBackTop.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Лента новостей для прокрутки */
 const NEWS = Array.from({ length: 40 }, (_, index) => `Новость ${index + 1}: склад в Волгограде принял ${20 + index} поставок`)
 
 const meta = {
@@ -75,7 +68,6 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Прокрутить список примера и дождаться кнопки */
 async function scrollList(canvasElement: HTMLElement): Promise<HTMLElement> {
 	const list = canvasElement.querySelector('[id^="news-"]') as HTMLElement
 	list.scrollTop = 600

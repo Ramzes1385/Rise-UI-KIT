@@ -1,7 +1,3 @@
-/**
- * Unit-тесты для useTableSelection.
- */
-
 import { computed, nextTick, ref } from 'vue'
 import { useTableSelection } from '../useTableSelection'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'

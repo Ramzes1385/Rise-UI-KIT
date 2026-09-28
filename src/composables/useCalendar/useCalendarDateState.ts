@@ -3,9 +3,6 @@ import { getWeekday, isSameDay, toDateOnly } from '@utils/dateUtils'
 import type { CalendarHighlight, CalendarWeekday } from './types/useCalendar.types'
 import type { UseCalendarDateStateOptions } from './types/useCalendarDateState.types'
 
-/**
- * Composable для управления выбором дат календаря: диапазон, отключённые даты, подсветки.
- */
 function useCalendarDateState(options: UseCalendarDateStateOptions) {
 	const {
 		internalValue,

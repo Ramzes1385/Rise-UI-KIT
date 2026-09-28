@@ -1,9 +1,3 @@
-/**
- * Unit/Integration-тесты для ChatMessageList.
- * Покрывают режим выделения, вложения (изображения/файлы), реакции,
- * контекстное меню, подсветку поиска, ссылки и галерею.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'

@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseMenu.
- * Проверяют взаимодействие: клики, emit select.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 import userEvent from '@testing-library/user-event'

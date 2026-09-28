@@ -13,7 +13,6 @@ export const AUTOCOMPLETE_VARIANTS = [
 	'underline',
 ] as const satisfies readonly InputVariant[]
 
-/** Вариант в списке */
 export interface AutocompleteOption {
 	/** Значение: уходит в v-model при выборе */
 	value: string | number
@@ -25,9 +24,6 @@ export interface AutocompleteOption {
 	isDisabled?: boolean
 }
 
-/**
- * Пропсы компонента BaseAutocomplete
- */
 export interface BaseAutocompleteProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'panel' | 'option' | 'empty'> {
 	/** Выбранное значение (v-model); `null` — ничего не выбрано */
 	modelValue?: string | number | null
@@ -66,9 +62,6 @@ export interface BaseAutocompleteProps extends BaseComponentProps<InputVariant, 
 	inputAttrs?: FieldInputAttrs
 }
 
-/**
- * События компонента BaseAutocomplete
- */
 export interface BaseAutocompleteEmits {
 	/** Новое значение: выбор из списка, свой вариант, очистка */
 	(event: 'update:modelValue', value: string | number | null): void
@@ -80,9 +73,6 @@ export interface BaseAutocompleteEmits {
 	(event: 'focus', e: FocusEvent): void
 }
 
-/**
- * Слоты компонента BaseAutocomplete
- */
 export interface BaseAutocompleteSlots {
 	/** Своя разметка варианта в списке (роль option и выбор остаются у компонента) */
 	option?: (props: { option: AutocompleteOption; isActive: boolean; isSelected: boolean }) => unknown

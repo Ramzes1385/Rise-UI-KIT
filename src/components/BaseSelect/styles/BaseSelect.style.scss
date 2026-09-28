@@ -1,10 +1,4 @@
-// BaseSelect. Триггер — коробка поля как у BaseInput: 32px при sizeScale = 100 (рамка 1px + отступ 5px + строка 20px),
-// значение --rise-text-highlighted, плейсхолдер и шеврон справа — --rise-text-muted.
-// Варианты триггера: default — рамка и фон страницы; outline — рамка без фона; soft — мягкий фон без рамки;
-// ghost — без фона и рамки до наведения; shadow — как default с тенью xs; underline — только нижняя линия.
-// Панель — BaseDropdown (floating-surface): поиск без рамки над списком, опции — пункты меню (menu-item),
-// выбранная опция — текст highlighted и галочка primary; в мультивыборе — квадрат-чекбокс и бейджи soft в триггере.
-// Обёртка BaseDropdown вокруг селекта (корень компонента) — на всю ширину, как поле ввода.
+// Триггер — поле как у BaseInput (32px при sizeScale=100); варианты default/outline/soft/ghost/shadow/underline; панель — BaseDropdown с поиском и опциями-пунктами меню, мультивыбор — чекбоксы и бейджи.
 .base-select__dropdown {
 	width: 100%;
 }
@@ -27,8 +21,6 @@
 	&__error-text {
 		@include field-error;
 	}
-
-	// ─── Триггер: коробка поля ───────────────────────────────────────────────────
 
 	&__trigger {
 		display: flex;
@@ -97,8 +89,6 @@
 		transform: rotate(180deg);
 	}
 
-	// ─── Мультивыбор: значения — бейджи soft ─────────────────────────────────────
-
 	// Слева отступ как сверху: бейдж 20px стоит в поле 32px с равными полями.
 	&--has-tags &__trigger {
 		padding-left: sz(var(--rise-control-padding-y));
@@ -136,8 +126,6 @@
 			background-color: var(--rise-primary-soft-hover);
 		}
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--outline &__trigger {
 		@include custom-bg(background-color, transparent);
@@ -189,8 +177,6 @@
 		box-shadow: 0 1px 0 0 var(--rise-primary);
 	}
 
-	// ─── Состояния ───────────────────────────────────────────────────────────────
-
 	&--error &__trigger {
 		border-color: var(--rise-error);
 		@include field-focus(var(--rise-error));
@@ -210,7 +196,6 @@
 		@include disabled-state;
 	}
 
-	// ─── Панель ──────────────────────────────────────────────────────────────────
 	// Содержимое панели BaseDropdown (телепорт в body): отступы задаёт сам селект, у панели padding 0 —
 	// так линия под поиском доходит до краёв панели.
 

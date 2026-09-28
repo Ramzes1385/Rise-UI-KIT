@@ -6,9 +6,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const TOOLBAR_VARIANTS = ['default', 'ghost', 'outline', 'soft'] as const
 
-/**
- * Пропсы компонента BaseToolbar
- */
 export interface BaseToolbarProps extends BaseComponentProps<(typeof TOOLBAR_VARIANTS)[number], 'root'> {
 	/** Имя панели для скринридера, например «Форматирование» */
 	ariaLabel?: string
@@ -16,9 +13,6 @@ export interface BaseToolbarProps extends BaseComponentProps<(typeof TOOLBAR_VAR
 	orientation?: 'horizontal' | 'vertical'
 }
 
-/**
- * Слоты компонента BaseToolbar
- */
 export interface BaseToolbarSlots {
 	/** Кнопки, переключатели, меню, разделители (BaseSeparator) и поля */
 	default?: () => unknown

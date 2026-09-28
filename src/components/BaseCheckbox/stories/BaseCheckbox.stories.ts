@@ -1,10 +1,3 @@
-/**
- * BaseCheckbox — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет) →
- * состояния (disabled, ошибка, частичный выбор, длинная подпись) → сценарии (слот ошибки, согласие перед отправкой) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'

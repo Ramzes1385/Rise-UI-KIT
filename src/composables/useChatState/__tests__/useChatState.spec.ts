@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useChatState.
- * Композабл управляет поиском, выделением, закрепами и панелью информации чата.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { effectScope, nextTick } from 'vue'
 import { useChatState } from '../useChatState'

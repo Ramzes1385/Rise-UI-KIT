@@ -1,10 +1,3 @@
-/**
- * BaseRadio — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (варианты, размеры, цвет, вертикальная группа) →
- * состояния (disabled, ошибка, длинные подписи) → сценарии (слот option) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, within } from 'storybook/test'
 import {
@@ -29,7 +22,6 @@ const DELIVERY_OPTIONS: BaseRadioOption[] = [
 	{ value: 'post', label: 'Почтой России' },
 ]
 
-/** Подробности опций для примера со слотом option */
 const DELIVERY_DETAILS: Record<string, string> = {
 	courier: 'Завтра с 10:00 до 22:00 · 290 ₽',
 	pickup: 'Пункт выдачи на Тверской, 12 · бесплатно',

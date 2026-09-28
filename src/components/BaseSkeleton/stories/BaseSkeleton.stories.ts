@@ -1,10 +1,3 @@
-/**
- * BaseSkeleton — stories.
- *
- * Разделы: Default (песочница) → внешний вид (формы, анимации, размеры, свой цвет фона) →
- * сценарии (заглушка карточки профиля).
- */
-
 import { expect } from 'storybook/test'
 import { ARG_GROUP, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'

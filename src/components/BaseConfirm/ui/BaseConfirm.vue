@@ -57,7 +57,6 @@ const emit = defineEmits<BaseConfirmEmits>()
 
 const { classes } = useStandardBaseComponent('base-confirm', props, ['root', 'description', 'cancel', 'confirm'])
 
-/** Кнопка необратимого действия — цвет ошибки из токенов темы */
 const DANGER_COLOR: CustomColor = {
 	bg: { base: 'var(--rise-error)', hover: 'var(--rise-error-hover)' },
 	text: { base: 'var(--rise-on-error)' },

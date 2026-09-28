@@ -10,15 +10,11 @@ function nextSortDirection(current: SortDirection): SortDirection {
 	return 'asc'
 }
 
-/**
- * Composable для управления сортировкой таблицы.
- */
 function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 	const { isMultiSort, onSort } = options
 
 	const sortStates = ref<SortState[]>([])
 
-	/** Получить направление сортировки для колонки */
 	function getSortDirection(key: string): SortDirection {
 		const state = sortStates.value.find(item => item.key === key)
 		return state ? state.direction : null
@@ -31,7 +27,6 @@ function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 		return index >= 0 ? index + 1 : 0
 	}
 
-	/** Обработка сортировки */
 	function handleSort(column: TableColumn): void {
 		if (!column.isSortable) return
 

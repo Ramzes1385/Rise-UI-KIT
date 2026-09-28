@@ -53,15 +53,10 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 		onSort,
 	})
 
-	// ============================================================
-	// Обработка данных: поиск + фильтры + сортировка
-	// ============================================================
-
 	/** Обработанные строки (поиск + фильтры + сортировка) */
 	const processedRows = computed((): TableRow[] => {
 		let result = [...rows.value]
 
-		// Поиск
 		if (searchQuery.value) {
 			const query = searchQuery.value.toLowerCase()
 			result = result.filter(row => {
@@ -69,7 +64,6 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 			})
 		}
 
-		// Фильтры
 		for (const filter of activeFilters.value) {
 			result = result.filter(row => {
 				const val = row.data[filter.key]

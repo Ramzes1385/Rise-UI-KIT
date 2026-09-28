@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseSelect.
- * Проверяют взаимодействие: выбор опций, мультивыбор, поиск.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
@@ -10,7 +5,6 @@ import { UI_TEXT } from '@/locales/messages'
 import BaseSelect from '../ui/BaseSelect.vue'
 import type { BaseSelectOption } from '../types/BaseSelect.types'
 
-/** Стандартный набор опций для тестов */
 const OPTIONS: BaseSelectOption[] = [
 	{ value: 'metal', label: 'Металл' },
 	{ value: 'wood', label: 'Дерево' },

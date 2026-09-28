@@ -3,7 +3,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 /** Типы оповещений: определяют цвет (роль), иконку и срочность озвучивания (error/warning — role="alert") */
 export const ALERT_TYPES = ['info', 'success', 'warning', 'error'] as const
 
-/** Типы оповещений */
 export type AlertType = (typeof ALERT_TYPES)[number]
 
 /**
@@ -13,12 +12,8 @@ export type AlertType = (typeof ALERT_TYPES)[number]
  */
 export const ALERT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/** Варианты отображения оповещения */
 export type AlertVariant = (typeof ALERT_VARIANTS)[number]
 
-/**
- * Пропсы компонента BaseAlert
- */
 export interface BaseAlertProps extends BaseComponentProps<
 	AlertVariant,
 	'root' | 'iconWrapper' | 'icon' | 'content' | 'title' | 'description' | 'text' | 'actions' | 'close' | 'closeIcon'
@@ -35,17 +30,11 @@ export interface BaseAlertProps extends BaseComponentProps<
 	icon?: string
 }
 
-/**
- * События компонента BaseAlert
- */
 export interface BaseAlertEmits {
 	/** Событие, вызываемое при клике на кнопку закрытия */
 	(event: 'close'): void
 }
 
-/**
- * Слоты компонента BaseAlert
- */
 export interface BaseAlertSlots {
 	/** Кастомное содержимое описания (заменяет проп description) */
 	default?: () => unknown

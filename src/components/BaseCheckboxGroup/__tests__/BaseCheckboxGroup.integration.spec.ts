@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseCheckboxGroup: v-model, «Выбрать все», группа в BaseFormField и BaseForm.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

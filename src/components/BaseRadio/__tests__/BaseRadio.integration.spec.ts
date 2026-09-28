@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseRadio.
- * Проверяют взаимодействие: выбор, v-model, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
 import userEvent from '@testing-library/user-event'

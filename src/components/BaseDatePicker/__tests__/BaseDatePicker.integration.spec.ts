@@ -1,17 +1,9 @@
-/**
- * Интеграционные тесты для BaseDatePicker.
- * Проверяют open/close flow, clear flow, closeOnClickOutside, closeOnEscape.
- * Дочерние компоненты заменены stub'ами с событиями.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 
-/** Захваченный callback для closeOnClickOutside */
 let clickOutsideCallback: (() => void) | null = null
-/** Захваченный callback для closeOnEscape */
 let escapeCallback: (() => void) | null = null
 
 vi.mock('@composables/useClickOutside', () => ({

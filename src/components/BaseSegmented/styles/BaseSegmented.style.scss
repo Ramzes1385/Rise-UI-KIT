@@ -1,8 +1,4 @@
-// BaseSegmented. Переключатель сегментами высотой 32px: дорожка с отступом 2px, сегмент 28px (6/12, текст 14/20).
-// Сегмент без выбора — текст text (контраст на дорожке), наведение — text-highlighted; выбранный — по варианту:
-// default — фон страницы с тенью на дорожке bg-elevated; soft — мягкий основной цвет; outline — рамка основного цвета
-// на дорожке с рамкой. Фокус с клавиатуры — кольцо вокруг сегмента. isBlock — во всю ширину, сегменты поровну.
-// Кастомный цвет: color.bg — фон выбранного сегмента, color.text — его текст.
+// Переключатель сегментами 32px (дорожка 2px, сегмент 28px, текст 14/20); варианты default/soft/outline, фокус — кольцо, isBlock — во всю ширину, цвет — через color.bg/color.text.
 .base-segmented {
 	--segment-checked-bg: var(--custom-bg, var(--rise-bg));
 	--segment-checked-text: var(--custom-text, var(--rise-text-highlighted));
@@ -110,8 +106,6 @@
 	&--error &__track {
 		--segment-track-border: var(--rise-error);
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	&--soft {
 		--segment-checked-bg: var(--custom-bg, var(--rise-primary-soft));

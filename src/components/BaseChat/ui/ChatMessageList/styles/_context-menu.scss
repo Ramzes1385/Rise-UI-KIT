@@ -1,5 +1,4 @@
-// Контекстное меню сообщения (телепорт в body): плавающая панель (floating-surface — фон bg, рамка, радиус md, тень lg),
-// сверху — ряд реакций 32px, ниже — пункты menu-item 14/20 с иконкой 16px. «Удалить» — цветом --rise-error.
+// Меню — телепорт в body (floating-surface); пункт «Удалить» окрашен --rise-error.
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
 @use '../../../styles/chat' as *;

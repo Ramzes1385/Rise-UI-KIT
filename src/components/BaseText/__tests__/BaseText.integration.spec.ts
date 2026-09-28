@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseText.
- * Проверяют truncate, maxLines, weight, nowrap и их взаимодействие.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseText from '../ui/BaseText.vue'

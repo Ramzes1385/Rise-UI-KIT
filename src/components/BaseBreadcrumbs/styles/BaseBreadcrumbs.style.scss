@@ -1,7 +1,4 @@
-// BaseBreadcrumbs. Цепочка ссылок 14/20: предыдущие страницы — приглушённые (text-muted, при наведении — text),
-// текущая — text-highlighted medium, разделители — text-dimmed.
-// Варианты: default — только ссылки; ghost — ссылки-кнопки с подсветкой фоном при наведении;
-// outline — в рамке; shadow — в рамке с тенью; soft — на мягком нейтральном фоне.
+// Цвета: предыдущие крошки — text-muted (при наведении — text), текущая — text-highlighted medium, разделители — text-dimmed.
 .base-breadcrumbs {
 	--breadcrumbs-gap: #{sz(6px)};
 
@@ -26,8 +23,6 @@
 		gap: var(--breadcrumbs-gap);
 		min-width: 0;
 	}
-
-	// ─── Ссылки (кнопки перехода) ────────────────────────────────────────────────
 
 	&__link {
 		display: inline-flex;
@@ -75,8 +70,6 @@
 		flex-shrink: 0;
 	}
 
-	// ─── Разделители ─────────────────────────────────────────────────────────────
-
 	&__sep {
 		display: inline-flex;
 		align-items: center;
@@ -91,8 +84,6 @@
 		min-width: sz(8px);
 		text-align: center;
 	}
-
-	// ─── Варианты ────────────────────────────────────────────────────────────────
 
 	// ghost: крошки-кнопки — отступы и подсветка фоном, как у ghost-кнопок.
 	&--ghost {

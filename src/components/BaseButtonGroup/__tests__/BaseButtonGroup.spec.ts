@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseButtonGroup: группа с именем, направление, содержимое.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseButtonGroup from '../ui/BaseButtonGroup.vue'

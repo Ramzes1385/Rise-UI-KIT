@@ -1,7 +1,4 @@
-/**
- * Конфигурация Vite для сборки npm-библиотеки (`npm run build:lib`).
- * Storybook и Vitest настроены отдельно: build/storybook/main.ts и build/tests/vitest.config.ts.
- */
+/** Storybook и Vitest настроены отдельно — build/storybook/main.ts и build/tests/vitest.config.ts. */
 
 import { defineConfig } from 'vite'
 import type { Plugin } from 'vite'

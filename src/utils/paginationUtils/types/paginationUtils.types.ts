@@ -1,7 +1,6 @@
 /** Элемент списка видимых страниц */
 type VisiblePageItem = number | '...'
 
-/** Параметры для расчёта видимых страниц */
 interface VisiblePagesOptions {
 	/** Текущая страница */
 	current: number
@@ -13,7 +12,6 @@ interface VisiblePagesOptions {
 	showLastPage?: boolean
 }
 
-/** Параметры для расчёта информации о странице */
 interface PageInfoOptions {
 	/** Текущая страница */
 	current: number

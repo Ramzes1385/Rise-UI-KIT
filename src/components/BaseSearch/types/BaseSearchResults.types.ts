@@ -18,7 +18,6 @@ export interface BaseSearchResultsEmits {
 	(event: 'highlight', index: number): void
 }
 
-/** Слоты компонента BaseSearchResults */
 export interface BaseSearchResultsSlots {
 	/** Кастомный рендер всего списка результатов */
 	results?: (props: { results: SearchResult[]; query: string; isLoading: boolean }) => unknown

@@ -1,13 +1,9 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения рейтинга */
 export const RATING_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type RatingVariant = (typeof RATING_VARIANTS)[number]
 
-/**
- * Пропсы компонента BaseRating
- */
 export interface BaseRatingProps extends BaseComponentProps<RatingVariant, 'root' | 'icon' | 'iconFilled'> {
 	/** Текущая оценка (v-model), допускает дробные значения */
 	modelValue?: number
@@ -27,9 +23,6 @@ export interface BaseRatingProps extends BaseComponentProps<RatingVariant, 'root
 	isDisabled?: boolean
 }
 
-/**
- * События компонента BaseRating
- */
 export interface BaseRatingEmits {
 	/** Изменение оценки через v-model */
 	(event: 'update:modelValue', value: number): void
@@ -37,9 +30,6 @@ export interface BaseRatingEmits {
 	(event: 'change', value: number): void
 }
 
-/**
- * Слоты компонента BaseRating
- */
 export interface BaseRatingSlots {
 	default?: () => unknown
 }

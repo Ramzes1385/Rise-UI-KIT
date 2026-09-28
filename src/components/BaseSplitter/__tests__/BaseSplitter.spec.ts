@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseSplitter: семантика separator, клавиатура (стрелки, Home/End, Enter), перетаскивание, отключение.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSplitter from '../ui/BaseSplitter.vue'

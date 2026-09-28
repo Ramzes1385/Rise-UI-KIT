@@ -1,4 +1,3 @@
-/** Позиция тултипа относительно триггера */
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
 /** Координаты и размеры триггера */
@@ -25,7 +24,6 @@ interface TooltipLayout {
 	viewport: TooltipSize
 }
 
-/** Параметры для расчёта позиции тултипа */
 interface TooltipPositionOptions {
 	/** Позиция тултипа */
 	position: TooltipPosition

@@ -1,8 +1,5 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Пропсы компонента BaseIcon
- */
 export interface BaseIconProps extends Omit<BaseComponentProps<string, 'root' | 'svg'>, 'color'> {
 	/** Имя иконки (соответствует имени SVG-файла без расширения) */
 	name: string
@@ -18,14 +15,8 @@ export interface BaseIconProps extends Omit<BaseComponentProps<string, 'root' | 
 	ariaLabel?: string
 }
 
-/**
- * События компонента BaseIcon
- */
 export type BaseIconEmits = Record<string, never>
 
-/**
- * Слоты компонента BaseIcon
- */
 export interface BaseIconSlots {
 	default?: () => unknown
 }

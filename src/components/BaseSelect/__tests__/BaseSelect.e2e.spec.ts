@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseSelect.
- * Проверяет: открытие/закрытие дропдауна, выбор опции.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('селект: открывает дропдаун и выбирает опцию', async ({ page }) => {

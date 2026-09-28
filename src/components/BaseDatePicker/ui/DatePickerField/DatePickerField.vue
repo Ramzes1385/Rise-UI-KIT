@@ -101,17 +101,14 @@ watchPostEffect(() => {
 	if (input) input.readOnly = resolvedProps.value.isReadonly
 })
 
-/** Клик по полю ввода */
 function handleFieldClick(): void {
 	emit('field-click')
 }
 
-/** Клик по кнопке очистки */
 function handleClearClick(): void {
 	emit('clear-click')
 }
 
-/** Клик по кнопке иконки */
 function handleIconClick(): void {
 	emit('icon-click')
 }

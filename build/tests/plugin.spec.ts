@@ -1,7 +1,3 @@
-/**
- * createUiKitPlugin: настройки для всего приложения — значения по умолчанию, замена иконок, компонент ссылок.
- */
-
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import { createUiKitPlugin } from '@/plugin'

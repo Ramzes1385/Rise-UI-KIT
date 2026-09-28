@@ -1,5 +1,4 @@
-// Цитата сообщения, на которое ответили: линия --rise-primary слева, фон --chat-quote-bg (bg поверх пузыря),
-// имя 12/16 medium цветом primary-text, текст 12/16 toned в одну строку. Кнопка: клик ведёт к оригиналу.
+// Цитата ответа: линия primary слева, фон --chat-quote-bg, имя 12/16 primary-text, текст 12/16 toned в одну строку; клик ведёт к оригиналу.
 @use '@styles/functions' as *;
 @use '@styles/mixins' as *;
 @use '../../../styles/chat' as *;

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseTooltip.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen, waitFor } from '@testing-library/vue'
 import BaseTooltip from '../ui/BaseTooltip.vue'

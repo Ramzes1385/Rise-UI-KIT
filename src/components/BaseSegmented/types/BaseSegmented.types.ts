@@ -7,7 +7,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const SEGMENTED_VARIANTS = ['default', 'soft', 'outline'] as const
 
-/** Сегмент */
 export interface SegmentedOption {
 	/** Значение: уходит в v-model при выборе */
 	value: string | number
@@ -19,9 +18,6 @@ export interface SegmentedOption {
 	isDisabled?: boolean
 }
 
-/**
- * Пропсы компонента BaseSegmented
- */
 export interface BaseSegmentedProps extends BaseComponentProps<
 	(typeof SEGMENTED_VARIANTS)[number],
 	'root' | 'label' | 'track' | 'segment' | 'error'
@@ -44,9 +40,6 @@ export interface BaseSegmentedProps extends BaseComponentProps<
 	error?: string
 }
 
-/**
- * События компонента BaseSegmented
- */
 export interface BaseSegmentedEmits {
 	/** Выбран сегмент (кликом, стрелками или пробелом) */
 	(event: 'update:modelValue', value: string | number): void

@@ -1,16 +1,9 @@
-/**
- * BaseContainer — stories.
- *
- * Разделы: Default (песочница) → ширины.
- */
-
 import { expect } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseContainer from '../ui/BaseContainer.vue'
 import { CONTAINER_SIZES } from '../types/BaseContainer.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
-/** Рамка, по которой видно ширину контейнера */
 const DEMO_STYLE = 'padding: 16px; border: 1px dashed var(--rise-border-accented); border-radius: 8px'
 
 const meta = {

@@ -25,7 +25,6 @@
 			</div>
 		</template>
 
-		<!-- Круговой прогресс -->
 		<template v-if="shape === 'circle'">
 			<svg class="base-progress__svg" :class="classes.svg" viewBox="0 0 120 120">
 				<circle

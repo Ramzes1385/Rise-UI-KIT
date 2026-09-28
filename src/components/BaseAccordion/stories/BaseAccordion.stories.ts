@@ -1,10 +1,3 @@
-/**
- * BaseAccordion — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты, размеры, цвет) → состояния (отключённый пункт, пусто,
- * длинный текст) → содержимое (иконки, слоты) → сценарии (несколько открытых) → клавиатура.
- */
-
 import { expect, fn } from 'storybook/test'
 import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseAccordion from '../ui/BaseAccordion.vue'

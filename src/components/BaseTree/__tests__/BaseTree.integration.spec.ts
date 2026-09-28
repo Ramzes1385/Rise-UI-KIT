@@ -1,15 +1,9 @@
-/**
- * Integration-тесты для BaseTree.
- * Проверяют взаимодействие: клики, раскрытие/сворачивание, выбор, клавиатура.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../types/BaseTree.types'
 
-/** Узлы с вложенностью */
 const NESTED_ITEMS: TreeNode[] = [
 	{
 		id: 'metall',
@@ -22,7 +16,6 @@ const NESTED_ITEMS: TreeNode[] = [
 	{ id: 'wood', label: 'Дерево' },
 ]
 
-/** Узлы с глубокой вложенностью для каскадного выбора */
 const CASCADE_ITEMS: TreeNode[] = [
 	{
 		id: 'root',
@@ -41,7 +34,6 @@ const CASCADE_ITEMS: TreeNode[] = [
 	},
 ]
 
-/** Узлы с отключёнными элементами */
 const DISABLED_ITEMS: TreeNode[] = [
 	{
 		id: 'group',
@@ -53,7 +45,6 @@ const DISABLED_ITEMS: TreeNode[] = [
 	},
 ]
 
-/** Слот для рендера текста узлов */
 const DEFAULT_SLOT = `<template #label="{ node }">{{ node.label }}</template>`
 
 /**

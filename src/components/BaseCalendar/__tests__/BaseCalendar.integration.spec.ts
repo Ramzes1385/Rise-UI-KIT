@@ -1,9 +1,4 @@
-/**
- * Integration-тесты для BaseCalendar.
- * Проверяют selectionMode, навигацию, isDisabled.
- * Дочерние UI-компоненты заменены stub'ами со слотами.
- * Мокаем только DOM-зависимые composables.
- */
+/** Дочерние UI-компоненты заменены stub'ами со слотами; мокаются только DOM-зависимые composables. */
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'

@@ -26,14 +26,12 @@ function replaceExtension(src: string, newExt: string): string {
 	return basePath.substring(0, dotIndex) + newExt + suffix
 }
 
-/** Построить оптимизированный src с параметром ширины */
 function buildOptimizedSrc(src: string, srcWidth?: number): string {
 	if (!srcWidth) return src
 	const separator = src.includes('?') ? '&' : '?'
 	return `${src}${separator}w=${srcWidth}`
 }
 
-/** Построить srcset для адаптивных изображений */
 function buildSrcset(src: string, srcWidth?: number): string | undefined {
 	if (!srcWidth) return undefined
 	const w1x = srcWidth

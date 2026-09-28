@@ -1,10 +1,4 @@
-/**
- * BaseDropdown — stories.
- *
- * Разделы: Default (песочница: меню действий, isOpen синхронизирован с Controls) → внешний вид (варианты, кастомный цвет) →
- * состояния (пустая панель, длинный список) → сценарии (позиции, у края окна, тёмный блок, поле ввода в панели) → клавиатура.
- * Открытые панели телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме.
- */
+/** Открытые панели телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { computed, ref } from 'vue'
 import { expect, fn, screen, waitFor } from 'storybook/test'
@@ -20,7 +14,6 @@ import type { BaseMenuItem } from '@components/BaseMenu'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { DropdownPosition } from '../types/BaseDropdown.types'
 
-/** Все позиции панели относительно триггера. */
 const POSITIONS: DropdownPosition[] = [
 	'bottom-start',
 	'bottom',
@@ -45,7 +38,6 @@ const FILE_ACTIONS: BaseMenuItem[][] = [
 	],
 ]
 
-/** Длинный список проектов для примера с прокруткой. */
 const PROJECTS: BaseMenuItem[][] = [
 	[
 		'Сайт студии',

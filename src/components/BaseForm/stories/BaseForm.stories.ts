@@ -1,10 +1,3 @@
-/**
- * BaseForm — stories.
- *
- * Разделы: Default (песочница) → внешний вид (варианты) → состояния (загрузка, disabled) →
- * сценарии (валидация при отправке, проверка по схеме, отправка с загрузкой) → клавиатура.
- */
-
 import { reactive, ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { BaseInput } from '@components/BaseInput'
@@ -20,7 +13,6 @@ import type { StandardSchemaIssue, StandardSchemaV1 } from '@utils/formUtils'
 /** Время «ответа сервера» в сценарии отправки с загрузкой, мс */
 const SUBMIT_DELAY = 600
 
-/** Данные заявки на вебинар */
 interface WebinarRequest {
 	name: string
 	email: string

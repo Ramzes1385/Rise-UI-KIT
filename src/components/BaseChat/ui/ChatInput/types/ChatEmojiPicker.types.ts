@@ -4,7 +4,6 @@ export interface ChatEmojiPickerProps {
 	sizeScale: number
 }
 
-/** Emits компонента ChatEmojiPicker */
 export interface ChatEmojiPickerEmits {
 	(event: 'select', emoji: string): void
 }

@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils'
-/** Тесты контекста формы и поля: блокировка контролов, подключение контрола к BaseFormField */
 import { computed, defineComponent, effectScope, h, provide, ref } from 'vue'
 import {
 	FORM_CONTEXT_KEY,
@@ -11,7 +10,6 @@ import {
 } from '../useFormContext'
 import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../types/useFormContext.types'
 
-/** Смонтировать composable внутри провайдеров формы и поля */
 function withProviders<T>(
 	use: () => T,
 	{ formDisabled, field }: { formDisabled?: ReturnType<typeof ref<boolean>>; field?: FormFieldContext } = {},

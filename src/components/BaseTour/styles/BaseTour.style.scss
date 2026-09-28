@@ -1,6 +1,4 @@
-// BaseTour. Пошаговый тур: цель подсвечена кольцом --rise-primary, остальная страница — под подложкой --rise-overlay;
-// рядом с целью — карточка-поповер: фон страницы, тонкая рамка, радиус lg, тень lg, отступ 16px.
-// Заголовок 14/20 semibold, текст 14/20 приглушённый; в подвале — прогресс (точки или полоса), счётчик и кнопки.
+// Цель подсвечена кольцом --rise-primary, остальная страница затемнена подложкой --rise-overlay.
 
 .base-tour {
 	position: fixed;
@@ -33,8 +31,6 @@
 	transition-timing-function: var(--rise-ease-out);
 }
 
-// ─── Карточка ────────────────────────────────────────────────────────────────
-
 .base-tour__card {
 	position: fixed;
 	z-index: 1;
@@ -61,7 +57,6 @@
 		transform-origin: left center;
 	}
 
-	// На телефоне карточка — внизу экрана во всю ширину.
 	&--mobile {
 		inset: auto sz(12px) sz(12px);
 		width: auto;
@@ -119,8 +114,6 @@
 	margin: sz(-2px) sz(-4px) sz(-2px) auto;
 	color: var(--rise-text-muted);
 }
-
-// ─── Подвал: прогресс, счётчик, кнопки ─────────────────────────────────────────
 
 .base-tour__footer {
 	display: flex;
@@ -184,8 +177,6 @@
 	gap: sz(8px);
 	margin-left: auto;
 }
-
-// ─── Появление карточки: проявление из 92% ─────────────────────────────────────
 
 .base-tour-card-enter-active,
 .base-tour-card-leave-active {

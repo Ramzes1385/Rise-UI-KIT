@@ -206,7 +206,6 @@ function handleListKeydown(event: KeyboardEvent): void {
 	if (targetId !== props.modelValue) emitSelect(targetId)
 }
 
-/** Обновить состояние кнопок навигации */
 function updateScrollState(): void {
 	const el = listRef.value
 	/* istanbul ignore next — defensive: listRef доступен после mount template-ссылки */
@@ -263,7 +262,6 @@ function handlePointerUp(): void {
 
 let resizeObserver: ResizeObserver | null = null
 
-/** Подключить/переподключить ResizeObserver */
 function setupObserver(): void {
 	resizeObserver?.disconnect()
 	resizeObserver = null

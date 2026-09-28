@@ -1,7 +1,4 @@
-/**
- * Visual regression BaseCalendar: ключевые stories в светлой и тёмной теме.
- * Время браузера зафиксировано на STORY_TODAY (openStory), поэтому «сегодня» на снимках — 15 мая 2025.
- */
+/** Время браузера зафиксировано на STORY_TODAY (openStory), поэтому «сегодня» на снимках — 15 мая 2025. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

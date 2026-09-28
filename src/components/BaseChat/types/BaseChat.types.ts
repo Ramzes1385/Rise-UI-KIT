@@ -80,9 +80,6 @@ export interface ChatCommand {
  */
 export const CHAT_VARIANTS = ['bubble', 'flat', 'modern'] as const
 
-/**
- * Пропсы компонента BaseChat
- */
 export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)[number], 'root'> {
 	messages: ChatMessage[]
 	title: string
@@ -102,9 +99,6 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	description?: string
 }
 
-/**
- * События компонента BaseChat
- */
 export interface BaseChatEmits {
 	(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[]; replyToId?: string }): void
 	(event: 'attach', files: FileList): void
@@ -128,9 +122,6 @@ export interface BaseChatEmits {
 	(event: 'error', payload: { type: string; message: string; detail?: unknown }): void
 }
 
-/**
- * Слоты компонента BaseChat
- */
 export interface BaseChatSlots {
 	default?: () => unknown
 }

@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseInplace: кнопка просмотра, имя, подсказка, пустое значение.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseInplace from '../ui/BaseInplace.vue'

@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для useImageZoom.
- * Проверяют масштаб, поворот, сброс и мини-карту.
- */
-
 import { nextTick } from 'vue'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { useImageZoom } from '../useImageZoom'
@@ -10,7 +5,6 @@ import { useImageZoom } from '../useImageZoom'
 // Блокировка прокрутки общая для всех экземпляров: незакрытые зумы из прошлых тестов держали бы её
 enableAutoUnmount(afterEach)
 
-/** Обёртка для вызова composable внутри Vue-контекста */
 function withSetup<T>(composable: () => T): T {
 	let result: T
 	mount({
@@ -22,7 +16,6 @@ function withSetup<T>(composable: () => T): T {
 	return result!
 }
 
-/** Создать опции по умолчанию */
 function createOptions(overrides: Record<string, unknown> = {}) {
 	return {
 		initialScale: () => 1,
@@ -59,7 +52,6 @@ function createMockImgEl(natural: { width: number; height: number }, offset: { w
 	return img
 }
 
-/** Создать zoom с мок-изображениями для тестов мини-карты */
 function createZoomWithMocks(overrides: Record<string, unknown> = {}) {
 	const mockZoomImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 3840, height: 2160 })
 	const mockMinimapImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 200, height: 150 })
@@ -232,8 +224,6 @@ describe('useImageZoom', () => {
 		expect(zoom.isZoomOpen.value).toBe(true)
 	})
 
-	// --- handleWheel ---
-
 	it('должен увеличивать масштаб при прокрутке колёсиком вверх (deltaY < 0)', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
 
@@ -250,8 +240,6 @@ describe('useImageZoom', () => {
 
 		expect(zoom.scalePercent.value).toBe(100)
 	})
-
-	// --- handleKeydown ---
 
 	it('должен закрывать зум при нажатии Escape', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
@@ -304,8 +292,6 @@ describe('useImageZoom', () => {
 		expect(zoom.scalePercent.value).toBe(100)
 	})
 
-	// --- handleMinimapClick ---
-
 	it('должен перемещать изображение при клике по мини-карте', () => {
 		const zoom = createZoomWithMocks()
 
@@ -337,8 +323,6 @@ describe('useImageZoom', () => {
 		expect(zoom.translateY.value).toBe(0)
 	})
 
-	// --- handleMinimapDragStart / DragMove / DragEnd ---
-
 	it('должен начинать перетаскивание мини-карты и обновлять translate', () => {
 		const zoom = createZoomWithMocks()
 		const addSpy = vi.spyOn(document, 'addEventListener')
@@ -349,14 +333,12 @@ describe('useImageZoom', () => {
 		expect(addSpy).toHaveBeenCalledWith('mousemove', expect.any(Function))
 		expect(addSpy).toHaveBeenCalledWith('mouseup', expect.any(Function))
 
-		// Имитируем перетаскивание
 		const moveEvent = new MouseEvent('mousemove', { clientX: 60, clientY: 40 })
 		zoom.handleMinimapDragMove(moveEvent)
 
 		expect(zoom.translateX.value).not.toBe(0)
 		expect(zoom.translateY.value).not.toBe(0)
 
-		// Завершаем перетаскивание
 		zoom.handleMinimapDragEnd()
 
 		expect(removeSpy).toHaveBeenCalledWith('mousemove', expect.any(Function))
@@ -374,8 +356,6 @@ describe('useImageZoom', () => {
 		expect(zoom.translateX.value).toBe(prevTX)
 		expect(zoom.translateY.value).toBe(prevTY)
 	})
-
-	// --- syncSizes ---
 
 	it('должен обновлять размеры при syncSizes с мок-изображениями', () => {
 		const mockZoomImg = createMockImgEl({ width: 800, height: 600 }, { width: 400, height: 300 })
@@ -401,8 +381,6 @@ describe('useImageZoom', () => {
 		expect(style).toHaveProperty('height')
 		expect(style).not.toHaveProperty('display')
 	})
-
-	// --- minimapViewportStyle ---
 
 	it('должен возвращать display:none когда zoomContentW=0', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
@@ -451,7 +429,6 @@ describe('useImageZoom', () => {
 		expect(style).toHaveProperty('width')
 		expect(style).toHaveProperty('height')
 
-		// Восстановление
 		Object.defineProperty(window, 'innerWidth', { value: originalW, configurable: true })
 		Object.defineProperty(window, 'innerHeight', { value: originalH, configurable: true })
 	})
@@ -472,7 +449,6 @@ describe('useImageZoom', () => {
 			),
 		)
 		// Не вызываем syncSizes — zoomContentW=0
-		// Активируем перетаскивание
 		zoom.handleMinimapDragStart(new MouseEvent('mousedown', { clientX: 0, clientY: 0 }))
 		const prevTX = zoom.translateX.value
 		zoom.handleMinimapDragMove(new MouseEvent('mousemove', { clientX: 10, clientY: 10 }))
@@ -515,8 +491,6 @@ describe('useImageZoom', () => {
 		expect(() => zoom.handleMinimapClick(event)).not.toThrow()
 	})
 
-	// --- minimapImageStyle ---
-
 	it('должен возвращать стили изображения мини-карты с поворотом', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
 
@@ -524,8 +498,6 @@ describe('useImageZoom', () => {
 
 		expect(zoom.minimapImageStyle.value.transform).toBe('rotate(90deg)')
 	})
-
-	// --- watch isZoomOpen ---
 
 	it('должен устанавливать body overflow=hidden при открытии зума', async () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
@@ -546,8 +518,6 @@ describe('useImageZoom', () => {
 
 		expect(document.body.style.overflow).toBe('')
 	})
-
-	// --- onUnmounted ---
 
 	it('должен удалять слушатели при размонтировании компонента', () => {
 		const removeSpy = vi.spyOn(document, 'removeEventListener')
@@ -608,10 +578,7 @@ describe('useImageZoom', () => {
 		expect(() => zoom.handleMinimapDragStart(startEvent)).not.toThrow()
 	})
 
-	// --- calcContain: широкое изображение (imgAspect > elAspect) ---
-
 	it('должен корректно рассчитывать contain для широкого изображения', () => {
-		// Широкое изображение 1920×400 в узком контейнере 300×300
 		const mockZoomImg = createMockImgEl({ width: 1920, height: 400 }, { width: 300, height: 300 })
 		const mockMinimapImg = createMockImgEl({ width: 1920, height: 400 }, { width: 200, height: 150 })
 		const zoom = withSetup(() =>
@@ -631,8 +598,6 @@ describe('useImageZoom', () => {
 		expect(style).toHaveProperty('height')
 		expect(style).not.toHaveProperty('display')
 	})
-
-	// --- clampPosition: scale > 1 и изображение шире/выше контейнера ---
 
 	it('должен ограничивать translate при scale > 1 и большом изображении', () => {
 		const mockZoomImg = createMockImgEl({ width: 7680, height: 4320 }, { width: 3840, height: 2160 })
@@ -654,8 +619,6 @@ describe('useImageZoom', () => {
 		expect(zoom.translateX.value).not.toBe(99999)
 		expect(zoom.translateY.value).not.toBe(99999)
 	})
-
-	// --- handleKeydown: не-зум-клавиша при открытом зуме ---
 
 	it('не должен реагировать на не-зум-клавиши при открытом зуме', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))

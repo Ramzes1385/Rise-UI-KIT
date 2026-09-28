@@ -1,8 +1,4 @@
-/**
- * Visual regression BaseAnimation: конечное состояние примеров в светлой и тёмной теме.
- * Play-функции этих stories переключают видимость (скрыть → показать, добавить → удалить);
- * openStory ждёт завершения play, поэтому в кадр попадает конечное состояние.
- */
+/** Play-функции этих stories переключают видимость (скрыть → показать, добавить → удалить); openStory ждёт завершения play, поэтому в кадр попадает конечное состояние. */
 
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'

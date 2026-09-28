@@ -2,9 +2,6 @@ import type { ComputedRef, Ref } from 'vue'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { VisiblePageItem } from '@utils/paginationUtils/types/paginationUtils.types'
 
-/**
- * Опции composable useTablePagination
- */
 export interface UseTablePaginationOptions {
 	/** Обработанные строки (поиск + фильтры + сортировка) */
 	processedRows: Ref<TableRow[]>
@@ -16,9 +13,6 @@ export interface UseTablePaginationOptions {
 	onPageSizeChange?: (size: number) => void
 }
 
-/**
- * Результат composable useTablePagination
- */
 export interface UseTablePaginationReturn {
 	/** Текущая страница */
 	currentPage: Ref<number>

@@ -1,10 +1,3 @@
-/**
- * BaseStepper — stories.
- *
- * Разделы: Default (песочница с рабочим v-model) → внешний вид (формы, ориентация, размеры, цвет) →
- * состояния (отключённый шаг, длинные подписи) → содержимое (иконки, слоты) → сценарии (пошаговая форма) → клавиатура.
- */
-
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'

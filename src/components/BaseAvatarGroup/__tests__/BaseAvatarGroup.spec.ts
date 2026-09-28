@@ -1,7 +1,3 @@
-/**
- * Unit-тесты BaseAvatarGroup: список, имена, остаток «+N».
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseAvatarGroup from '../ui/BaseAvatarGroup.vue'

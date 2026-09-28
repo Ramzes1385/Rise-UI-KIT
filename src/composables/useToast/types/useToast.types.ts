@@ -12,7 +12,6 @@ export interface ToastAction {
 	onClick?: () => void
 }
 
-/** Параметры уведомления для `useToast().add()` */
 export interface ToastOptions {
 	/**
 	 * Свой идентификатор. Повторный `add()` с тем же id заменяет уведомление, а не добавляет второе:
@@ -50,13 +49,11 @@ export interface ToastStore {
 	clear: () => void
 }
 
-/** Настройки хранилища */
 export interface ToastStoreOptions {
 	/** Сколько уведомлений показывать одновременно: лишние (самые старые) закрываются */
 	max?: () => number
 }
 
-/** API `useToast()` */
 export interface UseToastReturn {
 	/** Показать уведомление. Возвращает его id */
 	add: (toast: ToastOptions) => ToastId

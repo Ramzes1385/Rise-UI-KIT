@@ -1,8 +1,4 @@
-// BaseBadge — компактная метка. При sizeScale = 100: высота 20px (рамка 1px + отступ 1px + строка 16px),
-// текст 12/16 medium, отступ по бокам 8px вместе с рамкой, радиус sm.
-// Варианты — как у кнопки: default — заливка основным цветом; soft — мягкий фон основного цвета;
-// outline — нейтральная с рамкой; ghost — нейтральная без фона; shadow — нейтральная приподнятая с тенью.
-// Статусы (успех, ошибка…) — проп color с токенами роли: { bg: var(--rise-success-soft), text: var(--rise-success-text) }.
+// Высота 20px = рамка 1 + отступ 1 + строка 16; статус задаётся токенами роли: { bg: var(--rise-success-soft), text: var(--rise-success-text) }.
 .base-badge {
 	display: inline-flex;
 	align-items: center;
@@ -43,7 +39,6 @@
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
-	// Длинный label обрезается многоточием, бейдж не выходит за ширину контейнера.
 	&__text {
 		min-width: 0;
 		@include truncate;

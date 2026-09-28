@@ -22,9 +22,6 @@ export interface CustomColor {
 	text?: ColorStates
 }
 
-/**
- * Опции composable useCustomColor
- */
 export interface UseCustomColorOptions {
 	/** Геттер объекта кастомного цвета */
 	getColor: () => CustomColor | undefined

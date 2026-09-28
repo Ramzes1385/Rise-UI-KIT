@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseRange.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/vue'
@@ -10,7 +5,6 @@ import { BaseText } from '@components/BaseText'
 import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'
 
-/** Общие глобальные компоненты для всех тестов */
 const globalComponents = { components: { BaseText, BaseTooltip } }
 
 describe('BaseRange unit', () => {

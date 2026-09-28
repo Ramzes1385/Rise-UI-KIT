@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseForm.
- * Проверяют взаимодействие: отправка формы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, reactive, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

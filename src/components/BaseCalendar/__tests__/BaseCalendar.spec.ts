@@ -1,9 +1,4 @@
-/**
- * Unit-тесты для BaseCalendar.
- * Проверяют рендер, пропсы, CSS-модификаторы, isDisabled.
- * Дочерние UI-компоненты заменены stub'ами.
- * Мокаем только DOM-зависимые composables.
- */
+/** Дочерние UI-компоненты заменены stub'ами; мокаются только DOM-зависимые composables. */
 
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render } from '@testing-library/vue'

@@ -81,7 +81,6 @@ const inheritedTheme = useInheritedTheme(
 const layerStyle = useLayerIndex(() => props.isOpen)
 const dropdownRef = ref<HTMLElement | null>(null)
 
-/** Элемент с фокусом до открытия панели */
 const savedActiveElement = ref<HTMLElement | null>(null)
 
 /**
@@ -110,7 +109,6 @@ watch(
 	},
 )
 
-/** Позиционирование выпадающей панели */
 const { panelStyle, updatePosition } = useDropdownPosition({
 	wrapperRef,
 	dropdownRef,
@@ -127,14 +125,12 @@ function handleClose(): void {
 	emit('close')
 }
 
-/** Закрытие по клику снаружи */
 useClickOutside({
 	targets: [wrapperRef, dropdownRef],
 	callback: handleClose,
 	isActive: () => props.isOpen,
 })
 
-/** Закрытие по Escape */
 useEscapeKey({
 	isActive: () => props.isOpen && closeOnEscape.value,
 	callback: handleClose,
@@ -143,7 +139,6 @@ useEscapeKey({
 /** Поля ввода внутри панели (например, поиск BaseSelect) должны получать фокус — иначе в них нельзя печатать */
 const TEXT_ENTRY_SELECTOR = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
 
-/** Событие пришло из поля ввода панели */
 function isTextEntryTarget(target: EventTarget | null): boolean {
 	return target instanceof Element && target.closest(TEXT_ENTRY_SELECTOR) !== null
 }

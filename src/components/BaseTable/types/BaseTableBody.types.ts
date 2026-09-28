@@ -1,6 +1,5 @@
 import type { LoadMode, NestedTableConfig, TableColumn, TableRow } from './BaseTable.types'
 
-/** Props компонента BaseTableBody */
 export interface BaseTableBodyProps {
 	/** Данные строк таблицы */
 	rows: TableRow[]
@@ -51,14 +50,12 @@ export interface BaseTableBodyProps {
 	paddingEnd?: number
 }
 
-/** Emits компонента BaseTableBody */
 export interface BaseTableBodyEmits {
 	(event: 'row-click', row: TableRow): void
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
 }
 
-/** Слоты компонента BaseTableBody */
 export interface BaseTableBodySlots {
 	/** Контент при пустой таблице */
 	empty?: () => unknown

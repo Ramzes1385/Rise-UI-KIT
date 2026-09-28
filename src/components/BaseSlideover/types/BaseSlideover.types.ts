@@ -1,16 +1,9 @@
 import type { PaddingProp } from '@composables/usePadding'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Сторона появления slideover
- */
 export type SlideoverSide = 'left' | 'right'
 
-/**
- * Пропсы компонента BaseSlideover.
- * Из общих props действуют `sizeScale` (отступы, кегль, ширина панели) и `color` (фон и текст панели);
- * `variant` не используется — у панели одно оформление.
- */
+/** Из общих props действуют `sizeScale` (отступы, кегль, ширина панели) и `color` (фон и текст панели); `variant` не используется — у панели одно оформление. */
 export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 'panel' | 'header' | 'title' | 'body' | 'footer'> {
 	/** Состояние открытия */
 	isOpen: boolean
@@ -49,17 +42,11 @@ export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 
 	padding?: PaddingProp
 }
 
-/**
- * События компонента BaseSlideover
- */
 export interface BaseSlideoverEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
 }
 
-/**
- * Слоты компонента BaseSlideover
- */
 export interface BaseSlideoverSlots {
 	default?: () => unknown
 	/** Заголовок панели */

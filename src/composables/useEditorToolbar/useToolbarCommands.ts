@@ -24,9 +24,6 @@ function getHotkeyCommand(event: KeyboardEvent): string | undefined {
 	return FORMAT_HOTKEYS[event.code]
 }
 
-/**
- * Composable для выполнения команд редактора: форматирование, блоки, цвет, медиа.
- */
 function useToolbarCommands(options: UseToolbarCommandsOptions) {
 	const {
 		editorRef,

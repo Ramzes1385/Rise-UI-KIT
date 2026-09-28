@@ -6,9 +6,6 @@ import type { UseCalendarGridOptions } from './types/useCalendarGrid.types'
 /** Ячеек в сетке месяца: 6 недель по 7 дней — высота сетки не меняется от месяца к месяцу */
 const GRID_CELLS = 42
 
-/**
- * Composable для вычисления сетки дней календаря, названий месяцев, дней недели и диапазонов годов.
- */
 function useCalendarGrid(options: UseCalendarGridOptions) {
 	const { currentMonth, currentYear, currentView, locale, firstDayOfWeek, showYear } = options
 

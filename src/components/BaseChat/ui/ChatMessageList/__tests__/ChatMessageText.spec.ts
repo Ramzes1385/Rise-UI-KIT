@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для компонента ChatMessageText.
- * Проверяют рендеринг текста, ссылок, упоминаний, команд и подсветку поиска.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it } from 'vitest'
 import userEvent from '@testing-library/user-event'

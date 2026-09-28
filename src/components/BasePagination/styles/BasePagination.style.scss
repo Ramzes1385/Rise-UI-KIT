@@ -1,6 +1,4 @@
-// BasePagination. Кнопки — BaseButton высотой 32px при sizeScale = 100: стрелки и номера страниц в варианте `variant`
-// (при default — нейтральный ghost), текущая страница — заливка основным цветом.
-// Кастомный цвет: bg/text `base`, `hover` — стрелки и номера (через BaseButton), `active` — текущая страница.
+// variant по умолчанию — нейтральный ghost; текущая страница — заливка основным цветом (или custom bg/text active).
 .base-pagination {
 	display: flex;
 	flex-wrap: wrap;

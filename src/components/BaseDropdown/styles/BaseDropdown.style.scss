@@ -1,7 +1,4 @@
-// BaseDropdown. Обёртка триггера и плавающая панель в body (её используют BasePopover, BaseSelect, BaseSearch).
-// Панель — floating-surface: фон страницы, тонкая рамка, радиус md, тень lg; отступ 4px — пункты меню почти у краёв.
-// Варианты: default — рамка и тень; outline — рамка accented без тени; shadow — только тень xl;
-// soft — мягкий нейтральный фон без рамки; ghost — без фона, рамки и тени (оформление даёт содержимое).
+// Обёртка триггера и плавающая панель в body (использует BasePopover/BaseSelect/BaseSearch), отступ 4px; варианты default/outline/shadow/soft/ghost меняют фон, рамку и тень панели.
 
 .base-dropdown {
 	position: relative;
@@ -58,8 +55,6 @@
 		}
 	}
 }
-
-// ─── Появление: короткое проявление из 95%, как у меню Nuxt UI ─────────────────
 
 .base-dropdown-enter-active,
 .base-dropdown-leave-active {

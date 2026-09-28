@@ -1,13 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/**
- * Ориентация разделителя
- */
 export type SeparatorOrientation = 'horizontal' | 'vertical'
 
-/**
- * Пропсы компонента BaseSeparator
- */
 export interface BaseSeparatorProps extends BaseComponentProps<string, 'root' | 'line' | 'content'> {
 	/** Ориентация: `horizontal` — линия во всю ширину, `vertical` — во всю высоту ряда. */
 	orientation?: SeparatorOrientation
@@ -29,9 +23,6 @@ export interface BaseSeparatorProps extends BaseComponentProps<string, 'root' | 
  */
 export type BaseSeparatorEmits = Record<string, never>
 
-/**
- * Слоты компонента BaseSeparator
- */
 export interface BaseSeparatorSlots {
 	/** Контент между линиями (текст, иконка, кастомный декоратор) */
 	default?: () => unknown

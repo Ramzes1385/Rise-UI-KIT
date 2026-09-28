@@ -1,15 +1,4 @@
-// BaseSideBar. Нейтральная боковая панель в духе Nuxt Dashboard: фон bg, рамка border справа, без тени и скругления.
-// Шапка 56px: заголовок 16/24 semibold (text-highlighted) и ghost-кнопка сворачивания 32×32.
-// Пункт навигации 32px (14/20 medium, отступы 6/8, иконка 20px): текст text-muted, при наведении — фон bg-elevated
-// и text-highlighted; текущий пункт — фон bg-elevated, text-highlighted и иконка primary; его родитель — text-highlighted.
-// Вложенные уровни — с отступом и линией border слева. Бейдж — мягкий фон основного цвета (primary-soft, primary-text).
-// Подвал отделён линией border. Свёрнутая панель — квадратные пункты 32×32 с иконкой и подсказкой.
-// Варианты: default — фон bg и рамка справа; ghost — без фона и рамки; outline — отдельная панель в рамке с радиусом lg;
-// shadow — отдельная панель с рамкой, радиусом lg и тенью; soft — фон bg-muted и рамка справа.
-// Отступы панели — переменные --sidebar-pad-* (по умолчанию 8px 12px); проп padding задаёт их inline.
-// Ширина (width, collapsedWidth) и отступ между пунктами (gap) приходят inline в px и масштабируются вместе с sizeScale.
-// Кастомный цвет: bg.base — фон панели, text.base — заголовок и пункты, bg.hover / text.hover — пункт под курсором
-// и текущий пункт.
+// Боковая панель (фон bg, рамка справа); шапка 56px, пункт навигации 32px с иконкой 20px (текущий — bg-elevated и primary-иконка); варианты default/ghost/outline/shadow/soft; отступы — --sidebar-pad-*, ширина и gap — inline px; цвет — через bg.base/text.base/bg.hover/text.hover.
 
 .base-side-bar,
 .base-side-bar *,
@@ -37,8 +26,6 @@
 	@include custom-bg(background-color, var(--rise-bg));
 	@include custom-text(color, var(--rise-text));
 	@include transition(width, min-width, background-color, border-color);
-
-	// ─── Шапка ───────────────────────────────────────────────────────────────────
 
 	&__header {
 		display: flex;
@@ -75,8 +62,6 @@
 			color: var(--rise-text-highlighted);
 		}
 	}
-
-	// ─── Навигация, тело, подвал ─────────────────────────────────────────────────
 
 	&__navigation {
 		display: flex;
@@ -122,8 +107,6 @@
 			calc(#{sz(var(--sidebar-pad-left))} + #{sz(8px)});
 	}
 
-	// ─── Свёрнутая панель ────────────────────────────────────────────────────────
-
 	&--collapsed {
 		width: sz(var(--sidebar-collapsed-width));
 		min-width: sz(var(--sidebar-collapsed-width));
@@ -167,8 +150,6 @@
 		display: flex;
 	}
 
-	// ─── Варианты ────────────────────────────────────────────────────────────────
-
 	&--ghost {
 		border-right-color: transparent;
 		@include custom-bg(background-color, transparent);
@@ -188,8 +169,6 @@
 		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
 }
-
-// ─── Навигация (BaseSideBarNavigation) ─────────────────────────────────────────
 
 .base-side-bar-nav {
 	display: flex;

@@ -200,26 +200,21 @@ const calendarBindings = computed(() =>
 /** Календари после первого — без блока времени: он один на всё значение */
 const secondaryCalendarBindings = computed(() => withoutTimeBlock(calendarBindings.value))
 
-/** Проксирование modelValue */
 function handleModelUpdate(value: Date | null): void {
 	emit('model-update', value)
 }
 
-/** Проксирование modelValueEnd */
 function handleModelEndUpdate(value: Date | null): void {
 	emit('model-end-update', value)
 }
 
-/** Проксирование selectedDates */
 function handleSelectedUpdate(value: Date[]): void {
 	emit('selected-update', value)
 }
 
-/** Проксирование range-select */
 function handleRangeSelect(start: Date, end: Date): void {
 	emit('range-select', start, end)
 }
 
-/** Открыть panelRef для родителя */
 defineExpose({ panelRef })
 </script>

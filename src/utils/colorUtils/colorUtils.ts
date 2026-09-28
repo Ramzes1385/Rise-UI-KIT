@@ -8,7 +8,6 @@ const MAX_CHANNEL = 255
 const MAX_HUE = 360
 const MAX_PERCENT = 100
 
-/** Ограничить число диапазоном [min, max]. Экспортируется для переиспользования. */
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max)
 }
@@ -35,7 +34,6 @@ function channelToHex(channel: number): string {
 	return clamp(Math.round(channel), 0, MAX_CHANNEL).toString(16).padStart(2, '0')
 }
 
-/** Преобразовать RGB в нормализованный HEX */
 function rgbToHex(rgb: RgbColor): string {
 	return `#${channelToHex(rgb.r)}${channelToHex(rgb.g)}${channelToHex(rgb.b)}`
 }
@@ -52,7 +50,6 @@ function hexToRgb(input: string): RgbColor {
 	}
 }
 
-/** Вычислить hue по нормализованным каналам и дельте */
 function calcHue(max: number, delta: number, channels: RgbColor): number {
 	if (delta === 0) return 0
 	const { r, g, b } = channels
@@ -64,7 +61,6 @@ function calcHue(max: number, delta: number, channels: RgbColor): number {
 	return degrees < 0 ? degrees + MAX_HUE : degrees
 }
 
-/** Преобразовать RGB в HSV */
 function rgbToHsv(rgb: RgbColor): HsvColor {
 	const r = rgb.r / MAX_CHANNEL
 	const g = rgb.g / MAX_CHANNEL
@@ -79,7 +75,6 @@ function rgbToHsv(rgb: RgbColor): HsvColor {
 	}
 }
 
-/** Преобразовать HSV в RGB */
 function hsvToRgb(hsv: HsvColor): RgbColor {
 	const h = hsv.h / MAX_HUE
 	const s = hsv.s / MAX_PERCENT
@@ -105,12 +100,10 @@ function hsvToRgb(hsv: HsvColor): RgbColor {
 	}
 }
 
-/** Преобразовать HEX в HSV */
 function hexToHsv(input: string): HsvColor {
 	return rgbToHsv(hexToRgb(input))
 }
 
-/** Преобразовать HSV в нормализованный HEX */
 function hsvToHex(hsv: HsvColor): string {
 	return rgbToHex(hsvToRgb(hsv))
 }

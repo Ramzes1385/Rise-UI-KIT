@@ -1,12 +1,8 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FormIssue, FormValidationResult, StandardSchemaV1 } from '@utils/formUtils'
 
-/** Варианты отображения формы */
 export const FORM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseForm
- */
 export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)[number], 'root' | 'overlay' | 'content'> {
 	/** Состояние загрузки: submit не эмитится, поля формы отключены, у формы aria-busy */
 	isLoading?: boolean
@@ -21,9 +17,6 @@ export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)
 	state?: Record<string, unknown>
 }
 
-/**
- * События компонента BaseForm
- */
 export interface BaseFormEmits {
 	/** Отправка: `data` — данные после схемы (со `schema`) или `state` */
 	(event: 'submit', e: Event, data?: unknown): void
@@ -31,7 +24,6 @@ export interface BaseFormEmits {
 	(event: 'invalid', issues: FormIssue[]): void
 }
 
-/** Методы BaseForm через ref */
 export interface BaseFormExpose {
 	/** Проверить `state` схемой и показать ошибки; без схемы — успех */
 	validate: () => Promise<FormValidationResult>
@@ -41,9 +33,6 @@ export interface BaseFormExpose {
 	errors: Readonly<Record<string, string>>
 }
 
-/**
- * Слоты компонента BaseForm
- */
 export interface BaseFormSlots {
 	default?: () => unknown
 }

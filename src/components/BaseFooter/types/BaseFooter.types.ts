@@ -7,18 +7,12 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
  */
 export const FOOTER_VARIANTS = ['default', 'soft', 'ghost'] as const
 
-/**
- * Пропсы компонента BaseFooter.
- * `sizeScale` масштабирует отступы и кегль; `color` задаёт фон и текст.
- */
+/** `sizeScale` масштабирует отступы и кегль; `color` задаёт фон и текст. */
 export interface BaseFooterProps extends BaseComponentProps<(typeof FOOTER_VARIANTS)[number], 'root' | 'inner'> {
 	/** Ширина содержимого подвала — как у BaseContainer: `sm`…`xl` или `full` (во всю ширину) */
 	containerSize?: ContainerSize
 }
 
-/**
- * Слоты компонента BaseFooter
- */
 export interface BaseFooterSlots {
 	/** Середина: ссылки */
 	default?: () => unknown

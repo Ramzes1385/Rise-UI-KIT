@@ -1,7 +1,3 @@
-/**
- * Integration-тесты BaseInputTags: добавление Enter, разделителем, вставкой и при выходе; проверки; клавиатура тегов.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'

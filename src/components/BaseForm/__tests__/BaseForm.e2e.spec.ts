@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseForm.
- * Проверяет: заполнение → валидация → отправка.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('форма: заполняет поля и отправляет', async ({ page }) => {

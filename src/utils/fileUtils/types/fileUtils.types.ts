@@ -6,7 +6,6 @@ interface FileValidationResult {
 	errors: string[]
 }
 
-/** Параметры валидации файла */
 interface FileValidationOptions {
 	/** Максимальный размер в МБ */
 	maxSize?: number

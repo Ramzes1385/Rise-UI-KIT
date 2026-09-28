@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseMenu.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseMenu from '../ui/BaseMenu.vue'

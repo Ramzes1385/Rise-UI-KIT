@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseTextarea.
- * Проверяют рендер, пропсы, CSS-модификаторы, emits и поведенческую логику.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'

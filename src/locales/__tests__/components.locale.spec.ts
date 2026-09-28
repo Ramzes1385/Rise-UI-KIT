@@ -1,8 +1,3 @@
-/**
- * Компоненты на другом языке: строки интерфейса, календарь, смена языка на лету,
- * язык из BaseApp и из createUiKitPlugin.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'

@@ -1,7 +1,3 @@
-/**
- * Unit-тесты для useTableSort.
- */
-
 import { ref } from 'vue'
 import { useTableSort } from '../useTableSort'
 import type { TableColumn } from '@components/BaseTable/types/BaseTable.types'

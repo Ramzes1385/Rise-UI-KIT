@@ -1,13 +1,7 @@
-/**
- * Unit-тесты для useEditorToolbar.
- * Проверяют состояние тулбара, форматирование и оба режима (визуальный/код).
- */
-
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useEditorToolbar } from '../useEditorToolbar'
 
-/** Обёртка для вызова composable внутри Vue-контекста */
 function withSetup<T>(composable: () => T): T {
 	let result: T
 	mount({
@@ -19,7 +13,6 @@ function withSetup<T>(composable: () => T): T {
 	return result!
 }
 
-/** Создать мок textarea для режима кода */
 function createMockTextarea(selStart = 0, selEnd = 0): HTMLTextAreaElement {
 	const el = document.createElement('textarea')
 	Object.defineProperty(el, 'selectionStart', { value: selStart, writable: true })
@@ -27,7 +20,6 @@ function createMockTextarea(selStart = 0, selEnd = 0): HTMLTextAreaElement {
 	return el
 }
 
-/** Создать мок options для useEditorToolbar */
 function createOptions(withTextarea = false, selStart = 0, selEnd = 0) {
 	const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
 	const textareaEl = withTextarea ? createMockTextarea(selStart, selEnd) : null
@@ -37,7 +29,6 @@ function createOptions(withTextarea = false, selStart = 0, selEnd = 0) {
 	return { editorRef, codeTextareaRef, onInput, textareaEl }
 }
 
-/** Мок window.getSelection */
 function mockGetSelection(overrides: Record<string, unknown> = {}) {
 	const selection = {
 		anchorNode: null,
@@ -51,7 +42,6 @@ function mockGetSelection(overrides: Record<string, unknown> = {}) {
 	return selection
 }
 
-/** Мок Range */
 function mockRange(overrides: Record<string, unknown> = {}) {
 	return {
 		cloneRange: vi.fn().mockReturnThis(),
@@ -760,7 +750,6 @@ describe('useEditorToolbar', () => {
 
 			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			convertInlineHtml()
-			// Раньше строка разбиралась через innerHTML и `</b>` бесследно пропадал из текста
 			expect(onInput).not.toHaveBeenCalled()
 			expect(editorRef.value!.textContent).toBe('hello </b>world')
 		})
@@ -1056,7 +1045,6 @@ describe('useEditorToolbar', () => {
 		handleContextMenu(event)
 		expect(contextMenu.isVisible).toBe(true)
 
-		// Эмулируем клик вне
 		document.dispatchEvent(new MouseEvent('mousedown'))
 		expect(contextMenu.isVisible).toBe(false)
 	})

@@ -1,7 +1,3 @@
-/**
- * Integration-тесты для BaseAnimation.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseAnimation from '../ui/BaseAnimation.vue'

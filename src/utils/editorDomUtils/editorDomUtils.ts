@@ -2,16 +2,12 @@
 
 import type { TypedInlineTagMatch } from './types/editorDomUtils.types'
 
-/** Блочные теги для определения родительского блока */
 const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DIV', 'BLOCKQUOTE', 'PRE', 'ADDRESS', 'LI'])
 
-/** Теги блочного форматирования (formatBlock) */
 const FORMAT_BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE', 'ADDRESS'])
 
-/** Inline-теги форматирования для полной очистки */
 const INLINE_FORMAT_TAGS = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'DEL', 'FONT', 'SPAN', 'A'])
 
-/** Конфигурация команд форматирования */
 const FORMAT_CONFIG: Record<string, { primary: string; match: string[] }> = {
 	bold: { primary: 'b', match: ['B', 'STRONG'] },
 	italic: { primary: 'i', match: ['I', 'EM'] },
@@ -19,7 +15,6 @@ const FORMAT_CONFIG: Record<string, { primary: string; match: string[] }> = {
 	strikeThrough: { primary: 's', match: ['S', 'STRIKE', 'DEL'] },
 }
 
-/** Маппинг команд выравнивания на CSS-значения */
 const ALIGN_MAP: Record<string, string> = {
 	justifyLeft: 'left',
 	justifyCenter: 'center',
@@ -51,7 +46,6 @@ function matchTypedInlineTag(textBeforeCaret: string): TypedInlineTagMatch | nul
 	return { tag, content: match[2], start: match.index }
 }
 
-/** Получить HTMLElement из узла */
 function toHTMLElement(node: Node | null): HTMLElement | null {
 	if (!node) return null
 	if (node instanceof Text) return node.parentElement
@@ -59,7 +53,6 @@ function toHTMLElement(node: Node | null): HTMLElement | null {
 	return null
 }
 
-/** Проверить, находится ли узел внутри элемента с одним из указанных тегов */
 function isInsideTags(node: Node | null, tagNames: string[], root: HTMLElement): boolean {
 	let current = toHTMLElement(node)
 	while (current && current !== root) {
@@ -69,7 +62,6 @@ function isInsideTags(node: Node | null, tagNames: string[], root: HTMLElement):
 	return false
 }
 
-/** Найти ближайшего предка с одним из указанных тегов */
 function findAncestorByTags(node: Node | null, root: HTMLElement, tagNames: string[]): HTMLElement | null {
 	let current = toHTMLElement(node)
 	while (current && current !== root) {
@@ -79,7 +71,6 @@ function findAncestorByTags(node: Node | null, root: HTMLElement, tagNames: stri
 	return null
 }
 
-/** Найти ближайший блочный родитель */
 function getBlockParent(node: Node | null, root: HTMLElement): HTMLElement {
 	let current = toHTMLElement(node)
 	while (current && current !== root) {
@@ -89,7 +80,6 @@ function getBlockParent(node: Node | null, root: HTMLElement): HTMLElement {
 	return root
 }
 
-/** Найти ближайший блок форматирования */
 function getFormatBlock(node: Node | null, root: HTMLElement): string {
 	let current = toHTMLElement(node)
 	while (current && current !== root) {
@@ -101,7 +91,6 @@ function getFormatBlock(node: Node | null, root: HTMLElement): string {
 	return ''
 }
 
-/** Определить выравнивание текста блочного родителя */
 function getBlockAlign(node: Node | null, root: HTMLElement): string {
 	const block = getBlockParent(node, root)
 	if (block === root) return 'left'
@@ -111,7 +100,6 @@ function getBlockAlign(node: Node | null, root: HTMLElement): string {
 	return align
 }
 
-/** Проверить, находится ли узел внутри списка указанного типа */
 function isInsideList(node: Node | null, root: HTMLElement, listTag: string): boolean {
 	const matchTag = listTag.toUpperCase()
 	let current = toHTMLElement(node)

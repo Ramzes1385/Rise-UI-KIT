@@ -1,14 +1,7 @@
-/**
- * Unit-тесты для rangeUtils.
- * Покрывают: toPercent, snapToStep, calcFillStyle, calcThumbStyle.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { calcFillStyle, calcThumbStyle, snapToStep, toPercent } from '../rangeUtils'
 
 describe('rangeUtils', () => {
-	// ── toPercent ──
-
 	describe('toPercent', () => {
 		it('рассчитывает процент в середине диапазона', () => {
 			expect(toPercent({ min: 0, max: 100, value: 50 })).toBe(50)
@@ -30,8 +23,6 @@ describe('rangeUtils', () => {
 			expect(toPercent({ min: 10, max: 20, value: 15 })).toBe(50)
 		})
 	})
-
-	// ── snapToStep ──
 
 	describe('snapToStep', () => {
 		it('привязывает значение к ближайшему шагу', () => {
@@ -69,8 +60,6 @@ describe('rangeUtils', () => {
 		})
 	})
 
-	// ── calcFillStyle ──
-
 	describe('calcFillStyle', () => {
 		it('рассчитывает стиль заливки от начала', () => {
 			expect(calcFillStyle(60)).toEqual({ left: '0', width: '60%' })
@@ -81,15 +70,11 @@ describe('rangeUtils', () => {
 		})
 	})
 
-	// ── calcThumbStyle ──
-
 	describe('calcThumbStyle', () => {
 		it('рассчитывает позицию ползунка', () => {
 			expect(calcThumbStyle(75)).toEqual({ left: '75%' })
 		})
 	})
-
-	// ── Граничные случаи ──
 
 	it('возвращает отрицательный процент когда значение меньше минимума', () => {
 		expect(toPercent({ min: 0, max: 100, value: -25 })).toBe(-25)

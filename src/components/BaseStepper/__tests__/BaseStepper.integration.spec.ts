@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseStepper.
- * Проверяют взаимодействие: клики по шагам, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'

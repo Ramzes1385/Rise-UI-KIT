@@ -1,7 +1,3 @@
-/**
- * Unit-тесты для useTablePagination.
- */
-
 import { computed, nextTick, ref } from 'vue'
 import { useTablePagination } from '../useTablePagination'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'

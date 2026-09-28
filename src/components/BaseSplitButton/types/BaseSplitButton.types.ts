@@ -4,9 +4,6 @@ import type { DropdownMenuItem, DropdownMenuItems } from '@components/BaseDropdo
 /** Варианты — как у BaseButton: обе кнопки одного варианта */
 export const SPLIT_BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseSplitButton
- */
 export interface BaseSplitButtonProps extends BaseComponentProps<(typeof SPLIT_BUTTON_VARIANTS)[number], 'root' | 'main' | 'toggle'> {
 	/** Подпись основной кнопки (заменяется слотом default) */
 	label?: string
@@ -20,9 +17,6 @@ export interface BaseSplitButtonProps extends BaseComponentProps<(typeof SPLIT_B
 	isLoading?: boolean
 }
 
-/**
- * События компонента BaseSplitButton
- */
 export interface BaseSplitButtonEmits {
 	/** Основное действие */
 	(event: 'click', e: MouseEvent): void
@@ -30,9 +24,6 @@ export interface BaseSplitButtonEmits {
 	(event: 'select', item: DropdownMenuItem, e: Event): void
 }
 
-/**
- * Слоты компонента BaseSplitButton
- */
 export interface BaseSplitButtonSlots {
 	/** Содержимое основной кнопки вместо label */
 	default?: () => unknown

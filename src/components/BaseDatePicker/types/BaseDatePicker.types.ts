@@ -4,9 +4,6 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 
-/**
- * Пропсы компонента BaseDatePicker
- */
 export interface BaseDatePickerProps extends BaseComponentProps<string, 'root' | 'field' | 'panel'>, BaseDatePickerCalendarProps {
 	/** Выбранная дата */
 	modelValue?: Date | null
@@ -48,9 +45,6 @@ export interface BaseDatePickerProps extends BaseComponentProps<string, 'root' |
 	isMultiMonth?: boolean
 }
 
-/**
- * События компонента BaseDatePicker
- */
 export interface BaseDatePickerEmits {
 	(event: 'update:modelValue', value: Date | null): void
 	(event: 'update:modelValueEnd', value: Date | null): void
@@ -61,9 +55,6 @@ export interface BaseDatePickerEmits {
 	(event: 'range-select', start: Date, end: Date): void
 }
 
-/**
- * Слоты компонента BaseDatePicker
- */
 export interface BaseDatePickerSlots {
 	/** Кастомная иконка в инпуте */
 	icon?: () => unknown

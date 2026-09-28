@@ -1,8 +1,3 @@
-/**
- * E2E smoke-тест для BaseSlider.
- * Проверяет: навигация, autoplay, анимации.
- */
-
 import { expect, test } from '@playwright/test'
 
 async function loadSlider(page: import('@playwright/test').Page, storyId: string): Promise<void> {

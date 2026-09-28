@@ -9,7 +9,6 @@ import type {
 	UseFieldControlReturn,
 } from './types/useFormContext.types'
 
-/** Ключ контекста BaseForm */
 export const FORM_CONTEXT_KEY: InjectionKey<FormContext> = Symbol.for('rise-ui-kit.form')
 
 /** Ключ контекста BaseFormField (`null` — поля внутри не относятся к обёртке снаружи) */

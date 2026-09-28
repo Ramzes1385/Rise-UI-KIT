@@ -1,11 +1,7 @@
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения поля формы */
 export const FORM_FIELD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseFormField
- */
 export interface BaseFormFieldProps extends BaseComponentProps<
 	(typeof FORM_FIELD_VARIANTS)[number],
 	'root' | 'header' | 'label' | 'required' | 'content' | 'description' | 'animation' | 'error'
@@ -28,14 +24,8 @@ export interface BaseFormFieldProps extends BaseComponentProps<
 	name?: string
 }
 
-/**
- * События компонента BaseFormField
- */
 export type BaseFormFieldEmits = Record<string, never>
 
-/**
- * Слоты компонента BaseFormField
- */
 export interface BaseFormFieldSlots {
 	default?: () => unknown
 }

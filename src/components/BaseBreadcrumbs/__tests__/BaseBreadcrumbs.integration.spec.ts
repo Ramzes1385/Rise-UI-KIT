@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseBreadcrumbs.
- * Проверяют взаимодействие: клики, навигация, collapsed, слоты.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { markRaw } from 'vue'
 import userEvent from '@testing-library/user-event'
@@ -10,7 +5,6 @@ import { fireEvent, render, screen, within } from '@testing-library/vue'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
 import type { BreadcrumbItem } from '../types/BaseBreadcrumbs.types'
 
-/** Стандартный набор элементов для тестов */
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },
 	{ label: 'Каталог', to: '/catalog' },
@@ -59,14 +53,11 @@ describe('BaseBreadcrumbs integration', () => {
 				props: { items: ITEMS, maxItems: 2 },
 			})
 
-			// Изначально есть ellipsis
 			const ellipsisBtn = container.querySelector('.base-breadcrumbs__ellipsis-btn')
 			expect(ellipsisBtn).toBeInTheDocument()
 
-			// Кликаем для раскрытия
 			await user.click(ellipsisBtn!)
 
-			// После раскрытия ellipsis исчезает
 			expect(container.querySelector('.base-breadcrumbs__ellipsis-btn')).not.toBeInTheDocument()
 		})
 	})

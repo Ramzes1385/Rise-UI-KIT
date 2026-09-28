@@ -16,12 +16,10 @@
 		@mouseleave="onMouseLeave"
 		@focusin="onFocusIn"
 		@focusout="onFocusOut">
-		<!-- Слот header -->
 		<slot name="header" />
 
 		<!-- Сцена: область слайдов и стрелки, отцентрованные по ней (а не по всему слайдеру с навигацией) -->
 		<div class="base-slider__stage">
-			<!-- Листать нечего (слайдов не больше, чем видно) — стрелки и навигация не выводятся -->
 			<div v-if="hasArrows && canNavigate" class="base-slider__arrows" :class="classes.arrows">
 				<BaseButton
 					:variant="arrowVariant"
@@ -55,7 +53,6 @@
 				</BaseButton>
 			</div>
 
-			<!-- Область слайдов -->
 			<div
 				ref="viewportRef"
 				class="base-slider__viewport"
@@ -105,7 +102,6 @@
 			</div>
 		</div>
 
-		<!-- Навигация -->
 		<div v-if="hasNavigation && canNavigate" class="base-slider__navigation" :class="classes.navigation">
 			<div v-if="navigation === 'dots' || navigation === 'both'" class="base-slider__dots" :class="classes.dots">
 				<button
@@ -141,7 +137,6 @@
 			</div>
 		</div>
 
-		<!-- Слот footer -->
 		<slot name="footer" />
 	</div>
 </template>
@@ -258,7 +253,6 @@ const hasNavigation = computed(() => props.navigation !== 'none')
 /** Есть что листать: слайдов больше, чем помещается в область. Иначе стрелки и навигация не нужны. */
 const canNavigate = computed(() => maxIndex.value > 0)
 
-/** Стрелки поверх слайдов — приподнятые (shadow), снаружи в углах — контурные (outline). */
 const arrowVariant = computed(() => (props.arrowsPosition === 'center' ? 'shadow' : 'outline'))
 
 const perView = computed(() => Math.max(1, props.slidesPerView))
@@ -277,14 +271,12 @@ function slideLabel(index: number): string {
 
 let holdTimer: ReturnType<typeof setInterval> | null = null
 
-/** Удержание стрелки — быстрое перелистывание */
 function startHold(direction: 'prev' | 'next'): void {
 	stopHold()
 	const action = direction === 'next' ? goNext : goPrev
 	holdTimer = setInterval(action, HOLD_INTERVAL_MS)
 }
 
-/** Остановка удержания */
 function stopHold(): void {
 	if (holdTimer) {
 		clearInterval(holdTimer)

@@ -6,9 +6,6 @@ export const FAB_VARIANTS = ['default', 'soft', 'outline'] as const
 /** Угол экрана (или контейнера при isContained) */
 export type FabPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
 
-/**
- * Пропсы компонента BaseFab
- */
 export interface BaseFabProps extends BaseComponentProps<(typeof FAB_VARIANTS)[number], 'root' | 'icon' | 'label'> {
 	/** Действие — имя кнопки; видно при isExtended, иначе только для скринридера */
 	label: string
@@ -28,9 +25,6 @@ export interface BaseFabProps extends BaseComponentProps<(typeof FAB_VARIANTS)[n
 	href?: string
 }
 
-/**
- * События компонента BaseFab
- */
 export interface BaseFabEmits {
 	(event: 'click', e: MouseEvent): void
 }

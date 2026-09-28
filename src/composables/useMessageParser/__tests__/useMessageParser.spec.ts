@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для composable useMessageParser.
- * Проверяют разбор текста сообщения и подсветку поисковых совпадений.
- */
-
 import { describe, expect, it } from 'vitest'
 import { useMessageParser } from '../useMessageParser'
 

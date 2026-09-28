@@ -1,12 +1,8 @@
 import type { FieldInputAttrs } from '@composables/useFormContext'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
-/** Варианты отображения текстового поля */
 export const TEXTAREA_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
-/**
- * Пропсы компонента BaseTextarea
- */
 export interface BaseTextareaProps extends BaseComponentProps<
 	(typeof TEXTAREA_VARIANTS)[number],
 	'root' | 'label' | 'required' | 'field' | 'errorText'
@@ -39,18 +35,12 @@ export interface BaseTextareaProps extends BaseComponentProps<
 	inputAttrs?: FieldInputAttrs
 }
 
-/**
- * События компонента BaseTextarea
- */
 export interface BaseTextareaEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'blur', e: FocusEvent): void
 	(event: 'focus', e: FocusEvent): void
 }
 
-/**
- * Слоты компонента BaseTextarea
- */
 export interface BaseTextareaSlots {
 	default?: () => unknown
 }

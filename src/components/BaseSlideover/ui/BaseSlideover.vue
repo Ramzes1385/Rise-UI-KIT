@@ -21,7 +21,6 @@
 					role="dialog"
 					:aria-modal="isModal ? 'true' : undefined"
 					:aria-labelledby="hasDefaultTitle ? titleId : undefined">
-					<!-- Заголовок -->
 					<div v-if="hasHeader" class="base-slideover__header" :class="classes.header">
 						<slot name="header">
 							<BaseText
@@ -44,7 +43,6 @@
 						<slot />
 					</div>
 
-					<!-- Подвал -->
 					<footer v-if="hasFooter" class="base-slideover__footer" :class="classes.footer">
 						<slot name="footer" />
 					</footer>
@@ -95,20 +93,17 @@ const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('
 	'footer',
 ])
 
-/** Стиль для масштабирования ширины панели */
 const widthStyle = computed(() => {
 	if (props.isFullWidth || props.width === 100) return undefined
 	return { '--slideover-width-scale': String(props.width / 100) }
 })
 
-/** Режим ограничения активен: явный isContained или передан container */
 const isContainedMode = computed(() => props.isContained || !!props.container)
 
 /** Цель телепорта: проп container, иначе контейнер из плагина и BaseApp (teleportTo), иначе body */
 const appTeleportTarget = useTeleportTarget()
 const teleportTarget = computed<string | HTMLElement>(() => props.container ?? appTeleportTarget)
 
-/** Отключить teleport только когда нет контейнера и явно contained */
 const isTeleportDisabled = computed(() => !props.container && props.isContained)
 
 /**
@@ -131,7 +126,6 @@ const slots = useSlots()
 const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title))
 const hasFooter = computed(() => Boolean(slots.footer))
 
-/** Popup-паттерн: оверлей, Escape, блокировка скролла */
 /** Место панели среди открытых слоёв: панель, открытая из окна, — над ним */
 const layerStyle = useLayerIndex(() => props.isOpen)
 

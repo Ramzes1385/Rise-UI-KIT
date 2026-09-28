@@ -16,9 +16,6 @@ export interface BaseAppToasterOptions {
 	sizeScale?: number
 }
 
-/**
- * Пропсы компонента BaseApp
- */
 export interface BaseAppProps {
 	/** Настройки уведомлений, которые показывает `useToast()` */
 	toaster?: BaseAppToasterOptions
@@ -34,9 +31,6 @@ export interface BaseAppProps {
 	teleportTo?: TeleportTarget
 }
 
-/**
- * Слоты компонента BaseApp
- */
 export interface BaseAppSlots {
 	/** Приложение */
 	default?: () => unknown

@@ -1,10 +1,3 @@
-/**
- * Unit-тесты для BaseDatePicker.
- * Проверяют рендер, пропсы, формат отображения, clear-кнопку.
- * Дочерние компоненты заменены stub'ами.
- * Мокаем только DOM-зависимые composables.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
