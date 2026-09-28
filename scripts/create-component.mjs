@@ -117,25 +117,78 @@ function indexTemplate(n, kind) {
 	].join('\n')
 }
 
+function modelTemplate(n, kind) {
+	const keys = kind === 'form' ? "['root', 'label', 'control', 'error']" : "['root']"
+	const base = `useStandardBaseComponent('${n.kebab}', props, ${keys})`
+	const types = [`${n.name}Props`, kind !== 'display' && `${n.name}Emits`].filter(Boolean).join(', ')
+	const imports = [
+		...(kind === 'form' ? ["import { computed, useId } from 'vue'"] : []),
+		"import { useStandardBaseComponent } from '@composables/useBaseComponent'",
+		`import type { ${types} } from '../types/${n.name}.types'`,
+		'',
+	]
+	if (kind === 'display') {
+		return [...imports, `export function use${n.name}(props: ${n.name}Props) {`, `\treturn ${base}`, '}', ''].join('\n')
+	}
+	if (kind === 'interactive') {
+		return [
+			...imports,
+			`export function use${n.name}(props: ${n.name}Props, emit: ${n.name}Emits) {`,
+			'\treturn {',
+			`\t\t...${base},`,
+			'\t\thandleClick(event: MouseEvent): void {',
+			"\t\t\temit('click', event)",
+			'\t\t},',
+			'\t}',
+			'}',
+			'',
+		].join('\n')
+	}
+	return [
+		...imports,
+		`export function use${n.name}(props: ${n.name}Props, emit: ${n.name}Emits) {`,
+		'\tconst controlId = useId()',
+		'\tconst errorId = `${controlId}-error`',
+		'',
+		'\treturn {',
+		`\t\t...${base},`,
+		'\t\tcontrolId,',
+		'\t\terrorId,',
+		'\t\tdescribedBy: computed(() => (props.error ? errorId : undefined)),',
+		'\t\thandleInput(event: Event): void {',
+		"\t\t\temit('update:modelValue', (event.target as HTMLInputElement).value)",
+		'\t\t},',
+		'\t}',
+		'}',
+		'',
+	].join('\n')
+}
+
 function vueTemplate(n, kind) {
 	const root = '[variantClass, classes.root]'
 	const style = '[sizeScaleStyle, variantStyle, customColorStyle]'
-	const imports = [
-		...(kind === 'form' ? ["import { computed, useId } from 'vue'"] : []),
-		"import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'",
+	const typeNames = [kind !== 'display' && `${n.name}Emits`, `${n.name}Props`, kind !== 'form' && `${n.name}Slots`].filter(Boolean)
+	const returned = {
+		display: 'sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes',
+		interactive: 'sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, handleClick',
+		form: 'sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, controlId, errorId, describedBy, handleInput',
+	}[kind]
+	const script = [
+		'<script setup lang="ts">',
 		`import '../styles/${n.name}.style.scss'`,
-		`import type { ${[kind !== 'display' && `${n.name}Emits`, `${n.name}Props`, kind !== 'form' && `${n.name}Slots`].filter(Boolean).join(', ')} } from '../types/${n.name}.types'`,
-	]
-	const keys = kind === 'form' ? "['root', 'label', 'control', 'error']" : "['root']"
-	const setup = [
+		`import { use${n.name} } from '../model/use${n.name}'`,
+		"import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'",
+		`import type { ${typeNames.join(', ')} } from '../types/${n.name}.types'`,
+		'',
 		`const props = withDefaults(defineProps<${n.name}Props>(), {`,
 		'\tsizeScale: SIZE_SCALE_DEFAULT,',
 		'})',
 		'',
-		...(kind !== 'display' ? [`const emit = defineEmits<${n.name}Emits>()`] : []),
-		...(kind !== 'form' ? [`defineSlots<${n.name}Slots>()`] : []),
+		...(kind !== 'display' ? [`const emit = defineEmits<${n.name}Emits>()`, ''] : []),
+		...(kind !== 'form' ? [`defineSlots<${n.name}Slots>()`, ''] : []),
+		`const { ${returned} } = use${n.name}(props${kind === 'display' ? '' : ', emit'})`,
+		'</script>',
 		'',
-		`const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('${n.kebab}', props, ${keys})`,
 	]
 	if (kind === 'display') {
 		return [
@@ -145,12 +198,7 @@ function vueTemplate(n, kind) {
 			'\t</div>',
 			'</template>',
 			'',
-			'<script setup lang="ts">',
-			...imports,
-			'',
-			...setup,
-			'</script>',
-			'',
+			...script,
 		].join('\n')
 	}
 	if (kind === 'interactive') {
@@ -167,16 +215,7 @@ function vueTemplate(n, kind) {
 			'\t</button>',
 			'</template>',
 			'',
-			'<script setup lang="ts">',
-			...imports,
-			'',
-			...setup,
-			'',
-			'function handleClick(e: MouseEvent): void {',
-			"\temit('click', e)",
-			'}',
-			'</script>',
-			'',
+			...script,
 		].join('\n')
 	}
 	return [
@@ -200,20 +239,7 @@ function vueTemplate(n, kind) {
 		'\t</div>',
 		'</template>',
 		'',
-		'<script setup lang="ts">',
-		...imports,
-		'',
-		...setup,
-		'',
-		'const controlId = useId()',
-		'const errorId = `${controlId}-error`',
-		'const describedBy = computed(() => (props.error ? errorId : undefined))',
-		'',
-		'function handleInput(event: Event): void {',
-		"\temit('update:modelValue', (event.target as HTMLInputElement).value)",
-		'}',
-		'</script>',
-		'',
+		...script,
 	].join('\n')
 }
 
@@ -324,197 +350,248 @@ function styleTemplate(n, kind, variants) {
 	].join('\n')
 }
 
-function storiesTemplate(n, kind, variants, flags) {
-	const helpers = ['ARG_GROUP', 'baseArgTypes', 'propGroup', 'SIZE_PRESETS', 'sizeLabel', 'useArgsWithoutSlots']
-	if (kind !== 'form') helpers.push('slotArgType')
-	if (kind === 'form') helpers.push('useModelArg')
-	if (kind === 'interactive') helpers.push('tabTo')
-	helpers.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
+function storyFile(n, story) {
+	const description = `parameters: { docs: { description: { story: '${story.description}' } }${story.parameters ? `, ${story.parameters}` : ''} },`
+	return [
+		...story.imports,
+		`import type meta from '../${n.name}.stories'`,
+		"import type { StoryObj } from '@storybook/vue3-vite'",
+		'',
+		`export const ${story.name}: StoryObj<typeof meta> = {`,
+		`\t${description}`,
+		...story.body,
+		'}',
+		'',
+	].join('\n')
+}
 
+function storiesTemplate(n, kind, variants, flags) {
 	const argTypes = {
 		display: [
-			"\t\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
-			"\t\tdefault: slotArgType('Содержимое (заменяет label)'),",
+			"\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
+			"\tdefault: slotArgType('Содержимое (заменяет label)'),",
 		],
 		interactive: [
-			"\t\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
-			"\t\tisDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },",
-			"\t\tdefault: slotArgType('Содержимое (заменяет label)'),",
+			"\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
+			"\tisDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },",
+			"\tdefault: slotArgType('Содержимое (заменяет label)'),",
 		],
 		form: [
-			"\t\tmodelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },",
-			"\t\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
-			"\t\tplaceholder: { control: 'text', table: propGroup(ARG_GROUP.content) },",
-			"\t\terror: { control: 'text', table: propGroup(ARG_GROUP.state) },",
-			"\t\tisDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },",
+			"\tmodelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },",
+			"\tlabel: { control: 'text', table: propGroup(ARG_GROUP.content) },",
+			"\tplaceholder: { control: 'text', table: propGroup(ARG_GROUP.content) },",
+			"\terror: { control: 'text', table: propGroup(ARG_GROUP.state) },",
+			"\tisDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },",
 		],
 	}[kind]
 	const args = {
-		display: ["\t\tlabel: 'Пример',"],
-		interactive: ["\t\tlabel: 'Пример',", '\t\tisDisabled: false,', '\t\tonClick: fn(),'],
-		form: ["\t\tmodelValue: '',", "\t\tlabel: 'Название',", "\t\tplaceholder: 'Введите название',", '\t\tisDisabled: false,'],
+		display: ["\tlabel: 'Пример',"],
+		interactive: ["\tlabel: 'Пример',", '\tisDisabled: false,', '\tonClick: fn(),'],
+		form: ["\tmodelValue: '',", "\tlabel: 'Название',", "\tplaceholder: 'Введите название',", '\tisDisabled: false,'],
 	}[kind]
-	const itemLabel = kind === 'form' ? ':label="variant"' : ':label="variant"'
+	const argTypesHelpers = ['ARG_GROUP', 'baseArgTypes', 'propGroup', ...(kind === 'form' ? [] : ['slotArgType'])]
+	const metaType = `Meta<typeof ${n.name}>`
+	const componentType = `import type ${n.name} from '../ui/${n.name}.vue'`
+	const component = `import ${n.name} from '../../ui/${n.name}.vue'`
 
-	const lines = [
-		'/**',
-		` * ${n.name} — stories.`,
-		' *',
-		' * Разделы: Default (песочница) → внешний вид (варианты, размеры, кастомный цвет) → состояния → сценарии.',
-		' */',
-		'',
-		`import { expect${kind === 'interactive' ? ', fn' : ''} } from 'storybook/test'`,
-		`import { ${helpers.join(', ')} } from '@/stories/helpers'`,
-		`import { ${n.constName} } from '../types/${n.name}.types'`,
-		`import ${n.name} from '../ui/${n.name}.vue'`,
-		"import type { Meta, StoryObj } from '@storybook/vue3-vite'",
-		'',
-		'const meta = {',
-		`\ttitle: '${n.title}',`,
-		`\tcomponent: ${n.name},`,
-		'\tparameters: {',
-		'\t\tdocs: {',
-		'\t\t\tdescription: {',
-		`\t\t\t\tcomponent: ['${TODO}: назначение компонента и когда его использовать.', '', '- Варианты, размеры при \`sizeScale\` = 100, доступность.'].join('\\n'),`,
-		'\t\t\t},',
-		'\t\t},',
-		'\t},',
-		'\targTypes: {',
-		`\t\t...baseArgTypes({ variants: ${n.constName} }),`,
-		...argTypes,
-		'\t},',
-		'\targs: {',
-		...args,
-		"\t\tvariant: 'default',",
-		'\t\tsizeScale: 100,',
-		'\t},',
-		`} satisfies Meta<typeof ${n.name}>`,
-		'',
-		'export default meta',
-		'type Story = StoryObj<typeof meta>',
-		'',
-		'// ─── Default ───────────────────────────────────────────────────────────────────',
-		'',
+	const defaultStory = {
+		display: {
+			description: 'Песочница: меняйте props в панели Controls.',
+			imports: ["import { expect } from 'storybook/test'"],
+			body: ['\tplay: async ({ canvas }) => {', "\t\tawait expect(canvas.getByText('Пример')).toBeVisible()", '\t},'],
+		},
+		interactive: {
+			description: 'Песочница: меняйте props в панели Controls. Элемент достижим клавишей Tab и срабатывает по Enter.',
+			imports: ["import { expect } from 'storybook/test'", "import { tabTo } from '@/stories/helpers'"],
+			body: [
+				'\tplay: async ({ canvas, userEvent, args }) => {',
+				"\t\tconst control = canvas.getByRole('button', { name: 'Пример' })",
+				'\t\tawait tabTo(control, userEvent)',
+				"\t\tawait userEvent.keyboard('{Enter}')",
+				'\t\tawait expect(args.onClick).toHaveBeenCalledOnce()',
+				'\t},',
+			],
+		},
+		form: {
+			description: 'Песочница: v-model связан с Controls — введённый текст появляется в панели.',
+			imports: ["import { expect } from 'storybook/test'", "import { useModelArg } from '@/stories/helpers'", component],
+			body: [
+				'\trender: args => {',
+				'\t\tconst onUpdate = useModelArg()',
+				'\t\treturn {',
+				`\t\t\tcomponents: { ${n.name} },`,
+				'\t\t\tsetup: () => ({ args, onUpdate }),',
+				`\t\t\ttemplate: '<${n.name} v-bind="args" @update:model-value="onUpdate" />',`,
+				'\t\t}',
+				'\t},',
+				'\tplay: async ({ canvas, userEvent }) => {',
+				"\t\tconst field = canvas.getByLabelText('Название')",
+				'\t\tawait userEvent.tab()',
+				'\t\tawait expect(field).toHaveFocus()',
+				"\t\tawait userEvent.type(field, 'Отчёт')",
+				"\t\tawait expect(field).toHaveValue('Отчёт')",
+				'\t},',
+			],
+		},
+	}[kind]
+
+	const stories = [
+		{ name: 'Default', ...defaultStory },
+		{
+			name: 'Variants',
+			description: 'Все варианты оформления. Размер из Controls применяется ко всем.',
+			parameters: "controls: { include: ['sizeScale'] }",
+			imports: [
+				component,
+				"import { useArgsWithoutSlots } from '@/stories/helpers'",
+				`import { ${n.constName} } from '../../types/${n.name}.types'`,
+			],
+			body: [
+				'\trender: args => ({',
+				`\t\tcomponents: { ${n.name} },`,
+				`\t\tsetup: () => ({ props: useArgsWithoutSlots(args), variants: ${n.constName} }),`,
+				`\t\ttemplate: '<div class="story-row"><${n.name} v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :label="variant" /></div>',`,
+				'\t}),',
+			],
+		},
+		{
+			name: 'Sizes',
+			description: 'Размеры через `sizeScale`: 75 / 87.5 / 100 / 112.5 / 125.',
+			parameters: "controls: { include: ['variant'] }",
+			imports: [component, "import { SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'"],
+			body: [
+				'\trender: args => ({',
+				`\t\tcomponents: { ${n.name} },`,
+				'\t\tsetup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),',
+				`\t\ttemplate: '<div class="story-row"><${n.name} v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',`,
+				'\t}),',
+			],
+		},
+		{
+			name: 'CustomColor',
+			description: 'Кастомный цвет через `color`. Для статусов берите токены ролей: `var(--rise-success-soft)`.',
+			imports: ["import { expect } from 'storybook/test'"],
+			body: [
+				"\targs: { color: { bg: { base: '#6d28d9' }, text: { base: '#ffffff' } } },",
+				'\tplay: async ({ canvasElement }) => {',
+				`\t\tconst element = canvasElement.querySelector('${kind === 'form' ? `.${n.kebab}__control` : `.${n.kebab}`}') as HTMLElement`,
+				"\t\tawait expect(getComputedStyle(element).backgroundColor).toBe('rgb(109, 40, 217)')",
+				'\t},',
+			],
+		},
 	]
-
-	if (kind === 'display') {
-		lines.push(
-			'/** Песочница: меняйте props в панели Controls. */',
-			'export const Default: Story = {',
-			'\tplay: async ({ canvas }) => {',
-			"\t\tawait expect(canvas.getByText('Пример')).toBeVisible()",
-			'\t},',
-			'}',
-		)
-	} else if (kind === 'interactive') {
-		lines.push(
-			'/** Песочница: меняйте props в панели Controls. Элемент достижим клавишей Tab и срабатывает по Enter. */',
-			'export const Default: Story = {',
-			'\tplay: async ({ canvas, userEvent, args }) => {',
-			"\t\tconst control = canvas.getByRole('button', { name: 'Пример' })",
-			'\t\tawait tabTo(control, userEvent)',
-			"\t\tawait userEvent.keyboard('{Enter}')",
-			'\t\tawait expect(args.onClick).toHaveBeenCalledOnce()',
-			'\t},',
-			'}',
-		)
-	} else {
-		lines.push(
-			'/** Песочница: v-model связан с Controls — введённый текст появляется в панели. */',
-			'export const Default: Story = {',
-			'\trender: args => {',
-			'\t\tconst onUpdate = useModelArg()',
-			'\t\treturn {',
-			`\t\t\tcomponents: { ${n.name} },`,
-			'\t\t\tsetup: () => ({ args, onUpdate }),',
-			`\t\t\ttemplate: '<${n.name} v-bind="args" @update:model-value="onUpdate" />',`,
-			'\t\t}',
-			'\t},',
-			'\tplay: async ({ canvas, userEvent }) => {',
-			"\t\tconst field = canvas.getByLabelText('Название')",
-			'\t\tawait userEvent.tab()',
-			'\t\tawait expect(field).toHaveFocus()',
-			"\t\tawait userEvent.type(field, 'Отчёт')",
-			"\t\tawait expect(field).toHaveValue('Отчёт')",
-			'\t},',
-			'}',
-		)
-	}
-
-	lines.push(
-		'',
-		'// ─── Внешний вид ───────────────────────────────────────────────────────────────',
-		'',
-		'/** Все варианты оформления. Размер из Controls применяется ко всем. */',
-		'export const Variants: Story = {',
-		"\tparameters: { controls: { include: ['sizeScale'] } },",
-		'\trender: args => ({',
-		`\t\tcomponents: { ${n.name} },`,
-		`\t\tsetup: () => ({ props: useArgsWithoutSlots(args), variants: ${n.constName} }),`,
-		`\t\ttemplate: '<div class="story-row"><${n.name} v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" ${itemLabel} /></div>',`,
-		'\t}),',
-		'}',
-		'',
-		'/** Размеры через `sizeScale`: 75 / 87.5 / 100 / 112.5 / 125. */',
-		'export const Sizes: Story = {',
-		"\tparameters: { controls: { include: ['variant'] } },",
-		'\trender: args => ({',
-		`\t\tcomponents: { ${n.name} },`,
-		'\t\tsetup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),',
-		`\t\ttemplate: '<div class="story-row"><${n.name} v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',`,
-		'\t}),',
-		'}',
-		'',
-		'/** Кастомный цвет через `color`. Для статусов берите токены ролей: `var(--rise-success-soft)`. */',
-		'export const CustomColor: Story = {',
-		"\targs: { color: { bg: { base: '#6d28d9' }, text: { base: '#ffffff' } } },",
-		'\tplay: async ({ canvasElement }) => {',
-		`\t\tconst element = canvasElement.querySelector('${kind === 'form' ? `.${n.kebab}__control` : `.${n.kebab}`}') as HTMLElement`,
-		"\t\tawait expect(getComputedStyle(element).backgroundColor).toBe('rgb(109, 40, 217)')",
-		'\t},',
-		'}',
-	)
-
 	if (kind !== 'display') {
-		lines.push(
-			'',
-			'// ─── Состояния ─────────────────────────────────────────────────────────────────',
-			'',
-			`/** Отключённ${kind === 'form' ? 'ое поле' : 'ый элемент'}: не получает фокус и не реагирует на ввод. */`,
-			'export const Disabled: Story = {',
-			'\targs: { isDisabled: true },',
-			'\tplay: async ({ canvas }) => {',
-			kind === 'form'
-				? "\t\tawait expect(canvas.getByLabelText('Название')).toBeDisabled()"
-				: "\t\tawait expect(canvas.getByRole('button', { name: 'Пример' })).toBeDisabled()",
-			'\t},',
-			'}',
-		)
+		stories.push({
+			name: 'Disabled',
+			description: `Отключённ${kind === 'form' ? 'ое поле' : 'ый элемент'}: не получает фокус и не реагирует на ввод.`,
+			imports: ["import { expect } from 'storybook/test'"],
+			body: [
+				'\targs: { isDisabled: true },',
+				'\tplay: async ({ canvas }) => {',
+				kind === 'form'
+					? "\t\tawait expect(canvas.getByLabelText('Название')).toBeDisabled()"
+					: "\t\tawait expect(canvas.getByRole('button', { name: 'Пример' })).toBeDisabled()",
+				'\t},',
+			],
+		})
 	}
 	if (kind === 'form') {
-		lines.push(
-			'',
-			'/** Ошибка: текст под полем связан с ним через `aria-describedby`, поле помечено `aria-invalid`. */',
-			'export const WithError: Story = {',
-			"\targs: { error: 'Заполните название' },",
-			'\tplay: async ({ canvas }) => {',
-			"\t\tconst field = canvas.getByLabelText('Название')",
-			"\t\tawait expect(field).toHaveAccessibleDescription('Заполните название')",
-			"\t\tawait expect(field).toHaveAttribute('aria-invalid', 'true')",
-			'\t},',
-			'}',
-		)
+		stories.push({
+			name: 'WithError',
+			description: 'Ошибка: текст под полем связан с ним через `aria-describedby`, поле помечено `aria-invalid`.',
+			imports: ["import { expect } from 'storybook/test'"],
+			body: [
+				"\targs: { error: 'Заполните название' },",
+				'\tplay: async ({ canvas }) => {',
+				"\t\tconst field = canvas.getByLabelText('Название')",
+				"\t\tawait expect(field).toHaveAccessibleDescription('Заполните название')",
+				"\t\tawait expect(field).toHaveAttribute('aria-invalid', 'true')",
+				'\t},',
+			],
+		})
 	}
 	const stubs = [
 		flags.loading && ['Loading', 'состояние загрузки'],
 		flags.empty && ['Empty', 'пустое состояние'],
 		flags.long && ['LongContent', 'длинное содержимое: перенос или обрезка, ширина не больше контейнера'],
 	].filter(Boolean)
-	for (const [story, description] of stubs) {
-		lines.push('', `/** ${TODO}: ${description}. */`, `export const ${story}: Story = {}`)
-	}
-	lines.push('')
-	return lines.join('\n')
+	for (const [name, description] of stubs) stories.push({ name, description: `${TODO}: ${description}.`, imports: [], body: [] })
+
+	const files = [
+		[
+			`stories/${n.name}.stories.ts`,
+			[
+				"import * as cases from './cases'",
+				"import { args } from './args'",
+				"import { argTypes } from './argTypes'",
+				"import { parameters } from './parameters'",
+				`import ${n.name} from '../ui/${n.name}.vue'`,
+				"import type { Meta } from '@storybook/vue3-vite'",
+				'',
+				'const meta = {',
+				`\ttitle: '${n.title}',`,
+				`\tcomponent: ${n.name},`,
+				'\tparameters,',
+				'\targTypes,',
+				'\targs,',
+				`} satisfies ${metaType}`,
+				'',
+				'export default meta',
+				'',
+				...stories.map(story => `export const ${story.name} = cases.${story.name}`),
+				'',
+			].join('\n'),
+		],
+		[
+			'stories/parameters.ts',
+			[
+				componentType,
+				"import type { Meta } from '@storybook/vue3-vite'",
+				'',
+				'export const parameters = {',
+				'\tdocs: {',
+				'\t\tdescription: {',
+				`\t\t\tcomponent: ['${TODO}: назначение компонента и когда его использовать.', '', '- Варианты, размеры при \`sizeScale\` = 100, доступность.'].join('\\n'),`,
+				'\t\t},',
+				'\t},',
+				`} satisfies ${metaType}['parameters']`,
+				'',
+			].join('\n'),
+		],
+		[
+			'stories/argTypes.ts',
+			[
+				componentType,
+				"import type { Meta } from '@storybook/vue3-vite'",
+				`import { ${n.constName} } from '../types/${n.name}.types'`,
+				`import { ${argTypesHelpers.join(', ')} } from '@/stories/helpers'`,
+				'',
+				'export const argTypes = {',
+				`\t...baseArgTypes({ variants: ${n.constName} }),`,
+				...argTypes,
+				`} satisfies ${metaType}['argTypes']`,
+				'',
+			].join('\n'),
+		],
+		[
+			'stories/args.ts',
+			[
+				...(kind === 'interactive' ? ["import { fn } from 'storybook/test'"] : []),
+				componentType,
+				"import type { Meta } from '@storybook/vue3-vite'",
+				'',
+				'export const args = {',
+				...args,
+				"\tvariant: 'default',",
+				'\tsizeScale: 100,',
+				`} satisfies ${metaType}['args']`,
+				'',
+			].join('\n'),
+		],
+		['stories/cases/index.ts', `${stories.map(story => `export { ${story.name} } from './${story.name}'`).join('\n')}\n`],
+		...stories.map(story => [`stories/cases/${story.name}.ts`, storyFile(n, story)]),
+	]
+	return files
 }
 
 function unitSpecTemplate(n, kind) {
@@ -753,8 +830,9 @@ function main() {
 		[join(dir, 'index.ts'), indexTemplate(n, options.kind)],
 		[join(dir, `types/${n.name}.types.ts`), typesTemplate(n, options.kind, variants)],
 		[join(dir, `ui/${n.name}.vue`), vueTemplate(n, options.kind)],
+		[join(dir, `model/use${n.name}.ts`), modelTemplate(n, options.kind)],
 		[join(dir, `styles/${n.name}.style.scss`), styleTemplate(n, options.kind, variants)],
-		[join(dir, `stories/${n.name}.stories.ts`), storiesTemplate(n, options.kind, variants, flags)],
+		...storiesTemplate(n, options.kind, variants, flags).map(([path, content]) => [join(dir, path), content]),
 		[join(dir, `__tests__/${n.name}.spec.ts`), unitSpecTemplate(n, options.kind)],
 		[join(dir, `__tests__/${n.name}.integration.spec.ts`), integrationSpecTemplate(n, options.kind)],
 		[join(dir, `__tests__/${n.name}.visual.spec.ts`), visualSpecTemplate(n, options.kind)],

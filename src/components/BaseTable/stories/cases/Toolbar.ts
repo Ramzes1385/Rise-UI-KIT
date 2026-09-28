@@ -1,0 +1,65 @@
+import type meta from '../BaseTable.stories'
+import BaseTable from '../../ui/BaseTable.vue'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
+import { toRows, ORDERS, bodyRows } from '../shared'
+import type { StoryObj } from '@storybook/vue3-vite'
+import { waitFor, expect, screen } from 'storybook/test'
+import { useArgsWithoutSlots, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
+
+export const Toolbar: StoryObj<typeof meta> = {
+	args: {
+		rows: toRows(ORDERS.slice(0, 6)),
+		features: { search: true, filters: true, columnSettings: true },
+		searchDebounce: 0,
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: [
+					'Тулбар: поиск по всем полям (`features.search`), фильтр «колонка — условие — значение» (`features.filters`),',
+					'видимость колонок (`features.columnSettings`) и свои элементы в слотах `toolbar-prepend` / `toolbar-append`.',
+					'Поля и кнопки — 32px в один ряд. Панель «Колонки» ставит фокус на первый чекбокс, Escape возвращает его на кнопку.',
+				].join('\n'),
+			},
+			source: {
+				code: [
+					'<BaseTable :columns="columns" :rows="rows" :features="{ search: true, filters: true, columnSettings: true }">',
+					'  <template #toolbar-append>',
+					'    <BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Экспорт</BaseButton>',
+					'  </template>',
+					'</BaseTable>',
+				].join('\n'),
+			},
+		},
+	},
+	render: args => ({
+		components: { BaseTable, BaseButton, BaseIcon },
+		setup: () => ({ props: useArgsWithoutSlots(args) }),
+		template: `
+			<BaseTable v-bind="props">
+				<template #toolbar-append>
+					<BaseButton variant="outline">
+						<template #left><BaseIcon name="download" :size-scale="80" /></template>
+						Экспорт
+					</BaseButton>
+				</template>
+			</BaseTable>
+		`,
+	}),
+	play: async ({ canvas, userEvent, args }) => {
+		await userEvent.type(canvas.getByLabelText('Поиск по таблице'), 'Москва')
+		await waitFor(() => expect(bodyRows(canvas.getByRole('table'))).toHaveLength(2))
+		await waitFor(() => expect(args.onSearch).toHaveBeenLastCalledWith('Москва'))
+
+		const columnsButton = canvas.getByRole('button', { name: 'Колонки' })
+		await userEvent.click(columnsButton)
+		await expect(columnsButton).toHaveAttribute('aria-expanded', 'true')
+		const cityOption = await screen.findByRole('checkbox', { name: 'Город' }, { timeout: STORY_WAIT_TIMEOUT })
+		await userEvent.click(cityOption)
+		await expect(canvas.queryByRole('columnheader', { name: 'Город' })).not.toBeInTheDocument()
+		await userEvent.keyboard('{Escape}')
+		await expect(columnsButton).toHaveFocus()
+		await expect(columnsButton).toHaveAttribute('aria-expanded', 'false')
+	},
+}

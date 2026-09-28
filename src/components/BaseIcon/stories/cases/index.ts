@@ -1,0 +1,6 @@
+export { Default } from './Default'
+export { Gallery } from './Gallery'
+export { Sizes } from './Sizes'
+export { CustomColor } from './CustomColor'
+export { Transform } from './Transform'
+export { AriaLabel } from './AriaLabel'

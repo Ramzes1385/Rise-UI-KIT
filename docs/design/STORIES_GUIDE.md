@@ -1,40 +1,63 @@
 # Как писать stories
 
-Stories — одновременно документация (вкладка Docs), песочница (Controls) и проверки: play-функции, visual- и e2e-тесты открывают stories по id. Все файлы `*.stories.ts` устроены одинаково, чтобы было сразу видно, какая story за что отвечает. Эталоны: `BaseButton.stories.ts` (действие) и `BaseInput.stories.ts` (поле с v-model).
+Stories — одновременно документация (вкладка Docs), песочница (Controls) и проверки: play-функции, visual- и e2e-тесты открывают stories по id. Все папки `stories/` устроены одинаково, чтобы было сразу видно, какая story за что отвечает. Эталоны: `BaseButton/stories/` (действие) и `BaseInput/stories/` (поле с v-model).
 
-## 1. Структура файла
+## 1. Структура папки
+
+Stories компонента лежат в папке `stories/`, у каждого файла одно назначение:
+
+```
+stories/
+├── BaseX.stories.ts   # meta и список stories
+├── parameters.ts      # описание компонента: docs.description.component
+├── argTypes.ts        # таблица props: группы, контролы
+├── args.ts            # значения песочницы
+├── render.ts          # общий render, если есть (раздел 4)
+├── decorators.ts      # декораторы, если есть
+├── shared.ts          # данные и хелперы, нужные нескольким stories
+└── cases/
+    ├── Default.ts     # одна story на файл
+    └── index.ts       # реэкспорт stories
+```
 
 ```ts
-/**
- * BaseX — stories.
- * (1–3 строки: какие разделы есть и что в них.)
- */
-
-import { … } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, … } from '@/stories/helpers'
-import { X_VARIANTS } from '../types/BaseX.types'
+// BaseX.stories.ts
+import * as cases from './cases'
+import { args } from './args'
+import { argTypes } from './argTypes'
+import { parameters } from './parameters'
 import BaseX from '../ui/BaseX.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { Meta } from '@storybook/vue3-vite'
 
 const meta = {
   title: '<Раздел>/BaseX',
   component: BaseX,
-  parameters: { docs: { description: { component: '…' } } },
-  argTypes: { …baseArgTypes({ variants: X_VARIANTS }), …props по группам },
-  args: { …значения по умолчанию для песочницы },
-  render: …,                    // для компонентов с v-model — см. раздел 4
+  parameters,
+  argTypes,
+  args,
 } satisfies Meta<typeof BaseX>
 
 export default meta
-type Story = StoryObj<typeof meta>
 
-// ─── Default ─────────   песочница
-// ─── Внешний вид ─────   Variants, Sizes, CustomColor
-// ─── Состояния ───────   Disabled, Loading, WithError, Empty, Readonly…
-// ─── Содержимое ──────   слоты, иконки, LongContent
-// ─── Сценарии ────────   поведение, характерное для компонента
-// ─── Доступность ─────   Keyboard (tags: ['!autodocs'])
+export const Default = cases.Default
+export const Variants = cases.Variants
 ```
+
+```ts
+// cases/Variants.ts
+import type meta from '../BaseX.stories'
+import type { StoryObj } from '@storybook/vue3-vite'
+
+export const Variants: StoryObj<typeof meta> = {
+  parameters: { docs: { description: { story: 'Все варианты оформления…' } } },
+  render: args => ({ … }),
+}
+```
+
+- Каждая story перечислена в `BaseX.stories.ts` строкой `export const X = cases.X`: Storybook читает названия и порядок stories из этого файла статически. С `export { X } from './cases/X'` сайдбар покажет «CustomColor» вместо «Custom Color».
+- Порядок stories: песочница `Default` → внешний вид (Variants, Sizes, CustomColor) → состояния (Disabled, Loading, WithError, Empty, Readonly…) → содержимое (слоты, иконки, LongContent) → сценарии → доступность (`Keyboard` с `tags: ['!autodocs']`).
+- Части meta типизируются через `satisfies Meta<typeof BaseX>['args']`, story — через `StoryObj<typeof meta>`.
+- Комментариев в файлах stories нет: описание story — в `parameters.docs.description.story`, описание компонента — в `parameters.docs.description.component`.
 
 ## 2. Разделы Storybook
 
@@ -58,7 +81,7 @@ type Story = StoryObj<typeof meta>
   - ключевые варианты;
   - важное поведение: доступность, v-model, телепорт;
   - связанные компоненты.
-- **Описание story** — JSDoc-комментарий над экспортом. Первое предложение говорит, что показывает пример. Storybook выводит этот текст над примером в Docs.
+- **Описание story** — `parameters.docs.description.story`. Первое предложение говорит, что показывает пример. Storybook выводит этот текст над примером в Docs. Описание в несколько строк — массив строк с `.join('\n')`.
 - **Props в таблице** сгруппированы по смыслу. Категорию оставляем стандартной (`props`), группу задаём подкатегорией через `propGroup(ARG_GROUP.x)`:
 
   | Группа | Какие props |

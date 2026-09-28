@@ -89,7 +89,14 @@ export default tseslint.config(
 
 	{
 		files: ['src/**/*.{ts,vue}'],
-		ignores: ['src/**/types/*.types.ts', 'src/**/__tests__/**', 'src/**/*.stories.ts', 'src/components/*/stories/**', 'src/**/*.d.ts'],
+		ignores: [
+			'src/**/types/*.types.ts',
+			'src/**/__tests__/**',
+			'src/**/*.stories.ts',
+			'src/components/*/stories/**',
+			'src/stories/foundations/**',
+			'src/**/*.d.ts',
+		],
 		rules: {
 			'no-restricted-syntax': ['error', TYPES_OUTSIDE_TYPES_FOLDER],
 		},
@@ -137,7 +144,7 @@ export default tseslint.config(
 	},
 
 	{
-		files: ['**/*.spec.ts', '**/*.stories.ts', 'src/components/*/stories/**/*.ts'],
+		files: ['**/*.spec.ts', '**/*.stories.ts', 'src/components/*/stories/**/*.ts', 'src/stories/foundations/**/*.ts'],
 		languageOptions: {
 			globals: {
 				describe: 'readonly',

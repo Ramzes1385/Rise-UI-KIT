@@ -1,0 +1,60 @@
+import { ref } from 'vue'
+import { DEMO_TOOLBAR } from '../shared'
+import type meta from '../BaseTour.stories'
+import BaseTour from '../../ui/BaseTour.vue'
+import { BaseButton } from '@components/BaseButton'
+import type { StoryObj } from '@storybook/vue3-vite'
+import { useArgsWithoutSlots, tabTo } from '@/stories/helpers'
+import { screen, within, waitFor, expect } from 'storybook/test'
+
+export const Keyboard: StoryObj<typeof meta> = {
+	parameters: {
+		docs: {
+			description: {
+				story: [
+					'Клавиатура: Enter на кнопке запускает тур, фокус переходит на «Далее»; Tab обходит кнопки карточки по кругу,',
+					'Enter переходит к следующему шагу, Escape пропускает тур и возвращает фокус на кнопку запуска.',
+				].join('\n'),
+			},
+		},
+	},
+	tags: ['!autodocs'],
+	render: args => ({
+		components: { BaseTour, BaseButton },
+		setup: () => ({
+			props: useArgsWithoutSlots(args, ['isOpen', 'step', 'onUpdate:isOpen', 'onUpdate:step']),
+			isOpen: ref(false),
+			step: ref(0),
+		}),
+		template: `
+			<div class="story-stack">
+				${DEMO_TOOLBAR}
+				<div>
+					<BaseButton variant="soft" @click="isOpen = true">Запустить тур</BaseButton>
+				</div>
+			</div>
+			<BaseTour v-bind="props" v-model:is-open="isOpen" v-model:step="step" />
+		`,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const start = canvas.getByRole('button', { name: 'Запустить тур' })
+		await tabTo(start, userEvent)
+		await userEvent.keyboard('{Enter}')
+
+		const dialog = await screen.findByRole('dialog', { name: 'Новый проект' })
+		const next = await within(dialog).findByRole('button', { name: 'Далее' })
+		await waitFor(() => expect(next).toHaveFocus())
+
+		await userEvent.tab()
+		await expect(within(dialog).getByRole('button', { name: 'Пропустить тур' })).toHaveFocus()
+		await userEvent.tab()
+		await expect(next).toHaveFocus()
+
+		await userEvent.keyboard('{Enter}')
+		await expect(await screen.findByRole('dialog', { name: 'Импорт' })).toBeInTheDocument()
+
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+		await expect(start).toHaveFocus()
+	},
+}

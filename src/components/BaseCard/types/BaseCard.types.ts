@@ -34,7 +34,7 @@ export interface BaseCardProps extends BaseComponentProps<
 	scroll?: boolean
 }
 
-interface BaseCardSlotBindings {
+export interface BaseCardSlotBindings {
 	/** Масштаб размера */
 	sizeScale: number
 }
