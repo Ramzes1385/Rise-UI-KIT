@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты отображения поиска */
 export const SEARCH_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'filled', 'underline'] as const

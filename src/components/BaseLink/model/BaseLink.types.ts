@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { LinkComponent, LinkTo } from '@composables/useLink'
 
 /**

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { PaddingProp } from '@composables/usePadding'
 import type { VisiblePageItem } from '@utils/paginationUtils/paginationUtils.types'
 import type { InjectionKey } from 'vue'

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты оформления: те же, что у BaseCheckbox, — вариант получает каждый флажок группы */
 export const CHECKBOX_GROUP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

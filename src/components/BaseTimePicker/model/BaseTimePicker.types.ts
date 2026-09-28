@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '../../../types/base.types'
 import type { InputVariant } from '@components/BaseInput/model/BaseInput.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 
 /** Варианты оформления — как у BaseInput */

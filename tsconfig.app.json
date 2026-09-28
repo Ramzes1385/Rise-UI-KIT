@@ -38,12 +38,6 @@
       "@icons/*": [
         "src/icons/*"
       ],
-      "@plugins": [
-        "src/plugins/index.ts"
-      ],
-      "@plugins/*": [
-        "src/plugins/*"
-      ],
       "@styles": [
         "src/styles/index.scss"
       ],
@@ -69,6 +63,8 @@
     "build/storybook/preview.ts",
     "build/storybook/manager.ts",
     "build/storybook/theme.ts",
-    "build/tests/setup-vitest.ts"
+    "build/tests/setup-vitest.ts",
+    "build/tests/visual.ts",
+    "build/tests/*.spec.ts"
   ]
 }

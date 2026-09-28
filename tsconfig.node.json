@@ -32,6 +32,8 @@
     "build/storybook/preview.ts",
     "build/storybook/manager.ts",
     "build/storybook/theme.ts",
-    "build/tests/setup-vitest.ts"
+    "build/tests/setup-vitest.ts",
+    "build/tests/visual.ts",
+    "build/tests/*.spec.ts"
   ]
 }

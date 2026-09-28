@@ -17,7 +17,6 @@ export function createLibBuildConfig(): BuildOptions {
 				composables: resolve(process.cwd(), 'src/composables/index.ts'),
 				utils: resolve(process.cwd(), 'src/utils/index.ts'),
 				icons: resolve(process.cwd(), 'src/icons/index.ts'),
-				plugins: resolve(process.cwd(), 'src/plugins/index.ts'),
 			},
 			formats: ['es'],
 			cssFileName: 'styles',

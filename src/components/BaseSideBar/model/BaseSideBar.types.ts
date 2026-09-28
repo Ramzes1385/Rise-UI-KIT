@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { PaddingProp } from '@composables/usePadding'
 import type { Component } from 'vue'
 

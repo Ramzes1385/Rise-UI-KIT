@@ -1,11 +1,11 @@
 /**
  * Composable: доступ к SVG-спрайту иконок.
  *
- * Примечание: `createIconPlugin` вынесен в `@plugins/iconPlugin` (SRP — плагин
+ * Примечание: `createIconPlugin` вынесен в `@icons/iconPlugin` (SRP — плагин
  * отдельной ответственности от composable) и реэкспортируется здесь для обратной
  * совместимости публичного API `@composables`.
  */
-export { createIconPlugin } from '@plugins/iconPlugin'
-export type { IconPluginOptions } from '@plugins/iconPlugin'
+export { createIconPlugin } from '@icons/iconPlugin'
+export type { IconPluginOptions } from '@icons/iconPlugin'
 export { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY, useIcon } from './useIcon'
 export type { IconMap, ResolvedIcon, UseIconReturn } from './useIcon.types'

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** У каркаса одно оформление: фон и рамки задают шапка, меню и подвал внутри */
 export const LAYOUT_VARIANTS = ['default'] as const

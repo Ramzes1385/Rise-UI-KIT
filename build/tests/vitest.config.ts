@@ -104,7 +104,7 @@ export default defineConfig({
 					pool: 'forks',
 					testTimeout: 30_000,
 					setupFiles: [path.resolve(dirname, 'setup-vitest.ts')],
-					include: ['src/**/*.spec.ts', 'src/**/*.integration.spec.ts'],
+					include: ['src/**/*.spec.ts', 'src/**/*.integration.spec.ts', 'build/tests/**/*.spec.ts'],
 					exclude: ['src/**/*.visual.spec.ts', 'src/**/*.e2e.spec.ts'],
 				},
 			},

@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '../../../types/base.types'
 import type { ContainerSize } from '@components/BaseContainer'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
  * Варианты оформления BaseFooter: `default` — фон страницы и линия сверху, `soft` — приглушённый фон без линии,

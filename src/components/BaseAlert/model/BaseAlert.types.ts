@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Типы оповещений: определяют цвет (роль), иконку и срочность озвучивания (error/warning — role="alert") */
 export const ALERT_TYPES = ['info', 'success', 'warning', 'error'] as const

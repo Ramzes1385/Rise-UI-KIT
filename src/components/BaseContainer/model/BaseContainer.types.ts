@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** У контейнера одно оформление: он задаёт только ширину и боковые отступы, фона и рамки нет */
 export const CONTAINER_VARIANTS = ['default'] as const

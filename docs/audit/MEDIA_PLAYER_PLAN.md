@@ -50,7 +50,7 @@ Headless-ядро (src/composables):
 
 ```ts
 import type { Ref } from 'vue'
-import type { BaseComponentProps } from '@/types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 type MediaKind = 'video' | 'audio'
 

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты range */
 export const RANGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '../../../types/base.types'
 import type { DropdownMenuItem, DropdownMenuItems } from '@components/BaseDropdownMenu'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты — как у BaseButton: обе кнопки одного варианта */
 export const SPLIT_BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

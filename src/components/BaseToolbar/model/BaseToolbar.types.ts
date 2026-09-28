@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
  * Варианты панели: default — без фона и рамки; ghost — то же без внутреннего отступа; outline — рамка;

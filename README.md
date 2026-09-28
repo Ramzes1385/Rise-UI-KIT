@@ -424,7 +424,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## Публичный API
 
-Компоненты и их типы импортируются из корня пакета. Composables, utils, icons и plugins из корня экспортируются только как namespace (`composables`, `utils`, `icons`, `plugins`) — либо импортируйте их из подпутей пакета:
+Компоненты и их типы импортируются из корня пакета. Composables, utils и icons из корня экспортируются только как namespace (`composables`, `utils`, `icons`) — либо импортируйте их из подпутей пакета:
 
 ```ts
 import { BaseButton, BaseInput, BaseModal, BaseTable, composables, utils } from '@ramzes1385/rise-ui-kit'
@@ -438,7 +438,7 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты.
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons`, `/plugins`, `/styles` (`/styles.css`), `/icons.svg`.
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/styles` (`/styles.css`), `/icons.svg`.
 
 Не рекомендуется импортировать внутренние файлы из `dist` напрямую:
 
@@ -459,14 +459,18 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ```txt
 src/
-  components/      # UI-компоненты
+  components/      # UI-компоненты: index.ts, model/, ui/, styles/, stories/, __tests__/
   composables/     # Vue composables
-  icons/           # иконки и icon registry
-  plugins/         # Vue-плагины (createIconPlugin и др.)
-  styles/          # глобальные стили
+  constants/       # общие константы
+  icons/           # SVG-иконки, спрайт и createIconPlugin
+  locales/         # словари ru и en
+  stories/         # вводная страница и Foundations в Storybook, хелперы stories
+  styles/          # глобальные стили и токены
   utils/           # утилиты
-  plugin.ts        # Vue plugin
+  plugin.ts        # Vue-плагин createUiKitPlugin
   index.ts         # главный публичный API
+
+Тесты лежат в `__tests__` своей папки; тесты пакета целиком (границы входов, плагин) — в `build/tests/`.
 
 build/
   config/          # общие части Vite-конфигов: алиасы, SCSS, сборка библиотеки
@@ -2650,7 +2654,7 @@ createApp(App).use(createUiKitPlugin({ iconSpritePath: iconSpriteUrl })).mount('
 // main.ts: только иконки — глобальный BaseIcon без остальных компонентов
 import { createApp } from 'vue'
 import App from './App.vue'
-import { createIconPlugin } from '@ramzes1385/rise-ui-kit/plugins'
+import { createIconPlugin } from '@ramzes1385/rise-ui-kit/icons'
 
 createApp(App).use(createIconPlugin({ spritePath: '/icons.svg' })).mount('#app')
 ```
@@ -2712,10 +2716,10 @@ dist/components.js
 dist/composables.js
 dist/utils.js
 dist/icons.js
-dist/plugins.js
 dist/index.d.ts
 dist/plugin.d.ts
 dist/styles.css
+dist/styles.d.ts
 dist/icons.svg
 ```
 

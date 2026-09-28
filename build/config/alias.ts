@@ -20,7 +20,6 @@ export function createAliasConfig(): AliasOptions {
 		'@composables': resolveFromRoot(SOURCE_DIR, 'composables'),
 		'@constants': resolveFromRoot(SOURCE_DIR, 'constants'),
 		'@icons': resolveFromRoot(SOURCE_DIR, 'icons'),
-		'@plugins': resolveFromRoot(SOURCE_DIR, 'plugins'),
 		'@styles': resolveFromRoot(SOURCE_DIR, 'styles'),
 		'@utils': resolveFromRoot(SOURCE_DIR, 'utils'),
 	}

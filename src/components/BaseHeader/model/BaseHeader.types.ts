@@ -1,6 +1,6 @@
-import type { BaseComponentProps } from '../../../types/base.types'
 import type { ContainerSize } from '@components/BaseContainer'
 import type { DrawerDirection } from '@components/BaseDrawer'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { LinkTo } from '@composables/useLink'
 
 /**

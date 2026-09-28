@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '../../../types/base.types'
 import type { FabPosition } from '@components/BaseFab'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты — как у BaseFab: `default` — заливка основным цветом, `soft` — мягкий цвет, `outline` — фон и рамка */
 export const BACK_TOP_VARIANTS = ['default', 'soft', 'outline'] as const

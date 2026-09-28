@@ -497,7 +497,9 @@ src/components/BaseComponent/
 - Composable, который открывает конкретный компонент (`useConfirm` → BaseConfirm), лежит в папке этого компонента
   и экспортируется из её `index.ts`. В `src/composables/` — только composables без импорта компонентов (импорт типов
   компонентов допустим): иначе вход `@ramzes1385/rise-ui-kit/composables` тянул бы за собой код компонентов.
-- Тест composable лежит рядом с ним: `src/composables/useXxx/useXxx.spec.ts`.
+- Тесты лежат в `__tests__` своей папки: `src/composables/useXxx/__tests__/useXxx.spec.ts`,
+  `src/utils/xxxUtils/__tests__/xxxUtils.spec.ts`, `src/locales/__tests__/…`. Тесты пакета целиком (границы входов,
+  `createUiKitPlugin`) и хелпер скриншотных тестов — в `build/tests/`.
 - Props: `withDefaults(defineProps<BaseComponentProps>(), {...})` — без inline-типов
 - Emits: `defineEmits<BaseComponentEmits>()` — без inline-типов
 - Defaults: через `withDefaults`, не через `computed` fallback

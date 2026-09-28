@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '../../../types/base.types'
 import type { DropdownPosition } from '@components/BaseDropdown/model/BaseDropdown.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
  * Варианты панели меню — те же, что у BaseDropdown: default — рамка и тень; outline — рамка заметнее, без тени;

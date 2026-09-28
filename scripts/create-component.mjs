@@ -114,7 +114,7 @@ function typesTemplate(n, kind, variants) {
 	const slotLine = kind === 'form' ? null : ['\t/** Содержимое вместо label */', '\tdefault?: () => unknown']
 	const keys = kind === 'form' ? "'root' | 'label' | 'control' | 'error'" : "'root'"
 	return [
-		"import type { BaseComponentProps } from '../../../types/base.types'",
+		"import type { BaseComponentProps } from '@composables/useBaseComponent'",
 		'',
 		'/**',
 		` * Варианты оформления ${n.name}. ${TODO}: опишите, чем отличаются варианты.`,
@@ -694,7 +694,7 @@ function visualSpecTemplate(n, kind) {
 		' */',
 		'',
 		"import { test } from '@playwright/test'",
-		"import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'",
+		"import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'",
 		'',
 		`const STORIES = [${stories.map(story => `'${story}'`).join(', ')}] as const`,
 		'',

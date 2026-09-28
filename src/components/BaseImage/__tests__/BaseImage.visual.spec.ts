@@ -5,7 +5,7 @@
  */
 
 import { test } from '@playwright/test'
-import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
 const STORIES = ['fits', 'border-radius', 'custom-color', 'with-error'] as const
 const PAGE_STORIES = ['gallery'] as const

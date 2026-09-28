@@ -161,11 +161,11 @@ Stories, которые нужны только как проверка (кла�
 
 ## 9. Visual- и e2e-тесты
 
-**Visual-тест компонента** (`__tests__/BaseX.visual.spec.ts`) снимает 3–6 ключевых stories в двух темах через `src/__tests__/visual.ts`:
+**Visual-тест компонента** (`__tests__/BaseX.visual.spec.ts`) снимает 3–6 ключевых stories в двух темах через `build/tests/visual.ts`:
 
 ```ts
 import { test } from '@playwright/test'
-import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
 const STORIES = ['variants', 'sizes', 'disabled'] as const
 

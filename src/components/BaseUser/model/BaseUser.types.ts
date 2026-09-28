@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Вариант оформления один: вид задают аватар и текст */
 export const USER_VARIANTS = ['default'] as const

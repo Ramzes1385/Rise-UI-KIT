@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FormIssue, FormValidationResult, StandardSchemaV1 } from '@utils/formUtils'
 
 /** Варианты отображения формы */

@@ -364,6 +364,15 @@
 - `BaseTable`: `isVirtual` и `rowHeight` — виртуальная прокрутка вместе с `height`; в этом режиме таблица получает `aria-rowcount`, строки — `aria-rowindex`, в `tbody` появляются распорки (`tr.base-table__spacer`, `aria-hidden`). Без `height` режим не включается.
 - `BaseTree`: `isVirtual`, `height`, `itemSize` — дерево рисуется плоским списком `treeitem` с `aria-level`, `aria-setsize`, `aria-posinset` (без `role="group"` и анимации раскрытия); стрелки и Home/End к неотрисованному узлу прокручивают к нему.
 
+## Структура исходников
+
+- `createIconPlugin` переехал в `src/icons/`: импорт из `@ramzes1385/rise-ui-kit/icons` (или namespace `icons` из корня
+  пакета). Подпуть `@ramzes1385/rise-ui-kit/plugins` и namespace `plugins` удалены; импорт из `/composables` сохранён.
+- Тип `BaseComponentProps` (общие `variant`, `sizeScale`, `color`, `customClass`) экспортируется из composable
+  `useBaseComponent` (namespace `composables`); папки `src/types` больше нет.
+- Типы для `import '@ramzes1385/rise-ui-kit/styles'` теперь в `dist/styles.d.ts` (раньше — `types/styles.d.ts` в корне пакета).
+- Для разработчиков кита: тесты лежат в `__tests__` своей папки, тесты пакета целиком — в `build/tests/`.
+
 ## Новые утилиты
 
 | Функция | Назначение |

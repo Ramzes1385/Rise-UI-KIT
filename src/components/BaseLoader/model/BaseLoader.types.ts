@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
  * Вид индикатора: `spinner` — вращающаяся дуга, `dots` — три точки, `pulse` — точка с расходящимся кольцом, `bars` — столбики.

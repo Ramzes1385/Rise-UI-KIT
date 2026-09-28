@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты оформления: `default` — линия с ручкой, `ghost` — линия проявляется при наведении и в фокусе */
 export const SPLITTER_VARIANTS = ['default', 'ghost'] as const

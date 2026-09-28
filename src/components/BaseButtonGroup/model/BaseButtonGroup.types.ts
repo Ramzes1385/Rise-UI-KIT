@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Вариант оформления один: вид задают кнопки внутри */
 export const BUTTON_GROUP_VARIANTS = ['default'] as const

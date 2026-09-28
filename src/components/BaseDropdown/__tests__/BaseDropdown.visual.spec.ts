@@ -4,7 +4,7 @@
  */
 
 import { test } from '@playwright/test'
-import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../__tests__/visual'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
 const STORIES = ['variants', 'custom-color', 'empty', 'long-content', 'positions'] as const
 

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты: default — текст с пунктирным подчёркиванием, наведение — фон; ghost — только текст, наведение — фон */
 export const INPLACE_VARIANTS = ['default', 'ghost'] as const

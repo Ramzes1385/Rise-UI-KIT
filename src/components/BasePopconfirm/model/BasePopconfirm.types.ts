@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты панели — те же, что у BaseDropdown и BasePopover */
 export const POPCONFIRM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

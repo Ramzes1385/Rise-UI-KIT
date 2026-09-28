@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** У панели одно оформление: фон и текст меняет `color` */
 export const DRAWER_VARIANTS = ['default'] as const

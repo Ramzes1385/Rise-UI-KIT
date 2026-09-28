@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../types/base.types'
+import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты отображения радиокнопки */
 export const RADIO_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'bordered'] as const
