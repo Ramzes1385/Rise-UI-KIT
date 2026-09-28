@@ -95,21 +95,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRef, useId } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormField } from '@composables/useFormField'
-import { useFieldControl } from '@composables/useFormContext'
-import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseInput } from '../model/useBaseInput'
 import '../styles/BaseInput.style.scss'
-import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../types/BaseInput.types'
+import type { BaseInputEmits, BaseInputProps, BaseInputSlots } from '../types/BaseInput.types'
 
 const props = withDefaults(
 	defineProps<BaseInputProps>(),
@@ -126,101 +122,31 @@ const props = withDefaults(
 		mask: '',
 	}),
 )
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-input', props, [
-	'root',
-	'label',
-	'required',
-	'wrapper',
-	'prefix',
-	'field',
-	'passwordToggle',
-	'passwordIcon',
-	'postfix',
-	'passwordRules',
-	'passwordRule',
-	'passwordRuleIcon',
-	'errorText',
-])
-
 const emit = defineEmits<BaseInputEmits>()
 defineSlots<BaseInputSlots>()
-const inputRef = ref<HTMLInputElement | null>(null)
-/** id текста ошибки: поле описано ею через aria-describedby */
-const errorId = `${useId()}-error`
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-/** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */
-const control = useFieldControl({
-	id: () => props.inputAttrs?.id as string | undefined,
-	describedBy: () =>
-		[formField.error ? errorId : undefined, props.inputAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
-	hasError: () => Boolean(formField.error),
-	isRequired: () => props.isRequired,
-})
-const inputId = control.id
-
-/** Атрибуты нативного поля: inputAttrs, имя без подписи (ariaLabel) и aria-состояния поля и обёртки */
-const nativeAttrs = computed(() => ({
-	...props.inputAttrs,
-	...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
-	...control.aria.value,
-}))
-
-const masked = useMaskedInputHandlers({
-	getMask: () => props.mask,
-	getAllowedChars: () => props.allowedChars,
-	getValue: () => props.modelValue,
-	isPassword: () => props.type === 'password',
-	isReadonly: () => props.isReadonly || props.isDisabled,
-	emit: (event, value) => emit(event, value),
-	onKeydown: e => emit('keydown', e),
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
 	inputRef,
-})
+	errorId,
+	formField,
+	control,
+	inputId,
+	nativeAttrs,
+	masked,
+	displayValue,
+	isPasswordVisible,
+	inputType,
+	togglePasswordVisibility,
+	passwordRuleResults,
+	handleBlur,
+	handleFocus,
+	exposed,
+} = useBaseInput(props, emit)
 
-const { isPasswordVisible, inputType, togglePasswordVisibility } = usePasswordVisibility({
-	type: toRef(props, 'type'),
-})
-
-const passwordRuleResults = computed<PasswordRuleResult[]>(() => {
-	if (!props.passwordRules) return []
-	const val = props.modelValue == null ? '' : String(props.modelValue)
-	return props.passwordRules.map(rule => ({
-		key: rule.key,
-		label: rule.label,
-		isValid: rule.validate(val),
-	}))
-})
-
-const displayValue = computed(() => {
-	const val = props.modelValue == null ? '' : String(props.modelValue)
-	if (props.type === 'password') return val
-	if (!props.mask) return val
-	return masked.applyMask(val, props.mask)
-})
-
-function handleBlur(e: FocusEvent): void {
-	formField.onBlur()
-	emit('blur', e)
-}
-
-function handleFocus(e: FocusEvent): void {
-	emit('focus', e)
-}
-
-defineExpose({
-	rootRef: inputRef,
-	inputRef,
-	/* istanbul ignore next — defensive: optional chaining для public API на unmount */
-	focus: () => inputRef.value?.focus(),
-	/* istanbul ignore next — defensive: optional chaining для public API на unmount */
-	blur: () => inputRef.value?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
@@ -104,3 +105,5 @@ export interface BaseInputSlots {
 	/** Кастомный суффикс */
 	suffix?: () => unknown
 }
+
+export type InputProps = PropsWithDefaults<BaseInputProps, 'type' | 'mask' | 'isRequired' | 'isReadonly' | 'isDisabled'>

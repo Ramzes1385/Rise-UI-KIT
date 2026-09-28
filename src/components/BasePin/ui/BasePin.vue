@@ -42,15 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue'
-import { formatMessage } from '@/locales'
-import { UI_ARIA } from '@/locales/messages'
-import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormField } from '@composables/useFormField'
 import { FormFieldError } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBasePin } from '../model/useBasePin'
 import '../styles/BasePin.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../types/BasePin.types'
 
 const props = withDefaults(
@@ -63,115 +59,27 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-})
-
-const hasError = computed(() => Boolean(formField.error))
-
-/** id текста ошибки: каждая ячейка связана с ним через aria-describedby */
-const errorId = `${useId()}-error`
-
-/** Доступное имя ячейки: «Символ 2 из 4» — скринридер сообщает позицию в коде */
-function cellLabel(position: number): string {
-	return formatMessage(UI_ARIA.PIN_CELL, { position, length: props.length })
-}
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-pin', props, [
-	'root',
-	'cells',
-	'input',
-	'errorText',
-])
-
 const emit = defineEmits<BasePinEmits>()
-
 defineSlots<BasePinSlots>()
 
-const inputRefs = ref<HTMLInputElement[]>([])
-const rootRef = ref<HTMLElement | null>(null)
-
-/** Ячейки для отображения: пустые строки вместо пробелов-заполнителей */
-const cells = computed(() => {
-	const result: string[] = []
-	for (let i = 0; i < props.length; i++) {
-		const char = props.modelValue[i]
-		result.push(char && char !== ' ' ? char : '')
-	}
-	return result
-})
-
-/** Нормализует modelValue в массив фиксированной длины (пробел = пустая ячейка) */
-function normalizeValue(val: string): string[] {
-	const result: string[] = []
-	for (let i = 0; i < props.length; i++) {
-		result.push(val[i] || ' ')
-	}
-	return result
-}
-
-function handleInput(e: Event, index: number): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	const val = target.value.slice(-1)
-	const chars = normalizeValue(props.modelValue)
-	chars[index] = val || ' '
-	const result = chars.join('').trimEnd()
-	emit('update:modelValue', result)
-
-	if (val && index < props.length - 1) {
-		inputRefs.value[index + 1]?.focus()
-	}
-
-	if (result.length === props.length && !result.includes(' ')) {
-		emit('complete', result)
-	}
-}
-
-function handleKeyDown(e: KeyboardEvent, index: number): void {
-	if (e.key === 'Backspace') {
-		e.preventDefault()
-		const chars = normalizeValue(props.modelValue)
-
-		if (chars[index] !== ' ') {
-			chars[index] = ' '
-			emit('update:modelValue', chars.join('').trimEnd())
-		} else if (index > 0) {
-			chars[index - 1] = ' '
-			emit('update:modelValue', chars.join('').trimEnd())
-			inputRefs.value[index - 1]?.focus()
-		}
-	}
-
-	if (e.key === 'ArrowLeft' && index > 0) {
-		e.preventDefault()
-		inputRefs.value[index - 1]?.focus()
-	}
-
-	if (e.key === 'ArrowRight' && index < props.length - 1) {
-		e.preventDefault()
-		inputRefs.value[index + 1]?.focus()
-	}
-}
-
-function handlePaste(e: ClipboardEvent): void {
-	e.preventDefault()
-	/* istanbul ignore next -- defensive `|| ''`: clipboardData всегда установлен в paste-событии, fallback недостижим */
-	const data = e.clipboardData?.getData('text') || ''
-	const val = data.replace(/\s/g, '').slice(0, props.length)
-	emit('update:modelValue', val)
-	if (val.length === props.length) {
-		emit('complete', val)
-	}
-}
-
-defineExpose({
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	formField,
+	hasError,
+	errorId,
+	inputRefs,
 	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	cellLabel,
+	cells,
+	handleInput,
+	handlePaste,
+	handleKeyDown,
+	exposed,
+} = useBasePin(props, emit)
+
+defineExpose(exposed)
 </script>

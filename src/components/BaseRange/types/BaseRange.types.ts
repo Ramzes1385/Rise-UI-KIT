@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const RANGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -84,3 +85,5 @@ export interface BaseRangeSlots {
 	default?: () => unknown
 	thumb?: (props: { value: number; index: number }) => unknown
 }
+
+export type RangeProps = PropsWithDefaults<BaseRangeProps, 'modelValue' | 'min' | 'max' | 'step' | 'isVertical'>

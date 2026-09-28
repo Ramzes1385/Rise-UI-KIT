@@ -1,4 +1,5 @@
 import type { PaddingProp } from '@composables/usePadding'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
@@ -64,3 +65,5 @@ export interface BaseDropdownExpose {
 	/** Обновить позицию панели вручную */
 	updatePosition: () => void
 }
+
+export type DropdownProps = PropsWithDefaults<BaseDropdownProps, 'isOpen' | 'position' | 'gap' | 'maxHeight' | 'matchWidth'>

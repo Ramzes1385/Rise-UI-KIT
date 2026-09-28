@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
@@ -44,3 +45,5 @@ export interface BaseTextareaEmits {
 export interface BaseTextareaSlots {
 	default?: () => unknown
 }
+
+export type TextareaProps = PropsWithDefaults<BaseTextareaProps, 'modelValue' | 'isRequired' | 'isAutosize'>

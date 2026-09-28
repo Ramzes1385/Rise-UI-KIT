@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 /**
  * Элемент слайдера
  */
@@ -85,3 +86,17 @@ export interface BaseSliderSlots {
 	header?: () => unknown
 	footer?: () => unknown
 }
+
+export type SliderProps = PropsWithDefaults<
+	BaseSliderProps,
+	| 'animation'
+	| 'isAutoplay'
+	| 'autoplayInterval'
+	| 'isLoop'
+	| 'isVertical'
+	| 'initialIndex'
+	| 'spaceBetween'
+	| 'slidesPerView'
+	| 'slidesPerGroup'
+	| 'sizeScale'
+>

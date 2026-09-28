@@ -142,23 +142,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount } from 'vue'
-import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseImage } from '@components/BaseImage'
-import { useSlider } from '@composables/useSlider'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSlider } from '../model/useBaseSlider'
 import '../styles/BaseSlider.style.scss'
 import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../types/BaseSlider.types'
-
-/** Шаг перелистывания, пока стрелка зажата, мс */
-const HOLD_INTERVAL_MS = 150
 
 const props = withDefaults(
 	defineProps<BaseSliderProps>(),
@@ -183,34 +176,12 @@ const props = withDefaults(
 		isZoomable: false,
 	}),
 )
-
 const emit = defineEmits<BaseSliderEmits>()
 defineSlots<BaseSliderSlots>()
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-
-const { classes } = useCustomClass({
-	getClass: function () {
-		return props.customClass
-	},
-	elementKeys: [
-		'root',
-		'arrows',
-		'arrow',
-		'viewport',
-		'track',
-		'slide',
-		'caption',
-		'title',
-		'desc',
-		'navigation',
-		'dots',
-		'dot',
-		'thumbs',
-		'thumb',
-	],
-})
 
 const {
+	sizeScaleStyle,
+	classes,
 	viewportRef,
 	currentIndex,
 	isDragging,
@@ -232,58 +203,13 @@ const {
 	onTouchEnd,
 	onDragStart,
 	onClickCapture,
-} = useSlider({
-	itemCount: () => props.items.length,
-	animation: () => props.animation,
-	isAutoplay: () => props.isAutoplay,
-	autoplayInterval: () => props.autoplayInterval,
-	isLoop: () => props.isLoop,
-	isVertical: () => props.isVertical,
-	initialIndex: () => props.initialIndex,
-	spaceBetween: () => props.spaceBetween,
-	slidesPerView: () => props.slidesPerView,
-	slidesPerGroup: () => props.slidesPerGroup,
-	onChange: index => emit('change', index),
-	onNext: () => emit('next'),
-	onPrev: () => emit('prev'),
-})
-
-const hasNavigation = computed(() => props.navigation !== 'none')
-
-/** Есть что листать: слайдов больше, чем помещается в область. Иначе стрелки и навигация не нужны. */
-const canNavigate = computed(() => maxIndex.value > 0)
-
-const arrowVariant = computed(() => (props.arrowsPosition === 'center' ? 'shadow' : 'outline'))
-
-const perView = computed(() => Math.max(1, props.slidesPerView))
-const perGroup = computed(() => Math.max(1, props.slidesPerGroup))
-
-/** Слайд виден: в режиме slide — одно из perView окон начиная с текущего, в fade/scale/flip — только текущий. */
-function isSlideVisible(index: number): boolean {
-	if (props.animation !== 'slide') return index === currentIndex.value
-	return index >= currentIndex.value && index < currentIndex.value + perView.value
-}
-
-/** «Слайд 2 из 6»: имя точки и миниатюры — номер слайда, к которому они ведут. */
-function slideLabel(index: number): string {
-	return formatMessage(UI_ARIA.SLIDE_POSITION, { current: index + 1, total: props.items.length })
-}
-
-let holdTimer: ReturnType<typeof setInterval> | null = null
-
-function startHold(direction: 'prev' | 'next'): void {
-	stopHold()
-	const action = direction === 'next' ? goNext : goPrev
-	holdTimer = setInterval(action, HOLD_INTERVAL_MS)
-}
-
-function stopHold(): void {
-	if (holdTimer) {
-		clearInterval(holdTimer)
-		holdTimer = null
-	}
-}
-
-/** Остановка таймера удержания при размонтировании (если кнопка была зажата). */
-onBeforeUnmount(stopHold)
+	hasNavigation,
+	canNavigate,
+	arrowVariant,
+	perGroup,
+	isSlideVisible,
+	slideLabel,
+	startHold,
+	stopHold,
+} = useBaseSlider(props, emit)
 </script>

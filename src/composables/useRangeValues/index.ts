@@ -1,2 +1,2 @@
 export { useRangeValues } from './useRangeValues'
-export type { RangeMode } from './types/useRangeValues.types'
+export type { RangeMode, UseRangeValuesReturn } from './types/useRangeValues.types'

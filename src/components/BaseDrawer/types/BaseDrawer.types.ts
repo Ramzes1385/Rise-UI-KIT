@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** У панели одно оформление: фон и текст меняет `color` */
@@ -48,3 +49,5 @@ export interface BaseDrawerSlots {
 	/** Подвал: кнопки действий */
 	footer?: () => unknown
 }
+
+export type DrawerProps = PropsWithDefaults<BaseDrawerProps, 'closeOnOverlay' | 'closeOnEscape'>

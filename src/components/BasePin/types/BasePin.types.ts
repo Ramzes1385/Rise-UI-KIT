@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const PIN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -23,3 +24,5 @@ export interface BasePinEmits {
 export interface BasePinSlots {
 	default?: () => unknown
 }
+
+export type PinProps = PropsWithDefaults<BasePinProps, 'length'>

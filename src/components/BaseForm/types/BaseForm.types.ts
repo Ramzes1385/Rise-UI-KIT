@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { FormIssue, FormValidationResult, StandardSchemaV1 } from '@utils/formUtils'
 
@@ -36,3 +37,5 @@ export interface BaseFormExpose {
 export interface BaseFormSlots {
 	default?: () => unknown
 }
+
+export type FormProps = PropsWithDefaults<BaseFormProps, 'isLoading' | 'isDisabled'>

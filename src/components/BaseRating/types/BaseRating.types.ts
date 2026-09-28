@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const RATING_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -33,3 +34,5 @@ export interface BaseRatingEmits {
 export interface BaseRatingSlots {
 	default?: () => unknown
 }
+
+export type RatingProps = PropsWithDefaults<BaseRatingProps, 'modelValue' | 'max' | 'step' | 'icon'>

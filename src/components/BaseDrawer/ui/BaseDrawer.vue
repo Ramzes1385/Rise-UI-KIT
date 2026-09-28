@@ -61,18 +61,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId, useSlots, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { usePopup } from '@composables/usePopup'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useLayerIndex } from '@composables/useLayerStack'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseDrawer } from '../model/useBaseDrawer'
 import '../styles/BaseDrawer.style.scss'
 import type { BaseDrawerEmits, BaseDrawerProps, BaseDrawerSlots } from '../types/BaseDrawer.types'
 
@@ -89,110 +84,30 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
 const emit = defineEmits<BaseDrawerEmits>()
 defineSlots<BaseDrawerSlots>()
-const slots = useSlots()
 
-const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-drawer', props, [
-	'root',
-	'panel',
-	'handle',
-	'header',
-	'title',
-	'body',
-	'footer',
-])
-
-const teleportTarget = useTeleportTarget()
-const layerStyle = useLayerIndex(() => props.isOpen)
-
-const titleId = useId()
-const descriptionId = useId()
-
-const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title))
-/** Заголовок из title рендерится только без слота header — иначе aria-labelledby ссылался бы на несуществующий id */
-const hasDefaultTitle = computed(() => Boolean(props.title) && !slots.header)
-
-const { handleOverlayClick, close: handleClose } = usePopup({
-	isOpen: () => props.isOpen,
-	closeOnOverlay: () => props.closeOnOverlay,
-	closeOnEscape: () => props.closeOnEscape,
-	onClose: () => {
-		emit('update:isOpen', false)
-		emit('close')
-	},
-})
-
-const panelRef = ref<HTMLElement | null>(null)
-const bodyRef = ref<HTMLElement | null>(null)
-
-useFocusTrap({ containerRef: panelRef, isActive: () => props.isOpen })
-
-const { isScrollable: isBodyScrollable } = useScrollableRegion({ elementRef: bodyRef })
-
-/** Доля размера панели: отпущенная дальше панель закрывается, ближе — возвращается */
-const CLOSE_RATIO = 0.25
-
-const isVertical = computed(() => props.direction === 'bottom' || props.direction === 'top')
-/** Знак смещения к краю: вниз для нижней панели, вверх для верхней, вправо для правой, влево для левой */
-const closeSign = computed(() => (props.direction === 'bottom' || props.direction === 'right' ? 1 : -1))
-
-const isDragging = ref(false)
-const dragOffset = ref(0)
-/** Панель отпущена за порогом: уезжает к краю вместе с исчезающим затемнением */
-const isDismissing = ref(false)
-let dragStart = 0
-
-function pointerPosition(event: PointerEvent): number {
-	return isVertical.value ? event.clientY : event.clientX
-}
-
-/** Смещение панели: при перетаскивании — за указателем, при закрытии перетаскиванием — за край */
-const dragStyle = computed(() => {
-	const axis = isVertical.value ? 'Y' : 'X'
-	if (isDismissing.value) return { transform: `translate${axis}(${closeSign.value * 100}%)` }
-	if (!isDragging.value) return undefined
-	return { transform: `translate${axis}(${closeSign.value * dragOffset.value}px)`, transition: 'none' }
-})
-
-/** Тянуть можно за ручку и шапку, но не за кнопки и поля в них */
-function handlePointerdown(event: PointerEvent): void {
-	const target = event.target as HTMLElement
-	if (!props.isDraggable || event.button !== 0) return
-	if (!target.closest('.base-drawer__handle, .base-drawer__header') || target.closest('button, a, input, select, textarea')) return
-	panelRef.value?.setPointerCapture?.(event.pointerId)
-	dragStart = pointerPosition(event)
-	dragOffset.value = 0
-	isDragging.value = true
-}
-
-function handlePointermove(event: PointerEvent): void {
-	if (!isDragging.value) return
-	dragOffset.value = Math.max(0, (pointerPosition(event) - dragStart) * closeSign.value)
-}
-
-function resetDrag(): void {
-	isDragging.value = false
-	dragOffset.value = 0
-}
-
-function handlePointerup(): void {
-	if (!isDragging.value) return
-	const panel = panelRef.value as HTMLElement
-	const size = isVertical.value ? panel.offsetHeight : panel.offsetWidth
-	const shouldClose = dragOffset.value > size * CLOSE_RATIO
-	resetDrag()
-	if (!shouldClose) return
-	isDismissing.value = true
-	handleClose()
-}
-
-/** Родитель не закрыл панель или открыл её снова — она возвращается на место */
-watch(
-	() => props.isOpen,
-	() => {
-		isDismissing.value = false
-	},
-)
+const {
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	slots,
+	teleportTarget,
+	layerStyle,
+	titleId,
+	descriptionId,
+	hasHeader,
+	hasDefaultTitle,
+	handleOverlayClick,
+	handleClose,
+	panelRef,
+	bodyRef,
+	isBodyScrollable,
+	isDragging,
+	dragStyle,
+	resetDrag,
+	handlePointerdown,
+	handlePointermove,
+	handlePointerup,
+} = useBaseDrawer(props, emit)
 </script>

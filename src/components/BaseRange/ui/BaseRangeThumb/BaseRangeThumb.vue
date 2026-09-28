@@ -20,17 +20,12 @@
 </template>
 
 <script setup lang="ts">
+import { useBaseRangeThumb } from '../../model/useBaseRangeThumb'
 import type { BaseRangeThumbEmits, BaseRangeThumbProps, BaseRangeThumbSlots } from '../../types/BaseRangeThumb.types'
 
 const props = defineProps<BaseRangeThumbProps>()
 const emit = defineEmits<BaseRangeThumbEmits>()
 defineSlots<BaseRangeThumbSlots>()
 
-function emitDown(event: MouseEvent | TouchEvent): void {
-	emit('down', { event, index: props.index })
-}
-
-function emitKeydown(event: KeyboardEvent): void {
-	emit('keydown', { event, index: props.index })
-}
+const { emitDown, emitKeydown } = useBaseRangeThumb(props, emit)
 </script>
