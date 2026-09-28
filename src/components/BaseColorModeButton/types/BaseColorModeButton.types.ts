@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { BUTTON_VARIANTS } from '@components/BaseButton/types/BaseButton.types'
 import type { ColorModeController, ResolvedColorMode } from '@composables/useColorMode'
@@ -19,3 +20,5 @@ export interface BaseColorModeButtonEmits {
 	/** Тема переключена: какая действует теперь */
 	(event: 'change', mode: ResolvedColorMode): void
 }
+
+export type ColorModeButtonProps = PropsWithDefaults<BaseColorModeButtonProps, 'sizeScale'>

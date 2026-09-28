@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты — как у BaseAvatar: вариант получает каждый аватар группы */
@@ -20,3 +21,5 @@ export interface BaseAvatarGroupProps extends BaseComponentProps<(typeof AVATAR_
 	/** Имя группы для скринридера, например «Участники» */
 	ariaLabel?: string
 }
+
+export type AvatarGroupProps = PropsWithDefaults<BaseAvatarGroupProps, 'max'>

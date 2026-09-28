@@ -38,12 +38,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseEmpty } from '../model/useBaseEmpty'
 import '../styles/BaseEmpty.style.scss'
 import type { BaseEmptyProps, BaseEmptySlots } from '../types/BaseEmpty.types'
 
@@ -55,17 +55,7 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, [
-	'root',
-	'iconWrapper',
-	'icon',
-	'content',
-	'title',
-	'description',
-	'body',
-	'actions',
-])
 defineSlots<BaseEmptySlots>()
 
-const emptyIcon = computed((): string => props.icon || 'inbox')
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, emptyIcon } = useBaseEmpty(props)
 </script>

@@ -23,12 +23,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseAvatarGroup } from '../model/useBaseAvatarGroup'
 import '../styles/BaseAvatarGroup.style.scss'
 import type { BaseAvatarGroupProps } from '../types/BaseAvatarGroup.types'
 
@@ -42,14 +42,5 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, variantClass, variantStyle, classes } = useStandardBaseComponent('base-avatar-group', props, [
-	'root',
-	'item',
-	'more',
-])
-
-/** Показываем max аватаров; если остаётся один человек, показываем и его вместо «+1» */
-const visibleCount = computed(() => (props.items.length - props.max <= 1 ? props.items.length : Math.max(props.max, 0)))
-const visibleItems = computed(() => props.items.slice(0, visibleCount.value))
-const restCount = computed(() => props.items.length - visibleCount.value)
+const { sizeScaleStyle, variantClass, variantStyle, classes, visibleItems, restCount } = useBaseAvatarGroup(props)
 </script>

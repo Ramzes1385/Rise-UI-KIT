@@ -12,7 +12,8 @@
 
 <script setup lang="ts">
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseButtonGroup } from '../model/useBaseButtonGroup'
 import '../styles/BaseButtonGroup.style.scss'
 import type { BaseButtonGroupProps, BaseButtonGroupSlots } from '../types/BaseButtonGroup.types'
 
@@ -27,5 +28,5 @@ const props = withDefaults(
 
 defineSlots<BaseButtonGroupSlots>()
 
-const { sizeScaleStyle, classes } = useStandardBaseComponent('base-button-group', props, ['root'])
+const { sizeScaleStyle, classes } = useBaseButtonGroup(props)
 </script>

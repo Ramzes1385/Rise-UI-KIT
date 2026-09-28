@@ -39,9 +39,9 @@ import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useCustomClass } from '@composables/useCustomClass'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSplitButton } from '../model/useBaseSplitButton'
 import '../styles/BaseSplitButton.style.scss'
 import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../types/BaseSplitButton.types'
 
@@ -58,6 +58,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseSplitButtonEmits>()
 defineSlots<BaseSplitButtonSlots>()
 
-/** Классы по элементам; вид, размер и цвет задают кнопки */
-const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'main', 'toggle'] })
+const { classes } = useBaseSplitButton(props)
 </script>

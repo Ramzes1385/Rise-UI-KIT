@@ -16,10 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { useSlots } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseFooter } from '../model/useBaseFooter'
 import '../styles/BaseFooter.style.scss'
 import type { BaseFooterProps, BaseFooterSlots } from '../types/BaseFooter.types'
 
@@ -33,10 +33,5 @@ const props = withDefaults(
 )
 
 defineSlots<BaseFooterSlots>()
-const slots = useSlots()
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-footer', props, [
-	'root',
-	'inner',
-])
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots } = useBaseFooter(props)
 </script>

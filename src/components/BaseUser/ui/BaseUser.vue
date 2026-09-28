@@ -26,12 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseLink } from '@components/BaseLink'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseUser } from '../model/useBaseUser'
 import '../styles/BaseUser.style.scss'
 import type { BaseUserProps, BaseUserSlots } from '../types/BaseUser.types'
 
@@ -47,14 +47,5 @@ const props = withDefaults(
 
 defineSlots<BaseUserSlots>()
 
-const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-user', props, [
-	'root',
-	'avatar',
-	'name',
-	'description',
-])
-
-const isLink = computed(() => Boolean(props.to || props.href))
-
-const linkProps = computed(() => (isLink.value ? { to: props.to, href: props.href, target: props.target, variant: 'ghost' } : {}))
+const { sizeScaleStyle, customColorStyle, classes, isLink, linkProps } = useBaseUser(props)
 </script>

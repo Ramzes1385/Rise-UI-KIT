@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { kitDefaults } from '@composables/useDefaults'
-import { useCustomClass } from '@composables/useCustomClass'
+import { useBaseAnimation } from '../model/useBaseAnimation'
 import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../types/BaseAnimation.types'
 
@@ -39,16 +39,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseAnimationEmits>()
 defineSlots<BaseAnimationSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root'],
-})
-
-function handleAfterEnter(): void {
-	emit('after-enter')
-}
-
-function handleAfterLeave(): void {
-	emit('after-leave')
-}
+const { classes, handleAfterEnter, handleAfterLeave } = useBaseAnimation(props, emit)
 </script>

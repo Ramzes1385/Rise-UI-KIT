@@ -16,14 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useColorMode } from '@composables/useColorMode'
-import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseColorModeButton } from '../model/useBaseColorModeButton'
 import '../styles/BaseColorModeButton.style.scss'
 import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../types/BaseColorModeButton.types'
 
@@ -38,18 +35,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseColorModeButtonEmits>()
 
-const { classes } = useStandardBaseComponent('base-color-mode-button', props, ['root', 'icon'])
-
-// Экземпляр выбирается один раз: кнопка управляет одной и той же темой всё время жизни
-const { isDark, resolvedMode, toggle } = props.colorMode ?? useColorMode()
-
-const resolvedLabel = computed(() => props.label ?? UI_ARIA.DARK_THEME)
-
-/** Иконка 16px при sizeScale = 100, как в других кнопках-иконках */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
-
-function handleClick(): void {
-	toggle()
-	emit('change', resolvedMode.value)
-}
+const { classes, isDark, resolvedLabel, iconScale, handleClick } = useBaseColorModeButton(props, emit)
 </script>

@@ -39,8 +39,8 @@
 | Сделано (0, 1.1–1.8, 2.1–2.4) | 13 | ≈11 ч 40 мин |
 | Осталось до выпуска 2.0 (этапы 1–5) | 8 | ≈11 ч |
 | Необязательное | 4 | ≈4 ч 45 мин |
-| Структура и правила кода: сделано (С.1–С.8) | 8 | ≈7 ч 50 мин |
-| Структура и правила кода: осталось (С.9) | 6 | ≈7 ч 30 мин |
+| Структура и правила кода: сделано (С.1–С.8, С.9.1) | 9 | ≈8 ч 15 мин |
+| Структура и правила кода: осталось (С.9.2–С.9.9) | 8 | ≈13 ч 30 мин |
 
 ## Порции
 
@@ -118,7 +118,15 @@
 | С.6 | Типы в `types/` | Все `*.types.ts` — в папках `types/`, типы из кода и хелперов stories — туда же; функции и константы без типов — в `model/`; плагин — `src/plugin/`; ESLint запрещает типы вне `types/` и функции в `types/`; тест структуры; шаблоны `create:component` | 1 ч 30 мин | ≈1 ч 25 мин | ✅ |
 | С.7 | Мёртвый код | knip (`npm run lint:unused`, pre-commit и CI): удалены 10 неиспользуемых файлов, 6 dev-зависимостей, неиспользуемые экспорты и типы; ESLint проверяет неиспользуемые переменные и в тестах со stories | 45 мин | ≈35 мин | ✅ |
 | С.8 | Комментарии | Удалены около 1 700 комментариев, которые пересказывали код, заголовки разделов и шапки тестов и stories, 229 сокращены; остались объяснения «почему», единицы и смысл чисел, описания props, emits, slots и stories. Правило — в CONTRIBUTING | 1 ч | ≈1 ч 30 мин | ✅ |
-| С.9 | Логика в `model/` | Все компоненты: в `.vue` остаются макросы (`defineProps`, `defineEmits`, `defineSlots`, `defineExpose`) и вызов `useBaseX(props, emit)`, логика — в `model/useBaseX.ts`, как в пилоте С.4; 129 файлов `.vue`, ≈8 900 строк скрипта; 6 порций по группам | ≈7 ч 30 мин | — | ⬜ |
+| С.9.1 | Логика в `model/` | BaseButtonGroup, BaseContainer, BaseBadge, BaseFooter, BaseSplitButton, BaseAnimation, BaseAvatarGroup, BaseUser, BaseEmpty, BaseColorModeButton: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 45 мин | ≈25 мин | ✅ |
+| С.9.2 | Логика в `model/` | BaseLoader, BaseMenu, BaseConfirm, BaseIcon, BaseFab, BaseCard, BaseLink, BaseApp, BaseChip, BaseLayout: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 45 мин | — | ⬜ |
+| С.9.3 | Логика в `model/` | BaseTimeline, BaseHeader, BaseSeparator, BaseSegmented, BaseButton, BaseSkeleton, BaseStepper, BaseText, BaseAvatar, BaseTimePicker: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч | — | ⬜ |
+| С.9.4 | Логика в `model/` | BaseProgress, BaseRadio, BaseAlert, BaseCheckbox, BaseSwitch, BaseVirtualList, BaseKbd, BasePopover, BasePagination, BaseAccordion: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч | — | ⬜ |
+| С.9.5 | Логика в `model/` | BaseBackTop, BaseContextMenu, BaseCheckboxGroup, BaseModal, BaseInfiniteScroll, BaseToolbar, BaseBreadcrumbs, BaseFormField, BaseSlideover, BasePopconfirm: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч 15 мин | — | ⬜ |
+| С.9.6 | Логика в `model/` | BaseForm, BasePin, BaseDrawer, BaseInput, BaseRange, BaseDropdown, BaseColorPicker, BaseTextarea, BaseSlider, BaseRating: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч 45 мин | — | ⬜ |
+| С.9.7 | Логика в `model/` | BaseFileUpload, BaseSideBar, BaseScrollArea, BaseTour, BaseImage, BaseInputTags, BaseNotification, BaseTabs, BaseTooltip, BaseMegaMenu: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 2 ч 15 мин | — | ⬜ |
+| С.9.8 | Логика в `model/` | BaseAutocomplete, BaseSelect, BaseCalendar, BaseDatePicker, BaseSearch: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 2 ч | — | ⬜ |
+| С.9.9 | Логика в `model/` | BaseEditor, BaseTree, BaseTable, BaseDropdownMenu, BaseChat: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 3 ч 30 мин | — | ⬜ |
 
 ## Как продолжить в новом чате
 

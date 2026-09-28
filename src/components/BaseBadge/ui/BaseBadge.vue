@@ -12,7 +12,8 @@
 
 <script setup lang="ts">
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseBadge } from '../model/useBaseBadge'
 import '../styles/BaseBadge.style.scss'
 import type { BaseBadgeEmits, BaseBadgeProps, BaseBadgeSlots } from '../types/BaseBadge.types'
 
@@ -27,12 +28,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseBadgeEmits>()
 defineSlots<BaseBadgeSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-badge', props, [
-	'root',
-	'text',
-])
-
-function handleClick(e: MouseEvent): void {
-	emit('click', e)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, handleClick } = useBaseBadge(props, emit)
 </script>
