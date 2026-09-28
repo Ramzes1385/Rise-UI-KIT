@@ -36,18 +36,3 @@ export interface ChatMessageListEmits {
 	(event: 'mention-click', mention: string): void
 	(event: 'command-click', command: string): void
 }
-
-/**
- * Слоты компонента ChatMessageList
- */
-export interface ChatMessageListSlots {
-	default?: () => unknown
-}
-
-/**
- * Публичный API компонента ChatMessageList
- */
-export interface ChatMessageListExpose {
-	/** Прокрутить к сообщению по id */
-	scrollToMessage: (messageId: string) => void
-}

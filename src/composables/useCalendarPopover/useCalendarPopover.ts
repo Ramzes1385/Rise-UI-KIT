@@ -45,4 +45,3 @@ function useCalendarPopover(options: UseCalendarPopoverOptions): UseCalendarPopo
 }
 
 export { useCalendarPopover }
-export type { UseCalendarPopoverOptions, UseCalendarPopoverReturn }

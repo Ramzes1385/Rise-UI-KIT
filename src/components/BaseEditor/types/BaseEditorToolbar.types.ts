@@ -1,7 +1,7 @@
 import type { BaseSelectOption } from '@components/BaseSelect'
 
 /** Состояния активности кнопок форматирования */
-export interface EditorActiveStates {
+interface EditorActiveStates {
 	isBold: boolean
 	isItalic: boolean
 	isUnderline: boolean

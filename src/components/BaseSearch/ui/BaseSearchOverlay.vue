@@ -111,7 +111,12 @@ import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import BaseSearchInput from './BaseSearchInput.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
-import type { BaseSearchOverlayEmits, BaseSearchOverlayProps, BaseSearchOverlaySlots } from '../types/BaseSearchOverlay.types'
+import type {
+	BaseSearchOverlayEmits,
+	BaseSearchOverlayExpose,
+	BaseSearchOverlayProps,
+	BaseSearchOverlaySlots,
+} from '../types/BaseSearchOverlay.types'
 
 /** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
 const teleportTarget = useTeleportTarget()
@@ -166,5 +171,5 @@ function focus(): void {
 	inputRef.value?.focus()
 }
 
-defineExpose({ focus, open, close })
+defineExpose<BaseSearchOverlayExpose>({ focus, open, close })
 </script>

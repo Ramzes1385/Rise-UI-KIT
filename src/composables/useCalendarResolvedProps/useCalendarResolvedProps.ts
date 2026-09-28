@@ -44,4 +44,3 @@ function useCalendarResolvedProps(props: BaseCalendarProps): ComputedRef<Resolve
 }
 
 export { useCalendarResolvedProps }
-export type { ResolvedCalendarProps }

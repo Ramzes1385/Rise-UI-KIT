@@ -12,7 +12,7 @@ export type InputVariant = (typeof INPUT_VARIANTS)[number]
 /**
  * Фильтр допустимых символов
  */
-export type AllowedChars = 'digits' | 'letters' | 'alphanumeric'
+type AllowedChars = 'digits' | 'letters' | 'alphanumeric'
 
 /**
  * Правило валидации пароля

@@ -137,7 +137,8 @@ import { ChatSlideover } from './ChatSlideover'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
-import type { BaseChatEmits, BaseChatProps, BaseChatSlots, MessageListExposed } from '../types/BaseChat.types'
+import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../types/BaseChat.types'
+import type { MessageListExposed } from '@composables/useChatActions/types/useChatActions.types'
 
 const props = withDefaults(
 	defineProps<BaseChatProps>(),

@@ -41,11 +41,3 @@ export interface DatePickerPanelEmits {
 	(event: 'selected-update', value: Date[]): void
 	(event: 'range-select', start: Date, end: Date): void
 }
-
-/**
- * Публичный API компонента DatePickerPanel
- */
-export interface DatePickerPanelExpose {
-	/** Ref на DOM-элемент панели (для useClickOutside из родителя) */
-	panelRef: HTMLElement | null
-}

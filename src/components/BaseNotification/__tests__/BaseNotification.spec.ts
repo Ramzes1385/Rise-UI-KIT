@@ -324,7 +324,7 @@ describe('BaseNotification unit', () => {
 
 	describe('дополнительное покрытие ветвей', () => {
 		it('должен использовать тип info по умолчанию если тип уведомления не задан', async () => {
-			const { container } = render(BaseNotification, {
+			render(BaseNotification, {
 				props: {
 					title: 'Тест без типа',
 					type: undefined,

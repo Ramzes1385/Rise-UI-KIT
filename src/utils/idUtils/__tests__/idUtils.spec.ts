@@ -4,7 +4,7 @@
  * Date.now и Math.random замокированы для детерминизма.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { generateId } from '../idUtils'
 
 describe('idUtils', () => {

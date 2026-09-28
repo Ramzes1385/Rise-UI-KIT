@@ -65,7 +65,6 @@ describe('BaseAnimation unit', () => {
 				slots: { default: '<p>Контент</p>' },
 			})
 
-			const transition = container.querySelector('.fade-enter-active')
 			// Transition name применяется через CSS-классы Vue
 			expect(container.querySelector('.base-animation')).toBeInTheDocument()
 		})

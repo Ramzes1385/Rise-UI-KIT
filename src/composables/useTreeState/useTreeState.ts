@@ -127,4 +127,3 @@ function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 }
 
 export { useTreeState }
-export type { UseTreeStateOptions, UseTreeStateResult }

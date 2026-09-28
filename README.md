@@ -2839,6 +2839,7 @@ npm publish
 ```bash
 npm run lint
 npm run lint:styles
+npm run lint:unused
 npm run format:check
 npm run typecheck
 npm run test:unit

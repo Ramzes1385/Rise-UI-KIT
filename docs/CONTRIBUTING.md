@@ -216,9 +216,10 @@ feat: add component          ← какой компонент?
 ### 3.4. Локальная проверка перед push
 
 ```bash
-# 1. Lint, стили и форматирование
+# 1. Lint, стили, неиспользуемый код и форматирование
 npm run lint
 npm run lint:styles
+npm run lint:unused
 npm run format:check
 
 # 2. Unit-тесты (для конкретного компонента)
@@ -230,7 +231,7 @@ npm run test:e2e -- src/components/BaseSideBar
 # 4. Build
 npm run build
 
-# 5. Базовая CI-валидация: lint, стили, форматирование, типы, unit-тесты, сухая сборка пакета
+# 5. Базовая CI-валидация: lint, стили, неиспользуемый код, форматирование, типы, unit-тесты, сухая сборка пакета
 #    (пороги покрытия, stories/a11y-гейты и e2e/visual CI запускает отдельными job)
 npm run ci:validate
 
@@ -419,7 +420,7 @@ git push -u origin feat/sidebar-disclosure-groups
 ### Перед созданием PR
 
 - [ ] Все коммиты следуют Conventional Commits
-- [ ] `npm run lint`, `npm run lint:styles` и `npm run format:check` проходят без ошибок
+- [ ] `npm run lint`, `npm run lint:styles`, `npm run lint:unused` и `npm run format:check` проходят без ошибок
 - [ ] `npm run typecheck` проходит (типы исходников и тестов)
 - [ ] `npm run test:unit` проходит
 - [ ] `npm run test:e2e` проходит (если затронуты компоненты с e2e)
@@ -617,8 +618,15 @@ import type { ... } from './types/xxxUtils.types'
 | Prettier | Форматирование `ts`, `vue`, `js`, `scss`: табы, одинарные кавычки, без `;`, строка до 140 символов. Настройки — `package.json` → `prettier`; документы, JSON и YAML не форматируются (`.prettierignore`) | `npm run format`, проверка — `npm run format:check` |
 | ESLint | Ошибки кода, порядок импортов, правила «чистого кода» | `npm run lint`, исправление — `npm run lint:fix` |
 | Stylelint | SCSS по `stylelint-config-standard-scss`, классы по БЭМ. Настройки — `package.json` → `stylelint` | `npm run lint:styles` |
+| knip | Неиспользуемые файлы, экспорты, типы и зависимости. Настройки — `package.json` → `knip` | `npm run lint:unused` |
 
-Все три запускает git-хук pre-commit и CI.
+Все четыре запускает git-хук pre-commit и CI.
+
+**Неиспользуемый код не оставляем.** Переменные, функции и импорты проверяет ESLint — и в тестах со stories тоже.
+Файлы, экспорты, типы и зависимости проверяет knip: экспорт, который нигде не импортируется, удаляется или перестаёт
+быть экспортом. Входы пакета (`src/index.ts` и подпути) knip считает публичными. Зависимости, которых knip не видит,
+перечислены в `knip.ignoreDependencies`: шрифты подключаются через `url()` в SCSS, `lightningcss` — строкой в настройках
+Vite, плагины semantic-release — строками в его конфиге.
 
 **Импорты — «лесенкой».** Внутри группы каждая следующая строка не короче предыдущей, при равной длине — по алфавиту. Группы идут так: внешние пакеты → алиасы (`@/`, `@components`, `@composables`…) → относительные → `import type`. Импорт стилей (`import '../styles/X.style.scss'`) не переставляется: от его места зависит порядок CSS. Порядок расставляет `npm run lint:fix`.
 

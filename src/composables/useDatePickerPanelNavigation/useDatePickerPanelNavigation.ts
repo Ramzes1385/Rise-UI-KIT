@@ -105,4 +105,3 @@ function useDatePickerPanelNavigation(options: UseDatePickerPanelNavigationOptio
 }
 
 export { useDatePickerPanelNavigation }
-export type { UseDatePickerPanelNavigationOptions, MonthItem }

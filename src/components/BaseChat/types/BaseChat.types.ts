@@ -134,8 +134,3 @@ export interface BaseChatEmits {
 export interface BaseChatSlots {
 	default?: () => unknown
 }
-
-/** Публичные методы ChatMessageList, экспонированные через defineExpose */
-export interface MessageListExposed {
-	scrollToMessage: (messageId: string) => void
-}

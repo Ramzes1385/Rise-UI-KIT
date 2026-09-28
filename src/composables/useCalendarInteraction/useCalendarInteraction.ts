@@ -143,4 +143,3 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 }
 
 export { useCalendarInteraction }
-export type { UseCalendarInteractionOptions }

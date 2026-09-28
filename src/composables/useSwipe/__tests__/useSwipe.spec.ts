@@ -686,8 +686,6 @@ describe('useSwipe', () => {
 	it('должен корректно очищать слушатели если activeMouseMove=null', () => {
 		const removeSpy = vi.spyOn(document, 'removeEventListener')
 
-		const swipe = withSetup(() => useSwipe({ isVertical: () => false, threshold: 50 }))
-
 		// Вызываем cleanupMouseListeners напрямую через unmount без dragStart
 		// activeMouseMove и activeMouseUp = null
 		const { wrapper } = withSetupFull(() => useSwipe({ isVertical: () => false, threshold: 50 }))

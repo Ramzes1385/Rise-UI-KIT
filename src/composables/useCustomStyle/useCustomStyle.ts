@@ -1,7 +1,7 @@
 /** Composable: вычисление объекта стилей компонента */
 import { computed } from 'vue'
 import { hasElementKeys, isObject } from '@utils/typeUtils'
-import type { CustomStyleProp, StyleResultValue, UseCustomStyleOptions } from './types/useCustomStyle.types'
+import type { StyleResultValue, UseCustomStyleOptions } from './types/useCustomStyle.types'
 
 /**
  * Composable для вычисления объекта стилей компонента.
@@ -49,4 +49,3 @@ function useCustomStyle(options: UseCustomStyleOptions) {
 }
 
 export { useCustomStyle }
-export type { CustomStyleProp }

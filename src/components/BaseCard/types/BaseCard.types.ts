@@ -40,7 +40,7 @@ export interface BaseCardProps extends BaseComponentProps<
 /**
  * Привязки слотов компонента BaseCard
  */
-export interface BaseCardSlotBindings {
+interface BaseCardSlotBindings {
 	/** Масштаб размера */
 	sizeScale: number
 }

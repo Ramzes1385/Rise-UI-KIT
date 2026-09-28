@@ -1,7 +1,7 @@
 /** Composable: вычисление CSS-классов компонента */
 import { computed } from 'vue'
 import { hasElementKeys, isObject } from '@utils/typeUtils'
-import type { ClassResultInternal, CustomClassProp, UseCustomClassOptions } from './types/useCustomClass.types'
+import type { ClassResultInternal, UseCustomClassOptions } from './types/useCustomClass.types'
 
 /**
  * Composable для вычисления CSS-классов компонента.
@@ -54,4 +54,3 @@ function useCustomClass(options: UseCustomClassOptions) {
 }
 
 export { useCustomClass }
-export type { CustomClassProp }

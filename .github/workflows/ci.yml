@@ -34,6 +34,9 @@ jobs:
       - name: Stylelint
         run: npm run lint:styles
 
+      - name: Unused code (knip)
+        run: npm run lint:unused
+
       - name: Format check
         run: npm run format:check
 

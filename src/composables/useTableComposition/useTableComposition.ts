@@ -253,4 +253,3 @@ function useTableComposition(options: UseTableCompositionOptions) {
 }
 
 export { useTableComposition }
-export type { UseTableCompositionOptions }

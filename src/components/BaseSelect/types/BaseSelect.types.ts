@@ -22,7 +22,7 @@ export interface BaseSelectOption {
 /**
  * Вариант отображения
  */
-export type BaseSelectVariant = (typeof SELECT_VARIANTS)[number]
+type BaseSelectVariant = (typeof SELECT_VARIANTS)[number]
 
 /**
  * Пропсы компонента BaseSelect

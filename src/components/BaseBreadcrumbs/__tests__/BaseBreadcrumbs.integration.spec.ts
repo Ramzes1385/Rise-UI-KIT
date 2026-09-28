@@ -146,7 +146,7 @@ describe('BaseBreadcrumbs integration', () => {
 
 	describe('слоты', () => {
 		it('должен рендерить кастомный разделитель через слот', () => {
-			const { container } = render(BaseBreadcrumbs, {
+			render(BaseBreadcrumbs, {
 				props: { items: ITEMS },
 				slots: {
 					separator: '<span data-testid="custom-sep">→</span>',
@@ -157,7 +157,7 @@ describe('BaseBreadcrumbs integration', () => {
 		})
 
 		it('должен рендерить кастомную иконку дома через слот', () => {
-			const { container } = render(BaseBreadcrumbs, {
+			render(BaseBreadcrumbs, {
 				props: { items: ITEMS, showHome: true },
 				slots: {
 					home: '<span data-testid="custom-home">🏠</span>',

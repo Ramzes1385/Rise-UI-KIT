@@ -10,7 +10,7 @@ import { expect, type Page } from '@playwright/test'
 /** Темы, в которых снимаются baseline-скриншоты. */
 export const VISUAL_THEMES = ['light', 'dark'] as const
 
-export type VisualTheme = (typeof VISUAL_THEMES)[number]
+type VisualTheme = (typeof VISUAL_THEMES)[number]
 
 interface OpenStoryOptions {
 	theme?: VisualTheme

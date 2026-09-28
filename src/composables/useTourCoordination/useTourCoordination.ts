@@ -179,4 +179,3 @@ function useTourCoordination(options: UseTourCoordinationOptions) {
 }
 
 export { useTourCoordination }
-export type { UseTourCoordinationOptions }

@@ -119,7 +119,6 @@ export default tseslint.config(
 		},
 		rules: {
 			'@typescript-eslint/no-explicit-any': 'off',
-			'@typescript-eslint/no-unused-vars': 'off',
 			'no-undef': 'off',
 			// describe → it → колбэки и длинные сценарии в тестах и stories — норма.
 			complexity: 'off',

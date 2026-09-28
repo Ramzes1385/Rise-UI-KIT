@@ -2,7 +2,7 @@
  * Unit-тесты для useTableSort.
  */
 
-import { createApp, h, ref } from 'vue'
+import { ref } from 'vue'
 import { useTableSort } from '../useTableSort'
 import type { TableColumn } from '@components/BaseTable/types/BaseTable.types'
 
@@ -10,19 +10,6 @@ const testColumns = ref<TableColumn[]>([
 	{ key: 'name', label: 'Имя', isSortable: true, sortType: 'string' },
 	{ key: 'age', label: 'Возраст', isSortable: true, sortType: 'number' },
 ])
-
-function withSetup<T>(composable: () => T): [T, () => void] {
-	let result: T
-	const app = createApp({
-		setup() {
-			result = composable()
-			return () => h('div')
-		},
-	})
-	const el = document.createElement('div')
-	app.mount(el)
-	return [result!, () => app.unmount()]
-}
 
 describe('useTableSort', () => {
 	it('переключает направление asc → desc → null', () => {

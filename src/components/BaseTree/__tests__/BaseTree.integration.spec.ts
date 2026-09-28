@@ -192,7 +192,7 @@ describe('BaseTree integration', () => {
 
 		it('должен выбирать узел и не раскрывать в режиме single', async () => {
 			const user = userEvent.setup()
-			const { container, emitted } = render(BaseTree, {
+			const { emitted } = render(BaseTree, {
 				props: { items: NESTED_ITEMS, selectionMode: 'single' },
 				slots: { label: DEFAULT_SLOT },
 			})

@@ -10,6 +10,4 @@ export {
 	isInsideTags,
 	matchTypedInlineTag,
 	toHTMLElement,
-	TYPED_INLINE_TAGS,
 } from './editorDomUtils'
-export type { TypedInlineTagMatch } from './types/editorDomUtils.types'

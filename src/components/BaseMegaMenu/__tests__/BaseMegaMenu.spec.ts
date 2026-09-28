@@ -746,7 +746,7 @@ describe('BaseMegaMenu unit', () => {
 		})
 
 		it('должен поддерживать вложенность глубже трёх уровней', async () => {
-			const { container } = render(BaseMegaMenu, {
+			render(BaseMegaMenu, {
 				props: {
 					columns: [
 						{

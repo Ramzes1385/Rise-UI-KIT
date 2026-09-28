@@ -282,4 +282,3 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 }
 
 export { useDatePickerState }
-export type { UseDatePickerStateOptions }

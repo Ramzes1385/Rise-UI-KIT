@@ -132,7 +132,7 @@ describe('useEditorToolbar', () => {
 
 		it('toggleCodeMode обратно: editorRef.value может стать null', async () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { isCodeMode, toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const { toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 
 			toggleCodeMode() // в режим кода
 			editorRef.value = null

@@ -128,4 +128,3 @@ function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 }
 
 export { useTourLogic, DEFAULT_GAP, DEFAULT_PADDING, DEFAULT_RADIUS, resolvePlacement }
-export type { UseTourLogicOptions, UseTourLogicReturn }

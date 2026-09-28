@@ -9,18 +9,6 @@ import { render } from '@testing-library/vue'
 import userEvent from '@testing-library/user-event'
 import BasePin from '../ui/BasePin.vue'
 
-/** Wrapper-компонент с v-model для тестирования complete */
-function createPinWrapper(length = 4) {
-	return defineComponent({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { value, length }
-		},
-		template: '<BasePin v-model="value" :length="length" />',
-	})
-}
-
 describe('BasePin integration', () => {
 	describe('ввод символа', () => {
 		it('должен эмитить update:modelValue при вводе символа', async () => {

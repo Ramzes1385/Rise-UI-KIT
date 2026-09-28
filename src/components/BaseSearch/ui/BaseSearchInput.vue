@@ -53,7 +53,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import type { BaseSearchInputEmits, BaseSearchInputProps } from '../types/BaseSearchInput.types'
+import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
 /**
  * Поле поиска — BaseInput: иконка поиска слева, справа индикатор загрузки и ghost-кнопка очистки 24px.
@@ -95,7 +95,7 @@ function focus(): void {
 	inputRef.value?.focus()
 }
 
-defineExpose({
+defineExpose<BaseSearchInputExpose>({
 	focus,
 })
 </script>
