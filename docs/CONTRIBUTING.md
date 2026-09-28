@@ -489,7 +489,14 @@ src/components/BaseComponent/
 ├── styles/
 │   └── BaseComponent.style.scss   # Стили
 ├── stories/
-│   └── BaseComponent.stories.ts   # Storybook stories
+│   ├── BaseComponent.stories.ts   # meta и список stories
+│   ├── parameters.ts              # части meta; render.ts и decorators.ts — если есть
+│   ├── argTypes.ts
+│   ├── args.ts
+│   ├── shared.ts                  # данные и хелперы нескольких stories
+│   └── cases/
+│       ├── Default.ts             # одна StoryObj на файл
+│       └── index.ts               # реэкспорт stories
 ├── __tests__/
 │   ├── BaseComponent.spec.ts      # Unit-тесты
 │   ├── BaseComponent.e2e.spec.ts  # E2E-тесты (Playwright)
@@ -509,6 +516,16 @@ src/components/BaseComponent/
   (ключи `provide`/`inject`). Функции и остальные константы — в `model/` или в модуле, который их использует; функции
   в `types/` ESLint тоже не пропустит.
 - Тест `build/tests/structure.spec.ts` проверяет, что все `*.types.ts` лежат в папках `types/`.
+
+### Stories
+
+В `BaseX.stories.ts` остаются `title`, `component`, части meta из соседних файлов и список stories:
+`export const Default = cases.Default`. Storybook читает названия и порядок stories из этого файла статически, поэтому
+каждая story в нём перечислена явно: при `export { Default } from './cases/Default'` в сайдбаре вместо «Custom Color»
+появилось бы «CustomColor». Файл `cases/X.ts` содержит одну StoryObj с типом `StoryObj<typeof meta>`
+(`import type meta from '../BaseX.stories'`), описание story — в `parameters.docs.description.story`. Данные и хелперы,
+нужные одной story, лежат в её файле, нескольким — в `shared.ts`. Части meta типизируются через
+`satisfies Meta<typeof BaseX>['args']`.
 
 ### Логика в `model/`
 

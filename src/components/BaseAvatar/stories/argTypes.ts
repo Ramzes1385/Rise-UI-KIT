@@ -1,0 +1,14 @@
+import type { Meta } from '@storybook/vue3-vite'
+import type BaseAvatar from '../ui/BaseAvatar.vue'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
+import { AVATAR_VARIANTS, AVATAR_SHAPES } from '../types/BaseAvatar.types'
+
+export const argTypes = {
+	...baseArgTypes({ variants: AVATAR_VARIANTS }),
+	name: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	src: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	alt: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	shape: { control: 'inline-radio', options: AVATAR_SHAPES, table: propGroup(ARG_GROUP.appearance) },
+	isOnline: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	default: { control: false },
+} satisfies Meta<typeof BaseAvatar>['argTypes']

@@ -84,6 +84,7 @@ export default defineConfig({
 				'**/*.visual.spec.ts',
 				'**/*.e2e.spec.ts',
 				'**/*.stories.ts',
+				'**/stories/**',
 				'**/*.types.ts',
 				'**/*.style.scss',
 				'**/index.ts',

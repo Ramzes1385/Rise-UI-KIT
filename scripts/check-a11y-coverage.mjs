@@ -1,7 +1,7 @@
 /** Проверяет покрытие компонентов accessibility: наличие stories, обязательных состояний (Default/Disabled/Error), play-функций и keyboard navigation. */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 
 const ROOT = resolve(process.cwd())
 const COMPONENTS_DIR = join(ROOT, 'src/components')
@@ -19,6 +19,15 @@ function findStoryPath(componentDir, componentName) {
 	}
 
 	return null
+}
+
+/** Stories компонента разложены по файлам папки stories/: meta, части meta и cases/ с самими stories */
+function readStories(storyPath) {
+	const dir = dirname(storyPath)
+	return readdirSync(dir, { recursive: true })
+		.filter(file => String(file).endsWith('.ts'))
+		.map(file => readFileSync(join(dir, String(file)), 'utf-8'))
+		.join('\n')
 }
 
 /** Интерактивные компоненты, требующие keyboard navigation */
@@ -267,7 +276,7 @@ function checkA11yCoverage() {
 		}
 		results.hasStory++
 
-		const content = readFileSync(storyPath, 'utf-8')
+		const content = readStories(storyPath)
 		const isInteractive = INTERACTIVE_COMPONENTS.has(component)
 		const isForm = FORM_COMPONENTS.has(component)
 
