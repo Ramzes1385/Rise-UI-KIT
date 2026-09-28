@@ -1,5 +1,6 @@
 import type { InjectionKey } from 'vue'
 import type { PaddingProp } from '@composables/usePadding'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { VisiblePageItem } from '@utils/paginationUtils/types/paginationUtils.types'
 
@@ -258,3 +259,8 @@ export interface BaseTableSlots {
 	[key: `header-${string}`]: (props: { column: TableColumn }) => unknown
 	[key: `cell-${string}`]: (props: { column: TableColumn; row: TableRow }) => unknown
 }
+
+export type TableProps = PropsWithDefaults<
+	BaseTableProps,
+	'isLoading' | 'height' | 'pageSize' | 'pageSizeOptions' | 'loadMode' | 'searchDebounce' | 'isVirtual' | 'rowHeight'
+>

@@ -64,17 +64,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
 import { CHAT_SCALE } from '../../../model/chatScale'
+import { useChatMessageContextMenu } from '../model/useChatMessageContextMenu'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
-
-/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
-const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(defineProps<ChatMessageContextMenuProps>(), {
 	popularEmojis: () => ['👍', '❤️', '🔥', '😂', '😮', '😢'],
@@ -82,91 +76,21 @@ const props = withDefaults(defineProps<ChatMessageContextMenuProps>(), {
 
 const emit = defineEmits<ChatMessageContextMenuEmits>()
 
-const menuRef = ref<HTMLElement | null>(null)
-
-/**
- * Тема блока с чатом: меню в body иначе взяло бы тему страницы. Корень компонента — Teleport,
- * его метка остаётся в списке сообщений: от неё ищется ближайший `data-theme`
- */
-const instance = getCurrentInstance()
-const inheritedTheme = useInheritedTheme(
-	() => (instance?.proxy?.$el as Node | null | undefined)?.parentElement,
-	() => props.isOpen,
-)
-/** Место меню среди открытых слоёв: меню чата в окне — над окном */
-const layerStyle = useLayerIndex(() => props.isOpen)
-
-/** Меню телепортировано в body и не наследует --size-scale чата: масштаб передаётся явно */
-const menuStyle = computed(() => ({
-	top: `${props.y}px`,
-	left: `${props.x}px`,
-	'--size-scale': String(props.sizeScale / SIZE_SCALE_DEFAULT),
-}))
-
-function getItems(): HTMLElement[] {
-	return Array.from(menuRef.value?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
-}
-
-watch(
-	() => props.isOpen,
-	isOpen => {
-		if (isOpen) nextTick(() => getItems()[0]?.focus())
-	},
-	{ immediate: true },
-)
-
-/**
- * Клавиатура меню: ↓/→ — следующий пункт, ↑/← — предыдущий (по кругу), Home/End — первый и последний.
- * Escape и Tab закрывают меню; фокус возвращает useChatMessageActions.
- */
-function handleKeydown(event: KeyboardEvent): void {
-	const items = getItems()
-	const currentIndex = items.indexOf(document.activeElement as HTMLElement)
-	const moves: Record<string, number> = {
-		ArrowDown: currentIndex + 1,
-		ArrowRight: currentIndex + 1,
-		ArrowUp: currentIndex - 1,
-		ArrowLeft: currentIndex - 1,
-		Home: 0,
-		End: items.length - 1,
-	}
-	if (event.key in moves) {
-		event.preventDefault()
-		const nextIndex = (moves[event.key] + items.length) % items.length
-		items[nextIndex]?.focus()
-		return
-	}
-	if (event.key === 'Escape' || event.key === 'Tab') {
-		event.preventDefault()
-		emit('close')
-	}
-}
-
-function handleReaction(emoji: string): void {
-	emit('reaction', emoji)
-}
-
-function handleReply(): void {
-	emit('reply')
-}
-
-function handleSelect(): void {
-	emit('select')
-}
-
-function handleCopy(): void {
-	emit('copy')
-}
-
-function handlePin(): void {
-	emit('pin')
-}
-
-function handleDelete(): void {
-	emit('delete')
-}
-
-defineExpose({
+const {
+	teleportTarget,
 	menuRef,
-})
+	inheritedTheme,
+	layerStyle,
+	menuStyle,
+	handleKeydown,
+	handleReaction,
+	handleReply,
+	handleSelect,
+	handleCopy,
+	handlePin,
+	handleDelete,
+	exposed,
+} = useChatMessageContextMenu(props, emit)
+
+defineExpose(exposed)
 </script>

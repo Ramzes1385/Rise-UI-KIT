@@ -18,7 +18,7 @@
 				:model-value="isSelected"
 				:is-disabled="!!row.isDisabled"
 				:label="`${TABLE_TEXT.SELECT_ROW} ${rowNumber}`"
-				:custom-class="HIDDEN_CHECKBOX_LABEL"
+				:custom-class="hiddenCheckboxLabel"
 				:size-scale="sizeScale"
 				@update:model-value="emit('toggle-row', row)" />
 		</td>
@@ -29,7 +29,7 @@
 			<BaseButton
 				v-if="isExpandable"
 				variant="ghost"
-				:padding="EXPAND_BUTTON_PADDING"
+				:padding="expandButtonPadding"
 				class="base-table__expand-btn"
 				:aria-label="isExpanded ? TABLE_TEXT.COLLAPSE_ROW : TABLE_TEXT.EXPAND_ROW"
 				:aria-expanded="isExpanded ? 'true' : 'false'"
@@ -57,12 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { TABLE_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
+import { useBaseTableRow } from '../model/useBaseTableRow'
 import type { BaseTableRowEmits, BaseTableRowProps, BaseTableRowSlots } from '../types/BaseTableRow.types'
 
 const props = defineProps<BaseTableRowProps>()
@@ -71,12 +71,5 @@ const emit = defineEmits<BaseTableRowEmits>()
 
 defineSlots<BaseTableRowSlots>()
 
-/** Подпись чекбокса строки скрыта визуально: она нужна только как доступное имя «Выбрать строку N» */
-const HIDDEN_CHECKBOX_LABEL = { label: 'base-table__visually-hidden' }
-
-/** Квадратная кнопка 24×24: иконка 16px и отступ 3px (плюс рамка 1px) */
-const EXPAND_BUTTON_PADDING = { x: 3, y: 3 }
-
-/** Строку можно раскрыть: есть дочерние строки или она помечена isExpandable (содержимое — слот expanded-content) */
-const isExpandable = computed(() => Boolean(props.row.isExpandable || props.row.children?.length))
+const { hiddenCheckboxLabel, expandButtonPadding, isExpandable } = useBaseTableRow(props)
 </script>

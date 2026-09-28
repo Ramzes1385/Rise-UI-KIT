@@ -58,13 +58,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'
+import { useChatHeader } from './model/useChatHeader'
 import './ChatHeader.style.scss'
 import type { ChatHeaderEmits, ChatHeaderProps } from './types/ChatHeader.types'
 
@@ -78,41 +78,14 @@ const props = withDefaults(defineProps<ChatHeaderProps>(), {
 
 const emit = defineEmits<ChatHeaderEmits>()
 
-const searchInputRef = ref<HTMLInputElement | null>(null)
-const searchToggleRef = ref<{ focus: () => void } | null>(null)
-
-/** «Анна печатает» в групповом чате, «Печатает» — в личном */
-const typingText = computed(() =>
-	props.typingUsername ? `${props.typingUsername} ${UI_CHAT_TEXT.TYPING_SUFFIX}` : UI_CHAT_TEXT.TYPING_LABEL,
-)
-
-/** Открытое поле поиска сразу получает фокус: можно печатать без лишнего клика */
-watch(
-	() => props.isSearching,
-	isSearching => {
-		if (isSearching) nextTick(() => searchInputRef.value?.focus())
-	},
-)
-
-function handleAvatarClick(): void {
-	emit('avatar-click')
-}
-
-function handleToggleSearch(): void {
-	emit('toggle-search')
-}
-
-function handleSearchInput(event: Event): void {
-	emit('update:searchQuery', (event.target as HTMLInputElement).value)
-}
-
-/** Escape в поле поиска закрывает поиск и возвращает фокус на кнопку поиска */
-function handleSearchEscape(): void {
-	emit('toggle-search')
-	nextTick(() => searchToggleRef.value?.focus())
-}
-
-function handleInfoClick(): void {
-	emit('info-click')
-}
+const {
+	searchInputRef,
+	searchToggleRef,
+	typingText,
+	handleAvatarClick,
+	handleToggleSearch,
+	handleSearchInput,
+	handleSearchEscape,
+	handleInfoClick,
+} = useChatHeader(props, emit)
 </script>

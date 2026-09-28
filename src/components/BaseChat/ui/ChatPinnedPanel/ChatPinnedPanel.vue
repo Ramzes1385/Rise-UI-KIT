@@ -46,13 +46,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'
-import type { ChatMessage } from '../../types/BaseChat.types'
+import { useChatPinnedPanel } from '../../model/useChatPinnedPanel'
 import type { ChatPinnedPanelEmits, ChatPinnedPanelProps } from '../../types/ChatPinnedPanel.types'
 import './ChatPinnedPanel.style.scss'
 
@@ -63,50 +62,5 @@ const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
 
 const emit = defineEmits<ChatPinnedPanelEmits>()
 
-const currentMessage = computed((): ChatMessage | null => {
-	/* istanbul ignore next — defensive: панель скрыта при pinnedMessages пустом (v-if) */
-	return props.pinnedMessages[props.currentIndex] || null
-})
-
-const currentMessageText = computed((): string => {
-	/* istanbul ignore next — defensive: панель скрыта при отсутствии currentMessage */
-	if (!currentMessage.value) return ''
-	const text = currentMessage.value.text || ''
-	if (currentMessage.value.attachments && currentMessage.value.attachments.length > 0) {
-		const hasImage = currentMessage.value.attachments.some(attachment => attachment.type === 'image')
-		const prefix = hasImage ? `🖼️ ${UI_CHAT_TEXT.PHOTO}` : `📎 ${UI_CHAT_TEXT.FILE}`
-		return text ? `${prefix}: ${text}` : prefix
-	}
-	return text
-})
-
-function handlePrev(): void {
-	const len = props.pinnedMessages.length
-	/* istanbul ignore next — defensive: navigation-кнопки скрыты при len <= 1 (v-if) */
-	if (len <= 1) return
-	const prevIndex = (props.currentIndex - 1 + len) % len
-	emit('update:currentIndex', prevIndex)
-}
-
-function handleNext(): void {
-	const len = props.pinnedMessages.length
-	/* istanbul ignore next — defensive: navigation-кнопки скрыты при len <= 1 (v-if) */
-	if (len <= 1) return
-	const nextIndex = (props.currentIndex + 1) % len
-	emit('update:currentIndex', nextIndex)
-}
-
-function handlePanelClick(): void {
-	/* istanbul ignore next — defensive: панель скрыта при пустом currentMessage */
-	if (currentMessage.value) {
-		emit('click', currentMessage.value.id)
-	}
-}
-
-function handleUnpin(): void {
-	/* istanbul ignore next — defensive: unpin-кнопка скрыта при пустом currentMessage */
-	if (currentMessage.value) {
-		emit('unpin', currentMessage.value.id)
-	}
-}
+const { currentMessageText, handlePrev, handleNext, handlePanelClick, handleUnpin } = useChatPinnedPanel(props, emit)
 </script>

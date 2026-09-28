@@ -30,70 +30,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
-import { useClickOutside } from '@composables/useClickOutside'
+import { useChatEmojiPicker } from './model/useChatEmojiPicker'
 import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './types/ChatEmojiPicker.types'
 
 defineProps<ChatEmojiPickerProps>()
 
 const emit = defineEmits<ChatEmojiPickerEmits>()
 
-const isEmojiOpen = ref(false)
-const emojiWrapperRef = ref<HTMLElement | null>(null)
-const triggerRef = ref<{ focus: () => void } | null>(null)
-
-useClickOutside({
-	targets: [emojiWrapperRef],
-	callback: () => {
-		isEmojiOpen.value = false
-	},
-	isActive: () => isEmojiOpen.value,
-})
-
-function toggleEmoji(): void {
-	isEmojiOpen.value = !isEmojiOpen.value
-}
-
-function selectEmoji(emoji: string): void {
-	emit('select', emoji)
-	isEmojiOpen.value = false
-}
-
-/** Escape закрывает панель; preventDefault — чтобы слой ниже (окно, панель с чатом) не закрылся тем же нажатием */
-function handleEscape(event: KeyboardEvent): void {
-	if (!isEmojiOpen.value) return
-	event.preventDefault()
-	isEmojiOpen.value = false
-	triggerRef.value?.focus()
-}
-
-const popularEmojis = [
-	'😀',
-	'😂',
-	'😊',
-	'😍',
-	'👍',
-	'👎',
-	'🔥',
-	'🎉',
-	'❤️',
-	'🤔',
-	'😎',
-	'🙌',
-	'👏',
-	'🚀',
-	'✨',
-	'👀',
-	'😢',
-	'😡',
-	'💩',
-	'💯',
-	'🙏',
-	'💡',
-	'📌',
-	'📎',
-]
+const { isEmojiOpen, emojiWrapperRef, triggerRef, popularEmojis, toggleEmoji, selectEmoji, handleEscape } = useChatEmojiPicker(emit)
 </script>

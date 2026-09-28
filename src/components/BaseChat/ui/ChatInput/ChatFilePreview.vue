@@ -24,13 +24,12 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../model/chatScale'
+import { useChatFilePreview } from './model/useChatFilePreview'
 import type { ChatFilePreviewEmits, ChatFilePreviewProps } from './types/ChatFilePreview.types'
 
 defineProps<ChatFilePreviewProps>()
 
 const emit = defineEmits<ChatFilePreviewEmits>()
 
-function handleRemove(index: number): void {
-	emit('remove', index)
-}
+const { handleRemove } = useChatFilePreview(emit)
 </script>

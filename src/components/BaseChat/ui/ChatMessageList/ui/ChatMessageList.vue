@@ -74,16 +74,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
-import { useAutoScroll } from '@composables/useAutoScroll'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useChatMessageActions } from '@composables/useChatMessageActions'
 import ChatMessageItem from './ChatMessage.vue'
 import { CHAT_SCALE } from '../../../model/chatScale'
+import { useChatMessageList } from '../model/useChatMessageList'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
 import '../styles/ChatMessageList.style.scss'
 import type { ChatMessageListEmits, ChatMessageListProps } from '../types/ChatMessageList.types'
@@ -122,27 +120,14 @@ const {
 	handleContextMenuCopy,
 	handleContextMenuPin,
 	handleContextMenuDelete,
-	scrollToMessage,
 	handleMentionClick,
 	handleCommandClick,
-} = useChatMessageActions({
-	selectedMessageIds: computed(() => props.selectedMessageIds),
-	emit,
-})
+	selectedSet,
+	activeContextMessageId,
+	isSelectionMode,
+	typingLabel,
+	exposed,
+} = useChatMessageList(props, emit)
 
-useAutoScroll({
-	container: listRef,
-	enabled: () => true,
-	watchSource: () => props.messages.length + (props.isTyping ? 1 : 0),
-})
-
-const selectedSet = computed(() => new Set(props.selectedMessageIds))
-const activeContextMessageId = computed(() => contextMenu.value.message?.id ?? null)
-const isSelectionMode = computed(() => props.selectedMessageIds.length > 0)
-/** Доступное имя индикатора набора: «Анна печатает» или «Печатает» */
-const typingLabel = computed(() =>
-	props.typingUsername ? `${props.typingUsername} ${UI_CHAT_TEXT.TYPING_SUFFIX}` : UI_CHAT_TEXT.TYPING_LABEL,
-)
-
-defineExpose({ scrollToMessage })
+defineExpose(exposed)
 </script>

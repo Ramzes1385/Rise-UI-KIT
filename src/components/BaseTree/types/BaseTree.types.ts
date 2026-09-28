@@ -1,4 +1,5 @@
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export type TreeSelectionMode = 'none' | 'single' | 'multiple'
@@ -115,3 +116,8 @@ export interface VisibleNode {
 	setSize: number
 	posInSet: number
 }
+
+export type TreeProps = PropsWithDefaults<
+	BaseTreeProps,
+	'selectionMode' | 'arrowPosition' | 'isDefaultExpandAll' | 'isVirtual' | 'height' | 'itemSize'
+>

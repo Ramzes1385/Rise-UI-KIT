@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const EDITOR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -44,3 +45,5 @@ export interface BaseEditorEmits {
 export interface BaseEditorSlots {
 	toolbar?: () => unknown
 }
+
+export type EditorProps = PropsWithDefaults<BaseEditorProps, 'modelValue' | 'isReadonly' | 'isAutofocus' | 'sizeScale'>

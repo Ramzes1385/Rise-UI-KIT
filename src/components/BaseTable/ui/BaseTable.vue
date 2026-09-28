@@ -19,7 +19,7 @@
 				:columns="localColumns"
 				:is-settings-open="isSettingsOpen"
 				:size-scale="sizeScale"
-				:settings-max-height="SETTINGS_MAX_HEIGHT"
+				:settings-max-height="settingsMaxHeight"
 				:toolbar-class="classes.toolbar"
 				:search-class="classes.search"
 				:filters-class="classes.filters"
@@ -175,7 +175,7 @@
 						v-model="currentPage"
 						:total="processedRows.length"
 						:page-size="localPageSize"
-						:max-visible="PAGINATION_MAX_VISIBLE"
+						:max-visible="paginationMaxVisible"
 						:size-scale="sizeScale" />
 				</slot>
 			</div>
@@ -188,34 +188,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSelect } from '@components/BaseSelect'
-import { usePadding } from '@composables/usePadding'
 import { kitDefaults } from '@composables/useDefaults'
 import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import { BasePagination } from '@components/BasePagination'
-import { useVirtualList } from '@composables/useVirtualList'
-import { isolateFormField } from '@composables/useFormContext'
-import { useExpandTransition } from '@composables/useExpandTransition'
-import { useTableComposition } from '@composables/useTableComposition'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseTable.style.scss'
 import BaseTableBody from './BaseTableBody.vue'
 import BaseTableHeader from './BaseTableHeader.vue'
+import { useBaseTable } from '../model/useBaseTable'
 import BaseTableToolbar from './BaseTableToolbar.vue'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
 import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../types/BaseTable.types'
-
-/** Наибольшая высота панели настроек колонок */
-const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
-/** Номеров страниц в пагинации, не считая крайних */
-const PAGINATION_MAX_VISIBLE = 4
-/** Длительность раскрытия и сворачивания строки, мс */
-const EXPAND_DURATION_MS = 300
-/** Расстояние до низа таблицы, px, с которого подгружаются следующие строки */
-const INFINITE_SCROLL_THRESHOLD = 50
 
 const props = withDefaults(
 	defineProps<BaseTableProps>(),
@@ -233,64 +218,24 @@ const props = withDefaults(
 		rowHeight: 44,
 	}),
 )
-
-// Поиск, фильтры и выбор строк — служебные поля: они не становятся полем BaseFormField вокруг таблицы
-isolateFormField()
-
-const slots = useSlots()
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-table', props, [
-	'root',
-	'body',
-	'header',
-	'toolbar',
-	'search',
-	'filters',
-	'settings',
-	'activeFilters',
-	'wrapper',
-	'loadingOverlay',
-	'table',
-	'thead',
-	'tr',
-	'th',
-	'tbody',
-	'td',
-	'loadMore',
-	'footerBar',
-	'pageSize',
-	'paginationInfo',
-	'footer',
-])
-
-const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad' })
-/** Без пропа padding отступы ячеек берутся из стилей (12px 16px), inline-переменные не пишутся. */
-const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
-
-const expand = useExpandTransition({ duration: EXPAND_DURATION_MS })
-
-provide(TABLE_EXPAND_TRANSITION_KEY, {
-	onExpandBeforeEnter: expand.onBeforeEnter,
-	onExpandEnter: expand.onEnter,
-	onExpandAfterEnter: expand.onAfterEnter,
-	onCollapseBeforeLeave: expand.onBeforeLeave,
-	onCollapseLeave: expand.onLeave,
-	onCollapseAfterLeave: expand.onAfterLeave,
-})
-
 const emit = defineEmits<BaseTableEmits>()
 defineSlots<BaseTableSlots>()
 
-const isSelectable = computed(() => props.behavior?.selectable ?? false)
-const hasSearch = computed(() => props.features?.search ?? false)
-const hasFilters = computed(() => props.features?.filters ?? false)
-const isMultiSort = computed(() => props.behavior?.multiSort ?? false)
-const hasColumnSettings = computed(() => props.features?.columnSettings ?? false)
-const hasRowNumber = computed(() => props.features?.rowNumber ?? false)
-const hasPageSizeSelector = computed(() => props.features?.pageSizeSelector ?? false)
-const isResizable = computed(() => props.behavior?.resizable ?? false)
-
 const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	settingsMaxHeight,
+	paginationMaxVisible,
+	paddingStyle,
+	isSelectable,
+	hasSearch,
+	hasFilters,
+	isMultiSort,
+	hasColumnSettings,
+	hasRowNumber,
 	searchQuery,
 	activeFilters,
 	currentPage,
@@ -341,105 +286,12 @@ const {
 	handleLoadMore,
 	handleScroll,
 	startResize,
-} = useTableComposition({
-	rows: computed(() => props.rows),
-	columns: computed(() => props.columns),
-	loadMode: computed(() => props.loadMode),
-	pageSize: computed(() => props.pageSize),
-	isMultiSort,
-	searchDebounce: computed(() => props.searchDebounce),
-	isResizable,
-	hasRowNumber,
-	isSelectable,
-	hasSearch,
-	hasFilters,
-	hasColumnSettings,
-	isLoading: computed(() => props.isLoading),
-	pageSizeOptions: computed(() => props.pageSizeOptions),
-	infiniteScrollThreshold: INFINITE_SCROLL_THRESHOLD,
-	emit,
-	slots,
-})
-
-const hasPageSizeControl = computed(() => hasPageSizeSelector.value && props.pageSizeOptions.length > 0)
-
-const hasPagination = computed(() => props.loadMode === 'pagination' && localPageSize.value > 0 && totalPages.value > 1)
-
-const tableWrapperRef = ref<HTMLElement | null>(null)
-
-/**
- * Область таблицы прокручивается (задан height или таблица шире контейнера). Прокручиваемой области без фокусируемых
- * элементов нужен tabindex, иначе её не прокрутить с клавиатуры (WCAG 2.1.1, правило axe scrollable-region-focusable).
- * Постоянный tabindex добавил бы лишнюю остановку Tab, поэтому он ставится только при прокрутке. Признак пересчитывается
- * при изменении размеров области и самой таблицы (новые строки, скрытые колонки).
- */
-const isScrollable = ref(false)
-let scrollObserver: ResizeObserver | null = null
-
-function updateScrollable(): void {
-	const wrapper = tableWrapperRef.value
-	isScrollable.value = wrapper !== null && (wrapper.scrollHeight > wrapper.clientHeight || wrapper.scrollWidth > wrapper.clientWidth)
-}
-
-onMounted(() => {
-	const wrapper = tableWrapperRef.value
-	/* istanbul ignore if -- defensive: обёртка рендерится всегда, ref заполнен к onMounted */
-	if (!wrapper) return
-	scrollObserver = new ResizeObserver(updateScrollable)
-	scrollObserver.observe(wrapper)
-	if (wrapper.firstElementChild) scrollObserver.observe(wrapper.firstElementChild)
-	updateScrollable()
-})
-
-onBeforeUnmount(() => {
-	scrollObserver?.disconnect()
-	scrollObserver = null
-})
-
-/** Виртуальный режим: нужен height — без своей области прокрутки таблица растёт на все строки */
-const isVirtualMode = computed(() => props.isVirtual && Boolean(props.height))
-
-const virtual = useVirtualList({
-	count: () => (isVirtualMode.value ? displayedRows.value.length : 0),
-	estimateSize: () => props.rowHeight,
-	scrollElement: computed(() => (isVirtualMode.value ? tableWrapperRef.value : null)),
-	getKey: index => displayedRows.value[index].id,
-})
-
-/** Строки для tbody: в виртуальном режиме — видимая часть с запасом */
-const bodyRows = computed(() =>
-	isVirtualMode.value ? displayedRows.value.slice(virtual.range.value.start, virtual.range.value.end) : displayedRows.value,
-)
-
-/**
- * Высота строки — от её начала до начала следующей: так в неё входят вложенные и раскрытые строки.
- * У последней отрисованной строки следующей служит нижняя распорка
- */
-function measureRows(): void {
-	const wrapper = tableWrapperRef.value as HTMLElement
-	const rowElements = [...wrapper.querySelectorAll<HTMLElement>('tr[data-virtual-index]')]
-	const end = wrapper.querySelector<HTMLElement>('.base-table__spacer--end') as HTMLElement
-	rowElements.forEach((row, position) => {
-		const next = rowElements[position + 1] ?? end
-		virtual.measure(Number(row.dataset.virtualIndex), next.offsetTop - row.offsetTop)
-	})
-}
-
-/** Замер после каждой отрисовки строк и при изменении высоты tbody (раскрытие строки, загрузка картинок) */
-let rowsObserver: ResizeObserver | null = null
-
-watch(
-	[isVirtualMode, bodyRows],
-	([isVirtual]) => {
-		rowsObserver?.disconnect()
-		rowsObserver = null
-		if (!isVirtual) return
-		measureRows()
-		rowsObserver = new ResizeObserver(measureRows)
-		rowsObserver.observe((tableWrapperRef.value as HTMLElement).querySelector('.base-table__tbody') as HTMLElement)
-	},
-	{ flush: 'post' },
-)
-
-onBeforeUnmount(() => rowsObserver?.disconnect())
+	hasPageSizeControl,
+	hasPagination,
+	tableWrapperRef,
+	isScrollable,
+	isVirtualMode,
+	virtual,
+	bodyRows,
+} = useBaseTable(props, emit)
 </script>

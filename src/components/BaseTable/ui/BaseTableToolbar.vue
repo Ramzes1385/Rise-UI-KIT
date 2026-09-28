@@ -7,7 +7,7 @@
 				:model-value="searchQuery"
 				:label="TABLE_TEXT.SEARCH_LABEL"
 				:placeholder="UI_TEXT.SEARCH_PLACEHOLDER"
-				:custom-class="HIDDEN_LABEL"
+				:custom-class="hiddenLabel"
 				:size-scale="sizeScale"
 				@update:model-value="emit('search-input', $event)">
 				<template #prefix>
@@ -38,7 +38,7 @@
 				:model-value="filterValue"
 				:label="TABLE_TEXT.FILTER_VALUE_LABEL"
 				:placeholder="UI_FILTER.VALUE_PLACEHOLDER"
-				:custom-class="HIDDEN_LABEL"
+				:custom-class="hiddenLabel"
 				:size-scale="sizeScale"
 				@update:model-value="emit('update:filter-value', $event)"
 				@keydown.enter="emit('add-filter')" />
@@ -73,7 +73,7 @@
 							<BaseCheckbox
 								:model-value="!column.isHidden"
 								:label="column.label"
-								:custom-class="SETTINGS_OPTION"
+								:custom-class="settingsOption"
 								:size-scale="sizeScale"
 								@update:model-value="emit('toggle-column-visibility', column)" />
 						</div>
@@ -105,7 +105,6 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseBadge } from '@components/BaseBadge'
@@ -115,6 +114,7 @@ import { BaseSelect } from '@components/BaseSelect'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
+import { useBaseTableToolbar } from '../model/useBaseTableToolbar'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps, BaseTableToolbarSlots } from '../types/BaseTableToolbar.types'
 
 const props = defineProps<BaseTableToolbarProps>()
@@ -123,24 +123,5 @@ const emit = defineEmits<BaseTableToolbarEmits>()
 
 defineSlots<BaseTableToolbarSlots>()
 
-/** Подписи полей поиска и значения фильтра скрыты визуально: поле называет плейсхолдер, скринридер — подпись */
-const HIDDEN_LABEL = { label: 'base-table__visually-hidden' }
-
-/** Строка чекбокса в панели колонок — пункт меню на всю ширину панели: кликабельна вся строка */
-const SETTINGS_OPTION = { labelWrapper: 'base-table__settings-option' }
-
-const settingsListRef = ref<HTMLElement | null>(null)
-
-/**
- * Панель колонок телепортирована в конец body и не попадает в порядок Tab после кнопки. Поэтому при открытии фокус
- * переходит на первый чекбокс панели; Escape закрывает панель, и BaseDropdown возвращает фокус на кнопку «Колонки».
- */
-watch(
-	() => props.isSettingsOpen,
-	async isOpen => {
-		if (!isOpen) return
-		await nextTick()
-		settingsListRef.value?.querySelector<HTMLInputElement>('input')?.focus()
-	},
-)
+const { hiddenLabel, settingsOption, settingsListRef } = useBaseTableToolbar(props)
 </script>

@@ -30,7 +30,7 @@
 		<tr v-else-if="!isLoading && rows.length === 0" :class="trClass">
 			<td :colspan="totalColumns" class="base-table__td base-table__td--empty" :class="tdClass">
 				<slot name="empty">
-					<BaseEmpty variant="ghost" :title="emptyText" :custom-class="EMPTY_CLASSES" :size-scale="sizeScale" />
+					<BaseEmpty variant="ghost" :title="emptyText" :custom-class="emptyClasses" :size-scale="sizeScale" />
 				</slot>
 			</td>
 		</tr>
@@ -104,7 +104,7 @@
 
 		<tr v-if="isLoading && rows.length && loadMode === 'infinite'" :class="trClass">
 			<td :colspan="totalColumns" class="base-table__td base-table__td--loading-more" :class="tdClass">
-				<BaseLoader has-label :custom-class="LOADING_MORE_CLASSES" :size-scale="sizeScale" />
+				<BaseLoader has-label :custom-class="loadingMoreClasses" :size-scale="sizeScale" />
 			</td>
 		</tr>
 	</tbody>
@@ -116,6 +116,7 @@ import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import BaseTableRow from './BaseTableRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
+import { useBaseTableBody } from '../model/useBaseTableBody'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import type { BaseTableBodyEmits, BaseTableBodyProps, BaseTableBodySlots } from '../types/BaseTableBody.types'
 
@@ -125,16 +126,5 @@ const emit = defineEmits<BaseTableBodyEmits>()
 
 defineSlots<BaseTableBodySlots>()
 
-/** Класс заголовка пустого состояния сохраняет прежний селектор .base-table__empty-text для приложений и тестов */
-const EMPTY_CLASSES = { root: 'base-table__empty', title: 'base-table__empty-text' }
-
-/** Индикатор подгрузки в строку: спиннер 20px и подпись справа от него */
-const LOADING_MORE_CLASSES = { root: 'base-table__loading-more', animation: 'base-table__loading-more-icon' }
-
-/** Ширины скелетонов в ячейках: повторяющийся узор, чтобы строки-заглушки не выглядели одинаковыми */
-const SKELETON_WIDTHS = ['72%', '48%', '60%', '84%', '40%']
-
-function getSkeletonWidth(row: number, column: number): string {
-	return SKELETON_WIDTHS[(row + column) % SKELETON_WIDTHS.length]
-}
+const { emptyClasses, loadingMoreClasses, getSkeletonWidth } = useBaseTableBody()
 </script>

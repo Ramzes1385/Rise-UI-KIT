@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
@@ -36,3 +37,5 @@ export interface ChatMessageListEmits {
 	(event: 'mention-click', mention: string): void
 	(event: 'command-click', command: string): void
 }
+
+export type MessageListProps = PropsWithDefaults<ChatMessageListProps, 'selectedMessageIds'>

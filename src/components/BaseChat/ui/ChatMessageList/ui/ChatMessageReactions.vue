@@ -23,18 +23,11 @@
 
 <script setup lang="ts">
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import type { ChatMessageReaction } from '../../../types/BaseChat.types'
+import { useChatMessageReactions } from '../model/useChatMessageReactions'
 import type { ChatMessageReactionsEmits, ChatMessageReactionsProps } from '../types/ChatMessageReactions.types'
 
 defineProps<ChatMessageReactionsProps>()
 const emit = defineEmits<ChatMessageReactionsEmits>()
 
-/** Реакция текущего пользователя: в списке users он записан как 'me' */
-function isOwn(reaction: ChatMessageReaction): boolean {
-	return reaction.users.includes('me')
-}
-
-function handleClick(emoji: string): void {
-	emit('toggle', emoji)
-}
+const { isOwn, handleClick } = useChatMessageReactions(emit)
 </script>

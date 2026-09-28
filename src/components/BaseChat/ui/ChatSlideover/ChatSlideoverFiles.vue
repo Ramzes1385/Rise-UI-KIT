@@ -32,34 +32,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../model/chatScale'
-import type { ChatMessage } from '../../types/BaseChat.types'
-import type { SharedAttachment } from '../../types/ChatSlideover.types'
+import { useChatSlideoverFiles } from '../../model/useChatSlideoverFiles'
 import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../types/ChatSlideoverFiles.types'
 
 const props = defineProps<ChatSlideoverFilesProps>()
 
 const emit = defineEmits<ChatSlideoverFilesEmits>()
 
-function getPublishedLabel(message: ChatMessage): string {
-	return message.date || message.time
-}
-
-const files = computed((): SharedAttachment[] => {
-	const result: SharedAttachment[] = []
-	for (const message of props.messages) {
-		for (const attachment of message.attachments ?? []) {
-			if (attachment.type === 'file') {
-				result.push({ ...attachment, publishedAt: getPublishedLabel(message) })
-			}
-		}
-	}
-	return result
-})
+const { files } = useChatSlideoverFiles(props)
 </script>

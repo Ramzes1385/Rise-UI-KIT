@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from './BaseChat.types'
 
 export interface ChatSlideoverProps {
@@ -32,3 +33,5 @@ export interface ChatSlideoverEmits {
 export interface SharedAttachment extends ChatMessageAttachment {
 	publishedAt: string
 }
+
+export type ChatSlideoverPanelProps = PropsWithDefaults<ChatSlideoverProps, 'subtitle' | 'avatar' | 'isGroup' | 'members'>

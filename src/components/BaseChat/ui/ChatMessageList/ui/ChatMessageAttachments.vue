@@ -52,27 +52,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
 import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../../model/chatScale'
-import type { ChatMessageAttachment } from '../../../types/BaseChat.types'
+import { useChatMessageAttachments } from '../model/useChatMessageAttachments'
 import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../types/ChatMessageAttachments.types'
 
 const props = defineProps<ChatMessageAttachmentsProps>()
 const emit = defineEmits<ChatMessageAttachmentsEmits>()
 
-const images = computed(() => props.attachments.filter(attachment => attachment.type === 'image'))
-const files = computed(() => props.attachments.filter(attachment => attachment.type !== 'image'))
-
-function handleDownload(file: ChatMessageAttachment): void {
-	emit('download', file)
-}
-
-function handleFileClick(file: ChatMessageAttachment): void {
-	emit('file-click', file)
-}
+const { images, files, handleDownload, handleFileClick } = useChatMessageAttachments(props, emit)
 </script>

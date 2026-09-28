@@ -5,7 +5,7 @@
 				v-for="reply in quickReplies"
 				:key="reply"
 				variant="outline"
-				:size-scale="sizeScale * QUICK_REPLY_SCALE"
+				:size-scale="sizeScale * quickReplyScale"
 				class="base-chat-input__quick-reply-btn"
 				:aria-label="`${UI_CHAT_TEXT.QUICK_REPLY} ${reply}`"
 				@click="handleQuickReply(reply)">
@@ -149,21 +149,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, useId, watch } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useChatInputState } from '@composables/useChatInputState'
 import { CHAT_SCALE } from '../../model/chatScale'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import ChatFilePreview from './ChatFilePreview.vue'
+import { useChatInput } from './model/useChatInput'
 import './ChatInput.style.scss'
 import type { ChatInputEmits, ChatInputProps } from './types/ChatInput.types'
-
-/** Быстрые ответы — пилюли размера sm (28px) */
-const QUICK_REPLY_SCALE = 0.875
 
 const props = withDefaults(defineProps<ChatInputProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
@@ -179,7 +175,6 @@ const {
 	text,
 	fileInputRef,
 	attachments,
-	inputComponentRef,
 	showMentions,
 	showCommands,
 	activeSuggestionIndex,
@@ -195,53 +190,12 @@ const {
 	removeAttachment,
 	insertEmoji,
 	handleSend,
-} = useChatInputState({ props, emit })
-
-const suggestionsId = useId()
-
-/** Открыт непустой список подсказок — поле ссылается на него и на выбранный пункт */
-const isSuggestionsOpen = computed(
-	() => (showMentions.value && filteredMembers.value.length > 0) || (showCommands.value && filteredCommands.value.length > 0),
-)
-
-/** Поле ввода для useChatInputState: позиция курсора, фокус, подстановка упоминаний и команд */
-function setTextareaRef(element: unknown): void {
-	inputComponentRef.value = element instanceof HTMLTextAreaElement ? { inputRef: element } : null
-}
-
-/**
- * Высота поля подстраивается под текст (от одной строки до max-height из стилей, дальше — прокрутка).
- * Сначала высота сбрасывается в auto: иначе scrollHeight не меньше текущей высоты и поле только растёт.
- */
-function adjustFieldHeight(): void {
-	const field = inputComponentRef.value?.inputRef
-	if (!field) return
-	field.style.height = 'auto'
-	if (field.scrollHeight === 0) {
-		field.style.height = ''
-		return
-	}
-	const borders = field.offsetHeight - field.clientHeight
-	field.style.height = `${field.scrollHeight + borders}px`
-}
-
-watch(text, () => nextTick(adjustFieldHeight))
-onMounted(adjustFieldHeight)
-
-/**
- * Подсказки пересчитываются после отпускания клавиши (курсор мог сместиться стрелками или Home/End).
- * Кроме Escape: он закрыл список на keydown, и пересчёт на keyup открыл бы его снова.
- */
-function handleKeyUp(event: KeyboardEvent): void {
-	if (event.key === 'Escape') return
-	checkAutocomplete()
-}
-
-function handleCancelReply(): void {
-	emit('cancel-reply')
-}
-
-function handleQuickReply(reply: string): void {
-	emit('quick-reply', reply)
-}
+	quickReplyScale,
+	suggestionsId,
+	isSuggestionsOpen,
+	setTextareaRef,
+	handleKeyUp,
+	handleCancelReply,
+	handleQuickReply,
+} = useChatInput(props, emit)
 </script>

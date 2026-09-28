@@ -32,9 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useMessageParser } from '@composables/useMessageParser'
-import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../types/ChatMessageText.types'
+import { useChatMessageText } from '../model/useChatMessageText'
+import type { ChatMessageTextEmits, ChatMessageTextProps } from '../types/ChatMessageText.types'
 
 /*
  * Токены в шаблоне записаны в одну строку, без пробелов между тегами: текст сообщения выводится с white-space: pre-wrap,
@@ -43,22 +42,5 @@ import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } fro
 const props = defineProps<ChatMessageTextProps>()
 const emit = defineEmits<ChatMessageTextEmits>()
 
-const { getHighlightedParts, parseMessageText } = useMessageParser({
-	searchQuery: () => props.searchQuery ?? '',
-})
-
-const highlightedTokens = computed<HighlightedToken[]>(() =>
-	parseMessageText(props.text).map(token => ({
-		...token,
-		highlightedParts: token.type === 'text' ? getHighlightedParts(token.value) : [],
-	})),
-)
-
-function handleMentionClick(mention: string): void {
-	emit('mention-click', mention.slice(1))
-}
-
-function handleCommandClick(command: string): void {
-	emit('command-click', command.slice(1))
-}
+const { highlightedTokens, handleMentionClick, handleCommandClick } = useChatMessageText(props, emit)
 </script>

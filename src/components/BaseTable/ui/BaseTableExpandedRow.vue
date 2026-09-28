@@ -17,13 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
+import { useTableExpandTransition } from '../model/useTableExpandTransition'
 import type { BaseTableExpandedRowProps, BaseTableExpandedRowSlots } from '../types/BaseTableExpandedRow.types'
 
 defineProps<BaseTableExpandedRowProps>()
 
 defineSlots<BaseTableExpandedRowSlots>()
 
-const transitionCallbacks = inject(TABLE_EXPAND_TRANSITION_KEY)!
+const { transitionCallbacks } = useTableExpandTransition()
 </script>

@@ -161,85 +161,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { BaseColorPicker } from '@components/BaseColorPicker'
-import { EDITOR_MENU_SCALE_RATIO } from '../model/editorScale'
-import type {
-	BaseEditorToolbarEmits,
-	BaseEditorToolbarProps,
-	BaseEditorToolbarSlots,
-	ToolbarButton,
-} from '../types/BaseEditorToolbar.types'
+import { useBaseEditorToolbar } from '../model/useBaseEditorToolbar'
+import type { BaseEditorToolbarEmits, BaseEditorToolbarProps, BaseEditorToolbarSlots } from '../types/BaseEditorToolbar.types'
 
 const props = defineProps<BaseEditorToolbarProps>()
 
 const emit = defineEmits<BaseEditorToolbarEmits>()
 
-const headingValue = ref<string | number>('p')
-const textColorModel = ref(props.textColor)
-const backgroundColorModel = ref(props.backgroundColor)
-
-/** Иконки кнопок — 16px при sizeScale = 100 (размер sm шкалы иконок) */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
-
-/** Селект «Формат» — размер sm (28px), как кнопки тулбара */
-const controlScale = computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO)
-
-/** customClass.colorPicker редактора — класс кнопки-триггера пикера цвета */
-const colorPickerClasses = computed(() => ({ swatch: props.classes.colorPicker }))
-
-const buttonGroups = computed(() => [
-	{
-		key: 'format',
-		items: [
-			{ icon: 'bold', label: UI_EDITOR.BOLD, activeKey: 'isBold', action: 'bold', type: 'format' },
-			{ icon: 'italic', label: UI_EDITOR.ITALIC, activeKey: 'isItalic', action: 'italic', type: 'format' },
-			{ icon: 'underline', label: UI_EDITOR.UNDERLINE, activeKey: 'isUnderline', action: 'underline', type: 'format' },
-			{ icon: 'strike', label: UI_EDITOR.STRIKETHROUGH, activeKey: 'isStrike', action: 'strikeThrough', type: 'format' },
-		] as ToolbarButton[],
-	},
-	{
-		key: 'align',
-		items: [
-			{ icon: 'align-left', label: UI_EDITOR.ALIGN_LEFT, activeKey: 'isJustifyLeft', action: 'justifyLeft', type: 'format' },
-			{ icon: 'align-center', label: UI_EDITOR.ALIGN_CENTER, activeKey: 'isJustifyCenter', action: 'justifyCenter', type: 'format' },
-			{ icon: 'align-right', label: UI_EDITOR.ALIGN_RIGHT, activeKey: 'isJustifyRight', action: 'justifyRight', type: 'format' },
-			{ icon: 'align-justify', label: UI_EDITOR.ALIGN_JUSTIFY, activeKey: 'isJustifyFull', action: 'justifyFull', type: 'format' },
-		] as ToolbarButton[],
-	},
-	{
-		key: 'list',
-		items: [
-			{
-				icon: 'list-bullet',
-				label: UI_EDITOR.LIST_BULLET,
-				activeKey: 'isUnorderedList',
-				action: 'insertUnorderedList',
-				type: 'format',
-			},
-			{
-				icon: 'list-number',
-				label: UI_EDITOR.LIST_NUMBERED,
-				activeKey: 'isOrderedList',
-				action: 'insertOrderedList',
-				type: 'format',
-			},
-		] as ToolbarButton[],
-	},
-	{
-		key: 'block',
-		items: [
-			{ icon: 'quote', label: UI_EDITOR.QUOTE, activeKey: 'isBlockquote', action: 'blockquote', type: 'block' },
-			{ icon: 'code', label: UI_EDITOR.CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
-		] as ToolbarButton[],
-	},
-])
-
 defineSlots<BaseEditorToolbarSlots>()
+
+const { headingValue, textColorModel, backgroundColorModel, iconScale, controlScale, colorPickerClasses, buttonGroups } =
+	useBaseEditorToolbar(props)
 </script>

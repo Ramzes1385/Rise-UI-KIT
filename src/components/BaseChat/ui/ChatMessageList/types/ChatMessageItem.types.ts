@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
 export interface ChatMessageItemProps {
@@ -23,3 +24,5 @@ export interface ChatMessageItemEmits {
 	(event: 'command-click', command: string): void
 	(event: 'reaction-toggle', emoji: string): void
 }
+
+export type MessageItemProps = PropsWithDefaults<ChatMessageItemProps, 'isGroup' | 'allImagesUrls'>

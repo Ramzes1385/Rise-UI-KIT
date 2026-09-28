@@ -485,7 +485,7 @@ src/components/BaseComponent/
 ├── types/
 │   └── BaseComponent.types.ts     # Типы и константы, из которых они выводятся
 ├── model/
-│   └── useBaseComponent.ts        # Логика компонента (пилот: BaseInputNumber, BaseSplitter, BaseInplace)
+│   └── useBaseComponent.ts        # Логика компонента
 ├── styles/
 │   └── BaseComponent.style.scss   # Стили
 ├── stories/
@@ -513,15 +513,19 @@ src/components/BaseComponent/
 ### Логика в `model/`
 
 `<script setup>` компонента содержит только макросы (`defineProps`, `defineEmits`, `defineSlots`, `defineExpose`),
-импорты для шаблона и вызов `useBaseX(props, emit)` из `model/useBaseX.ts`. Компоненты переводятся на эту схему
-группами (docs/v2/PLAN.md, С.9); переведённые перечислены в `MODEL_COMPONENTS` в `eslint.config.js`, и для них ESLint
-не пропускает в `.vue` функции, `let`, `computed`, `watch`, хуки жизненного цикла и composables не из `model/`.
+импорты для шаблона и вызов `useBaseX(props, emit)` из `model/useBaseX.ts`. Так устроены все компоненты: в
+`src/components/*/ui/**/*.vue` ESLint не пропускает функции, `let`, `computed`, `watch`, хуки жизненного цикла
+и composables не из `model/`.
 
 - Пропсы после `withDefaults` описывает тип `PropsWithDefaults<BaseXProps, 'ключи со значениями по умолчанию'>`
   из `@composables/useDefaults`.
 - Логика делится на небольшие функции по задачам (значение, клавиатура, перетаскивание), чтобы каждая проходила пороги
   «чистого кода» (раздел 11).
-- Composable возвращает всё, что нужно шаблону, включая template ref и методы для `defineExpose`.
+- Composable возвращает всё, что нужно шаблону, включая template ref и методы для `defineExpose`. Константу, нужную
+  только шаблону, он возвращает в camelCase (`settingsMaxHeight`); константа для умолчаний пропсов экспортируется
+  из `model/` (`DEFAULT_DURATION`).
+- У вложенного компонента свой composable в `model/` рядом с его `types/`: `model/useDropdownMenuContent.ts`,
+  `ui/ChatHeader/model/useChatHeader.ts`. Компоненту без логики (`BaseCalendarMonths`) модель не нужна.
 - Типы composable (`NumberDraft`, `SplitterSize`) — в `types/BaseX.types.ts` вместе с типами компонента.
 - Тесты — по-прежнему через компонент; покрытие `model/use*.ts` проверяет `npm run test:components:coverage`.
 

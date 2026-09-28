@@ -22,32 +22,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { CHAT_SCALE } from '../../model/chatScale'
-import type { ChatMessage } from '../../types/BaseChat.types'
-import type { ChatSlideoverLinksProps, SharedLink } from '../../types/ChatSlideoverLinks.types'
+import { useChatSlideoverLinks } from '../../model/useChatSlideoverLinks'
+import type { ChatSlideoverLinksProps } from '../../types/ChatSlideoverLinks.types'
 
 const props = defineProps<ChatSlideoverLinksProps>()
 
-function getPublishedLabel(message: ChatMessage): string {
-	return message.date || message.time
-}
-
-const links = computed((): SharedLink[] => {
-	const result: SharedLink[] = []
-	const seen = new Set<string>()
-	const urlRegex = /(https?:\/\/[^\s]+)/gi
-	for (const message of props.messages) {
-		if (!message.text) continue
-		for (const url of message.text.match(urlRegex) ?? []) {
-			if (seen.has(url)) continue
-			seen.add(url)
-			result.push({ url, publishedAt: getPublishedLabel(message) })
-		}
-	}
-	return result
-})
+const { links } = useChatSlideoverLinks(props)
 </script>

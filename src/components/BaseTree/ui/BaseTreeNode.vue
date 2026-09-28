@@ -114,134 +114,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref, useId, watch } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import BaseTreeChildren from './BaseTreeChildren.vue'
-import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
-import type { TreeContext } from '../types/BaseTree.types'
+import { useBaseTreeNode } from '../model/useBaseTreeNode'
 import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../types/BaseTreeNode.types'
 import '../styles/BaseTree.style.scss'
 
 const props = defineProps<BaseTreeNodeProps>()
 defineSlots<BaseTreeNodeSlots>()
 
-const treeContext = getTreeContext()
-
-function getTreeContext(): TreeContext {
-	const context = inject(TREE_CONTEXT_KEY, undefined)
-	/* istanbul ignore if -- defensive: BaseTreeNode всегда рендерится внутри BaseTree, контекст предоставляется родителем */
-	if (!context) {
-		throw new Error('BaseTreeNode: TreeContext not found. Ensure BaseTreeNode is rendered inside BaseTree.')
-	}
-	return context
-}
-
-const labelId = `rise-tree-${useId()}-label`
-
-/** Текущий элемент заголовка — чтобы снять именно его регистрацию при размонтировании */
-let headerElement: HTMLElement | null = null
-
-/** Заголовок регистрируется в дереве: на него дерево переводит фокус стрелками и поиском по буквам */
-function setHeaderElement(element: unknown): void {
-	if (element instanceof HTMLElement) {
-		headerElement = element
-		treeContext.registerHeader(props.node.id, element)
-	} else if (headerElement) {
-		treeContext.unregisterHeader(props.node.id, headerElement)
-		headerElement = null
-	}
-}
-
-const hasChildren = computed(function getHasChildren() {
-	return Boolean(props.node.children?.length)
-})
-
-/** Дочерние узлы для рендера — рендерится только при hasChildren, поэтому всегда непустой. */
-const childNodes = computed(function getChildNodes() {
-	/* istanbul ignore next -- defensive: childNodes читается только при hasChildren=true */
-	return props.node.children ?? []
-})
-
-const isExpanded = computed(function getIsExpanded() {
-	return treeContext.expandedSet.value.has(props.node.id)
-})
-
-const isSelected = computed(function getIsSelected() {
-	return treeContext.selectedSet.value.has(props.node.id)
-})
-
-/** 0 — узел в порядке Tab, −1 — нет. Computed: при переходе стрелкой перерисовываются только два узла */
-const tabIndex = computed(function getTabIndex() {
-	return treeContext.tabIndexOf(props.node.id)
-})
-
-/**
- * Классы чекбокса: пользовательский класс checkbox — на корень, подпись скрыта визуально.
- * Флажок скрыт от скринридера (отметку объявляет aria-checked узла); подпись оставлена, чтобы поле не было безымянным.
- */
-const checkboxClasses = computed(function getCheckboxClasses() {
-	return { root: treeContext.classes.value.checkbox, label: 'base-tree__visually-hidden' }
-})
-
-/** Узел был раскрыт хотя бы раз — для ленивого рендеринга детей */
-const wasExpanded = ref(isExpanded.value)
-
-watch(isExpanded, function handleExpandedWatch(expanded) {
-	if (expanded && !wasExpanded.value) {
-		wasExpanded.value = true
-	}
-})
-
-const nodeClasses = computed(function getNodeClasses() {
-	return {
-		'base-tree__node--expanded': isExpanded.value,
-		'base-tree__node--selected': isSelected.value,
-		'base-tree__node--disabled': props.node.isDisabled,
-		'base-tree__node--leaf': !hasChildren.value,
-		'base-tree__node--flat': props.isFlat,
-	}
-})
-
-/** Клик по стрелке — только раскрытие/скрытие */
-function handleArrowClick(): void {
-	if (props.node.isDisabled) {
-		return
-	}
-	treeContext.toggleNode(props.node.id)
-}
-
-/** Нажатие мышью на ссылку: фокус остаётся на узле (treeitem), иначе стрелки перестали бы работать */
-function handleLinkMousedown(event: MouseEvent): void {
-	if (event.button !== 0) return
-	event.preventDefault()
-	headerElement?.focus()
-}
-
-/**
- * Переход по ссылке узла (клик или Enter). Раскрытие не меняется — для него стрелка; в режиме single узел
- * становится выбранным (текущая страница), повторный переход выбор не снимает.
- */
-function handleLinkClick(event: MouseEvent): void {
-	event.stopPropagation()
-	if (treeContext.selectionMode.value === 'single' && !isSelected.value) treeContext.selectNode(props.node.id)
-}
-
-function handleHeaderClick(): void {
-	if (props.node.isDisabled) {
-		return
-	}
-	const mode = treeContext.selectionMode.value
-
-	if (mode === 'none') {
-		if (hasChildren.value) {
-			treeContext.toggleNode(props.node.id)
-		}
-		return
-	}
-
-	treeContext.selectNode(props.node.id)
-}
+const {
+	treeContext,
+	labelId,
+	setHeaderElement,
+	hasChildren,
+	isExpanded,
+	isSelected,
+	wasExpanded,
+	childNodes,
+	tabIndex,
+	nodeClasses,
+	checkboxClasses,
+	handleArrowClick,
+	handleLinkMousedown,
+	handleLinkClick,
+	handleHeaderClick,
+} = useBaseTreeNode(props)
 </script>

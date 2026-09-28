@@ -20,33 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseImage } from '@components/BaseImage'
-import type { ChatMessage } from '../../types/BaseChat.types'
-import type { SharedAttachment } from '../../types/ChatSlideover.types'
+import { useChatSlideoverMedia } from '../../model/useChatSlideoverMedia'
 import type { ChatSlideoverMediaProps } from '../../types/ChatSlideoverMedia.types'
 
 const props = defineProps<ChatSlideoverMediaProps>()
 
-function getPublishedLabel(message: ChatMessage): string {
-	return message.date || message.time
-}
-
-const media = computed((): SharedAttachment[] => {
-	const result: SharedAttachment[] = []
-	for (const message of props.messages) {
-		for (const attachment of message.attachments ?? []) {
-			if (attachment.type === 'image') {
-				result.push({ ...attachment, publishedAt: getPublishedLabel(message) })
-			}
-		}
-	}
-	return result
-})
-
-const imageUrls = computed((): string[] => {
-	return media.value.map(item => item.url)
-})
+const { media, imageUrls } = useChatSlideoverMedia(props)
 </script>

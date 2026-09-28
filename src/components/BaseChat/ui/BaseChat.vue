@@ -117,25 +117,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useChatState } from '@composables/useChatState'
 import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
-import { useChatActions } from '@composables/useChatActions'
-import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
-import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseChat.style.scss'
 import { ChatInput } from './ChatInput'
 import { ChatHeader } from './ChatHeader'
 import { ChatSlideover } from './ChatSlideover'
+import { useBaseChat } from '../model/useBaseChat'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
 import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../types/BaseChat.types'
-import type { MessageListExposed } from '@composables/useChatActions/types/useChatActions.types'
 
 const props = withDefaults(
 	defineProps<BaseChatProps>(),
@@ -152,16 +148,17 @@ const props = withDefaults(
 		currentUserRole: 'member',
 	}),
 )
-
 const emit = defineEmits<BaseChatEmits>()
 
 defineSlots<BaseChatSlots>()
 
-const { variantClass, variantStyle, sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-chat', props, ['root'])
-
-const messageListRef = ref<MessageListExposed | null>(null)
-
 const {
+	variantClass,
+	variantStyle,
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	messageListRef,
 	searchQuery,
 	isSearching,
 	selectedMessageIds,
@@ -179,11 +176,6 @@ const {
 	handleAvatarClick,
 	handleInfoClick,
 	handleScrollToPinned,
-} = useChatState(props, emit, {
-	scrollToMessage: messageId => messageListRef.value?.scrollToMessage(messageId),
-})
-
-const {
 	deleteConfirm,
 	deleteConfirmText,
 	handleDeleteSelected,
@@ -192,13 +184,6 @@ const {
 	handleCancelDelete,
 	handleForwardSelected,
 	handleCancelSelection,
-} = useChatDeleteConfirm({
-	selectedMessageIds,
-	onDelete: ids => emit('delete-messages', ids),
-	onForward: ids => emit('forward-messages', ids),
-})
-
-const {
 	handleHeaderAvatarClick,
 	handleReplyClick,
 	handleSend,
@@ -214,12 +199,5 @@ const {
 	handleUpdateMemberRole,
 	handleMentionClick,
 	handleCommandClick,
-} = useChatActions({
-	emit,
-	replyingTo,
-	getAvatar: () => props.avatar,
-	messageListRef,
-	handleAvatarClick,
-	handleCancelReply,
-})
+} = useBaseChat(props, emit)
 </script>

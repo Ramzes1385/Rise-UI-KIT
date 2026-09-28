@@ -41,14 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue'
 import BaseTable from './BaseTable.vue'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
+import { useTableExpandTransition } from '../model/useTableExpandTransition'
 import type { BaseTableNestedRowProps, BaseTableNestedRowSlots } from '../types/BaseTableNestedRow.types'
 
 defineProps<BaseTableNestedRowProps>()
 
 defineSlots<BaseTableNestedRowSlots>()
 
-const transitionCallbacks = inject(TABLE_EXPAND_TRANSITION_KEY)!
+const { transitionCallbacks } = useTableExpandTransition()
 </script>

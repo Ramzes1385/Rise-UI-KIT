@@ -138,7 +138,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAvatar } from '@components/BaseAvatar'
@@ -148,10 +147,10 @@ import { BaseCheckbox } from '@components/BaseCheckbox'
 import ChatMessageText from './ChatMessageText.vue'
 import { CHAT_SCALE } from '../../../model/chatScale'
 import ChatMessageReply from './ChatMessageReply.vue'
+import { useChatMessage } from '../model/useChatMessage'
 import ChatMessageReactions from './ChatMessageReactions.vue'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import type { ChatMessageItemEmits, ChatMessageItemProps } from '../types/ChatMessageItem.types'
-import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../types/BaseChat.types'
 
 const props = withDefaults(defineProps<ChatMessageItemProps>(), {
 	isGroup: false,
@@ -164,78 +163,23 @@ const props = withDefaults(defineProps<ChatMessageItemProps>(), {
 
 const emit = defineEmits<ChatMessageItemEmits>()
 
-/** Доступные названия статусов доставки: галочки передают статус не только цветом */
-const STATUS_LABELS: Record<Exclude<ChatMessageStatus, 'sending'>, string> = {
-	sent: UI_CHAT_TEXT.STATUS_SENT,
-	delivered: UI_CHAT_TEXT.STATUS_DELIVERED,
-	read: UI_CHAT_TEXT.STATUS_READ,
-}
-
-const hasAvatar = computed(() => props.message.sender === 'other' && Boolean(props.message.senderAvatar))
-const showSenderName = computed(() => props.isGroup && props.message.sender === 'other' && Boolean(props.message.senderName))
-const senderName = computed(() => props.message.senderName || 'Companion')
-const avatarLabel = computed(() =>
-	props.message.senderName ? `${UI_CHAT_TEXT.PROFILE_ARIA} ${props.message.senderName}` : UI_CHAT_TEXT.SENDER_PROFILE_ARIA,
-)
-const statusLabel = computed(() =>
-	props.message.status && props.message.status !== 'sending' ? STATUS_LABELS[props.message.status] : undefined,
-)
-
-const gallery = computed(() => (props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message)))
-
-function getMessageImageUrls(message: ChatMessage): string[] {
-	return message.attachments?.filter(attachment => attachment.type === 'image').map(attachment => attachment.url) ?? []
-}
-
-function handleSelect(): void {
-	emit('select')
-}
-
-function handleAvatarClick(): void {
-	emit('avatar-click')
-}
-
-function handleReplyAction(): void {
-	emit('reply-action')
-}
-
-function handleContextMenu(payload: MouseEvent): void {
-	emit('context-menu', payload)
-}
-
-/**
- * Кнопка «Другие действия» открывает то же меню, что и правый клик. При нажатии с клавиатуры у события нет координат
- * указателя, поэтому меню ставится под кнопкой.
- */
-function handleMoreClick(event: MouseEvent): void {
-	const button = event.currentTarget as HTMLElement
-	const rect = button.getBoundingClientRect()
-	emit('context-menu', new MouseEvent('contextmenu', { clientX: rect.left, clientY: rect.bottom + 4 }))
-}
-
-function handleReplyClick(replyToId?: string): void {
-	if (replyToId) {
-		emit('reply-click', replyToId)
-	}
-}
-
-function handleDownload(file: ChatMessageAttachment): void {
-	emit('download', file)
-}
-
-function handleFileClick(file: ChatMessageAttachment): void {
-	emit('file-click', file)
-}
-
-function handleMentionClick(mention: string): void {
-	emit('mention-click', mention)
-}
-
-function handleCommandClick(command: string): void {
-	emit('command-click', command)
-}
-
-function handleReactionToggle(emoji: string): void {
-	emit('reaction-toggle', emoji)
-}
+const {
+	hasAvatar,
+	showSenderName,
+	senderName,
+	avatarLabel,
+	statusLabel,
+	gallery,
+	handleSelect,
+	handleAvatarClick,
+	handleReplyAction,
+	handleContextMenu,
+	handleMoreClick,
+	handleReplyClick,
+	handleDownload,
+	handleFileClick,
+	handleMentionClick,
+	handleCommandClick,
+	handleReactionToggle,
+} = useChatMessage(props, emit)
 </script>
