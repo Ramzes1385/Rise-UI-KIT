@@ -42,11 +42,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BasePin.style.scss'
+import { useBasePin } from '../model/useBasePin'
 import { kitDefaults } from '@composables/useDefaults'
 import { FormFieldError } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBasePin } from '../model/useBasePin'
-import '../styles/BasePin.style.scss'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../types/BasePin.types'
 
 const props = withDefaults(

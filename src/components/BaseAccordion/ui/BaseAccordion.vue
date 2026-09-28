@@ -59,12 +59,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseAccordion.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseAccordion } from '../model/useBaseAccordion'
-import '../styles/BaseAccordion.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../types/BaseAccordion.types'
 
 const props = withDefaults(

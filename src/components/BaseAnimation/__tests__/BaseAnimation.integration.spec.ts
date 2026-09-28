@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseAnimation from '../ui/BaseAnimation.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseAnimation integration', () => {
 	it('должен рендерить контент когда show=true', () => {

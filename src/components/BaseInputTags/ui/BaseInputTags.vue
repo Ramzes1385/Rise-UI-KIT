@@ -57,15 +57,15 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseInputTags.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseInputTags } from '../model/useBaseInputTags'
-import '../styles/BaseInputTags.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseInputTagsEmits, BaseInputTagsProps } from '../types/BaseInputTags.types'
 
 const props = withDefaults(

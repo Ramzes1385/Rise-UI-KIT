@@ -1,7 +1,7 @@
 /** Composable: логика BaseAvatarGroup — видимые аватары и счётчик остальных */
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { AvatarGroupProps } from '../types/BaseAvatarGroup.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 export function useBaseAvatarGroup(props: AvatarGroupProps) {
 	/** Показываются max аватаров; если остаётся один человек, показывается и он вместо «+1» */

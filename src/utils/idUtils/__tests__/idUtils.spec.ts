@@ -1,7 +1,7 @@
 /** Date.now и Math.random замокированы для детерминизма. */
 
-import { describe, it, expect, vi, afterEach } from 'vitest'
 import { generateId } from '../idUtils'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 
 describe('idUtils', () => {
 	afterEach(() => {

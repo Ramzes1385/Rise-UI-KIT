@@ -1,8 +1,8 @@
-import { expect, fn, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInplace from '../ui/BaseInplace.vue'
-import { INPLACE_VARIANTS } from '../types/BaseInplace.types'
+import { expect, fn, waitFor } from 'storybook/test'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { INPLACE_VARIANTS } from '../types/BaseInplace.types'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const meta = {
 	title: 'Form/BaseInplace',

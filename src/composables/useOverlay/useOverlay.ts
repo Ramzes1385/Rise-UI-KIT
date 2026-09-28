@@ -1,6 +1,6 @@
+import type { Component, InjectionKey } from 'vue'
 /** Composable: модальные окна и панели, открываемые из кода, через BaseApp */
 import { getCurrentInstance, inject, markRaw, ref } from 'vue'
-import type { Component, InjectionKey } from 'vue'
 import type {
 	OverlayCreateOptions,
 	OverlayEntry,

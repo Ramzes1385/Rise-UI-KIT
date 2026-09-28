@@ -1,11 +1,11 @@
-/** Composable: логика BaseTree — дерево (APG Tree View): раскрытие, выбор, клавиатура, поиск по буквам и виртуальная прокрутка */
-import { computed, nextTick, onBeforeUnmount, provide, ref, toRef } from 'vue'
+import type { ComputedRef } from 'vue'
 import { findTypeaheadIndex } from '@utils/menuUtils'
 import { useTreeState } from '@composables/useTreeState'
+import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
 import { useVirtualList } from '@composables/useVirtualList'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
-import type { ComputedRef } from 'vue'
+/** Composable: логика BaseTree — дерево (APG Tree View): раскрытие, выбор, клавиатура, поиск по буквам и виртуальная прокрутка */
+import { computed, nextTick, onBeforeUnmount, provide, ref, toRef } from 'vue'
 import type { BaseTreeEmits, TreeNode, TreeProps, VisibleNode } from '../types/BaseTree.types'
 
 const TREE_ELEMENTS = ['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children']

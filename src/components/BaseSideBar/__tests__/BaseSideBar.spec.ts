@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSideBar from '../ui/BaseSideBar.vue'
+import { render, screen } from '@testing-library/vue'
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
 
 describe('BaseSideBar unit', () => {

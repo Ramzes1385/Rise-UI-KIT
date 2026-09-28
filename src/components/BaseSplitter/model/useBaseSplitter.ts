@@ -1,8 +1,8 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseSplitter — размер первой панели, клавиши и перетаскивание разделителя */
 import { ref, useId, watch } from 'vue'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { BaseSplitterEmits, SplitterProps, SplitterSize } from '../types/BaseSplitter.types'
 
 function useSplitterSize(props: SplitterProps, emit: BaseSplitterEmits): SplitterSize {

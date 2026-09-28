@@ -16,12 +16,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseColorModeButton.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseColorModeButton } from '../model/useBaseColorModeButton'
-import '../styles/BaseColorModeButton.style.scss'
 import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../types/BaseColorModeButton.types'
 
 const props = withDefaults(

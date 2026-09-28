@@ -1,8 +1,8 @@
 import { expect, fn } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseInputTags from '../ui/BaseInputTags.vue'
-import { INPUT_TAGS_VARIANTS } from '../types/BaseInputTags.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { INPUT_TAGS_VARIANTS } from '../types/BaseInputTags.types'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const meta = {
 	title: 'Form/BaseInputTags',

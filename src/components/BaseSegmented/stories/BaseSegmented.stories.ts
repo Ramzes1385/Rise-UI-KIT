@@ -1,9 +1,9 @@
 import { expect, fn } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSegmented from '../ui/BaseSegmented.vue'
-import { SEGMENTED_VARIANTS } from '../types/BaseSegmented.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { SEGMENTED_VARIANTS } from '../types/BaseSegmented.types'
 import type { SegmentedOption } from '../types/BaseSegmented.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const PERIODS: SegmentedOption[] = [
 	{ value: 'day', label: 'День' },

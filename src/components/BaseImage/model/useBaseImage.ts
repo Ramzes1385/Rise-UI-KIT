@@ -1,14 +1,14 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseImage — загрузка с запасным источником, форматы и просмотр с зумом и галереей */
 import { computed, ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import type BaseImageZoom from '../ui/BaseImageZoom.vue'
 import { useImageZoom } from '@composables/useImageZoom'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useImageState } from '@composables/useImageState'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useImageGallery } from '@composables/useImageGallery'
-import type { Ref } from 'vue'
-import type BaseImageZoom from '../ui/BaseImageZoom.vue'
 import type { BaseImageEmits, ImageProps } from '../types/BaseImage.types'
 
 const IMAGE_ELEMENTS = [

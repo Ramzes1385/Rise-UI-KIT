@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseBackTop from '../ui/BaseBackTop.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 function scrollWindow(y: number): void {
 	Object.defineProperty(window, 'scrollY', { value: y, configurable: true })

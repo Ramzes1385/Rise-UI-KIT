@@ -1,7 +1,7 @@
 /** Composable: реестр раскрытия дерева мега-меню (provide/inject) */
 import { inject, provide, readonly, ref } from 'vue'
-import { MEGA_MENU_TREE_KEY } from './types/useMegaMenuTree.types'
 import type { MegaMenuTree } from './types/useMegaMenuTree.types'
+import { MEGA_MENU_TREE_KEY } from './types/useMegaMenuTree.types'
 
 export const MEGA_MENU_PATH_SEPARATOR = '/'
 

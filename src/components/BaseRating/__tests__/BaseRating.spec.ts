@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseRating from '../ui/BaseRating.vue'
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import BaseRating from '../ui/BaseRating.vue'
 
 function mockStarRect(star: HTMLElement, width = 20): void {
 	vi.spyOn(star, 'getBoundingClientRect').mockReturnValue({

@@ -1,7 +1,10 @@
 /** Маршруты рендерит StoryRouterLink — как RouterLink, но без перехода со страницы Storybook. */
 
-import { expect, fn, within } from 'storybook/test'
+import BaseLink from '../ui/BaseLink.vue'
 import { BaseText } from '@components/BaseText'
+import { expect, fn, within } from 'storybook/test'
+import { LINK_VARIANTS } from '../types/BaseLink.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -14,9 +17,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseLink from '../ui/BaseLink.vue'
-import { LINK_VARIANTS } from '../types/BaseLink.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {
 	title: 'Navigation/BaseLink',

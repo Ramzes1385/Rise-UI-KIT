@@ -1,14 +1,14 @@
 import { ref } from 'vue'
-import { expect, fn, waitFor } from 'storybook/test'
+import BaseTree from '../ui/BaseTree.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import BaseTree from '../ui/BaseTree.vue'
+import { expect, fn, waitFor } from 'storybook/test'
 import { TREE_VARIANTS } from '../types/BaseTree.types'
 import type { TreeNode } from '../types/BaseTree.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const FILES: TreeNode[] = [
 	{

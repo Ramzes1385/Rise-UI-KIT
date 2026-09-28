@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseInput — связь с BaseFormField, маска, видимость пароля и его правила */
 import { computed, ref, toRef, useId } from 'vue'
 import { useFormField } from '@composables/useFormField'
@@ -5,7 +6,6 @@ import { useFieldControl } from '@composables/useFormContext'
 import { useMaskedInputHandlers } from '@composables/useInputMask'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import type { Ref } from 'vue'
 import type { BaseInputEmits, InputProps, PasswordRuleResult } from '../types/BaseInput.types'
 
 const INPUT_ELEMENTS = [

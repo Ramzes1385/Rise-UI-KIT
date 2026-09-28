@@ -117,13 +117,14 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '../styles/BaseBreadcrumbs.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useBaseBreadcrumbs } from '../model/useBaseBreadcrumbs'
-import '../styles/BaseBreadcrumbs.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots } from '../types/BaseBreadcrumbs.types'
 
 const props = withDefaults(

@@ -1,9 +1,9 @@
 import { expect } from 'storybook/test'
-import { BaseBadge } from '@components/BaseBadge'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseUser from '../ui/BaseUser.vue'
+import { BaseBadge } from '@components/BaseBadge'
 import { USER_VARIANTS } from '../types/BaseUser.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, STORY_USERS, useArgsWithoutSlots } from '@/stories/helpers'
 
 const [ANNA] = STORY_USERS
 

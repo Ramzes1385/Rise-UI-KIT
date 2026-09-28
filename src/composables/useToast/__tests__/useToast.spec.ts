@@ -1,7 +1,7 @@
 import { render } from '@testing-library/vue'
 import { defineComponent, h, provide } from 'vue'
-import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY, useToast } from '../useToast'
 import type { ToastStore, UseToastReturn } from '../types/useToast.types'
+import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY, useToast } from '../useToast'
 
 afterEach(() => {
 	setActiveToastStore(null)

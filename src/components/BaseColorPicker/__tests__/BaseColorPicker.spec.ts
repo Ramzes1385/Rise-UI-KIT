@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { UI_COLOR_PICKER } from '@/locales/messages'
 import BaseColorPicker from '../ui/BaseColorPicker.vue'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 /** Мок размеров SV-области (200×140 в начале координат) */
 function mockAreaRect(): void {

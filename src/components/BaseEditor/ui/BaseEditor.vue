@@ -118,16 +118,15 @@
 </template>
 
 <script setup lang="ts">
-import { UI_EDITOR } from '@/locales/messages'
 import '../styles/BaseEditor.style.scss'
-
+import { UI_EDITOR } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
+import { useBaseEditor } from '../model/useBaseEditor'
 import { kitDefaults } from '@composables/useDefaults'
+import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseEditor } from '../model/useBaseEditor'
-import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../types/BaseEditor.types'
 
 const props = withDefaults(

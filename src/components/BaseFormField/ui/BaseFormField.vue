@@ -43,11 +43,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseFormField.style.scss'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseAnimation } from '@components/BaseAnimation'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseFormField } from '../model/useBaseFormField'
-import '../styles/BaseFormField.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseFormFieldProps, BaseFormFieldSlots } from '../types/BaseFormField.types'
 
 const props = withDefaults(

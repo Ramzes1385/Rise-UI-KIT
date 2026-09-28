@@ -46,14 +46,14 @@
 </template>
 
 <script setup lang="ts">
+import './ChatPinnedPanel.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { CHAT_SCALE } from '../../model/chatScale'
 import { BaseButton } from '@components/BaseButton'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { CHAT_SCALE } from '../../model/chatScale'
 import { useChatPinnedPanel } from '../../model/useChatPinnedPanel'
 import type { ChatPinnedPanelEmits, ChatPinnedPanelProps } from '../../types/ChatPinnedPanel.types'
-import './ChatPinnedPanel.style.scss'
 
 const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
 	currentUserRole: 'member',

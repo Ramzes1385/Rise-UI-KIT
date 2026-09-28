@@ -1,9 +1,9 @@
-import { defineComponent, ref } from 'vue'
-import { fireEvent, render } from '@testing-library/vue'
-import { BaseText } from '@components/BaseText'
 import '@testing-library/jest-dom/vitest'
-import { BaseTooltip } from '@components/BaseTooltip'
+import { defineComponent, ref } from 'vue'
 import BaseRange from '../ui/BaseRange.vue'
+import { BaseText } from '@components/BaseText'
+import { BaseTooltip } from '@components/BaseTooltip'
+import { fireEvent, render } from '@testing-library/vue'
 
 const globalComponents = { components: { BaseText, BaseTooltip } }
 

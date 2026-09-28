@@ -1,7 +1,7 @@
 /** Все образцы берут цвет из CSS-переменных: переключите «Тему» на панели инструментов, чтобы увидеть тёмные значения. */
 
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import './foundations.scss'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {
 	title: 'Foundations/Colors',

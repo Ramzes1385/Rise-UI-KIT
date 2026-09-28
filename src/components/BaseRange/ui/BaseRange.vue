@@ -82,14 +82,14 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseRange.style.scss'
+import BaseRangeMarks from './BaseRangeMarks.vue'
+import { BaseRangeThumb } from './BaseRangeThumb'
+import { useBaseRange } from '../model/useBaseRange'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT } from '@composables/useBaseComponent'
-import BaseRangeMarks from './BaseRangeMarks.vue'
-import { BaseRangeThumb } from './BaseRangeThumb'
-import { useBaseRange } from '../model/useBaseRange'
-import '../styles/BaseRange.style.scss'
 import type { BaseRangeEmits, BaseRangeProps, BaseRangeSlots } from '../types/BaseRange.types'
 
 const props = withDefaults(

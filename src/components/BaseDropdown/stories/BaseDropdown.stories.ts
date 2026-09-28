@@ -1,18 +1,18 @@
 /** Открытые панели телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { computed, ref } from 'vue'
-import { expect, fn, screen, waitFor } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseMenu } from '@components/BaseMenu'
 import { BaseText } from '@components/BaseText'
+import BaseDropdown from '../ui/BaseDropdown.vue'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import BaseDropdown from '../ui/BaseDropdown.vue'
-import { DROPDOWN_VARIANTS } from '../types/BaseDropdown.types'
 import type { BaseMenuItem } from '@components/BaseMenu'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor } from 'storybook/test'
+import { DROPDOWN_VARIANTS } from '../types/BaseDropdown.types'
 import type { DropdownPosition } from '../types/BaseDropdown.types'
+import { ARG_GROUP, baseArgTypes, propGroup, STORY_USERS, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const POSITIONS: DropdownPosition[] = [
 	'bottom-start',

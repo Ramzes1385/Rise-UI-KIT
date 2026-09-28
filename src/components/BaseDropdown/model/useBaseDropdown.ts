@@ -1,5 +1,6 @@
 /** Composable: логика BaseDropdown — позиция панели, закрытие и фокус между триггером и панелью */
 import { computed, ref, watch } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { getActiveElement } from '@utils/domUtils'
 import { usePadding } from '@composables/usePadding'
 import { useEscapeKey } from '@composables/useEscapeKey'
@@ -9,7 +10,6 @@ import { useDropdownPosition } from '@composables/useDropdownPosition'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
-import type { ComputedRef, Ref } from 'vue'
 import type { BaseDropdownEmits, BaseDropdownExpose, DropdownProps } from '../types/BaseDropdown.types'
 
 /** Поля ввода внутри панели (например, поиск BaseSelect) должны получать фокус — иначе в них нельзя печатать */

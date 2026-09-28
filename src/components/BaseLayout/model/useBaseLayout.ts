@@ -1,8 +1,8 @@
-/** Composable: логика BaseLayout — переход к содержимому и высота шапки */
-import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { Ref } from 'vue'
 import type { BaseLayoutProps } from '../types/BaseLayout.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
+/** Composable: логика BaseLayout — переход к содержимому и высота шапки */
+import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
 
 /** Высота шапки: прилипшее боковое меню встаёт под неё, а переход к <main> не прячет начало под шапкой */
 function useHeaderHeight(headerRef: Ref<HTMLElement | null>): Ref<number> {

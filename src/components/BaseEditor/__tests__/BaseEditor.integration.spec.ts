@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render } from '@testing-library/vue'
 import BaseEditor from '../ui/BaseEditor.vue'
+import { fireEvent, render } from '@testing-library/vue'
 
 function getContent(container: Element): HTMLElement {
 	const content = container.querySelector('.base-editor__content')

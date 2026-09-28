@@ -37,12 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { UI_TEXT } from '@/locales/messages'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseLayout } from '../model/useBaseLayout'
 import '../styles/BaseLayout.style.scss'
+import { UI_TEXT } from '@/locales/messages'
+import { useBaseLayout } from '../model/useBaseLayout'
+import { kitDefaults } from '@composables/useDefaults'
 import type { BaseLayoutProps, BaseLayoutSlots } from '../types/BaseLayout.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseLayoutProps>(),

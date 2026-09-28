@@ -1,5 +1,8 @@
 import { ref } from 'vue'
+import BasePin from '../ui/BasePin.vue'
 import { expect, fn, waitFor } from 'storybook/test'
+import { PIN_VARIANTS } from '../types/BasePin.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -11,9 +14,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BasePin from '../ui/BasePin.vue'
-import { PIN_VARIANTS } from '../types/BasePin.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {
 	title: 'Form/BasePin',

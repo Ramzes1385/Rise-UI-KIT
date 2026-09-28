@@ -1,7 +1,7 @@
+import type { InjectionKey } from 'vue'
+import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
 /** Composable: ссылки кита через RouterLink приложения или `<a href>` */
 import { getCurrentInstance, hasInjectionContext, inject } from 'vue'
-import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
-import type { InjectionKey } from 'vue'
 import type { LinkComponent, LinkOptions, ResolvedLink } from './types/useLink.types'
 
 /** Ключ provide/inject компонента ссылок: `createUiKitPlugin({ linkComponent: RouterLink })` */

@@ -1,13 +1,13 @@
 /** Stories с открытой панелью в play видны только в сайдбаре: в Docs панель закрыла бы страницу. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
-import { BaseButton } from '@components/BaseButton'
-import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseDrawer from '../ui/BaseDrawer.vue'
-import { DRAWER_DIRECTIONS } from '../types/BaseDrawer.types'
+import { BaseButton } from '@components/BaseButton'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { DRAWER_DIRECTIONS } from '../types/BaseDrawer.types'
+import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const STATUSES = [
 	{ value: 'new', label: 'Новые' },

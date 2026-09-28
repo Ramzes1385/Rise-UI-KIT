@@ -134,12 +134,13 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseCard/styles/BaseCard.style.scss'
+import '../styles/BaseCalendar.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
-import '../styles/BaseCalendar.style.scss'
 import BaseCalendarDays from './BaseCalendarDays.vue'
 import BaseCalendarTime from './BaseCalendarTime.vue'
 import BaseCalendarMonths from './BaseCalendarMonths.vue'

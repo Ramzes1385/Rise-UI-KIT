@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseStepper from '../ui/BaseStepper.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseStepperStep } from '../types/BaseStepper.types'
 
 const ITEMS: BaseStepperStep[] = [

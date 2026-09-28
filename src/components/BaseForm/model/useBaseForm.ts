@@ -1,10 +1,10 @@
+import type { ComputedRef, Ref } from 'vue'
+import type { FormValidationResult } from '@utils/formUtils'
 /** Composable: логика BaseForm — проверка схемой, блокировка на время отправки и возврат фокуса */
 import { computed, nextTick, provide, ref, watch } from 'vue'
 import { FORM_CONTEXT_KEY } from '@composables/useFormContext'
 import { issuesToErrors, validateSchema } from '@utils/formUtils'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { ComputedRef, Ref } from 'vue'
-import type { FormValidationResult } from '@utils/formUtils'
 import type { BaseFormEmits, BaseFormExpose, FormProps } from '../types/BaseForm.types'
 
 /** Фокус на время блокировки: после disabled браузер переводит фокус на body, после разблокировки фокус возвращается */

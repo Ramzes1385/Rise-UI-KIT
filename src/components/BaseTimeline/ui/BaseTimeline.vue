@@ -34,12 +34,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTimeline.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseTimeline } from '../model/useBaseTimeline'
-import '../styles/BaseTimeline.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseTimelineProps, BaseTimelineSlots } from '../types/BaseTimeline.types'
 
 const props = withDefaults(

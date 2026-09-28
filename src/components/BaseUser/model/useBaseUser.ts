@@ -1,7 +1,7 @@
 /** Composable: логика BaseUser — классы и ссылка профиля */
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseUserProps } from '../types/BaseUser.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 export function useBaseUser(props: BaseUserProps) {
 	const isLink = computed(() => Boolean(props.to || props.href))

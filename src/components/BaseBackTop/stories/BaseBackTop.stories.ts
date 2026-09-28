@@ -1,8 +1,8 @@
-import { expect, fn, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseBackTop from '../ui/BaseBackTop.vue'
-import { BACK_TOP_VARIANTS } from '../types/BaseBackTop.types'
+import { expect, fn, waitFor } from 'storybook/test'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { BACK_TOP_VARIANTS } from '../types/BaseBackTop.types'
+import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 
 const NEWS = Array.from({ length: 40 }, (_, index) => `Новость ${index + 1}: склад в Волгограде принял ${20 + index} поставок`)
 

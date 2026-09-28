@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom/vitest'
-import { defineComponent, h } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { getLocale, setLocale } from '@/locales/state'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { getActiveToastStore, useToast } from '@composables/useToast'
-import { getActiveOverlayStore, useOverlay } from '@composables/useOverlay'
 import BaseApp from '../ui/BaseApp.vue'
+import { defineComponent, h } from 'vue'
+import { getLocale, setLocale } from '@/locales/state'
 import type { UseToastReturn } from '@composables/useToast'
 import type { UseOverlayReturn } from '@composables/useOverlay'
+import { fireEvent, render, screen } from '@testing-library/vue'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 import type { BaseAppToasterOptions } from '../types/BaseApp.types'
+import { getActiveToastStore, useToast } from '@composables/useToast'
+import { getActiveOverlayStore, useOverlay } from '@composables/useOverlay'
 
 /** Простой оверлей: показывает props, закрывается своими событиями. Кнопка «Анимация…» видна и после закрытия */
 const TestDialog = defineComponent({

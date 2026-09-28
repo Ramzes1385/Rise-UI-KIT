@@ -1,7 +1,7 @@
+import type { Ref } from 'vue'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 /** Composable: логика BaseScrollArea — свои полосы прокрутки: размер и положение ползунка, клик по полосе, перетаскивание */
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { Axis, BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps } from '../types/BaseScrollArea.types'
 
 const AXES: Axis[] = ['y', 'x']

@@ -1,9 +1,9 @@
-import { expect, fn } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseMenu from '../ui/BaseMenu.vue'
+import { expect, fn } from 'storybook/test'
 import { MENU_VARIANTS } from '../types/BaseMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { BaseMenuItem } from '../types/BaseMenu.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const ITEMS: BaseMenuItem[][] = [
 	[

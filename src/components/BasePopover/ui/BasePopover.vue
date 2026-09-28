@@ -28,11 +28,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BasePopover.style.scss'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import '../styles/BasePopover.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBasePopover } from '../model/useBasePopover'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../types/BasePopover.types'
 
 const props = withDefaults(

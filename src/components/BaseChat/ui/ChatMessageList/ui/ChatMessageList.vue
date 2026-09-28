@@ -74,16 +74,17 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseAvatar/styles/BaseAvatar.style.scss'
+import '../styles/ChatMessageList.style.scss'
+import ChatMessageItem from './ChatMessage.vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import ChatMessageItem from './ChatMessage.vue'
 import { CHAT_SCALE } from '../../../model/chatScale'
 import { useChatMessageList } from '../model/useChatMessageList'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
-import '../styles/ChatMessageList.style.scss'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { ChatMessageListEmits, ChatMessageListProps } from '../types/ChatMessageList.types'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {

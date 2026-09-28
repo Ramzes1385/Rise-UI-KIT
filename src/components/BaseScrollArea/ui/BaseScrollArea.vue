@@ -48,10 +48,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseScrollArea } from '../model/useBaseScrollArea'
 import '../styles/BaseScrollArea.style.scss'
+import { kitDefaults } from '@composables/useDefaults'
+import { useBaseScrollArea } from '../model/useBaseScrollArea'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps, BaseScrollAreaSlots } from '../types/BaseScrollArea.types'
 
 const props = withDefaults(

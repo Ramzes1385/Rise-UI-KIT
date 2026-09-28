@@ -1,13 +1,13 @@
 import { computed, ref } from 'vue'
 import { expect } from 'storybook/test'
+import BaseEmpty from '../ui/BaseEmpty.vue'
 import { BaseCard } from '@components/BaseCard'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseEmpty from '../ui/BaseEmpty.vue'
 import { EMPTY_VARIANTS } from '../types/BaseEmpty.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, placeholderImage, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 
 const PROJECTS = ['Ребрендинг', 'Мобильное приложение', 'Справочный центр', 'Интеграция с платёжным сервисом']
 

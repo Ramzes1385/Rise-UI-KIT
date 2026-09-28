@@ -122,14 +122,14 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { BaseDropdown } from '@components/BaseDropdown'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import BaseSearchInput from './BaseSearchInput.vue'
 import '../styles/BaseSearch.style.scss'
+import BaseSearchInput from './BaseSearchInput.vue'
 import { useBaseSearch } from '../model/useBaseSearch'
+import { kitDefaults } from '@composables/useDefaults'
 import BaseSearchOverlay from './BaseSearchOverlay.vue'
 import BaseSearchResults from './BaseSearchResults.vue'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSearchEmits, BaseSearchProps, BaseSearchSlots } from '../types/BaseSearch.types'
 
 const props = withDefaults(

@@ -1,7 +1,10 @@
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import BaseSlider from '../ui/BaseSlider.vue'
 import { BaseCard } from '@components/BaseCard'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSkeleton } from '@components/BaseSkeleton'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { SliderItem } from '../types/BaseSlider.types'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -12,9 +15,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseSlider from '../ui/BaseSlider.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { SliderItem } from '../types/BaseSlider.types'
 
 const TOURS = [
 	{ title: 'Рассвет на плато', description: 'Однодневный маршрут · 12 км' },

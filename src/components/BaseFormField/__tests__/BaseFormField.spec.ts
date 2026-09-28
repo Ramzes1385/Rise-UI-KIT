@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import { render, screen } from '@testing-library/vue'
 import { UI_TEXT } from '@/locales/messages'
 import BaseFormField from '../ui/BaseFormField.vue'
+import { render, screen } from '@testing-library/vue'
 import type { FormFieldValidateExpose } from '@composables/useFormField'
 
 describe('BaseFormField unit', () => {

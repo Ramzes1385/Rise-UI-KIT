@@ -9,11 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseText.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { TEXT_WEIGHT } from '../model/textWeight'
 import { useBaseText } from '../model/useBaseText'
+import { kitDefaults } from '@composables/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseTextProps, BaseTextSlots } from '../types/BaseText.types'
 
 const props = withDefaults(

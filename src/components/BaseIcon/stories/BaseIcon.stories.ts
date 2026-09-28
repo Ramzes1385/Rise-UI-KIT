@@ -1,9 +1,9 @@
 import { expect } from 'storybook/test'
+import BaseIcon from '../ui/BaseIcon.vue'
 import { ICON_SCALE } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseIcon from '../ui/BaseIcon.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 
 /**
  * Имена всех иконок спрайта — файлы `src/icons/svg/*.svg`. Нужны только ключи glob (пути к файлам):

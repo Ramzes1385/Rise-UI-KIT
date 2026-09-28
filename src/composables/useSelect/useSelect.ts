@@ -1,6 +1,6 @@
+import { findTypeaheadIndex } from '@utils/menuUtils'
 /** Composable: логика выбора и фильтрации для BaseSelect */
 import { computed, onScopeDispose, ref, watch } from 'vue'
-import { findTypeaheadIndex } from '@utils/menuUtils'
 import type { UseSelectOptions } from './types/useSelect.types'
 import type { BaseSelectOption } from '@components/BaseSelect/types/BaseSelect.types'
 

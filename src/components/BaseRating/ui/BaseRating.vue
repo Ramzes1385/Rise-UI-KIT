@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseRating.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { useBaseRating } from '../model/useBaseRating'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseRating } from '../model/useBaseRating'
-import '../styles/BaseRating.style.scss'
 import type { BaseRatingEmits, BaseRatingProps, BaseRatingSlots } from '../types/BaseRating.types'
 
 const props = withDefaults(

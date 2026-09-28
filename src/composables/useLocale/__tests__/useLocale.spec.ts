@@ -1,5 +1,5 @@
-import { setLocale } from '@/locales/state'
 import { useLocale } from '../useLocale'
+import { setLocale } from '@/locales/state'
 
 afterEach(() => {
 	setLocale('ru')

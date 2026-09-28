@@ -1,12 +1,12 @@
 /** Постоянно видимые подсказки телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
-import { expect, screen, waitFor } from 'storybook/test'
+import BaseTooltip from '../ui/BaseTooltip.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseTooltip from '../ui/BaseTooltip.vue'
-import { TOOLTIP_VARIANTS } from '../types/BaseTooltip.types'
+import { expect, screen, waitFor } from 'storybook/test'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { TOOLTIP_VARIANTS } from '../types/BaseTooltip.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 /** Цвет после подстановки CSS-переменных в текущей теме: так значение `var(--rise-…)` сравнивается с цветом элемента. */
 function resolveColor(value: string): string {

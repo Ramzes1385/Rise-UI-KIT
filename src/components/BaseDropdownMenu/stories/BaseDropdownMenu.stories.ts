@@ -1,14 +1,14 @@
 /** Открытое меню телепортируется в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
-import { DROPDOWN_MENU_VARIANTS } from '../types/BaseDropdownMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import type { DropdownMenuItem } from '../types/BaseDropdownMenu.types'
+import { DROPDOWN_MENU_VARIANTS } from '../types/BaseDropdownMenu.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 /** Действия с серией: три группы, подменю экспорта, опасное действие последним */
 const EPISODE_ACTIONS: DropdownMenuItem[][] = [

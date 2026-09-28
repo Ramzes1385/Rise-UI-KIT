@@ -1,13 +1,13 @@
 import { expect } from 'storybook/test'
+import BaseToolbar from '../ui/BaseToolbar.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSeparator } from '@components/BaseSeparator'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { TOOLBAR_VARIANTS } from '../types/BaseToolbar.types'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseToolbar from '../ui/BaseToolbar.vue'
-import { TOOLBAR_VARIANTS } from '../types/BaseToolbar.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const FORMAT_BUTTONS = [
 	{ icon: 'bold', label: 'Полужирный' },

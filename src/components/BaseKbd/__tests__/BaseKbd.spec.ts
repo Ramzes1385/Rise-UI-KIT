@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import BaseKbd from '../ui/BaseKbd.vue'
+import { render } from '@testing-library/vue'
 
 function kbdOf(value: string, platform?: 'mac' | 'other'): HTMLElement {
 	const { container } = render(BaseKbd, { props: { value, platform } })

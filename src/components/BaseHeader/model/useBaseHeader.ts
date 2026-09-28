@@ -1,9 +1,9 @@
+import { UI_ARIA } from '@/locales/messages'
 /** Composable: логика BaseHeader — выдвижное меню на узком экране */
 import { computed, ref, useSlots, watch } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
 import { useBreakpoint } from '@composables/useBreakpoint'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseHeaderProps } from '../types/BaseHeader.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 export function useBaseHeader(props: BaseHeaderProps) {
 	const slots = useSlots()

@@ -1,8 +1,8 @@
 /** Teleport to="body" — поиск в document */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen, waitFor } from '@testing-library/vue'
 import BaseModal from '../ui/BaseModal.vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))

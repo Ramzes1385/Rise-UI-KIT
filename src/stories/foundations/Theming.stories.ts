@@ -1,3 +1,4 @@
+import './foundations.scss'
 import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BaseAlert } from '@components/BaseAlert'
@@ -7,7 +8,6 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSwitch } from '@components/BaseSwitch'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import './foundations.scss'
 
 const meta = {
 	title: 'Foundations/Theming',

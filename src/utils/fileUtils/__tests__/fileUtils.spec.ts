@@ -1,5 +1,5 @@
-import { setLocale } from '@/locales/state'
 import '@testing-library/jest-dom/vitest'
+import { setLocale } from '@/locales/state'
 import {
 	createImagePreview,
 	downloadFile,

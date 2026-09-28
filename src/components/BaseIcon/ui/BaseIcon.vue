@@ -26,11 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseIcon } from '../model/useBaseIcon'
 import '../styles/BaseIcon.style.scss'
+import { useBaseIcon } from '../model/useBaseIcon'
+import { kitDefaults } from '@composables/useDefaults'
 import type { BaseIconProps } from '../types/BaseIcon.types'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseIconProps>(),

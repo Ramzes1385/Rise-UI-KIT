@@ -1,6 +1,9 @@
 import { ref } from 'vue'
+import BaseAlert from '../ui/BaseAlert.vue'
 import { expect, fn } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ALERT_TYPES, ALERT_VARIANTS } from '../types/BaseAlert.types'
 import {
 	ARG_GROUP,
 	avatarImage,
@@ -12,9 +15,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseAlert from '../ui/BaseAlert.vue'
-import { ALERT_TYPES, ALERT_VARIANTS } from '../types/BaseAlert.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const MESSAGES = {
 	info: { title: 'Доступно обновление', description: 'Версия 2.4 ускоряет загрузку таблиц и исправляет импорт отчётов.' },

@@ -1,10 +1,10 @@
 /** Composable: логика BaseMegaMenuNode — раскрытие узла в дереве меню, каскадный flyout и события перехода */
 import { computed, ref } from 'vue'
+import type { ComputedRef } from 'vue'
+import { useHoverTimer } from './useHoverTimer'
 import { calcIconScale } from '@utils/iconUtils'
 import { useFlyoutPosition } from '@composables/useFlyoutPosition'
 import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
-import { useHoverTimer } from './useHoverTimer'
-import type { ComputedRef } from 'vue'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps } from '../types/BaseMegaMenuNode.types'
 
 /**

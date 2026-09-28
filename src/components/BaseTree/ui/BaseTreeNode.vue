@@ -114,14 +114,14 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTree.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { calcIconScale } from '@utils/iconUtils'
-import { BaseCheckbox } from '@components/BaseCheckbox'
 import BaseTreeChildren from './BaseTreeChildren.vue'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import { useBaseTreeNode } from '../model/useBaseTreeNode'
 import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../types/BaseTreeNode.types'
-import '../styles/BaseTree.style.scss'
 
 const props = defineProps<BaseTreeNodeProps>()
 defineSlots<BaseTreeNodeSlots>()

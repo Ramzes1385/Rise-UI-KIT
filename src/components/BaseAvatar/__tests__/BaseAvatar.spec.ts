@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseAvatar from '../ui/BaseAvatar.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 function getElement(selector: string, root: ParentNode): Element {
 	const element = root.querySelector(selector)

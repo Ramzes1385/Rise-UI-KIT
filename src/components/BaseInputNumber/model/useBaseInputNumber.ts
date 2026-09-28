@@ -1,11 +1,11 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseInputNumber — текст поля, шаги кнопками и клавишами, атрибуты spinbutton */
 import { computed, ref, watch } from 'vue'
 import { formatNumber } from '@/locales/state'
+import type { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useFormDisabled } from '@composables/useFormContext'
 import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '@utils/numberInputUtils'
-import type { Ref } from 'vue'
-import type { BaseInput } from '@components/BaseInput'
 import type { BaseInputNumberEmits, InputNumberProps, NumberCommit, NumberDraft } from '../types/BaseInputNumber.types'
 
 const STEP_KEYS: Record<string, number> = { ArrowUp: 1, ArrowDown: -1, PageUp: 10, PageDown: -10 }

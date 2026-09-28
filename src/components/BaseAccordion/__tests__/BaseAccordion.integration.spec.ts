@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseAccordion from '../ui/BaseAccordion.vue'
+import userEvent from '@testing-library/user-event'
 import type { BaseAccordionItem } from '../types/BaseAccordion.types'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const ITEMS: BaseAccordionItem[] = [
 	{ label: 'Материалы', content: 'Работаем с металлом' },

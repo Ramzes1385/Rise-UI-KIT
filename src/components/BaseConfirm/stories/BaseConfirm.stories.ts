@@ -1,15 +1,15 @@
 /** Stories с окном, открытым поверх всей страницы, видны только в сайдбаре: в Docs они закрыли бы страницу. */
 
+import { useConfirm } from '../useConfirm'
 import { defineComponent, ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseApp } from '@components/BaseApp'
+import BaseConfirm from '../ui/BaseConfirm.vue'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { MODAL_VARIANTS } from '@components/BaseModal/types/BaseModal.types'
 import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import { useConfirm } from '../useConfirm'
-import BaseConfirm from '../ui/BaseConfirm.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const meta = {
 	title: 'Overlay/BaseConfirm',

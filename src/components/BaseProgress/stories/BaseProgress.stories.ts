@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
-import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseProgress from '../ui/BaseProgress.vue'
-import { PROGRESS_ANIMATIONS, PROGRESS_SHAPES } from '../types/BaseProgress.types'
+import { BaseButton } from '@components/BaseButton'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { PROGRESS_ANIMATIONS, PROGRESS_SHAPES } from '../types/BaseProgress.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 
 const meta = {
 	title: 'Element/BaseProgress',

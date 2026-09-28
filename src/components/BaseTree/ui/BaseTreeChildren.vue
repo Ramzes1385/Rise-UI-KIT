@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTree.style.scss'
 import BaseTreeNode from './BaseTreeNode.vue'
 import { useBaseTreeChildren } from '../model/useBaseTreeChildren'
 import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../types/BaseTreeChildren.types'
-import '../styles/BaseTree.style.scss'
 
 defineProps<BaseTreeChildrenProps>()
 defineSlots<BaseTreeChildrenSlots>()

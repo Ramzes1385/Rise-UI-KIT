@@ -2,8 +2,8 @@
 import { nextTick } from 'vue'
 import { escapeHtml } from '@utils/htmlUtils'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/urlUtils'
-import { FORMAT_CONFIG, isInsideList, matchTypedInlineTag } from '@utils/editorDomUtils'
 import type { UseToolbarCommandsOptions } from './types/useToolbarCommands.types'
+import { FORMAT_CONFIG, isInsideList, matchTypedInlineTag } from '@utils/editorDomUtils'
 
 /**
  * Горячие клавиши форматирования: Ctrl (⌘ на macOS) + клавиша. Ключ — физическая клавиша (`event.code`),

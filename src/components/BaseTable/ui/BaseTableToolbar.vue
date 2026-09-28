@@ -113,8 +113,8 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
 import { useBaseTableToolbar } from '../model/useBaseTableToolbar'
+import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps, BaseTableToolbarSlots } from '../types/BaseTableToolbar.types'
 
 const props = defineProps<BaseTableToolbarProps>()

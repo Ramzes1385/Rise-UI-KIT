@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSelect from '../ui/BaseSelect.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseSelectOption } from '../types/BaseSelect.types'
 
 const OPTIONS: BaseSelectOption[] = [

@@ -1,9 +1,9 @@
-/** Composable: управление состоянием загрузки файлов (валидация, drag-and-drop, прогресс) */
-import { computed, onBeforeUnmount, ref } from 'vue'
 import { generateId } from '@utils/idUtils'
 import { UI_TEXT } from '@/locales/messages'
-import { createImagePreview, getExtension, validateFile } from '@utils/fileUtils'
+/** Composable: управление состоянием загрузки файлов (валидация, drag-and-drop, прогресс) */
+import { computed, onBeforeUnmount, ref } from 'vue'
 import type { UseFileUploadStateOptions } from './types/useFileUploadState.types'
+import { createImagePreview, getExtension, validateFile } from '@utils/fileUtils'
 import type { UploadedFile } from '@components/BaseFileUpload/types/BaseFileUpload.types'
 
 /** Имитация загрузки: прибавка прогресса за шаг — от PROGRESS_STEP_MIN до PROGRESS_STEP_MIN + PROGRESS_STEP_RANGE, % */

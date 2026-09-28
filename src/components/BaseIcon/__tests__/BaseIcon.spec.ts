@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import BaseIcon from '../ui/BaseIcon.vue'
+import { render } from '@testing-library/vue'
 
 /** Мокаем useIcon — разрыв циклической зависимости */
 vi.mock('@composables/useIcon', () => ({

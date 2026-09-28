@@ -2,8 +2,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BasePopover from '../ui/BasePopover.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const SLOTS = {
 	trigger: '<button>Триггер</button>',

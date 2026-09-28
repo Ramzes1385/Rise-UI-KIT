@@ -26,14 +26,15 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '../styles/BaseUser.style.scss'
 import { BaseLink } from '@components/BaseLink'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { useBaseUser } from '../model/useBaseUser'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseUser } from '../model/useBaseUser'
-import '../styles/BaseUser.style.scss'
 import type { BaseUserProps, BaseUserSlots } from '../types/BaseUser.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseUserProps>(),

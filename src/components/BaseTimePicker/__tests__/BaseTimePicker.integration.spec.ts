@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
 import BaseTimePicker from '../ui/BaseTimePicker.vue'
+import { render, screen } from '@testing-library/vue'
 
 function renderModel(initial: string | null = null, props: Record<string, unknown> = {}) {
 	const model = ref<string | null>(initial)

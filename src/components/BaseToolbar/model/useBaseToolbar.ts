@@ -1,8 +1,8 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseToolbar — один элемент в порядке Tab и стрелки между элементами (APG Toolbar) */
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { BaseToolbarProps } from '../types/BaseToolbar.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 /** Элементы панели: фокусируемые и не отключённые; помеченные панелью — даже с tabindex="-1" */
 const ITEM_SELECTOR = 'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [data-toolbar-item]'

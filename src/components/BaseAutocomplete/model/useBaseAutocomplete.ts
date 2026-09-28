@@ -1,11 +1,11 @@
+import type { ComputedRef } from 'vue'
+import { UI_TEXT } from '@/locales/messages'
 /** Composable: логика BaseAutocomplete — поле с подсказками (APG Combobox): фильтр, выбор, свой вариант и клавиатура */
 import { computed, ref, useId, watch } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
+import type { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useFormDisabled } from '@composables/useFormContext'
-import type { ComputedRef } from 'vue'
-import type { BaseInput } from '@components/BaseInput'
 import type { AutocompleteOption, AutocompleteProps, BaseAutocompleteEmits } from '../types/BaseAutocomplete.types'
 
 function defaultFilter(option: AutocompleteOption, text: string): boolean {

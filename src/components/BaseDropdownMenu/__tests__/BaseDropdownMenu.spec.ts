@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import type { DropdownMenuItem, DropdownMenuItems } from '../types/BaseDropdownMenu.types'
 
 function renderMenu(items: DropdownMenuItems, props: Record<string, unknown> = {}) {

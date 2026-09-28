@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseBadge.style.scss'
+import { useBaseBadge } from '../model/useBaseBadge'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseBadge } from '../model/useBaseBadge'
-import '../styles/BaseBadge.style.scss'
 import type { BaseBadgeEmits, BaseBadgeProps, BaseBadgeSlots } from '../types/BaseBadge.types'
 
 const props = withDefaults(

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSlider from '../ui/BaseSlider.vue'
 import type { SliderItem } from '../types/BaseSlider.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const ITEMS: SliderItem[] = [
 	{ src: 'slide1.jpg', alt: 'Слайд 1', type: 'image' },

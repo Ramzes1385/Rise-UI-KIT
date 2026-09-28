@@ -1,9 +1,9 @@
-import { expect, fn, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
-import { MEGA_MENU_VARIANTS } from '../types/BaseMegaMenu.types'
+import { expect, fn, waitFor } from 'storybook/test'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { MEGA_MENU_VARIANTS } from '../types/BaseMegaMenu.types'
 import type { MegaMenuColumn, MegaMenuItem } from '../types/BaseMegaMenu.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const COLUMNS: MegaMenuColumn[] = [
 	{

@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseInfiniteScroll.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseInfiniteScroll } from '../model/useBaseInfiniteScroll'
-import '../styles/BaseInfiniteScroll.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type {
 	BaseInfiniteScrollEmits,
 	BaseInfiniteScrollExpose,

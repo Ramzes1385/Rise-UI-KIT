@@ -2,8 +2,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 /** Открыть панель кликом по полю ввода */
 async function openPanel(): Promise<HTMLElement> {

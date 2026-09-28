@@ -21,10 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseDropdown } from '../model/useBaseDropdown'
 import '../styles/BaseDropdown.style.scss'
+import { kitDefaults } from '@composables/useDefaults'
+import { useBaseDropdown } from '../model/useBaseDropdown'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseDropdownEmits, BaseDropdownExpose, BaseDropdownProps, BaseDropdownSlots } from '../types/BaseDropdown.types'
 
 const props = withDefaults(

@@ -1,9 +1,9 @@
 import { expect, fn } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseAccordion from '../ui/BaseAccordion.vue'
-import { ACCORDION_VARIANTS } from '../types/BaseAccordion.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ACCORDION_VARIANTS } from '../types/BaseAccordion.types'
 import type { BaseAccordionItem } from '../types/BaseAccordion.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const ITEMS: BaseAccordionItem[] = [
 	{

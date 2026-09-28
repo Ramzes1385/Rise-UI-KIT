@@ -1,8 +1,12 @@
 /** Панель результатов и окна modal/sidebar телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor } from 'storybook/test'
+import BaseSearch from '../ui/BaseSearch.vue'
 import { BaseButton } from '@components/BaseButton'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { SEARCH_VARIANTS } from '../types/BaseSearch.types'
+import { expect, fn, screen, waitFor } from 'storybook/test'
+import type { SearchResult } from '../types/BaseSearch.types'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -14,10 +18,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseSearch from '../ui/BaseSearch.vue'
-import { SEARCH_VARIANTS } from '../types/BaseSearch.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { SearchResult } from '../types/BaseSearch.types'
 
 /** Материалы проекта студии: иконка — тип файла, категория — справа. */
 const FILES: SearchResult[] = [

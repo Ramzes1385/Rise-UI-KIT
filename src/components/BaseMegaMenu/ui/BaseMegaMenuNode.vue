@@ -74,10 +74,12 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseIcon/styles/BaseIcon.style.scss'
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '../styles/BaseMegaMenu.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { useBaseMegaMenuNode } from '../model/useBaseMegaMenuNode'
-import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../types/BaseMegaMenuNode.types'
 
 const props = defineProps<BaseMegaMenuNodeProps>()

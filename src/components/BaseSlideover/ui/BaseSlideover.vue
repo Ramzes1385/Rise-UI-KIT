@@ -53,13 +53,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseSlideover.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { useBaseSlideover } from '../model/useBaseSlideover'
-import '../styles/BaseSlideover.style.scss'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../types/BaseSlideover.types'
 
 const props = withDefaults(

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen, waitFor } from '@testing-library/vue'
 import BaseAccordion from '../ui/BaseAccordion.vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import type { BaseAccordionItem } from '../types/BaseAccordion.types'
 
 const ITEMS: BaseAccordionItem[] = [

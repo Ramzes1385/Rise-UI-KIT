@@ -1,15 +1,15 @@
 /** Открытый тур закрывает всю страницу, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import BaseTour from '../ui/BaseTour.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import BaseTour from '../ui/BaseTour.vue'
-import { TOUR_PLACEMENTS } from '../types/BaseTour.types'
 import type { TourStep } from '../types/BaseTour.types'
+import { TOUR_PLACEMENTS } from '../types/BaseTour.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { ARG_GROUP, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Шаги тура по панели инструментов из DEMO_TOOLBAR. */
 const STEPS: TourStep[] = [

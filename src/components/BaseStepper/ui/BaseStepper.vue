@@ -67,12 +67,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseStepper.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseStepper } from '../model/useBaseStepper'
-import '../styles/BaseStepper.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../types/BaseStepper.types'
 
 const props = withDefaults(

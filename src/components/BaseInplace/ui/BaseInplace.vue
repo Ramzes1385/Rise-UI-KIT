@@ -34,12 +34,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseInplace.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseInplace } from '../model/useBaseInplace'
-import '../styles/BaseInplace.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseInplaceEmits, BaseInplaceProps, BaseInplaceSlots } from '../types/BaseInplace.types'
 
 const props = withDefaults(

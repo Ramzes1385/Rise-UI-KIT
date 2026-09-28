@@ -1,10 +1,10 @@
 import { expect } from 'storybook/test'
+import BaseFooter from '../ui/BaseFooter.vue'
 import { BaseLink } from '@components/BaseLink'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { FOOTER_VARIANTS } from '../types/BaseFooter.types'
 import { CONTAINER_SIZES } from '@components/BaseContainer'
 import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseFooter from '../ui/BaseFooter.vue'
-import { FOOTER_VARIANTS } from '../types/BaseFooter.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const TEMPLATE = `
 	<BaseFooter v-bind="props">

@@ -71,11 +71,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseRadio.style.scss'
+import { useBaseRadio } from '../model/useBaseRadio'
 import { kitDefaults } from '@composables/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseRadio } from '../model/useBaseRadio'
-import '../styles/BaseRadio.style.scss'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../types/BaseRadio.types'
 
 const props = withDefaults(

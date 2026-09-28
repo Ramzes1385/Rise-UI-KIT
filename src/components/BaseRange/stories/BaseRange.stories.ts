@@ -1,10 +1,10 @@
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseRange from '../ui/BaseRange.vue'
 import { RANGE_VARIANTS } from '../types/BaseRange.types'
 import type { RangeMark } from '../types/BaseRange.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Шкала громкости: подписи на крайних и среднем делениях, промежуточные — короче. */
 const VOLUME_MARKS: RangeMark[] = [

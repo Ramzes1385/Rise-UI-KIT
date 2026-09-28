@@ -56,13 +56,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseCheckbox.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
+import { useBaseCheckbox } from '../model/useBaseCheckbox'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseCheckbox } from '../model/useBaseCheckbox'
-import '../styles/BaseCheckbox.style.scss'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../types/BaseCheckbox.types'
 
 const props = withDefaults(

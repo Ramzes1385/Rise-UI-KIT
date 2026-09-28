@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useExpandTransition } from '../useExpandTransition'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('useExpandTransition', () => {
 	let rafCallbacks: FrameRequestCallback[] = []

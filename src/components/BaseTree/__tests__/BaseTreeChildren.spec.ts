@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import BaseTreeNode from '../ui/BaseTreeNode.vue'
-import BaseTreeChildren from '../ui/BaseTreeChildren.vue'
 import type { TreeNode } from '../types/BaseTree.types'
+import { fireEvent, render } from '@testing-library/vue'
+import BaseTreeChildren from '../ui/BaseTreeChildren.vue'
 
 const NESTED_ITEMS: TreeNode[] = [
 	{

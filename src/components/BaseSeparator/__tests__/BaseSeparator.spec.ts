@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSeparator from '../ui/BaseSeparator.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseSeparator unit', () => {
 	describe('рендер', () => {

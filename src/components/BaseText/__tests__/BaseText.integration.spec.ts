@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseText from '../ui/BaseText.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseText integration', () => {
 	describe('truncate + maxLines', () => {

@@ -1,8 +1,8 @@
-/** Composable: управление состоянием ввода чата */
-import { computed, nextTick, ref, watch } from 'vue'
 import { generateId } from '@utils/idUtils'
 import { formatFileSize } from '@utils/fileUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
+/** Composable: управление состоянием ввода чата */
+import { computed, nextTick, ref, watch } from 'vue'
 import type { ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 import type { BaseInputExposed, SuggestionList, UseChatInputStateOptions } from './types/useChatInputState.types'
 

@@ -1,5 +1,9 @@
 import { ref, watch } from 'vue'
+import BaseChat from '../ui/BaseChat.vue'
+import { CHAT_VARIANTS } from '../types/BaseChat.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment, ChatMessageReaction } from '../types/BaseChat.types'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -13,10 +17,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseChat from '../ui/BaseChat.vue'
-import { CHAT_VARIANTS } from '../types/BaseChat.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment, ChatMessageReaction } from '../types/BaseChat.types'
 
 // Даты — от STORY_TODAY (15 мая 2025), люди — STORY_USERS, картинки — STORY_IMAGES: скриншоты не зависят от дня и сети.
 

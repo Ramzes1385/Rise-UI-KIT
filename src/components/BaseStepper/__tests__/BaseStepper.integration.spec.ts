@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseStepper from '../ui/BaseStepper.vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import BaseStepper from '../ui/BaseStepper.vue'
 import type { BaseStepperStep } from '../types/BaseStepper.types'
 
 const ITEMS: BaseStepperStep[] = [{ label: 'Данные' }, { label: 'Адрес' }, { label: 'Оплата', isDisabled: true }]

@@ -55,14 +55,14 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BasePopconfirm.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBasePopconfirm } from '../model/useBasePopconfirm'
-import '../styles/BasePopconfirm.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BasePopconfirmEmits, BasePopconfirmProps, BasePopconfirmSlots } from '../types/BasePopconfirm.types'
 
 defineOptions({ name: 'BasePopconfirm' })

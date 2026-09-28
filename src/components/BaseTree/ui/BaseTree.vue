@@ -57,11 +57,11 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseTree.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BaseTreeNode from './BaseTreeNode.vue'
 import { useBaseTree } from '../model/useBaseTree'
+import { kitDefaults } from '@composables/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots } from '../types/BaseTree.types'
 
 const props = withDefaults(

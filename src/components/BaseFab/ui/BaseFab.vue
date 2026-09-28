@@ -19,14 +19,15 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '../styles/BaseFab.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
+import { useBaseFab } from '../model/useBaseFab'
 import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseFab } from '../model/useBaseFab'
-import '../styles/BaseFab.style.scss'
 import type { BaseFabEmits, BaseFabProps } from '../types/BaseFab.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseFabProps>(),

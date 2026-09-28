@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseAnimation.style.scss'
 import { kitDefaults } from '@composables/useDefaults'
 import { useBaseAnimation } from '../model/useBaseAnimation'
-import '../styles/BaseAnimation.style.scss'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../types/BaseAnimation.types'
 
 const props = withDefaults(

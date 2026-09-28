@@ -1,7 +1,7 @@
 /** Composable: логика BaseSearchInput — атрибуты combobox на нативном поле и события поля поиска */
 import { ref } from 'vue'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BaseInput } from '@components/BaseInput'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
 export function useBaseSearchInput(props: BaseSearchInputProps, emit: BaseSearchInputEmits) {

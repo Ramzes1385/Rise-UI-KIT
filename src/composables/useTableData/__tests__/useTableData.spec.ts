@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { computed, createApp, h, nextTick, ref } from 'vue'
 import { useTableData } from '../useTableData'
+import { computed, createApp, h, nextTick, ref } from 'vue'
 import type { UseTableDataOptions } from '../types/useTableData.types'
 import type { ColumnFilter, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 

@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { computed, defineComponent, effectScope, h, provide, ref } from 'vue'
+import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../types/useFormContext.types'
 import {
 	FORM_CONTEXT_KEY,
 	FORM_FIELD_CONTEXT_KEY,
@@ -8,7 +9,6 @@ import {
 	useFormContext,
 	useFormDisabled,
 } from '../useFormContext'
-import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../types/useFormContext.types'
 
 function withProviders<T>(
 	use: () => T,

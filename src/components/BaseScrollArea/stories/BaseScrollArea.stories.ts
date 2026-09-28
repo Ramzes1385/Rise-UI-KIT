@@ -1,7 +1,7 @@
 import { expect, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseScrollArea from '../ui/BaseScrollArea.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const EVENTS = Array.from(
 	{ length: 30 },

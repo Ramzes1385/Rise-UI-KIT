@@ -111,10 +111,10 @@
 </template>
 
 <script setup lang="ts">
+import BaseTableRow from './BaseTableRow.vue'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
-import BaseTableRow from './BaseTableRow.vue'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import { useBaseTableBody } from '../model/useBaseTableBody'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'

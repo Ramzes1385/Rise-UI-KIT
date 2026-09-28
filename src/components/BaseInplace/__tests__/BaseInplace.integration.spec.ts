@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
+import BaseInplace from '../ui/BaseInplace.vue'
+import { BaseForm } from '@components/BaseForm'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
-import { BaseForm } from '@components/BaseForm'
-import BaseInplace from '../ui/BaseInplace.vue'
 
 function renderModel(initial = 'Альфа', props: Record<string, unknown> = {}) {
 	const model = ref(initial)

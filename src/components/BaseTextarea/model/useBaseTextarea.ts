@@ -1,10 +1,10 @@
-/** Composable: логика BaseTextarea — связь с BaseFormField, счётчик символов и высота по тексту */
-import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
+import type { Ref } from 'vue'
 import { toHTMLTextAreaElement } from '@utils/domUtils'
 import { useFormField } from '@composables/useFormField'
 import { useFieldControl } from '@composables/useFormContext'
+/** Composable: логика BaseTextarea — связь с BaseFormField, счётчик символов и высота по тексту */
+import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { BaseTextareaEmits, TextareaProps } from '../types/BaseTextarea.types'
 
 /** Поле и BaseFormField вокруг: id (подпись связана через for), описания, aria-invalid и aria-required */

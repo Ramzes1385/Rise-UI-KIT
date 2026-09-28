@@ -1,10 +1,10 @@
 import { ref } from 'vue'
-import { expect, fn, waitFor, within } from 'storybook/test'
-import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, hiddenArgTypes, propGroup, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseAnimation from '../ui/BaseAnimation.vue'
-import { ANIMATION_MODES, ANIMATION_NAMES } from '../types/BaseAnimation.types'
+import { BaseButton } from '@components/BaseButton'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, waitFor, within } from 'storybook/test'
+import { ANIMATION_MODES, ANIMATION_NAMES } from '../types/BaseAnimation.types'
+import { ARG_GROUP, hiddenArgTypes, propGroup, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Анимации одиночного элемента; `list` — для списков (story List). */
 const SINGLE_NAMES = ANIMATION_NAMES.filter(name => name !== 'list')

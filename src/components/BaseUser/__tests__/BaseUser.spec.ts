@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseUser from '../ui/BaseUser.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseUser', () => {
 	it('имя и подпись; аватар скрыт от скринридера; без ссылки — div', () => {

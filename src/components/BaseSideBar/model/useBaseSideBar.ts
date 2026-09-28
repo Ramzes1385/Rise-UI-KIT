@@ -1,7 +1,7 @@
-/** Composable: логика BaseSideBar — свёрнутое состояние (своё или через v-model), размеры и секции панели */
-import { computed, ref, useSlots, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { usePadding } from '@composables/usePadding'
+/** Composable: логика BaseSideBar — свёрнутое состояние (своё или через v-model), размеры и секции панели */
+import { computed, ref, useSlots, watch } from 'vue'
 import { useLinkComponent } from '@composables/useLink'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'

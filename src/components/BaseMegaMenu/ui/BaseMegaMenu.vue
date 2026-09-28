@@ -108,13 +108,15 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseIcon/styles/BaseIcon.style.scss'
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '../styles/BaseMegaMenu.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
+import { kitDefaults } from '@composables/useDefaults'
 import { useBaseMegaMenu } from '../model/useBaseMegaMenu'
-import '../styles/BaseMegaMenu.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots } from '../types/BaseMegaMenu.types'
 
 const props = withDefaults(

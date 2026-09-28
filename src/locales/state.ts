@@ -1,7 +1,7 @@
-/** Текущий язык кита: один на страницу. Его задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
-import { shallowRef } from 'vue'
 import { en } from './en'
 import { ru } from './ru'
+/** Текущий язык кита: один на страницу. Его задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
+import { shallowRef } from 'vue'
 import type { LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
 export const LOCALES = { ru: ru as UiKitLocale, en } as const

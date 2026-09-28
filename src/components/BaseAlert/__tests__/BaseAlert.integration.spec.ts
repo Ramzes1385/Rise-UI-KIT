@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
+import BaseAlert from '../ui/BaseAlert.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseAlert from '../ui/BaseAlert.vue'
 
 describe('BaseAlert integration', () => {
 	describe('закрытие через родителя', () => {

@@ -1,8 +1,8 @@
 /** Composable: логика BaseTimeline — текущее событие и даты */
 import { computed } from 'vue'
 import { getLocale } from '@/locales/state'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseTimelineProps } from '../types/BaseTimeline.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 /** Дата события: Date или распознаваемая строка; иначе undefined */
 function toDate(value: Date | string): Date | undefined {

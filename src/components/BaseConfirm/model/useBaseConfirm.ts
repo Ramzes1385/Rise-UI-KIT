@@ -1,7 +1,7 @@
 /** Composable: логика BaseConfirm — закрытие окна с результатом */
 import { useId } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { CustomColor } from '@composables/useCustomColor'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../types/BaseConfirm.types'
 
 const DANGER_COLOR: CustomColor = {

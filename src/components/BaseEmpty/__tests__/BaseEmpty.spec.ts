@@ -1,9 +1,9 @@
+import '@testing-library/jest-dom/vitest'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
-import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseEmpty from '../ui/BaseEmpty.vue'
+import { dirname, resolve } from 'node:path'
+import { render, screen } from '@testing-library/vue'
 
 /** Исходник стилей компонента: jsdom не вычисляет calc()/var(), формулы считаются в тесте */
 // Путь строится через node:path: в jsdom-окружении глобальный URL — реализация jsdom, и fs не принимает такой объект

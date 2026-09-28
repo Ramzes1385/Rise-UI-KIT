@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
+import BaseEmpty from '../ui/BaseEmpty.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseEmpty from '../ui/BaseEmpty.vue'
 
 describe('BaseEmpty integration', () => {
 	describe('слот actions', () => {

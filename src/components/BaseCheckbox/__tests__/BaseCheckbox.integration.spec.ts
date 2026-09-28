@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseCheckbox from '../ui/BaseCheckbox.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseCheckbox from '../ui/BaseCheckbox.vue'
 
 describe('BaseCheckbox integration', () => {
 	describe('переключение по клику', () => {

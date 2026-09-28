@@ -1,11 +1,15 @@
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import BaseTable from '../ui/BaseTable.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseProgress } from '@components/BaseProgress'
+import { TABLE_VARIANTS } from '../types/BaseTable.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import type { NestedTableConfig, TableColumn, TableRow } from '../types/BaseTable.types'
 import {
 	ARG_GROUP,
 	avatarImage,
@@ -18,10 +22,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseTable from '../ui/BaseTable.vue'
-import { TABLE_VARIANTS } from '../types/BaseTable.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { NestedTableConfig, TableColumn, TableRow } from '../types/BaseTable.types'
 
 /** Сумма в рублях: «12 490 ₽». Перед знаком рубля — неразрывный пробел: сумма не переносится по строкам */
 function formatRub(value: unknown): string {

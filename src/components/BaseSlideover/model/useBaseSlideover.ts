@@ -1,13 +1,13 @@
-/** Composable: логика BaseSlideover — режим панели, отступы секций, закрытие и ловушка фокуса */
-import { computed, ref, useId, useSlots } from 'vue'
+import type { ComputedRef } from 'vue'
 import { usePopup } from '@composables/usePopup'
 import { usePadding } from '@composables/usePadding'
+/** Composable: логика BaseSlideover — режим панели, отступы секций, закрытие и ловушка фокуса */
+import { computed, ref, useId, useSlots } from 'vue'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { ComputedRef } from 'vue'
 import type { BaseSlideoverEmits, SlideoverProps } from '../types/BaseSlideover.types'
 
 const SLIDEOVER_ELEMENTS = ['root', 'panel', 'header', 'title', 'body', 'footer']

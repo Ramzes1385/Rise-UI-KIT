@@ -1,8 +1,8 @@
 /** Composable: логика DatePickerField — поле с датой: значения по умолчанию, readonly без оформления и открытие с клавиатуры */
 import { computed, ref, watchPostEffect } from 'vue'
+import type { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import type { BaseInput } from '@components/BaseInput'
 import type { DatePickerFieldEmits, DatePickerFieldProps } from '../types/DatePickerField.types'
 
 function useFieldResolvedProps(props: DatePickerFieldProps) {

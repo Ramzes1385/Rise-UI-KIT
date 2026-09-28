@@ -1,11 +1,11 @@
 /** Открытая панель телепортируется в body, поэтому в Docs примеры показываются в отдельном фрейме. */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BasePopconfirm from '../ui/BasePopconfirm.vue'
-import { POPCONFIRM_VARIANTS } from '../types/BasePopconfirm.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { POPCONFIRM_VARIANTS } from '../types/BasePopconfirm.types'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 function docsFrame(height: number) {
 	return { story: { inline: false, height: `${height}px` } }

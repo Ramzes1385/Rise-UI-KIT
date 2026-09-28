@@ -1,7 +1,10 @@
 import { ref } from 'vue'
 import { expect } from 'storybook/test'
+import BaseCard from '../ui/BaseCard.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
+import { CARD_VARIANTS } from '../types/BaseCard.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -14,9 +17,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseCard from '../ui/BaseCard.vue'
-import { CARD_VARIANTS } from '../types/BaseCard.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const BODY = 'Выручка выросла на 12% к апрелю, средний чек — на 4%. Больше всего заказов пришло из мобильного приложения.'
 

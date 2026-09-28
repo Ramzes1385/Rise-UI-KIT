@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseContainer from '../ui/BaseContainer.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseContainer unit', () => {
 	it('рендерит содержимое в div шириной xl', () => {

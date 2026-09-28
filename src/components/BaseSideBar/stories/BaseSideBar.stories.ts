@@ -1,8 +1,12 @@
 import { ref } from 'vue'
-import { expect, fn, waitFor } from 'storybook/test'
+import BaseSideBar from '../ui/BaseSideBar.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
+import { expect, fn, waitFor } from 'storybook/test'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { SIDEBAR_VARIANTS } from '../types/BaseSideBar.types'
+import type { SideBarItem } from '../types/BaseSideBar.types'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -15,10 +19,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseSideBar from '../ui/BaseSideBar.vue'
-import { SIDEBAR_VARIANTS } from '../types/BaseSideBar.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { SideBarItem } from '../types/BaseSideBar.types'
 
 const BASIC_ITEMS: SideBarItem[] = [
 	{ key: 'dashboard', label: 'Главная', icon: 'home', to: '/dashboard' },

@@ -90,13 +90,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseAutocomplete.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseAutocomplete } from '../model/useBaseAutocomplete'
-import '../styles/BaseAutocomplete.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseAutocompleteEmits, BaseAutocompleteProps, BaseAutocompleteSlots } from '../types/BaseAutocomplete.types'
 
 const props = withDefaults(

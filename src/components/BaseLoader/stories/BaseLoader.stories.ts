@@ -1,9 +1,9 @@
 import { expect } from 'storybook/test'
 import { UI_TEXT } from '@/locales/messages'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseLoader from '../ui/BaseLoader.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { LoaderVariant } from '../types/BaseLoader.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 
 const LOADER_VARIANTS: readonly LoaderVariant[] = ['spinner', 'dots', 'pulse', 'bars']
 

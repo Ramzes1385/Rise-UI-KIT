@@ -32,10 +32,10 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseButton.style.scss'
+import { useBaseButton } from '../model/useBaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseButton } from '../model/useBaseButton'
-import '../styles/BaseButton.style.scss'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../types/BaseButton.types'
 
 const props = withDefaults(

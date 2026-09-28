@@ -2,8 +2,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseVirtualList from '../ui/BaseVirtualList.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseVirtualListExpose } from '../types/BaseVirtualList.types'
 
 const ORDERS = Array.from({ length: 1000 }, (_, index) => ({ id: `order-${index}`, title: `Заказ № ${index + 1}` }))

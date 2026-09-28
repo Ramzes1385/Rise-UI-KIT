@@ -46,16 +46,18 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '@components/BaseButton/styles/BaseButton.style.scss'
+import '../styles/BaseHeader.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDrawer } from '@components/BaseDrawer'
+import { useBaseHeader } from '../model/useBaseHeader'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseHeader } from '../model/useBaseHeader'
-import '../styles/BaseHeader.style.scss'
 import type { BaseHeaderProps, BaseHeaderSlots } from '../types/BaseHeader.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseHeaderProps>(),

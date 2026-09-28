@@ -58,14 +58,14 @@
 </template>
 
 <script setup lang="ts">
+import './ChatHeader.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { CHAT_SCALE } from '../../model/chatScale'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { CHAT_SCALE } from '../../model/chatScale'
 import { useChatHeader } from './model/useChatHeader'
-import './ChatHeader.style.scss'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { ChatHeaderEmits, ChatHeaderProps } from './types/ChatHeader.types'
 
 const props = withDefaults(defineProps<ChatHeaderProps>(), {

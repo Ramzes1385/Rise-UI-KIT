@@ -1,3 +1,4 @@
+import './foundations.scss'
 import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
@@ -6,9 +7,8 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseSwitch } from '@components/BaseSwitch'
 import { BaseCheckbox } from '@components/BaseCheckbox'
-import { SIZE_PRESETS, sizeLabel } from '@/stories/helpers'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import './foundations.scss'
+import { SIZE_PRESETS, sizeLabel } from '@/stories/helpers'
 
 const meta = {
 	title: 'Foundations/Sizing',

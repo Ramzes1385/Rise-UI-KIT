@@ -1,10 +1,10 @@
+import { setLocale } from '@/locales/state'
 /** Composable: логика BaseApp — свои хранилища уведомлений и оверлеев, язык и цель телепорта */
 import { onBeforeUnmount, provide, watch } from 'vue'
-import { setLocale } from '@/locales/state'
+import type { BaseAppProps } from '../types/BaseApp.types'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
 import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
-import type { BaseAppProps } from '../types/BaseApp.types'
 
 export function useBaseApp(props: BaseAppProps) {
 	// У каждого BaseApp свои хранилища: вложенный BaseApp не показывает уведомления внешнего второй раз

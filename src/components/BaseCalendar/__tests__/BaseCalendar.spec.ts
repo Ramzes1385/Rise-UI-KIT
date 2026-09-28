@@ -1,8 +1,8 @@
 /** Дочерние UI-компоненты заменены stub'ами; мокаются только DOM-зависимые composables. */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import BaseCalendar from '../ui/BaseCalendar.vue'
+import { fireEvent, render } from '@testing-library/vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 

@@ -1,5 +1,6 @@
 import { render } from '@testing-library/vue'
 import { defineComponent, h, provide } from 'vue'
+import type { OverlayStore, UseOverlayReturn } from '../types/useOverlay.types'
 import {
 	createOverlayStore,
 	getActiveOverlayStore,
@@ -8,7 +9,6 @@ import {
 	setActiveOverlayStore,
 	useOverlay,
 } from '../useOverlay'
-import type { OverlayStore, UseOverlayReturn } from '../types/useOverlay.types'
 
 const Dialog = defineComponent({ name: 'TestDialog', render: () => null })
 

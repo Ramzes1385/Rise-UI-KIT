@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
 import { BaseForm } from '@components/BaseForm'
 import { BaseInput } from '@components/BaseInput'
+import BaseFormField from '../ui/BaseFormField.vue'
 import { BaseSelect } from '@components/BaseSelect'
+import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseTextarea } from '@components/BaseTextarea'
-import { BaseDatePicker } from '@components/BaseDatePicker'
-import BaseFormField from '../ui/BaseFormField.vue'
 import type { StandardSchemaV1 } from '@utils/formUtils'
+import { BaseDatePicker } from '@components/BaseDatePicker'
 
 describe('BaseFormField integration', () => {
 	it('должен рендерить label и error', () => {

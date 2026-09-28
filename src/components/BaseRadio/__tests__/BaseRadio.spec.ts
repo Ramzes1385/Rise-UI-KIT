@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
-import { BaseText } from '@components/BaseText'
 import BaseRadio from '../ui/BaseRadio.vue'
+import { BaseText } from '@components/BaseText'
+import { render, screen } from '@testing-library/vue'
 import type { BaseRadioOption } from '../types/BaseRadio.types'
 
 const OPTIONS: BaseRadioOption[] = [

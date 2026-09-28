@@ -1,12 +1,12 @@
 /** Меню телепортируется в body, поэтому в Docs примеры показываются в отдельном фрейме. */
 
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseContextMenu from '../ui/BaseContextMenu.vue'
-import { CONTEXT_MENU_VARIANTS } from '../types/BaseContextMenu.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { CONTEXT_MENU_VARIANTS } from '../types/BaseContextMenu.types'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const EPISODE_ACTIONS: DropdownMenuItem[][] = [
 	[

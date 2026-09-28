@@ -1,12 +1,12 @@
+import type { Ref } from 'vue'
+import { formatMessage } from '@/locales'
 /** Composable: логика BasePin — ячейки кода, переходы между ними и вставка */
 import { computed, ref, useId } from 'vue'
-import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
 import { toHTMLInputElement } from '@utils/domUtils'
 import { useFormField } from '@composables/useFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { BasePinEmits, PinProps } from '../types/BasePin.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 /** Значение фиксированной длины: пробел — пустая ячейка */
 function normalizeValue(value: string, length: number): string[] {

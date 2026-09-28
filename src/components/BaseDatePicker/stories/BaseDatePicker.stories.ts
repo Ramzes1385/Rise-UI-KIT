@@ -1,10 +1,12 @@
 /** Панель телепортируется в body: примеры с открытой панелью в Docs показываются во фрейме. Все даты — вокруг STORY_TODAY (15 мая 2025). */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
+import BaseDatePicker from '../ui/BaseDatePicker.vue'
 import { INPUT_VARIANTS } from '@components/BaseInput'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { CALENDAR_VARIANTS } from '@components/BaseCalendar'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -17,8 +19,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseDatePicker from '../ui/BaseDatePicker.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Полная дата, как в доступном имени дня календаря: «четверг, 15 мая 2025 г.». */
 const DAY_NAME = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })

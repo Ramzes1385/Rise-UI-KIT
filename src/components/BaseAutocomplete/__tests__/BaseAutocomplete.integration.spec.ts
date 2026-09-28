@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
-import userEvent from '@testing-library/user-event'
-import { render, screen, waitFor } from '@testing-library/vue'
 import { BaseForm } from '@components/BaseForm'
+import userEvent from '@testing-library/user-event'
 import BaseAutocomplete from '../ui/BaseAutocomplete.vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import type { AutocompleteOption } from '../types/BaseAutocomplete.types'
 
 const CITIES: AutocompleteOption[] = [

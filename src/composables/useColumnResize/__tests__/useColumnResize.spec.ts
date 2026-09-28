@@ -1,8 +1,8 @@
+import type { Ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { defineComponent, ref } from 'vue'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useColumnResize } from '../useColumnResize'
-import type { Ref } from 'vue'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 function withSetup(fn: () => ReturnType<typeof useColumnResize>) {
 	let result: ReturnType<typeof useColumnResize>

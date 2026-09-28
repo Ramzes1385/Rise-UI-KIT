@@ -22,12 +22,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseBackTop.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseFab } from '@components/BaseFab'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseBackTop } from '../model/useBaseBackTop'
-import '../styles/BaseBackTop.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseBackTopEmits, BaseBackTopProps } from '../types/BaseBackTop.types'
 
 const props = withDefaults(

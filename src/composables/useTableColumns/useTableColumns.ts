@@ -1,7 +1,7 @@
 /** Composable: управление колонками таблицы */
 import { computed, ref, toRaw, watch } from 'vue'
-import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
 import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
+import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/tableUtils'
 import type { ColumnPropState, UseTableColumnsOptions, UseTableColumnsReturn } from './types/useTableColumns.types'
 
 /** Строк скелетона, когда размер страницы не задан */

@@ -1,8 +1,8 @@
 import { expect, fn } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSplitter from '../ui/BaseSplitter.vue'
-import { SPLITTER_VARIANTS } from '../types/BaseSplitter.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { SPLITTER_VARIANTS } from '../types/BaseSplitter.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const LETTERS = ['Счёт за сентябрь', 'Договор поставки', 'Сверка остатков', 'Отгрузка № 1048', 'Акт выполненных работ']
 

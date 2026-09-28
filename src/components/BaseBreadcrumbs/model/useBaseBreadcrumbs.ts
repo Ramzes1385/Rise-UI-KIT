@@ -1,10 +1,10 @@
 /** Composable: логика BaseBreadcrumbs — свёртка длинной цепочки, ссылки крошек и микроразметка */
 import { computed, ref } from 'vue'
 import { calcIconScale } from '@utils/iconUtils'
+import type { ResolvedLink } from '@composables/useLink'
 import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
 import { resolveLink, useLinkComponent } from '@composables/useLink'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { ResolvedLink } from '@composables/useLink'
 import type { BaseBreadcrumbsEmits, BreadcrumbItem, BreadcrumbsProps } from '../types/BaseBreadcrumbs.types'
 
 const BREADCRUMBS_ELEMENTS = [

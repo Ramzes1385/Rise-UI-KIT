@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { h, nextTick } from 'vue'
-import { fireEvent, render, screen, within } from '@testing-library/vue'
 import BaseContextMenu from '../ui/BaseContextMenu.vue'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
+import { fireEvent, render, screen, within } from '@testing-library/vue'
 
 const ITEMS: DropdownMenuItem[][] = [[{ label: 'Открыть' }, { label: 'Копировать ссылку' }], [{ label: 'Удалить', isDanger: true }]]
 

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick } from 'vue'
-import { COLOR_MODE_STORAGE_KEY, createColorMode } from '../useColorMode'
 import type { ColorModeInstance } from '../types/useColorMode.types'
+import { COLOR_MODE_STORAGE_KEY, createColorMode } from '../useColorMode'
 
 /** Поддельный MediaQueryList: jsdom не реализует matchMedia */
 function mockSystemTheme(isDark: boolean) {

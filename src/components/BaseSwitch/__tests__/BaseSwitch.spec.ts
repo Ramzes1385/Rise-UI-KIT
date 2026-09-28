@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSwitch from '../ui/BaseSwitch.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseSwitch unit', () => {
 	describe('рендер', () => {

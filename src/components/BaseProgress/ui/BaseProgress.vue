@@ -55,12 +55,11 @@
 </template>
 
 <script setup lang="ts">
-import { UI_ARIA } from '@/locales/messages'
 import '../styles/BaseProgress.style.scss'
-
+import { UI_ARIA } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseProgress } from '../model/useBaseProgress'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../types/BaseProgress.types'
 
 const props = withDefaults(

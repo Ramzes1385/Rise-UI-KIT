@@ -1,6 +1,9 @@
 import { ref } from 'vue'
-import { expect, fn, screen, spyOn, waitFor, within } from 'storybook/test'
+import BaseEditor from '../ui/BaseEditor.vue'
 import { BaseButton } from '@components/BaseButton'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { EDITOR_VARIANTS } from '../types/BaseEditor.types'
+import { expect, fn, screen, spyOn, waitFor, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -12,9 +15,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseEditor from '../ui/BaseEditor.vue'
-import { EDITOR_VARIANTS } from '../types/BaseEditor.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const NOTE_HTML = [
 	'<h3>План релиза 1.4</h3>',

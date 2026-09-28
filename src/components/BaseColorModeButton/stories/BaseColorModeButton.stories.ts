@@ -1,13 +1,13 @@
 /** Каждый пример переключает тему своей рамки (createColorMode({ target })), а не всей страницы Storybook — тема страницы задаётся кнопкой «Тема» на панели инструментов. */
 
 import { onBeforeUnmount, ref } from 'vue'
-import { expect, fn, waitFor } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
+import { expect, fn, waitFor } from 'storybook/test'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { createColorMode } from '@composables/useColorMode'
+import BaseColorModeButton from '../ui/BaseColorModeButton.vue'
 import { BUTTON_VARIANTS } from '@components/BaseButton/types/BaseButton.types'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseColorModeButton from '../ui/BaseColorModeButton.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Тема рамки примера: светлая при открытии, выбор не сохраняется */
 function useFrameColorMode() {

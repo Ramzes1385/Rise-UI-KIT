@@ -1,6 +1,6 @@
+import type { ComponentPublicInstance } from 'vue'
 /** Composable: отслеживание клика вне заданных элементов */
 import { useLayer } from '@composables/useLayerStack'
-import type { ComponentPublicInstance } from 'vue'
 import type { UseClickOutsideOptions } from './types/useClickOutside.types'
 
 function isComponentInstance(value: unknown): value is ComponentPublicInstance {

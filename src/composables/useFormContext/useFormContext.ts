@@ -1,6 +1,6 @@
+import type { ComputedRef, InjectionKey } from 'vue'
 /** Composable: контекст формы (блокировка, ошибки схемы) и поля (подпись, описание, ошибка) для контролов кита */
 import { computed, inject, onScopeDispose, provide, useId } from 'vue'
-import type { ComputedRef, InjectionKey } from 'vue'
 import type {
 	FieldControlAria,
 	FormContext,

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSplitter from '../ui/BaseSplitter.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const SLOTS = { start: 'Письма', end: 'Письмо' }
 

@@ -1,7 +1,7 @@
 /** Composable: логика BaseFab — кнопка или ссылка */
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseFabProps } from '../types/BaseFab.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 export function useBaseFab(props: BaseFabProps) {
 	const isLink = computed(() => Boolean(props.to || props.href))

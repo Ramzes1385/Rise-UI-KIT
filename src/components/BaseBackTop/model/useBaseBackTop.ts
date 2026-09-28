@@ -1,6 +1,6 @@
+import { useCustomClass } from '@composables/useCustomClass'
 /** Composable: логика BaseBackTop — видимость по прокрутке и возврат наверх */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
 import type { BackTopProps, BaseBackTopEmits } from '../types/BaseBackTop.types'
 
 function resolveElement(value: string | HTMLElement): HTMLElement | null {

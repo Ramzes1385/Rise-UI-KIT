@@ -1,15 +1,15 @@
-/** Composable: логика BaseTour — шаги, подсветка элемента, блокировка прокрутки и фокус в карточке */
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useTourLogic } from '@composables/useTourLogic'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useScrollLock } from '@composables/useScrollLock'
+/** Composable: логика BaseTour — шаги, подсветка элемента, блокировка прокрутки и фокус в карточке */
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useTourCoordination } from '@composables/useTourCoordination'
-import type { Ref } from 'vue'
 import type { BaseTourEmits, TourProps } from '../types/BaseTour.types'
 
 const TOUR_ELEMENTS = [

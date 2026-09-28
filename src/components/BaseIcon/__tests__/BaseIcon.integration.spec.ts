@@ -2,9 +2,9 @@
 
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
-import { render } from '@testing-library/vue'
-import { createUiKitPlugin } from '@/plugin'
 import BaseIcon from '../ui/BaseIcon.vue'
+import { createUiKitPlugin } from '@/plugin'
+import { render } from '@testing-library/vue'
 
 describe('BaseIcon integration', () => {
 	it('должен рендерить SVG-элемент с реальным useIcon', () => {

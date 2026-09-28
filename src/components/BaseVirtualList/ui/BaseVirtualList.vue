@@ -33,10 +33,10 @@
 </template>
 
 <script setup lang="ts" generic="T">
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseVirtualList } from '../model/useBaseVirtualList'
 import '../styles/BaseVirtualList.style.scss'
+import { kitDefaults } from '@composables/useDefaults'
+import { useBaseVirtualList } from '../model/useBaseVirtualList'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../types/BaseVirtualList.types'
 
 const props = withDefaults(

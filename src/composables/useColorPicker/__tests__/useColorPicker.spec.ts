@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-import { defineComponent, h, nextTick, ref } from 'vue'
 import { useColorPicker } from '../useColorPicker'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import type { UseColorPickerReturn } from '../types/useColorPicker.types'
 
 interface HostResult {

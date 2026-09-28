@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseMenu from '../ui/BaseMenu.vue'
+import userEvent from '@testing-library/user-event'
 import type { BaseMenuItem } from '../types/BaseMenu.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const clickHandler = vi.fn()
 

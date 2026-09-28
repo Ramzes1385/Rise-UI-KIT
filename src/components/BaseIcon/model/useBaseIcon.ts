@@ -1,8 +1,8 @@
 /** Composable: логика BaseIcon — символ, доступность и трансформации */
 import { computed } from 'vue'
 import { useIcon } from '@composables/useIcon'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseIconProps } from '../types/BaseIcon.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 function iconTransform(props: BaseIconProps): string {
 	const transforms: string[] = []

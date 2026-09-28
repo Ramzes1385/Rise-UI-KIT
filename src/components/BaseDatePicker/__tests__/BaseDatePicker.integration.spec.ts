@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 let clickOutsideCallback: (() => void) | null = null
 let escapeCallback: (() => void) | null = null

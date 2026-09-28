@@ -1,13 +1,13 @@
+import type { Ref } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 /** Composable: логика BaseRange — значения ползунков, перетаскивание и их доступные имена */
 import { computed, ref, useSlots } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
 import { useFormField } from '@composables/useFormField'
 import { useRangeDrag } from '@composables/useRangeDrag'
 import { useRangeValues } from '@composables/useRangeValues'
 import { useFormDisabled } from '@composables/useFormContext'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { UseRangeValuesReturn } from '@composables/useRangeValues'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseRangeEmits, RangeProps } from '../types/BaseRange.types'
 
 const RANGE_ELEMENTS = [

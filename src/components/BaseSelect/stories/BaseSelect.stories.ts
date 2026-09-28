@@ -1,13 +1,13 @@
 /** Открытый список телепортируется в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
-import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSelect from '../ui/BaseSelect.vue'
-import { SELECT_VARIANTS } from '../types/BaseSelect.types'
+import { BaseButton } from '@components/BaseButton'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { SELECT_VARIANTS } from '../types/BaseSelect.types'
 import type { BaseSelectOption } from '../types/BaseSelect.types'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Города доставки. Екатеринбург недоступен — на нём видно отключённую опцию. */
 const CITIES: BaseSelectOption[] = [

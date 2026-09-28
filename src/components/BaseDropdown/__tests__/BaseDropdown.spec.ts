@@ -1,8 +1,8 @@
 /** Компонент использует teleport to="body" — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseDropdown from '../ui/BaseDropdown.vue'
+import { render, screen } from '@testing-library/vue'
 
 const { clickOutsideMock, escapeKeyMock } = vi.hoisted(() => ({
 	clickOutsideMock: { callback: null as (() => void) | null, isActive: null as (() => boolean) | null },

@@ -166,18 +166,19 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseText/styles/BaseText.style.scss'
+import '../styles/BaseSelect.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseBadge } from '@components/BaseBadge'
+import { useBaseSelect } from '../model/useBaseSelect'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import '../styles/BaseSelect.style.scss'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseSelect } from '../model/useBaseSelect'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../types/BaseSelect.types'
 
 const props = withDefaults(

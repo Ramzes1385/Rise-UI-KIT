@@ -2,9 +2,9 @@
 
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../types/BaseTree.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 /** 200 папок, у первой — два файла */
 const ITEMS: TreeNode[] = Array.from({ length: 200 }, (_, index) => ({

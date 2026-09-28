@@ -61,14 +61,15 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseText/styles/BaseText.style.scss'
+import '../styles/BaseDrawer.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
+import { useBaseDrawer } from '../model/useBaseDrawer'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseDrawer } from '../model/useBaseDrawer'
-import '../styles/BaseDrawer.style.scss'
 import type { BaseDrawerEmits, BaseDrawerProps, BaseDrawerSlots } from '../types/BaseDrawer.types'
 
 const props = withDefaults(

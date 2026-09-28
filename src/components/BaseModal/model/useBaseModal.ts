@@ -1,6 +1,6 @@
+import { usePopup } from '@composables/usePopup'
 /** Composable: логика BaseModal — закрытие, место среди слоёв, прокрутка тела и ловушка фокуса */
 import { computed, ref, useId, useSlots } from 'vue'
-import { usePopup } from '@composables/usePopup'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useTeleportTarget } from '@composables/useTeleportTarget'

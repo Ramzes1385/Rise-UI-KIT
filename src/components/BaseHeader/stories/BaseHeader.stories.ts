@@ -1,12 +1,12 @@
-import { expect, screen, waitFor, within } from 'storybook/test'
+import BaseHeader from '../ui/BaseHeader.vue'
 import { BaseLink } from '@components/BaseLink'
 import { BaseButton } from '@components/BaseButton'
 import { DRAWER_DIRECTIONS } from '@components/BaseDrawer'
-import { CONTAINER_SIZES } from '@components/BaseContainer'
-import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseHeader from '../ui/BaseHeader.vue'
-import { HEADER_VARIANTS } from '../types/BaseHeader.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { HEADER_VARIANTS } from '../types/BaseHeader.types'
+import { CONTAINER_SIZES } from '@components/BaseContainer'
+import { expect, screen, waitFor, within } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const NAV = `
 	<nav aria-label="Основное" class="story-row" style="gap: 20px">

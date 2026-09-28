@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseHeader from '../ui/BaseHeader.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 function resizeTo(width: number): void {
 	Object.defineProperty(window, 'innerWidth', { value: width, configurable: true })

@@ -1,12 +1,12 @@
 /** Composable: логика BaseRating — предпросмотр под указателем, выбор кликом и клавишами слайдера */
 import { computed, ref } from 'vue'
+import type { ComputedRef } from 'vue'
 import { UI_RATING } from '@/locales/messages'
 import { useFormField } from '@composables/useFormField'
 import { useFormDisabled } from '@composables/useFormContext'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
-import type { ComputedRef } from 'vue'
 import type { BaseRatingEmits, RatingProps } from '../types/BaseRating.types'
+import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
 
 function pointerRatio(event: MouseEvent, target: EventTarget | null): number {
 	/* istanbul ignore next — defensive: currentTarget звезды всегда HTMLElement */

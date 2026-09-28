@@ -1,8 +1,8 @@
-import { nextTick, reactive } from 'vue'
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, waitFor } from '@testing-library/vue'
-import { useEscapeKey } from '@composables/useEscapeKey'
+import { nextTick, reactive } from 'vue'
 import BaseSearch from '../ui/BaseSearch.vue'
+import { useEscapeKey } from '@composables/useEscapeKey'
+import { fireEvent, render, waitFor } from '@testing-library/vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))

@@ -1,10 +1,10 @@
 /** Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка; компонент использует teleport — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
+import BaseSlideover from '../ui/BaseSlideover.vue'
 import userEvent from '@testing-library/user-event'
 import { defineComponent, nextTick, ref } from 'vue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import BaseSlideover from '../ui/BaseSlideover.vue'
 
 /** Хост: кнопка-триггер и панель с полем ввода и кнопкой в футере */
 function renderSlideoverHost() {

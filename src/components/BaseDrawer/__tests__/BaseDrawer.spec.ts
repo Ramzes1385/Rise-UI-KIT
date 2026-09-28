@@ -1,8 +1,8 @@
 /** Панель телепортируется — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseDrawer from '../ui/BaseDrawer.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 function panel(): HTMLElement {
 	return document.querySelector('.base-drawer__panel') as HTMLElement

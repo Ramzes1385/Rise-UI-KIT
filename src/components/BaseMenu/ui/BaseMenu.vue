@@ -42,13 +42,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseMenu.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
+import { useBaseMenu } from '../model/useBaseMenu'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseSeparator } from '@components/BaseSeparator'
-import '../styles/BaseMenu.style.scss'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseMenu } from '../model/useBaseMenu'
 import type { BaseMenuEmits, BaseMenuProps, BaseMenuSlots } from '../types/BaseMenu.types'
 
 const props = withDefaults(

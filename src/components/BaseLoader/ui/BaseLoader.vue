@@ -36,11 +36,11 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseLoader } from '../model/useBaseLoader'
 import '../styles/BaseLoader.style.scss'
+import { useBaseLoader } from '../model/useBaseLoader'
+import { kitDefaults } from '@composables/useDefaults'
 import type { BaseLoaderProps } from '../types/BaseLoader.types'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseLoaderProps>(),

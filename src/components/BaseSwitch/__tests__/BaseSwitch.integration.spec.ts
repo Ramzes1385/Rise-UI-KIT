@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseSwitch from '../ui/BaseSwitch.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseSwitch from '../ui/BaseSwitch.vue'
 
 describe('BaseSwitch integration', () => {
 	describe('v-model', () => {

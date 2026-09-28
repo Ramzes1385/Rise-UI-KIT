@@ -1,12 +1,12 @@
+import type { ComputedRef } from 'vue'
 /** Composable: логика BaseSelect — список (APG select-only combobox), поиск, мультивыбор и связь с BaseFormField */
 import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { useSelect } from '@composables/useSelect'
 import { useFormField } from '@composables/useFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
-import type { ComputedRef } from 'vue'
 import type { BaseSelectEmits, SelectProps } from '../types/BaseSelect.types'
+import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
 
 const SELECT_ELEMENTS = [
 	'root',

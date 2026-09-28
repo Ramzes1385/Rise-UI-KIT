@@ -24,11 +24,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseAvatar.style.scss'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { useBaseAvatar } from '../model/useBaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseAvatar } from '../model/useBaseAvatar'
-import '../styles/BaseAvatar.style.scss'
 import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../types/BaseAvatar.types'
 
 const props = withDefaults(

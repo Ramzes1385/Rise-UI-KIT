@@ -1,8 +1,8 @@
-/** Composable: логика ChatSlideover — панель «Информация»: вкладки, профиль участника, меню администратора и возврат фокуса */
-import { computed, nextTick, ref, useId, watch } from 'vue'
+import type { Ref } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
-import type { Ref } from 'vue'
+/** Composable: логика ChatSlideover — панель «Информация»: вкладки, профиль участника, меню администратора и возврат фокуса */
+import { computed, nextTick, ref, useId, watch } from 'vue'
 import type { ChatInfoTab, ChatMember } from '../types/BaseChat.types'
 import type { ChatSlideoverEmits, ChatSlideoverPanelProps } from '../types/ChatSlideover.types'
 

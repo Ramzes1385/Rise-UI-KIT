@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseButtonGroup } from '../model/useBaseButtonGroup'
 import '../styles/BaseButtonGroup.style.scss'
+import { kitDefaults } from '@composables/useDefaults'
+import { useBaseButtonGroup } from '../model/useBaseButtonGroup'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseButtonGroupProps, BaseButtonGroupSlots } from '../types/BaseButtonGroup.types'
 
 const props = withDefaults(

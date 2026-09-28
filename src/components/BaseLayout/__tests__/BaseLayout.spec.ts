@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseLayout from '../ui/BaseLayout.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const SLOTS = {
 	header: '<header>Шапка</header>',

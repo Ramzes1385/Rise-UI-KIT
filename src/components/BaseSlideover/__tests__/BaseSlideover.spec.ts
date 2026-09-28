@@ -1,8 +1,8 @@
 /** Компонент использует teleport — поиск в document. */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSlideover from '../ui/BaseSlideover.vue'
+import { render, screen } from '@testing-library/vue'
 
 vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))

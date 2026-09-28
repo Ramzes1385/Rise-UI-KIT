@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { createApp, h } from 'vue'
 import { mount } from '@vue/test-utils'
-import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 import { createIconPlugin } from '../iconPlugin'
+import BaseIcon from '@components/BaseIcon/ui/BaseIcon.vue'
 
 describe('createIconPlugin', () => {
 	it('возвращает объект с методом install', () => {

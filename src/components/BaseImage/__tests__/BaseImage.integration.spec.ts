@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
+import BaseImage from '../ui/BaseImage.vue'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import BaseSlider from '@components/BaseSlider/ui/BaseSlider.vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import ChatSlideoverMedia from '@components/BaseChat/ui/ChatSlideover/ChatSlideoverMedia.vue'
 import ChatMessageAttachments from '@components/BaseChat/ui/ChatMessageList/ui/ChatMessageAttachments.vue'
-import BaseImage from '../ui/BaseImage.vue'
 
 describe('BaseImage integration', () => {
 	const defaultProps = {

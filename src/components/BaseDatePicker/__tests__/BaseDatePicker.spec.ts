@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const clickOutsideOptions: { isActive?: () => boolean } = {}
 const escapeKeyOptions: { isActive?: () => boolean } = {}

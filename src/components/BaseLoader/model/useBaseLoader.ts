@@ -2,9 +2,9 @@
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { useSizeScale } from '@composables/useSizeScale'
+import type { LoaderProps } from '../types/BaseLoader.types'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
-import type { LoaderProps } from '../types/BaseLoader.types'
 
 export function useBaseLoader(props: LoaderProps) {
 	/**

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
+import ChatInput from '../ui/ChatInput/ChatInput.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import ChatInput from '../ui/ChatInput/ChatInput.vue'
 import type { ChatCommand, ChatMember, ChatMessage } from '../types/BaseChat.types'
 
 const MEMBERS: ChatMember[] = [

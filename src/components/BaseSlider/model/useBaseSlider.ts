@@ -1,7 +1,7 @@
-/** Composable: логика BaseSlider — листание, видимость слайдов и перелистывание при зажатой стрелке */
-import { computed, onBeforeUnmount } from 'vue'
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
+/** Composable: логика BaseSlider — листание, видимость слайдов и перелистывание при зажатой стрелке */
+import { computed, onBeforeUnmount } from 'vue'
 import { useSlider } from '@composables/useSlider'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'

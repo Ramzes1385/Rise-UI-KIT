@@ -82,16 +82,17 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseLink/styles/BaseLink.style.scss'
+import '../styles/BaseSideBar.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseSkeleton } from '@components/BaseSkeleton'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseSideBar } from '../model/useBaseSideBar'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots } from '../types/BaseSideBar.types'
-import '../styles/BaseSideBar.style.scss'
 
 defineOptions({
 	name: 'BaseSideBar',

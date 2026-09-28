@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
-import { ARG_GROUP, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, hiddenArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 
 const SKELETON_SHAPES = ['text', 'rect', 'circle'] as const
 

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseChip from '../ui/BaseChip.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseChip unit', () => {
 	it('должен рендерить контент слота', () => {

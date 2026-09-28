@@ -16,12 +16,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseFooter.style.scss'
+import { useBaseFooter } from '../model/useBaseFooter'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseFooter } from '../model/useBaseFooter'
-import '../styles/BaseFooter.style.scss'
 import type { BaseFooterProps, BaseFooterSlots } from '../types/BaseFooter.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseFooterProps>(),

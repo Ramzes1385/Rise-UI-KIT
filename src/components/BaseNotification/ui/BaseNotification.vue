@@ -81,6 +81,8 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseIcon/styles/BaseIcon.style.scss'
+import '../styles/BaseNotification.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
@@ -89,7 +91,6 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { DEFAULT_DURATION, useBaseNotification } from '../model/useBaseNotification'
-import '../styles/BaseNotification.style.scss'
 import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots } from '../types/BaseNotification.types'
 
 const props = withDefaults(

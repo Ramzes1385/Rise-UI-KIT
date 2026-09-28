@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSegmented from '../ui/BaseSegmented.vue'
+import { render, screen } from '@testing-library/vue'
 import type { SegmentedOption } from '../types/BaseSegmented.types'
 
 const OPTIONS: SegmentedOption[] = [

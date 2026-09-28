@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTextarea from '../ui/BaseTextarea.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 /**
  * Эмулирует scrollHeight браузера (jsdom всегда отдаёт 0): при `height: auto` — высота текста,

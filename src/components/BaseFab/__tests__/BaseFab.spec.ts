@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseFab from '../ui/BaseFab.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseFab', () => {
 	it('круглая кнопка: имя из label (aria-label), type="button", угол по умолчанию — правый нижний', () => {

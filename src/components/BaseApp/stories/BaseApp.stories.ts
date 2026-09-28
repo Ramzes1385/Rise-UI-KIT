@@ -1,7 +1,7 @@
 /** Подтверждение — в stories BaseConfirm; уведомления и окна телепортируются в body, play-функции ищут их через screen. */
 
+import BaseApp from '../ui/BaseApp.vue'
 import { defineComponent, ref } from 'vue'
-import { expect, screen, waitFor, within } from 'storybook/test'
 import { BaseMenu } from '@components/BaseMenu'
 import { BaseText } from '@components/BaseText'
 import { useToast } from '@composables/useToast'
@@ -11,9 +11,9 @@ import { BaseButton } from '@components/BaseButton'
 import { useOverlay } from '@composables/useOverlay'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { ARG_GROUP, propGroup } from '@/stories/helpers'
-import BaseApp from '../ui/BaseApp.vue'
 import type { ToastOptions } from '@composables/useToast'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, screen, waitFor, within } from 'storybook/test'
 
 const TOAST_EXAMPLES: { label: string; toast: ToastOptions }[] = [
 	{ label: 'Успех', toast: { type: 'success', title: 'Серия опубликована', description: 'Серия 3 доступна подписчикам сообщества.' } },

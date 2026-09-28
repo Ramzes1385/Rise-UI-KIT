@@ -1,7 +1,7 @@
+import type { ComputedRef } from 'vue'
 /** Composable: логика BaseTreeNode — узел дерева: заголовок для фокуса, раскрытие, выбор и переход по ссылке */
 import { computed, inject, ref, useId, watch } from 'vue'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
-import type { ComputedRef } from 'vue'
 import type { TreeContext } from '../types/BaseTree.types'
 import type { BaseTreeNodeProps } from '../types/BaseTreeNode.types'
 

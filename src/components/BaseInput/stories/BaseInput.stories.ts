@@ -1,10 +1,10 @@
 import { ref } from 'vue'
+import BaseInput from '../ui/BaseInput.vue'
 import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import BaseInput from '../ui/BaseInput.vue'
 import { INPUT_VARIANTS } from '../types/BaseInput.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const meta = {
 	title: 'Form/BaseInput',

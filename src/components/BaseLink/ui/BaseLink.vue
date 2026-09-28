@@ -16,11 +16,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseLink.style.scss'
 import { UI_ARIA } from '@/locales/messages'
+import { useBaseLink } from '../model/useBaseLink'
 import { kitDefaults } from '@composables/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseLink } from '../model/useBaseLink'
-import '../styles/BaseLink.style.scss'
 import type { BaseLinkEmits, BaseLinkProps, BaseLinkSlots } from '../types/BaseLink.types'
 
 const props = withDefaults(

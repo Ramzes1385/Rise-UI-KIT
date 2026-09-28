@@ -1,9 +1,9 @@
+import type { ComputedRef, Ref } from 'vue'
 /** Composable: логика BaseDropdownMenu — кнопка меню (APG Menu Button): открытие с клавиатуры, фокус и выбор пункта */
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/useCustomClass'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import type { ComputedRef, Ref } from 'vue'
 import type DropdownMenuContent from '../ui/DropdownMenuContent.vue'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, DropdownMenuItem, FocusTarget } from '../types/BaseDropdownMenu.types'
 
 /** Кнопка меню по APG: Enter, Space и стрелка вниз открывают меню на первом пункте, стрелка вверх — на последнем */

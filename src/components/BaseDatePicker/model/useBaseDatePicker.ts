@@ -6,8 +6,8 @@ import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
 import { useDatePickerState } from '@composables/useDatePickerState'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import { resolveDatePickerCalendarConfig } from './datePickerCalendarConfig'
+import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import type { BaseDatePickerEmits, DatePickerProps } from '../types/BaseDatePicker.types'
 
 function resolveDisplayProps(props: DatePickerProps) {

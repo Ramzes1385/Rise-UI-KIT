@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseImage from '../ui/BaseImage.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 /** Проп timeout по умолчанию, мс */
 const LOAD_TIMEOUT = 5000

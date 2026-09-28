@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import { expect, fn, waitFor } from 'storybook/test'
-import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseStepper from '../ui/BaseStepper.vue'
-import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../types/BaseStepper.types'
+import { BaseButton } from '@components/BaseButton'
+import { expect, fn, waitFor } from 'storybook/test'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { BaseStepperStep } from '../types/BaseStepper.types'
+import { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from '../types/BaseStepper.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const STEPS: BaseStepperStep[] = [
 	{ label: 'Корзина', description: 'Проверьте товары' },

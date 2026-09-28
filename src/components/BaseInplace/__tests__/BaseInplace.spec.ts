@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseInplace from '../ui/BaseInplace.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseInplace', () => {
 	it('в просмотре — кнопка «что: значение» с подсказкой; слот display', () => {

@@ -1,7 +1,7 @@
 /** Composable: логика BaseChip — значение бейджа и его видимость */
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseChipEmits, ChipProps } from '../types/BaseChip.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 function toNumber(content: ChipProps['content']): number | null {
 	if (typeof content === 'number') return content

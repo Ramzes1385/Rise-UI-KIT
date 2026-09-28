@@ -95,16 +95,17 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseText/styles/BaseText.style.scss'
+import '../styles/BaseInput.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
+import { useBaseInput } from '../model/useBaseInput'
 import { kitDefaults } from '@composables/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseInput } from '../model/useBaseInput'
-import '../styles/BaseInput.style.scss'
 import type { BaseInputEmits, BaseInputProps, BaseInputSlots } from '../types/BaseInput.types'
 
 const props = withDefaults(

@@ -1,10 +1,10 @@
 import { expect } from 'storybook/test'
+import BaseLayout from '../ui/BaseLayout.vue'
 import { BaseLink } from '@components/BaseLink'
 import { BaseFooter } from '@components/BaseFooter'
 import { BaseHeader } from '@components/BaseHeader'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseLayout from '../ui/BaseLayout.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 const SECTIONS = ['Заказы', 'Клиенты', 'Склад', 'Отчёты', 'Настройки']
 

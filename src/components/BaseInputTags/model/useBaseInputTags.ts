@@ -1,11 +1,11 @@
+import type { ComputedRef, Ref } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 /** Composable: логика BaseInputTags — теги из текста по разделителям, клавиатура по тегам и объявления для скринридера */
 import { computed, nextTick, ref } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import type { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useFormDisabled } from '@composables/useFormContext'
-import type { ComputedRef, Ref } from 'vue'
-import type { BaseInput } from '@components/BaseInput'
 import type { BaseInputTagsEmits, InputTagsProps } from '../types/BaseInputTags.types'
 
 /** Разбить текст по разделителям: полные части — теги, хвост без разделителя остаётся в поле */

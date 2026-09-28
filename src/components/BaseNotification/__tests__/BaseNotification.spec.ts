@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseNotification from '../ui/BaseNotification.vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 function getNotification() {
 	return document.querySelector('.base-notification-item')

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSideBar from '../ui/BaseSideBar.vue'
+import { describe, expect, it, vi } from 'vitest'
 import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseSideBar integration', () => {
 	it('эмитит collapse при клике на кнопку сворачивания', async () => {

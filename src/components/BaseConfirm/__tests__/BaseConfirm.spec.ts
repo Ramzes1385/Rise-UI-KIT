@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { BaseModal } from '@components/BaseModal'
 import BaseConfirm from '../ui/BaseConfirm.vue'
+import { BaseModal } from '@components/BaseModal'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const TITLE = 'Удалить проект?'
 const DESCRIPTION = 'Задачи и файлы проекта удалятся без возможности восстановления.'

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
-import { render, screen } from '@testing-library/vue'
 import BaseToolbar from '../ui/BaseToolbar.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseToolbar', () => {
 	it('role="toolbar" с именем и ориентацией; в порядке Tab первый доступный элемент', () => {

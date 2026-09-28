@@ -2,8 +2,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { effectScope } from 'vue'
-import { resolvePlacement, useTourLogic } from '../useTourLogic'
 import type { EffectScope } from 'vue'
+import { resolvePlacement, useTourLogic } from '../useTourLogic'
 import type { BaseTourProps } from '@components/BaseTour/types/BaseTour.types'
 
 /** Прямоугольник элемента 60×40 в точке (top, left) */

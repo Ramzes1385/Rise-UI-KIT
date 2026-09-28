@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseInputTags from '../ui/BaseInputTags.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseInputTags', () => {
 	it('теги — список с именем, у каждого кнопка «Удалить …» вне порядка Tab; поле с подписью', () => {

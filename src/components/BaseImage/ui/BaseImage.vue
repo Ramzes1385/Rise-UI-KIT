@@ -66,14 +66,13 @@
 </template>
 
 <script setup lang="ts">
-import { UI_TEXT } from '@/locales/messages'
 import '../styles/BaseImage.style.scss'
-
+import { UI_TEXT } from '@/locales/messages'
+import BaseImageZoom from './BaseImageZoom.vue'
 import { BaseIcon } from '@components/BaseIcon'
+import { useBaseImage } from '../model/useBaseImage'
 import { kitDefaults } from '@composables/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import BaseImageZoom from './BaseImageZoom.vue'
-import { useBaseImage } from '../model/useBaseImage'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
 
 const props = withDefaults(

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseFooter from '../ui/BaseFooter.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseFooter unit', () => {
 	it('рендерит <footer> с тремя зонами', () => {

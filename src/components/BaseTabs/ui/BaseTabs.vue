@@ -74,13 +74,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTabs.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { useBaseTabs } from '../model/useBaseTabs'
 import { BaseButton } from '@components/BaseButton'
-import '../styles/BaseTabs.style.scss'
 import { kitDefaults } from '@composables/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseTabs } from '../model/useBaseTabs'
 import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../types/BaseTabs.types'
 
 const props = withDefaults(

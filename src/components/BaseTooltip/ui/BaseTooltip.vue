@@ -35,11 +35,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTooltip.style.scss'
 import { BaseText } from '@components/BaseText'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseTooltip } from '../model/useBaseTooltip'
-import '../styles/BaseTooltip.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../types/BaseTooltip.types'
 
 const props = withDefaults(

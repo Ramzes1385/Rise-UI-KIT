@@ -1,10 +1,10 @@
+import BaseBadge from '../ui/BaseBadge.vue'
 import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseBadge from '../ui/BaseBadge.vue'
 import { BADGE_VARIANTS } from '../types/BaseBadge.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, slotArgType, useArgsWithoutSlots } from '@/stories/helpers'
 
 /** Статусы заказа: мягкий фон и текст роли — токены меняются вместе с темой. */
 const STATUSES = [

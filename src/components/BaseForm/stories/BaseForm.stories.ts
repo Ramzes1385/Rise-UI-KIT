@@ -1,14 +1,14 @@
 import { reactive, ref } from 'vue'
-import { expect, fn, waitFor } from 'storybook/test'
+import BaseForm from '../ui/BaseForm.vue'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
-import { BaseFormField } from '@components/BaseFormField'
-import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
-import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseForm from '../ui/BaseForm.vue'
+import { expect, fn, waitFor } from 'storybook/test'
 import { FORM_VARIANTS } from '../types/BaseForm.types'
+import { BaseFormField } from '@components/BaseFormField'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
 import type { StandardSchemaIssue, StandardSchemaV1 } from '@utils/formUtils'
+import { ARG_GROUP, baseArgTypes, propGroup, useArgsWithoutSlots } from '@/stories/helpers'
 
 /** Время «ответа сервера» в сценарии отправки с загрузкой, мс */
 const SUBMIT_DELAY = 600

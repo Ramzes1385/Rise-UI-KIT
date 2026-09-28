@@ -1,7 +1,7 @@
-/** Composable: логика BaseInfiniteScroll — подгрузка у конца списка и строка состояния */
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+/** Composable: логика BaseInfiniteScroll — подгрузка у конца списка и строка состояния */
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
 	BaseInfiniteScrollEmits,
 	BaseInfiniteScrollExpose,

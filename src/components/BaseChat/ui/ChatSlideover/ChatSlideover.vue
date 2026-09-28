@@ -209,19 +209,19 @@
 </template>
 
 <script setup lang="ts">
+import './ChatSlideover.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { CHAT_SCALE } from '../../model/chatScale'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
-import { BaseSlideover } from '@components/BaseSlideover'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { CHAT_SCALE } from '../../model/chatScale'
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
+import { BaseSlideover } from '@components/BaseSlideover'
 import { useChatSlideover } from '../../model/useChatSlideover'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { ChatSlideoverEmits, ChatSlideoverProps } from '../../types/ChatSlideover.types'
-import './ChatSlideover.style.scss'
 
 const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	subtitle: '',

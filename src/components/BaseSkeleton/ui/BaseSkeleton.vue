@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
 import '../styles/BaseSkeleton.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/useDefaults'
 import { useBaseSkeleton } from '../model/useBaseSkeleton'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSkeletonProps } from '../types/BaseSkeleton.types'
 
 // Заглушка декоративная (aria-hidden): о загрузке сообщает контейнер (aria-busy) или текст статуса, а не скелетон.

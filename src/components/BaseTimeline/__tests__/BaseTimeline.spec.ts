@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseTimeline from '../ui/BaseTimeline.vue'
+import { render, screen } from '@testing-library/vue'
 import type { TimelineItem } from '../types/BaseTimeline.types'
 
 const ITEMS: TimelineItem[] = [

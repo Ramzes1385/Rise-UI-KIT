@@ -2,8 +2,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import BaseEditor from '../ui/BaseEditor.vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 
 const globalConfig = {
 	stubs: {

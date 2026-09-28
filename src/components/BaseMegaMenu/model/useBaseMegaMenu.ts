@@ -1,11 +1,11 @@
 /** Composable: логика BaseMegaMenu — раскрытие колонок и пунктов по клику или наведению, переходы */
 import { computed, ref } from 'vue'
+import { useHoverTimer } from './useHoverTimer'
 import { calcIconScale } from '@utils/iconUtils'
 import { navigateAndEmit } from '@utils/navigationUtils'
 import { useBreakpoint } from '@composables/useBreakpoint'
 import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useHoverTimer } from './useHoverTimer'
 import type { BaseMegaMenuEmits, MegaMenuItem, MegaMenuProps } from '../types/BaseMegaMenu.types'
 
 const MEGA_MENU_ELEMENTS = ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown']

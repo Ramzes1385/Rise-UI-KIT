@@ -6,10 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseContainer } from '../model/useBaseContainer'
 import '../styles/BaseContainer.style.scss'
+import { kitDefaults } from '@composables/useDefaults'
+import { useBaseContainer } from '../model/useBaseContainer'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseContainerProps, BaseContainerSlots } from '../types/BaseContainer.types'
 
 const props = withDefaults(

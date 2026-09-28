@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseInfiniteScroll from '../ui/BaseInfiniteScroll.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseInfiniteScrollExpose, InfiniteScrollLoadEvent } from '../types/BaseInfiniteScroll.types'
 
 class FakeObserver {

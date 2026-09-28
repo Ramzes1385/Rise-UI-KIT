@@ -1,11 +1,11 @@
 import { ref } from 'vue'
+import BaseChip from '../ui/BaseChip.vue'
 import { expect, fn } from 'storybook/test'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseChip from '../ui/BaseChip.vue'
 import { CHIP_VARIANTS } from '../types/BaseChip.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 
 const PLACEMENTS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'] as const
 

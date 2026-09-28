@@ -2,11 +2,11 @@ import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { BasePin } from '@components/BasePin'
 import { BaseInput } from '@components/BaseInput'
-import { BaseCheckbox } from '@components/BaseCheckbox'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 import BaseFormField from '../ui/BaseFormField.vue'
-import { FORM_FIELD_VARIANTS } from '../types/BaseFormField.types'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { FORM_FIELD_VARIANTS } from '../types/BaseFormField.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'
 
 const meta = {
 	title: 'Form/BaseFormField',

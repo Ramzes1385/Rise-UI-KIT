@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseTooltip from '../ui/BaseTooltip.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
-import BaseTooltip from '../ui/BaseTooltip.vue'
 
 /** Задержки показа и скрытия подсказки, мс — как в BaseTooltip */
 const SHOW_DELAY = 100

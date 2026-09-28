@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 vi.mock('@utils/fileUtils', async importOriginal => {
 	const actual = await importOriginal<typeof import('@utils/fileUtils')>()

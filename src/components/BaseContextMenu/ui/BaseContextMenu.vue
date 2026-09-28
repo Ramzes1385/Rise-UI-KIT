@@ -30,14 +30,14 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseDropdownMenu/styles/BaseDropdownMenu.style.scss'
+import '../styles/BaseContextMenu.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
+import { useBaseContextMenu } from '../model/useBaseContextMenu'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
-import { useBaseContextMenu } from '../model/useBaseContextMenu'
-import '@components/BaseDropdownMenu/styles/BaseDropdownMenu.style.scss'
-import '../styles/BaseContextMenu.style.scss'
 import type { BaseContextMenuEmits, BaseContextMenuProps, BaseContextMenuSlots } from '../types/BaseContextMenu.types'
 
 defineOptions({ name: 'BaseContextMenu' })

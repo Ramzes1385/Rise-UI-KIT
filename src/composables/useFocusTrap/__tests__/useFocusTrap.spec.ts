@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import type { Component } from 'vue'
+import { useFocusTrap } from '../useFocusTrap'
 import userEvent from '@testing-library/user-event'
 import { defineComponent, onMounted, ref } from 'vue'
 import { render, screen, waitFor } from '@testing-library/vue'
-import { useFocusTrap } from '../useFocusTrap'
-import type { Component } from 'vue'
 
 /** Хост: триггер и соседняя кнопка снаружи, диалог с заданным содержимым */
 function createHost(dialogContent: string, options: { hideTriggerWhenOpen?: boolean } = {}) {

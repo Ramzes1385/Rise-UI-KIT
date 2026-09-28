@@ -53,9 +53,8 @@ export default tseslint.config(
 			'no-var': 'error',
 			'prefer-const': 'error',
 
-			// Импорты — «лесенкой»: внутри группы строка не короче предыдущей, при равной длине — по алфавиту.
-			// Группы: builtin/external → внутренние (@-алиасы) → относительные → типы. Импорт стилей не переставляется:
-			// от его места зависит порядок CSS.
+			// Импорты — одной «лесенкой»: строка не короче предыдущей, при равной длине — по алфавиту. Сначала импорты
+			// стилей, затем прочие импорты с побочным эффектом; между собой они не переставляются.
 			'perfectionist/sort-imports': [
 				'error',
 				{
@@ -63,8 +62,7 @@ export default tseslint.config(
 					order: 'asc',
 					fallbackSort: { type: 'alphabetical', order: 'asc' },
 					newlinesBetween: 0,
-					internalPattern: ['^@/', '^@components(/|$)', '^@composables(/|$)', '^@utils(/|$)', '^@icons(/|$)', '^@styles(/|$)'],
-					groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index'], 'type', 'style', 'unknown'],
+					groups: ['side-effect-style', 'side-effect', 'unknown'],
 				},
 			],
 

@@ -1,11 +1,11 @@
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
 import { BaseFormField } from '@components/BaseFormField'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import BaseCheckboxGroup from '../ui/BaseCheckboxGroup.vue'
 import { CHECKBOX_GROUP_VARIANTS } from '../types/BaseCheckboxGroup.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import type { CheckboxGroupOption } from '../types/BaseCheckboxGroup.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Каналы уведомлений: SMS недоступны в тарифе */
 const CHANNELS: CheckboxGroupOption[] = [

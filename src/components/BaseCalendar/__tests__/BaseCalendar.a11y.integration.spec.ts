@@ -1,8 +1,8 @@
 /** Проверки перенесены из play-функций прежних stories (CustomSlotsInteractive, DatePopover*, InteractiveStates). */
 
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, within } from '@testing-library/vue'
 import BaseCalendar from '../ui/BaseCalendar.vue'
+import { fireEvent, render, screen, within } from '@testing-library/vue'
 
 /** Полная дата — доступное имя кнопки дня */
 const dayName = (date: Date): string =>

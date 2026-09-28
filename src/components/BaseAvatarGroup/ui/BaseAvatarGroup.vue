@@ -23,14 +23,14 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseAvatarGroup.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseAvatarGroup } from '../model/useBaseAvatarGroup'
-import '../styles/BaseAvatarGroup.style.scss'
 import type { BaseAvatarGroupProps } from '../types/BaseAvatarGroup.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseAvatarGroupProps>(),

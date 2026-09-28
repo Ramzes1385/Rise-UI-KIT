@@ -2,8 +2,8 @@
 
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTable from '../ui/BaseTable.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import type { TableColumn, TableRow } from '../types/BaseTable.types'
 
 const COLUMNS: TableColumn[] = [

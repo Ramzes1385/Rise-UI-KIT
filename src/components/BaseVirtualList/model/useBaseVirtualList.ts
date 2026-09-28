@@ -1,10 +1,10 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseVirtualList — ключи строк, фокус в строке и прокрутка */
 import { computed, ref } from 'vue'
 import { useVirtualList } from '@composables/useVirtualList'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { VirtualKey } from '@composables/useVirtualList'
 import type { VirtualListProps } from '../types/BaseVirtualList.types'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 
 /** Ключ строки: функция, поле из itemKey, поле id, иначе индекс */
 function keyOf<T>(props: VirtualListProps<T>, index: number): VirtualKey {

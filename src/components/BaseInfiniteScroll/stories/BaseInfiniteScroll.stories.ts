@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
-import BaseInfiniteScroll from '../ui/BaseInfiniteScroll.vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import BaseInfiniteScroll from '../ui/BaseInfiniteScroll.vue'
 import type { InfiniteScrollLoadEvent } from '../types/BaseInfiniteScroll.types'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, tabTo, useArgsWithoutSlots } from '@/stories/helpers'
 
 /** Сколько заказов в одной подгрузке и всего */
 const PAGE = 10

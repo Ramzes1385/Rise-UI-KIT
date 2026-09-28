@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import ChatHeader from '../ui/ChatHeader/ChatHeader.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('ChatHeader unit', () => {
 	it('показывает заголовок и подзаголовок', () => {

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseChip from '../ui/BaseChip.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseChip from '../ui/BaseChip.vue'
 
 describe('BaseChip integration', () => {
 	it('должен эмитить click-badge при клике на индикатор', async () => {

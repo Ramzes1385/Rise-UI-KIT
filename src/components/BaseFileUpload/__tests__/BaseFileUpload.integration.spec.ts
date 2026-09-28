@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
 import type { UploadedFile } from '../types/BaseFileUpload.types'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 function createFile(name: string, size: number, type: string): File {
 	const file = new File(['x'.repeat(size)], name, { type })

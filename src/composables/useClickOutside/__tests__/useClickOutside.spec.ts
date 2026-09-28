@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
-import { defineComponent, h, nextTick, ref, shallowRef } from 'vue'
 import { useClickOutside } from '../useClickOutside'
 import type { ComponentPublicInstance, Ref } from 'vue'
+import { defineComponent, h, nextTick, ref, shallowRef } from 'vue'
 
 type Target = HTMLElement | ComponentPublicInstance | (HTMLElement | null)[] | null
 

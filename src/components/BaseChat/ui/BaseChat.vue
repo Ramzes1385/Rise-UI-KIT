@@ -117,20 +117,20 @@
 </template>
 
 <script setup lang="ts">
-import { BaseCard } from '@components/BaseCard'
-import { BaseModal } from '@components/BaseModal'
-import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
-import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import '../styles/BaseChat.style.scss'
 import { ChatInput } from './ChatInput'
 import { ChatHeader } from './ChatHeader'
 import { ChatSlideover } from './ChatSlideover'
+import { BaseCard } from '@components/BaseCard'
+import { BaseModal } from '@components/BaseModal'
 import { useBaseChat } from '../model/useBaseChat'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
+import { BaseButton } from '@components/BaseButton'
+import { kitDefaults } from '@composables/useDefaults'
+import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../types/BaseChat.types'
 
 const props = withDefaults(

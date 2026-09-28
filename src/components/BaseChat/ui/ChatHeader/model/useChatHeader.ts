@@ -1,6 +1,6 @@
+import { UI_CHAT_TEXT } from '@/locales/messages'
 /** Composable: логика ChatHeader — строка «печатает», поле поиска и возврат фокуса на кнопку поиска */
 import { computed, nextTick, ref, watch } from 'vue'
-import { UI_CHAT_TEXT } from '@/locales/messages'
 import type { ChatHeaderEmits, ChatHeaderProps } from '../types/ChatHeader.types'
 
 export function useChatHeader(props: ChatHeaderProps, emit: ChatHeaderEmits) {

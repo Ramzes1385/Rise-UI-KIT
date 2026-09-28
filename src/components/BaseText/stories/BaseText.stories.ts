@@ -1,4 +1,8 @@
 import { expect } from 'storybook/test'
+import BaseText from '../ui/BaseText.vue'
+import { TEXT_WEIGHT } from '../model/textWeight'
+import { TEXT_TAGS } from '../types/BaseText.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -9,10 +13,6 @@ import {
 	slotArgType,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseText from '../ui/BaseText.vue'
-import { TEXT_WEIGHT } from '../model/textWeight'
-import { TEXT_TAGS } from '../types/BaseText.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const LONG_TEXT =
 	'Проект «Ребрендинг» объединяет задачи дизайна, разработки и маркетинга. Участники видят сроки, ответственных и статус каждой задачи, а менеджер получает сводку по неделям и отчёт о загрузке команды.'

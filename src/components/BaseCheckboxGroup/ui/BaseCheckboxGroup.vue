@@ -54,13 +54,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseCheckboxGroup.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseCheckbox } from '@components/BaseCheckbox'
+import { useBaseCheckboxGroup } from '../model/useBaseCheckboxGroup'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseCheckboxGroup } from '../model/useBaseCheckboxGroup'
-import '../styles/BaseCheckboxGroup.style.scss'
 import type { BaseCheckboxGroupEmits, BaseCheckboxGroupProps } from '../types/BaseCheckboxGroup.types'
 
 const props = withDefaults(

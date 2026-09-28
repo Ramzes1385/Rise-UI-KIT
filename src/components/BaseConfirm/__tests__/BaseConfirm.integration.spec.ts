@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
-import { defineComponent, h, ref } from 'vue'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
-import { BaseApp } from '@components/BaseApp'
-import { getActiveOverlayStore, OVERLAY_DESTROY_DELAY } from '@composables/useOverlay'
 import { useConfirm } from '../useConfirm'
+import { BaseApp } from '@components/BaseApp'
+import { defineComponent, h, ref } from 'vue'
 import type { ConfirmOptions } from '../types/BaseConfirm.types'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
+import { getActiveOverlayStore, OVERLAY_DESTROY_DELAY } from '@composables/useOverlay'
 
 /** Кнопка «Удалить», которая спрашивает подтверждение и показывает ответ */
 function renderApp(options: ConfirmOptions) {

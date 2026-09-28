@@ -1,7 +1,7 @@
 import { en } from '../en'
 import { ru } from '../ru'
-import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
 import type { UiKitLocale } from '../types/locales.types'
+import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
 
 const SECTIONS = ['text', 'aria', 'tour', 'filter', 'calendar', 'colorPicker', 'rating', 'chat', 'editor', 'table', 'plural'] as const
 

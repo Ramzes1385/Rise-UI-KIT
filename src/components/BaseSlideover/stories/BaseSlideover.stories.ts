@@ -1,10 +1,12 @@
 /** Stories с панелью поверх всей страницы видны только в сайдбаре: в Docs они закрыли бы страницу. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
 import { BaseInput } from '@components/BaseInput'
+import BaseSlideover from '../ui/BaseSlideover.vue'
 import { BaseButton } from '@components/BaseButton'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -16,8 +18,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseSlideover from '../ui/BaseSlideover.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */
 const SHOWCASE_OWN_ARGS = ['isOpen', 'title', 'isContained', 'onUpdate:isOpen'] as const

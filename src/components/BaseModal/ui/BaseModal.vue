@@ -59,14 +59,14 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseModal.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
+import { useBaseModal } from '../model/useBaseModal'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseModal } from '../model/useBaseModal'
-import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../types/BaseModal.types'
 
 const props = withDefaults(

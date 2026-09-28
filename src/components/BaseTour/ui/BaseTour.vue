@@ -97,13 +97,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTour.style.scss'
 import { UI_TOUR } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { useBaseTour } from '../model/useBaseTour'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { useBaseTour } from '../model/useBaseTour'
-import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../types/BaseTour.types'
 
 const props = withDefaults(

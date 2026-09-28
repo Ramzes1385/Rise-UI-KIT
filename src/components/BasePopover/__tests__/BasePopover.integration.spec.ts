@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BasePopover from '../ui/BasePopover.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BasePopover from '../ui/BasePopover.vue'
 
 describe('BasePopover integration', () => {
 	describe('переключение', () => {

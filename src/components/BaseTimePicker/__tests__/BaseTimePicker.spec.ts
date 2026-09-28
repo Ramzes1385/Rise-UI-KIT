@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
 import BaseTimePicker from '../ui/BaseTimePicker.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseTimePicker', () => {
 	it('поле — combobox с подсказкой «чч:мм» и цифровой клавиатурой; список с шагом в границах', async () => {

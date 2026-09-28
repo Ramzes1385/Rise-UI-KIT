@@ -1,14 +1,14 @@
+import type { Ref } from 'vue'
 /** Composable: логика BaseSearch — поле поиска (APG combobox with listbox popup) в строке, окне или боковой панели */
 import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { getSearchOptionId } from './searchOptionId'
 import { getLocale, pluralize } from '@/locales/state'
 import { useFormField } from '@composables/useFormField'
-import { useSearchState } from '@composables/useSearchState'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { getSearchOptionId } from './searchOptionId'
-import type { Ref } from 'vue'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
+import { useSearchState } from '@composables/useSearchState'
 import type BaseSearchOverlay from '../ui/BaseSearchOverlay.vue'
+import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseSearchEmits, SearchProps } from '../types/BaseSearch.types'
 
 const SEARCH_ELEMENTS = [

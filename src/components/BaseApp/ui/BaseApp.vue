@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import { BaseNotification } from '@components/BaseNotification'
 import { useBaseApp } from '../model/useBaseApp'
+import { BaseNotification } from '@components/BaseNotification'
 import type { BaseAppProps, BaseAppSlots } from '../types/BaseApp.types'
 
 // Корень — фрагмент: BaseApp не добавляет обёртку и не влияет на раскладку приложения

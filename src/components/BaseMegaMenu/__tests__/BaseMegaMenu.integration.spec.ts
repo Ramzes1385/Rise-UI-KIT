@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 import { nextTick } from 'vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { openExternalUrl } from '@utils/navigationUtils'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
+import { openExternalUrl } from '@utils/navigationUtils'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 vi.mock('@utils/navigationUtils', () => {
 	const openExternalUrl = vi.fn()

@@ -1,6 +1,6 @@
+import type { InjectionKey } from 'vue'
 /** Composable: значения props по умолчанию для всего приложения */
 import { hasInjectionContext, inject } from 'vue'
-import type { InjectionKey } from 'vue'
 import type { UiKitDefaults } from './types/useDefaults.types'
 
 /**

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
+import { BaseForm } from '@components/BaseForm'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import { BaseForm } from '@components/BaseForm'
 import BaseInputNumber from '../ui/BaseInputNumber.vue'
 
 function renderModel(initial: number | null, props: Record<string, unknown> = {}) {

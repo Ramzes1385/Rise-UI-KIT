@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseBadge from '../ui/BaseBadge.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseBadge from '../ui/BaseBadge.vue'
 
 describe('BaseBadge integration', () => {
 	it('должен эмитить click при клике', async () => {

@@ -149,16 +149,17 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseImage/styles/BaseImage.style.scss'
+import './ChatInput.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { BaseAvatar } from '@components/BaseAvatar'
-import { BaseButton } from '@components/BaseButton'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { CHAT_SCALE } from '../../model/chatScale'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import ChatFilePreview from './ChatFilePreview.vue'
 import { useChatInput } from './model/useChatInput'
-import './ChatInput.style.scss'
+import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseButton } from '@components/BaseButton'
+import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { ChatInputEmits, ChatInputProps } from './types/ChatInput.types'
 
 const props = withDefaults(defineProps<ChatInputProps>(), {

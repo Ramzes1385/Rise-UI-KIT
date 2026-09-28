@@ -1,9 +1,9 @@
-/** Composable: логика ChatMessageContextMenu — меню действий с сообщением: положение, тема, фокус и клавиатура */
-import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+/** Composable: логика ChatMessageContextMenu — меню действий с сообщением: положение, тема, фокус и клавиатура */
+import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
-import type { Ref } from 'vue'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
 
 function getItems(menu: HTMLElement | null): HTMLElement[] {

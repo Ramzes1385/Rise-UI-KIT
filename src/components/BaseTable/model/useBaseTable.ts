@@ -1,14 +1,14 @@
-/** Composable: логика BaseTable — сортировка, фильтры, поиск, выбор и раскрытие строк, пагинация и виртуальная прокрутка */
-import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { usePadding } from '@composables/usePadding'
 import { useVirtualList } from '@composables/useVirtualList'
 import { isolateFormField } from '@composables/useFormContext'
+import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
 import { useExpandTransition } from '@composables/useExpandTransition'
 import { useTableComposition } from '@composables/useTableComposition'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
-import type { ComputedRef, Ref } from 'vue'
 import type { BaseTableEmits, TableProps } from '../types/BaseTable.types'
+/** Composable: логика BaseTable — сортировка, фильтры, поиск, выбор и раскрытие строк, пагинация и виртуальная прокрутка */
+import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
 
 /** Наибольшая высота панели настроек колонок */
 const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseInput from '../ui/BaseInput.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseInput unit', () => {
 	describe('рендер', () => {

@@ -1,7 +1,7 @@
 /** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
 import { ref } from 'vue'
-import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
 import type { Component } from 'vue'
+import { isExternalUrl, isSafeUrl } from '@utils/urlUtils'
 import type { UseSideBarNavigationOptions } from './types/useSideBarNavigation.types'
 import type { BaseSideBarItemSlotProps, SideBarItem, SideBarItemKey, SideBarItemTo } from '@components/BaseSideBar/types/BaseSideBar.types'
 

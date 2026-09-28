@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
+import BaseInputTags from '../ui/BaseInputTags.vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import BaseInputTags from '../ui/BaseInputTags.vue'
 
 function renderModel(initial: string[] = [], props: Record<string, unknown> = {}) {
 	const model = ref<string[]>(initial)

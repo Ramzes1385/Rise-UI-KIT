@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseTextarea from '../ui/BaseTextarea.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseTextarea from '../ui/BaseTextarea.vue'
 
 describe('BaseTextarea integration', () => {
 	describe('v-model', () => {

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import { getOpenLayers, useLayer, useLayerIndex } from '../useLayerStack'
 import type { LayerOptions } from '../types/useLayerStack.types'
+import { getOpenLayers, useLayer, useLayerIndex } from '../useLayerStack'
 
 function mountLayer(options: LayerOptions) {
 	return render(

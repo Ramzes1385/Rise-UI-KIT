@@ -34,15 +34,15 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseSplitButton.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseSplitButton } from '../model/useBaseSplitButton'
-import '../styles/BaseSplitButton.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../types/BaseSplitButton.types'
 
 const props = withDefaults(

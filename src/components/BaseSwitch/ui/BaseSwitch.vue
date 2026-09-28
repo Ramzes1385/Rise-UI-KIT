@@ -70,12 +70,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseSwitch.style.scss'
 import { BaseText } from '@components/BaseText'
+import { useBaseSwitch } from '../model/useBaseSwitch'
 import { kitDefaults } from '@composables/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseSwitch } from '../model/useBaseSwitch'
-import '../styles/BaseSwitch.style.scss'
 import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../types/BaseSwitch.types'
 
 const props = withDefaults(

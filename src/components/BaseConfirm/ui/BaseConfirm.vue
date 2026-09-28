@@ -34,13 +34,13 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseConfirm.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseConfirm } from '../model/useBaseConfirm'
-import '../styles/BaseConfirm.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../types/BaseConfirm.types'
 
 const props = withDefaults(

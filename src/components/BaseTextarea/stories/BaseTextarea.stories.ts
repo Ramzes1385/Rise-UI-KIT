@@ -1,5 +1,8 @@
 import { ref } from 'vue'
+import BaseTextarea from '../ui/BaseTextarea.vue'
 import { expect, fn, waitFor } from 'storybook/test'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { TEXTAREA_VARIANTS } from '../types/BaseTextarea.types'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -11,9 +14,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseTextarea from '../ui/BaseTextarea.vue'
-import { TEXTAREA_VARIANTS } from '../types/BaseTextarea.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 const LONG_TEXT = [
 	'Заказ собран 14 мая, но курьер не смог передать его по адресу: в подъезде не работает домофон, а телефон был недоступен.',

@@ -1,9 +1,9 @@
 /** Composable: логика BaseText — начертание и обрезка строк */
 import { computed } from 'vue'
+import type { TextProps } from '../types/BaseText.types'
 import { useSizeScale } from '@composables/useSizeScale'
 import { useCustomClass } from '@composables/useCustomClass'
 import { useCustomColor } from '@composables/useCustomColor'
-import type { TextProps } from '../types/BaseText.types'
 
 export function useBaseText(props: TextProps) {
 	return {

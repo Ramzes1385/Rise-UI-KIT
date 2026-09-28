@@ -1,7 +1,7 @@
-/** Composable: логика BaseImageZoom — имя диалога, подписи миниатюр и ловушка фокуса */
-import { computed, nextTick, ref } from 'vue'
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
+/** Composable: логика BaseImageZoom — имя диалога, подписи миниатюр и ловушка фокуса */
+import { computed, nextTick, ref } from 'vue'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import type { BaseImageZoomProps } from '../types/BaseImageZoom.types'

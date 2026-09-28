@@ -1,13 +1,13 @@
-/** Composable: логика BaseTooltip — показ с задержками, положение у триггера с переворотом и сдвигом у края окна */
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
+import type { TooltipLayout } from '@utils/tooltipUtils'
+import type { TooltipProps } from '../types/BaseTooltip.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
+/** Composable: логика BaseTooltip — показ с задержками, положение у триггера с переворотом и сдвигом у края окна */
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/tooltipUtils'
-import type { ComputedRef, Ref } from 'vue'
-import type { TooltipLayout } from '@utils/tooltipUtils'
-import type { TooltipProps } from '../types/BaseTooltip.types'
 
 /** Отступ подсказки от элемента, px */
 const GAP = 8

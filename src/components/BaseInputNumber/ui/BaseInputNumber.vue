@@ -54,14 +54,14 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseInputNumber.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseInputNumber } from '../model/useBaseInputNumber'
-import '../styles/BaseInputNumber.style.scss'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseInputNumberEmits, BaseInputNumberProps } from '../types/BaseInputNumber.types'
 
 const props = withDefaults(

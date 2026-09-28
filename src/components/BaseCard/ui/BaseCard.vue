@@ -51,12 +51,12 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseCard.style.scss'
+import { useBaseCard } from '../model/useBaseCard'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseCard } from '../model/useBaseCard'
-import '../styles/BaseCard.style.scss'
 import type { BaseCardProps, BaseCardSlots } from '../types/BaseCard.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseCardProps>(),

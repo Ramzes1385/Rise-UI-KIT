@@ -1,7 +1,7 @@
 /** Composable: логика выбора цвета (HSV-модель) */
 import { computed, ref, watch } from 'vue'
-import { clamp, hexToHsv, hsvToHex, normalizeHex } from '@utils/colorUtils'
 import type { HsvColor } from '@utils/colorUtils'
+import { clamp, hexToHsv, hsvToHex, normalizeHex } from '@utils/colorUtils'
 import type { RelativePoint, UseColorPickerOptions, UseColorPickerReturn } from './types/useColorPicker.types'
 
 const MAX_HUE = 360

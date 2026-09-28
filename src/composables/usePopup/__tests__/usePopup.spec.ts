@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
+import type { Ref } from 'vue'
+import { usePopup } from '../usePopup'
 import { fireEvent, render } from '@testing-library/vue'
 import { defineComponent, h, nextTick, shallowRef } from 'vue'
-import { usePopup } from '../usePopup'
-import type { Ref } from 'vue'
 
 function createTestComponent(options: {
 	isOpenRef: Ref<boolean>

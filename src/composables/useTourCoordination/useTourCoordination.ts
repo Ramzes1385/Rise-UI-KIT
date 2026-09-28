@@ -1,6 +1,6 @@
+import { UI_TOUR } from '@/locales/messages'
 /** Composable: координирование пошагового тура (переходы, фокусировка, стили) */
 import { computed, nextTick, ref } from 'vue'
-import { UI_TOUR } from '@/locales/messages'
 import { DEFAULT_RADIUS } from '../useTourLogic'
 import type { UseTourCoordinationOptions } from './types/useTourCoordination.types'
 import type { BaseTourSlotContext } from '@components/BaseTour/types/BaseTour.types'

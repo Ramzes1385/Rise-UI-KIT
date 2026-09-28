@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 import { expect, fn, waitFor } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BasePagination from '../ui/BasePagination.vue'
-import { PAGINATION_VARIANTS } from '../types/BasePagination.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { PAGINATION_VARIANTS } from '../types/BasePagination.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Ключи args, которые витрины задают сами (у каждого экземпляра своя страница). */
 const MODEL_KEYS = ['modelValue', 'onUpdate:modelValue']

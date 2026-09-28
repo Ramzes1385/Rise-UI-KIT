@@ -1,9 +1,9 @@
-/** Composable: зум изображений (панорамирование, вращение, масштабирование, миникарта) */
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useScrollLock } from '@composables/useScrollLock'
-import { MINIMAP_HEIGHT, MINIMAP_WIDTH, useZoomMinimap } from './useZoomMinimap'
 import type { Size, UseImageZoomOptions } from './types/useImageZoom.types'
+/** Composable: зум изображений (панорамирование, вращение, масштабирование, миникарта) */
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { MINIMAP_HEIGHT, MINIMAP_WIDTH, useZoomMinimap } from './useZoomMinimap'
 
 /** Поворот за одно нажатие, градусы */
 const ROTATION_STEP_DEG = 90

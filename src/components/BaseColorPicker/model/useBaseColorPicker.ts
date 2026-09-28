@@ -1,11 +1,11 @@
-/** Composable: логика BaseColorPicker — SV-область, оттенок, HEX и пресеты */
-import { computed, onBeforeUnmount, ref } from 'vue'
+import type { Ref } from 'vue'
 import { normalizeHex } from '@utils/colorUtils'
 import { toHTMLInputElement } from '@utils/domUtils'
+/** Composable: логика BaseColorPicker — SV-область, оттенок, HEX и пресеты */
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useFormField } from '@composables/useFormField'
 import { useColorPicker } from '@composables/useColorPicker'
 import { useCustomClass } from '@composables/useCustomClass'
-import type { Ref } from 'vue'
 import type { BaseColorPickerEmits, BaseColorPickerProps } from '../types/BaseColorPicker.types'
 
 /** Шаг стрелок в SV-области: 1% насыщенности или яркости, с Shift — 10% */

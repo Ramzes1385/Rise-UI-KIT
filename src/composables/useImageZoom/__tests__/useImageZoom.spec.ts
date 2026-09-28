@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
-import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { useImageZoom } from '../useImageZoom'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 
 // Блокировка прокрутки общая для всех экземпляров: незакрытые зумы из прошлых тестов держали бы её
 enableAutoUnmount(afterEach)

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseFab from '../ui/BaseFab.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseFab from '../ui/BaseFab.vue'
 
 describe('BaseFab integration', () => {
 	it('Tab, Enter и пробел нажимают кнопку', async () => {

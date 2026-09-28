@@ -1,8 +1,8 @@
+import type { ComputedRef } from 'vue'
+import { useTeleportTarget } from '@composables/useTeleportTarget'
 /** Composable: логика BaseNotification — список уведомлений, автозакрытие с паузой и действия */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { ComputedRef } from 'vue'
 import type {
 	AutoCloseTimer,
 	BaseNotificationEmits,

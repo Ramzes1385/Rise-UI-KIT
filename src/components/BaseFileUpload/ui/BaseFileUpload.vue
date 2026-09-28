@@ -129,6 +129,7 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseFileUpload.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
@@ -138,10 +139,9 @@ import { kitDefaults } from '@composables/useDefaults'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseFileUpload } from '../model/useBaseFileUpload'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../types/BaseFileUpload.types'
-import '../styles/BaseFileUpload.style.scss'
 
 const props = withDefaults(
 	defineProps<BaseFileUploadProps>(),

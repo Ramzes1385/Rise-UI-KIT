@@ -54,11 +54,11 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseTextarea.style.scss'
 import { kitDefaults } from '@composables/useDefaults'
+import { useBaseTextarea } from '../model/useBaseTextarea'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseTextarea } from '../model/useBaseTextarea'
-import '../styles/BaseTextarea.style.scss'
 import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../types/BaseTextarea.types'
 
 const props = withDefaults(

@@ -1,12 +1,12 @@
 /** Composables (usePopup, useEscapeKey, useScrollLock) реальные — проверяется их связка; teleport to="body", поиск в document */
 
 import '@testing-library/jest-dom/vitest'
+import BaseModal from '../ui/BaseModal.vue'
 import userEvent from '@testing-library/user-event'
 import { defineComponent, nextTick, ref } from 'vue'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { useImageZoom } from '@composables/useImageZoom'
 import { BaseSlideover } from '@components/BaseSlideover'
-import BaseModal from '../ui/BaseModal.vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 /** Хост: кнопка-триггер и модалка с полем ввода и двумя кнопками в футере */
 function renderModalHost(modalProps: Record<string, unknown> = {}) {

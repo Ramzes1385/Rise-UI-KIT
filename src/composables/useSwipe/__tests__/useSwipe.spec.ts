@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
 import { useSwipe } from '../useSwipe'
+import { mount } from '@vue/test-utils'
 
 function withSetup<T>(composable: () => T): T {
 	let result: T

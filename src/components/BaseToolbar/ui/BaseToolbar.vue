@@ -18,10 +18,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
-import { useBaseToolbar } from '../model/useBaseToolbar'
 import '../styles/BaseToolbar.style.scss'
+import { kitDefaults } from '@composables/useDefaults'
+import { useBaseToolbar } from '../model/useBaseToolbar'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type { BaseToolbarProps, BaseToolbarSlots } from '../types/BaseToolbar.types'
 
 const props = withDefaults(

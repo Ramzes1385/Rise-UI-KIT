@@ -22,8 +22,8 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
-import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../model/chatScale'
+import { BaseButton } from '@components/BaseButton'
 import { useChatFilePreview } from './model/useChatFilePreview'
 import type { ChatFilePreviewEmits, ChatFilePreviewProps } from './types/ChatFilePreview.types'
 

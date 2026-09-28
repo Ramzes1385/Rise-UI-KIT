@@ -1,8 +1,8 @@
-/** Composable: логика DropdownMenuContent — меню по APG Menu: roving tabindex, стрелки, поиск по буквам, подменю и отметки */
-import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { calcIconScale } from '@utils/iconUtils'
 import { findTypeaheadIndex, toMenuGroups } from '@utils/menuUtils'
-import type { ComputedRef, Ref } from 'vue'
+/** Composable: логика DropdownMenuContent — меню по APG Menu: roving tabindex, стрелки, поиск по буквам, подменю и отметки */
+import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
 import type { DropdownMenuItem } from '../types/BaseDropdownMenu.types'
 import type { DropdownMenuContentEmits, MenuContentProps } from '../types/DropdownMenuContent.types'
 

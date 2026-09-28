@@ -1,5 +1,9 @@
 import { ref } from 'vue'
+import BaseRadio from '../ui/BaseRadio.vue'
 import { expect, fn, within } from 'storybook/test'
+import { RADIO_VARIANTS } from '../types/BaseRadio.types'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import type { BaseRadioOption } from '../types/BaseRadio.types'
 import {
 	ARG_GROUP,
 	baseArgTypes,
@@ -11,10 +15,6 @@ import {
 	useArgsWithoutSlots,
 	useModelArg,
 } from '@/stories/helpers'
-import BaseRadio from '../ui/BaseRadio.vue'
-import { RADIO_VARIANTS } from '../types/BaseRadio.types'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
-import type { BaseRadioOption } from '../types/BaseRadio.types'
 
 const DELIVERY_OPTIONS: BaseRadioOption[] = [
 	{ value: 'courier', label: 'Курьером' },

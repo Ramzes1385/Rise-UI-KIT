@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import BaseToolbar from '../ui/BaseToolbar.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseToolbar from '../ui/BaseToolbar.vue'
 
 const BUTTONS =
 	'<button>A</button><button>B</button><input aria-label="Поле" /><input type="checkbox" aria-label="Флажок" /><button>C</button>'

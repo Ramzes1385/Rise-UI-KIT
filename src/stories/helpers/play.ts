@@ -1,7 +1,7 @@
 /** Помощники для play-функций: каждая проверка должна утверждать наблюдаемое поведение (роль, доступное имя, атрибут, фокус, событие), а не то, что «элемент есть в DOM». */
 
-import { expect, userEvent as defaultUserEvent } from 'storybook/test'
 import type { UserEvent } from './types/helpers.types'
+import { expect, userEvent as defaultUserEvent } from 'storybook/test'
 
 /**
  * Переводит фокус клавишей Tab на element (не больше maxSteps нажатий) и проверяет, что он получил фокус.

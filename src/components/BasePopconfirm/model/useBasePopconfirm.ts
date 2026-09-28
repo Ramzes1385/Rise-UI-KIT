@@ -1,10 +1,10 @@
+import type { ComputedRef, Ref } from 'vue'
+import { calcIconScale } from '@utils/iconUtils'
 /** Composable: логика BasePopconfirm — открытие, фокус в панели и ответ */
 import { computed, nextTick, ref, useId, watch } from 'vue'
-import { calcIconScale } from '@utils/iconUtils'
 import { useCustomClass } from '@composables/useCustomClass'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import type { ComputedRef, Ref } from 'vue'
 import type { CustomColor } from '@composables/useCustomColor'
+import { useTriggerAttributes } from '@composables/useTriggerAttributes'
 import type { BasePopconfirmEmits, PopconfirmProps } from '../types/BasePopconfirm.types'
 
 /** Кнопка необратимого действия — цвет ошибки из токенов темы, как у BaseConfirm */

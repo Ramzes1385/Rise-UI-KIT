@@ -3,9 +3,9 @@ import { computed, nextTick, ref } from 'vue'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { useScrollLock } from '@composables/useScrollLock'
+import type BaseSearchInput from '../ui/BaseSearchInput.vue'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type BaseSearchInput from '../ui/BaseSearchInput.vue'
 import type { BaseSearchOverlayExpose, BaseSearchOverlayProps } from '../types/BaseSearchOverlay.types'
 
 /** Классы слоя по виду панели (modal или sidebar): свои и из customClass */

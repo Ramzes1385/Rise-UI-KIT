@@ -1,9 +1,9 @@
+import { useFormField } from '@composables/useFormField'
 /** Composable: логика BaseFormField — связь подписи, описания и ошибки с контролом внутри */
 import { computed, provide, ref, shallowRef, useId } from 'vue'
-import { useFormField } from '@composables/useFormField'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
 import type { FormFieldControl, FormFieldProps } from '../types/BaseFormField.types'
+import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
 
 const FIELD_ELEMENTS = ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error']
 

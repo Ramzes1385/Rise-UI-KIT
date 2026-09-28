@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
 import type { TreeNode } from '../types/BaseTree.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const FLAT_ITEMS: TreeNode[] = [
 	{ id: 'item-1', label: 'Первый' },

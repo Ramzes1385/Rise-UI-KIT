@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { BaseText } from '@components/BaseText'
 import BaseRadio from '../ui/BaseRadio.vue'
+import { BaseText } from '@components/BaseText'
+import userEvent from '@testing-library/user-event'
 import type { BaseRadioOption } from '../types/BaseRadio.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const OPTIONS: BaseRadioOption[] = [
 	{ value: 'metal', label: 'Металл' },

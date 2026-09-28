@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
-import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/vue'
-import { BaseText } from '@components/BaseText'
-import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'
+import { BaseText } from '@components/BaseText'
+import { describe, expect, it, vi } from 'vitest'
+import { BaseTooltip } from '@components/BaseTooltip'
+import { render, screen } from '@testing-library/vue'
 
 const globalComponents = { components: { BaseText, BaseTooltip } }
 

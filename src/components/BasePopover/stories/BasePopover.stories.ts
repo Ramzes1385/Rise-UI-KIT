@@ -1,15 +1,15 @@
 /** Открытые поповеры телепортируются в body, поэтому в Docs такие примеры показываются в отдельном фрейме. */
 
 import { ref } from 'vue'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import BasePopover from '../ui/BasePopover.vue'
 import { BaseText } from '@components/BaseText'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
-import BasePopover from '../ui/BasePopover.vue'
-import { POPOVER_VARIANTS } from '../types/BasePopover.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { POPOVER_VARIANTS } from '../types/BasePopover.types'
+import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 /** Args, которые витрины задают сами: их нет в v-bind, чтобы не перебить значения примера. */
 const SHOWCASE_OWN_ARGS = ['isOpen', 'onUpdate:isOpen'] as const

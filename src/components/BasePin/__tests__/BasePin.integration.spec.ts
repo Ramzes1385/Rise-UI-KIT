@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
+import BasePin from '../ui/BasePin.vue'
 import { defineComponent, ref } from 'vue'
 import { render } from '@testing-library/vue'
 import userEvent from '@testing-library/user-event'
-import BasePin from '../ui/BasePin.vue'
 
 describe('BasePin integration', () => {
 	describe('ввод символа', () => {

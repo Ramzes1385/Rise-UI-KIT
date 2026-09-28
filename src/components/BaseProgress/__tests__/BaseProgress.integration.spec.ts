@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseProgress from '../ui/BaseProgress.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseProgress integration', () => {
 	describe('hasLabel (линейный)', () => {

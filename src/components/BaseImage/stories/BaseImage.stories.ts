@@ -1,3 +1,5 @@
+import BaseImage from '../ui/BaseImage.vue'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { expect, fn, screen, waitFor } from 'storybook/test'
 import {
 	ARG_GROUP,
@@ -10,8 +12,6 @@ import {
 	tabTo,
 	useArgsWithoutSlots,
 } from '@/stories/helpers'
-import BaseImage from '../ui/BaseImage.vue'
-import type { Meta, StoryObj } from '@storybook/vue3-vite'
 
 /** Изображения для выбора в Controls: имя → data URI. */
 const IMAGE_OPTIONS: Record<string, string> = {

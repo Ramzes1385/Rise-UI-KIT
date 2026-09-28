@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 import { expect, fn } from 'storybook/test'
-import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 import BaseSwitch from '../ui/BaseSwitch.vue'
-import { SWITCH_VARIANTS } from '../types/BaseSwitch.types'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
+import { SWITCH_VARIANTS } from '../types/BaseSwitch.types'
+import { ARG_GROUP, baseArgTypes, propGroup, SIZE_PRESETS, sizeLabel, tabTo, useArgsWithoutSlots, useModelArg } from '@/stories/helpers'
 
 const meta = {
 	title: 'Form/BaseSwitch',

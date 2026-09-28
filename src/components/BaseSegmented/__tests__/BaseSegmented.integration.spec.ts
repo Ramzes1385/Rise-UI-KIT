@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
+import { BaseForm } from '@components/BaseForm'
+import BaseSegmented from '../ui/BaseSegmented.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import { BaseForm } from '@components/BaseForm'
 import { BaseFormField } from '@components/BaseFormField'
-import BaseSegmented from '../ui/BaseSegmented.vue'
 import type { SegmentedOption } from '../types/BaseSegmented.types'
 
 const OPTIONS: SegmentedOption[] = [

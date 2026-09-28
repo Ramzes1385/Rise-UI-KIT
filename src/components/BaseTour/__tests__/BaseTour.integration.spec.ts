@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import BaseTour from '../ui/BaseTour.vue'
 import { defineComponent, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen, waitFor } from '@testing-library/vue'
-import BaseTour from '../ui/BaseTour.vue'
 import type { TourStep } from '../types/BaseTour.types'
+import { render, screen, waitFor } from '@testing-library/vue'
 
 const STEPS: TourStep[] = [
 	{ target: '#a', title: 'Первый', content: 'Контент 1' },

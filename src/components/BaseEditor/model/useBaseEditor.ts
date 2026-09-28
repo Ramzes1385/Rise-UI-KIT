@@ -1,18 +1,18 @@
-/** Composable: логика BaseEditor — визуальный редактор: форматирование, очистка вставленного HTML, режим кода и меню медиа */
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
+import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import { useLayerIndex } from '@composables/useLayerStack'
 import { escapeHtml, sanitizeHtml } from '@utils/htmlUtils'
 import { useEditorState } from '@composables/useEditorState'
+import type { BaseSelectOption } from '@components/BaseSelect'
+/** Composable: логика BaseEditor — визуальный редактор: форматирование, очистка вставленного HTML, режим кода и меню медиа */
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useEditorToolbar } from '@composables/useEditorToolbar'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { isolateFormField, useFormDisabled } from '@composables/useFormContext'
 import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
-import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
-import type { ComputedRef, Ref } from 'vue'
-import type { BaseSelectOption } from '@components/BaseSelect'
-import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 
 const EDITOR_ELEMENTS = ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code']
 

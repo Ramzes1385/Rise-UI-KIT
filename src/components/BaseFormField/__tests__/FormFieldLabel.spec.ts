@@ -1,8 +1,8 @@
 /** Общая подпись полей: BaseInput, BaseTextarea, BaseSelect, BaseCheckbox, BaseRadio, BaseSwitch */
 
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import FormFieldLabel from '../ui/FormFieldLabel.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('FormFieldLabel unit', () => {
 	it('связывает подпись с полем через for, если передан forId', () => {

@@ -1,7 +1,7 @@
-/** Composable: куда телепортируются окна, панели и тултипы, и какую тему они наследуют */
-import { hasInjectionContext, inject, onMounted, ref, watch } from 'vue'
 import type { InjectionKey, Ref } from 'vue'
 import type { TeleportTarget } from './types/useTeleportTarget.types'
+/** Composable: куда телепортируются окна, панели и тултипы, и какую тему они наследуют */
+import { hasInjectionContext, inject, onMounted, ref, watch } from 'vue'
 
 /**
  * Ключ provide/inject цели телепорта: `createUiKitPlugin({ teleportTo })` и `<BaseApp teleport-to>`.

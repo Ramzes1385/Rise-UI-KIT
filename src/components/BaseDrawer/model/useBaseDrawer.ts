@@ -1,12 +1,12 @@
-/** Composable: логика BaseDrawer — закрытие, перетаскивание панели к краю и ловушка фокуса */
-import { computed, ref, useId, useSlots, watch } from 'vue'
+import type { Ref } from 'vue'
 import { usePopup } from '@composables/usePopup'
 import { useFocusTrap } from '@composables/useFocusTrap'
 import { useLayerIndex } from '@composables/useLayerStack'
+/** Composable: логика BaseDrawer — закрытие, перетаскивание панели к краю и ловушка фокуса */
+import { computed, ref, useId, useSlots, watch } from 'vue'
 import { useTeleportTarget } from '@composables/useTeleportTarget'
 import { useScrollableRegion } from '@composables/useScrollableRegion'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { Ref } from 'vue'
 import type { BaseDrawerEmits, DrawerProps } from '../types/BaseDrawer.types'
 
 /** Доля размера панели: отпущенная дальше панель закрывается, ближе — возвращается */
