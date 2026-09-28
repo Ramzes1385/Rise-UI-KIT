@@ -43,12 +43,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, shallowRef, useId } from 'vue'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFormField } from '@composables/useFormField'
 import { BaseAnimation } from '@components/BaseAnimation'
-import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseFormField } from '../model/useBaseFormField'
 import '../styles/BaseFormField.style.scss'
 import type { BaseFormFieldProps, BaseFormFieldSlots } from '../types/BaseFormField.types'
 
@@ -60,76 +58,24 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, [
-	'root',
-	'header',
-	'label',
-	'required',
-	'content',
-	'description',
-	'animation',
-	'error',
-])
 defineSlots<BaseFormFieldSlots>()
 
-const rootRef = ref<HTMLElement | null>(null)
-
-/** id подписи, описания и ошибки: по ним содержимое без `for` получает имя и описание группы */
-const fieldId = useId()
-const labelId = `${fieldId}-label`
-const descriptionId = `${fieldId}-description`
-const errorId = `${fieldId}-error`
-
-// Обёртка не владеет значением дочернего контрола, поэтому required здесь не проверяется:
-// проверка по «пустому» значению всегда проваливалась бы и показывала ложное «Обязательное поле».
-// isRequired — звёздочка и aria-required у контрола кита внутри; пустоту значения проверяет сам контрол (его validate()).
-const form = useFormContext()
-
-/** Ошибка поля: из пропа или из проверки BaseForm по схеме (по `name`) */
-const formError = computed(() => (props.name ? form?.errors.value[props.name] : undefined))
-
-const formField = useFormField({
-	value: () => undefined,
-	error: () => props.error || formError.value,
-})
-
-const error = computed(() => formField.error)
-
-/** Контрол кита внутри обёртки (первый): как получить id его элемента и можно ли назвать его через `for` */
-const control = shallowRef<{ getId: () => string; isLabelable: boolean } | null>(null)
-
-/** С чем связана подпись: `for` из пропа или id подключённого нативного поля */
-const controlId = computed(() => props.for ?? (control.value?.isLabelable ? control.value.getId() : undefined))
-
-/** Подпись есть, но связать её не с чем — связываем подпись с содержимым как с группой */
-const isGroup = computed(() => Boolean(props.label) && !props.for && !control.value)
-
-/** Что описывает поле: ошибка вытесняет описание так же, как на экране */
-const describedBy = computed(() => {
-	if (error.value) return errorId
-	return props.description ? descriptionId : undefined
-})
-
-provide(FORM_FIELD_CONTEXT_KEY, {
-	labelId,
-	hasLabel: computed(() => Boolean(props.label)),
-	describedBy,
-	hasError: computed(() => Boolean(error.value)),
-	isRequired: computed(() => props.isRequired),
-	register: (getId, isLabelable) => {
-		if (control.value) return undefined
-		const entry = { getId, isLabelable }
-		control.value = entry
-		return () => {
-			if (control.value === entry) control.value = null
-		}
-	},
-})
-
-defineExpose({
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
 	rootRef,
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	labelId,
+	descriptionId,
+	errorId,
+	error,
+	describedBy,
+	controlId,
+	isGroup,
+	exposed,
+} = useBaseFormField(props)
+
+defineExpose(exposed)
 </script>

@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты панели — те же, что у BaseDropdown и BasePopover */
@@ -48,3 +49,5 @@ export interface BasePopconfirmSlots {
 	/** Кнопка действия, которое нужно подтвердить */
 	default?: (props: PopconfirmTriggerSlotProps) => unknown
 }
+
+export type PopconfirmProps = PropsWithDefaults<BasePopconfirmProps, 'sizeScale'>

@@ -39,8 +39,8 @@
 | Сделано (0, 1.1–1.8, 2.1–2.4) | 13 | ≈11 ч 40 мин |
 | Осталось до выпуска 2.0 (этапы 1–5) | 8 | ≈11 ч |
 | Необязательное | 4 | ≈4 ч 45 мин |
-| Структура и правила кода: сделано (С.1–С.8, С.9.1–С.9.4) | 12 | ≈9 ч 40 мин |
-| Структура и правила кода: осталось (С.9.5–С.9.9) | 5 | ≈7 ч 45 мин |
+| Структура и правила кода: сделано (С.1–С.8, С.9.1–С.9.5) | 13 | ≈10 ч 10 мин |
+| Структура и правила кода: осталось (С.9.6–С.9.9) | 4 | ≈6 ч 45 мин |
 
 ## Порции
 
@@ -122,7 +122,7 @@
 | С.9.2 | Логика в `model/` | BaseLoader, BaseMenu, BaseConfirm, BaseIcon, BaseFab, BaseCard, BaseLink, BaseApp, BaseChip, BaseLayout: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts`. Перед группой — пороги «чистого кода» ошибками для `model/` и новых файлов, правило ESLint для `<script setup>` переведённых компонентов | 45 мин | ≈35 мин | ✅ |
 | С.9.3 | Логика в `model/` | BaseTimeline, BaseHeader, BaseSeparator, BaseSegmented, BaseButton, BaseSkeleton, BaseStepper, BaseText, BaseAvatar, BaseTimePicker: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч | ≈25 мин | ✅ |
 | С.9.4 | Логика в `model/` | BaseProgress, BaseRadio, BaseAlert, BaseCheckbox, BaseSwitch, BaseVirtualList, BaseKbd, BasePopover, BasePagination, BaseAccordion: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 45 мин | ≈25 мин | ✅ |
-| С.9.5 | Логика в `model/` | BaseBackTop, BaseContextMenu, BaseCheckboxGroup, BaseModal, BaseInfiniteScroll, BaseToolbar, BaseBreadcrumbs, BaseFormField, BaseSlideover, BasePopconfirm: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч | — | ⬜ |
+| С.9.5 | Логика в `model/` | BaseBackTop, BaseContextMenu, BaseCheckboxGroup, BaseModal, BaseInfiniteScroll, BaseToolbar, BaseBreadcrumbs, BaseFormField, BaseSlideover, BasePopconfirm: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч | ≈30 мин | ✅ |
 | С.9.6 | Логика в `model/` | BaseForm, BasePin, BaseDrawer, BaseInput, BaseRange, BaseDropdown, BaseColorPicker, BaseTextarea, BaseSlider, BaseRating: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч 15 мин | — | ⬜ |
 | С.9.7 | Логика в `model/` | BaseFileUpload, BaseSideBar, BaseScrollArea, BaseTour, BaseImage, BaseInputTags, BaseNotification, BaseTabs, BaseTooltip, BaseMegaMenu: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч 30 мин | — | ⬜ |
 | С.9.8 | Логика в `model/` | BaseAutocomplete, BaseSelect, BaseCalendar, BaseDatePicker, BaseSearch: в `.vue` — макросы и вызов `useBaseX`, логика — в `model/useBaseX.ts` | 1 ч 30 мин | — | ⬜ |

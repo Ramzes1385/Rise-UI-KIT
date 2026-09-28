@@ -1,4 +1,5 @@
 import type { FabPosition } from '@components/BaseFab'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты — как у BaseFab: `default` — заливка основным цветом, `soft` — мягкий цвет, `outline` — фон и рамка */
@@ -30,3 +31,5 @@ export interface BaseBackTopProps extends BaseComponentProps<(typeof BACK_TOP_VA
 export interface BaseBackTopEmits {
 	(event: 'click', value: MouseEvent): void
 }
+
+export type BackTopProps = PropsWithDefaults<BaseBackTopProps, 'visibilityHeight'>

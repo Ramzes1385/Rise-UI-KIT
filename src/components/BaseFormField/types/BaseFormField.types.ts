@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const FORM_FIELD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -28,4 +29,12 @@ export type BaseFormFieldEmits = Record<string, never>
 
 export interface BaseFormFieldSlots {
 	default?: () => unknown
+}
+
+export type FormFieldProps = PropsWithDefaults<BaseFormFieldProps, 'isRequired'>
+
+/** Контрол кита внутри обёртки: как получить id его элемента и можно ли назвать его через `for` */
+export interface FormFieldControl {
+	getId: () => string
+	isLabelable: boolean
 }

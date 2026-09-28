@@ -54,13 +54,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseCheckboxGroup } from '../model/useBaseCheckboxGroup'
 import '../styles/BaseCheckboxGroup.style.scss'
 import type { BaseCheckboxGroupEmits, BaseCheckboxGroupProps } from '../types/BaseCheckboxGroup.types'
 
@@ -79,64 +78,22 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseCheckboxGroupEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox-group', props, [
-	'root',
-	'label',
-	'required',
-	'options',
-	'checkbox',
-	'error',
-])
-
-const ownId = useId()
-const labelId = `${ownId}-label`
-const errorId = `${ownId}-error`
-
-/** Блокировка: свой isDisabled или неактивная BaseForm вокруг */
-const isControlDisabled = useFormDisabled(() => props.isDisabled)
-
-/** Группа в BaseFormField: подпись обёртки называет группу, её описание или ошибка описывают группу */
-const control = useFieldControl({
-	isLabelable: false,
-	describedBy: () => (props.error ? errorId : undefined),
-	hasError: () => Boolean(props.error),
-})
-
-const labelledBy = computed(() => (props.label ? labelId : control.fieldLabelId.value))
-
-const checkedSet = computed(() => new Set(props.modelValue))
-
-/** Значения доступных вариантов: их отмечает и снимает «Выбрать все» */
-const enabledValues = computed(() => props.options.filter(option => !option.isDisabled).map(option => option.value))
-
-const isAllChecked = computed(() => enabledValues.value.length > 0 && enabledValues.value.every(value => checkedSet.value.has(value)))
-const isPartlyChecked = computed(() => !isAllChecked.value && enabledValues.value.some(value => checkedSet.value.has(value)))
-
-/** Новый набор в порядке вариантов; отмеченные значения вне вариантов сохраняются в конце */
-function update(next: Set<string | number>): void {
-	const known = new Set(props.options.map(option => option.value))
-	const value = [
-		...props.options.map(option => option.value).filter(item => next.has(item)),
-		...props.modelValue.filter(item => !known.has(item)),
-	]
-	emit('update:modelValue', value)
-	emit('change', value)
-}
-
-function handleToggle(value: string | number, isChecked: boolean): void {
-	const next = new Set(checkedSet.value)
-	if (isChecked) next.add(value)
-	else next.delete(value)
-	update(next)
-}
-
-/** «Выбрать все»: отмечает доступные варианты, а если все уже отмечены — снимает их; недоступные не трогает */
-function handleSelectAll(): void {
-	const next = new Set(checkedSet.value)
-	for (const value of enabledValues.value) {
-		if (isAllChecked.value) next.delete(value)
-		else next.add(value)
-	}
-	update(next)
-}
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	labelId,
+	errorId,
+	isControlDisabled,
+	control,
+	labelledBy,
+	checkedSet,
+	enabledValues,
+	isAllChecked,
+	isPartlyChecked,
+	handleToggle,
+	handleSelectAll,
+} = useBaseCheckboxGroup(props, emit)
 </script>

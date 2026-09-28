@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Варианты оформления: те же, что у BaseCheckbox, — вариант получает каждый флажок группы */
@@ -42,3 +43,5 @@ export interface BaseCheckboxGroupEmits {
 	/** То же после действия пользователя */
 	(event: 'change', value: (string | number)[]): void
 }
+
+export type CheckboxGroupProps = PropsWithDefaults<BaseCheckboxGroupProps, 'modelValue'>

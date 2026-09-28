@@ -1,4 +1,5 @@
 import type { LinkComponent } from '@composables/useLink'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const BREADCRUMBS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -64,3 +65,5 @@ export interface BaseBreadcrumbsSlots {
 	/** Кастомная иконка дома */
 	home?: () => unknown
 }
+
+export type BreadcrumbsProps = PropsWithDefaults<BaseBreadcrumbsProps, 'maxItems' | 'showHome' | 'sizeScale'>

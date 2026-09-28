@@ -53,19 +53,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId, useSlots } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { usePopup } from '@composables/usePopup'
 import { BaseButton } from '@components/BaseButton'
-import { usePadding } from '@composables/usePadding'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useLayerIndex } from '@composables/useLayerStack'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useBaseSlideover } from '../model/useBaseSlideover'
 import '../styles/BaseSlideover.style.scss'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../types/BaseSlideover.types'
 
@@ -82,86 +75,28 @@ const props = withDefaults(
 		padding: undefined,
 	}),
 )
-
-/** Масштаб и кастомный цвет — на корне: панель и её содержимое наследуют --size-scale и --custom-* */
-const { sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-slideover', props, [
-	'root',
-	'panel',
-	'header',
-	'title',
-	'body',
-	'footer',
-])
-
-const widthStyle = computed(() => {
-	if (props.isFullWidth || props.width === 100) return undefined
-	return { '--slideover-width-scale': String(props.width / 100) }
-})
-
-const isContainedMode = computed(() => props.isContained || !!props.container)
-
-/** Цель телепорта: проп container, иначе контейнер из плагина и BaseApp (teleportTo), иначе body */
-const appTeleportTarget = useTeleportTarget()
-const teleportTarget = computed<string | HTMLElement>(() => props.container ?? appTeleportTarget)
-
-const isTeleportDisabled = computed(() => !props.container && props.isContained)
-
-/**
- * Отступы секций: число задаёт только горизонталь (множитель 1), объект — точечно.
- * omitUnsetSides оставляет остальные стороны на значениях из стилей (16px по вертикали, 20px по горизонтали).
- * Без пропа padding inline-переменные не пишутся: отступы целиком берутся из стилей.
- */
-const { paddingStyle: explicitPaddingStyle } = usePadding({
-	getPadding: () => props.padding,
-	prefix: '--slideover-pad',
-	axisMultiplier: 1,
-	omitUnsetSides: true,
-})
-const panelStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
-
 const emit = defineEmits<BaseSlideoverEmits>()
 defineSlots<BaseSlideoverSlots>()
-const slots = useSlots()
 
-const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title))
-const hasFooter = computed(() => Boolean(slots.footer))
-
-/** Место панели среди открытых слоёв: панель, открытая из окна, — над ним */
-const layerStyle = useLayerIndex(() => props.isOpen)
-
-const { handleOverlayClick, close: handleClose } = usePopup({
-	isOpen: () => props.isOpen,
-	closeOnOverlay: () => props.closeOnOverlay,
-	closeOnEscape: () => props.closeOnEscape,
-	lockScroll: () => !isContainedMode.value,
-	onClose: () => {
-		emit('update:isOpen', false)
-		emit('close')
-	},
-})
-
-const panelRef = ref<HTMLElement | null>(null)
-const bodyRef = ref<HTMLElement | null>(null)
-const titleId = useId()
-
-/**
- * Тело с прокруткой получает tabindex="0": если в нём нет полей и кнопок, иначе его не прокрутить с клавиатуры.
- * Короткое тело в порядок Tab не попадает.
- */
-const { isScrollable: isBodyScrollable } = useScrollableRegion({ elementRef: bodyRef })
-
-/** Заголовок из title рендерится только без слота header — иначе aria-labelledby ссылался бы на несуществующий id */
-const hasDefaultTitle = computed(() => Boolean(props.title) && !slots.header)
-
-/**
- * Модальный режим: оверлей на весь экран перехватывает клики (в том числе прозрачный при hasOverlay=false)
- * и блокирует прокрутку. В isContained/container панель перекрывает только свой контейнер,
- * остальная страница доступна — диалог немодальный: без aria-modal и без ловушки фокуса.
- */
-const isModal = computed(() => !isContainedMode.value)
-
-useFocusTrap({
-	containerRef: panelRef,
-	isActive: () => props.isOpen && isModal.value,
-})
+const {
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	widthStyle,
+	isContainedMode,
+	teleportTarget,
+	isTeleportDisabled,
+	panelStyle,
+	hasHeader,
+	hasFooter,
+	hasDefaultTitle,
+	layerStyle,
+	handleOverlayClick,
+	handleClose,
+	panelRef,
+	bodyRef,
+	titleId,
+	isBodyScrollable,
+	isModal,
+} = useBaseSlideover(props, emit)
 </script>

@@ -59,23 +59,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId, useSlots } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { usePopup } from '@composables/usePopup'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useLayerIndex } from '@composables/useLayerStack'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseModal } from '../model/useBaseModal'
 import '../styles/BaseModal.style.scss'
 import type { BaseModalEmits, BaseModalProps, BaseModalSlots } from '../types/BaseModal.types'
-
-/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
-const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(
 	defineProps<BaseModalProps>(),
@@ -89,62 +81,25 @@ const props = withDefaults(
 		dialogRole: 'dialog',
 	}),
 )
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-modal', props, [
-	'root',
-	'content',
-	'header',
-	'headerLeft',
-	'title',
-	'close',
-	'body',
-	'footer',
-])
-
 const emit = defineEmits<BaseModalEmits>()
 defineSlots<BaseModalSlots>()
-const slots = useSlots()
 
-const hasFooter = computed(() => Boolean(slots.footer))
-
-const fullScreenClass = computed(() => {
-	if (!props.fullScreen) return undefined
-	return `base-modal--fullscreen-${props.fullScreen}`
-})
-
-/** Место окна среди открытых слоёв: окно, открытое из поповера или другого окна, — над ними */
-const layerStyle = useLayerIndex(() => props.isOpen)
-
-const { handleOverlayClick, close: handleClose } = usePopup({
-	isOpen: () => props.isOpen,
-	closeOnOverlay: () => props.closeOnOverlay ?? true,
-	closeOnEscape: () => true,
-	lockScroll: () => !props.isContained,
-	onClose: () => {
-		emit('update:isOpen', false)
-		emit('close')
-	},
-})
-
-const contentRef = ref<HTMLElement | null>(null)
-const bodyRef = ref<HTMLElement | null>(null)
-const titleId = useId()
-
-/**
- * Тело с прокруткой получает tabindex="0": если в нём нет полей и кнопок, иначе его не прокрутить с клавиатуры.
- * Короткое тело в порядок Tab не попадает.
- */
-const { isScrollable: isBodyScrollable } = useScrollableRegion({ elementRef: bodyRef })
-
-/**
- * Модальный режим: оверлей на весь экран перехватывает клики (в том числе прозрачный при hasOverlay=false)
- * и блокирует прокрутку. В isContained окно перекрывает только свой контейнер, остальная страница
- * доступна — диалог немодальный: без aria-modal и без ловушки фокуса.
- */
-const isModal = computed(() => !props.isContained)
-
-useFocusTrap({
-	containerRef: contentRef,
-	isActive: () => Boolean(props.isOpen) && isModal.value,
-})
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	teleportTarget,
+	hasFooter,
+	fullScreenClass,
+	layerStyle,
+	handleOverlayClick,
+	handleClose,
+	contentRef,
+	bodyRef,
+	titleId,
+	isBodyScrollable,
+	isModal,
+} = useBaseModal(props, emit)
 </script>

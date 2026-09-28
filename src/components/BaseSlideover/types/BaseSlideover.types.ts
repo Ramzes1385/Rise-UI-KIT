@@ -1,4 +1,5 @@
 import type { PaddingProp } from '@composables/usePadding'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export type SlideoverSide = 'left' | 'right'
@@ -54,3 +55,5 @@ export interface BaseSlideoverSlots {
 	/** Подвал панели */
 	footer?: () => unknown
 }
+
+export type SlideoverProps = PropsWithDefaults<BaseSlideoverProps, 'width' | 'closeOnOverlay' | 'closeOnEscape'>

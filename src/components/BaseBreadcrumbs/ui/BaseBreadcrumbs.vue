@@ -117,18 +117,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { kitDefaults } from '@composables/useDefaults'
-import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
-import { resolveLink, useLinkComponent } from '@composables/useLink'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
+import { useBaseBreadcrumbs } from '../model/useBaseBreadcrumbs'
 import '../styles/BaseBreadcrumbs.style.scss'
-import type { ResolvedLink } from '@composables/useLink'
-import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../types/BaseBreadcrumbs.types'
+import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots } from '../types/BaseBreadcrumbs.types'
 
 const props = withDefaults(
 	defineProps<BaseBreadcrumbsProps>(),
@@ -141,76 +137,23 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-breadcrumbs', props, [
-	'root',
-	'list',
-	'item',
-	'ellipsisBtn',
-	'link',
-	'current',
-	'separator',
-	'separatorIcon',
-	'separatorText',
-	'homeIcon',
-	'itemIcon',
-	'itemText',
-	'currentIcon',
-	'currentText',
-])
-
 const emit = defineEmits<BaseBreadcrumbsEmits>()
 defineSlots<BaseBreadcrumbsSlots>()
 
-const isExpanded = ref(false)
-
-/** Иконки крошек и «дома» — 16px при sizeScale = 100 */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
-
-/**
- * Крошки после кнопки «домой». При showHome первую крошку представляет сама кнопка, поэтому в цепочке её нет
- * (иначе «Главная» выводилась дважды). Единственная крошка остаётся в цепочке: это текущая страница.
- */
-const trailItems = computed<BreadcrumbItem[]>(() => (props.showHome && props.items.length > 1 ? props.items.slice(1) : props.items))
-
-const visibleItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return trailItems.value
-	if (trailItems.value.length <= props.maxItems) return trailItems.value
-	return trailItems.value.slice(-props.maxItems)
-})
-
-const collapsedItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return []
-	if (trailItems.value.length <= props.maxItems) return []
-	return trailItems.value.slice(0, -props.maxItems)
-})
-
-const schemaJson = computed((): string => buildBreadcrumbsSchema(props.items))
-
-function isCurrent(index: number): boolean {
-	return index === visibleItems.value.length - 1
-}
-
-function realIndex(visibleIdx: number): number {
-	return props.items.length - visibleItems.value.length + visibleIdx
-}
-
-/** Компонент ссылок: проп, `linkComponent` из плагина, RouterLink приложения или `a` */
-const appLinkComponent = useLinkComponent()
-
-/**
- * Ссылка крошки. Внешний адрес (`href`) по умолчанию открывается в новой вкладке, как раньше открывался через window.open.
- * Крошка без адреса — кнопка: приложение обрабатывает её событием item-click.
- */
-function getLink(item: BreadcrumbItem): ResolvedLink {
-	if (!item.to && !item.href) return { is: 'button', attrs: { type: 'button' }, hasTarget: false }
-	const target = item.target ?? (item.href ? '_blank' : undefined)
-	return resolveLink({ to: item.to, href: item.href, target }, props.linkComponent ?? appLinkComponent)
-}
-
-/** Переход выполняет сама ссылка; события сообщают о нём приложению (аналитика, закрытие меню) */
-function handleItemClick(item: BreadcrumbItem): void {
-	emit('item-click', item)
-	if (getLink(item).hasTarget) emit('navigate', (item.href ?? item.to)!)
-}
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	isExpanded,
+	visibleItems,
+	collapsedItems,
+	iconScale,
+	schemaJson,
+	isCurrent,
+	realIndex,
+	getLink,
+	handleItemClick,
+} = useBaseBreadcrumbs(props, emit)
 </script>
