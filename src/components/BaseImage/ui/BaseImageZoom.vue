@@ -94,7 +94,7 @@
 					class="base-image__zoom-img"
 					:style="zoom.zoomImageStyle.value"
 					draggable="false"
-					@load="() => nextTick(zoom.syncSizes)" />
+					@load="handleImageLoad" />
 			</div>
 
 			<div v-if="gallery.hasGallery.value" class="base-image__zoom-gallery">
@@ -128,7 +128,7 @@
 					class="base-image__minimap-img"
 					:style="zoom.minimapImageStyle.value"
 					draggable="false"
-					@load="() => nextTick(zoom.syncSizes)" />
+					@load="handleImageLoad" />
 				<div class="base-image__minimap-viewport" :style="zoom.minimapViewportStyle.value"></div>
 			</div>
 		</div>
@@ -136,33 +136,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
-import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
+import { useBaseImageZoom } from '../model/useBaseImageZoom'
 import type { BaseImageZoomProps } from '../types/BaseImageZoom.types'
-
-/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
-const teleportTarget = useTeleportTarget()
 
 const props = defineProps<BaseImageZoomProps>()
 
-/** Имя диалога: у декоративного изображения (alt="") остаётся общее «Просмотр изображения» */
-const dialogLabel = computed((): string => (props.alt ? `${UI_ARIA.IMAGE_VIEWER}: ${props.alt}` : UI_ARIA.IMAGE_VIEWER))
+const { teleportTarget, dialogLabel, thumbLabel, dialogRef, zoomImgRef, minimapImgRef, handleImageLoad, exposed } = useBaseImageZoom(props)
 
-function thumbLabel(index: number): string {
-	return formatMessage(UI_ARIA.GALLERY_ITEM, { current: index + 1, total: props.gallery.galleryList.value.length })
-}
-
-const dialogRef = ref<HTMLElement | null>(null)
-const zoomImgRef = ref<HTMLElement | null>(null)
-const minimapImgRef = ref<HTMLElement | null>(null)
-
-// Просмотр смонтирован только пока открыт: ловушка активна всё время жизни компонента
-useFocusTrap({ containerRef: dialogRef, isActive: () => true })
-
-defineExpose({ zoomImgRef, minimapImgRef })
+defineExpose(exposed)
 </script>

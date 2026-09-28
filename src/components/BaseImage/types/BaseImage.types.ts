@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export type ImageFit = 'cover' | 'contain' | 'fill' | 'none'
@@ -100,3 +101,5 @@ export interface BaseImageSlots {
 	placeholder?: () => unknown
 	error?: () => unknown
 }
+
+export type ImageProps = PropsWithDefaults<BaseImageProps, 'timeout' | 'loading' | 'convertToWebp' | 'convertToAvif' | 'sizeScale'>

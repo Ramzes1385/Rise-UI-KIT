@@ -129,23 +129,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { calcIconScale } from '@utils/iconUtils'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
-import { toHTMLInputElement } from '@utils/domUtils'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseProgress } from '@components/BaseProgress'
-import { useFormField } from '@composables/useFormField'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { FormFieldLabel } from '@components/BaseFormField'
-import { useFormDisabled } from '@composables/useFormContext'
-import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
-import { useFileUploadState } from '@composables/useFileUploadState'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
-import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots, UploadedFile } from '../types/BaseFileUpload.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseFileUpload } from '../model/useBaseFileUpload'
+import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../types/BaseFileUpload.types'
 import '../styles/BaseFileUpload.style.scss'
 
 const props = withDefaults(
@@ -166,115 +161,36 @@ const props = withDefaults(
 		error: '',
 	}),
 )
-
-/** Блокировка: свой isDisabled или неактивная BaseForm вокруг (fieldset формы блокирует только нативные поля) */
-const isControlDisabled = useFormDisabled(() => props.isDisabled)
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-file-upload', props, [
-	'root',
-	'label',
-	'dropzone',
-	'text',
-	'hint',
-	'list',
-	'item',
-	'preview',
-	'previewImg',
-	'info',
-	'name',
-	'meta',
-	'ext',
-	'size',
-	'status',
-	'progress',
-	'remove',
-	'errors',
-	'errorItem',
-])
-
 const emit = defineEmits<BaseFileUploadEmits>()
 defineSlots<BaseFileUploadSlots>()
 
-const formField = useFormField({
-	value: () => undefined,
-	error: () => props.error,
-})
-
-const fileInput = ref<HTMLInputElement | null>(null)
-const rootRef = ref<HTMLElement | null>(null)
-const inputId = useId()
-const errorsId = useId()
-
 const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	isControlDisabled,
+	fileInput,
+	rootRef,
+	inputId,
+	errorsId,
 	uploadedFiles,
 	isDragOver,
-	displayErrors: uploadErrors,
-	addFiles,
 	handleRemove,
-	handleDragOver,
 	handleDragLeave,
-	handleDrop,
-} = useFileUploadState({
-	getMaxSize: () => props.maxSize,
-	getAccept: () => props.accept,
-	getMaxCount: () => props.maxCount,
-	getIsMultiple: () => props.isMultiple,
-	onError: (message: string) => emit('error', message),
-	onChange: (files: File[]) => emit('change', files),
-	onRemove: file => emit('remove', file),
-})
+	displayErrors,
+	hasError,
+	previewStyle,
+	formatHint,
+	formatSize,
+	fileIconName,
+	triggerUpload,
+	handleZoneDragOver,
+	handleZoneDrop,
+	handleFileChange,
+	exposed,
+} = useBaseFileUpload(props, emit)
 
-const displayErrors = computed(() => [...(formField.error ? [formField.error] : []), ...uploadErrors.value])
-const hasError = computed(() => displayErrors.value.length > 0)
-
-/** Явный previewSize (px) масштабируется вместе с компонентом; без пропа размер задают стили. */
-const previewStyle = computed(() => {
-	if (props.previewSize === undefined) return undefined
-	const size = `${Math.round((props.previewSize * props.sizeScale) / 100)}px`
-	return { width: size, height: size }
-})
-
-const formatHint = computed(() => formatAcceptHint(props.accept))
-
-function formatSize(bytes: number): string {
-	return formatFileSize(bytes)
-}
-
-/** Иконка файла без превью: по MIME-типу — изображение, видео или документ. */
-function fileIconName(item: UploadedFile): string {
-	if (item.type.startsWith('image/')) return 'image'
-	if (item.type.startsWith('video/')) return 'video'
-	return 'file'
-}
-
-function triggerUpload(): void {
-	if (isControlDisabled.value) return
-	fileInput.value?.click()
-}
-
-// Отключённое состояние не может полагаться только на CSS pointer-events: drop и клавиатура его обходят
-function handleZoneDragOver(): void {
-	if (isControlDisabled.value) return
-	handleDragOver()
-}
-
-function handleZoneDrop(e: DragEvent): void {
-	if (isControlDisabled.value) return
-	handleDrop(e)
-}
-
-function handleFileChange(e: Event): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target || !target.files) return
-	addFiles(Array.from(target.files))
-	target.value = ''
-}
-
-defineExpose({
-	rootRef,
-	focus: () => rootRef.value?.focus(),
-	blur: () => rootRef.value?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import type { PaddingProp } from '@composables/usePadding'
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const SIDEBAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -242,3 +243,5 @@ export interface BaseSideBarNavigationSlots {
 	/** Кастомный рендер бейджа */
 	badge?: (props: BaseSideBarItemSlotProps) => unknown
 }
+
+export type SideBarProps = PropsWithDefaults<BaseSideBarProps, 'isCollapsible'>

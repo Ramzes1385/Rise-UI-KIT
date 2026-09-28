@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const FILE_UPLOAD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -83,3 +84,5 @@ export interface BaseFileUploadSlots {
 	/** Кастомная зона загрузки */
 	trigger?: () => unknown
 }
+
+export type FileUploadProps = PropsWithDefaults<BaseFileUploadProps, 'accept' | 'isMultiple' | 'maxSize' | 'maxCount' | 'sizeScale'>

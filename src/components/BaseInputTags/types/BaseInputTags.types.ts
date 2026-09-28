@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { FieldInputAttrs } from '@composables/useFormContext'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
@@ -54,3 +55,5 @@ export interface BaseInputTagsEmits {
 	(event: 'blur', e: FocusEvent): void
 	(event: 'focus', e: FocusEvent): void
 }
+
+export type InputTagsProps = PropsWithDefaults<BaseInputTagsProps, 'modelValue' | 'separators'>

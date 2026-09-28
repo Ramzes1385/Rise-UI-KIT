@@ -74,12 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
-import { calcIconScale } from '@utils/iconUtils'
-import { useFlyoutPosition } from '@composables/useFlyoutPosition'
-import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
+import { useBaseMegaMenuNode } from '../model/useBaseMegaMenuNode'
 import '../styles/BaseMegaMenu.style.scss'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps, BaseMegaMenuNodeSlots } from '../types/BaseMegaMenuNode.types'
 
@@ -87,83 +84,20 @@ const props = defineProps<BaseMegaMenuNodeProps>()
 const emit = defineEmits<BaseMegaMenuNodeEmits>()
 defineSlots<BaseMegaMenuNodeSlots>()
 
-/** Реестр дерева: открыт только один узел на уровень во всей ветви */
-const tree = useMegaMenuTree()
-const nodePath = computed(() => `${props.parentPath}${MEGA_MENU_PATH_SEPARATOR}${props.item.label}`)
-const isOpen = computed(() => tree.isPathOpen(nodePath.value))
-/** Якорь для каскадного flyout (шапка узла) — задаёт вертикальное выравнивание */
-const anchorRef = ref<HTMLElement | null>(null)
-/** Панель-контейнер узла — flyout встаёт встык к её краю, без наезда */
-const boundaryRef = ref<HTMLElement | null>(null)
-const panelRef = ref<HTMLElement | null>(null)
-const hasChildren = computed(() => Boolean(props.item.children && props.item.children.length > 0))
-/** Лист с адресом — ссылка, переход выполняет она сама */
-const isLink = computed(() => !hasChildren.value && Boolean(props.item.to || props.item.href))
-
-/**
- * Каскадный flyout — только в dropdown-layout на десктопе.
- * В columns узлы стоят в середине широкой панели, поэтому боковой flyout
- * накладывался бы на меню — там вложенные уровни раскрываются аккордеоном вниз.
- */
-const isFlyout = computed(() => props.layout === 'dropdown' && !props.isMobile)
-
-const { panelStyle, isFlipped } = useFlyoutPosition({
+const {
+	nodePath,
+	isOpen,
+	hasChildren,
+	isLink,
 	anchorRef,
 	panelRef,
-	boundaryRef,
-	isOpen: () => isOpen.value && isFlyout.value,
-})
-
-/** Запомнить панель-контейнер, в которой лежит узел (для расчёта flyout встык) */
-function updateBoundary(): void {
-	boundaryRef.value = anchorRef.value?.closest('.base-mega-menu__sub-list, .base-mega-menu__dropdown') ?? null
-}
-/** Единый масштаб иконки для всех уровней */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
-
-let hoverTimer: ReturnType<typeof setTimeout> | null = null
-
-function clearTimer(): void {
-	if (hoverTimer) {
-		clearTimeout(hoverTimer)
-		hoverTimer = null
-	}
-}
-
-onBeforeUnmount(clearTimer)
-
-/** Клик по ссылке: переход выполняет BaseLink, компонент сообщает о нём событиями */
-function handleLinkClick(): void {
-	emit('item-click', props.item)
-	emit('navigate', (props.item.href ?? props.item.to) as string)
-}
-
-/** Клик по узлу: раскрытие вложенного уровня (закрывая соседей); у листа без адреса — только item-click */
-function handleClick(): void {
-	if (props.item.isDisabled) return
-	emit('item-click', props.item)
-	if (!hasChildren.value) return
-	if (isOpen.value) {
-		tree.close(nodePath.value)
-	} else {
-		updateBoundary()
-		tree.open(nodePath.value)
-	}
-}
-
-/** Наведение: раскрытие при trigger=hover (закрывая соседей) */
-function handleEnter(): void {
-	if (props.trigger !== 'hover' || !hasChildren.value) return
-	clearTimer()
-	updateBoundary()
-	tree.open(nodePath.value)
-}
-
-/** Уход курсора: закрытие с задержкой при trigger=hover */
-function handleLeave(): void {
-	if (props.trigger !== 'hover' || !hasChildren.value) return
-	hoverTimer = setTimeout(() => {
-		tree.close(nodePath.value)
-	}, props.hoverDelay)
-}
+	isFlyout,
+	panelStyle,
+	isFlipped,
+	iconScale,
+	handleLinkClick,
+	handleClick,
+	handleEnter,
+	handleLeave,
+} = useBaseMegaMenuNode(props, emit)
 </script>

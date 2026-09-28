@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /**
@@ -25,3 +26,5 @@ export interface BaseTooltipSlots {
 	 */
 	default?: (props: { triggerProps: Record<string, string | undefined> }) => unknown
 }
+
+export type TooltipProps = PropsWithDefaults<BaseTooltipProps, 'position'>

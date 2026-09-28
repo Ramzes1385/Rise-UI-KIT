@@ -108,18 +108,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { navigateAndEmit } from '@utils/navigationUtils'
-import { useBreakpoint } from '@composables/useBreakpoint'
-import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
+import { useBaseMegaMenu } from '../model/useBaseMegaMenu'
 import '../styles/BaseMegaMenu.style.scss'
-import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../types/BaseMegaMenu.types'
+import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots } from '../types/BaseMegaMenu.types'
 
 const props = withDefaults(
 	defineProps<BaseMegaMenuProps>(),
@@ -131,118 +127,26 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, [
-	'root',
-	'container',
-	'column',
-	'title',
-	'list',
-	'nav',
-	'navItem',
-	'navLink',
-	'dropdown',
-])
-
 const emit = defineEmits<BaseMegaMenuEmits>()
 defineSlots<BaseMegaMenuSlots>()
 
-/** Реестр раскрытия дерева: гарантирует, что открыт только один узел на уровень */
-useMegaMenuTreeProvider()
-
-const { isMobile } = useBreakpoint()
-
-/** На мобильном hover недоступен — раскрытие всегда по клику */
-const effectiveTrigger = computed(() => (isMobile.value ? 'click' : props.trigger))
-
-/** Единый масштаб иконки для корневого уровня */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
-
-/** Открытые колонки (columns layout) */
-const openColumns = ref<string[]>([])
-/** Открытые навигационные пункты (dropdown layout) */
-const openNavItems = ref<string[]>([])
-
-let hoverTimer: ReturnType<typeof setTimeout> | null = null
-
-function clearTimer(): void {
-	if (hoverTimer) {
-		clearTimeout(hoverTimer)
-		hoverTimer = null
-	}
-}
-
-onBeforeUnmount(clearTimer)
-
-function hasChildren(item: MegaMenuItem): boolean {
-	return Boolean(item.children && item.children.length > 0)
-}
-
-function navigate(to?: string, href?: string, target?: '_blank' | '_self'): void {
-	navigateAndEmit({ to, href, target }, url => emit('navigate', url))
-}
-
-function toggleColumn(title: string): void {
-	if (effectiveTrigger.value === 'hover') return
-	const index = openColumns.value.indexOf(title)
-	if (index > -1) {
-		openColumns.value.splice(index, 1)
-	} else {
-		openColumns.value.push(title)
-	}
-	const column = props.columns?.find(c => c.title === title)
-	/* istanbul ignore else -- defensive: title всегда соответствует существующей колонке */
-	if (column) emit('column-click', column)
-}
-
-function isColumnOpen(title: string): boolean {
-	return openColumns.value.includes(title) || !isMobile.value
-}
-
-function handleColumnEnter(title: string): void {
-	if (effectiveTrigger.value !== 'hover') return
-	clearTimer()
-	if (!openColumns.value.includes(title)) {
-		openColumns.value.push(title)
-	}
-}
-
-function handleColumnLeave(): void {
-	/* istanbul ignore next -- defensive: handleColumnLeave вызывается только при trigger='hover' */
-	if (effectiveTrigger.value !== 'hover') return
-	hoverTimer = setTimeout(() => {
-		openColumns.value = []
-	}, props.hoverDelay)
-}
-
-function handleNavClick(item: MegaMenuItem): void {
-	/* istanbul ignore next -- defensive: disabled-элементы не вызывают click в template */
-	if (item.isDisabled) return
-	emit('item-click', item)
-	if (hasChildren(item)) {
-		openNavItems.value = openNavItems.value.includes(item.label) ? [] : [item.label]
-	} else {
-		navigate(item.to, item.href, item.target)
-	}
-}
-
-function handleNavEnter(item: MegaMenuItem): void {
-	if (effectiveTrigger.value !== 'hover') return
-	clearTimer()
-	if (hasChildren(item) && !openNavItems.value.includes(item.label)) {
-		openNavItems.value = [item.label]
-	}
-}
-
-function handleNavLeave(): void {
-	/* istanbul ignore next -- defensive: handleNavLeave вызывается только при trigger='hover' */
-	if (effectiveTrigger.value !== 'hover') return
-	hoverTimer = setTimeout(() => {
-		openNavItems.value = []
-	}, props.hoverDelay)
-}
-
-function isNavOpen(label: string): boolean {
-	return openNavItems.value.includes(label)
-}
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	isMobile,
+	effectiveTrigger,
+	iconScale,
+	hasChildren,
+	toggleColumn,
+	isColumnOpen,
+	handleColumnEnter,
+	handleColumnLeave,
+	isNavOpen,
+	handleNavClick,
+	handleNavEnter,
+	handleNavLeave,
+} = useBaseMegaMenu(props, emit)
 </script>

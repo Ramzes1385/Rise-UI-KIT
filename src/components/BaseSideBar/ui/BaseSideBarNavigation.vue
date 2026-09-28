@@ -120,7 +120,7 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { useSideBarNavigation } from '@composables/useSideBarNavigation'
+import { useBaseSideBarNavigation } from '../model/useBaseSideBarNavigation'
 import type { BaseSideBarNavigationEmits, BaseSideBarNavigationProps, BaseSideBarNavigationSlots } from '../types/BaseSideBar.types'
 
 defineOptions({
@@ -153,5 +153,5 @@ const {
 	handleClick,
 	handleChildItemClick,
 	getSlotProps,
-} = useSideBarNavigation({ props, emit })
+} = useBaseSideBarNavigation(props, emit)
 </script>

@@ -97,26 +97,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { UI_TOUR } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/useDefaults'
-import { useEscapeKey } from '@composables/useEscapeKey'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useTourLogic } from '@composables/useTourLogic'
-import { useBreakpoint } from '@composables/useBreakpoint'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { useScrollLock } from '@composables/useScrollLock'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useTourCoordination } from '@composables/useTourCoordination'
+import { useBaseTour } from '../model/useBaseTour'
 import '../styles/BaseTour.style.scss'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../types/BaseTour.types'
-
-/** Куда телепортируются слои: body или контейнер из плагина и BaseApp (teleportTo) */
-const teleportTarget = useTeleportTarget()
 
 const props = withDefaults(
 	defineProps<BaseTourProps>(),
@@ -128,48 +116,21 @@ const props = withDefaults(
 		showProgress: true,
 	}),
 )
-
 const emit = defineEmits<BaseTourEmits>()
 defineSlots<BaseTourSlots>()
 
-/** Место тура среди открытых слоёв: тур, запущенный из окна, — над ним */
-const layerStyle = useLayerIndex(() => props.isOpen)
-
-const internalIndex = ref(props.step)
-const activeIndex = computed((): number => internalIndex.value)
-
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'overlay',
-		'spotlight',
-		'card',
-		'cardInner',
-		'title',
-		'closeButton',
-		'closeIcon',
-		'content',
-		'footer',
-		'progress',
-		'dot',
-		'counter',
-		'actions',
-		'prevButton',
-		'nextButton',
-		'finishButton',
-	],
-})
-
-const { lock, unlock } = useScrollLock()
-const { isMobile } = useBreakpoint()
-
-const { geometry, currentStep, isFirst, isLast, total, recalculate, attachListeners, detachListeners } = useTourLogic({
-	props,
-	getIndex: () => internalIndex.value,
-})
-
 const {
+	teleportTarget,
+	layerStyle,
+	classes,
+	activeIndex,
+	isMobile,
+	geometry,
+	currentStep,
+	isFirst,
+	isLast,
+	total,
+	cardRef,
 	isFocusing,
 	spotlightStyle,
 	cardStyle,
@@ -180,73 +141,10 @@ const {
 	resolvedNextLabel,
 	resolvedPrevLabel,
 	resolvedFinishLabel,
-	resolvedCloseOnEscape,
-	resolvedLockScroll,
 	goNext,
 	goPrev,
 	handleSkip,
 	handleFinish,
 	handleOverlayClick,
-	startFocus,
-	stopFocus,
-} = useTourCoordination({
-	props,
-	emit,
-	internalIndex,
-	activeIndex,
-	currentStep,
-	isFirst,
-	isLast,
-	total,
-	geometry,
-	isMobile,
-	recalculate,
-})
-
-useEscapeKey({
-	isActive: () => props.isOpen && resolvedCloseOnEscape.value,
-	callback: handleSkip,
-})
-
-/** Карточка шага (появляется после анимации подсветки) */
-const cardRef = ref<HTMLElement | null>(null)
-
-/**
- * Тур — модальный диалог: когда карточка появилась, фокус переходит в неё (на кнопку «Далее» с autofocus),
- * Tab не уходит на страницу под затемнением, после закрытия фокус возвращается на кнопку, которая запустила тур.
- */
-useFocusTrap({
-	containerRef: cardRef,
-	isActive: () => props.isOpen && cardRef.value !== null,
-})
-
-watch(
-	() => props.step,
-	value => {
-		internalIndex.value = value
-	},
-)
-
-watch(
-	() => props.isOpen,
-	value => {
-		if (value) {
-			internalIndex.value = props.step
-			if (resolvedLockScroll.value) lock()
-			attachListeners()
-			void startFocus()
-		} else {
-			stopFocus()
-			unlock()
-			detachListeners()
-		}
-	},
-	{ immediate: true },
-)
-
-/** Размонтирование открытого тура (смена маршрута, v-if) не проходит через watch isOpen — снимаем блокировку явно */
-onBeforeUnmount(() => {
-	stopFocus()
-	unlock()
-})
+} = useBaseTour(props, emit)
 </script>

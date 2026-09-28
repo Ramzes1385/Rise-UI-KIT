@@ -66,20 +66,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { BaseIcon } from '@components/BaseIcon'
+import { UI_TEXT } from '@/locales/messages'
 import '../styles/BaseImage.style.scss'
 
-import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { BaseIcon } from '@components/BaseIcon'
 import { kitDefaults } from '@composables/useDefaults'
-import { useImageZoom } from '@composables/useImageZoom'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useImageState } from '@composables/useImageState'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useImageGallery } from '@composables/useImageGallery'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import BaseImageZoom from './BaseImageZoom.vue'
+import { useBaseImage } from '../model/useBaseImage'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
 
 const props = withDefaults(
@@ -98,84 +92,23 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
-
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'placeholder',
-		'error',
-		'img',
-		'zoomOutButton',
-		'zoomOutIcon',
-		'zoomScale',
-		'zoomInButton',
-		'zoomInIcon',
-		'zoomResetButton',
-		'zoomResetIcon',
-		'rotateLeftButton',
-		'rotateLeftIcon',
-		'rotateRightButton',
-		'rotateRightIcon',
-		'zoomCloseButton',
-		'zoomCloseIcon',
-		'galleryPrevButton',
-		'galleryPrevIcon',
-		'galleryNextButton',
-		'galleryNextIcon',
-		'galleryCounter',
-	],
-})
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
 const emit = defineEmits<BaseImageEmits>()
 defineSlots<BaseImageSlots>()
 
-const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? false)
-const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? true)
-
-/**
- * Атрибуты кнопки-обёртки зума. Имя кнопки даёт alt изображения внутри; у декоративного изображения (alt="")
- * имени нет — тогда кнопка называется «Просмотр изображения».
- */
-const zoomTriggerAttrs = computed(() => {
-	if (!resolvedHasZoom.value) return undefined
-	return {
-		type: 'button',
-		'aria-haspopup': 'dialog',
-		'aria-label': props.alt ? undefined : UI_ARIA.IMAGE_VIEWER,
-	}
-})
-
-const zoomRef = ref<InstanceType<typeof BaseImageZoom> | null>(null)
-const imgRef = ref<HTMLImageElement | null>(null)
-
-const gallery = useImageGallery({
-	gallery: () => props.gallery,
-	src: () => props.src,
-	resetZoom: () => zoom.resetZoom(),
-})
-
-const zoom = useImageZoom({
-	initialScale: () => props.zoomConfig?.initialScale ?? 1,
-	zoomStep: () => props.zoomConfig?.zoomStep ?? 0.25,
-	minScale: () => props.zoomConfig?.minScale ?? 0.5,
-	maxScale: () => props.zoomConfig?.maxScale ?? 5,
-	closeOnOverlay: () => props.zoomConfig?.closeOnOverlay ?? true,
-	onZoom: (scale: number) => emit('zoom', scale),
-	getZoomImgEl: () => zoomRef.value?.zoomImgRef ?? null,
-	getMinimapImgEl: () => zoomRef.value?.minimapImgRef ?? null,
-	onArrowLeft: () => gallery.handleGalleryPrev(),
-	onArrowRight: () => gallery.handleGalleryNext(),
-})
-
 const {
+	classes,
+	sizeScaleStyle,
+	customColorStyle,
+	resolvedHasZoom,
+	resolvedShowMinimap,
+	zoomTriggerAttrs,
+	zoomRef,
+	imgRef,
+	gallery,
+	zoom,
 	isLoaded,
 	hasError,
 	containerStyle,
-	borderRadiusStyle,
 	currentSrc,
 	avifSrc,
 	webpSrc,
@@ -183,30 +116,7 @@ const {
 	sizesValue,
 	handleLoad,
 	handleError,
-} = useImageState({
-	src: () => props.src,
-	fallbackSrc: () => props.fallbackSrc,
-	timeout: () => props.timeout,
-	width: () => props.width,
-	height: () => props.height,
-	aspectRatio: () => props.aspectRatio,
-	borderRadius: () => props.borderRadius,
-	srcWidth: () => props.srcWidth,
-	convertToWebp: () => props.convertToWebp,
-	convertToAvif: () => props.convertToAvif,
-	loading: () => props.loading,
-	imgRef,
-	onLoad: () => emit('load'),
-	onError: () => emit('error'),
-})
-
-/** Радиус из пропа borderRadius (в px, масштабируется); без пропа — радиус md из стилей. */
-const radiusStyle = computed(() => (props.borderRadius === undefined ? undefined : borderRadiusStyle.value))
-
-function handleImageClick(): void {
-	if (!resolvedHasZoom.value) return
-	const foundIndex = gallery.galleryList.value.indexOf(props.src)
-	gallery.galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
-	zoom.openZoom()
-}
+	radiusStyle,
+	handleImageClick,
+} = useBaseImage(props, emit)
 </script>

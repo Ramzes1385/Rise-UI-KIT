@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 /** Сторона размещения карточки-подсказки относительно подсвеченного элемента */
@@ -133,3 +134,5 @@ export interface BaseTourSlots {
 	/** Кастомное тело карточки */
 	content?: (props: { step: TourStep; index: number }) => unknown
 }
+
+export type TourProps = PropsWithDefaults<BaseTourProps, 'isOpen' | 'step'>

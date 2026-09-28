@@ -1,3 +1,4 @@
+import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export const MEGA_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -75,3 +76,5 @@ export interface BaseMegaMenuSlots {
 	/** Кастомный узел меню (любой уровень вложенности) */
 	item?: (props: { item: MegaMenuItem; level: number }) => unknown
 }
+
+export type MegaMenuProps = PropsWithDefaults<BaseMegaMenuProps, 'trigger' | 'hoverDelay' | 'sizeScale'>

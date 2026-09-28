@@ -82,19 +82,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { usePadding } from '@composables/usePadding'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseSkeleton } from '@components/BaseSkeleton'
-import { useLinkComponent } from '@composables/useLink'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useBaseSideBar } from '../model/useBaseSideBar'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
-import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots, SideBarItem } from '../types/BaseSideBar.types'
+import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots } from '../types/BaseSideBar.types'
 import '../styles/BaseSideBar.style.scss'
 
 defineOptions({
@@ -116,89 +112,29 @@ const props = withDefaults(
 	}),
 )
 const emit = defineEmits<BaseSideBarEmits>()
-const slots = defineSlots<BaseSideBarSlots>()
+defineSlots<BaseSideBarSlots>()
 
-const { wasPropPassed } = useExplicitPropDetection()
-
-/** Компонент ссылок: проп, `linkComponent` из плагина, RouterLink приложения или `a` */
-const appLinkComponent = useLinkComponent()
-const resolvedLinkComponent = computed(() => props.linkComponent ?? appLinkComponent)
-
-const { variantClass, variantStyle, customColorStyle, sizeScaleStyle, classes } = useStandardBaseComponent('base-side-bar', props, [
-	'root',
-	'header',
-	'title',
-	'toggle',
-	'navigation',
-	'loading',
-	'body',
-	'footer',
-	'collapsed',
-])
-
-const { paddingStyle: explicitPaddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--sidebar-pad' })
-/** Без пропа padding отступы берутся из стилей (8px 12px): inline-переменные --sidebar-pad-* пишутся только для явного значения. */
-const paddingStyle = computed(() => (props.padding === undefined ? undefined : explicitPaddingStyle.value))
-
-const internalCollapsed = ref(false)
-const isCollapsedControlled = computed(() => wasPropPassed('isCollapsed'))
-const isCollapsedState = computed(() => {
-	if (isCollapsedControlled.value) {
-		return props.isCollapsed === true
-	}
-
-	return internalCollapsed.value
-})
-
-const toggleIcon = computed(() => 'menu')
-const toggleLabel = computed(() => (isCollapsedState.value ? UI_TEXT.EXPAND : UI_TEXT.COLLAPSE))
-
-const widthStyle = computed(() => ({
-	'--sidebar-width': `${props.width}px`,
-}))
-
-const collapsedWidthStyle = computed(() => ({
-	'--sidebar-collapsed-width': `${props.collapsedWidth}px`,
-}))
-
-const gapStyle = computed(() => ({
-	'--sidebar-gap': `${props.gap}px`,
-}))
-
-const hasItems = computed(() => Boolean(props.items?.length))
-const hasHeader = computed(() => Boolean(slots.header) || Boolean(props.title) || props.isCollapsible)
-const hasNavigation = computed(() => Boolean(slots.navigation) || hasItems.value)
-const hasFooter = computed(() => Boolean(slots.footer))
-const hasBody = computed(() => Boolean(slots.default))
-const hasCollapsedContent = computed(() => Boolean(slots.collapsedContent))
-
-function handleToggle(): void {
-	const newValue = !isCollapsedState.value
-
-	if (!isCollapsedControlled.value) {
-		internalCollapsed.value = newValue
-	}
-
-	emit('update:isCollapsed', newValue)
-
-	if (newValue) {
-		emit('collapse')
-	} else {
-		emit('expand')
-	}
-}
-
-function handleItemClick(item: SideBarItem, event: MouseEvent): void {
-	emit('itemClick', item, event)
-}
-
-watch(
-	() => props.isCollapsed,
-	(collapsed: boolean | undefined) => {
-		if (isCollapsedControlled.value) {
-			internalCollapsed.value = collapsed === true
-		}
-	},
-	{ immediate: true },
-)
+const {
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	sizeScaleStyle,
+	classes,
+	resolvedLinkComponent,
+	paddingStyle,
+	widthStyle,
+	collapsedWidthStyle,
+	gapStyle,
+	isCollapsedState,
+	toggleLabel,
+	handleToggle,
+	toggleIcon,
+	hasItems,
+	hasHeader,
+	hasNavigation,
+	hasFooter,
+	hasBody,
+	hasCollapsedContent,
+	handleItemClick,
+} = useBaseSideBar(props, emit)
 </script>
