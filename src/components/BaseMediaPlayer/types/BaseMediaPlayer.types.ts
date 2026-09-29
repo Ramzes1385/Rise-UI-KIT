@@ -12,6 +12,24 @@ export const MEDIA_LOGO_POSITIONS = ['top-left', 'top-right'] as const
 /** Угол кадра с логотипом */
 export type MediaLogoPosition = (typeof MEDIA_LOGO_POSITIONS)[number]
 
+export const MEDIA_REPORT_REASONS = ['no-sound', 'no-video', 'buffering', 'out-of-sync', 'other'] as const
+
+/** Причина жалобы зрителя: нет звука, нет изображения, тормозит, не совпадают субтитры или озвучка, другое */
+export type MediaReportReason = (typeof MEDIA_REPORT_REASONS)[number]
+
+export interface MediaReport {
+	/** Что случилось */
+	reason: MediaReportReason
+	/** Комментарий зрителя */
+	comment: string
+	/** Позиция записи в момент отправки, секунды */
+	time: number
+	/** Адрес воспроизводимого источника */
+	source: string
+	/** Техническая информация плеера: строки «название: значение» */
+	details: string
+}
+
 /** Что загружать до запуска: ничего, только длительность и первый кадр или запись целиком */
 export type MediaPreload = (typeof MEDIA_PRELOAD_MODES)[number]
 
@@ -72,6 +90,14 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	playbackRate?: number
 	/** Широкий экран (`v-model:is-theater`): раскладку страницы меняет приложение, плеер — свою кнопку и вид */
 	isTheater?: boolean
+	/** Ключ записи для запоминания позиции в браузере (localStorage): без него позиция не запоминается */
+	storageKey?: string
+	/** Ссылка для «Копировать ссылку»; по умолчанию — адрес страницы */
+	shareUrl?: string
+	/** Параметр адреса с позицией в секундах: `?t=754` */
+	timeParam?: string
+	/** Начать с позиции из адреса страницы (`timeParam`), если она там есть */
+	hasUrlTime?: boolean
 }
 
 export interface BaseMediaPlayerEmits {
@@ -90,6 +116,8 @@ export interface BaseMediaPlayerEmits {
 	(event: 'update:isTheater', value: boolean): void
 	/** Плеер развернулся на весь экран или свернулся */
 	(event: 'fullscreen-change', isFullscreen: boolean): void
+	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
+	(event: 'report', report: MediaReport): void
 }
 
 export interface BaseMediaPlayerSlots {
@@ -116,6 +144,8 @@ export type MediaPlayerProps = PropsWithDefaults<
 	| 'idleTimeout'
 	| 'hasTitle'
 	| 'logoPosition'
+	| 'timeParam'
+	| 'hasUrlTime'
 >
 
 /** Связь `v-model` плеера со значением медиаэлемента */

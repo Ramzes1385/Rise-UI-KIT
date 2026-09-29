@@ -20,4 +20,6 @@ export const Settings = cases.Settings
 export const TitleAndLogo = cases.TitleAndLogo
 export const Theater = cases.Theater
 export const Autoplay = cases.Autoplay
+export const ContextMenu = cases.ContextMenu
+export const ResumePosition = cases.ResumePosition
 export const WithError = cases.WithError

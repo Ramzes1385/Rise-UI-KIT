@@ -25,4 +25,5 @@ export const args = {
 	onError: fn(),
 	'onFullscreen-change': fn(),
 	'onUpdate:isTheater': fn(),
+	onReport: fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

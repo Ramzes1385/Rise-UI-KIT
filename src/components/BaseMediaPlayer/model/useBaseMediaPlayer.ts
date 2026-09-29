@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import { formatMediaTime } from './mediaTime'
 import { UI_PLAYER } from '@/locales/messages'
+import { usePlayerTools } from './usePlayerTools'
 import { useIdleControls } from './useIdleControls'
 import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
@@ -166,6 +167,13 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		...overlays,
 		...models,
 		...elements,
+		...usePlayerTools(props, emit, {
+			state,
+			actions,
+			media: elements.mediaRef,
+			activeSource: () => sources.activeSource.value,
+			toggleFullscreen,
+		}),
 		state,
 		actions,
 		isIdle,
