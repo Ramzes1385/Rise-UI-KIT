@@ -39,6 +39,7 @@ import { BaseSwitch } from '../components/BaseSwitch'
 import { BaseBackTop } from '../components/BaseBackTop'
 import { BaseConfirm } from '../components/BaseConfirm'
 import { BaseInplace } from '../components/BaseInplace'
+import { BaseMention } from '../components/BaseMention'
 import { BasePopover } from '../components/BasePopover'
 import { BaseSideBar } from '../components/BaseSideBar'
 import { BaseStepper } from '../components/BaseStepper'
@@ -46,22 +47,26 @@ import { BaseToolbar } from '../components/BaseToolbar'
 import { BaseTooltip } from '../components/BaseTooltip'
 import { BaseCheckbox } from '../components/BaseCheckbox'
 import { BaseDropdown } from '../components/BaseDropdown'
+import { BaseMarkdown } from '../components/BaseMarkdown'
 import { BaseMegaMenu } from '../components/BaseMegaMenu'
 import { BaseProgress } from '../components/BaseProgress'
 import { BaseSkeleton } from '../components/BaseSkeleton'
 import { BaseSplitter } from '../components/BaseSplitter'
 import { BaseTextarea } from '../components/BaseTextarea'
 import { BaseTimeline } from '../components/BaseTimeline'
+import { BaseToolCall } from '../components/BaseToolCall'
 import { BaseWaveform } from '../components/BaseWaveform'
 // Точечные импорты обходят top-level barrel src/components/index.ts —
 // иначе sub-barrel ./components/BaseChat/index.ts тянул бы тяжёлый BaseChat.vue
 // статически через цепочку re-export, ломая физический split на async-чанки
 // (см. defineAsyncComponent ниже и HEAVY_APP_CHUNKS в build/config/build.ts).
 import { BaseAccordion } from '../components/BaseAccordion'
+import { BaseAiMessage } from '../components/BaseAiMessage'
 import { BaseAnimation } from '../components/BaseAnimation'
 import { BaseContainer } from '../components/BaseContainer'
 import { BaseFormField } from '../components/BaseFormField'
 import { BaseInputTags } from '../components/BaseInputTags'
+import { BaseReasoning } from '../components/BaseReasoning'
 import { BaseSegmented } from '../components/BaseSegmented'
 import { BaseSeparator } from '../components/BaseSeparator'
 import { BaseSlideover } from '../components/BaseSlideover'
@@ -76,7 +81,9 @@ import { BaseBreadcrumbs } from '../components/BaseBreadcrumbs'
 import { BaseButtonGroup } from '../components/BaseButtonGroup'
 import { BaseColorPicker } from '../components/BaseColorPicker'
 import { BaseContextMenu } from '../components/BaseContextMenu'
+import { BaseEmojiPicker } from '../components/BaseEmojiPicker'
 import { BaseInputNumber } from '../components/BaseInputNumber'
+import { BasePromptInput } from '../components/BasePromptInput'
 import { BaseSplitButton } from '../components/BaseSplitButton'
 import { BaseVirtualList } from '../components/BaseVirtualList'
 import { BaseAutocomplete } from '../components/BaseAutocomplete'
@@ -102,6 +109,7 @@ const BaseFileUpload = defineAsyncComponent(() => import('../components/BaseFile
 
 const UI_COMPONENTS: Record<string, Component> = {
 	BaseAccordion,
+	BaseAiMessage,
 	BaseAlert,
 	BaseAnimation,
 	BaseApp,
@@ -130,6 +138,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseDropdown,
 	BaseDropdownMenu,
 	BaseEditor,
+	BaseEmojiPicker,
 	BaseEmpty,
 	BaseFab,
 	BaseFileUpload,
@@ -148,7 +157,9 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseLayout,
 	BaseLink,
 	BaseLoader,
+	BaseMarkdown,
 	BaseMegaMenu,
+	BaseMention,
 	BaseMenu,
 	BaseModal,
 	BaseNotification,
@@ -157,9 +168,11 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BasePopconfirm,
 	BasePopover,
 	BaseProgress,
+	BasePromptInput,
 	BaseRadio,
 	BaseRange,
 	BaseRating,
+	BaseReasoning,
 	BaseScrollArea,
 	BaseSearch,
 	BaseSegmented,
@@ -180,6 +193,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseTextarea,
 	BaseTimePicker,
 	BaseTimeline,
+	BaseToolCall,
 	BaseToolbar,
 	BaseTooltip,
 	BaseTour,

@@ -91,6 +91,11 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseAudioPlayer',
 	'BaseVoiceRecorder',
 	'BaseSubtitleEditor',
+	'BaseReasoning',
+	'BaseToolCall',
+	'BasePromptInput',
+	'BaseEmojiPicker',
+	'BaseMention',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -126,6 +131,9 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseAudioPlayer',
 	'BaseVoiceRecorder',
 	'BaseSubtitleEditor',
+	'BasePromptInput',
+	'BaseEmojiPicker',
+	'BaseMention',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -146,6 +154,8 @@ const FORM_COMPONENTS = new Set([
 	'BaseTimePicker',
 	'BaseInputTags',
 	'BaseSegmented',
+	'BasePromptInput',
+	'BaseMention',
 ])
 
 const LOADING_COMPONENTS = new Set(['BaseButton', 'BaseSearch', 'BaseFileUpload', 'BaseTable', 'BaseEditor', 'BaseChat', 'BaseSlider'])

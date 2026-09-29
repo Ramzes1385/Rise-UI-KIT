@@ -1,0 +1,144 @@
+.base-prompt-input {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	min-width: 0;
+	@include custom-text(color, var(--rise-text-highlighted));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__box {
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		min-width: 0;
+		border-radius: sz(var(--rise-radius-lg));
+		@include field-box;
+	}
+
+	&__control {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		max-height: calc(var(--prompt-max-rows, 8) * 1lh + #{sz(16px)});
+		margin: 0;
+		padding: sz(12px) sz(14px) sz(4px);
+		overflow-y: auto;
+		border: 0;
+		background-color: transparent;
+		color: inherit;
+		font: inherit;
+		@include control-text;
+		resize: none;
+		outline: none;
+		@include scrollbar-thin;
+
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
+		}
+	}
+
+	&__toolbar {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		padding: sz(6px) sz(8px) sz(8px);
+	}
+
+	&__start,
+	&__end {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__start {
+		flex: 1 1 auto;
+	}
+
+	&__end {
+		margin-left: auto;
+	}
+
+	&__button {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(32px);
+		height: sz(32px);
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background-color: var(--rise-primary);
+		color: var(--rise-on-primary);
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		.base-icon {
+			width: sz(16px);
+			height: sz(16px);
+		}
+
+		@include hover {
+			background-color: color-mix(in oklab, var(--rise-primary) 88%, var(--rise-text-highlighted));
+		}
+
+		&:disabled {
+			background-color: var(--rise-bg-accented);
+			color: var(--rise-text-dimmed);
+			cursor: not-allowed;
+		}
+	}
+
+	&__button--stop {
+		background-color: var(--rise-text-highlighted);
+		color: var(--rise-bg);
+
+		@include hover {
+			background-color: var(--rise-text);
+		}
+	}
+
+	&--outline &__box {
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--soft &__box {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--ghost &__box {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--error &__box {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--disabled &__box {
+		@include disabled-state;
+	}
+
+	&--disabled &__control {
+		cursor: not-allowed;
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}

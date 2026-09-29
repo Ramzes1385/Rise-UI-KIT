@@ -1,0 +1,158 @@
+.base-mention {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	min-width: 0;
+	@include custom-text(color, var(--rise-text-highlighted));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__field {
+		position: relative;
+		min-width: 0;
+	}
+
+	&__control {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 0;
+		margin: 0;
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		color: inherit;
+		font: inherit;
+		@include control-text;
+		resize: vertical;
+		outline: none;
+		@include field-box;
+
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
+		}
+	}
+
+	&__popup {
+		position: absolute;
+		top: calc(100% + #{sz(4px)});
+		left: 0;
+		z-index: var(--rise-z-overlay);
+		box-sizing: border-box;
+		width: min(100%, #{sz(320px)});
+		overflow: hidden;
+		@include floating-surface;
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		max-height: sz(264px);
+		margin: 0;
+		padding: sz(4px);
+		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+	}
+
+	&__option {
+		@include menu-item;
+		gap: sz(10px);
+
+		&--active {
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__avatar {
+		flex: none;
+		width: sz(28px);
+		height: sz(28px);
+		border-radius: 50%;
+		object-fit: cover;
+	}
+
+	&__avatar--initial {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--rise-bg-accented);
+		color: var(--rise-text-highlighted);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__option-text {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__option-label {
+		@include truncate;
+	}
+
+	&__option-value,
+	&__option-description {
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		@include truncate;
+	}
+
+	&__option-description {
+		flex: none;
+		max-width: 40%;
+	}
+
+	&__option--active &__option-value,
+	&__option--active &__option-description {
+		color: var(--rise-text-toned);
+	}
+
+	@media (hover: hover) {
+		&__option:hover &__option-value,
+		&__option:hover &__option-description {
+			color: var(--rise-text-toned);
+		}
+	}
+
+	&__empty {
+		margin: 0;
+		padding: sz(12px);
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+	}
+
+	&--outline &__control {
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--soft &__control {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--ghost &__control {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--error &__control {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--disabled &__control {
+		@include disabled-state;
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+}

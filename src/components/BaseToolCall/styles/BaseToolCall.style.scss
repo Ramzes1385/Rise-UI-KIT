@@ -1,0 +1,261 @@
+.base-tool-call {
+	--tool-call-status: var(--rise-text-muted);
+
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-md));
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
+	@include custom-bg(background-color, var(--rise-bg));
+
+	&--running {
+		--tool-call-status: var(--rise-primary);
+	}
+
+	&--success {
+		--tool-call-status: var(--rise-success);
+	}
+
+	&--error {
+		--tool-call-status: var(--rise-error);
+	}
+
+	&__trigger {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		width: 100%;
+		min-width: 0;
+		padding: sz(8px) sz(12px);
+		border: 0;
+		background-color: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring(-2px);
+
+		@include hover {
+			background-color: var(--rise-bg-muted);
+		}
+	}
+
+	&__status {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(16px);
+		height: sz(16px);
+		color: var(--tool-call-status);
+
+		.base-icon {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	&__spinner {
+		box-sizing: border-box;
+		width: sz(14px);
+		height: sz(14px);
+		border: sz(2px) solid color-mix(in oklab, currentcolor 25%, transparent);
+		border-top-color: currentcolor;
+		border-radius: 50%;
+
+		@include motion-safe {
+			animation: base-tool-call-spin 0.8s linear infinite;
+		}
+	}
+
+	&__heading {
+		display: flex;
+		flex: 1 1 auto;
+		align-items: baseline;
+		gap: sz(8px);
+		min-width: 0;
+	}
+
+	&__title {
+		display: block;
+		min-width: 0;
+		font-weight: var(--rise-font-weight-medium);
+		@include truncate;
+	}
+
+	&__name {
+		display: block;
+		flex: 0 1 auto;
+		min-width: 0;
+		@include custom-text(color, var(--rise-text-muted));
+		font-family: var(--rise-font-mono);
+		@include text-size(xs);
+		@include truncate;
+	}
+
+	&__state {
+		flex: none;
+		color: var(--tool-call-status);
+		@include text-size(xs);
+	}
+
+	&--pending &__state,
+	&--success &__state {
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--error &__state {
+		color: var(--rise-error-text);
+	}
+
+	&__arrow {
+		flex: none;
+		width: sz(16px);
+		height: sz(16px);
+		@include custom-text(color, var(--rise-text-muted));
+		@include transition(transform);
+	}
+
+	&--open &__arrow {
+		transform: rotate(180deg);
+	}
+
+	&__collapse {
+		display: grid;
+		grid-template-rows: 0fr;
+		@include transition(grid-template-rows);
+	}
+
+	&--open &__collapse {
+		grid-template-rows: 1fr;
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: sz(10px);
+		min-height: 0;
+		overflow: hidden;
+		padding: 0 sz(12px);
+		opacity: 0;
+		@include transition(opacity, padding);
+	}
+
+	&--open &__content {
+		padding-top: sz(10px);
+		padding-bottom: sz(12px);
+		border-top: 1px solid var(--rise-border);
+		opacity: 1;
+	}
+
+	&__section {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__label {
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__code {
+		max-height: sz(240px);
+		margin: 0;
+		padding: sz(8px) sz(10px);
+		overflow: auto;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-muted);
+		color: var(--rise-text-highlighted);
+		font-family: var(--rise-font-mono);
+		@include text-size(xs);
+		line-height: 1.6;
+		white-space: pre;
+		@include focus-ring(-2px);
+		@include scrollbar-thin;
+	}
+
+	&__error {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(8px);
+		margin: 0;
+		padding: sz(8px) sz(10px);
+		border: 1px solid var(--rise-error-border);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+
+		.base-icon {
+			flex: none;
+			width: sz(16px);
+			height: sz(16px);
+			color: var(--rise-error);
+		}
+	}
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--soft &__trigger {
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+	}
+
+	&--soft &__code {
+		background-color: var(--rise-bg);
+	}
+
+	&--soft &__content,
+	&--outline &__content,
+	&--ghost &__content {
+		border-top: 0;
+	}
+
+	&--soft.base-tool-call--open &__content,
+	&--outline.base-tool-call--open &__content {
+		padding-top: 0;
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		border-color: transparent;
+		border-radius: 0;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost &__trigger {
+		padding-inline: 0;
+		border-radius: sz(var(--rise-radius-sm));
+
+		@include hover {
+			background-color: transparent;
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&--ghost &__content {
+		padding-inline: 0;
+	}
+}
+
+@keyframes base-tool-call-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

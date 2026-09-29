@@ -30,3 +30,13 @@ export const TABLE_TEXT = localized('table')
 export const UI_CHAT_TEXT = localized('chat')
 
 export const UI_EDITOR = localized('editor')
+
+/** Markdown: блок кода и задачи */
+export const UI_MARKDOWN = localized('markdown')
+
+/** ИИ-чат: сообщение ассистента, рассуждение, вызов инструмента, поле запроса */
+export const UI_AI = localized('ai')
+
+export const UI_EMOJI = localized('emoji')
+
+export const UI_MENTION = localized('mention')

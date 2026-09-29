@@ -117,6 +117,14 @@
 - `BaseVoiceRecorder` — запись голосового сообщения: уровень звука, время, прослушивание перед отправкой; голосовые сообщения в `BaseChat` (`has-voice-messages`, событие `send-voice`, вложения `type: 'audio'`) (порция 4.14).
 - `BaseAudioPlayer` — компактный аудиоплеер для голосовых сообщений и подкастов: пуск, волна с перемоткой, время, скорость; на странице играет один такой плеер. `BaseWaveform` — волна записи: амплитуды, перемотка мышью и клавишами, выделение фрагмента (порция 4.14).
 
+**ИИ и общение**
+
+- `BaseMarkdown` — Markdown без `v-html`: разметка превращается в элементы Vue, HTML-теги выводятся текстом, ссылки только `http`, `https`, `mailto` и `tel`, внешние — с `rel="noopener noreferrer"`. Заголовки, списки и задачи, цитаты, таблицы, блоки кода с кнопкой «Копировать», потоковый ответ с курсором (порция 4.15).
+- `BaseAiMessage`, `BaseReasoning`, `BaseToolCall` — блоки ИИ-чата: ответ ассистента в Markdown с потоковым выводом, ошибкой и «Повторить», сворачиваемые рассуждения «Думает… → Думал 12 с», вызов инструмента с состоянием, параметрами и результатом (порция 4.15).
+- `BasePromptInput` — поле запроса: растёт по тексту, Enter отправляет, Shift+Enter — новая строка, «Остановить ответ» во время генерации, слоты панели (порция 4.15).
+- `BaseEmojiPicker` — выбор эмодзи: поиск по названиям на языке кита, разделы, недавние, навигация стрелками; набор загружается отдельным файлом при первом показе (порция 4.15).
+- `BaseMention` — поле с упоминаниями `@ник`: список коллег под полем, стрелки, Enter или Tab, свой триггер (порция 4.15).
+
 **Доступность и клавиатура**
 
 - `BaseModal`, `BaseSlideover`: `role="dialog"`, `aria-modal` (кроме режимов `isContained` / `container`), `aria-labelledby` на заголовок; при открытии фокус переходит внутрь (`[autofocus]` → первый фокусируемый → контейнер), Tab/Shift+Tab не выходят из окна, при закрытии фокус возвращается на прежний элемент. Новый composable `useFocusTrap`.
@@ -2054,6 +2062,79 @@ function handleSend(payload: { text: string }): void {
 
 ---
 
+## BaseMarkdown
+
+Безопасный Markdown (CommonMark и GFM) без `v-html`: текст разбирается в дерево и выводится элементами Vue, поэтому HTML-теги из источника показываются как текст, а ссылки с `javascript:` и другими схемами — обычным текстом. Поддерживаются заголовки, абзацы, выделение, зачёркивание, код и блоки кода (язык и «Копировать»), цитаты, списки и задачи, таблицы с выравниванием, картинки, линии и автоссылки.
+
+```vue
+<BaseMarkdown :source="answer" :is-streaming="isGenerating" />
+```
+
+`is-streaming` — потоковый ответ: в конце мигает курсор, незакрытый блок кода показывается до конца. Одиночный перевод строки — перенос, как в чатах; `:has-line-breaks="false"` — пробел, как в CommonMark.
+
+---
+
+## BaseAiMessage, BaseReasoning, BaseToolCall
+
+Блоки ответа ИИ-ассистента. `BaseAiMessage` — аватар, имя, время и ответ в Markdown; пока `is-streaming`, у сообщения `aria-busy`, скринридер слышит «Ассистент отвечает», а без текста видны три точки. `error` показывает ошибку и «Повторить» (событие `retry`), «Копировать ответ» копирует Markdown (событие `copy`). В слот `default` кладутся рассуждения и вызовы инструментов, в слот `actions` — свои действия.
+
+```vue
+<BaseAiMessage :content="message.text" :is-streaming="message.isStreaming" :error="message.error" @retry="retry(message)">
+	<BaseReasoning :content="message.reasoning" :is-streaming="message.isThinking" />
+	<BaseToolCall
+		v-for="call in message.toolCalls"
+		:key="call.id"
+		:name="call.name"
+		:title="call.title"
+		:status="call.status"
+		:args="call.args"
+		:result="call.result"
+		:error="call.error" />
+</BaseAiMessage>
+```
+
+`BaseReasoning` раскрыт, пока модель думает, и сворачивается по окончании, показывая «Думал 12 с». Длительность можно передать в `duration`, без неё она замеряется по `is-streaming`; `:has-auto-toggle="false"` отключает раскрытие. `BaseToolCall` показывает состояние словом и значком (`pending`, `running`, `success`, `error`), а параметры и результат — JSON с отступами; свою разметку результата задаёт слот `output`. Оба сворачиваются кнопкой с `aria-expanded` и поддерживают `v-model:is-open`.
+
+---
+
+## BasePromptInput
+
+Поле запроса к ассистенту. Растёт по тексту до `max-rows` строк. Enter отправляет (событие `submit`), Shift+Enter переносит строку, во время набора через IME Enter не отправляет. Пустой запрос не отправляется, после отправки поле очищается, фокус остаётся в нём. Пока идёт ответ (`is-generating`), вместо «Отправить» видна кнопка «Остановить ответ» (событие `stop`).
+
+```vue
+<BasePromptInput v-model="prompt" :is-generating="isGenerating" @submit="ask" @stop="abort">
+	<template #start>
+		<BaseButton variant="ghost" aria-label="Прикрепить файл"><BaseIcon name="attach" /></BaseButton>
+	</template>
+</BasePromptInput>
+```
+
+Без `label` доступное имя поля — «Сообщение». Подсказка про Enter и Shift+Enter связана с полем через `aria-describedby`.
+
+---
+
+## BaseEmojiPicker
+
+Выбор эмодзи: поиск, вкладки разделов, сетка и недавние (`v-model:recent`, выбранный эмодзи встаёт первым). Встроенный набор — эмодзи Unicode до версии 14.0 с названиями CLDR на языке кита. Он загружается отдельным файлом при первом показе и не утяжеляет сборку тех, кто пикер не использует. Свой набор задаёт `emojis`: `{ emoji, label, category }`.
+
+```vue
+<BaseEmojiPicker v-model:recent="recentEmojis" @select="item => insert(item.emoji)" />
+```
+
+В сетке одна точка Tab. Стрелки двигают фокус, вниз и вверх — по столбцу, в том числе между разделами; Home и End ведут к первому и последнему эмодзи. Из поиска стрелка вниз переводит фокус в сетку, Enter выбирает первый результат. Поиск не различает регистр, «ё» и «е». Данные набора обновляет `npm run generate:emoji-data` (см. `scripts/generate-emoji-data.mjs`), лицензии — в THIRD_PARTY_NOTICES.md.
+
+---
+
+## BaseMention
+
+Поле с упоминаниями. После `@` (свой символ — `trigger`) под полем открывается список из `options` (`{ value, label, description?, avatar? }`), отфильтрованный по имени и нику. Стрелки выбирают вариант, Enter или Tab вставляют `@ник` и пробел, Escape закрывает список до следующего упоминания. Событие `search` сообщает набранный текст для загрузки вариантов с сервера, `mention` — выбранного коллегу.
+
+```vue
+<BaseMention v-model="comment" label="Комментарий" :options="team" @search="loadTeam" />
+```
+
+---
+
 ## BaseTree
 
 Дерево данных.
@@ -2449,6 +2530,7 @@ import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
 
 ```txt
 BaseAccordion
+BaseAiMessage
 BaseAlert
 BaseAnimation
 BaseAutocomplete
@@ -2474,6 +2556,7 @@ BaseDrawer
 BaseDropdown
 BaseDropdownMenu
 BaseEditor
+BaseEmojiPicker
 BaseEmpty
 BaseFab
 BaseFileUpload
@@ -2491,7 +2574,9 @@ BaseInputTags
 BaseKbd
 BaseLayout
 BaseLoader
+BaseMarkdown
 BaseMegaMenu
+BaseMention
 BaseMenu
 BaseModal
 BaseNotification
@@ -2500,9 +2585,11 @@ BasePin
 BasePopconfirm
 BasePopover
 BaseProgress
+BasePromptInput
 BaseRadio
 BaseRange
 BaseRating
+BaseReasoning
 BaseScrollArea
 BaseSearch
 BaseSegmented
@@ -2523,6 +2610,7 @@ BaseTextarea
 BaseTimeline
 BaseTimePicker
 BaseToolbar
+BaseToolCall
 BaseTooltip
 BaseTour
 BaseTree

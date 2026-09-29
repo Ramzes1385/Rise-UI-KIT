@@ -33,6 +33,10 @@ export interface UiKitLocale {
 	chat: Section<'chat'>
 	editor: Section<'editor'>
 	table: Section<'table'>
+	markdown: Section<'markdown'>
+	ai: Section<'ai'>
+	emoji: Section<'emoji'>
+	mention: Section<'mention'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

@@ -1,0 +1,125 @@
+import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
+import BaseMarkdown from '../ui/BaseMarkdown.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
+
+const SOURCE = [
+	'## Итоги',
+	'',
+	'Текст с [ссылкой](https://example.com) и [внутренней](/docs), `кодом` и ~~старым~~.',
+	'',
+	'1. Первый',
+	'2. **Второй**',
+	'',
+	'- [x] сделано',
+	'- [ ] план',
+	'',
+	'> Цитата',
+	'',
+	'```ts',
+	'const a = 1',
+	'```',
+	'',
+	'| Имя | Счёт |',
+	'| :-- | --: |',
+	'| Анна | 10 |',
+	'',
+	'![Кот](/cat.png)',
+	'',
+	'***',
+	'',
+	'5. пять',
+].join('\n')
+
+describe('BaseMarkdown', () => {
+	afterEach(() => {
+		Reflect.deleteProperty(navigator, 'clipboard')
+		vi.useRealTimers()
+	})
+
+	it('рендерит разметку элементами, без HTML-строк', () => {
+		const { container } = render(BaseMarkdown, { props: { source: SOURCE } })
+
+		expect(screen.getByRole('heading', { level: 2, name: 'Итоги' })).toBeInTheDocument()
+		expect(screen.getByRole('link', { name: 'ссылкой' })).toHaveAttribute('target', '_blank')
+		expect(screen.getByRole('link', { name: 'ссылкой' })).toHaveAttribute('rel', 'noopener noreferrer')
+		expect(screen.getByRole('link', { name: 'внутренней' })).not.toHaveAttribute('target')
+		expect(container.querySelector('code.base-markdown__code')).toHaveTextContent('кодом')
+		expect(container.querySelector('del')).toHaveTextContent('старым')
+		expect(container.querySelector('ol strong')).toHaveTextContent('Второй')
+		expect(screen.getByRole('img', { name: 'Выполнено' })).toContainElement(container.querySelector('.base-icon'))
+		expect(screen.getByRole('img', { name: 'Не выполнено' })).toBeEmptyDOMElement()
+		expect(container.querySelector('blockquote')).toHaveTextContent('Цитата')
+		expect(container.querySelector('pre')).toHaveTextContent('const a = 1')
+		expect(container.querySelector('.base-markdown__code-lang')).toHaveTextContent('ts')
+		expect(screen.getByRole('columnheader', { name: 'Счёт' })).toHaveStyle({ textAlign: 'right' })
+		expect(screen.getByRole('cell', { name: 'Анна' })).toHaveStyle({ textAlign: 'left' })
+		expect(screen.getByRole('img', { name: 'Кот' })).toHaveAttribute('src', '/cat.png')
+		expect(container.querySelector('hr')).toBeInTheDocument()
+		expect(container.querySelectorAll('ol')[1]).toHaveAttribute('start', '5')
+		expect(container.querySelectorAll('ol')[0]).not.toHaveAttribute('start')
+	})
+
+	it('потоковый ответ: курсор в конце и aria-busy; после ответа курсора нет', async () => {
+		const { container, rerender } = render(BaseMarkdown, { props: { source: 'Думаю', isStreaming: true } })
+		const root = container.querySelector('.base-markdown') as HTMLElement
+
+		expect(root).toHaveAttribute('aria-busy', 'true')
+		expect(root).toHaveClass('base-markdown--streaming')
+		expect(container.querySelector('p .base-markdown__caret')).toHaveAttribute('aria-hidden', 'true')
+		await rerender({ source: '```js\nlet x', isStreaming: true })
+		expect(container.querySelector('pre .base-markdown__caret')).toBeInTheDocument()
+		await rerender({ source: 'Готово', isStreaming: false })
+		expect(root).not.toHaveAttribute('aria-busy')
+		expect(container.querySelector('.base-markdown__caret')).toBeNull()
+	})
+
+	it('одиночный перевод строки — перенос; без has-line-breaks — пробел', async () => {
+		const { container, rerender } = render(BaseMarkdown, { props: { source: 'раз\nдва' } })
+		expect(container.querySelector('br')).toBeInTheDocument()
+		await rerender({ hasLineBreaks: false })
+		expect(container.querySelector('br')).toBeNull()
+		expect(container.querySelector('p')).toHaveTextContent('раз два')
+	})
+
+	it('«Копировать» у блока кода: «Скопировано» на 2 с; без буфера обмена надпись не меняется', async () => {
+		vi.useFakeTimers()
+		const writeText = vi.fn(async (_text: string) => undefined)
+		Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+		const { container, unmount } = render(BaseMarkdown, { props: { source: '```\nx = 1\n```' } })
+		const button = screen.getByRole('button', { name: 'Копировать' })
+
+		expect(container.querySelector('.base-markdown__code-lang')).toHaveTextContent('Код')
+		await fireEvent.click(button)
+		await Promise.resolve()
+		await nextTick()
+		expect(writeText).toHaveBeenCalledWith('x = 1')
+		expect(button).toHaveTextContent('Скопировано')
+		await fireEvent.click(button)
+		await Promise.resolve()
+		vi.advanceTimersByTime(2000)
+		await nextTick()
+		expect(button).toHaveTextContent('Копировать')
+
+		writeText.mockRejectedValueOnce(new Error('denied'))
+		await fireEvent.click(button)
+		await Promise.resolve()
+		await nextTick()
+		expect(button).toHaveTextContent('Копировать')
+		Reflect.deleteProperty(navigator, 'clipboard')
+		await fireEvent.click(button)
+		await nextTick()
+		expect(button).toHaveTextContent('Копировать')
+		unmount()
+	})
+
+	it('вариант, масштаб и customClass', () => {
+		const { container } = render(BaseMarkdown, { props: { variant: 'soft', sizeScale: 125, customClass: { root: 'my-root' } } })
+		const root = container.querySelector('.base-markdown') as HTMLElement
+
+		expect(root).toHaveClass('base-markdown--soft', 'my-root')
+		expect(root.style.getPropertyValue('--size-scale')).toBe('1.25')
+		expect(root.children).toHaveLength(0)
+		expect(root).toHaveTextContent('')
+	})
+})
