@@ -23,6 +23,8 @@ export interface MediaSliderProps {
 	markers?: number[]
 	/** Выделенные отрезки: рекламные интеграции */
 	highlights?: MediaTimeRange[]
+	/** Вертикальный ползунок (громкость во всплывающей панели): значение растёт снизу вверх */
+	isVertical?: boolean
 }
 
 export interface MediaSliderEmits {

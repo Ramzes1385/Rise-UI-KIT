@@ -3,9 +3,8 @@ import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import { FakeHls } from './hls.test-utils'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
-import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import MediaSettingsMenu from '../ui/MediaSettingsMenu.vue'
 import type { MediaHlsConstructor } from '../types/MediaHls.types'
+import { fakeMedia, playerMenu } from './BaseMediaPlayer.test-utils'
 
 const Hls = FakeHls as unknown as MediaHlsConstructor
 
@@ -18,7 +17,7 @@ async function setup(props: Record<string, unknown> = {}) {
 	const videoElement = wrapper.get('video').element as HTMLVideoElement
 	const fake = fakeMedia(videoElement, { duration: 60, currentTime: 20 })
 	await nextTick()
-	return { wrapper, videoElement, fake, settings: wrapper.findComponent(MediaSettingsMenu) }
+	return { wrapper, videoElement, fake, quality: playerMenu(wrapper, 'Качество'), dub: playerMenu(wrapper, 'Озвучка') }
 }
 
 describe('BaseMediaPlayer: HLS', () => {
@@ -32,25 +31,20 @@ describe('BaseMediaPlayer: HLS', () => {
 	})
 
 	it('поток .m3u8 играет через hls.js: адрес элементу не назначается, качество и озвучки — из потока', async () => {
-		const { wrapper, videoElement, settings } = await setup({ hlsConfig: { lowLatencyMode: false } })
+		const { wrapper, videoElement, quality, dub } = await setup({ hlsConfig: { lowLatencyMode: false } })
 		const hls = FakeHls.last()
 
 		expect(videoElement.hasAttribute('src')).toBe(false)
 		expect(hls.config).toEqual({ lowLatencyMode: false })
 		expect(hls.attachMedia).toHaveBeenCalledWith(videoElement)
-		expect(settings.props('qualities').map((option: { label: string }) => option.label)).toEqual([
-			'Авто (360p)',
-			'1080p',
-			'360p',
-			expect.stringContaining('кбит/с'),
-		])
-		expect(settings.props('activeQualityId')).toBe('auto')
-		expect(settings.props('audioOptions')).toHaveLength(3)
-		settings.vm.$emit('select-quality', 'hls:1')
-		settings.vm.$emit('select-audio', 'hls-audio:1')
+		expect(quality.options()).toEqual(['Авто (360p)', '1080p', '360p', expect.stringContaining('кбит/с')])
+		expect(quality.checked()).toBe('Авто (360p)')
+		expect(dub.options()).toHaveLength(3)
+		quality.pick('1080p')
+		dub.pickAt(1)
 		await nextTick()
 		expect([hls.manualLevel, hls.audioTrack]).toEqual([1, 1])
-		expect(settings.props('activeQualityId')).toBe('hls:1')
+		expect(quality.checked()).toBe('1080p')
 		expect(wrapper.emitted('update:audioTrack')).toEqual([['hls-audio:1']])
 		wrapper.unmount()
 	})

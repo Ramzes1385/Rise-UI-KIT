@@ -1,5 +1,8 @@
 import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import type { VueWrapper } from '@vue/test-utils'
+import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
+import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 
 export interface FakeMediaValues {
 	currentTime: number
@@ -105,4 +108,25 @@ export function withSetup<T>(composable: () => T) {
 		},
 	})
 	return { result, wrapper }
+}
+
+export function playerMenu(wrapper: VueWrapper, name: string) {
+	const find = () => wrapper.findAllComponents(BaseDropdownMenu).find(menu => menu.props('ariaLabel') === name)
+	const items = (): DropdownMenuItem[] => ((find()?.props('items') ?? []) as DropdownMenuItem[][]).flat()
+	const radios = (): DropdownMenuItem[] => items().filter(item => item.type === 'radio')
+	return {
+		exists: () => find() !== undefined,
+		options: () => radios().map(item => item.label),
+		checked: () => radios().find(item => item.isChecked)?.label,
+		pick: (label: string) =>
+			radios()
+				.find(item => item.label === label)
+				?.onUpdateChecked?.(true),
+		pickAt: (index: number) => radios()[index]?.onUpdateChecked?.(true),
+		select: (label: string) =>
+			items()
+				.find(item => item.label === label)
+				?.onSelect?.(new Event('click')),
+		submenu: (label: string) => (items().find(item => item.label?.startsWith(label))?.children ?? []) as DropdownMenuItem[],
+	}
 }

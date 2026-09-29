@@ -2,7 +2,11 @@
 	<div
 		ref="rootRef"
 		class="base-media-player__slider"
-		:class="{ 'base-media-player__slider--dragging': isDragging, 'base-media-player__slider--disabled': isDisabled }"
+		:class="{
+			'base-media-player__slider--dragging': isDragging,
+			'base-media-player__slider--disabled': isDisabled,
+			'base-media-player__slider--vertical': props.isVertical,
+		}"
 		@pointerdown="onPointerDown"
 		@pointermove="onPointerMove"
 		@pointerup="onPointerEnd"
@@ -29,6 +33,7 @@
 			:aria-valuetext="valueText"
 			:aria-label="label"
 			:aria-disabled="isDisabled || undefined"
+			:aria-orientation="props.isVertical ? 'vertical' : undefined"
 			:style="thumbStyle"
 			@keydown="onKeydown"></div>
 		<div v-if="hoverLabel" class="base-media-player__slider-tooltip" :style="hoverStyle" aria-hidden="true">{{ hoverLabel }}</div>

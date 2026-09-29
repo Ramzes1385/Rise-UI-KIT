@@ -2,9 +2,8 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
-import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import MediaSettingsMenu from '../ui/MediaSettingsMenu.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { playerMenu, fakeMedia } from './BaseMediaPlayer.test-utils'
 import type { BaseMediaPlayerProps } from '../types/BaseMediaPlayer.types'
 
 const SOURCE = '/media/demo.webm'
@@ -75,13 +74,14 @@ describe('BaseMediaPlayer: субтитры', () => {
 
 		await vi.waitFor(() => expect(captions()).toBe('Привет, мир'))
 		expect(root.querySelector('.base-media-player__caption--italic')).toHaveTextContent('мир')
-		expect(button).toHaveAttribute('aria-pressed', 'true')
+		expect(button).toHaveClass('base-media-player__control--active')
+		expect(button).toHaveAttribute('aria-haspopup', 'menu')
 		fake.update({ currentTime: 6 }, 'seeked')
 		await nextTick()
 		expect(captions()).toBe('Вторая реплика')
 
-		await fireEvent.click(button)
-		expect(button).toHaveAttribute('aria-pressed', 'false')
+		await fireEvent.keyDown(root, { code: 'KeyC' })
+		expect(button).not.toHaveClass('base-media-player__control--active')
 		expect(root.querySelector('.base-media-player__captions')).toBeNull()
 		expect(flash()).toBe('Субтитры выключены')
 		await fireEvent.keyDown(root, { code: 'KeyC' })
@@ -90,25 +90,32 @@ describe('BaseMediaPlayer: субтитры', () => {
 		expect(emitted('update:textTrack')).toEqual([['/subs/ru.vtt'], [null], ['/subs/ru.vtt']])
 	})
 
-	it('меню настроек: дорожки, вид субтитров и загрузка файла', async () => {
+	it('меню субтитров: дорожки, вид субтитров и загрузка файла', async () => {
 		stubFetch()
 		const click = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => undefined)
 		const wrapper = mount(BaseMediaPlayer, { props: { sources: SOURCE, title: 'Демо', tracks: TRACKS }, attachTo: document.body })
-		const settings = wrapper.findComponent(MediaSettingsMenu)
+		const menu = playerMenu(wrapper, 'Субтитры')
 		await vi.waitFor(() => expect(wrapper.find('.base-media-player__caption-line').exists()).toBe(true))
 
-		expect(settings.props()).toMatchObject({
-			captionTracks: [
-				{ id: '/subs/ru.vtt', label: 'Русский' },
-				{ id: '/subs/en.srt', label: 'English' },
-			],
-			activeCaptionId: '/subs/ru.vtt',
-			captionStyle: { size: 100, color: 'white', background: 'semi', position: { x: 50, y: 86 } },
-			canLoadCaptions: true,
-		})
-		settings.vm.$emit('select-caption', '/subs/en.srt')
-		settings.vm.$emit('update-caption-style', { color: 'yellow', size: 150 })
-		settings.vm.$emit('load-captions')
+		expect(menu.options()).toEqual(['Выкл', 'Русский', 'English'])
+		expect(menu.checked()).toBe('Русский')
+		const style = menu.submenu('Вид субтитров')
+		expect(style.map(item => item.label?.replace(/\s/g, ' '))).toEqual([
+			'Размер: 100 %',
+			'Цвет: Белый',
+			'Фон: Полупрозрачный',
+			'Положение: Внизу',
+		])
+		menu.pick('English')
+		style[1].children
+			?.flat()
+			.find(item => item.label === 'Жёлтый')
+			?.onUpdateChecked?.(true)
+		style[0].children
+			?.flat()
+			.find(item => item.label?.startsWith('150'))
+			?.onUpdateChecked?.(true)
+		menu.select('Загрузить файл субтитров…')
 		await vi.waitFor(() => expect(wrapper.find('.base-media-player__caption-line').text()).toBe('Hello'))
 		const box = wrapper.get('.base-media-player__caption-box')
 		expect(box.classes()).toContain('base-media-player__caption-box--color-yellow')
@@ -122,10 +129,10 @@ describe('BaseMediaPlayer: субтитры', () => {
 		const input = root.querySelector('input[type="file"]') as HTMLInputElement
 
 		expect(input).toHaveAttribute('accept', '.srt,.vtt')
-		expect(screen.queryByRole('button', { name: 'Субтитры' })).toBeNull()
+		expect(screen.getByRole('button', { name: 'Субтитры' })).not.toHaveClass('base-media-player__control--active')
 		await chooseFiles(input, [new File([SRT_FILE], 'serial-01.srt')])
 		await vi.waitFor(() => expect(captions()).toBe('Из файла зрителя'))
-		expect(screen.getByRole('button', { name: 'Субтитры' })).toHaveAttribute('aria-pressed', 'true')
+		expect(screen.getByRole('button', { name: 'Субтитры' })).toHaveClass('base-media-player__control--active')
 
 		await chooseFiles(input, [new File(['x'], 'poster.png')])
 		expect(flash()).toBe('Не удалось загрузить субтитры')
@@ -166,7 +173,7 @@ describe('BaseMediaPlayer: субтитры', () => {
 		const { flash } = await setup({ tracks: [{ src: '/subs/missing.vtt', label: 'Нет файла', isDefault: true }] })
 
 		await vi.waitFor(() => expect(flash()).toBe('Не удалось загрузить субтитры'))
-		expect(screen.getByRole('button', { name: 'Субтитры' })).toHaveAttribute('aria-pressed', 'false')
+		expect(screen.getByRole('button', { name: 'Субтитры' })).not.toHaveClass('base-media-player__control--active')
 	})
 
 	it('v-model:text-track: null выключает, адрес включает дорожку', async () => {

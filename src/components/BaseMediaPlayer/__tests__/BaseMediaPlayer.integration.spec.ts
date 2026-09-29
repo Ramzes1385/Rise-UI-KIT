@@ -20,18 +20,22 @@ async function setup(props: Partial<BaseMediaPlayerProps> = {}, initial: Partial
 }
 
 describe('BaseMediaPlayer: клавиатура и мышь', () => {
-	it('Tab проходит по контролам: перемотка, воспроизведение, звук, громкость', async () => {
+	it('Tab проходит по контролам: перемотка, воспроизведение, ±10 с, звук, громкость, скорость', async () => {
 		const user = userEvent.setup()
 		await setup()
 
-		await user.tab()
-		expect(screen.getByRole('slider', { name: 'Перемотка' })).toHaveFocus()
-		await user.tab()
-		expect(screen.getByRole('button', { name: 'Воспроизвести' })).toHaveFocus()
-		await user.tab()
-		expect(screen.getByRole('button', { name: 'Выключить звук' })).toHaveFocus()
-		await user.tab()
-		expect(screen.getByRole('slider', { name: 'Громкость' })).toHaveFocus()
+		for (const [role, name] of [
+			['slider', 'Перемотка'],
+			['button', 'Воспроизвести'],
+			['button', 'Назад на 10 с'],
+			['button', 'Вперёд на 10 с'],
+			['button', 'Выключить звук'],
+			['slider', 'Громкость'],
+			['button', 'Скорость воспроизведения'],
+		] as const) {
+			await user.tab()
+			expect(screen.getByRole(role, { name })).toHaveFocus()
+		}
 	})
 
 	it('горячие клавиши работают, пока фокус внутри плеера', async () => {

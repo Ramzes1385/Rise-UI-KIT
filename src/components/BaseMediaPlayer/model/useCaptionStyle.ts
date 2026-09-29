@@ -46,6 +46,11 @@ function writeStyle(style: MediaCaptionStyle): void {
 	}
 }
 
+function raiseOffset(box: HTMLElement): number {
+	const [, offset = '0'] = getComputedStyle(box).getPropertyValue('translate').split(' ')
+	return Number.parseFloat(offset) || 0
+}
+
 function startDrag(event: PointerEvent, origin: MediaCaptionPoint): MediaCaptionDrag | null {
 	const box = event.currentTarget as HTMLElement
 	const area = box.parentElement?.getBoundingClientRect()
@@ -53,7 +58,7 @@ function startDrag(event: PointerEvent, origin: MediaCaptionPoint): MediaCaption
 	const rect = box.getBoundingClientRect()
 	return {
 		pointer: { x: event.clientX, y: event.clientY },
-		origin,
+		origin: { x: origin.x, y: origin.y + (raiseOffset(box) / area.height) * 100 },
 		area: { width: area.width, height: area.height },
 		half: { x: (rect.width / 2 / area.width) * 100, y: (rect.height / 2 / area.height) * 100 },
 	}

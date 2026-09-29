@@ -2,8 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
-import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import MediaSettingsMenu from '../ui/MediaSettingsMenu.vue'
+import { fakeMedia, playerMenu } from './BaseMediaPlayer.test-utils'
 
 const AUDIO_TRACKS = [{ label: 'Оригинал' }, { src: '/audio/anilibria.m4a', label: 'AniLibria', isDefault: true }]
 
@@ -20,7 +19,7 @@ async function setup(props: Record<string, unknown> = {}) {
 	await nextTick()
 	video.emit('loadedmetadata')
 	await nextTick()
-	return { wrapper, videoElement, audioElement, video, audio, settings: wrapper.findComponent(MediaSettingsMenu) }
+	return { wrapper, videoElement, audioElement, video, audio, dub: playerMenu(wrapper, 'Озвучка') }
 }
 
 describe('BaseMediaPlayer: озвучки', () => {
@@ -29,19 +28,15 @@ describe('BaseMediaPlayer: озвучки', () => {
 	})
 
 	it('озвучка по умолчанию звучит вместо видео; меню получает варианты; выбор «Оригинал» возвращает звук видео', async () => {
-		const { wrapper, videoElement, audioElement, settings } = await setup()
+		const { wrapper, videoElement, audioElement, dub } = await setup()
 
 		expect(audioElement.getAttribute('src')).toBe('/audio/anilibria.m4a')
 		expect(videoElement.muted).toBe(true)
 		expect(audioElement.volume).toBe(0.6)
-		expect(settings.props()).toMatchObject({
-			audioOptions: [
-				{ id: null, label: 'Оригинал' },
-				{ id: '/audio/anilibria.m4a', label: 'AniLibria' },
-			],
-			activeAudioId: '/audio/anilibria.m4a',
-		})
-		settings.vm.$emit('select-audio', null)
+		expect(dub.options()).toEqual(['Оригинал', 'AniLibria'])
+		expect(dub.checked()).toBe('AniLibria')
+		expect(wrapper.get('button[aria-label="Озвучка"]').text()).toBe('AniLibria')
+		dub.pick('Оригинал')
 		await nextTick()
 		expect(videoElement.muted).toBe(false)
 		expect(audioElement.hasAttribute('src')).toBe(false)
@@ -67,7 +62,7 @@ describe('BaseMediaPlayer: озвучки', () => {
 		original.wrapper.unmount()
 
 		const plain = await setup({ audioTracks: undefined })
-		expect(plain.settings.props('audioOptions')).toEqual([])
+		expect(plain.dub.exists()).toBe(false)
 		expect(plain.audioElement.hasAttribute('src')).toBe(false)
 		plain.wrapper.unmount()
 	})

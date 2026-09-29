@@ -40,15 +40,21 @@ function gapMask(marks: number[] | undefined, max: number): string | undefined {
 	return `linear-gradient(to right, ${gaps.join(', ')})`
 }
 
+function pointerRatio(event: PointerEvent, isVertical: boolean | undefined): number | null {
+	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+	const size = isVertical ? rect.height : rect.width
+	if (!size) return null
+	return isVertical ? (rect.bottom - event.clientY) / size : (event.clientX - rect.left) / size
+}
+
 function useHover(props: MediaSliderProps, isDisabled: Readonly<Ref<boolean>>) {
 	const hoverValue = ref<number | null>(null)
 	return {
 		hoverLabel: computed(() => (hoverValue.value === null || !props.hoverText ? '' : props.hoverText(hoverValue.value))),
 		hoverStyle: computed(() => ({ left: `${toPercent(hoverValue.value ?? 0, props.max)}%` })),
 		onHover(event: PointerEvent): void {
-			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-			hoverValue.value =
-				isDisabled.value || !rect.width ? null : clamp(((event.clientX - rect.left) / rect.width) * props.max, props.max)
+			const ratio = pointerRatio(event, props.isVertical)
+			hoverValue.value = isDisabled.value || ratio === null ? null : clamp(ratio * props.max, props.max)
 		},
 		onHoverEnd(): void {
 			hoverValue.value = null
@@ -61,8 +67,8 @@ function usePointerDrag(props: MediaSliderProps, emit: MediaSliderEmits, isDisab
 	const thumbRef = ref<HTMLElement | null>(null)
 	const dragValue = ref<number | null>(null)
 	const moveTo = (event: PointerEvent): void => {
-		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-		dragValue.value = rect.width > 0 ? clamp(((event.clientX - rect.left) / rect.width) * props.max, props.max) : 0
+		const ratio = pointerRatio(event, props.isVertical)
+		dragValue.value = ratio === null ? 0 : clamp(ratio * props.max, props.max)
 		emit('update:modelValue', dragValue.value)
 	}
 	return {
@@ -105,8 +111,8 @@ export function useMediaSlider(props: MediaSliderProps, emit: MediaSliderEmits) 
 		isDragging: computed(() => drag.dragValue.value !== null),
 		valueNow: computed(() => Math.round(value.value * 100) / 100),
 		valueMax: computed(() => (isDisabled.value ? 0 : Math.round(props.max * 100) / 100)),
-		fillStyle: computed(() => ({ width: `${percent.value}%` })),
-		thumbStyle: computed(() => ({ left: `${percent.value}%` })),
+		fillStyle: computed(() => (props.isVertical ? { height: `${percent.value}%` } : { width: `${percent.value}%` })),
+		thumbStyle: computed(() => (props.isVertical ? { bottom: `${percent.value}%` } : { left: `${percent.value}%` })),
 		bufferedStyles: computed(() => (isDisabled.value ? [] : bufferedStyles(props))),
 		markerStyles: computed(() =>
 			isDisabled.value ? [] : (props.markers ?? []).map(marker => ({ left: `${toPercent(marker, props.max)}%` })),

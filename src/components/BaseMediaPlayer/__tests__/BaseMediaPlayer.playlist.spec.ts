@@ -4,7 +4,6 @@ import { mount } from '@vue/test-utils'
 import MediaSlider from '../ui/MediaSlider.vue'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import MediaSettingsMenu from '../ui/MediaSettingsMenu.vue'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import type { MediaPlaylist } from '../types/MediaPlaylist.types'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
@@ -156,12 +155,12 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		await wrapper.get('.base-media-player__next-actions button').trigger('click')
 		expect(wrapper.emitted('update:episode')).toEqual([['e2']])
 
-		const settings = wrapper.findComponent(MediaSettingsMenu)
-		expect(settings.props()).toMatchObject({ hasAutoNext: true, isAutoNext: true })
-		settings.vm.$emit('update-auto-next', false)
-		await nextTick()
+		const autoNext = wrapper.get('button[role="switch"]')
+		expect(autoNext.attributes('aria-checked')).toBe('true')
+		expect(autoNext.text()).toBe('Автовоспроизведение')
+		await autoNext.trigger('click')
 		expect(wrapper.emitted('update:isAutoNext')).toEqual([[false]])
-		expect(settings.props('isAutoNext')).toBe(false)
+		expect(autoNext.attributes('aria-checked')).toBe('false')
 		wrapper.unmount()
 	})
 

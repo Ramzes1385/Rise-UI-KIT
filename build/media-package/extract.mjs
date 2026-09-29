@@ -75,4 +75,5 @@ if (existsSync(target) && readdirSync(target).length > 0) {
 cpSync(TEMPLATE, target, { recursive: true })
 copyPlayer(target)
 copyKitScss(target)
+cpSync(join(ROOT, 'THIRD_PARTY_NOTICES.md'), join(target, 'THIRD_PARTY_NOTICES.md'))
 console.log(`Готово: ${target}. Дальше — npm install и npm run build (см. README.md)`)

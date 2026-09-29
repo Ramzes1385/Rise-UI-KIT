@@ -59,6 +59,11 @@ export interface BaseDropdownMenuProps extends BaseComponentProps<
 	position?: DropdownPosition
 	/** Имя меню для скринридера. По умолчанию меню называется текстом кнопки */
 	ariaLabel?: string
+	/**
+	 * Флажок или переключатель закрывает меню и при выборе мышью (по умолчанию закрывает только Enter,
+	 * мышью можно отметить несколько). Для меню выбора одного значения: скорость, качество, серия
+	 */
+	closeOnCheck?: boolean
 }
 
 export interface BaseDropdownMenuEmits {

@@ -87,7 +87,7 @@ test('клавиатура: все элементы панели доступн�
 	await openPlayer(page, 'default')
 	await page.mouse.click(5, 550)
 	const visited: string[] = []
-	for (let step = 0; step < 20; step++) {
+	for (let step = 0; step < 30; step++) {
 		await page.keyboard.press('Tab')
 		const focused = await page.evaluate(() => {
 			const element = document.activeElement as HTMLElement | null
@@ -103,7 +103,23 @@ test('клавиатура: все элементы панели доступн�
 		expect(focused.outline, focused.name).toBe(true)
 		visited.push(focused.name)
 	}
-	expect(visited).toEqual(['Перемотка', 'Воспроизвести', 'Выключить звук', 'Громкость', 'Настройки', 'Широкий экран', 'Во весь экран'])
+	expect(visited).toEqual([
+		'Перемотка',
+		'Воспроизвести',
+		'Назад на 10 с',
+		'Вперёд на 10 с',
+		'Выключить звук',
+		'Громкость',
+		'Скорость воспроизведения',
+		'Субтитры',
+		'Картинка в картинке',
+		'Широкий экран',
+		'Во весь экран',
+		'Назад на 30 с',
+		'Назад на 5 с',
+		'Вперёд на 5 с',
+		'Вперёд на 30 с',
+	])
 })
 
 test('трансляция (эмуляция Cast): клавиши управляют телевизором, после остановки просмотр продолжается здесь', async ({ page }) => {

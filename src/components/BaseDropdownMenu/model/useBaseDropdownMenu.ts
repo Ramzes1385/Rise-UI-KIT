@@ -100,7 +100,7 @@ export function useBaseDropdownMenu(props: BaseDropdownMenuProps, emit: BaseDrop
 		},
 		handleSelect(item: DropdownMenuItem, event: Event, shouldClose: boolean): void {
 			emit('select', item, event)
-			if (!shouldClose) return
+			if (!shouldClose && !(props.closeOnCheck && (item.type === 'radio' || item.type === 'checkbox'))) return
 			setOpen(false)
 			trigger.getTrigger()?.focus()
 		},

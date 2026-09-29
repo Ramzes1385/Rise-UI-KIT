@@ -13,5 +13,6 @@ export const argTypes = {
 	},
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	closeOnCheck: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	default: { control: false },
 } satisfies Meta<typeof BaseDropdownMenu>['argTypes']

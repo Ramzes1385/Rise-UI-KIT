@@ -16,127 +16,177 @@
 			:highlights="adSegmentRanges"
 			@update:model-value="actions.seek" />
 		<div class="base-media-player__bar">
-			<BaseButton
-				v-if="previousEpisode"
-				variant="ghost"
-				class="base-media-player__button"
-				:aria-label="UI_PLAYER.PREVIOUS_EPISODE"
-				@click="playPrevious">
-				<template #left><BaseIcon name="skip-previous" /></template>
-			</BaseButton>
-			<BaseButton variant="ghost" class="base-media-player__button" :aria-label="playLabel" @click="togglePlay">
-				<template #left><BaseIcon :name="state.isPaused ? 'play' : 'pause'" /></template>
-			</BaseButton>
-			<BaseButton
-				v-if="nextEpisode"
-				variant="ghost"
-				class="base-media-player__button"
-				:aria-label="UI_PLAYER.NEXT_EPISODE"
-				@click="playNext">
-				<template #left><BaseIcon name="skip-next" /></template>
-			</BaseButton>
-			<BaseButton variant="ghost" class="base-media-player__button" :aria-label="muteLabel" @click="actions.toggleMute">
-				<template #left><MediaVolumeIcon :volume="state.volume" :is-muted="state.isMuted" /></template>
-			</BaseButton>
-			<MediaSlider
-				class="base-media-player__volume"
-				:class="classes.volume"
-				:model-value="volumeValue"
-				:max="1"
-				:step="props.volumeStep"
-				:large-step="props.volumeStep * 2"
-				:label="UI_PLAYER.VOLUME"
-				:value-text="volumeValueText"
-				@update:model-value="actions.setVolume" />
-			<div class="base-media-player__info">
-				<span class="base-media-player__time" :class="classes.time">{{ currentTimeText }} / {{ durationText }}</span>
-				<BaseDropdownMenu v-if="chapters.length" :items="chapterItems" position="top-start" :aria-label="UI_PLAYER.CHAPTERS">
-					<BaseButton variant="ghost" class="base-media-player__button base-media-player__chapter">
-						{{ currentChapter?.title ?? UI_PLAYER.CHAPTERS }}
-					</BaseButton>
-				</BaseDropdownMenu>
+			<div class="base-media-player__group">
+				<MediaControlButton
+					v-if="previousEpisode"
+					class="base-media-player__episode-button"
+					icon="previous"
+					:label="UI_PLAYER.PREVIOUS_EPISODE"
+					@click="playPrevious" />
+				<MediaControlButton :icon="state.isPaused ? 'play' : 'pause'" :label="playLabel" @click="togglePlay" />
+				<MediaControlButton
+					v-if="nextEpisode"
+					class="base-media-player__episode-button"
+					icon="next"
+					:label="UI_PLAYER.NEXT_EPISODE"
+					@click="playNext" />
+				<MediaControlButton
+					icon="rewind"
+					:caption="String(seekSteps.large)"
+					:label="seekLabel(-seekSteps.large)"
+					@click="actions.seekBy(-seekSteps.large)" />
+				<MediaControlButton
+					icon="forward"
+					:caption="String(seekSteps.large)"
+					:label="seekLabel(seekSteps.large)"
+					@click="actions.seekBy(seekSteps.large)" />
+				<div class="base-media-player__volume-group">
+					<MediaControlButton :icon="volumeIcon" :label="muteLabel" @click="actions.toggleMute" />
+					<div class="base-media-player__volume-popover">
+						<MediaSlider
+							class="base-media-player__volume"
+							:class="classes.volume"
+							:model-value="volumeValue"
+							:max="1"
+							:step="props.volumeStep"
+							:large-step="props.volumeStep * 2"
+							:label="UI_PLAYER.VOLUME"
+							:value-text="volumeValueText"
+							:is-vertical="!isAudioMode"
+							@update:model-value="actions.setVolume" />
+					</div>
+				</div>
+				<div class="base-media-player__info">
+					<span class="base-media-player__time" :class="classes.time">
+						{{ currentTimeText }}<span class="base-media-player__duration"> / {{ durationText }}</span>
+					</span>
+					<BaseDropdownMenu
+						v-if="chapters.length"
+						:items="chapterItems"
+						position="top-start"
+						:aria-label="UI_PLAYER.CHAPTERS"
+						close-on-check>
+						<button type="button" class="base-media-player__chapter">{{ currentChapter?.title ?? UI_PLAYER.CHAPTERS }}</button>
+					</BaseDropdownMenu>
+				</div>
 			</div>
-			<BaseDropdownMenu v-if="hasEpisodes" :items="episodeItems" position="top-end" :aria-label="UI_PLAYER.EPISODES">
-				<BaseButton variant="ghost" class="base-media-player__button" :aria-label="UI_PLAYER.EPISODES">
-					<template #left><BaseIcon name="list-bullet" /></template>
-				</BaseButton>
-			</BaseDropdownMenu>
-			<BaseButton
-				v-if="captionTracks.length && !isAudioMode"
-				variant="ghost"
-				class="base-media-player__button base-media-player__captions-button"
-				:aria-label="UI_PLAYER.CAPTIONS"
-				:aria-pressed="activeCaptionId !== null"
-				@click="toggleCaptions">
-				<template #left><BaseIcon name="subtitles" /></template>
-			</BaseButton>
-			<BaseButton
-				v-if="hasCast"
-				variant="ghost"
-				class="base-media-player__button"
-				:aria-label="castLabel"
-				:aria-pressed="isCasting"
-				@click="toggleCast">
-				<template #left><BaseIcon name="cast" /></template>
-			</BaseButton>
-			<MediaSettingsMenu
-				:rates="rates"
-				:rate="state.playbackRate"
-				:qualities="qualities"
-				:active-quality-id="activeQualityId"
-				:caption-tracks="captionTracks"
-				:active-caption-id="activeCaptionId"
-				:caption-style="captionStyle"
-				:can-load-captions="props.hasCaptionUpload"
-				:audio-options="audioOptions"
-				:active-audio-id="activeAudioId"
-				@select-rate="actions.setPlaybackRate"
-				@select-quality="selectQuality"
-				@select-caption="selectCaptionTrack"
-				@load-captions="openCaptionFile"
-				@update-caption-style="updateCaptionStyle"
-				:has-auto-next="hasEpisodes"
-				:is-auto-next="isAutoNext"
-				@select-audio="selectAudioTrack"
-				@update-auto-next="setAutoNext" />
-			<BaseButton
-				v-if="!isFullscreen && !isAudioMode"
-				variant="ghost"
-				class="base-media-player__button"
-				:aria-label="theaterLabel"
-				@click="toggleTheater">
-				<template #left><BaseIcon :name="isTheater ? 'theater-exit' : 'theater'" /></template>
-			</BaseButton>
-			<BaseButton
-				v-if="isFullscreenSupported && !isAudioMode"
-				variant="ghost"
-				class="base-media-player__button"
-				:aria-label="fullscreenLabel"
-				@click="toggleFullscreen">
-				<template #left><BaseIcon :name="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" /></template>
-			</BaseButton>
+			<div class="base-media-player__group base-media-player__group--end">
+				<BaseDropdownMenu :items="speedItems" position="top-end" :aria-label="UI_PLAYER.SPEED_MENU" close-on-check>
+					<MediaControlButton icon="speed" :label="UI_PLAYER.SPEED_MENU" :text="rateText" />
+				</BaseDropdownMenu>
+				<BaseDropdownMenu
+					v-if="qualities.length > 1"
+					:items="qualityItems"
+					position="top-end"
+					:aria-label="UI_PLAYER.QUALITY"
+					close-on-check>
+					<MediaControlButton icon="quality" :label="UI_PLAYER.QUALITY" :text="qualityText" />
+				</BaseDropdownMenu>
+				<BaseDropdownMenu
+					v-if="(captionTracks.length || props.hasCaptionUpload) && !isAudioMode"
+					:items="captionItems"
+					position="top-end"
+					:aria-label="UI_PLAYER.CAPTIONS"
+					close-on-check>
+					<MediaControlButton
+						class="base-media-player__captions-button"
+						:icon="activeCaptionId === null ? 'captions-off' : 'captions'"
+						:label="UI_PLAYER.CAPTIONS"
+						:is-active="activeCaptionId !== null" />
+				</BaseDropdownMenu>
+				<BaseDropdownMenu
+					v-if="audioOptions.length > 1"
+					:items="audioItems"
+					position="top-end"
+					:aria-label="UI_PLAYER.AUDIO"
+					close-on-check>
+					<MediaControlButton icon="dub" :label="UI_PLAYER.AUDIO" :text="audioText" />
+				</BaseDropdownMenu>
+				<MediaControlButton
+					v-if="hasCast"
+					:icon="isCasting ? 'cast-connected' : 'cast'"
+					:label="castLabel"
+					:is-pressed="isCasting"
+					@click="toggleCast" />
+				<BaseDropdownMenu
+					v-if="hasEpisodes"
+					:items="episodeItems"
+					position="top-end"
+					:aria-label="UI_PLAYER.EPISODES"
+					close-on-check>
+					<MediaControlButton icon="playlist" :label="UI_PLAYER.EPISODES" :badge="episodeCount" />
+				</BaseDropdownMenu>
+				<MediaControlButton
+					v-if="isPipSupported && !isAudioMode"
+					class="base-media-player__pip-button"
+					:icon="isPip ? 'pip-exit' : 'pip'"
+					:label="pipLabel"
+					:is-pressed="isPip"
+					@click="togglePip" />
+				<MediaControlButton
+					v-if="!isFullscreen && !isAudioMode"
+					class="base-media-player__theater-button"
+					:icon="isTheater ? 'theater-exit' : 'theater'"
+					:label="theaterLabel"
+					@click="toggleTheater" />
+				<MediaControlButton
+					v-if="isFullscreenSupported && !isAudioMode"
+					:icon="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
+					:label="fullscreenLabel"
+					@click="toggleFullscreen" />
+			</div>
+		</div>
+		<div class="base-media-player__bar base-media-player__bar--secondary">
+			<div class="base-media-player__group">
+				<MediaControlButton
+					icon="rewind"
+					:caption="String(seekSteps.long)"
+					:label="seekLabel(-seekSteps.long)"
+					@click="actions.seekBy(-seekSteps.long)" />
+				<MediaControlButton
+					icon="rewind"
+					:caption="String(seekSteps.short)"
+					:label="seekLabel(-seekSteps.short)"
+					@click="actions.seekBy(-seekSteps.short)" />
+				<MediaControlButton
+					icon="forward"
+					:caption="String(seekSteps.short)"
+					:label="seekLabel(seekSteps.short)"
+					@click="actions.seekBy(seekSteps.short)" />
+				<MediaControlButton
+					icon="forward"
+					:caption="String(seekSteps.long)"
+					:label="seekLabel(seekSteps.long)"
+					@click="actions.seekBy(seekSteps.long)" />
+			</div>
+			<div class="base-media-player__group base-media-player__group--end">
+				<MediaSwitch v-if="hasEpisodes" :label="UI_PLAYER.AUTO_NEXT" :is-checked="isAutoNext" @update:is-checked="setAutoNext" />
+			</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import '../styles/MediaControls.style.scss'
+import '../styles/MediaMenus.style.scss'
 import MediaSlider from './MediaSlider.vue'
+import MediaSwitch from './MediaSwitch.vue'
 import { UI_PLAYER } from '../model/messages'
-import { BaseIcon } from '@components/BaseIcon'
-import MediaVolumeIcon from './MediaVolumeIcon.vue'
-import { BaseButton } from '@components/BaseButton'
-import MediaSettingsMenu from './MediaSettingsMenu.vue'
-import { usePlayerContext } from '../model/usePlayerContext'
+import MediaControlButton from './MediaControlButton.vue'
+import { usePlayerControls } from '../model/usePlayerControls'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 
 const {
 	actions,
-	activeAudioId,
 	activeCaptionId,
-	activeQualityId,
+	adMarks,
+	adSegmentRanges,
+	audioItems,
 	audioOptions,
-	captionStyle,
+	audioText,
+	captionItems,
 	captionTracks,
+	castLabel,
 	chapterItems,
 	chapterMarks,
 	chapters,
@@ -145,44 +195,46 @@ const {
 	currentChapter,
 	currentTimeText,
 	durationText,
+	episodeCount,
 	episodeItems,
 	fullscreenLabel,
+	hasCast,
 	hasEpisodes,
-	isAutoNext,
-	isFullscreen,
 	isAudioMode,
+	isAutoNext,
+	isCasting,
+	isFullscreen,
 	isFullscreenSupported,
+	isPip,
+	isPipSupported,
 	isTheater,
 	muteLabel,
 	nextEpisode,
-	openCaptionFile,
+	pipLabel,
 	playLabel,
 	playNext,
 	playPrevious,
 	previousEpisode,
 	props,
 	qualities,
-	rates,
+	qualityItems,
+	qualityText,
+	rateText,
 	seekHoverText,
+	seekLabel,
+	seekSteps,
 	seekValueText,
-	selectAudioTrack,
-	selectCaptionTrack,
-	selectQuality,
 	setAutoNext,
+	speedItems,
 	state,
 	theaterLabel,
-	toggleCaptions,
+	toggleCast,
 	toggleFullscreen,
+	togglePip,
 	togglePlay,
 	toggleTheater,
-	updateCaptionStyle,
+	volumeIcon,
 	volumeValue,
 	volumeValueText,
-	adMarks,
-	adSegmentRanges,
-	hasCast,
-	isCasting,
-	castLabel,
-	toggleCast,
-} = usePlayerContext()
+} = usePlayerControls()
 </script>

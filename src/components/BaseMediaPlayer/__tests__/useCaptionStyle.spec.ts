@@ -99,6 +99,20 @@ describe('useCaptionStyle', () => {
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) as string).position).toEqual({ x: 10, y: 95 })
 	})
 
+	it('поднятый над панелью блок начинает движение с видимого места, без скачка', () => {
+		const style = setup()
+		const box = frame()
+		const computed = getComputedStyle(box)
+		vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+			...computed,
+			getPropertyValue: (name: string) => (name === 'translate' ? '0px -100px' : ''),
+		} as CSSStyleDeclaration)
+
+		style.onCaptionPointerDown(pointer(box, { clientX: 500, clientY: 330 }))
+		style.onCaptionPointerMove(pointer(box, { clientX: 500, clientY: 320 }))
+		expect(style.captionStyle.value.position).toEqual({ x: 50, y: 64 })
+	})
+
 	it('захват указателя, если браузер его поддерживает', () => {
 		const style = setup()
 		const box = frame()

@@ -211,6 +211,23 @@ describe('BaseDropdownMenu', () => {
 		expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 	})
 
+	it('closeOnCheck: выбор переключателя мышью закрывает меню и возвращает фокус на кнопку', async () => {
+		const onRadio = vi.fn()
+		const { trigger } = renderMenu(
+			[
+				{ type: 'radio', label: '1×', isChecked: true, onUpdateChecked: onRadio },
+				{ type: 'radio', label: '2×', isChecked: false, onUpdateChecked: onRadio },
+			],
+			{ closeOnCheck: true },
+		)
+		const menu = await openWithKeyboard(trigger)
+
+		await fireEvent.click(within(menu).getByRole('menuitemradio', { name: '2×' }))
+		expect(onRadio).toHaveBeenCalledWith(true)
+		expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+		expect(trigger).toHaveFocus()
+	})
+
 	it('отмеченный флажок показывает галочку, переключатель — точку', async () => {
 		const { trigger } = renderMenu([
 			{ type: 'checkbox', label: 'Автор', isChecked: true },

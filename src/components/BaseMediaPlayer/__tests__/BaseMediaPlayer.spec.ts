@@ -30,7 +30,7 @@ async function setup(props: Partial<BaseMediaPlayerProps> = {}, slots: Record<st
 
 describe('BaseMediaPlayer', () => {
 	it('регион с именем, видео с источником, подписи контролов и время', async () => {
-		const { video } = await setup({ poster: '/media/poster.webp' })
+		const { video, container } = await setup({ poster: '/media/poster.webp' })
 		await flushPromises()
 
 		expect(screen.getByRole('region', { name: 'Демо' })).toHaveClass('base-media-player')
@@ -42,7 +42,7 @@ describe('BaseMediaPlayer', () => {
 		expect(screen.getByRole('button', { name: 'Выключить звук' })).toBeInTheDocument()
 		expect(screen.getByRole('slider', { name: 'Перемотка' })).toHaveAttribute('aria-valuetext', '0:00 из 1:00')
 		expect(screen.getByRole('slider', { name: 'Громкость' })).toHaveAttribute('aria-valuetext', expect.stringMatching(/^100\s%$/))
-		expect(screen.getByText('0:00 / 1:00')).toHaveClass('base-media-player__time')
+		expect(container.querySelector('.base-media-player__time')).toHaveTextContent('0:00 / 1:00')
 		expect(screen.queryByRole('button', { name: 'Во весь экран' })).toBeNull()
 		expect(screen.queryByRole('alert')).toBeNull()
 	})
@@ -85,11 +85,11 @@ describe('BaseMediaPlayer', () => {
 	})
 
 	it('ползунок перемотки переходит к позиции', async () => {
-		const { fake } = await setup()
+		const { fake, container } = await setup()
 
 		await fireEvent.keyDown(screen.getByRole('slider', { name: 'Перемотка' }), { key: 'End' })
 		expect(fake.values.currentTime).toBe(60)
-		expect(screen.getByText('1:00 / 1:00')).toBeInTheDocument()
+		expect(container.querySelector('.base-media-player__time')).toHaveTextContent('1:00 / 1:00')
 	})
 
 	it.each([

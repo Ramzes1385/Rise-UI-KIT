@@ -2,10 +2,9 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
-import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import MediaSettingsMenu from '../ui/MediaSettingsMenu.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { FakeMediaValues } from './BaseMediaPlayer.test-utils'
+import { fakeMedia, playerMenu } from './BaseMediaPlayer.test-utils'
 import type { BaseMediaPlayerProps } from '../types/BaseMediaPlayer.types'
 
 const SOURCE = '/media/demo.webm'
@@ -138,7 +137,7 @@ describe('BaseMediaPlayer: панель', () => {
 		expect(emitted('update:currentTime')?.at(-1)).toEqual([30.2])
 	})
 
-	it('меню настроек получает скорости по порядку и качества с подписью; выбор меняет элемент', async () => {
+	it('меню скорости — по порядку, качества — источники с подписью; выбор меняет элемент, кнопки показывают текущее', async () => {
 		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
 		const sources = [
 			{ src: '/media/hd.webm', type: 'video/webm', label: '720p' },
@@ -147,21 +146,39 @@ describe('BaseMediaPlayer: панель', () => {
 		]
 		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо', playbackRates: [2, 1, 0.5] }, attachTo: document.body })
 		await nextTick()
-		const settings = wrapper.findComponent(MediaSettingsMenu)
+		const speed = playerMenu(wrapper, 'Скорость воспроизведения')
+		const quality = playerMenu(wrapper, 'Качество')
 
-		expect(settings.props()).toMatchObject({ rates: [0.5, 1, 2], rate: 1, activeQualityId: '/media/hd.webm' })
-		expect(settings.props('qualities')).toEqual([
-			{ id: '/media/hd.webm', label: '720p' },
-			{ id: '/media/sd.webm', label: '360p' },
-		])
-		settings.vm.$emit('select-rate', 2)
-		settings.vm.$emit('select-quality', '/media/unknown.webm')
-		settings.vm.$emit('select-quality', '/media/sd.webm')
+		expect(speed.options()).toEqual(['0,5×', 'Обычная', '2×'])
+		expect(speed.checked()).toBe('Обычная')
+		expect(quality.options()).toEqual(['720p', '360p'])
+		expect(quality.checked()).toBe('720p')
+		speed.pick('2×')
+		quality.pick('360p')
 		await nextTick()
 		const video = wrapper.get('video').element as HTMLVideoElement
 		expect(video.playbackRate).toBe(2)
 		expect(video.getAttribute('src')).toBe('/media/sd.webm')
+		video.dispatchEvent(new Event('ratechange'))
+		await nextTick()
+		expect(wrapper.get('button[aria-label="Скорость воспроизведения"]').text()).toBe('2×')
+		expect(wrapper.get('button[aria-label="Качество"]').text()).toBe('360p')
 		wrapper.unmount()
+	})
+
+	it('кнопки перемотки: ±10 с в первом ряду, ±30 и ±5 с во втором', async () => {
+		const { fake } = await setup({}, { currentTime: 40 })
+		const seekBy = async (name: string, expected: number): Promise<void> => {
+			await fireEvent.click(screen.getByRole('button', { name }))
+			expect(fake.values.currentTime).toBe(expected)
+		}
+
+		await seekBy('Назад на 10 с', 30)
+		await seekBy('Вперёд на 10 с', 40)
+		await seekBy('Назад на 30 с', 10)
+		await seekBy('Назад на 5 с', 5)
+		await seekBy('Вперёд на 5 с', 10)
+		await seekBy('Вперёд на 30 с', 40)
 	})
 
 	it('событие fullscreen-change', async () => {

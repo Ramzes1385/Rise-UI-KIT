@@ -43,18 +43,20 @@ async function closeMenus(page: Page): Promise<void> {
 	await expect(menu).toHaveCount(0)
 }
 
-async function openSettings(page: Page): Promise<void> {
-	await page.getByRole('button', { name: 'Настройки' }).click()
-	await expect(page.getByRole('menu').first()).toBeVisible()
-	await page.mouse.move(0, 0)
+function openMenu(name: string) {
+	return async (page: Page): Promise<void> => {
+		await page.getByRole('button', { name }).click()
+		await expect(page.getByRole('menu').first()).toBeVisible()
+		await page.mouse.move(0, 0)
+	}
 }
 
 const SCENARIOS: Scenario[] = [
 	{ story: 'default', time: 5 },
 	{ story: 'title-and-logo' },
-	{ story: 'settings', time: 3, prepare: openSettings },
+	{ story: 'settings', time: 3, prepare: openMenu('Скорость воспроизведения') },
 	{ story: 'subtitles', time: 4 },
-	{ story: 'audio-tracks', time: 3, prepare: openSettings },
+	{ story: 'audio-tracks', time: 3, prepare: openMenu('Озвучка') },
 	{ story: 'episodes', time: 3 },
 	{ story: 'audio-mode', time: 3 },
 	{ story: 'ads', time: 9 },
