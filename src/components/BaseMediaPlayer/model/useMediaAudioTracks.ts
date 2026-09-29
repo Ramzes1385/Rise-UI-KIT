@@ -6,6 +6,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { MediaElementRef } from '../types/MediaCore.types'
 import type {
 	MediaAudioOption,
+	MediaAudioProvider,
 	MediaAudioTrackItem,
 	MediaAudioTracksOptions,
 	MediaEmbeddedAudioTrack,
@@ -96,7 +97,7 @@ function useExternalAudio(options: MediaAudioTracksOptions) {
 
 function applyAudio(
 	id: string | null,
-	tracks: { isExternal: boolean; external: ReturnType<typeof useExternalAudio>; embedded: ReturnType<typeof useEmbeddedAudio> },
+	tracks: { isExternal: boolean; external: ReturnType<typeof useExternalAudio>; embedded: MediaAudioProvider },
 ): boolean {
 	if (tracks.isExternal) {
 		if (tracks.external.activeId.value === id) return false
@@ -110,13 +111,14 @@ function applyAudio(
 
 export function useMediaAudioTracks(options: MediaAudioTracksOptions) {
 	const external = useExternalAudio(options)
-	const embedded = useEmbeddedAudio(options.video)
+	const fileTracks = useEmbeddedAudio(options.video)
+	const inner = computed(() => (options.stream && options.stream.options.value.length > 0 ? options.stream : fileTracks))
 	const isExternal = computed(() => external.items.value.length > 0)
-	const list = computed(() => (isExternal.value ? external.options.value : embedded.options.value))
-	const activeId = computed(() => (isExternal.value ? (external.activeId.value ?? null) : embedded.activeId.value))
+	const list = computed(() => (isExternal.value ? external.options.value : inner.value.options.value))
+	const activeId = computed(() => (isExternal.value ? (external.activeId.value ?? null) : inner.value.activeId.value))
 	const has = (id: string | null): boolean => list.value.some(option => option.id === id)
 	const select = (id: string | null): void => {
-		if (has(id) && applyAudio(id, { isExternal: isExternal.value, external, embedded })) options.emitTrack(id)
+		if (has(id) && applyAudio(id, { isExternal: isExternal.value, external, embedded: inner.value })) options.emitTrack(id)
 	}
 	const selectInitial = (): void => {
 		const wanted = options.audioTrack()

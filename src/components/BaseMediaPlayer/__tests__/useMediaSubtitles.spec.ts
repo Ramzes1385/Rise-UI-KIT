@@ -220,3 +220,84 @@ describe('useMediaSubtitles', () => {
 		wrapper.unmount()
 	})
 })
+
+function textTrack(init: Partial<Record<'kind' | 'label' | 'language' | 'mode', string>>): TextTrack {
+	const track = new EventTarget() as TextTrack
+	Object.assign(track, { kind: 'subtitles', label: '', language: '', mode: 'disabled', activeCues: null, ...init })
+	return track
+}
+
+function textTrackList(tracks: TextTrack[]): TextTrackList {
+	const list = new EventTarget() as TextTrackList
+	const define = (items: TextTrack[]): void => {
+		items.forEach((track, index) => Object.defineProperty(list, index, { value: track, configurable: true }))
+		Object.defineProperty(list, 'length', { value: items.length, configurable: true })
+	}
+	define(tracks)
+	return Object.assign(list, { define })
+}
+
+describe('useMediaSubtitles: субтитры потока и файла (textTracks)', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+	})
+
+	it('дорожки элемента в списке; выбор скрывает вывод браузера и берёт реплики из activeCues', async () => {
+		const stream = textTrack({ label: 'Русский (поток)', language: 'ru' })
+		const plain = textTrack({ kind: 'captions' })
+		const list = textTrackList([stream, textTrack({ kind: 'metadata' }), plain])
+		const { result, media, fetchMock, text } = setup([EN], null)
+		media.value = { textTracks: list, currentTime: 0 } as unknown as HTMLMediaElement
+		await nextTick()
+
+		expect(result.captionTracks.value).toEqual([
+			{ id: EN.src, label: 'English' },
+			{ id: 'text:0', label: 'Русский (поток)' },
+			{ id: 'text:1', label: 'Субтитры 2' },
+		])
+		result.selectCaptionTrack('text:0')
+		expect([stream.mode, plain.mode]).toEqual(['hidden', 'disabled'])
+		expect(fetchMock).not.toHaveBeenCalled()
+		Object.assign(stream, { activeCues: [{ text: '<i>Из потока</i>' }] })
+		stream.dispatchEvent(new Event('cuechange'))
+		await nextTick()
+		expect(text()).toBe('Из потока')
+		expect(result.captionLines.value[0][0].isItalic).toBe(true)
+	})
+
+	it('браузер или hls.js включили дорожку сами — плеер возвращает свой выбор; выключение и новые дорожки', async () => {
+		const first = textTrack({ label: 'A' })
+		const second = textTrack({ label: 'B' })
+		const list = textTrackList([first, second]) as TextTrackList & { define: (items: TextTrack[]) => void }
+		const { result, media } = setup([])
+		media.value = { textTracks: list, currentTime: 0 } as unknown as HTMLMediaElement
+		await nextTick()
+
+		result.selectCaptionTrack('text:0')
+		second.mode = 'showing'
+		list.dispatchEvent(new Event('change'))
+		expect([first.mode, second.mode]).toEqual(['hidden', 'disabled'])
+		result.selectCaptionTrack(null)
+		expect(first.mode).toBe('disabled')
+
+		list.define([first, second, textTrack({ label: 'C' })])
+		list.dispatchEvent(new Event('addtrack'))
+		await nextTick()
+		expect(result.captionTracks.value.map(track => track.label)).toEqual(['A', 'B', 'C'])
+		expect(result.captionLines.value).toEqual([])
+	})
+
+	it('обработчики дорожек элемента снимаются вместе с плеером', async () => {
+		const track = textTrack({ label: 'A' })
+		const list = textTrackList([track])
+		const removeFromList = vi.spyOn(list, 'removeEventListener')
+		const removeFromTrack = vi.spyOn(track, 'removeEventListener')
+		const { media, wrapper } = setup([])
+		media.value = { textTracks: list, currentTime: 0 } as unknown as HTMLMediaElement
+		await nextTick()
+
+		wrapper.unmount()
+		expect(removeFromList).toHaveBeenCalledTimes(3)
+		expect(removeFromTrack).toHaveBeenCalledWith('cuechange', expect.any(Function))
+	})
+})

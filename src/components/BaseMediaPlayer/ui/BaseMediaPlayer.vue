@@ -102,9 +102,9 @@
 				<p v-if="isAutoplayBlocked" class="base-media-player__hint" role="status">{{ errorMessage }}</p>
 			</div>
 			<div v-if="overlayError" class="base-media-player__overlay" :class="classes.overlay" role="alert">
-				<slot name="error" :error="overlayError" :retry="actions.retry">
+				<slot name="error" :error="overlayError" :retry="retryPlayback">
 					<p class="base-media-player__message">{{ errorMessage }}</p>
-					<BaseButton v-if="canRetry" variant="soft" :size-scale="sizeScale" @click="actions.retry">
+					<BaseButton v-if="canRetry" variant="soft" :size-scale="sizeScale" @click="retryPlayback">
 						{{ UI_TEXT.RETRY }}
 					</BaseButton>
 				</slot>
@@ -152,7 +152,7 @@
 						:rates="rates"
 						:rate="state.playbackRate"
 						:qualities="qualities"
-						:active-src="src"
+						:active-quality-id="activeQualityId"
 						:caption-tracks="captionTracks"
 						:active-caption-id="activeCaptionId"
 						:caption-style="captionStyle"
@@ -349,6 +349,8 @@ const {
 	audioOptions,
 	activeAudioId,
 	selectAudioTrack,
+	activeQualityId,
+	retryPlayback,
 } = useBaseMediaPlayer(props, emit)
 
 defineExpose<BaseMediaPlayerExpose>(exposed)

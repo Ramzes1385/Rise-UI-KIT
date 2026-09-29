@@ -6,8 +6,8 @@ import { useMediaSettingsMenu } from '../model/useMediaSettingsMenu'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 import type { MediaSettingsMenuProps } from '../types/MediaSettingsMenu.types'
 
-const HD = { src: '/media/hd.webm', label: '720p' }
-const SD = { src: '/media/sd.webm', label: '360p' }
+const HD = { id: '/media/hd.webm', label: '720p' }
+const SD = { id: '/media/sd.webm', label: '360p' }
 
 const RU = { id: '/subs/ru.vtt', label: 'Русский' }
 
@@ -17,7 +17,10 @@ const STYLE = { size: 100, color: 'white', background: 'semi', position: { x: 50
 
 function menu(props: Partial<MediaSettingsMenuProps> = {}) {
 	const emit = vi.fn()
-	const { items, label } = useMediaSettingsMenu({ rates: [0.5, 1, 1.5], rate: 1, qualities: [HD, SD], activeSrc: SD.src, ...props }, emit)
+	const { items, label } = useMediaSettingsMenu(
+		{ rates: [0.5, 1, 1.5], rate: 1, qualities: [HD, SD], activeQualityId: SD.id, ...props },
+		emit,
+	)
 	return { items: items.value, label: label.value, emit }
 }
 
@@ -56,10 +59,10 @@ describe('MediaSettingsMenu', () => {
 		children(quality)[0].onUpdateChecked?.(true)
 		expect(emit.mock.calls).toEqual([
 			['select-rate', 1.5],
-			['select-quality', HD],
+			['select-quality', HD.id],
 		])
 		expect(menu({ qualities: [HD] }).items).toHaveLength(1)
-		expect(menu({ activeSrc: undefined }).items[1].label).toBe('Качество')
+		expect(menu({ activeQualityId: undefined }).items[1].label).toBe('Качество')
 	})
 
 	it('кнопка «Настройки» открывает меню', async () => {

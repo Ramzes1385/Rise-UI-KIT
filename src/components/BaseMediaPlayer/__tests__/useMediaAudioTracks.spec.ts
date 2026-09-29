@@ -1,7 +1,12 @@
 import { nextTick, ref } from 'vue'
 import { useMediaAudioTracks } from '../model/useMediaAudioTracks'
 import { fakeMedia, withSetup } from './BaseMediaPlayer.test-utils'
-import type { MediaAudioTrackItem, MediaEmbeddedAudioTrack, MediaEmbeddedAudioTrackList } from '../types/MediaAudio.types'
+import type {
+	MediaAudioProvider,
+	MediaAudioTrackItem,
+	MediaEmbeddedAudioTrack,
+	MediaEmbeddedAudioTrackList,
+} from '../types/MediaAudio.types'
 
 const ORIGINAL = { label: 'Оригинал' }
 
@@ -23,6 +28,7 @@ async function setup(
 		audioTrack?: string | null
 		embedded?: MediaEmbeddedAudioTrackList
 		hasAudioElement?: boolean
+		stream?: MediaAudioProvider
 	} = {},
 ) {
 	const videoElement = document.createElement('video')
@@ -45,6 +51,7 @@ async function setup(
 			sound,
 			emitTrack,
 			flash,
+			stream: options.stream,
 		}),
 	)
 	await nextTick()
@@ -199,5 +206,30 @@ describe('useMediaAudioTracks: без аудиоэлемента', () => {
 		expect(result.activeAudioId.value).toBe('/audio/a.m4a')
 		expect(sound.value).toBeNull()
 		expect(videoElement.muted).toBe(false)
+	})
+})
+
+describe('useMediaAudioTracks: дорожки потока', () => {
+	it('дорожки потока важнее дорожек файла; выбор передаётся потоку', async () => {
+		const active = ref<string | null>('hls-audio:0')
+		const stream = {
+			options: ref([
+				{ id: 'hls-audio:0', label: 'Японский' },
+				{ id: 'hls-audio:1', label: 'Русский' },
+			]),
+			activeId: active,
+			enable: vi.fn((id: string) => {
+				active.value = id
+			}),
+		}
+		const { result, emitTrack } = await setup({ stream, embedded: embeddedList([{ id: 'a', enabled: true }, { id: 'b' }]) })
+
+		expect(result.audioOptions.value.map(option => option.label)).toEqual(['Японский', 'Русский'])
+		result.selectAudioTrack('hls-audio:1')
+		expect(stream.enable).toHaveBeenCalledWith('hls-audio:1')
+		expect(emitTrack).toHaveBeenCalledWith('hls-audio:1')
+		stream.options.value = []
+		await nextTick()
+		expect(result.audioOptions.value.map(option => option.id)).toEqual(['embedded:a', 'embedded:b'])
 	})
 })

@@ -39,6 +39,13 @@ export interface MediaEmbeddedAudioTrackList extends EventTarget {
 /** Медиаэлемент со списком звуковых дорожек, если браузер его поддерживает */
 export type MediaElementWithAudioTracks = HTMLMediaElement & { audioTracks?: MediaEmbeddedAudioTrackList }
 
+/** Дорожки внутри файла или потока для меню «Озвучка» */
+export interface MediaAudioProvider {
+	options: Readonly<Ref<MediaAudioOption[]>>
+	activeId: Readonly<Ref<string | null>>
+	enable: (id: string) => void
+}
+
 export interface MediaAudioTracksOptions {
 	/** Озвучки из props */
 	tracks: () => MediaAudioTrackItem[] | undefined
@@ -54,6 +61,8 @@ export interface MediaAudioTracksOptions {
 	emitTrack: (id: string | null) => void
 	/** Короткое сообщение поверх кадра */
 	flash: (message: string) => void
+	/** Дорожки потока (HLS): важнее дорожек внутри файла */
+	stream?: MediaAudioProvider
 }
 
 export interface MediaAudioSyncOptions {

@@ -37,10 +37,18 @@ function useBuffering(state: Readonly<MediaState>): Ref<boolean> {
 
 export function usePlayerOverlays(
 	props: MediaPlayerProps,
-	{ state, activeSource }: { state: Readonly<MediaState>; activeSource: Readonly<Ref<MediaSourceItem | null | undefined>> },
+	{
+		state,
+		activeSource,
+		adapterError,
+	}: {
+		state: Readonly<MediaState>
+		activeSource: Readonly<Ref<MediaSourceItem | null | undefined>>
+		adapterError?: Readonly<Ref<MediaPlayerError | null>>
+	},
 ) {
 	const hasStarted = ref(false)
-	const error = computed(() => state.error ?? (activeSource.value === null ? NO_SOURCE_ERROR : null))
+	const error = computed(() => state.error ?? adapterError?.value ?? (activeSource.value === null ? NO_SOURCE_ERROR : null))
 	const isAutoplayBlocked = computed(() => error.value?.code === 'autoplay-blocked')
 	const overlayError = computed(() => (isAutoplayBlocked.value ? null : error.value))
 	return {

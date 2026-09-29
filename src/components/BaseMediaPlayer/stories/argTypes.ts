@@ -35,6 +35,8 @@ export const argTypes = {
 	isLoop: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	idleTimeout: { control: { type: 'number', min: 500, step: 500 }, table: propGroup(ARG_GROUP.behavior) },
 	allowedProtocols: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	hls: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	hlsConfig: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	hasKeyboardShortcuts: { control: 'boolean', table: propGroup(ARG_GROUP.a11y) },
 	seekStep: { control: { type: 'number', min: 1 }, table: propGroup(ARG_GROUP.a11y) },
 	seekStepLarge: { control: { type: 'number', min: 1 }, table: propGroup(ARG_GROUP.a11y) },

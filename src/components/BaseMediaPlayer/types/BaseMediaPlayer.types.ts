@@ -1,3 +1,4 @@
+import type { MediaHlsConstructor } from './MediaHls.types'
 import type { MediaAudioTrackItem } from './MediaAudio.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
@@ -116,6 +117,13 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	audioTracks?: MediaAudioTrackItem[]
 	/** Выбранная озвучка (`v-model:audio-track`): `src` дорожки, null — звук самого видео, `embedded:<id>` — дорожка внутри файла */
 	audioTrack?: string | null
+	/**
+	 * Класс `Hls` из пакета hls.js для потоков .m3u8 там, где браузер не играет HLS сам (везде, кроме Safari):
+	 * качество «Авто» и вручную, озвучки и субтитры потока. В ките hls.js нет — его подключает приложение
+	 */
+	hls?: MediaHlsConstructor
+	/** Настройки hls.js: передаются в `new Hls(config)` */
+	hlsConfig?: Record<string, unknown>
 }
 
 export interface BaseMediaPlayerEmits {

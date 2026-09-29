@@ -82,6 +82,8 @@ export interface MediaSourcesOptions {
 	allowedProtocols?: () => readonly string[] | undefined
 	/** Медиаэлемент: по его canPlayType выбирается первый воспроизводимый источник; до монтирования источник не выбирается */
 	media: MediaElementRef
+	/** Источник, который плеер воспроизводит сам, даже если браузер его не знает (HLS через hls.js) */
+	canPlay?: (item: MediaSourceItem) => boolean
 }
 
 interface MediaHotkeyActions {

@@ -58,12 +58,12 @@ function speedItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits):
 
 function qualityItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits): DropdownMenuItem {
 	return {
-		label: [UI_PLAYER.QUALITY, props.qualities.find(source => source.src === props.activeSrc)?.label].filter(Boolean).join(': '),
-		children: props.qualities.map(source => ({
+		label: [UI_PLAYER.QUALITY, props.qualities.find(option => option.id === props.activeQualityId)?.label].filter(Boolean).join(': '),
+		children: props.qualities.map(option => ({
 			type: 'radio',
-			label: source.label,
-			isChecked: source.src === props.activeSrc,
-			onUpdateChecked: () => emit('select-quality', source),
+			label: option.label,
+			isChecked: option.id === props.activeQualityId,
+			onUpdateChecked: () => emit('select-quality', option.id),
 		})),
 	}
 }

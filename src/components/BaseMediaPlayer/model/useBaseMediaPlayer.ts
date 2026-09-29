@@ -11,7 +11,9 @@ import { usePlayerCaptions } from './usePlayerCaptions'
 import { usePlayerOverlays } from './usePlayerOverlays'
 import { useMediaFullscreen } from './useMediaFullscreen'
 import { useMediaAudioTracks } from './useMediaAudioTracks'
+import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
 import { formatMessage, formatNumber } from '@/locales/state'
+import type { MediaAudioProvider } from '../types/MediaAudio.types'
 import { MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import type { MediaState, MediaActions } from '../types/MediaCore.types'
@@ -51,16 +53,40 @@ function useLabels(state: Readonly<MediaState>) {
 	}
 }
 
-function usePlayerView(props: MediaPlayerProps, sources: ReturnType<typeof useMediaSources>) {
+function usePlayerSources(props: MediaPlayerProps, media: Readonly<Ref<HTMLVideoElement | null>>) {
+	const sources = useMediaSources({
+		sources: () => props.sources,
+		allowedProtocols: () => props.allowedProtocols,
+		media,
+		canPlay: item => isHlsSource(item) && Boolean(props.hls?.isSupported()),
+	})
+	const hls = useHlsAdapter({ Hls: () => props.hls, config: () => props.hlsConfig, media, source: () => sources.activeSource.value })
+	const fileQualities = computed(() =>
+		sources.playableSources.value.filter(source => source.label).map(source => ({ id: source.src, label: source.label as string })),
+	)
 	return {
-		src: computed(() => sources.activeSource.value?.src),
+		sources,
+		hls,
+		view: {
+			src: computed(() => (hls.isHlsActive.value ? undefined : sources.activeSource.value?.src)),
+			qualities: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.options.value : fileQualities.value)),
+			activeQualityId: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.activeId.value : sources.activeSource.value?.src)),
+			selectQuality(id: string): void {
+				if (hls.isHlsActive.value) return hls.hlsQuality.select(id)
+				const source = sources.playableSources.value.find(item => item.src === id)
+				if (source) sources.setSource(source)
+			},
+		},
+	}
+}
+
+function usePlayerView(props: MediaPlayerProps) {
+	return {
 		posterSrc: computed(() => safeUrl(props.poster, IMAGE_PROTOCOLS)),
 		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
 		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
 		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
 		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
-		qualities: computed(() => sources.playableSources.value.filter(source => source.label)),
-		selectQuality: sources.setSource,
 	}
 }
 
@@ -154,7 +180,7 @@ function usePlayerEvents(
 function usePlayerAudio(
 	props: MediaPlayerProps,
 	emit: BaseMediaPlayerEmits,
-	player: { elements: ReturnType<typeof usePlayerElements>; flash: (message: string) => void },
+	player: { elements: ReturnType<typeof usePlayerElements>; flash: (message: string) => void; stream: MediaAudioProvider },
 ) {
 	return useMediaAudioTracks({
 		tracks: () => props.audioTracks,
@@ -165,6 +191,7 @@ function usePlayerAudio(
 		sound: player.elements.soundRef,
 		emitTrack: id => emit('update:audioTrack', id),
 		flash: player.flash,
+		stream: player.stream,
 	})
 }
 
@@ -192,12 +219,8 @@ function usePlayerIdle(props: MediaPlayerProps, elements: ReturnType<typeof useP
 export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	const elements = usePlayerElements()
 	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
-	const sources = useMediaSources({
-		sources: () => props.sources,
-		allowedProtocols: () => props.allowedProtocols,
-		media: elements.mediaRef,
-	})
-	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource })
+	const { sources, hls, view } = usePlayerSources(props, elements.mediaRef)
+	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource, adapterError: hls.hlsError })
 	const models = usePlayerModels(props, emit, { state, actions })
 	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
 	const tools = usePlayerTools(props, emit, {
@@ -216,23 +239,31 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		toggleTheater: models.toggleTheater,
 		toggleCaptions: captions.toggleCaptions,
 	})
+	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
 
 	return {
 		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
 		...useLabels(state),
-		...usePlayerView(props, sources),
+		...usePlayerView(props),
+		...view,
 		...overlays,
 		...models,
 		...elements,
 		...tools,
 		...captions,
-		...usePlayerAudio(props, emit, { elements, flash: tools.flash }),
+		...usePlayerAudio(props, emit, { elements, flash: tools.flash, stream: hls.hlsAudio }),
 		...screen,
 		state,
 		actions,
 		isIdle: usePlayerIdle(props, elements, state),
 		togglePlay: () => void actions.togglePlay(),
-		exposed: { ...actions, state, getMediaElement: () => elements.mediaRef.value } satisfies BaseMediaPlayerExpose,
+		retryPlayback,
+		exposed: {
+			...actions,
+			retry: retryPlayback,
+			state,
+			getMediaElement: () => elements.mediaRef.value,
+		} satisfies BaseMediaPlayerExpose,
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}
 }

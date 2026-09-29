@@ -9,8 +9,8 @@ function normalizeSources(sources: MediaSourceItem[] | string | undefined, allow
 	return list.filter(item => isSafeUrl(item.src, allowed))
 }
 
-function isPlayable(media: HTMLMediaElement, item: MediaSourceItem): boolean {
-	return !item.type || media.canPlayType(item.type) !== ''
+function isPlayable(media: HTMLMediaElement, item: MediaSourceItem, canPlay?: (item: MediaSourceItem) => boolean): boolean {
+	return !item.type || media.canPlayType(item.type) !== '' || Boolean(canPlay?.(item))
 }
 
 function resumeAfterSwitch(media: HTMLMediaElement): void {
@@ -31,7 +31,7 @@ export function useMediaSources(options: MediaSourcesOptions) {
 	const sources = computed(() => normalizeSources(options.sources(), options.allowedProtocols?.() ?? MEDIA_PROTOCOLS))
 	const playableSources = computed(() => {
 		const media = options.media.value
-		return media ? sources.value.filter(item => isPlayable(media, item)) : []
+		return media ? sources.value.filter(item => isPlayable(media, item, options.canPlay)) : []
 	})
 	const activeSource = computed<MediaSourceItem | null | undefined>(() => {
 		if (!options.media.value) return undefined

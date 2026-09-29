@@ -8,6 +8,68 @@ import type { MediaCue, MediaCaptionOption, MediaFetchCredentials, MediaSubtitle
 
 const TRACK_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
 
+const TEXT_PREFIX = 'text:'
+
+const TEXT_TRACK_EVENTS = ['addtrack', 'removetrack', 'change']
+
+function subtitleTracksOf(media: HTMLMediaElement | null): TextTrack[] {
+	const list = media?.textTracks
+	if (!list?.addEventListener) return []
+	return Array.from({ length: list.length }, (_, index) => list[index]).filter(track => ['subtitles', 'captions'].includes(track.kind))
+}
+
+function cueText(track: TextTrack | undefined): string {
+	return Array.from(track?.activeCues ?? [])
+		.map(cue => (cue as VTTCue).text)
+		.join('\n')
+}
+
+function useElementTextTracks(media: MediaElementRef) {
+	const listVersion = ref(0)
+	const cueVersion = ref(0)
+	let activeId: string | null = null
+	const tracks = computed(() => (listVersion.value >= 0 ? subtitleTracksOf(media.value) : []))
+	const apply = (): void =>
+		tracks.value.forEach((track, index) => {
+			const mode = `${TEXT_PREFIX}${index}` === activeId ? 'hidden' : 'disabled'
+			if (track.mode !== mode) track.mode = mode
+		})
+	watch(
+		media,
+		(element, _, onCleanup) => {
+			const list = element?.textTracks
+			if (!list?.addEventListener) return
+			const onChange = (): void => {
+				listVersion.value++
+				apply()
+			}
+			TEXT_TRACK_EVENTS.forEach(name => list.addEventListener(name, onChange))
+			onCleanup(() => TEXT_TRACK_EVENTS.forEach(name => list.removeEventListener(name, onChange)))
+		},
+		{ immediate: true },
+	)
+	watch(tracks, (list, _, onCleanup) => {
+		const onCue = (): void => {
+			cueVersion.value++
+		}
+		list.forEach(track => track.addEventListener('cuechange', onCue))
+		onCleanup(() => list.forEach(track => track.removeEventListener('cuechange', onCue)))
+	})
+	return {
+		options: computed<MediaCaptionOption[]>(() =>
+			tracks.value.map((track, index) => ({
+				id: `${TEXT_PREFIX}${index}`,
+				label: track.label || track.language || formatMessage(UI_PLAYER.CAPTIONS_TRACK, { n: index + 1 }),
+			})),
+		),
+		select(id: string | null): void {
+			activeId = id?.startsWith(TEXT_PREFIX) ? id : null
+			apply()
+		},
+		text: (id: string): string => (cueVersion.value >= 0 ? cueText(tracks.value[Number(id.slice(TEXT_PREFIX.length))]) : ''),
+	}
+}
+
 async function fetchCues(src: string, credentials: MediaFetchCredentials): Promise<MediaCue[]> {
 	const response = await fetch(src, { credentials })
 	if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -50,11 +112,12 @@ function useCaptionClock(media: MediaElementRef, isRunning: () => boolean) {
 	return time
 }
 
-function useTrackList(options: MediaSubtitlesOptions) {
+function useTrackList(options: MediaSubtitlesOptions, textTracks: Readonly<{ value: MediaCaptionOption[] }>) {
 	const urlTracks = computed(() => (options.tracks() ?? []).filter(track => isSafeUrl(track.src, TRACK_PROTOCOLS)))
 	const fileTracks = ref<MediaCaptionOption[]>([])
 	const list = computed<MediaCaptionOption[]>(() => [
 		...urlTracks.value.map(track => ({ id: track.src, label: track.label })),
+		...textTracks.value,
 		...fileTracks.value,
 	])
 	return {
@@ -68,19 +131,26 @@ function useTrackList(options: MediaSubtitlesOptions) {
 	}
 }
 
-function useCaptionText(options: MediaSubtitlesOptions, activeId: () => string | null, cache: Map<string, MediaCue[]>) {
-	const clock = useCaptionClock(options.media, () => !options.state.isPaused && activeId() !== null)
+function useCaptionText(
+	options: MediaSubtitlesOptions,
+	activeId: () => string | null,
+	sources: { cache: Map<string, MediaCue[]>; textTracks: ReturnType<typeof useElementTextTracks> },
+) {
+	const isFileCues = (): boolean => !(activeId() ?? TEXT_PREFIX).startsWith(TEXT_PREFIX)
+	const clock = useCaptionClock(options.media, () => !options.state.isPaused && isFileCues())
 	const text = computed(() => {
 		const id = activeId()
-		const time = options.state.isPaused ? options.state.currentTime : clock.value
-		return id ? activeCueText(cache.get(id) ?? [], time) : ''
+		if (!id) return ''
+		if (id.startsWith(TEXT_PREFIX)) return sources.textTracks.text(id)
+		return activeCueText(sources.cache.get(id) ?? [], options.state.isPaused ? options.state.currentTime : clock.value)
 	})
 	return computed(() => cueLines(text.value))
 }
 
 export function useMediaSubtitles(options: MediaSubtitlesOptions) {
 	const cues = useCueCache(options.credentials)
-	const tracks = useTrackList(options)
+	const textTracks = useElementTextTracks(options.media)
+	const tracks = useTrackList(options, textTracks.options)
 	const activeId = ref<string | null>(null)
 	let lastId: string | null = null
 	const select = (id: string | null): void => {
@@ -88,7 +158,8 @@ export function useMediaSubtitles(options: MediaSubtitlesOptions) {
 		if (next === activeId.value) return
 		activeId.value = next
 		options.emitTrack(next)
-		if (next === null) return
+		textTracks.select(next)
+		if (next === null || next.startsWith(TEXT_PREFIX)) return
 		lastId = next
 		void cues.load(next, () => {
 			options.flash(UI_PLAYER.CAPTIONS_ERROR)
@@ -105,7 +176,7 @@ export function useMediaSubtitles(options: MediaSubtitlesOptions) {
 	return {
 		captionTracks: tracks.list,
 		activeCaptionId: activeId,
-		captionLines: useCaptionText(options, () => activeId.value, cues.cache),
+		captionLines: useCaptionText(options, () => activeId.value, { cache: cues.cache, textTracks }),
 		selectCaptionTrack: select,
 		async loadCaptionFile(file: File): Promise<void> {
 			const parsed = parseSubtitles(decodeSubtitles(await file.arrayBuffer()))

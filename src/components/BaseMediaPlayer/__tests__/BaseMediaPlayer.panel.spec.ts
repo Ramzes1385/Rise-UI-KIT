@@ -149,10 +149,14 @@ describe('BaseMediaPlayer: панель', () => {
 		await nextTick()
 		const settings = wrapper.findComponent(MediaSettingsMenu)
 
-		expect(settings.props()).toMatchObject({ rates: [0.5, 1, 2], rate: 1, activeSrc: '/media/hd.webm' })
-		expect(settings.props('qualities')).toEqual(sources.slice(0, 2))
+		expect(settings.props()).toMatchObject({ rates: [0.5, 1, 2], rate: 1, activeQualityId: '/media/hd.webm' })
+		expect(settings.props('qualities')).toEqual([
+			{ id: '/media/hd.webm', label: '720p' },
+			{ id: '/media/sd.webm', label: '360p' },
+		])
 		settings.vm.$emit('select-rate', 2)
-		settings.vm.$emit('select-quality', sources[1])
+		settings.vm.$emit('select-quality', '/media/unknown.webm')
+		settings.vm.$emit('select-quality', '/media/sd.webm')
 		await nextTick()
 		const video = wrapper.get('video').element as HTMLVideoElement
 		expect(video.playbackRate).toBe(2)
