@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import { computed, ref } from 'vue'
-import type { MediaSliderEmits, MediaSliderProps } from '../types/MediaSlider.types'
+import { computed, ref, watch } from 'vue'
+import type { MediaSliderEmits, MediaSliderProps, MediaSliderSlots } from '../types/MediaSlider.types'
 
 function clamp(value: number, max: number): number {
 	return Math.min(max, Math.max(0, value))
@@ -30,14 +30,16 @@ function bufferedStyles(props: MediaSliderProps): Array<{ left: string; width: s
 	})
 }
 
-function gapMask(marks: number[] | undefined, max: number): string | undefined {
-	const stops = (marks ?? []).filter(mark => mark > 0 && mark < max).map(mark => toPercent(mark, max))
-	if (stops.length === 0) return undefined
-	const gaps = stops.map(
-		stop =>
-			`black calc(${stop}% - 1px), transparent calc(${stop}% - 1px), transparent calc(${stop}% + 1px), black calc(${stop}% + 1px)`,
-	)
-	return `linear-gradient(to right, ${gaps.join(', ')})`
+function segmentViews(props: MediaSliderProps, value: number, hover: number | null) {
+	return (props.segments ?? []).map(segment => {
+		const left = toPercent(segment.start, props.max)
+		const length = segment.end - segment.start
+		return {
+			style: { left: `${left}%`, width: `${toPercent(segment.end, props.max) - left}%`, '--segment-color': segment.color },
+			fillStyle: { width: `${length > 0 ? clamp((value - segment.start) / length, 1) * 100 : 0}%` },
+			isHovered: hover !== null && segment.start <= hover && hover < segment.end,
+		}
+	})
 }
 
 function pointerRatio(event: PointerEvent, isVertical: boolean | undefined): number | null {
@@ -47,13 +49,24 @@ function pointerRatio(event: PointerEvent, isVertical: boolean | undefined): num
 	return isVertical ? (rect.bottom - event.clientY) / size : (event.clientX - rect.left) / size
 }
 
-function useHover(props: MediaSliderProps, isDisabled: Readonly<Ref<boolean>>) {
+function useHover(props: MediaSliderProps, isDisabled: Readonly<Ref<boolean>>, hasTooltip: () => boolean) {
 	const hoverValue = ref<number | null>(null)
+	const tooltipRef = ref<HTMLElement | null>(null)
+	const size = ref({ track: 0, tip: 0 })
+	watch(hoverValue, () => (size.value = { ...size.value, tip: tooltipRef.value?.offsetWidth ?? 0 }), { flush: 'post' })
 	return {
+		hoverValue,
+		tooltipRef,
+		isTooltipVisible: computed(() => hoverValue.value !== null && (hasTooltip() || Boolean(props.hoverText))),
 		hoverLabel: computed(() => (hoverValue.value === null || !props.hoverText ? '' : props.hoverText(hoverValue.value))),
-		hoverStyle: computed(() => ({ left: `${toPercent(hoverValue.value ?? 0, props.max)}%` })),
+		hoverStyle: computed(() => {
+			const { track, tip } = size.value
+			const x = (toPercent(hoverValue.value ?? 0, props.max) / 100) * track
+			return { left: `${Math.max(tip / 2, Math.min(track - tip / 2, x))}px` }
+		}),
 		onHover(event: PointerEvent): void {
 			const ratio = pointerRatio(event, props.isVertical)
+			size.value = { ...size.value, track: (event.currentTarget as HTMLElement).getBoundingClientRect().width }
 			hoverValue.value = isDisabled.value || ratio === null ? null : clamp(ratio * props.max, props.max)
 		},
 		onHoverEnd(): void {
@@ -91,18 +104,18 @@ function usePointerDrag(props: MediaSliderProps, emit: MediaSliderEmits, isDisab
 	}
 }
 
-export function useMediaSlider(props: MediaSliderProps, emit: MediaSliderEmits) {
+export function useMediaSlider(props: MediaSliderProps, emit: MediaSliderEmits, slots: MediaSliderSlots) {
 	const isDisabled = computed(() => !(props.max > 0) || !Number.isFinite(props.max))
 	const drag = usePointerDrag(props, emit, isDisabled)
 	const value = computed(() => (isDisabled.value ? 0 : clamp(drag.dragValue.value ?? props.modelValue, props.max)))
 	const percent = computed(() => (isDisabled.value ? 0 : toPercent(value.value, props.max)))
 	const steps = keySteps(props)
-	const hover = useHover(props, isDisabled)
+	const hover = useHover(props, isDisabled, () => Boolean(slots.tooltip))
 
 	return {
 		...drag,
 		...hover,
-		trackStyle: computed(() => ({ maskImage: isDisabled.value ? undefined : gapMask(props.marks, props.max) })),
+		segments: computed(() => (isDisabled.value ? [] : segmentViews(props, value.value, hover.hoverValue.value))),
 		onPointerMove(event: PointerEvent): void {
 			hover.onHover(event)
 			drag.onPointerMove(event)

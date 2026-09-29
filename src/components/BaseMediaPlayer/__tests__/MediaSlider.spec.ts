@@ -1,7 +1,5 @@
 import '@testing-library/jest-dom/vitest'
 import MediaSlider from '../ui/MediaSlider.vue'
-import { useMediaSlider } from '../model/useMediaSlider'
-import { withSetup } from './BaseMediaPlayer.test-utils'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { MediaSliderProps } from '../types/MediaSlider.types'
 
@@ -98,17 +96,33 @@ describe('MediaSlider', () => {
 		expect(values()).toEqual([])
 	})
 
-	it('главы — разрывы на дорожке; края и отключённый ползунок без разрывов', () => {
-		const mask = (props: Partial<MediaSliderProps>) =>
-			withSetup(() => useMediaSlider({ ...PROPS, ...props }, vi.fn())).result.trackStyle.value.maskImage
+	it('отрезки глав: цвет, заполнение до текущей позиции, отрезок под указателем растёт; у отключённого отрезков нет', async () => {
+		const segments = [
+			{ start: 0, end: 10, color: 'red' },
+			{ start: 10, end: 40 },
+			{ start: 40, end: 40 },
+		]
+		const { root, container, rerender } = setup({ segments })
+		root.getBoundingClientRect = () => ({ left: 0, width: 120 }) as DOMRect
+		const items = () => [...container.querySelectorAll<HTMLElement>('.base-media-player__slider-segment')]
 
-		expect(mask({ marks: [0, 15, 30, 60] })).toBe(
-			'linear-gradient(to right, black calc(25% - 1px), transparent calc(25% - 1px), transparent calc(25% + 1px), black calc(25% + 1px), ' +
-				'black calc(50% - 1px), transparent calc(50% - 1px), transparent calc(50% + 1px), black calc(50% + 1px))',
-		)
-		expect(mask({ marks: [0] })).toBeUndefined()
-		expect(mask({ marks: [15], max: Number.NaN })).toBeUndefined()
-		expect(setup({ marks: [15] }).container.querySelector('.base-media-player__slider-track')).not.toBeNull()
+		expect(container.querySelector('.base-media-player__slider-track--segmented')).not.toBeNull()
+		expect(container.querySelector('.base-media-player__slider-fill')).toBeNull()
+		expect(items().map(item => [item.style.left, item.style.width, item.style.getPropertyValue('--segment-color')])).toEqual([
+			['0%', '16.666666666666664%', 'red'],
+			['16.666666666666664%', '49.99999999999999%', ''],
+			['66.66666666666666%', '0%', ''],
+		])
+		expect(items().map(item => (item.querySelector('.base-media-player__slider-segment-fill') as HTMLElement).style.width)).toEqual([
+			'100%',
+			'16.666666666666664%',
+			'0%',
+		])
+		await fireEvent.pointerMove(root, { clientX: 30 })
+		expect(items().map(item => item.classList.contains('base-media-player__slider-segment--hovered'))).toEqual([false, true, false])
+
+		await rerender({ max: Number.NaN })
+		expect(items()).toHaveLength(0)
 	})
 
 	it('подсказка при наведении: текст для значения под указателем, уходит вместе с указателем', async () => {
@@ -119,7 +133,7 @@ describe('MediaSlider', () => {
 
 		await fireEvent.pointerMove(root, { clientX: 30 })
 		expect(tooltip()).toHaveTextContent('15 с')
-		expect(tooltip()?.style.left).toBe('25%')
+		expect(tooltip()?.style.left).toBe('30px')
 		await fireEvent.pointerLeave(root)
 		expect(tooltip()).toBeNull()
 
@@ -128,7 +142,27 @@ describe('MediaSlider', () => {
 		expect(tooltip()).toBeNull()
 	})
 
-	it('без hoverText подсказки нет', async () => {
+	it('подсказка из слота не выходит за края дорожки: её ширина учитывается', async () => {
+		const width = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(40)
+		const result = render(MediaSlider, {
+			props: PROPS,
+			slots: { tooltip: '<template #tooltip="{ value }"><b>{{ value }}</b></template>' },
+		})
+		const root = result.container.querySelector('.base-media-player__slider') as HTMLElement
+		root.getBoundingClientRect = () => ({ left: 0, width: 120 }) as DOMRect
+		const tooltip = () => result.container.querySelector('.base-media-player__slider-tooltip') as HTMLElement
+
+		await fireEvent.pointerMove(root, { clientX: 2 })
+		await fireEvent.pointerMove(root, { clientX: 3 })
+		expect(tooltip()).toHaveTextContent('1.5')
+		expect(tooltip().style.left).toBe('20px')
+		await fireEvent.pointerMove(root, { clientX: 119 })
+		await fireEvent.pointerMove(root, { clientX: 118 })
+		expect(tooltip().style.left).toBe('100px')
+		width.mockRestore()
+	})
+
+	it('без hoverText и слота подсказки нет', async () => {
 		const { root, container } = setup()
 		root.getBoundingClientRect = () => ({ left: 0, width: 120 }) as DOMRect
 

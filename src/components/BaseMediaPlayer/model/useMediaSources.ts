@@ -19,6 +19,14 @@ function isPlayable(media: HTMLMediaElement, item: MediaSourceItem, canPlay?: (i
 	return !item.type || media.canPlayType(item.type) !== '' || Boolean(canPlay?.(item))
 }
 
+export function firstPlayable(
+	sources: MediaSourceItem[] | string | undefined,
+	allowed: readonly string[],
+	media: HTMLMediaElement,
+): MediaSourceItem | undefined {
+	return normalizeSources(sources, allowed).find(item => isPlayable(media, item))
+}
+
 function resumeAfterSwitch(media: HTMLMediaElement): void {
 	const time = media.currentTime
 	const wasPlaying = !media.paused

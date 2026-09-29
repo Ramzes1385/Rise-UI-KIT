@@ -23,7 +23,7 @@ export type { MediaTextTrackItem, MediaCaptionColor, MediaCaptionBackground } fr
 export { MEDIA_CHAPTER_KINDS } from './types/MediaPlaylist.types'
 export type { MediaHlsConstructor } from './types/MediaHls.types'
 export type { MediaAudioTrackItem } from './types/MediaAudio.types'
-export type { MediaChapter, MediaEpisode, MediaPlaylist, MediaChapterKind } from './types/MediaPlaylist.types'
+export type { MediaClip, MediaChapter, MediaEpisode, MediaPlaylist, MediaChapterKind } from './types/MediaPlaylist.types'
 export { MEDIA_AD_EVENT_TYPES, MEDIA_AD_TRACKING_EVENTS } from './types/MediaAds.types'
 export type {
 	MediaAdBreak,

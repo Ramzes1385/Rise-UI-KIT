@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import MediaSlider from '../ui/MediaSlider.vue'
+import { fireEvent } from '@testing-library/vue'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 import MediaControlBar from '../ui/MediaControlBar.vue'
 import { fakeMedia } from './BaseMediaPlayer.test-utils'
@@ -103,9 +104,22 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		await nextTick()
 
 		const seek = wrapper.findComponent(MediaSlider)
-		expect(seek.props('marks')).toEqual([0, 10, 20, 30, 50])
-		expect((seek.props('hoverText') as (value: number) => string)(15)).toBe('0:15 · Опенинг')
-		expect((seek.props('hoverText') as (value: number) => string)(0)).toBe('0:00 · Пролог')
+		expect(seek.props('segments')).toEqual([
+			{ start: 0, end: 10, color: 'var(--media-chapter-1)' },
+			{ start: 10, end: 20, color: 'var(--media-chapter-2)' },
+			{ start: 20, end: 30, color: 'var(--media-chapter-3)' },
+			{ start: 30, end: 40, color: 'var(--media-chapter-4)' },
+			{ start: 40, end: 50 },
+			{ start: 50, end: 60, color: 'var(--media-chapter-5)' },
+		])
+		const slider = wrapper.get('.base-media-player__seek').element as HTMLElement
+		slider.getBoundingClientRect = () => ({ left: 0, width: 600 }) as DOMRect
+		const hover = async (clientX: number): Promise<string> => {
+			await fireEvent.pointerMove(slider, { clientX })
+			return wrapper.get('.base-media-player__preview').text()
+		}
+		expect(await hover(150)).toBe('Опенинг0:15')
+		expect(await hover(450)).toBe('0:45')
 		expect(wrapper.get('.base-media-player__chapter').text()).toBe('Опенинг')
 		const chapters = menu('chapterMenu')?.items ?? []
 		expect(chapters.map(item => [item.label, item.hint, item.isChecked])).toEqual([
@@ -125,6 +139,19 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		fake.update({ currentTime: 35 }, 'seeked')
 		await nextTick()
 		expect(wrapper.get('.base-media-player__skip').text()).toBe('Пропустить краткое содержание')
+		wrapper.unmount()
+	})
+
+	it('глава за концом записи на шкале не рисуется', async () => {
+		const chapters = [
+			{ start: 0, title: 'Начало' },
+			{ start: 70, title: 'После титров' },
+		]
+		const { wrapper } = await setup({
+			playlists: [{ id: 's', title: 'С', episodes: [{ id: 'x', title: 'X', sources: '/x.webm', chapters }] }],
+		})
+
+		expect(wrapper.findComponent(MediaSlider).props('segments')).toEqual([{ start: 0, end: 60, color: 'var(--media-chapter-1)' }])
 		wrapper.unmount()
 	})
 

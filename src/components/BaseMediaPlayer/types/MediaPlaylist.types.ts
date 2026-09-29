@@ -2,7 +2,7 @@ import type { MediaBanner } from './MediaNotices.types'
 import type { MediaAudioTrackItem } from './MediaAudio.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { MediaAdBreak, MediaAdSegment } from './MediaAds.types'
-import type { MediaState, MediaSourceItem } from './MediaCore.types'
+import type { MediaState, MediaActions, MediaSourceItem } from './MediaCore.types'
 
 export const MEDIA_CHAPTER_KINDS = ['intro', 'outro', 'recap'] as const
 
@@ -18,11 +18,26 @@ export interface MediaChapter {
 	title: string
 	/** Отрезок с кнопкой «Пропустить» */
 	kind?: MediaChapterKind
+	/** Цвет отрезка на шкале; по умолчанию — из палитры плеера по порядку глав */
+	color?: string
 }
 
 /** Глава с известным концом */
 export interface MediaChapterRange extends MediaChapter {
 	end: number
+}
+
+/**
+ * Отдельный ролик до или после серии: заставка студии, титры с составом озвучки.
+ * Играет поверх кадра с кнопкой «Пропустить», серия ждёт его окончания
+ */
+export interface MediaClip {
+	/** Источники ролика — как `sources` плеера: файл, который браузер играет сам (MP4, WebM) */
+	sources: MediaSourceItem[] | string
+	/** Подпись над роликом; по умолчанию «Интро» или «Аутро» */
+	title?: string
+	/** «Пропустить» — через столько секунд; по умолчанию сразу */
+	skipAfter?: number
 }
 
 export interface MediaEpisode {
@@ -46,6 +61,12 @@ export interface MediaEpisode {
 	adSegments?: MediaAdSegment[]
 	/** Баннеры серии */
 	banners?: MediaBanner[]
+	/** Интро перед серией; null — без интро, хотя оно задано у плейлиста или плеера */
+	intro?: MediaClip | null
+	/** Аутро после серии; null — без аутро */
+	outro?: MediaClip | null
+	/** Миниатюры для превью на шкале — как `thumbnails` плеера */
+	thumbnails?: string
 }
 
 export interface MediaPlaylist {
@@ -54,6 +75,10 @@ export interface MediaPlaylist {
 	/** Название: «Сезон 1», «OVA» */
 	title: string
 	episodes: MediaEpisode[]
+	/** Интро перед каждой серией плейлиста */
+	intro?: MediaClip | null
+	/** Аутро после каждой серии плейлиста */
+	outro?: MediaClip | null
 }
 
 /** Серия вместе с плейлистом, в котором она лежит */
@@ -87,4 +112,24 @@ export interface MediaNextCountdownOptions {
 	playNext: () => void
 	/** Отсчёт ждёт: идёт реклама после серии */
 	isHeld?: () => boolean
+}
+
+/** Ролик до серии или после неё */
+export type MediaClipKind = 'intro' | 'outro'
+
+export interface MediaClipsOptions {
+	intro: () => MediaClip | null | undefined
+	outro: () => MediaClip | null | undefined
+	/** Ключ содержимого: при смене серии ролики играют заново */
+	contentKey: () => string | undefined
+	state: Readonly<MediaState>
+	actions: MediaActions
+	/** Элемент основной записи: интро начинается по её событию `play` */
+	media: Readonly<{ value: HTMLMediaElement | null }>
+	/** Элемент ролика поверх кадра */
+	clipMedia: Readonly<{ value: HTMLVideoElement | null }>
+	/** Идёт реклама: ролики ждут её окончания */
+	isAdPlaying: () => boolean
+	/** Протоколы, разрешённые для источников */
+	allowedProtocols: () => readonly string[]
 }

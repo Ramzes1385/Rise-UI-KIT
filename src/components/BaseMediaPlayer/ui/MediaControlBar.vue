@@ -10,11 +10,12 @@
 			:buffered="state.buffered"
 			:label="UI_PLAYER.SEEK"
 			:value-text="seekValueText"
-			:marks="chapterMarks"
-			:hover-text="seekHoverText"
+			:segments="chapterSegments"
 			:markers="adMarks"
 			:highlights="adSegmentRanges"
-			@update:model-value="actions.seek" />
+			@update:model-value="actions.seek">
+			<template #tooltip="{ value }"><MediaSeekPreview :time="value" /></template>
+		</MediaSlider>
 		<div class="base-media-player__bar">
 			<div class="base-media-player__group">
 				<MediaControlButton
@@ -209,6 +210,7 @@ import { UI_PLAYER } from '../model/messages'
 import MediaPopover from './MediaPopover.vue'
 import MediaMenuPanel from './MediaMenuPanel.vue'
 import MediaSpeedPanel from './MediaSpeedPanel.vue'
+import MediaSeekPreview from './MediaSeekPreview.vue'
 import MediaControlButton from './MediaControlButton.vue'
 import { usePlayerControls } from '../model/usePlayerControls'
 
@@ -223,7 +225,7 @@ const {
 	captionMenu,
 	captionTracks,
 	castLabel,
-	chapterMarks,
+	chapterSegments,
 	chapterMenu,
 	chapters,
 	classes,
@@ -257,7 +259,6 @@ const {
 	qualityMenu,
 	qualityText,
 	rateText,
-	seekHoverText,
 	seekLabel,
 	seekSteps,
 	seekValueText,

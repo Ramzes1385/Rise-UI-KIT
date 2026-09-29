@@ -4,15 +4,37 @@ import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaChapters } from './useMediaChapters'
 import { useMediaPlaylist } from './useMediaPlaylist'
 import { useNextCountdown } from './useNextCountdown'
+import type { MediaSliderSegment } from '../types/MediaSlider.types'
 import type { MediaActions, MediaState } from '../types/MediaCore.types'
 import type { MediaMenuItem, MediaMenuList } from '../types/MediaMenu.types'
-import type { MediaEpisode, MediaChapterKind } from '../types/MediaPlaylist.types'
 import type { MediaPlayerProps, BaseMediaPlayerEmits } from '../types/BaseMediaPlayer.types'
+import type { MediaClip, MediaEpisode, MediaChapterKind, MediaChapterRange } from '../types/MediaPlaylist.types'
+
+const CHAPTER_COLORS = 8
+
+function chapterSegments(chapters: MediaChapterRange[], duration: number): MediaSliderSegment[] {
+	if (chapters.length === 0 || !(duration > 0)) return []
+	const segments: MediaSliderSegment[] = []
+	let cursor = 0
+	chapters.forEach((chapter, index) => {
+		const start = Math.min(duration, Math.max(cursor, chapter.start))
+		const end = Math.min(duration, chapter.end)
+		if (start > cursor) segments.push({ start: cursor, end: start })
+		if (end <= start) return
+		segments.push({ start, end, color: chapter.color ?? `var(--media-chapter-${(index % CHAPTER_COLORS) + 1})` })
+		cursor = end
+	})
+	return cursor < duration ? [...segments, { start: cursor, end: duration }] : segments
+}
 
 const SKIP_LABELS: Record<MediaChapterKind, () => string> = {
 	intro: () => UI_PLAYER.SKIP_INTRO,
 	outro: () => UI_PLAYER.SKIP_OUTRO,
 	recap: () => UI_PLAYER.SKIP_RECAP,
+}
+
+function pickClip(...levels: Array<MediaClip | null | undefined>): MediaClip | null {
+	return levels.find(level => level !== undefined) ?? null
 }
 
 function useAutoNext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
@@ -67,6 +89,10 @@ export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayer
 			adBreaks: () => episode()?.adBreaks ?? props.adBreaks,
 			adSegments: () => episode()?.adSegments ?? props.adSegments,
 			banners: () => episode()?.banners ?? props.banners,
+			thumbnails: () => episode()?.thumbnails ?? props.thumbnails,
+			intro: () => pickClip(episode()?.intro, playlist.currentEntry.value?.playlist.intro, props.intro),
+			outro: () => pickClip(episode()?.outro, playlist.currentEntry.value?.playlist.outro, props.outro),
+			key: () => episode()?.id ?? '',
 			storageKey: () => (props.storageKey && episode() ? `${props.storageKey}:${episode()?.id}` : props.storageKey),
 		},
 	}
@@ -84,11 +110,8 @@ function useChapterUi(chapters: ReturnType<typeof useMediaChapters>, media: { st
 				onSelect: () => media.actions.seek(chapter.start),
 			})),
 		})),
-		seekHoverText(time: number): string {
-			const text = formatMediaTime(time, media.state.duration)
-			const chapter = chapters.chapterAt(time)
-			return chapter ? `${text} · ${chapter.title}` : text
-		},
+		chapterSegments: computed(() => chapterSegments(chapters.chapters.value, media.state.duration)),
+		chapterTitleAt: (time: number): string => chapters.chapterAt(time)?.title ?? '',
 	}
 }
 
@@ -122,7 +145,6 @@ export function usePlayerEpisodes(
 		...useChapterUi(chapters, { state, actions }),
 		chapters: chapters.chapters,
 		currentChapter: chapters.currentChapter,
-		chapterMarks: chapters.chapterMarks,
 		skipChapter: chapters.skipChapter,
 		episodeTitle: computed(() => playlist.currentEpisode.value?.title),
 		nextEpisode: playlist.nextEpisode,

@@ -2,22 +2,18 @@ import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import { usePlayerCast } from './usePlayerCast'
 import { usePlayerTools } from './usePlayerTools'
+import { useSeekPreview } from './useSeekPreview'
 import { useIdleControls } from './useIdleControls'
-import { useMediaBanners } from './useMediaBanners'
 import { useMediaElement } from './useMediaElement'
 import { usePlayerModels } from './usePlayerModels'
 import { formatMediaTime } from '@utils/mediaUtils'
-import { useMediaAdBreaks } from './useMediaAdBreaks'
 import { usePlayerHotkeys } from './usePlayerHotkeys'
 import { usePlayerCaptions } from './usePlayerCaptions'
 import { PLAYER_CONTEXT_KEY } from './usePlayerContext'
 import { usePlayerOverlays } from './usePlayerOverlays'
-import { useMediaAdSegments } from './useMediaAdSegments'
 import { useMediaFullscreen } from './useMediaFullscreen'
-import type { MediaAdEvent } from '../types/MediaAds.types'
 import { useMediaAudioTracks } from './useMediaAudioTracks'
 import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
-import { useMediaAchievements } from './useMediaAchievements'
 import { UI_PLAYER, formatMessage, formatNumber } from './messages'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -26,6 +22,7 @@ import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import { isAudioSource, MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import type { MediaAudioProvider, MediaAudioTrackItem } from '../types/MediaAudio.types'
 import type { MediaState, MediaActions, MediaSourceItem } from '../types/MediaCore.types'
+import { lowestSource, usePlayerAds, usePlayerClips, usePlayerNotices } from './usePlayerInserts'
 import type { BaseMediaPlayerEmits, BaseMediaPlayerExpose, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
 
 const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
@@ -113,6 +110,7 @@ function usePlayerElements() {
 		mediaRef: ref<HTMLVideoElement | null>(null),
 		audioRef: ref<HTMLAudioElement | null>(null),
 		adMediaRef: ref<HTMLVideoElement | null>(null),
+		clipMediaRef: ref<HTMLVideoElement | null>(null),
 		soundRef: ref<HTMLMediaElement | null>(null),
 		controlsRef: ref<HTMLElement | null>(null),
 		layer: useTeleportLayer(rootRef),
@@ -231,49 +229,15 @@ function usePlayerExtras(
 		tracks: series.content.tracks,
 	})
 	const ads = usePlayerAds(emit, { state, actions, elements, series })
+	const clips = usePlayerClips(props, { state, actions, elements, series, ads })
+	const isHeld = (): boolean => ads.isAdPlaying.value || clips.isClipHeld.value
 	return {
 		tools,
 		captions,
 		ads,
+		clips,
 		notices: usePlayerNotices(props, emit, { state, series }),
-		episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld: () => ads.isAdPlaying.value, isCasting: player.isCasting }),
-	}
-}
-
-function usePlayerAds(
-	emit: BaseMediaPlayerEmits,
-	player: {
-		state: Readonly<MediaState>
-		actions: MediaActions
-		elements: ReturnType<typeof usePlayerElements>
-		series: ReturnType<typeof usePlayerPlaylist>
-	},
-) {
-	const options = {
-		breaks: player.series.content.adBreaks,
-		segments: player.series.content.adSegments,
-		state: player.state,
-		actions: player.actions,
-		media: player.elements.mediaRef,
-		adMedia: player.elements.adMediaRef,
-		emitAd: (event: MediaAdEvent) => emit('ad', event),
-	}
-	return { ...useMediaAdBreaks(options), ...useMediaAdSegments(options) }
-}
-
-function usePlayerNotices(
-	props: MediaPlayerProps,
-	emit: BaseMediaPlayerEmits,
-	player: { state: Readonly<MediaState>; series: ReturnType<typeof usePlayerPlaylist> },
-) {
-	return {
-		...useMediaBanners({ banners: player.series.content.banners, state: player.state, emitBanner: event => emit('banner', event) }),
-		...useMediaAchievements({
-			achievements: () => props.achievements,
-			earned: () => props.earnedAchievements,
-			state: player.state,
-			emitAchievement: achievement => emit('achievement', achievement),
-		}),
+		episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld, isCasting: player.isCasting }),
 	}
 }
 
@@ -323,6 +287,40 @@ function createExpose(player: {
 	}
 }
 
+function extrasContext(extras: ReturnType<typeof usePlayerExtras>) {
+	return { ...extras.tools, ...extras.captions, ...extras.episodes, ...extras.ads, ...extras.clips, ...extras.notices }
+}
+
+function usePlayerKeys(
+	root: Readonly<Ref<HTMLElement | null>>,
+	props: MediaPlayerProps,
+	player: Omit<Parameters<typeof usePlayerHotkeys>[2], 'ads'> & ReturnType<typeof usePlayerExtras>,
+): void {
+	const isInsertPlaying = computed(() => player.ads.isAdPlaying.value || player.clips.isClipPlaying.value)
+	usePlayerHotkeys(root, props, { ...player, ads: { isAdPlaying: isInsertPlaying } })
+}
+
+function usePlayerPreview(
+	props: MediaPlayerProps,
+	player: {
+		state: Readonly<MediaState>
+		series: ReturnType<typeof usePlayerPlaylist>
+		sources: ReturnType<typeof useMediaSources>
+		isAudio: Readonly<Ref<boolean>>
+	},
+) {
+	const { sources } = player
+	return useSeekPreview({
+		thumbnails: player.series.content.thumbnails,
+		source: () => lowestSource(sources.playableSources.value) ?? sources.activeSource.value,
+		isEnabled: () => props.hasSeekPreview && !player.isAudio.value,
+		duration: () => player.state.duration,
+		crossorigin: () => props.crossorigin,
+		Hls: () => props.hls,
+		hlsConfig: () => props.hlsConfig,
+	})
+}
+
 export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	const elements = usePlayerElements()
 	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
@@ -343,7 +341,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		toggleFullscreen: screen.toggleFullscreen,
 		isCasting: () => cast.isCastConnected.value,
 	})
-	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, cast, isAudio: view.isAudioMode, ...extras })
+	usePlayerKeys(elements.rootRef, props, { state, actions, screen, models, cast, isAudio: view.isAudioMode, ...extras })
 	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
 
 	return {
@@ -355,11 +353,8 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		...overlays,
 		...models,
 		...elements,
-		...extras.tools,
-		...extras.captions,
-		...extras.episodes,
-		...extras.ads,
-		...extras.notices,
+		...extrasContext(extras),
+		...usePlayerPreview(props, { state, series, sources, isAudio: view.isAudioMode }),
 		...usePlayerAudio(props, emit, { elements, flash: extras.tools.flash, stream: hls.hlsAudio, tracks: series.content.audioTracks }),
 		...screen,
 		state,

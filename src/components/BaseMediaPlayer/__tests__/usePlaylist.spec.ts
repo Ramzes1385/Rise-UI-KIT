@@ -86,7 +86,6 @@ describe('useMediaChapters', () => {
 			['Опенинг', 90, 180],
 			['Серия', 180, 100],
 		])
-		expect(chapters.chapterMarks.value).toEqual([0, 90, 180])
 		expect(chapters.currentChapter.value?.title).toBe('Опенинг')
 		expect(chapters.skipChapter.value?.kind).toBe('intro')
 		state.currentTime = 10

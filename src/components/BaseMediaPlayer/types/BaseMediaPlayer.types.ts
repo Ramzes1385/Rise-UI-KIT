@@ -4,8 +4,8 @@ import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { createPlayerContext } from '../model/useBaseMediaPlayer'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
 import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './MediaAds.types'
+import type { MediaClip, MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
 import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './MediaNotices.types'
 import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './MediaCore.types'
 
@@ -146,9 +146,20 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	playlists?: MediaPlaylist[]
 	/** Выбранная серия (`v-model:episode`): `id` серии; без значения — первая */
 	episode?: string
-	/** Главы записи: отрезки на шкале, список глав, «Пропустить опенинг» (у серии — свои главы) */
+	/** Главы записи: цветные отрезки на шкале, список глав, «Пропустить опенинг» (у серии — свои главы) */
 	chapters?: MediaChapter[]
-	/** Переходить к следующей серии после окончания (`v-model:is-auto-next`); переключатель — в «Настройках» */
+	/**
+	 * Миниатюры для превью на шкале: файл WebVTT, где каждому отрезку времени соответствует картинка
+	 * или её часть (`sprite.jpg#xywh=0,0,160,90`). Без файла превью берёт кадры из самой записи
+	 */
+	thumbnails?: string
+	/** Превью кадра над шкалой при наведении; кадры из записи загружаются отдельным скрытым видео */
+	hasSeekPreview?: boolean
+	/** Интро — отдельный ролик перед серией или записью: играет при запуске с начала, с «Пропустить» */
+	intro?: MediaClip
+	/** Аутро — отдельный ролик после серии или записи: играет до отсчёта следующей серии */
+	outro?: MediaClip
+	/** Переходить к следующей серии после окончания (`v-model:is-auto-next`); переключатель «Автовоспроизведение» — в панели */
 	isAutoNext?: boolean
 	/** Отсчёт перед следующей серией, секунды; 0 — переход сразу */
 	nextCountdown?: number
@@ -229,6 +240,7 @@ export type MediaPlayerProps = PropsWithDefaults<
 	| 'hasUrlTime'
 	| 'hasCaptionUpload'
 	| 'nextCountdown'
+	| 'hasSeekPreview'
 >
 
 /** Связь `v-model` плеера со значением медиаэлемента */

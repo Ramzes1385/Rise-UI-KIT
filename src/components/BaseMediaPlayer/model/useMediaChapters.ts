@@ -16,7 +16,6 @@ export function useMediaChapters(options: MediaChaptersOptions) {
 	return {
 		chapters,
 		currentChapter: current,
-		chapterMarks: computed(() => chapters.value.map(chapter => chapter.start)),
 		chapterAt,
 		skipChapter: computed(() => (current.value?.kind ? current.value : null)),
 	}

@@ -1,10 +1,13 @@
 import demoVideo from './media/demo.webm'
 import demoDubA from './media/demo-dub-a.webm'
 import demoDubB from './media/demo-dub-b.webm'
+import demoIntro from './media/demo-intro.webm'
+import demoOutro from './media/demo-outro.webm'
 import demoVideoLow from './media/demo-144.webm'
 import demoPoster from './media/demo-poster.webp'
 import demoSubtitlesRu from './media/demo.ru.vtt'
 import demoSubtitlesEn from './media/demo.en.srt?url'
+import demoThumbnailsSprite from './media/demo-thumbnails.jpg'
 
 const WEBM = 'video/webm; codecs="vp9, opus"'
 
@@ -16,6 +19,27 @@ export const DEMO_QUALITIES = [
 ]
 
 export const DEMO_POSTER = demoPoster
+
+export const DEMO_INTRO = { sources: [{ src: demoIntro, type: WEBM }] }
+
+export const DEMO_OUTRO = { sources: [{ src: demoOutro, type: WEBM }], title: 'Аутро · титры', skipAfter: 1 }
+
+export const DEMO_CLIP_CHAPTERS = [
+	{ start: 0, end: 3, title: 'Опенинг', kind: 'intro' as const },
+	{ start: 3, title: 'Серия' },
+	{ start: 10, title: 'Эндинг', kind: 'outro' as const },
+]
+
+export function demoThumbnails(): string {
+	const sprite = new URL(demoThumbnailsSprite, location.href).href
+	const time = (second: number): string => `00:00:${String(second).padStart(2, '0')}.000`
+	const cues = Array.from(
+		{ length: 12 },
+		(_, second) =>
+			`${time(second)} --> ${time(second + 1)}\n${sprite}#xywh=${(second % 4) * 160},${Math.floor(second / 4) * 90},160,90`,
+	)
+	return URL.createObjectURL(new Blob([`WEBVTT\n\n${cues.join('\n\n')}\n`], { type: 'text/vtt' }))
+}
 
 export const DEMO_AD_BREAKS = [
 	{

@@ -1,5 +1,15 @@
 import type { MediaTimeRange } from './MediaCore.types'
 
+/** Отрезок дорожки ползунка */
+export interface MediaSliderSegment {
+	/** Начало */
+	start: number
+	/** Конец */
+	end: number
+	/** Цвет; без цвета — цвет дорожки */
+	color?: string
+}
+
 export interface MediaSliderProps {
 	/** Значение */
 	modelValue: number
@@ -15,9 +25,9 @@ export interface MediaSliderProps {
 	valueText: string
 	/** Загруженные отрезки на дорожке */
 	buffered?: MediaTimeRange[]
-	/** Границы отрезков (главы): разрывы на дорожке */
-	marks?: number[]
-	/** Подсказка над дорожкой при наведении: время и название главы; без неё подсказки нет */
+	/** Отрезки дорожки (главы): каждый со своим цветом и заполнением, отрезок под указателем растёт */
+	segments?: MediaSliderSegment[]
+	/** Подсказка над дорожкой при наведении; свой вид — слот `tooltip`; без обоих подсказки нет */
 	hoverText?: (value: number) => string
 	/** Точки на дорожке: рекламные паузы */
 	markers?: number[]
@@ -30,4 +40,9 @@ export interface MediaSliderProps {
 export interface MediaSliderEmits {
 	/** Новое значение: перетаскивание, клик по дорожке или клавиши */
 	(event: 'update:modelValue', value: number): void
+}
+
+export interface MediaSliderSlots {
+	/** Содержимое подсказки над дорожкой: значение под указателем */
+	tooltip?: (props: { value: number }) => unknown
 }

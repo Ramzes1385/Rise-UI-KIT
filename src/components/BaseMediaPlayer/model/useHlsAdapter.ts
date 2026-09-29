@@ -11,7 +11,7 @@ import type {
 	MediaHlsConstructor,
 } from '../types/MediaHls.types'
 
-const HLS_TYPE = 'application/vnd.apple.mpegurl'
+export const HLS_TYPE = 'application/vnd.apple.mpegurl'
 
 const REFRESH_EVENTS = ['hlsManifestParsed', 'hlsLevelsUpdated', 'hlsLevelSwitched', 'hlsAudioTracksUpdated', 'hlsAudioTrackSwitched']
 
@@ -35,7 +35,7 @@ function levelOptions(levels: MediaHlsLevel[]): MediaQualityOption[] {
 		.map(({ level, index }) => ({ id: `${LEVEL_PREFIX}${index}`, label: levelLabel(level) }))
 }
 
-function createHls(Hls: MediaHlsConstructor, config: Record<string, unknown> | undefined): MediaHlsInstance {
+export function createHls(Hls: MediaHlsConstructor, config: Record<string, unknown> | undefined): MediaHlsInstance {
 	const hls = new (Hls as unknown as new (config: Record<string, unknown>) => MediaHlsInstance)({ ...config })
 	hls.subtitleDisplay = false
 	return hls

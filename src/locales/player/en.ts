@@ -26,6 +26,11 @@ export const playerEn: UiKitLocale['player'] = {
 	SPEED_UP: 'Faster',
 	/** Back button of a nested menu: “Back: Caption style” */
 	MENU_BACK: 'Back: {title}',
+	/** Separate clips before and after an episode: label and skip button */
+	INTRO: 'Intro',
+	OUTRO: 'Outro',
+	SKIP_INTRO_CLIP: 'Skip intro',
+	SKIP_OUTRO_CLIP: 'Skip outro',
 	SPEED_NORMAL: 'Normal',
 	QUALITY: 'Quality',
 	LOADING: 'Loading',

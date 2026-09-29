@@ -10,6 +10,7 @@
 				'base-media-player--theater': isTheater,
 				'base-media-player--drop-target': isDropTarget,
 				'base-media-player--ad': isAdPlaying,
+				'base-media-player--clip': isClipPlaying,
 				'base-media-player--audio': isAudioMode,
 				'base-media-player--casting': isCasting,
 				'base-media-player--cast-remote': isCastConnected,
@@ -119,6 +120,7 @@
 			</div>
 			<MediaControlBar />
 			<MediaAdOverlay />
+			<MediaClipOverlay />
 			<MediaNotices>
 				<template v-if="$slots.banner" #banner="bannerProps"><slot name="banner" v-bind="bannerProps" /></template>
 			</MediaNotices>
@@ -177,6 +179,7 @@ import MediaStatsPanel from './MediaStatsPanel.vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import MediaCastOverlay from './MediaCastOverlay.vue'
+import MediaClipOverlay from './MediaClipOverlay.vue'
 import { UI_PLAYER, UI_TEXT } from '../model/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseContextMenu } from '@components/BaseContextMenu'
@@ -218,6 +221,7 @@ const props = withDefaults(
 		isAutoNext: undefined,
 		nextCountdown: 5,
 		hasCaptionUpload: true,
+		hasSeekPreview: true,
 	}),
 )
 const emit = defineEmits<BaseMediaPlayerEmits>()
@@ -298,6 +302,7 @@ const {
 	cancelNext,
 	exposed,
 	isAdPlaying,
+	isClipPlaying,
 	isCasting,
 	isCastConnected,
 	activeAdSegment,

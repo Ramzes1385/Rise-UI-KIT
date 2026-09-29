@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import { FakeHls } from './hls.test-utils'
+import { fireEvent } from '@testing-library/vue'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 import type { MediaHlsConstructor } from '../types/MediaHls.types'
 import { fakeMedia, playerMenu } from './BaseMediaPlayer.test-utils'
@@ -28,6 +29,20 @@ describe('BaseMediaPlayer: HLS', () => {
 	afterEach(() => {
 		document.body.innerHTML = ''
 		vi.restoreAllMocks()
+	})
+
+	it('превью кадра над шкалой берёт кадры из потока своим hls.js на самом низком качестве', async () => {
+		const { wrapper, fake } = await setup({ hlsConfig: { lowLatencyMode: false } })
+		fake.emit('loadedmetadata')
+		await nextTick()
+		const slider = wrapper.get('.base-media-player__seek').element as HTMLElement
+		slider.getBoundingClientRect = () => ({ left: 0, width: 600 }) as DOMRect
+
+		await fireEvent.pointerMove(slider, { clientX: 300 })
+		expect(FakeHls.instances).toHaveLength(2)
+		expect(FakeHls.last().config).toEqual({ lowLatencyMode: false, startLevel: 0, maxBufferLength: 2, backBufferLength: 0 })
+		expect(FakeHls.last().loadSource).toHaveBeenCalledWith('/stream/master.m3u8')
+		wrapper.unmount()
 	})
 
 	it('поток .m3u8 играет через hls.js: адрес элементу не назначается, качество и озвучки — из потока', async () => {

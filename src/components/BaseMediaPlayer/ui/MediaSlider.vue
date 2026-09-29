@@ -12,9 +12,19 @@
 		@pointerup="onPointerEnd"
 		@pointercancel="onPointerEnd"
 		@pointerleave="onHoverEnd">
-		<div class="base-media-player__slider-track" :style="trackStyle">
+		<div class="base-media-player__slider-track" :class="{ 'base-media-player__slider-track--segmented': segments.length }">
 			<div v-for="(style, index) in bufferedStyles" :key="index" class="base-media-player__slider-buffered" :style="style"></div>
-			<div class="base-media-player__slider-fill" :style="fillStyle"></div>
+			<div v-if="segments.length" class="base-media-player__slider-segments">
+				<div
+					v-for="(segment, index) in segments"
+					:key="`segment-${index}`"
+					class="base-media-player__slider-segment"
+					:class="{ 'base-media-player__slider-segment--hovered': segment.isHovered }"
+					:style="segment.style">
+					<div class="base-media-player__slider-segment-fill" :style="segment.fillStyle"></div>
+				</div>
+			</div>
+			<div v-else class="base-media-player__slider-fill" :style="fillStyle"></div>
 			<div
 				v-for="(style, index) in highlightStyles"
 				:key="`highlight-${index}`"
@@ -36,16 +46,19 @@
 			:aria-orientation="props.isVertical ? 'vertical' : undefined"
 			:style="thumbStyle"
 			@keydown="onKeydown"></div>
-		<div v-if="hoverLabel" class="base-media-player__slider-tooltip" :style="hoverStyle" aria-hidden="true">{{ hoverLabel }}</div>
+		<div v-if="isTooltipVisible" ref="tooltipRef" class="base-media-player__slider-tooltip" :style="hoverStyle" aria-hidden="true">
+			<slot name="tooltip" :value="hoverValue as number">{{ hoverLabel }}</slot>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { useMediaSlider } from '../model/useMediaSlider'
-import type { MediaSliderEmits, MediaSliderProps } from '../types/MediaSlider.types'
+import type { MediaSliderEmits, MediaSliderProps, MediaSliderSlots } from '../types/MediaSlider.types'
 
 const props = defineProps<MediaSliderProps>()
 const emit = defineEmits<MediaSliderEmits>()
+const slots = defineSlots<MediaSliderSlots>()
 
 const {
 	rootRef,
@@ -61,11 +74,14 @@ const {
 	onPointerMove,
 	onPointerEnd,
 	onKeydown,
-	trackStyle,
+	segments,
+	hoverValue,
+	tooltipRef,
+	isTooltipVisible,
 	hoverLabel,
 	hoverStyle,
 	onHoverEnd,
 	markerStyles,
 	highlightStyles,
-} = useMediaSlider(props, emit)
+} = useMediaSlider(props, emit, slots)
 </script>
