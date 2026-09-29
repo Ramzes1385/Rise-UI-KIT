@@ -383,9 +383,22 @@ export const en: UiKitLocale = {
 		LIST: 'Mentions',
 		EMPTY: 'No matches',
 	},
+	kanban: {
+		BOARD: 'Task board',
+		EMPTY: 'No cards',
+		LIMIT: 'Limit {limit}',
+		OVER_LIMIT: 'Limit of {limit} exceeded',
+		HINT: 'Space to pick up a card, arrow keys to move to the next one, Enter to open',
+		PICKED: 'Picked up card “{card}”. Use arrow keys to move it, Space to drop, Escape to cancel',
+		MOVED: '“{column}”, position {position} of {total}',
+		DROPPED: 'Dropped card “{card}” in “{column}”, position {position} of {total}',
+		CANCELLED: 'Move cancelled, card “{card}” is back in place',
+		BLOCKED: 'Card “{card}” cannot be dropped in “{column}”',
+	},
 	plural: {
 		DATES_SELECTED: { one: '{n} date selected', other: '{n} dates selected' },
 		PARTICIPANTS: { one: '{n} member', other: '{n} members' },
+		CARDS: { one: '{n} card', other: '{n} cards' },
 		SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 	},
 }

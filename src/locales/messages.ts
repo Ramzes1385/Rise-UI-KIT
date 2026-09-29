@@ -40,3 +40,6 @@ export const UI_AI = localized('ai')
 export const UI_EMOJI = localized('emoji')
 
 export const UI_MENTION = localized('mention')
+
+/** Канбан-доска */
+export const UI_KANBAN = localized('kanban')

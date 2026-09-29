@@ -37,6 +37,7 @@ export interface UiKitLocale {
 	ai: Section<'ai'>
 	emoji: Section<'emoji'>
 	mention: Section<'mention'>
+	kanban: Section<'kanban'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

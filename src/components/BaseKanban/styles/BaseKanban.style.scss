@@ -1,0 +1,190 @@
+.base-kanban {
+	display: flex;
+	align-items: flex-start;
+	gap: sz(12px);
+	box-sizing: border-box;
+	max-width: 100%;
+	padding-bottom: sz(4px);
+	overflow-x: auto;
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
+	@include scrollbar-thin;
+
+	&__column {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		gap: sz(8px);
+		box-sizing: border-box;
+		width: sz(272px);
+		padding: sz(8px);
+		border-radius: sz(var(--rise-radius-lg));
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		min-height: sz(24px);
+		padding: 0 sz(4px);
+	}
+
+	&__title {
+		min-width: 0;
+		font-weight: var(--rise-font-weight-semibold);
+		@include custom-text(color, var(--rise-text-highlighted));
+		@include truncate;
+	}
+
+	&__count {
+		flex: none;
+		min-width: sz(20px);
+		padding: 0 sz(8px);
+		border-radius: sz(var(--rise-radius-full));
+		background-color: var(--rise-bg-accented);
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+		font-variant-numeric: tabular-nums;
+		text-align: center;
+	}
+
+	&__column--over &__count {
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__card,
+	&__ghost {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		box-sizing: border-box;
+		padding: sz(10px) sz(12px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		color: var(--rise-text);
+		box-shadow: var(--rise-shadow-xs);
+		text-align: left;
+		user-select: none;
+	}
+
+	&__card {
+		cursor: grab;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			border-color: var(--rise-border-accented);
+		}
+	}
+
+	&__card--grabbed {
+		border-color: var(--rise-primary);
+		box-shadow:
+			0 0 0 1px var(--rise-primary),
+			var(--rise-shadow-lg);
+	}
+
+	&__card--placeholder {
+		border-style: dashed;
+		border-color: var(--rise-border-accented);
+		background-color: transparent;
+		box-shadow: none;
+
+		> * {
+			visibility: hidden;
+		}
+	}
+
+	&__ghost {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: var(--rise-z-overlay);
+		box-shadow: var(--rise-shadow-lg);
+		pointer-events: none;
+
+		@include motion-safe {
+			rotate: 2deg;
+		}
+	}
+
+	&__card-title {
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-medium);
+		overflow-wrap: anywhere;
+	}
+
+	&__card-description {
+		display: -webkit-box;
+		overflow: hidden;
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+	}
+
+	&__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+	}
+
+	&__tag {
+		padding: 0 sz(6px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+	}
+
+	&__empty {
+		margin: 0;
+		padding: sz(16px) sz(8px);
+		border: 1px dashed var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-md));
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+		text-align: center;
+	}
+
+	&--dragging,
+	&--dragging &__card {
+		cursor: grabbing;
+	}
+
+	&--disabled &__card {
+		cursor: default;
+	}
+
+	&--soft &__column {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline &__column {
+		border: 1px solid var(--rise-border);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost &__column {
+		padding: 0;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__hint,
+	&__status {
+		@include visually-hidden;
+	}
+}

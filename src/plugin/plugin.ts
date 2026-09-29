@@ -29,6 +29,7 @@ import { BaseButton } from '../components/BaseButton'
 import { BaseDrawer } from '../components/BaseDrawer'
 import { BaseFooter } from '../components/BaseFooter'
 import { BaseHeader } from '../components/BaseHeader'
+import { BaseKanban } from '../components/BaseKanban'
 import { BaseLayout } from '../components/BaseLayout'
 import { BaseLoader } from '../components/BaseLoader'
 import { BaseRating } from '../components/BaseRating'
@@ -153,6 +154,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseInput,
 	BaseInputNumber,
 	BaseInputTags,
+	BaseKanban,
 	BaseKbd,
 	BaseLayout,
 	BaseLink,
