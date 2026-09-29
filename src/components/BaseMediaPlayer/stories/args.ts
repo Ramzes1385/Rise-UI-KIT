@@ -27,5 +27,6 @@ export const args = {
 	'onFullscreen-change': fn(),
 	'onUpdate:isTheater': fn(),
 	'onUpdate:textTrack': fn(),
+	'onUpdate:audioTrack': fn(),
 	onReport: fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

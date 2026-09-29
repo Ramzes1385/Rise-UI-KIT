@@ -1,4 +1,6 @@
 import demoVideo from './media/demo.webm'
+import demoDubA from './media/demo-dub-a.webm'
+import demoDubB from './media/demo-dub-b.webm'
 import demoVideoLow from './media/demo-144.webm'
 import demoPoster from './media/demo-poster.webp'
 import demoSubtitlesRu from './media/demo.ru.vtt'
@@ -14,6 +16,14 @@ export const DEMO_QUALITIES = [
 ]
 
 export const DEMO_POSTER = demoPoster
+
+const OPUS = 'audio/webm; codecs="opus"'
+
+export const DEMO_AUDIO_TRACKS = [
+	{ label: 'Оригинал' },
+	{ src: demoDubA, label: 'Озвучка A (330 Гц)', srclang: 'ru', type: OPUS, isDefault: true },
+	{ src: demoDubB, label: 'Озвучка B (550 Гц)', srclang: 'en', type: OPUS },
+]
 
 export const DEMO_TRACKS = [
 	{ src: demoSubtitlesRu, label: 'Русский', srclang: 'ru', isDefault: true },

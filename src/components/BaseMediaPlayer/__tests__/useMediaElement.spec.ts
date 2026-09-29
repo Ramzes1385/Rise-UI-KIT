@@ -210,4 +210,30 @@ describe('useMediaElement', () => {
 
 		expect(state).toMatchObject({ currentTime: 0, volume: 1, isMuted: false, playbackRate: 1, error: null })
 	})
+
+	it('громкость и звук — у элемента, который звучит: переключение на аудио и обратно', async () => {
+		const element = document.createElement('video')
+		const audioElement = document.createElement('audio')
+		fakeMedia(element, { volume: 0.5 })
+		const audio = fakeMedia(audioElement, { volume: 0.8, muted: true })
+		const sound = ref<HTMLMediaElement | null>(null)
+		const { state, actions } = withSetup(() => useMediaElement(ref(element), sound)).result
+
+		expect(state).toMatchObject({ volume: 0.5, isMuted: false })
+		sound.value = audioElement
+		await nextTick()
+		expect(state).toMatchObject({ volume: 0.8, isMuted: true })
+		actions.setVolume(0.3)
+		actions.toggleMute()
+		actions.setMuted(true)
+		expect(audio.values).toMatchObject({ volume: 0.3, muted: true })
+		expect(element.volume).toBe(0.5)
+		element.muted = true
+		expect(state.isMuted).toBe(true)
+		audioElement.muted = false
+		expect(state.isMuted).toBe(false)
+		sound.value = null
+		await nextTick()
+		expect(state).toMatchObject({ volume: 0.5, isMuted: true })
+	})
 })

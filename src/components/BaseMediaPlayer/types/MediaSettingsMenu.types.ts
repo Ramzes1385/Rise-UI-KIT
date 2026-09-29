@@ -1,4 +1,5 @@
 import type { MediaSourceItem } from './MediaCore.types'
+import type { MediaAudioOption } from './MediaAudio.types'
 import type { MediaCaptionOption, MediaCaptionStyle } from './MediaSubtitles.types'
 
 export interface MediaSettingsMenuProps {
@@ -18,6 +19,10 @@ export interface MediaSettingsMenuProps {
 	captionStyle?: MediaCaptionStyle
 	/** Пункт «Загрузить файл субтитров…» */
 	canLoadCaptions?: boolean
+	/** Озвучки; пункт «Озвучка» появляется, когда их хотя бы две */
+	audioOptions?: MediaAudioOption[]
+	/** Выбранная озвучка */
+	activeAudioId?: string | null
 }
 
 export interface MediaSettingsMenuEmits {
@@ -31,4 +36,6 @@ export interface MediaSettingsMenuEmits {
 	(event: 'load-captions'): void
 	/** Изменено оформление субтитров */
 	(event: 'update-caption-style', patch: Partial<MediaCaptionStyle>): void
+	/** Выбрана озвучка */
+	(event: 'select-audio', id: string | null): void
 }

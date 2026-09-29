@@ -45,6 +45,7 @@
 				@play="onMediaEvent.play"
 				@pause="onMediaEvent.pause"
 				@ended="onMediaEvent.ended"></video>
+			<audio ref="audioRef" class="base-media-player__audio" preload="auto" :crossorigin="crossorigin"></audio>
 			<div v-if="captionLines.length || isCaptionDragging" class="base-media-player__captions">
 				<div
 					class="base-media-player__caption-box"
@@ -156,11 +157,14 @@
 						:active-caption-id="activeCaptionId"
 						:caption-style="captionStyle"
 						:can-load-captions="hasCaptionUpload"
+						:audio-options="audioOptions"
+						:active-audio-id="activeAudioId"
 						@select-rate="actions.setPlaybackRate"
 						@select-quality="selectQuality"
 						@select-caption="selectCaptionTrack"
 						@load-captions="openCaptionFile"
-						@update-caption-style="updateCaptionStyle" />
+						@update-caption-style="updateCaptionStyle"
+						@select-audio="selectAudioTrack" />
 					<BaseButton
 						v-if="!isFullscreen"
 						variant="ghost"
@@ -248,6 +252,7 @@ const props = withDefaults(
 		playbackRate: undefined,
 		isTheater: undefined,
 		textTrack: undefined,
+		audioTrack: undefined,
 		hasCaptionUpload: true,
 	}),
 )
@@ -340,6 +345,10 @@ const {
 	onCaptionDragOver,
 	onCaptionDragLeave,
 	onCaptionDrop,
+	audioRef,
+	audioOptions,
+	activeAudioId,
+	selectAudioTrack,
 } = useBaseMediaPlayer(props, emit)
 
 defineExpose<BaseMediaPlayerExpose>(exposed)

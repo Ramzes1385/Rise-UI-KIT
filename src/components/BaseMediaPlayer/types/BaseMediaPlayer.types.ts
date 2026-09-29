@@ -1,3 +1,4 @@
+import type { MediaAudioTrackItem } from './MediaAudio.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
@@ -108,6 +109,13 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	textTrack?: string | null
 	/** Зритель может добавить свой файл .srt или .vtt: пунктом меню или перетаскиванием на плеер */
 	hasCaptionUpload?: boolean
+	/**
+	 * Озвучки отдельными аудиофайлами: играют синхронно с видео, переключаются с той же позиции.
+	 * Пункт без `src` — звук самого видео. Без списка меню «Озвучка» показывает дорожки внутри файла, если их видит браузер
+	 */
+	audioTracks?: MediaAudioTrackItem[]
+	/** Выбранная озвучка (`v-model:audio-track`): `src` дорожки, null — звук самого видео, `embedded:<id>` — дорожка внутри файла */
+	audioTrack?: string | null
 }
 
 export interface BaseMediaPlayerEmits {
@@ -125,6 +133,7 @@ export interface BaseMediaPlayerEmits {
 	(event: 'update:playbackRate', value: number): void
 	(event: 'update:isTheater', value: boolean): void
 	(event: 'update:textTrack', value: string | null): void
+	(event: 'update:audioTrack', value: string | null): void
 	/** Плеер развернулся на весь экран или свернулся */
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */

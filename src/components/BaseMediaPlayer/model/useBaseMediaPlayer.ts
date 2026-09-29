@@ -6,12 +6,13 @@ import { usePlayerTools } from './usePlayerTools'
 import { useIdleControls } from './useIdleControls'
 import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
-import { useMediaSources } from './useMediaSources'
 import { usePlayerModels } from './usePlayerModels'
 import { usePlayerCaptions } from './usePlayerCaptions'
 import { usePlayerOverlays } from './usePlayerOverlays'
 import { useMediaFullscreen } from './useMediaFullscreen'
+import { useMediaAudioTracks } from './useMediaAudioTracks'
 import { formatMessage, formatNumber } from '@/locales/state'
+import { MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import type { MediaState, MediaActions } from '../types/MediaCore.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
@@ -111,6 +112,8 @@ function usePlayerElements() {
 	return {
 		rootRef,
 		mediaRef: ref<HTMLVideoElement | null>(null),
+		audioRef: ref<HTMLAudioElement | null>(null),
+		soundRef: ref<HTMLMediaElement | null>(null),
 		controlsRef: ref<HTMLElement | null>(null),
 		layer: useTeleportLayer(rootRef),
 	}
@@ -148,6 +151,23 @@ function usePlayerEvents(
 	}
 }
 
+function usePlayerAudio(
+	props: MediaPlayerProps,
+	emit: BaseMediaPlayerEmits,
+	player: { elements: ReturnType<typeof usePlayerElements>; flash: (message: string) => void },
+) {
+	return useMediaAudioTracks({
+		tracks: () => props.audioTracks,
+		audioTrack: () => props.audioTrack,
+		allowedProtocols: () => props.allowedProtocols ?? MEDIA_PROTOCOLS,
+		video: player.elements.mediaRef,
+		audio: player.elements.audioRef,
+		sound: player.elements.soundRef,
+		emitTrack: id => emit('update:audioTrack', id),
+		flash: player.flash,
+	})
+}
+
 function useScreenModes(elements: ReturnType<typeof usePlayerElements>, isTheater: Readonly<Ref<boolean>>) {
 	const fullscreen = useMediaFullscreen(elements.rootRef, elements.mediaRef)
 	return {
@@ -171,7 +191,7 @@ function usePlayerIdle(props: MediaPlayerProps, elements: ReturnType<typeof useP
 
 export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	const elements = usePlayerElements()
-	const { state, actions } = useMediaElement(elements.mediaRef)
+	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
 	const sources = useMediaSources({
 		sources: () => props.sources,
 		allowedProtocols: () => props.allowedProtocols,
@@ -185,6 +205,7 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		actions,
 		media: elements.mediaRef,
 		activeSource: () => sources.activeSource.value,
+		audioSource: () => elements.soundRef.value?.currentSrc || null,
 		toggleFullscreen: screen.toggleFullscreen,
 	})
 	const captions = usePlayerCaptions(props, emit, { state, media: elements.mediaRef, root: elements.rootRef, flash: tools.flash })
@@ -205,6 +226,7 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		...elements,
 		...tools,
 		...captions,
+		...usePlayerAudio(props, emit, { elements, flash: tools.flash }),
 		...screen,
 		state,
 		actions,

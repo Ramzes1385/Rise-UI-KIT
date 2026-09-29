@@ -72,4 +72,23 @@ describe('useMediaStats', () => {
 		wrapper.unmount()
 		vi.useRealTimers()
 	})
+
+	it('строка «Озвучка» — только когда звучит отдельный аудиофайл', () => {
+		const state = reactive({
+			currentTime: 0,
+			duration: 12,
+			buffered: [],
+			playbackRate: 1,
+			volume: 1,
+			isMuted: false,
+		}) as unknown as MediaState
+		const audio = ref<string | null>('https://cdn.example.com/dub.m4a')
+		const { result } = withSetup(() =>
+			useMediaStats({ media: ref(video()), state, source: () => undefined, audioSource: () => audio.value }),
+		)
+
+		expect(result.statsRows.value[1]).toEqual({ label: 'Озвучка', value: 'https://cdn.example.com/dub.m4a' })
+		audio.value = null
+		expect(result.statsRows.value.map(row => row.label)).not.toContain('Озвучка')
+	})
 })

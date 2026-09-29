@@ -154,4 +154,23 @@ describe('MediaSettingsMenu', () => {
 			['Вверху', false],
 		])
 	})
+
+	it('озвучка: пункт первым, когда вариантов хотя бы два; выбор сообщается событием', () => {
+		const audioOptions = [
+			{ id: null, label: 'Оригинал' },
+			{ id: '/audio/a.m4a', label: 'AniLibria' },
+		]
+		const { items, emit } = menu({ audioOptions, activeAudioId: '/audio/a.m4a' })
+		const [audio] = items
+
+		expect(audio.label).toBe('Озвучка: AniLibria')
+		expect(radios(children(audio))).toEqual([
+			['Оригинал', false],
+			['AniLibria', true],
+		])
+		children(audio)[0].onUpdateChecked?.(true)
+		expect(emit).toHaveBeenCalledWith('select-audio', null)
+		expect(menu({ audioOptions, activeAudioId: 'embedded:9' }).items[0].label).toBe('Озвучка')
+		expect(menu({ audioOptions: audioOptions.slice(0, 1) }).items[0].label).toBe('Скорость: Обычная')
+	})
 })

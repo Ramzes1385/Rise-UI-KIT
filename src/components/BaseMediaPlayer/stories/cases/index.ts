@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Settings } from './Settings'
 export { Subtitles } from './Subtitles'
+export { AudioTracks } from './AudioTracks'
 export { TitleAndLogo } from './TitleAndLogo'
 export { Theater } from './Theater'
 export { Autoplay } from './Autoplay'

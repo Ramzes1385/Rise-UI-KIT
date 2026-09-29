@@ -21,10 +21,15 @@ function frames(media: HTMLVideoElement): string {
 		: EMPTY
 }
 
-function statsRows(media: HTMLVideoElement, state: Readonly<MediaState>, source: MediaSourceItem | null | undefined): MediaStatsRow[] {
+function statsRows(
+	media: HTMLVideoElement,
+	state: Readonly<MediaState>,
+	sources: { video: MediaSourceItem | null | undefined; audio: string | null },
+): MediaStatsRow[] {
 	return [
 		{ label: UI_PLAYER.STATS_SOURCE, value: media.currentSrc || EMPTY },
-		{ label: UI_PLAYER.STATS_FORMAT, value: source?.type ?? EMPTY },
+		...(sources.audio ? [{ label: UI_PLAYER.STATS_AUDIO, value: sources.audio }] : []),
+		{ label: UI_PLAYER.STATS_FORMAT, value: sources.video?.type ?? EMPTY },
 		{ label: UI_PLAYER.STATS_RESOLUTION, value: media.videoWidth ? `${media.videoWidth}×${media.videoHeight}` : EMPTY },
 		{ label: UI_PLAYER.STATS_FRAMES, value: frames(media) },
 		{
@@ -48,6 +53,7 @@ export function useMediaStats(options: {
 	media: MediaElementRef
 	state: Readonly<MediaState>
 	source: () => MediaSourceItem | null | undefined
+	audioSource?: () => string | null
 }) {
 	const isStatsOpen = ref(false)
 	const tick = ref(0)
@@ -62,7 +68,8 @@ export function useMediaStats(options: {
 	onBeforeUnmount(() => clearInterval(timer))
 	const rows = computed(() => {
 		const media = options.media.value as HTMLVideoElement | null
-		return tick.value >= 0 && media ? statsRows(media, options.state, options.source()) : []
+		const sources = { video: options.source(), audio: options.audioSource?.() ?? null }
+		return tick.value >= 0 && media ? statsRows(media, options.state, sources) : []
 	})
 
 	return {

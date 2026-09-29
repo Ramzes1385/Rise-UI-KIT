@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import type { MediaSourceItem, MediaSourcesOptions } from '../types/MediaCore.types'
 
-const MEDIA_PROTOCOLS = ['http:', 'https:', 'blob:'] as const
+export const MEDIA_PROTOCOLS = ['http:', 'https:', 'blob:'] as const
 
 function normalizeSources(sources: MediaSourceItem[] | string | undefined, allowed: readonly string[]): MediaSourceItem[] {
 	const list = typeof sources === 'string' ? [{ src: sources }] : (sources ?? [])

@@ -1,4 +1,4 @@
-import { reactive, readonly, watch } from 'vue'
+import { computed, reactive, readonly, watch } from 'vue'
 import type { MediaState, MediaActions, MediaErrorCode, MediaTimeRange, MediaElementRef, MediaPlayerError } from '../types/MediaCore.types'
 
 const MEDIA_ERROR_BY_CODE: Record<number, MediaErrorCode> = { 1: 'aborted', 2: 'network', 3: 'decode', 4: 'unsupported' }
@@ -31,8 +31,6 @@ function syncState(state: MediaState, media: HTMLMediaElement): void {
 		isPaused: media.paused,
 		isEnded: media.ended,
 		isSeeking: media.seeking,
-		volume: media.volume,
-		isMuted: media.muted,
 		playbackRate: media.playbackRate,
 		error: readError(media),
 	})
@@ -52,7 +50,6 @@ function eventHandlers(state: MediaState, onTimeUpdate: () => void): Record<stri
 		canplay: () => Object.assign(state, { isWaiting: false }),
 		seeking: media => Object.assign(state, { isSeeking: true, currentTime: media.currentTime }),
 		seeked: media => Object.assign(state, { isSeeking: false, currentTime: media.currentTime }),
-		volumechange: media => Object.assign(state, { volume: media.volume, isMuted: media.muted }),
 		ratechange: media => Object.assign(state, { playbackRate: media.playbackRate }),
 		error: media => Object.assign(state, { error: readError(media), isWaiting: false }),
 		emptied: media => syncState(state, media),
@@ -82,6 +79,22 @@ function useListeners(media: MediaElementRef, state: MediaState): void {
 				frame = 0
 				listeners.forEach(([name, listener]) => element.removeEventListener(name, listener))
 			})
+		},
+		{ immediate: true },
+	)
+}
+
+function useSoundListener(sound: MediaElementRef, state: MediaState): void {
+	watch(
+		sound,
+		(element, _, onCleanup) => {
+			if (!element) return
+			const sync = (): void => {
+				Object.assign(state, { volume: element.volume, isMuted: element.muted })
+			}
+			sync()
+			element.addEventListener('volumechange', sync)
+			onCleanup(() => element.removeEventListener('volumechange', sync))
 		},
 		{ immediate: true },
 	)
@@ -122,7 +135,7 @@ function createRetry(state: MediaState, media: MediaElementRef, resume: (time: n
 	}
 }
 
-function createActions(state: MediaState, media: MediaElementRef): MediaActions {
+function createActions(state: MediaState, media: MediaElementRef, sound: MediaElementRef): MediaActions {
 	const play = createPlay(state, media)
 	const seek = createSeek(state, media)
 	return {
@@ -132,16 +145,16 @@ function createActions(state: MediaState, media: MediaElementRef): MediaActions 
 		seek,
 		seekBy: delta => seek(state.currentTime + delta),
 		setVolume(volume) {
-			const element = media.value
+			const element = sound.value
 			if (!element) return
 			element.volume = Math.min(1, Math.max(0, volume))
 			if (volume > 0 && element.muted) element.muted = false
 		},
 		toggleMute() {
-			if (media.value) media.value.muted = !media.value.muted
+			if (sound.value) sound.value.muted = !sound.value.muted
 		},
 		setMuted(isMuted) {
-			if (media.value) media.value.muted = isMuted
+			if (sound.value) sound.value.muted = isMuted
 		},
 		setPlaybackRate(rate) {
 			if (media.value) media.value.playbackRate = rate
@@ -153,7 +166,7 @@ function createActions(state: MediaState, media: MediaElementRef): MediaActions 
 	}
 }
 
-export function useMediaElement(media: MediaElementRef) {
+export function useMediaElement(media: MediaElementRef, sound?: MediaElementRef) {
 	const state = reactive<MediaState>({
 		currentTime: 0,
 		duration: Number.NaN,
@@ -167,6 +180,8 @@ export function useMediaElement(media: MediaElementRef) {
 		playbackRate: 1,
 		error: null,
 	})
+	const output = computed(() => sound?.value ?? media.value)
 	useListeners(media, state)
-	return { state: readonly(state) as Readonly<MediaState>, actions: createActions(state, media) }
+	useSoundListener(output, state)
+	return { state: readonly(state) as Readonly<MediaState>, actions: createActions(state, media, output) }
 }

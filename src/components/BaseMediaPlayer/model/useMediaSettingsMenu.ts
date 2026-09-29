@@ -68,6 +68,23 @@ function qualityItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits
 	}
 }
 
+function audioItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits): DropdownMenuItem[] {
+	const options = props.audioOptions ?? []
+	if (options.length < 2) return []
+	const active = options.find(option => option.id === props.activeAudioId)
+	return [
+		{
+			label: [UI_PLAYER.AUDIO, active?.label].filter(Boolean).join(': '),
+			children: options.map(option => ({
+				type: 'radio',
+				label: option.label,
+				isChecked: option === active,
+				onUpdateChecked: () => emit('select-audio', option.id),
+			})),
+		},
+	]
+}
+
 function captionsItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits): DropdownMenuItem {
 	const tracks = props.captionTracks ?? []
 	const active = tracks.find(track => track.id === props.activeCaptionId)
@@ -132,6 +149,7 @@ export function useMediaSettingsMenu(props: MediaSettingsMenuProps, emit: MediaS
 	return {
 		label: computed(() => UI_PLAYER.SETTINGS),
 		items: computed(() => [
+			...audioItem(props, emit),
 			...captionItems(props, emit),
 			speedItem(props, emit),
 			...(props.qualities.length > 1 ? [qualityItem(props, emit)] : []),

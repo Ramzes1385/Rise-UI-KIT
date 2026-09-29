@@ -55,6 +55,7 @@ export function usePlayerTools(
 		actions: MediaActions
 		media: MediaElementRef
 		activeSource: () => MediaSourceItem | null | undefined
+		audioSource: () => string | null
 		toggleFullscreen: () => void
 	},
 ) {
@@ -62,7 +63,7 @@ export function usePlayerTools(
 	const isLoopOn = useLoop(props)
 	const isReportOpen = ref(false)
 	const share = useMediaShare({ shareUrl: () => props.shareUrl, timeParam: () => props.timeParam, currentTime: () => state.currentTime })
-	const stats = useMediaStats({ media: core.media, state, source: core.activeSource })
+	const stats = useMediaStats({ media: core.media, state, source: core.activeSource, audioSource: core.audioSource })
 	const memory = usePlaybackMemory({
 		state,
 		actions,
