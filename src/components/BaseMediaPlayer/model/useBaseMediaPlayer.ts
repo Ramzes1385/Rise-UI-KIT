@@ -1,121 +1,28 @@
 import type { Ref } from 'vue'
-import { isSafeUrl } from '@utils/urlUtils'
+import { UI_PLAYER } from './messages'
+import { computed, provide, watch } from 'vue'
 import { usePlayerCast } from './usePlayerCast'
 import { usePlayerTools } from './usePlayerTools'
 import { useSeekPreview } from './useSeekPreview'
 import { useIdleControls } from './useIdleControls'
-import { useMediaElement } from './useMediaElement'
 import { usePlayerModels } from './usePlayerModels'
-import { formatMediaTime } from '@utils/mediaUtils'
 import { usePlayerHotkeys } from './usePlayerHotkeys'
 import { usePlayerCaptions } from './usePlayerCaptions'
 import { PLAYER_CONTEXT_KEY } from './usePlayerContext'
 import { usePlayerOverlays } from './usePlayerOverlays'
 import { useMediaFullscreen } from './useMediaFullscreen'
 import { useMediaAudioTracks } from './useMediaAudioTracks'
-import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
-import { UI_PLAYER, formatMessage, formatNumber } from './messages'
-import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
+import { useLabels, usePlayerBase } from './usePlayerSetup'
+import type { MediaEventLogEntry } from '../types/MediaStatsPanel.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { MEDIA_PROTOCOLS, type useMediaSources } from './useMediaSources'
 import { usePlayerEpisodes, usePlayerPlaylist } from './usePlayerPlaylist'
-import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
-import { isAudioSource, MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import type { MediaAudioProvider, MediaAudioTrackItem } from '../types/MediaAudio.types'
 import type { MediaState, MediaActions, MediaSourceItem } from '../types/MediaCore.types'
 import { lowestSource, usePlayerAds, usePlayerClips, usePlayerNotices } from './usePlayerInserts'
 import type { BaseMediaPlayerEmits, BaseMediaPlayerExpose, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
 
-const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
-
-const LINK_PROTOCOLS = ['http:', 'https:'] as const
-
 const CLASS_KEYS = ['root', 'media', 'overlay', 'controls', 'seek', 'volume', 'time', 'title', 'logo']
-
-function safeUrl(url: string | undefined, protocols: readonly string[]): string | undefined {
-	return url && isSafeUrl(url, protocols) ? url : undefined
-}
-
-function useLabels(state: Readonly<MediaState>) {
-	return {
-		playLabel: computed(() => (state.isPaused ? UI_PLAYER.PLAY : UI_PLAYER.PAUSE)),
-		muteLabel: computed(() => (state.isMuted || state.volume === 0 ? UI_PLAYER.UNMUTE : UI_PLAYER.MUTE)),
-		currentTimeText: computed(() => formatMediaTime(state.currentTime, state.duration)),
-		durationText: computed(() => formatMediaTime(state.duration)),
-		seekValueText: computed(() =>
-			formatMessage(UI_PLAYER.TIME, {
-				current: formatMediaTime(state.currentTime, state.duration),
-				duration: formatMediaTime(state.duration),
-			}),
-		),
-		volumeValue: computed(() => (state.isMuted ? 0 : state.volume)),
-		volumeValueText: computed(() => formatNumber(state.isMuted ? 0 : state.volume, { style: 'percent', maximumFractionDigits: 0 })),
-	}
-}
-
-function usePlayerSources(
-	props: MediaPlayerProps,
-	player: { media: Readonly<Ref<HTMLVideoElement | null>>; sources: () => MediaSourceItem[] | string | undefined },
-) {
-	const { media } = player
-	const sources = useMediaSources({
-		sources: player.sources,
-		allowedProtocols: () => props.allowedProtocols,
-		media,
-		canPlay: item => isHlsSource(item) && Boolean(props.hls?.isSupported()),
-	})
-	const hls = useHlsAdapter({ Hls: () => props.hls, config: () => props.hlsConfig, media, source: () => sources.activeSource.value })
-	const fileQualities = computed(() =>
-		sources.playableSources.value.filter(source => source.label).map(source => ({ id: source.src, label: source.label as string })),
-	)
-	return {
-		sources,
-		hls,
-		view: {
-			src: computed(() => (hls.isHlsActive.value ? undefined : sources.activeSource.value?.src)),
-			qualities: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.options.value : fileQualities.value)),
-			activeQualityId: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.activeId.value : sources.activeSource.value?.src)),
-			isAudioMode: computed(() => props.mode === 'audio' || (props.mode === 'auto' && isAudioSource(sources.activeSource.value))),
-			selectQuality(id: string): void {
-				if (hls.isHlsActive.value) return hls.hlsQuality.select(id)
-				const source = sources.playableSources.value.find(item => item.src === id)
-				if (source) sources.setSource(source)
-			},
-		},
-	}
-}
-
-function usePlayerView(props: MediaPlayerProps, view: { poster: () => string | undefined; isAudio: Readonly<Ref<boolean>> }) {
-	return {
-		posterSrc: computed(() => safeUrl(view.poster(), IMAGE_PROTOCOLS)),
-		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
-		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
-		rootStyle: computed(() => (view.isAudio.value ? {} : { aspectRatio: props.aspectRatio })),
-		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
-	}
-}
-
-function useTeleportLayer(root: Readonly<Ref<HTMLElement | null>>): HTMLElement | null {
-	const layer = typeof document === 'undefined' ? null : document.createElement('div')
-	layer?.classList.add('base-media-player__layer')
-	provide(TELEPORT_TARGET_KEY, layer ?? 'body')
-	onMounted(() => layer && root.value?.append(layer))
-	onBeforeUnmount(() => layer?.remove())
-	return layer
-}
-
-function usePlayerElements() {
-	const rootRef = ref<HTMLElement | null>(null)
-	return {
-		rootRef,
-		mediaRef: ref<HTMLVideoElement | null>(null),
-		audioRef: ref<HTMLAudioElement | null>(null),
-		adMediaRef: ref<HTMLVideoElement | null>(null),
-		clipMediaRef: ref<HTMLVideoElement | null>(null),
-		soundRef: ref<HTMLMediaElement | null>(null),
-		controlsRef: ref<HTMLElement | null>(null),
-		layer: useTeleportLayer(rootRef),
-	}
-}
 
 function usePlayerEvents(
 	props: MediaPlayerProps,
@@ -153,7 +60,7 @@ function usePlayerAudio(
 	props: MediaPlayerProps,
 	emit: BaseMediaPlayerEmits,
 	player: {
-		elements: ReturnType<typeof usePlayerElements>
+		elements: ReturnType<typeof usePlayerBase>['elements']
 		flash: (message: string) => void
 		stream: MediaAudioProvider
 		tracks: () => MediaAudioTrackItem[] | undefined
@@ -172,7 +79,7 @@ function usePlayerAudio(
 	})
 }
 
-function useScreenModes(elements: ReturnType<typeof usePlayerElements>, isTheater: Readonly<Ref<boolean>>) {
+function useScreenModes(elements: ReturnType<typeof usePlayerBase>['elements'], isTheater: Readonly<Ref<boolean>>) {
 	const fullscreen = useMediaFullscreen(elements.rootRef, elements.mediaRef)
 	return {
 		fullscreen,
@@ -186,7 +93,7 @@ function useScreenModes(elements: ReturnType<typeof usePlayerElements>, isTheate
 
 function usePlayerIdle(
 	props: MediaPlayerProps,
-	elements: ReturnType<typeof usePlayerElements>,
+	elements: ReturnType<typeof usePlayerBase>['elements'],
 	player: { state: Readonly<MediaState>; isAudio: Readonly<Ref<boolean>> },
 ) {
 	const isFocusInPanel = (): boolean =>
@@ -204,11 +111,12 @@ function usePlayerExtras(
 	player: {
 		state: Readonly<MediaState>
 		actions: MediaActions
-		elements: ReturnType<typeof usePlayerElements>
+		elements: ReturnType<typeof usePlayerBase>['elements']
 		series: ReturnType<typeof usePlayerPlaylist>
 		activeSource: () => MediaSourceItem | null | undefined
 		toggleFullscreen: () => void
 		isCasting: () => boolean
+		events: () => MediaEventLogEntry[]
 	},
 ) {
 	const { state, actions, elements, series } = player
@@ -220,6 +128,7 @@ function usePlayerExtras(
 		audioSource: () => elements.soundRef.value?.currentSrc || null,
 		storageKey: series.content.storageKey,
 		toggleFullscreen: player.toggleFullscreen,
+		events: player.events,
 	})
 	const captions = usePlayerCaptions(props, emit, {
 		state,
@@ -246,7 +155,7 @@ function usePlayerCasting(
 	player: {
 		state: Readonly<MediaState>
 		actions: MediaActions
-		elements: ReturnType<typeof usePlayerElements>
+		elements: ReturnType<typeof usePlayerBase>['elements']
 		series: ReturnType<typeof usePlayerPlaylist>
 		activeSource: () => MediaSourceItem | null | undefined
 		title: () => string
@@ -321,12 +230,8 @@ function usePlayerPreview(
 	})
 }
 
-export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
-	const elements = usePlayerElements()
-	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
-	const series = usePlayerPlaylist(props, emit)
-	const { sources, hls, view } = usePlayerSources(props, { media: elements.mediaRef, sources: series.content.sources })
-	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource, adapterError: hls.hlsError })
+export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMediaPlayerEmits) {
+	const { elements, state, actions, eventLog, emit, series, sources, hls, view, cover, overlays } = usePlayerBase(props, playerEmit)
 	const models = usePlayerModels(props, emit, { state, actions })
 	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
 	const activeSource = (): MediaSourceItem | null | undefined => sources.activeSource.value
@@ -340,6 +245,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		activeSource,
 		toggleFullscreen: screen.toggleFullscreen,
 		isCasting: () => cast.isCastConnected.value,
+		events: () => eventLog.value,
 	})
 	usePlayerKeys(elements.rootRef, props, { state, actions, screen, models, cast, isAudio: view.isAudioMode, ...extras })
 	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
@@ -348,7 +254,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
 		props,
 		...useLabels(state),
-		...usePlayerView(props, { poster: series.content.poster, isAudio: view.isAudioMode }),
+		...cover,
 		...view,
 		...overlays,
 		...models,

@@ -35,6 +35,7 @@ async function freeze(page: Page, seconds: number): Promise<void> {
 	await page.mouse.move(0, 0)
 	const whole = Math.floor(seconds)
 	await expect(page.getByRole('slider', SEEK)).toHaveAttribute('aria-valuetext', `0:${String(whole).padStart(2, '0')} из 0:12`)
+	await page.waitForFunction(() => !document.querySelector('[class*="-enter-active"], [class*="-leave-active"]'))
 }
 
 async function closeMenus(page: Page): Promise<void> {
@@ -82,7 +83,7 @@ const SCENARIOS: Scenario[] = [
 		prepare: async page => {
 			await page.getByRole('button', { name: 'Закрыть', exact: true }).click()
 			await page.locator('.base-media-player__media').click({ button: 'right', position: { x: 60, y: 60 } })
-			await expect(page.getByRole('menuitem', { name: 'Техническая информация' })).toBeVisible()
+			await expect(page.getByRole('menuitem', { name: 'Данные для отладки' })).toBeVisible()
 		},
 	},
 	{ story: 'with-error' },

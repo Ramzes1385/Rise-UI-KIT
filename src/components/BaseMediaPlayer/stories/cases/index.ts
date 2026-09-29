@@ -1,4 +1,5 @@
 export { Default } from './Default'
+export { Cover, VideoCover } from './Cover'
 export { Settings } from './Settings'
 export { Subtitles } from './Subtitles'
 export { AudioTracks } from './AudioTracks'

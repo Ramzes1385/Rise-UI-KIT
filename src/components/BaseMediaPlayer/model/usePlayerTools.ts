@@ -7,6 +7,7 @@ import { useMediaGestures } from './useMediaGestures'
 import { usePlaybackMemory } from './usePlaybackMemory'
 import { useMediaContextMenu } from './useMediaContextMenu'
 import { formatMediaTime, parseMediaTime } from '@utils/mediaUtils'
+import type { MediaEventLogEntry } from '../types/MediaStatsPanel.types'
 import type { MediaState, MediaActions, MediaElementRef, MediaSourceItem } from '../types/MediaCore.types'
 import type { MediaReportReason, BaseMediaPlayerEmits, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
 
@@ -46,6 +47,27 @@ function useToolsMenu(tools: {
 	})
 }
 
+function reportSender(
+	emit: BaseMediaPlayerEmits,
+	core: Parameters<typeof usePlayerTools>[2],
+	tools: { share: ReturnType<typeof useMediaShare>; stats: ReturnType<typeof useMediaStats> },
+) {
+	return (report: { reason: MediaReportReason; comment: string }): void => {
+		emit('report', {
+			...report,
+			time: core.state.currentTime,
+			source: core.media.value?.currentSrc ?? '',
+			details: tools.stats.statsReport(),
+		})
+		tools.share.flash(UI_PLAYER.REPORT_THANKS)
+	}
+}
+
+function useCoreStats(core: Parameters<typeof usePlayerTools>[2]) {
+	const { media, state, activeSource, audioSource, events } = core
+	return useMediaStats({ media, state, source: activeSource, audioSource, events })
+}
+
 export function usePlayerTools(
 	props: MediaPlayerProps,
 	emit: BaseMediaPlayerEmits,
@@ -57,13 +79,14 @@ export function usePlayerTools(
 		audioSource: () => string | null
 		storageKey: () => string | undefined
 		toggleFullscreen: () => void
+		events: () => MediaEventLogEntry[]
 	},
 ) {
 	const { state, actions } = core
 	const isLoopOn = useLoop(props)
 	const isReportOpen = ref(false)
 	const share = useMediaShare({ shareUrl: () => props.shareUrl, timeParam: () => props.timeParam, currentTime: () => state.currentTime })
-	const stats = useMediaStats({ media: core.media, state, source: core.activeSource, audioSource: core.audioSource })
+	const stats = useCoreStats(core)
 	const memory = usePlaybackMemory({
 		state,
 		actions,
@@ -85,15 +108,7 @@ export function usePlayerTools(
 		seekHintText: computed(() =>
 			formatMessage(UI_PLAYER.SECONDS, { n: `${gestures.seekHint.value?.side === 'left' ? '−' : '+'}${props.seekStepLarge}` }),
 		),
-		copyStats: () => void share.copyText(stats.statsText.value),
-		submitReport(report: { reason: MediaReportReason; comment: string }): void {
-			emit('report', {
-				...report,
-				time: state.currentTime,
-				source: core.media.value?.currentSrc ?? '',
-				details: stats.statsText.value,
-			})
-			share.flash(UI_PLAYER.REPORT_THANKS)
-		},
+		copyStats: () => void share.copyText(stats.statsReport()),
+		submitReport: reportSender(emit, core, { share, stats }),
 	}
 }

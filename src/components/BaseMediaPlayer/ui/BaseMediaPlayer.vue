@@ -28,6 +28,7 @@
 		<BaseContextMenu
 			class="base-media-player__frame"
 			:items="contextItems"
+			:custom-class="contextClasses"
 			:is-disabled="isContextMenuOpen || isBoosted"
 			@update:is-open="setContextMenuOpen">
 			<video
@@ -51,6 +52,31 @@
 				@pause="onMediaEvent.pause"
 				@ended="onMediaEvent.ended"></video>
 			<audio ref="audioRef" class="base-media-player__audio" preload="auto" :crossorigin="crossorigin"></audio>
+			<Transition name="base-media-player__cover">
+				<div v-if="isCoverVisible" class="base-media-player__cover" aria-hidden="true">
+					<img v-if="posterSrc" class="base-media-player__cover-media" :src="posterSrc" alt="" />
+					<video
+						v-if="posterVideoSrc"
+						class="base-media-player__cover-media"
+						:src="posterVideoSrc"
+						autoplay
+						muted
+						loop
+						playsinline
+						disablepictureinpicture
+						disableremoteplayback></video>
+				</div>
+			</Transition>
+			<Transition name="base-media-player__paused">
+				<div
+					v-if="isPauseScreen"
+					class="base-media-player__paused"
+					:class="{ 'base-media-player__paused--next': nextCountdown !== null }">
+					<button type="button" class="base-media-player__big-play" tabindex="-1" aria-hidden="true" @click="actions.play">
+						<MediaIcon :name="pauseScreenIcon" />
+					</button>
+				</div>
+			</Transition>
 			<div v-if="captionLines.length || isCaptionDragging" class="base-media-player__captions">
 				<div
 					class="base-media-player__caption-box"
@@ -82,9 +108,9 @@
 				class="base-media-player__seek-hint"
 				:class="`base-media-player__seek-hint--${seekHint.side}`"
 				aria-hidden="true">
-				{{ seekHintText }}
+				<MediaIcon :name="seekHint.side === 'left' ? 'rewind' : 'forward'" />
+				<span class="base-media-player__seek-hint-label">{{ seekHintText }}</span>
 			</div>
-			<div v-if="isBoosted" class="base-media-player__boost" aria-hidden="true">{{ boostRate }}×</div>
 			<MediaCastOverlay />
 			<div v-if="hasTitle || logoSrc" class="base-media-player__top" :class="`base-media-player__top--logo-${logoPosition}`">
 				<span v-if="hasTitle" class="base-media-player__title" :class="classes.title">
@@ -103,19 +129,26 @@
 				</a>
 				<img v-else-if="logoSrc" class="base-media-player__logo" :class="classes.logo" :src="logoSrc" :alt="logoAlt ?? ''" />
 			</div>
-			<BaseLoader v-if="isBuffering" class="base-media-player__loader" :label="UI_PLAYER.LOADING" />
+			<Transition name="base-media-player__loader">
+				<div v-if="isBuffering" class="base-media-player__loader" role="status" :aria-label="UI_PLAYER.LOADING">
+					<MediaIcon name="loading" />
+				</div>
+			</Transition>
 			<div v-if="isStartScreen" class="base-media-player__start">
 				<button type="button" class="base-media-player__big-play" tabindex="-1" aria-hidden="true" @click="actions.play">
-					<BaseIcon name="play" />
+					<MediaIcon name="play" />
 				</button>
 				<p v-if="isAutoplayBlocked" class="base-media-player__hint" role="status">{{ errorMessage }}</p>
 			</div>
 			<div v-if="overlayError" class="base-media-player__overlay" :class="classes.overlay" role="alert">
 				<slot name="error" :error="overlayError" :retry="retryPlayback">
+					<MediaIcon name="alert" class="base-media-player__overlay-icon" />
+					<p class="base-media-player__overlay-title">{{ UI_PLAYER.ERROR_TITLE }}</p>
 					<p class="base-media-player__message">{{ errorMessage }}</p>
-					<BaseButton v-if="canRetry" variant="soft" :size-scale="sizeScale" @click="retryPlayback">
+					<button v-if="canRetry" type="button" class="base-media-player__retry" @click="retryPlayback">
+						<MediaIcon name="refresh" />
 						{{ UI_TEXT.RETRY }}
-					</BaseButton>
+					</button>
 				</slot>
 			</div>
 			<MediaControlBar />
@@ -133,25 +166,40 @@
 					</BaseButton>
 				</div>
 			</Transition>
-			<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" @close="toggleStats" @copy="copyStats" />
-			<BaseButton
-				v-if="skipChapter && !activeAdSegment"
-				variant="soft"
-				class="base-media-player__skip"
-				:size-scale="sizeScale"
-				@click="skipCurrentChapter">
-				{{ skipLabel }}
-			</BaseButton>
-			<div v-if="nextCountdown !== null" class="base-media-player__next">
-				<p class="base-media-player__next-title" aria-hidden="true">{{ nextCountdownText }}</p>
-				<p class="base-media-player__next-episode" role="status">{{ UI_PLAYER.NEXT_EPISODE }}: {{ nextEpisode?.title }}</p>
-				<div class="base-media-player__next-actions">
-					<BaseButton variant="soft" :size-scale="sizeScale" @click="playNextNow">{{ UI_PLAYER.NEXT_NOW }}</BaseButton>
-					<BaseButton variant="ghost" class="base-media-player__button" :size-scale="sizeScale" @click="cancelNext">
-						{{ UI_TEXT.CANCEL }}
-					</BaseButton>
+			<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" :events="statsEvents" @close="toggleStats" @copy="copyStats" />
+			<Transition name="base-media-player__skip">
+				<button v-if="skipChapter && !activeAdSegment" type="button" class="base-media-player__skip" @click="skipCurrentChapter">
+					{{ skipLabel }}
+					<MediaIcon name="skip" />
+				</button>
+			</Transition>
+			<Transition name="base-media-player__next">
+				<div v-if="nextCountdown !== null" class="base-media-player__next" :style="nextCountdownStyle">
+					<div class="base-media-player__next-ring" aria-hidden="true">
+						<svg viewBox="0 0 100 100">
+							<circle class="base-media-player__next-track" cx="50" cy="50" r="45" />
+							<circle class="base-media-player__next-progress" cx="50" cy="50" r="45" />
+						</svg>
+						<span class="base-media-player__next-number">{{ nextCountdown }}</span>
+					</div>
+					<div class="base-media-player__next-text">
+						<p class="base-media-player__next-title" aria-hidden="true">{{ nextCountdownText }}</p>
+						<p class="base-media-player__next-episode" role="status">
+							<span class="base-media-player__visually-hidden">{{ UI_PLAYER.NEXT_EPISODE }}: </span>{{ nextEpisode?.title }}
+						</p>
+					</div>
+					<div class="base-media-player__next-actions">
+						<button
+							type="button"
+							class="base-media-player__next-button base-media-player__next-button--primary"
+							@click="playNextNow">
+							<MediaIcon name="play" />
+							{{ UI_PLAYER.NEXT_NOW }}
+						</button>
+						<button type="button" class="base-media-player__next-button" @click="cancelNext">{{ UI_TEXT.CANCEL }}</button>
+					</div>
 				</div>
-			</div>
+			</Transition>
 			<MediaReportForm v-model:is-open="isReportOpen" @submit="submitReport" />
 			<div v-if="isDropTarget" class="base-media-player__drop" aria-hidden="true">{{ UI_PLAYER.CAPTIONS_DROP }}</div>
 			<input
@@ -163,26 +211,31 @@
 				tabindex="-1"
 				hidden
 				@change="onCaptionFileChange" />
-			<div class="base-media-player__flash" role="status">{{ flashMessage }}</div>
+			<div class="base-media-player__toasts">
+				<div v-if="isBoosted" class="base-media-player__boost" aria-hidden="true">{{ boostRate }}×</div>
+				<MediaAchievementToast />
+				<div class="base-media-player__flash" role="status">{{ flashMessage }}</div>
+			</div>
 		</BaseContextMenu>
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseMediaPlayer.style.scss'
+import '../styles/MediaOverlays.style.scss'
+import MediaIcon from './MediaIcon.vue'
 import MediaNotices from './MediaNotices.vue'
-import { BaseIcon } from '@components/BaseIcon'
 import MediaAdOverlay from './MediaAdOverlay.vue'
 import MediaControlBar from './MediaControlBar.vue'
 import MediaReportForm from './MediaReportForm.vue'
 import MediaStatsPanel from './MediaStatsPanel.vue'
 import { BaseButton } from '@components/BaseButton'
-import { BaseLoader } from '@components/BaseLoader'
 import MediaCastOverlay from './MediaCastOverlay.vue'
 import MediaClipOverlay from './MediaClipOverlay.vue'
 import { UI_PLAYER, UI_TEXT } from '../model/messages'
 import { kitDefaults } from '@composables/useDefaults'
 import { BaseContextMenu } from '@components/BaseContextMenu'
+import MediaAchievementToast from './MediaAchievementToast.vue'
 import { useBaseMediaPlayer } from '../model/useBaseMediaPlayer'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import type {
@@ -240,6 +293,10 @@ const {
 	isTheater,
 	src,
 	posterSrc,
+	posterVideoSrc,
+	isCoverVisible,
+	isPauseScreen,
+	pauseScreenIcon,
 	logoSrc,
 	logoLink,
 	rootStyle,
@@ -252,6 +309,7 @@ const {
 	isStartScreen,
 	onMediaEvent,
 	contextItems,
+	contextClasses,
 	isContextMenuOpen,
 	setContextMenuOpen,
 	isBoosted,
@@ -269,6 +327,7 @@ const {
 	dismissResume,
 	isStatsOpen,
 	statsRows,
+	statsEvents,
 	toggleStats,
 	copyStats,
 	isReportOpen,
@@ -298,6 +357,7 @@ const {
 	skipLabel,
 	nextCountdown,
 	nextCountdownText,
+	nextCountdownStyle,
 	playNextNow,
 	cancelNext,
 	exposed,

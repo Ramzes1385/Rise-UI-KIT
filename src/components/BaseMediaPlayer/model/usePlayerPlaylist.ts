@@ -83,6 +83,7 @@ export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayer
 		content: {
 			sources: () => episode()?.sources ?? props.sources,
 			poster: () => episode()?.poster ?? props.poster,
+			posterVideo: () => episode()?.posterVideo ?? props.posterVideo,
 			tracks: () => episode()?.tracks ?? props.tracks,
 			audioTracks: () => episode()?.audioTracks ?? props.audioTracks,
 			chapters: () => episode()?.chapters ?? props.chapters,
@@ -154,6 +155,7 @@ export function usePlayerEpisodes(
 		hasEpisodes: computed(() => playlist.playlists.value.reduce((count, list) => count + list.episodes.length, 0) > 1),
 		episodeMenu: computed(() => episodeMenu(playlist)),
 		nextCountdownText: computed(() => formatMessage(UI_PLAYER.NEXT_IN, { n: countdown.nextCountdown.value ?? 0 })),
+		nextCountdownStyle: computed(() => ({ '--media-next-seconds': props.nextCountdown })),
 		skipLabel: computed(() => (chapters.skipChapter.value?.kind ? SKIP_LABELS[chapters.skipChapter.value.kind]() : '')),
 		skipCurrentChapter(): void {
 			const chapter = chapters.skipChapter.value

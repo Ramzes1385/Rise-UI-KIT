@@ -36,7 +36,7 @@ export interface MediaReport {
 	time: number
 	/** Адрес воспроизводимого источника */
 	source: string
-	/** Техническая информация плеера: строки «название: значение» */
+	/** Отчёт для отладки: время, браузер, страница, показатели плеера и последние события */
 	details: string
 }
 
@@ -66,8 +66,13 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	logoHref?: string
 	/** Угол кадра с логотипом */
 	logoPosition?: MediaLogoPosition
-	/** Кадр до запуска: относительный адрес или http:, https:, blob:, data: */
+	/**
+	 * Обложка до первого запуска: относительный адрес или http:, https:, blob:, data:.
+	 * Анимированные GIF, WebP, APNG и AVIF проигрываются; картинка заполняет кадр (`object-fit: cover`)
+	 */
 	poster?: string
+	/** Видео-обложка до первого запуска: короткий ролик без звука по кругу (WebM, MP4); `poster` показывается, пока он грузится */
+	posterVideo?: string
 	/** Запустить без звука сразу после загрузки: браузеры разрешают автозапуск только без звука */
 	isAutoplay?: boolean
 	/** Начинать заново после окончания */

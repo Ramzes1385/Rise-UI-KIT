@@ -1,7 +1,7 @@
 import { formatMediaTime } from '@utils/mediaUtils'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { MediaStatsRow } from '../types/MediaStatsPanel.types'
 import { UI_PLAYER, formatMessage, formatNumber } from './messages'
+import type { MediaEventLogEntry, MediaStatsRow } from '../types/MediaStatsPanel.types'
 import type { MediaState, MediaElementRef, MediaSourceItem } from '../types/MediaCore.types'
 
 const REFRESH_INTERVAL = 1000
@@ -48,11 +48,24 @@ function statsRows(
 	]
 }
 
+function environment(): string[] {
+	return [
+		`${UI_PLAYER.DEBUG_DATE}: ${new Date().toISOString()}`,
+		`${UI_PLAYER.DEBUG_BROWSER}: ${navigator.userAgent}`,
+		`${UI_PLAYER.DEBUG_PAGE}: ${location.origin}${location.pathname}`,
+	]
+}
+
+function eventLine(entry: MediaEventLogEntry): string {
+	return [entry.clock, `[${entry.position}]`, entry.type, entry.detail].filter(Boolean).join(' ')
+}
+
 export function useMediaStats(options: {
 	media: MediaElementRef
 	state: Readonly<MediaState>
 	source: () => MediaSourceItem | null | undefined
 	audioSource?: () => string | null
+	events?: () => MediaEventLogEntry[]
 }) {
 	const isStatsOpen = ref(false)
 	const tick = ref(0)
@@ -65,16 +78,26 @@ export function useMediaStats(options: {
 			}, REFRESH_INTERVAL)
 	})
 	onBeforeUnmount(() => clearInterval(timer))
-	const rows = computed(() => {
+	const currentRows = (): MediaStatsRow[] => {
 		const media = options.media.value as HTMLVideoElement | null
 		const sources = { video: options.source(), audio: options.audioSource?.() ?? null }
-		return tick.value >= 0 && media ? statsRows(media, options.state, sources) : []
-	})
+		return media ? statsRows(media, options.state, sources) : []
+	}
+	const events = (): MediaEventLogEntry[] => options.events?.() ?? []
 
 	return {
 		isStatsOpen,
-		statsRows: rows,
-		statsText: computed(() => rows.value.map(row => `${row.label}: ${row.value}`).join('\n')),
+		statsRows: computed(() => (tick.value >= 0 ? currentRows() : [])),
+		statsEvents: computed(() => [...events()].reverse()),
+		statsReport: (): string =>
+			[
+				...environment(),
+				'',
+				...currentRows().map(row => `${row.label}: ${row.value}`),
+				'',
+				`${UI_PLAYER.DEBUG_EVENTS}:`,
+				...events().map(eventLine),
+			].join('\n'),
 		toggleStats(): void {
 			isStatsOpen.value = !isStatsOpen.value
 		},

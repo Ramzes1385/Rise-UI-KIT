@@ -41,10 +41,12 @@ export function usePlayerOverlays(
 		state,
 		activeSource,
 		adapterError,
+		hasCover,
 	}: {
 		state: Readonly<MediaState>
 		activeSource: Readonly<Ref<MediaSourceItem | null | undefined>>
 		adapterError?: Readonly<Ref<MediaPlayerError | null>>
+		hasCover?: () => boolean
 	},
 ) {
 	const hasStarted = ref(false)
@@ -61,6 +63,9 @@ export function usePlayerOverlays(
 		isStartScreen: computed(
 			() => !hasStarted.value && state.isPaused && !overlayError.value && (!props.isAutoplay || isAutoplayBlocked.value),
 		),
+		isCoverVisible: computed(() => !hasStarted.value && Boolean(hasCover?.())),
+		isPauseScreen: computed(() => hasStarted.value && state.isPaused && !overlayError.value),
+		pauseScreenIcon: computed<'replay' | 'play'>(() => (state.isEnded ? 'replay' : 'play')),
 		markStarted(): void {
 			hasStarted.value = true
 		},

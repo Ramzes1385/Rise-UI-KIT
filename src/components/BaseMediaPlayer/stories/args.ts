@@ -1,6 +1,6 @@
 import { fn } from 'storybook/test'
 import type { Meta } from '@storybook/vue3-vite'
-import { DEMO_POSTER, DEMO_SOURCES } from './shared'
+import { DEMO_COVER, DEMO_SOURCES } from './shared'
 import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 
 export const args = {
@@ -8,7 +8,7 @@ export const args = {
 	title: 'Демо-ролик Rise UI Kit',
 	hasTitle: true,
 	logoPosition: 'top-right',
-	poster: DEMO_POSTER,
+	poster: DEMO_COVER,
 	preload: 'metadata',
 	aspectRatio: '16 / 9',
 	mode: 'auto',

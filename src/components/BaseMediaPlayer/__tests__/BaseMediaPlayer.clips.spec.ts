@@ -54,7 +54,7 @@ describe('BaseMediaPlayer: интро и аутро', () => {
 		await clip.trigger('pause')
 		expect(overlay.find('button[aria-label="Воспроизвести"]').exists()).toBe(true)
 		await clip.trigger('click')
-		await overlay.get('.base-media-player__ad-skip').trigger('click')
+		await overlay.get('.base-media-player__skip').trigger('click')
 		expect(wrapper.find('.base-media-player__ad--clip').exists()).toBe(false)
 		expect(HTMLMediaElement.prototype.play).toHaveBeenCalled()
 		wrapper.unmount()

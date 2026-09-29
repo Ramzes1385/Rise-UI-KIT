@@ -68,15 +68,22 @@ describe('BaseMediaPlayer: меню, ссылки, жесты, позиция', 
 		expect(await screen.findByText('Ссылка скопирована')).toHaveAttribute('role', 'status')
 	})
 
-	it('техническая информация: открыть, скопировать, закрыть', async () => {
-		const { video } = await setup()
+	it('данные для отладки: показатели, лог событий элемента и плеера, отчёт в буфер обмена', async () => {
+		const { video, fake } = await setup()
+		fake.emit('play')
+		await nextTick()
 
-		await fireEvent.click(within((await openContextMenu(video)).menu).getByRole('menuitem', { name: 'Техническая информация' }))
-		const panel = screen.getByRole('region', { name: 'Техническая информация' })
-		await fireEvent.click(within(panel).getByRole('button', { name: 'Скопировать сведения' }))
+		await fireEvent.click(within((await openContextMenu(video)).menu).getByRole('menuitem', { name: 'Данные для отладки' }))
+		const panel = screen.getByRole('region', { name: 'Данные для отладки' })
+		expect(panel).toHaveTextContent('Позиция0:12 / 1:00')
+		await fireEvent.click(within(panel).getByRole('button', { name: /^События/ }))
+		const types = [...panel.querySelectorAll('.base-media-player__stats-type')].map(item => item.textContent)
+		expect(types).toEqual(expect.arrayContaining(['play', 'loadedmetadata']))
+		await fireEvent.click(within(panel).getByRole('button', { name: 'Скопировать отчёт' }))
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Позиция: 0:12 / 1:00')))
+		expect(writeText.mock.calls[0][0]).toMatch(/\[0:12\.0\] play/)
 		await fireEvent.click(within(panel).getByRole('button', { name: 'Закрыть' }))
-		expect(screen.queryByRole('region', { name: 'Техническая информация' })).toBeNull()
+		expect(screen.queryByRole('region', { name: 'Данные для отладки' })).toBeNull()
 	})
 
 	it('«Сообщить о проблеме» отправляет событие report с позицией и сведениями', async () => {

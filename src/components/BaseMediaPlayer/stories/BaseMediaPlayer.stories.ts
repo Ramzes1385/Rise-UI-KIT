@@ -16,6 +16,8 @@ const meta = {
 export default meta
 
 export const Default = cases.Default
+export const Cover = cases.Cover
+export const VideoCover = cases.VideoCover
 export const Settings = cases.Settings
 export const Subtitles = cases.Subtitles
 export const AudioTracks = cases.AudioTracks

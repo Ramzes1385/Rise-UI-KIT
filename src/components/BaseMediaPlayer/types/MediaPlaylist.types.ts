@@ -47,8 +47,10 @@ export interface MediaEpisode {
 	title: string
 	/** Источники серии — как `sources` плеера */
 	sources: MediaSourceItem[] | string
-	/** Кадр до запуска */
+	/** Обложка до запуска: картинка, в том числе анимированная */
 	poster?: string
+	/** Видео-обложка до запуска: короткий ролик без звука по кругу */
+	posterVideo?: string
 	/** Субтитры серии */
 	tracks?: MediaTextTrackItem[]
 	/** Озвучки серии */

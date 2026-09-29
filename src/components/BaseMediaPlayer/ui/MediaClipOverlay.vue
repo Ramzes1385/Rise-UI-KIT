@@ -16,9 +16,10 @@
 		<div class="base-media-player__ad-bar">
 			<span class="base-media-player__ad-label">{{ clipLabel }}</span>
 			<MediaControlButton :icon="isClipPaused ? 'play' : 'pause'" :label="clipPauseLabel" @click="toggleClipPause" />
-			<BaseButton v-if="canSkipClip" variant="soft" class="base-media-player__ad-skip" @click="finishClip">
+			<button v-if="canSkipClip" type="button" class="base-media-player__skip base-media-player__skip--inline" @click="finishClip">
 				{{ clipSkipLabel }}
-			</BaseButton>
+				<MediaIcon name="skip" />
+			</button>
 			<span v-else class="base-media-player__ad-wait">{{ clipSkipText }}</span>
 		</div>
 		<div class="base-media-player__ad-progress" :style="clipProgressStyle"></div>
@@ -26,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { BaseButton } from '@components/BaseButton'
+import MediaIcon from './MediaIcon.vue'
 import MediaControlButton from './MediaControlButton.vue'
 import { usePlayerContext } from '../model/usePlayerContext'
 

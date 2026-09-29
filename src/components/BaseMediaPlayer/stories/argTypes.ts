@@ -9,6 +9,7 @@ export const argTypes = {
 	sources: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	title: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	poster: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	posterVideo: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	tracks: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	audioTracks: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	playlists: { control: 'object', table: propGroup(ARG_GROUP.content) },

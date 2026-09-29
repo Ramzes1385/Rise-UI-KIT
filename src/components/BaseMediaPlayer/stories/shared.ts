@@ -1,13 +1,16 @@
 import demoVideo from './media/demo.webm'
 import demoDubA from './media/demo-dub-a.webm'
 import demoDubB from './media/demo-dub-b.webm'
+import demoCover from './media/demo-cover.webp'
 import demoIntro from './media/demo-intro.webm'
 import demoOutro from './media/demo-outro.webm'
 import demoVideoLow from './media/demo-144.webm'
 import demoPoster from './media/demo-poster.webp'
 import demoSubtitlesRu from './media/demo.ru.vtt'
+import demoCoverVideo from './media/demo-cover.webm'
 import demoSubtitlesEn from './media/demo.en.srt?url'
 import demoThumbnailsSprite from './media/demo-thumbnails.jpg'
+import demoCoverAnimated from './media/demo-cover-animated.webp'
 
 const WEBM = 'video/webm; codecs="vp9, opus"'
 
@@ -18,7 +21,11 @@ export const DEMO_QUALITIES = [
 	{ src: demoVideoLow, type: WEBM, label: '144p' },
 ]
 
-export const DEMO_POSTER = demoPoster
+export const DEMO_COVER = demoCover
+
+export const DEMO_COVER_ANIMATED = demoCoverAnimated
+
+export const DEMO_COVER_VIDEO = demoCoverVideo
 
 export const DEMO_INTRO = { sources: [{ src: demoIntro, type: WEBM }] }
 

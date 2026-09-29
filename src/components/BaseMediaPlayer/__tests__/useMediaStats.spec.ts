@@ -43,7 +43,13 @@ describe('useMediaStats', () => {
 			Позиция: '0:05 / 0:12',
 		})
 		expect(values['Громкость']).toMatch(/^50\s%$/)
-		expect(result.statsText.value.split('\n')).toHaveLength(9)
+		const report = result.statsReport().split('\n')
+		expect(report[0]).toMatch(/^Время отчёта: \d{4}-\d{2}-\d{2}T/)
+		expect(report[1]).toBe(`Браузер: ${navigator.userAgent}`)
+		expect(report[2]).toBe(`Страница: ${location.origin}${location.pathname}`)
+		expect(report.slice(4, 13)).toContain('Формат: video/webm')
+		expect(report.slice(-2)).toEqual(['', 'События:'])
+		expect(result.statsEvents.value).toEqual([])
 	})
 
 	it('без данных о кадрах и буфере — прочерк и 0; без элемента — пусто', () => {
@@ -90,5 +96,28 @@ describe('useMediaStats', () => {
 		expect(result.statsRows.value[1]).toEqual({ label: 'Озвучка', value: 'https://cdn.example.com/dub.m4a' })
 		audio.value = null
 		expect(result.statsRows.value.map(row => row.label)).not.toContain('Озвучка')
+	})
+
+	it('лог событий: в панели новые сверху, в отчёте — по порядку, без пустых подробностей', () => {
+		const state = reactive({
+			currentTime: 0,
+			duration: 12,
+			buffered: [],
+			playbackRate: 1,
+			volume: 1,
+			isMuted: false,
+		}) as unknown as MediaState
+		const events = [
+			{ id: 1, clock: '10:00:00.000', position: '0:00.0', type: 'loadstart', detail: 'demo.webm' },
+			{ id: 2, clock: '10:00:01.000', position: '0:00.0', type: 'play', detail: '' },
+		]
+		const { result } = withSetup(() => useMediaStats({ media: ref(video()), state, source: () => undefined, events: () => events }))
+
+		expect(result.statsEvents.value.map(entry => entry.id)).toEqual([2, 1])
+		expect(result.statsReport().split('\n').slice(-3)).toEqual([
+			'События:',
+			'10:00:00.000 [0:00.0] loadstart demo.webm',
+			'10:00:01.000 [0:00.0] play',
+		])
 	})
 })
