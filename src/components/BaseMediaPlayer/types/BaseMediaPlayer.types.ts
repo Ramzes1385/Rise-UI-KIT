@@ -1,14 +1,14 @@
-import type { MediaHlsConstructor } from './MediaHls.types'
-import type { MediaAudioTrackItem } from './MediaAudio.types'
-import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { createPlayerContext } from '../model/useBaseMediaPlayer'
+import type { MediaHlsConstructor } from './playback/MediaHls.types'
+import type { MediaAudioTrackItem } from './content/MediaAudio.types'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { MediaWatchEvent, MediaWatchParty } from './MediaWatch.types'
-import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './MediaAds.types'
-import type { MediaClip, MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
-import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './MediaNotices.types'
-import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './MediaCore.types'
+import type { MediaTextTrackItem } from './content/MediaSubtitles.types'
+import type { createPlayerContext } from '../model/player/useBaseMediaPlayer'
+import type { MediaWatchEvent, MediaWatchParty } from './panels/MediaWatch.types'
+import type { MediaClip, MediaChapter, MediaPlaylist } from './content/MediaPlaylist.types'
+import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './overlays/MediaAds.types'
+import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './overlays/MediaNotices.types'
+import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './playback/MediaCore.types'
 
 /** Вариант оформления один: панель управления лежит поверх кадра на тёмной подложке в обеих темах */
 export const MEDIA_PLAYER_VARIANTS = ['default'] as const

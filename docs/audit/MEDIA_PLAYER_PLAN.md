@@ -327,6 +327,8 @@ interface BaseMediaPlayerExpose extends MediaPlayerActions {
 
 ## 11. Реализация (порция 4.1)
 
+Пути файлов в разделах 11–14 — на момент порций. С П14 файлы плеера разложены по подпапкам по назначению (`model/core/`, `model/controls/`, `ui/panels/`, `__tests__/browser/` и т. д., см. CONTRIBUTING, раздел 9).
+
 Сделано — в `src/components/BaseMediaPlayer/`:
 
 | Часть | Что делает |
@@ -521,6 +523,7 @@ interface BaseMediaPlayerExpose extends MediaPlayerActions {
 | П11 | Пятая партия правок: экран ошибки с анимированным фоном на выбор (`retro`, `aurora`, `noise`, `glitch`) и слот `error` | ⬜ |
 | П12 | Шестая партия правок: значки в стиле Font Awesome Solid, «Поделиться» со всеми соцсетями | ⬜ |
 | П13 | Шестая партия правок: баннер снизу во всю ширину, актёры сериала со ссылками на соцсети, все кнопки в Default | ⬜ |
+| П14 | Правка 19:30 по коду: `model/`, `ui/`, `types/`, `__tests__/` и `stories/cases/` плеера — по подпапкам по назначению (175 файлов, импорты переписаны скриптом); правило — в CONTRIBUTING, раздел 9 | ✅ |
 
 Четвёртая партия правок владельца (29.09, 15:18):
 

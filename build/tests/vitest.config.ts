@@ -18,7 +18,7 @@ const ROOT = path.resolve(dirname, '../..')
 const BASE_COVERAGE_INCLUDE = ['src/utils/**/*.ts', 'src/composables/**/*.ts', 'src/components/**/*.vue', 'src/components/**/model/use*.ts']
 
 /** Точечные include/exclude передаются поверх через CLI (--coverage.include). */
-const COMPONENT_COVERAGE_INCLUDE = ['src/components/**/*.vue', 'src/components/**/model/use*.ts']
+const COMPONENT_COVERAGE_INCLUDE = ['src/components/**/*.vue', 'src/components/**/model/**/use*.ts']
 
 const COVERAGE_MODE = process.env.COVERAGE_MODE ?? ''
 

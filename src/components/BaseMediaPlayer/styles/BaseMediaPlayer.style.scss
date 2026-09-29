@@ -635,7 +635,10 @@ $media-ad: #fc0;
 	}
 
 	&__slider-buffered {
+		width: 100%;
+		border-radius: 0;
 		background-color: rgb(255 255 255 / 30%);
+		transform-origin: left center;
 	}
 
 	&__slider-track--segmented &__slider-buffered {

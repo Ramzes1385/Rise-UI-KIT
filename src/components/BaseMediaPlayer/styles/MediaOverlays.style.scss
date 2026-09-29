@@ -104,6 +104,7 @@
 		color: white;
 		cursor: pointer;
 		pointer-events: auto;
+		transform: scale(1);
 		transition:
 			background-color var(--media-normal) var(--media-ease),
 			box-shadow var(--media-normal) var(--media-ease),

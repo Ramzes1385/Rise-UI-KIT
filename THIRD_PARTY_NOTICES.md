@@ -2,7 +2,7 @@
 
 ## Material Design Icons
 
-Иконки медиаплеера (`src/components/BaseMediaPlayer/types/MediaIcon.types.ts`, в сборке — `dist/media.js`) — контуры из [Material Design Icons](https://pictogrammers.com/library/mdi/) версии 7.4.47 (пакет `@mdi/js`), © Pictogrammers. Иконки распространяются по лицензии Apache License 2.0; текст лицензии набора и Apache License 2.0 — ниже.
+Иконки медиаплеера (`src/components/BaseMediaPlayer/types/controls/MediaIcon.types.ts`, в сборке — `dist/media.js`) — контуры из [Material Design Icons](https://pictogrammers.com/library/mdi/) версии 7.4.47 (пакет `@mdi/js`), © Pictogrammers. Иконки распространяются по лицензии Apache License 2.0; текст лицензии набора и Apache License 2.0 — ниже.
 
 ```text
 Pictogrammers Free License

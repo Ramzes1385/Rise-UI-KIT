@@ -1,9 +1,9 @@
 /**
- * Структура исходников: типы — только в папках types/.
+ * Структура исходников: типы — только в папках types/ (в том числе в их подпапках по назначению).
  */
 
 import { readdirSync } from 'node:fs'
-import { basename, dirname, join, relative, resolve } from 'node:path'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
@@ -15,10 +15,10 @@ function listFiles(dir: string): string[] {
 }
 
 describe('структура src', () => {
-	it('файлы *.types.ts лежат в папках types/', () => {
+	it('файлы *.types.ts лежат в папках types/ или в их подпапках', () => {
 		const misplaced = listFiles(join(ROOT, 'src'))
-			.filter(file => file.endsWith('.types.ts') && basename(dirname(file)) !== 'types')
 			.map(file => relative(ROOT, file))
+			.filter(file => file.endsWith('.types.ts') && !dirname(file).split(sep).includes('types'))
 
 		expect(misplaced).toEqual([])
 	})

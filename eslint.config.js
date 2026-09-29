@@ -114,7 +114,7 @@ export default tseslint.config(
 	{
 		files: ['src/**/*.{ts,vue}'],
 		ignores: [
-			'src/**/types/*.types.ts',
+			'src/**/types/**/*.types.ts',
 			'src/**/__tests__/**',
 			'src/**/*.stories.ts',
 			'src/components/*/stories/**',
@@ -133,7 +133,7 @@ export default tseslint.config(
 
 	{
 		files: ['src/components/**/*.{ts,vue}'],
-		ignores: ['src/components/**/types/*.types.ts'],
+		ignores: ['src/components/**/types/**/*.types.ts'],
 		plugins: { rise: RISE },
 		rules: { 'rise/no-comments': 'error' },
 	},
@@ -162,7 +162,7 @@ export default tseslint.config(
 	},
 
 	{
-		files: ['src/**/types/*.types.ts'],
+		files: ['src/**/types/**/*.types.ts'],
 		rules: {
 			'no-restricted-syntax': [
 				'error',

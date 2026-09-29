@@ -504,6 +504,26 @@ src/components/BaseComponent/
 └── index.ts                       # Публичный экспорт
 ```
 
+### Подпапки
+
+Код должен читаться не только внутри файлов, но и по структуре. Если в папке компонента (`model/`, `ui/`, `types/`,
+`__tests__/`, `stories/cases/`, `styles/`) больше 7 файлов, они раскладываются по подпапкам по назначению. Названия
+подпапок в разных папках по возможности совпадают: тест лежит в той же области, что и модель, которую он проверяет. В корне
+остаются общие файлы: главный компонент `ui/BaseX.vue`, публичные типы `types/BaseX.types.ts`, тексты `model/messages.ts`,
+история `stories/cases/Default.ts`. Правило касается всего проекта, в том числе `src/composables` и `src/utils`.
+
+Пример — BaseMediaPlayer:
+
+```
+model/        core/ player/ controls/ input/ panels/ playlist/ captions/ audio/ ads/ notices/ cast/ screen/ preview/ sharing/
+ui/           controls/ panels/ overlays/ + BaseMediaPlayer.vue
+types/        playback/ controls/ panels/ content/ overlays/ + BaseMediaPlayer.types.ts
+__tests__/    те же области, что в model/, + browser/ (e2e и visual) и utils/ (стабы и хелперы)
+stories/      cases/{appearance,playback,content,ads,sharing}/ + Default.ts, demo/ (эмуляции для историй)
+```
+
+ESLint, покрытие и сборка понимают вложенные папки: правила действуют для `model/**`, `ui/**`, `types/**/*.types.ts`.
+
 ### Типы
 
 Типы лежат в папке `types/` рядом с кодом: `BaseX/types/BaseX.types.ts`, `useX/types/useX.types.ts`,
