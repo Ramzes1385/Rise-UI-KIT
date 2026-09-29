@@ -17,7 +17,7 @@
 		aspect-ratio: var(--media-aspect, 16 / 9);
 		overflow: hidden;
 		border-radius: sz(12px);
-		background-color: black;
+		background-color: var(--media-shade);
 		box-shadow: 0 16px 48px rgb(0 0 0 / 45%);
 
 		@include motion-safe {
@@ -53,7 +53,7 @@
 		display: flex;
 		gap: sz(2px);
 		border-radius: sz(8px);
-		background-color: rgb(0 0 0 / 55%);
+		background-color: rgb(7 8 14 / 60%);
 		opacity: 0;
 		transition: opacity 200ms var(--rise-ease);
 
@@ -117,7 +117,7 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		width: min(#{sz(400px)}, 100%);
-		background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		background-image: linear-gradient(160deg, rgb(30 32 48 / 97%) 0%, rgb(14 15 24 / 97%) 100%);
 		box-shadow: -4px 0 24px rgb(0 0 0 / 50%);
 		color: white;
 	}
@@ -141,7 +141,7 @@
 	}
 
 	&__episodes-title {
-		color: #e2e8f0;
+		color: var(--media-text);
 		font-size: sz(18px);
 		font-weight: 700;
 	}
@@ -160,9 +160,9 @@
 		flex: none;
 		padding: sz(6px) sz(14px);
 		border: 1px solid rgb(255 255 255 / 12%);
-		border-radius: 999px;
+		border-radius: sz(8px);
 		background-color: transparent;
-		color: #94a3b8;
+		color: var(--media-muted);
 		font: inherit;
 		font-size: sz(14px);
 		font-weight: 600;
@@ -173,12 +173,12 @@
 
 		@include hover {
 			background-color: rgb(255 255 255 / 6%);
-			color: #e2e8f0;
+			color: var(--media-text);
 		}
 
 		&[aria-pressed='true'] {
-			border-color: #c2410c;
-			background-color: #c2410c;
+			border-color: var(--media-primary-strong);
+			background-color: var(--media-primary-strong);
 			color: white;
 		}
 	}
@@ -221,7 +221,7 @@
 
 	&__episode-card--current {
 		border-color: var(--media-accent);
-		background-color: rgb(255 102 0 / 16%);
+		background-color: var(--media-primary-soft);
 	}
 
 	&__episode-number {
@@ -233,14 +233,14 @@
 		height: sz(28px);
 		border-radius: sz(6px);
 		background-color: rgb(255 255 255 / 10%);
-		color: #e2e8f0;
+		color: var(--media-text);
 		font-size: sz(14px);
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 	}
 
 	&__episode-card--current &__episode-number {
-		background-color: #c2410c;
+		background-color: var(--media-primary-strong);
 		color: white;
 	}
 
@@ -251,7 +251,7 @@
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
 		border-radius: sz(6px);
-		background-image: linear-gradient(135deg, #334155, #1e293b);
+		background-image: linear-gradient(135deg, rgb(52 55 76), rgb(28 30 44));
 	}
 
 	&__episode-image {
@@ -280,7 +280,7 @@
 	}
 
 	&__episode-name {
-		color: #e2e8f0;
+		color: var(--media-text);
 		font-size: sz(14px);
 		font-weight: 600;
 		@include truncate;
@@ -289,7 +289,7 @@
 	&__episode-description {
 		display: -webkit-box;
 		overflow: hidden;
-		color: #94a3b8;
+		color: var(--media-muted);
 		font-size: sz(12px);
 		line-height: 1.35;
 		-webkit-box-orient: vertical;
@@ -379,11 +379,11 @@
 	}
 
 	&__watch-button--primary {
-		background-color: #2563eb;
+		background-color: var(--media-primary-strong);
 		color: white;
 
 		@include hover {
-			background-color: #1d4ed8;
+			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, white);
 		}
 	}
 
@@ -427,8 +427,8 @@
 		width: sz(32px);
 		height: sz(32px);
 		overflow: hidden;
-		border-radius: 50%;
-		background-image: linear-gradient(135deg, #6366f1, #ec4899);
+		border-radius: sz(10px);
+		background-image: linear-gradient(135deg, var(--media-primary), #ec4899);
 		color: white;
 		font-size: sz(12px);
 		font-weight: 700;
@@ -461,9 +461,9 @@
 	&__watch-status {
 		flex: none;
 		padding: sz(2px) sz(8px);
-		border-radius: 999px;
+		border-radius: sz(6px);
 		background-color: rgb(255 255 255 / 10%);
-		color: #cbd5e1;
+		color: color-mix(in srgb, var(--media-text) 82%, transparent);
 		font-size: sz(11px);
 		font-weight: 600;
 	}

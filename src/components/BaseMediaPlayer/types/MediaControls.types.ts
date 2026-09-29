@@ -12,11 +12,13 @@ export interface MediaControlButtonProps {
 	icon: MediaIconName
 	/** Доступное имя и текст подсказки */
 	label: string
+	/** Подсказка, если она подробнее доступного имени: «Озвучка: AniLibria» */
+	tooltip?: string
 	/** Короткий текст справа от иконки: текущая скорость, качество */
 	text?: string
 	/** Текст под иконкой: секунды перемотки */
 	caption?: string
-	/** Число в кружке: количество серий */
+	/** Число на значке: количество серий */
 	badge?: number
 	/** Кнопка-переключатель: `aria-pressed` */
 	isPressed?: boolean

@@ -9,7 +9,7 @@ export const AudioTracks: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Озвучки отдельными аудиофайлами (`audioTracks`): звучат синхронно с видео, переключаются кнопкой «Озвучка» с той же',
-					'позиции без перезагрузки видео. Пункт без `src` — звук самого видео. Громкость и кнопка звука управляют выбранной',
+					'позиции без перезагрузки видео. На кнопке — только значок, выбранная озвучка — в подсказке. Пункт без `src` — звук самого видео. Громкость и кнопка звука управляют выбранной',
 					'озвучкой; `v-model:audio-track` — выбранная озвучка. Расхождение больше 0,3 с исправляется само.',
 					'Файл с несколькими дорожками (MP4, MKV) без списка: меню показывает дорожки, если их видит браузер (Safari);',
 					'для остальных браузеров дорожки выносятся в отдельные файлы — рецепт ffmpeg в README.',
@@ -25,7 +25,7 @@ export const AudioTracks: StoryObj<typeof meta> = {
 		await expect(storyVideo(canvasElement).muted).toBe(true)
 
 		const dub = canvas.getByRole('button', { name: 'Озвучка' })
-		await expect(dub).toHaveTextContent('Озвучка A (330 Гц)')
+		await expect(dub).toHaveAttribute('data-tooltip', 'Озвучка: Озвучка A (330 Гц)')
 		await userEvent.click(dub)
 		await userEvent.click(await player.findByRole('menuitemradio', { name: 'Оригинал' }))
 		await waitFor(() => expect(audio.hasAttribute('src')).toBe(false))

@@ -2,7 +2,7 @@
 	&__cover {
 		position: absolute;
 		inset: 0;
-		background-color: black;
+		background-color: var(--media-shade);
 		pointer-events: none;
 	}
 
@@ -28,7 +28,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: rgb(0 0 0 / 45%);
+		background-color: rgb(7 8 14 / 45%);
 		pointer-events: none;
 		backdrop-filter: blur(2px);
 	}
@@ -88,22 +88,22 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: sz(88px);
-		height: sz(88px);
+		width: sz(80px);
+		height: sz(80px);
 		padding: 0;
 		border: 0;
-		border-radius: 50%;
-		background-color: rgb(255 255 255 / 95%);
+		border-radius: sz(22px);
+		background-color: var(--media-primary);
 		box-shadow:
-			0 4px 20px rgb(0 0 0 / 25%),
-			0 8px 40px rgb(0 0 0 / 15%);
-		color: black;
+			0 10px 30px var(--media-glow),
+			0 4px 12px rgb(0 0 0 / 30%);
+		color: white;
 		cursor: pointer;
 		pointer-events: auto;
 		transition:
 			background-color 300ms var(--rise-ease),
 			box-shadow 300ms var(--rise-ease),
-			transform 300ms var(--rise-ease);
+			transform 300ms var(--rise-ease-out);
 
 		.base-media-player__icon {
 			width: sz(40px);
@@ -111,11 +111,10 @@
 		}
 
 		@include hover {
-			background-color: white;
 			box-shadow:
-				0 6px 30px rgb(0 0 0 / 30%),
-				0 12px 60px rgb(0 0 0 / 20%);
-			transform: scale(1.1);
+				0 14px 44px var(--media-glow),
+				0 6px 16px rgb(0 0 0 / 30%);
+			transform: scale(1.06);
 		}
 
 		&:active {
@@ -129,7 +128,7 @@
 		margin: 0;
 		padding: sz(6px) sz(12px);
 		border-radius: sz(8px);
-		background-color: rgb(0 0 0 / 60%);
+		background-color: rgb(7 8 14 / 60%);
 		font-size: sz(14px);
 		text-align: center;
 	}
@@ -142,13 +141,15 @@
 		align-items: center;
 		justify-content: center;
 		gap: sz(2px);
-		width: sz(80px);
-		height: sz(80px);
-		border-radius: 50%;
-		background-color: rgb(255 255 255 / 95%);
-		box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-		color: rgb(0 0 0 / 80%);
+		width: sz(84px);
+		height: sz(84px);
+		border: 1px solid var(--media-border);
+		border-radius: sz(20px);
+		background-color: var(--media-panel);
+		box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+		color: var(--media-text);
 		opacity: 0.92;
+		backdrop-filter: blur(12px);
 		pointer-events: none;
 		transform: translateY(-50%);
 
@@ -171,7 +172,7 @@
 	}
 
 	&__seek-hint-label {
-		color: rgb(0 0 0 / 70%);
+		color: var(--media-text);
 		font-size: sz(12px);
 		font-weight: 600;
 		line-height: 1;
@@ -183,7 +184,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: rgb(0 0 0 / 50%);
+		background-color: rgb(7 8 14 / 50%);
 		color: white;
 		pointer-events: none;
 
@@ -216,7 +217,7 @@
 		justify-content: center;
 		gap: sz(8px);
 		padding: sz(32px);
-		background-color: rgb(0 0 0 / 80%);
+		background-color: rgb(7 8 14 / 86%);
 		text-align: center;
 	}
 
@@ -248,7 +249,7 @@
 		padding: sz(10px) sz(20px);
 		border: 0;
 		border-radius: sz(8px);
-		background-color: #2563eb;
+		background-color: var(--media-primary-strong);
 		color: white;
 		font: inherit;
 		font-size: sz(15px);
@@ -263,8 +264,7 @@
 		}
 
 		@include hover {
-			background-color: #1d4ed8;
-			box-shadow: 0 4px 12px rgb(59 130 246 / 30%);
+			box-shadow: 0 6px 18px var(--media-glow);
 			transform: translateY(-2px);
 		}
 
@@ -291,8 +291,8 @@
 	&__boost,
 	&__flash {
 		padding: sz(4px) sz(12px);
-		border-radius: 999px;
-		background-color: rgb(0 0 0 / 56%);
+		border-radius: sz(8px);
+		background-color: rgb(7 8 14 / 60%);
 		font-size: sz(13px);
 		font-weight: 500;
 	}
@@ -308,12 +308,12 @@
 		box-sizing: border-box;
 		max-width: min(#{sz(340px)}, 100%);
 		padding: sz(6px) sz(14px) sz(6px) sz(6px);
-		border: 1px solid rgb(251 191 36 / 45%);
+		border: 1px solid color-mix(in srgb, var(--media-primary) 45%, transparent);
 		border-radius: sz(14px);
 		background-color: var(--media-panel);
 		box-shadow:
 			0 10px 30px rgb(0 0 0 / 45%),
-			0 0 24px rgb(251 191 36 / 18%);
+			0 0 24px color-mix(in srgb, var(--media-primary) 22%, transparent);
 		cursor: pointer;
 		pointer-events: auto;
 		backdrop-filter: blur(10px);
@@ -329,7 +329,7 @@
 		height: sz(40px);
 		overflow: hidden;
 		border-radius: sz(10px);
-		background-image: linear-gradient(135deg, #fbbf24, #f97316);
+		background-image: linear-gradient(135deg, var(--media-primary), #ec4899);
 		color: white;
 
 		.base-media-player__icon {
@@ -364,7 +364,7 @@
 	}
 
 	&__achievement-label {
-		color: #fbbf24;
+		color: color-mix(in srgb, var(--media-primary) 55%, white);
 		font-size: sz(11px);
 		font-weight: 600;
 		letter-spacing: 0.04em;
@@ -480,7 +480,7 @@
 		height: sz(28px);
 		padding: 0;
 		border: 0;
-		border-radius: 50%;
+		border-radius: sz(8px);
 		background-color: rgb(255 255 255 / 12%);
 		color: var(--media-text);
 		cursor: pointer;
@@ -576,9 +576,9 @@
 		box-sizing: border-box;
 		width: min(#{sz(360px)}, calc(100% - #{sz(32px)}));
 		padding: sz(14px);
-		border: 2px solid rgb(59 130 246 / 50%);
-		border-radius: sz(12px);
-		background-color: rgb(15 23 42 / 95%);
+		border: 1px solid color-mix(in srgb, var(--media-primary) 45%, transparent);
+		border-radius: sz(14px);
+		background-color: var(--media-panel-solid);
 		box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
 		backdrop-filter: blur(10px);
 		transition: bottom 300ms var(--rise-ease);
@@ -593,7 +593,6 @@
 			display: block;
 			width: 100%;
 			height: 100%;
-			transform: rotate(-90deg);
 		}
 	}
 
@@ -604,12 +603,12 @@
 	}
 
 	&__next-track {
-		stroke: rgb(148 163 184 / 20%);
+		stroke: rgb(255 255 255 / 12%);
 	}
 
 	&__next-progress {
 		stroke: var(--media-primary);
-		stroke-dasharray: 283;
+		stroke-dasharray: 100;
 		stroke-linecap: round;
 
 		@include motion-safe {
@@ -637,14 +636,14 @@
 
 	&__next-title {
 		margin: 0;
-		color: #e2e8f0;
+		color: var(--media-text);
 		font-size: sz(15px);
 		font-weight: 600;
 	}
 
 	&__next-episode {
 		margin: 0;
-		color: #94a3b8;
+		color: var(--media-muted);
 		font-size: sz(13px);
 		@include truncate;
 	}
@@ -664,8 +663,8 @@
 		padding: sz(8px) sz(14px);
 		border: 0;
 		border-radius: sz(8px);
-		background-color: rgb(148 163 184 / 20%);
-		color: #e2e8f0;
+		background-color: rgb(255 255 255 / 12%);
+		color: var(--media-text);
 		font: inherit;
 		font-size: sz(14px);
 		font-weight: 600;
@@ -679,7 +678,7 @@
 		}
 
 		@include hover {
-			background-color: rgb(148 163 184 / 30%);
+			background-color: rgb(255 255 255 / 20%);
 		}
 
 		&:active {
@@ -688,11 +687,11 @@
 	}
 
 	&__next-button--primary {
-		background-color: #2563eb;
+		background-color: var(--media-primary-strong);
 		color: white;
 
 		@include hover {
-			background-color: #1d4ed8;
+			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, white);
 		}
 	}
 
@@ -793,8 +792,8 @@
 	&__stats-count {
 		min-width: sz(18px);
 		padding: 0 sz(5px);
-		border-radius: 999px;
-		background-color: #2563eb;
+		border-radius: sz(5px);
+		background-color: var(--media-primary-strong);
 		color: white;
 		font-size: sz(10px);
 		font-variant-numeric: tabular-nums;
@@ -853,7 +852,7 @@
 	}
 
 	&__stats-type {
-		color: #93c5fd;
+		color: color-mix(in srgb, var(--media-primary) 50%, white);
 		font-weight: 600;
 		overflow-wrap: anywhere;
 	}
@@ -870,7 +869,7 @@
 }
 
 .base-media-player .base-media-player__context {
-	--dd-bg: rgb(28 28 28 / 95%);
+	--dd-bg: var(--media-panel-solid);
 	--dd-border: transparent;
 	--dd-pad-top: 8px;
 	--dd-pad-right: 0px;
@@ -937,7 +936,7 @@
 	}
 
 	to {
-		stroke-dashoffset: 283;
+		stroke-dashoffset: 100;
 	}
 }
 

@@ -35,7 +35,7 @@ describe('BaseMediaPlayer: озвучки', () => {
 		expect(audioElement.volume).toBe(0.6)
 		expect(dub.options()).toEqual(['Оригинал', 'AniLibria'])
 		expect(dub.checked()).toBe('AniLibria')
-		expect(wrapper.get('button[aria-label="Озвучка"]').text()).toBe('AniLibria')
+		expect(wrapper.get('button[aria-label="Озвучка"]').attributes('data-tooltip')).toBe('Озвучка: AniLibria')
 		dub.pick('Оригинал')
 		await nextTick()
 		expect(videoElement.muted).toBe(false)

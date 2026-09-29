@@ -32,16 +32,6 @@
 					:label="UI_PLAYER.NEXT_EPISODE"
 					@click="playNext" />
 				<MediaControlButton
-					icon="rewind"
-					:caption="String(seekSteps.large)"
-					:label="seekLabel(-seekSteps.large)"
-					@click="actions.seekBy(-seekSteps.large)" />
-				<MediaControlButton
-					icon="forward"
-					:caption="String(seekSteps.large)"
-					:label="seekLabel(seekSteps.large)"
-					@click="actions.seekBy(seekSteps.large)" />
-				<MediaControlButton
 					class="base-media-player__seek-more"
 					icon="more"
 					:label="UI_PLAYER.SEEK_MORE"
@@ -127,7 +117,7 @@
 						<MediaControlButton
 							icon="dub"
 							:label="UI_PLAYER.AUDIO"
-							:text="audioText"
+							:tooltip="audioHint"
 							aria-haspopup="menu"
 							:aria-expanded="isOpen"
 							@click="toggle" />
@@ -185,25 +175,12 @@
 			<div v-if="isSeekRowOpen" class="base-media-player__bar base-media-player__bar--secondary">
 				<div class="base-media-player__group">
 					<MediaControlButton
-						icon="rewind"
-						:caption="String(seekSteps.long)"
-						:label="seekLabel(-seekSteps.long)"
-						@click="actions.seekBy(-seekSteps.long)" />
-					<MediaControlButton
-						icon="rewind"
-						:caption="String(seekSteps.short)"
-						:label="seekLabel(-seekSteps.short)"
-						@click="actions.seekBy(-seekSteps.short)" />
-					<MediaControlButton
-						icon="forward"
-						:caption="String(seekSteps.short)"
-						:label="seekLabel(seekSteps.short)"
-						@click="actions.seekBy(seekSteps.short)" />
-					<MediaControlButton
-						icon="forward"
-						:caption="String(seekSteps.long)"
-						:label="seekLabel(seekSteps.long)"
-						@click="actions.seekBy(seekSteps.long)" />
+						v-for="step in seekRow"
+						:key="step"
+						:icon="step < 0 ? 'rewind' : 'forward'"
+						:caption="String(Math.abs(step))"
+						:label="seekLabel(step)"
+						@click="actions.seekBy(step)" />
 				</div>
 				<div v-if="!isAudioMode" class="base-media-player__group base-media-player__group--end">
 					<MediaControlButton
@@ -237,8 +214,8 @@ const {
 	adMarks,
 	adSegmentRanges,
 	audioMenu,
+	audioHint,
 	audioOptions,
-	audioText,
 	captionMenu,
 	captionTracks,
 	castLabel,
@@ -279,7 +256,7 @@ const {
 	qualityText,
 	rateText,
 	seekLabel,
-	seekSteps,
+	seekRow,
 	seekValueText,
 	setAmbient,
 	setAutoNext,

@@ -45,6 +45,7 @@ export const argTypes = {
 	hasSeekPreview: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	hasMiniPlayer: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	accentColor: { control: 'color', table: propGroup(ARG_GROUP.appearance) },
 	mode: { control: 'inline-radio', options: [...MEDIA_PLAYER_MODES], table: propGroup(ARG_GROUP.appearance) },
 	preload: { control: 'inline-radio', options: [...MEDIA_PRELOAD_MODES], table: propGroup(ARG_GROUP.behavior) },
 	crossorigin: { control: 'inline-radio', options: ['anonymous', 'use-credentials'], table: propGroup(ARG_GROUP.behavior) },

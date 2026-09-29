@@ -65,7 +65,7 @@ describe('меню панели плеера', () => {
 			['Оригинал', false],
 			['Студия A', true],
 		])
-		expect(menus.audioText.value).toBe('Студия A')
+		expect(menus.audioHint.value).toBe('Озвучка: Студия A')
 		menus.qualityMenu.value.items[0].onSelect?.()
 		menus.audioMenu.value.items[0].onSelect?.()
 		expect(selectQuality).toHaveBeenCalledWith(HD.id)
@@ -73,7 +73,7 @@ describe('меню панели плеера', () => {
 
 		const empty = useMediaMenus(source({ activeQualityId: () => undefined }))
 		expect(empty.qualityText.value).toBe('')
-		expect(empty.audioText.value).toBe('')
+		expect(empty.audioHint.value).toBe('Озвучка')
 	})
 
 	it('субтитры: «Выкл», дорожки, вид субтитров и загрузка файла', () => {

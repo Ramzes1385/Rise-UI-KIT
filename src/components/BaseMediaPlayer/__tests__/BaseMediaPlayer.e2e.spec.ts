@@ -106,8 +106,6 @@ test('клавиатура: все элементы панели доступн�
 	expect(visited).toEqual([
 		'Перемотка',
 		'Воспроизвести',
-		'Назад на 10 с',
-		'Вперёд на 10 с',
 		'Точная перемотка',
 		'Выключить звук',
 		'Громкость',
@@ -170,10 +168,10 @@ test('совместный просмотр: вкладка по ссылке п
 	const media = (target: Page) => target.locator('video.base-media-player__media')
 
 	await media(guest).evaluate(video => {
-		video.muted = true
+		;(video as HTMLVideoElement).muted = true
 	})
 	await media(page).evaluate(video => {
-		video.muted = true
+		;(video as HTMLVideoElement).muted = true
 		return (video as HTMLVideoElement).play()
 	})
 	await expect.poll(() => media(guest).evaluate(video => (video as HTMLVideoElement).paused)).toBe(false)
@@ -186,6 +184,29 @@ test('совместный просмотр: вкладка по ссылке п
 	await guest.close()
 	await page.getByRole('button', { name: 'Совместный просмотр' }).click()
 	await expect(page.locator('.base-media-player__watch-member').filter({ hasText: 'Смотрит' })).toHaveCount(0)
+})
+
+test('подгонка панели: открытое и закрытое меню не прячет кнопки первого ряда', async ({ page }) => {
+	await openPlayer(page, 'episodes')
+	await page.setViewportSize({ width: 1000, height: 640 })
+	const bar = page.locator('.base-media-player__bar').first()
+	await expect(bar).toHaveAttribute('data-fit', '')
+	await bar.evaluate(element => {
+		const log: string[] = []
+		Object.assign(window, { fitLog: log })
+		new MutationObserver(() => log.push(element.dataset.fit ?? '')).observe(element, { attributeFilter: ['data-fit'] })
+	})
+
+	await page.locator('.base-media-player__chapter').click()
+	await expect(page.getByRole('menu', { name: 'Главы' })).toBeVisible()
+	await page.keyboard.press('Escape')
+	await expect(page.getByRole('menu', { name: 'Главы' })).toHaveCount(0)
+	await page.getByRole('button', { name: 'Скорость воспроизведения' }).click()
+	await page.keyboard.press('Escape')
+	await page.waitForTimeout(400)
+	const log = await page.evaluate(() => (window as unknown as { fitLog: string[] }).fitLog)
+	expect(new Set(log)).toEqual(new Set(log.length > 0 ? [''] : []))
+	await expect(page.getByRole('button', { name: 'Следующая серия' })).toBeVisible()
 })
 
 test('производительность: панель обновляется реже кадра при воспроизведении и не работает на паузе', async ({ page }) => {

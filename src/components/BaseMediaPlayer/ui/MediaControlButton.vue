@@ -8,7 +8,7 @@
 		}"
 		:aria-label="label"
 		:aria-pressed="isPressed"
-		:data-tooltip="label">
+		:data-tooltip="tooltip ?? label">
 		<MediaIcon :name="icon" />
 		<span v-if="text" class="base-media-player__control-text" aria-hidden="true">{{ text }}</span>
 		<span v-if="caption" class="base-media-player__control-caption" aria-hidden="true">{{ caption }}</span>

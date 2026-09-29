@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Cover, VideoCover } from './Cover'
 export { Settings } from './Settings'
+export { Colors } from './Colors'
 export { Subtitles } from './Subtitles'
 export { AudioTracks } from './AudioTracks'
 export { Episodes } from './Episodes'

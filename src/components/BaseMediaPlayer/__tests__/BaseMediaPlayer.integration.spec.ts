@@ -20,15 +20,13 @@ async function setup(props: Partial<BaseMediaPlayerProps> = {}, initial: Partial
 }
 
 describe('BaseMediaPlayer: клавиатура и мышь', () => {
-	it('Tab проходит по контролам: перемотка, воспроизведение, ±10 с, точная перемотка, звук, громкость, скорость', async () => {
+	it('Tab проходит по контролам: перемотка, воспроизведение, точная перемотка, звук, громкость, скорость', async () => {
 		const user = userEvent.setup()
 		await setup()
 
 		for (const [role, name] of [
 			['slider', 'Перемотка'],
 			['button', 'Воспроизвести'],
-			['button', 'Назад на 10 с'],
-			['button', 'Вперёд на 10 с'],
 			['button', 'Точная перемотка'],
 			['button', 'Выключить звук'],
 			['slider', 'Громкость'],

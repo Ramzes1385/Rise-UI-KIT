@@ -96,6 +96,7 @@ export const playerEn: UiKitLocale['player'] = {
 	CAPTIONS_DRAG: 'Drag to move the subtitles',
 	CAPTIONS_DROP: 'Drop the file to add subtitles',
 	AUDIO: 'Audio',
+	AUDIO_CURRENT: 'Audio: {name}',
 	AUDIO_TRACK: 'Track {n}',
 	AUDIO_ERROR: 'Could not load the audio track',
 	STATS_AUDIO: 'Audio track',

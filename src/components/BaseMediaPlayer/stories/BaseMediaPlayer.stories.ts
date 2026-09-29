@@ -19,6 +19,7 @@ export const Default = cases.Default
 export const Cover = cases.Cover
 export const VideoCover = cases.VideoCover
 export const Settings = cases.Settings
+export const Colors = cases.Colors
 export const Subtitles = cases.Subtitles
 export const AudioTracks = cases.AudioTracks
 export const Episodes = cases.Episodes

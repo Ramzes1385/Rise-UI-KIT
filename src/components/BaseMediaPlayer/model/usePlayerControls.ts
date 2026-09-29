@@ -41,7 +41,10 @@ export function usePlayerControls() {
 			updateCaptionStyle: player.updateCaptionStyle,
 		}),
 		volumeIcon: computed(() => volumeIcon(player.state.volume, player.state.isMuted)),
-		seekSteps: computed(() => ({ short: player.props.seekStep, large: player.props.seekStepLarge, long: SEEK_LONG })),
+		seekRow: computed(() => {
+			const steps = [...new Set([SEEK_LONG, player.props.seekStepLarge, player.props.seekStep])].sort((a, b) => b - a)
+			return [...steps.map(step => -step), ...[...steps].reverse()]
+		}),
 		seekLabel: (seconds: number): string =>
 			formatMessage(seconds < 0 ? UI_PLAYER.SEEK_BACK : UI_PLAYER.SEEK_FORWARD, { n: Math.abs(seconds) }),
 		episodeCount: computed(() => (player.props.playlists ?? []).reduce((count, list) => count + list.episodes.length, 0)),

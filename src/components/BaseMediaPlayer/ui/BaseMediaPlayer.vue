@@ -189,8 +189,11 @@
 					<div v-if="nextCountdown !== null" class="base-media-player__next" :style="nextCountdownStyle">
 						<div class="base-media-player__next-ring" aria-hidden="true">
 							<svg viewBox="0 0 100 100">
-								<circle class="base-media-player__next-track" cx="50" cy="50" r="45" />
-								<circle class="base-media-player__next-progress" cx="50" cy="50" r="45" />
+								<rect class="base-media-player__next-track" x="5" y="5" width="90" height="90" rx="24" />
+								<path
+									class="base-media-player__next-progress"
+									pathLength="100"
+									d="M50 5H71A24 24 0 0 1 95 29V71A24 24 0 0 1 71 95H29A24 24 0 0 1 5 71V29A24 24 0 0 1 29 5Z" />
 							</svg>
 							<span class="base-media-player__next-number">{{ nextCountdown }}</span>
 						</div>

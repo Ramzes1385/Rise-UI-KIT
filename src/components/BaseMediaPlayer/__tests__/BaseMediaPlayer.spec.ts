@@ -153,10 +153,11 @@ describe('BaseMediaPlayer', () => {
 		expect(await screen.findByText('Код: network')).toBeInTheDocument()
 	})
 
-	it('customClass, sizeScale и пропорции кадра', async () => {
+	it('customClass, sizeScale, пропорции кадра и цвет плеера', async () => {
 		const { container } = await setup({
 			sizeScale: 125,
 			aspectRatio: '4 / 3',
+			accentColor: '#38bdf8',
 			customClass: {
 				root: 'my-root',
 				media: 'my-media',
@@ -171,6 +172,8 @@ describe('BaseMediaPlayer', () => {
 		expect(root).toHaveClass('my-root')
 		expect(root.style.getPropertyValue('--size-scale')).toBe('1.25')
 		expect(root.style.aspectRatio).toBe('4 / 3')
+		expect(root.style.getPropertyValue('--media-primary')).toBe('#38bdf8')
+		expect(root.style.getPropertyValue('--media-primary-strong')).toBe('color-mix(in oklab, #38bdf8 72%, black)')
 		;['my-media', 'my-controls', 'my-seek', 'my-volume', 'my-time'].forEach(name =>
 			expect(container.querySelector(`.${name}`)).not.toBeNull(),
 		)

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { captionPreset } from './subtitles'
-import { UI_PLAYER, formatNumber } from './messages'
+import { UI_PLAYER, formatMessage, formatNumber } from './messages'
 import type { MediaMenusSource } from '../types/MediaControls.types'
 import type { MediaMenuItem, MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaCaptionColor, MediaCaptionStyle, MediaCaptionPreset, MediaCaptionBackground } from '../types/MediaSubtitles.types'
@@ -118,7 +118,9 @@ export function useMediaMenus(source: MediaMenusSource) {
 	return {
 		rateText: computed(() => `${formatNumber(source.rate())}×`),
 		qualityText: computed(() => activeQuality.value?.label ?? ''),
-		audioText: computed(() => activeAudio.value?.label ?? ''),
+		audioHint: computed(() =>
+			activeAudio.value ? formatMessage(UI_PLAYER.AUDIO_CURRENT, { name: activeAudio.value.label }) : UI_PLAYER.AUDIO,
+		),
 		qualityMenu: computed(() =>
 			optionMenu(UI_PLAYER.QUALITY, source.qualities(), { active: source.activeQualityId(), select: source.selectQuality }),
 		),

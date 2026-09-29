@@ -236,7 +236,8 @@ describe('BaseMediaPlayer: панель', () => {
 		expect(isOpen()).toBe(false)
 		await choose('button[aria-label="Озвучка"]', 'Студия')
 		expect(isOpen()).toBe(false)
-		expect(wrapper.get('button[aria-label="Озвучка"]').text()).toBe('Студия')
+		expect(wrapper.get('button[aria-label="Озвучка"]').text()).toBe('')
+		expect(wrapper.get('button[aria-label="Озвучка"]').attributes('data-tooltip')).toBe('Озвучка: Студия')
 		await choose('.base-media-player__chapter', 'Опенинг')
 		expect(isOpen()).toBe(false)
 		expect(fake.values.currentTime).toBe(10)
@@ -251,21 +252,31 @@ describe('BaseMediaPlayer: панель', () => {
 		wrapper.unmount()
 	})
 
-	it('кнопки перемотки: ±10 с в первом ряду, ±30 и ±5 с — во втором, он раскрывается кнопкой', async () => {
+	it('кнопки перемотки: ±30, ±10 и ±5 с — во втором ряду, он раскрывается кнопкой «Точная перемотка»', async () => {
 		const { fake } = await setup({}, { currentTime: 40 })
 		const seekBy = async (name: string, expected: number): Promise<void> => {
 			await fireEvent.click(screen.getByRole('button', { name }))
 			expect(fake.values.currentTime).toBe(expected)
 		}
 
-		await seekBy('Назад на 10 с', 30)
-		await seekBy('Вперёд на 10 с', 40)
-		expect(screen.queryByRole('button', { name: 'Назад на 30 с' })).toBeNull()
+		expect(screen.queryByRole('button', { name: 'Назад на 10 с' })).toBeNull()
 		await fireEvent.click(screen.getByRole('button', { name: 'Точная перемотка' }))
 		expect(screen.getByRole('button', { name: 'Точная перемотка' })).toHaveAttribute('aria-expanded', 'true')
+		const row = document.querySelector('.base-media-player__bar--secondary') as HTMLElement
+		expect([...row.querySelectorAll('button')].map(button => button.getAttribute('aria-label'))).toEqual([
+			'Назад на 30 с',
+			'Назад на 10 с',
+			'Назад на 5 с',
+			'Вперёд на 5 с',
+			'Вперёд на 10 с',
+			'Вперёд на 30 с',
+			'Подсветка',
+		])
 		await seekBy('Назад на 30 с', 10)
-		await seekBy('Назад на 5 с', 5)
-		await seekBy('Вперёд на 5 с', 10)
+		await seekBy('Вперёд на 10 с', 20)
+		await seekBy('Назад на 5 с', 15)
+		await seekBy('Вперёд на 5 с', 20)
+		await seekBy('Назад на 10 с', 10)
 		await seekBy('Вперёд на 30 с', 40)
 	})
 

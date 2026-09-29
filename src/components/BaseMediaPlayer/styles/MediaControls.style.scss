@@ -8,7 +8,7 @@
 		flex-direction: column;
 		gap: sz(6px);
 		padding: sz(28px) sz(12px) sz(10px);
-		background-image: linear-gradient(to top, rgb(0 0 0 / 90%) 0%, rgb(0 0 0 / 70%) 40%, transparent 100%);
+		background-image: linear-gradient(to top, rgb(7 8 14 / 90%) 0%, rgb(7 8 14 / 66%) 40%, transparent 100%);
 		container-type: inline-size;
 		transition:
 			opacity 200ms var(--rise-ease),
@@ -75,6 +75,21 @@
 		padding-inline-start: 0;
 		margin-inline-start: 0;
 		overflow-x: visible;
+	}
+
+	&__bar[data-measure] {
+		justify-content: flex-start;
+	}
+
+	&__bar[data-measure] > &__group {
+		flex: none;
+		width: max-content;
+		padding-inline-start: 0;
+		margin-inline-start: 0;
+	}
+
+	&__bar[data-measure] &__chapter {
+		max-width: sz(88px);
 	}
 
 	&__control {
@@ -162,7 +177,6 @@
 	&__bar[data-fit~='text'] &__control-text,
 	&__bar[data-fit~='chapter'] &__chapter,
 	&__bar[data-fit~='episode'] &__episode-button,
-	&__bar[data-fit~='seek'] &__control--stacked,
 	&__bar[data-fit~='seek'] &__seek-more,
 	&__bar[data-fit~='seek'] ~ &__bar--secondary,
 	&__bar[data-fit~='duration'] &__duration,
@@ -223,8 +237,8 @@
 		min-width: sz(18px);
 		height: sz(18px);
 		padding: 0 sz(4px);
-		border-radius: sz(9px);
-		background-color: var(--media-accent);
+		border-radius: sz(6px);
+		background-color: var(--media-primary-strong);
 		font-size: sz(11px);
 		font-weight: 700;
 		line-height: sz(18px);
@@ -237,7 +251,7 @@
 		bottom: sz(5px);
 		left: sz(10px);
 		height: sz(2px);
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(1px);
 		background-color: var(--media-primary);
 		content: '';
 	}
@@ -331,6 +345,7 @@
 		width: sz(14px);
 		height: sz(14px);
 		border: 2px solid var(--media-text);
+		border-radius: sz(5px);
 		background-color: var(--media-primary);
 		box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
 		transform: translate(-50%, 50%);
@@ -384,7 +399,7 @@
 		align-items: center;
 		width: sz(36px);
 		height: sz(20px);
-		border-radius: sz(10px);
+		border-radius: sz(7px);
 		background-color: rgb(255 255 255 / 30%);
 		@include transition(background-color);
 	}
@@ -398,7 +413,7 @@
 		justify-content: center;
 		width: sz(16px);
 		height: sz(16px);
-		border-radius: 50%;
+		border-radius: sz(5px);
 		background-color: var(--media-text);
 		box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
 		color: rgb(0 0 0 / 75%);
@@ -412,6 +427,7 @@
 
 	&__switch[aria-checked='true'] &__switch-track {
 		background-color: var(--media-accent);
+		box-shadow: 0 0 12px var(--media-glow);
 	}
 
 	&__switch[aria-checked='true'] &__switch-thumb {

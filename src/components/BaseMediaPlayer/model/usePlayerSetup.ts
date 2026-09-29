@@ -70,6 +70,10 @@ function usePlayerSources(
 	}
 }
 
+function accentStyle(color: string | undefined): Record<string, string> {
+	return color ? { '--media-primary': color, '--media-primary-strong': `color-mix(in oklab, ${color} 72%, black)` } : {}
+}
+
 function usePlayerView(props: MediaPlayerProps, series: ReturnType<typeof usePlayerPlaylist>, isAudio: Readonly<Ref<boolean>>) {
 	const posterSrc = computed(() => safeUrl(series.content.poster(), IMAGE_PROTOCOLS))
 	const posterVideoSrc = computed(() => safeUrl(series.content.posterVideo(), IMAGE_PROTOCOLS))
@@ -79,7 +83,10 @@ function usePlayerView(props: MediaPlayerProps, series: ReturnType<typeof usePla
 		hasCover: (): boolean => Boolean(posterSrc.value || posterVideoSrc.value),
 		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
 		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
-		rootStyle: computed(() => (isAudio.value ? {} : { aspectRatio: props.aspectRatio, '--media-aspect': props.aspectRatio })),
+		rootStyle: computed(() => ({
+			...accentStyle(props.accentColor),
+			...(isAudio.value ? {} : { aspectRatio: props.aspectRatio, '--media-aspect': props.aspectRatio }),
+		})),
 		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
 	}
 }
