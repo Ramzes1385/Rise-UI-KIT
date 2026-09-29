@@ -3,6 +3,7 @@ import { UI_KANBAN } from '@/locales/messages'
 import { cardElement } from './board/kanbanDom'
 import { useKanbanFlip } from './drag/useKanbanFlip'
 import { useKanbanMenu } from './board/useKanbanMenu'
+import { cardSummary, toDay } from './card/kanbanCardMeta'
 import { useKanbanPointer } from './drag/useKanbanPointer'
 import { useKanbanKeyboard } from './drag/useKanbanKeyboard'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
@@ -85,8 +86,22 @@ function useKanbanContext(props: BaseKanbanProps, emit: BaseKanbanEmits): Kanban
 	return { props, emit, rootRef, draft, cards, announce, finish, cancel, moveTo, announcement }
 }
 
+function useKanbanCardText(props: BaseKanbanProps, hintId: string) {
+	const today = computed(() => toDay(props.today ?? new Date()))
+	const isDoneColumn = (columnId: string): boolean => Boolean(props.columns.find(column => column.id === columnId)?.isDone)
+	const summaryId = (card: KanbanCard): string => `${hintId}-${card.id.replace(/\s/g, '_')}`
+	return {
+		today,
+		isDoneColumn,
+		summaryId,
+		cardDescribedBy: (card: KanbanCard): string => `${summaryId(card)} ${hintId}`,
+		cardSummary: (card: KanbanCard): string => cardSummary(card, { today: today.value, isDone: isDoneColumn(card.columnId) }),
+	}
+}
+
 export function useBaseKanban(props: BaseKanbanProps, emit: BaseKanbanEmits) {
 	const context = useKanbanContext(props, emit)
+	const hintId = `rise-kanban-${useId()}-hint`
 	const pointer = useKanbanPointer(context)
 	const keyboard = useKanbanKeyboard(context)
 	const menu = useKanbanMenu(context)
@@ -108,7 +123,8 @@ export function useBaseKanban(props: BaseKanbanProps, emit: BaseKanbanEmits) {
 		),
 		rootRef: context.rootRef,
 		announcement: context.announcement,
-		hintId: `rise-kanban-${useId()}-hint`,
+		...useKanbanCardText(props, hintId),
+		hintId,
 		columnsView: computed(() => props.columns.map(column => columnView(column, context.cards.value))),
 		isPlaceholder: (card: KanbanCard): boolean => pointer.drag.value?.card.id === card.id,
 		ghostStyle: computed(() => {

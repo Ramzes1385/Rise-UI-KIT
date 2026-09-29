@@ -1,0 +1,143 @@
+/** Общие строки: подписи и кнопки, доступные имена, тур, рейтинг */
+export const ruBase = {
+	text: {
+		EMPTY: 'Нет данных',
+		NO_RESULTS: 'Ничего не найдено',
+		SEARCH_PLACEHOLDER: 'Поиск...',
+		TODAY: 'Сегодня',
+		LOADING: 'Загрузка...',
+		LOADING_ARIA: 'Загрузка',
+		LOAD_MORE: 'Загрузить еще',
+		/** Конец списка BaseInfiniteScroll */
+		NO_MORE_ITEMS: 'Больше ничего нет',
+		/** Ошибка подгрузки BaseInfiniteScroll */
+		LOAD_ERROR: 'Не удалось загрузить',
+		RETRY: 'Повторить',
+		/** Первая ссылка BaseLayout: к основному содержимому мимо шапки и меню */
+		SKIP_TO_CONTENT: 'Перейти к содержимому',
+		IMAGE_ERROR: 'Ошибка загрузки',
+		FILE_STATUS_DONE: 'Загружено',
+		FILE_STATUS_ERROR: 'Ошибка',
+		FILE_STATUS_PENDING: 'Ожидание',
+		DELETE: 'Удалить',
+		NO_COLOR: 'Без цвета',
+		CANCEL: 'Отмена',
+		CONFIRM: 'Подтвердить',
+		APPLY: 'Применить',
+		REQUIRED_FIELD: 'Обязательное поле',
+		SELECT_PLACEHOLDER: 'Выберите...',
+		/** Флажок «выбрать все» над вариантами BaseCheckboxGroup */
+		SELECT_ALL_OPTIONS: 'Выбрать все',
+		/** Подсказка в пустом поле BaseTimePicker */
+		TIME_PLACEHOLDER: 'чч:мм',
+		SELECT_DATE: 'Выберите дату',
+		EXPAND: 'Развернуть',
+		COLLAPSE: 'Свернуть',
+		FILE_SELECT: 'Выберите файлы',
+		FILE_DROP: 'Перетащите файлы сюда',
+		FILE_MAX_SIZE_PREFIX: 'до',
+		FILE_MAX_SIZE_SUFFIX: 'МБ',
+		FILE_MAX_COUNT_PREFIX: 'Максимум файлов:',
+		/** Строка страниц пагинации: «1–10 из 100» */
+		PAGE_RANGE: '{from}–{to} из {total}',
+		SIZE_B: 'Б',
+		SIZE_KB: 'КБ',
+		SIZE_MB: 'МБ',
+		/** Ошибка выбора файла больше maxSize */
+		FILE_TOO_LARGE: 'Файл "{name}" превышает {size} МБ',
+	},
+	aria: {
+		BREADCRUMBS: 'Навигация',
+		BREADCRUMBS_NAV: 'Хлебные крошки',
+		PAGINATION_PREV: 'Предыдущая страница',
+		PAGINATION_NEXT: 'Следующая страница',
+		TABS_SCROLL_LEFT: 'Прокрутить вкладки влево',
+		TABS_SCROLL_RIGHT: 'Прокрутить вкладки вправо',
+		CLOSE: 'Закрыть',
+		DARK_THEME: 'Тёмная тема',
+		OPENS_IN_NEW_TAB: '(откроется в новой вкладке)',
+		PROGRESS: 'Прогресс',
+		PREV_YEAR: 'Предыдущий год',
+		PREV_MONTH: 'Предыдущий месяц',
+		NEXT_MONTH: 'Следующий месяц',
+		NEXT_YEAR: 'Следующий год',
+		PREV_YEARS: 'Предыдущие годы',
+		NEXT_YEARS: 'Следующие годы',
+		OPEN_CALENDAR: 'Открыть календарь',
+		CLEAR_VALUE: 'Очистить',
+		SORT: 'Сортировать',
+		PASSWORD_HIDE: 'Скрыть пароль',
+		PASSWORD_SHOW: 'Показать пароль',
+		NOTIFICATIONS: 'Уведомления',
+		IMAGE_VIEWER: 'Просмотр изображения',
+		ZOOM_IN: 'Увеличить',
+		ZOOM_OUT: 'Уменьшить',
+		ZOOM_RESET: 'Сбросить масштаб',
+		ROTATE_LEFT: 'Повернуть влево',
+		ROTATE_RIGHT: 'Повернуть вправо',
+		GALLERY_PREV: 'Предыдущее изображение',
+		GALLERY_NEXT: 'Следующее изображение',
+		SEARCH: 'Поиск',
+		CONTEXT_MENU: 'Контекстное меню',
+		/** Имена ползунков BaseRange без ariaLabel: одно значение, границы диапазона, точки */
+		RANGE_VALUE: 'Значение',
+		RANGE_MIN: 'Минимум',
+		RANGE_MAX: 'Максимум',
+		RANGE_POINT: 'Точка',
+		SLIDER_PREV: 'Предыдущий слайд',
+		SLIDER_NEXT: 'Следующий слайд',
+		/** Имя точки и миниатюры слайдера */
+		SLIDE_POSITION: 'Слайд {current} из {total}',
+		/** Подпись миниатюры галереи */
+		GALLERY_ITEM: 'Изображение {current} из {total}',
+		/** Имя ячейки BasePin: позиция в коде */
+		PIN_CELL: 'Символ {position} из {length}',
+		/** Кнопки BaseInputNumber */
+		NUMBER_DECREASE: 'Уменьшить',
+		NUMBER_INCREASE: 'Увеличить',
+		/** Кнопка удаления тега BaseInputTags и объявления для скринридера */
+		TAG_REMOVE: 'Удалить {name}',
+		TAG_ADDED: 'Добавлено: {name}',
+		TAG_REMOVED: 'Удалено: {name}',
+		/** Список тегов BaseInputTags */
+		TAGS: 'Теги',
+		/** Имена клавиш BaseKbd для скринридера (на экране — символ) */
+		KEY_COMMAND: 'Command',
+		KEY_OPTION: 'Option',
+		KEY_CONTROL: 'Control',
+		KEY_SHIFT: 'Shift',
+		KEY_ENTER: 'Enter',
+		KEY_BACKSPACE: 'Backspace',
+		KEY_DELETE: 'Delete',
+		KEY_UP: 'стрелка вверх',
+		KEY_DOWN: 'стрелка вниз',
+		KEY_LEFT: 'стрелка влево',
+		KEY_RIGHT: 'стрелка вправо',
+		/** Остаток BaseAvatarGroup: «+3» на экране */
+		AVATARS_MORE: 'и ещё {n}',
+		/** Кнопка меню BaseSplitButton */
+		MORE_ACTIONS: 'Другие действия',
+		/** Подсказка кнопки BaseInplace */
+		INPLACE_HINT: 'Нажмите, чтобы изменить',
+		/** Кнопка меню в BaseHeader и заголовок выдвижного меню */
+		MENU: 'Меню',
+		/** Кнопка BaseBackTop */
+		BACK_TO_TOP: 'Наверх',
+		/** Разделитель BaseSplitter */
+		SPLITTER: 'Размер панелей',
+	},
+	tour: {
+		SKIP: 'Пропустить тур',
+		NEXT: 'Далее',
+		PREV: 'Назад',
+		FINISH: 'Завершить',
+		TITLE: 'Тур по интерфейсу',
+	},
+	rating: {
+		ARIA_PREFIX: 'Оценка от 0 до',
+		/** Имя рейтинга только для чтения (role="img"): «Оценка 4.5 из 5» */
+		LABEL: 'Оценка',
+		/** Связка значения и максимума в aria-valuetext и имени: «3 из 5» */
+		OF: 'из',
+	},
+}

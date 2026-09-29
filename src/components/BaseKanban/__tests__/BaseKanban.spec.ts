@@ -32,8 +32,10 @@ describe('BaseKanban', () => {
 		expect(container.querySelector('[data-column-id="doing"] .base-kanban__count')).toHaveTextContent('1 / 1')
 		expect(card('Альфа')).toHaveAttribute('tabindex', '0')
 		expect(card('Бета')).toHaveAttribute('tabindex', '-1')
-		expect(card('Альфа')).toHaveAccessibleDescription('Space — взять карточку, стрелки — перейти к соседней, Enter — открыть')
-		expect(card('Альфа')).toHaveTextContent('АльфаОписаниедизайн')
+		expect(card('Альфа')).toHaveAccessibleDescription(
+			'Метки: дизайн. Описание Space — взять карточку, стрелки — перейти к соседней, Enter — открыть',
+		)
+		expect(card('Альфа')).toHaveTextContent(/^дизайнАльфаОписание/)
 	})
 
 	it('сверх WIP-лимита — подсветка и «Превышен лимит»', () => {

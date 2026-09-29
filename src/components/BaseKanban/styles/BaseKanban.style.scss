@@ -161,18 +161,142 @@
 		-webkit-line-clamp: 3;
 	}
 
-	&__tags {
+	&__cover {
+		display: block;
+		flex: none;
+		height: sz(32px);
+		margin: sz(-10px) sz(-12px) sz(2px);
+		border-radius: sz(var(--rise-radius-md)) sz(var(--rise-radius-md)) 0 0;
+		background-position: center;
+		background-size: cover;
+	}
+
+	&__cover--image {
+		height: sz(112px);
+	}
+
+	&__labels {
 		display: flex;
 		flex-wrap: wrap;
 		gap: sz(4px);
 	}
 
-	&__tag {
+	&__label {
 		padding: 0 sz(6px);
 		border-radius: sz(var(--rise-radius-sm));
 		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-toned);
 		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	@each $role in (primary, success, warning, error, info) {
+		&__label--#{$role} {
+			background-color: var(--rise-#{$role}-soft);
+			color: var(--rise-#{$role}-text);
+		}
+	}
+
+	&__meta {
+		display: flex;
+		align-items: flex-end;
+		gap: sz(8px);
+		margin-top: sz(2px);
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		font-variant-numeric: tabular-nums;
+
+		.base-icon {
+			width: sz(14px);
+			height: sz(14px);
+		}
+	}
+
+	&__meta-info {
+		display: flex;
+		flex: 1 1 auto;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		min-width: 0;
+		min-height: sz(24px);
+	}
+
+	&__key {
+		font-family: var(--rise-font-mono);
+	}
+
+	&__priority,
+	&__due,
+	&__stat {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(3px);
+	}
+
+	&__priority {
+		flex-direction: column;
+		gap: 0;
+
+		.base-icon + .base-icon {
+			margin-top: sz(-9px);
+		}
+	}
+
+	&__priority--highest,
+	&__priority--high {
+		color: var(--rise-error);
+	}
+
+	&__priority--medium {
+		color: var(--rise-warning);
+	}
+
+	&__priority--low,
+	&__priority--lowest {
+		color: var(--rise-info);
+	}
+
+	&__due {
+		padding: 0 sz(5px);
+		margin-inline: sz(-5px);
+		border-radius: sz(var(--rise-radius-sm));
+	}
+
+	&__due--overdue {
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+	}
+
+	&__due--today,
+	&__due--tomorrow {
+		background-color: var(--rise-warning-soft);
+		color: var(--rise-warning-text);
+	}
+
+	&__due--done {
+		color: var(--rise-success-text);
+	}
+
+	&__stat--complete {
+		color: var(--rise-success-text);
+	}
+
+	&__estimate {
+		min-width: sz(18px);
+		padding: 0 sz(5px);
+		border-radius: sz(var(--rise-radius-full));
+		background-color: var(--rise-bg-accented);
+		color: var(--rise-text-toned);
+		text-align: center;
+	}
+
+	&__assignees {
+		flex: none;
+	}
+
+	&__summary {
+		@include visually-hidden;
 	}
 
 	&__empty {

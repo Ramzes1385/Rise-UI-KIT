@@ -1,11 +1,13 @@
 import { fn } from 'storybook/test'
 import { CARDS, COLUMNS } from './shared'
+import { STORY_TODAY } from '@/stories/helpers'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseKanban from '../ui/BaseKanban.vue'
 
 export const args = {
 	columns: COLUMNS,
 	cards: CARDS,
+	today: STORY_TODAY,
 	isDisabled: false,
 	variant: 'default',
 	sizeScale: 100,

@@ -26,7 +26,7 @@ export const CustomCard: StoryObj<typeof meta> = {
 							<strong>{{ card.title }}</strong>
 							<span aria-hidden="true">{{ isDragging ? '✋' : '⋮⋮' }}</span>
 						</span>
-						<span style="font-size: 12px">#{{ card.id.slice(1) }} · {{ card.tags?.join(', ') || 'без меток' }}</span>
+						<span style="font-size: 12px">#{{ card.id.slice(1) }} · {{ card.labels?.map(label => label.text).join(', ') || 'без меток' }}</span>
 					</template>
 					<template #column-footer="{ column, cards: columnCards }">
 						<p style="margin: 0; padding: 0 4px; font-size: 12px">{{ column.title }}: {{ columnCards.length }}</p>

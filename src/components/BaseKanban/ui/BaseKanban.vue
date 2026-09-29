@@ -32,7 +32,7 @@
 								role="button"
 								:tabindex="card.id === activeId ? 0 : -1"
 								:aria-label="card.title"
-								:aria-describedby="hintId"
+								:aria-describedby="cardDescribedBy(card)"
 								:aria-pressed="card.id === grabbedId ? 'true' : undefined"
 								:aria-disabled="isDisabled ? 'true' : undefined"
 								:data-card-id="card.id"
@@ -41,8 +41,9 @@
 								@focus="handleCardFocus(card)"
 								@keydown="handleCardKeydown($event, card)">
 								<slot name="card" :card="card" :is-dragging="card.id === grabbedId || isPlaceholder(card)">
-									<KanbanCardContent :card="card" />
+									<KanbanCardContent :card="card" :today="today" :is-done="isDoneColumn(card.columnId)" />
 								</slot>
+								<span :id="summaryId(card)" class="base-kanban__summary">{{ cardSummary(card) }}</span>
 							</div>
 						</li>
 					</ul>
@@ -61,7 +62,7 @@
 				aria-hidden="true">
 				<div class="base-kanban__ghost-card" :class="classes.card">
 					<slot name="card" :card="drag.card" :is-dragging="true">
-						<KanbanCardContent :card="drag.card" />
+						<KanbanCardContent :card="drag.card" :today="today" :is-done="isDoneColumn(drag.card.columnId)" />
 					</slot>
 				</div>
 			</div>
@@ -84,6 +85,7 @@ const props = withDefaults(defineProps<BaseKanbanProps>(), {
 	cards: () => [],
 	canMove: undefined,
 	cardActions: undefined,
+	today: undefined,
 	isDisabled: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
@@ -106,6 +108,11 @@ const {
 	drag,
 	ghostStyle,
 	hintId,
+	today,
+	isDoneColumn,
+	summaryId,
+	cardSummary,
+	cardDescribedBy,
 	announcement,
 	menuItems,
 	teleportTarget,

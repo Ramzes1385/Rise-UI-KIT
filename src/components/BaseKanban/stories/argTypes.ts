@@ -8,6 +8,8 @@ export const argTypes = {
 	columns: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	cards: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	canMove: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	cardActions: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	today: { control: 'date', table: propGroup(ARG_GROUP.content) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	card: slotArgType('Содержимое карточки: { card, isDragging }'),
 	'column-footer': slotArgType('Низ колонки: { column, cards }'),

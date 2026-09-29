@@ -1,13 +1,59 @@
 <template>
+	<span
+		v-if="coverStyle"
+		class="base-kanban__cover"
+		:class="{ 'base-kanban__cover--image': Boolean(card.coverImage) }"
+		:style="coverStyle"
+		aria-hidden="true"></span>
+	<span v-if="meta.labels.length" class="base-kanban__labels">
+		<span v-for="label in meta.labels" :key="label.text" class="base-kanban__label" :class="`base-kanban__label--${label.color}`">
+			{{ label.text }}
+		</span>
+	</span>
 	<span class="base-kanban__card-title">{{ card.title }}</span>
 	<span v-if="card.description" class="base-kanban__card-description">{{ card.description }}</span>
-	<span v-if="card.tags?.length" class="base-kanban__tags">
-		<span v-for="tag in card.tags" :key="tag" class="base-kanban__tag">{{ tag }}</span>
+	<span v-if="meta.hasFooter" class="base-kanban__meta" aria-hidden="true">
+		<span class="base-kanban__meta-info">
+			<span v-if="card.key" class="base-kanban__key">{{ card.key }}</span>
+			<span
+				v-if="meta.priority"
+				class="base-kanban__priority"
+				:class="`base-kanban__priority--${meta.priority.level}`"
+				:title="meta.priority.label">
+				<BaseIcon v-for="index in meta.priority.count" :key="index" :name="meta.priority.icon" />
+			</span>
+			<span v-if="meta.due" class="base-kanban__due" :class="`base-kanban__due--${meta.due.status}`">
+				<BaseIcon name="calendar" />
+				{{ meta.due.text }}
+			</span>
+			<span
+				v-if="card.subtasks"
+				class="base-kanban__stat"
+				:class="{ 'base-kanban__stat--complete': card.subtasks.done >= card.subtasks.total }">
+				<BaseIcon name="check-circle" />
+				{{ card.subtasks.done }}/{{ card.subtasks.total }}
+			</span>
+			<span v-if="card.comments" class="base-kanban__stat">
+				<BaseIcon name="comment" />
+				{{ card.comments }}
+			</span>
+			<span v-if="card.attachments" class="base-kanban__stat">
+				<BaseIcon name="attach" />
+				{{ card.attachments }}
+			</span>
+			<span v-if="card.estimate !== undefined" class="base-kanban__estimate">{{ card.estimate }}</span>
+		</span>
+		<BaseAvatarGroup v-if="assignees.length" class="base-kanban__assignees" :items="assignees" :max="2" :size-scale="75" />
 	</span>
 </template>
 
 <script setup lang="ts">
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseAvatarGroup } from '@components/BaseAvatarGroup'
 import type { KanbanCardContentProps } from '../types/KanbanParts.types'
+import { useKanbanCardContent } from '../model/card/useKanbanCardContent'
 
-defineProps<KanbanCardContentProps>()
+const props = defineProps<KanbanCardContentProps>()
+
+const { meta, assignees, coverStyle } = useKanbanCardContent(props)
 </script>
