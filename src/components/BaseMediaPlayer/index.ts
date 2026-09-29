@@ -36,4 +36,12 @@ export type {
 } from './types/MediaAds.types'
 export { MEDIA_BANNER_POSITIONS, MEDIA_BANNER_EVENT_TYPES } from './types/MediaNotices.types'
 export type { MediaBanner, MediaAchievement, MediaBannerEvent, MediaBannerPosition } from './types/MediaNotices.types'
+export { MEDIA_WATCH_EVENT_TYPES, MEDIA_WATCH_MEMBER_STATUSES } from './types/MediaWatch.types'
+export type {
+	MediaWatchEvent,
+	MediaWatchParty,
+	MediaWatchMember,
+	MediaWatchEventType,
+	MediaWatchMemberStatus,
+} from './types/MediaWatch.types'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'

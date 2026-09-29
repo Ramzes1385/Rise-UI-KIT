@@ -4,6 +4,7 @@ import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { createPlayerContext } from '../model/useBaseMediaPlayer'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { MediaWatchEvent, MediaWatchParty } from './MediaWatch.types'
 import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './MediaAds.types'
 import type { MediaClip, MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
 import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './MediaNotices.types'
@@ -165,6 +166,12 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	 * и возвращается на место, когда место плеера снова видно
 	 */
 	hasMiniPlayer?: boolean
+	/**
+	 * Совместный просмотр: ссылка-приглашение и участники. Кнопка в панели открывает окно со ссылкой, приглашением по почте
+	 * и списком участников; запуск, пауза, перемотка и скорость приходят событием `watch-sync`, команды других участников
+	 * плеер применяет через `applyWatchEvent`. Письма и сервер, через который участники обмениваются командами, — у приложения
+	 */
+	watchParty?: MediaWatchParty
 	/** Интро — отдельный ролик перед серией или записью: играет при запуске с начала, с «Пропустить» */
 	intro?: MediaClip
 	/** Аутро — отдельный ролик после серии или записи: играет до отсчёта следующей серии */
@@ -215,6 +222,10 @@ export interface BaseMediaPlayerEmits {
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
 	(event: 'report', report: MediaReport): void
+	/** Совместный просмотр: зритель пригласил участника по почте — письмо со ссылкой отправляет приложение */
+	(event: 'watch-invite', email: string): void
+	/** Совместный просмотр: зритель запустил, остановил, перемотал запись или сменил скорость — разошлите участникам */
+	(event: 'watch-sync', data: MediaWatchEvent): void
 }
 
 export interface BaseMediaPlayerSlots {
@@ -231,6 +242,8 @@ export interface BaseMediaPlayerExpose extends MediaActions {
 	getMediaElement: () => HTMLMediaElement | null
 	/** Выдать достижение из `achievements` по ключу (например, по событию приложения) */
 	awardAchievement: (id: string) => void
+	/** Применить команду другого участника совместного просмотра: без повторного `watch-sync` */
+	applyWatchEvent: (event: MediaWatchEvent) => void
 }
 
 export type MediaPlayerProps = PropsWithDefaults<

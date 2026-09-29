@@ -36,4 +36,6 @@ export const args = {
 	onAd: fn(),
 	onBanner: fn(),
 	onAchievement: fn(),
+	'onWatch-sync': fn(),
+	'onWatch-invite': fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

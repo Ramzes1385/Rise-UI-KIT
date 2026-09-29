@@ -20,6 +20,7 @@ export const argTypes = {
 	adBreaks: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	adSegments: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	banners: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	watchParty: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	achievements: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	earnedAchievements: { control: 'object', table: propGroup(ARG_GROUP.state) },
 	hasTitle: { control: 'boolean', table: propGroup(ARG_GROUP.content) },

@@ -134,6 +134,18 @@
 					</template>
 					<template #panel="{ close }"><MediaMenuPanel :menu="audioMenu" @close="close" /></template>
 				</MediaPopover>
+				<MediaPopover v-if="hasWatchParty">
+					<template #default="{ isOpen, toggle }">
+						<MediaControlButton
+							icon="people"
+							:label="UI_PLAYER.WATCH"
+							:badge="watchCount || undefined"
+							aria-haspopup="dialog"
+							:aria-expanded="isOpen"
+							@click="toggle" />
+					</template>
+					<template #panel><MediaWatchPanel /></template>
+				</MediaPopover>
 				<MediaControlButton
 					v-if="hasCast"
 					:icon="isCasting ? 'cast-connected' : 'cast'"
@@ -214,6 +226,7 @@ import { UI_PLAYER } from '../model/messages'
 import MediaPopover from './MediaPopover.vue'
 import MediaMenuPanel from './MediaMenuPanel.vue'
 import MediaSpeedPanel from './MediaSpeedPanel.vue'
+import MediaWatchPanel from './MediaWatchPanel.vue'
 import MediaSeekPreview from './MediaSeekPreview.vue'
 import MediaControlButton from './MediaControlButton.vue'
 import { usePlayerControls } from '../model/usePlayerControls'
@@ -241,6 +254,7 @@ const {
 	fullscreenLabel,
 	hasCast,
 	hasEpisodes,
+	hasWatchParty,
 	isAmbient,
 	isAudioMode,
 	isAutoNext,
@@ -281,5 +295,6 @@ const {
 	volumeIcon,
 	volumeValue,
 	volumeValueText,
+	watchCount,
 } = usePlayerControls()
 </script>

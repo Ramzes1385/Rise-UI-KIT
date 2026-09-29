@@ -3,6 +3,7 @@ import { UI_PLAYER } from './messages'
 import { useMediaMini } from './useMediaMini'
 import { computed, provide, watch } from 'vue'
 import { usePlayerCast } from './usePlayerCast'
+import { useWatchParty } from './useWatchParty'
 import { usePlayerTools } from './usePlayerTools'
 import { useSeekPreview } from './useSeekPreview'
 import { useAmbientLight } from './useAmbientLight'
@@ -119,6 +120,29 @@ function usePlayerIdle(
 	}).isIdle
 }
 
+function usePlayerWatch(
+	props: MediaPlayerProps,
+	emit: BaseMediaPlayerEmits,
+	player: {
+		media: Readonly<Ref<HTMLVideoElement | null>>
+		state: Readonly<MediaState>
+		actions: MediaActions
+		tools: ReturnType<typeof usePlayerTools>
+	},
+) {
+	const { media, state, actions, tools } = player
+	return useWatchParty({
+		party: () => props.watchParty,
+		media,
+		state,
+		actions,
+		emitSync: data => emit('watch-sync', data),
+		emitInvite: email => emit('watch-invite', email),
+		copy: text => void tools.copyText(text),
+		flash: tools.flash,
+	})
+}
+
 function usePlayerExtras(
 	props: MediaPlayerProps,
 	emit: BaseMediaPlayerEmits,
@@ -159,6 +183,7 @@ function usePlayerExtras(
 		captions,
 		ads,
 		clips,
+		watch: usePlayerWatch(props, emit, { media: elements.mediaRef, state, actions, tools }),
 		notices: usePlayerNotices(props, emit, { state, series }),
 		episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld, isCasting: player.isCasting }),
 	}
@@ -199,19 +224,28 @@ function createExpose(player: {
 	actions: MediaActions
 	media: Readonly<Ref<HTMLVideoElement | null>>
 	retry: () => void
-	notices: { awardAchievement: (id: string) => void }
+	extras: ReturnType<typeof usePlayerExtras>
 }): BaseMediaPlayerExpose {
 	return {
 		...player.actions,
 		retry: player.retry,
 		state: player.state,
 		getMediaElement: () => player.media.value,
-		awardAchievement: player.notices.awardAchievement,
+		awardAchievement: player.extras.notices.awardAchievement,
+		applyWatchEvent: player.extras.watch.applyWatchEvent,
 	}
 }
 
 function extrasContext(extras: ReturnType<typeof usePlayerExtras>) {
-	return { ...extras.tools, ...extras.captions, ...extras.episodes, ...extras.ads, ...extras.clips, ...extras.notices }
+	return {
+		...extras.tools,
+		...extras.captions,
+		...extras.episodes,
+		...extras.ads,
+		...extras.clips,
+		...extras.notices,
+		...extras.watch,
+	}
 }
 
 function usePlayerKeys(
@@ -290,7 +324,7 @@ export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMed
 		accessibleName,
 		...cast,
 		toggleCast: () => void cast.toggleCast().then(isStarted => isStarted || extras.tools.flash(UI_PLAYER.CAST_FAILED)),
-		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback, notices: extras.notices }),
+		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback, extras }),
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}
 }

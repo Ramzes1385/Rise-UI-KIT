@@ -160,6 +160,34 @@ test('трансляция (эмуляция Cast): выбор устройст�
 	expect(await page.evaluate(() => (document.querySelector('video') as HTMLVideoElement).paused)).toBe(true)
 })
 
+test('совместный просмотр: вкладка по ссылке подключается, запуск, перемотка и пауза общие', async ({ page, context }) => {
+	await openPlayer(page, 'watch-party')
+	const link = await page.getByRole('textbox', { name: 'Ссылка-приглашение' }).inputValue()
+	const guest = await context.newPage()
+	await guest.goto(link)
+	await expect(page.locator('.base-media-player__watch-member').filter({ hasText: 'Смотрит' })).toHaveCount(1)
+	await page.keyboard.press('Escape')
+	const media = (target: Page) => target.locator('video.base-media-player__media')
+
+	await media(guest).evaluate(video => {
+		video.muted = true
+	})
+	await media(page).evaluate(video => {
+		video.muted = true
+		return (video as HTMLVideoElement).play()
+	})
+	await expect.poll(() => media(guest).evaluate(video => (video as HTMLVideoElement).paused)).toBe(false)
+	await media(page).evaluate(video => {
+		;(video as HTMLVideoElement).currentTime = 8
+	})
+	await expect.poll(() => media(guest).evaluate(video => Math.round((video as HTMLVideoElement).currentTime))).toBeGreaterThanOrEqual(8)
+	await media(guest).evaluate(video => (video as HTMLVideoElement).pause())
+	await expect.poll(() => media(page).evaluate(video => (video as HTMLVideoElement).paused)).toBe(true)
+	await guest.close()
+	await page.getByRole('button', { name: 'Совместный просмотр' }).click()
+	await expect(page.locator('.base-media-player__watch-member').filter({ hasText: 'Смотрит' })).toHaveCount(0)
+})
+
 test('производительность: панель обновляется реже кадра при воспроизведении и не работает на паузе', async ({ page }) => {
 	await openPlayer(page, 'default')
 	const cdp = await page.context().newCDPSession(page)
