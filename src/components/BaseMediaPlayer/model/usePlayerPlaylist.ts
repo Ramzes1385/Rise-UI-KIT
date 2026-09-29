@@ -4,9 +4,9 @@ import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaChapters } from './useMediaChapters'
 import { useMediaPlaylist } from './useMediaPlaylist'
 import { useNextCountdown } from './useNextCountdown'
+import type { MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaSliderSegment } from '../types/MediaSlider.types'
 import type { MediaActions, MediaState } from '../types/MediaCore.types'
-import type { MediaMenuItem, MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaPlayerProps, BaseMediaPlayerEmits } from '../types/BaseMediaPlayer.types'
 import type { MediaClip, MediaEpisode, MediaChapterKind, MediaChapterRange } from '../types/MediaPlaylist.types'
 
@@ -48,25 +48,23 @@ function useAutoNext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	}
 }
 
-function episodeMenu(playlist: ReturnType<typeof useMediaPlaylist>): MediaMenuList {
-	const current = playlist.currentEpisode.value
-	const items = (episodes: MediaEpisode[]): MediaMenuItem[] =>
-		episodes.map(episode => ({
-			id: episode.id,
-			label: episode.title,
-			isChecked: episode === current,
-			onSelect: () => playlist.selectEpisode(episode.id),
-		}))
-	const lists = playlist.playlists.value
-	if (lists.length === 1) return { title: UI_PLAYER.EPISODES, items: items(lists[0].episodes) }
+function useEpisodesPanelState(playlist: ReturnType<typeof useMediaPlaylist>) {
+	const isOpen = ref(false)
 	return {
-		title: UI_PLAYER.EPISODES,
-		items: lists.map(list => ({
-			id: list.id,
-			label: list.title,
-			hint: list.episodes.includes(current as MediaEpisode) ? current?.title : undefined,
-			children: { title: list.title, items: items(list.episodes) },
-		})),
+		isEpisodesOpen: isOpen,
+		episodeSeasons: playlist.playlists,
+		currentSeasonId: computed(() => playlist.currentEntry.value?.playlist.id),
+		currentEpisodeId: computed(() => playlist.currentEpisode.value?.id),
+		toggleEpisodes(): void {
+			isOpen.value = !isOpen.value
+		},
+		closeEpisodes(): void {
+			isOpen.value = false
+		},
+		chooseEpisode(id: string): void {
+			playlist.selectEpisode(id)
+			isOpen.value = false
+		},
 	}
 }
 
@@ -153,7 +151,7 @@ export function usePlayerEpisodes(
 		playNext: playlist.playNext,
 		playPrevious: playlist.playPrevious,
 		hasEpisodes: computed(() => playlist.playlists.value.reduce((count, list) => count + list.episodes.length, 0) > 1),
-		episodeMenu: computed(() => episodeMenu(playlist)),
+		...useEpisodesPanelState(playlist),
 		nextCountdownText: computed(() => formatMessage(UI_PLAYER.NEXT_IN, { n: countdown.nextCountdown.value ?? 0 })),
 		nextCountdownStyle: computed(() => ({ '--media-next-seconds': props.nextCountdown })),
 		skipLabel: computed(() => (chapters.skipChapter.value?.kind ? SKIP_LABELS[chapters.skipChapter.value.kind]() : '')),

@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
 import { UI_PLAYER } from './messages'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
@@ -35,4 +36,25 @@ export function useMediaContextMenu(options: {
 			],
 		]),
 	}
+}
+
+export function withFrameItems(
+	items: Readonly<Ref<DropdownMenuItem[][]>>,
+	frame: {
+		rotationText: Readonly<Ref<string>>
+		rotateFrame: () => void
+		isAmbient: Readonly<Ref<boolean>>
+		setAmbient: (isOn: boolean) => void
+		isAudio: Readonly<Ref<boolean>>
+	},
+) {
+	return computed<DropdownMenuItem[][]>(() => {
+		if (frame.isAudio.value) return items.value
+		const [first, ...rest] = items.value
+		const frameItems: DropdownMenuItem[] = [
+			{ label: UI_PLAYER.ROTATE, icon: 'rotate-right', shortcut: frame.rotationText.value, onSelect: frame.rotateFrame },
+			{ type: 'checkbox', label: UI_PLAYER.AMBIENT, isChecked: frame.isAmbient.value, onUpdateChecked: frame.setAmbient },
+		]
+		return [first, frameItems, ...rest]
+	})
 }

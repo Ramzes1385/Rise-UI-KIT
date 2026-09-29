@@ -188,7 +188,7 @@ describe('BaseMediaPlayer: панель', () => {
 		wrapper.unmount()
 	})
 
-	it('меню открываются кнопками и закрываются выбором: качество, субтитры, озвучка, главы, серии', async () => {
+	it('меню открываются кнопками и закрываются выбором: качество, субтитры, озвучка, главы; серии — в панели', async () => {
 		vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
 		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
 		const sources = [
@@ -240,8 +240,13 @@ describe('BaseMediaPlayer: панель', () => {
 		await choose('.base-media-player__chapter', 'Опенинг')
 		expect(isOpen()).toBe(false)
 		expect(fake.values.currentTime).toBe(10)
-		await choose('button[aria-label="Серии"]', 'Сезон 2', 'Серия 3')
-		expect(isOpen()).toBe(false)
+		await wrapper.get('button[aria-label="Серии"]').trigger('click')
+		await wrapper
+			.findAll('.base-media-player__episodes-tab')
+			.find(tab => tab.text() === 'Сезон 2')
+			?.trigger('click')
+		await wrapper.get('.base-media-player__episode-card').trigger('click')
+		expect(wrapper.find('.base-media-player__episodes').exists()).toBe(false)
 		expect(wrapper.emitted('update:episode')).toEqual([['e3']])
 		wrapper.unmount()
 	})

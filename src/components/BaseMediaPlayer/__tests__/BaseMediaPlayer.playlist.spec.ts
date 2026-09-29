@@ -40,10 +40,9 @@ async function setup(props: Record<string, unknown> = {}) {
 	await nextTick()
 	fake.emit('loadedmetadata')
 	await nextTick()
-	const menu = (key: 'episodeMenu' | 'chapterMenu'): MediaMenuList | undefined => {
+	const menu = (key: 'chapterMenu'): MediaMenuList | undefined => {
 		const state = wrapper.findComponent(MediaControlBar).vm as unknown as Record<string, MediaMenuList>
-		const button = key === 'episodeMenu' ? 'button[aria-label="Серии"]' : '.base-media-player__chapter'
-		return wrapper.find(button).exists() ? state[key] : undefined
+		return wrapper.find('.base-media-player__chapter').exists() ? state[key] : undefined
 	}
 	return { wrapper, video, fake, play, menu }
 }
@@ -72,28 +71,92 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		wrapper.unmount()
 	})
 
-	it('список серий по сезонам; Shift+N и Shift+P', async () => {
-		const { wrapper, menu } = await setup({ episode: 'e2' })
-		const items = menu('episodeMenu')?.items ?? []
+	it('панель серий: вкладки сезонов, карточки с номером, обложкой, описанием и длительностью; Shift+N и Shift+P', async () => {
+		const seasons: MediaPlaylist[] = [
+			{
+				...SEASONS[0],
+				episodes: [
+					SEASONS[0].episodes[0],
+					{ ...SEASONS[0].episodes[1], description: 'Герои в пути', duration: 1450 },
+					{ id: 'e2b', title: 'Спешл', sources: '/sp.webm', poster: 'javascript:alert(1)' },
+				],
+			},
+			SEASONS[1],
+		]
+		const { wrapper } = await setup({ playlists: seasons, episode: 'e2' })
+		const button = wrapper.get('button[aria-label="Серии"]')
+		const panel = () => wrapper.find('.base-media-player__episodes')
+		const cards = () => wrapper.findAll('.base-media-player__episode-card')
 
-		expect(items.map(item => [item.label, item.hint])).toEqual([
-			['Сезон 1', 'Серия 2'],
-			['Сезон 2', undefined],
+		expect(panel().exists()).toBe(false)
+		await button.trigger('click')
+		await nextTick()
+		expect(button.attributes('aria-expanded')).toBe('true')
+		expect(panel().attributes('aria-label')).toBe('Серии')
+		const tabs = panel().findAll('.base-media-player__episodes-tab')
+		expect(tabs.map(tab => [tab.text(), tab.attributes('aria-pressed')])).toEqual([
+			['Сезон 1', 'true'],
+			['Сезон 2', 'false'],
 		])
-		items[1].children?.items[0].onSelect?.()
+		expect(cards().map(card => card.find('.base-media-player__episode-number').text())).toEqual(['1', '2', '3'])
+		const current = cards()[1]
+		expect(current.attributes('aria-current')).toBe('true')
+		expect(document.activeElement).toBe(current.element)
+		expect(current.get('img').attributes('src')).toBe('/e2.webp')
+		expect(current.get('.base-media-player__episode-duration').text()).toBe('24:10')
+		expect(current.get('.base-media-player__episode-description').text()).toBe('Герои в пути')
+		expect(cards()[2].find('img').exists()).toBe(false)
+		await tabs[1].trigger('click')
+		expect(cards().map(card => card.get('.base-media-player__episode-name').text())).toEqual(['Серия 3'])
+		;(cards()[0].element as HTMLElement).focus()
+		await cards()[0].trigger('click')
+		expect(panel().exists()).toBe(false)
+		expect(document.activeElement).toBe(button.element)
 		await wrapper.trigger('keydown', { code: 'KeyN', shiftKey: true })
 		await wrapper.trigger('keydown', { code: 'KeyP', shiftKey: true })
-		expect(wrapper.emitted('update:episode')).toEqual([['e3'], ['e3'], ['e1']])
+		expect(wrapper.emitted('update:episode')).toEqual([['e3'], ['e2b'], ['e1']])
 		wrapper.unmount()
 	})
 
-	it('один сезон — серии сразу в меню; одна серия — меню нет', async () => {
+	it('панель серий закрывают крестик, Escape (фокус — на кнопку «Серии»), щелчок мимо и повторное нажатие кнопки', async () => {
+		const { wrapper } = await setup()
+		const button = wrapper.get('button[aria-label="Серии"]')
+		const panel = () => wrapper.find('.base-media-player__episodes')
+		const open = async (): Promise<void> => {
+			await button.trigger('click')
+			await nextTick()
+		}
+
+		await open()
+		await panel().get('button[aria-label="Закрыть"]').trigger('click')
+		expect(panel().exists()).toBe(false)
+		expect(document.activeElement).toBe(button.element)
+		await open()
+		await panel().trigger('keydown', { key: 'ArrowDown' })
+		expect(panel().exists()).toBe(true)
+		await panel().trigger('keydown', { key: 'Escape' })
+		expect(panel().exists()).toBe(false)
+		await open()
+		await fireEvent.pointerDown(panel().element)
+		await fireEvent.pointerDown(button.element)
+		expect(panel().exists()).toBe(true)
+		await fireEvent.pointerDown(wrapper.get('video').element)
+		expect(panel().exists()).toBe(false)
+		await open()
+		await button.trigger('click')
+		expect(panel().exists()).toBe(false)
+		wrapper.unmount()
+	})
+
+	it('один сезон — без вкладок; одна серия — кнопки «Серии» нет', async () => {
 		const single = await setup({ playlists: [SEASONS[0]] })
-		expect(single.menu('episodeMenu')?.items.map(item => item.label)).toEqual(['Серия 1', 'Серия 2'])
+		await single.wrapper.get('button[aria-label="Серии"]').trigger('click')
+		expect(single.wrapper.find('.base-media-player__episodes-tabs').exists()).toBe(false)
+		expect(single.wrapper.findAll('.base-media-player__episode-name').map(name => name.text())).toEqual(['Серия 1', 'Серия 2'])
 		single.wrapper.unmount()
 
 		const one = await setup({ playlists: [SEASONS[1]] })
-		expect(one.menu('episodeMenu')).toBeUndefined()
+		expect(one.wrapper.find('button[aria-label="Серии"]').exists()).toBe(false)
 		expect(one.wrapper.find('button[aria-label="Следующая серия"]').exists()).toBe(false)
 		one.wrapper.unmount()
 	})

@@ -1,0 +1,324 @@
+.base-media-player {
+	&__dock {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+	}
+
+	&--audio &__dock {
+		display: contents;
+	}
+
+	&--mini &__dock {
+		position: fixed;
+		inset: auto sz(16px) sz(16px) auto;
+		z-index: 1000;
+		width: min(#{sz(360px)}, calc(100vw - #{sz(32px)}));
+		aspect-ratio: var(--media-aspect, 16 / 9);
+		overflow: hidden;
+		border-radius: sz(12px);
+		background-color: black;
+		box-shadow: 0 16px 48px rgb(0 0 0 / 45%);
+
+		@include motion-safe {
+			animation: base-media-player-mini 300ms var(--rise-ease-out);
+		}
+	}
+
+	&--mini &__top {
+		display: none;
+	}
+
+	&__mini-placeholder {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: sz(8px);
+		color: var(--media-muted);
+		font-size: sz(14px);
+
+		.base-media-player__icon {
+			width: sz(28px);
+			height: sz(28px);
+		}
+	}
+
+	&__mini-bar {
+		position: absolute;
+		top: sz(6px);
+		right: sz(6px);
+		z-index: 8;
+		display: flex;
+		gap: sz(2px);
+		border-radius: sz(8px);
+		background-color: rgb(0 0 0 / 55%);
+		opacity: 0;
+		transition: opacity 200ms var(--rise-ease);
+
+		.base-media-player__control {
+			min-width: sz(32px);
+			height: sz(32px);
+		}
+
+		.base-media-player__control::after {
+			top: calc(100% + #{sz(6px)});
+			bottom: auto;
+		}
+	}
+
+	&__dock:hover &__mini-bar,
+	&__mini-bar:focus-within {
+		opacity: 1;
+	}
+
+	&--rotate-180 &__media {
+		transform: rotate(180deg);
+	}
+
+	&--rotate-90 &__dock,
+	&--rotate-270 &__dock {
+		container-type: size;
+	}
+
+	&--rotate-90 &__media,
+	&--rotate-270 &__media {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 100cqh;
+		height: 100cqw;
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+
+	&--rotate-270 &__media {
+		transform: translate(-50%, -50%) rotate(270deg);
+	}
+
+	&--ambient {
+		box-shadow: var(--media-ambient, none);
+		transition: box-shadow 800ms linear;
+	}
+
+	&--fullscreen,
+	&--theater,
+	&--mini {
+		box-shadow: none;
+	}
+
+	&__episodes {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 7;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		width: min(#{sz(400px)}, 100%);
+		background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		box-shadow: -4px 0 24px rgb(0 0 0 / 50%);
+		color: white;
+	}
+
+	&__episodes-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		padding: sz(10px) sz(10px) sz(10px) sz(20px);
+		border-bottom: 1px solid rgb(255 255 255 / 10%);
+
+		.base-media-player__control::after {
+			--media-tip-right: 0px;
+			--media-tip-left: auto;
+			--media-tip-shift: 0px;
+
+			top: calc(100% + #{sz(6px)});
+			bottom: auto;
+		}
+	}
+
+	&__episodes-title {
+		color: #e2e8f0;
+		font-size: sz(18px);
+		font-weight: 700;
+	}
+
+	&__episodes-tabs {
+		display: flex;
+		flex: none;
+		gap: sz(8px);
+		padding: sz(12px) sz(16px);
+		overflow-x: auto;
+		border-bottom: 1px solid rgb(255 255 255 / 10%);
+		@include scrollbar-thin;
+	}
+
+	&__episodes-tab {
+		flex: none;
+		padding: sz(6px) sz(14px);
+		border: 1px solid rgb(255 255 255 / 12%);
+		border-radius: 999px;
+		background-color: transparent;
+		color: #94a3b8;
+		font: inherit;
+		font-size: sz(14px);
+		font-weight: 600;
+		white-space: nowrap;
+		cursor: pointer;
+		@include transition(background-color, border-color, color);
+		@include focus-ring;
+
+		@include hover {
+			background-color: rgb(255 255 255 / 6%);
+			color: #e2e8f0;
+		}
+
+		&[aria-pressed='true'] {
+			border-color: #c2410c;
+			background-color: #c2410c;
+			color: white;
+		}
+	}
+
+	&__episodes-list {
+		display: grid;
+		flex: 1;
+		align-content: start;
+		gap: sz(10px);
+		min-height: 0;
+		margin: 0;
+		padding: sz(12px) sz(12px) sz(16px);
+		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+	}
+
+	&__episode-card {
+		display: flex;
+		align-items: center;
+		gap: sz(12px);
+		box-sizing: border-box;
+		width: 100%;
+		padding: sz(10px);
+		border: 2px solid transparent;
+		border-radius: sz(10px);
+		background-color: rgb(255 255 255 / 5%);
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		@include transition(background-color, border-color, transform);
+		@include focus-ring;
+
+		@include hover {
+			background-color: rgb(255 255 255 / 10%);
+			transform: translateX(#{sz(-4px)});
+		}
+	}
+
+	&__episode-card--current {
+		border-color: var(--media-accent);
+		background-color: rgb(255 102 0 / 16%);
+	}
+
+	&__episode-number {
+		display: flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(28px);
+		height: sz(28px);
+		border-radius: sz(6px);
+		background-color: rgb(255 255 255 / 10%);
+		color: #e2e8f0;
+		font-size: sz(14px);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__episode-card--current &__episode-number {
+		background-color: #c2410c;
+		color: white;
+	}
+
+	&__episode-cover {
+		position: relative;
+		flex: none;
+		width: sz(112px);
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		border-radius: sz(6px);
+		background-image: linear-gradient(135deg, #334155, #1e293b);
+	}
+
+	&__episode-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	&__episode-duration {
+		position: absolute;
+		right: sz(4px);
+		bottom: sz(4px);
+		padding: sz(1px) sz(5px);
+		border-radius: sz(4px);
+		background-color: rgb(0 0 0 / 75%);
+		font-size: sz(11px);
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__episode-info {
+		display: grid;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__episode-name {
+		color: #e2e8f0;
+		font-size: sz(14px);
+		font-weight: 600;
+		@include truncate;
+	}
+
+	&__episode-description {
+		display: -webkit-box;
+		overflow: hidden;
+		color: #94a3b8;
+		font-size: sz(12px);
+		line-height: 1.35;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow-wrap: anywhere;
+	}
+
+	&__episodes-enter-active,
+	&__episodes-leave-active {
+		transition:
+			opacity 300ms var(--rise-ease-out),
+			transform 300ms var(--rise-ease-out);
+	}
+
+	&__episodes-enter-from,
+	&__episodes-leave-to {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+@keyframes base-media-player-mini {
+	from {
+		opacity: 0;
+		transform: translateY(#{sz(24px)}) scale(0.96);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}

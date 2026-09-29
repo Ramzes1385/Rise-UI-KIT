@@ -9,6 +9,9 @@ import demoPoster from './media/demo-poster.webp'
 import demoSubtitlesRu from './media/demo.ru.vtt'
 import demoCoverVideo from './media/demo-cover.webm'
 import demoSubtitlesEn from './media/demo.en.srt?url'
+import demoEpisode1 from './media/demo-episode-1.webp'
+import demoEpisode2 from './media/demo-episode-2.webp'
+import demoEpisode3 from './media/demo-episode-3.webp'
 import demoThumbnailsSprite from './media/demo-thumbnails.jpg'
 import demoCoverAnimated from './media/demo-cover-animated.webp'
 
@@ -119,11 +122,40 @@ export const DEMO_PLAYLISTS = [
 		id: 'season-1',
 		title: 'Сезон 1',
 		episodes: [
-			{ id: 's1e1', title: 'Серия 1. Начало', sources: DEMO_SOURCES, chapters: DEMO_CHAPTERS },
-			{ id: 's1e2', title: 'Серия 2. Дорога', sources: DEMO_QUALITIES, chapters: DEMO_CHAPTERS },
+			{
+				id: 's1e1',
+				title: 'Серия 1. Начало',
+				description: 'Команда собирает первый плеер и спорит, сколько кнопок должно быть на панели.',
+				duration: 12,
+				poster: demoEpisode1,
+				sources: DEMO_SOURCES,
+				chapters: DEMO_CHAPTERS,
+			},
+			{
+				id: 's1e2',
+				title: 'Серия 2. Дорога',
+				description: 'Два качества записи, главы на шкале и первая реклама — плеер отправляется в путь.',
+				duration: 12,
+				poster: demoEpisode2,
+				sources: DEMO_QUALITIES,
+				chapters: DEMO_CHAPTERS,
+			},
 		],
 	},
-	{ id: 'season-2', title: 'Сезон 2', episodes: [{ id: 's2e1', title: 'Серия 1. Возвращение', sources: DEMO_SOURCES }] },
+	{
+		id: 'season-2',
+		title: 'Сезон 2',
+		episodes: [
+			{
+				id: 's2e1',
+				title: 'Серия 1. Возвращение',
+				description: 'Плеер возвращается с новой панелью серий, мини-плеером и подсветкой.',
+				duration: 12,
+				poster: demoEpisode3,
+				sources: DEMO_SOURCES,
+			},
+		],
+	},
 ]
 
 const OPUS = 'audio/webm; codecs="opus"'

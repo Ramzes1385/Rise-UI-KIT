@@ -110,7 +110,7 @@ export function withSetup<T>(composable: () => T) {
 	return { result, wrapper }
 }
 
-const MENU_KEYS = ['qualityMenu', 'audioMenu', 'captionMenu', 'episodeMenu', 'chapterMenu']
+const MENU_KEYS = ['qualityMenu', 'audioMenu', 'captionMenu', 'chapterMenu']
 
 export function playerMenu(wrapper: VueWrapper, name: string) {
 	const list = (): MediaMenuList | undefined => {

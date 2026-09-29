@@ -79,7 +79,7 @@ function usePlayerView(props: MediaPlayerProps, series: ReturnType<typeof usePla
 		hasCover: (): boolean => Boolean(posterSrc.value || posterVideoSrc.value),
 		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
 		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
-		rootStyle: computed(() => (isAudio.value ? {} : { aspectRatio: props.aspectRatio })),
+		rootStyle: computed(() => (isAudio.value ? {} : { aspectRatio: props.aspectRatio, '--media-aspect': props.aspectRatio })),
 		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
 	}
 }

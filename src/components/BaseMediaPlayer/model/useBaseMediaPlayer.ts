@@ -1,12 +1,16 @@
 import type { Ref } from 'vue'
 import { UI_PLAYER } from './messages'
+import { useMediaMini } from './useMediaMini'
 import { computed, provide, watch } from 'vue'
 import { usePlayerCast } from './usePlayerCast'
 import { usePlayerTools } from './usePlayerTools'
 import { useSeekPreview } from './useSeekPreview'
+import { useAmbientLight } from './useAmbientLight'
 import { useIdleControls } from './useIdleControls'
 import { usePlayerModels } from './usePlayerModels'
+import { useMediaRotation } from './useMediaRotation'
 import { usePlayerHotkeys } from './usePlayerHotkeys'
+import { withFrameItems } from './useMediaContextMenu'
 import { usePlayerCaptions } from './usePlayerCaptions'
 import { PLAYER_CONTEXT_KEY } from './usePlayerContext'
 import { usePlayerOverlays } from './usePlayerOverlays'
@@ -79,29 +83,39 @@ function usePlayerAudio(
 	})
 }
 
-function useScreenModes(elements: ReturnType<typeof usePlayerBase>['elements'], isTheater: Readonly<Ref<boolean>>) {
+function useScreenModes(
+	props: MediaPlayerProps,
+	elements: ReturnType<typeof usePlayerBase>['elements'],
+	player: { isTheater: Readonly<Ref<boolean>>; state: Readonly<MediaState>; actions: MediaActions },
+) {
 	const fullscreen = useMediaFullscreen(elements.rootRef, elements.mediaRef)
+	const isFullscreen = (): boolean => fullscreen.isFullscreen.value
+	const { rootRef: root, mediaRef: media } = elements
 	return {
 		fullscreen,
 		toggleFullscreen: (): void => void fullscreen.toggle(),
 		isFullscreen: fullscreen.isFullscreen,
 		isFullscreenSupported: fullscreen.isSupported,
 		fullscreenLabel: computed(() => (fullscreen.isFullscreen.value ? UI_PLAYER.EXIT_FULLSCREEN : UI_PLAYER.FULLSCREEN)),
-		theaterLabel: computed(() => (isTheater.value ? UI_PLAYER.EXIT_THEATER : UI_PLAYER.THEATER)),
+		theaterLabel: computed(() => (player.isTheater.value ? UI_PLAYER.EXIT_THEATER : UI_PLAYER.THEATER)),
+		...useMediaMini({ root, isEnabled: () => props.hasMiniPlayer, isFullscreen, state: player.state, pause: player.actions.pause }),
+		...useMediaRotation({ media, isFullscreen }),
+		...useAmbientLight({ media, state: player.state }),
 	}
 }
 
 function usePlayerIdle(
 	props: MediaPlayerProps,
 	elements: ReturnType<typeof usePlayerBase>['elements'],
-	player: { state: Readonly<MediaState>; isAudio: Readonly<Ref<boolean>> },
+	player: { state: Readonly<MediaState>; isAudio: Readonly<Ref<boolean>>; isPanelOpen: () => boolean },
 ) {
 	const isFocusInPanel = (): boolean =>
 		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
 	const isPointerOnPanel = (): boolean => Boolean(elements.controlsRef.value?.matches(':hover'))
+	const isBusy = (): boolean => player.isAudio.value || player.state.isPaused || player.isPanelOpen()
 	return useIdleControls(elements.rootRef, {
 		timeout: () => props.idleTimeout,
-		canHide: () => !player.isAudio.value && !player.state.isPaused && !isFocusInPanel() && !isPointerOnPanel(),
+		canHide: () => !isBusy() && !isFocusInPanel() && !isPointerOnPanel(),
 	}).isIdle
 }
 
@@ -233,7 +247,7 @@ function usePlayerPreview(
 export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMediaPlayerEmits) {
 	const { elements, state, actions, eventLog, emit, series, sources, hls, view, cover, overlays } = usePlayerBase(props, playerEmit)
 	const models = usePlayerModels(props, emit, { state, actions })
-	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
+	const { fullscreen, ...screen } = useScreenModes(props, elements, { isTheater: models.isTheater, state, actions })
 	const activeSource = (): MediaSourceItem | null | undefined => sources.activeSource.value
 	const accessibleName = computed(() => [props.title, series.playlist.currentEpisode.value?.title].filter(Boolean).join('. '))
 	const cast = usePlayerCasting(props, { state, actions, elements, series, activeSource, title: () => accessibleName.value })
@@ -260,12 +274,17 @@ export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMed
 		...models,
 		...elements,
 		...extrasContext(extras),
+		contextItems: withFrameItems(extras.tools.contextItems, { ...screen, isAudio: view.isAudioMode }),
 		...usePlayerPreview(props, { state, series, sources, isAudio: view.isAudioMode }),
 		...usePlayerAudio(props, emit, { elements, flash: extras.tools.flash, stream: hls.hlsAudio, tracks: series.content.audioTracks }),
 		...screen,
 		state,
 		actions,
-		isIdle: usePlayerIdle(props, elements, { state, isAudio: view.isAudioMode }),
+		isIdle: usePlayerIdle(props, elements, {
+			state,
+			isAudio: view.isAudioMode,
+			isPanelOpen: () => extras.episodes.isEpisodesOpen.value,
+		}),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,
 		accessibleName,

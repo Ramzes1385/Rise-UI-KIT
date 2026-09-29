@@ -140,18 +140,15 @@
 					:label="castLabel"
 					:is-pressed="isCasting"
 					@click="toggleCast" />
-				<MediaPopover v-if="hasEpisodes">
-					<template #default="{ isOpen, toggle }">
-						<MediaControlButton
-							icon="playlist"
-							:label="UI_PLAYER.EPISODES"
-							:badge="episodeCount"
-							aria-haspopup="menu"
-							:aria-expanded="isOpen"
-							@click="toggle" />
-					</template>
-					<template #panel="{ close }"><MediaMenuPanel :menu="episodeMenu" @close="close" /></template>
-				</MediaPopover>
+				<MediaControlButton
+					v-if="hasEpisodes"
+					class="base-media-player__episodes-button"
+					icon="playlist"
+					:label="UI_PLAYER.EPISODES"
+					:badge="episodeCount"
+					:is-active="isEpisodesOpen"
+					:aria-expanded="isEpisodesOpen"
+					@click="toggleEpisodes" />
 				<MediaControlButton
 					v-if="isPipSupported && !isAudioMode"
 					class="base-media-player__pip-button"
@@ -196,6 +193,13 @@
 						:label="seekLabel(seekSteps.long)"
 						@click="actions.seekBy(seekSteps.long)" />
 				</div>
+				<div v-if="!isAudioMode" class="base-media-player__group base-media-player__group--end">
+					<MediaControlButton
+						:icon="isAmbient ? 'light' : 'light-off'"
+						:label="UI_PLAYER.AMBIENT"
+						:is-pressed="isAmbient"
+						@click="setAmbient(!isAmbient)" />
+				</div>
 			</div>
 		</Transition>
 	</div>
@@ -234,13 +238,14 @@ const {
 	currentTimeText,
 	durationText,
 	episodeCount,
-	episodeMenu,
 	fullscreenLabel,
 	hasCast,
 	hasEpisodes,
+	isAmbient,
 	isAudioMode,
 	isAutoNext,
 	isCasting,
+	isEpisodesOpen,
 	isFullscreen,
 	isFullscreenSupported,
 	isPip,
@@ -262,10 +267,12 @@ const {
 	seekLabel,
 	seekSteps,
 	seekValueText,
+	setAmbient,
 	setAutoNext,
 	state,
 	theaterLabel,
 	toggleCast,
+	toggleEpisodes,
 	toggleFullscreen,
 	togglePip,
 	togglePlay,

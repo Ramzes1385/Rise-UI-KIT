@@ -160,6 +160,11 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	thumbnails?: string
 	/** Превью кадра над шкалой при наведении; кадры из записи загружаются отдельным скрытым видео */
 	hasSeekPreview?: boolean
+	/**
+	 * Мини-плеер: если идущая запись прокручена за пределы экрана, плеер переезжает в правый нижний угол окна
+	 * и возвращается на место, когда место плеера снова видно
+	 */
+	hasMiniPlayer?: boolean
 	/** Интро — отдельный ролик перед серией или записью: играет при запуске с начала, с «Пропустить» */
 	intro?: MediaClip
 	/** Аутро — отдельный ролик после серии или записи: играет до отсчёта следующей серии */
@@ -246,6 +251,7 @@ export type MediaPlayerProps = PropsWithDefaults<
 	| 'hasCaptionUpload'
 	| 'nextCountdown'
 	| 'hasSeekPreview'
+	| 'hasMiniPlayer'
 >
 
 /** Связь `v-model` плеера со значением медиаэлемента */

@@ -31,6 +31,7 @@ export const BannersAndAchievements = cases.BannersAndAchievements
 export const Cast = cases.Cast
 export const TitleAndLogo = cases.TitleAndLogo
 export const Theater = cases.Theater
+export const MiniPlayer = cases.MiniPlayer
 export const Autoplay = cases.Autoplay
 export const ContextMenu = cases.ContextMenu
 export const ResumePosition = cases.ResumePosition

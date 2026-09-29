@@ -82,4 +82,47 @@ describe('BaseMediaPlayer: оверлеи в стиле VideoStack', () => {
 		expect(hint.querySelector('.base-media-player__seek-hint-label')).toHaveTextContent('−10 с')
 		expect(hint.querySelector('path')).toHaveAttribute('d', expect.stringMatching(/^M11\.5,12/))
 	})
+
+	it('мини-плеер: место плеера с подписью, кнопки «Вернуть» и «Закрыть» в углу', async () => {
+		let report: IntersectionObserverCallback = () => undefined
+		vi.stubGlobal(
+			'IntersectionObserver',
+			class {
+				constructor(callback: IntersectionObserverCallback) {
+					report = callback
+				}
+				observe(): void {}
+				disconnect(): void {}
+			},
+		)
+		const { root, fake } = await setup({ hasMiniPlayer: true })
+		fake.emit('play')
+		report([{ intersectionRatio: 0, boundingClientRect: { top: -500 } } as IntersectionObserverEntry], {} as IntersectionObserver)
+		await nextTick()
+
+		expect(root).toHaveClass('base-media-player--mini')
+		expect(root.querySelector('.base-media-player__mini-placeholder')).toHaveTextContent('Видео в мини-плеере')
+		await fireEvent.click(screen.getByRole('button', { name: 'Вернуть плеер на место' }))
+		expect(root.scrollIntoView).toHaveBeenCalled()
+		await fireEvent.click(screen.getByRole('button', { name: 'Закрыть мини-плеер' }))
+		expect(fake.pause).toHaveBeenCalledOnce()
+		expect(root).not.toHaveClass('base-media-player--mini')
+		vi.unstubAllGlobals()
+	})
+
+	it('подсветка — кнопкой во втором ряду; поворот и подсветка — в контекстном меню', async () => {
+		const { root, video } = await setup()
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Точная перемотка' }))
+		const ambient = screen.getByRole('button', { name: 'Подсветка' })
+		await fireEvent.click(ambient)
+		expect(ambient).toHaveAttribute('aria-pressed', 'true')
+		expect(root).toHaveClass('base-media-player--ambient')
+		video.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 20, clientY: 20 }))
+		const menu = await screen.findByRole('menu')
+		expect(within(menu).getByRole('menuitemcheckbox', { name: 'Подсветка' })).toHaveAttribute('aria-checked', 'true')
+		await fireEvent.click(within(menu).getByRole('menuitem', { name: /Повернуть картинку/ }))
+		expect(root).toHaveClass('base-media-player--rotate-90')
+		localStorage.clear()
+	})
 })

@@ -42,6 +42,7 @@ export const argTypes = {
 	hasUrlTime: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	hasCaptionUpload: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	hasSeekPreview: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	hasMiniPlayer: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	mode: { control: 'inline-radio', options: [...MEDIA_PLAYER_MODES], table: propGroup(ARG_GROUP.appearance) },
 	preload: { control: 'inline-radio', options: [...MEDIA_PRELOAD_MODES], table: propGroup(ARG_GROUP.behavior) },
