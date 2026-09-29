@@ -1,3 +1,4 @@
+import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './MediaCore.types'
@@ -66,7 +67,7 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	crossorigin?: 'anonymous' | 'use-credentials'
 	/** Пропорции кадра — значение CSS `aspect-ratio` */
 	aspectRatio?: string
-	/** Горячие клавиши, пока фокус внутри плеера: Space/K, ←/→, J/L, Home/End, 0–9, ↑/↓, M, F, T, Shift+, и Shift+. */
+	/** Горячие клавиши, пока фокус внутри плеера: Space/K, ←/→, J/L, Home/End, 0–9, ↑/↓, M, F, T, C, Shift+, и Shift+. */
 	hasKeyboardShortcuts?: boolean
 	/** Шаг перемотки стрелками ←/→, секунды */
 	seekStep?: number
@@ -98,6 +99,15 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	timeParam?: string
 	/** Начать с позиции из адреса страницы (`timeParam`), если она там есть */
 	hasUrlTime?: boolean
+	/**
+	 * Субтитры: файлы WebVTT (.vtt) или SubRip (.srt) в UTF-8, UTF-16 или Windows-1251.
+	 * Файлы с другого домена загружаются по CORS: сервер должен отвечать заголовком Access-Control-Allow-Origin
+	 */
+	tracks?: MediaTextTrackItem[]
+	/** Выбранные субтитры (`v-model:text-track`): `src` дорожки или null — выключены; без значения — дорожка с `isDefault` */
+	textTrack?: string | null
+	/** Зритель может добавить свой файл .srt или .vtt: пунктом меню или перетаскиванием на плеер */
+	hasCaptionUpload?: boolean
 }
 
 export interface BaseMediaPlayerEmits {
@@ -114,6 +124,7 @@ export interface BaseMediaPlayerEmits {
 	(event: 'update:isMuted', value: boolean): void
 	(event: 'update:playbackRate', value: number): void
 	(event: 'update:isTheater', value: boolean): void
+	(event: 'update:textTrack', value: string | null): void
 	/** Плеер развернулся на весь экран или свернулся */
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
@@ -146,6 +157,7 @@ export type MediaPlayerProps = PropsWithDefaults<
 	| 'logoPosition'
 	| 'timeParam'
 	| 'hasUrlTime'
+	| 'hasCaptionUpload'
 >
 
 /** Связь `v-model` плеера со значением медиаэлемента */

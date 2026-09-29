@@ -1,6 +1,8 @@
 import demoVideo from './media/demo.webm'
 import demoVideoLow from './media/demo-144.webm'
 import demoPoster from './media/demo-poster.webp'
+import demoSubtitlesRu from './media/demo.ru.vtt'
+import demoSubtitlesEn from './media/demo.en.srt?url'
 
 const WEBM = 'video/webm; codecs="vp9, opus"'
 
@@ -12,6 +14,11 @@ export const DEMO_QUALITIES = [
 ]
 
 export const DEMO_POSTER = demoPoster
+
+export const DEMO_TRACKS = [
+	{ src: demoSubtitlesRu, label: 'Русский', srclang: 'ru', isDefault: true },
+	{ src: demoSubtitlesEn, label: 'English', srclang: 'en' },
+]
 
 export const DEMO_LOGO = `data:image/svg+xml,${encodeURIComponent(
 	'<svg xmlns="http://www.w3.org/2000/svg" width="96" height="32" viewBox="0 0 96 32"><circle cx="16" cy="16" r="12" fill="none" stroke="white" stroke-width="4"/><text x="36" y="23" fill="white" font-family="sans-serif" font-size="18" font-weight="700">RISE</text></svg>',

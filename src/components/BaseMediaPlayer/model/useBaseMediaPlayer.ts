@@ -8,6 +8,7 @@ import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
 import { useMediaSources } from './useMediaSources'
 import { usePlayerModels } from './usePlayerModels'
+import { usePlayerCaptions } from './usePlayerCaptions'
 import { usePlayerOverlays } from './usePlayerOverlays'
 import { useMediaFullscreen } from './useMediaFullscreen'
 import { formatMessage, formatNumber } from '@/locales/state'
@@ -65,7 +66,13 @@ function usePlayerView(props: MediaPlayerProps, sources: ReturnType<typeof useMe
 function usePlayerHotkeys(
 	target: Readonly<Ref<HTMLElement | null>>,
 	props: MediaPlayerProps,
-	media: { state: Readonly<MediaState>; actions: MediaActions; toggleFullscreen: () => void; toggleTheater: () => void },
+	media: {
+		state: Readonly<MediaState>
+		actions: MediaActions
+		toggleFullscreen: () => void
+		toggleTheater: () => void
+		toggleCaptions: () => void
+	},
 ): void {
 	const { state, actions } = media
 	useMediaHotkeys(target, {
@@ -81,6 +88,7 @@ function usePlayerHotkeys(
 			toggleMute: actions.toggleMute,
 			toggleFullscreen: media.toggleFullscreen,
 			toggleTheater: media.toggleTheater,
+			toggleCaptions: media.toggleCaptions,
 			stepPlaybackRate(direction) {
 				const rate = nextRate(props.playbackRates, state.playbackRate, direction)
 				if (rate !== undefined) actions.setPlaybackRate(rate)
@@ -140,6 +148,27 @@ function usePlayerEvents(
 	}
 }
 
+function useScreenModes(elements: ReturnType<typeof usePlayerElements>, isTheater: Readonly<Ref<boolean>>) {
+	const fullscreen = useMediaFullscreen(elements.rootRef, elements.mediaRef)
+	return {
+		fullscreen,
+		toggleFullscreen: (): void => void fullscreen.toggle(),
+		isFullscreen: fullscreen.isFullscreen,
+		isFullscreenSupported: fullscreen.isSupported,
+		fullscreenLabel: computed(() => (fullscreen.isFullscreen.value ? UI_PLAYER.EXIT_FULLSCREEN : UI_PLAYER.FULLSCREEN)),
+		theaterLabel: computed(() => (isTheater.value ? UI_PLAYER.EXIT_THEATER : UI_PLAYER.THEATER)),
+	}
+}
+
+function usePlayerIdle(props: MediaPlayerProps, elements: ReturnType<typeof usePlayerElements>, state: Readonly<MediaState>) {
+	const isFocusInPanel = (): boolean =>
+		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
+	return useIdleControls(elements.rootRef, {
+		timeout: () => props.idleTimeout,
+		canHide: () => !state.isPaused && !isFocusInPanel(),
+	}).isIdle
+}
+
 export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	const elements = usePlayerElements()
 	const { state, actions } = useMediaElement(elements.mediaRef)
@@ -148,17 +177,24 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		allowedProtocols: () => props.allowedProtocols,
 		media: elements.mediaRef,
 	})
-	const fullscreen = useMediaFullscreen(elements.rootRef, elements.mediaRef)
-	const toggleFullscreen = (): void => void fullscreen.toggle()
-	const isFocusInPanel = (): boolean =>
-		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
-	const { isIdle } = useIdleControls(elements.rootRef, {
-		timeout: () => props.idleTimeout,
-		canHide: () => !state.isPaused && !isFocusInPanel(),
-	})
 	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource })
 	const models = usePlayerModels(props, emit, { state, actions })
-	usePlayerHotkeys(elements.rootRef, props, { state, actions, toggleFullscreen, toggleTheater: models.toggleTheater })
+	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
+	const tools = usePlayerTools(props, emit, {
+		state,
+		actions,
+		media: elements.mediaRef,
+		activeSource: () => sources.activeSource.value,
+		toggleFullscreen: screen.toggleFullscreen,
+	})
+	const captions = usePlayerCaptions(props, emit, { state, media: elements.mediaRef, root: elements.rootRef, flash: tools.flash })
+	usePlayerHotkeys(elements.rootRef, props, {
+		state,
+		actions,
+		toggleFullscreen: screen.toggleFullscreen,
+		toggleTheater: models.toggleTheater,
+		toggleCaptions: captions.toggleCaptions,
+	})
 
 	return {
 		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
@@ -167,22 +203,13 @@ export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlaye
 		...overlays,
 		...models,
 		...elements,
-		...usePlayerTools(props, emit, {
-			state,
-			actions,
-			media: elements.mediaRef,
-			activeSource: () => sources.activeSource.value,
-			toggleFullscreen,
-		}),
+		...tools,
+		...captions,
+		...screen,
 		state,
 		actions,
-		isIdle,
+		isIdle: usePlayerIdle(props, elements, state),
 		togglePlay: () => void actions.togglePlay(),
-		toggleFullscreen,
-		isFullscreen: fullscreen.isFullscreen,
-		isFullscreenSupported: fullscreen.isSupported,
-		fullscreenLabel: computed(() => (fullscreen.isFullscreen.value ? UI_PLAYER.EXIT_FULLSCREEN : UI_PLAYER.FULLSCREEN)),
-		theaterLabel: computed(() => (models.isTheater.value ? UI_PLAYER.EXIT_THEATER : UI_PLAYER.THEATER)),
 		exposed: { ...actions, state, getMediaElement: () => elements.mediaRef.value } satisfies BaseMediaPlayerExpose,
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}

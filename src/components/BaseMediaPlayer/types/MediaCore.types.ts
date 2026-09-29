@@ -94,6 +94,8 @@ interface MediaHotkeyActions {
 	toggleFullscreen: () => void
 	/** Широкий экран или обычный режим */
 	toggleTheater: () => void
+	/** Включить или выключить субтитры */
+	toggleCaptions: () => void
 	/** Сменить скорость на соседнюю: 1 — быстрее, -1 — медленнее */
 	stepPlaybackRate: (direction: 1 | -1) => void
 }

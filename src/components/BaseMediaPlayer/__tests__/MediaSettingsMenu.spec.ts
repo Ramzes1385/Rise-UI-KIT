@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { formatNumber } from '@/locales/state'
 import MediaSettingsMenu from '../ui/MediaSettingsMenu.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { useMediaSettingsMenu } from '../model/useMediaSettingsMenu'
@@ -8,6 +9,12 @@ import type { MediaSettingsMenuProps } from '../types/MediaSettingsMenu.types'
 const HD = { src: '/media/hd.webm', label: '720p' }
 const SD = { src: '/media/sd.webm', label: '360p' }
 
+const RU = { id: '/subs/ru.vtt', label: 'Русский' }
+
+const EN = { id: '/subs/en.srt', label: 'English' }
+
+const STYLE = { size: 100, color: 'white', background: 'semi', position: { x: 50, y: 86 } } as const
+
 function menu(props: Partial<MediaSettingsMenuProps> = {}) {
 	const emit = vi.fn()
 	const { items, label } = useMediaSettingsMenu({ rates: [0.5, 1, 1.5], rate: 1, qualities: [HD, SD], activeSrc: SD.src, ...props }, emit)
@@ -16,6 +23,14 @@ function menu(props: Partial<MediaSettingsMenuProps> = {}) {
 
 function children(item: DropdownMenuItem): DropdownMenuItem[] {
 	return item.children as DropdownMenuItem[]
+}
+
+function groups(item: DropdownMenuItem): DropdownMenuItem[][] {
+	return item.children as DropdownMenuItem[][]
+}
+
+function radios(group: DropdownMenuItem[]): Array<[string | undefined, boolean | undefined]> {
+	return group.filter(item => item.type === 'radio').map(item => [item.label, item.isChecked])
 }
 
 describe('MediaSettingsMenu', () => {
@@ -52,5 +67,91 @@ describe('MediaSettingsMenu', () => {
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Настройки' }))
 		expect(await screen.findByRole('menuitem', { name: /Скорость/ })).toBeInTheDocument()
+	})
+
+	it('субтитры: «Выкл», дорожки и загрузка файла; выбор сообщается событиями', () => {
+		const { items, emit } = menu({ captionTracks: [RU, EN], activeCaptionId: EN.id, captionStyle: STYLE, canLoadCaptions: true })
+		const [captions, style, speed] = items
+		const [choices, [upload]] = groups(captions)
+
+		expect(captions.label).toBe('Субтитры: English')
+		expect(style.label).toBe('Вид субтитров')
+		expect(speed.label).toBe('Скорость: Обычная')
+		expect(radios(choices)).toEqual([
+			['Выкл', false],
+			['Русский', false],
+			['English', true],
+		])
+		choices[0].onUpdateChecked?.(true)
+		choices[1].onUpdateChecked?.(true)
+		upload.onSelect?.(new Event('click'))
+		expect(upload.label).toBe('Загрузить файл субтитров…')
+		expect(emit.mock.calls).toEqual([['select-caption', null], ['select-caption', RU.id], ['load-captions']])
+	})
+
+	it('субтитры: без дорожек — только «Выкл» и загрузка; без загрузки и дорожек пункта нет', () => {
+		const onlyUpload = menu({ canLoadCaptions: true, captionStyle: STYLE }).items
+		expect(onlyUpload.map(item => item.label)).toEqual(['Субтитры: Выкл', 'Скорость: Обычная', 'Качество: 360p'])
+		expect(radios(groups(onlyUpload[0])[0])).toEqual([['Выкл', true]])
+
+		const tracksOnly = menu({ captionTracks: [RU], activeCaptionId: '/subs/gone.vtt' }).items
+		expect(tracksOnly[0].label).toBe('Субтитры: Выкл')
+		expect(groups(tracksOnly[0])).toHaveLength(1)
+		expect(tracksOnly[1].label).toBe('Скорость: Обычная')
+		expect(menu({ captionTracks: [] }).items[0].label).toBe('Скорость: Обычная')
+	})
+
+	it('вид субтитров: размер, цвет, фон и положение — подменю с текущим значением; выбор отдаёт изменение', () => {
+		const { items, emit } = menu({ captionTracks: [RU], activeCaptionId: RU.id, captionStyle: STYLE })
+		const [size, color, background, position] = children(items[1])
+
+		expect([size, color, background, position].map(item => item.label)).toEqual([
+			`Размер: ${formatNumber(1, { style: 'percent' })}`,
+			'Цвет: Белый',
+			'Фон: Полупрозрачный',
+			'Положение: Внизу',
+		])
+		expect(radios(children(size))).toEqual([
+			[formatNumber(0.75, { style: 'percent' }), false],
+			[formatNumber(1, { style: 'percent' }), true],
+			[formatNumber(1.5, { style: 'percent' }), false],
+			[formatNumber(2, { style: 'percent' }), false],
+		])
+		expect(radios(children(color))).toEqual([
+			['Белый', true],
+			['Жёлтый', false],
+			['Зелёный', false],
+			['Голубой', false],
+		])
+		expect(radios(children(background))).toEqual([
+			['Без фона', false],
+			['Полупрозрачный', true],
+			['Чёрный', false],
+		])
+		expect(radios(children(position))).toEqual([
+			['Внизу', true],
+			['Вверху', false],
+		])
+		children(size)[2].onUpdateChecked?.(true)
+		children(color)[1].onUpdateChecked?.(true)
+		children(background)[0].onUpdateChecked?.(true)
+		children(position)[1].onUpdateChecked?.(true)
+		expect(emit.mock.calls).toEqual([
+			['update-caption-style', { size: 150 }],
+			['update-caption-style', { color: 'yellow' }],
+			['update-caption-style', { background: 'none' }],
+			['update-caption-style', { position: { x: 50, y: 12 } }],
+		])
+	})
+
+	it('вид субтитров: после перетаскивания положение без значения, ни один вариант не отмечен', () => {
+		const style = { ...STYLE, position: { x: 30, y: 40 } }
+		const position = children(menu({ captionTracks: [RU], captionStyle: style }).items[1])[3]
+
+		expect(position.label).toBe('Положение')
+		expect(radios(children(position))).toEqual([
+			['Внизу', false],
+			['Вверху', false],
+		])
 	})
 })

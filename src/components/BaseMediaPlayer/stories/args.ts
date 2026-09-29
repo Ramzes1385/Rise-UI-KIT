@@ -18,6 +18,7 @@ export const args = {
 	seekStepLarge: 10,
 	volumeStep: 0.05,
 	idleTimeout: 3000,
+	hasCaptionUpload: true,
 	sizeScale: 100,
 	onPlay: fn(),
 	onPause: fn(),
@@ -25,5 +26,6 @@ export const args = {
 	onError: fn(),
 	'onFullscreen-change': fn(),
 	'onUpdate:isTheater': fn(),
+	'onUpdate:textTrack': fn(),
 	onReport: fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

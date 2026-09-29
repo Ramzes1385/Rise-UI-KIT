@@ -17,6 +17,7 @@ export default meta
 
 export const Default = cases.Default
 export const Settings = cases.Settings
+export const Subtitles = cases.Subtitles
 export const TitleAndLogo = cases.TitleAndLogo
 export const Theater = cases.Theater
 export const Autoplay = cases.Autoplay

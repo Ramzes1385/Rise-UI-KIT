@@ -1,4 +1,5 @@
 import type { MediaSourceItem } from './MediaCore.types'
+import type { MediaCaptionOption, MediaCaptionStyle } from './MediaSubtitles.types'
 
 export interface MediaSettingsMenuProps {
 	/** Скорости на выбор */
@@ -9,6 +10,14 @@ export interface MediaSettingsMenuProps {
 	qualities: MediaSourceItem[]
 	/** Адрес текущего источника */
 	activeSrc?: string
+	/** Дорожки субтитров; пункт «Субтитры» есть, если дорожки есть или можно загрузить файл */
+	captionTracks?: MediaCaptionOption[]
+	/** Выбранная дорожка субтитров; null — выключены */
+	activeCaptionId?: string | null
+	/** Оформление субтитров: пункт «Вид субтитров» появляется вместе с дорожками */
+	captionStyle?: MediaCaptionStyle
+	/** Пункт «Загрузить файл субтитров…» */
+	canLoadCaptions?: boolean
 }
 
 export interface MediaSettingsMenuEmits {
@@ -16,4 +25,10 @@ export interface MediaSettingsMenuEmits {
 	(event: 'select-rate', rate: number): void
 	/** Выбрано качество */
 	(event: 'select-quality', source: MediaSourceItem): void
+	/** Выбрана дорожка субтитров или «Выкл» (null) */
+	(event: 'select-caption', id: string | null): void
+	/** Выбран пункт «Загрузить файл субтитров…» */
+	(event: 'load-captions'): void
+	/** Изменено оформление субтитров */
+	(event: 'update-caption-style', patch: Partial<MediaCaptionStyle>): void
 }

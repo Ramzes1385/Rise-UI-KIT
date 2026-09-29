@@ -8,6 +8,7 @@
 				'base-media-player--idle': isIdle,
 				'base-media-player--fullscreen': isFullscreen,
 				'base-media-player--theater': isTheater,
+				'base-media-player--drop-target': isDropTarget,
 			},
 			classes.root,
 		]"
@@ -15,7 +16,10 @@
 		data-theme="dark"
 		role="region"
 		tabindex="-1"
-		:aria-label="title">
+		:aria-label="title"
+		@dragover="onCaptionDragOver"
+		@dragleave="onCaptionDragLeave"
+		@drop="onCaptionDrop">
 		<BaseContextMenu
 			class="base-media-player__frame"
 			:items="contextItems"
@@ -41,6 +45,31 @@
 				@play="onMediaEvent.play"
 				@pause="onMediaEvent.pause"
 				@ended="onMediaEvent.ended"></video>
+			<div v-if="captionLines.length || isCaptionDragging" class="base-media-player__captions">
+				<div
+					class="base-media-player__caption-box"
+					:class="captionBoxClass"
+					:style="captionBoxStyle"
+					:title="UI_PLAYER.CAPTIONS_DRAG"
+					@pointerdown="onCaptionPointerDown"
+					@pointermove="onCaptionPointerMove"
+					@pointerup="onCaptionPointerUp"
+					@pointercancel="onCaptionPointerUp"
+					@lostpointercapture="onCaptionPointerUp">
+					<span v-for="(line, lineIndex) in captionLines" :key="lineIndex" class="base-media-player__caption-line">
+						<span
+							v-for="(segment, segmentIndex) in line"
+							:key="segmentIndex"
+							:class="{
+								'base-media-player__caption--italic': segment.isItalic,
+								'base-media-player__caption--bold': segment.isBold,
+								'base-media-player__caption--underline': segment.isUnderline,
+							}">
+							{{ segment.text }}
+						</span>
+					</span>
+				</div>
+			</div>
 			<div
 				v-if="seekHint"
 				:key="seekHint.key"
@@ -109,13 +138,29 @@
 						:value-text="volumeValueText"
 						@update:model-value="actions.setVolume" />
 					<span class="base-media-player__time" :class="classes.time">{{ currentTimeText }} / {{ durationText }}</span>
+					<BaseButton
+						v-if="captionTracks.length"
+						variant="ghost"
+						class="base-media-player__button base-media-player__captions-button"
+						:aria-label="UI_PLAYER.CAPTIONS"
+						:aria-pressed="activeCaptionId !== null"
+						@click="toggleCaptions">
+						<template #left><BaseIcon name="subtitles" /></template>
+					</BaseButton>
 					<MediaSettingsMenu
 						:rates="rates"
 						:rate="state.playbackRate"
 						:qualities="qualities"
 						:active-src="src"
+						:caption-tracks="captionTracks"
+						:active-caption-id="activeCaptionId"
+						:caption-style="captionStyle"
+						:can-load-captions="hasCaptionUpload"
 						@select-rate="actions.setPlaybackRate"
-						@select-quality="selectQuality" />
+						@select-quality="selectQuality"
+						@select-caption="selectCaptionTrack"
+						@load-captions="openCaptionFile"
+						@update-caption-style="updateCaptionStyle" />
 					<BaseButton
 						v-if="!isFullscreen"
 						variant="ghost"
@@ -143,6 +188,16 @@
 			</div>
 			<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" @close="toggleStats" @copy="copyStats" />
 			<MediaReportForm v-model:is-open="isReportOpen" @submit="submitReport" />
+			<div v-if="isDropTarget" class="base-media-player__drop" aria-hidden="true">{{ UI_PLAYER.CAPTIONS_DROP }}</div>
+			<input
+				v-if="hasCaptionUpload"
+				ref="captionInputRef"
+				class="base-media-player__file"
+				type="file"
+				:accept="captionAccept"
+				tabindex="-1"
+				hidden
+				@change="onCaptionFileChange" />
 			<div class="base-media-player__flash" role="status">{{ flashMessage }}</div>
 		</BaseContextMenu>
 	</div>
@@ -192,6 +247,8 @@ const props = withDefaults(
 		isMuted: undefined,
 		playbackRate: undefined,
 		isTheater: undefined,
+		textTrack: undefined,
+		hasCaptionUpload: true,
 	}),
 )
 const emit = defineEmits<BaseMediaPlayerEmits>()
@@ -262,6 +319,27 @@ const {
 	isReportOpen,
 	submitReport,
 	flashMessage,
+	captionTracks,
+	activeCaptionId,
+	captionLines,
+	selectCaptionTrack,
+	toggleCaptions,
+	captionStyle,
+	isCaptionDragging,
+	captionBoxStyle,
+	captionBoxClass,
+	updateCaptionStyle,
+	onCaptionPointerDown,
+	onCaptionPointerMove,
+	onCaptionPointerUp,
+	captionInputRef,
+	captionAccept,
+	isDropTarget,
+	openCaptionFile,
+	onCaptionFileChange,
+	onCaptionDragOver,
+	onCaptionDragLeave,
+	onCaptionDrop,
 } = useBaseMediaPlayer(props, emit)
 
 defineExpose<BaseMediaPlayerExpose>(exposed)

@@ -11,4 +11,6 @@ export type {
 	BaseMediaPlayerSlots,
 	BaseMediaPlayerExpose,
 } from './types/BaseMediaPlayer.types'
+export { MEDIA_CAPTION_SIZES, MEDIA_CAPTION_COLORS, MEDIA_CAPTION_BACKGROUNDS } from './types/MediaSubtitles.types'
+export type { MediaTextTrackItem, MediaCaptionColor, MediaCaptionBackground } from './types/MediaSubtitles.types'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'
