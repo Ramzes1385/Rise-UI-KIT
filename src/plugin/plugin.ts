@@ -86,6 +86,7 @@ import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
 import { LINK_COMPONENT_KEY } from '../composables/useLink/useLink'
 import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
+import { BaseSubtitleEditor } from '../components/BaseSubtitleEditor'
 import { DEFAULTS_KEY } from '../composables/useDefaults/useDefaults'
 import { BaseColorModeButton } from '../components/BaseColorModeButton'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '../composables/useIcon/useIcon'
@@ -171,6 +172,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseSplitButton,
 	BaseSplitter,
 	BaseStepper,
+	BaseSubtitleEditor,
 	BaseSwitch,
 	BaseTable,
 	BaseTabs,

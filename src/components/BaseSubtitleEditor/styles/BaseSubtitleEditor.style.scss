@@ -1,0 +1,147 @@
+.base-subtitle-editor {
+	display: flex;
+	flex-direction: column;
+	gap: sz(12px);
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	padding: sz(12px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px);
+	}
+
+	&__spacer {
+		flex: 1 1 auto;
+	}
+
+	&__file {
+		display: none;
+	}
+
+	&__timeline {
+		position: relative;
+		height: sz(28px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-accented);
+		cursor: pointer;
+	}
+
+	&__block {
+		position: absolute;
+		top: sz(4px);
+		bottom: sz(4px);
+		min-width: 2px;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: color-mix(in srgb, var(--rise-primary) 45%, transparent);
+
+		&--active {
+			background-color: var(--rise-primary);
+		}
+	}
+
+	&__playhead {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		margin-left: -1px;
+		background-color: var(--rise-text-highlighted);
+		pointer-events: none;
+	}
+
+	&__empty {
+		margin: 0;
+		@include text-size(sm);
+		color: var(--rise-text-toned);
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__row {
+		display: grid;
+		grid-template-columns: sz(24px) sz(96px) sz(96px) minmax(0, 1fr) auto;
+		align-items: start;
+		gap: sz(6px);
+		padding: sz(6px);
+		border-radius: sz(var(--rise-radius-md));
+
+		&--active {
+			background-color: var(--rise-primary-soft);
+		}
+	}
+
+	&__number {
+		padding-top: sz(6px);
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+		@include text-size(sm);
+		color: var(--rise-text-toned);
+	}
+
+	&__time {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+	}
+
+	&__input,
+	&__text {
+		box-sizing: border-box;
+		width: 100%;
+		padding: sz(5px) sz(8px);
+		border: 1px solid var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		color: var(--rise-text-highlighted);
+		font: inherit;
+		@include text-size(sm);
+		@include field-focus;
+
+		&:disabled {
+			@include disabled-state;
+		}
+
+		&[aria-invalid='true'] {
+			border-color: var(--rise-error);
+		}
+	}
+
+	&__input {
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__text {
+		resize: vertical;
+	}
+
+	&__error {
+		@include text-size(xs);
+		color: var(--rise-error);
+	}
+
+	&__actions {
+		display: flex;
+		gap: sz(2px);
+	}
+}

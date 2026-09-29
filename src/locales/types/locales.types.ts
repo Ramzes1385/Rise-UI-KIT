@@ -29,6 +29,7 @@ export interface UiKitLocale {
 	rating: Section<'rating'>
 	player: Section<'player'>
 	audio: Section<'audio'>
+	subtitles: Section<'subtitles'>
 	chat: Section<'chat'>
 	editor: Section<'editor'>
 	table: Section<'table'>

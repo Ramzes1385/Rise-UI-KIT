@@ -21,6 +21,9 @@ export const UI_RATING = localized('rating')
 /** Записи: аудиоплеер, волна, диктофон */
 export const UI_AUDIO = localized('audio')
 
+/** Редактор субтитров */
+export const UI_SUBTITLES = localized('subtitles')
+
 /** Таблица: тексты и доступные имена элементов управления */
 export const TABLE_TEXT = localized('table')
 

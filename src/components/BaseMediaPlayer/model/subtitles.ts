@@ -1,10 +1,6 @@
 import { MEDIA_CAPTION_PRESETS } from '../types/MediaSubtitles.types'
 import type { MediaCue, MediaCueSegment, MediaCaptionPoint, MediaCaptionPreset } from '../types/MediaSubtitles.types'
 
-const TIMESTAMP = /(?:(\d+):)?(\d{1,2}):(\d{2})[.,](\d{1,3})/
-
-const TIMING_LINE = /^\s*((?:\d+:)?\d{1,2}:\d{2}[.,]\d{1,3})\s*-->\s*((?:\d+:)?\d{1,2}:\d{2}[.,]\d{1,3})/
-
 const TAG = /<(\/?)([ibu])(?:\.[^>]*)?>|<[^>]*>|\{\\[^}]*\}/gi
 
 const ENTITIES: Record<string, string> = {
@@ -16,47 +12,7 @@ const ENTITIES: Record<string, string> = {
 	'&rlm;': '\u200F',
 }
 
-const BYTE_ORDER_MARKS: Array<[number[], string]> = [
-	[[0xff, 0xfe], 'utf-16le'],
-	[[0xfe, 0xff], 'utf-16be'],
-]
-
 const STYLE_BY_TAG: Record<string, keyof Omit<MediaCueSegment, 'text'>> = { i: 'isItalic', b: 'isBold', u: 'isUnderline' }
-
-function toSeconds(value: string): number {
-	const [, hours = '0', minutes, seconds, fraction] = TIMESTAMP.exec(value) as RegExpExecArray
-	return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds) + Number(fraction.padEnd(3, '0')) / 1000
-}
-
-function parseBlock(block: string): MediaCue | null {
-	const lines = block.split('\n')
-	const timingIndex = lines.findIndex(line => TIMING_LINE.test(line))
-	const text = lines
-		.slice(timingIndex + 1)
-		.join('\n')
-		.trim()
-	if (timingIndex === -1 || !text) return null
-	const [, start, end] = TIMING_LINE.exec(lines[timingIndex]) as RegExpExecArray
-	return { start: toSeconds(start), end: toSeconds(end), text }
-}
-
-export function parseSubtitles(source: string): MediaCue[] {
-	return source
-		.replace(/^\uFEFF/, '')
-		.replace(/\r\n?/g, '\n')
-		.split(/\n[^\S\n]*\n/)
-		.map(parseBlock)
-		.filter((cue): cue is MediaCue => cue !== null)
-		.sort((a, b) => a.start - b.start)
-}
-
-export function decodeSubtitles(buffer: ArrayBuffer): string {
-	const bytes = new Uint8Array(buffer)
-	const encoding = BYTE_ORDER_MARKS.find(([mark]) => mark.every((byte, index) => bytes[index] === byte))?.[1]
-	if (encoding) return new TextDecoder(encoding).decode(bytes)
-	const text = new TextDecoder().decode(bytes)
-	return text.includes('\uFFFD') ? new TextDecoder('windows-1251').decode(bytes) : text
-}
 
 function decode(text: string): string {
 	return text.replace(/&(amp|lt|gt|nbsp|lrm|rlm);/g, entity => ENTITIES[entity])

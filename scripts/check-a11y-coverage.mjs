@@ -90,6 +90,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseWaveform',
 	'BaseAudioPlayer',
 	'BaseVoiceRecorder',
+	'BaseSubtitleEditor',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -124,6 +125,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseWaveform',
 	'BaseAudioPlayer',
 	'BaseVoiceRecorder',
+	'BaseSubtitleEditor',
 ])
 
 /** Формовые компоненты, требующие story Error */
