@@ -5,6 +5,7 @@ import type { PropsWithDefaults } from '@composables/useDefaults'
 import type { createPlayerContext } from '../model/useBaseMediaPlayer'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
+import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './MediaAds.types'
 import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './MediaCore.types'
 
 /** Вариант оформления один: панель управления лежит поверх кадра на тёмной подложке в обеих темах */
@@ -139,6 +140,10 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	isAutoNext?: boolean
 	/** Отсчёт перед следующей серией, секунды; 0 — переход сразу */
 	nextCountdown?: number
+	/** Рекламные паузы: перед видео, на заданной секунде и после; ролики и картинки с «Пропустить через N с» */
+	adBreaks?: MediaAdBreak[]
+	/** Рекламные интеграции внутри ролика: отрезки на шкале и «Пропустить рекламу» */
+	adSegments?: MediaAdSegment[]
 }
 
 export interface BaseMediaPlayerEmits {
@@ -159,6 +164,8 @@ export interface BaseMediaPlayerEmits {
 	(event: 'update:audioTrack', value: string | null): void
 	(event: 'update:episode', value: string): void
 	(event: 'update:isAutoNext', value: boolean): void
+	/** Реклама: показ, досмотр, пропуск, переход по ссылке или ошибка — для статистики приложения */
+	(event: 'ad', data: MediaAdEvent): void
 	/** Плеер развернулся на весь экран или свернулся */
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */

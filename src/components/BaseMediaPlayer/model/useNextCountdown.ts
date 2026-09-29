@@ -17,7 +17,7 @@ export function useNextCountdown(options: MediaNextCountdownOptions) {
 		options.playNext()
 	}
 	watch(
-		() => options.state.isEnded,
+		() => options.state.isEnded && !options.isHeld?.(),
 		isEnded => {
 			stop()
 			if (!isEnded || !options.isEnabled() || !options.hasNext()) return

@@ -9,6 +9,7 @@
 				'base-media-player--fullscreen': isFullscreen,
 				'base-media-player--theater': isTheater,
 				'base-media-player--drop-target': isDropTarget,
+				'base-media-player--ad': isAdPlaying,
 			},
 			classes.root,
 		]"
@@ -113,6 +114,7 @@
 				</slot>
 			</div>
 			<MediaControlBar />
+			<MediaAdOverlay />
 			<div v-if="resumeTime !== null" class="base-media-player__resume">
 				<span>{{ resumeText }}</span>
 				<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PLAYER.RESUME_YES }}</BaseButton>
@@ -122,7 +124,7 @@
 			</div>
 			<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" @close="toggleStats" @copy="copyStats" />
 			<BaseButton
-				v-if="skipChapter"
+				v-if="skipChapter && !activeAdSegment"
 				variant="soft"
 				class="base-media-player__skip"
 				:size-scale="sizeScale"
@@ -158,6 +160,7 @@
 <script setup lang="ts">
 import '../styles/BaseMediaPlayer.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import MediaAdOverlay from './MediaAdOverlay.vue'
 import MediaControlBar from './MediaControlBar.vue'
 import MediaReportForm from './MediaReportForm.vue'
 import MediaStatsPanel from './MediaStatsPanel.vue'
@@ -281,6 +284,8 @@ const {
 	playNextNow,
 	cancelNext,
 	exposed,
+	isAdPlaying,
+	activeAdSegment,
 } = useBaseMediaPlayer(props, emit)
 
 defineExpose<BaseMediaPlayerExpose>(exposed)

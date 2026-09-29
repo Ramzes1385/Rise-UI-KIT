@@ -32,4 +32,5 @@ export const args = {
 	'onUpdate:episode': fn(),
 	'onUpdate:isAutoNext': fn(),
 	onReport: fn(),
+	onAd: fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

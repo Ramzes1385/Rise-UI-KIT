@@ -19,6 +19,10 @@ export interface MediaSliderProps {
 	marks?: number[]
 	/** Подсказка над дорожкой при наведении: время и название главы; без неё подсказки нет */
 	hoverText?: (value: number) => string
+	/** Точки на дорожке: рекламные паузы */
+	markers?: number[]
+	/** Выделенные отрезки: рекламные интеграции */
+	highlights?: MediaTimeRange[]
 }
 
 export interface MediaSliderEmits {

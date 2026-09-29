@@ -11,7 +11,13 @@
 		<div class="base-media-player__slider-track" :style="trackStyle">
 			<div v-for="(style, index) in bufferedStyles" :key="index" class="base-media-player__slider-buffered" :style="style"></div>
 			<div class="base-media-player__slider-fill" :style="fillStyle"></div>
+			<div
+				v-for="(style, index) in highlightStyles"
+				:key="`highlight-${index}`"
+				class="base-media-player__slider-highlight"
+				:style="style"></div>
 		</div>
+		<div v-for="(style, index) in markerStyles" :key="`marker-${index}`" class="base-media-player__slider-marker" :style="style"></div>
 		<div
 			ref="thumbRef"
 			class="base-media-player__slider-thumb"
@@ -54,5 +60,7 @@ const {
 	hoverLabel,
 	hoverStyle,
 	onHoverEnd,
+	markerStyles,
+	highlightStyles,
 } = useMediaSlider(props, emit)
 </script>

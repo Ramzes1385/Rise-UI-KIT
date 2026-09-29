@@ -17,6 +17,27 @@ export const DEMO_QUALITIES = [
 
 export const DEMO_POSTER = demoPoster
 
+export const DEMO_AD_BREAKS = [
+	{
+		id: 'pre',
+		at: 'pre' as const,
+		ads: [
+			{
+				id: 'banner',
+				src: demoPoster,
+				type: 'image/webp',
+				duration: 3,
+				skipAfter: 1,
+				title: 'Rise UI Kit',
+				clickUrl: 'https://example.com/',
+			},
+		],
+	},
+	{ id: 'mid', at: 6, ads: [{ id: 'clip', src: demoVideoLow, type: WEBM, skipAfter: 2 }] },
+]
+
+export const DEMO_AD_SEGMENTS = [{ id: 'sponsor', start: 8, end: 10, title: 'Интеграция' }]
+
 const DEMO_CHAPTERS = [
 	{ start: 0, title: 'Пролог' },
 	{ start: 2, end: 5, title: 'Опенинг', kind: 'intro' as const },

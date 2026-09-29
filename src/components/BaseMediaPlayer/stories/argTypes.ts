@@ -13,6 +13,8 @@ export const argTypes = {
 	audioTracks: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	playlists: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	chapters: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	adBreaks: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	adSegments: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	hasTitle: { control: 'boolean', table: propGroup(ARG_GROUP.content) },
 	logo: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	logoAlt: { control: 'text', table: propGroup(ARG_GROUP.content) },

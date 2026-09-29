@@ -108,6 +108,10 @@ export function useMediaSlider(props: MediaSliderProps, emit: MediaSliderEmits) 
 		fillStyle: computed(() => ({ width: `${percent.value}%` })),
 		thumbStyle: computed(() => ({ left: `${percent.value}%` })),
 		bufferedStyles: computed(() => (isDisabled.value ? [] : bufferedStyles(props))),
+		markerStyles: computed(() =>
+			isDisabled.value ? [] : (props.markers ?? []).map(marker => ({ left: `${toPercent(marker, props.max)}%` })),
+		),
+		highlightStyles: computed(() => (isDisabled.value ? [] : bufferedStyles({ ...props, buffered: props.highlights }))),
 		onKeydown(event: KeyboardEvent): void {
 			const step = steps[event.key]
 			if (!step || isDisabled.value) return

@@ -135,4 +135,14 @@ describe('MediaSlider', () => {
 		await fireEvent.pointerMove(root, { clientX: 30 })
 		expect(container.querySelector('.base-media-player__slider-tooltip')).toBeNull()
 	})
+
+	it('метки рекламных пауз и отрезки интеграций на дорожке; у отключённого ползунка их нет', async () => {
+		const { container, rerender } = setup({ markers: [30], highlights: [[6, 12]] })
+
+		expect((container.querySelector('.base-media-player__slider-marker') as HTMLElement).style.left).toBe('50%')
+		expect((container.querySelector('.base-media-player__slider-highlight') as HTMLElement).style.width).toBe('10%')
+		await rerender({ max: Number.NaN })
+		expect(container.querySelector('.base-media-player__slider-marker')).toBeNull()
+		expect(container.querySelector('.base-media-player__slider-highlight')).toBeNull()
+	})
 })

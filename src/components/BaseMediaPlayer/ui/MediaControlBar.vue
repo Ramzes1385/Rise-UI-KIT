@@ -12,6 +12,8 @@
 			:value-text="seekValueText"
 			:marks="chapterMarks"
 			:hover-text="seekHoverText"
+			:markers="adMarks"
+			:highlights="adSegmentRanges"
 			@update:model-value="actions.seek" />
 		<div class="base-media-player__bar">
 			<BaseButton
@@ -115,7 +117,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import MediaVolumeIcon from './MediaVolumeIcon.vue'
 import { BaseButton } from '@components/BaseButton'
 import MediaSettingsMenu from './MediaSettingsMenu.vue'
-import { useMediaControlBar } from '../model/usePlayerContext'
+import { usePlayerContext } from '../model/usePlayerContext'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 
 const {
@@ -166,5 +168,7 @@ const {
 	updateCaptionStyle,
 	volumeValue,
 	volumeValueText,
-} = useMediaControlBar()
+	adMarks,
+	adSegmentRanges,
+} = usePlayerContext()
 </script>

@@ -1,5 +1,6 @@
 import type { MediaAudioTrackItem } from './MediaAudio.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
+import type { MediaAdBreak, MediaAdSegment } from './MediaAds.types'
 import type { MediaState, MediaSourceItem } from './MediaCore.types'
 
 export const MEDIA_CHAPTER_KINDS = ['intro', 'outro', 'recap'] as const
@@ -38,6 +39,10 @@ export interface MediaEpisode {
 	audioTracks?: MediaAudioTrackItem[]
 	/** Главы серии: опенинг, эндинг, сюжетные части */
 	chapters?: MediaChapter[]
+	/** Рекламные паузы серии */
+	adBreaks?: MediaAdBreak[]
+	/** Рекламные интеграции серии */
+	adSegments?: MediaAdSegment[]
 }
 
 export interface MediaPlaylist {
@@ -77,4 +82,6 @@ export interface MediaNextCountdownOptions {
 	state: Readonly<MediaState>
 	/** Перейти к следующей серии */
 	playNext: () => void
+	/** Отсчёт ждёт: идёт реклама после серии */
+	isHeld?: () => boolean
 }

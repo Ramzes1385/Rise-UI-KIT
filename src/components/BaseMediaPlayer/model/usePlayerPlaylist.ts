@@ -56,6 +56,8 @@ export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayer
 			tracks: () => episode()?.tracks ?? props.tracks,
 			audioTracks: () => episode()?.audioTracks ?? props.audioTracks,
 			chapters: () => episode()?.chapters ?? props.chapters,
+			adBreaks: () => episode()?.adBreaks ?? props.adBreaks,
+			adSegments: () => episode()?.adSegments ?? props.adSegments,
 			storageKey: () => (props.storageKey && episode() ? `${props.storageKey}:${episode()?.id}` : props.storageKey),
 		},
 	}
@@ -81,7 +83,7 @@ function useChapterUi(chapters: ReturnType<typeof useMediaChapters>, media: { st
 
 export function usePlayerEpisodes(
 	props: MediaPlayerProps,
-	player: ReturnType<typeof usePlayerPlaylist> & { state: Readonly<MediaState>; actions: MediaActions },
+	player: ReturnType<typeof usePlayerPlaylist> & { state: Readonly<MediaState>; actions: MediaActions; isHeld: () => boolean },
 ) {
 	const { playlist, state, actions } = player
 	const chapters = useMediaChapters({ chapters: player.content.chapters, state })
@@ -91,6 +93,7 @@ export function usePlayerEpisodes(
 		hasNext: () => playlist.nextEpisode.value !== null,
 		state,
 		playNext: playlist.playNext,
+		isHeld: player.isHeld,
 	})
 	watch(
 		() => playlist.currentEpisode.value?.id,

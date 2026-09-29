@@ -7,6 +7,7 @@ $media-track: color-mix(in srgb, white 32%, transparent);
 $media-buffered: color-mix(in srgb, white 56%, transparent);
 $media-big-play: color-mix(in srgb, black 56%, transparent);
 $media-caption-semi: color-mix(in srgb, black 75%, transparent);
+$media-ad: #fc0;
 
 .base-media-player {
 	position: relative;
@@ -456,6 +457,98 @@ $media-caption-semi: color-mix(in srgb, black 75%, transparent);
 		white-space: nowrap;
 		pointer-events: none;
 		transform: translateX(-50%);
+	}
+
+	&--ad &__controls,
+	&--ad &__top,
+	&--ad &__captions {
+		display: none;
+	}
+
+	&__ad {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		background-color: $media-surface;
+	}
+
+	&__ad-media {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	&__ad-bar {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		padding: sz(24px) sz(12px) sz(8px);
+		background-image: linear-gradient(to top, $media-scrim, transparent);
+	}
+
+	&__ad-label {
+		margin-right: auto;
+		padding: sz(2px) sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: $media-ad;
+		color: $media-surface;
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__ad-link {
+		color: $media-text;
+		@include text-size(sm);
+		@include focus-ring;
+	}
+
+	&__ad-wait {
+		padding: sz(6px) sz(12px);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: $media-scrim;
+		@include text-size(sm);
+	}
+
+	&__ad-progress {
+		position: relative;
+		height: sz(3px);
+		background-color: $media-ad;
+	}
+
+	&__ad-segment {
+		position: absolute;
+		right: sz(16px);
+		bottom: sz(88px);
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__ad-segment &__ad-label {
+		margin-right: 0;
+	}
+
+	&__slider-highlight {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background-color: $media-ad;
+	}
+
+	&__slider-marker {
+		position: absolute;
+		top: 50%;
+		width: sz(4px);
+		height: sz(10px);
+		border-radius: sz(2px);
+		background-color: $media-ad;
+		pointer-events: none;
+		transform: translate(-50%, -50%);
 	}
 
 	&__drop {

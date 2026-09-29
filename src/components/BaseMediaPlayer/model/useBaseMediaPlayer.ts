@@ -7,10 +7,13 @@ import { useIdleControls } from './useIdleControls'
 import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
 import { usePlayerModels } from './usePlayerModels'
+import { useMediaAdBreaks } from './useMediaAdBreaks'
 import { usePlayerCaptions } from './usePlayerCaptions'
 import { PLAYER_CONTEXT_KEY } from './usePlayerContext'
 import { usePlayerOverlays } from './usePlayerOverlays'
+import { useMediaAdSegments } from './useMediaAdSegments'
 import { useMediaFullscreen } from './useMediaFullscreen'
+import type { MediaAdEvent } from '../types/MediaAds.types'
 import { useMediaAudioTracks } from './useMediaAudioTracks'
 import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
 import { formatMessage, formatNumber } from '@/locales/state'
@@ -106,11 +109,12 @@ function usePlayerHotkeys(
 		models: { toggleTheater: () => void }
 		captions: { toggleCaptions: () => void }
 		episodes: { playNext: () => void; playPrevious: () => void }
+		ads: { isAdPlaying: Readonly<Ref<boolean>> }
 	},
 ): void {
 	const { state, actions } = media
 	useMediaHotkeys(target, {
-		isEnabled: () => props.hasKeyboardShortcuts,
+		isEnabled: () => props.hasKeyboardShortcuts && !media.ads.isAdPlaying.value,
 		seekStep: () => props.seekStep,
 		seekStepLarge: () => props.seekStepLarge,
 		volumeStep: () => props.volumeStep,
@@ -148,6 +152,7 @@ function usePlayerElements() {
 		rootRef,
 		mediaRef: ref<HTMLVideoElement | null>(null),
 		audioRef: ref<HTMLAudioElement | null>(null),
+		adMediaRef: ref<HTMLVideoElement | null>(null),
 		soundRef: ref<HTMLMediaElement | null>(null),
 		controlsRef: ref<HTMLElement | null>(null),
 		layer: useTeleportLayer(rootRef),
@@ -259,7 +264,29 @@ function usePlayerExtras(
 		flash: tools.flash,
 		tracks: series.content.tracks,
 	})
-	return { tools, captions, episodes: usePlayerEpisodes(props, { ...series, state, actions }) }
+	const ads = usePlayerAds(emit, { state, actions, elements, series })
+	return { tools, captions, ads, episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld: () => ads.isAdPlaying.value }) }
+}
+
+function usePlayerAds(
+	emit: BaseMediaPlayerEmits,
+	player: {
+		state: Readonly<MediaState>
+		actions: MediaActions
+		elements: ReturnType<typeof usePlayerElements>
+		series: ReturnType<typeof usePlayerPlaylist>
+	},
+) {
+	const options = {
+		breaks: player.series.content.adBreaks,
+		segments: player.series.content.adSegments,
+		state: player.state,
+		actions: player.actions,
+		media: player.elements.mediaRef,
+		adMedia: player.elements.adMediaRef,
+		emitAd: (event: MediaAdEvent) => emit('ad', event),
+	}
+	return { ...useMediaAdBreaks(options), ...useMediaAdSegments(options) }
 }
 
 function createExpose(player: {
@@ -288,7 +315,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		activeSource,
 		toggleFullscreen: screen.toggleFullscreen,
 	})
-	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, captions: extras.captions, episodes: extras.episodes })
+	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, ...extras })
 	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
 
 	return {
@@ -303,6 +330,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		...extras.tools,
 		...extras.captions,
 		...extras.episodes,
+		...extras.ads,
 		...usePlayerAudio(props, emit, { elements, flash: extras.tools.flash, stream: hls.hlsAudio, tracks: series.content.audioTracks }),
 		...screen,
 		state,
