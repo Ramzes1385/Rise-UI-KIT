@@ -1,11 +1,15 @@
 import type { Ref } from 'vue'
 import { UI_KANBAN } from '@/locales/messages'
+import { cardElement } from './board/kanbanDom'
+import { useKanbanFlip } from './drag/useKanbanFlip'
+import { useKanbanMenu } from './board/useKanbanMenu'
 import { useKanbanPointer } from './drag/useKanbanPointer'
 import { useKanbanKeyboard } from './drag/useKanbanKeyboard'
-import { computed, ref, shallowRef, useId, watch } from 'vue'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
-import { columnCards, isSamePlace, locateCard } from './board/kanbanCards'
+import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { columnCards, isSamePlace, locateCard, moveCard } from './board/kanbanCards'
+import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type {
 	BaseKanbanEmits,
 	BaseKanbanProps,
@@ -72,16 +76,36 @@ function useKanbanContext(props: BaseKanbanProps, emit: BaseKanbanEmits): Kanban
 		announce('CANCELLED', cardId)
 		done()
 	}
-	return { props, emit, rootRef: ref<HTMLElement | null>(null), draft, cards, announce, finish, cancel, announcement }
+	const rootRef = ref<HTMLElement | null>(null)
+	const moveTo = (cardId: string, place: KanbanPlace): void => {
+		const origin = locateCard(cards.value, cardId) as KanbanPlace
+		draft.value = moveCard(cards.value, cardId, place)
+		finish({ cardId, origin }, () => nextTick(() => cardElement(rootRef.value, cardId)?.focus()))
+	}
+	return { props, emit, rootRef, draft, cards, announce, finish, cancel, moveTo, announcement }
 }
 
 export function useBaseKanban(props: BaseKanbanProps, emit: BaseKanbanEmits) {
 	const context = useKanbanContext(props, emit)
 	const pointer = useKanbanPointer(context)
+	const keyboard = useKanbanKeyboard(context)
+	const menu = useKanbanMenu(context)
+	useKanbanFlip(context)
 	return {
 		...useStandardBaseComponent('base-kanban', props, ['root', 'column', 'card']),
-		...useKanbanKeyboard(context),
+		...keyboard,
 		...pointer,
+		menuItems: menu.menuItems,
+		handleBoardContextMenu: menu.handleBoardContextMenu,
+		handleCardKeydown(event: KeyboardEvent, card: KanbanCard): void {
+			menu.rememberMenuCard(event, card)
+			keyboard.handleCardKeydown(event, card)
+		},
+		teleportTarget: useTeleportTarget(),
+		inheritedTheme: useInheritedTheme(
+			() => context.rootRef.value,
+			() => Boolean(pointer.drag.value),
+		),
 		rootRef: context.rootRef,
 		announcement: context.announcement,
 		hintId: `rise-kanban-${useId()}-hint`,

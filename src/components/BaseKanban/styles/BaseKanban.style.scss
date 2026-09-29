@@ -1,14 +1,19 @@
 .base-kanban {
-	display: flex;
-	align-items: flex-start;
-	gap: sz(12px);
+	--kanban-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
 	box-sizing: border-box;
 	max-width: 100%;
-	padding-bottom: sz(4px);
-	overflow-x: auto;
 	@include text-size(sm);
 	@include custom-text(color, var(--rise-text));
-	@include scrollbar-thin;
+
+	&__board {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(12px);
+		padding-bottom: sz(4px);
+		overflow-x: auto;
+		@include scrollbar-thin;
+	}
 
 	&__column {
 		display: flex;
@@ -65,7 +70,7 @@
 	}
 
 	&__card,
-	&__ghost {
+	&__ghost-card {
 		display: flex;
 		flex-direction: column;
 		gap: sz(6px);
@@ -85,6 +90,14 @@
 		@include transition-colors;
 		@include focus-ring;
 
+		@include motion-safe {
+			transition:
+				border-color 0.15s var(--kanban-ease),
+				background-color 0.15s var(--kanban-ease),
+				box-shadow 0.2s var(--kanban-ease),
+				scale 0.2s var(--kanban-ease);
+		}
+
 		@include hover {
 			border-color: var(--rise-border-accented);
 		}
@@ -95,6 +108,7 @@
 		box-shadow:
 			0 0 0 1px var(--rise-primary),
 			var(--rise-shadow-lg);
+		scale: 1.02;
 	}
 
 	&__card--placeholder {
@@ -113,12 +127,23 @@
 		top: 0;
 		left: 0;
 		z-index: var(--rise-z-overlay);
-		box-shadow: var(--rise-shadow-lg);
+		box-sizing: border-box;
+		@include text-size(sm);
 		pointer-events: none;
+	}
+
+	&__ghost-card {
+		box-shadow: var(--rise-shadow-lg);
 
 		@include motion-safe {
 			rotate: 2deg;
+			transition: rotate 0.18s ease-out;
+			animation: base-kanban-lift 0.18s var(--kanban-ease);
 		}
+	}
+
+	&__ghost--settling &__ghost-card {
+		rotate: 0deg;
 	}
 
 	&__card-title {
@@ -158,6 +183,10 @@
 		@include custom-text(color, var(--rise-text-muted));
 		@include text-size(xs);
 		text-align: center;
+
+		@include motion-safe {
+			animation: base-kanban-appear 0.2s var(--kanban-ease);
+		}
 	}
 
 	&--dragging,
@@ -186,5 +215,18 @@
 	&__hint,
 	&__status {
 		@include visually-hidden;
+	}
+}
+
+@keyframes base-kanban-lift {
+	from {
+		rotate: 0deg;
+		box-shadow: var(--rise-shadow-xs);
+	}
+}
+
+@keyframes base-kanban-appear {
+	from {
+		opacity: 0;
 	}
 }

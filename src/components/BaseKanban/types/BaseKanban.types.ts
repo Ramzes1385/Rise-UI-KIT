@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
 
 /**
  * Варианты оформления BaseKanban: `default` — колонки на приглушённой подложке, `soft` — на приподнятой,
@@ -68,7 +69,12 @@ export interface BaseKanbanProps extends BaseComponentProps<(typeof KANBAN_VARIA
 	cards?: readonly KanbanCard[]
 	/** Запрет перемещения: вернуть false, чтобы карточку нельзя было положить в это место */
 	canMove?: (move: KanbanMove) => boolean
-	/** Только просмотр: карточки не перетаскиваются и не открываются */
+	/**
+	 * Пункты приложения в меню карточки (правый клик, Shift+F10 или клавиша меню) после встроенных «Открыть»,
+	 * «Переместить в» и «В начало / в конец колонки»: например, «Удалить» с `isDanger`
+	 */
+	cardActions?: (card: KanbanCard) => DropdownMenuItem[]
+	/** Только просмотр: карточки не перетаскиваются, не открываются, меню карточки не показывается */
 	isDisabled?: boolean
 }
 
@@ -104,4 +110,5 @@ export interface KanbanBoardContext {
 	announce: (message: KanbanAnnouncement, cardId: string, cards?: readonly KanbanCard[]) => void
 	finish: (move: { cardId: string; origin: KanbanPlace }, done: () => void) => void
 	cancel: (cardId: string, done: () => void) => void
+	moveTo: (cardId: string, place: KanbanPlace) => void
 }

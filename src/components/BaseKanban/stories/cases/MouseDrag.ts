@@ -12,7 +12,9 @@ const pointer = (type: string, x: number, y: number) =>
 export const MouseDrag: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Перетаскивание мышью: копия карточки под курсором, пунктир на новом месте; Escape отменяет.' },
+			description: {
+				story: 'Перетаскивание мышью: соседние карточки плавно расступаются, копия под курсором при отпускании долетает до места; Escape отменяет.',
+			},
 		},
 	},
 	render: args => ({
@@ -26,11 +28,12 @@ export const MouseDrag: StoryObj<typeof meta> = {
 		const done = (canvasElement.querySelector('[data-column-id="done"]') as HTMLElement).getBoundingClientRect()
 		card.dispatchEvent(pointer('pointerdown', from.left + 20, from.top + 10))
 		window.dispatchEvent(pointer('pointermove', from.left + 40, from.top + 30))
-		await waitFor(() => expect(canvasElement.querySelector('.base-kanban__ghost')).not.toBeNull())
+		const ghost = () => canvasElement.ownerDocument.querySelector('.base-kanban__ghost')
+		await waitFor(() => expect(ghost()).not.toBeNull())
 		window.dispatchEvent(pointer('pointermove', done.left + 40, done.top + 60))
 		window.dispatchEvent(pointer('pointerup', done.left + 40, done.top + 60))
 		await waitFor(() => expect(canvas.getByRole('list', { name: /^Готово/ })).toHaveTextContent('Экспорт таблицы в CSV'))
 		await expect(args.onMove).toHaveBeenCalledWith(expect.objectContaining({ to: { columnId: 'done', index: 0 } }))
-		await expect(canvasElement.querySelector('.base-kanban__ghost')).toBeNull()
+		await waitFor(() => expect(ghost()).toBeNull())
 	},
 }

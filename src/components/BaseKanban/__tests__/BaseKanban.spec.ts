@@ -197,3 +197,67 @@ describe('BaseKanban', () => {
 		expect(card('Альфа')).toHaveClass('c')
 	})
 })
+
+describe('BaseKanban: меню карточки', () => {
+	const menuItem = (name: RegExp | string) => screen.getByRole('menuitem', { name })
+
+	it('правый клик по карточке открывает меню; «Открыть» — событие open', async () => {
+		const { emitted } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
+
+		await fireEvent.contextMenu(card('Бета'), { clientX: 10, clientY: 10 })
+		expect(await screen.findByRole('menu', { name: 'Действия с карточкой' })).toBeInTheDocument()
+		expect(menuItem('В начало колонки')).not.toHaveAttribute('aria-disabled')
+		expect(menuItem('В конец колонки')).toHaveAttribute('aria-disabled', 'true')
+		await fireEvent.click(menuItem('Открыть'))
+		expect(emitted('open')).toEqual([[CARDS[1]]])
+	})
+
+	it('правый клик мимо карточки меню не открывает', async () => {
+		const { container } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
+		const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+
+		;(container.querySelector('.base-kanban__header') as HTMLElement).dispatchEvent(event)
+		expect(event.defaultPrevented).toBe(false)
+		expect(screen.queryByRole('menu')).toBeNull()
+	})
+
+	it('Shift+F10 на карточке открывает меню; «В начало колонки» переносит с объявлением', async () => {
+		const { emitted } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
+
+		card('Бета').focus()
+		await fireEvent.keyDown(card('Бета'), { key: 'F10', shiftKey: true })
+		await fireEvent.click(await screen.findByRole('menuitem', { name: 'В начало колонки' }))
+		expect(emitted('move')).toEqual([[{ card: CARDS[1], from: { columnId: 'todo', index: 1 }, to: { columnId: 'todo', index: 0 } }]])
+		expect(screen.getByRole('status')).toHaveTextContent('Карточка «Бета» положена в «План», позиция 1 из 2')
+		await waitFor(() => expect(card('Бета')).toHaveFocus())
+	})
+
+	it('«Переместить в» — подменю колонок; запрещённые can-move места неактивны; пункты приложения', async () => {
+		const remove = vi.fn()
+		const canMove = vi.fn(({ to }) => to.columnId !== 'done')
+		const { emitted } = render(BaseKanban, {
+			props: { columns: COLUMNS, cards: CARDS, canMove, cardActions: () => [{ label: 'Удалить', isDanger: true, onSelect: remove }] },
+		})
+
+		await fireEvent.keyDown(card('Альфа'), { key: 'ContextMenu' })
+		await fireEvent.click(await screen.findByRole('menuitem', { name: 'Удалить' }))
+		expect(remove).toHaveBeenCalledOnce()
+		await fireEvent.contextMenu(card('Альфа'))
+		await fireEvent.click(await screen.findByRole('menuitem', { name: /Переместить в/ }))
+		expect(await screen.findByRole('menuitem', { name: 'Готово' })).toHaveAttribute('aria-disabled', 'true')
+		await fireEvent.click(screen.getByRole('menuitem', { name: 'В работе' }))
+		expect(emitted('move')).toEqual([[{ card: CARDS[0], from: { columnId: 'todo', index: 0 }, to: { columnId: 'doing', index: 1 } }]])
+	})
+
+	it('в единственной колонке «Переместить в» неактивно; is-disabled — меню браузера', async () => {
+		const { rerender } = render(BaseKanban, { props: { columns: COLUMNS.slice(0, 1), cards: CARDS.slice(0, 1) } })
+
+		await fireEvent.contextMenu(card('Альфа'))
+		expect(await screen.findByRole('menuitem', { name: /Переместить в/ })).toHaveAttribute('aria-disabled', 'true')
+		await fireEvent.keyDown(document.activeElement as Element, { key: 'Escape' })
+		await rerender({ isDisabled: true })
+		const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+		card('Альфа').dispatchEvent(event)
+		expect(event.defaultPrevented).toBe(false)
+	})
+})

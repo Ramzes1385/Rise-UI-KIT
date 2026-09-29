@@ -19,6 +19,7 @@ export const Default = cases.Default
 export const MouseDrag = cases.MouseDrag
 export const WipLimits = cases.WipLimits
 export const CustomCard = cases.CustomCard
+export const ContextMenu = cases.ContextMenu
 export const Disabled = cases.Disabled
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes

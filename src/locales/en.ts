@@ -394,6 +394,11 @@ export const en: UiKitLocale = {
 		DROPPED: 'Dropped card “{card}” in “{column}”, position {position} of {total}',
 		CANCELLED: 'Move cancelled, card “{card}” is back in place',
 		BLOCKED: 'Card “{card}” cannot be dropped in “{column}”',
+		MENU: 'Card actions',
+		OPEN: 'Open',
+		MOVE_TO: 'Move to',
+		MOVE_TOP: 'Move to top',
+		MOVE_BOTTOM: 'Move to bottom',
 	},
 	plural: {
 		DATES_SELECTED: { one: '{n} date selected', other: '{n} dates selected' },

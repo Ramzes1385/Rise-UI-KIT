@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseKanban from '../ui/BaseKanban.vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import type { KanbanCard, KanbanColumn } from '../types/BaseKanban.types'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const COLUMNS: KanbanColumn[] = [
 	{ id: 'todo', title: 'План' },
@@ -40,14 +40,14 @@ describe('BaseKanban: перетаскивание мышью', () => {
 	afterEach(() => vi.restoreAllMocks())
 
 	it('карточка поднимается после сдвига, под курсором — копия, на месте — пунктир; отпускание переносит', async () => {
-		const { container, emitted } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
+		const { emitted } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
 
 		card('Бета').dispatchEvent(pointer('pointerdown', [20, 60]))
 		window.dispatchEvent(pointer('pointermove', [22, 61]))
 		await fireEvent(window, pointer('pointermove', [22, 62]))
-		expect(container.querySelector('.base-kanban__ghost')).toBeNull()
+		expect(document.querySelector('.base-kanban__ghost')).toBeNull()
 		await fireEvent(window, pointer('pointermove', [240, 10]))
-		const ghost = container.querySelector('.base-kanban__ghost') as HTMLElement
+		const ghost = document.querySelector('.base-kanban__ghost') as HTMLElement
 		expect(ghost).toHaveTextContent('Бета')
 		expect(ghost.style.transform).toBe('translate(220px, 0px)')
 		expect(ghost.style.width).toBe('100px')
@@ -57,7 +57,7 @@ describe('BaseKanban: перетаскивание мышью', () => {
 		await fireEvent(window, pointer('pointermove', [150, 10]))
 		await fireEvent(window, pointer('pointermove', [105, 10]))
 		await fireEvent(window, pointer('pointerup', [150, 10]))
-		expect(container.querySelector('.base-kanban__ghost')).toBeNull()
+		await waitFor(() => expect(document.querySelector('.base-kanban__ghost')).toBeNull())
 		expect(emitted('move')).toEqual([[{ card: CARDS[1], from: { columnId: 'todo', index: 1 }, to: { columnId: 'doing', index: 0 } }]])
 		await fireEvent.click(card('Бета'))
 		expect(emitted('open')).toBeUndefined()
@@ -66,13 +66,13 @@ describe('BaseKanban: перетаскивание мышью', () => {
 	})
 
 	it('Escape во время перетаскивания отменяет; клик без сдвига открывает карточку', async () => {
-		const { container, emitted } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
+		const { emitted } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
 
 		card('Альфа').dispatchEvent(pointer('pointerdown', [20, 10]))
 		await fireEvent(window, pointer('pointermove', [250, 10]))
 		await fireEvent.keyDown(window, { key: 'a' })
 		await fireEvent.keyDown(window, { key: 'Escape' })
-		expect(container.querySelector('.base-kanban__ghost')).toBeNull()
+		await waitFor(() => expect(document.querySelector('.base-kanban__ghost')).toBeNull())
 		expect(screen.getByRole('list', { name: /^План/ })).toContainElement(card('Альфа'))
 		expect(screen.getByRole('status')).toHaveTextContent('Перемещение отменено')
 		await fireEvent.keyDown(window, { key: 'Escape' })
@@ -84,15 +84,15 @@ describe('BaseKanban: перетаскивание мышью', () => {
 	})
 
 	it('правая кнопка, касание и is-disabled не начинают перетаскивание', async () => {
-		const { container, rerender } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
+		const { rerender } = render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
 
 		card('Альфа').dispatchEvent(pointer('pointerdown', [20, 10], { button: 2 }))
 		card('Альфа').dispatchEvent(pointer('pointerdown', [20, 10], { pointerType: 'touch' }))
 		await fireEvent(window, pointer('pointermove', [250, 10]))
-		expect(container.querySelector('.base-kanban__ghost')).toBeNull()
+		expect(document.querySelector('.base-kanban__ghost')).toBeNull()
 		await rerender({ isDisabled: true })
 		card('Альфа').dispatchEvent(pointer('pointerdown', [20, 10]))
 		await fireEvent(window, pointer('pointermove', [250, 10]))
-		expect(container.querySelector('.base-kanban__ghost')).toBeNull()
+		expect(document.querySelector('.base-kanban__ghost')).toBeNull()
 	})
 })
