@@ -60,7 +60,9 @@
 				:members="members"
 				:commands="commands"
 				:is-group="isGroup"
+				:has-voice="hasVoiceMessages"
 				@send="handleSend"
+				@send-voice="handleSendVoice"
 				@attach="handleAttach"
 				@cancel-reply="handleCancelReply"
 				@quick-reply="handleQuickReply" />
@@ -184,6 +186,7 @@ const {
 	handleHeaderAvatarClick,
 	handleReplyClick,
 	handleSend,
+	handleSendVoice,
 	handleAttach,
 	handleMessageReaction,
 	handleQuickReply,

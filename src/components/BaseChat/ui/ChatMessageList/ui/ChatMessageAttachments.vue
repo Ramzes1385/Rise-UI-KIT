@@ -25,6 +25,17 @@
 			</div>
 		</div>
 
+		<BaseAudioPlayer
+			v-for="audio in audios"
+			:key="audio.id"
+			class="base-chat-message-list__voice"
+			:src="audio.url"
+			:title="UI_AUDIO.VOICE_MESSAGE"
+			:peaks="audio.peaks"
+			:duration="audio.duration"
+			variant="ghost"
+			:size-scale="sizeScale" />
+
 		<div v-if="files.length > 0" class="base-chat-message-list__files-list">
 			<div v-for="file in files" :key="file.id" class="base-chat-message-list__attached-file">
 				<button type="button" class="base-chat-message-list__attached-file-main" @click.stop="handleFileClick(file)">
@@ -51,16 +62,17 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
 import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../../model/chatScale'
+import { UI_AUDIO, UI_CHAT_TEXT } from '@/locales/messages'
+import { BaseAudioPlayer } from '@components/BaseAudioPlayer'
 import { useChatMessageAttachments } from '../model/useChatMessageAttachments'
 import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../types/ChatMessageAttachments.types'
 
 const props = defineProps<ChatMessageAttachmentsProps>()
 const emit = defineEmits<ChatMessageAttachmentsEmits>()
 
-const { images, files, handleDownload, handleFileClick } = useChatMessageAttachments(props, emit)
+const { images, files, audios, handleDownload, handleFileClick } = useChatMessageAttachments(props, emit)
 </script>

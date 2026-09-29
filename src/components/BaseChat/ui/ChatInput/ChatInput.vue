@@ -31,7 +31,25 @@
 
 		<ChatFilePreview v-if="attachments.length > 0" :attachments="attachments" :size-scale="sizeScale" @remove="removeAttachment" />
 
-		<div class="base-chat-input__controls">
+		<div v-if="isVoiceMode" class="base-chat-input__controls base-chat-input__controls--voice">
+			<BaseVoiceRecorder
+				ref="recorderRef"
+				class="base-chat-input__recorder"
+				variant="soft"
+				:size-scale="sizeScale"
+				@record="handleVoiceRecord"
+				@state-change="handleVoiceState" />
+			<BaseButton
+				v-if="voiceState === 'error'"
+				variant="ghost"
+				:size-scale="sizeScale"
+				:aria-label="UI_ARIA.CLOSE"
+				@click="closeVoice">
+				<BaseIcon name="close" :size-scale="sizeScale" />
+			</BaseButton>
+		</div>
+
+		<div v-else class="base-chat-input__controls">
 			<BaseButton
 				variant="ghost"
 				:size-scale="sizeScale"
@@ -133,6 +151,15 @@
 			</div>
 
 			<BaseButton
+				v-if="canRecordVoice"
+				:size-scale="sizeScale"
+				class="base-chat-input__send-btn"
+				:aria-label="UI_AUDIO.RECORD"
+				@click="startVoice">
+				<BaseIcon name="mic" :size-scale="sizeScale" />
+			</BaseButton>
+			<BaseButton
+				v-else
 				:size-scale="sizeScale"
 				:is-disabled="!text.trim() && attachments.length === 0"
 				class="base-chat-input__send-btn"
@@ -148,14 +175,15 @@
 import '@components/BaseImage/styles/BaseImage.style.scss'
 import './ChatInput.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
-import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../model/chatScale'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'
 import ChatFilePreview from './ChatFilePreview.vue'
 import { useChatInput } from './model/useChatInput'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
+import { BaseVoiceRecorder } from '@components/BaseVoiceRecorder'
 import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { UI_ARIA, UI_AUDIO, UI_CHAT_TEXT } from '@/locales/messages'
 import type { ChatInputEmits, ChatInputProps } from './types/ChatInput.types'
 
 const props = withDefaults(defineProps<ChatInputProps>(), {
@@ -194,5 +222,13 @@ const {
 	handleKeyUp,
 	handleCancelReply,
 	handleQuickReply,
+	isVoiceMode,
+	voiceState,
+	recorderRef,
+	canRecordVoice,
+	startVoice,
+	closeVoice,
+	handleVoiceState,
+	handleVoiceRecord,
 } = useChatInput(props, emit)
 </script>

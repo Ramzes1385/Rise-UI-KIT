@@ -1,3 +1,4 @@
+import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 
 export type ChatMessageSender = 'me' | 'other'
@@ -9,12 +10,16 @@ export interface ChatMessageAttachment {
 	id: string
 	/** Имя файла */
 	name: string
-	/** Тип вложения: изображение или файл */
-	type: 'image' | 'file'
+	/** Тип вложения: изображение, файл или аудио (голосовое сообщение — плеер с волной) */
+	type: 'image' | 'file' | 'audio'
 	/** URL для отображения или скачивания */
 	url: string
 	/** Размер файла в читаемом формате (например, "1.2 MB") */
 	size?: string
+	/** Длительность аудио, секунды: видна до загрузки файла */
+	duration?: number
+	/** Амплитуды волны аудио от 0 до 1 (например, `peaks` записи BaseVoiceRecorder) */
+	peaks?: number[]
 }
 
 export interface ChatMessageReaction {
@@ -97,11 +102,15 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	currentUserRole?: 'admin' | 'member'
 	/** Описание чата или собеседника для панели «Информация»; без него блок описания не выводится */
 	description?: string
+	/** Голосовые сообщения: кнопка микрофона вместо «Отправить», пока поле пустое; запись приходит событием `send-voice` */
+	hasVoiceMessages?: boolean
 }
 
 export interface BaseChatEmits {
 	(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[]; replyToId?: string }): void
 	(event: 'attach', files: FileList): void
+	/** Записано голосовое сообщение: приложение загружает `recording.blob` и добавляет сообщение с вложением `type: 'audio'` */
+	(event: 'send-voice', payload: { recording: VoiceRecording; replyToId?: string }): void
 	(event: 'avatar-click', senderId: string): void
 	(event: 'search', query: string): void
 	(event: 'message-select', messageId: string): void

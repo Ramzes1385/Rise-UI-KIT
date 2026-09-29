@@ -259,3 +259,11 @@
 		@include truncate;
 	}
 }
+
+.base-chat-input__controls--voice {
+	align-items: center;
+}
+
+.base-chat-input__recorder {
+	flex: 1 1 auto;
+}

@@ -18,6 +18,7 @@ export const args = {
 	currentUserRole: 'member',
 	onSend: fn(),
 	onAttach: fn(),
+	'onSend-voice': fn(),
 	'onAvatar-click': fn(),
 	'onMessage-select': fn(),
 	'onInfo-click': fn(),

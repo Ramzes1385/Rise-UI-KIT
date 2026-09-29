@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useChatState } from '@composables/useChatState'
 import { useChatActions } from '@composables/useChatActions'
+import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
 import type { BaseChatEmits, BaseChatProps } from '../types/BaseChat.types'
@@ -26,5 +27,15 @@ export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 		handleCancelReply: state.handleCancelReply,
 	})
 
-	return { ...standard, messageListRef, ...state, ...deleteConfirm, ...actions }
+	return {
+		...standard,
+		messageListRef,
+		...state,
+		...deleteConfirm,
+		...actions,
+		handleSendVoice(recording: VoiceRecording): void {
+			emit('send-voice', { recording, replyToId: state.replyingTo.value?.id || undefined })
+			state.handleCancelReply()
+		},
+	}
 }

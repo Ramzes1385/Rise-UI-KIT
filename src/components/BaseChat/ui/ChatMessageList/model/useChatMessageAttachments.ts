@@ -5,7 +5,8 @@ import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '.
 export function useChatMessageAttachments(props: ChatMessageAttachmentsProps, emit: ChatMessageAttachmentsEmits) {
 	return {
 		images: computed(() => props.attachments.filter(attachment => attachment.type === 'image')),
-		files: computed(() => props.attachments.filter(attachment => attachment.type !== 'image')),
+		files: computed(() => props.attachments.filter(attachment => attachment.type === 'file')),
+		audios: computed(() => props.attachments.filter(attachment => attachment.type === 'audio')),
 		handleDownload: (file: ChatMessageAttachment): void => emit('download', file),
 		handleFileClick: (file: ChatMessageAttachment): void => emit('file-click', file),
 	}

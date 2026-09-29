@@ -1,3 +1,4 @@
+import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
 export interface ChatInputProps {
@@ -13,11 +14,14 @@ export interface ChatInputProps {
 	commands?: ChatCommand[]
 	/** Является ли чат групповым */
 	isGroup?: boolean
+	/** Кнопка записи голосового сообщения, пока поле пустое */
+	hasVoice?: boolean
 }
 
 export interface ChatInputEmits {
 	(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[] }): void
 	(event: 'attach', files: FileList): void
+	(event: 'send-voice', recording: VoiceRecording): void
 	(event: 'cancel-reply'): void
 	(event: 'quick-reply', text: string): void
 }

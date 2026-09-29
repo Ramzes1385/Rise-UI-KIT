@@ -1,3 +1,4 @@
+import { useChatVoice } from './useChatVoice'
 import { computed, nextTick, onMounted, useId, watch } from 'vue'
 import { useChatInputState } from '@composables/useChatInputState'
 import type { ChatInputEmits, ChatInputProps } from '../types/ChatInput.types'
@@ -24,6 +25,7 @@ export function useChatInput(props: ChatInputProps, emit: ChatInputEmits) {
 
 	return {
 		...state,
+		...useChatVoice(props, emit, state),
 		quickReplyScale: QUICK_REPLY_SCALE,
 		suggestionsId,
 		isSuggestionsOpen: computed(

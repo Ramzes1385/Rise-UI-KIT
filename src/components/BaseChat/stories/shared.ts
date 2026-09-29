@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import { storyDate, STORY_IMAGES, STORY_USERS, STORY_TODAY } from '@/stories/helpers'
 import type { ChatMessage, ChatMessageAttachment, ChatMember, ChatCommand, ChatMessageReaction } from '../types/BaseChat.types'
 
@@ -196,6 +197,22 @@ function createChatHandlers(getMessages: () => ChatMessage[], setMessages: (mess
 				},
 			])
 		},
+		sendVoice({ recording, replyToId }: { recording: VoiceRecording; replyToId?: string }): void {
+			this.send({
+				text: '',
+				replyToId,
+				attachments: [
+					{
+						id: `voice-${getMessages().length + 1}`,
+						name: 'voice.webm',
+						type: 'audio',
+						url: URL.createObjectURL(recording.blob),
+						duration: recording.duration,
+						peaks: recording.peaks,
+					},
+				],
+			})
+		},
 		react({ messageId, emoji }: { messageId: string; emoji: string }): void {
 			update(messageId, message => ({ reactions: toggleOwnReaction(message.reactions ?? [], emoji) }))
 		},
@@ -227,6 +244,7 @@ export function useStoryMessages(args: { messages: ChatMessage[] }) {
 	)
 	const listeners = {
 		send: chat.send,
+		'send-voice': chat.sendVoice.bind(chat),
 		'message-reaction': chat.react,
 		'delete-messages': chat.remove,
 		'pin-message': chat.pin,

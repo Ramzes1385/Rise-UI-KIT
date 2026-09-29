@@ -83,6 +83,7 @@ import { BaseAutocomplete } from '../components/BaseAutocomplete'
 import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
 import { BaseNotification } from '../components/BaseNotification'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
+import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
 import { LINK_COMPONENT_KEY } from '../composables/useLink/useLink'
 import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
 import { DEFAULTS_KEY } from '../composables/useDefaults/useDefaults'
@@ -183,6 +184,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseTree,
 	BaseUser,
 	BaseVirtualList,
+	BaseVoiceRecorder,
 	BaseWaveform,
 }
 
