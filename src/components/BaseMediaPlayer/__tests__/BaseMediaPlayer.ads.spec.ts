@@ -119,4 +119,18 @@ describe('BaseMediaPlayer: реклама', () => {
 		expect(wrapper.get('.base-media-player__next-title').text()).toBe('Следующая серия через 5')
 		wrapper.unmount()
 	})
+
+	it('пауза VAST: пока ответ сети загружается — индикатор загрузки вместо панели', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(() => new Promise(() => undefined)),
+		)
+		const { wrapper } = await setup({ adBreaks: [{ at: 'pre', vast: 'https://ads.example.com/vast' }] })
+
+		await wrapper.get('.base-media-player__big-play').trigger('click')
+		expect(wrapper.classes()).toContain('base-media-player--ad')
+		expect(wrapper.get('[role="region"][aria-label="Реклама"]').find('[role="status"]').exists()).toBe(true)
+		vi.unstubAllGlobals()
+		wrapper.unmount()
+	})
 })

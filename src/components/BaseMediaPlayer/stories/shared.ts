@@ -36,6 +36,23 @@ export const DEMO_AD_BREAKS = [
 	{ id: 'mid', at: 6, ads: [{ id: 'clip', src: demoVideoLow, type: WEBM, skipAfter: 2 }] },
 ]
 
+const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
+
+export function demoVastUrl(): string {
+	const media = new URL(demoVideoLow, window.location.href).href
+	const xml = `<VAST version="4.1"><Ad id="demo-vast"><InLine>
+		<AdTitle>Демо рекламной сети</AdTitle>
+		<Impression>${PIXEL}</Impression>
+		<Creatives><Creative><Linear skipoffset="00:00:02">
+			<Duration>00:00:12</Duration>
+			<TrackingEvents><Tracking event="start">${PIXEL}</Tracking><Tracking event="complete">${PIXEL}</Tracking></TrackingEvents>
+			<VideoClicks><ClickThrough>https://example.com/</ClickThrough></VideoClicks>
+			<MediaFiles><MediaFile delivery="progressive" type="video/webm" width="256" height="144">${media}</MediaFile></MediaFiles>
+		</Linear></Creative></Creatives>
+	</InLine></Ad></VAST>`
+	return URL.createObjectURL(new Blob([xml], { type: 'application/xml' }))
+}
+
 export const DEMO_AD_SEGMENTS = [{ id: 'sponsor', start: 8, end: 10, title: 'Интеграция' }]
 
 const DEMO_CHAPTERS = [

@@ -17,6 +17,14 @@ export { MEDIA_CHAPTER_KINDS } from './types/MediaPlaylist.types'
 export type { MediaHlsConstructor } from './types/MediaHls.types'
 export type { MediaAudioTrackItem } from './types/MediaAudio.types'
 export type { MediaChapter, MediaEpisode, MediaPlaylist, MediaChapterKind } from './types/MediaPlaylist.types'
-export { MEDIA_AD_EVENT_TYPES } from './types/MediaAds.types'
-export type { MediaAdBreak, MediaAdEvent, MediaAdSegment, MediaAdCreative, MediaAdEventType } from './types/MediaAds.types'
+export { MEDIA_AD_EVENT_TYPES, MEDIA_AD_TRACKING_EVENTS } from './types/MediaAds.types'
+export type {
+	MediaAdBreak,
+	MediaAdEvent,
+	MediaAdSegment,
+	MediaAdCreative,
+	MediaAdTracking,
+	MediaAdEventType,
+	MediaAdTrackingEvent,
+} from './types/MediaAds.types'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'

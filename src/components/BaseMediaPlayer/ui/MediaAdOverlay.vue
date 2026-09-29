@@ -35,6 +35,9 @@
 		</div>
 		<div class="base-media-player__ad-progress" :style="adProgressStyle"></div>
 	</div>
+	<div v-else-if="isAdLoading" class="base-media-player__ad" role="region" :aria-label="UI_PLAYER.AD">
+		<BaseLoader class="base-media-player__loader" :label="UI_PLAYER.LOADING" />
+	</div>
 	<div v-else-if="activeAdSegment" class="base-media-player__ad-segment">
 		<span class="base-media-player__ad-label">{{ adSegmentLabel }}</span>
 		<BaseButton v-if="canSkipAdSegment" variant="soft" class="base-media-player__ad-skip" @click="skipAdSegment">
@@ -47,6 +50,7 @@
 import { UI_PLAYER } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
+import { BaseLoader } from '@components/BaseLoader'
 import { usePlayerContext } from '../model/usePlayerContext'
 
 const {
@@ -54,6 +58,7 @@ const {
 	currentAd,
 	isAdVideo,
 	isAdPaused,
+	isAdLoading,
 	adMediaRef,
 	adLabel,
 	adLink,

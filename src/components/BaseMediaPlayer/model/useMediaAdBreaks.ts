@@ -2,12 +2,30 @@ import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import { UI_PLAYER } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { MediaAdBreak, MediaAdsOptions, MediaAdPosition, MediaAdCreative, MediaAdEventType } from '../types/MediaAds.types'
+import { resolveVast, sendPixels } from './vast'
+import { computed, onBeforeUnmount, ref, shallowReactive, watch } from 'vue'
+import type {
+	MediaAdBreak,
+	MediaAdsOptions,
+	MediaAdPosition,
+	MediaAdCreative,
+	MediaAdEventType,
+	MediaAdTrackingEvent,
+} from '../types/MediaAds.types'
 
 const IMAGE_TICK = 250
 
 const DEFAULT_IMAGE_DURATION = 5
+
+const VAST_TIMEOUT = 8000
+
+const MEDIA_PLAYBACK_ERROR = 405
+
+const QUARTILES: Array<[number, MediaAdTrackingEvent]> = [
+	[0.25, 'firstQuartile'],
+	[0.5, 'midpoint'],
+	[0.75, 'thirdQuartile'],
+]
 
 const VIDEO_PROTOCOLS = ['http:', 'https:', 'blob:'] as const
 
@@ -39,13 +57,23 @@ function useImageTimer(options: { elapsed: Ref<number>; isRunning: () => boolean
 }
 
 function useAdQueue(options: MediaAdsOptions) {
-	const breaks = computed(() => (options.breaks() ?? []).map(adBreak => ({ ...adBreak, ads: adBreak.ads.filter(isSafeAd) })))
+	const resolved = shallowReactive(new Map<number, MediaAdCreative[]>())
+	const breaks = computed(() =>
+		(options.breaks() ?? []).map((adBreak, index) => ({
+			...adBreak,
+			ads: (resolved.get(index) ?? adBreak.ads ?? []).filter(isSafeAd),
+		})),
+	)
 	const position = ref<MediaAdPosition | null>(null)
 	const played = new Set<number>()
-	watch(breaks, () => played.clear())
+	watch(options.breaks, () => {
+		played.clear()
+		resolved.clear()
+	})
 	const currentBreak = computed(() => (position.value ? breaks.value[position.value.breakIndex] : null))
 	return {
 		breaks,
+		resolved,
 		position,
 		played,
 		currentBreak,
@@ -60,47 +88,125 @@ function useAdQueue(options: MediaAdsOptions) {
 	}
 }
 
-function useAdPlayback(options: MediaAdsOptions, queue: ReturnType<typeof useAdQueue>) {
+async function fetchXml(url: string): Promise<string> {
+	const controller = new AbortController()
+	const timer = setTimeout(() => controller.abort(), VAST_TIMEOUT)
+	try {
+		const response = await fetch(url, { credentials: 'omit', signal: controller.signal })
+		if (!response.ok) throw new Error(`HTTP ${response.status}`)
+		return await response.text()
+	} finally {
+		clearTimeout(timer)
+	}
+}
+
+function useVastLoader(options: MediaAdsOptions, queue: ReturnType<typeof useAdQueue>) {
+	const isLoading = ref(false)
+	return {
+		isAdLoading: isLoading,
+		async load(index: number, url: string): Promise<void> {
+			isLoading.value = true
+			const ads = await resolveVast(url, {
+				fetchXml,
+				canPlay: type => document.createElement('video').canPlayType(type) !== '',
+				width: options.media.value?.clientWidth ?? 0,
+				onError: (urls, errorCode) => sendPixels(urls, { errorCode }),
+			})
+			queue.resolved.set(index, ads)
+			isLoading.value = false
+		},
+	}
+}
+
+function useAdTracking(options: MediaAdsOptions, queue: ReturnType<typeof useAdQueue>, elapsed: Readonly<Ref<number>>) {
+	const quartiles = new Set<MediaAdTrackingEvent>()
+	const send = (event: MediaAdTrackingEvent, errorCode?: number): void =>
+		sendPixels(queue.currentAd.value?.tracking?.[event], { errorCode, adTime: elapsed.value })
+	watch(
+		() => options.state.isMuted,
+		isMuted => queue.currentAd.value && send(isMuted ? 'mute' : 'unmute'),
+	)
+	return {
+		reset: (): void => quartiles.clear(),
+		send,
+		progress(share: number): void {
+			for (const [threshold, event] of QUARTILES) {
+				if (share < threshold || quartiles.has(event)) continue
+				quartiles.add(event)
+				send(event)
+			}
+		},
+	}
+}
+
+function useAdSequence(options: MediaAdsOptions, queue: ReturnType<typeof useAdQueue>) {
 	const elapsed = ref(0)
 	const length = ref(0)
 	const isAdPaused = ref(false)
-	let resumeMain = false
+	const tracking = useAdTracking(options, queue, elapsed)
+	const resume = { main: false }
 	const emit = (type: MediaAdEventType): void => {
 		const ad = queue.currentAd.value
-		if (ad) options.emitAd({ type, ad, adBreak: queue.currentBreak.value ?? undefined })
+		if (!ad) return
+		options.emitAd({ type, ad, adBreak: queue.currentBreak.value ?? undefined })
+		if (type === 'start') tracking.send('impression')
+		tracking.send(type, type === 'error' ? MEDIA_PLAYBACK_ERROR : undefined)
 	}
 	const startAd = (): void => {
 		const ad = queue.currentAd.value as MediaAdCreative
 		elapsed.value = 0
 		isAdPaused.value = false
 		length.value = isImageAd(ad) ? (ad.duration ?? DEFAULT_IMAGE_DURATION) : 0
+		tracking.reset()
 		emit('start')
-	}
-	const next = (type: MediaAdEventType): void => {
-		const position = queue.position.value
-		if (!position) return
-		emit(type)
-		const hasMore = position.adIndex + 1 < (queue.currentBreak.value?.ads.length ?? 0)
-		const isPost = queue.currentBreak.value?.at === 'post'
-		queue.position.value = hasMore ? { ...position, adIndex: position.adIndex + 1 } : null
-		if (hasMore) startAd()
-		else if (!isPost && resumeMain) void options.actions.play()
 	}
 	return {
 		elapsed,
 		length,
 		isAdPaused,
-		next,
-		startBreak(index: number, shouldResume: boolean): void {
-			if (!queue.breaks.value[index]?.ads.length) return
-			resumeMain = shouldResume
-			options.actions.pause()
-			queue.position.value = { breakIndex: index, adIndex: 0 }
-			startAd()
+		tracking,
+		resume,
+		emit,
+		startAd,
+		next(type: MediaAdEventType): void {
+			const position = queue.position.value
+			if (!position) return
+			emit(type)
+			const hasMore = position.adIndex + 1 < (queue.currentBreak.value?.ads.length ?? 0)
+			const isPost = queue.currentBreak.value?.at === 'post'
+			queue.position.value = hasMore ? { ...position, adIndex: position.adIndex + 1 } : null
+			if (hasMore) startAd()
+			else if (!isPost && resume.main) void options.actions.play()
 		},
+	}
+}
+
+function useAdPlayback(options: MediaAdsOptions, queue: ReturnType<typeof useAdQueue>) {
+	const sequence = useAdSequence(options, queue)
+	const vast = useVastLoader(options, queue)
+	const startBreak = (index: number, shouldResume: boolean): void => {
+		const adBreak = queue.breaks.value[index]
+		const needsVast = Boolean(adBreak.vast) && !queue.resolved.has(index)
+		if (!needsVast && adBreak.ads.length === 0) {
+			if (queue.resolved.has(index) && shouldResume && adBreak.at !== 'post') void options.actions.play()
+			return
+		}
+		sequence.resume.main = shouldResume
+		options.actions.pause()
+		if (needsVast) {
+			void vast.load(index, adBreak.vast as string).then(() => startBreak(index, shouldResume))
+			return
+		}
+		queue.position.value = { breakIndex: index, adIndex: 0 }
+		sequence.startAd()
+	}
+	return {
+		...sequence,
+		isAdLoading: vast.isAdLoading,
+		startBreak,
 		click(): void {
-			emit('click')
-			isAdPaused.value = true
+			sequence.emit('click')
+			sequence.isAdPaused.value = true
 			options.adMedia.value?.pause()
 		},
 	}
@@ -188,13 +294,17 @@ export function useMediaAdBreaks(options: MediaAdsOptions) {
 	useImageTimer({
 		elapsed,
 		isRunning: () => Boolean(ad.value && isImageAd(ad.value) && !isAdPaused.value),
-		onTick: () => elapsed.value >= length.value && playback.next('complete'),
+		onTick: () => {
+			playback.tracking.progress(elapsed.value / length.value)
+			if (elapsed.value >= length.value) playback.next('complete')
+		},
 	})
 
 	return {
 		...useAdTexts(queue, playback),
 		currentAd: ad,
-		isAdPlaying: computed(() => ad.value !== null),
+		isAdPlaying: computed(() => ad.value !== null || playback.isAdLoading.value),
+		isAdLoading: playback.isAdLoading,
 		isAdVideo: computed(() => Boolean(ad.value && !isImageAd(ad.value))),
 		isAdPaused,
 		adPauseLabel: computed(() => (isAdPaused.value ? UI_PLAYER.PLAY : UI_PLAYER.PAUSE)),
@@ -204,6 +314,7 @@ export function useMediaAdBreaks(options: MediaAdsOptions) {
 		failAd: () => playback.next('error'),
 		clickAd: playback.click,
 		toggleAdPause(): void {
+			playback.tracking.send(isAdPaused.value ? 'resume' : 'pause')
 			const element = options.adMedia.value
 			if (element && !isImageAd(ad.value as MediaAdCreative)) void (element.paused ? element.play() : element.pause())
 			else isAdPaused.value = !isAdPaused.value
@@ -212,6 +323,7 @@ export function useMediaAdBreaks(options: MediaAdsOptions) {
 			const element = event.target as HTMLVideoElement
 			elapsed.value = element.currentTime
 			length.value = Number.isFinite(element.duration) ? element.duration : 0
+			if (length.value > 0) playback.tracking.progress(elapsed.value / length.value)
 		},
 		onAdPlayState(event: Event): void {
 			isAdPaused.value = (event.target as HTMLVideoElement).paused

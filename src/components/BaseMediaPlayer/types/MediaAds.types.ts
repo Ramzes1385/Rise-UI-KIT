@@ -21,7 +21,34 @@ export interface MediaAdCreative {
 	skipAfter?: number
 	/** Подпись рядом с меткой «Реклама»: рекламодатель или товар */
 	title?: string
+	/** Адреса трекинга (пиксели): у объявлений VAST заполняются из ответа сети */
+	tracking?: MediaAdTracking
 }
+
+export const MEDIA_AD_TRACKING_EVENTS = [
+	'impression',
+	'start',
+	'firstQuartile',
+	'midpoint',
+	'thirdQuartile',
+	'complete',
+	'skip',
+	'click',
+	'pause',
+	'resume',
+	'mute',
+	'unmute',
+	'error',
+] as const
+
+/** Событие трекинга VAST */
+export type MediaAdTrackingEvent = (typeof MEDIA_AD_TRACKING_EVENTS)[number]
+
+/**
+ * Пиксели трекинга: GET-запросы при событиях объявления. Поддерживаются макросы [CACHEBUSTING], [TIMESTAMP],
+ * [ERRORCODE] и [ADPLAYHEAD]
+ */
+export type MediaAdTracking = Partial<Record<MediaAdTrackingEvent, string[]>>
 
 export interface MediaAdBreak {
 	/** Ключ рекламной паузы для статистики */
@@ -29,7 +56,12 @@ export interface MediaAdBreak {
 	/** Когда: `pre` — перед видео, `post` — после, число — на этой секунде записи */
 	at: 'pre' | 'post' | number
 	/** Объявления подряд */
-	ads: MediaAdCreative[]
+	ads?: MediaAdCreative[]
+	/**
+	 * Адрес VAST 3/4 рекламной сети: ответ загружается, когда подходит время паузы (без cookie, сервер отвечает с CORS).
+	 * Поддерживаются InLine и Wrapper, линейные ролики и цепочки объявлений (`sequence`); VPAID и SIMID — нет
+	 */
+	vast?: string
 }
 
 /** Рекламная интеграция внутри ролика: отрезок на шкале и «Пропустить рекламу» */
@@ -70,4 +102,32 @@ export interface MediaAdsOptions {
 	adMedia: Readonly<Ref<HTMLVideoElement | null>>
 	/** Сообщить о событии рекламы (`ad`) */
 	emitAd: (event: MediaAdEvent) => void
+}
+
+/** Как загружать и выбирать ролики ответа VAST */
+export interface MediaVastOptions {
+	/** Загрузить XML по адресу */
+	fetchXml: (url: string) => Promise<string>
+	/** Браузер воспроизводит этот MIME */
+	canPlay: (type: string) => boolean
+	/** Ширина плеера в пикселях: выбирается ролик не меньше неё */
+	width: number
+	/** Сообщить об ошибке: адреса Error и код VAST */
+	onError: (urls: string[], code: number) => void
+	/** Сколько обёрток (Wrapper) можно пройти; по умолчанию 5 */
+	maxDepth?: number
+}
+
+/** Файл ролика из MediaFiles */
+export interface MediaVastFile {
+	src: string
+	type: string
+	width: number
+}
+
+/** Разбор одного ответа VAST: глубина обёрток и трекинг, накопленный по цепочке */
+export interface VastContext {
+	depth: number
+	inherited: MediaAdTracking
+	options: MediaVastOptions
 }

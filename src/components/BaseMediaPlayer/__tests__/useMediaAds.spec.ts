@@ -211,6 +211,8 @@ describe('useMediaAdBreaks', () => {
 		expect(isImageAd({ src: '/a.mp4' })).toBe(false)
 		result.completeAd()
 		result.skipAd()
+		result.clickAd()
+		expect(result.isAdPaused.value).toBe(true)
 	})
 })
 
@@ -252,5 +254,113 @@ describe('useMediaAdSegments', () => {
 		expect(result.adSegmentLabel.value).toBe('Реклама')
 		result.skipAdSegment()
 		expect(events()).toEqual(['start:a', 'skip:a', 'start:b', 'complete:b'])
+	})
+})
+
+const VAST_XML = `<VAST version="4.0"><Ad id="net"><InLine>
+	<Impression>https://t.example.com/imp</Impression>
+	<Creatives><Creative><Linear skipoffset="00:00:05">
+		<Duration>00:00:20</Duration>
+		<TrackingEvents>
+			<Tracking event="start">https://t.example.com/start</Tracking>
+			<Tracking event="firstQuartile">https://t.example.com/q1</Tracking>
+			<Tracking event="midpoint">https://t.example.com/q2</Tracking>
+			<Tracking event="pause">https://t.example.com/pause</Tracking>
+			<Tracking event="resume">https://t.example.com/resume</Tracking>
+			<Tracking event="mute">https://t.example.com/mute</Tracking>
+			<Tracking event="unmute">https://t.example.com/unmute</Tracking>
+			<Tracking event="complete">https://t.example.com/complete</Tracking>
+		</TrackingEvents>
+		<VideoClicks><ClickTracking>https://t.example.com/click</ClickTracking></VideoClicks>
+		<MediaFiles><MediaFile delivery="progressive" type="video/webm" width="640">https://cdn.example.com/net.webm</MediaFile></MediaFiles>
+	</Linear></Creative></Creatives>
+</InLine></Ad></VAST>`
+
+describe('useMediaAdBreaks: VAST', () => {
+	let pixels: string[]
+
+	beforeEach(() => {
+		pixels = []
+		vi.stubGlobal(
+			'Image',
+			class {
+				set src(value: string) {
+					pixels.push(value.replace('https://t.example.com/', ''))
+				}
+			},
+		)
+		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.restoreAllMocks()
+		vi.useRealTimers()
+	})
+
+	it('пауза VAST: загрузка, объявление из ответа сети, пиксели показа, квартилей, паузы, звука, клика и досмотра', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => new Response(VAST_XML)),
+		)
+		const { result, main, state, actions, adMedia, adElement, ad } = setup([{ id: 'network', at: 'pre', vast: '/vast' }])
+		vi.useRealTimers()
+
+		main.dispatchEvent(new Event('play'))
+		expect(actions.pause).toHaveBeenCalledOnce()
+		expect([result.isAdLoading.value, result.isAdPlaying.value]).toEqual([true, true])
+		await vi.waitFor(() => expect(result.currentAd.value?.src).toBe('https://cdn.example.com/net.webm'))
+		expect(result.isAdLoading.value).toBe(false)
+		expect(pixels).toEqual(['imp', 'start'])
+
+		adMedia.value = adElement
+		ad.update({ currentTime: 5, duration: 20 })
+		result.onAdTime({ target: adElement } as unknown as Event)
+		result.onAdTime({ target: adElement } as unknown as Event)
+		result.toggleAdPause()
+		ad.update({ paused: true })
+		result.onAdPlayState({ target: adElement } as unknown as Event)
+		result.toggleAdPause()
+		state.isMuted = true
+		await nextTick()
+		state.isMuted = false
+		await nextTick()
+		result.clickAd()
+		ad.update({ currentTime: 10 })
+		result.onAdTime({ target: adElement } as unknown as Event)
+		result.completeAd()
+		expect(pixels).toEqual(['imp', 'start', 'q1', 'pause', 'resume', 'mute', 'unmute', 'click', 'q2', 'complete'])
+		expect(actions.play).toHaveBeenCalledOnce()
+	})
+
+	it('пустой ответ, ошибка сервера и таймаут — запись продолжается без рекламы', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string, init: RequestInit) => {
+				if (url === '/empty') return new Response('<VAST version="4.0"/>')
+				if (url === '/down') return new Response('', { status: 500 })
+				return new Promise((_, reject) =>
+					init.signal?.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError'))),
+				)
+			}),
+		)
+		const empty = setup([{ at: 'pre', vast: '/empty' }])
+		vi.useRealTimers()
+		empty.main.dispatchEvent(new Event('play'))
+		await vi.waitFor(() => expect(empty.actions.play).toHaveBeenCalledOnce())
+		expect(empty.result.isAdPlaying.value).toBe(false)
+
+		const down = setup([{ at: 'pre', vast: '/down' }])
+		vi.useRealTimers()
+		down.main.dispatchEvent(new Event('play'))
+		await vi.waitFor(() => expect(down.actions.play).toHaveBeenCalledOnce())
+
+		const slow = setup([{ at: 'post', vast: '/slow' }])
+		slow.state.isEnded = true
+		await nextTick()
+		expect(slow.result.isAdLoading.value).toBe(true)
+		await vi.advanceTimersByTimeAsync(8000)
+		await vi.waitFor(() => expect(slow.result.isAdLoading.value).toBe(false))
+		expect(slow.actions.play).not.toHaveBeenCalled()
 	})
 })
