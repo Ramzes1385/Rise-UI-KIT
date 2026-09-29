@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import '../styles/BaseAnimation.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseAnimation } from '../model/useBaseAnimation'
 import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../types/BaseAnimation.types'
 

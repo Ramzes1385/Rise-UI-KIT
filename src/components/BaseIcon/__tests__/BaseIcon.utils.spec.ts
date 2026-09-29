@@ -1,4 +1,4 @@
-import { calcIconScale, ICON_SCALE } from '@utils/iconUtils'
+import { calcIconScale, ICON_SCALE } from '@utils/media/iconUtils'
 
 describe('ICON_SCALE', () => {
 	it('должен содержать типовые размеры', () => {

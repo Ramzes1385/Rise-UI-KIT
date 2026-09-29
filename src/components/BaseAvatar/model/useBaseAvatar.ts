@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseAvatarEmits, BaseAvatarProps } from '../types/BaseAvatar.types'
 
 function toInitials(name: string | undefined): string {

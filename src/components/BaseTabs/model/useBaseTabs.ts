@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
-import { toHTMLElement } from '@utils/domUtils'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLElement } from '@utils/dom/domUtils'
 import type { BaseTabsEmits, BaseTabsProps } from '../types/BaseTabs.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'vue'
 
 const TABS_ELEMENTS = ['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content']

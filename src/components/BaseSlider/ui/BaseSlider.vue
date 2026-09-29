@@ -143,12 +143,12 @@
 import '../styles/BaseSlider.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
 import { useBaseSlider } from '../model/useBaseSlider'
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../types/BaseSlider.types'
 
 const props = withDefaults(

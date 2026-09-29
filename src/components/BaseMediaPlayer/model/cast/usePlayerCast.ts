@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { useCastSdk } from './useCastSdk'
-import { formatMediaTime } from '@utils/mediaUtils'
 import { UI_PLAYER, formatMessage } from '../messages'
 import { useRemotePlayback } from './useRemotePlayback'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import type { MediaCastOptions } from '../../types/playback/MediaCast.types'
 
 export function usePlayerCast(options: MediaCastOptions) {

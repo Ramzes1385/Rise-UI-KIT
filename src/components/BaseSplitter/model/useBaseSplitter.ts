@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { ref, useId, watch } from 'vue'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 import type { BaseSplitterEmits, SplitterProps, SplitterSize } from '../types/BaseSplitter.types'
 
 function useSplitterSize(props: SplitterProps, emit: BaseSplitterEmits): SplitterSize {

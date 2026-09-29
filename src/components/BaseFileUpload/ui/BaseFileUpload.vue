@@ -129,15 +129,15 @@
 import '../styles/BaseFileUpload.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { FormFieldLabel } from '@components/BaseFormField'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseFileUpload } from '../model/useBaseFileUpload'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../types/BaseFileUpload.types'
 
 const props = withDefaults(

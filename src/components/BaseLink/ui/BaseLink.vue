@@ -18,8 +18,8 @@
 import '../styles/BaseLink.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { useBaseLink } from '../model/useBaseLink'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseLinkEmits, BaseLinkProps, BaseLinkSlots } from '../types/BaseLink.types'
 
 const props = withDefaults(

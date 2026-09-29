@@ -65,7 +65,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { BaseWaveform } from '@components/BaseWaveform'
 import { useBaseAudioPlayer } from '../model/useBaseAudioPlayer'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseAudioPlayerEmits, BaseAudioPlayerProps } from '../types/BaseAudioPlayer.types'
 
 const props = withDefaults(defineProps<BaseAudioPlayerProps>(), {

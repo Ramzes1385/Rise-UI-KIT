@@ -1,6 +1,6 @@
 import { useId } from 'vue'
-import type { CustomColor } from '@composables/useCustomColor'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import type { CustomColor } from '@composables/base/useCustomColor'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../types/BaseConfirm.types'
 
 const DANGER_COLOR: CustomColor = {

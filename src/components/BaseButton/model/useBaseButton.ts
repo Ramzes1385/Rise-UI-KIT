@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
-import { usePadding } from '@composables/usePadding'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { usePadding } from '@composables/base/usePadding'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseButtonEmits, BaseButtonProps } from '../types/BaseButton.types'
 
 export function useBaseButton(props: BaseButtonProps, emit: BaseButtonEmits) {

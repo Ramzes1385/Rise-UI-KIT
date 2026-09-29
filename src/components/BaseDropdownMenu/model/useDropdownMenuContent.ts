@@ -1,8 +1,8 @@
 import type { ComputedRef, Ref } from 'vue'
-import { calcIconScale } from '@utils/iconUtils'
-import { findTypeaheadIndex, toMenuGroups } from '@utils/menuUtils'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
 import type { DropdownMenuItem } from '../types/BaseDropdownMenu.types'
+import { findTypeaheadIndex, toMenuGroups } from '@utils/navigation/menuUtils'
 import type { DropdownMenuContentEmits, MenuContentProps } from '../types/DropdownMenuContent.types'
 
 const SUBMENU_HOVER_DELAY = 120

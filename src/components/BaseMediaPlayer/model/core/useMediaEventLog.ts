@@ -1,5 +1,5 @@
-import { formatMediaTime } from '@utils/mediaUtils'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import type { BaseMediaPlayerEmits } from '../../types/BaseMediaPlayer.types'
 import type { MediaEventLogEntry, MediaEventLogOptions } from '../../types/panels/MediaStatsPanel.types'
 

@@ -30,8 +30,8 @@ import '../styles/BaseForm.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { useBaseForm } from '../model/useBaseForm'
 import { BaseLoader } from '@components/BaseLoader'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseFormEmits, BaseFormExpose, BaseFormProps, BaseFormSlots } from '../types/BaseForm.types'
 
 const props = withDefaults(

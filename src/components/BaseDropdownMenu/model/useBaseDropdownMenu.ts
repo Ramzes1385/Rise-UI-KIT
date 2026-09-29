@@ -1,8 +1,8 @@
 import type { ComputedRef, Ref } from 'vue'
 import { computed, nextTick, ref, useId, watch } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type DropdownMenuContent from '../ui/DropdownMenuContent.vue'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, DropdownMenuItem, FocusTarget } from '../types/BaseDropdownMenu.types'
 
 function focusTargetFor(key: string): FocusTarget | null {

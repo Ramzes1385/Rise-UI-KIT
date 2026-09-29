@@ -1,6 +1,6 @@
 import { useId } from 'vue'
 import type { TableColumn } from '../types/BaseTable.types'
-import type { BaseTableHeaderProps } from '../types/BaseTableHeader.types'
+import type { BaseTableHeaderProps } from '../types/header/BaseTableHeader.types'
 
 const HIDDEN_CHECKBOX_LABEL = { label: 'base-table__visually-hidden' }
 

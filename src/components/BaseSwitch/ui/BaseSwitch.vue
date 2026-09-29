@@ -68,9 +68,9 @@
 import '../styles/BaseSwitch.style.scss'
 import { BaseText } from '@components/BaseText'
 import { useBaseSwitch } from '../model/useBaseSwitch'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../types/BaseSwitch.types'
 
 const props = withDefaults(

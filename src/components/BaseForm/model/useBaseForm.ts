@@ -1,9 +1,9 @@
 import type { ComputedRef, Ref } from 'vue'
-import type { FormValidationResult } from '@utils/formUtils'
 import { computed, nextTick, provide, ref, watch } from 'vue'
-import { FORM_CONTEXT_KEY } from '@composables/useFormContext'
-import { issuesToErrors, validateSchema } from '@utils/formUtils'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import type { FormValidationResult } from '@utils/form/formUtils'
+import { FORM_CONTEXT_KEY } from '@composables/form/useFormContext'
+import { issuesToErrors, validateSchema } from '@utils/form/formUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseFormEmits, BaseFormExpose, FormProps } from '../types/BaseForm.types'
 
 function useLockFocus(isLocked: ComputedRef<boolean>, formRef: Ref<HTMLFormElement | null>): void {

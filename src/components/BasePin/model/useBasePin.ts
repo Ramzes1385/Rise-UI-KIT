@@ -2,10 +2,10 @@ import type { Ref } from 'vue'
 import { formatMessage } from '@/locales'
 import { computed, ref, useId } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { useFormField } from '@composables/useFormField'
+import { toHTMLInputElement } from '@utils/dom/domUtils'
+import { useFormField } from '@composables/form/useFormField'
 import type { BasePinEmits, PinProps } from '../types/BasePin.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 function normalizeValue(value: string, length: number): string[] {
 	return Array.from({ length }, (_, index) => value[index] || ' ')

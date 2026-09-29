@@ -1,4 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { CustomClassProp } from '@composables/base/useCustomClass'
 
 export interface FormFieldLabelProps {
 	/** Текст метки */

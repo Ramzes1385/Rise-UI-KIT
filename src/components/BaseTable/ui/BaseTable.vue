@@ -187,17 +187,17 @@
 
 <script setup lang="ts">
 import '../styles/BaseTable.style.scss'
-import BaseTableBody from './BaseTableBody.vue'
-import BaseTableHeader from './BaseTableHeader.vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSelect } from '@components/BaseSelect'
 import { useBaseTable } from '../model/useBaseTable'
-import BaseTableToolbar from './BaseTableToolbar.vue'
-import { kitDefaults } from '@composables/useDefaults'
+import BaseTableBody from './body/BaseTableBody.vue'
 import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
+import BaseTableHeader from './header/BaseTableHeader.vue'
 import { BasePagination } from '@components/BasePagination'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import BaseTableToolbar from './toolbar/BaseTableToolbar.vue'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../types/BaseTable.types'
 
 const props = withDefaults(

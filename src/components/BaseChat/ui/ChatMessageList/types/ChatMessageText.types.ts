@@ -1,4 +1,4 @@
-import type { MessageToken, TextPart } from '@composables/useMessageParser/types/useMessageParser.types'
+import type { MessageToken, TextPart } from '@composables/chat/useMessageParser/types/useMessageParser.types'
 
 export interface ChatMessageTextProps {
 	text: string

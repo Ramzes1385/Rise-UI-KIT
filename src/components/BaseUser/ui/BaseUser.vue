@@ -31,9 +31,9 @@ import { BaseLink } from '@components/BaseLink'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useBaseUser } from '../model/useBaseUser'
 import { BaseAvatar } from '@components/BaseAvatar'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseUserProps, BaseUserSlots } from '../types/BaseUser.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseUserProps>(),

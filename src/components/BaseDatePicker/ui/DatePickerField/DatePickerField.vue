@@ -59,9 +59,9 @@
 import './DatePickerField.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { useDatePickerField } from '../../model/useDatePickerField'
 import type { DatePickerFieldEmits, DatePickerFieldProps, DatePickerFieldSlots } from '../../types/DatePickerField.types'
 

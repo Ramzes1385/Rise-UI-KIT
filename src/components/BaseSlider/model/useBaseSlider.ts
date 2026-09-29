@@ -1,9 +1,9 @@
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
 import { computed, onBeforeUnmount } from 'vue'
-import { useSlider } from '@composables/useSlider'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
+import { useSlider } from '@composables/range/useSlider'
+import { useSizeScale } from '@composables/base/useSizeScale'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BaseSliderEmits, SliderProps } from '../types/BaseSlider.types'
 
 const HOLD_INTERVAL_MS = 150

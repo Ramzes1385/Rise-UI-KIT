@@ -1,10 +1,10 @@
 import type { Ref } from 'vue'
-import { normalizeHex } from '@utils/colorUtils'
-import { toHTMLInputElement } from '@utils/domUtils'
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { useFormField } from '@composables/useFormField'
-import { useColorPicker } from '@composables/useColorPicker'
-import { useCustomClass } from '@composables/useCustomClass'
+import { normalizeHex } from '@utils/data/colorUtils'
+import { toHTMLInputElement } from '@utils/dom/domUtils'
+import { useFormField } from '@composables/form/useFormField'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useColorPicker } from '@composables/form/useColorPicker'
 import type { BaseColorPickerEmits, BaseColorPickerProps } from '../types/BaseColorPicker.types'
 
 const AREA_STEP = 0.01

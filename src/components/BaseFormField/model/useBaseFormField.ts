@@ -1,8 +1,8 @@
-import { useFormField } from '@composables/useFormField'
+import { useFormField } from '@composables/form/useFormField'
 import { computed, provide, ref, shallowRef, useId } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { FormFieldControl, FormFieldProps } from '../types/BaseFormField.types'
-import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/useFormContext'
+import { FORM_FIELD_CONTEXT_KEY, useFormContext } from '@composables/form/useFormContext'
 
 const FIELD_ELEMENTS = ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error']
 

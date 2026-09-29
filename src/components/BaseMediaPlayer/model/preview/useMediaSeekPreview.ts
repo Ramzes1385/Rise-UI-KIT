@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import { formatMediaTime } from '@utils/mediaUtils'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import { usePlayerContext } from '../player/usePlayerContext'
 import type { MediaSeekPreviewProps, MediaThumbnailCue } from '../../types/content/MediaPreview.types'
 

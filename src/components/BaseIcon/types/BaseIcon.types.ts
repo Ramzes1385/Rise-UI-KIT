@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseIconProps extends Omit<BaseComponentProps<string, 'root' | 'svg'>, 'color'> {
 	/** Имя иконки (соответствует имени SVG-файла без расширения) */

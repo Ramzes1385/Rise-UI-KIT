@@ -38,11 +38,11 @@
 <script setup lang="ts">
 import '../styles/BaseMenu.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { useBaseMenu } from '../model/useBaseMenu'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseMenuEmits, BaseMenuProps, BaseMenuSlots } from '../types/BaseMenu.types'
 
 const props = withDefaults(

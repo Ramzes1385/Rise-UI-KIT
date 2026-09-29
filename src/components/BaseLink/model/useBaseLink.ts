@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { resolveLink, useLinkComponent } from '@composables/useLink'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseLinkEmits, BaseLinkProps } from '../types/BaseLink.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { resolveLink, useLinkComponent } from '@composables/interaction/useLink'
 
 export function useBaseLink(props: BaseLinkProps, emit: BaseLinkEmits) {
 	const appLinkComponent = useLinkComponent()

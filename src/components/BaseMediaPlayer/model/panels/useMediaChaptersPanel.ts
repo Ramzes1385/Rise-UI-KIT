@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { formatMediaTime } from '@utils/mediaUtils'
 import { useMediaSidePanel } from './useMediaSidePanel'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import { usePlayerContext } from '../player/usePlayerContext'
 import type { MediaChapterItem } from '../../types/playback/MediaScreen.types'
 import type { MediaChapterRange } from '../../types/content/MediaPlaylist.types'

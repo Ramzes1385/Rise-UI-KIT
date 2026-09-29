@@ -1,10 +1,10 @@
 import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
 import { useHoverTimer } from './useHoverTimer'
-import { calcIconScale } from '@utils/iconUtils'
-import { useFlyoutPosition } from '@composables/useFlyoutPosition'
-import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/useMegaMenuTree'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { useFlyoutPosition } from '@composables/overlay/useFlyoutPosition'
 import type { BaseMegaMenuNodeEmits, BaseMegaMenuNodeProps } from '../types/BaseMegaMenuNode.types'
+import { MEGA_MENU_PATH_SEPARATOR, useMegaMenuTree } from '@composables/navigation/useMegaMenuTree'
 
 function useNodeFlyout(props: BaseMegaMenuNodeProps, isOpen: ComputedRef<boolean>) {
 	const anchorRef = ref<HTMLElement | null>(null)

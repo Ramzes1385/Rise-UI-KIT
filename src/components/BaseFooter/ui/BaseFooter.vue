@@ -17,10 +17,10 @@
 <script setup lang="ts">
 import '../styles/BaseFooter.style.scss'
 import { useBaseFooter } from '../model/useBaseFooter'
-import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseFooterProps, BaseFooterSlots } from '../types/BaseFooter.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseFooterProps>(),

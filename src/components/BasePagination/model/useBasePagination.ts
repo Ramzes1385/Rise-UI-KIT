@@ -1,9 +1,9 @@
 import { computed } from 'vue'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { DEFAULT_VARIANT } from '@composables/useBaseComponent'
-import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
+import { useSizeScale } from '@composables/base/useSizeScale'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useCustomColor } from '@composables/base/useCustomColor'
+import { DEFAULT_VARIANT } from '@composables/base/useBaseComponent'
+import { calcTotalPages, calcVisiblePages } from '@utils/navigation/paginationUtils'
 import type { BasePaginationEmits, PaginationProps } from '../types/BasePagination.types'
 
 export function useBasePagination(props: PaginationProps, emit: BasePaginationEmits) {

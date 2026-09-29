@@ -1,4 +1,4 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { DropdownMenuItem, DropdownMenuItems, DropdownMenuVariant } from './BaseDropdownMenu.types'
 
 export interface DropdownMenuContentProps {

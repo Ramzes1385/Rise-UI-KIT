@@ -1,9 +1,9 @@
 import type { ComputedRef } from 'vue'
-import { findTypeaheadIndex } from '@utils/menuUtils'
-import { useTreeState } from '@composables/useTreeState'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
-import { useVirtualList } from '@composables/useVirtualList'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
+import { useTreeState } from '@composables/navigation/useTreeState'
+import { useVirtualList } from '@composables/interaction/useVirtualList'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, nextTick, onBeforeUnmount, provide, ref, toRef } from 'vue'
 import type { BaseTreeEmits, TreeNode, TreeProps, VisibleNode } from '../types/BaseTree.types'
 

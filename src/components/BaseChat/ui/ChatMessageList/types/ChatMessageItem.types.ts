@@ -1,4 +1,4 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
 export interface ChatMessageItemProps {

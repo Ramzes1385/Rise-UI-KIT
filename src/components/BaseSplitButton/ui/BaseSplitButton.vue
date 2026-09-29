@@ -36,12 +36,12 @@
 import '../styles/BaseSplitButton.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { useBaseSplitButton } from '../model/useBaseSplitButton'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSplitButtonEmits, BaseSplitButtonProps, BaseSplitButtonSlots } from '../types/BaseSplitButton.types'
 
 const props = withDefaults(

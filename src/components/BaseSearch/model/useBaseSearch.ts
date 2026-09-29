@@ -3,12 +3,12 @@ import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { getSearchOptionId } from './searchOptionId'
 import { getLocale, pluralize } from '@/locales/state'
-import { useFormField } from '@composables/useFormField'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
-import { useSearchState } from '@composables/useSearchState'
+import { useFormField } from '@composables/form/useFormField'
 import type BaseSearchOverlay from '../ui/BaseSearchOverlay.vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useSearchState } from '@composables/form/useSearchState'
 import type { BaseSearchEmits, SearchProps } from '../types/BaseSearch.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 const SEARCH_ELEMENTS = [
 	'root',

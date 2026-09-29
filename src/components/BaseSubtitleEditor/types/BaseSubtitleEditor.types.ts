@@ -1,5 +1,5 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { SubtitleCue, SubtitleFormat } from '@utils/subtitleUtils'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { SubtitleCue, SubtitleFormat } from '@utils/media/subtitleUtils'
 
 /** Варианты BaseSubtitleEditor: default — панель с рамкой, soft — приподнятый фон без рамки */
 export const SUBTITLE_EDITOR_VARIANTS = ['default', 'soft'] as const

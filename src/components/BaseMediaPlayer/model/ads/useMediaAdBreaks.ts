@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import { isSafeUrl } from '@utils/urlUtils'
 import { resolveVast, sendPixels } from './vast'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { UI_PLAYER, formatMessage } from '../messages'
 import { computed, onBeforeUnmount, ref, shallowReactive, watch } from 'vue'
 import type {

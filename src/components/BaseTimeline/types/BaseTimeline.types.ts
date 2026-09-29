@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Варианты маркеров: default — круг цвета события с белой иконкой или точкой; soft — мягкий фон и иконка цвета события;

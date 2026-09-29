@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, h } from 'vue'
 import BaseLink from '../ui/BaseLink.vue'
-import { LINK_COMPONENT_KEY } from '@composables/useLink'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { LINK_COMPONENT_KEY } from '@composables/interaction/useLink'
 
 const RouterLinkStub = defineComponent({
 	name: 'RouterLinkStub',

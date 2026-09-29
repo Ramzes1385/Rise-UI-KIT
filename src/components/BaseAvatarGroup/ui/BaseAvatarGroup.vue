@@ -26,10 +26,10 @@ import '../styles/BaseAvatarGroup.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { BaseAvatar } from '@components/BaseAvatar'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseAvatarGroup } from '../model/useBaseAvatarGroup'
 import type { BaseAvatarGroupProps } from '../types/BaseAvatarGroup.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseAvatarGroupProps>(),

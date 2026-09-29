@@ -1,6 +1,6 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { VirtualAlign, VirtualKey } from '@composables/useVirtualList'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { VirtualAlign, VirtualKey } from '@composables/interaction/useVirtualList'
 
 /** У списка одно оформление: строки рисует слот */
 export const VIRTUAL_LIST_VARIANTS = ['default'] as const

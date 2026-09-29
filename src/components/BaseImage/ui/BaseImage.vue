@@ -69,8 +69,8 @@ import { UI_TEXT } from '@/locales/messages'
 import BaseImageZoom from './BaseImageZoom.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseImage } from '../model/useBaseImage'
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
 
 const props = withDefaults(

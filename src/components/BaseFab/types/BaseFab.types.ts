@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты: default — заливка основным цветом; soft — мягкий основной цвет; outline — фон страницы и рамка */
 export const FAB_VARIANTS = ['default', 'soft', 'outline'] as const

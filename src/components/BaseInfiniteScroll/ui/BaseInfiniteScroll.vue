@@ -22,9 +22,9 @@ import '../styles/BaseInfiniteScroll.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseInfiniteScroll } from '../model/useBaseInfiniteScroll'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type {
 	BaseInfiniteScrollEmits,
 	BaseInfiniteScrollExpose,

@@ -55,11 +55,11 @@
 <script setup lang="ts">
 import '../styles/BaseCheckbox.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { useBaseCheckbox } from '../model/useBaseCheckbox'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../types/BaseCheckbox.types'
 
 const props = withDefaults(

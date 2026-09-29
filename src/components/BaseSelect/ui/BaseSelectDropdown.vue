@@ -102,8 +102,8 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { calcIconScale } from '@utils/iconUtils'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { useBaseSelectDropdown } from '../model/useBaseSelectDropdown'
 import type { BaseSelectDropdownEmits, BaseSelectDropdownProps, BaseSelectDropdownSlots } from '../types/BaseSelectDropdown.types'
 

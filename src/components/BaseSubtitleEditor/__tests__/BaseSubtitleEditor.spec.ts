@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
-import type { SubtitleCue } from '@utils/subtitleUtils'
 import BaseSubtitleEditor from '../ui/BaseSubtitleEditor.vue'
+import type { SubtitleCue } from '@utils/media/subtitleUtils'
 import { formatCueTime, parseCueTime } from '../model/cueTime'
 import { fireEvent, render, screen } from '@testing-library/vue'
 

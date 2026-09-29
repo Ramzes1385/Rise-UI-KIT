@@ -1,6 +1,6 @@
 import type { InputVariant } from '@components/BaseInput'
-import type { CustomColor } from '@composables/useCustomColor'
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { CustomColor } from '@composables/base/useCustomColor'
+import type { CustomClassProp } from '@composables/base/useCustomClass'
 
 export interface DatePickerFieldProps {
 	/** Отображаемое значение в инпуте */

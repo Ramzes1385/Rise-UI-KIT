@@ -1,5 +1,5 @@
 import { ref, onBeforeUnmount } from 'vue'
-import { createColorMode } from '@composables/useColorMode'
+import { createColorMode } from '@composables/app/useColorMode'
 
 export function useFrameColorMode() {
 	const frame = ref<HTMLElement | null>(null)

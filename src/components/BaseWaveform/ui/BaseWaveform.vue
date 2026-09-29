@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import '../styles/BaseWaveform.style.scss'
 import { useBaseWaveform } from '../model/useBaseWaveform'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseWaveformEmits, BaseWaveformProps } from '../types/BaseWaveform.types'
 
 const props = withDefaults(defineProps<BaseWaveformProps>(), {

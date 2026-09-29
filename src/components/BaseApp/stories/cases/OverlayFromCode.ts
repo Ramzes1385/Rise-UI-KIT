@@ -5,8 +5,8 @@ import { BaseText } from '@components/BaseText'
 import { BaseInput } from '@components/BaseInput'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
-import { useOverlay } from '@composables/useOverlay'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { useOverlay } from '@composables/overlay/useOverlay'
 import { screen, within, expect, waitFor } from 'storybook/test'
 
 const RenameProjectModal = defineComponent({

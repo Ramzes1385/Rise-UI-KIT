@@ -29,9 +29,9 @@
 
 <script setup lang="ts" generic="T">
 import '../styles/BaseVirtualList.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseVirtualList } from '../model/useBaseVirtualList'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseVirtualListExpose, BaseVirtualListProps, BaseVirtualListSlots } from '../types/BaseVirtualList.types'
 
 const props = withDefaults(

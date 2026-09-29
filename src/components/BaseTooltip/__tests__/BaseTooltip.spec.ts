@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseTooltip from '../ui/BaseTooltip.vue'
 import { render, screen, waitFor } from '@testing-library/vue'
-import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
+import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget'
 
 const renderOptions = {
 	global: {

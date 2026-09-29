@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import BaseCalendar from '../ui/BaseCalendar.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 
 const stubs = {
 	BaseCard: { template: '<div class="base-card-stub"><slot /></div>' },

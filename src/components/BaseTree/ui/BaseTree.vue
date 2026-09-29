@@ -51,8 +51,8 @@
 import '../styles/BaseTree.style.scss'
 import BaseTreeNode from './BaseTreeNode.vue'
 import { useBaseTree } from '../model/useBaseTree'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots } from '../types/BaseTree.types'
 
 const props = withDefaults(

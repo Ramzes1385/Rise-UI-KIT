@@ -19,7 +19,7 @@ export const ANIMATION_MODES = ['out-in', 'in-out', 'default'] as const
 
 export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseAnimationProps extends BaseComponentProps<string, 'root'> {
 	/** Показывать содержимое. Переключение запускает анимацию появления или исчезновения. По умолчанию `true`. */

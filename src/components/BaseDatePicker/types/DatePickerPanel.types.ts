@@ -1,4 +1,4 @@
-import type { CustomClassProp } from '@composables/useCustomClass'
+import type { CustomClassProp } from '@composables/base/useCustomClass'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { BaseDatePickerCalendarConfig, BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
 

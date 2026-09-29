@@ -12,8 +12,8 @@
 import '../styles/BaseText.style.scss'
 import { TEXT_WEIGHT } from '../model/textWeight'
 import { useBaseText } from '../model/useBaseText'
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseTextProps, BaseTextSlots } from '../types/BaseText.types'
 
 const props = withDefaults(

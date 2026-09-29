@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { getLocale } from '@/locales/state'
 import type { BaseTimelineProps } from '../types/BaseTimeline.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 function toDate(value: Date | string): Date | undefined {
 	const date = value instanceof Date ? value : new Date(value)

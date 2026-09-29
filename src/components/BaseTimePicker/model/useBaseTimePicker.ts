@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type { TimePickerProps } from '../types/BaseTimePicker.types'
 import type { AutocompleteOption, BaseAutocomplete } from '@components/BaseAutocomplete'
-import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/timeUtils'
+import { buildTimeOptions, parseTimeInput, timePrefixes, timeToMinutes } from '@utils/data/timeUtils'
 
 function normalizeTime(props: TimePickerProps, text: string): string | null {
 	const time = parseTimeInput(text)

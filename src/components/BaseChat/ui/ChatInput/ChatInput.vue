@@ -183,8 +183,8 @@ import { useChatInput } from './model/useChatInput'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseVoiceRecorder } from '@components/BaseVoiceRecorder'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { UI_ARIA, UI_AUDIO, UI_CHAT_TEXT } from '@/locales/messages'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { ChatInputEmits, ChatInputProps } from './types/ChatInput.types'
 
 const props = withDefaults(defineProps<ChatInputProps>(), {

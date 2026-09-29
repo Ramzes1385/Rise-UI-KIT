@@ -98,7 +98,7 @@ import { UI_TOUR } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseTour } from '../model/useBaseTour'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../types/BaseTour.types'
 

@@ -1,13 +1,13 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { useCalendar } from '@composables/useCalendar'
-import { isolateFormField } from '@composables/useFormContext'
-import { useBaseComponent } from '@composables/useBaseComponent'
-import { useCalendarPopover } from '@composables/useCalendarPopover'
-import { useCalendarInteraction } from '@composables/useCalendarInteraction'
-import { useCalendarResolvedProps } from '@composables/useCalendarResolvedProps'
+import { useCalendar } from '@composables/calendar/useCalendar'
+import { isolateFormField } from '@composables/form/useFormContext'
+import { useBaseComponent } from '@composables/base/useBaseComponent'
+import { useCalendarPopover } from '@composables/calendar/useCalendarPopover'
+import { useCalendarInteraction } from '@composables/calendar/useCalendarInteraction'
 import type { BaseCalendarEmits, BaseCalendarProps } from '../types/BaseCalendar.types'
+import { useCalendarResolvedProps } from '@composables/calendar/useCalendarResolvedProps'
 
 const CALENDAR_ELEMENTS = ['root', 'header', 'weekdays', 'grid', 'dayWrapper', 'day', 'popover', 'months', 'years', 'time', 'footer']
 

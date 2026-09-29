@@ -11,7 +11,7 @@ import { BaseFormField } from '@components/BaseFormField'
 import { BaseFileUpload } from '@components/BaseFileUpload'
 import type { BaseFormExpose } from '../types/BaseForm.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import type { StandardSchemaResult, StandardSchemaV1 } from '@utils/formUtils'
+import type { StandardSchemaResult, StandardSchemaV1 } from '@utils/form/formUtils'
 
 describe('BaseForm integration', () => {
 	describe('отправка формы', () => {

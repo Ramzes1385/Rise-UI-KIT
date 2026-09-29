@@ -1,4 +1,4 @@
-import { formatMediaTime } from '@utils/mediaUtils'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { UI_PLAYER, formatMessage, formatNumber } from '../messages'
 import type { MediaEventLogEntry, MediaStatsRow } from '../../types/panels/MediaStatsPanel.types'

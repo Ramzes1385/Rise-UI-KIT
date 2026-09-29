@@ -1,4 +1,4 @@
-import { isSafeUrl } from '@utils/urlUtils'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import type { MediaThumbnailArea, MediaThumbnailCue } from '../../types/content/MediaPreview.types'
 
 const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:']

@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
 import type meta from '../BaseIcon.stories'
 import BaseIcon from '../../ui/BaseIcon.vue'
-import { ICON_SCALE } from '@utils/iconUtils'
+import { ICON_SCALE } from '@utils/media/iconUtils'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { useArgsWithoutSlots } from '@/stories/helpers'
 

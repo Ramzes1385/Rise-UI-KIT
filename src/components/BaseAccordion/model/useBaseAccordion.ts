@@ -1,5 +1,5 @@
 import { onMounted, ref, useId } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseAccordionEmits, BaseAccordionProps } from '../types/BaseAccordion.types'
 
 const ACCORDION_ELEMENTS = ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText']

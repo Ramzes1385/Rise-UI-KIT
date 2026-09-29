@@ -515,12 +515,33 @@ src/components/BaseComponent/
 Пример — BaseMediaPlayer:
 
 ```
-model/        core/ player/ controls/ input/ panels/ playlist/ captions/ audio/ ads/ notices/ cast/ screen/ preview/ sharing/
-ui/           controls/ panels/ overlays/ + BaseMediaPlayer.vue
-types/        playback/ controls/ panels/ content/ overlays/ + BaseMediaPlayer.types.ts
+model/        core/ player/ controls/ menus/ input/ panels/ overlays/ playlist/ captions/ audio/ ads/ notices/ cast/ screen/
+              preview/ sharing/
+ui/           controls/ menus/ panels/ overlays/ + BaseMediaPlayer.vue
+types/        playback/ controls/ menus/ panels/ content/ overlays/ + BaseMediaPlayer.types.ts
 __tests__/    те же области, что в model/, + browser/ (e2e и visual) и utils/ (стабы и хелперы)
 stories/      cases/{appearance,playback,content,ads,sharing}/ + Default.ts, demo/ (эмуляции для историй)
 ```
+
+`src/composables` и `src/utils` разложены по областям так же (С.11); публичные входы `…/composables` и `…/utils` не
+изменились — их `index.ts` реэкспортирует всё, как раньше. Внутри кита импорт идёт с областью:
+`@composables/base/useDefaults`, `@utils/data/urlUtils`.
+
+```
+src/composables/  base/ (useBaseComponent, useDefaults, useVariant, useSizeScale, useCustom*, usePadding…)
+                  app/ (useLocale, useIcon, useColorMode, useBreakpoint, useToast, useLayerStack, useTeleportTarget)
+                  overlay/ (useOverlay, usePopup, позиционирование, useClickOutside, useEscapeKey, useFocusTrap…)
+                  interaction/ (useAutoScroll, useDebounce, useListNavigation, useSwipe, useVirtualList, useLink…)
+                  form/ (useFormContext, useFormField, useInputMask, useSelect, useSearchState, useColorPicker…)
+                  calendar/ chat/ table/ editor/ image/ range/ navigation/ — composables своих компонентов
+src/utils/        dom/ data/ media/ form/ navigation/
+```
+
+В компонентах так же: BaseTable — `ui/{body,header,toolbar}/`, `types/{body,header,toolbar}/`,
+`styles/{body,panels,layout}/`; BaseChat — `model/slideover/`, `__tests__/{ui,browser}/`,
+`ui/ChatMessageList/styles/message/`; BaseDatePicker — `__tests__/{ui,browser}/`. Тесты e2e и скриншотные лежат в
+`__tests__/browser/`. Папки с медиафайлами историй (`stories/media/`) и SVG-иконками (`src/icons/svg/`) — это ресурсы,
+правило на них не распространяется.
 
 ESLint, покрытие и сборка понимают вложенные папки: правила действуют для `model/**`, `ui/**`, `types/**/*.types.ts`.
 
@@ -555,7 +576,7 @@ ESLint, покрытие и сборка понимают вложенные п�
 и composables не из `model/`.
 
 - Пропсы после `withDefaults` описывает тип `PropsWithDefaults<BaseXProps, 'ключи со значениями по умолчанию'>`
-  из `@composables/useDefaults`.
+  из `@composables/base/useDefaults`.
 - Логика делится на небольшие функции по задачам (значение, клавиатура, перетаскивание), чтобы каждая проходила пороги
   «чистого кода» (раздел 11).
 - Composable возвращает всё, что нужно шаблону, включая template ref и методы для `defineExpose`. Константу, нужную
@@ -571,8 +592,8 @@ ESLint, покрытие и сборка понимают вложенные п�
 - Composable, который открывает конкретный компонент (`useConfirm` → BaseConfirm), лежит в папке этого компонента
   и экспортируется из её `index.ts`. В `src/composables/` — только composables без импорта компонентов (импорт типов
   компонентов допустим): иначе вход `@ramzes1385/rise-ui-kit/composables` тянул бы за собой код компонентов.
-- Тесты лежат в `__tests__` своей папки: `src/composables/useXxx/__tests__/useXxx.spec.ts`,
-  `src/utils/xxxUtils/__tests__/xxxUtils.spec.ts`, `src/locales/__tests__/…`. Тесты пакета целиком (границы входов,
+- Тесты лежат в `__tests__` своей папки: `src/composables/<область>/useXxx/__tests__/useXxx.spec.ts`,
+  `src/utils/<область>/xxxUtils/__tests__/xxxUtils.spec.ts`, `src/locales/__tests__/…`. Тесты пакета целиком (границы входов,
   `createUiKitPlugin`) и хелпер скриншотных тестов — в `build/tests/`.
 - Props: `withDefaults(defineProps<BaseComponentProps>(), {...})` — без inline-типов
 - Emits: `defineEmits<BaseComponentEmits>()` — без inline-типов
@@ -643,7 +664,7 @@ import type { ... } from './types/xxxUtils.types'
 - Общее для частей одного компонента — в его `model/`: `CHAT_SCALE` в `BaseChat/model/chatScale.ts`,
   `TEXT_WEIGHT` в `BaseText/model/textWeight.ts`. Массив вариантов, из которого выводится тип, — в `types/`.
 - Общее для всех компонентов — в composable, который это значение толкует: `DEFAULT_VARIANT` в `useVariant`,
-  `SIZE_SCALE_DEFAULT` в `useSizeScale`. Компоненты импортируют оба из `@composables/useBaseComponent`.
+  `SIZE_SCALE_DEFAULT` в `useSizeScale`. Компоненты импортируют оба из `@composables/base/useBaseComponent`.
 
 Строки интерфейса (подписи, доступные имена, сообщения) в код не пишутся: они лежат в словарях `src/locales/ru.ts` и `src/locales/en.ts`. Компоненты читают их через разделы словаря из `src/locales/messages.ts` (`UI_TEXT`, `UI_ARIA`, `UI_CHAT_TEXT` и другие): `UI_ARIA.CLOSE` возвращает строку текущего языка. Новую строку добавляйте в оба словаря с одним ключом — тест `src/locales/__tests__/locales.spec.ts` сверяет ключи и места для значений `{name}`. Строку со значением собирайте через `formatMessage`, число с подписью — через `pluralize`, а не склейкой строк.
 

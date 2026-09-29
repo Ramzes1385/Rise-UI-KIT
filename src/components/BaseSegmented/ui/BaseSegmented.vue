@@ -63,11 +63,11 @@
 <script setup lang="ts">
 import '../styles/BaseSegmented.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseSegmented } from '../model/useBaseSegmented'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSegmentedEmits, BaseSegmentedProps } from '../types/BaseSegmented.types'
 
 const props = withDefaults(

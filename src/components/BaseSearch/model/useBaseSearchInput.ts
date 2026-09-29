@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
 export function useBaseSearchInput(props: BaseSearchInputProps, emit: BaseSearchInputEmits) {

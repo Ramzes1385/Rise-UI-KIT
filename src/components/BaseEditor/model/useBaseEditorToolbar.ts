@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
-import { calcIconScale } from '@utils/iconUtils'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import type { BaseEditorToolbarProps, ToolbarButton } from '../types/BaseEditorToolbar.types'
 

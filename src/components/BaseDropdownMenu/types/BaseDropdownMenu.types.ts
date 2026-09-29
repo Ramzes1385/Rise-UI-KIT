@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 
 /**

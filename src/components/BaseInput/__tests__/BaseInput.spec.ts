@@ -459,7 +459,7 @@ describe('BaseInput unit', () => {
 
 		it('не должен эмитить update при Delete когда valueIndex вне диапазона', async () => {
 			vi.resetModules()
-			vi.doMock('@composables/useInputMask', () => ({
+			vi.doMock('@composables/form/useInputMask', () => ({
 				useInputMask: () => ({
 					applyMask: (v: string) => v,
 					stripMask: (v: string) => v,
@@ -515,7 +515,7 @@ describe('BaseInput unit', () => {
 			const updates = emitted()['update:modelValue']
 			expect(updates).toBeUndefined()
 
-			vi.doUnmock('@composables/useInputMask')
+			vi.doUnmock('@composables/form/useInputMask')
 		})
 	})
 

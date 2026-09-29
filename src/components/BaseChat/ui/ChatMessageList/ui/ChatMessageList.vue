@@ -82,7 +82,7 @@ import { BaseLoader } from '@components/BaseLoader'
 import { CHAT_SCALE } from '../../../model/chatScale'
 import { useChatMessageList } from '../model/useChatMessageList'
 import ChatMessageContextMenu from './ChatMessageContextMenu.vue'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { ChatMessageListEmits, ChatMessageListProps } from '../types/ChatMessageList.types'
 
 const props = withDefaults(defineProps<ChatMessageListProps>(), {

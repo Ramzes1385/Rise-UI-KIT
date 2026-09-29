@@ -1,5 +1,5 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Вид индикатора: `spinner` — вращающаяся дуга, `dots` — три точки, `pulse` — точка с расходящимся кольцом, `bars` — столбики.

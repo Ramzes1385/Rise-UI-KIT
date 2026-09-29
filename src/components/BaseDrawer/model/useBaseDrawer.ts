@@ -1,12 +1,12 @@
 import type { Ref } from 'vue'
-import { usePopup } from '@composables/usePopup'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useLayerIndex } from '@composables/useLayerStack'
+import { usePopup } from '@composables/overlay/usePopup'
 import { computed, ref, useId, useSlots, watch } from 'vue'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useLayerIndex } from '@composables/app/useLayerStack'
+import { useFocusTrap } from '@composables/overlay/useFocusTrap'
+import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseDrawerEmits, DrawerProps } from '../types/BaseDrawer.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 
 const CLOSE_RATIO = 0.25
 const DRAWER_ELEMENTS = ['root', 'panel', 'handle', 'header', 'title', 'body', 'footer']

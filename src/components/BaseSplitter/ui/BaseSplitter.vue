@@ -49,9 +49,9 @@
 <script setup lang="ts">
 import '../styles/BaseSplitter.style.scss'
 import { UI_ARIA } from '@/locales/messages'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseSplitter } from '../model/useBaseSplitter'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSplitterEmits, BaseSplitterProps, BaseSplitterSlots } from '../types/BaseSplitter.types'
 
 const props = withDefaults(

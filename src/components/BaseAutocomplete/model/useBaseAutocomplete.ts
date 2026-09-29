@@ -3,8 +3,8 @@ import { UI_TEXT } from '@/locales/messages'
 import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useFormDisabled } from '@composables/useFormContext'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useFormDisabled } from '@composables/form/useFormContext'
 import type { AutocompleteOption, AutocompleteProps, BaseAutocompleteEmits } from '../types/BaseAutocomplete.types'
 
 function defaultFilter(option: AutocompleteOption, text: string): boolean {

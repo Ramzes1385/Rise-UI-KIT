@@ -1,8 +1,8 @@
 import { UI_ARIA } from '@/locales/messages'
 import { computed, ref, useSlots, watch } from 'vue'
-import { useBreakpoint } from '@composables/useBreakpoint'
+import { useBreakpoint } from '@composables/app/useBreakpoint'
 import type { BaseHeaderProps } from '../types/BaseHeader.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 export function useBaseHeader(props: BaseHeaderProps) {
 	const slots = useSlots()

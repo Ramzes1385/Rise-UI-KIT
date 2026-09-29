@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { AlertProps, BaseAlertEmits } from '../types/BaseAlert.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 const CLOSE_BUTTON_PADDING = { x: 3, y: 3 } as const
 const ALERT_ICONS: Record<string, string> = { info: 'info', success: 'check-circle', warning: 'alert-triangle', error: 'x-circle' }

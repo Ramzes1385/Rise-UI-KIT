@@ -1,5 +1,5 @@
 import type { UiKitLocale } from '@/locales'
-import { useLocale } from '@composables/useLocale'
+import { useLocale } from '@composables/app/useLocale'
 
 const { messages, formatMessage, formatNumber } = useLocale()
 

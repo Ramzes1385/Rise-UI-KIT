@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { BaseLayoutProps } from '../types/BaseLayout.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
 
 function useHeaderHeight(headerRef: Ref<HTMLElement | null>): Ref<number> {

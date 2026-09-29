@@ -32,10 +32,10 @@
 import '@components/BaseDropdownMenu/styles/BaseDropdownMenu.style.scss'
 import '../styles/BaseContextMenu.style.scss'
 import { UI_ARIA } from '@/locales/messages'
-import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseContextMenu } from '../model/useBaseContextMenu'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
 import type { BaseContextMenuEmits, BaseContextMenuProps, BaseContextMenuSlots } from '../types/BaseContextMenu.types'
 

@@ -1,5 +1,5 @@
-import { isSafeUrl } from '@utils/urlUtils'
 import { computed, reactive, watch } from 'vue'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import type { MediaBanner, MediaBannersOptions } from '../../types/overlays/MediaNotices.types'
 
 const DEFAULT_DURATION = 10

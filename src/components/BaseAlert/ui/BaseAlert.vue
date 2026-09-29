@@ -52,12 +52,12 @@
 import '../styles/BaseAlert.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { useBaseAlert } from '../model/useBaseAlert'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../types/BaseAlert.types'
 
 const props = withDefaults(

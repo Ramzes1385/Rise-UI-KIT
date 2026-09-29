@@ -1,9 +1,9 @@
 import type { Ref } from 'vue'
-import { toHTMLTextAreaElement } from '@utils/domUtils'
-import { useFormField } from '@composables/useFormField'
-import { useFieldControl } from '@composables/useFormContext'
+import { toHTMLTextAreaElement } from '@utils/dom/domUtils'
+import { useFormField } from '@composables/form/useFormField'
+import { useFieldControl } from '@composables/form/useFormContext'
 import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseTextareaEmits, TextareaProps } from '../types/BaseTextarea.types'
 
 function useTextareaControl(props: TextareaProps) {

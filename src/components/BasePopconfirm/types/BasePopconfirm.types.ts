@@ -1,5 +1,5 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты панели — те же, что у BaseDropdown и BasePopover */
 export const POPCONFIRM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const

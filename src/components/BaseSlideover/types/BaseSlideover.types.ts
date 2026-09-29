@@ -1,6 +1,6 @@
-import type { PaddingProp } from '@composables/usePadding'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PaddingProp } from '@composables/base/usePadding'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export type SlideoverSide = 'left' | 'right'
 

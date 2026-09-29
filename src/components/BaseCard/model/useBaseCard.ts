@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { usePadding } from '@composables/usePadding'
+import { usePadding } from '@composables/base/usePadding'
 import type { BaseCardProps } from '../types/BaseCard.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 export function useBaseCard(props: BaseCardProps) {
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad' })

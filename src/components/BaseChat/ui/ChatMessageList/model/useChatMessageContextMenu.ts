@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { useLayerIndex } from '@composables/app/useLayerStack'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
-import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
+import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
 
 function getItems(menu: HTMLElement | null): HTMLElement[] {

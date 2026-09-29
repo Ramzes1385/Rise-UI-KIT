@@ -1,7 +1,7 @@
 import { UI_AUDIO } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import { formatMediaTime, resampleLevels } from '@utils/mediaUtils'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { formatMediaTime, resampleLevels } from '@utils/media/mediaUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, watch } from 'vue'
 import { canRecord, captureError, isInsecurePage, levelOf, openStream, pickMimeType, stopStream } from './voiceCapture'
 import type {

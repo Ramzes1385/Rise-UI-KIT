@@ -46,10 +46,10 @@
 <script setup lang="ts">
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { useBaseSearchInput } from '../model/useBaseSearchInput'
 import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 

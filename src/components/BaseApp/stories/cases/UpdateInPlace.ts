@@ -1,8 +1,8 @@
 import { defineComponent } from 'vue'
 import BaseApp from '../../ui/BaseApp.vue'
 import type meta from '../BaseApp.stories'
-import { useToast } from '@composables/useToast'
 import { BaseButton } from '@components/BaseButton'
+import { useToast } from '@composables/app/useToast'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, expect, waitFor } from 'storybook/test'
 

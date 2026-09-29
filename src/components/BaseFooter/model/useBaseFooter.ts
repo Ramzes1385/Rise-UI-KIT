@@ -1,6 +1,6 @@
 import { useSlots } from 'vue'
 import type { BaseFooterProps } from '../types/BaseFooter.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 export function useBaseFooter(props: BaseFooterProps) {
 	return { ...useStandardBaseComponent('base-footer', props, ['root', 'inner']), slots: useSlots() }

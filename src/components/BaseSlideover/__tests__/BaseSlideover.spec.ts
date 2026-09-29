@@ -2,12 +2,12 @@ import '@testing-library/jest-dom/vitest'
 import BaseSlideover from '../ui/BaseSlideover.vue'
 import { render, screen } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({
 	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
 }))
-vi.mock('@composables/usePopup', () => ({
+vi.mock('@composables/overlay/usePopup', () => ({
 	usePopup: () => ({ handleOverlayClick: vi.fn(), close: vi.fn() }),
 }))
 

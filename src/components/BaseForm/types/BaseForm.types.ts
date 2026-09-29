@@ -1,6 +1,6 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { FormIssue, FormValidationResult, StandardSchemaV1 } from '@utils/formUtils'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { FormIssue, FormValidationResult, StandardSchemaV1 } from '@utils/form/formUtils'
 
 export const FORM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 

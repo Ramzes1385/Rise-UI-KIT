@@ -78,8 +78,8 @@ import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseTabs } from '../model/useBaseTabs'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../types/BaseTabs.types'
 
 const props = withDefaults(

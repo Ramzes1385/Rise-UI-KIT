@@ -4,9 +4,9 @@ import BaseSearch from '../ui/BaseSearch.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
 
 describe('BaseSearch integration', () => {
 	it('должен эмитить update:modelValue при вводе', async () => {

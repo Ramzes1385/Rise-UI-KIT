@@ -87,9 +87,9 @@ import BaseRangeMarks from './BaseRangeMarks.vue'
 import { BaseRangeThumb } from './BaseRangeThumb'
 import { useBaseRange } from '../model/useBaseRange'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
-import { DEFAULT_VARIANT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT } from '@composables/base/useBaseComponent'
 import type { BaseRangeEmits, BaseRangeProps, BaseRangeSlots } from '../types/BaseRange.types'
 
 const props = withDefaults(

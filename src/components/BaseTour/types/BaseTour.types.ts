@@ -1,5 +1,5 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Сторона размещения карточки-подсказки относительно подсвеченного элемента */
 export const TOUR_PLACEMENTS = ['top', 'bottom', 'left', 'right', 'auto'] as const

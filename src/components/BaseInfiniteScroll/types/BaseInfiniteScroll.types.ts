@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** У компонента одно оформление: строка состояния под списком */
 export const INFINITE_SCROLL_VARIANTS = ['default'] as const

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { MODAL_VARIANTS } from '@components/BaseModal/types/BaseModal.types'
 
 export interface BaseConfirmProps extends BaseComponentProps<

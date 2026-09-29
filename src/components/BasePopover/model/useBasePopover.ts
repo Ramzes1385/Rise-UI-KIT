@@ -1,7 +1,7 @@
 import { computed, ref, useId, watch } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BasePopoverEmits, PopoverProps } from '../types/BasePopover.types'
+import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 
 function usePopoverOpen(props: PopoverProps, emit: BasePopoverEmits) {
 	const isOpenLocal = ref(props.isOpen)

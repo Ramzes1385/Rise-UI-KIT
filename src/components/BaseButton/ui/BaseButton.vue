@@ -34,8 +34,8 @@
 <script setup lang="ts">
 import '../styles/BaseButton.style.scss'
 import { useBaseButton } from '../model/useBaseButton'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../types/BaseButton.types'
 
 const props = withDefaults(

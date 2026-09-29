@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { isSafeUrl } from '@utils/urlUtils'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import type { MediaSourceItem, MediaSourcesOptions } from '../../types/playback/MediaCore.types'
 
 export const MEDIA_PROTOCOLS = ['http:', 'https:', 'blob:'] as const

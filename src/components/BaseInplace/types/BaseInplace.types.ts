@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты: default — текст с пунктирным подчёркиванием, наведение — фон; ghost — только текст, наведение — фон */
 export const INPLACE_VARIANTS = ['default', 'ghost'] as const

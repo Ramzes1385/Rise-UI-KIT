@@ -63,9 +63,9 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
-import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
 import { CHAT_SCALE } from '../../../model/chatScale'
+import { getFileIconName } from '@utils/media/fileUtils'
 import { UI_AUDIO, UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseAudioPlayer } from '@components/BaseAudioPlayer'
 import { useChatMessageAttachments } from '../model/useChatMessageAttachments'

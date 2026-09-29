@@ -1,8 +1,8 @@
 @use './list';
-@use './reply';
-@use './attachments';
-@use './text';
-@use './reactions';
-@use './meta';
+@use './message/reply';
+@use './message/attachments';
+@use './message/text';
+@use './message/reactions';
+@use './message/meta';
 @use './context-menu';
 @use './animations';

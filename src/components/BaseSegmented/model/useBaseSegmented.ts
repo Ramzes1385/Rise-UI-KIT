@@ -1,6 +1,6 @@
 import { computed, useId } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFieldControl, useFormDisabled } from '@composables/useFormContext'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseSegmentedEmits, BaseSegmentedProps } from '../types/BaseSegmented.types'
 
 export function useBaseSegmented(props: BaseSegmentedProps, emit: BaseSegmentedEmits) {

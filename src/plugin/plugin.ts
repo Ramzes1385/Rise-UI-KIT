@@ -84,13 +84,13 @@ import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
 import { BaseNotification } from '../components/BaseNotification'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
-import { LINK_COMPONENT_KEY } from '../composables/useLink/useLink'
 import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
 import { BaseSubtitleEditor } from '../components/BaseSubtitleEditor'
-import { DEFAULTS_KEY } from '../composables/useDefaults/useDefaults'
 import { BaseColorModeButton } from '../components/BaseColorModeButton'
-import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '../composables/useIcon/useIcon'
-import { TELEPORT_TARGET_KEY } from '../composables/useTeleportTarget/useTeleportTarget'
+import { DEFAULTS_KEY } from '../composables/base/useDefaults/useDefaults'
+import { LINK_COMPONENT_KEY } from '../composables/interaction/useLink/useLink'
+import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '../composables/app/useIcon/useIcon'
+import { TELEPORT_TARGET_KEY } from '../composables/app/useTeleportTarget/useTeleportTarget'
 
 // Тяжёлые компоненты — ленивая загрузка через async-чанки (см. §5.2 plans/stage-5-code-splitting.md)
 const BaseChat = defineAsyncComponent(() => import('../components/BaseChat/ui/BaseChat.vue'))

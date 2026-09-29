@@ -8,8 +8,8 @@ import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { BaseTextarea } from '@components/BaseTextarea'
-import type { StandardSchemaV1 } from '@utils/formUtils'
 import { BaseDatePicker } from '@components/BaseDatePicker'
+import type { StandardSchemaV1 } from '@utils/form/formUtils'
 
 describe('BaseFormField integration', () => {
 	it('должен рендерить label и error', () => {

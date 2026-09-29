@@ -1,4 +1,4 @@
-import { isSafeUrl } from '@utils/urlUtils'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { parseThumbnails, thumbnailAt } from './thumbnails'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { HLS_TYPE, createHls, isHlsSource } from '../core/useHlsAdapter'

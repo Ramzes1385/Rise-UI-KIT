@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useClickOutside } from '@composables/useClickOutside'
+import { useClickOutside } from '@composables/overlay/useClickOutside'
 import type { ChatEmojiPickerEmits } from '../types/ChatEmojiPicker.types'
 
 const POPULAR_EMOJIS = [

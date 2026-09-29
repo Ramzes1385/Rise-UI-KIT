@@ -1,9 +1,9 @@
 import type { ComputedRef, Ref } from 'vue'
-import { calcIconScale } from '@utils/iconUtils'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { computed, nextTick, ref, useId, watch } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
-import type { CustomColor } from '@composables/useCustomColor'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import type { CustomColor } from '@composables/base/useCustomColor'
+import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import type { BasePopconfirmEmits, PopconfirmProps } from '../types/BasePopconfirm.types'
 
 const DANGER_COLOR: CustomColor = {

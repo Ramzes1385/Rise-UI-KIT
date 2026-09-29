@@ -105,9 +105,9 @@
 <script setup lang="ts">
 import './DatePickerPanel.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseButton } from '@components/BaseButton'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { useDatePickerPanel } from '../../model/useDatePickerPanel'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'

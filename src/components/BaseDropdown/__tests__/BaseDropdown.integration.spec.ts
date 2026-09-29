@@ -25,8 +25,8 @@ function renderDropdownWithInput() {
 	return render(Host)
 }
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useDropdownPosition', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: () => ({
 		panelStyle: { value: {} },
 		triggerWidth: { value: 0 },

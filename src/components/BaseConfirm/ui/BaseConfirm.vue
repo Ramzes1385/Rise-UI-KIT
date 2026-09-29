@@ -37,10 +37,10 @@ import '../styles/BaseConfirm.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseConfirm } from '../model/useBaseConfirm'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseConfirmEmits, BaseConfirmProps } from '../types/BaseConfirm.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseConfirmProps>(),

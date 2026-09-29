@@ -1,10 +1,10 @@
 import { computed, ref } from 'vue'
 import { useHoverTimer } from './useHoverTimer'
-import { calcIconScale } from '@utils/iconUtils'
-import { navigateAndEmit } from '@utils/navigationUtils'
-import { useBreakpoint } from '@composables/useBreakpoint'
-import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { useBreakpoint } from '@composables/app/useBreakpoint'
+import { navigateAndEmit } from '@utils/navigation/navigationUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useMegaMenuTreeProvider } from '@composables/navigation/useMegaMenuTree'
 import type { BaseMegaMenuEmits, MegaMenuItem, MegaMenuProps } from '../types/BaseMegaMenu.types'
 
 const MEGA_MENU_ELEMENTS = ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown']

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-import { createColorMode } from '@composables/useColorMode'
 import BaseColorModeButton from '../ui/BaseColorModeButton.vue'
+import { createColorMode } from '@composables/app/useColorMode'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import type { ColorModeInstance } from '@composables/useColorMode'
+import type { ColorModeInstance } from '@composables/app/useColorMode'
 
 let colorMode: ColorModeInstance
 let panel: HTMLElement

@@ -2,13 +2,13 @@ import '@testing-library/jest-dom/vitest'
 import BaseApp from '../ui/BaseApp.vue'
 import { defineComponent, h } from 'vue'
 import { getLocale, setLocale } from '@/locales/state'
-import type { UseToastReturn } from '@composables/useToast'
-import type { UseOverlayReturn } from '@composables/useOverlay'
+import type { UseToastReturn } from '@composables/app/useToast'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
 import type { BaseAppToasterOptions } from '../types/BaseApp.types'
-import { getActiveToastStore, useToast } from '@composables/useToast'
-import { getActiveOverlayStore, useOverlay } from '@composables/useOverlay'
+import { useTeleportTarget } from '@composables/app/useTeleportTarget'
+import type { UseOverlayReturn } from '@composables/overlay/useOverlay'
+import { getActiveToastStore, useToast } from '@composables/app/useToast'
+import { getActiveOverlayStore, useOverlay } from '@composables/overlay/useOverlay'
 
 const TestDialog = defineComponent({
 	name: 'TestDialog',

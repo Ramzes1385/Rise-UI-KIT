@@ -99,10 +99,10 @@
 <script setup lang="ts">
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
 import BaseSearchInput from './BaseSearchInput.vue'
 import { BaseButton } from '@components/BaseButton'
+import { calcIconScale } from '@utils/media/iconUtils'
 import BaseSearchResults from './BaseSearchResults.vue'
 import { useBaseSearchOverlay } from '../model/useBaseSearchOverlay'
 import type {

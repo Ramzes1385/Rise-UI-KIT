@@ -21,10 +21,10 @@
 import '../styles/BaseBackTop.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseFab } from '@components/BaseFab'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseBackTop } from '../model/useBaseBackTop'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseBackTopEmits, BaseBackTopProps } from '../types/BaseBackTop.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseBackTopProps>(),

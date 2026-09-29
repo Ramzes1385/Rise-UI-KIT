@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
 import type { SkeletonProps } from '../types/BaseSkeleton.types'
+import { useCustomClass } from '@composables/base/useCustomClass'
 
 function scaleDimension(value: number | string, scale: number): string {
 	if (typeof value === 'number') return `${value * scale}px`

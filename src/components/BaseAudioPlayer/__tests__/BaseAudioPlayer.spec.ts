@@ -8,7 +8,7 @@ import type { BaseAudioPlayerExpose } from '../types/BaseAudioPlayer.types'
 
 const decodeWaveformPeaks = vi.hoisted(() => vi.fn(async (_src: string, _bars: number): Promise<number[] | null> => null))
 
-vi.mock('@utils/mediaUtils', async original => ({ ...(await original<object>()), decodeWaveformPeaks }))
+vi.mock('@utils/media/mediaUtils', async original => ({ ...(await original<object>()), decodeWaveformPeaks }))
 
 function setup(props: Record<string, unknown> = {}) {
 	const result = render(BaseAudioPlayer, { props: { src: '/voice.webm', title: 'Голосовое', peaks: [0.5, 1], ...props } })

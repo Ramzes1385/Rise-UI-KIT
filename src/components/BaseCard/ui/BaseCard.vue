@@ -51,10 +51,10 @@
 <script setup lang="ts">
 import '../styles/BaseCard.style.scss'
 import { useBaseCard } from '../model/useBaseCard'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import type { BaseCardProps, BaseCardSlots } from '../types/BaseCard.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseCardProps>(),

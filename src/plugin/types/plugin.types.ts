@@ -1,8 +1,8 @@
 import type { LocaleInput } from '../../locales/types/locales.types'
-import type { IconMap } from '../../composables/useIcon/types/useIcon.types'
-import type { LinkComponent } from '../../composables/useLink/types/useLink.types'
-import type { UiKitDefaults } from '../../composables/useDefaults/types/useDefaults.types'
-import type { TeleportTarget } from '../../composables/useTeleportTarget/types/useTeleportTarget.types'
+import type { IconMap } from '../../composables/app/useIcon/types/useIcon.types'
+import type { LinkComponent } from '../../composables/interaction/useLink/types/useLink.types'
+import type { UiKitDefaults } from '../../composables/base/useDefaults/types/useDefaults.types'
+import type { TeleportTarget } from '../../composables/app/useTeleportTarget/types/useTeleportTarget.types'
 
 export interface UiKitPluginOptions {
 	/** Префикс для глобальных имён компонентов. */

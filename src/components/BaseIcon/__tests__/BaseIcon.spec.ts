@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import BaseIcon from '../ui/BaseIcon.vue'
 import { render } from '@testing-library/vue'
 
-vi.mock('@composables/useIcon', () => ({
+vi.mock('@composables/app/useIcon', () => ({
 	useIcon: () => ({
 		resolveIcon: (name: string) => ({ url: `icons.svg#${name}` }),
 	}),

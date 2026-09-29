@@ -1,4 +1,4 @@
-import { isSafeUrl } from '@utils/urlUtils'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { UI_PLAYER, formatMessage } from '../messages'
 import { computed, onBeforeUnmount, watch } from 'vue'
 import type { MediaWatchEvent, MediaWatchMember, MediaWatchOptions, MediaWatchMemberView } from '../../types/panels/MediaWatch.types'

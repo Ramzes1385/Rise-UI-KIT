@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления: `default` — линия с ручкой, `ghost` — линия проявляется при наведении и в фокусе */
 export const SPLITTER_VARIANTS = ['default', 'ghost'] as const

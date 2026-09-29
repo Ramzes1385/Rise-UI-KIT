@@ -1,7 +1,7 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { BUTTON_VARIANTS } from '@components/BaseButton/types/BaseButton.types'
-import type { ColorModeController, ResolvedColorMode } from '@composables/useColorMode'
+import type { ColorModeController, ResolvedColorMode } from '@composables/app/useColorMode'
 
 /** Варианты — как у BaseButton, по умолчанию `ghost`: кнопка темы обычно стоит в шапке рядом с другими кнопками-иконками. */
 export interface BaseColorModeButtonProps extends BaseComponentProps<(typeof BUTTON_VARIANTS)[number], 'root' | 'icon'> {

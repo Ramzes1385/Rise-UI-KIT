@@ -2,9 +2,9 @@ import '@testing-library/jest-dom/vitest'
 import BaseModal from '../ui/BaseModal.vue'
 import { render, screen, waitFor } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({
 	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
 }))
 const { popupMock } = vi.hoisted(() => ({
@@ -16,7 +16,7 @@ const { popupMock } = vi.hoisted(() => ({
 	},
 }))
 
-vi.mock('@composables/usePopup', () => ({
+vi.mock('@composables/overlay/usePopup', () => ({
 	usePopup: (options: {
 		onClose: () => void
 		isOpen: () => boolean

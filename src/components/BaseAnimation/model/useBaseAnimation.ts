@@ -1,4 +1,4 @@
-import { useCustomClass } from '@composables/useCustomClass'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BaseAnimationEmits, BaseAnimationProps } from '../types/BaseAnimation.types'
 
 export function useBaseAnimation(props: BaseAnimationProps, emit: BaseAnimationEmits) {

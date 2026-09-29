@@ -1,6 +1,6 @@
 import { computed, nextTick, ref } from 'vue'
-import { getFixedOrigin } from '@utils/domUtils'
-import { useCustomClass } from '@composables/useCustomClass'
+import { getFixedOrigin } from '@utils/dom/domUtils'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
 import type { BaseContextMenuEmits, BaseContextMenuProps } from '../types/BaseContextMenu.types'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'

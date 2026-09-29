@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { BaseUserProps } from '../types/BaseUser.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 export function useBaseUser(props: BaseUserProps) {
 	const isLink = computed(() => Boolean(props.to || props.href))

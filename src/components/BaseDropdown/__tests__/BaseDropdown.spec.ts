@@ -7,21 +7,21 @@ const { clickOutsideMock, escapeKeyMock } = vi.hoisted(() => ({
 	escapeKeyMock: { callback: null as (() => void) | null, isActive: null as (() => boolean) | null },
 }))
 
-vi.mock('@composables/useClickOutside', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({
 	useClickOutside: (options: { callback: () => void; isActive: () => boolean }) => {
 		clickOutsideMock.callback = options.callback
 		clickOutsideMock.isActive = options.isActive
 		options.isActive()
 	},
 }))
-vi.mock('@composables/useEscapeKey', () => ({
+vi.mock('@composables/overlay/useEscapeKey', () => ({
 	useEscapeKey: (options: { callback: () => void; isActive: () => boolean }) => {
 		escapeKeyMock.callback = options.callback
 		escapeKeyMock.isActive = options.isActive
 		options.isActive()
 	},
 }))
-vi.mock('@composables/useDropdownPosition', () => ({
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: (options: {
 		position: () => string
 		gap: () => number

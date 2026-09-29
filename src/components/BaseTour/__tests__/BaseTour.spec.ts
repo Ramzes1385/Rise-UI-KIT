@@ -4,7 +4,7 @@ import BaseTour from '../ui/BaseTour.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseTourSlotContext, TourStep } from '../types/BaseTour.types'
 
-vi.mock('@composables/useScrollLock', () => ({
+vi.mock('@composables/overlay/useScrollLock', () => ({
 	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
 }))
 

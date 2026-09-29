@@ -4,7 +4,7 @@ import { BaseApp } from '@components/BaseApp'
 import { defineComponent, h, ref } from 'vue'
 import type { ConfirmOptions } from '../types/BaseConfirm.types'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
-import { getActiveOverlayStore, OVERLAY_DESTROY_DELAY } from '@composables/useOverlay'
+import { getActiveOverlayStore, OVERLAY_DESTROY_DELAY } from '@composables/overlay/useOverlay'
 
 function renderApp(options: ConfirmOptions) {
 	const Page = defineComponent({

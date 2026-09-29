@@ -1,11 +1,11 @@
 import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
 import { UI_RATING } from '@/locales/messages'
-import { useFormField } from '@composables/useFormField'
-import { useFormDisabled } from '@composables/useFormContext'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/form/useFormField'
+import { useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseRatingEmits, RatingProps } from '../types/BaseRating.types'
-import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/ratingUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '@utils/form/ratingUtils'
 
 function pointerRatio(event: MouseEvent): number {
 	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()

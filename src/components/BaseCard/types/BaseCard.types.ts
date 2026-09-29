@@ -1,5 +1,5 @@
-import type { PaddingProp } from '@composables/usePadding'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PaddingProp } from '@composables/base/usePadding'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Варианты отображения карточки:

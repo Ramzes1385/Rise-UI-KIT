@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { FieldInputAttrs } from '@composables/useFormContext'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { FieldInputAttrs } from '@composables/form/useFormContext'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
 
 /** Варианты оформления — как у BaseInput: поле числа — BaseInput с кнопками −/+ */

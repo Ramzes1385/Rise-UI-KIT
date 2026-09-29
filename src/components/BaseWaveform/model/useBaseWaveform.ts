@@ -1,8 +1,8 @@
 import { UI_AUDIO } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import { formatMediaTime } from '@utils/mediaUtils'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseWaveformEmits, BaseWaveformProps } from '../types/BaseWaveform.types'
 
 const DRAG_THRESHOLD = 4

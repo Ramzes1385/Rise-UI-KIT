@@ -1,9 +1,9 @@
 import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
-import { useVirtualList } from '@composables/useVirtualList'
-import type { VirtualKey } from '@composables/useVirtualList'
 import type { VirtualListProps } from '../types/BaseVirtualList.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useVirtualList } from '@composables/interaction/useVirtualList'
+import type { VirtualKey } from '@composables/interaction/useVirtualList'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 function keyOf<T>(props: VirtualListProps<T>, index: number): VirtualKey {
 	const item = props.items[index]

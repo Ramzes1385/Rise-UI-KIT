@@ -1,7 +1,7 @@
 import { ref, useId } from 'vue'
-import { useFormField } from '@composables/useFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/form/useFormField'
 import type { BaseRadioEmits, RadioProps } from '../types/BaseRadio.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 const RADIO_ELEMENTS = ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText']
 

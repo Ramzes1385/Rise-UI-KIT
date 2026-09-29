@@ -6,9 +6,9 @@
 
 <script setup lang="ts">
 import '../styles/BaseContainer.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseContainer } from '../model/useBaseContainer'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseContainerProps, BaseContainerSlots } from '../types/BaseContainer.types'
 
 const props = withDefaults(

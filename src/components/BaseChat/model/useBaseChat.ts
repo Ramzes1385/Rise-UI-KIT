@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import { useChatState } from '@composables/useChatState'
-import { useChatActions } from '@composables/useChatActions'
+import { useChatState } from '@composables/chat/useChatState'
+import { useChatActions } from '@composables/chat/useChatActions'
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
 import type { BaseChatEmits, BaseChatProps } from '../types/BaseChat.types'
-import type { MessageListExposed } from '@composables/useChatActions/types/useChatActions.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useChatDeleteConfirm } from '@composables/chat/useChatDeleteConfirm'
+import type { MessageListExposed } from '@composables/chat/useChatActions/types/useChatActions.types'
 
 export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 	const standard = useStandardBaseComponent('base-chat', props, ['root'])

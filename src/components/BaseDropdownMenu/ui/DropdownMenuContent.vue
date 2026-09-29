@@ -103,7 +103,7 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { BaseDropdown } from '@components/BaseDropdown'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { useDropdownMenuContent } from '../model/useDropdownMenuContent'
 import type { DropdownMenuContentEmits, DropdownMenuContentProps } from '../types/DropdownMenuContent.types'
 

@@ -1,4 +1,4 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
 /**
  * Элемент слайдера
  */
@@ -21,7 +21,7 @@ export type SliderAnimation = 'slide' | 'fade' | 'scale' | 'flip'
 
 export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseSliderProps extends BaseComponentProps<
 	string,

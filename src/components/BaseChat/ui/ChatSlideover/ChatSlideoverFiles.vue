@@ -36,9 +36,9 @@ import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { CHAT_SCALE } from '../../model/chatScale'
-import { getFileIconName } from '@utils/fileUtils'
 import { BaseButton } from '@components/BaseButton'
-import { useChatSlideoverFiles } from '../../model/useChatSlideoverFiles'
+import { getFileIconName } from '@utils/media/fileUtils'
+import { useChatSlideoverFiles } from '../../model/slideover/useChatSlideoverFiles'
 import type { ChatSlideoverFilesEmits, ChatSlideoverFilesProps } from '../../types/ChatSlideoverFiles.types'
 
 const props = defineProps<ChatSlideoverFilesProps>()

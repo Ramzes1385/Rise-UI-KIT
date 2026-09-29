@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Варианты BaseWaveform: default — сыгранная часть цветом primary на приглушённых столбиках,

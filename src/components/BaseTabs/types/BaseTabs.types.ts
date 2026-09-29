@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const TABS_VARIANTS = ['underline', 'pills', 'rounded', 'arc'] as const
 

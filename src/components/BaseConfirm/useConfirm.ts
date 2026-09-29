@@ -1,5 +1,5 @@
 import BaseConfirm from './ui/BaseConfirm.vue'
-import { useOverlay } from '@composables/useOverlay'
+import { useOverlay } from '@composables/overlay/useOverlay'
 import type { ConfirmOptions } from './types/BaseConfirm.types'
 
 export function useConfirm(): (options: ConfirmOptions) => Promise<boolean> {

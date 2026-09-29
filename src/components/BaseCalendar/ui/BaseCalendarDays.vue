@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { UI_CALENDAR } from '@/locales/messages'
-import { formatPopoverDate } from '@utils/dateUtils'
+import { formatPopoverDate } from '@utils/data/dateUtils'
 import { useBaseCalendarDays } from '../model/useBaseCalendarDays'
 import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../types/BaseCalendarDays.types'
 

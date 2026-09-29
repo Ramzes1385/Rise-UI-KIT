@@ -1,13 +1,13 @@
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { computed, ref, useSlots } from 'vue'
-import { useFormField } from '@composables/useFormField'
-import { useRangeDrag } from '@composables/useRangeDrag'
-import { useRangeValues } from '@composables/useRangeValues'
-import { useFormDisabled } from '@composables/useFormContext'
-import type { UseRangeValuesReturn } from '@composables/useRangeValues'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormField } from '@composables/form/useFormField'
+import { useRangeDrag } from '@composables/range/useRangeDrag'
+import { useFormDisabled } from '@composables/form/useFormContext'
+import { useRangeValues } from '@composables/range/useRangeValues'
 import type { BaseRangeEmits, RangeProps } from '../types/BaseRange.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { UseRangeValuesReturn } from '@composables/range/useRangeValues'
 
 const RANGE_ELEMENTS = [
 	'root',

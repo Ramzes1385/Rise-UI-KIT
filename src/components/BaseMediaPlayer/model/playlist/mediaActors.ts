@@ -1,4 +1,4 @@
-import { isSafeUrl } from '@utils/urlUtils'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { UI_PLAYER, formatMessage } from '../messages'
 import type { MediaActor, MediaActorCard, MediaActorLinkItem, MediaActorNetworkSpec } from '../../types/content/MediaPlaylist.types'
 

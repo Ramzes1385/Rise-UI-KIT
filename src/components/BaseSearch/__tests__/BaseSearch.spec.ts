@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick, reactive } from 'vue'
 import BaseSearch from '../ui/BaseSearch.vue'
-import { useEscapeKey } from '@composables/useEscapeKey'
+import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { fireEvent, render, waitFor } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
 
 const globalConfig = {
 	stubs: {

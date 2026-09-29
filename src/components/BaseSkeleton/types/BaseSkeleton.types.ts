@@ -1,5 +1,5 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
 	/** Ширина: число — пиксели, строка — любая длина CSS (`'100%'`, `'12rem'`). Масштабируется `sizeScale`. */

@@ -35,11 +35,11 @@
 
 <script setup lang="ts">
 import '../styles/BaseDropdownMenu.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
 import DropdownMenuContent from './DropdownMenuContent.vue'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseDropdownMenu } from '../model/useBaseDropdownMenu'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, BaseDropdownMenuSlots } from '../types/BaseDropdownMenu.types'
 
 defineOptions({ name: 'BaseDropdownMenu' })

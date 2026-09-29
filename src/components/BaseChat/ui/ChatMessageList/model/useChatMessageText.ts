@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useMessageParser } from '@composables/useMessageParser'
+import { useMessageParser } from '@composables/chat/useMessageParser'
 import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../types/ChatMessageText.types'
 
 export function useChatMessageText(props: ChatMessageTextProps, emit: ChatMessageTextEmits) {

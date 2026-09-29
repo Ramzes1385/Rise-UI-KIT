@@ -1,6 +1,6 @@
 import { useChatVoice } from './useChatVoice'
 import { computed, nextTick, onMounted, useId, watch } from 'vue'
-import { useChatInputState } from '@composables/useChatInputState'
+import { useChatInputState } from '@composables/chat/useChatInputState'
 import type { ChatInputEmits, ChatInputProps } from '../types/ChatInput.types'
 
 const QUICK_REPLY_SCALE = 0.875

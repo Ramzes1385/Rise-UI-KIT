@@ -1,9 +1,9 @@
 import { UI_TEXT } from '@/locales/messages'
-import { usePadding } from '@composables/usePadding'
 import { computed, ref, useSlots, watch } from 'vue'
-import { useLinkComponent } from '@composables/useLink'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { usePadding } from '@composables/base/usePadding'
+import { useLinkComponent } from '@composables/interaction/useLink'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseSideBarEmits, SideBarItem, SideBarProps } from '../types/BaseSideBar.types'
 
 const SIDEBAR_ELEMENTS = ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed']

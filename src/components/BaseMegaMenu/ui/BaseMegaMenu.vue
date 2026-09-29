@@ -114,9 +114,9 @@ import '../styles/BaseMegaMenu.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseMegaMenu } from '../model/useBaseMegaMenu'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots } from '../types/BaseMegaMenu.types'
 
 const props = withDefaults(

@@ -1,9 +1,9 @@
-import { isSafeUrl } from '@utils/urlUtils'
 import { UI_AUDIO } from '@/locales/messages'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { decodeWaveformPeaks, formatMediaTime } from '@utils/mediaUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { decodeWaveformPeaks, formatMediaTime } from '@utils/media/mediaUtils'
 import type { AudioPlayerError, BaseAudioPlayerEmits, BaseAudioPlayerProps } from '../types/BaseAudioPlayer.types'
 
 const PROTOCOLS = ['http:', 'https:', 'blob:', 'data:']

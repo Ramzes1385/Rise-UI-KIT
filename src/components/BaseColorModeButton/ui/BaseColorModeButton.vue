@@ -18,8 +18,8 @@
 import '../styles/BaseColorModeButton.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { useBaseColorModeButton } from '../model/useBaseColorModeButton'
 import type { BaseColorModeButtonEmits, BaseColorModeButtonProps } from '../types/BaseColorModeButton.types'
 

@@ -3,8 +3,8 @@ import { UI_ARIA } from '@/locales/messages'
 import { computed, nextTick, ref } from 'vue'
 import { formatMessage } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useFormDisabled } from '@composables/useFormContext'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseInputTagsEmits, InputTagsProps } from '../types/BaseInputTags.types'
 
 function splitBySeparators(text: string, separators: string[]): { parts: string[]; rest: string } {

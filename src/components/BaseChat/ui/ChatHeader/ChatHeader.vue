@@ -64,7 +64,7 @@ import { CHAT_SCALE } from '../../model/chatScale'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { useChatHeader } from './model/useChatHeader'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { ChatHeaderEmits, ChatHeaderProps } from './types/ChatHeader.types'
 
 const props = withDefaults(defineProps<ChatHeaderProps>(), {

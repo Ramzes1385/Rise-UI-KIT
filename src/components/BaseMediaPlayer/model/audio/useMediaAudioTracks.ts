@@ -1,5 +1,5 @@
-import { isSafeUrl } from '@utils/urlUtils'
 import { useAudioSync } from './useAudioSync'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { computed, onMounted, ref, watch } from 'vue'
 import { UI_PLAYER, formatMessage } from '../messages'
 import type { MediaElementRef } from '../../types/playback/MediaCore.types'

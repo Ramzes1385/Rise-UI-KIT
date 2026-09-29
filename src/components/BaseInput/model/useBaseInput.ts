@@ -1,10 +1,10 @@
 import type { Ref } from 'vue'
 import { computed, ref, toRef, useId } from 'vue'
-import { useFormField } from '@composables/useFormField'
-import { useFieldControl } from '@composables/useFormContext'
-import { useMaskedInputHandlers } from '@composables/useInputMask'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { usePasswordVisibility } from '@composables/usePasswordVisibility'
+import { useFormField } from '@composables/form/useFormField'
+import { useFieldControl } from '@composables/form/useFormContext'
+import { useMaskedInputHandlers } from '@composables/form/useInputMask'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { usePasswordVisibility } from '@composables/form/usePasswordVisibility'
 import type { BaseInputEmits, InputProps, PasswordRuleResult } from '../types/BaseInput.types'
 
 const INPUT_ELEMENTS = [

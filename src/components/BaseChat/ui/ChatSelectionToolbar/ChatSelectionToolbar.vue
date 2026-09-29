@@ -36,7 +36,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../model/chatScale'
 import { BaseButton } from '@components/BaseButton'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { ChatSelectionToolbarEmits, ChatSelectionToolbarProps } from '../../types/ChatSelectionToolbar.types'
 
 withDefaults(defineProps<ChatSelectionToolbarProps>(), {

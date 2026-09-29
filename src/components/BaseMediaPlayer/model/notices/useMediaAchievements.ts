@@ -1,4 +1,4 @@
-import { isSafeUrl } from '@utils/urlUtils'
+import { isSafeUrl } from '@utils/data/urlUtils'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { MediaAchievement, MediaAchievementsOptions } from '../../types/overlays/MediaNotices.types'
 

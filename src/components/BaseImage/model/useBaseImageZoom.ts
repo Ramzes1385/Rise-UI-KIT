@@ -1,9 +1,9 @@
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
 import { computed, nextTick, ref } from 'vue'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
+import { useFocusTrap } from '@composables/overlay/useFocusTrap'
 import type { BaseImageZoomProps } from '../types/BaseImageZoom.types'
+import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 export function useBaseImageZoom(props: BaseImageZoomProps) {
 	const teleportTarget = useTeleportTarget()

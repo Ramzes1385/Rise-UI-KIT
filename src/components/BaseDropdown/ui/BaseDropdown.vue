@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import '../styles/BaseDropdown.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseDropdown } from '../model/useBaseDropdown'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseDropdownEmits, BaseDropdownExpose, BaseDropdownProps, BaseDropdownSlots } from '../types/BaseDropdown.types'
 
 const props = withDefaults(

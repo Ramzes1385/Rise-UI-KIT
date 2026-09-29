@@ -21,7 +21,7 @@
 import '../../styles/MediaError.style.scss'
 import MediaIcon from '../controls/MediaIcon.vue'
 import { UI_PLAYER, UI_TEXT } from '../../model/messages'
-import { useMediaErrorScreen } from '../../model/player/useMediaErrorScreen'
+import { useMediaErrorScreen } from '../../model/overlays/useMediaErrorScreen'
 import type { MediaErrorScreenSlots } from '../../types/overlays/MediaError.types'
 
 defineSlots<MediaErrorScreenSlots>()

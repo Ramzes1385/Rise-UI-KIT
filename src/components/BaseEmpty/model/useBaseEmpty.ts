@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { BaseEmptyProps } from '../types/BaseEmpty.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 export function useBaseEmpty(props: BaseEmptyProps) {
 	return {

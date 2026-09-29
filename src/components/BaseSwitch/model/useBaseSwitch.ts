@@ -1,8 +1,8 @@
 import { ref, useId } from 'vue'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { useFormField } from '@composables/useFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/dom/domUtils'
+import { useFormField } from '@composables/form/useFormField'
 import type { BaseSwitchEmits, SwitchProps } from '../types/BaseSwitch.types'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 const SWITCH_ELEMENTS = ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText']
 

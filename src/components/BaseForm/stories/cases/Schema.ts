@@ -8,7 +8,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
-import type { StandardSchemaV1, StandardSchemaIssue } from '@utils/formUtils'
+import type { StandardSchemaV1, StandardSchemaIssue } from '@utils/form/formUtils'
 
 interface WebinarRequest {
 	name: string

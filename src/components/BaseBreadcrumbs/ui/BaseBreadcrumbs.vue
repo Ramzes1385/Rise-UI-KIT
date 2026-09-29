@@ -116,10 +116,10 @@ import '@components/BaseLink/styles/BaseLink.style.scss'
 import '../styles/BaseBreadcrumbs.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
 import { useBaseBreadcrumbs } from '../model/useBaseBreadcrumbs'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots } from '../types/BaseBreadcrumbs.types'
 
 const props = withDefaults(

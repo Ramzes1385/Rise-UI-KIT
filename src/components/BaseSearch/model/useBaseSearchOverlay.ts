@@ -1,10 +1,10 @@
 import { computed, nextTick, ref } from 'vue'
-import { useEscapeKey } from '@composables/useEscapeKey'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { useScrollLock } from '@composables/useScrollLock'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useLayerIndex } from '@composables/app/useLayerStack'
+import { useEscapeKey } from '@composables/overlay/useEscapeKey'
+import { useScrollLock } from '@composables/overlay/useScrollLock'
+import { useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseSearchOverlayExpose, BaseSearchOverlayProps } from '../types/BaseSearchOverlay.types'
 
 function useLayerClasses(props: BaseSearchOverlayProps) {

@@ -35,11 +35,11 @@
 <script setup lang="ts">
 import '../styles/BaseTimeline.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { useBaseTimeline } from '../model/useBaseTimeline'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseTimelineProps, BaseTimelineSlots } from '../types/BaseTimeline.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseTimelineProps>(),

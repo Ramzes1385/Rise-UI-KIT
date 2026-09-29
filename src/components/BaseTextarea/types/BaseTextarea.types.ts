@@ -1,6 +1,6 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { FieldInputAttrs } from '@composables/useFormContext'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { FieldInputAttrs } from '@composables/form/useFormContext'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const TEXTAREA_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 

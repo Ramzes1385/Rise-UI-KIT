@@ -215,8 +215,8 @@ import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
 import { BaseSlideover } from '@components/BaseSlideover'
-import { useChatSlideover } from '../../model/useChatSlideover'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import { useChatSlideover } from '../../model/slideover/useChatSlideover'
 import type { ChatSlideoverEmits, ChatSlideoverProps } from '../../types/ChatSlideover.types'
 
 const props = withDefaults(defineProps<ChatSlideoverProps>(), {

@@ -2,7 +2,7 @@ import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
 import MediaControlBar from '../../ui/controls/MediaControlBar.vue'
-import type { MediaMenuItem, MediaMenuList } from '../../types/controls/MediaMenu.types'
+import type { MediaMenuItem, MediaMenuList } from '../../types/menus/MediaMenu.types'
 
 export interface FakeMediaValues {
 	currentTime: number

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { DropdownMenuItem, DropdownMenuItems } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
 
 /** Варианты панели меню — те же, что у BaseDropdownMenu */

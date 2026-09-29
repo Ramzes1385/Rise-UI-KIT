@@ -1,9 +1,9 @@
 import { defineComponent } from 'vue'
 import BaseApp from '../ui/BaseApp.vue'
-import { useToast } from '@composables/useToast'
 import type { Meta } from '@storybook/vue3-vite'
 import { BaseButton } from '@components/BaseButton'
-import type { ToastOptions } from '@composables/useToast'
+import { useToast } from '@composables/app/useToast'
+import type { ToastOptions } from '@composables/app/useToast'
 
 const TOAST_EXAMPLES: { label: string; toast: ToastOptions }[] = [
 	{ label: 'Успех', toast: { type: 'success', title: 'Серия опубликована', description: 'Серия 3 доступна подписчикам сообщества.' } },

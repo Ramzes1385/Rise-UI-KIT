@@ -88,10 +88,10 @@
 import '../styles/BaseAutocomplete.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
-import { kitDefaults } from '@composables/useDefaults'
 import { BaseDropdown } from '@components/BaseDropdown'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseAutocomplete } from '../model/useBaseAutocomplete'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseAutocompleteEmits, BaseAutocompleteProps, BaseAutocompleteSlots } from '../types/BaseAutocomplete.types'
 
 const props = withDefaults(

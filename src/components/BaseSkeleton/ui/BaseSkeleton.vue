@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 import '../styles/BaseSkeleton.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseSkeleton } from '../model/useBaseSkeleton'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseSkeletonProps } from '../types/BaseSkeleton.types'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseSkeletonProps>(),

@@ -2,7 +2,7 @@
 
 import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'
-import { LINK_COMPONENT_KEY } from '../../src/composables/useLink/useLink'
+import { LINK_COMPONENT_KEY } from '../../src/composables/interaction/useLink/useLink'
 import { setLocale } from '../../src/locales/state'
 import { STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
 import type { Decorator, Preview } from '@storybook/vue3-vite'

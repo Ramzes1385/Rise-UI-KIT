@@ -1,4 +1,4 @@
-import type { IconMap } from '@composables/useIcon/types/useIcon.types'
+import type { IconMap } from '@composables/app/useIcon/types/useIcon.types'
 
 /** Опции плагина глобальной регистрации BaseIcon. */
 export interface IconPluginOptions {

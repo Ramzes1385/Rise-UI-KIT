@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { AvatarGroupProps } from '../types/BaseAvatarGroup.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 export function useBaseAvatarGroup(props: AvatarGroupProps) {
 	const visibleCount = computed(() => (props.items.length - props.max <= 1 ? props.items.length : Math.max(props.max, 0)))

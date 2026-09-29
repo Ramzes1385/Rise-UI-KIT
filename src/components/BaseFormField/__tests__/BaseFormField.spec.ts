@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import { UI_TEXT } from '@/locales/messages'
 import BaseFormField from '../ui/BaseFormField.vue'
 import { render, screen } from '@testing-library/vue'
-import type { FormFieldValidateExpose } from '@composables/useFormField'
+import type { FormFieldValidateExpose } from '@composables/form/useFormField'
 
 describe('BaseFormField unit', () => {
 	describe('рендер', () => {

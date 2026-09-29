@@ -1,13 +1,13 @@
 import type { ComputedRef, Ref } from 'vue'
-import { getFixedOrigin } from '@utils/domUtils'
-import { useEscapeKey } from '@composables/useEscapeKey'
-import type { TooltipLayout } from '@utils/tooltipUtils'
+import { getFixedOrigin } from '@utils/dom/domUtils'
+import type { TooltipLayout } from '@utils/dom/tooltipUtils'
 import type { TooltipProps } from '../types/BaseTooltip.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useTriggerAttributes } from '@composables/useTriggerAttributes'
-import { useInheritedTheme, useTeleportTarget } from '@composables/useTeleportTarget'
+import { useEscapeKey } from '@composables/overlay/useEscapeKey'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
-import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/tooltipUtils'
+import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/dom/tooltipUtils'
 
 const GAP = 8
 const SHOW_DELAY_MS = 100

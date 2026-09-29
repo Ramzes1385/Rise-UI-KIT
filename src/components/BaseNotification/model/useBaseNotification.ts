@@ -1,7 +1,7 @@
 import type { ComputedRef } from 'vue'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
+import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type {
 	AutoCloseTimer,
 	BaseNotificationEmits,

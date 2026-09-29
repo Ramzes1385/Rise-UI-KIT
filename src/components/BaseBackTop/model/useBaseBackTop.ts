@@ -1,5 +1,5 @@
-import { useCustomClass } from '@composables/useCustomClass'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BackTopProps, BaseBackTopEmits } from '../types/BaseBackTop.types'
 
 function resolveElement(value: string | HTMLElement): HTMLElement | null {

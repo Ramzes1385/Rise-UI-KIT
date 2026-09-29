@@ -2,8 +2,8 @@ import '@testing-library/jest-dom/vitest'
 import BaseModal from '../ui/BaseModal.vue'
 import userEvent from '@testing-library/user-event'
 import { defineComponent, nextTick, ref } from 'vue'
-import { useImageZoom } from '@composables/useImageZoom'
 import { BaseSlideover } from '@components/BaseSlideover'
+import { useImageZoom } from '@composables/image/useImageZoom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 function renderModalHost(modalProps: Record<string, unknown> = {}) {

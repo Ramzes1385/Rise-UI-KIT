@@ -53,11 +53,11 @@
 import '../styles/BaseInputNumber.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/iconUtils'
 import { BaseInput } from '@components/BaseInput'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseInputNumber } from '../model/useBaseInputNumber'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseInputNumberEmits, BaseInputNumberProps } from '../types/BaseInputNumber.types'
 
 const props = withDefaults(

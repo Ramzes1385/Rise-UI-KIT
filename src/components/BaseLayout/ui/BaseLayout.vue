@@ -35,9 +35,9 @@
 import '../styles/BaseLayout.style.scss'
 import { UI_TEXT } from '@/locales/messages'
 import { useBaseLayout } from '../model/useBaseLayout'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseLayoutProps, BaseLayoutSlots } from '../types/BaseLayout.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseLayoutProps>(),

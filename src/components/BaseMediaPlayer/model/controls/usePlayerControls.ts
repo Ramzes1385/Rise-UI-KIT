@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
-import { useMediaMenus } from './useMediaMenus'
 import { useMediaPip } from '../screen/useMediaPip'
+import { useMediaMenus } from '../menus/useMediaMenus'
 import { UI_PLAYER, formatMessage } from '../messages'
 import { useControlsLayout } from './useControlsLayout'
 import { usePlayerContext } from '../player/usePlayerContext'

@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
-import { calcIconScale } from '@utils/iconUtils'
-import type { ResolvedLink } from '@composables/useLink'
-import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
-import { resolveLink, useLinkComponent } from '@composables/useLink'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { buildBreadcrumbsSchema } from '@utils/form/schemaUtils'
+import type { ResolvedLink } from '@composables/interaction/useLink'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { resolveLink, useLinkComponent } from '@composables/interaction/useLink'
 import type { BaseBreadcrumbsEmits, BreadcrumbItem, BreadcrumbsProps } from '../types/BaseBreadcrumbs.types'
 
 const BREADCRUMBS_ELEMENTS = [

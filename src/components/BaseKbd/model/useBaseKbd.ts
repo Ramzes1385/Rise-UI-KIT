@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { KbdKeyLabel, KbdKeySpec, KbdProps } from '../types/BaseKbd.types'
 
 const MAC_MODIFIERS = new Map<string, KbdKeySpec>([

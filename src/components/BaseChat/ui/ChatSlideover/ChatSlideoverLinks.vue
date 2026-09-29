@@ -26,7 +26,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { CHAT_SCALE } from '../../model/chatScale'
-import { useChatSlideoverLinks } from '../../model/useChatSlideoverLinks'
+import { useChatSlideoverLinks } from '../../model/slideover/useChatSlideoverLinks'
 import type { ChatSlideoverLinksProps } from '../../types/ChatSlideoverLinks.types'
 
 const props = defineProps<ChatSlideoverLinksProps>()

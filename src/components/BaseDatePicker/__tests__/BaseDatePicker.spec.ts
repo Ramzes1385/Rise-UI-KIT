@@ -5,12 +5,12 @@ import { fireEvent, render, screen } from '@testing-library/vue'
 const clickOutsideOptions: { isActive?: () => boolean } = {}
 const escapeKeyOptions: { isActive?: () => boolean } = {}
 
-vi.mock('@composables/useClickOutside', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({
 	useClickOutside: vi.fn((opts: { isActive?: () => boolean }) => {
 		clickOutsideOptions.isActive = opts.isActive
 	}),
 }))
-vi.mock('@composables/useDropdownPosition', () => ({
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: (opts: {
 		position?: () => unknown
 		gap?: () => unknown
@@ -28,7 +28,7 @@ vi.mock('@composables/useDropdownPosition', () => ({
 		}
 	},
 }))
-vi.mock('@composables/useEscapeKey', () => ({
+vi.mock('@composables/overlay/useEscapeKey', () => ({
 	useEscapeKey: vi.fn((opts: { isActive?: () => boolean }) => {
 		escapeKeyOptions.isActive = opts.isActive
 	}),

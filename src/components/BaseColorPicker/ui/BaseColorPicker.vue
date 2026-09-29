@@ -78,11 +78,11 @@
 <script setup lang="ts">
 import '../styles/BaseColorPicker.style.scss'
 import { BasePopover } from '@components/BasePopover'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'
 import { UI_COLOR_PICKER, UI_TEXT } from '@/locales/messages'
 import { useBaseColorPicker } from '../model/useBaseColorPicker'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots } from '../types/BaseColorPicker.types'
 
 const props = withDefaults(

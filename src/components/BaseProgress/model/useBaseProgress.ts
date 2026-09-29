@@ -1,7 +1,7 @@
 import { computed, watch } from 'vue'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useSizeScale } from '@composables/base/useSizeScale'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useCustomColor } from '@composables/base/useCustomColor'
 import type { BaseProgressEmits, ProgressProps } from '../types/BaseProgress.types'
 
 const CIRCLE_RADIUS = 52

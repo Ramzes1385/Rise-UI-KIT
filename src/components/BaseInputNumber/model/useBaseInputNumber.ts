@@ -2,9 +2,9 @@ import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { formatNumber } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useFormDisabled } from '@composables/useFormContext'
-import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '@utils/numberInputUtils'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useFormDisabled } from '@composables/form/useFormContext'
+import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '@utils/form/numberInputUtils'
 import type { BaseInputNumberEmits, InputNumberProps, NumberCommit, NumberDraft } from '../types/BaseInputNumber.types'
 
 const STEP_KEYS: Record<string, number> = { ArrowUp: 1, ArrowDown: -1, PageUp: 10, PageDown: -10 }

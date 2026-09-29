@@ -83,11 +83,11 @@ import '../styles/BaseSideBar.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { BaseTooltip } from '@components/BaseTooltip'
-import { kitDefaults } from '@composables/useDefaults'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseSideBar } from '../model/useBaseSideBar'
+import { kitDefaults } from '@composables/base/useDefaults'
 import BaseSideBarNavigation from './BaseSideBarNavigation.vue'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots } from '../types/BaseSideBar.types'
 
 defineOptions({

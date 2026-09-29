@@ -27,9 +27,9 @@
 <script setup lang="ts">
 import '../styles/BaseIcon.style.scss'
 import { useBaseIcon } from '../model/useBaseIcon'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseIconProps } from '../types/BaseIcon.types'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseIconProps>(),

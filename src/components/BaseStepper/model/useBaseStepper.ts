@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseStepperEmits, BaseStepperProps } from '../types/BaseStepper.types'
 
 const STEPPER_ELEMENTS = [

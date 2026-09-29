@@ -1,12 +1,12 @@
 import { formatMessage } from '@/locales/state'
-import { downloadFile } from '@utils/fileUtils'
 import { UI_SUBTITLES } from '@/locales/messages'
-import { formatMediaTime } from '@utils/mediaUtils'
+import { downloadFile } from '@utils/media/fileUtils'
 import { formatCueTime, parseCueTime } from './cueTime'
+import { formatMediaTime } from '@utils/media/mediaUtils'
 import { computed, nextTick, reactive, ref, useId } from 'vue'
-import type { SubtitleCue, SubtitleFormat } from '@utils/subtitleUtils'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { decodeSubtitles, parseSubtitles, serializeSubtitles } from '@utils/subtitleUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { SubtitleCue, SubtitleFormat } from '@utils/media/subtitleUtils'
+import { decodeSubtitles, parseSubtitles, serializeSubtitles } from '@utils/media/subtitleUtils'
 import type { BaseSubtitleEditorEmits, BaseSubtitleEditorProps } from '../types/BaseSubtitleEditor.types'
 
 const FALLBACK_DURATION = 10

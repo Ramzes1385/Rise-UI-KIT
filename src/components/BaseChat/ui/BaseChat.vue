@@ -127,10 +127,10 @@ import { useBaseChat } from '../model/useBaseChat'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { BaseButton } from '@components/BaseButton'
-import { kitDefaults } from '@composables/useDefaults'
 import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../types/BaseChat.types'
 
 const props = withDefaults(

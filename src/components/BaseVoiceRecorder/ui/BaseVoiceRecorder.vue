@@ -54,8 +54,8 @@ import { UI_AUDIO } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { BaseAudioPlayer } from '@components/BaseAudioPlayer'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseVoiceRecorder } from '../model/useBaseVoiceRecorder'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseVoiceRecorderEmits, BaseVoiceRecorderProps } from '../types/BaseVoiceRecorder.types'
 
 const props = withDefaults(defineProps<BaseVoiceRecorderProps>(), {

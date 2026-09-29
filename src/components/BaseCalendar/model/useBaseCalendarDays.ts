@@ -1,5 +1,5 @@
 import { computed, ref, useSlots } from 'vue'
-import { useClickOutside } from '@composables/useClickOutside'
+import { useClickOutside } from '@composables/overlay/useClickOutside'
 import type { BaseCalendarDaysProps } from '../types/BaseCalendarDays.types'
 
 function popoverClassFor(column: number): string | undefined {

@@ -6,17 +6,17 @@ import { fireEvent, render, screen } from '@testing-library/vue'
 let clickOutsideCallback: (() => void) | null = null
 let escapeCallback: (() => void) | null = null
 
-vi.mock('@composables/useClickOutside', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({
 	useClickOutside: vi.fn((options: { callback: () => void }) => {
 		clickOutsideCallback = options.callback
 	}),
 }))
-vi.mock('@composables/useDropdownPosition', () => ({
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: () => ({
 		panelStyle: { value: { position: 'fixed', top: '0px', left: '0px' } },
 	}),
 }))
-vi.mock('@composables/useEscapeKey', () => ({
+vi.mock('@composables/overlay/useEscapeKey', () => ({
 	useEscapeKey: vi.fn((options: { callback: () => void }) => {
 		escapeCallback = options.callback
 	}),

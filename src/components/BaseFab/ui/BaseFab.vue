@@ -23,10 +23,10 @@ import '../styles/BaseFab.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { useBaseFab } from '../model/useBaseFab'
-import { calcIconScale } from '@utils/iconUtils'
-import { kitDefaults } from '@composables/useDefaults'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseFabEmits, BaseFabProps } from '../types/BaseFab.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseFabProps>(),

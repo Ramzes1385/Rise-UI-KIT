@@ -43,10 +43,10 @@
 <script setup lang="ts">
 import '../styles/BasePin.style.scss'
 import { useBasePin } from '../model/useBasePin'
-import { kitDefaults } from '@composables/useDefaults'
 import { FormFieldError } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BasePinEmits, BasePinProps, BasePinSlots } from '../types/BasePin.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BasePinProps>(),

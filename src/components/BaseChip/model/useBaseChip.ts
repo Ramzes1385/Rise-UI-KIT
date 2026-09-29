@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { BaseChipEmits, ChipProps } from '../types/BaseChip.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 function toNumber(content: ChipProps['content']): number | null {
 	if (typeof content === 'number') return content

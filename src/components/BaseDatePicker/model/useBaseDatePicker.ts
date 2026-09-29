@@ -1,12 +1,12 @@
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { useFormField } from '@composables/useFormField'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useDatePickerState } from '@composables/useDatePickerState'
+import { useSizeScale } from '@composables/base/useSizeScale'
+import { useFormField } from '@composables/form/useFormField'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useCustomColor } from '@composables/base/useCustomColor'
 import { resolveDatePickerCalendarConfig } from './datePickerCalendarConfig'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { useDatePickerState } from '@composables/calendar/useDatePickerState'
+import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseDatePickerEmits, DatePickerProps } from '../types/BaseDatePicker.types'
 
 function resolveDisplayProps(props: DatePickerProps) {

@@ -1,9 +1,9 @@
 import { setLocale } from '@/locales/state'
 import { onBeforeUnmount, provide, watch } from 'vue'
 import type { BaseAppProps } from '../types/BaseApp.types'
-import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
-import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/useOverlay'
-import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/useToast'
+import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget'
+import { createToastStore, getActiveToastStore, setActiveToastStore, TOAST_MAX, TOAST_STORE_KEY } from '@composables/app/useToast'
+import { createOverlayStore, getActiveOverlayStore, OVERLAY_STORE_KEY, setActiveOverlayStore } from '@composables/overlay/useOverlay'
 
 export function useBaseApp(props: BaseAppProps) {
 	const toasts = createToastStore({ max: () => props.toaster?.max ?? TOAST_MAX })

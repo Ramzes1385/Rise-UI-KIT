@@ -71,9 +71,9 @@
 <script setup lang="ts">
 import '../styles/BaseRadio.style.scss'
 import { useBaseRadio } from '../model/useBaseRadio'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../types/BaseRadio.types'
 
 const props = withDefaults(

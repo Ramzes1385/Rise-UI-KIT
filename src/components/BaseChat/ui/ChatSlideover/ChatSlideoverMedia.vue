@@ -23,7 +23,7 @@
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseImage } from '@components/BaseImage'
-import { useChatSlideoverMedia } from '../../model/useChatSlideoverMedia'
+import { useChatSlideoverMedia } from '../../model/slideover/useChatSlideoverMedia'
 import type { ChatSlideoverMediaProps } from '../../types/ChatSlideoverMedia.types'
 
 const props = defineProps<ChatSlideoverMediaProps>()

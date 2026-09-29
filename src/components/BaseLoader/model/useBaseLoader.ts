@@ -1,9 +1,9 @@
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { useSizeScale } from '@composables/useSizeScale'
 import type { LoaderProps } from '../types/BaseLoader.types'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
+import { useSizeScale } from '@composables/base/useSizeScale'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useCustomColor } from '@composables/base/useCustomColor'
 
 export function useBaseLoader(props: LoaderProps) {
 	const resolvedLabel = computed((): string => props.label ?? UI_TEXT.LOADING)

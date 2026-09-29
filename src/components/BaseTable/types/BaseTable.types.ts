@@ -1,8 +1,8 @@
 import type { InjectionKey } from 'vue'
-import type { PaddingProp } from '@composables/usePadding'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
-import type { VisiblePageItem } from '@utils/paginationUtils/types/paginationUtils.types'
+import type { PaddingProp } from '@composables/base/usePadding'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/paginationUtils.types'
 
 export const TABLE_VARIANTS = ['default', 'bordered', 'striped'] as const
 

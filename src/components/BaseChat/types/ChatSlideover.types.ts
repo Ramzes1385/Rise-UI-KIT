@@ -1,4 +1,4 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { ChatInfoTab, ChatMember, ChatMessage, ChatMessageAttachment } from './BaseChat.types'
 
 export interface ChatSlideoverProps {

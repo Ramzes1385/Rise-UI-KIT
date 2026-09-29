@@ -1,5 +1,5 @@
 import { UI_TEXT } from '@/locales/messages'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
 	BaseInfiniteScrollEmits,

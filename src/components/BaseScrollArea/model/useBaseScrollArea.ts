@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { Axis, BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps } from '../types/BaseScrollArea.types'
 
 const AXES: Axis[] = ['y', 'x']

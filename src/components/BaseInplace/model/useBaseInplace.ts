@@ -1,6 +1,6 @@
 import { nextTick, ref, useId } from 'vue'
-import { useFormDisabled } from '@composables/useFormContext'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useFormDisabled } from '@composables/form/useFormContext'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseInplaceEmits, InplaceProps, InplaceState } from '../types/BaseInplace.types'
 
 function useInplaceActions(props: InplaceProps, emit: BaseInplaceEmits, state: InplaceState) {

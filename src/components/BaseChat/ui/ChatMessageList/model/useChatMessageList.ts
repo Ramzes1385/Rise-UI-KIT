@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { useAutoScroll } from '@composables/useAutoScroll'
-import { useChatMessageActions } from '@composables/useChatMessageActions'
+import { useAutoScroll } from '@composables/interaction/useAutoScroll'
+import { useChatMessageActions } from '@composables/chat/useChatMessageActions'
 import type { ChatMessageListEmits, MessageListProps } from '../types/ChatMessageList.types'
 
 export function useChatMessageList(props: MessageListProps, emit: ChatMessageListEmits) {

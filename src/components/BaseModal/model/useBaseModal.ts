@@ -1,11 +1,11 @@
-import { usePopup } from '@composables/usePopup'
 import { computed, ref, useId, useSlots } from 'vue'
-import { useFocusTrap } from '@composables/useFocusTrap'
-import { useLayerIndex } from '@composables/useLayerStack'
-import { useTeleportTarget } from '@composables/useTeleportTarget'
-import { useScrollableRegion } from '@composables/useScrollableRegion'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { usePopup } from '@composables/overlay/usePopup'
+import { useLayerIndex } from '@composables/app/useLayerStack'
+import { useFocusTrap } from '@composables/overlay/useFocusTrap'
+import { useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseModalEmits, BaseModalProps } from '../types/BaseModal.types'
+import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 
 const MODAL_ELEMENTS = ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer']
 

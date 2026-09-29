@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты BaseVoiceRecorder: default — панель с рамкой, soft — приподнятый фон без рамки */
 export const VOICE_RECORDER_VARIANTS = ['default', 'soft'] as const

@@ -50,10 +50,10 @@ import { BaseLink } from '@components/BaseLink'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDrawer } from '@components/BaseDrawer'
 import { useBaseHeader } from '../model/useBaseHeader'
-import { kitDefaults } from '@composables/useDefaults'
 import { BaseContainer } from '@components/BaseContainer'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseHeaderProps, BaseHeaderSlots } from '../types/BaseHeader.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseHeaderProps>(),

@@ -15,8 +15,8 @@
 <script setup lang="ts">
 import '../styles/BaseChip.style.scss'
 import { useBaseChip } from '../model/useBaseChip'
-import { kitDefaults } from '@composables/useDefaults'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseChipEmits, BaseChipProps, BaseChipSlots } from '../types/BaseChip.types'
 
 const props = withDefaults(

@@ -29,9 +29,9 @@
 
 <script setup lang="ts">
 import '../styles/BaseSeparator.style.scss'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseSeparator } from '../model/useBaseSeparator'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSeparatorProps, BaseSeparatorSlots } from '../types/BaseSeparator.types'
 
 const props = withDefaults(

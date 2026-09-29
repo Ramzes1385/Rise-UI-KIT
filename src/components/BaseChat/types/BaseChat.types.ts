@@ -1,5 +1,5 @@
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export type ChatMessageSender = 'me' | 'other'
 export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read'

@@ -1,4 +1,4 @@
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../types/BaseMenu.types'
 
 export function useBaseMenu(props: BaseMenuProps, emit: BaseMenuEmits) {

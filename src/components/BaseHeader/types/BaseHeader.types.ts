@@ -1,7 +1,7 @@
-import type { LinkTo } from '@composables/useLink'
 import type { DrawerDirection } from '@components/BaseDrawer'
 import type { ContainerSize } from '@components/BaseContainer'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { LinkTo } from '@composables/interaction/useLink'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Варианты оформления BaseHeader: `default` — фон страницы и линия снизу, `soft` — приглушённый фон без линии,

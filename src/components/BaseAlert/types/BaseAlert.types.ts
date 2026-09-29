@@ -1,5 +1,5 @@
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Типы оповещений: определяют цвет (роль), иконку и срочность озвучивания (error/warning — role="alert") */
 export const ALERT_TYPES = ['info', 'success', 'warning', 'error'] as const

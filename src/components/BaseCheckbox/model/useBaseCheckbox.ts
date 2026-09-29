@@ -1,7 +1,7 @@
 import { ref, useId } from 'vue'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { useFormField } from '@composables/useFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/dom/domUtils'
+import { useFormField } from '@composables/form/useFormField'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseCheckboxEmits, CheckboxProps } from '../types/BaseCheckbox.types'
 
 const CHECKBOX_ELEMENTS = ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText']

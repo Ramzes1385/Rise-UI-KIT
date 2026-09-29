@@ -27,10 +27,10 @@
 
 <script setup lang="ts">
 import { UI_TEXT } from '@/locales/messages'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseTimePicker } from '../model/useBaseTimePicker'
 import { BaseAutocomplete } from '@components/BaseAutocomplete'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseTimePickerEmits, BaseTimePickerProps } from '../types/BaseTimePicker.types'
 
 const props = withDefaults(

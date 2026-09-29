@@ -2,8 +2,8 @@ import '@testing-library/jest-dom/vitest'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
-vi.mock('@utils/fileUtils', async importOriginal => {
-	const actual = await importOriginal<typeof import('@utils/fileUtils')>()
+vi.mock('@utils/media/fileUtils', async importOriginal => {
+	const actual = await importOriginal<typeof import('@utils/media/fileUtils')>()
 	return {
 		...actual,
 		createImagePreview: vi.fn(() => Promise.resolve('blob:preview-mock')),

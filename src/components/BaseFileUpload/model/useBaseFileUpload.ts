@@ -1,11 +1,11 @@
 import { computed, ref, useId } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { useFormField } from '@composables/useFormField'
-import { useFormDisabled } from '@composables/useFormContext'
-import { formatAcceptHint, formatFileSize } from '@utils/fileUtils'
-import { useFileUploadState } from '@composables/useFileUploadState'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { toHTMLInputElement } from '@utils/dom/domUtils'
+import { useFormField } from '@composables/form/useFormField'
+import { useFormDisabled } from '@composables/form/useFormContext'
+import { useFileUploadState } from '@composables/form/useFileUploadState'
+import { formatAcceptHint, formatFileSize } from '@utils/media/fileUtils'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseFileUploadEmits, FileUploadProps, UploadedFile } from '../types/BaseFileUpload.types'
 
 const FILE_UPLOAD_ELEMENTS = [

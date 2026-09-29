@@ -1,7 +1,7 @@
 import { computed, ref, watchPostEffect } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { DatePickerFieldEmits, DatePickerFieldProps } from '../types/DatePickerField.types'
 
 function useFieldResolvedProps(props: DatePickerFieldProps) {

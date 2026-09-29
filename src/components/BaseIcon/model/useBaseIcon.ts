@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { useIcon } from '@composables/useIcon'
+import { useIcon } from '@composables/app/useIcon'
 import type { BaseIconProps } from '../types/BaseIcon.types'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
 function iconTransform(props: BaseIconProps): string {
 	const transforms: string[] = []

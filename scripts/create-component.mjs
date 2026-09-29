@@ -86,7 +86,7 @@ function typesTemplate(n, kind, variants) {
 	const slotLine = kind === 'form' ? null : ['\t/** Содержимое вместо label */', '\tdefault?: () => unknown']
 	const keys = kind === 'form' ? "'root' | 'label' | 'control' | 'error'" : "'root'"
 	return [
-		"import type { BaseComponentProps } from '@composables/useBaseComponent'",
+		"import type { BaseComponentProps } from '@composables/base/useBaseComponent'",
 		'',
 		'/**',
 		` * Варианты оформления ${n.name}. ${TODO}: опишите, чем отличаются варианты.`,
@@ -123,7 +123,7 @@ function modelTemplate(n, kind) {
 	const types = [`${n.name}Props`, kind !== 'display' && `${n.name}Emits`].filter(Boolean).join(', ')
 	const imports = [
 		...(kind === 'form' ? ["import { computed, useId } from 'vue'"] : []),
-		"import { useStandardBaseComponent } from '@composables/useBaseComponent'",
+		"import { useStandardBaseComponent } from '@composables/base/useBaseComponent'",
 		`import type { ${types} } from '../types/${n.name}.types'`,
 		'',
 	]
@@ -177,7 +177,7 @@ function vueTemplate(n, kind) {
 		'<script setup lang="ts">',
 		`import '../styles/${n.name}.style.scss'`,
 		`import { use${n.name} } from '../model/use${n.name}'`,
-		"import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'",
+		"import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'",
 		`import type { ${typeNames.join(', ')} } from '../types/${n.name}.types'`,
 		'',
 		`const props = withDefaults(defineProps<${n.name}Props>(), {`,

@@ -104,8 +104,8 @@ import '../styles/BaseSubtitleEditor.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_SUBTITLES } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
-import { SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
 import { useBaseSubtitleEditor } from '../model/useBaseSubtitleEditor'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSubtitleEditorEmits, BaseSubtitleEditorProps } from '../types/BaseSubtitleEditor.types'
 
 const props = withDefaults(defineProps<BaseSubtitleEditorProps>(), {

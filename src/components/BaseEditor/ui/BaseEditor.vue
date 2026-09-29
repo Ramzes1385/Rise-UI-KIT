@@ -120,10 +120,10 @@ import { UI_EDITOR } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { useBaseEditor } from '../model/useBaseEditor'
-import { kitDefaults } from '@composables/useDefaults'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import { BaseTextarea } from '@components/BaseTextarea'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseEditorEmits, BaseEditorProps, BaseEditorSlots } from '../types/BaseEditor.types'
 
 const props = withDefaults(

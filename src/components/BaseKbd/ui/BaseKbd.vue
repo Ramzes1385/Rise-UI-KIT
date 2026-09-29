@@ -13,9 +13,9 @@
 <script setup lang="ts">
 import '../styles/BaseKbd.style.scss'
 import { useBaseKbd } from '../model/useBaseKbd'
-import { kitDefaults } from '@composables/useDefaults'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseKbdProps, BaseKbdSlots } from '../types/BaseKbd.types'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseKbdProps>(),

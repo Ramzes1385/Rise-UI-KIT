@@ -1,6 +1,6 @@
 import type { FabPosition } from '@components/BaseFab'
-import type { PropsWithDefaults } from '@composables/useDefaults'
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты — как у BaseFab: `default` — заливка основным цветом, `soft` — мягкий цвет, `outline` — фон и рамка */
 export const BACK_TOP_VARIANTS = ['default', 'soft', 'outline'] as const

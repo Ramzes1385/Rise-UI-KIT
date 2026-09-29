@@ -1,5 +1,5 @@
 import { nextTick, ref, watch } from 'vue'
-import type { BaseTableToolbarProps } from '../types/BaseTableToolbar.types'
+import type { BaseTableToolbarProps } from '../types/toolbar/BaseTableToolbar.types'
 
 const HIDDEN_LABEL = { label: 'base-table__visually-hidden' }
 const SETTINGS_OPTION = { labelWrapper: 'base-table__settings-option' }

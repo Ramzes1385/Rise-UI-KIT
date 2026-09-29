@@ -1,4 +1,4 @@
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseBadgeEmits, BaseBadgeProps } from '../types/BaseBadge.types'
 
 export function useBaseBadge(props: BaseBadgeProps, emit: BaseBadgeEmits) {

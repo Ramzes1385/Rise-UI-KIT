@@ -32,10 +32,10 @@
 <script setup lang="ts">
 import '../styles/BaseTooltip.style.scss'
 import { BaseText } from '@components/BaseText'
-import { kitDefaults } from '@composables/useDefaults'
 import { useBaseTooltip } from '../model/useBaseTooltip'
-import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/useBaseComponent'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseTooltipProps, BaseTooltipSlots } from '../types/BaseTooltip.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
 const props = withDefaults(
 	defineProps<BaseTooltipProps>(),

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** У области одно оформление: тонкая полоса прокрутки поверх содержимого */
 export const SCROLL_AREA_VARIANTS = ['default'] as const
