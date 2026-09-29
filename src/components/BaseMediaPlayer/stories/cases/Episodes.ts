@@ -13,8 +13,10 @@ export const Episodes: StoryObj<typeof meta> = {
 					'сезонов и карточки с номером, картинкой (`poster`), названием, описанием (`description`) и длительностью (`duration`);',
 					'текущая серия выделена, Escape, крестик и щелчок мимо закрывают панель. После конца серии — карточка с отсчётом',
 					'«Следующая серия через 5» (`nextCountdown`), выключается переключателем «Автовоспроизведение» в панели.',
-					'Главы серии — цветные отрезки на шкале, превью с названием при наведении, текущая глава рядом со временем и список глав;',
-					'на опенинге и эндинге появляется «Пропустить». Позиция запоминается для каждой серии: `storageKey:<id серии>`.',
+					'Главы серии — отрезки на шкале, превью с названием при наведении, текущая глава рядом со временем; щелчок по ней',
+					'открывает полупрозрачную панель глав слева: название, начало, просмотренная часть текущей главы. На опенинге и эндинге',
+					'появляется «Пропустить». Панели глав и серий не открываются вместе. Позиция запоминается для каждой серии:',
+					'`storageKey:<id серии>`.',
 				].join('\n'),
 			},
 		},
@@ -23,7 +25,11 @@ export const Episodes: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const player = within(canvasElement.querySelector('.base-media-player') as HTMLElement)
 		await expect(canvas.getByRole('region', { name: 'Демо-сериал. Серия 1. Начало' })).toBeInTheDocument()
-		await expect(canvas.getByRole('button', { name: 'Пролог' })).toBeInTheDocument()
+		await userEvent.click(canvas.getByRole('button', { name: 'Главы: Пролог' }))
+		const chapters = within(await player.findByRole('region', { name: 'Главы' }))
+		await expect(chapters.getByRole('button', { name: /Пролог/ })).toHaveAttribute('aria-current', 'true')
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(player.queryByRole('region', { name: 'Главы' })).toBeNull())
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Серии' }))
 		const panel = within(await player.findByRole('region', { name: 'Серии' }))

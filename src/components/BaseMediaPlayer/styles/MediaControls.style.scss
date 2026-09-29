@@ -8,17 +8,17 @@
 		flex-direction: column;
 		gap: sz(6px);
 		padding: sz(28px) sz(12px) sz(10px);
-		background-image: linear-gradient(to top, rgb(7 8 14 / 90%) 0%, rgb(7 8 14 / 66%) 40%, transparent 100%);
+		background-image: linear-gradient(to top, rgb(0 0 0 / 90%) 0%, rgb(0 0 0 / 66%) 40%, transparent 100%);
 		container-type: inline-size;
 		transition:
-			opacity 200ms var(--rise-ease),
-			transform 200ms var(--rise-ease);
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
 	}
 
 	&--idle &__controls {
 		opacity: 0;
-		transform: translateY(#{sz(8px)});
-		transition-duration: 450ms;
+		transform: translateY(#{sz(10px)});
+		transition-duration: var(--media-slow);
 	}
 
 	&--audio &__controls {
@@ -45,10 +45,22 @@
 	&__row-leave-active {
 		overflow: hidden;
 		transition:
-			max-height 240ms var(--rise-ease),
-			margin-top 240ms var(--rise-ease),
-			padding-top 240ms var(--rise-ease),
-			opacity 200ms var(--rise-ease);
+			max-height var(--media-normal) var(--media-ease),
+			margin-top var(--media-normal) var(--media-ease),
+			padding-top var(--media-normal) var(--media-ease),
+			opacity var(--media-normal) var(--media-ease);
+	}
+
+	&__row-enter-active .base-media-player__control {
+		transition:
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
+		transition-delay: calc(var(--media-item-index, 0) * var(--media-fast) / 6 + var(--media-fast) / 3);
+	}
+
+	&__row-enter-from .base-media-player__control {
+		opacity: 0;
+		transform: translateY(#{sz(6px)});
 	}
 
 	&__row-enter-from,
@@ -103,20 +115,31 @@
 		height: sz(40px);
 		padding: 0 sz(8px);
 		border: 0;
-		border-radius: sz(8px);
+		border-radius: sz(10px);
 		background-color: transparent;
 		color: var(--media-text);
 		font: inherit;
 		cursor: pointer;
-		@include transition(background-color, color, transform);
+		transition:
+			background-color var(--media-normal) var(--media-ease),
+			color var(--media-normal) var(--media-ease),
+			transform var(--media-fast) var(--media-ease);
 		@include focus-ring;
+
+		.base-media-player__icon {
+			transition: transform var(--media-normal) var(--media-spring);
+		}
 
 		@include hover {
 			background-color: var(--media-hover);
+
+			.base-media-player__icon {
+				transform: scale(1.12);
+			}
 		}
 
 		&:active {
-			transform: scale(0.95);
+			transform: scale(0.92);
 		}
 
 		&::after {
@@ -136,12 +159,15 @@
 			pointer-events: none;
 			content: attr(data-tooltip);
 			opacity: 0;
-			transform: translate(var(--media-tip-shift, -50%), var(--media-tip-lift, 4px));
-			@include transition(opacity, transform);
+			transform: translate(var(--media-tip-shift, -50%), var(--media-tip-lift, #{sz(6px)})) scale(var(--media-tip-scale, 0.96));
+			transition:
+				opacity var(--media-fast) var(--media-ease),
+				transform var(--media-normal) var(--media-ease);
 		}
 
 		@include hover {
 			--media-tip-lift: 0px;
+			--media-tip-scale: 1;
 
 			&::after {
 				opacity: 1;
@@ -150,6 +176,7 @@
 
 		&:focus-visible {
 			--media-tip-lift: 0px;
+			--media-tip-scale: 1;
 
 			&::after {
 				opacity: 1;
@@ -197,6 +224,32 @@
 		width: sz(24px);
 		height: sz(24px);
 		fill: currentcolor;
+
+		path {
+			transform-box: view-box;
+			transform-origin: 50% 50%;
+		}
+	}
+
+	&__icon-morph {
+		transition: d var(--media-normal) var(--media-ease);
+	}
+
+	&__icon-enter-active,
+	&__icon-leave-active {
+		transition:
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
+	}
+
+	&__icon-enter-from {
+		opacity: 0;
+		transform: scale(0.4) rotate(-60deg);
+	}
+
+	&__icon-leave-to {
+		opacity: 0;
+		transform: scale(0.4) rotate(60deg);
 	}
 
 	&__control--active {
@@ -243,6 +296,10 @@
 		font-weight: 700;
 		line-height: sz(18px);
 		text-align: center;
+
+		@include motion-safe {
+			animation: base-media-player-badge var(--media-slow) var(--media-spring);
+		}
 	}
 
 	&__captions-button.base-media-player__control--active::before {
@@ -277,8 +334,11 @@
 		padding: sz(14px) 0 sz(22px);
 		pointer-events: none;
 		opacity: 0;
-		transform: translate(-50%, 8px);
-		@include transition(opacity, transform);
+		transform: translate(-50%, #{sz(8px)}) scale(0.96);
+		transform-origin: 50% 100%;
+		transition:
+			opacity var(--media-fast) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
 
 		&::before {
 			position: absolute;
@@ -337,10 +397,13 @@
 
 	&__slider--vertical &__slider-fill {
 		inset: auto 0 0;
+		height: 100%;
+		transform-origin: center bottom;
 	}
 
 	&__slider--vertical &__slider-thumb {
 		top: auto;
+		bottom: 0;
 		left: 50%;
 		width: sz(14px);
 		height: sz(14px);
@@ -373,24 +436,47 @@
 	}
 
 	&__chapter {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(2px);
 		min-width: 0;
 		max-width: sz(220px);
-		padding: sz(6px) sz(8px);
-		overflow: hidden;
+		padding: sz(6px) sz(4px) sz(6px) sz(10px);
 		border: 0;
 		border-radius: sz(8px);
 		background-color: transparent;
 		color: var(--media-text);
 		font: inherit;
 		font-size: sz(14px);
-		text-overflow: ellipsis;
 		white-space: nowrap;
 		cursor: pointer;
+		@include transition(background-color);
 		@include focus-ring;
+
+		.base-media-player__icon {
+			width: sz(18px);
+			height: sz(18px);
+			opacity: 0.7;
+			transition: transform 240ms var(--media-ease);
+		}
 
 		@include hover {
 			background-color: var(--media-hover);
+
+			.base-media-player__icon {
+				transform: translateX(#{sz(2px)});
+			}
 		}
+
+		&[aria-expanded='true'] {
+			background-color: var(--media-hover);
+		}
+	}
+
+	&__chapter-title {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	&__switch-track {
@@ -401,7 +487,9 @@
 		height: sz(20px);
 		border-radius: sz(7px);
 		background-color: rgb(255 255 255 / 30%);
-		@include transition(background-color);
+		transition:
+			background-color var(--media-normal) var(--media-ease),
+			box-shadow var(--media-normal) var(--media-ease);
 	}
 
 	&__switch-thumb {
@@ -417,7 +505,7 @@
 		background-color: var(--media-text);
 		box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
 		color: rgb(0 0 0 / 75%);
-		@include transition(transform);
+		transition: transform var(--media-slow) var(--media-spring);
 
 		.base-media-player__icon {
 			width: sz(12px);
@@ -432,5 +520,12 @@
 
 	&__switch[aria-checked='true'] &__switch-thumb {
 		transform: translateX(sz(16px));
+	}
+}
+
+@keyframes base-media-player-badge {
+	from {
+		opacity: 0;
+		scale: 0.4;
 	}
 }

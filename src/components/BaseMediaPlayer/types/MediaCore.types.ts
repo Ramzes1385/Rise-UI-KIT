@@ -121,8 +121,11 @@ export interface MediaHotkeysOptions {
 export interface IdleControlsOptions {
 	/** Время бездействия до скрытия, мс */
 	timeout: () => number
-	/** Можно ли скрыть сейчас: например, идёт воспроизведение и меню закрыто */
-	canHide: () => boolean
+	/**
+	 * Можно ли скрыть сейчас: например, идёт воспроизведение и меню закрыто.
+	 * `isKeyboard` — последний ввод был с клавиатуры: фокус внутри панели держит её открытой только тогда
+	 */
+	canHide: (input: { isKeyboard: boolean }) => boolean
 }
 
 /** Медиаэлемент Safari на iOS: полноэкранный режим есть только у самого видео */

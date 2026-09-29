@@ -1,13 +1,12 @@
+import { computed, ref, watch } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import { formatMediaTime } from '@utils/mediaUtils'
 import { usePlayerContext } from './usePlayerContext'
+import { useMediaSidePanel } from './useMediaSidePanel'
 import type { MediaEpisode } from '../types/MediaPlaylist.types'
 import type { MediaEpisodeCard } from '../types/MediaScreen.types'
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
-
-const TRIGGER = '.base-media-player__episodes-button'
 
 function episodeCard(episode: MediaEpisode, index: number, currentId: string | undefined): MediaEpisodeCard {
 	return {
@@ -21,41 +20,21 @@ function episodeCard(episode: MediaEpisode, index: number, currentId: string | u
 	}
 }
 
-function useOutsidePress(panel: Readonly<{ value: HTMLElement | null }>, isOpen: () => boolean, close: () => void): void {
-	const onPointerDown = (event: PointerEvent): void => {
-		const target = event.target as Element
-		if (!panel.value?.contains(target) && !target.closest?.(TRIGGER)) close()
-	}
-	const stop = (): void => document.removeEventListener('pointerdown', onPointerDown, true)
-	watch(isOpen, open => (open ? document.addEventListener('pointerdown', onPointerDown, true) : stop()))
-	onBeforeUnmount(stop)
-}
-
 export function useMediaEpisodesPanel() {
-	const { rootRef, isEpisodesOpen, episodeSeasons, currentSeasonId, currentEpisodeId, closeEpisodes, chooseEpisode } = usePlayerContext()
-	const panelRef = ref<HTMLElement | null>(null)
+	const { isEpisodesOpen, episodeSeasons, currentSeasonId, currentEpisodeId, closeEpisodes, chooseEpisode } = usePlayerContext()
 	const seasonId = ref(currentSeasonId.value)
-	const leave = (action: () => void): void => {
-		const hadFocus = panelRef.value?.contains(document.activeElement)
-		action()
-		if (hadFocus) rootRef.value?.querySelector<HTMLElement>(TRIGGER)?.focus()
-	}
-	const close = (): void => leave(closeEpisodes)
-	watch(isEpisodesOpen, isOpen => {
-		if (!isOpen) return
-		seasonId.value = currentSeasonId.value
-		void nextTick(() => {
-			const panel = panelRef.value
-			;(
-				panel?.querySelector<HTMLElement>('[aria-current="true"]') ??
-				panel?.querySelector<HTMLElement>('.base-media-player__episode-card')
-			)?.focus()
-		})
+	const panel = useMediaSidePanel({
+		trigger: '.base-media-player__episodes-button',
+		focus: ['[aria-current="true"]', '.base-media-player__episode-card'],
+		isOpen: () => isEpisodesOpen.value,
+		close: closeEpisodes,
 	})
-	useOutsidePress(panelRef, () => isEpisodesOpen.value, closeEpisodes)
+	watch(isEpisodesOpen, isOpen => {
+		if (isOpen) seasonId.value = currentSeasonId.value
+	})
 
 	return {
-		panelRef,
+		...panel,
 		isEpisodesOpen,
 		seasonId,
 		seasonTabs: computed(() => episodeSeasons.value.map(season => ({ id: season.id, title: season.title }))),
@@ -67,12 +46,6 @@ export function useMediaEpisodesPanel() {
 		selectSeason(id: string): void {
 			seasonId.value = id
 		},
-		chooseEpisode: (id: string): void => leave(() => chooseEpisode(id)),
-		close,
-		onKeydown(event: KeyboardEvent): void {
-			if (event.key !== 'Escape') return
-			event.stopPropagation()
-			close()
-		},
+		chooseEpisode: (id: string): void => panel.leave(() => chooseEpisode(id)),
 	}
 }

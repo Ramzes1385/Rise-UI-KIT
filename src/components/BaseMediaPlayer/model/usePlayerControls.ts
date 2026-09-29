@@ -48,5 +48,9 @@ export function usePlayerControls() {
 		seekLabel: (seconds: number): string =>
 			formatMessage(seconds < 0 ? UI_PLAYER.SEEK_BACK : UI_PLAYER.SEEK_FORWARD, { n: Math.abs(seconds) }),
 		episodeCount: computed(() => (player.props.playlists ?? []).reduce((count, list) => count + list.episodes.length, 0)),
+		chapterLabel: computed(() => {
+			const chapter = player.currentChapter.value
+			return chapter ? formatMessage(UI_PLAYER.CHAPTERS_CURRENT, { title: chapter.title }) : UI_PLAYER.CHAPTERS
+		}),
 	}
 }

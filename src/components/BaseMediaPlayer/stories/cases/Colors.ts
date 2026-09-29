@@ -5,10 +5,10 @@ import { useArgsWithoutSlots } from '@/stories/helpers'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
 
 const PALETTES = [
-	{ name: 'Фиалка — по умолчанию', color: undefined },
+	{ name: 'Оранжевый — по умолчанию', color: undefined },
 	{ name: 'Небо', color: '#38bdf8' },
 	{ name: 'Изумруд', color: '#34d399' },
-	{ name: 'Роза', color: '#f472b6' },
+	{ name: 'Фиалка', color: '#7c6cff' },
 ]
 
 const CHAPTERS = [
@@ -23,11 +23,12 @@ export const Colors: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Своя палитра плеера: графитовые полупрозрачные панели с размытием и акцентный цвет. `accent-color` — «цвет',
-					'плеера», как у Kinescope: большая кнопка, шкала, переключатели, счётчики, выбранные пункты меню и серии. Для',
-					'кнопок с белым текстом плеер сам берёт затемнённый вариант цвета. Остальное меняется CSS-переменными корня:',
-					'`--media-panel`, `--media-overlay`, `--media-hover`, `--media-text`, `--media-muted`, `--media-border`,',
-					'`--media-chapter-1…8` (цвета отрезков глав) и `--media-radius` (скругление углов плеера).',
+					'По умолчанию плеер оранжево-чёрно-белый: оранжевый акцент, чёрные полупрозрачные панели, белый текст.',
+					'`accent-color` меняет «цвет плеера», как у Kinescope: большая кнопка, шкала, переключатели, счётчики,',
+					'выбранные пункты меню и серии; для кнопок с белым текстом плеер сам берёт затемнённый вариант цвета. Главы',
+					'на шкале — цветом плеера, своя глава может задать `color`. Остальное меняется CSS-переменными корня:',
+					'`--media-panel`, `--media-overlay`, `--media-hover`, `--media-text`, `--media-muted`, `--media-border`',
+					'и `--media-radius` (скругление углов плеера).',
 				].join('\n'),
 			},
 		},
@@ -50,6 +51,6 @@ export const Colors: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvasElement }) => {
 		const players = [...canvasElement.querySelectorAll<HTMLElement>('.base-media-player')]
-		await expect(players.map(player => player.style.getPropertyValue('--media-primary'))).toEqual(['', '#38bdf8', '#34d399', '#f472b6'])
+		await expect(players.map(player => player.style.getPropertyValue('--media-primary'))).toEqual(['', '#38bdf8', '#34d399', '#7c6cff'])
 	},
 }

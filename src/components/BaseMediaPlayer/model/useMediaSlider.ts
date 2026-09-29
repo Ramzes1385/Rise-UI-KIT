@@ -36,11 +36,13 @@ function segmentViews(props: MediaSliderProps, value: number, hover: number | nu
 		const length = segment.end - segment.start
 		return {
 			style: { left: `${left}%`, width: `${toPercent(segment.end, props.max) - left}%`, '--segment-color': segment.color },
-			fillStyle: { width: `${length > 0 ? clamp((value - segment.start) / length, 1) * 100 : 0}%` },
+			fillStyle: { transform: `scaleX(${length > 0 ? clamp((value - segment.start) / length, 1) : 0})` },
 			isHovered: hover !== null && segment.start <= hover && hover < segment.end,
 		}
 	})
 }
+
+const TOOLTIP_OVERHANG = 12
 
 function pointerRatio(event: PointerEvent, isVertical: boolean | undefined): number | null {
 	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
@@ -62,7 +64,8 @@ function useHover(props: MediaSliderProps, isDisabled: Readonly<Ref<boolean>>, h
 		hoverStyle: computed(() => {
 			const { track, tip } = size.value
 			const x = (toPercent(hoverValue.value ?? 0, props.max) / 100) * track
-			return { left: `${Math.max(tip / 2, Math.min(track - tip / 2, x))}px` }
+			const left = Math.max(tip / 2 - TOOLTIP_OVERHANG, Math.min(track - tip / 2 + TOOLTIP_OVERHANG, x))
+			return { left: `${left}px`, '--media-tip-arrow': `${x - left}px` }
 		}),
 		onHover(event: PointerEvent): void {
 			const ratio = pointerRatio(event, props.isVertical)
@@ -124,8 +127,10 @@ export function useMediaSlider(props: MediaSliderProps, emit: MediaSliderEmits, 
 		isDragging: computed(() => drag.dragValue.value !== null),
 		valueNow: computed(() => Math.round(value.value * 100) / 100),
 		valueMax: computed(() => (isDisabled.value ? 0 : Math.round(props.max * 100) / 100)),
-		fillStyle: computed(() => (props.isVertical ? { height: `${percent.value}%` } : { width: `${percent.value}%` })),
-		thumbStyle: computed(() => (props.isVertical ? { bottom: `${percent.value}%` } : { left: `${percent.value}%` })),
+		fillStyle: computed(() => ({ transform: `${props.isVertical ? 'scaleY' : 'scaleX'}(${percent.value / 100})` })),
+		railStyle: computed(() => ({
+			transform: props.isVertical ? `translateY(${-percent.value}%)` : `translateX(${percent.value}%)`,
+		})),
 		bufferedStyles: computed(() => (isDisabled.value ? [] : bufferedStyles(props))),
 		markerStyles: computed(() =>
 			isDisabled.value ? [] : (props.markers ?? []).map(marker => ({ left: `${toPercent(marker, props.max)}%` })),

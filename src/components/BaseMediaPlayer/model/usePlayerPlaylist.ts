@@ -1,27 +1,23 @@
-import { formatMediaTime } from '@utils/mediaUtils'
 import { computed, nextTick, ref, watch } from 'vue'
 import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaChapters } from './useMediaChapters'
 import { useMediaPlaylist } from './useMediaPlaylist'
 import { useNextCountdown } from './useNextCountdown'
-import type { MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaSliderSegment } from '../types/MediaSlider.types'
 import type { MediaActions, MediaState } from '../types/MediaCore.types'
 import type { MediaPlayerProps, BaseMediaPlayerEmits } from '../types/BaseMediaPlayer.types'
 import type { MediaClip, MediaEpisode, MediaChapterKind, MediaChapterRange } from '../types/MediaPlaylist.types'
 
-const CHAPTER_COLORS = 8
-
 function chapterSegments(chapters: MediaChapterRange[], duration: number): MediaSliderSegment[] {
 	if (chapters.length === 0 || !(duration > 0)) return []
 	const segments: MediaSliderSegment[] = []
 	let cursor = 0
-	chapters.forEach((chapter, index) => {
+	chapters.forEach(chapter => {
 		const start = Math.min(duration, Math.max(cursor, chapter.start))
 		const end = Math.min(duration, chapter.end)
 		if (start > cursor) segments.push({ start: cursor, end: start })
 		if (end <= start) return
-		segments.push({ start, end, color: chapter.color ?? `var(--media-chapter-${(index % CHAPTER_COLORS) + 1})` })
+		segments.push({ start, end, color: chapter.color })
 		cursor = end
 	})
 	return cursor < duration ? [...segments, { start: cursor, end: duration }] : segments
@@ -48,22 +44,27 @@ function useAutoNext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	}
 }
 
-function useEpisodesPanelState(playlist: ReturnType<typeof useMediaPlaylist>) {
-	const isOpen = ref(false)
+function useSidePanels(playlist: ReturnType<typeof useMediaPlaylist>) {
+	const open = ref<'episodes' | 'chapters' | null>(null)
+	const toggle = (panel: 'episodes' | 'chapters'): void => {
+		open.value = open.value === panel ? null : panel
+	}
+	const close = (panel: 'episodes' | 'chapters'): void => {
+		if (open.value === panel) open.value = null
+	}
 	return {
-		isEpisodesOpen: isOpen,
+		isEpisodesOpen: computed(() => open.value === 'episodes'),
+		isChaptersOpen: computed(() => open.value === 'chapters'),
 		episodeSeasons: playlist.playlists,
 		currentSeasonId: computed(() => playlist.currentEntry.value?.playlist.id),
 		currentEpisodeId: computed(() => playlist.currentEpisode.value?.id),
-		toggleEpisodes(): void {
-			isOpen.value = !isOpen.value
-		},
-		closeEpisodes(): void {
-			isOpen.value = false
-		},
+		toggleEpisodes: (): void => toggle('episodes'),
+		toggleChapters: (): void => toggle('chapters'),
+		closeEpisodes: (): void => close('episodes'),
+		closeChapters: (): void => close('chapters'),
 		chooseEpisode(id: string): void {
 			playlist.selectEpisode(id)
-			isOpen.value = false
+			close('episodes')
 		},
 	}
 }
@@ -97,19 +98,9 @@ export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayer
 	}
 }
 
-function useChapterUi(chapters: ReturnType<typeof useMediaChapters>, media: { state: Readonly<MediaState>; actions: MediaActions }) {
+function useChapterUi(chapters: ReturnType<typeof useMediaChapters>, state: Readonly<MediaState>) {
 	return {
-		chapterMenu: computed<MediaMenuList>(() => ({
-			title: UI_PLAYER.CHAPTERS,
-			items: chapters.chapters.value.map((chapter, index) => ({
-				id: String(index),
-				label: chapter.title,
-				hint: formatMediaTime(chapter.start),
-				isChecked: chapter.start === chapters.currentChapter.value?.start,
-				onSelect: () => media.actions.seek(chapter.start),
-			})),
-		})),
-		chapterSegments: computed(() => chapterSegments(chapters.chapters.value, media.state.duration)),
+		chapterSegments: computed(() => chapterSegments(chapters.chapters.value, state.duration)),
 		chapterTitleAt: (time: number): string => chapters.chapterAt(time)?.title ?? '',
 	}
 }
@@ -141,7 +132,7 @@ export function usePlayerEpisodes(
 	return {
 		...countdown,
 		...player.autoNext,
-		...useChapterUi(chapters, { state, actions }),
+		...useChapterUi(chapters, state),
 		chapters: chapters.chapters,
 		currentChapter: chapters.currentChapter,
 		skipChapter: chapters.skipChapter,
@@ -151,7 +142,7 @@ export function usePlayerEpisodes(
 		playNext: playlist.playNext,
 		playPrevious: playlist.playPrevious,
 		hasEpisodes: computed(() => playlist.playlists.value.reduce((count, list) => count + list.episodes.length, 0) > 1),
-		...useEpisodesPanelState(playlist),
+		...useSidePanels(playlist),
 		nextCountdownText: computed(() => formatMessage(UI_PLAYER.NEXT_IN, { n: countdown.nextCountdown.value ?? 0 })),
 		nextCountdownStyle: computed(() => ({ '--media-next-seconds': props.nextCountdown })),
 		skipLabel: computed(() => (chapters.skipChapter.value?.kind ? SKIP_LABELS[chapters.skipChapter.value.kind]() : '')),

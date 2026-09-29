@@ -120,7 +120,7 @@ describe('BaseMediaPlayer: клавиатура и мышь', () => {
 		Reflect.deleteProperty(Element.prototype, 'requestFullscreen')
 	})
 
-	it('во время воспроизведения панель скрывается после бездействия, но не при фокусе внутри', async () => {
+	it('во время воспроизведения панель скрывается после бездействия и сразу, когда мышь уходит с плеера; фокус с клавиатуры держит её', async () => {
 		const { fake, root } = await setup({ idleTimeout: 1000 })
 		vi.useFakeTimers()
 
@@ -132,10 +132,16 @@ describe('BaseMediaPlayer: клавиатура и мышь', () => {
 
 		await fireEvent.pointerMove(root)
 		expect(root).not.toHaveClass('base-media-player--idle')
+		await fireEvent.keyDown(root, { key: 'Tab' })
 		screen.getByRole('button', { name: 'Пауза' }).focus()
 		vi.advanceTimersByTime(1000)
 		await nextTick()
 		expect(root).not.toHaveClass('base-media-player--idle')
+
+		await fireEvent.pointerDown(screen.getByRole('button', { name: 'Пауза' }))
+		root.dispatchEvent(Object.assign(new Event('pointerleave'), { pointerType: 'mouse' }))
+		await nextTick()
+		expect(root).toHaveClass('base-media-player--idle')
 		vi.useRealTimers()
 	})
 })

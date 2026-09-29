@@ -58,19 +58,16 @@
 					<span class="base-media-player__time" :class="classes.time">
 						{{ currentTimeText }}<span class="base-media-player__duration"> / {{ durationText }}</span>
 					</span>
-					<MediaPopover v-if="chapters.length" position="top-start">
-						<template #default="{ isOpen, toggle }">
-							<button
-								type="button"
-								class="base-media-player__chapter"
-								aria-haspopup="menu"
-								:aria-expanded="isOpen"
-								@click="toggle">
-								{{ currentChapter?.title ?? UI_PLAYER.CHAPTERS }}
-							</button>
-						</template>
-						<template #panel="{ close }"><MediaMenuPanel :menu="chapterMenu" @close="close" /></template>
-					</MediaPopover>
+					<button
+						v-if="chapters.length"
+						type="button"
+						class="base-media-player__chapter"
+						:aria-label="chapterLabel"
+						:aria-expanded="isChaptersOpen"
+						@click="toggleChapters">
+						<span class="base-media-player__chapter-title">{{ currentChapter?.title ?? UI_PLAYER.CHAPTERS }}</span>
+						<MediaIcon name="chevron-right" />
+					</button>
 				</div>
 			</div>
 			<div class="base-media-player__group base-media-player__group--end">
@@ -175,8 +172,9 @@
 			<div v-if="isSeekRowOpen" class="base-media-player__bar base-media-player__bar--secondary">
 				<div class="base-media-player__group">
 					<MediaControlButton
-						v-for="step in seekRow"
+						v-for="(step, index) in seekRow"
 						:key="step"
+						:style="{ '--media-item-index': index }"
 						:icon="step < 0 ? 'rewind' : 'forward'"
 						:caption="String(Math.abs(step))"
 						:label="seekLabel(step)"
@@ -197,6 +195,7 @@
 <script setup lang="ts">
 import '../styles/MediaControls.style.scss'
 import '../styles/MediaMenus.style.scss'
+import MediaIcon from './MediaIcon.vue'
 import MediaSlider from './MediaSlider.vue'
 import MediaSwitch from './MediaSwitch.vue'
 import { UI_PLAYER } from '../model/messages'
@@ -220,7 +219,7 @@ const {
 	captionTracks,
 	castLabel,
 	chapterSegments,
-	chapterMenu,
+	chapterLabel,
 	chapters,
 	classes,
 	controlsRef,
@@ -236,6 +235,7 @@ const {
 	isAudioMode,
 	isAutoNext,
 	isCasting,
+	isChaptersOpen,
 	isEpisodesOpen,
 	isFullscreen,
 	isFullscreenSupported,
@@ -263,6 +263,7 @@ const {
 	state,
 	theaterLabel,
 	toggleCast,
+	toggleChapters,
 	toggleEpisodes,
 	toggleFullscreen,
 	togglePip,

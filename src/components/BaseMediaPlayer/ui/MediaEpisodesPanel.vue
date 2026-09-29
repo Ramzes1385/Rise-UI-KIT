@@ -1,5 +1,5 @@
 <template>
-	<Transition name="base-media-player__episodes">
+	<Transition name="base-media-player__episodes" :duration="{ enter: 720, leave: 240 }">
 		<section
 			v-if="isEpisodesOpen"
 			ref="panelRef"
@@ -22,7 +22,7 @@
 				</button>
 			</div>
 			<ol class="base-media-player__episodes-list">
-				<li v-for="card in episodeCards" :key="card.id">
+				<li v-for="(card, index) in episodeCards" :key="card.id" :style="{ '--media-item-index': index }">
 					<button
 						type="button"
 						class="base-media-player__episode-card"

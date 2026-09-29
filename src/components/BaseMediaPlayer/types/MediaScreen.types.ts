@@ -39,3 +39,29 @@ export interface MediaEpisodeCard {
 	/** Эта серия сейчас играет */
 	isCurrent: boolean
 }
+
+/** Глава в панели глав */
+export interface MediaChapterItem {
+	id: string
+	title: string
+	/** Начало главы, секунды */
+	start: number
+	/** Начало главы: «1:05» */
+	time: string
+	/** Цвет отрезка главы на шкале */
+	color: string
+	/** Эта глава сейчас играет */
+	isCurrent: boolean
+	/** Сколько главы просмотрено: от 0 до 1 */
+	progress: number
+}
+
+/** Выдвижная панель плеера: серии справа, главы слева */
+export interface MediaSidePanelOptions {
+	/** Кнопка, которая открывает панель: на неё возвращается фокус при закрытии */
+	trigger: string
+	/** Что фокусировать при открытии: первый найденный по порядку селекторов */
+	focus: readonly string[]
+	isOpen: () => boolean
+	close: () => void
+}

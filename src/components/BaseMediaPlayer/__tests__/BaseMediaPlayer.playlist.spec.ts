@@ -4,9 +4,7 @@ import { mount } from '@vue/test-utils'
 import MediaSlider from '../ui/MediaSlider.vue'
 import { fireEvent } from '@testing-library/vue'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
-import MediaControlBar from '../ui/MediaControlBar.vue'
 import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import type { MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaPlaylist } from '../types/MediaPlaylist.types'
 
 const SEASONS: MediaPlaylist[] = [
@@ -23,7 +21,7 @@ const SEASONS: MediaPlaylist[] = [
 					{ start: 10, end: 20, title: 'Опенинг', kind: 'intro' },
 					{ start: 20, title: 'Серия' },
 					{ start: 30, end: 40, title: 'Ранее', kind: 'recap' },
-					{ start: 50, title: 'Эндинг', kind: 'outro' },
+					{ start: 50, title: 'Эндинг', kind: 'outro', color: '#a855f7' },
 				],
 			},
 			{ id: 'e2', title: 'Серия 2', sources: '/e2.webm', poster: '/e2.webp' },
@@ -40,11 +38,7 @@ async function setup(props: Record<string, unknown> = {}) {
 	await nextTick()
 	fake.emit('loadedmetadata')
 	await nextTick()
-	const menu = (key: 'chapterMenu'): MediaMenuList | undefined => {
-		const state = wrapper.findComponent(MediaControlBar).vm as unknown as Record<string, MediaMenuList>
-		return wrapper.find('.base-media-player__chapter').exists() ? state[key] : undefined
-	}
-	return { wrapper, video, fake, play, menu }
+	return { wrapper, video, fake, play }
 }
 
 describe('BaseMediaPlayer: серии и главы', () => {
@@ -148,6 +142,39 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		wrapper.unmount()
 	})
 
+	it('панель глав закрывают Escape и щелчок мимо; панели глав и серий не открываются вместе; с открытой панелью панель управления не прячется', async () => {
+		vi.useFakeTimers()
+		const { wrapper, fake } = await setup({ idleTimeout: 1000 })
+		fake.update({ currentTime: 12, paused: false }, 'play')
+		await nextTick()
+		const chapter = wrapper.get('.base-media-player__chapter')
+		const chapters = () => wrapper.find('.base-media-player__chapters')
+		const episodes = () => wrapper.find('.base-media-player__episodes')
+
+		await chapter.trigger('click')
+		await vi.advanceTimersByTimeAsync(3000)
+		expect(wrapper.classes()).not.toContain('base-media-player--idle')
+		await chapters().trigger('keydown', { key: 'ArrowDown' })
+		expect(chapters().exists()).toBe(true)
+		await chapters().trigger('keydown', { key: 'Escape' })
+		expect(chapters().exists()).toBe(false)
+		await chapter.trigger('click')
+		await fireEvent.pointerDown(chapters().element)
+		await fireEvent.pointerDown(chapter.element)
+		expect(chapters().exists()).toBe(true)
+		await fireEvent.pointerDown(wrapper.get('video').element)
+		expect(chapters().exists()).toBe(false)
+		await chapter.trigger('click')
+		await wrapper.get('button[aria-label="Серии"]').trigger('click')
+		expect([chapters().exists(), episodes().exists()]).toEqual([false, true])
+		await chapter.trigger('click')
+		expect([chapters().exists(), episodes().exists()]).toEqual([true, false])
+		await wrapper.get('.base-media-player__chapters button[aria-label="Закрыть"]').trigger('click')
+		expect(chapters().exists()).toBe(false)
+		vi.useRealTimers()
+		wrapper.unmount()
+	})
+
 	it('один сезон — без вкладок; одна серия — кнопки «Серии» нет', async () => {
 		const single = await setup({ playlists: [SEASONS[0]] })
 		await single.wrapper.get('button[aria-label="Серии"]').trigger('click')
@@ -161,19 +188,19 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		one.wrapper.unmount()
 	})
 
-	it('главы: подсказка на шкале, текущая глава, список глав и «Пропустить опенинг»', async () => {
-		const { wrapper, fake, menu } = await setup()
+	it('главы: подсказка на шкале, текущая глава, панель глав слева и «Пропустить опенинг»', async () => {
+		const { wrapper, fake } = await setup()
 		fake.update({ currentTime: 12 }, 'seeked')
 		await nextTick()
 
 		const seek = wrapper.findComponent(MediaSlider)
 		expect(seek.props('segments')).toEqual([
-			{ start: 0, end: 10, color: 'var(--media-chapter-1)' },
-			{ start: 10, end: 20, color: 'var(--media-chapter-2)' },
-			{ start: 20, end: 30, color: 'var(--media-chapter-3)' },
-			{ start: 30, end: 40, color: 'var(--media-chapter-4)' },
+			{ start: 0, end: 10 },
+			{ start: 10, end: 20 },
+			{ start: 20, end: 30 },
+			{ start: 30, end: 40 },
 			{ start: 40, end: 50 },
-			{ start: 50, end: 60, color: 'var(--media-chapter-5)' },
+			{ start: 50, end: 60, color: '#a855f7' },
 		])
 		const slider = wrapper.get('.base-media-player__seek').element as HTMLElement
 		slider.getBoundingClientRect = () => ({ left: 0, width: 600 }) as DOMRect
@@ -183,17 +210,25 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		}
 		expect(await hover(150)).toBe('Опенинг0:15')
 		expect(await hover(450)).toBe('0:45')
-		expect(wrapper.get('.base-media-player__chapter').text()).toBe('Опенинг')
-		const chapters = menu('chapterMenu')?.items ?? []
-		expect(chapters.map(item => [item.label, item.hint, item.isChecked])).toEqual([
-			['Пролог', '0:00', false],
-			['Опенинг', '0:10', true],
-			['Серия', '0:20', false],
-			['Ранее', '0:30', false],
-			['Эндинг', '0:50', false],
+		const button = wrapper.get('.base-media-player__chapter')
+		expect([button.text(), button.attributes('aria-label')]).toEqual(['Опенинг', 'Главы: Опенинг'])
+		await button.trigger('click')
+		expect(button.attributes('aria-expanded')).toBe('true')
+		const panel = wrapper.get('.base-media-player__chapters')
+		expect(panel.attributes('aria-label')).toBe('Главы')
+		const items = panel.findAll('.base-media-player__chapter-item')
+		expect(items.map(item => [item.text(), item.attributes('aria-current') ?? '', item.attributes('style')])).toEqual([
+			['Пролог0:00', '', '--segment-color: var(--media-primary); --chapter-progress: 1;'],
+			['Опенинг0:10', 'true', '--segment-color: var(--media-primary); --chapter-progress: 0.2;'],
+			['Серия0:20', '', '--segment-color: var(--media-primary); --chapter-progress: 0;'],
+			['Ранее0:30', '', '--segment-color: var(--media-primary); --chapter-progress: 0;'],
+			['Эндинг0:50', '', '--segment-color: #a855f7; --chapter-progress: 0;'],
 		])
-		chapters[2].onSelect?.()
+		await vi.waitFor(() => expect(document.activeElement).toBe(items[1].element))
+		await items[2].trigger('click')
 		expect(fake.values.currentTime).toBe(20)
+		expect(wrapper.find('.base-media-player__chapters').exists()).toBe(false)
+		expect(document.activeElement).toBe(button.element)
 
 		fake.update({ currentTime: 12 }, 'seeked')
 		await nextTick()
@@ -214,7 +249,7 @@ describe('BaseMediaPlayer: серии и главы', () => {
 			playlists: [{ id: 's', title: 'С', episodes: [{ id: 'x', title: 'X', sources: '/x.webm', chapters }] }],
 		})
 
-		expect(wrapper.findComponent(MediaSlider).props('segments')).toEqual([{ start: 0, end: 60, color: 'var(--media-chapter-1)' }])
+		expect(wrapper.findComponent(MediaSlider).props('segments')).toEqual([{ start: 0, end: 60 }])
 		wrapper.unmount()
 	})
 

@@ -143,6 +143,7 @@ export const playerRu = {
 	WATCH_PENDING: 'Приглашён',
 	WATCH_HOST: 'Ведущий',
 	CHAPTERS: 'Главы',
+	CHAPTERS_CURRENT: 'Главы: {title}',
 	SKIP_INTRO: 'Пропустить опенинг',
 	SKIP_OUTRO: 'Пропустить эндинг',
 	SKIP_RECAP: 'Пропустить краткое содержание',

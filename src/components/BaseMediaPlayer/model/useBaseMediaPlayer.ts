@@ -110,13 +110,14 @@ function usePlayerIdle(
 	elements: ReturnType<typeof usePlayerBase>['elements'],
 	player: { state: Readonly<MediaState>; isAudio: Readonly<Ref<boolean>>; isPanelOpen: () => boolean },
 ) {
-	const isFocusInPanel = (): boolean =>
-		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
-	const isPointerOnPanel = (): boolean => Boolean(elements.controlsRef.value?.matches(':hover'))
-	const isBusy = (): boolean => player.isAudio.value || player.state.isPaused || player.isPanelOpen()
+	const controls = (): HTMLElement | null => elements.controlsRef.value
+	const isFocusIn = (panel: HTMLElement | null): boolean => Boolean(panel?.contains(document.activeElement))
+	const isPointerOnPanel = (): boolean => Boolean(controls()?.matches(':hover'))
+	const hasOpenMenu = (): boolean => Boolean(controls()?.querySelector('.base-media-player__popover')) || isFocusIn(elements.layer)
+	const isBusy = (): boolean => player.isAudio.value || player.state.isPaused || player.isPanelOpen() || hasOpenMenu()
 	return useIdleControls(elements.rootRef, {
 		timeout: () => props.idleTimeout,
-		canHide: () => !isBusy() && !isFocusInPanel() && !isPointerOnPanel(),
+		canHide: ({ isKeyboard }) => !isBusy() && !(isKeyboard && isFocusIn(controls())) && !isPointerOnPanel(),
 	}).isIdle
 }
 
@@ -317,7 +318,7 @@ export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMed
 		isIdle: usePlayerIdle(props, elements, {
 			state,
 			isAudio: view.isAudioMode,
-			isPanelOpen: () => extras.episodes.isEpisodesOpen.value,
+			isPanelOpen: () => extras.episodes.isEpisodesOpen.value || extras.episodes.isChaptersOpen.value,
 		}),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,

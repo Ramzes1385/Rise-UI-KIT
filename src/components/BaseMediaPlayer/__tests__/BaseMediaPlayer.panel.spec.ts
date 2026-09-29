@@ -238,8 +238,12 @@ describe('BaseMediaPlayer: панель', () => {
 		expect(isOpen()).toBe(false)
 		expect(wrapper.get('button[aria-label="Озвучка"]').text()).toBe('')
 		expect(wrapper.get('button[aria-label="Озвучка"]').attributes('data-tooltip')).toBe('Озвучка: Студия')
-		await choose('.base-media-player__chapter', 'Опенинг')
-		expect(isOpen()).toBe(false)
+		await wrapper.get('.base-media-player__chapter').trigger('click')
+		await wrapper
+			.findAll('.base-media-player__chapter-item')
+			.find(item => item.text().startsWith('Опенинг'))
+			?.trigger('click')
+		expect(wrapper.find('.base-media-player__chapters').exists()).toBe(false)
 		expect(fake.values.currentTime).toBe(10)
 		await wrapper.get('button[aria-label="Серии"]').trigger('click')
 		await wrapper

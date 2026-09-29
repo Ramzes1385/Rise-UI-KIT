@@ -4,9 +4,20 @@ import { useIdleControls } from '../model/useIdleControls'
 
 function setup(target: HTMLElement | null = document.createElement('div')) {
 	const canHide = ref(false)
-	const { result, wrapper } = withSetup(() => useIdleControls(ref(target), { timeout: () => 1000, canHide: () => canHide.value }))
-	return { target, canHide, wrapper, ...result }
+	const inputs: boolean[] = []
+	const { result, wrapper } = withSetup(() =>
+		useIdleControls(ref(target), {
+			timeout: () => 1000,
+			canHide: ({ isKeyboard }) => {
+				inputs.push(isKeyboard)
+				return canHide.value
+			},
+		}),
+	)
+	return { target, canHide, wrapper, inputs, ...result }
 }
+
+const leave = (pointerType: string): Event => Object.assign(new Event('pointerleave'), { pointerType })
 
 describe('useIdleControls', () => {
 	beforeEach(() => {
@@ -49,6 +60,24 @@ describe('useIdleControls', () => {
 		canHide.value = false
 		await nextTick()
 		expect(isIdle.value).toBe(false)
+	})
+
+	it('мышь ушла с элемента — скрывает сразу, даже после ввода с клавиатуры; касание — после бездействия; способ ввода передаётся в canHide', async () => {
+		const { target, canHide, isIdle, inputs } = setup()
+		canHide.value = true
+		await nextTick()
+
+		target!.dispatchEvent(new Event('keydown'))
+		vi.advanceTimersByTime(1000)
+		expect(inputs.at(-1)).toBe(true)
+		target!.dispatchEvent(leave('mouse'))
+		expect([isIdle.value, inputs.at(-1)]).toEqual([true, false])
+		target!.dispatchEvent(new Event('pointerdown'))
+		expect(isIdle.value).toBe(false)
+		target!.dispatchEvent(leave('touch'))
+		expect(isIdle.value).toBe(false)
+		vi.advanceTimersByTime(1000)
+		expect([isIdle.value, inputs.at(-1)]).toEqual([true, false])
 	})
 
 	it('после размонтирования таймер и обработчики сняты; без элемента не падает', async () => {

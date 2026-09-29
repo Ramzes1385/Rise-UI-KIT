@@ -32,20 +32,21 @@
 				:style="style"></div>
 		</div>
 		<div v-for="(style, index) in markerStyles" :key="`marker-${index}`" class="base-media-player__slider-marker" :style="style"></div>
-		<div
-			ref="thumbRef"
-			class="base-media-player__slider-thumb"
-			role="slider"
-			tabindex="0"
-			aria-valuemin="0"
-			:aria-valuemax="valueMax"
-			:aria-valuenow="valueNow"
-			:aria-valuetext="valueText"
-			:aria-label="label"
-			:aria-disabled="isDisabled || undefined"
-			:aria-orientation="props.isVertical ? 'vertical' : undefined"
-			:style="thumbStyle"
-			@keydown="onKeydown"></div>
+		<div class="base-media-player__slider-rail" :style="railStyle">
+			<div
+				ref="thumbRef"
+				class="base-media-player__slider-thumb"
+				role="slider"
+				tabindex="0"
+				aria-valuemin="0"
+				:aria-valuemax="valueMax"
+				:aria-valuenow="valueNow"
+				:aria-valuetext="valueText"
+				:aria-label="label"
+				:aria-disabled="isDisabled || undefined"
+				:aria-orientation="props.isVertical ? 'vertical' : undefined"
+				@keydown="onKeydown"></div>
+		</div>
 		<div v-if="isTooltipVisible" ref="tooltipRef" class="base-media-player__slider-tooltip" :style="hoverStyle" aria-hidden="true">
 			<slot name="tooltip" :value="hoverValue as number">{{ hoverLabel }}</slot>
 		</div>
@@ -68,7 +69,7 @@ const {
 	valueNow,
 	valueMax,
 	fillStyle,
-	thumbStyle,
+	railStyle,
 	bufferedStyles,
 	onPointerDown,
 	onPointerMove,

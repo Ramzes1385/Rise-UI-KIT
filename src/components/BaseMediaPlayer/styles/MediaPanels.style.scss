@@ -15,13 +15,13 @@
 		z-index: 1000;
 		width: min(#{sz(360px)}, calc(100vw - #{sz(32px)}));
 		aspect-ratio: var(--media-aspect, 16 / 9);
-		overflow: hidden;
+		overflow: clip;
 		border-radius: sz(12px);
 		background-color: var(--media-shade);
 		box-shadow: 0 16px 48px rgb(0 0 0 / 45%);
 
 		@include motion-safe {
-			animation: base-media-player-mini 300ms var(--rise-ease-out);
+			animation: base-media-player-mini var(--media-slow) var(--media-ease);
 		}
 	}
 
@@ -53,9 +53,9 @@
 		display: flex;
 		gap: sz(2px);
 		border-radius: sz(8px);
-		background-color: rgb(7 8 14 / 60%);
+		background-color: rgb(0 0 0 / 60%);
 		opacity: 0;
-		transition: opacity 200ms var(--rise-ease);
+		transition: opacity var(--media-normal) var(--media-ease);
 
 		.base-media-player__control {
 			min-width: sz(32px);
@@ -98,7 +98,7 @@
 
 	&--ambient {
 		box-shadow: var(--media-ambient, none);
-		transition: box-shadow 800ms linear;
+		transition: box-shadow calc(var(--media-slow) * 2) linear;
 	}
 
 	&--fullscreen,
@@ -117,7 +117,7 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		width: min(#{sz(400px)}, 100%);
-		background-image: linear-gradient(160deg, rgb(30 32 48 / 97%) 0%, rgb(14 15 24 / 97%) 100%);
+		background-image: linear-gradient(160deg, rgb(32 32 32 / 97%) 0%, rgb(10 10 10 / 97%) 100%);
 		box-shadow: -4px 0 24px rgb(0 0 0 / 50%);
 		color: white;
 	}
@@ -210,7 +210,10 @@
 		font: inherit;
 		text-align: left;
 		cursor: pointer;
-		@include transition(background-color, border-color, transform);
+		transition:
+			background-color var(--media-normal) var(--media-ease),
+			border-color var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
 		@include focus-ring;
 
 		@include hover {
@@ -251,7 +254,7 @@
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
 		border-radius: sz(6px);
-		background-image: linear-gradient(135deg, rgb(52 55 76), rgb(28 30 44));
+		background-image: linear-gradient(135deg, rgb(58 58 58), rgb(30 30 30));
 	}
 
 	&__episode-image {
@@ -428,7 +431,7 @@
 		height: sz(32px);
 		overflow: hidden;
 		border-radius: sz(10px);
-		background-image: linear-gradient(135deg, var(--media-primary), #ec4899);
+		background-image: linear-gradient(135deg, #fbbf24, var(--media-primary-strong));
 		color: white;
 		font-size: sz(12px);
 		font-weight: 700;
@@ -478,17 +481,159 @@
 		font-size: sz(13px);
 	}
 
+	&__chapters {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 7;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		width: min(#{sz(340px)}, 86%);
+		border-right: 1px solid var(--media-border);
+		background-color: rgb(10 10 10 / 55%);
+		box-shadow: 8px 0 32px rgb(0 0 0 / 35%);
+		color: var(--media-text);
+		backdrop-filter: blur(18px) saturate(140%);
+	}
+
+	&__chapters-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		padding: sz(10px) sz(10px) sz(10px) sz(20px);
+		border-bottom: 1px solid var(--media-border);
+
+		.base-media-player__control::after {
+			top: calc(100% + #{sz(6px)});
+			bottom: auto;
+		}
+	}
+
+	&__chapters-title {
+		font-size: sz(18px);
+		font-weight: 700;
+	}
+
+	&__chapters-list {
+		display: grid;
+		flex: 1;
+		align-content: start;
+		gap: sz(4px);
+		min-height: 0;
+		margin: 0;
+		padding: sz(10px);
+		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+	}
+
+	&__chapter-item {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: sz(12px);
+		align-items: center;
+		box-sizing: border-box;
+		width: 100%;
+		padding: sz(10px) sz(12px);
+		overflow: hidden;
+		border: 0;
+		border-radius: sz(10px);
+		background-color: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		@include transition(background-color, transform);
+		@include focus-ring(-2px);
+
+		@include hover {
+			background-color: rgb(255 255 255 / 8%);
+			transform: translateX(#{sz(4px)});
+		}
+	}
+
+	&__chapter-item--current {
+		background-color: rgb(255 255 255 / 11%);
+	}
+
+	&__chapter-mark {
+		width: sz(4px);
+		height: sz(28px);
+		border-radius: sz(2px);
+		background-color: var(--segment-color);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--segment-color) 60%, transparent);
+	}
+
+	&__chapter-name {
+		font-size: sz(14px);
+		font-weight: 600;
+		@include truncate;
+	}
+
+	&__chapter-start {
+		color: var(--media-muted);
+		font-size: sz(13px);
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__chapter-progress {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: sz(2px);
+		background-color: var(--segment-color);
+		transform: scaleX(var(--chapter-progress, 0));
+		transform-origin: left;
+		transition: transform var(--media-normal) linear;
+	}
+
+	&__chapters-enter-active,
+	&__chapters-leave-active,
 	&__episodes-enter-active,
 	&__episodes-leave-active {
 		transition:
-			opacity 300ms var(--rise-ease-out),
-			transform 300ms var(--rise-ease-out);
+			opacity var(--media-slow) var(--media-ease),
+			transform var(--media-slow) var(--media-ease);
+	}
+
+	&__chapters-leave-active,
+	&__episodes-leave-active {
+		transition-duration: var(--media-normal);
+	}
+
+	&__chapters-enter-from,
+	&__chapters-leave-to {
+		opacity: 0;
+		transform: translateX(-100%);
 	}
 
 	&__episodes-enter-from,
 	&__episodes-leave-to {
 		opacity: 0;
 		transform: translateX(100%);
+	}
+
+	&__chapters-enter-active li,
+	&__episodes-enter-active li {
+		transition:
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
+		transition-delay: calc(min(var(--media-item-index, 0), 8) * var(--media-fast) / 5 + var(--media-fast) / 2);
+	}
+
+	&__chapters-enter-from li,
+	&__episodes-enter-from li {
+		opacity: 0;
+		transform: translateX(#{sz(-12px)});
+	}
+
+	&__episodes-enter-from li {
+		transform: translateX(#{sz(12px)});
 	}
 }
 

@@ -125,6 +125,7 @@ export const playerEn: UiKitLocale['player'] = {
 	WATCH_PENDING: 'Invited',
 	WATCH_HOST: 'Host',
 	CHAPTERS: 'Chapters',
+	CHAPTERS_CURRENT: 'Chapters: {title}',
 	SKIP_INTRO: 'Skip intro',
 	SKIP_OUTRO: 'Skip outro',
 	SKIP_RECAP: 'Skip recap',

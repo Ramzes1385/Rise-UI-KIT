@@ -29,8 +29,8 @@ describe('MediaSlider', () => {
 		expect(slider).toHaveAttribute('aria-valuemax', '60')
 		expect(slider).toHaveAttribute('aria-valuetext', '0:15 из 1:00')
 		expect(slider).not.toHaveAttribute('aria-disabled')
-		expect(slider.style.left).toBe('25%')
-		expect((container.querySelector('.base-media-player__slider-fill') as HTMLElement).style.width).toBe('25%')
+		expect((container.querySelector('.base-media-player__slider-fill') as HTMLElement).style.transform).toBe('scaleX(0.25)')
+		expect((container.querySelector('.base-media-player__slider-rail') as HTMLElement).style.transform).toBe('translateX(25%)')
 		const buffered = container.querySelector('.base-media-player__slider-buffered') as HTMLElement
 		expect([buffered.style.left, buffered.style.width]).toEqual(['0%', '50%'])
 	})
@@ -113,11 +113,9 @@ describe('MediaSlider', () => {
 			['16.666666666666664%', '49.99999999999999%', ''],
 			['66.66666666666666%', '0%', ''],
 		])
-		expect(items().map(item => (item.querySelector('.base-media-player__slider-segment-fill') as HTMLElement).style.width)).toEqual([
-			'100%',
-			'16.666666666666664%',
-			'0%',
-		])
+		expect(items().map(item => (item.querySelector('.base-media-player__slider-segment-fill') as HTMLElement).style.transform)).toEqual(
+			['scaleX(1)', 'scaleX(0.16666666666666666)', 'scaleX(0)'],
+		)
 		await fireEvent.pointerMove(root, { clientX: 30 })
 		expect(items().map(item => item.classList.contains('base-media-player__slider-segment--hovered'))).toEqual([false, true, false])
 
@@ -142,7 +140,7 @@ describe('MediaSlider', () => {
 		expect(tooltip()).toBeNull()
 	})
 
-	it('подсказка из слота не выходит за края дорожки: её ширина учитывается', async () => {
+	it('подсказка из слота выходит за край дорожки не больше чем на 12px, стрелка указывает на место под указателем', async () => {
 		const width = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(40)
 		const result = render(MediaSlider, {
 			props: PROPS,
@@ -155,10 +153,10 @@ describe('MediaSlider', () => {
 		await fireEvent.pointerMove(root, { clientX: 2 })
 		await fireEvent.pointerMove(root, { clientX: 3 })
 		expect(tooltip()).toHaveTextContent('1.5')
-		expect(tooltip().style.left).toBe('20px')
+		expect([tooltip().style.left, tooltip().style.getPropertyValue('--media-tip-arrow')]).toEqual(['8px', '-5px'])
 		await fireEvent.pointerMove(root, { clientX: 119 })
 		await fireEvent.pointerMove(root, { clientX: 118 })
-		expect(tooltip().style.left).toBe('100px')
+		expect([tooltip().style.left, tooltip().style.getPropertyValue('--media-tip-arrow')]).toEqual(['112px', '6px'])
 		width.mockRestore()
 	})
 

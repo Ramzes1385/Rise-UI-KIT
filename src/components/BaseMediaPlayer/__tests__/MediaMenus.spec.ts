@@ -194,8 +194,8 @@ describe('кнопки панели', () => {
 
 		expect(screen.getByRole('slider', { name: 'Громкость' })).toHaveAttribute('aria-orientation', 'vertical')
 		expect(root).toHaveClass('base-media-player__slider--vertical')
-		expect((container.querySelector('.base-media-player__slider-fill') as HTMLElement).style.height).toBe('50%')
-		expect((container.querySelector('.base-media-player__slider-thumb') as HTMLElement).style.bottom).toBe('50%')
+		expect((container.querySelector('.base-media-player__slider-fill') as HTMLElement).style.transform).toBe('scaleY(0.5)')
+		expect((container.querySelector('.base-media-player__slider-rail') as HTMLElement).style.transform).toBe('translateY(-50%)')
 		await fireEvent.pointerDown(root, { button: 0, pointerId: 1, clientY: 125 })
 		await fireEvent.pointerMove(root, { pointerId: 1, clientY: 300 })
 		expect(emitted('update:modelValue')).toEqual([[0.75], [0]])

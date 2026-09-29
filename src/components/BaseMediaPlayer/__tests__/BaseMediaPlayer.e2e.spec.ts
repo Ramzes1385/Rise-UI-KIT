@@ -55,7 +55,9 @@ test('жесты: двойной клик по краям перематывае
 	expect(after).toEqual({ rate: 1, paused: false })
 })
 
-test('панель прячется во время воспроизведения без движения мыши и возвращается при движении', async ({ page }) => {
+test('панель прячется во время воспроизведения без движения мыши, возвращается при движении и сразу уходит вместе с мышью', async ({
+	page,
+}) => {
 	await openPlayer(page, 'default')
 	const player = page.locator('.base-media-player')
 	await page.mouse.move(5, 550)
@@ -68,6 +70,8 @@ test('панель прячется во время воспроизведени
 	await expect(player).toHaveClass(/base-media-player--idle/, { timeout: 6000 })
 	await page.mouse.move(400, 200)
 	await expect(player).not.toHaveClass(/base-media-player--idle/)
+	await page.mouse.move(400, 555, { steps: 4 })
+	await expect(player).toHaveClass(/base-media-player--idle/, { timeout: 500 })
 })
 
 test('субтитры: блок перетаскивается мышью в верх кадра', async ({ page }) => {
@@ -186,7 +190,7 @@ test('совместный просмотр: вкладка по ссылке п
 	await expect(page.locator('.base-media-player__watch-member').filter({ hasText: 'Смотрит' })).toHaveCount(0)
 })
 
-test('подгонка панели: открытое и закрытое меню не прячет кнопки первого ряда', async ({ page }) => {
+test('подгонка панели: панель глав и меню не прячут кнопки первого ряда', async ({ page }) => {
 	await openPlayer(page, 'episodes')
 	await page.setViewportSize({ width: 1000, height: 640 })
 	const bar = page.locator('.base-media-player__bar').first()
@@ -198,9 +202,9 @@ test('подгонка панели: открытое и закрытое мен
 	})
 
 	await page.locator('.base-media-player__chapter').click()
-	await expect(page.getByRole('menu', { name: 'Главы' })).toBeVisible()
+	await expect(page.getByRole('region', { name: 'Главы' })).toBeVisible()
 	await page.keyboard.press('Escape')
-	await expect(page.getByRole('menu', { name: 'Главы' })).toHaveCount(0)
+	await expect(page.getByRole('region', { name: 'Главы' })).toHaveCount(0)
 	await page.getByRole('button', { name: 'Скорость воспроизведения' }).click()
 	await page.keyboard.press('Escape')
 	await page.waitForTimeout(400)

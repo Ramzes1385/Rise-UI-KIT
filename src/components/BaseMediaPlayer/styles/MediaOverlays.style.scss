@@ -15,7 +15,7 @@
 	}
 
 	&__cover-leave-active {
-		transition: opacity 400ms var(--rise-ease);
+		transition: opacity var(--media-slow) var(--media-ease);
 	}
 
 	&__cover-leave-to {
@@ -28,7 +28,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: rgb(7 8 14 / 45%);
+		background-color: rgb(0 0 0 / 45%);
 		pointer-events: none;
 		backdrop-filter: blur(2px);
 	}
@@ -42,24 +42,24 @@
 	}
 
 	&__paused-enter-active {
-		transition: opacity 300ms var(--rise-ease) 80ms;
+		transition: opacity var(--media-normal) var(--media-ease) calc(var(--media-fast) / 3);
 	}
 
 	&__paused-leave-active {
-		transition: opacity 250ms var(--rise-ease);
+		transition: opacity var(--media-normal) var(--media-ease);
 	}
 
 	&__paused-enter-active &__big-play {
 		transition:
-			opacity 300ms var(--rise-ease) 80ms,
-			transform 300ms var(--rise-ease-out) 80ms;
+			opacity var(--media-normal) var(--media-ease) calc(var(--media-fast) / 3),
+			transform var(--media-slow) var(--media-spring) calc(var(--media-fast) / 3);
 	}
 
 	&__paused-leave-active &__big-play {
 		pointer-events: none;
 		transition:
-			opacity 250ms var(--rise-ease),
-			transform 250ms var(--rise-ease);
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
 	}
 
 	&__paused-enter-from,
@@ -67,10 +67,14 @@
 		opacity: 0;
 	}
 
-	&__paused-enter-from &__big-play,
+	&__paused-enter-from &__big-play {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+
 	&__paused-leave-to &__big-play {
 		opacity: 0;
-		transform: scale(0.8);
+		transform: scale(1.3);
 	}
 
 	&__start {
@@ -101,9 +105,9 @@
 		cursor: pointer;
 		pointer-events: auto;
 		transition:
-			background-color 300ms var(--rise-ease),
-			box-shadow 300ms var(--rise-ease),
-			transform 300ms var(--rise-ease-out);
+			background-color var(--media-normal) var(--media-ease),
+			box-shadow var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-spring);
 
 		.base-media-player__icon {
 			width: sz(40px);
@@ -114,12 +118,12 @@
 			box-shadow:
 				0 14px 44px var(--media-glow),
 				0 6px 16px rgb(0 0 0 / 30%);
-			transform: scale(1.06);
+			transform: scale(1.07);
 		}
 
 		&:active {
-			transform: scale(0.95);
-			transition-duration: 100ms;
+			transform: scale(0.94);
+			transition-duration: var(--media-fast);
 		}
 	}
 
@@ -128,7 +132,7 @@
 		margin: 0;
 		padding: sz(6px) sz(12px);
 		border-radius: sz(8px);
-		background-color: rgb(7 8 14 / 60%);
+		background-color: rgb(0 0 0 / 60%);
 		font-size: sz(14px);
 		text-align: center;
 	}
@@ -184,7 +188,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: rgb(7 8 14 / 50%);
+		background-color: rgb(0 0 0 / 50%);
 		color: white;
 		pointer-events: none;
 
@@ -200,7 +204,7 @@
 
 	&__loader-enter-active,
 	&__loader-leave-active {
-		transition: opacity 250ms var(--rise-ease);
+		transition: opacity var(--media-normal) var(--media-ease);
 	}
 
 	&__loader-enter-from,
@@ -217,7 +221,7 @@
 		justify-content: center;
 		gap: sz(8px);
 		padding: sz(32px);
-		background-color: rgb(7 8 14 / 86%);
+		background-color: rgb(0 0 0 / 86%);
 		text-align: center;
 	}
 
@@ -292,7 +296,7 @@
 	&__flash {
 		padding: sz(4px) sz(12px);
 		border-radius: sz(8px);
-		background-color: rgb(7 8 14 / 60%);
+		background-color: rgb(0 0 0 / 60%);
 		font-size: sz(13px);
 		font-weight: 500;
 	}
@@ -329,7 +333,7 @@
 		height: sz(40px);
 		overflow: hidden;
 		border-radius: sz(10px);
-		background-image: linear-gradient(135deg, var(--media-primary), #ec4899);
+		background-image: linear-gradient(135deg, #fbbf24, var(--media-primary-strong));
 		color: white;
 
 		.base-media-player__icon {
@@ -385,14 +389,14 @@
 
 	&__achievement-enter-active {
 		transition:
-			opacity 300ms var(--rise-ease-out),
-			transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-slow) var(--media-spring);
 	}
 
 	&__achievement-leave-active {
 		transition:
-			opacity 200ms var(--rise-ease),
-			transform 200ms var(--rise-ease);
+			opacity var(--media-fast) var(--rise-ease-in),
+			transform var(--media-fast) var(--rise-ease-in);
 	}
 
 	&__achievement-enter-from {
@@ -419,10 +423,10 @@
 		background-color: var(--media-panel);
 		box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
 		backdrop-filter: blur(10px);
-		transition: bottom 300ms var(--rise-ease);
+		transition: bottom var(--media-slow) var(--media-ease);
 
 		@include motion-safe {
-			animation: base-media-player-banner 300ms var(--rise-ease-out);
+			animation: base-media-player-banner var(--media-slow) var(--media-ease);
 		}
 
 		&--top-left {
@@ -521,9 +525,9 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition:
-			bottom 300ms var(--rise-ease),
-			background-color 200ms var(--rise-ease),
-			transform 200ms var(--rise-ease);
+			bottom var(--media-slow) var(--media-ease),
+			background-color var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-spring);
 		@include focus-ring;
 
 		.base-media-player__icon {
@@ -549,8 +553,8 @@
 	&__skip-enter-active,
 	&__skip-leave-active {
 		transition:
-			opacity 250ms var(--rise-ease),
-			transform 250ms var(--rise-ease);
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-slow) var(--media-ease);
 	}
 
 	&__skip-enter-from,
@@ -581,7 +585,7 @@
 		background-color: var(--media-panel-solid);
 		box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
 		backdrop-filter: blur(10px);
-		transition: bottom 300ms var(--rise-ease);
+		transition: bottom var(--media-slow) var(--media-ease);
 	}
 
 	&__next-ring {
@@ -698,8 +702,8 @@
 	&__next-enter-active,
 	&__next-leave-active {
 		transition:
-			opacity 300ms var(--rise-ease-out),
-			transform 300ms var(--rise-ease-out);
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-slow) var(--media-ease);
 	}
 
 	&__next-enter-from,

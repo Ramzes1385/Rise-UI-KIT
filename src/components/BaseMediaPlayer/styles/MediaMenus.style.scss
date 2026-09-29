@@ -13,9 +13,9 @@
 		border: 1px solid var(--media-border);
 		border-radius: sz(10px);
 		background-color: var(--media-panel);
-		box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
+		box-shadow: 0 12px 36px rgb(0 0 0 / 45%);
 		color: var(--media-text);
-		backdrop-filter: blur(10px);
+		backdrop-filter: blur(16px) saturate(140%);
 		transform-origin: bottom right;
 	}
 
@@ -28,24 +28,29 @@
 		transform-origin: bottom left;
 	}
 
-	&__popover-enter-active,
+	&__popover-enter-active {
+		transition:
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
+	}
+
 	&__popover-leave-active {
 		transition:
-			opacity 160ms var(--rise-ease),
-			transform 160ms var(--rise-ease);
+			opacity var(--media-fast) var(--rise-ease-in),
+			transform var(--media-fast) var(--rise-ease-in);
 	}
 
 	&__popover-enter-from,
 	&__popover-leave-to {
 		opacity: 0;
-		transform: translateY(#{sz(6px)}) scale(0.97);
+		transform: translateY(#{sz(8px)}) scale(0.94);
 	}
 
 	&__menu {
 		position: relative;
 		transition:
-			width 200ms var(--rise-ease),
-			height 200ms var(--rise-ease);
+			width var(--media-normal) var(--media-ease),
+			height var(--media-normal) var(--media-ease);
 	}
 
 	&__menu-view {
@@ -68,20 +73,20 @@
 	&__menu-back-enter-active,
 	&__menu-back-leave-active {
 		transition:
-			opacity 180ms var(--rise-ease),
-			transform 180ms var(--rise-ease);
+			opacity var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-ease);
 	}
 
 	&__menu-forward-enter-from,
 	&__menu-back-leave-to {
 		opacity: 0;
-		transform: translateX(#{sz(24px)});
+		transform: translateX(#{sz(32px)});
 	}
 
 	&__menu-forward-leave-to,
 	&__menu-back-enter-from {
 		opacity: 0;
-		transform: translateX(#{sz(-24px)});
+		transform: translateX(#{sz(-32px)});
 	}
 
 	&__menu-title,
@@ -141,7 +146,9 @@
 		text-align: left;
 		white-space: nowrap;
 		cursor: pointer;
-		@include transition(background-color, color);
+		transition:
+			background-color var(--media-fast) var(--media-ease),
+			color var(--media-fast) var(--media-ease);
 
 		&:hover,
 		&:focus-visible {

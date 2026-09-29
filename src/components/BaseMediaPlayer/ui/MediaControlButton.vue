@@ -12,7 +12,7 @@
 		<MediaIcon :name="icon" />
 		<span v-if="text" class="base-media-player__control-text" aria-hidden="true">{{ text }}</span>
 		<span v-if="caption" class="base-media-player__control-caption" aria-hidden="true">{{ caption }}</span>
-		<span v-if="badge" class="base-media-player__control-badge" aria-hidden="true">{{ badge }}</span>
+		<span v-if="badge" :key="badge" class="base-media-player__control-badge" aria-hidden="true">{{ badge }}</span>
 	</button>
 </template>
 
