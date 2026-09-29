@@ -1,8 +1,7 @@
 import { formatMediaTime } from './mediaTime'
-import { UI_PLAYER } from '@/locales/messages'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { formatMessage, formatNumber } from '@/locales/state'
 import type { MediaStatsRow } from '../types/MediaStatsPanel.types'
+import { UI_PLAYER, formatMessage, formatNumber } from './messages'
 import type { MediaState, MediaElementRef, MediaSourceItem } from '../types/MediaCore.types'
 
 const REFRESH_INTERVAL = 1000

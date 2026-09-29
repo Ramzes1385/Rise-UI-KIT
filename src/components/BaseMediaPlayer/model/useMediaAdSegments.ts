@@ -1,5 +1,5 @@
 import { computed, watch } from 'vue'
-import { UI_PLAYER } from '@/locales/messages'
+import { UI_PLAYER } from './messages'
 import type { MediaAdSegment, MediaAdsOptions } from '../types/MediaAds.types'
 
 const END_TOLERANCE = 0.5

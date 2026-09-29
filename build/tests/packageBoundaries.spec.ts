@@ -1,14 +1,22 @@
 /** Регрессия: utils/index.ts реэкспортировал storybookUtils с runtime-импортом 'storybook/test' — lib-сборка вшивала тестовый рантайм Storybook (~600 КБ) в dist/utils, подгружаемый при импорте корня пакета. */
 
-import { existsSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join, relative, resolve } from 'node:path'
+import ts from 'typescript'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const SRC = join(ROOT, 'src')
 
 /** Входы lib-сборки: src/index.ts и subpath-входы из package.json exports */
-const PUBLIC_ENTRIES = ['index.ts', 'components/index.ts', 'composables/index.ts', 'utils/index.ts', 'icons/index.ts']
+const PUBLIC_ENTRIES = [
+	'index.ts',
+	'components/index.ts',
+	'composables/index.ts',
+	'utils/index.ts',
+	'icons/index.ts',
+	'components/BaseMediaPlayer/index.ts',
+]
 
 const ALIASES: Record<string, string> = {
 	'@components': 'components',
@@ -88,5 +96,69 @@ describe('границы npm-пакета', () => {
 		const externals = collectExternalImports()
 		expect(externals.has('storybook')).toBe(false)
 		expect(externals.has('@storybook/vue3')).toBe(false)
+	})
+})
+
+/** Входы кита, через которые плеер (отдельный вход `/media`, позже — отдельный пакет) может брать его код */
+const KIT_ENTRIES = ['index.ts', 'components/index.ts', 'composables/index.ts', 'utils/index.ts', 'icons/index.ts']
+
+const MEDIA_DIR = join(SRC, 'components/BaseMediaPlayer')
+
+function kitPublicNames(): Set<string> {
+	const host = { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => undefined }
+	const config = ts.getParsedCommandLineOfConfigFile(join(ROOT, 'tsconfig.app.json'), {}, host)
+	const entries = KIT_ENTRIES.map(entry => join(SRC, entry))
+	const program = ts.createProgram(entries, config?.options ?? {})
+	const checker = program.getTypeChecker()
+	return new Set(
+		entries.flatMap(entry => {
+			const moduleSymbol = checker.getSymbolAtLocation(program.getSourceFile(entry) as ts.SourceFile)
+			return moduleSymbol ? checker.getExportsOfModule(moduleSymbol).map(symbol => symbol.name) : []
+		}),
+	)
+}
+
+function listSources(dir: string): string[] {
+	return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+		const path = join(dir, entry.name)
+		if (entry.isDirectory()) return ['__tests__', 'stories'].includes(entry.name) ? [] : listSources(path)
+		return /\.(ts|vue)$/.test(entry.name) ? [path] : []
+	})
+}
+
+function importedNames(clause: ts.ImportClause | undefined, exportClause: ts.NamedExportBindings | undefined): string[] {
+	const names: string[] = []
+	if (clause?.name) names.push('default')
+	const bindings = clause?.namedBindings ?? exportClause
+	if (bindings && (ts.isNamespaceImport(bindings) || ts.isNamespaceExport(bindings))) names.push('*')
+	else if (bindings) bindings.elements.forEach(element => names.push((element.propertyName ?? element.name).text))
+	return names
+}
+
+/** Импорты папки плеера из остального кита: файл, модуль и импортируемые имена */
+function mediaKitImports(): Array<{ file: string; specifier: string; name: string }> {
+	return listSources(MEDIA_DIR).flatMap(file => {
+		let source = readFileSync(file, 'utf8')
+		if (file.endsWith('.vue')) source = [...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1]).join('\n')
+		const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest)
+		return tree.statements.flatMap(statement => {
+			if (!(ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) || !statement.moduleSpecifier) return []
+			const specifier = (statement.moduleSpecifier as ts.StringLiteral).text
+			const target = resolveSpecifier(specifier, file)
+			if (!target || target.startsWith(MEDIA_DIR + sep)) return []
+			const names = ts.isImportDeclaration(statement)
+				? importedNames(statement.importClause, undefined)
+				: importedNames(undefined, statement.exportClause)
+			return names.map(name => ({ file: relative(ROOT, file), specifier, name }))
+		})
+	})
+}
+
+describe('границы плеера', () => {
+	it('папка плеера берёт код кита только из его публичных входов: каждое имя экспортирует пакет', () => {
+		const imports = mediaKitImports()
+		const publicNames = kitPublicNames()
+		expect(imports.length).toBeGreaterThan(0)
+		expect(imports.filter(({ name }) => !publicNames.has(name))).toEqual([])
 	})
 })

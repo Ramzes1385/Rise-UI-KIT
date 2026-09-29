@@ -1,6 +1,6 @@
 import { ref } from 'vue'
+import { UI_PLAYER } from './messages'
 import { isSubtitleFile } from './subtitles'
-import { UI_PLAYER } from '@/locales/messages'
 import { useCaptionStyle } from './useCaptionStyle'
 import { useMediaSubtitles } from './useMediaSubtitles'
 import type { MediaState, MediaElementRef } from '../types/MediaCore.types'

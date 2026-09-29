@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { UI_PLAYER } from '@/locales/messages'
+import { UI_PLAYER } from '../model/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'

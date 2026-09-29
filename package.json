@@ -50,6 +50,10 @@
       "types": "./dist/icons/index.d.ts",
       "import": "./dist/icons.js"
     },
+    "./media": {
+      "types": "./dist/components/BaseMediaPlayer/index.d.ts",
+      "import": "./dist/media.js"
+    },
     "./styles": {
       "types": "./dist/styles.d.ts",
       "import": "./dist/styles.css",
@@ -256,7 +260,9 @@
       "src/composables/index.ts",
       "src/utils/index.ts",
       "src/icons/index.ts",
-      "scripts/*.mjs"
+      "src/components/BaseMediaPlayer/index.ts",
+      "scripts/*.mjs",
+      "build/media-package/extract.mjs"
     ],
     "project": [
       "src/**/*.{ts,vue,mdx}",
@@ -314,6 +320,9 @@
       "@semantic-release/release-notes-generator",
       "conventional-changelog-conventionalcommits",
       "lightningcss"
+    ],
+    "ignore": [
+      "build/media-package/template/**"
     ],
     "ignoreIssues": {
       "src/plugin/plugin.ts": [

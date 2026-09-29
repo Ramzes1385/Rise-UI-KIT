@@ -1,6 +1,5 @@
 import { isSafeUrl } from '@utils/urlUtils'
-import { UI_PLAYER } from '@/locales/messages'
-import { formatMessage } from '@/locales/state'
+import { UI_PLAYER, formatMessage } from './messages'
 import type { MediaElementRef } from '../types/MediaCore.types'
 import { activeCueText, cueLines, decodeSubtitles, parseSubtitles } from './subtitles'
 import { computed, onBeforeUnmount, onMounted, ref, shallowReactive, watch } from 'vue'

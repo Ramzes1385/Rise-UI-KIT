@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { captionPreset } from './subtitles'
-import { UI_PLAYER } from '@/locales/messages'
-import { formatNumber } from '@/locales/state'
+import { UI_PLAYER, formatNumber } from './messages'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 import type { MediaSettingsMenuEmits, MediaSettingsMenuProps } from '../types/MediaSettingsMenu.types'
 import type { MediaCaptionColor, MediaCaptionStyle, MediaCaptionPreset, MediaCaptionBackground } from '../types/MediaSubtitles.types'

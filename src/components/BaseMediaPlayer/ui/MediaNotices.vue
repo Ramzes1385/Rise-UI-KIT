@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { UI_ARIA, UI_PLAYER } from '@/locales/messages'
+import { UI_ARIA, UI_PLAYER } from '../model/messages'
 import { usePlayerContext } from '../model/usePlayerContext'
 import type { MediaNoticesSlots } from '../types/MediaNotices.types'
 

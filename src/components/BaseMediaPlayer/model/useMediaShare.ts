@@ -1,5 +1,5 @@
+import { UI_PLAYER } from './messages'
 import { onBeforeUnmount, ref } from 'vue'
-import { UI_PLAYER } from '@/locales/messages'
 
 const FLASH_DURATION = 2000
 

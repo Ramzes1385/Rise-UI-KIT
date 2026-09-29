@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { UI_PLAYER } from '@/locales/messages'
+import { UI_PLAYER } from './messages'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 
 export function useMediaContextMenu(options: {

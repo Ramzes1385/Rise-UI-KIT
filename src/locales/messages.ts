@@ -18,8 +18,6 @@ export const UI_COLOR_PICKER = localized('colorPicker')
 
 export const UI_RATING = localized('rating')
 
-export const UI_PLAYER = localized('player')
-
 /** Таблица: тексты и доступные имена элементов управления */
 export const TABLE_TEXT = localized('table')
 

@@ -1,7 +1,6 @@
-import { UI_PLAYER } from '@/locales/messages'
 import { computed, ref, shallowRef, watch } from 'vue'
-import { formatMessage, formatNumber } from '@/locales/state'
 import type { MediaAudioProvider } from '../types/MediaAudio.types'
+import { UI_PLAYER, formatMessage, formatNumber } from './messages'
 import type { MediaPlayerError, MediaSourceItem } from '../types/MediaCore.types'
 import type {
 	MediaHlsLevel,

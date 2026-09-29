@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { UI_PLAYER } from '@/locales/messages'
+import { UI_PLAYER } from './messages'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { MediaPlayerProps } from '../types/BaseMediaPlayer.types'
 import type { MediaState, MediaErrorCode, MediaSourceItem, MediaPlayerError } from '../types/MediaCore.types'

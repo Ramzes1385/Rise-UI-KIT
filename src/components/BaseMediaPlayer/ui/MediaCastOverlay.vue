@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import MediaSlider from './MediaSlider.vue'
-import { UI_PLAYER } from '@/locales/messages'
+import { UI_PLAYER } from '../model/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { usePlayerContext } from '../model/usePlayerContext'

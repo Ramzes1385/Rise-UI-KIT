@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { UI_PLAYER } from '@/locales/messages'
+import { UI_PLAYER } from './messages'
 import type { MediaReportReason } from '../types/BaseMediaPlayer.types'
 import type { MediaReportFormEmits, MediaReportFormProps } from '../types/MediaReportForm.types'
 

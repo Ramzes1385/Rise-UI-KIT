@@ -15,7 +15,7 @@
 import { BaseModal } from '@components/BaseModal'
 import { BaseRadio } from '@components/BaseRadio'
 import { BaseButton } from '@components/BaseButton'
-import { UI_PLAYER, UI_TEXT } from '@/locales/messages'
+import { UI_PLAYER, UI_TEXT } from '../model/messages'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { useMediaReportForm } from '../model/useMediaReportForm'
 import type { MediaReportFormEmits, MediaReportFormProps } from '../types/MediaReportForm.types'

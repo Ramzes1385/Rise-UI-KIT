@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { UI_ARIA, UI_PLAYER } from '@/locales/messages'
+import { UI_ARIA, UI_PLAYER } from '../model/messages'
 import type { MediaStatsPanelEmits, MediaStatsPanelProps } from '../types/MediaStatsPanel.types'
 
 defineProps<MediaStatsPanelProps>()

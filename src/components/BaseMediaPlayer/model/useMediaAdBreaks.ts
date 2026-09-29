@@ -1,8 +1,7 @@
 import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
-import { UI_PLAYER } from '@/locales/messages'
-import { formatMessage } from '@/locales/state'
 import { resolveVast, sendPixels } from './vast'
+import { UI_PLAYER, formatMessage } from './messages'
 import { computed, onBeforeUnmount, ref, shallowReactive, watch } from 'vue'
 import type {
 	MediaAdBreak,

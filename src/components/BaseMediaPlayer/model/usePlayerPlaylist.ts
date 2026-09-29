@@ -1,7 +1,6 @@
 import { formatMediaTime } from './mediaTime'
-import { UI_PLAYER } from '@/locales/messages'
-import { formatMessage } from '@/locales/state'
 import { computed, nextTick, ref, watch } from 'vue'
+import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaChapters } from './useMediaChapters'
 import { useMediaPlaylist } from './useMediaPlaylist'
 import { useNextCountdown } from './useNextCountdown'

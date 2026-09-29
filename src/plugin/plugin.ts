@@ -75,7 +75,6 @@ import { BaseButtonGroup } from '../components/BaseButtonGroup'
 import { BaseColorPicker } from '../components/BaseColorPicker'
 import { BaseContextMenu } from '../components/BaseContextMenu'
 import { BaseInputNumber } from '../components/BaseInputNumber'
-import { BaseMediaPlayer } from '../components/BaseMediaPlayer'
 import { BaseSplitButton } from '../components/BaseSplitButton'
 import { BaseVirtualList } from '../components/BaseVirtualList'
 import { BaseAutocomplete } from '../components/BaseAutocomplete'
@@ -144,7 +143,6 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseLayout,
 	BaseLink,
 	BaseLoader,
-	BaseMediaPlayer,
 	BaseMegaMenu,
 	BaseMenu,
 	BaseModal,
