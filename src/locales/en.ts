@@ -169,6 +169,7 @@ export const en: UiKitLocale = {
 		VOICE_MESSAGE: 'Voice message',
 		ERROR_DENIED: 'No access to the microphone. Allow it in the browser settings',
 		ERROR_NO_DEVICE: 'No microphone found',
+		ERROR_INSECURE: 'The microphone is only available over HTTPS or on localhost',
 		ERROR_UNSUPPORTED: 'This browser cannot record audio',
 		ERROR_RECORD: 'Could not record audio',
 	},

@@ -482,6 +482,12 @@ $media-ad: #fc0;
 		object-fit: contain;
 	}
 
+	&__ad-surface {
+		position: absolute;
+		inset: 0;
+		cursor: pointer;
+	}
+
 	&__ad-bar {
 		position: relative;
 		display: flex;

@@ -61,6 +61,7 @@
 				:commands="commands"
 				:is-group="isGroup"
 				:has-voice="hasVoiceMessages"
+				:request-voice-stream="requestVoiceStream"
 				@send="handleSend"
 				@send-voice="handleSendVoice"
 				@attach="handleAttach"

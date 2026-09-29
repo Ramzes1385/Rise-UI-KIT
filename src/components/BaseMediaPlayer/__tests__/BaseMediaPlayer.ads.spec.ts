@@ -46,6 +46,14 @@ describe('BaseMediaPlayer: реклама', () => {
 			target: '_blank',
 			rel: 'noopener noreferrer sponsored',
 		})
+		const surface = wrapper.get('.base-media-player__ad-surface')
+		expect(surface.attributes()).toMatchObject({
+			href: 'https://example.com/promo',
+			target: '_blank',
+			tabindex: '-1',
+			'aria-hidden': 'true',
+		})
+		await surface.trigger('click')
 		await link.trigger('click')
 		await wrapper.get('.base-media-player__ad button[aria-label="Воспроизвести"]').trigger('click')
 		vi.advanceTimersByTime(1000)
@@ -53,7 +61,7 @@ describe('BaseMediaPlayer: реклама', () => {
 		await wrapper.get('.base-media-player__ad-skip').trigger('click')
 		expect(wrapper.classes()).not.toContain('base-media-player--ad')
 		expect(fake.play).toHaveBeenCalledTimes(2)
-		expect(adEvents()).toEqual(['start:banner', 'click:banner', 'skip:banner'])
+		expect(adEvents()).toEqual(['start:banner', 'click:banner', 'click:banner', 'skip:banner'])
 		wrapper.unmount()
 	})
 

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
 import BaseWaveform from '../ui/BaseWaveform.vue'
 import { render, screen } from '@testing-library/vue'
 
@@ -14,6 +15,49 @@ describe('BaseWaveform unit', () => {
 		const bars = [...container.querySelectorAll<HTMLElement>('.base-waveform__bar')]
 		expect(bars.map(bar => bar.style.height)).toEqual(['20%', '100%', '50%', '6%'])
 		expect(bars.map(bar => bar.classList.contains('base-waveform__bar--played'))).toEqual([true, true, false, false])
+	})
+
+	it('столбиков столько, сколько помещается по ширине: волна всегда на всю ширину', async () => {
+		const observers: Array<() => void> = []
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				constructor(callback: () => void) {
+					observers.push(callback)
+				}
+				observe(): void {
+					observers.at(-1)?.()
+				}
+				disconnect = vi.fn()
+			},
+		)
+		const style = vi.spyOn(window, 'getComputedStyle').mockReturnValue({ columnGap: '2px' } as CSSStyleDeclaration)
+		const width = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(98)
+		const bars = (container: Element): string[] =>
+			[...container.querySelectorAll<HTMLElement>('.base-waveform__bar')].map(bar => bar.style.height)
+
+		const wide = setup({ peaks: [0, 1] })
+		await nextTick()
+		expect(bars(wide.container)).toHaveLength(20)
+		expect(bars(wide.container).slice(0, 3)).toEqual(['6%', '6%', `${(2 / 19) * 100}%`])
+		const dense = setup({ peaks: Array.from({ length: 40 }, (_, index) => (index % 2 ? 1 : 0.1)) })
+		await nextTick()
+		expect(new Set(bars(dense.container))).toEqual(new Set(['100%']))
+
+		width.mockReturnValue(10)
+		const narrow = setup()
+		await nextTick()
+		expect(bars(narrow.container)).toHaveLength(8)
+		style.mockReturnValue({ columnGap: '' } as CSSStyleDeclaration)
+		const unknownGap = setup()
+		await nextTick()
+		expect(bars(unknownGap.container)).toHaveLength(PEAKS.length)
+		narrow.unmount()
+		vi.stubGlobal('ResizeObserver', undefined)
+		const noObserver = setup()
+		await nextTick()
+		expect(bars(noObserver.container)).toHaveLength(PEAKS.length)
+		vi.unstubAllGlobals()
 	})
 
 	it('шкала для скринридера: имя, границы, позиция текстом', () => {

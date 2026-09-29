@@ -137,10 +137,11 @@ describe('BaseAudioPlayer', () => {
 	})
 
 	it('отключённый плеер не запускается и не перематывается', async () => {
-		const { fake } = setup({ isDisabled: true })
+		const { fake, rerender } = setup({ isDisabled: true })
 		fake.emit('durationchange')
 		await fireEvent.click(screen.getByRole('button', { name: 'Воспроизвести' }))
 		await fireEvent.keyDown(screen.getByRole('slider'), { key: 'End' })
+		await rerender({ currentTime: 6 })
 		expect(fake.play).not.toHaveBeenCalled()
 		expect(fake.values.currentTime).toBe(0)
 		expect(screen.getByRole('group')).toHaveClass('base-audio-player--disabled')

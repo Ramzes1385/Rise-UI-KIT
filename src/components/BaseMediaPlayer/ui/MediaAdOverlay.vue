@@ -14,6 +14,15 @@
 			@ended="completeAd"
 			@error="failAd"></video>
 		<img v-else class="base-media-player__ad-media" :src="currentAd.src" :alt="currentAd.title ?? ''" />
+		<a
+			v-if="adLink"
+			class="base-media-player__ad-surface"
+			:href="adLink"
+			target="_blank"
+			rel="noopener noreferrer sponsored"
+			tabindex="-1"
+			aria-hidden="true"
+			@click="clickAd"></a>
 		<div class="base-media-player__ad-bar">
 			<span class="base-media-player__ad-label">{{ adLabel }}</span>
 			<BaseButton variant="ghost" class="base-media-player__button" :aria-label="adPauseLabel" @click="toggleAdPause">

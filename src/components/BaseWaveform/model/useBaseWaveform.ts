@@ -1,7 +1,7 @@
-import { computed, useId } from 'vue'
 import { UI_AUDIO } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { formatMediaTime } from '@utils/mediaUtils'
+import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import type { BaseWaveformEmits, BaseWaveformProps } from '../types/BaseWaveform.types'
 
@@ -10,6 +10,10 @@ const DRAG_THRESHOLD = 4
 const MIN_BAR = 0.06
 
 const PAGE_SHARE = 0.1
+
+const BAR_TO_GAP = 1.5
+
+const MIN_BARS = 8
 
 function clampTime(time: number, duration: number): number {
 	return Math.min(Math.max(time, 0), Math.max(duration, 0))
@@ -22,40 +26,71 @@ function timeAt(event: PointerEvent, duration: number): number {
 
 function useWaveformPointer(props: BaseWaveformProps, emit: BaseWaveformEmits) {
 	let origin: { x: number; time: number } | null = null
-	let isDragging = false
-	const drag = (event: PointerEvent): number => {
+	let isSelecting = false
+	const select = (event: PointerEvent): number => {
 		const time = timeAt(event, props.duration)
-		const start = origin?.time ?? time
-		if (props.isSelectable) emit('update:selection', { start: Math.min(start, time), end: Math.max(start, time) })
-		else emit('update:currentTime', time)
-		return Math.min(start, time)
+		const start = Math.min(origin?.time ?? time, time)
+		emit('update:selection', { start, end: Math.max(origin?.time ?? time, time) })
+		return start
 	}
 	return {
 		onPointerDown(event: PointerEvent): void {
 			if (props.isDisabled || event.button !== 0) return
 			;(event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId)
 			origin = { x: event.clientX, time: timeAt(event, props.duration) }
-			isDragging = false
+			isSelecting = false
+			emit('update:currentTime', origin.time)
 		},
 		onPointerMove(event: PointerEvent): void {
-			if (!origin || (!isDragging && Math.abs(event.clientX - origin.x) < DRAG_THRESHOLD)) return
-			isDragging = true
-			drag(event)
+			if (!origin) return
+			if (!props.isSelectable) return emit('update:currentTime', timeAt(event, props.duration))
+			if (!isSelecting && Math.abs(event.clientX - origin.x) < DRAG_THRESHOLD) return
+			isSelecting = true
+			select(event)
 		},
 		onPointerUp(event: PointerEvent): void {
 			if (!origin) return
-			const start = isDragging ? drag(event) : null
-			if (start !== null && props.isSelectable) emit('update:currentTime', start)
-			else if (start === null) {
-				emit('update:currentTime', origin.time)
-				if (props.selection) emit('update:selection', null)
-			}
+			if (isSelecting) emit('update:currentTime', select(event))
+			else if (props.selection) emit('update:selection', null)
 			origin = null
 		},
 		onPointerCancel(): void {
 			origin = null
 		},
 	}
+}
+
+function fitPeaks(peaks: number[], count: number): number[] {
+	if (count === peaks.length || peaks.length < 2) return peaks
+	const step = (peaks.length - 1) / Math.max(count - 1, 1)
+	if (count > peaks.length)
+		return Array.from({ length: count }, (_, index) => {
+			const position = index * step
+			const low = Math.floor(position)
+			const high = Math.min(low + 1, peaks.length - 1)
+			return peaks[low] + (peaks[high] - peaks[low]) * (position - low)
+		})
+	const size = peaks.length / count
+	return Array.from({ length: count }, (_, index) =>
+		Math.max(...peaks.slice(Math.floor(index * size), Math.max(Math.floor((index + 1) * size), Math.floor(index * size) + 1))),
+	)
+}
+
+function useBarCount(rootRef: Readonly<{ value: HTMLElement | null }>) {
+	const count = ref(0)
+	let observer: ResizeObserver | null = null
+	const measure = (): void => {
+		const element = rootRef.value as HTMLElement
+		const gap = Number.parseFloat(getComputedStyle(element).columnGap)
+		count.value = gap > 0 ? Math.max(MIN_BARS, Math.floor((element.clientWidth + gap) / (gap * (BAR_TO_GAP + 1)))) : 0
+	}
+	onMounted(() => {
+		if (!rootRef.value || typeof ResizeObserver === 'undefined') return
+		observer = new ResizeObserver(measure)
+		observer.observe(rootRef.value)
+	})
+	onBeforeUnmount(() => observer?.disconnect())
+	return count
 }
 
 function useWaveformKeys(props: BaseWaveformProps, emit: BaseWaveformEmits) {
@@ -92,14 +127,15 @@ function useWaveformKeys(props: BaseWaveformProps, emit: BaseWaveformEmits) {
 	}
 }
 
-function useWaveformView(props: BaseWaveformProps) {
+function useWaveformView(props: BaseWaveformProps, barCount: Readonly<{ value: number }>) {
 	const fraction = computed(() => (props.duration > 0 ? clampTime(props.currentTime ?? 0, props.duration) / props.duration : 0))
 	const share = (time: number): string => `${(Math.max(time, 0) / (props.duration || 1)) * 100}%`
+	const levels = computed(() => fitPeaks(props.peaks, barCount.value || props.peaks.length))
 	return {
 		bars: computed(() =>
-			props.peaks.map((peak, index) => ({
+			levels.value.map((peak, index) => ({
 				height: `${Math.max(Math.min(peak, 1), MIN_BAR) * 100}%`,
-				isPlayed: (index + 0.5) / props.peaks.length <= fraction.value,
+				isPlayed: (index + 0.5) / levels.value.length <= fraction.value,
 			})),
 		),
 		selectionStyle: computed(() => {
@@ -125,9 +161,11 @@ function useWaveformView(props: BaseWaveformProps) {
 }
 
 export function useBaseWaveform(props: BaseWaveformProps, emit: BaseWaveformEmits) {
+	const rootRef = ref<HTMLElement | null>(null)
 	return {
 		...useStandardBaseComponent('base-waveform', props, ['root', 'bar', 'selection']),
-		...useWaveformView(props),
+		rootRef,
+		...useWaveformView(props, useBarCount(rootRef)),
 		...useWaveformPointer(props, emit),
 		...useWaveformKeys(props, emit),
 		selectionId: `base-waveform-${useId()}`,

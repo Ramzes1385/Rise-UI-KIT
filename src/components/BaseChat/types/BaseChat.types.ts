@@ -104,6 +104,8 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	description?: string
 	/** Голосовые сообщения: кнопка микрофона вместо «Отправить», пока поле пустое; запись приходит событием `send-voice` */
 	hasVoiceMessages?: boolean
+	/** Источник звука для голосовых вместо микрофона — как `requestStream` у BaseVoiceRecorder */
+	requestVoiceStream?: () => Promise<MediaStream>
 }
 
 export interface BaseChatEmits {

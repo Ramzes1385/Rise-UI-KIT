@@ -28,7 +28,6 @@
 	&__bar {
 		flex: 1 1 0;
 		min-width: 1px;
-		max-width: sz(4px);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--waveform-rest);
 		@include transition(background-color);

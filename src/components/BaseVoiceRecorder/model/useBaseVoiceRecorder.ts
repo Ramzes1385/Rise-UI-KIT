@@ -3,7 +3,7 @@ import { formatMessage } from '@/locales/state'
 import { formatMediaTime, resampleLevels } from '@utils/mediaUtils'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, watch } from 'vue'
-import { canRecord, captureError, levelOf, pickMimeType, stopStream } from './voiceCapture'
+import { canRecord, captureError, isInsecurePage, levelOf, openStream, pickMimeType, stopStream } from './voiceCapture'
 import type {
 	VoiceRecording,
 	VoiceRecorderError,
@@ -19,6 +19,7 @@ const TICK = 100
 const ERROR_TEXT: Record<VoiceRecorderError['code'], () => string> = {
 	denied: () => UI_AUDIO.ERROR_DENIED,
 	'no-device': () => UI_AUDIO.ERROR_NO_DEVICE,
+	insecure: () => UI_AUDIO.ERROR_INSECURE,
 	unsupported: () => UI_AUDIO.ERROR_UNSUPPORTED,
 	failed: () => UI_AUDIO.ERROR_RECORD,
 }
@@ -89,7 +90,7 @@ function useCapture(
 	let isCanceled = false
 	return {
 		async open(): Promise<void> {
-			stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+			stream = await openStream(props.requestStream)
 			const chunks: Blob[] = []
 			recorder = new MediaRecorder(stream, { mimeType: pickMimeType(props.mimeType) || undefined })
 			const mime = recorder.mimeType
@@ -173,7 +174,9 @@ function useRecorderActions(props: BaseVoiceRecorderProps, emit: BaseVoiceRecord
 	return {
 		async start(): Promise<void> {
 			if (props.isDisabled || state.value === 'recording' || state.value === 'requesting') return
-			if (!canRecord()) return fail({ code: 'unsupported' })
+			const hasSource = Boolean(props.requestStream)
+			if (isInsecurePage(hasSource)) return fail({ code: 'insecure' })
+			if (!canRecord(hasSource)) return fail({ code: 'unsupported' })
 			reset()
 			state.value = 'requesting'
 			try {

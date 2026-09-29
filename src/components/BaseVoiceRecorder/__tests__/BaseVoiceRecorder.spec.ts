@@ -90,6 +90,31 @@ describe('BaseVoiceRecorder', () => {
 		expect(screen.getByText('Браузер не умеет записывать звук')).toBeInTheDocument()
 	})
 
+	it('requestStream — свой источник звука вместо микрофона, даже без mediaDevices', async () => {
+		const env = installRecorderEnvironment()
+		Reflect.deleteProperty(navigator, 'mediaDevices')
+		const requestStream = vi.fn(async () => env.stream)
+		render(BaseVoiceRecorder, { props: { requestStream } })
+		await fireEvent.click(screen.getByRole('button', { name: 'Записать голосовое сообщение' }))
+		await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Остановить запись' })).toBeEnabled())
+		expect(requestStream).toHaveBeenCalledOnce()
+		expect(env.getUserMedia).not.toHaveBeenCalled()
+	})
+
+	it('страница не по HTTPS — браузер не даёт микрофон: сообщение и код insecure; со своим источником записывает', async () => {
+		const env = installRecorderEnvironment()
+		vi.stubGlobal('isSecureContext', false)
+		const { emitted, rerender } = render(BaseVoiceRecorder)
+		await fireEvent.click(screen.getByRole('button', { name: 'Записать голосовое сообщение' }))
+		expect(screen.getByText('Микрофон доступен только на странице с HTTPS или на localhost')).toBeInTheDocument()
+		expect((emitted('error') as Array<[{ code: string }]>)[0][0].code).toBe('insecure')
+		expect(env.getUserMedia).not.toHaveBeenCalled()
+
+		await rerender({ requestStream: async () => env.stream })
+		await fireEvent.click(screen.getByRole('button', { name: 'Записать голосовое сообщение' }))
+		await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Остановить запись' })).toBeEnabled())
+	})
+
 	it('методы через ref; повторный старт во время записи и старт отключённого — без действия; удаление компонента освобождает микрофон', async () => {
 		const env = installRecorderEnvironment()
 		vi.stubGlobal('AudioContext', undefined)

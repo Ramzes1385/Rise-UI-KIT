@@ -9,8 +9,16 @@ const ERROR_CODES: Record<string, VoiceRecorderError['code']> = {
 	OverconstrainedError: 'no-device',
 }
 
-export function canRecord(): boolean {
-	return typeof MediaRecorder !== 'undefined' && typeof navigator !== 'undefined' && Boolean(navigator.mediaDevices?.getUserMedia)
+export function canRecord(hasSource: boolean): boolean {
+	return typeof MediaRecorder !== 'undefined' && (hasSource || Boolean(globalThis.navigator?.mediaDevices?.getUserMedia))
+}
+
+export function isInsecurePage(hasSource: boolean): boolean {
+	return !hasSource && globalThis.isSecureContext === false
+}
+
+export function openStream(request: (() => Promise<MediaStream>) | undefined): Promise<MediaStream> {
+	return request ? request() : navigator.mediaDevices.getUserMedia({ audio: true })
 }
 
 export function pickMimeType(preferred: string | undefined): string {

@@ -37,6 +37,7 @@
 				class="base-chat-input__recorder"
 				variant="soft"
 				:size-scale="sizeScale"
+				:request-stream="requestVoiceStream"
 				@record="handleVoiceRecord"
 				@state-change="handleVoiceState" />
 			<BaseButton

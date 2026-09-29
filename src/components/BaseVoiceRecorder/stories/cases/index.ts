@@ -1,4 +1,5 @@
 export { Default } from './Default'
+export { DemoMicrophone } from './DemoMicrophone'
 export { Preview } from './Preview'
 export { Denied } from './Denied'
 export { Disabled } from './Disabled'

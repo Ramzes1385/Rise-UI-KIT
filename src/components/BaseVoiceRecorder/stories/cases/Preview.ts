@@ -1,14 +1,20 @@
 import { expect, waitFor } from 'storybook/test'
-import { installDemoMicrophone } from '../micDemo'
+import { demoMicrophoneStream } from '../micDemo'
 import type meta from '../BaseVoiceRecorder.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Preview: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Готовая запись: волна из уровней звука во время записи, «Удалить» и «Отправить».' } },
+		docs: {
+			description: {
+				story: [
+					'Готовая запись: волна из уровней звука во время записи, «Удалить» и «Отправить».',
+					'Звук — эмуляция через `requestStream` (тон из Web Audio), чтобы историю можно было посмотреть без микрофона.',
+				].join('\n'),
+			},
+		},
 	},
-	args: { variant: 'soft' },
-	beforeEach: () => installDemoMicrophone(),
+	args: { variant: 'soft', requestStream: demoMicrophoneStream },
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Записать голосовое сообщение' }))
 		const stop = await canvas.findByRole('button', { name: 'Остановить запись' })

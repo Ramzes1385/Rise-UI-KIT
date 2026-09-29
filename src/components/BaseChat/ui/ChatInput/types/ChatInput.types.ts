@@ -16,6 +16,8 @@ export interface ChatInputProps {
 	isGroup?: boolean
 	/** Кнопка записи голосового сообщения, пока поле пустое */
 	hasVoice?: boolean
+	/** Источник звука вместо микрофона для BaseVoiceRecorder */
+	requestVoiceStream?: () => Promise<MediaStream>
 }
 
 export interface ChatInputEmits {

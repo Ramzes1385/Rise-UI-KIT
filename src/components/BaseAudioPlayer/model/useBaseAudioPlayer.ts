@@ -86,7 +86,11 @@ function useAudioState(audioRef: Readonly<{ value: HTMLAudioElement | null }>, e
 
 function useAudioActions(
 	props: BaseAudioPlayerProps,
-	audio: { ref: Readonly<{ value: HTMLAudioElement | null }>; fail: (error: AudioPlayerError) => void },
+	audio: {
+		ref: Readonly<{ value: HTMLAudioElement | null }>
+		fail: (error: AudioPlayerError) => void
+		state: { currentTime: number }
+	},
 ) {
 	const play = async (): Promise<void> => {
 		const element = audio.ref.value
@@ -102,7 +106,9 @@ function useAudioActions(
 		pause,
 		togglePlay: (): Promise<void> | void => (audio.ref.value?.paused === false ? pause() : play()),
 		seek(time: number): void {
-			if (audio.ref.value && !props.isDisabled) audio.ref.value.currentTime = time
+			if (!audio.ref.value || props.isDisabled) return
+			audio.ref.value.currentTime = time
+			audio.state.currentTime = time
 		},
 	}
 }
@@ -123,7 +129,7 @@ function useRate(props: BaseAudioPlayerProps, audioRef: Readonly<{ value: HTMLAu
 export function useBaseAudioPlayer(props: BaseAudioPlayerProps, emit: BaseAudioPlayerEmits) {
 	const audioRef = ref<HTMLAudioElement | null>(null)
 	const { state, fail, handlers } = useAudioState(audioRef, emit)
-	const actions = useAudioActions(props, { ref: audioRef, fail })
+	const actions = useAudioActions(props, { ref: audioRef, fail, state })
 	const duration = computed(() => (Number.isFinite(state.duration) ? state.duration : (props.duration ?? 0)))
 	watch(
 		() => props.currentTime,

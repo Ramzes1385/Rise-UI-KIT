@@ -16,9 +16,12 @@ export interface VoiceRecording {
 	peaks: number[]
 }
 
-/** Ошибка записи: нет доступа к микрофону, микрофона нет, браузер не умеет записывать или запись сорвалась */
+/**
+ * Ошибка записи: нет доступа к микрофону, микрофона нет, страница открыта не по HTTPS (браузер не даёт микрофон),
+ * браузер не умеет записывать или запись сорвалась
+ */
 export interface VoiceRecorderError {
-	code: 'denied' | 'no-device' | 'unsupported' | 'failed'
+	code: 'denied' | 'no-device' | 'insecure' | 'unsupported' | 'failed'
 	cause?: unknown
 }
 
@@ -34,6 +37,12 @@ export interface BaseVoiceRecorderProps extends BaseComponentProps<(typeof VOICE
 	bars?: number
 	/** После остановки показать запись для прослушивания с «Удалить» и «Отправить»; без этого запись отдаётся сразу */
 	hasPreview?: boolean
+	/**
+	 * Источник звука вместо микрофона: функция возвращает MediaStream — например, звук из Web Audio для демо и тестов
+	 * или заранее выбранное устройство. По умолчанию — `navigator.mediaDevices.getUserMedia({ audio: true })`:
+	 * браузер спрашивает доступ к микрофону
+	 */
+	requestStream?: () => Promise<MediaStream>
 	/** Запись недоступна */
 	isDisabled?: boolean
 }

@@ -39,7 +39,7 @@ describe('BaseWaveform integration', () => {
 		expect(times()).toEqual([55])
 	})
 
-	it('щелчок перематывает и снимает выделение; перетаскивание выделяет, позиция — в начало фрагмента', async () => {
+	it('нажатие сразу перематывает и снимает выделение; перетаскивание выделяет, позиция — в начало фрагмента', async () => {
 		const { slider, times, selections } = setup({ isSelectable: true, selection: { start: 10, end: 20 } })
 		await fireEvent.pointerDown(slider, { button: 0, pointerId: 1, clientX: 100 })
 		await fireEvent.pointerMove(slider, { pointerId: 1, clientX: 102 })
@@ -47,31 +47,34 @@ describe('BaseWaveform integration', () => {
 		await fireEvent.pointerDown(slider, { button: 0, pointerId: 1, clientX: 150 })
 		await fireEvent.pointerMove(slider, { pointerId: 1, clientX: 60 })
 		await fireEvent.pointerUp(slider, { pointerId: 1, clientX: 40 })
-		expect(times()).toEqual([50, 20])
+		expect(times()).toEqual([50, 75, 20])
 		expect(selections()).toEqual([null, { start: 30, end: 75 }, { start: 20, end: 75 }])
 	})
 
-	it('без isSelectable перетаскивание перематывает; за краями — начало и конец', async () => {
+	it('без isSelectable позиция идёт за указателем с первого нажатия; за краями — начало и конец', async () => {
 		const { slider, times, selections } = setup()
 		await fireEvent.pointerDown(slider, { button: 0, pointerId: 1, clientX: 20 })
+		await fireEvent.pointerMove(slider, { pointerId: 1, clientX: 21 })
 		await fireEvent.pointerMove(slider, { pointerId: 1, clientX: 260 })
+		await fireEvent.pointerMove(slider, { pointerId: 1, clientX: -30 })
 		await fireEvent.pointerUp(slider, { pointerId: 1, clientX: -30 })
-		expect(times()).toEqual([100, 0])
+		expect(times()).toEqual([10, 10.5, 100, 0])
 		expect(selections()).toEqual([])
 	})
 
-	it('правая кнопка, отмена жеста, движение без нажатия и отключённая волна — без перемотки', async () => {
+	it('правая кнопка, движение без нажатия, отпускание после отмены жеста и отключённая волна — без перемотки', async () => {
 		const { slider, times, rerender } = setup()
 		await fireEvent.pointerMove(slider, { clientX: 50 })
 		await fireEvent.pointerUp(slider, { clientX: 50 })
 		await fireEvent.pointerDown(slider, { button: 2, clientX: 50 })
 		await fireEvent.pointerDown(slider, { button: 0, clientX: 50 })
 		await fireEvent.pointerCancel(slider)
-		await fireEvent.pointerUp(slider, { clientX: 50 })
+		await fireEvent.pointerMove(slider, { clientX: 150 })
+		await fireEvent.pointerUp(slider, { clientX: 150 })
 		await rerender({ isDisabled: true })
 		await fireEvent.pointerDown(slider, { button: 0, clientX: 50 })
 		await fireEvent.keyDown(slider, { key: 'End' })
-		expect(times()).toEqual([])
+		expect(times()).toEqual([25])
 	})
 
 	it('шкала нулевой ширины даёт начало записи', async () => {

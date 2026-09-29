@@ -11,6 +11,7 @@ export const argTypes = {
 	avatar: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	description: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	hasVoiceMessages: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	requestVoiceStream: { control: false, table: propGroup(ARG_GROUP.behavior) },
 	members: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	quickReplies: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	commands: { control: 'object', table: propGroup(ARG_GROUP.content) },

@@ -47,6 +47,16 @@ describe('BaseChat: голосовые сообщения', () => {
 		expect(screen.getByPlaceholderText('Напишите сообщение...')).toBeInTheDocument()
 	})
 
+	it('requestVoiceStream чата уходит в диктофон вместо микрофона', async () => {
+		const env = installRecorderEnvironment()
+		const requestVoiceStream = vi.fn(async () => env.stream)
+		render(BaseChat, { props: { title: 'Анна', messages: [], hasVoiceMessages: true, requestVoiceStream } })
+		await fireEvent.click(screen.getByRole('button', { name: 'Записать голосовое сообщение' }))
+		await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Остановить запись' })).toBeEnabled())
+		expect(requestVoiceStream).toHaveBeenCalledOnce()
+		expect(env.getUserMedia).not.toHaveBeenCalled()
+	})
+
 	it('отмена записи возвращает поле; ошибка доступа — текст и «Закрыть»', async () => {
 		const env = installRecorderEnvironment()
 		render(ChatInput, { props: { hasVoice: true } })

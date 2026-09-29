@@ -1,8 +1,8 @@
+import { expect } from 'storybook/test'
+import { tabTo } from '@/stories/helpers'
 import type meta from '../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { expect, waitFor, within } from 'storybook/test'
 import { ANNA, PRIVATE_MESSAGES, sentAt } from '../shared'
-import { installDemoMicrophone } from '@components/BaseVoiceRecorder/stories/micDemo'
 import { DEMO_VOICE, DEMO_VOICE_DURATION, DEMO_VOICE_PEAKS } from '@components/BaseAudioPlayer/stories/shared'
 
 export const VoiceMessages: StoryObj<typeof meta> = {
@@ -13,7 +13,9 @@ export const VoiceMessages: StoryObj<typeof meta> = {
 					'Голосовые сообщения (`hasVoiceMessages`): пока поле пустое, вместо «Отправить» — микрофон. Запись идёт прямо в поле',
 					'ввода, после остановки её можно прослушать, удалить или отправить. Событие `send-voice` отдаёт запись',
 					'(`blob`, `duration`, `peaks`) и `replyToId`; приложение загружает файл и добавляет сообщение с вложением',
-					'`type: "audio"` — в ленте оно играет в BaseAudioPlayer с волной. В story вместо микрофона — эмуляция.',
+					'`type: "audio"` — в ленте оно играет в BaseAudioPlayer с волной. Микрофон настоящий: браузер спросит доступ',
+					'(страница по HTTPS или на localhost). Свой источник звука — `requestVoiceStream`, как `requestStream` у',
+					'BaseVoiceRecorder.',
 				].join('\n'),
 			},
 		},
@@ -43,19 +45,11 @@ export const VoiceMessages: StoryObj<typeof meta> = {
 			},
 		],
 	},
-	beforeEach: () => installDemoMicrophone(),
-	play: async ({ canvas, userEvent, args }) => {
+	play: async ({ canvas, userEvent }) => {
 		await expect(canvas.getByRole('group', { name: 'Голосовое сообщение' })).toBeInTheDocument()
-		await userEvent.click(canvas.getByRole('button', { name: 'Записать голосовое сообщение' }))
-		const stop = await canvas.findByRole('button', { name: 'Остановить запись' })
-		await waitFor(() => expect(stop).toBeEnabled())
-		await new Promise(resolve => setTimeout(resolve, 1200))
-		await userEvent.click(stop)
-		const recorder = within(await canvas.findByRole('group', { name: 'Записанное сообщение' }))
-		await expect(recorder.getByRole('button', { name: 'Воспроизвести' })).toBeInTheDocument()
-		await userEvent.click(canvas.getByRole('button', { name: 'Отправить' }))
-		await waitFor(() => expect(args['onSend-voice']).toHaveBeenCalledOnce())
-		await waitFor(() => expect(canvas.getAllByRole('group', { name: 'Голосовое сообщение' })).toHaveLength(2))
-		await expect(canvas.getByRole('button', { name: 'Записать голосовое сообщение' })).toBeInTheDocument()
+		const record = canvas.getByRole('button', { name: 'Записать голосовое сообщение' })
+		await userEvent.click(canvas.getByPlaceholderText('Напишите сообщение...'))
+		await tabTo(record, userEvent)
+		await expect(record).toHaveFocus()
 	},
 }

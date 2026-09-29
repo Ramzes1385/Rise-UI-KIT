@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-waveform"
 		:class="[
 			variantClass,
@@ -54,6 +55,7 @@ const props = withDefaults(defineProps<BaseWaveformProps>(), {
 const emit = defineEmits<BaseWaveformEmits>()
 
 const {
+	rootRef,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
