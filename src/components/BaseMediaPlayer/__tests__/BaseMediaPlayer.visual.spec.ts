@@ -91,6 +91,10 @@ const SCENARIOS: Scenario[] = [
 		story: 'cast',
 		prepare: async page => {
 			await page.getByRole('button', { name: 'Трансляция на телевизор' }).click()
+			await page
+				.getByRole('dialog', { name: 'Трансляция' })
+				.getByRole('button', { name: /Телевизор в гостиной/ })
+				.click()
 			const controls = page.locator('.base-media-player__cast-controls')
 			await controls.getByRole('button', { name: 'Пауза' }).click()
 			await controls.getByRole('slider', SEEK).press('Home')

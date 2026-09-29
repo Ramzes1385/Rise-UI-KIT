@@ -1,10 +1,12 @@
+import { pickCastDevice } from './castPicker'
+
 type Listener = () => void
 
 type DemoPlayer = { isConnected: boolean; isPaused: boolean; currentTime: number; duration: number }
 
 type DemoRequest = { media: { contentId: string }; currentTime?: number; autoplay?: boolean }
 
-const DEMO_DEVICE = 'Демо-телевизор'
+const CANCEL = 'cancel'
 
 const TICK = 250
 
@@ -33,7 +35,7 @@ function createReceiver() {
 	const context = listenerMap()
 	const controller = listenerMap()
 	const player: DemoPlayer = { isConnected: false, isPaused: true, currentTime: 0, duration: 0 }
-	const receiver = { state: 'NOT_CONNECTED', isSession: false, timer: 0 }
+	const receiver = { state: 'NOT_CONNECTED', isSession: false, timer: 0, device: '' }
 	const changed = (): void => controller.emit('anyChanged')
 	const setState = (state: string): void => {
 		receiver.state = state
@@ -51,7 +53,7 @@ function createReceiver() {
 function sessionFor(demo: ReturnType<typeof createReceiver>) {
 	const { player, receiver, changed } = demo
 	return {
-		getCastDevice: () => ({ friendlyName: DEMO_DEVICE }),
+		getCastDevice: () => ({ friendlyName: receiver.device }),
 		loadMedia: async (request: DemoRequest): Promise<void> => {
 			Object.assign(player, { isConnected: true, isPaused: !request.autoplay, currentTime: request.currentTime ?? 0 })
 			probeDuration(request.media.contentId, duration => {
@@ -75,6 +77,9 @@ function contextFor(demo: ReturnType<typeof createReceiver>) {
 		removeEventListener: demo.context.remove,
 		getCurrentSession: () => (receiver.isSession ? session : null),
 		requestSession: async (): Promise<void> => {
+			const device = await pickCastDevice()
+			if (!device) return Promise.reject(CANCEL)
+			receiver.device = device
 			demo.setState('CONNECTING')
 			await new Promise(resolve => window.setTimeout(resolve, 400))
 			receiver.isSession = true

@@ -119,9 +119,30 @@ test('клавиатура: все элементы панели доступн�
 	])
 })
 
-test('трансляция (эмуляция Cast): клавиши управляют телевизором, после остановки просмотр продолжается здесь', async ({ page }) => {
+test('трансляция (эмуляция Cast): отказ от выбора устройства — без ошибки и без трансляции', async ({ page }) => {
 	await openPlayer(page, 'cast')
 	await page.getByRole('button', { name: 'Трансляция на телевизор' }).click()
+	const picker = page.getByRole('dialog', { name: 'Трансляция' })
+	await expect(picker.getByRole('button', { name: /Телевизор в гостиной/ })).toBeFocused()
+	await page.keyboard.press('Escape')
+	await expect(picker).toHaveCount(0)
+	await page.getByRole('button', { name: 'Трансляция на телевизор' }).click()
+	await picker.getByRole('button', { name: 'Отмена' }).click()
+	await expect(picker).toHaveCount(0)
+	await expect(page.locator('.base-media-player__cast')).toHaveCount(0)
+	await expect(page.locator('.base-media-player__flash')).toHaveText('')
+})
+
+test('трансляция (эмуляция Cast): выбор устройства, клавиши управляют телевизором, после остановки просмотр продолжается здесь', async ({
+	page,
+}) => {
+	await openPlayer(page, 'cast')
+	await page.getByRole('button', { name: 'Трансляция на телевизор' }).click()
+	const picker = page.getByRole('dialog', { name: 'Трансляция' })
+	await expect(picker.getByRole('status')).toHaveText('Поиск устройств в сети…')
+	await picker.getByRole('button', { name: /Проектор в кабинете/ }).click()
+	await expect(picker).toHaveCount(0)
+	await expect(page.getByText('Воспроизводится на «Проектор в кабинете»')).toBeVisible()
 	const controls = page.locator('.base-media-player__cast-controls')
 	await expect(controls.getByRole('button', { name: 'Пауза' })).toBeVisible()
 
