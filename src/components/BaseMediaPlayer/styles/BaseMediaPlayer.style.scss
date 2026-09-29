@@ -23,6 +23,7 @@ $media-ad: #fc0;
 	--media-hover: rgb(255 255 255 / 10%);
 	--media-muted: #94a3b8;
 	--media-border: rgb(255 255 255 / 10%);
+	--media-overlay-bottom: calc(var(--media-controls-height, #{sz(80px)}) + #{sz(8px)});
 
 	background-color: $media-surface;
 	color: $media-text;
@@ -34,6 +35,8 @@ $media-ad: #fc0;
 	}
 
 	&--idle {
+		--media-overlay-bottom: #{sz(16px)};
+
 		cursor: none;
 	}
 
@@ -59,7 +62,7 @@ $media-ad: #fc0;
 			inset: 0;
 			background-image: linear-gradient(to bottom, $media-scrim, transparent);
 			content: '';
-			@include transition(opacity);
+			transition: opacity 200ms var(--rise-ease);
 		}
 	}
 
@@ -69,7 +72,9 @@ $media-ad: #fc0;
 		@include text-size(lg);
 		font-weight: var(--rise-font-weight-semibold);
 		@include truncate;
-		@include transition(opacity);
+		transition:
+			opacity 200ms var(--rise-ease),
+			transform 200ms var(--rise-ease);
 	}
 
 	&__episode {
@@ -102,6 +107,11 @@ $media-ad: #fc0;
 	&--idle &__top::before,
 	&--idle &__title {
 		opacity: 0;
+		transition-duration: 450ms;
+	}
+
+	&--idle &__title {
+		transform: translateY(#{sz(-8px)});
 	}
 
 	&__loader {
@@ -213,17 +223,39 @@ $media-ad: #fc0;
 
 	&__resume {
 		position: absolute;
-		bottom: sz(72px);
-		left: sz(12px);
+		bottom: var(--media-overlay-bottom);
+		left: 50%;
+		z-index: 1;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
+		justify-content: center;
 		gap: sz(8px);
+		box-sizing: border-box;
+		width: max-content;
 		max-width: calc(100% - #{sz(24px)});
-		padding: sz(8px) sz(12px);
-		border-radius: sz(var(--rise-radius-md));
-		background-color: $media-big-play;
-		@include text-size(sm);
+		padding: sz(6px) sz(6px) sz(6px) sz(14px);
+		border: 1px solid var(--media-border);
+		border-radius: sz(10px);
+		background-color: var(--media-panel);
+		box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
+		font-size: sz(14px);
+		backdrop-filter: blur(10px);
+		transform: translateX(-50%);
+		transition: bottom 300ms var(--rise-ease);
+	}
+
+	&__resume-enter-active,
+	&__resume-leave-active {
+		transition:
+			opacity 220ms var(--rise-ease),
+			transform 220ms var(--rise-ease);
+	}
+
+	&__resume-enter-from,
+	&__resume-leave-to {
+		opacity: 0;
+		transform: translate(-50%, #{sz(8px)});
 	}
 
 	&__stats {
@@ -331,6 +363,7 @@ $media-ad: #fc0;
 
 	&--idle &__caption-box {
 		cursor: none;
+		transition-duration: 450ms;
 	}
 
 	&__caption-line {
@@ -370,7 +403,8 @@ $media-ad: #fc0;
 	&__skip {
 		position: absolute;
 		right: sz(16px);
-		bottom: sz(88px);
+		bottom: var(--media-overlay-bottom);
+		transition: bottom 300ms var(--rise-ease);
 	}
 
 	&__next {
@@ -486,7 +520,7 @@ $media-ad: #fc0;
 	&__ad-segment {
 		position: absolute;
 		right: sz(16px);
-		bottom: sz(88px);
+		bottom: var(--media-overlay-bottom);
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
@@ -535,13 +569,13 @@ $media-ad: #fc0;
 		}
 
 		&--bottom-left {
-			bottom: sz(88px);
+			bottom: var(--media-overlay-bottom);
 			left: sz(12px);
 		}
 
 		&--bottom-right {
 			right: sz(12px);
-			bottom: sz(88px);
+			bottom: var(--media-overlay-bottom);
 		}
 	}
 
@@ -615,6 +649,7 @@ $media-ad: #fc0;
 	&--audio {
 		display: flex;
 		flex-direction: column;
+		overflow: visible;
 	}
 
 	&--audio &__media,

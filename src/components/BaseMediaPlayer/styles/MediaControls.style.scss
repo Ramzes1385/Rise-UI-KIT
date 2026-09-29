@@ -10,11 +10,15 @@
 		padding: sz(28px) sz(12px) sz(10px);
 		background-image: linear-gradient(to top, rgb(0 0 0 / 90%) 0%, rgb(0 0 0 / 70%) 40%, transparent 100%);
 		container-type: inline-size;
-		@include transition(opacity);
+		transition:
+			opacity 200ms var(--rise-ease),
+			transform 200ms var(--rise-ease);
 	}
 
 	&--idle &__controls {
 		opacity: 0;
+		transform: translateY(#{sz(8px)});
+		transition-duration: 450ms;
 	}
 
 	&--audio &__controls {
@@ -32,8 +36,27 @@
 	}
 
 	&__bar--secondary {
+		max-height: sz(60px);
 		padding-top: sz(6px);
 		border-top: 1px solid var(--media-border);
+	}
+
+	&__row-enter-active,
+	&__row-leave-active {
+		overflow: hidden;
+		transition:
+			max-height 240ms var(--rise-ease),
+			margin-top 240ms var(--rise-ease),
+			padding-top 240ms var(--rise-ease),
+			opacity 200ms var(--rise-ease);
+	}
+
+	&__row-enter-from,
+	&__row-leave-to {
+		max-height: 0;
+		margin-top: sz(-6px);
+		padding-top: 0;
+		opacity: 0;
 	}
 
 	&__group {
@@ -140,6 +163,8 @@
 	&__bar[data-fit~='chapter'] &__chapter,
 	&__bar[data-fit~='episode'] &__episode-button,
 	&__bar[data-fit~='seek'] &__control--stacked,
+	&__bar[data-fit~='seek'] &__seek-more,
+	&__bar[data-fit~='seek'] ~ &__bar--secondary,
 	&__bar[data-fit~='duration'] &__duration,
 	&__bar[data-fit~='theater'] &__theater-button,
 	&__bar[data-fit~='pip'] &__pip-button,
@@ -151,10 +176,6 @@
 	&__bar[data-fit~='compact'] &__control {
 		min-width: sz(36px);
 		padding-inline: sz(6px);
-	}
-
-	&--idle &__control::after {
-		display: none;
 	}
 
 	&__icon {
@@ -263,10 +284,6 @@
 		transform: translate(-50%, 0);
 	}
 
-	&--idle &__volume-popover {
-		display: none;
-	}
-
 	&--audio &__volume-group &__volume-popover {
 		position: static;
 		align-items: center;
@@ -361,32 +378,13 @@
 		}
 	}
 
-	&__switch {
-		display: inline-flex;
-		flex: none;
-		align-items: center;
-		gap: sz(10px);
-		padding: sz(6px) sz(8px);
-		border: 0;
-		border-radius: sz(8px);
-		background-color: transparent;
-		color: var(--media-text);
-		font: inherit;
-		font-size: sz(14px);
-		font-weight: 500;
-		cursor: pointer;
-		@include focus-ring;
-
-		@include hover {
-			background-color: var(--media-hover);
-		}
-	}
-
 	&__switch-track {
 		position: relative;
-		width: sz(40px);
-		height: sz(22px);
-		border-radius: sz(11px);
+		display: inline-flex;
+		align-items: center;
+		width: sz(36px);
+		height: sz(20px);
+		border-radius: sz(10px);
 		background-color: rgb(255 255 255 / 30%);
 		@include transition(background-color);
 	}
@@ -395,12 +393,21 @@
 		position: absolute;
 		top: sz(2px);
 		left: sz(2px);
-		width: sz(18px);
-		height: sz(18px);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(16px);
+		height: sz(16px);
 		border-radius: 50%;
 		background-color: var(--media-text);
 		box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+		color: rgb(0 0 0 / 75%);
 		@include transition(transform);
+
+		.base-media-player__icon {
+			width: sz(12px);
+			height: sz(12px);
+		}
 	}
 
 	&__switch[aria-checked='true'] &__switch-track {
@@ -408,12 +415,6 @@
 	}
 
 	&__switch[aria-checked='true'] &__switch-thumb {
-		transform: translateX(sz(18px));
-	}
-}
-
-@container (max-width: 640px) {
-	.base-media-player__bar--secondary {
-		display: none;
+		transform: translateX(sz(16px));
 	}
 }

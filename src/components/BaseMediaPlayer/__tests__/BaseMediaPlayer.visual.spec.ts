@@ -51,10 +51,18 @@ function openMenu(name: string) {
 	}
 }
 
+function openSpeedPanel(page: Page): Promise<void> {
+	return (async () => {
+		await page.getByRole('button', { name: 'Скорость воспроизведения' }).click()
+		await expect(page.getByRole('group', { name: 'Скорость воспроизведения' })).toBeVisible()
+		await page.mouse.move(0, 0)
+	})()
+}
+
 const SCENARIOS: Scenario[] = [
 	{ story: 'default', time: 5 },
 	{ story: 'title-and-logo' },
-	{ story: 'settings', time: 3, prepare: openMenu('Скорость воспроизведения') },
+	{ story: 'settings', time: 3, prepare: openSpeedPanel },
 	{ story: 'subtitles', time: 4 },
 	{ story: 'audio-tracks', time: 3, prepare: openMenu('Озвучка') },
 	{ story: 'episodes', time: 3 },

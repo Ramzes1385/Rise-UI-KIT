@@ -2,15 +2,11 @@ import { computed } from 'vue'
 import { captionPreset } from './subtitles'
 import { UI_PLAYER, formatNumber } from './messages'
 import type { MediaMenusSource } from '../types/MediaControls.types'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
+import type { MediaMenuItem, MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaCaptionColor, MediaCaptionStyle, MediaCaptionPreset, MediaCaptionBackground } from '../types/MediaSubtitles.types'
 import { MEDIA_CAPTION_SIZES, MEDIA_CAPTION_COLORS, MEDIA_CAPTION_PRESETS, MEDIA_CAPTION_BACKGROUNDS } from '../types/MediaSubtitles.types'
 
 const CAPTION_PRESETS = Object.keys(MEDIA_CAPTION_PRESETS) as MediaCaptionPreset[]
-
-function rateLabel(rate: number): string {
-	return rate === 1 ? UI_PLAYER.SPEED_NORMAL : `${formatNumber(rate)}×`
-}
 
 function colorLabel(color: MediaCaptionColor): string {
 	return { white: UI_PLAYER.COLOR_WHITE, yellow: UI_PLAYER.COLOR_YELLOW, green: UI_PLAYER.COLOR_GREEN, cyan: UI_PLAYER.COLOR_CYAN }[color]
@@ -24,64 +20,96 @@ function presetLabel(preset: MediaCaptionPreset): string {
 	return preset === 'top' ? UI_PLAYER.POSITION_TOP : UI_PLAYER.POSITION_BOTTOM
 }
 
-function radios<T>(values: readonly T[], menu: { current: T | null; label: (value: T) => string; select: (value: T) => void }) {
-	return values.map((value): DropdownMenuItem => ({
-		type: 'radio',
+function choices<T>(values: readonly T[], menu: { current: T | null; label: (value: T) => string; select: (value: T) => void }) {
+	return values.map((value, index): MediaMenuItem => ({
+		id: String(index),
 		label: menu.label(value),
 		isChecked: value === menu.current,
-		onUpdateChecked: () => menu.select(value),
+		onSelect: () => menu.select(value),
 	}))
 }
 
-function radioSubmenu<T>(title: string, values: readonly T[], menu: Parameters<typeof radios<T>>[1]): DropdownMenuItem {
-	const current = menu.current === null ? null : menu.label(menu.current)
-	return { label: current === null ? title : `${title}: ${current}`, children: radios(values, menu) }
-}
-
-function titled(title: string, ...groups: DropdownMenuItem[][]): DropdownMenuItem[][] {
-	return [[{ type: 'label', label: title }], ...groups.filter(group => group.length > 0)]
-}
-
-function captionStyleItem(style: MediaCaptionStyle, update: (patch: Partial<MediaCaptionStyle>) => void): DropdownMenuItem {
+function choiceList<T>(
+	heading: { id: string; title: string },
+	values: readonly T[],
+	menu: Parameters<typeof choices<T>>[1],
+): MediaMenuItem {
+	const { id, title } = heading
 	return {
-		label: UI_PLAYER.CAPTIONS_STYLE,
-		children: [
-			radioSubmenu(UI_PLAYER.CAPTIONS_SIZE, MEDIA_CAPTION_SIZES, {
-				current: style.size,
-				label: size => formatNumber(size / 100, { style: 'percent' }),
-				select: size => update({ size }),
-			}),
-			radioSubmenu(UI_PLAYER.CAPTIONS_COLOR, MEDIA_CAPTION_COLORS, {
-				current: style.color,
-				label: colorLabel,
-				select: color => update({ color }),
-			}),
-			radioSubmenu(UI_PLAYER.CAPTIONS_BACKGROUND, MEDIA_CAPTION_BACKGROUNDS, {
-				current: style.background,
-				label: backgroundLabel,
-				select: background => update({ background }),
-			}),
-			radioSubmenu(UI_PLAYER.CAPTIONS_POSITION, CAPTION_PRESETS, {
-				current: captionPreset(style.position),
-				label: presetLabel,
-				select: preset => update({ position: MEDIA_CAPTION_PRESETS[preset] }),
-			}),
-		],
+		id,
+		label: title,
+		hint: menu.current === null ? undefined : menu.label(menu.current),
+		children: { title, items: choices(values, menu), isKeptOpen: true },
 	}
 }
 
-function captionMenu(source: MediaMenusSource): DropdownMenuItem[][] {
+function captionStyleItem(style: MediaCaptionStyle, update: (patch: Partial<MediaCaptionStyle>) => void): MediaMenuItem {
+	return {
+		id: 'style',
+		label: UI_PLAYER.CAPTIONS_STYLE,
+		children: {
+			title: UI_PLAYER.CAPTIONS_STYLE,
+			items: [
+				choiceList({ id: 'size', title: UI_PLAYER.CAPTIONS_SIZE }, MEDIA_CAPTION_SIZES, {
+					current: style.size,
+					label: size => formatNumber(size / 100, { style: 'percent' }),
+					select: size => update({ size }),
+				}),
+				choiceList({ id: 'color', title: UI_PLAYER.CAPTIONS_COLOR }, MEDIA_CAPTION_COLORS, {
+					current: style.color,
+					label: colorLabel,
+					select: color => update({ color }),
+				}),
+				choiceList({ id: 'background', title: UI_PLAYER.CAPTIONS_BACKGROUND }, MEDIA_CAPTION_BACKGROUNDS, {
+					current: style.background,
+					label: backgroundLabel,
+					select: background => update({ background }),
+				}),
+				choiceList({ id: 'position', title: UI_PLAYER.CAPTIONS_POSITION }, CAPTION_PRESETS, {
+					current: captionPreset(style.position),
+					label: presetLabel,
+					select: preset => update({ position: MEDIA_CAPTION_PRESETS[preset] }),
+				}),
+			],
+		},
+	}
+}
+
+function captionMenu(source: MediaMenusSource): MediaMenuList {
 	const tracks = source.captionTracks()
 	const active = source.activeCaptionId()
-	const choices = radios([{ id: null, label: UI_PLAYER.CAPTIONS_OFF }, ...tracks], {
-		current: tracks.find(track => track.id === active) ?? null,
-		label: track => track.label,
-		select: track => source.selectCaption(track.id),
-	})
-	choices[0].isChecked = active === null || !tracks.some(track => track.id === active)
-	const upload: DropdownMenuItem[] = source.canLoadCaptions() ? [{ label: UI_PLAYER.CAPTIONS_LOAD, onSelect: source.loadCaptions }] : []
+	const current = tracks.find(track => track.id === active) ?? null
+	const off: MediaMenuItem = {
+		id: 'off',
+		label: UI_PLAYER.CAPTIONS_OFF,
+		isChecked: current === null,
+		onSelect: () => source.selectCaption(null),
+	}
+	const items = tracks.map((track): MediaMenuItem => ({
+		id: `track-${track.id}`,
+		label: track.label,
+		isChecked: track === current,
+		onSelect: () => source.selectCaption(track.id),
+	}))
 	const style = tracks.length ? [captionStyleItem(source.captionStyle(), source.updateCaptionStyle)] : []
-	return titled(UI_PLAYER.CAPTIONS, choices, upload, style)
+	const upload = source.canLoadCaptions() ? [{ id: 'upload', label: UI_PLAYER.CAPTIONS_LOAD, onSelect: source.loadCaptions }] : []
+	return { title: UI_PLAYER.CAPTIONS, items: [off, ...items, ...style, ...upload] }
+}
+
+function optionMenu<T extends string | null>(
+	title: string,
+	options: Array<{ id: T; label: string }>,
+	choice: { active: T | undefined; select: (id: T) => void },
+): MediaMenuList {
+	return {
+		title,
+		items: options.map(option => ({
+			id: String(option.id),
+			label: option.label,
+			isChecked: option.id === choice.active,
+			onSelect: () => choice.select(option.id),
+		})),
+	}
 }
 
 export function useMediaMenus(source: MediaMenusSource) {
@@ -91,29 +119,12 @@ export function useMediaMenus(source: MediaMenusSource) {
 		rateText: computed(() => `${formatNumber(source.rate())}×`),
 		qualityText: computed(() => activeQuality.value?.label ?? ''),
 		audioText: computed(() => activeAudio.value?.label ?? ''),
-		speedItems: computed(() =>
-			titled(UI_PLAYER.SPEED_MENU, radios(source.rates(), { current: source.rate(), label: rateLabel, select: source.selectRate })),
+		qualityMenu: computed(() =>
+			optionMenu(UI_PLAYER.QUALITY, source.qualities(), { active: source.activeQualityId(), select: source.selectQuality }),
 		),
-		qualityItems: computed(() =>
-			titled(
-				UI_PLAYER.QUALITY,
-				radios(source.qualities(), {
-					current: activeQuality.value ?? null,
-					label: option => option.label,
-					select: option => source.selectQuality(option.id),
-				}),
-			),
+		audioMenu: computed(() =>
+			optionMenu(UI_PLAYER.AUDIO, source.audioOptions(), { active: source.activeAudioId(), select: source.selectAudio }),
 		),
-		audioItems: computed(() =>
-			titled(
-				UI_PLAYER.AUDIO,
-				radios(source.audioOptions(), {
-					current: activeAudio.value ?? null,
-					label: option => option.label,
-					select: option => source.selectAudio(option.id),
-				}),
-			),
-		),
-		captionItems: computed(() => captionMenu(source)),
+		captionMenu: computed(() => captionMenu(source)),
 	}
 }

@@ -122,13 +122,15 @@
 			<MediaNotices>
 				<template v-if="$slots.banner" #banner="bannerProps"><slot name="banner" v-bind="bannerProps" /></template>
 			</MediaNotices>
-			<div v-if="resumeTime !== null" class="base-media-player__resume">
-				<span>{{ resumeText }}</span>
-				<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PLAYER.RESUME_YES }}</BaseButton>
-				<BaseButton variant="ghost" class="base-media-player__button" :size-scale="sizeScale" @click="dismissResume">
-					{{ UI_PLAYER.RESUME_NO }}
-				</BaseButton>
-			</div>
+			<Transition name="base-media-player__resume">
+				<div v-if="resumeTime !== null" class="base-media-player__resume">
+					<span>{{ resumeText }}</span>
+					<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PLAYER.RESUME_YES }}</BaseButton>
+					<BaseButton variant="ghost" class="base-media-player__button" :size-scale="sizeScale" @click="dismissResume">
+						{{ UI_PLAYER.RESUME_NO }}
+					</BaseButton>
+				</div>
+			</Transition>
 			<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" @close="toggleStats" @copy="copyStats" />
 			<BaseButton
 				v-if="skipChapter && !activeAdSegment"

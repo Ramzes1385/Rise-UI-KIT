@@ -193,9 +193,10 @@ function usePlayerIdle(
 ) {
 	const isFocusInPanel = (): boolean =>
 		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
+	const isPointerOnPanel = (): boolean => Boolean(elements.controlsRef.value?.matches(':hover'))
 	return useIdleControls(elements.rootRef, {
 		timeout: () => props.idleTimeout,
-		canHide: () => !player.isAudio.value && !player.state.isPaused && !isFocusInPanel(),
+		canHide: () => !player.isAudio.value && !player.state.isPaused && !isFocusInPanel() && !isPointerOnPanel(),
 	}).isIdle
 }
 

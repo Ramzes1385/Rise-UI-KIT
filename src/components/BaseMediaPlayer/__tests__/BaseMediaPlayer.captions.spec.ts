@@ -100,21 +100,15 @@ describe('BaseMediaPlayer: субтитры', () => {
 		expect(menu.options()).toEqual(['Выкл', 'Русский', 'English'])
 		expect(menu.checked()).toBe('Русский')
 		const style = menu.submenu('Вид субтитров')
-		expect(style.map(item => item.label?.replace(/\s/g, ' '))).toEqual([
+		expect(style.map(item => `${item.label}: ${item.hint?.replace(/\s/g, ' ')}`)).toEqual([
 			'Размер: 100 %',
 			'Цвет: Белый',
 			'Фон: Полупрозрачный',
 			'Положение: Внизу',
 		])
 		menu.pick('English')
-		style[1].children
-			?.flat()
-			.find(item => item.label === 'Жёлтый')
-			?.onUpdateChecked?.(true)
-		style[0].children
-			?.flat()
-			.find(item => item.label?.startsWith('150'))
-			?.onUpdateChecked?.(true)
+		style[1].children?.items.find(item => item.label === 'Жёлтый')?.onSelect?.()
+		style[0].children?.items.find(item => item.label.startsWith('150'))?.onSelect?.()
 		menu.select('Загрузить файл субтитров…')
 		await vi.waitFor(() => expect(wrapper.find('.base-media-player__caption-line').text()).toBe('Hello'))
 		const box = wrapper.get('.base-media-player__caption-box')

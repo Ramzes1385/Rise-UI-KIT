@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
-import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
+import MediaControlBar from '../ui/MediaControlBar.vue'
+import type { MediaMenuItem, MediaMenuList } from '../types/MediaMenu.types'
 
 export interface FakeMediaValues {
 	currentTime: number
@@ -110,23 +110,28 @@ export function withSetup<T>(composable: () => T) {
 	return { result, wrapper }
 }
 
+const MENU_KEYS = ['qualityMenu', 'audioMenu', 'captionMenu', 'episodeMenu', 'chapterMenu']
+
 export function playerMenu(wrapper: VueWrapper, name: string) {
-	const find = () => wrapper.findAllComponents(BaseDropdownMenu).find(menu => menu.props('ariaLabel') === name)
-	const items = (): DropdownMenuItem[] => ((find()?.props('items') ?? []) as DropdownMenuItem[][]).flat()
-	const radios = (): DropdownMenuItem[] => items().filter(item => item.type === 'radio')
+	const list = (): MediaMenuList | undefined => {
+		const state = wrapper.findComponent(MediaControlBar).vm as unknown as Record<string, MediaMenuList | undefined>
+		return MENU_KEYS.map(key => state[key]).find(menu => menu?.title === name)
+	}
+	const items = (): MediaMenuItem[] => list()?.items ?? []
+	const radios = (): MediaMenuItem[] => items().filter(item => item.isChecked !== undefined)
 	return {
-		exists: () => find() !== undefined,
+		exists: () => wrapper.find(`button[aria-label="${name}"]`).exists(),
 		options: () => radios().map(item => item.label),
 		checked: () => radios().find(item => item.isChecked)?.label,
 		pick: (label: string) =>
 			radios()
 				.find(item => item.label === label)
-				?.onUpdateChecked?.(true),
-		pickAt: (index: number) => radios()[index]?.onUpdateChecked?.(true),
+				?.onSelect?.(),
+		pickAt: (index: number) => radios()[index]?.onSelect?.(),
 		select: (label: string) =>
 			items()
 				.find(item => item.label === label)
-				?.onSelect?.(new Event('click')),
-		submenu: (label: string) => (items().find(item => item.label?.startsWith(label))?.children ?? []) as DropdownMenuItem[],
+				?.onSelect?.(),
+		submenu: (label: string) => items().find(item => item.label.startsWith(label))?.children?.items ?? [],
 	}
 }

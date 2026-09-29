@@ -24,9 +24,9 @@ export interface MediaControlButtonProps {
 	isActive?: boolean
 }
 
-/** Переключатель второго ряда панели: «Автовоспроизведение» */
+/** Компактный переключатель панели («Автовоспроизведение»): подпись — в подсказке и доступном имени */
 export interface MediaSwitchProps {
-	/** Подпись */
+	/** Подпись: подсказка над переключателем и доступное имя */
 	label: string
 	/** Включён (`v-model:is-checked`) */
 	isChecked: boolean
@@ -38,11 +38,8 @@ export interface MediaSwitchEmits {
 
 /** Откуда меню скорости, качества, субтитров и озвучки берут значения и куда сообщают выбор */
 export interface MediaMenusSource {
-	/** Скорости на выбор */
-	rates: () => number[]
-	/** Текущая скорость */
+	/** Текущая скорость: текст на кнопке */
 	rate: () => number
-	selectRate: (rate: number) => void
 	/** Варианты качества: источники с подписью или уровни потока */
 	qualities: () => MediaQualityOption[]
 	activeQualityId: () => string | undefined

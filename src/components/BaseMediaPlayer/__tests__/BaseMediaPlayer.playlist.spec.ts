@@ -3,10 +3,10 @@ import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import MediaSlider from '../ui/MediaSlider.vue'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
+import MediaControlBar from '../ui/MediaControlBar.vue'
 import { fakeMedia } from './BaseMediaPlayer.test-utils'
-import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
+import type { MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaPlaylist } from '../types/MediaPlaylist.types'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 
 const SEASONS: MediaPlaylist[] = [
 	{
@@ -39,7 +39,11 @@ async function setup(props: Record<string, unknown> = {}) {
 	await nextTick()
 	fake.emit('loadedmetadata')
 	await nextTick()
-	const menu = (label: string) => wrapper.findAllComponents(BaseDropdownMenu).find(item => item.props('ariaLabel') === label)
+	const menu = (key: 'episodeMenu' | 'chapterMenu'): MediaMenuList | undefined => {
+		const state = wrapper.findComponent(MediaControlBar).vm as unknown as Record<string, MediaMenuList>
+		const button = key === 'episodeMenu' ? 'button[aria-label="Серии"]' : '.base-media-player__chapter'
+		return wrapper.find(button).exists() ? state[key] : undefined
+	}
 	return { wrapper, video, fake, play, menu }
 }
 
@@ -69,10 +73,13 @@ describe('BaseMediaPlayer: серии и главы', () => {
 
 	it('список серий по сезонам; Shift+N и Shift+P', async () => {
 		const { wrapper, menu } = await setup({ episode: 'e2' })
-		const items = menu('Серии')?.props('items') as DropdownMenuItem[]
+		const items = menu('episodeMenu')?.items ?? []
 
-		expect(items.map(item => item.label)).toEqual(['Сезон 1', 'Сезон 2'])
-		;(items[1].children as DropdownMenuItem[])[0].onUpdateChecked?.(true)
+		expect(items.map(item => [item.label, item.hint])).toEqual([
+			['Сезон 1', 'Серия 2'],
+			['Сезон 2', undefined],
+		])
+		items[1].children?.items[0].onSelect?.()
 		await wrapper.trigger('keydown', { code: 'KeyN', shiftKey: true })
 		await wrapper.trigger('keydown', { code: 'KeyP', shiftKey: true })
 		expect(wrapper.emitted('update:episode')).toEqual([['e3'], ['e3'], ['e1']])
@@ -81,11 +88,11 @@ describe('BaseMediaPlayer: серии и главы', () => {
 
 	it('один сезон — серии сразу в меню; одна серия — меню нет', async () => {
 		const single = await setup({ playlists: [SEASONS[0]] })
-		expect((single.menu('Серии')?.props('items') as DropdownMenuItem[]).map(item => item.label)).toEqual(['Серия 1', 'Серия 2'])
+		expect(single.menu('episodeMenu')?.items.map(item => item.label)).toEqual(['Серия 1', 'Серия 2'])
 		single.wrapper.unmount()
 
 		const one = await setup({ playlists: [SEASONS[1]] })
-		expect(one.menu('Серии')).toBeUndefined()
+		expect(one.menu('episodeMenu')).toBeUndefined()
 		expect(one.wrapper.find('button[aria-label="Следующая серия"]').exists()).toBe(false)
 		one.wrapper.unmount()
 	})
@@ -100,15 +107,15 @@ describe('BaseMediaPlayer: серии и главы', () => {
 		expect((seek.props('hoverText') as (value: number) => string)(15)).toBe('0:15 · Опенинг')
 		expect((seek.props('hoverText') as (value: number) => string)(0)).toBe('0:00 · Пролог')
 		expect(wrapper.get('.base-media-player__chapter').text()).toBe('Опенинг')
-		const chapters = menu('Главы')?.props('items') as DropdownMenuItem[]
-		expect(chapters.map(item => [item.label, item.isChecked])).toEqual([
-			['0:00 · Пролог', false],
-			['0:10 · Опенинг', true],
-			['0:20 · Серия', false],
-			['0:30 · Ранее', false],
-			['0:50 · Эндинг', false],
+		const chapters = menu('chapterMenu')?.items ?? []
+		expect(chapters.map(item => [item.label, item.hint, item.isChecked])).toEqual([
+			['Пролог', '0:00', false],
+			['Опенинг', '0:10', true],
+			['Серия', '0:20', false],
+			['Ранее', '0:30', false],
+			['Эндинг', '0:50', false],
 		])
-		chapters[2].onUpdateChecked?.(true)
+		chapters[2].onSelect?.()
 		expect(fake.values.currentTime).toBe(20)
 
 		fake.update({ currentTime: 12 }, 'seeked')
@@ -157,7 +164,7 @@ describe('BaseMediaPlayer: серии и главы', () => {
 
 		const autoNext = wrapper.get('button[role="switch"]')
 		expect(autoNext.attributes('aria-checked')).toBe('true')
-		expect(autoNext.text()).toBe('Автовоспроизведение')
+		expect(autoNext.attributes('aria-label')).toBe('Автовоспроизведение')
 		await autoNext.trigger('click')
 		expect(wrapper.emitted('update:isAutoNext')).toEqual([[false]])
 		expect(autoNext.attributes('aria-checked')).toBe('false')

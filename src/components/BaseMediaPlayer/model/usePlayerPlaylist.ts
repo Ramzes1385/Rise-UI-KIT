@@ -4,8 +4,8 @@ import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaChapters } from './useMediaChapters'
 import { useMediaPlaylist } from './useMediaPlaylist'
 import { useNextCountdown } from './useNextCountdown'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 import type { MediaActions, MediaState } from '../types/MediaCore.types'
+import type { MediaMenuItem, MediaMenuList } from '../types/MediaMenu.types'
 import type { MediaEpisode, MediaChapterKind } from '../types/MediaPlaylist.types'
 import type { MediaPlayerProps, BaseMediaPlayerEmits } from '../types/BaseMediaPlayer.types'
 
@@ -26,17 +26,26 @@ function useAutoNext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
 	}
 }
 
-function episodeItems(playlist: ReturnType<typeof useMediaPlaylist>): DropdownMenuItem[] {
+function episodeMenu(playlist: ReturnType<typeof useMediaPlaylist>): MediaMenuList {
 	const current = playlist.currentEpisode.value
-	const radios = (episodes: MediaEpisode[]): DropdownMenuItem[] =>
+	const items = (episodes: MediaEpisode[]): MediaMenuItem[] =>
 		episodes.map(episode => ({
-			type: 'radio',
+			id: episode.id,
 			label: episode.title,
 			isChecked: episode === current,
-			onUpdateChecked: () => playlist.selectEpisode(episode.id),
+			onSelect: () => playlist.selectEpisode(episode.id),
 		}))
 	const lists = playlist.playlists.value
-	return lists.length === 1 ? radios(lists[0].episodes) : lists.map(list => ({ label: list.title, children: radios(list.episodes) }))
+	if (lists.length === 1) return { title: UI_PLAYER.EPISODES, items: items(lists[0].episodes) }
+	return {
+		title: UI_PLAYER.EPISODES,
+		items: lists.map(list => ({
+			id: list.id,
+			label: list.title,
+			hint: list.episodes.includes(current as MediaEpisode) ? current?.title : undefined,
+			children: { title: list.title, items: items(list.episodes) },
+		})),
+	}
 }
 
 export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
@@ -65,14 +74,16 @@ export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayer
 
 function useChapterUi(chapters: ReturnType<typeof useMediaChapters>, media: { state: Readonly<MediaState>; actions: MediaActions }) {
 	return {
-		chapterItems: computed<DropdownMenuItem[]>(() =>
-			chapters.chapters.value.map(chapter => ({
-				type: 'radio',
-				label: `${formatMediaTime(chapter.start)} · ${chapter.title}`,
+		chapterMenu: computed<MediaMenuList>(() => ({
+			title: UI_PLAYER.CHAPTERS,
+			items: chapters.chapters.value.map((chapter, index) => ({
+				id: String(index),
+				label: chapter.title,
+				hint: formatMediaTime(chapter.start),
 				isChecked: chapter.start === chapters.currentChapter.value?.start,
-				onUpdateChecked: () => media.actions.seek(chapter.start),
+				onSelect: () => media.actions.seek(chapter.start),
 			})),
-		),
+		})),
 		seekHoverText(time: number): string {
 			const text = formatMediaTime(time, media.state.duration)
 			const chapter = chapters.chapterAt(time)
@@ -119,7 +130,7 @@ export function usePlayerEpisodes(
 		playNext: playlist.playNext,
 		playPrevious: playlist.playPrevious,
 		hasEpisodes: computed(() => playlist.playlists.value.reduce((count, list) => count + list.episodes.length, 0) > 1),
-		episodeItems: computed(() => episodeItems(playlist)),
+		episodeMenu: computed(() => episodeMenu(playlist)),
 		nextCountdownText: computed(() => formatMessage(UI_PLAYER.NEXT_IN, { n: countdown.nextCountdown.value ?? 0 })),
 		skipLabel: computed(() => (chapters.skipChapter.value?.kind ? SKIP_LABELS[chapters.skipChapter.value.kind]() : '')),
 		skipCurrentChapter(): void {

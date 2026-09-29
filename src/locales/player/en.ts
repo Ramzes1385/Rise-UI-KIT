@@ -19,6 +19,13 @@ export const playerEn: UiKitLocale['player'] = {
 	SEEK_FORWARD: 'Forward {n} s',
 	PIP: 'Picture-in-picture',
 	EXIT_PIP: 'Exit picture-in-picture',
+	/** Button that expands the second panel row: 30 and 5 s seek */
+	SEEK_MORE: 'More seek options',
+	/** Speed panel minus and plus buttons */
+	SPEED_DOWN: 'Slower',
+	SPEED_UP: 'Faster',
+	/** Back button of a nested menu: “Back: Caption style” */
+	MENU_BACK: 'Back: {title}',
 	SPEED_NORMAL: 'Normal',
 	QUALITY: 'Quality',
 	LOADING: 'Loading',

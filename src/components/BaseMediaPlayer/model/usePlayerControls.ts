@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useMediaPip } from './useMediaPip'
 import { useMediaMenus } from './useMediaMenus'
 import { UI_PLAYER, formatMessage } from './messages'
@@ -15,14 +15,17 @@ function volumeIcon(volume: number, isMuted: boolean): MediaIconName {
 
 export function usePlayerControls() {
 	const player = usePlayerContext()
+	const isSeekRowOpen = ref(false)
 	useControlsLayout(player.controlsRef, player.rootRef)
 	return {
 		...player,
+		isSeekRowOpen,
+		toggleSeekRow: (): void => {
+			isSeekRowOpen.value = !isSeekRowOpen.value
+		},
 		...useMediaPip(player.mediaRef),
 		...useMediaMenus({
-			rates: () => player.rates.value,
 			rate: () => player.state.playbackRate,
-			selectRate: player.actions.setPlaybackRate,
 			qualities: () => player.qualities.value,
 			activeQualityId: () => player.activeQualityId.value,
 			selectQuality: player.selectQuality,

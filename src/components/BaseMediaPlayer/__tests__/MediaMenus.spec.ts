@@ -6,10 +6,10 @@ import MediaSwitch from '../ui/MediaSwitch.vue'
 import { useMediaPip } from '../model/useMediaPip'
 import { useMediaMenus } from '../model/useMediaMenus'
 import { withSetup } from './BaseMediaPlayer.test-utils'
+import type { MediaMenuList } from '../types/MediaMenu.types'
 import MediaControlButton from '../ui/MediaControlButton.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { MediaMenusSource } from '../types/MediaControls.types'
-import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 
 const HD = { id: '/media/hd.webm', label: '720p' }
 const SD = { id: '/media/sd.webm', label: '360p' }
@@ -19,9 +19,7 @@ const STYLE = { size: 100, color: 'white', background: 'semi', position: { x: 50
 
 function source(patch: Partial<MediaMenusSource> = {}): MediaMenusSource {
 	return {
-		rates: () => [0.5, 1, 1.5],
 		rate: () => 1,
-		selectRate: vi.fn(),
 		qualities: () => [HD, SD],
 		activeQualityId: () => SD.id,
 		selectQuality: vi.fn(),
@@ -39,28 +37,13 @@ function source(patch: Partial<MediaMenusSource> = {}): MediaMenusSource {
 	}
 }
 
-function radios(groups: DropdownMenuItem[][]): Array<[string | undefined, boolean | undefined]> {
-	return groups
-		.flat()
-		.filter(item => item.type === 'radio')
-		.map(item => [item.label, item.isChecked])
-}
-
-function children(item: DropdownMenuItem | undefined): DropdownMenuItem[] {
-	return (item?.children ?? []) as DropdownMenuItem[]
+function radios(list: MediaMenuList | undefined): Array<[string, boolean | undefined]> {
+	return (list?.items ?? []).filter(item => item.isChecked !== undefined).map(item => [item.label, item.isChecked])
 }
 
 describe('меню панели плеера', () => {
-	it('скорость: заголовок, «Обычная» для 1, остальные числом; текст кнопки — текущая скорость', () => {
-		const menus = useMediaMenus(source({ rate: () => 1.5 }))
-
-		expect(menus.speedItems.value[0]).toEqual([{ type: 'label', label: 'Скорость воспроизведения' }])
-		expect(radios(menus.speedItems.value)).toEqual([
-			['0,5×', false],
-			['Обычная', false],
-			['1,5×', true],
-		])
-		expect(menus.rateText.value).toBe('1,5×')
+	it('текст кнопки скорости — текущая скорость', () => {
+		expect(useMediaMenus(source({ rate: () => 1.5 })).rateText.value).toBe('1,5×')
 	})
 
 	it('качество и озвучка: варианты, текущий отмечен и виден на кнопке; выбор сообщается', () => {
@@ -72,19 +55,19 @@ describe('меню панели плеера', () => {
 		]
 		const menus = useMediaMenus(source({ selectQuality, selectAudio, audioOptions: () => dubs, activeAudioId: () => '/audio/a.m4a' }))
 
-		expect(menus.qualityItems.value[0][0].label).toBe('Качество')
-		expect(radios(menus.qualityItems.value)).toEqual([
+		expect(menus.qualityMenu.value.title).toBe('Качество')
+		expect(radios(menus.qualityMenu.value)).toEqual([
 			['720p', false],
 			['360p', true],
 		])
 		expect(menus.qualityText.value).toBe('360p')
-		expect(radios(menus.audioItems.value)).toEqual([
+		expect(radios(menus.audioMenu.value)).toEqual([
 			['Оригинал', false],
 			['Студия A', true],
 		])
 		expect(menus.audioText.value).toBe('Студия A')
-		menus.qualityItems.value[1][0].onUpdateChecked?.(true)
-		menus.audioItems.value[1][0].onUpdateChecked?.(true)
+		menus.qualityMenu.value.items[0].onSelect?.()
+		menus.audioMenu.value.items[0].onSelect?.()
 		expect(selectQuality).toHaveBeenCalledWith(HD.id)
 		expect(selectAudio).toHaveBeenCalledWith(null)
 
@@ -93,7 +76,7 @@ describe('меню панели плеера', () => {
 		expect(empty.audioText.value).toBe('')
 	})
 
-	it('субтитры: «Выкл», дорожки, загрузка файла и вид субтитров', () => {
+	it('субтитры: «Выкл», дорожки, вид субтитров и загрузка файла', () => {
 		const selectCaption = vi.fn()
 		const loadCaptions = vi.fn()
 		const menus = useMediaMenus(
@@ -105,52 +88,53 @@ describe('меню панели плеера', () => {
 				loadCaptions,
 			}),
 		)
-		const [title, choices, [upload], [style]] = menus.captionItems.value
+		const menu = menus.captionMenu.value
 
-		expect(title[0].label).toBe('Субтитры')
-		expect(radios([choices])).toEqual([
+		expect(menu.title).toBe('Субтитры')
+		expect(radios(menu)).toEqual([
 			['Выкл', false],
 			['Русский', false],
 			['English', true],
 		])
-		expect(upload.label).toBe('Загрузить файл субтитров…')
-		expect(style.label).toBe('Вид субтитров')
-		choices[0].onUpdateChecked?.(true)
-		choices[1].onUpdateChecked?.(true)
-		upload.onSelect?.(new Event('click'))
+		expect(menu.items.map(item => item.label).slice(3)).toEqual(['Вид субтитров', 'Загрузить файл субтитров…'])
+		menu.items[0].onSelect?.()
+		menu.items[1].onSelect?.()
+		menu.items[4].onSelect?.()
 		expect(selectCaption.mock.calls).toEqual([[null], [RU.id]])
 		expect(loadCaptions).toHaveBeenCalledOnce()
 	})
 
 	it('субтитры без дорожек — «Выкл» и загрузка; неизвестная дорожка — отмечен «Выкл», без загрузки и вида', () => {
-		const onlyUpload = useMediaMenus(source({ canLoadCaptions: () => true })).captionItems.value
-		expect(onlyUpload.map(group => group.map(item => item.label))).toEqual([['Субтитры'], ['Выкл'], ['Загрузить файл субтитров…']])
+		const onlyUpload = useMediaMenus(source({ canLoadCaptions: () => true })).captionMenu.value
+		expect(onlyUpload.items.map(item => item.label)).toEqual(['Выкл', 'Загрузить файл субтитров…'])
 		expect(radios(onlyUpload)).toEqual([['Выкл', true]])
 
-		const gone = useMediaMenus(source({ captionTracks: () => [RU], activeCaptionId: () => '/subs/gone.vtt' })).captionItems.value
+		const gone = useMediaMenus(source({ captionTracks: () => [RU], activeCaptionId: () => '/subs/gone.vtt' })).captionMenu.value
 		expect(radios(gone)).toEqual([
 			['Выкл', true],
 			['Русский', false],
 		])
-		expect(gone).toHaveLength(3)
+		expect(gone.items).toHaveLength(3)
 	})
 
-	it('вид субтитров: размер, цвет, фон и положение с текущим значением; выбор отдаёт изменение', () => {
+	it('вид субтитров: размер, цвет, фон и положение с текущим значением; списки не закрывают меню', () => {
 		const updateCaptionStyle = vi.fn()
 		const menus = useMediaMenus(source({ captionTracks: () => [RU], activeCaptionId: () => RU.id, updateCaptionStyle }))
-		const [size, color, background, position] = children(menus.captionItems.value[2][0])
+		const style = menus.captionMenu.value.items[2].children as MediaMenuList
+		const [size, color, background, position] = style.items
 
-		expect([size, color, background, position].map(item => item.label)).toEqual([
-			`Размер: ${formatNumber(1, { style: 'percent' })}`,
-			'Цвет: Белый',
-			'Фон: Полупрозрачный',
-			'Положение: Внизу',
+		expect(style.items.map(item => [item.label, item.hint])).toEqual([
+			['Размер', formatNumber(1, { style: 'percent' })],
+			['Цвет', 'Белый'],
+			['Фон', 'Полупрозрачный'],
+			['Положение', 'Внизу'],
 		])
-		expect(radios([children(size)]).map(([, checked]) => checked)).toEqual([false, true, false, false])
-		children(size)[2].onUpdateChecked?.(true)
-		children(color)[1].onUpdateChecked?.(true)
-		children(background)[0].onUpdateChecked?.(true)
-		children(position)[1].onUpdateChecked?.(true)
+		expect(size.children?.isKeptOpen).toBe(true)
+		expect(radios(size.children).map(([, checked]) => checked)).toEqual([false, true, false, false])
+		size.children?.items[2].onSelect?.()
+		color.children?.items[1].onSelect?.()
+		background.children?.items[0].onSelect?.()
+		position.children?.items[1].onSelect?.()
 		expect(updateCaptionStyle.mock.calls).toEqual([
 			[{ size: 150 }],
 			[{ color: 'yellow' }],
@@ -167,9 +151,9 @@ describe('меню панели плеера', () => {
 				captionStyle: () => ({ ...STYLE, position: { x: 30, y: 40 } }),
 			}),
 		)
-		const position = children(menus.captionItems.value[2][0])[3]
-		expect(position.label).toBe('Положение')
-		expect(radios([children(position)])).toEqual([
+		const position = (menus.captionMenu.value.items[2].children as MediaMenuList).items[3]
+		expect(position.hint).toBeUndefined()
+		expect(radios(position.children)).toEqual([
 			['Внизу', false],
 			['Вверху', false],
 		])
