@@ -1,4 +1,4 @@
-import type { ARG_GROUP } from '../argTypes'
+import type { ARG_GROUP } from '../controls/argTypes'
 import type { userEvent as defaultUserEvent } from 'storybook/test'
 
 export type ArgGroup = (typeof ARG_GROUP)[keyof typeof ARG_GROUP]

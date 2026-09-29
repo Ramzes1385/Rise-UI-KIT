@@ -543,6 +543,13 @@ src/utils/        dom/ data/ media/ form/ navigation/
 `__tests__/browser/`. Папки с медиафайлами историй (`stories/media/`) и SVG-иконками (`src/icons/svg/`) — это ресурсы,
 правило на них не распространяется.
 
+Истории (С.12): в `stories/cases/` — `appearance/` (варианты, размеры, цвета, формы, раскладка, положение),
+`states/` (disabled, readonly, загрузка, пусто, ошибки), `content/` (слоты, значки, длинное и своё содержимое) и
+`behavior/` (клавиатура, режимы, формы, работа с данными). У больших компонентов области свои: BaseTable — `data/`,
+BaseChat — `messages/`, BaseText — `typography/` и `overflow/`, плеер — `appearance/`, `playback/`, `content/`, `ads/`,
+`sharing/`. Если в области оказалась одна история, она остаётся в корне рядом с `Default.ts`. Id историй в Storybook
+берутся из экспортов `*.stories.ts` и от папок не зависят.
+
 ESLint, покрытие и сборка понимают вложенные папки: правила действуют для `model/**`, `ui/**`, `types/**/*.types.ts`.
 
 ### Типы
