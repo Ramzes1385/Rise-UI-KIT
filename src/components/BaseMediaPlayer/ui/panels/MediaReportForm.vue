@@ -1,5 +1,10 @@
 <template>
-	<BaseModal class="base-media-player__report" :is-open="isOpen" :title="UI_PLAYER.REPORT_TITLE" is-contained @update:is-open="close">
+	<BaseModal
+		:custom-class="{ root: 'base-media-player__report' }"
+		:is-open="isOpen"
+		:title="UI_PLAYER.REPORT_TITLE"
+		is-contained
+		@update:is-open="close">
 		<div class="base-media-player__report-form">
 			<BaseRadio v-model="reason" name="media-report-reason" :options="reasonOptions" :label="UI_PLAYER.REPORT" />
 			<BaseTextarea v-model="comment" :label="UI_PLAYER.REPORT_COMMENT" :rows="2" :maxlength="1000" />

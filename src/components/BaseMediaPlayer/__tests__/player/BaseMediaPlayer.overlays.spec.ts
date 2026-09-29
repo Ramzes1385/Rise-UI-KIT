@@ -31,12 +31,12 @@ describe('BaseMediaPlayer: оверлеи в стиле VideoStack', () => {
 		expect(paused()).toBeNull()
 		fake.update({ paused: true }, 'pause')
 		await nextTick()
-		expect(paused()?.querySelector('path')).toHaveAttribute('d', expect.stringMatching(/^M8,5\.14/))
+		expect(paused()?.querySelector('.base-media-player__icon')).toHaveAttribute('data-icon', 'play')
 		await fireEvent.click(paused()?.querySelector('button') as HTMLElement)
 		expect(fake.play).toHaveBeenCalledOnce()
 		fake.update({ paused: true, ended: true }, 'ended')
 		await nextTick()
-		expect(paused()?.querySelector('path')).toHaveAttribute('d', expect.stringMatching(/^M12,5V1/))
+		expect(paused()?.querySelector('.base-media-player__icon')).toHaveAttribute('data-icon', 'replay')
 		fake.update({ error: { code: 2 } }, 'error')
 		await nextTick()
 		expect(paused()).toBeNull()
@@ -80,7 +80,7 @@ describe('BaseMediaPlayer: оверлеи в стиле VideoStack', () => {
 		await fireEvent.dblClick(video, { clientX: 0 })
 		const hint = root.querySelector('.base-media-player__seek-hint--left') as HTMLElement
 		expect(hint.querySelector('.base-media-player__seek-hint-label')).toHaveTextContent('−10 с')
-		expect(hint.querySelector('path')).toHaveAttribute('d', expect.stringMatching(/^M11\.5,12/))
+		expect(hint.querySelector('.base-media-player__icon')).toHaveAttribute('data-icon', 'rewind')
 	})
 
 	it('мини-плеер: место плеера с подписью, кнопки «Вернуть» и «Закрыть» в углу', async () => {

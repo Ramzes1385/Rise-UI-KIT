@@ -53,4 +53,6 @@ export type {
 	MediaWatchEventType,
 	MediaWatchMemberStatus,
 } from './types/panels/MediaWatch.types'
+export { MEDIA_SHARE_NETWORKS } from './types/panels/MediaShare.types'
+export type { MediaShareEvent, MediaShareNetwork } from './types/panels/MediaShare.types'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'

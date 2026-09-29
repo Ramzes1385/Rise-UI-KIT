@@ -68,6 +68,17 @@ describe('BaseMediaPlayer: меню, ссылки, жесты, позиция', 
 		expect(await screen.findByText('Ссылка скопирована')).toHaveAttribute('role', 'status')
 	})
 
+	it('«Поделиться…» в меню — только с has-share и открывает окно соцсетей', async () => {
+		const plain = await setup()
+		expect(within((await openContextMenu(plain.video)).menu).queryByRole('menuitem', { name: 'Поделиться…' })).toBeNull()
+		plain.unmount()
+
+		const { video, root } = await setup({ hasShare: true })
+		await fireEvent.click(within((await openContextMenu(video)).menu).getByRole('menuitem', { name: 'Поделиться…' }))
+		await nextTick()
+		expect(within(root).getByRole('dialog', { name: 'Поделиться' })).toBeInTheDocument()
+	})
+
 	it('данные для отладки: показатели, лог событий элемента и плеера, отчёт в буфер обмена', async () => {
 		const { video, fake } = await setup()
 		fake.emit('play')

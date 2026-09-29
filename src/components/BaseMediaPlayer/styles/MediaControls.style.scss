@@ -136,6 +136,49 @@
 			.base-media-player__icon {
 				transform: scale(1.12);
 			}
+
+			[data-icon='quality'] {
+				transform: rotate(60deg) scale(1.08);
+			}
+
+			[data-icon='speed'],
+			[data-icon='share'],
+			[data-icon='dub'] {
+				transform: rotate(-10deg) scale(1.12);
+			}
+
+			[data-icon='next'],
+			[data-icon='forward'] {
+				transform: translateX(8%) scale(1.12);
+			}
+
+			[data-icon='previous'],
+			[data-icon='rewind'] {
+				transform: translateX(-8%) scale(1.12);
+			}
+
+			[data-icon='fullscreen'],
+			[data-icon='theater'],
+			[data-icon='pip'],
+			[data-icon='expand'] {
+				transform: scale(1.2);
+			}
+
+			[data-icon='fullscreen-exit'],
+			[data-icon='theater-exit'],
+			[data-icon='pip-exit'] {
+				transform: scale(0.9);
+			}
+
+			[data-icon^='volume'],
+			[data-icon^='cast'] {
+				transform: translateX(-4%) scale(1.12);
+			}
+
+			[data-icon='playlist'],
+			[data-icon='people'] {
+				transform: translateY(-6%) scale(1.12);
+			}
 		}
 
 		&:active {
@@ -208,6 +251,7 @@
 	&__bar[data-fit~='seek'] ~ &__bar--secondary,
 	&__bar[data-fit~='duration'] &__duration,
 	&__bar[data-fit~='theater'] &__theater-button,
+	&__bar[data-fit~='theater'] &__share-button,
 	&__bar[data-fit~='pip'] &__pip-button,
 	&__bar[data-fit~='volume'] &__volume-group,
 	&__bar[data-fit~='time'] &__info {

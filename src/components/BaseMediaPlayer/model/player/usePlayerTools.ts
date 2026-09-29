@@ -7,6 +7,7 @@ import { useMediaGestures } from '../input/useMediaGestures'
 import { usePlaybackMemory } from '../core/usePlaybackMemory'
 import { useMediaContextMenu } from '../panels/useMediaContextMenu'
 import { formatMediaTime, parseMediaTime } from '@utils/mediaUtils'
+import type { MediaShareEvent } from '../../types/panels/MediaShare.types'
 import type { MediaEventLogEntry } from '../../types/panels/MediaStatsPanel.types'
 import type { MediaReportReason, BaseMediaPlayerEmits, MediaPlayerProps } from '../../types/BaseMediaPlayer.types'
 import type { MediaState, MediaActions, MediaElementRef, MediaSourceItem } from '../../types/playback/MediaCore.types'
@@ -27,16 +28,24 @@ function useLoop(props: MediaPlayerProps) {
 	return isLoopOn
 }
 
-function useToolsMenu(tools: {
-	isLoopOn: Ref<boolean>
-	isReportOpen: Ref<boolean>
-	share: ReturnType<typeof useMediaShare>
-	stats: ReturnType<typeof useMediaStats>
-}) {
+function useToolsMenu(
+	props: MediaPlayerProps,
+	tools: {
+		isLoopOn: Ref<boolean>
+		isReportOpen: Ref<boolean>
+		isShareOpen: Ref<boolean>
+		share: ReturnType<typeof useMediaShare>
+		stats: ReturnType<typeof useMediaStats>
+	},
+) {
 	return useMediaContextMenu({
 		isLoop: () => tools.isLoopOn.value,
 		setLoop: isLoop => {
 			tools.isLoopOn.value = isLoop
+		},
+		hasShare: () => Boolean(props.hasShare),
+		openShare: () => {
+			tools.isShareOpen.value = true
 		},
 		copyLink: () => void tools.share.copyLink(),
 		copyLinkAtTime: () => void tools.share.copyLinkAtTime(),
@@ -85,6 +94,7 @@ export function usePlayerTools(
 	const { state, actions } = core
 	const isLoopOn = useLoop(props)
 	const isReportOpen = ref(false)
+	const isShareOpen = ref(false)
 	const share = useMediaShare({ shareUrl: () => props.shareUrl, timeParam: () => props.timeParam, currentTime: () => state.currentTime })
 	const stats = useCoreStats(core)
 	const memory = usePlaybackMemory({
@@ -94,7 +104,7 @@ export function usePlayerTools(
 		startTime: () => urlStartTime(props),
 	})
 	const gestures = useMediaGestures({ state, actions, seekStep: () => props.seekStepLarge, toggleFullscreen: core.toggleFullscreen })
-	const menu = useToolsMenu({ isLoopOn, isReportOpen, share, stats })
+	const menu = useToolsMenu(props, { isLoopOn, isReportOpen, isShareOpen, share, stats })
 
 	return {
 		...share,
@@ -104,6 +114,11 @@ export function usePlayerTools(
 		...menu,
 		isLoopOn,
 		isReportOpen,
+		isShareOpen,
+		toggleShare: (): void => {
+			isShareOpen.value = !isShareOpen.value
+		},
+		emitShare: (data: MediaShareEvent): void => emit('share', data),
 		resumeText: computed(() => formatMessage(UI_PLAYER.RESUME, { time: formatMediaTime(memory.resumeTime.value ?? 0) })),
 		seekHintText: computed(() =>
 			formatMessage(UI_PLAYER.SECONDS, { n: `${gestures.seekHint.value?.side === 'left' ? '−' : '+'}${props.seekStepLarge}` }),

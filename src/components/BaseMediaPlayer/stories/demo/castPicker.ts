@@ -1,3 +1,5 @@
+import { MEDIA_ICONS } from '../../types/controls/MediaIcon.types'
+
 const DEMO_CAST_DEVICES = [
 	{ name: 'Телевизор в гостиной', kind: 'Телевизор' },
 	{ name: 'Проектор в кабинете', kind: 'Проектор' },
@@ -5,9 +7,6 @@ const DEMO_CAST_DEVICES = [
 ]
 
 const SEARCH_DELAY = 500
-
-const CAST_ICON =
-	'M1,10V12A9,9 0 0,1 10,21H12C12,14.92 7.07,10 1,10M1,14V16A5,5 0 0,1 6,21H8A7,7 0 0,0 1,14M1,18V21H4A3,3 0 0,0 1,18M21,3H3C1.89,3 1,3.89 1,5V8H3V5H21V19H14V21H21A2,2 0 0,0 23,19V5C23,3.89 22.1,3 21,3Z'
 
 const PANEL_STYLE = [
 	'position: fixed',
@@ -47,12 +46,12 @@ function element<K extends keyof HTMLElementTagNameMap>(tag: K, style: string, t
 
 function castIcon(): SVGSVGElement {
 	const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-	svg.setAttribute('viewBox', '0 0 24 24')
+	svg.setAttribute('viewBox', '0 0 640 512')
 	svg.setAttribute('width', '24')
 	svg.setAttribute('height', '24')
 	svg.setAttribute('aria-hidden', 'true')
 	const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-	path.setAttribute('d', CAST_ICON)
+	path.setAttribute('d', MEDIA_ICONS.cast)
 	path.setAttribute('fill', '#8ab4f8')
 	svg.append(path)
 	return svg

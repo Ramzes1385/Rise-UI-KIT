@@ -39,4 +39,5 @@ export const args = {
 	onAchievement: fn(),
 	'onWatch-sync': fn(),
 	'onWatch-invite': fn(),
+	onShare: fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

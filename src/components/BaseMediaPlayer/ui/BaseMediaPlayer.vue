@@ -179,6 +179,7 @@
 				</Transition>
 				<MediaNextCard />
 				<MediaReportForm v-model:is-open="isReportOpen" @submit="submitReport" />
+				<MediaSharePanel v-if="hasShare" />
 				<div v-if="isDropTarget" class="base-media-player__drop" aria-hidden="true">{{ UI_PLAYER.CAPTIONS_DROP }}</div>
 				<input
 					v-if="hasCaptionUpload"
@@ -217,6 +218,7 @@ import { kitDefaults } from '@composables/useDefaults'
 import MediaNextCard from './overlays/MediaNextCard.vue'
 import MediaAdOverlay from './overlays/MediaAdOverlay.vue'
 import MediaReportForm from './panels/MediaReportForm.vue'
+import MediaSharePanel from './panels/MediaSharePanel.vue'
 import MediaStatsPanel from './panels/MediaStatsPanel.vue'
 import MediaControlBar from './controls/MediaControlBar.vue'
 import { BaseContextMenu } from '@components/BaseContextMenu'

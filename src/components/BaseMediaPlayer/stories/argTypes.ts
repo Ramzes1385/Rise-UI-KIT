@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
+import { MEDIA_SHARE_NETWORKS } from '../types/panels/MediaShare.types'
 import { MEDIA_ERROR_EFFECTS } from '../types/overlays/MediaError.types'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup } from '@/stories/helpers'
 import { MEDIA_LOGO_POSITIONS, MEDIA_PLAYER_MODES, MEDIA_PRELOAD_MODES } from '../types/BaseMediaPlayer.types'
@@ -40,6 +41,8 @@ export const argTypes = {
 	isAutoNext: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	storageKey: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	shareUrl: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+	hasShare: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	shareNetworks: { control: 'check', options: [...MEDIA_SHARE_NETWORKS], table: propGroup(ARG_GROUP.behavior) },
 	timeParam: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	hasUrlTime: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	hasCaptionUpload: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },

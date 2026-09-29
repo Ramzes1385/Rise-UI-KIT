@@ -249,6 +249,11 @@ function extrasContext(extras: ReturnType<typeof usePlayerExtras>) {
 	}
 }
 
+function isPanelOpen(extras: ReturnType<typeof usePlayerExtras>): boolean {
+	const { episodes, tools } = extras
+	return [episodes.isEpisodesOpen, episodes.isChaptersOpen, tools.isShareOpen, tools.isReportOpen].some(isOpen => isOpen.value)
+}
+
 function usePlayerKeys(
 	root: Readonly<Ref<HTMLElement | null>>,
 	props: MediaPlayerProps,
@@ -318,7 +323,7 @@ export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMed
 		isIdle: usePlayerIdle(props, elements, {
 			state,
 			isAudio: view.isAudioMode,
-			isPanelOpen: () => extras.episodes.isEpisodesOpen.value || extras.episodes.isChaptersOpen.value,
+			isPanelOpen: () => isPanelOpen(extras),
 		}),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,

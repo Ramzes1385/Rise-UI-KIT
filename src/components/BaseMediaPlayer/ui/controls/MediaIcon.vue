@@ -1,5 +1,5 @@
 <template>
-	<svg class="base-media-player__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+	<svg class="base-media-player__icon" viewBox="0 0 640 512" :data-icon="name" aria-hidden="true" focusable="false">
 		<template v-if="morph">
 			<path class="base-media-player__icon-morph" :d="morph[0]" />
 			<path class="base-media-player__icon-morph" :d="morph[1]" />

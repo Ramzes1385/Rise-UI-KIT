@@ -134,6 +134,14 @@
 					<template #panel><MediaWatchPanel /></template>
 				</MediaPopover>
 				<MediaControlButton
+					v-if="props.hasShare"
+					class="base-media-player__share-button"
+					icon="share"
+					:label="UI_PLAYER.SHARE"
+					aria-haspopup="dialog"
+					:aria-expanded="isShareOpen"
+					@click="toggleShare" />
+				<MediaControlButton
 					v-if="hasCast"
 					:icon="isCasting ? 'cast-connected' : 'cast'"
 					:label="castLabel"
@@ -242,6 +250,7 @@ const {
 	isPip,
 	isPipSupported,
 	isSeekRowOpen,
+	isShareOpen,
 	isTheater,
 	muteLabel,
 	nextEpisode,
@@ -269,6 +278,7 @@ const {
 	togglePip,
 	togglePlay,
 	toggleSeekRow,
+	toggleShare,
 	toggleTheater,
 	volumeIcon,
 	volumeValue,

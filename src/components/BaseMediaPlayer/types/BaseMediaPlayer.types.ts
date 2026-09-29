@@ -6,6 +6,7 @@ import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { MediaTextTrackItem } from './content/MediaSubtitles.types'
 import type { createPlayerContext } from '../model/player/useBaseMediaPlayer'
 import type { MediaWatchEvent, MediaWatchParty } from './panels/MediaWatch.types'
+import type { MediaShareEvent, MediaShareNetwork } from './panels/MediaShare.types'
 import type { MediaClip, MediaChapter, MediaPlaylist } from './content/MediaPlaylist.types'
 import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './overlays/MediaAds.types'
 import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './overlays/MediaNotices.types'
@@ -122,8 +123,15 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	isTheater?: boolean
 	/** Ключ записи для запоминания позиции в браузере (localStorage): без него позиция не запоминается */
 	storageKey?: string
-	/** Ссылка для «Копировать ссылку»; по умолчанию — адрес страницы */
+	/** Ссылка для «Поделиться» и «Копировать ссылку»; по умолчанию — адрес страницы */
 	shareUrl?: string
+	/**
+	 * Кнопка «Поделиться» на панели и пункт «Поделиться…» в контекстном меню: окно со ссылками в соцсети и мессенджеры,
+	 * копированием ссылки, переключателем «Начать с …» и системным окном «Поделиться» там, где оно есть (Web Share API)
+	 */
+	hasShare?: boolean
+	/** Соцсети окна «Поделиться» и их порядок; по умолчанию — все из `MEDIA_SHARE_NETWORKS` */
+	shareNetworks?: readonly MediaShareNetwork[]
 	/** Параметр адреса с позицией в секундах: `?t=754` */
 	timeParam?: string
 	/** Начать с позиции из адреса страницы (`timeParam`), если она там есть */
@@ -233,6 +241,8 @@ export interface BaseMediaPlayerEmits {
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
 	(event: 'report', report: MediaReport): void
+	/** Зритель поделился записью: соцсеть, копирование ссылки или системное окно — для статистики приложения */
+	(event: 'share', data: MediaShareEvent): void
 	/** Совместный просмотр: зритель пригласил участника по почте — письмо со ссылкой отправляет приложение */
 	(event: 'watch-invite', email: string): void
 	/** Совместный просмотр: зритель запустил, остановил, перемотал запись или сменил скорость — разошлите участникам */

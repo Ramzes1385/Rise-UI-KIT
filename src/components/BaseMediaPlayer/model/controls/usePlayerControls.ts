@@ -10,7 +10,7 @@ const SEEK_LONG = 30
 
 function volumeIcon(volume: number, isMuted: boolean): MediaIconName {
 	if (isMuted || volume === 0) return 'volume-mute'
-	return volume < 0.5 ? 'volume-low' : 'volume-high'
+	return volume < 0.5 ? 'volume-medium' : 'volume-high'
 }
 
 export function usePlayerControls() {

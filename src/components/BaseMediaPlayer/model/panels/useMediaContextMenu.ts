@@ -12,6 +12,8 @@ const CONTEXT_CLASSES = {
 export function useMediaContextMenu(options: {
 	isLoop: () => boolean
 	setLoop: (isLoop: boolean) => void
+	hasShare: () => boolean
+	openShare: () => void
 	copyLink: () => void
 	copyLinkAtTime: () => void
 	openReport: () => void
@@ -27,6 +29,7 @@ export function useMediaContextMenu(options: {
 		contextItems: computed<DropdownMenuItem[][]>(() => [
 			[
 				{ type: 'checkbox', label: UI_PLAYER.LOOP, isChecked: options.isLoop(), onUpdateChecked: options.setLoop },
+				...(options.hasShare() ? [{ label: UI_PLAYER.SHARE_MENU, icon: 'send', onSelect: options.openShare }] : []),
 				{ label: UI_PLAYER.COPY_LINK, icon: 'copy', onSelect: options.copyLink },
 				{ label: UI_PLAYER.COPY_LINK_AT_TIME, icon: 'link', onSelect: options.copyLinkAtTime },
 			],
