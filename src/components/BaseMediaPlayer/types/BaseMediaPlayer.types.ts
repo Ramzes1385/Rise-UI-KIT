@@ -16,6 +16,9 @@ export const MEDIA_PRELOAD_MODES = ['none', 'metadata', 'auto'] as const
 
 export const MEDIA_LOGO_POSITIONS = ['top-left', 'top-right'] as const
 
+/** Вид плеера: auto — по источнику (аудиофайл — audio), video — кадр с панелью поверх, audio — компактная панель без кадра */
+export const MEDIA_PLAYER_MODES = ['auto', 'video', 'audio'] as const
+
 /** Угол кадра с логотипом */
 export type MediaLogoPosition = (typeof MEDIA_LOGO_POSITIONS)[number]
 
@@ -39,6 +42,8 @@ export interface MediaReport {
 
 /** Что загружать до запуска: ничего, только длительность и первый кадр или запись целиком */
 export type MediaPreload = (typeof MEDIA_PRELOAD_MODES)[number]
+
+export type MediaPlayerMode = (typeof MEDIA_PLAYER_MODES)[number]
 
 export interface BaseMediaPlayerProps extends BaseComponentProps<
 	(typeof MEDIA_PLAYER_VARIANTS)[number],
@@ -71,8 +76,14 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	preload?: MediaPreload
 	/** CORS-режим загрузки: нужен, если записи и субтитры лежат на другом домене */
 	crossorigin?: 'anonymous' | 'use-credentials'
-	/** Пропорции кадра — значение CSS `aspect-ratio` */
+	/** Пропорции кадра — значение CSS `aspect-ratio`; в аудиорежиме не действуют */
 	aspectRatio?: string
+	/**
+	 * Вид: `auto` — по выбранному источнику (MIME `audio/*` или расширение .mp3, .m4a, .aac, .ogg, .opus, .wav, .flac —
+	 * аудиорежим), `video` — кадр с панелью поверх, `audio` — компактная панель без кадра: без полного и широкого экрана,
+	 * субтитров и жестов по кадру, панель не прячется
+	 */
+	mode?: MediaPlayerMode
 	/** Горячие клавиши, пока фокус внутри плеера: Space/K, ←/→, J/L, Home/End, 0–9, ↑/↓, M, F, T, C, Shift+, и Shift+. */
 	hasKeyboardShortcuts?: boolean
 	/** Шаг перемотки стрелками ←/→, секунды */
@@ -205,6 +216,7 @@ export type MediaPlayerProps = PropsWithDefaults<
 	BaseMediaPlayerProps,
 	| 'preload'
 	| 'aspectRatio'
+	| 'mode'
 	| 'hasKeyboardShortcuts'
 	| 'seekStep'
 	| 'seekStepLarge'

@@ -56,6 +56,7 @@ const SCENARIOS: Scenario[] = [
 	{ story: 'subtitles', time: 4 },
 	{ story: 'audio-tracks', time: 3, prepare: openSettings },
 	{ story: 'episodes', time: 3 },
+	{ story: 'audio-mode', time: 3 },
 	{ story: 'ads', time: 9 },
 	{
 		story: 'banners-and-achievements',

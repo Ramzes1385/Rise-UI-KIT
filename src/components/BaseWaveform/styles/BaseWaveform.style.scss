@@ -1,0 +1,56 @@
+.base-waveform {
+	@include custom-bg('--waveform-color', var(--custom-text, var(--rise-primary)));
+	--waveform-rest: var(--rise-border-accented);
+
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: sz(2px);
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	height: sz(40px);
+	border-radius: sz(var(--rise-radius-sm));
+	cursor: pointer;
+	touch-action: none;
+	user-select: none;
+	@include focus-ring;
+
+	&--soft {
+		--waveform-color: currentcolor;
+		--waveform-rest: color-mix(in srgb, currentcolor 35%, transparent);
+	}
+
+	&--disabled {
+		cursor: default;
+	}
+
+	&__bar {
+		flex: 1 1 0;
+		min-width: 1px;
+		max-width: sz(4px);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--waveform-rest);
+		@include transition(background-color);
+
+		&--played {
+			background-color: var(--waveform-color);
+		}
+	}
+
+	&__selection {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: color-mix(in srgb, var(--waveform-color) 18%, transparent);
+		box-shadow:
+			inset 2px 0 0 var(--waveform-color),
+			inset -2px 0 0 var(--waveform-color);
+		pointer-events: none;
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}

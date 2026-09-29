@@ -87,6 +87,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseInfiniteScroll',
 	'BaseVirtualList',
 	'BaseMediaPlayer',
+	'BaseWaveform',
+	'BaseAudioPlayer',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -118,6 +120,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseFab',
 	'BaseInplace',
 	'BaseSplitter',
+	'BaseWaveform',
+	'BaseAudioPlayer',
 ])
 
 /** Формовые компоненты, требующие story Error */

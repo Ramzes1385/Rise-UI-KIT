@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useCastSdk } from './useCastSdk'
-import { formatMediaTime } from './mediaTime'
+import { formatMediaTime } from '@utils/mediaUtils'
 import { UI_PLAYER, formatMessage } from './messages'
 import { useRemotePlayback } from './useRemotePlayback'
 import type { MediaCastOptions } from '../types/MediaCast.types'

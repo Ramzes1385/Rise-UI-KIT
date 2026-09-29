@@ -18,6 +18,9 @@ export const UI_COLOR_PICKER = localized('colorPicker')
 
 export const UI_RATING = localized('rating')
 
+/** Записи: аудиоплеер, волна, диктофон */
+export const UI_AUDIO = localized('audio')
+
 /** Таблица: тексты и доступные имена элементов управления */
 export const TABLE_TEXT = localized('table')
 

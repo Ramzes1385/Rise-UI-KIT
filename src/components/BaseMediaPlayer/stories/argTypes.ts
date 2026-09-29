@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup } from '@/stories/helpers'
-import { MEDIA_LOGO_POSITIONS, MEDIA_PRELOAD_MODES } from '../types/BaseMediaPlayer.types'
+import { MEDIA_LOGO_POSITIONS, MEDIA_PLAYER_MODES, MEDIA_PRELOAD_MODES } from '../types/BaseMediaPlayer.types'
 
 export const argTypes = {
 	...baseArgTypes(),
@@ -38,6 +38,7 @@ export const argTypes = {
 	hasUrlTime: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	hasCaptionUpload: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	mode: { control: 'inline-radio', options: [...MEDIA_PLAYER_MODES], table: propGroup(ARG_GROUP.appearance) },
 	preload: { control: 'inline-radio', options: [...MEDIA_PRELOAD_MODES], table: propGroup(ARG_GROUP.behavior) },
 	crossorigin: { control: 'inline-radio', options: ['anonymous', 'use-credentials'], table: propGroup(ARG_GROUP.behavior) },
 	isAutoplay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },

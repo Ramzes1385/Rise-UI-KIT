@@ -4,6 +4,12 @@ import type { MediaSourceItem, MediaSourcesOptions } from '../types/MediaCore.ty
 
 export const MEDIA_PROTOCOLS = ['http:', 'https:', 'blob:'] as const
 
+const AUDIO_EXTENSIONS = /\.(?:mp3|m4a|aac|oga|ogg|opus|wav|flac|weba)(?:[?#]|$)/i
+
+export function isAudioSource(item: MediaSourceItem | null | undefined): boolean {
+	return Boolean(item && (item.type?.toLowerCase().startsWith('audio/') || AUDIO_EXTENSIONS.test(item.src)))
+}
+
 function normalizeSources(sources: MediaSourceItem[] | string | undefined, allowed: readonly string[]): MediaSourceItem[] {
 	const list = typeof sources === 'string' ? [{ src: sources }] : (sources ?? [])
 	return list.filter(item => isSafeUrl(item.src, allowed))

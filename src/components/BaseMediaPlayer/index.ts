@@ -1,8 +1,15 @@
 export { MEDIA_ERROR_CODES } from './types/MediaCore.types'
-export { MEDIA_LOGO_POSITIONS, MEDIA_PLAYER_VARIANTS, MEDIA_PRELOAD_MODES, MEDIA_REPORT_REASONS } from './types/BaseMediaPlayer.types'
+export {
+	MEDIA_LOGO_POSITIONS,
+	MEDIA_PLAYER_MODES,
+	MEDIA_PLAYER_VARIANTS,
+	MEDIA_PRELOAD_MODES,
+	MEDIA_REPORT_REASONS,
+} from './types/BaseMediaPlayer.types'
 export type { MediaState, MediaActions, MediaErrorCode, MediaTimeRange, MediaSourceItem, MediaPlayerError } from './types/MediaCore.types'
 export type {
 	MediaPreload,
+	MediaPlayerMode,
 	MediaLogoPosition,
 	MediaReport,
 	MediaReportReason,

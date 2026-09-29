@@ -1,14 +1,14 @@
 import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
-import { formatMediaTime } from './mediaTime'
 import { usePlayerCast } from './usePlayerCast'
 import { usePlayerTools } from './usePlayerTools'
 import { useIdleControls } from './useIdleControls'
 import { useMediaBanners } from './useMediaBanners'
 import { useMediaElement } from './useMediaElement'
-import { useMediaHotkeys } from './useMediaHotkeys'
 import { usePlayerModels } from './usePlayerModels'
+import { formatMediaTime } from '@utils/mediaUtils'
 import { useMediaAdBreaks } from './useMediaAdBreaks'
+import { usePlayerHotkeys } from './usePlayerHotkeys'
 import { usePlayerCaptions } from './usePlayerCaptions'
 import { PLAYER_CONTEXT_KEY } from './usePlayerContext'
 import { usePlayerOverlays } from './usePlayerOverlays'
@@ -19,11 +19,11 @@ import { useMediaAudioTracks } from './useMediaAudioTracks'
 import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
 import { useMediaAchievements } from './useMediaAchievements'
 import { UI_PLAYER, formatMessage, formatNumber } from './messages'
-import { MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import { usePlayerEpisodes, usePlayerPlaylist } from './usePlayerPlaylist'
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
+import { isAudioSource, MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import type { MediaAudioProvider, MediaAudioTrackItem } from '../types/MediaAudio.types'
 import type { MediaState, MediaActions, MediaSourceItem } from '../types/MediaCore.types'
 import type { BaseMediaPlayerEmits, BaseMediaPlayerExpose, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
@@ -36,11 +36,6 @@ const CLASS_KEYS = ['root', 'media', 'overlay', 'controls', 'seek', 'volume', 't
 
 function safeUrl(url: string | undefined, protocols: readonly string[]): string | undefined {
 	return url && isSafeUrl(url, protocols) ? url : undefined
-}
-
-function nextRate(rates: number[], current: number, direction: 1 | -1): number | undefined {
-	const sorted = [...rates].sort((a, b) => a - b)
-	return direction > 0 ? sorted.find(rate => rate > current) : sorted.filter(rate => rate < current).pop()
 }
 
 function useLabels(state: Readonly<MediaState>) {
@@ -82,6 +77,7 @@ function usePlayerSources(
 			src: computed(() => (hls.isHlsActive.value ? undefined : sources.activeSource.value?.src)),
 			qualities: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.options.value : fileQualities.value)),
 			activeQualityId: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.activeId.value : sources.activeSource.value?.src)),
+			isAudioMode: computed(() => props.mode === 'audio' || (props.mode === 'auto' && isAudioSource(sources.activeSource.value))),
 			selectQuality(id: string): void {
 				if (hls.isHlsActive.value) return hls.hlsQuality.select(id)
 				const source = sources.playableSources.value.find(item => item.src === id)
@@ -91,55 +87,14 @@ function usePlayerSources(
 	}
 }
 
-function usePlayerView(props: MediaPlayerProps, poster: () => string | undefined) {
+function usePlayerView(props: MediaPlayerProps, view: { poster: () => string | undefined; isAudio: Readonly<Ref<boolean>> }) {
 	return {
-		posterSrc: computed(() => safeUrl(poster(), IMAGE_PROTOCOLS)),
+		posterSrc: computed(() => safeUrl(view.poster(), IMAGE_PROTOCOLS)),
 		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
 		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
-		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
+		rootStyle: computed(() => (view.isAudio.value ? {} : { aspectRatio: props.aspectRatio })),
 		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
 	}
-}
-
-function usePlayerHotkeys(
-	target: Readonly<Ref<HTMLElement | null>>,
-	props: MediaPlayerProps,
-	media: {
-		state: Readonly<MediaState>
-		actions: MediaActions
-		screen: { toggleFullscreen: () => void }
-		models: { toggleTheater: () => void }
-		captions: { toggleCaptions: () => void }
-		episodes: { playNext: () => void; playPrevious: () => void }
-		ads: { isAdPlaying: Readonly<Ref<boolean>> }
-		cast: Pick<ReturnType<typeof usePlayerCast>, 'isCastConnected' | 'castRemote' | 'castPlayOrPause' | 'castSeek'>
-	},
-): void {
-	const { state, actions, cast } = media
-	const isCast = (): boolean => cast.isCastConnected.value
-	useMediaHotkeys(target, {
-		isEnabled: () => props.hasKeyboardShortcuts && !media.ads.isAdPlaying.value,
-		seekStep: () => props.seekStep,
-		seekStepLarge: () => props.seekStepLarge,
-		volumeStep: () => props.volumeStep,
-		actions: {
-			togglePlay: () => (isCast() ? cast.castPlayOrPause() : void actions.togglePlay()),
-			seekBy: delta => (isCast() ? cast.castSeek(cast.castRemote.currentTime + delta) : actions.seekBy(delta)),
-			seekToFraction: fraction =>
-				isCast() ? cast.castSeek(cast.castRemote.duration * fraction) : actions.seek(state.duration * fraction),
-			changeVolume: delta => actions.setVolume(state.volume + delta),
-			toggleMute: actions.toggleMute,
-			toggleFullscreen: media.screen.toggleFullscreen,
-			toggleTheater: media.models.toggleTheater,
-			toggleCaptions: media.captions.toggleCaptions,
-			nextEpisode: media.episodes.playNext,
-			previousEpisode: media.episodes.playPrevious,
-			stepPlaybackRate(direction) {
-				const rate = nextRate(props.playbackRates, state.playbackRate, direction)
-				if (rate !== undefined) actions.setPlaybackRate(rate)
-			},
-		},
-	})
 }
 
 function useTeleportLayer(root: Readonly<Ref<HTMLElement | null>>): HTMLElement | null {
@@ -231,12 +186,16 @@ function useScreenModes(elements: ReturnType<typeof usePlayerElements>, isTheate
 	}
 }
 
-function usePlayerIdle(props: MediaPlayerProps, elements: ReturnType<typeof usePlayerElements>, state: Readonly<MediaState>) {
+function usePlayerIdle(
+	props: MediaPlayerProps,
+	elements: ReturnType<typeof usePlayerElements>,
+	player: { state: Readonly<MediaState>; isAudio: Readonly<Ref<boolean>> },
+) {
 	const isFocusInPanel = (): boolean =>
 		[elements.controlsRef.value, elements.layer].some(panel => panel?.contains(document.activeElement))
 	return useIdleControls(elements.rootRef, {
 		timeout: () => props.idleTimeout,
-		canHide: () => !state.isPaused && !isFocusInPanel(),
+		canHide: () => !player.isAudio.value && !player.state.isPaused && !isFocusInPanel(),
 	}).isIdle
 }
 
@@ -383,14 +342,14 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		toggleFullscreen: screen.toggleFullscreen,
 		isCasting: () => cast.isCastConnected.value,
 	})
-	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, cast, ...extras })
+	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, cast, isAudio: view.isAudioMode, ...extras })
 	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
 
 	return {
 		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
 		props,
 		...useLabels(state),
-		...usePlayerView(props, series.content.poster),
+		...usePlayerView(props, { poster: series.content.poster, isAudio: view.isAudioMode }),
 		...view,
 		...overlays,
 		...models,
@@ -404,7 +363,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		...screen,
 		state,
 		actions,
-		isIdle: usePlayerIdle(props, elements, state),
+		isIdle: usePlayerIdle(props, elements, { state, isAudio: view.isAudioMode }),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,
 		accessibleName,

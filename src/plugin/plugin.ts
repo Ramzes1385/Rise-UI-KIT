@@ -52,6 +52,7 @@ import { BaseSkeleton } from '../components/BaseSkeleton'
 import { BaseSplitter } from '../components/BaseSplitter'
 import { BaseTextarea } from '../components/BaseTextarea'
 import { BaseTimeline } from '../components/BaseTimeline'
+import { BaseWaveform } from '../components/BaseWaveform'
 // Точечные импорты обходят top-level barrel src/components/index.ts —
 // иначе sub-barrel ./components/BaseChat/index.ts тянул бы тяжёлый BaseChat.vue
 // статически через цепочку re-export, ломая физический split на async-чанки
@@ -69,6 +70,7 @@ import { BasePopconfirm } from '../components/BasePopconfirm'
 import { BaseScrollArea } from '../components/BaseScrollArea'
 import { BaseTimePicker } from '../components/BaseTimePicker'
 import type { UiKitPluginOptions } from './types/plugin.types'
+import { BaseAudioPlayer } from '../components/BaseAudioPlayer'
 import { BaseAvatarGroup } from '../components/BaseAvatarGroup'
 import { BaseBreadcrumbs } from '../components/BaseBreadcrumbs'
 import { BaseButtonGroup } from '../components/BaseButtonGroup'
@@ -101,6 +103,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseAlert,
 	BaseAnimation,
 	BaseApp,
+	BaseAudioPlayer,
 	BaseAutocomplete,
 	BaseAvatar,
 	BaseAvatarGroup,
@@ -180,6 +183,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseTree,
 	BaseUser,
 	BaseVirtualList,
+	BaseWaveform,
 }
 
 function getName(name: string, prefix?: string): string {

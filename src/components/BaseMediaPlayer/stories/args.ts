@@ -11,6 +11,7 @@ export const args = {
 	poster: DEMO_POSTER,
 	preload: 'metadata',
 	aspectRatio: '16 / 9',
+	mode: 'auto',
 	isAutoplay: false,
 	isLoop: false,
 	hasKeyboardShortcuts: true,

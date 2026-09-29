@@ -62,7 +62,7 @@
 				</BaseButton>
 			</BaseDropdownMenu>
 			<BaseButton
-				v-if="captionTracks.length"
+				v-if="captionTracks.length && !isAudioMode"
 				variant="ghost"
 				class="base-media-player__button base-media-player__captions-button"
 				:aria-label="UI_PLAYER.CAPTIONS"
@@ -100,7 +100,7 @@
 				@select-audio="selectAudioTrack"
 				@update-auto-next="setAutoNext" />
 			<BaseButton
-				v-if="!isFullscreen"
+				v-if="!isFullscreen && !isAudioMode"
 				variant="ghost"
 				class="base-media-player__button"
 				:aria-label="theaterLabel"
@@ -108,7 +108,7 @@
 				<template #left><BaseIcon :name="isTheater ? 'theater-exit' : 'theater'" /></template>
 			</BaseButton>
 			<BaseButton
-				v-if="isFullscreenSupported"
+				v-if="isFullscreenSupported && !isAudioMode"
 				variant="ghost"
 				class="base-media-player__button"
 				:aria-label="fullscreenLabel"
@@ -150,6 +150,7 @@ const {
 	hasEpisodes,
 	isAutoNext,
 	isFullscreen,
+	isAudioMode,
 	isFullscreenSupported,
 	isTheater,
 	muteLabel,

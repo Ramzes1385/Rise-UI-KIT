@@ -649,6 +649,36 @@ $media-ad: #fc0;
 		@include text-size(sm);
 	}
 
+	&--audio {
+		display: flex;
+		flex-direction: column;
+	}
+
+	&--audio &__media,
+	&--audio &__start,
+	&--audio &__captions,
+	&--audio &__loader,
+	&--audio &__seek-hint,
+	&--audio &__boost {
+		display: none;
+	}
+
+	&--audio &__top {
+		position: relative;
+		min-height: 0;
+		padding-bottom: 0;
+
+		&::before {
+			content: none;
+		}
+	}
+
+	&--audio &__controls {
+		position: relative;
+		padding-top: sz(8px);
+		background-image: none;
+	}
+
 	&--casting &__start,
 	&--cast-remote &__controls,
 	&--cast-remote &__captions,

@@ -6,7 +6,7 @@ import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaGestures } from './useMediaGestures'
 import { usePlaybackMemory } from './usePlaybackMemory'
 import { useMediaContextMenu } from './useMediaContextMenu'
-import { formatMediaTime, parseMediaTime } from './mediaTime'
+import { formatMediaTime, parseMediaTime } from '@utils/mediaUtils'
 import type { MediaState, MediaActions, MediaElementRef, MediaSourceItem } from '../types/MediaCore.types'
 import type { MediaReportReason, BaseMediaPlayerEmits, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
 

@@ -1,0 +1,88 @@
+.base-audio-player {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto auto;
+	align-items: center;
+	column-gap: sz(10px);
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	padding: sz(8px) sz(12px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
+		background-color: transparent;
+		color: inherit;
+	}
+
+	&__audio {
+		display: none;
+	}
+
+	&__button {
+		border-radius: var(--rise-radius-full);
+	}
+
+	&__body {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+	}
+
+	&__title {
+		@include text-size(sm);
+		@include truncate;
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__waveform {
+		height: sz(32px);
+	}
+
+	&__time {
+		@include text-size(xs);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		color: var(--rise-text-toned);
+	}
+
+	&--ghost &__time,
+	&--ghost &__button {
+		color: inherit;
+	}
+
+	&__rate {
+		min-width: sz(40px);
+		padding: sz(2px) sz(6px);
+		border: 1px solid currentcolor;
+		border-radius: var(--rise-radius-full);
+		background: none;
+		color: inherit;
+		font: inherit;
+		font-variant-numeric: tabular-nums;
+		cursor: pointer;
+		@include text-size(xs);
+		@include focus-ring;
+
+		&:disabled {
+			@include disabled-state;
+		}
+	}
+
+	&__error {
+		grid-column: 1 / -1;
+		margin: sz(4px) 0 0;
+		@include text-size(xs);
+		color: var(--rise-error);
+	}
+}

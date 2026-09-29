@@ -97,6 +97,8 @@ export const DEMO_PLAYLISTS = [
 
 const OPUS = 'audio/webm; codecs="opus"'
 
+export const DEMO_AUDIO_SOURCES = [{ src: demoDubA, type: OPUS }]
+
 export const DEMO_AUDIO_TRACKS = [
 	{ label: 'Оригинал' },
 	{ src: demoDubA, label: 'Озвучка A (330 Гц)', srclang: 'ru', type: OPUS, isDefault: true },

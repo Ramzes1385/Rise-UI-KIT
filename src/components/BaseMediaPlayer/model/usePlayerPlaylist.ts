@@ -1,4 +1,4 @@
-import { formatMediaTime } from './mediaTime'
+import { formatMediaTime } from '@utils/mediaUtils'
 import { computed, nextTick, ref, watch } from 'vue'
 import { UI_PLAYER, formatMessage } from './messages'
 import { useMediaChapters } from './useMediaChapters'

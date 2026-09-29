@@ -28,6 +28,7 @@ export interface UiKitLocale {
 	colorPicker: Section<'colorPicker'>
 	rating: Section<'rating'>
 	player: Section<'player'>
+	audio: Section<'audio'>
 	chat: Section<'chat'>
 	editor: Section<'editor'>
 	table: Section<'table'>

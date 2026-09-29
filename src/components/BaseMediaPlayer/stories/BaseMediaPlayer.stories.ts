@@ -20,6 +20,7 @@ export const Settings = cases.Settings
 export const Subtitles = cases.Subtitles
 export const AudioTracks = cases.AudioTracks
 export const Episodes = cases.Episodes
+export const AudioMode = cases.AudioMode
 export const Ads = cases.Ads
 export const VastAds = cases.VastAds
 export const BannersAndAchievements = cases.BannersAndAchievements
