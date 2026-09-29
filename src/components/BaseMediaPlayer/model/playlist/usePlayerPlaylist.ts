@@ -58,6 +58,8 @@ function useSidePanels(playlist: ReturnType<typeof useMediaPlaylist>) {
 		episodeSeasons: playlist.playlists,
 		currentSeasonId: computed(() => playlist.currentEntry.value?.playlist.id),
 		currentEpisodeId: computed(() => playlist.currentEpisode.value?.id),
+		episodeActors: computed(() => playlist.currentEpisode.value?.actors),
+		seasonActors: computed(() => playlist.currentEntry.value?.playlist.actors),
 		toggleEpisodes: (): void => toggle('episodes'),
 		toggleChapters: (): void => toggle('chapters'),
 		closeEpisodes: (): void => close('episodes'),

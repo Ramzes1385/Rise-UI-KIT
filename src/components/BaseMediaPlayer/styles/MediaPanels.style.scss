@@ -146,6 +146,148 @@
 		font-weight: 700;
 	}
 
+	&__episodes-views {
+		display: flex;
+		gap: sz(4px);
+		padding: sz(3px);
+		border-radius: sz(10px);
+		background-color: rgb(255 255 255 / 6%);
+	}
+
+	&__episodes-view {
+		padding: sz(6px) sz(12px);
+		border: 0;
+		border-radius: sz(8px);
+		background-color: transparent;
+		color: var(--media-muted);
+		font: inherit;
+		font-size: sz(15px);
+		font-weight: 700;
+		white-space: nowrap;
+		cursor: pointer;
+		@include transition(background-color, color);
+		@include focus-ring;
+
+		@include hover {
+			color: var(--media-text);
+		}
+
+		&[aria-pressed='true'] {
+			background-color: rgb(255 255 255 / 12%);
+			color: var(--media-text);
+		}
+	}
+
+	&__actors {
+		display: grid;
+		flex: 1;
+		align-content: start;
+		gap: sz(16px);
+		min-height: 0;
+		padding: sz(12px) sz(12px) sz(16px);
+		overflow-y: auto;
+		@include scrollbar-thin;
+	}
+
+	&__actors-title {
+		margin: 0 0 sz(8px) sz(4px);
+		color: var(--media-muted);
+		font-size: sz(12px);
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	&__actors-list {
+		display: grid;
+		gap: sz(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__actor {
+		display: flex;
+		align-items: center;
+		gap: sz(12px);
+		padding: sz(8px) sz(10px);
+		border-radius: sz(10px);
+		background-color: rgb(255 255 255 / 5%);
+
+		@include motion-safe {
+			animation: base-media-player-actor-in var(--media-slow) var(--media-ease) both;
+			animation-delay: calc(min(var(--media-item-index), 8) * var(--media-fast) / 5);
+		}
+	}
+
+	&__actor-photo.base-avatar {
+		width: sz(48px);
+		height: sz(48px);
+		border-radius: sz(12px);
+
+		.base-avatar__content {
+			background-color: rgb(255 255 255 / 10%);
+			color: var(--media-text);
+			font-weight: 700;
+		}
+	}
+
+	&__actor-info {
+		display: grid;
+		flex: 1 1 auto;
+		gap: sz(2px);
+		min-width: 0;
+	}
+
+	&__actor-name {
+		color: var(--media-text);
+		font-size: sz(14px);
+		font-weight: 600;
+		@include truncate;
+	}
+
+	&__actor-role {
+		color: var(--media-muted);
+		font-size: sz(12px);
+		@include truncate;
+	}
+
+	&__actor-links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: sz(6px);
+		max-width: 50%;
+	}
+
+	&__actor-link {
+		display: grid;
+		place-items: center;
+		width: sz(30px);
+		height: sz(30px);
+		border-radius: sz(9px);
+		background-color: var(--media-share-color);
+		color: white;
+		transition:
+			transform var(--media-normal) var(--media-spring),
+			box-shadow var(--media-normal) var(--media-ease);
+		@include focus-ring;
+
+		.base-media-player__icon {
+			width: sz(17px);
+			height: sz(17px);
+		}
+
+		@include hover {
+			box-shadow: 0 6px 16px color-mix(in srgb, var(--media-share-color) 45%, transparent);
+			transform: translateY(-2px) scale(1.06);
+		}
+
+		&:active {
+			transform: scale(0.94);
+		}
+	}
+
 	&__episodes-tabs {
 		display: flex;
 		flex: none;
@@ -646,5 +788,12 @@
 	to {
 		opacity: 1;
 		transform: none;
+	}
+}
+
+@keyframes base-media-player-actor-in {
+	from {
+		opacity: 0;
+		transform: translateX(#{sz(16px)});
 	}
 }

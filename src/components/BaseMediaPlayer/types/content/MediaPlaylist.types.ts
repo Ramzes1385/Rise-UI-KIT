@@ -1,4 +1,5 @@
 import type { MediaAudioTrackItem } from './MediaAudio.types'
+import type { MediaIconName } from '../controls/MediaIcon.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { MediaBanner } from '../overlays/MediaNotices.types'
 import type { MediaAdBreak, MediaAdSegment } from '../overlays/MediaAds.types'
@@ -40,6 +41,49 @@ export interface MediaClip {
 	skipAfter?: number
 }
 
+/** Актёр: карточка на вкладке «В ролях» панели серий */
+export interface MediaActor {
+	/** Ключ актёра; по умолчанию — порядковый номер и имя */
+	id?: string
+	/** Имя актёра */
+	name: string
+	/** Роль: имя персонажа */
+	role?: string
+	/** Фото: относительный адрес или http:, https:, blob:, data:; без фото — инициалы */
+	photo?: string
+	/**
+	 * Ссылки на соцсети и страницы актёра (http: или https:), открываются в новой вкладке. Значок плеер узнаёт по адресу:
+	 * Instagram, ВКонтакте, Telegram, X, Facebook, YouTube, TikTok, Threads, IMDb, Одноклассники; остальные — «Сайт»
+	 */
+	links?: string[]
+}
+
+/** Ссылка актёра в панели серий */
+export interface MediaActorLinkItem {
+	url: string
+	label: string
+	ariaLabel: string
+	icon: MediaIconName
+	color: string
+}
+
+/** Карточка актёра в панели серий */
+export interface MediaActorCard {
+	id: string
+	name: string
+	role?: string
+	photo?: string
+	links: MediaActorLinkItem[]
+}
+
+/** Как плеер узнаёт соцсеть актёра по адресу */
+export interface MediaActorNetworkSpec {
+	hosts?: readonly string[]
+	label: () => string
+	icon: MediaIconName
+	color: string
+}
+
 export interface MediaEpisode {
 	/** Ключ серии: значение `v-model:episode` */
 	id: string
@@ -73,6 +117,8 @@ export interface MediaEpisode {
 	outro?: MediaClip | null
 	/** Миниатюры для превью на шкале — как `thumbnails` плеера */
 	thumbnails?: string
+	/** Актёры серии, например приглашённые звёзды: на вкладке «В ролях» — над актёрами сезона */
+	actors?: MediaActor[]
 }
 
 export interface MediaPlaylist {
@@ -85,6 +131,8 @@ export interface MediaPlaylist {
 	intro?: MediaClip | null
 	/** Аутро после каждой серии плейлиста */
 	outro?: MediaClip | null
+	/** Актёры сезона или сериала: вкладка «В ролях» в панели серий, у каждого — ссылки на соцсети */
+	actors?: MediaActor[]
 }
 
 /** Серия вместе с плейлистом, в котором она лежит */

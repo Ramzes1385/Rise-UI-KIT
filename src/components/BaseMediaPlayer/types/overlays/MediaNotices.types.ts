@@ -1,8 +1,8 @@
 import type { MediaState } from '../playback/MediaCore.types'
 
-export const MEDIA_BANNER_POSITIONS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const
+export const MEDIA_BANNER_POSITIONS = ['bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'] as const
 
-/** Угол кадра с баннером */
+/** Где баннер: `bottom` — полосой во всю ширину над панелью, остальные — карточкой в углу кадра */
 export type MediaBannerPosition = (typeof MEDIA_BANNER_POSITIONS)[number]
 
 export interface MediaBanner {
@@ -18,7 +18,7 @@ export interface MediaBanner {
 	image?: string
 	/** Ссылка (http: или https:), открывается в новой вкладке */
 	href?: string
-	/** Угол кадра; по умолчанию левый нижний */
+	/** Место: по умолчанию `bottom` — полосой во всю ширину над панелью; или угол кадра */
 	position?: MediaBannerPosition
 	/** Кнопка «Закрыть»; по умолчанию есть */
 	isClosable?: boolean

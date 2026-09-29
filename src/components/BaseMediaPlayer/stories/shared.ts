@@ -99,7 +99,6 @@ export const DEMO_BANNERS = [
 		text: 'Rise UI Kit — компоненты для Vue',
 		href: 'https://example.com/',
 		image: demoPoster,
-		position: 'top-right' as const,
 	},
 ]
 
@@ -158,6 +157,27 @@ export const DEMO_PLAYLISTS = [
 	},
 ]
 
+const DEMO_ACTORS = [
+	{
+		name: 'Мира Звёздная',
+		role: 'Капитан Вега',
+		links: [
+			'https://www.instagram.com/rise_ui_kit_demo_mira/',
+			'https://vk.com/rise_ui_kit_demo_mira',
+			'https://t.me/rise_ui_kit_demo_mira',
+		],
+	},
+	{
+		name: 'Лев Громов',
+		role: 'Инженер Кай',
+		links: ['https://www.youtube.com/@rise-ui-kit-demo-lev', 'https://x.com/rise_demo_lev', 'https://example.com/lev-gromov'],
+	},
+	{ name: 'Ася Ветрова', role: 'Штурман Лира', links: ['https://www.threads.net/@rise_ui_kit_demo_asya'] },
+	{ name: 'Тимур Облаков', role: 'Голос бортового компьютера' },
+]
+
+const DEMO_GUEST_ACTORS = [{ name: 'Ева Туманова', role: 'Гостья с орбиты', links: ['https://www.tiktok.com/@rise_ui_kit_demo_eva'] }]
+
 const OPUS = 'audio/webm; codecs="opus"'
 
 export const DEMO_AUDIO_SOURCES = [{ src: demoDubA, type: OPUS }]
@@ -181,4 +201,16 @@ export const MISSING_SOURCE = '/__story-missing-media__.webm'
 
 export function storyVideo(canvasElement: HTMLElement): HTMLVideoElement {
 	return canvasElement.querySelector('video') as HTMLVideoElement
+}
+
+export function demoSeries() {
+	const [first, second] = DEMO_PLAYLISTS
+	const [pilot, ...rest] = first.episodes
+	const audioTracks = DEMO_AUDIO_TRACKS.map(track => ({ ...track, isDefault: false }))
+	const tracks = DEMO_TRACKS.map(track => ({ ...track, isDefault: false }))
+	const episode = { ...pilot, sources: DEMO_QUALITIES, tracks, audioTracks, thumbnails: demoThumbnails() }
+	return [
+		{ ...first, actors: DEMO_ACTORS, episodes: [episode, ...rest.map(item => ({ ...item, actors: DEMO_GUEST_ACTORS }))] },
+		{ ...second, actors: DEMO_ACTORS },
+	]
 }

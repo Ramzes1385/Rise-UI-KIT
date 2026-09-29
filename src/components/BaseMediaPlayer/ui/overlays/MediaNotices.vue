@@ -3,7 +3,7 @@
 		v-for="banner in visibleBanners"
 		:key="banner.id"
 		class="base-media-player__banner"
-		:class="`base-media-player__banner--${banner.position ?? 'bottom-left'}`">
+		:class="`base-media-player__banner--${banner.position ?? 'bottom'}`">
 		<slot name="banner" :banner="banner" :close="() => closeBanner(banner)">
 			<component
 				:is="bannerLink(banner) ? 'a' : 'div'"
@@ -14,6 +14,7 @@
 				@click="clickBanner(banner)">
 				<img v-if="bannerImage(banner)" class="base-media-player__banner-image" :src="bannerImage(banner)" alt="" />
 				<span v-if="banner.text" class="base-media-player__banner-text">{{ banner.text }}</span>
+				<MediaIcon v-if="bannerLink(banner)" class="base-media-player__banner-arrow" name="chevron-right" />
 			</component>
 		</slot>
 		<button

@@ -119,6 +119,12 @@ export const playerRu = {
 	PREVIOUS_EPISODE: 'Предыдущая серия',
 	NEXT_EPISODE: 'Следующая серия',
 	EPISODES: 'Серии',
+	/** Вкладка актёров в панели серий; группы — актёры серии и сезона; ссылка — «Instagram: Анна Орлова» */
+	ACTORS: 'В ролях',
+	ACTORS_EPISODE: 'В этой серии',
+	ACTORS_SERIES: 'В сезоне',
+	ACTOR_LINK: '{network}: {name}',
+	ACTOR_WEBSITE: 'Сайт',
 	/** Мини-плеер в углу окна */
 	MINI_PLACEHOLDER: 'Видео в мини-плеере',
 	MINI_EXPAND: 'Вернуть плеер на место',

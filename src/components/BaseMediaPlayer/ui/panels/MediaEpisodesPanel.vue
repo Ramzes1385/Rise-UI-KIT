@@ -7,10 +7,63 @@
 			:aria-label="UI_PLAYER.EPISODES"
 			@keydown="onKeydown">
 			<div class="base-media-player__episodes-header">
-				<span class="base-media-player__episodes-title">{{ UI_PLAYER.EPISODES }}</span>
+				<div v-if="hasActors" class="base-media-player__episodes-views">
+					<button
+						type="button"
+						class="base-media-player__episodes-view"
+						:aria-pressed="view === 'episodes'"
+						@click="showView('episodes')">
+						{{ UI_PLAYER.EPISODES }}
+					</button>
+					<button
+						type="button"
+						class="base-media-player__episodes-view"
+						:aria-pressed="view === 'actors'"
+						@click="showView('actors')">
+						{{ UI_PLAYER.ACTORS }}
+					</button>
+				</div>
+				<span v-else class="base-media-player__episodes-title">{{ UI_PLAYER.EPISODES }}</span>
 				<MediaControlButton icon="close" :label="UI_ARIA.CLOSE" @click="close" />
 			</div>
-			<div v-if="seasonTabs.length > 1" class="base-media-player__episodes-tabs">
+			<div v-if="view === 'actors'" class="base-media-player__actors">
+				<div
+					v-for="group in actorGroups"
+					:key="group.id"
+					class="base-media-player__actors-group"
+					role="group"
+					:aria-label="group.title">
+					<p v-if="actorGroups.length > 1" class="base-media-player__actors-title">{{ group.title }}</p>
+					<ul class="base-media-player__actors-list">
+						<li
+							v-for="(actor, index) in group.actors"
+							:key="actor.id"
+							class="base-media-player__actor"
+							:style="{ '--media-item-index': index }">
+							<BaseAvatar class="base-media-player__actor-photo" :src="actor.photo" :name="actor.name" shape="square" />
+							<span class="base-media-player__actor-info">
+								<span class="base-media-player__actor-name">{{ actor.name }}</span>
+								<span v-if="actor.role" class="base-media-player__actor-role">{{ actor.role }}</span>
+							</span>
+							<span v-if="actor.links.length" class="base-media-player__actor-links">
+								<a
+									v-for="link in actor.links"
+									:key="link.url"
+									class="base-media-player__actor-link"
+									:href="link.url"
+									target="_blank"
+									rel="noopener noreferrer"
+									:aria-label="link.ariaLabel"
+									:title="link.label"
+									:style="{ '--media-share-color': link.color }">
+									<MediaIcon :name="link.icon" />
+								</a>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div v-else-if="seasonTabs.length > 1" class="base-media-player__episodes-tabs">
 				<button
 					v-for="tab in seasonTabs"
 					:key="tab.id"
@@ -21,7 +74,7 @@
 					{{ tab.title }}
 				</button>
 			</div>
-			<ol class="base-media-player__episodes-list">
+			<ol v-if="view === 'episodes'" class="base-media-player__episodes-list">
 				<li v-for="(card, index) in episodeCards" :key="card.id" :style="{ '--media-item-index': index }">
 					<button
 						type="button"
@@ -46,10 +99,25 @@
 </template>
 
 <script setup lang="ts">
+import MediaIcon from '../controls/MediaIcon.vue'
+import { BaseAvatar } from '@components/BaseAvatar'
 import { UI_ARIA, UI_PLAYER } from '../../model/messages'
 import MediaControlButton from '../controls/MediaControlButton.vue'
 import { useMediaEpisodesPanel } from '../../model/panels/useMediaEpisodesPanel'
 
-const { panelRef, isEpisodesOpen, seasonId, seasonTabs, episodeCards, selectSeason, chooseEpisode, close, onKeydown } =
-	useMediaEpisodesPanel()
+const {
+	panelRef,
+	isEpisodesOpen,
+	seasonId,
+	seasonTabs,
+	episodeCards,
+	selectSeason,
+	chooseEpisode,
+	close,
+	onKeydown,
+	view,
+	showView,
+	hasActors,
+	actorGroups,
+} = useMediaEpisodesPanel()
 </script>
