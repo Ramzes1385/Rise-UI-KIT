@@ -4,6 +4,7 @@ import { formatMediaTime } from './mediaTime'
 import { UI_PLAYER } from '@/locales/messages'
 import { usePlayerTools } from './usePlayerTools'
 import { useIdleControls } from './useIdleControls'
+import { useMediaBanners } from './useMediaBanners'
 import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
 import { usePlayerModels } from './usePlayerModels'
@@ -16,6 +17,7 @@ import { useMediaFullscreen } from './useMediaFullscreen'
 import type { MediaAdEvent } from '../types/MediaAds.types'
 import { useMediaAudioTracks } from './useMediaAudioTracks'
 import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
+import { useMediaAchievements } from './useMediaAchievements'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
@@ -265,7 +267,13 @@ function usePlayerExtras(
 		tracks: series.content.tracks,
 	})
 	const ads = usePlayerAds(emit, { state, actions, elements, series })
-	return { tools, captions, ads, episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld: () => ads.isAdPlaying.value }) }
+	return {
+		tools,
+		captions,
+		ads,
+		notices: usePlayerNotices(props, emit, { state, series }),
+		episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld: () => ads.isAdPlaying.value }),
+	}
 }
 
 function usePlayerAds(
@@ -289,13 +297,36 @@ function usePlayerAds(
 	return { ...useMediaAdBreaks(options), ...useMediaAdSegments(options) }
 }
 
+function usePlayerNotices(
+	props: MediaPlayerProps,
+	emit: BaseMediaPlayerEmits,
+	player: { state: Readonly<MediaState>; series: ReturnType<typeof usePlayerPlaylist> },
+) {
+	return {
+		...useMediaBanners({ banners: player.series.content.banners, state: player.state, emitBanner: event => emit('banner', event) }),
+		...useMediaAchievements({
+			achievements: () => props.achievements,
+			earned: () => props.earnedAchievements,
+			state: player.state,
+			emitAchievement: achievement => emit('achievement', achievement),
+		}),
+	}
+}
+
 function createExpose(player: {
 	state: Readonly<MediaState>
 	actions: MediaActions
 	media: Readonly<Ref<HTMLVideoElement | null>>
 	retry: () => void
+	notices: { awardAchievement: (id: string) => void }
 }): BaseMediaPlayerExpose {
-	return { ...player.actions, retry: player.retry, state: player.state, getMediaElement: () => player.media.value }
+	return {
+		...player.actions,
+		retry: player.retry,
+		state: player.state,
+		getMediaElement: () => player.media.value,
+		awardAchievement: player.notices.awardAchievement,
+	}
 }
 
 export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
@@ -331,6 +362,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		...extras.captions,
 		...extras.episodes,
 		...extras.ads,
+		...extras.notices,
 		...usePlayerAudio(props, emit, { elements, flash: extras.tools.flash, stream: hls.hlsAudio, tracks: series.content.audioTracks }),
 		...screen,
 		state,
@@ -339,7 +371,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,
 		accessibleName: computed(() => [props.title, extras.episodes.episodeTitle.value].filter(Boolean).join('. ')),
-		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback }),
+		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback, notices: extras.notices }),
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}
 }

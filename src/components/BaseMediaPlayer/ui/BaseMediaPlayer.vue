@@ -115,6 +115,9 @@
 			</div>
 			<MediaControlBar />
 			<MediaAdOverlay />
+			<MediaNotices>
+				<template v-if="$slots.banner" #banner="bannerProps"><slot name="banner" v-bind="bannerProps" /></template>
+			</MediaNotices>
 			<div v-if="resumeTime !== null" class="base-media-player__resume">
 				<span>{{ resumeText }}</span>
 				<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PLAYER.RESUME_YES }}</BaseButton>
@@ -159,6 +162,7 @@
 
 <script setup lang="ts">
 import '../styles/BaseMediaPlayer.style.scss'
+import MediaNotices from './MediaNotices.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import MediaAdOverlay from './MediaAdOverlay.vue'
 import MediaControlBar from './MediaControlBar.vue'

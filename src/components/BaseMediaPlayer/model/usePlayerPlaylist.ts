@@ -58,6 +58,7 @@ export function usePlayerPlaylist(props: MediaPlayerProps, emit: BaseMediaPlayer
 			chapters: () => episode()?.chapters ?? props.chapters,
 			adBreaks: () => episode()?.adBreaks ?? props.adBreaks,
 			adSegments: () => episode()?.adSegments ?? props.adSegments,
+			banners: () => episode()?.banners ?? props.banners,
 			storageKey: () => (props.storageKey && episode() ? `${props.storageKey}:${episode()?.id}` : props.storageKey),
 		},
 	}

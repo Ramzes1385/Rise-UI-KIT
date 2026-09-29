@@ -6,6 +6,7 @@ import type { createPlayerContext } from '../model/useBaseMediaPlayer'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
 import type { MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
 import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './MediaAds.types'
+import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './MediaNotices.types'
 import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './MediaCore.types'
 
 /** Вариант оформления один: панель управления лежит поверх кадра на тёмной подложке в обеих темах */
@@ -144,6 +145,12 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	adBreaks?: MediaAdBreak[]
 	/** Рекламные интеграции внутри ролика: отрезки на шкале и «Пропустить рекламу» */
 	adSegments?: MediaAdSegment[]
+	/** Баннеры поверх кадра в заданное время: текст, картинка, ссылка, угол, «Закрыть»; свой вид — слот `banner` */
+	banners?: MediaBanner[]
+	/** Достижения: выдаются, когда зритель досмотрел до секунды `at` или до конца; всплывают уведомлением один раз */
+	achievements?: MediaAchievement[]
+	/** Уже полученные достижения (например, с сервера); плеер ещё помнит полученные в браузере */
+	earnedAchievements?: string[]
 }
 
 export interface BaseMediaPlayerEmits {
@@ -166,6 +173,10 @@ export interface BaseMediaPlayerEmits {
 	(event: 'update:isAutoNext', value: boolean): void
 	/** Реклама: показ, досмотр, пропуск, переход по ссылке или ошибка — для статистики приложения */
 	(event: 'ad', data: MediaAdEvent): void
+	/** Баннер показан, по нему перешли или его закрыли */
+	(event: 'banner', data: MediaBannerEvent): void
+	/** Зритель получил достижение: приложение сохраняет его на сервере */
+	(event: 'achievement', achievement: MediaAchievement): void
 	/** Плеер развернулся на весь экран или свернулся */
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
@@ -175,6 +186,8 @@ export interface BaseMediaPlayerEmits {
 export interface BaseMediaPlayerSlots {
 	/** Своё сообщение об ошибке вместо текста и кнопки «Повторить» */
 	error?: (props: { error: MediaPlayerError; retry: () => void }) => unknown
+	/** Своё содержимое баннера; `close` закрывает его */
+	banner?: (props: { banner: MediaBanner; close: () => void }) => unknown
 }
 
 export interface BaseMediaPlayerExpose extends MediaActions {
@@ -182,6 +195,8 @@ export interface BaseMediaPlayerExpose extends MediaActions {
 	state: Readonly<MediaState>
 	/** Медиаэлемент — для интеграций: аналитика, MSE; до монтирования null */
 	getMediaElement: () => HTMLMediaElement | null
+	/** Выдать достижение из `achievements` по ключу (например, по событию приложения) */
+	awardAchievement: (id: string) => void
 }
 
 export type MediaPlayerProps = PropsWithDefaults<

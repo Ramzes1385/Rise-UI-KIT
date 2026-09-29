@@ -1,3 +1,4 @@
+import type { MediaBanner } from './MediaNotices.types'
 import type { MediaAudioTrackItem } from './MediaAudio.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { MediaAdBreak, MediaAdSegment } from './MediaAds.types'
@@ -43,6 +44,8 @@ export interface MediaEpisode {
 	adBreaks?: MediaAdBreak[]
 	/** Рекламные интеграции серии */
 	adSegments?: MediaAdSegment[]
+	/** Баннеры серии */
+	banners?: MediaBanner[]
 }
 
 export interface MediaPlaylist {

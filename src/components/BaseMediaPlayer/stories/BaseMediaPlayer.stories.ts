@@ -22,6 +22,7 @@ export const AudioTracks = cases.AudioTracks
 export const Episodes = cases.Episodes
 export const Ads = cases.Ads
 export const VastAds = cases.VastAds
+export const BannersAndAchievements = cases.BannersAndAchievements
 export const TitleAndLogo = cases.TitleAndLogo
 export const Theater = cases.Theater
 export const Autoplay = cases.Autoplay

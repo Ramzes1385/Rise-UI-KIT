@@ -242,6 +242,7 @@ export const en: UiKitLocale = {
 		AD_SKIP: 'Skip ad',
 		AD_SKIP_IN: 'Skip in {n}',
 		AD_VISIT: 'Visit site',
+		ACHIEVEMENT: 'Achievement unlocked',
 		ERROR_ABORTED: 'Loading was aborted',
 		ERROR_NETWORK: 'Network error. Check your connection and try again',
 		ERROR_DECODE: 'The media could not be decoded: the file may be damaged',

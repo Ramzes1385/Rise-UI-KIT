@@ -53,6 +53,27 @@ export function demoVastUrl(): string {
 	return URL.createObjectURL(new Blob([xml], { type: 'application/xml' }))
 }
 
+const DEMO_LOGO_ICON = `data:image/svg+xml,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#fc0"/><path d="M14 25l7 7 13-15" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+)}`
+
+export const DEMO_BANNERS = [
+	{
+		id: 'promo',
+		start: 1,
+		end: 11,
+		text: 'Rise UI Kit — компоненты для Vue',
+		href: 'https://example.com/',
+		image: demoPoster,
+		position: 'top-right' as const,
+	},
+]
+
+export const DEMO_ACHIEVEMENTS = [
+	{ id: 'first-seconds', title: 'Первые секунды', description: 'Досмотрите до второй секунды', icon: DEMO_LOGO_ICON, at: 2 },
+	{ id: 'finale', title: 'До конца', description: 'Досмотрите ролик до конца', icon: DEMO_LOGO_ICON, at: 'end' as const },
+]
+
 export const DEMO_AD_SEGMENTS = [{ id: 'sponsor', start: 8, end: 10, title: 'Интеграция' }]
 
 const DEMO_CHAPTERS = [
