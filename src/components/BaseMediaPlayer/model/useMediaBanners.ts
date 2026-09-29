@@ -20,6 +20,9 @@ export function useMediaBanners(options: MediaBannersOptions) {
 		const shown = new Set(previous.map(banner => banner.id))
 		banners.filter(banner => !shown.has(banner.id)).forEach(banner => options.emitBanner({ type: 'show', banner }))
 	})
+	watch([() => options.state.isEnded, options.banners], ([isEnded], [, previousBanners]) => {
+		if (isEnded || options.banners() !== previousBanners) closed.clear()
+	})
 
 	return {
 		visibleBanners: visible,

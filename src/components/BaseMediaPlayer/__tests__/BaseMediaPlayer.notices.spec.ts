@@ -55,6 +55,29 @@ describe('BaseMediaPlayer: баннеры и достижения', () => {
 		wrapper.unmount()
 	})
 
+	it('закрытый баннер возвращается при повторном просмотре и в новой серии', async () => {
+		const { wrapper, fake } = await setup({ props: { banners: [BANNERS[0]] } })
+		fake.update({ currentTime: 6 }, 'seeked')
+		await nextTick()
+		await wrapper.get('.base-media-player__banner button').trigger('click')
+		expect(wrapper.find('.base-media-player__banner').exists()).toBe(false)
+
+		fake.update({ currentTime: 7 }, 'seeked')
+		await nextTick()
+		expect(wrapper.find('.base-media-player__banner').exists()).toBe(false)
+
+		fake.update({ currentTime: 30, ended: true }, 'ended')
+		await nextTick()
+		fake.update({ currentTime: 6, ended: false }, 'seeked')
+		await nextTick()
+		expect(wrapper.find('.base-media-player__banner').exists()).toBe(true)
+
+		await wrapper.get('.base-media-player__banner button').trigger('click')
+		await wrapper.setProps({ banners: [{ ...BANNERS[0] }] })
+		expect(wrapper.find('.base-media-player__banner').exists()).toBe(true)
+		wrapper.unmount()
+	})
+
 	it('свой вид баннера через слот banner', async () => {
 		const { wrapper, fake } = await setup({
 			props: { banners: [BANNERS[0]] },

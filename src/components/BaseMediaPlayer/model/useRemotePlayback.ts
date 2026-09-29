@@ -4,6 +4,8 @@ import type { MediaElementRef } from '../types/MediaCore.types'
 
 const REMOTE_EVENTS = ['connecting', 'connect', 'disconnect']
 
+const DISMISS_ERRORS = ['NotAllowedError', 'AbortError']
+
 export function useRemotePlayback(media: MediaElementRef) {
 	const isAvailable = ref(false)
 	const state = ref<MediaCastState>('disconnected')
@@ -39,8 +41,13 @@ export function useRemotePlayback(media: MediaElementRef) {
 		isRemoteAvailable: isAvailable,
 		remoteState: state,
 		isRemoteConnected: computed(() => state.value === 'connected'),
-		promptRemote(): void {
-			void media.value?.remote?.prompt().catch(() => undefined)
+		async promptRemote(): Promise<boolean> {
+			const remote = media.value?.remote
+			if (!remote) return false
+			return remote.prompt().then(
+				() => true,
+				(error: unknown) => error instanceof DOMException && DISMISS_ERRORS.includes(error.name),
+			)
 		},
 	}
 }

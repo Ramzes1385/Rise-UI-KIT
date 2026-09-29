@@ -1,4 +1,5 @@
 /** Composable: позиционирование выпадающей панели с переворотом и сдвигом у края окна */
+import { getFixedOrigin } from '@utils/domUtils'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { Align, Edge, Geometry, Side, Size, UseDropdownPositionOptions } from './types/useDropdownPosition.types'
@@ -68,6 +69,15 @@ function fits(geometry: Geometry, side: Side): boolean {
 }
 
 /**
+ * Угол панели в её системе отсчёта. Обычно это окно, но панель внутри предка с transform
+ * (Storybook Docs, анимированное окно) отсчитывается от этого предка
+ */
+function toPanelSpace(point: { top: number; left: number }, panel: HTMLElement | null): { top: number; left: number } {
+	const origin = getFixedOrigin(panel?.parentElement)
+	return { top: point.top - origin.y, left: point.left - origin.x }
+}
+
+/**
  * Позиция выпадающей панели (`position: fixed`) у триггера. Если на выбранной стороне не хватает места,
  * а на противоположной хватает, панель переворачивается; вдоль края окна она сдвигается, чтобы не выйти за него.
  * Пересчёт — при открытии, прокрутке, изменении окна и размера панели; слушатели есть только у открытой панели.
@@ -129,9 +139,10 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		}
 
 		placement.value = toPosition(side, align)
+		const next = toPanelSpace({ top, left }, panel)
 		// Тот же угол — без нового объекта: иначе каждая прокрутка и отчёт ResizeObserver перерисовывали бы панель
 		// и её содержимое (например, сбрасывали бы набираемое в поле панели значение)
-		if (coords.value.top !== top || coords.value.left !== left) coords.value = { top, left }
+		if (coords.value.top !== next.top || coords.value.left !== next.left) coords.value = next
 	}
 
 	/** Стили панели: координаты левого верхнего угла, предел высоты и ширина триггера при matchWidth */

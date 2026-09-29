@@ -100,6 +100,7 @@ export const playerEn: UiKitLocale['player'] = {
 	CAST_STOP: 'Stop casting',
 	CAST_ACTIVE: 'Playing on “{device}”',
 	CAST_ACTIVE_TV: 'Playing on TV',
+	CAST_FAILED: 'Could not start casting',
 	ERROR_ABORTED: 'Loading was aborted',
 	ERROR_NETWORK: 'Network error. Check your connection and try again',
 	ERROR_DECODE: 'The media could not be decoded: the file may be damaged',

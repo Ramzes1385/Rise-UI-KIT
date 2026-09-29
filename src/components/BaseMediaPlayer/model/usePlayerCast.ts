@@ -22,10 +22,13 @@ export function usePlayerCast(options: MediaCastOptions) {
 		castTimeText: computed(
 			() => `${formatMediaTime(sdk.castRemote.currentTime, sdk.castRemote.duration)} / ${formatMediaTime(sdk.castRemote.duration)}`,
 		),
-		toggleCast(): void {
-			if (sdk.isCastConnected.value) return sdk.stopCast()
+		async toggleCast(): Promise<boolean> {
+			if (sdk.isCastConnected.value) {
+				sdk.stopCast()
+				return true
+			}
 			if (remote.isRemoteConnected.value || !sdk.isCastAvailable.value) return remote.promptRemote()
-			void sdk.startCast()
+			return sdk.startCast()
 		},
 	}
 }

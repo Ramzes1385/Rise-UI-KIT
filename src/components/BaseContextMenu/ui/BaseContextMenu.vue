@@ -1,5 +1,5 @@
 <template>
-	<div class="base-context-menu" :class="classes.root" @contextmenu="handleContextMenu" @keydown="handleKeydown">
+	<div ref="rootRef" class="base-context-menu" :class="classes.root" @contextmenu="handleContextMenu" @keydown="handleKeydown">
 		<slot />
 
 		<BaseDropdown
@@ -53,10 +53,8 @@ const props = withDefaults(
 const emit = defineEmits<BaseContextMenuEmits>()
 defineSlots<BaseContextMenuSlots>()
 
-const { classes, contentRef, isOpen, setOpen, anchorStyle, handleContextMenu, handleKeydown, handleSelect, exposed } = useBaseContextMenu(
-	props,
-	emit,
-)
+const { classes, rootRef, contentRef, isOpen, setOpen, anchorStyle, handleContextMenu, handleKeydown, handleSelect, exposed } =
+	useBaseContextMenu(props, emit)
 
 defineExpose(exposed)
 </script>

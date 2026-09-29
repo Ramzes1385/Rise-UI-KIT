@@ -1,10 +1,12 @@
 import { computed, nextTick, ref } from 'vue'
+import { getFixedOrigin } from '@utils/domUtils'
 import { useCustomClass } from '@composables/useCustomClass'
 import type DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
 import type { BaseContextMenuEmits, BaseContextMenuProps } from '../types/BaseContextMenu.types'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
 
 function useMenuOpening(emit: BaseContextMenuEmits) {
+	const rootRef = ref<HTMLElement | null>(null)
 	const contentRef = ref<InstanceType<typeof DropdownMenuContent> | null>(null)
 	const isOpen = ref(false)
 	const point = ref({ x: 0, y: 0 })
@@ -17,13 +19,15 @@ function useMenuOpening(emit: BaseContextMenuEmits) {
 	}
 
 	return {
+		rootRef,
 		contentRef,
 		isOpen,
 		point,
 		setOpen,
 		async openAt(x: number, y: number, focusFirst = false): Promise<void> {
 			returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
-			point.value = { x, y }
+			const origin = getFixedOrigin(rootRef.value)
+			point.value = { x: x - origin.x, y: y - origin.y }
 			setOpen(true)
 			await nextTick()
 			if (focusFirst) contentRef.value?.focusFirst()
@@ -36,10 +40,11 @@ function useMenuOpening(emit: BaseContextMenuEmits) {
 }
 
 export function useBaseContextMenu(props: BaseContextMenuProps, emit: BaseContextMenuEmits) {
-	const { contentRef, isOpen, point, setOpen, openAt, restoreFocus } = useMenuOpening(emit)
+	const { rootRef, contentRef, isOpen, point, setOpen, openAt, restoreFocus } = useMenuOpening(emit)
 
 	return {
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'panel', 'item', 'label', 'separator'] }),
+		rootRef,
 		contentRef,
 		isOpen,
 		setOpen,

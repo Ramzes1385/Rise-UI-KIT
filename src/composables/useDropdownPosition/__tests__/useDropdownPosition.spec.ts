@@ -249,4 +249,19 @@ describe('useDropdownPosition', () => {
 		api.updatePosition()
 		expect(api.coords.value).toBe(before)
 	})
+
+	it('панель внутри предка с transform (Storybook Docs) — координаты от этого предка, а решения о перевороте — по окну', () => {
+		const container = document.createElement('div')
+		container.style.transform = 'translateZ(0)'
+		container.getBoundingClientRect = () => rect(120, 30, { width: 600, height: 400 })
+		const panel = createPanel()
+		container.append(panel)
+		document.body.append(container)
+
+		const { api } = setup({ position: 'bottom-start', trigger: rect(700, 400), panel })
+
+		expect(api.placement.value).toBe('top-start')
+		expect(api.coords.value).toEqual({ top: 700 - GAP - 50 - 120, left: 400 - 30 })
+		container.remove()
+	})
 })

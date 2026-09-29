@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { mount } from '@vue/test-utils'
 import MediaSlider from '../ui/MediaSlider.vue'
+import { flushPromises, mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
 import { fakeMedia } from './BaseMediaPlayer.test-utils'
 import { fakeRemote, installCastSdk, removeCastSdk } from './cast.test-utils'
@@ -63,6 +63,23 @@ describe('BaseMediaPlayer: трансляция на телевизор', () => 
 		expect(wrapper.find('.base-media-player__cast-controls').exists()).toBe(false)
 		await castButton().trigger('click')
 		expect(remote?.remote.prompt).toHaveBeenCalledTimes(2)
+		wrapper.unmount()
+	})
+
+	it('устройство не ответило — сообщение «Не удалось начать трансляцию»; закрытый выбор устройства — без сообщения', async () => {
+		const { wrapper, remote, castButton } = await setup({ remote: true })
+		await vi.waitFor(() => expect(castButton().exists()).toBe(true))
+		const prompt = remote?.remote.prompt as ReturnType<typeof vi.fn>
+		const flash = (): string => wrapper.get('.base-media-player__flash').text()
+
+		prompt.mockRejectedValueOnce(new DOMException('dismissed', 'NotAllowedError'))
+		await castButton().trigger('click')
+		await flushPromises()
+		expect(flash()).toBe('')
+
+		prompt.mockRejectedValueOnce(new DOMException('gone', 'NotFoundError'))
+		await castButton().trigger('click')
+		await vi.waitFor(() => expect(flash()).toBe('Не удалось начать трансляцию'))
 		wrapper.unmount()
 	})
 

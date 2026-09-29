@@ -7,6 +7,8 @@ const CONTENT_TYPES: Array<[RegExp, string]> = [
 	[/\.webm(?:[?#]|$)/i, 'video/webm'],
 ]
 
+const CANCEL_ERROR = 'cancel'
+
 function castApi(): MediaCastApi | null {
 	const win = window as unknown as MediaCastWindow
 	const framework = win.cast?.framework
@@ -115,16 +117,17 @@ function useCastControls(
 	connection: () => ReturnType<typeof connectCast> | null,
 ) {
 	return {
-		async startCast(): Promise<void> {
+		async startCast(): Promise<boolean> {
 			const found = api.value
-			if (!found) return
-			const isConnected = await found.framework.CastContext.getInstance()
+			if (!found) return false
+			const result = await found.framework.CastContext.getInstance()
 				.requestSession()
 				.then(
-					() => true,
-					() => false,
+					() => 'connected',
+					(error: unknown) => (error === CANCEL_ERROR ? 'cancelled' : 'failed'),
 				)
-			if (isConnected) await loadMedia(found, options, options.state.currentTime)
+			if (result === 'connected') await loadMedia(found, options, options.state.currentTime)
+			return result !== 'failed'
 		},
 		loadCast(startAt: number): void {
 			const current = connection()

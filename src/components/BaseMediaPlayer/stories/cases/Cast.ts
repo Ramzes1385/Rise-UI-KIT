@@ -1,3 +1,4 @@
+import { onMounted } from 'vue'
 import { installDemoCast } from '../castDemo'
 import type meta from '../BaseMediaPlayer.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
@@ -15,11 +16,20 @@ export const Cast: StoryObj<typeof meta> = {
 					'Запись уходит на телевизор с текущей секунды, плеер становится пультом: пауза, перемотка, клавиши, смена серии.',
 					'«Остановить трансляцию» — просмотр продолжится здесь с того же места. Своё приложение-приёмник — `castReceiverId`.',
 					'В этой истории вместо настоящего телевизора — эмуляция Cast («Демо-телевизор»), чтобы показать вид плеера.',
+					'Настоящую трансляцию проверяйте в Chrome с телевизором в той же сети: в Яндекс Браузере Chromecast не поддерживается,',
+					'и кнопки там не будет. Адрес записи должен открываться с телевизора — `localhost` для него недоступен.',
 				].join('\n'),
 			},
 		},
 	},
-	beforeEach: () => installDemoCast(),
+	decorators: [
+		() => ({
+			setup() {
+				onMounted(installDemoCast())
+			},
+			template: '<story />',
+		}),
+	],
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const player = within(canvasElement.querySelector('.base-media-player') as HTMLElement)
 		await userEvent.click(await canvas.findByRole('button', { name: 'Трансляция на телевизор' }))

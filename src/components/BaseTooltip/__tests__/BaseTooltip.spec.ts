@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseTooltip from '../ui/BaseTooltip.vue'
 import { render, screen, waitFor } from '@testing-library/vue'
+import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
 
 const renderOptions = {
 	global: {
@@ -320,6 +321,29 @@ describe('BaseTooltip: доступность и край окна', () => {
 		expect(button).not.toHaveAttribute('aria-describedby')
 	})
 
+	it('повторный заход на цель до скрытия отменяет скрытие; isAlwaysVisible включается и выключается на лету', async () => {
+		vi.useFakeTimers()
+		const { container, rerender } = render(BaseTooltip, {
+			props: { text: 'Подсказка' },
+			slots: { default: '<button type="button">Цель</button>' },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(200)
+		wrapper.dispatchEvent(new MouseEvent('mouseleave'))
+		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+
+		wrapper.dispatchEvent(new MouseEvent('mouseleave'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+		await rerender({ isAlwaysVisible: true })
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+		await rerender({ isAlwaysVisible: false })
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+	})
+
 	it('указатель на подсказке не даёт ей скрыться, уход с подсказки скрывает', async () => {
 		vi.useFakeTimers()
 		const { container } = render(BaseTooltip, {
@@ -358,5 +382,30 @@ describe('BaseTooltip: доступность и край окна', () => {
 		const tooltip = screen.getByRole('tooltip')
 		expect(tooltip.style.left).toBe('68px')
 		expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset')).toBe('-58px')
+	})
+
+	it('подсказка в контейнере с transform (Storybook Docs, окно плеера) отсчитывается от контейнера', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const layer = document.createElement('div')
+		layer.style.transform = 'translateZ(0)'
+		layer.getBoundingClientRect = () =>
+			({ top: 100, left: 50, width: 800, height: 600, bottom: 700, right: 850, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
+		document.body.append(layer)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isAlwaysVisible: true, position: 'bottom' },
+			slots: { default: '<button type="button">?</button>' },
+			global: { provide: { [TELEPORT_TARGET_KEY as symbol]: layer } },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 300, left: 400, width: 20, height: 20, bottom: 320, right: 420, x: 400, y: 300, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		const tooltip = await screen.findByRole('tooltip')
+		await waitFor(() => expect(tooltip.style.top).toBe('228px'))
+		expect(tooltip.style.left).toBe('360px')
+		layer.remove()
 	})
 })

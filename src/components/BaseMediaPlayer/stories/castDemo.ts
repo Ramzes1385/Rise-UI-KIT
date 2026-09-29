@@ -127,8 +127,8 @@ function chromeCast() {
 }
 
 export function installDemoCast(): () => void {
-	const win = window as unknown as { cast?: unknown; chrome?: Record<string, unknown> }
-	if (win.cast) return () => undefined
+	const win = window as unknown as { cast?: { framework?: unknown }; chrome?: Record<string, unknown> }
+	if (win.cast?.framework) return () => undefined
 	const demo = createReceiver()
 	const context = contextFor(demo)
 	win.cast = {

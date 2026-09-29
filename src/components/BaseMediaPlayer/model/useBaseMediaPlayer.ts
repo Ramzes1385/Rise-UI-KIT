@@ -368,6 +368,7 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		retryPlayback,
 		accessibleName,
 		...cast,
+		toggleCast: () => void cast.toggleCast().then(isStarted => isStarted || extras.tools.flash(UI_PLAYER.CAST_FAILED)),
 		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback, notices: extras.notices }),
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}

@@ -1,4 +1,5 @@
 /** Composable: позиционирование каскадной flyout-панели через position: fixed */
+import { getFixedOrigin } from '@utils/domUtils'
 import { nextTick, onBeforeUnmount, onMounted, readonly, ref, watch } from 'vue'
 import type { UseFlyoutPositionOptions, UseFlyoutPositionReturn } from './types/useFlyoutPosition.types'
 
@@ -52,11 +53,12 @@ function useFlyoutPosition(options: UseFlyoutPositionOptions): UseFlyoutPosition
 		const boundaryRect = boundaryRef?.value?.getBoundingClientRect() ?? anchorRect
 		const panelRect = panelRef.value.getBoundingClientRect()
 		const panelWidth = Math.max(panelRect.width, minWidth)
+		const origin = getFixedOrigin(panelRef.value.parentElement)
 
 		panelStyle.value = {
 			position: 'fixed',
-			top: `${resolveTop(anchorRect, panelRect.height)}px`,
-			left: `${resolveLeft(boundaryRect, panelWidth)}px`,
+			top: `${resolveTop(anchorRect, panelRect.height) - origin.y}px`,
+			left: `${resolveLeft(boundaryRect, panelWidth) - origin.x}px`,
 		}
 	}
 

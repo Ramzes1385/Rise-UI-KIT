@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import { getFixedOrigin } from '@utils/domUtils'
 import { useEscapeKey } from '@composables/useEscapeKey'
 import type { TooltipLayout } from '@utils/tooltipUtils'
 import type { TooltipProps } from '../types/BaseTooltip.types'
@@ -19,6 +20,7 @@ function getViewport(): { width: number; height: number } {
 
 function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | null>, popupRef: Ref<HTMLElement | null>) {
 	const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
+	const origin = ref({ x: 0, y: 0 })
 	const popupSize = ref({ width: 0, height: 0 })
 	const currentLayout = (): TooltipLayout => ({ coords: coords.value, size: popupSize.value, viewport: getViewport() })
 	const placement = computed(() => resolveTooltipPlacement(props.position, currentLayout(), GAP))
@@ -28,7 +30,12 @@ function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | n
 		tooltipStyle: computed((): Record<string, string> => {
 			const shift = calcTooltipShift(placement.value, currentLayout())
 			return {
-				...calcTooltipPosition({ position: placement.value, coords: coords.value, gap: GAP, shift }),
+				...calcTooltipPosition({
+					position: placement.value,
+					coords: { ...coords.value, top: coords.value.top - origin.value.y, left: coords.value.left - origin.value.x },
+					gap: GAP,
+					shift,
+				}),
 				'--tooltip-arrow-offset': `${-shift}px`,
 			}
 		}),
@@ -39,6 +46,8 @@ function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | n
 			if (current.top !== top || current.left !== left || current.width !== width || current.height !== height) {
 				coords.value = { top, left, width, height }
 			}
+			const { x, y } = getFixedOrigin(popupRef.value?.parentElement)
+			if (origin.value.x !== x || origin.value.y !== y) origin.value = { x, y }
 		},
 		measurePopup(): void {
 			const popup = popupRef.value

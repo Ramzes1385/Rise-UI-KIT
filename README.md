@@ -2835,6 +2835,19 @@ isSafeUrl('blob:https://example.com/7f3c', DOWNLOAD_PROTOCOLS) // true
 
 ---
 
+## domUtils
+
+`getFixedOrigin(container)` — где на экране начало координат для `position: fixed` внутри `container`. Обычно это окно (`{ x: 0, y: 0 }`), но предок с `transform`, `filter`, `contain` или `container-type` становится точкой отсчёта: так Storybook оборачивает истории на странице Docs, так же ведут себя анимированные окна. Выпадающие панели, подсказки и контекстное меню кита уже учитывают это; функция нужна своим fixed-элементам.
+
+```ts
+import { getFixedOrigin } from '@ramzes1385/rise-ui-kit/utils'
+
+const origin = getFixedOrigin(panel.parentElement)
+panel.style.top = `${trigger.getBoundingClientRect().bottom - origin.y}px`
+```
+
+---
+
 ## Список utils
 
 ```txt
@@ -2847,11 +2860,13 @@ fileUtils
 iconUtils
 idUtils
 imageUtils
+mediaUtils
 navigationUtils
 paginationUtils
 rangeUtils
 ratingUtils
 schemaUtils
+subtitleUtils
 tableUtils
 tooltipUtils
 treeUtils
