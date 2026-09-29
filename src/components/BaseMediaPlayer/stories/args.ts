@@ -21,6 +21,7 @@ export const args = {
 	idleTimeout: 3000,
 	hasCaptionUpload: true,
 	nextCountdown: 5,
+	errorEffect: 'retro',
 	sizeScale: 100,
 	onPlay: fn(),
 	onPause: fn(),

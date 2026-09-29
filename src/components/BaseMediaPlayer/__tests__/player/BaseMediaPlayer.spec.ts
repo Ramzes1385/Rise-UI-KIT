@@ -146,11 +146,34 @@ describe('BaseMediaPlayer', () => {
 		expect(container.querySelector('.base-media-player__start')).toBeNull()
 	})
 
-	it('слот error заменяет сообщение', async () => {
-		const { fake } = await setup({}, { error: '<template #error="{ error }"><b>Код: {{ error.code }}</b></template>' })
+	it('слот error заменяет сообщение, фон эффекта остаётся', async () => {
+		const { fake, container } = await setup({}, { error: '<template #error="{ error }"><b>Код: {{ error.code }}</b></template>' })
 
 		fake.update({ error: { code: 2 } }, 'error')
 		expect(await screen.findByText('Код: network')).toBeInTheDocument()
+		expect(container.querySelector('.base-media-player__overlay--retro .base-media-player__error-sun')).not.toBeNull()
+		expect(container.querySelector('.base-media-player__overlay-title')).toBeNull()
+	})
+
+	it.each([
+		['retro', ['stars', 'sun', 'grid', 'shade']],
+		['aurora', ['blob', 'blob', 'blob', 'shade']],
+		['noise', ['noise', 'scanlines', 'roll', 'shade']],
+		['glitch', ['slice', 'slice', 'slice', 'shade']],
+		['none', []],
+	] as const)('экран ошибки с фоном %s: слои фона, значок, заголовок, причина и «Повторить»', async (errorEffect, layers) => {
+		const { fake, container } = await setup({ errorEffect })
+
+		fake.update({ error: { code: 2 } }, 'error')
+		const alert = await screen.findByRole('alert')
+		expect(alert).toHaveClass(`base-media-player__overlay--${errorEffect}`)
+		expect([...container.querySelectorAll('.base-media-player__error-scene > span')].map(layer => layer.className)).toEqual(
+			layers.map(layer => `base-media-player__error-${layer}`),
+		)
+		expect(alert.querySelector('.base-media-player__error-scene')).toHaveAttribute('aria-hidden', 'true')
+		expect(alert.querySelector('.base-media-player__overlay-badge .base-media-player__overlay-icon')).not.toBeNull()
+		expect(within(alert).getByText('Ошибка воспроизведения')).toBeInTheDocument()
+		expect(within(alert).getByRole('button', { name: 'Повторить' })).toBeInTheDocument()
 	})
 
 	it('customClass, sizeScale, пропорции кадра и цвет плеера', async () => {

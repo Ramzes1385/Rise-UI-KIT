@@ -42,6 +42,8 @@ export type {
 	MediaAdTrackingEvent,
 } from './types/overlays/MediaAds.types'
 export { MEDIA_BANNER_POSITIONS, MEDIA_BANNER_EVENT_TYPES } from './types/overlays/MediaNotices.types'
+export { MEDIA_ERROR_EFFECTS } from './types/overlays/MediaError.types'
+export type { MediaErrorEffect } from './types/overlays/MediaError.types'
 export type { MediaBanner, MediaAchievement, MediaBannerEvent, MediaBannerPosition } from './types/overlays/MediaNotices.types'
 export { MEDIA_WATCH_EVENT_TYPES, MEDIA_WATCH_MEMBER_STATUSES } from './types/panels/MediaWatch.types'
 export type {

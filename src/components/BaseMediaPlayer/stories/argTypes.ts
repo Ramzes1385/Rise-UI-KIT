@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
+import { MEDIA_ERROR_EFFECTS } from '../types/overlays/MediaError.types'
 import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup } from '@/stories/helpers'
 import { MEDIA_LOGO_POSITIONS, MEDIA_PLAYER_MODES, MEDIA_PRELOAD_MODES } from '../types/BaseMediaPlayer.types'
 
@@ -46,6 +47,7 @@ export const argTypes = {
 	hasMiniPlayer: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	accentColor: { control: 'color', table: propGroup(ARG_GROUP.appearance) },
+	errorEffect: { control: 'select', options: MEDIA_ERROR_EFFECTS, table: propGroup(ARG_GROUP.appearance) },
 	mode: { control: 'inline-radio', options: [...MEDIA_PLAYER_MODES], table: propGroup(ARG_GROUP.appearance) },
 	preload: { control: 'inline-radio', options: [...MEDIA_PRELOAD_MODES], table: propGroup(ARG_GROUP.behavior) },
 	crossorigin: { control: 'inline-radio', options: ['anonymous', 'use-credentials'], table: propGroup(ARG_GROUP.behavior) },

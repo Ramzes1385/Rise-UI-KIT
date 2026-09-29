@@ -38,3 +38,4 @@ export const Autoplay = cases.Autoplay
 export const ContextMenu = cases.ContextMenu
 export const ResumePosition = cases.ResumePosition
 export const WithError = cases.WithError
+export const ErrorEffects = cases.ErrorEffects

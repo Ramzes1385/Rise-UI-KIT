@@ -148,17 +148,9 @@
 					</button>
 					<p v-if="isAutoplayBlocked" class="base-media-player__hint" role="status">{{ errorMessage }}</p>
 				</div>
-				<div v-if="overlayError" class="base-media-player__overlay" :class="classes.overlay" role="alert">
-					<slot name="error" :error="overlayError" :retry="retryPlayback">
-						<MediaIcon name="alert" class="base-media-player__overlay-icon" />
-						<p class="base-media-player__overlay-title">{{ UI_PLAYER.ERROR_TITLE }}</p>
-						<p class="base-media-player__message">{{ errorMessage }}</p>
-						<button v-if="canRetry" type="button" class="base-media-player__retry" @click="retryPlayback">
-							<MediaIcon name="refresh" />
-							{{ UI_TEXT.RETRY }}
-						</button>
-					</slot>
-				</div>
+				<MediaErrorScreen>
+					<template v-if="$slots.error" #default="errorProps"><slot name="error" v-bind="errorProps" /></template>
+				</MediaErrorScreen>
 				<MediaControlBar />
 				<MediaAdOverlay />
 				<MediaClipOverlay />
@@ -217,9 +209,9 @@
 import '../styles/BaseMediaPlayer.style.scss'
 import '../styles/MediaOverlays.style.scss'
 import '../styles/MediaPanels.style.scss'
+import { UI_PLAYER } from '../model/messages'
 import MediaIcon from './controls/MediaIcon.vue'
 import { BaseButton } from '@components/BaseButton'
-import { UI_PLAYER, UI_TEXT } from '../model/messages'
 import MediaNotices from './overlays/MediaNotices.vue'
 import { kitDefaults } from '@composables/useDefaults'
 import MediaNextCard from './overlays/MediaNextCard.vue'
@@ -230,6 +222,7 @@ import MediaControlBar from './controls/MediaControlBar.vue'
 import { BaseContextMenu } from '@components/BaseContextMenu'
 import MediaCastOverlay from './overlays/MediaCastOverlay.vue'
 import MediaClipOverlay from './overlays/MediaClipOverlay.vue'
+import MediaErrorScreen from './overlays/MediaErrorScreen.vue'
 import MediaChaptersPanel from './panels/MediaChaptersPanel.vue'
 import MediaEpisodesPanel from './panels/MediaEpisodesPanel.vue'
 import MediaControlButton from './controls/MediaControlButton.vue'
@@ -274,6 +267,7 @@ const props = withDefaults(
 		hasCaptionUpload: true,
 		hasSeekPreview: true,
 		hasMiniPlayer: false,
+		errorEffect: 'retro',
 	}),
 )
 const emit = defineEmits<BaseMediaPlayerEmits>()
@@ -306,10 +300,8 @@ const {
 	logoLink,
 	rootStyle,
 	isAudioMode,
-	overlayError,
 	isAutoplayBlocked,
 	errorMessage,
-	canRetry,
 	isBuffering,
 	isStartScreen,
 	onMediaEvent,
@@ -353,7 +345,6 @@ const {
 	onCaptionDragLeave,
 	onCaptionDrop,
 	audioRef,
-	retryPlayback,
 	accessibleName,
 	episodeTitle,
 	skipChapter,

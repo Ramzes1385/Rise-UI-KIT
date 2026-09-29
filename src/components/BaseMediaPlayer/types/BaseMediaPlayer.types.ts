@@ -1,4 +1,5 @@
 import type { PropsWithDefaults } from '@composables/useDefaults'
+import type { MediaErrorEffect } from './overlays/MediaError.types'
 import type { MediaHlsConstructor } from './playback/MediaHls.types'
 import type { MediaAudioTrackItem } from './content/MediaAudio.types'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
@@ -172,6 +173,11 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	 */
 	hasMiniPlayer?: boolean
 	/**
+	 * Анимированный фон экрана ошибки: `retro` — ретро-сетка с солнцем, `aurora` — переливы, `noise` — помехи «нет сигнала»,
+	 * `glitch` — сбой картинки, `none` — затемнение без анимации. При `prefers-reduced-motion` фон неподвижен
+	 */
+	errorEffect?: MediaErrorEffect
+	/**
 	 * Совместный просмотр: ссылка-приглашение и участники. Кнопка в панели открывает окно со ссылкой, приглашением по почте
 	 * и списком участников; запуск, пауза, перемотка и скорость приходят событием `watch-sync`, команды других участников
 	 * плеер применяет через `applyWatchEvent`. Письма и сервер, через который участники обмениваются командами, — у приложения
@@ -270,6 +276,7 @@ export type MediaPlayerProps = PropsWithDefaults<
 	| 'nextCountdown'
 	| 'hasSeekPreview'
 	| 'hasMiniPlayer'
+	| 'errorEffect'
 >
 
 /** Связь `v-model` плеера со значением медиаэлемента */
