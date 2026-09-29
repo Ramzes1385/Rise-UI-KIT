@@ -649,6 +649,49 @@ $media-ad: #fc0;
 		@include text-size(sm);
 	}
 
+	&--casting &__start,
+	&--cast-remote &__controls,
+	&--cast-remote &__captions,
+	&--cast-remote &__loader,
+	&--cast-remote &__resume {
+		display: none;
+	}
+
+	&__cast {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+
+		&--remote {
+			justify-content: flex-end;
+			background-color: $media-scrim;
+			pointer-events: auto;
+		}
+	}
+
+	&__cast-message {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		margin: auto 0;
+		padding: sz(8px) sz(16px);
+		border-radius: var(--rise-radius-full);
+		background-color: $media-scrim;
+		@include text-size(base);
+	}
+
+	&__cast-controls {
+		align-self: stretch;
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		padding: sz(8px) sz(12px);
+	}
+
 	&__drop {
 		position: absolute;
 		inset: sz(8px);

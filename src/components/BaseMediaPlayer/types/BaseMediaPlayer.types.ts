@@ -151,6 +151,8 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	achievements?: MediaAchievement[]
 	/** Уже полученные достижения (например, с сервера); плеер ещё помнит полученные в браузере */
 	earnedAchievements?: string[]
+	/** Приложение-приёмник Google Cast, если приложение подключило скрипт Cast; по умолчанию Default Media Receiver */
+	castReceiverId?: string
 }
 
 export interface BaseMediaPlayerEmits {

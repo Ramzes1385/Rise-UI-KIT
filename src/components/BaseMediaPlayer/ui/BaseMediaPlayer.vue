@@ -10,6 +10,8 @@
 				'base-media-player--theater': isTheater,
 				'base-media-player--drop-target': isDropTarget,
 				'base-media-player--ad': isAdPlaying,
+				'base-media-player--casting': isCasting,
+				'base-media-player--cast-remote': isCastConnected,
 			},
 			classes.root,
 		]"
@@ -81,6 +83,7 @@
 				{{ seekHintText }}
 			</div>
 			<div v-if="isBoosted" class="base-media-player__boost" aria-hidden="true">{{ boostRate }}×</div>
+			<MediaCastOverlay />
 			<div v-if="hasTitle || logoSrc" class="base-media-player__top" :class="`base-media-player__top--logo-${logoPosition}`">
 				<span v-if="hasTitle" class="base-media-player__title" :class="classes.title">
 					{{ title }}
@@ -170,6 +173,7 @@ import MediaReportForm from './MediaReportForm.vue'
 import MediaStatsPanel from './MediaStatsPanel.vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
+import MediaCastOverlay from './MediaCastOverlay.vue'
 import { kitDefaults } from '@composables/useDefaults'
 import { UI_PLAYER, UI_TEXT } from '@/locales/messages'
 import { BaseContextMenu } from '@components/BaseContextMenu'
@@ -289,6 +293,8 @@ const {
 	cancelNext,
 	exposed,
 	isAdPlaying,
+	isCasting,
+	isCastConnected,
 	activeAdSegment,
 } = useBaseMediaPlayer(props, emit)
 

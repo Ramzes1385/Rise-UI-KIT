@@ -70,6 +70,15 @@
 				@click="toggleCaptions">
 				<template #left><BaseIcon name="subtitles" /></template>
 			</BaseButton>
+			<BaseButton
+				v-if="hasCast"
+				variant="ghost"
+				class="base-media-player__button"
+				:aria-label="castLabel"
+				:aria-pressed="isCasting"
+				@click="toggleCast">
+				<template #left><BaseIcon name="cast" /></template>
+			</BaseButton>
 			<MediaSettingsMenu
 				:rates="rates"
 				:rate="state.playbackRate"
@@ -170,5 +179,9 @@ const {
 	volumeValueText,
 	adMarks,
 	adSegmentRanges,
+	hasCast,
+	isCasting,
+	castLabel,
+	toggleCast,
 } = usePlayerContext()
 </script>

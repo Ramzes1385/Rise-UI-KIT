@@ -84,7 +84,12 @@ function useChapterUi(chapters: ReturnType<typeof useMediaChapters>, media: { st
 
 export function usePlayerEpisodes(
 	props: MediaPlayerProps,
-	player: ReturnType<typeof usePlayerPlaylist> & { state: Readonly<MediaState>; actions: MediaActions; isHeld: () => boolean },
+	player: ReturnType<typeof usePlayerPlaylist> & {
+		state: Readonly<MediaState>
+		actions: MediaActions
+		isHeld: () => boolean
+		isCasting: () => boolean
+	},
 ) {
 	const { playlist, state, actions } = player
 	const chapters = useMediaChapters({ chapters: player.content.chapters, state })
@@ -98,7 +103,8 @@ export function usePlayerEpisodes(
 	})
 	watch(
 		() => playlist.currentEpisode.value?.id,
-		(id, previous) => previous !== undefined && id !== previous && void nextTick(() => actions.play()),
+		(id, previous) =>
+			previous !== undefined && id !== previous && void nextTick(() => (player.isCasting() ? undefined : actions.play())),
 	)
 	return {
 		...countdown,

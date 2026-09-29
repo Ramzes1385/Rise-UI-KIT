@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import { isSafeUrl } from '@utils/urlUtils'
 import { formatMediaTime } from './mediaTime'
 import { UI_PLAYER } from '@/locales/messages'
+import { usePlayerCast } from './usePlayerCast'
 import { usePlayerTools } from './usePlayerTools'
 import { useIdleControls } from './useIdleControls'
 import { useMediaBanners } from './useMediaBanners'
@@ -112,18 +113,21 @@ function usePlayerHotkeys(
 		captions: { toggleCaptions: () => void }
 		episodes: { playNext: () => void; playPrevious: () => void }
 		ads: { isAdPlaying: Readonly<Ref<boolean>> }
+		cast: Pick<ReturnType<typeof usePlayerCast>, 'isCastConnected' | 'castRemote' | 'castPlayOrPause' | 'castSeek'>
 	},
 ): void {
-	const { state, actions } = media
+	const { state, actions, cast } = media
+	const isCast = (): boolean => cast.isCastConnected.value
 	useMediaHotkeys(target, {
 		isEnabled: () => props.hasKeyboardShortcuts && !media.ads.isAdPlaying.value,
 		seekStep: () => props.seekStep,
 		seekStepLarge: () => props.seekStepLarge,
 		volumeStep: () => props.volumeStep,
 		actions: {
-			togglePlay: () => void actions.togglePlay(),
-			seekBy: actions.seekBy,
-			seekToFraction: fraction => actions.seek(state.duration * fraction),
+			togglePlay: () => (isCast() ? cast.castPlayOrPause() : void actions.togglePlay()),
+			seekBy: delta => (isCast() ? cast.castSeek(cast.castRemote.currentTime + delta) : actions.seekBy(delta)),
+			seekToFraction: fraction =>
+				isCast() ? cast.castSeek(cast.castRemote.duration * fraction) : actions.seek(state.duration * fraction),
 			changeVolume: delta => actions.setVolume(state.volume + delta),
 			toggleMute: actions.toggleMute,
 			toggleFullscreen: media.screen.toggleFullscreen,
@@ -247,6 +251,7 @@ function usePlayerExtras(
 		series: ReturnType<typeof usePlayerPlaylist>
 		activeSource: () => MediaSourceItem | null | undefined
 		toggleFullscreen: () => void
+		isCasting: () => boolean
 	},
 ) {
 	const { state, actions, elements, series } = player
@@ -272,7 +277,7 @@ function usePlayerExtras(
 		captions,
 		ads,
 		notices: usePlayerNotices(props, emit, { state, series }),
-		episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld: () => ads.isAdPlaying.value }),
+		episodes: usePlayerEpisodes(props, { ...series, state, actions, isHeld: () => ads.isAdPlaying.value, isCasting: player.isCasting }),
 	}
 }
 
@@ -313,6 +318,36 @@ function usePlayerNotices(
 	}
 }
 
+function usePlayerCasting(
+	props: MediaPlayerProps,
+	player: {
+		state: Readonly<MediaState>
+		actions: MediaActions
+		elements: ReturnType<typeof usePlayerElements>
+		series: ReturnType<typeof usePlayerPlaylist>
+		activeSource: () => MediaSourceItem | null | undefined
+		title: () => string
+	},
+) {
+	const cast = usePlayerCast({
+		media: player.elements.mediaRef,
+		state: player.state,
+		receiverId: () => props.castReceiverId,
+		content: () => ({ source: player.activeSource(), title: player.title(), poster: player.series.content.poster() }),
+		pauseLocal: player.actions.pause,
+		resumeLocal(time, isPlaying) {
+			player.actions.seek(time)
+			if (isPlaying) void player.actions.play()
+		},
+	})
+	watch(
+		() => player.series.playlist.currentEpisode.value?.id,
+		() => cast.loadCast(0),
+		{ flush: 'post' },
+	)
+	return cast
+}
+
 function createExpose(player: {
 	state: Readonly<MediaState>
 	actions: MediaActions
@@ -338,6 +373,8 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 	const models = usePlayerModels(props, emit, { state, actions })
 	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
 	const activeSource = (): MediaSourceItem | null | undefined => sources.activeSource.value
+	const accessibleName = computed(() => [props.title, series.playlist.currentEpisode.value?.title].filter(Boolean).join('. '))
+	const cast = usePlayerCasting(props, { state, actions, elements, series, activeSource, title: () => accessibleName.value })
 	const extras = usePlayerExtras(props, emit, {
 		state,
 		actions,
@@ -345,8 +382,9 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		series,
 		activeSource,
 		toggleFullscreen: screen.toggleFullscreen,
+		isCasting: () => cast.isCastConnected.value,
 	})
-	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, ...extras })
+	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, cast, ...extras })
 	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
 
 	return {
@@ -370,7 +408,8 @@ export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlay
 		isIdle: usePlayerIdle(props, elements, state),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,
-		accessibleName: computed(() => [props.title, extras.episodes.episodeTitle.value].filter(Boolean).join('. ')),
+		accessibleName,
+		...cast,
 		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback, notices: extras.notices }),
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}
