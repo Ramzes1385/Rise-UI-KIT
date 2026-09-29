@@ -4,8 +4,8 @@ import { UI_PLAYER } from '@/locales/messages'
 import { useCaptionStyle } from './useCaptionStyle'
 import { useMediaSubtitles } from './useMediaSubtitles'
 import type { MediaState, MediaElementRef } from '../types/MediaCore.types'
-import type { MediaCaptionFilesOptions } from '../types/MediaSubtitles.types'
 import type { MediaPlayerProps, BaseMediaPlayerEmits } from '../types/BaseMediaPlayer.types'
+import type { MediaTextTrackItem, MediaCaptionFilesOptions } from '../types/MediaSubtitles.types'
 
 const CAPTION_ACCEPT = '.srt,.vtt'
 
@@ -54,10 +54,11 @@ export function usePlayerCaptions(
 		media: MediaElementRef
 		root: Readonly<{ value: HTMLElement | null }>
 		flash: (message: string) => void
+		tracks: () => MediaTextTrackItem[] | undefined
 	},
 ) {
 	const subtitles = useMediaSubtitles({
-		tracks: () => props.tracks,
+		tracks: player.tracks,
 		textTrack: () => props.textTrack,
 		state: player.state,
 		media: player.media,

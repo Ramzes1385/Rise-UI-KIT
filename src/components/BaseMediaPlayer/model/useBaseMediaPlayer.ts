@@ -8,17 +8,19 @@ import { useMediaElement } from './useMediaElement'
 import { useMediaHotkeys } from './useMediaHotkeys'
 import { usePlayerModels } from './usePlayerModels'
 import { usePlayerCaptions } from './usePlayerCaptions'
+import { PLAYER_CONTEXT_KEY } from './usePlayerContext'
 import { usePlayerOverlays } from './usePlayerOverlays'
 import { useMediaFullscreen } from './useMediaFullscreen'
 import { useMediaAudioTracks } from './useMediaAudioTracks'
 import { isHlsSource, useHlsAdapter } from './useHlsAdapter'
 import { formatMessage, formatNumber } from '@/locales/state'
-import type { MediaAudioProvider } from '../types/MediaAudio.types'
 import { MEDIA_PROTOCOLS, useMediaSources } from './useMediaSources'
 import { TELEPORT_TARGET_KEY } from '@composables/useTeleportTarget'
-import type { MediaState, MediaActions } from '../types/MediaCore.types'
 import { useStandardBaseComponent } from '@composables/useBaseComponent'
+import { usePlayerEpisodes, usePlayerPlaylist } from './usePlayerPlaylist'
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
+import type { MediaAudioProvider, MediaAudioTrackItem } from '../types/MediaAudio.types'
+import type { MediaState, MediaActions, MediaSourceItem } from '../types/MediaCore.types'
 import type { BaseMediaPlayerEmits, BaseMediaPlayerExpose, MediaPlayerProps } from '../types/BaseMediaPlayer.types'
 
 const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
@@ -53,9 +55,13 @@ function useLabels(state: Readonly<MediaState>) {
 	}
 }
 
-function usePlayerSources(props: MediaPlayerProps, media: Readonly<Ref<HTMLVideoElement | null>>) {
+function usePlayerSources(
+	props: MediaPlayerProps,
+	player: { media: Readonly<Ref<HTMLVideoElement | null>>; sources: () => MediaSourceItem[] | string | undefined },
+) {
+	const { media } = player
 	const sources = useMediaSources({
-		sources: () => props.sources,
+		sources: player.sources,
 		allowedProtocols: () => props.allowedProtocols,
 		media,
 		canPlay: item => isHlsSource(item) && Boolean(props.hls?.isSupported()),
@@ -80,9 +86,9 @@ function usePlayerSources(props: MediaPlayerProps, media: Readonly<Ref<HTMLVideo
 	}
 }
 
-function usePlayerView(props: MediaPlayerProps) {
+function usePlayerView(props: MediaPlayerProps, poster: () => string | undefined) {
 	return {
-		posterSrc: computed(() => safeUrl(props.poster, IMAGE_PROTOCOLS)),
+		posterSrc: computed(() => safeUrl(poster(), IMAGE_PROTOCOLS)),
 		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
 		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
 		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
@@ -96,9 +102,10 @@ function usePlayerHotkeys(
 	media: {
 		state: Readonly<MediaState>
 		actions: MediaActions
-		toggleFullscreen: () => void
-		toggleTheater: () => void
-		toggleCaptions: () => void
+		screen: { toggleFullscreen: () => void }
+		models: { toggleTheater: () => void }
+		captions: { toggleCaptions: () => void }
+		episodes: { playNext: () => void; playPrevious: () => void }
 	},
 ): void {
 	const { state, actions } = media
@@ -113,9 +120,11 @@ function usePlayerHotkeys(
 			seekToFraction: fraction => actions.seek(state.duration * fraction),
 			changeVolume: delta => actions.setVolume(state.volume + delta),
 			toggleMute: actions.toggleMute,
-			toggleFullscreen: media.toggleFullscreen,
-			toggleTheater: media.toggleTheater,
-			toggleCaptions: media.toggleCaptions,
+			toggleFullscreen: media.screen.toggleFullscreen,
+			toggleTheater: media.models.toggleTheater,
+			toggleCaptions: media.captions.toggleCaptions,
+			nextEpisode: media.episodes.playNext,
+			previousEpisode: media.episodes.playPrevious,
 			stepPlaybackRate(direction) {
 				const rate = nextRate(props.playbackRates, state.playbackRate, direction)
 				if (rate !== undefined) actions.setPlaybackRate(rate)
@@ -180,10 +189,15 @@ function usePlayerEvents(
 function usePlayerAudio(
 	props: MediaPlayerProps,
 	emit: BaseMediaPlayerEmits,
-	player: { elements: ReturnType<typeof usePlayerElements>; flash: (message: string) => void; stream: MediaAudioProvider },
+	player: {
+		elements: ReturnType<typeof usePlayerElements>
+		flash: (message: string) => void
+		stream: MediaAudioProvider
+		tracks: () => MediaAudioTrackItem[] | undefined
+	},
 ) {
 	return useMediaAudioTracks({
-		tracks: () => props.audioTracks,
+		tracks: player.tracks,
 		audioTrack: () => props.audioTrack,
 		allowedProtocols: () => props.allowedProtocols ?? MEDIA_PROTOCOLS,
 		video: player.elements.mediaRef,
@@ -216,54 +230,94 @@ function usePlayerIdle(props: MediaPlayerProps, elements: ReturnType<typeof useP
 	}).isIdle
 }
 
-export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
-	const elements = usePlayerElements()
-	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
-	const { sources, hls, view } = usePlayerSources(props, elements.mediaRef)
-	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource, adapterError: hls.hlsError })
-	const models = usePlayerModels(props, emit, { state, actions })
-	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
+function usePlayerExtras(
+	props: MediaPlayerProps,
+	emit: BaseMediaPlayerEmits,
+	player: {
+		state: Readonly<MediaState>
+		actions: MediaActions
+		elements: ReturnType<typeof usePlayerElements>
+		series: ReturnType<typeof usePlayerPlaylist>
+		activeSource: () => MediaSourceItem | null | undefined
+		toggleFullscreen: () => void
+	},
+) {
+	const { state, actions, elements, series } = player
 	const tools = usePlayerTools(props, emit, {
 		state,
 		actions,
 		media: elements.mediaRef,
-		activeSource: () => sources.activeSource.value,
+		activeSource: player.activeSource,
 		audioSource: () => elements.soundRef.value?.currentSrc || null,
-		toggleFullscreen: screen.toggleFullscreen,
+		storageKey: series.content.storageKey,
+		toggleFullscreen: player.toggleFullscreen,
 	})
-	const captions = usePlayerCaptions(props, emit, { state, media: elements.mediaRef, root: elements.rootRef, flash: tools.flash })
-	usePlayerHotkeys(elements.rootRef, props, {
+	const captions = usePlayerCaptions(props, emit, {
+		state,
+		media: elements.mediaRef,
+		root: elements.rootRef,
+		flash: tools.flash,
+		tracks: series.content.tracks,
+	})
+	return { tools, captions, episodes: usePlayerEpisodes(props, { ...series, state, actions }) }
+}
+
+function createExpose(player: {
+	state: Readonly<MediaState>
+	actions: MediaActions
+	media: Readonly<Ref<HTMLVideoElement | null>>
+	retry: () => void
+}): BaseMediaPlayerExpose {
+	return { ...player.actions, retry: player.retry, state: player.state, getMediaElement: () => player.media.value }
+}
+
+export function createPlayerContext(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
+	const elements = usePlayerElements()
+	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
+	const series = usePlayerPlaylist(props, emit)
+	const { sources, hls, view } = usePlayerSources(props, { media: elements.mediaRef, sources: series.content.sources })
+	const overlays = usePlayerOverlays(props, { state, activeSource: sources.activeSource, adapterError: hls.hlsError })
+	const models = usePlayerModels(props, emit, { state, actions })
+	const { fullscreen, ...screen } = useScreenModes(elements, models.isTheater)
+	const activeSource = (): MediaSourceItem | null | undefined => sources.activeSource.value
+	const extras = usePlayerExtras(props, emit, {
 		state,
 		actions,
+		elements,
+		series,
+		activeSource,
 		toggleFullscreen: screen.toggleFullscreen,
-		toggleTheater: models.toggleTheater,
-		toggleCaptions: captions.toggleCaptions,
 	})
+	usePlayerHotkeys(elements.rootRef, props, { state, actions, screen, models, captions: extras.captions, episodes: extras.episodes })
 	const retryPlayback = (): void => (hls.isHlsActive.value ? hls.retryHls() : actions.retry())
 
 	return {
 		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
+		props,
 		...useLabels(state),
-		...usePlayerView(props),
+		...usePlayerView(props, series.content.poster),
 		...view,
 		...overlays,
 		...models,
 		...elements,
-		...tools,
-		...captions,
-		...usePlayerAudio(props, emit, { elements, flash: tools.flash, stream: hls.hlsAudio }),
+		...extras.tools,
+		...extras.captions,
+		...extras.episodes,
+		...usePlayerAudio(props, emit, { elements, flash: extras.tools.flash, stream: hls.hlsAudio, tracks: series.content.audioTracks }),
 		...screen,
 		state,
 		actions,
 		isIdle: usePlayerIdle(props, elements, state),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,
-		exposed: {
-			...actions,
-			retry: retryPlayback,
-			state,
-			getMediaElement: () => elements.mediaRef.value,
-		} satisfies BaseMediaPlayerExpose,
+		accessibleName: computed(() => [props.title, extras.episodes.episodeTitle.value].filter(Boolean).join('. ')),
+		exposed: createExpose({ state, actions, media: elements.mediaRef, retry: retryPlayback }),
 		onMediaEvent: usePlayerEvents(props, emit, { src: () => sources.activeSource.value?.src, actions, overlays, fullscreen }),
 	}
+}
+
+export function useBaseMediaPlayer(props: MediaPlayerProps, emit: BaseMediaPlayerEmits) {
+	const context = createPlayerContext(props, emit)
+	provide(PLAYER_CONTEXT_KEY, context)
+	return context
 }

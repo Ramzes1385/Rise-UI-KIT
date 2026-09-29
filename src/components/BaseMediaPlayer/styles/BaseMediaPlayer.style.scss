@@ -62,6 +62,10 @@ $media-caption-semi: color-mix(in srgb, black 75%, transparent);
 		@include transition(opacity);
 	}
 
+	&__episode {
+		font-weight: var(--rise-font-weight-normal);
+	}
+
 	&__logo {
 		position: relative;
 		display: block;
@@ -391,6 +395,69 @@ $media-caption-semi: color-mix(in srgb, black 75%, transparent);
 		content: '';
 	}
 
+	&__chapter.base-button {
+		--btn-pad-left: 8px;
+		--btn-pad-right: 8px;
+
+		min-width: 0;
+		max-width: sz(220px);
+		border-radius: sz(var(--rise-radius-md));
+		@include text-size(sm);
+
+		.base-button__content {
+			@include truncate;
+		}
+	}
+
+	&__skip {
+		position: absolute;
+		right: sz(16px);
+		bottom: sz(88px);
+	}
+
+	&__next {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: sz(8px);
+		padding: sz(24px);
+		background-color: $media-scrim;
+		text-align: center;
+	}
+
+	&__next-title {
+		margin: 0;
+		@include text-size(lg);
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__next-episode {
+		margin: 0;
+		@include text-size(sm);
+	}
+
+	&__next-actions {
+		display: flex;
+		gap: sz(8px);
+		margin-top: sz(8px);
+	}
+
+	&__slider-tooltip {
+		position: absolute;
+		bottom: calc(100% + #{sz(8px)});
+		padding: sz(2px) sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: $media-scrim;
+		@include text-size(xs);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		pointer-events: none;
+		transform: translateX(-50%);
+	}
+
 	&__drop {
 		position: absolute;
 		inset: sz(8px);
@@ -471,8 +538,14 @@ $media-caption-semi: color-mix(in srgb, black 75%, transparent);
 		border-radius: var(--rise-radius-full);
 	}
 
-	&__time {
+	&__info {
+		display: flex;
+		align-items: center;
+		min-width: 0;
 		margin-right: auto;
+	}
+
+	&__time {
 		padding-inline: sz(8px);
 		@include text-size(sm);
 		font-variant-numeric: tabular-nums;

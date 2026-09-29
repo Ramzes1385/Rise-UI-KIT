@@ -6,8 +6,9 @@
 		@pointerdown="onPointerDown"
 		@pointermove="onPointerMove"
 		@pointerup="onPointerEnd"
-		@pointercancel="onPointerEnd">
-		<div class="base-media-player__slider-track">
+		@pointercancel="onPointerEnd"
+		@pointerleave="onHoverEnd">
+		<div class="base-media-player__slider-track" :style="trackStyle">
 			<div v-for="(style, index) in bufferedStyles" :key="index" class="base-media-player__slider-buffered" :style="style"></div>
 			<div class="base-media-player__slider-fill" :style="fillStyle"></div>
 		</div>
@@ -24,6 +25,7 @@
 			:aria-disabled="isDisabled || undefined"
 			:style="thumbStyle"
 			@keydown="onKeydown"></div>
+		<div v-if="hoverLabel" class="base-media-player__slider-tooltip" :style="hoverStyle" aria-hidden="true">{{ hoverLabel }}</div>
 	</div>
 </template>
 
@@ -48,5 +50,9 @@ const {
 	onPointerMove,
 	onPointerEnd,
 	onKeydown,
+	trackStyle,
+	hoverLabel,
+	hoverStyle,
+	onHoverEnd,
 } = useMediaSlider(props, emit)
 </script>

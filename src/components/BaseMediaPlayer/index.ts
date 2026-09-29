@@ -13,4 +13,8 @@ export type {
 } from './types/BaseMediaPlayer.types'
 export { MEDIA_CAPTION_SIZES, MEDIA_CAPTION_COLORS, MEDIA_CAPTION_BACKGROUNDS } from './types/MediaSubtitles.types'
 export type { MediaTextTrackItem, MediaCaptionColor, MediaCaptionBackground } from './types/MediaSubtitles.types'
+export { MEDIA_CHAPTER_KINDS } from './types/MediaPlaylist.types'
+export type { MediaHlsConstructor } from './types/MediaHls.types'
+export type { MediaAudioTrackItem } from './types/MediaAudio.types'
+export type { MediaChapter, MediaEpisode, MediaPlaylist, MediaChapterKind } from './types/MediaPlaylist.types'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'

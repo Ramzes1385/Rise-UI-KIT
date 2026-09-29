@@ -30,6 +30,32 @@ function bufferedStyles(props: MediaSliderProps): Array<{ left: string; width: s
 	})
 }
 
+function gapMask(marks: number[] | undefined, max: number): string | undefined {
+	const stops = (marks ?? []).filter(mark => mark > 0 && mark < max).map(mark => toPercent(mark, max))
+	if (stops.length === 0) return undefined
+	const gaps = stops.map(
+		stop =>
+			`black calc(${stop}% - 1px), transparent calc(${stop}% - 1px), transparent calc(${stop}% + 1px), black calc(${stop}% + 1px)`,
+	)
+	return `linear-gradient(to right, ${gaps.join(', ')})`
+}
+
+function useHover(props: MediaSliderProps, isDisabled: Readonly<Ref<boolean>>) {
+	const hoverValue = ref<number | null>(null)
+	return {
+		hoverLabel: computed(() => (hoverValue.value === null || !props.hoverText ? '' : props.hoverText(hoverValue.value))),
+		hoverStyle: computed(() => ({ left: `${toPercent(hoverValue.value ?? 0, props.max)}%` })),
+		onHover(event: PointerEvent): void {
+			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+			hoverValue.value =
+				isDisabled.value || !rect.width ? null : clamp(((event.clientX - rect.left) / rect.width) * props.max, props.max)
+		},
+		onHoverEnd(): void {
+			hoverValue.value = null
+		},
+	}
+}
+
 function usePointerDrag(props: MediaSliderProps, emit: MediaSliderEmits, isDisabled: Readonly<Ref<boolean>>) {
 	const rootRef = ref<HTMLElement | null>(null)
 	const thumbRef = ref<HTMLElement | null>(null)
@@ -65,9 +91,16 @@ export function useMediaSlider(props: MediaSliderProps, emit: MediaSliderEmits) 
 	const value = computed(() => (isDisabled.value ? 0 : clamp(drag.dragValue.value ?? props.modelValue, props.max)))
 	const percent = computed(() => (isDisabled.value ? 0 : toPercent(value.value, props.max)))
 	const steps = keySteps(props)
+	const hover = useHover(props, isDisabled)
 
 	return {
 		...drag,
+		...hover,
+		trackStyle: computed(() => ({ maskImage: isDisabled.value ? undefined : gapMask(props.marks, props.max) })),
+		onPointerMove(event: PointerEvent): void {
+			hover.onHover(event)
+			drag.onPointerMove(event)
+		},
 		isDisabled,
 		isDragging: computed(() => drag.dragValue.value !== null),
 		valueNow: computed(() => Math.round(value.value * 100) / 100),

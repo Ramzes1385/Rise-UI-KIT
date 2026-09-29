@@ -10,7 +10,7 @@ function setup(options: { storageKey?: string; startTime?: number | null } = {})
 	const { result } = withSetup(() =>
 		usePlaybackMemory({ state, actions, storageKey: () => key.value, startTime: () => options.startTime ?? null }),
 	)
-	return { state, actions, result }
+	return { state, actions, result, key }
 }
 
 describe('usePlaybackMemory', () => {
@@ -119,5 +119,35 @@ describe('usePlaybackMemory', () => {
 		state.currentTime = 50
 		await nextTick()
 		expect(result.resumeTime.value).toBeNull()
+	})
+
+	it('новая серия — новый ключ: позиция читается после загрузки её метаданных, до этого не сохраняется', async () => {
+		localStorage.setItem('rise-media:show:e1', '20')
+		localStorage.setItem('rise-media:show:e2', '55')
+		const { state, result, key } = setup({ storageKey: 'show:e1' })
+		state.duration = 100
+		await nextTick()
+		expect(result.resumeTime.value).toBe(20)
+
+		key.value = 'show:e2'
+		await nextTick()
+		expect(result.resumeTime.value).toBeNull()
+		state.currentTime = 70
+		state.isPaused = false
+		await nextTick()
+		state.isPaused = true
+		await nextTick()
+		expect(localStorage.getItem('rise-media:show:e2')).toBe('55')
+
+		state.duration = Number.NaN
+		await nextTick()
+		state.duration = 120
+		await nextTick()
+		expect(result.resumeTime.value).toBe(55)
+		state.duration = Number.NaN
+		await nextTick()
+		state.duration = 120
+		await nextTick()
+		expect(result.resumeTime.value).toBe(55)
 	})
 })

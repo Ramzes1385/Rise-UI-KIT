@@ -85,6 +85,18 @@ function audioItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits):
 	]
 }
 
+function autoNextItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits): DropdownMenuItem[] {
+	if (!props.hasAutoNext) return []
+	return [
+		{
+			type: 'checkbox',
+			label: UI_PLAYER.AUTO_NEXT,
+			isChecked: Boolean(props.isAutoNext),
+			onUpdateChecked: isChecked => emit('update-auto-next', isChecked),
+		},
+	]
+}
+
 function captionsItem(props: MediaSettingsMenuProps, emit: MediaSettingsMenuEmits): DropdownMenuItem {
 	const tracks = props.captionTracks ?? []
 	const active = tracks.find(track => track.id === props.activeCaptionId)
@@ -153,6 +165,7 @@ export function useMediaSettingsMenu(props: MediaSettingsMenuProps, emit: MediaS
 			...captionItems(props, emit),
 			speedItem(props, emit),
 			...(props.qualities.length > 1 ? [qualityItem(props, emit)] : []),
+			...autoNextItem(props, emit),
 		]),
 	}
 }

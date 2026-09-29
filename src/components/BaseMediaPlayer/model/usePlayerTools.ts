@@ -56,6 +56,7 @@ export function usePlayerTools(
 		media: MediaElementRef
 		activeSource: () => MediaSourceItem | null | undefined
 		audioSource: () => string | null
+		storageKey: () => string | undefined
 		toggleFullscreen: () => void
 	},
 ) {
@@ -67,7 +68,7 @@ export function usePlayerTools(
 	const memory = usePlaybackMemory({
 		state,
 		actions,
-		storageKey: () => (props.currentTime === undefined ? props.storageKey : undefined),
+		storageKey: () => (props.currentTime === undefined ? core.storageKey() : undefined),
 		startTime: () => urlStartTime(props),
 	})
 	const gestures = useMediaGestures({ state, actions, seekStep: () => props.seekStepLarge, toggleFullscreen: core.toggleFullscreen })

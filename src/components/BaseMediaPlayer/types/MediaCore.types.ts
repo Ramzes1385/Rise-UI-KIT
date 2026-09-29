@@ -98,6 +98,10 @@ interface MediaHotkeyActions {
 	toggleTheater: () => void
 	/** Включить или выключить субтитры */
 	toggleCaptions: () => void
+	/** Следующая серия */
+	nextEpisode: () => void
+	/** Предыдущая серия */
+	previousEpisode: () => void
 	/** Сменить скорость на соседнюю: 1 — быстрее, -1 — медленнее */
 	stepPlaybackRate: (direction: 1 | -1) => void
 }

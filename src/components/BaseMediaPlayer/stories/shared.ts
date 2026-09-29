@@ -17,6 +17,25 @@ export const DEMO_QUALITIES = [
 
 export const DEMO_POSTER = demoPoster
 
+const DEMO_CHAPTERS = [
+	{ start: 0, title: 'Пролог' },
+	{ start: 2, end: 5, title: 'Опенинг', kind: 'intro' as const },
+	{ start: 5, title: 'Серия' },
+	{ start: 10, title: 'Эндинг', kind: 'outro' as const },
+]
+
+export const DEMO_PLAYLISTS = [
+	{
+		id: 'season-1',
+		title: 'Сезон 1',
+		episodes: [
+			{ id: 's1e1', title: 'Серия 1. Начало', sources: DEMO_SOURCES, chapters: DEMO_CHAPTERS },
+			{ id: 's1e2', title: 'Серия 2. Дорога', sources: DEMO_QUALITIES, chapters: DEMO_CHAPTERS },
+		],
+	},
+	{ id: 'season-2', title: 'Сезон 2', episodes: [{ id: 's2e1', title: 'Серия 1. Возвращение', sources: DEMO_SOURCES }] },
+]
+
 const OPUS = 'audio/webm; codecs="opus"'
 
 export const DEMO_AUDIO_TRACKS = [

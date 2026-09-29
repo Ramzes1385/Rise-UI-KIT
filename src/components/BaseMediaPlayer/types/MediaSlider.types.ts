@@ -15,6 +15,10 @@ export interface MediaSliderProps {
 	valueText: string
 	/** Загруженные отрезки на дорожке */
 	buffered?: MediaTimeRange[]
+	/** Границы отрезков (главы): разрывы на дорожке */
+	marks?: number[]
+	/** Подсказка над дорожкой при наведении: время и название главы; без неё подсказки нет */
+	hoverText?: (value: number) => string
 }
 
 export interface MediaSliderEmits {

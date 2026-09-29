@@ -19,6 +19,7 @@ export const args = {
 	volumeStep: 0.05,
 	idleTimeout: 3000,
 	hasCaptionUpload: true,
+	nextCountdown: 5,
 	sizeScale: 100,
 	onPlay: fn(),
 	onPause: fn(),
@@ -28,5 +29,7 @@ export const args = {
 	'onUpdate:isTheater': fn(),
 	'onUpdate:textTrack': fn(),
 	'onUpdate:audioTrack': fn(),
+	'onUpdate:episode': fn(),
+	'onUpdate:isAutoNext': fn(),
 	onReport: fn(),
 } satisfies Meta<typeof BaseMediaPlayer>['args']

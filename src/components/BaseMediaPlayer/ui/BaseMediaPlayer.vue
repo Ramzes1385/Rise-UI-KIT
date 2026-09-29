@@ -16,7 +16,7 @@
 		data-theme="dark"
 		role="region"
 		tabindex="-1"
-		:aria-label="title"
+		:aria-label="accessibleName"
 		@dragover="onCaptionDragOver"
 		@dragleave="onCaptionDragLeave"
 		@drop="onCaptionDrop">
@@ -81,7 +81,10 @@
 			</div>
 			<div v-if="isBoosted" class="base-media-player__boost" aria-hidden="true">{{ boostRate }}×</div>
 			<div v-if="hasTitle || logoSrc" class="base-media-player__top" :class="`base-media-player__top--logo-${logoPosition}`">
-				<span v-if="hasTitle" class="base-media-player__title" :class="classes.title">{{ title }}</span>
+				<span v-if="hasTitle" class="base-media-player__title" :class="classes.title">
+					{{ title }}
+					<span v-if="episodeTitle" class="base-media-player__episode">· {{ episodeTitle }}</span>
+				</span>
 				<a
 					v-if="logoSrc && logoLink"
 					class="base-media-player__logo"
@@ -109,80 +112,7 @@
 					</BaseButton>
 				</slot>
 			</div>
-			<div ref="controlsRef" class="base-media-player__controls" :class="classes.controls">
-				<MediaSlider
-					class="base-media-player__seek"
-					:class="classes.seek"
-					:model-value="state.currentTime"
-					:max="state.duration"
-					:step="seekStep"
-					:large-step="seekStepLarge"
-					:buffered="state.buffered"
-					:label="UI_PLAYER.SEEK"
-					:value-text="seekValueText"
-					@update:model-value="actions.seek" />
-				<div class="base-media-player__bar">
-					<BaseButton variant="ghost" class="base-media-player__button" :aria-label="playLabel" @click="togglePlay">
-						<template #left><BaseIcon :name="state.isPaused ? 'play' : 'pause'" /></template>
-					</BaseButton>
-					<BaseButton variant="ghost" class="base-media-player__button" :aria-label="muteLabel" @click="actions.toggleMute">
-						<template #left><MediaVolumeIcon :volume="state.volume" :is-muted="state.isMuted" /></template>
-					</BaseButton>
-					<MediaSlider
-						class="base-media-player__volume"
-						:class="classes.volume"
-						:model-value="volumeValue"
-						:max="1"
-						:step="volumeStep"
-						:large-step="volumeStep * 2"
-						:label="UI_PLAYER.VOLUME"
-						:value-text="volumeValueText"
-						@update:model-value="actions.setVolume" />
-					<span class="base-media-player__time" :class="classes.time">{{ currentTimeText }} / {{ durationText }}</span>
-					<BaseButton
-						v-if="captionTracks.length"
-						variant="ghost"
-						class="base-media-player__button base-media-player__captions-button"
-						:aria-label="UI_PLAYER.CAPTIONS"
-						:aria-pressed="activeCaptionId !== null"
-						@click="toggleCaptions">
-						<template #left><BaseIcon name="subtitles" /></template>
-					</BaseButton>
-					<MediaSettingsMenu
-						:rates="rates"
-						:rate="state.playbackRate"
-						:qualities="qualities"
-						:active-quality-id="activeQualityId"
-						:caption-tracks="captionTracks"
-						:active-caption-id="activeCaptionId"
-						:caption-style="captionStyle"
-						:can-load-captions="hasCaptionUpload"
-						:audio-options="audioOptions"
-						:active-audio-id="activeAudioId"
-						@select-rate="actions.setPlaybackRate"
-						@select-quality="selectQuality"
-						@select-caption="selectCaptionTrack"
-						@load-captions="openCaptionFile"
-						@update-caption-style="updateCaptionStyle"
-						@select-audio="selectAudioTrack" />
-					<BaseButton
-						v-if="!isFullscreen"
-						variant="ghost"
-						class="base-media-player__button"
-						:aria-label="theaterLabel"
-						@click="toggleTheater">
-						<template #left><BaseIcon :name="isTheater ? 'theater-exit' : 'theater'" /></template>
-					</BaseButton>
-					<BaseButton
-						v-if="isFullscreenSupported"
-						variant="ghost"
-						class="base-media-player__button"
-						:aria-label="fullscreenLabel"
-						@click="toggleFullscreen">
-						<template #left><BaseIcon :name="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" /></template>
-					</BaseButton>
-				</div>
-			</div>
+			<MediaControlBar />
 			<div v-if="resumeTime !== null" class="base-media-player__resume">
 				<span>{{ resumeText }}</span>
 				<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PLAYER.RESUME_YES }}</BaseButton>
@@ -191,6 +121,24 @@
 				</BaseButton>
 			</div>
 			<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" @close="toggleStats" @copy="copyStats" />
+			<BaseButton
+				v-if="skipChapter"
+				variant="soft"
+				class="base-media-player__skip"
+				:size-scale="sizeScale"
+				@click="skipCurrentChapter">
+				{{ skipLabel }}
+			</BaseButton>
+			<div v-if="nextCountdown !== null" class="base-media-player__next">
+				<p class="base-media-player__next-title" aria-hidden="true">{{ nextCountdownText }}</p>
+				<p class="base-media-player__next-episode" role="status">{{ UI_PLAYER.NEXT_EPISODE }}: {{ nextEpisode?.title }}</p>
+				<div class="base-media-player__next-actions">
+					<BaseButton variant="soft" :size-scale="sizeScale" @click="playNextNow">{{ UI_PLAYER.NEXT_NOW }}</BaseButton>
+					<BaseButton variant="ghost" class="base-media-player__button" :size-scale="sizeScale" @click="cancelNext">
+						{{ UI_TEXT.CANCEL }}
+					</BaseButton>
+				</div>
+			</div>
 			<MediaReportForm v-model:is-open="isReportOpen" @submit="submitReport" />
 			<div v-if="isDropTarget" class="base-media-player__drop" aria-hidden="true">{{ UI_PLAYER.CAPTIONS_DROP }}</div>
 			<input
@@ -209,15 +157,13 @@
 
 <script setup lang="ts">
 import '../styles/BaseMediaPlayer.style.scss'
-import MediaSlider from './MediaSlider.vue'
 import { BaseIcon } from '@components/BaseIcon'
+import MediaControlBar from './MediaControlBar.vue'
 import MediaReportForm from './MediaReportForm.vue'
 import MediaStatsPanel from './MediaStatsPanel.vue'
-import MediaVolumeIcon from './MediaVolumeIcon.vue'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { kitDefaults } from '@composables/useDefaults'
-import MediaSettingsMenu from './MediaSettingsMenu.vue'
 import { UI_PLAYER, UI_TEXT } from '@/locales/messages'
 import { BaseContextMenu } from '@components/BaseContextMenu'
 import { useBaseMediaPlayer } from '../model/useBaseMediaPlayer'
@@ -253,6 +199,9 @@ const props = withDefaults(
 		isTheater: undefined,
 		textTrack: undefined,
 		audioTrack: undefined,
+		episode: undefined,
+		isAutoNext: undefined,
+		nextCountdown: 5,
 		hasCaptionUpload: true,
 	}),
 )
@@ -266,41 +215,22 @@ const {
 	classes,
 	rootRef,
 	mediaRef,
-	controlsRef,
-	state,
 	actions,
 	isIdle,
-	togglePlay,
-	toggleFullscreen,
 	isFullscreen,
-	isFullscreenSupported,
-	fullscreenLabel,
-	theaterLabel,
 	isTheater,
-	toggleTheater,
 	src,
 	posterSrc,
 	logoSrc,
 	logoLink,
 	rootStyle,
-	rates,
-	qualities,
-	selectQuality,
 	overlayError,
 	isAutoplayBlocked,
 	errorMessage,
 	canRetry,
 	isBuffering,
 	isStartScreen,
-	playLabel,
-	muteLabel,
-	currentTimeText,
-	durationText,
-	seekValueText,
-	volumeValue,
-	volumeValueText,
 	onMediaEvent,
-	exposed,
 	contextItems,
 	isContextMenuOpen,
 	setContextMenuOpen,
@@ -324,33 +254,33 @@ const {
 	isReportOpen,
 	submitReport,
 	flashMessage,
-	captionTracks,
-	activeCaptionId,
 	captionLines,
-	selectCaptionTrack,
-	toggleCaptions,
-	captionStyle,
 	isCaptionDragging,
 	captionBoxStyle,
 	captionBoxClass,
-	updateCaptionStyle,
 	onCaptionPointerDown,
 	onCaptionPointerMove,
 	onCaptionPointerUp,
 	captionInputRef,
 	captionAccept,
 	isDropTarget,
-	openCaptionFile,
 	onCaptionFileChange,
 	onCaptionDragOver,
 	onCaptionDragLeave,
 	onCaptionDrop,
 	audioRef,
-	audioOptions,
-	activeAudioId,
-	selectAudioTrack,
-	activeQualityId,
 	retryPlayback,
+	accessibleName,
+	episodeTitle,
+	nextEpisode,
+	skipChapter,
+	skipCurrentChapter,
+	skipLabel,
+	nextCountdown,
+	nextCountdownText,
+	playNextNow,
+	cancelNext,
+	exposed,
 } = useBaseMediaPlayer(props, emit)
 
 defineExpose<BaseMediaPlayerExpose>(exposed)

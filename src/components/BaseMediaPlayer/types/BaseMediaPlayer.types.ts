@@ -2,7 +2,9 @@ import type { MediaHlsConstructor } from './MediaHls.types'
 import type { MediaAudioTrackItem } from './MediaAudio.types'
 import type { MediaTextTrackItem } from './MediaSubtitles.types'
 import type { PropsWithDefaults } from '@composables/useDefaults'
+import type { createPlayerContext } from '../model/useBaseMediaPlayer'
 import type { BaseComponentProps } from '@composables/useBaseComponent'
+import type { MediaChapter, MediaPlaylist } from './MediaPlaylist.types'
 import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './MediaCore.types'
 
 /** Вариант оформления один: панель управления лежит поверх кадра на тёмной подложке в обеих темах */
@@ -42,9 +44,9 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 > {
 	/**
 	 * Источник: адрес или список с MIME. Играет первый источник, который поддерживает браузер (`canPlayType`).
-	 * Абсолютные адреса — только со схемами из `allowedProtocols`.
+	 * Абсолютные адреса — только со схемами из `allowedProtocols`. С `playlists` источники берутся из выбранной серии.
 	 */
-	sources: MediaSourceItem[] | string
+	sources?: MediaSourceItem[] | string
 	/** Название записи: доступное имя плеера и подпись поверх кадра */
 	title: string
 	/** Показывать название поверх кадра вместе с панелью управления */
@@ -124,6 +126,19 @@ export interface BaseMediaPlayerProps extends BaseComponentProps<
 	hls?: MediaHlsConstructor
 	/** Настройки hls.js: передаются в `new Hls(config)` */
 	hlsConfig?: Record<string, unknown>
+	/**
+	 * Плейлисты (сезоны) с сериями. Источники, обложка, субтитры, озвучки и главы берутся из выбранной серии,
+	 * если они у неё есть; позиция запоминается для каждой серии отдельно (`storageKey:<id серии>`)
+	 */
+	playlists?: MediaPlaylist[]
+	/** Выбранная серия (`v-model:episode`): `id` серии; без значения — первая */
+	episode?: string
+	/** Главы записи: отрезки на шкале, список глав, «Пропустить опенинг» (у серии — свои главы) */
+	chapters?: MediaChapter[]
+	/** Переходить к следующей серии после окончания (`v-model:is-auto-next`); переключатель — в «Настройках» */
+	isAutoNext?: boolean
+	/** Отсчёт перед следующей серией, секунды; 0 — переход сразу */
+	nextCountdown?: number
 }
 
 export interface BaseMediaPlayerEmits {
@@ -142,6 +157,8 @@ export interface BaseMediaPlayerEmits {
 	(event: 'update:isTheater', value: boolean): void
 	(event: 'update:textTrack', value: string | null): void
 	(event: 'update:audioTrack', value: string | null): void
+	(event: 'update:episode', value: string): void
+	(event: 'update:isAutoNext', value: boolean): void
 	/** Плеер развернулся на весь экран или свернулся */
 	(event: 'fullscreen-change', isFullscreen: boolean): void
 	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
@@ -175,6 +192,7 @@ export type MediaPlayerProps = PropsWithDefaults<
 	| 'timeParam'
 	| 'hasUrlTime'
 	| 'hasCaptionUpload'
+	| 'nextCountdown'
 >
 
 /** Связь `v-model` плеера со значением медиаэлемента */
@@ -191,3 +209,6 @@ export interface PlayerModelSync<T> {
 	/** Не передавать значение из props при монтировании */
 	skipOnMount?: () => boolean
 }
+
+/** Всё, что плеер отдаёт своим частям (панели управления): состояние, команды, подписи, меню */
+export type MediaPlayerContext = ReturnType<typeof createPlayerContext>

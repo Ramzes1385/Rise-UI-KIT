@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import MediaSlider from '../ui/MediaSlider.vue'
+import { useMediaSlider } from '../model/useMediaSlider'
+import { withSetup } from './BaseMediaPlayer.test-utils'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { MediaSliderProps } from '../types/MediaSlider.types'
 
@@ -94,5 +96,43 @@ describe('MediaSlider', () => {
 		await fireEvent.keyDown(slider, { key: 'End' })
 		await fireEvent.pointerDown(root, { button: 0, clientX: 50 })
 		expect(values()).toEqual([])
+	})
+
+	it('главы — разрывы на дорожке; края и отключённый ползунок без разрывов', () => {
+		const mask = (props: Partial<MediaSliderProps>) =>
+			withSetup(() => useMediaSlider({ ...PROPS, ...props }, vi.fn())).result.trackStyle.value.maskImage
+
+		expect(mask({ marks: [0, 15, 30, 60] })).toBe(
+			'linear-gradient(to right, black calc(25% - 1px), transparent calc(25% - 1px), transparent calc(25% + 1px), black calc(25% + 1px), ' +
+				'black calc(50% - 1px), transparent calc(50% - 1px), transparent calc(50% + 1px), black calc(50% + 1px))',
+		)
+		expect(mask({ marks: [0] })).toBeUndefined()
+		expect(mask({ marks: [15], max: Number.NaN })).toBeUndefined()
+		expect(setup({ marks: [15] }).container.querySelector('.base-media-player__slider-track')).not.toBeNull()
+	})
+
+	it('подсказка при наведении: текст для значения под указателем, уходит вместе с указателем', async () => {
+		const hoverText = vi.fn((value: number) => `${value} с`)
+		const { root, container } = setup({ hoverText })
+		root.getBoundingClientRect = () => ({ left: 0, width: 120 }) as DOMRect
+		const tooltip = () => container.querySelector('.base-media-player__slider-tooltip') as HTMLElement | null
+
+		await fireEvent.pointerMove(root, { clientX: 30 })
+		expect(tooltip()).toHaveTextContent('15 с')
+		expect(tooltip()?.style.left).toBe('25%')
+		await fireEvent.pointerLeave(root)
+		expect(tooltip()).toBeNull()
+
+		root.getBoundingClientRect = () => ({ left: 0, width: 0 }) as DOMRect
+		await fireEvent.pointerMove(root, { clientX: 30 })
+		expect(tooltip()).toBeNull()
+	})
+
+	it('без hoverText подсказки нет', async () => {
+		const { root, container } = setup()
+		root.getBoundingClientRect = () => ({ left: 0, width: 120 }) as DOMRect
+
+		await fireEvent.pointerMove(root, { clientX: 30 })
+		expect(container.querySelector('.base-media-player__slider-tooltip')).toBeNull()
 	})
 })

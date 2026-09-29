@@ -176,4 +176,15 @@ describe('MediaSettingsMenu', () => {
 		expect(menu({ audioOptions, activeAudioId: 'embedded:9' }).items[0].label).toBe('Озвучка')
 		expect(menu({ audioOptions: audioOptions.slice(0, 1) }).items[0].label).toBe('Скорость: Обычная')
 	})
+
+	it('автовоспроизведение серий — флажок последним, только когда есть серии', () => {
+		const { items, emit } = menu({ hasAutoNext: true, isAutoNext: true })
+		const autoNext = items.at(-1) as DropdownMenuItem
+
+		expect(autoNext).toMatchObject({ type: 'checkbox', label: 'Автовоспроизведение', isChecked: true })
+		autoNext.onUpdateChecked?.(false)
+		expect(emit).toHaveBeenCalledWith('update-auto-next', false)
+		expect(menu({ hasAutoNext: true }).items.at(-1)?.isChecked).toBe(false)
+		expect(menu().items.some(item => item.type === 'checkbox')).toBe(false)
+	})
 })

@@ -31,6 +31,8 @@ function hotkeyMap(options: MediaHotkeysOptions): Map<string, () => void> {
 		['KeyC', actions.toggleCaptions],
 		['Shift+Comma', () => actions.stepPlaybackRate(-1)],
 		['Shift+Period', () => actions.stepPlaybackRate(1)],
+		['Shift+KeyN', actions.nextEpisode],
+		['Shift+KeyP', actions.previousEpisode],
 	])
 }
 

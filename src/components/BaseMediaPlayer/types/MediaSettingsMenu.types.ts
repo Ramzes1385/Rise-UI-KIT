@@ -23,6 +23,10 @@ export interface MediaSettingsMenuProps {
 	audioOptions?: MediaAudioOption[]
 	/** Выбранная озвучка */
 	activeAudioId?: string | null
+	/** Флажок «Автовоспроизведение» следующей серии: есть, когда у плеера есть серии */
+	hasAutoNext?: boolean
+	/** Следующая серия включается сама */
+	isAutoNext?: boolean
 }
 
 export interface MediaSettingsMenuEmits {
@@ -38,4 +42,6 @@ export interface MediaSettingsMenuEmits {
 	(event: 'update-caption-style', patch: Partial<MediaCaptionStyle>): void
 	/** Выбрана озвучка */
 	(event: 'select-audio', id: string | null): void
+	/** Переключено автовоспроизведение следующей серии */
+	(event: 'update-auto-next', value: boolean): void
 }

@@ -15,6 +15,8 @@ function setup() {
 		toggleFullscreen: vi.fn(),
 		toggleTheater: vi.fn(),
 		toggleCaptions: vi.fn(),
+		nextEpisode: vi.fn(),
+		previousEpisode: vi.fn(),
 		stepPlaybackRate: vi.fn(),
 	}
 	const isEnabled = ref(true)
@@ -74,6 +76,15 @@ describe('useMediaHotkeys', () => {
 		press('Comma', { shiftKey: true, key: 'Б' })
 		press('Period', { shiftKey: true, key: 'Ю' })
 		expect(actions.stepPlaybackRate.mock.calls).toEqual([[-1], [1]])
+	})
+
+	it('Shift+N и Shift+P — следующая и предыдущая серия', () => {
+		const { actions, press } = setup()
+
+		press('KeyN', { shiftKey: true })
+		press('KeyP', { shiftKey: true })
+		expect(actions.nextEpisode).toHaveBeenCalledOnce()
+		expect(actions.previousEpisode).toHaveBeenCalledOnce()
 	})
 
 	it('не перехватывает чужие сочетания, поля ввода, Space на кнопке и ввод IME', () => {

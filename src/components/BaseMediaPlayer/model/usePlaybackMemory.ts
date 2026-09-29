@@ -56,25 +56,28 @@ export function usePlaybackMemory(options: {
 }) {
 	const { state, actions } = options
 	const resumeTime = ref<number | null>(null)
-	let isReady = false
+	let readyKey: string | null | undefined
 	const key = (): string | null => (options.storageKey() ? `${STORAGE_PREFIX}${options.storageKey()}` : null)
 	const save = (time: number | null): void => {
 		const storageKey = key()
-		if (storageKey && isReady) writeStorage(storageKey, time !== null && isInside(time, state.duration) ? time : null)
+		if (storageKey && storageKey === readyKey) writeStorage(storageKey, time !== null && isInside(time, state.duration) ? time : null)
 	}
 
 	watch(
 		() => Number.isFinite(state.duration),
-		() => {
-			const start = options.startTime()
+		hasDuration => {
 			const storageKey = key()
+			if (!hasDuration || storageKey === readyKey) return
+			const start = readyKey === undefined ? options.startTime() : null
 			const saved = storageKey ? readStorage(storageKey) : 0
-			isReady = true
+			readyKey = storageKey
 			if (start !== null) actions.seek(start)
 			else if (isInside(saved, state.duration)) resumeTime.value = saved
 		},
-		{ once: true },
 	)
+	watch(key, () => {
+		resumeTime.value = null
+	})
 	useAutoSave(state, { save, onPlay: () => (resumeTime.value = null) })
 
 	return {
