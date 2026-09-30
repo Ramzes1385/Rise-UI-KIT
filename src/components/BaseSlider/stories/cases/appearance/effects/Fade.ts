@@ -8,7 +8,7 @@ export const Fade: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Смена растворением (`animation="fade"`); `scale` и `flip` работают так же. Слайды лежат друг на друге,',
+					'Смена растворением (`animation="fade"`); `scale` работает так же, но с приближением. Слайды лежат друг на друге,',
 					'но клики и Tab достаются только видимому.',
 				].join('\n'),
 			},

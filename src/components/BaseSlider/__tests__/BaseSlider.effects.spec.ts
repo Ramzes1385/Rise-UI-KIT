@@ -14,12 +14,15 @@ function renderSlider(animation: SliderAnimation, props: Record<string, unknown>
 }
 
 describe('BaseSlider: пространственные эффекты', () => {
-	it.each(['cube', 'coverflow'] as const)('%s: у каждого слайда смещение от текущего с переходом через край по кругу', animation => {
-		const { container } = renderSlider(animation)
+	it.each(['flip', 'cube', 'coverflow', 'cards', 'creative'] as const)(
+		'%s: у каждого слайда смещение от текущего с переходом через край по кругу',
+		animation => {
+			const { container } = renderSlider(animation)
 
-		expect(container.querySelector(`.base-slider--${animation}`)).toBeInTheDocument()
-		expect(offsets(container)).toEqual(['0', '1', '2', '3', '-3', '-2', '-1'])
-	})
+			expect(container.querySelector(`.base-slider--${animation}`)).toBeInTheDocument()
+			expect(offsets(container)).toEqual(['0', '1', '2', '3', '-3', '-2', '-1'])
+		},
+	)
 
 	it('смещение ограничено, а расстояние и слой считаются по модулю', () => {
 		const { container } = renderSlider('coverflow', { isLoop: false, initialIndex: 5 })
