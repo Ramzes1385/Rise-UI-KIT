@@ -273,15 +273,6 @@ describe('BaseBreadcrumbs unit', () => {
 		})
 	})
 
-	describe('Schema.org', () => {
-		it('должен рендерить JSON-LD скрипт для SEO', () => {
-			const { container } = render(BaseBreadcrumbs, { props: { items: ITEMS } })
-
-			const script = container.querySelector('script[type="application/ld+json"]')
-			expect(script).toBeInTheDocument()
-		})
-	})
-
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу', () => {
 			const { container } = render(BaseBreadcrumbs, {

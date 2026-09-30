@@ -179,7 +179,6 @@ numberInputUtils
 paginationUtils
 rangeUtils
 ratingUtils
-schemaUtils
 scriptUtils
 structuredDataUtils
 subtitleUtils

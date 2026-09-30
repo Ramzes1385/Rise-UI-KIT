@@ -27,6 +27,7 @@
 			</span>
 		</span>
 		<span v-if="isValueShown" class="base-rating__value" :class="classes.value" aria-hidden="true">{{ valueLabel }}</span>
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 	</div>
 </template>
 
@@ -49,6 +50,7 @@ const props = withDefaults(
 		icon: 'star',
 		isReadonly: false,
 		isDisabled: false,
+		seo: false,
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -73,6 +75,7 @@ const {
 	handleHover,
 	clearHover,
 	handleKeydown,
+	structuredData,
 	exposed,
 } = useBaseRating(props, emit)
 

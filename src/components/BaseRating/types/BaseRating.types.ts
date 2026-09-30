@@ -1,11 +1,12 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const RATING_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type RatingVariant = (typeof RATING_VARIANTS)[number]
 
-export interface BaseRatingProps extends BaseComponentProps<RatingVariant, 'root' | 'icon' | 'iconFilled' | 'value'> {
+export interface BaseRatingProps extends SeoComponentProps, BaseComponentProps<RatingVariant, 'root' | 'icon' | 'iconFilled' | 'value'> {
 	/** Текущая оценка (v-model), допускает дробные значения */
 	modelValue?: number
 	/** Количество звёзд */

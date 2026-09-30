@@ -1,6 +1,8 @@
 import { computed, onMounted, ref, useId } from 'vue'
+import type { StructuredData } from '@utils/seo/structuredDataUtils'
+import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import type { BaseAccordionEmits, BaseAccordionProps } from '../types/BaseAccordion.types'
+import type { BaseAccordionEmits, BaseAccordionItem, BaseAccordionProps } from '../types/BaseAccordion.types'
 
 const ACCORDION_ELEMENTS = [
 	'root',
@@ -17,6 +19,18 @@ const ACCORDION_ELEMENTS = [
 ]
 
 const DEFAULT_EXPAND_ICON = 'chevron-down'
+
+function faqSchema(items: BaseAccordionItem[]): StructuredData | null {
+	if (!items.length) return null
+	return {
+		'@type': 'FAQPage',
+		mainEntity: items.map(item => ({
+			'@type': 'Question',
+			name: item.label,
+			acceptedAnswer: { '@type': 'Answer', text: item.seoAnswer ?? item.content },
+		})),
+	}
+}
 
 function useAccordionAppearance(props: BaseAccordionProps) {
 	return {
@@ -72,5 +86,10 @@ export function useBaseAccordion(props: BaseAccordionProps, emit: BaseAccordionE
 		...useAccordionAppearance(props),
 		getHeaderId: (index: number): string => `${baseId}-header-${index}`,
 		getPanelId: (index: number): string => `${baseId}-panel-${index}`,
+		...useStructuredData(
+			'BaseAccordion',
+			() => props.seo,
+			() => faqSchema(props.items),
+		),
 	}
 }

@@ -27,3 +27,4 @@ export const WithHome = cases.WithHome
 export const CustomSlots = cases.CustomSlots
 export const Collapsed = cases.Collapsed
 export const Keyboard = cases.Keyboard
+export const Seo = cases.Seo

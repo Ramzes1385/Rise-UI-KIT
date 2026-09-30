@@ -3,6 +3,8 @@
 		class="base-accordion"
 		:class="[variantClass, appearanceClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
+
 		<div
 			v-for="(item, index) in items"
 			:key="index"
@@ -89,6 +91,7 @@ const props = withDefaults(
 		expandIcon: 'chevron-down',
 		density: 'default',
 		isAccented: false,
+		seo: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -109,5 +112,6 @@ const {
 	toggleItem,
 	getHeaderId,
 	getPanelId,
+	structuredData,
 } = useBaseAccordion(props, emit)
 </script>

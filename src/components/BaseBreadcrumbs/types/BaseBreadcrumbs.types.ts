@@ -1,5 +1,6 @@
 import type { LinkComponent } from '@composables/interaction/useLink'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const BREADCRUMBS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
@@ -19,23 +20,26 @@ export interface BreadcrumbItem {
 
 export type BreadcrumbSeparator = 'slash' | 'chevron' | 'dot' | 'arrow'
 
-export interface BaseBreadcrumbsProps extends BaseComponentProps<
-	(typeof BREADCRUMBS_VARIANTS)[number],
-	| 'root'
-	| 'list'
-	| 'item'
-	| 'ellipsisBtn'
-	| 'link'
-	| 'current'
-	| 'separator'
-	| 'separatorIcon'
-	| 'separatorText'
-	| 'homeIcon'
-	| 'itemIcon'
-	| 'itemText'
-	| 'currentIcon'
-	| 'currentText'
-> {
+export interface BaseBreadcrumbsProps
+	extends
+		SeoComponentProps,
+		BaseComponentProps<
+			(typeof BREADCRUMBS_VARIANTS)[number],
+			| 'root'
+			| 'list'
+			| 'item'
+			| 'ellipsisBtn'
+			| 'link'
+			| 'current'
+			| 'separator'
+			| 'separatorIcon'
+			| 'separatorText'
+			| 'homeIcon'
+			| 'itemIcon'
+			| 'itemText'
+			| 'currentIcon'
+			| 'currentText'
+		> {
 	/** Элементы крошек */
 	items: BreadcrumbItem[]
 	/** Разделитель */

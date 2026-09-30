@@ -1,3 +1,4 @@
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -28,6 +29,8 @@ export interface BaseAccordionItem {
 	description?: string
 	/** Контент */
 	content?: string
+	/** Ответ для SEO-разметки FAQPage, когда содержимое — слот. По умолчанию — `content` */
+	seoAnswer?: string
 	/** Слот для контента */
 	slot?: string
 	/** Иконка заголовка (имя из спрайта) */
@@ -38,10 +41,13 @@ export interface BaseAccordionItem {
 	defaultOpen?: boolean
 }
 
-export interface BaseAccordionProps extends BaseComponentProps<
-	(typeof ACCORDION_VARIANTS)[number],
-	'root' | 'item' | 'header' | 'icon' | 'label' | 'description' | 'arrow' | 'arrowIcon' | 'collapse' | 'content' | 'contentText'
-> {
+export interface BaseAccordionProps
+	extends
+		SeoComponentProps,
+		BaseComponentProps<
+			(typeof ACCORDION_VARIANTS)[number],
+			'root' | 'item' | 'header' | 'icon' | 'label' | 'description' | 'arrow' | 'arrowIcon' | 'collapse' | 'content' | 'contentText'
+		> {
 	/** Список элементов */
 	items: BaseAccordionItem[]
 	/** Возможность открывать несколько элементов */

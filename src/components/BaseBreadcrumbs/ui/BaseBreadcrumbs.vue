@@ -4,16 +4,10 @@
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="UI_ARIA.BREADCRUMBS_NAV">
-		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 
-		<ol class="base-breadcrumbs__list" :class="classes.list" itemscope itemtype="https://schema.org/BreadcrumbList">
-			<li
-				v-if="showHome && items.length"
-				class="base-breadcrumbs__item base-breadcrumbs__item--home"
-				:class="classes.item"
-				itemprop="itemListElement"
-				itemscope
-				itemtype="https://schema.org/ListItem">
+		<ol class="base-breadcrumbs__list" :class="classes.list">
+			<li v-if="showHome && items.length" class="base-breadcrumbs__item base-breadcrumbs__item--home" :class="classes.item">
 				<slot name="home">
 					<component
 						:is="getLink(items[0]!).is"
@@ -25,7 +19,6 @@
 						<BaseIcon :name="homeIcon" :size-scale="iconScale" :custom-class="classes.homeIcon" />
 					</component>
 				</slot>
-				<meta itemprop="position" content="1" />
 				<span class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
 					<slot name="separator" :index="-1">
 						<BreadcrumbsSeparator
@@ -64,10 +57,7 @@
 				v-for="(item, index) in visibleItems"
 				:key="`${item?.label ?? ''}-${index}`"
 				class="base-breadcrumbs__item"
-				:class="[{ 'base-breadcrumbs__item--current': isCurrent(index) }, classes.item]"
-				itemprop="itemListElement"
-				itemscope
-				itemtype="https://schema.org/ListItem">
+				:class="[{ 'base-breadcrumbs__item--current': isCurrent(index) }, classes.item]">
 				<slot name="item" :item="item" :index="realIndex(index)">
 					<component
 						:is="getLink(item).is"
@@ -82,7 +72,7 @@
 							:size-scale="iconScale"
 							class="base-breadcrumbs__icon"
 							:custom-class="classes.itemIcon" />
-						<span class="base-breadcrumbs__text" :class="classes.itemText" itemprop="name">{{ item.label }}</span>
+						<span class="base-breadcrumbs__text" :class="classes.itemText">{{ item.label }}</span>
 					</component>
 					<span v-else class="base-breadcrumbs__current" :class="classes.current" aria-current="page">
 						<BaseIcon
@@ -91,11 +81,9 @@
 							:size-scale="iconScale"
 							class="base-breadcrumbs__icon"
 							:custom-class="classes.currentIcon" />
-						<span class="base-breadcrumbs__text" :class="classes.currentText" itemprop="name">{{ item.label }}</span>
+						<span class="base-breadcrumbs__text" :class="classes.currentText">{{ item.label }}</span>
 					</span>
 				</slot>
-				<meta :itemprop="'url'" :content="item.to || item.href || ''" />
-				<meta :itemprop="'position'" :content="String(realIndex(index) + 1)" />
 
 				<span v-if="!isCurrent(index)" class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
 					<slot name="separator" :index="realIndex(index)">
@@ -129,6 +117,7 @@ const props = withDefaults(
 		separator: 'chevron',
 		maxItems: 0,
 		showHome: false,
+		seo: false,
 		homeIcon: 'home',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -146,7 +135,7 @@ const {
 	visibleItems,
 	collapsedItems,
 	iconScale,
-	schemaJson,
+	structuredData,
 	isCurrent,
 	realIndex,
 	getLink,

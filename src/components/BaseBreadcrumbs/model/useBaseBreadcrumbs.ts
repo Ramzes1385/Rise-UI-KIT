@@ -1,8 +1,10 @@
 import { computed, ref } from 'vue'
 import { calcIconScale } from '@utils/media/iconUtils'
-import { buildBreadcrumbsSchema } from '@utils/form/schemaUtils'
 import type { ResolvedLink } from '@composables/interaction/useLink'
+import type { StructuredData } from '@utils/seo/structuredDataUtils'
+import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { StructuredDataContext } from '@composables/seo/useStructuredData'
 import { resolveLink, useLinkComponent } from '@composables/interaction/useLink'
 import type { BaseBreadcrumbsEmits, BreadcrumbItem, BreadcrumbsProps } from '../types/BaseBreadcrumbs.types'
 
@@ -22,6 +24,19 @@ const BREADCRUMBS_ELEMENTS = [
 	'currentIcon',
 	'currentText',
 ]
+
+function breadcrumbsSchema(items: BreadcrumbItem[], { url }: StructuredDataContext): StructuredData | null {
+	if (!items.length) return null
+	return {
+		'@type': 'BreadcrumbList',
+		itemListElement: items.map((item, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: item.label,
+			item: url(item.href ?? item.to),
+		})),
+	}
+}
 
 function useVisibleItems(props: BreadcrumbsProps) {
 	const isExpanded = ref(false)
@@ -63,7 +78,11 @@ export function useBaseBreadcrumbs(props: BreadcrumbsProps, emit: BaseBreadcrumb
 		visibleItems,
 		collapsedItems,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
-		schemaJson: computed((): string => buildBreadcrumbsSchema(props.items)),
+		...useStructuredData(
+			'BaseBreadcrumbs',
+			() => props.seo,
+			context => breadcrumbsSchema(props.items, context),
+		),
 		isCurrent: (index: number): boolean => index === visibleItems.value.length - 1,
 		realIndex: (visibleIdx: number): number => props.items.length - visibleItems.value.length + visibleIdx,
 		...useItemLinks(props, emit),

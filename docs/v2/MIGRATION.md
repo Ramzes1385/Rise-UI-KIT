@@ -1023,3 +1023,14 @@
 - В разработке нехватка обязательных полей — предупреждение `[rise-ui-kit]` (строка словаря `warnings.SEO_MISSING_FIELDS`), в production (`process.env.NODE_ENV === 'production'`) — тишина.
 
 **Что сделать.** Для своего словаря через `defineLocale` — добавить `warnings.SEO_MISSING_FIELDS` (параметры `{component}`, `{type}`, `{fields}`). Разметка по умолчанию выключена — без `seo` в DOM ничего не меняется.
+
+### Р.35 — SEO: BaseBreadcrumbs, BaseAccordion, BaseRating
+
+**Что изменилось.**
+- **BaseBreadcrumbs:** JSON-LD `BreadcrumbList` больше не выводится всегда — только с `seo`. Microdata (`itemscope`, `itemprop`, `<meta itemprop="position">`) убрана: она дублировала JSON-LD, вместо `item` писала `url` и теряла свёрнутые `maxItems` крошки. В разметке — весь путь, `position` с 1, `item` — `href` или `to` (с `seo.baseUrl` — абсолютный адрес), у текущей страницы `item` нет.
+- **Удалена утилита `buildBreadcrumbsSchema`** и тип `SchemaBreadcrumbItem` (`schemaUtils`): разметку собирает сам компонент, общий вывод — `serializeJsonLd` (Р.34).
+- **BaseAccordion:** `seo` → `FAQPage`: вопрос — `label`, ответ — новое поле пункта `seoAnswer` или `content`. Пункт без ответа (содержимое в слоте) — предупреждение в разработке.
+- **BaseRating:** `seo` → `AggregateRating`: `ratingValue` — `modelValue`, `bestRating` — `max`, `worstRating` — 1 (при `step` < 1 — `step`). Нулевая оценка — без разметки. Что оценивают (`itemReviewed`) и число оценок (`ratingCount` или `reviewCount`) передаются в `seo.data` — без них Google не показывает звёзды, в разработке — предупреждение.
+- Проп `seo` у всех трёх можно задать для приложения: `createUiKitPlugin({ defaults: { BaseBreadcrumbs: { seo: { baseUrl: 'https://example.com' } } } })`.
+
+**Что сделать.** Если страница полагалась на JSON-LD или microdata крошек — добавить `seo` (лучше с `baseUrl`). Вызовы `buildBreadcrumbsSchema` заменить на `serializeJsonLd({ '@type': 'BreadcrumbList', itemListElement: [...] })`. Для звёзд в выдаче — передать в BaseRating `seo.data` с `itemReviewed` и `ratingCount`.

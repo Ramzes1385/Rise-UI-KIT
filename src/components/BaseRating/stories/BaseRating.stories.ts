@@ -29,3 +29,4 @@ export const HalfStars = cases.HalfStars
 export const HoverPreview = cases.HoverPreview
 export const Precise = cases.Precise
 export const Keyboard = cases.Keyboard
+export const Seo = cases.Seo

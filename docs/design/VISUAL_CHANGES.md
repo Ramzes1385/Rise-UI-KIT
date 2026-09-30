@@ -884,3 +884,10 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 ## Задача loader-progress (BaseLoader и BaseProgress)
 
 Вид историй `element-baseloader--*` и `element-baseprogress--*` не меняется: текст озвучивания лоадера визуально скрыт, `inert` и `aria-busy` под оверлеем на вид не влияют, геометрия кольца та же (viewBox 120, радиус 52, линия 8 — теперь расчётом). Единственное отличие — у BaseProgress при дробном значении близко к максимуму (например 99,6 из 100) подпись и заливка показывают 99%, а не 100%; в историях таких значений нет, эталоны не меняются.
+
+## Эпик seo — SEO-разметка schema.org (Р.34–Р.37)
+
+### Р.35 — BaseBreadcrumbs, BaseAccordion, BaseRating
+
+- Существующие истории и снимки не меняются: без `seo` в DOM нет разметки, у BaseBreadcrumbs убраны только невидимые `<meta itemprop>` и атрибуты microdata. Проверено попиксельно по собранному Storybook до и после (36 историй трёх компонентов; `form-baserating--in-form-field` отличается и между двумя снимками одной сборки — недетерминирована, не от правки).
+- Новые истории `navigation-basebreadcrumbs--seo`, `data-baseaccordion--seo`, `form-baserating--seo`: компонент и под ним блок JSON-LD (декоратор `withJsonLd`, класс `.story-json-ld` в `build/storybook/preview.scss`). В скриншот-тесты не добавлены — эталоны не нужны.

@@ -4,6 +4,8 @@ import { UI_RATING } from '@/locales/messages'
 import { formatNumber } from '@/locales/state'
 import { useFormField } from '@composables/form/useFormField'
 import { useFormDisabled } from '@composables/form/useFormContext'
+import type { StructuredData } from '@utils/seo/structuredDataUtils'
+import { useStructuredData } from '@composables/seo/useStructuredData'
 import type { BaseRatingEmits, RatingProps } from '../types/BaseRating.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { rawValueFromPointer, snapRating, starFillPercent, stepDecimals, valueFromPointer } from '@utils/form/ratingUtils'
@@ -15,6 +17,11 @@ function pointerRatio(event: MouseEvent): number {
 }
 
 const VALUE_MAX_DECIMALS = 4
+
+function ratingSchema(props: RatingProps): StructuredData | null {
+	if (props.modelValue <= 0) return null
+	return { '@type': 'AggregateRating', ratingValue: props.modelValue, bestRating: props.max, worstRating: Math.min(1, props.step) }
+}
 
 function formatRatingValue(value: number, minimumFractionDigits = 0): string {
 	return formatNumber(value, { minimumFractionDigits, maximumFractionDigits: Math.max(minimumFractionDigits, VALUE_MAX_DECIMALS) })
@@ -121,6 +128,11 @@ export function useBaseRating(props: RatingProps, emit: BaseRatingEmits) {
 		fillPercent: (star: number): number => starFillPercent(star, displayValue.value),
 		valueLabel: computed((): string => formatRatingValue(labelValue.value, stepDecimals(props.step))),
 		...input,
+		...useStructuredData(
+			'BaseRating',
+			() => props.seo,
+			() => ratingSchema(props),
+		),
 		exposed: {
 			rootRef,
 			focus: () => rootRef.value?.focus(),

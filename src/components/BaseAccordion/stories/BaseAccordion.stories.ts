@@ -29,3 +29,4 @@ export const WithIcons = cases.WithIcons
 export const WithSlot = cases.WithSlot
 export const Multiple = cases.Multiple
 export const Keyboard = cases.Keyboard
+export const Seo = cases.Seo
