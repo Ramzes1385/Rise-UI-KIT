@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseCheckboxGroup from '../ui/BaseCheckboxGroup.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Группа флажков — выбор нескольких вариантов из видимого списка: каналы уведомлений, фильтры, права доступа.',

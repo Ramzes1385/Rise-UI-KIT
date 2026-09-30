@@ -1,9 +1,22 @@
-import { ref } from 'vue'
 import type meta from '../../BaseCheckbox.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCheckbox from '../../../ui/BaseCheckbox.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { CHECKBOX_VARIANTS } from '../../../types/BaseCheckbox.types'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const variants = CHECKBOX_VARIANTS
+
+const state = { values: Object.fromEntries(CHECKBOX_VARIANTS.map(variant => [variant, { off: false, on: true }])) }
+
+const template = `
+	<div class="story-col">
+		<div v-for="variant in variants" :key="variant" class="story-row">
+			<span class="story-label">{{ variant }}</span>
+			<BaseCheckbox v-bind="args" v-model="values[variant].off" :variant="variant" label="Email" />
+			<BaseCheckbox v-bind="args" v-model="values[variant].on" :variant="variant" label="SMS" />
+		</div>
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,28 +28,18 @@ export const Variants: StoryObj<typeof meta> = {
 					'`soft` — мягкий фон основного цвета; `ghost` — без рамки; `shadow` — с тенью.',
 				].join('\n'),
 			},
-			source: {
-				code: CHECKBOX_VARIANTS.map(variant => `<BaseCheckbox v-model="checked" variant="${variant}" label="${variant}" />`).join(
-					'\n',
-				),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseCheckbox'],
+				script: `const variants = ${literal(variants)}`,
+				state,
+				omit: ['modelValue', 'label', 'variant', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseCheckbox },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['modelValue', 'label', 'variant', 'onUpdate:modelValue']),
-			variants: CHECKBOX_VARIANTS,
-			values: ref(Object.fromEntries(CHECKBOX_VARIANTS.map(variant => [variant, { off: false, on: true }]))),
-		}),
-		template: `
-			<div class="story-col">
-				<div v-for="variant in variants" :key="variant" class="story-row">
-					<span class="story-label">{{ variant }}</span>
-					<BaseCheckbox v-bind="props" v-model="values[variant].off" :variant="variant" label="Email" />
-					<BaseCheckbox v-bind="props" v-model="values[variant].on" :variant="variant" label="SMS" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { variants }, slots: ['modelValue', 'label', 'variant', 'onUpdate:modelValue'] }),
+		template,
 	}),
 }

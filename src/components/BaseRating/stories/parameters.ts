@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseRating from '../ui/BaseRating.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Оценка звёздами: выбор кликом или с клавиатуры, дробные значения (`step` 0.5 или 0.1), режим только для чтения.',

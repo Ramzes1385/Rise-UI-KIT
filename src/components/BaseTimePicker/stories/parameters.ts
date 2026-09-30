@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseTimePicker from '../ui/BaseTimePicker.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поле времени: список времени с шагом `step` (по умолчанию 30 минут) и свободный ввод.',

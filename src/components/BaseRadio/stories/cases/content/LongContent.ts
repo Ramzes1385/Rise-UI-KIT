@@ -2,11 +2,20 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseRadio.stories'
 import BaseRadio from '../../../ui/BaseRadio.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { picked: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseRadio v-bind="args" v-model="picked" /></div>
+`
 
 export const LongContent: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Длинные подписи переносятся по словам, круг остаётся у первой строки (ширина контейнера 360px).' } },
+		docs: {
+			description: { story: 'Длинные подписи переносятся по словам, круг остаётся у первой строки (ширина контейнера 360px).' },
+			source: storySource({ template, imports: ['BaseRadio'], models }),
+		},
 	},
 	args: {
 		label: 'Что сделать, если товара не окажется в наличии',
@@ -20,14 +29,11 @@ export const LongContent: StoryObj<typeof meta> = {
 		],
 	},
 	argTypes: { modelValue: { control: 'inline-radio', options: ['replace', 'call', 'remove'] } },
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseRadio },
-			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-			template: '<div class="story-narrow"><BaseRadio v-bind="props" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseRadio },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas }) => {
 		const radio = canvas.getByRole('radio', { name: /Заменить на аналогичный/ })
 		const label = canvas.getByText(/Заменить на аналогичный/)

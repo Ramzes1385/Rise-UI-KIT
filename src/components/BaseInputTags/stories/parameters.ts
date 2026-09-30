@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseInputTags from '../ui/BaseInputTags.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поле тегов: навыки, получатели, ключевые слова. Теги стоят в рамке поля перед строкой ввода.',

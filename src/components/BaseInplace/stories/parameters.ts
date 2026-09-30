@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseInplace from '../ui/BaseInplace.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Текст с правкой на месте: название проекта, имя в профиле, заметка в строке таблицы.',

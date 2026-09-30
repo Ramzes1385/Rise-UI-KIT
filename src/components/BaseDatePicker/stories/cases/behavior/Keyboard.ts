@@ -1,8 +1,8 @@
+import { findPanel, dayName } from '../../shared'
 import type meta from '../../BaseDatePicker.stories'
 import { storyDate, tabTo } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { within, waitFor, expect, screen } from 'storybook/test'
-import { renderWithLocalModel, findPanel, dayName } from '../../shared'
 
 export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,7 +17,6 @@ export const Keyboard: StoryObj<typeof meta> = {
 	},
 	tags: ['!autodocs'],
 	args: { modelValue: storyDate(0, 0, 0) },
-	render: renderWithLocalModel(),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByLabelText('Дата встречи')
 		await tabTo(field, userEvent)

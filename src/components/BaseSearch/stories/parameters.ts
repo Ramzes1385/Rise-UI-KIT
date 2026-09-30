@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { SearchArgs } from './shared'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поле поиска с подсказками: результаты фильтруются по названию и описанию, совпадения выделены.',

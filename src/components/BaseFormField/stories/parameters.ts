@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseFormField from '../ui/BaseFormField.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Обёртка поля формы: подпись сверху, под полем — описание или ошибка. Нужна контролам без собственной подписи:',

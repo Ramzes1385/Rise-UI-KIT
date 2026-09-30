@@ -1,15 +1,22 @@
-import { storyDate } from '@/stories/helpers'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
+import { docsFrame, findPanel, dayName } from '../../shared'
 import { expect, within, waitFor, screen } from 'storybook/test'
-import { docsFrame, renderWithLocalModel, findPanel, dayName } from '../../shared'
+import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { start: storyDate(-3, 0, 0), end: storyDate(3, 0, 0) }
+
+const template = `
+	<div class="story-medium">
+		<BaseDatePicker v-bind="args" v-model="start" v-model:model-value-end="end" />
+	</div>
+`
 
 export const RangeSelection: StoryObj<typeof meta> = {
 	args: {
 		label: 'Даты поездки',
 		selectionMode: 'range',
-		modelValue: storyDate(-3, 0, 0),
-		modelValueEnd: storyDate(3, 0, 0),
 		isMultiMonth: true,
 	},
 	parameters: {
@@ -21,9 +28,14 @@ export const RangeSelection: StoryObj<typeof meta> = {
 					'сколько помещается. Первый клик — начало, второй — конец: панель закрывается, в поле — «начало — конец».',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseDatePicker'], state }),
 		},
 	},
-	render: renderWithLocalModel('story-medium'),
+	render: args => ({
+		components: { BaseDatePicker },
+		setup: useStorySetup(args, { state, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByLabelText('Даты поездки')
 		await expect(field).toHaveValue('12.05.2025 — 18.05.2025')

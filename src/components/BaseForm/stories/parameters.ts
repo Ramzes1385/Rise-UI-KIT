@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseForm from '../ui/BaseForm.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Обёртка над `<form>`: отправка без перезагрузки страницы, состояния загрузки и блокировки.',

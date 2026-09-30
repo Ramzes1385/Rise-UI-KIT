@@ -1,12 +1,17 @@
 import BaseRating from '../ui/BaseRating.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseRating },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BaseRating v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseRating>['render']
+const models = { rating: 'modelValue' }
+
+const template = `
+	<BaseRating v-bind="args" v-model="rating" />
+`
+
+export const source = storySource({ template, imports: ['BaseRating'], models })
+
+export const render = (args => ({
+	components: { BaseRating },
+	setup: useStorySetup(args, { models }),
+	template,
+})) satisfies Meta<typeof BaseRating>['render']

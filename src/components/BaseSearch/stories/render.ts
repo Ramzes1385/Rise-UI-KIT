@@ -1,13 +1,18 @@
 import type { SearchArgs } from './shared'
 import BaseSearch from '../ui/BaseSearch.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseSearch },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<div class="story-narrow"><BaseSearch v-bind="props" @update:model-value="onUpdate" /></div>',
-	}
-}) satisfies Meta<SearchArgs>['render']
+const models = { query: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseSearch v-bind="args" v-model="query" /></div>
+`
+
+export const source = storySource({ template, imports: ['BaseSearch'], models })
+
+export const render = (args => ({
+	components: { BaseSearch },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<SearchArgs>['render']

@@ -1,11 +1,29 @@
-import { ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { docsFrame, CENTERED } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseColorPicker.stories'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { screen, expect, waitFor } from 'storybook/test'
 import BaseColorPicker from '../../../ui/BaseColorPicker.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { color: 'modelValue' }
+
+const state = { isNone: false }
+
+const template = `
+	<div style="${CENTERED}">
+		<BaseColorPicker
+			v-bind="args"
+			v-model="color"
+			:has-transparent-swatch="isNone"
+			@update:model-value="isNone = false"
+			@reset="isNone = true">
+			<template #trigger>
+				<BaseIcon v-if="isNone" name="minus" :size-scale="80" />
+			</template>
+		</BaseColorPicker>
+	</div>
+`
 
 export const Resettable: StoryObj<typeof meta> = {
 	args: { isResettable: true, modelValue: '#15803d' },
@@ -15,29 +33,13 @@ export const Resettable: StoryObj<typeof meta> = {
 			description: {
 				story: 'Сброс цвета (`isResettable`): кнопка «Без цвета» эмитит `reset` и закрывает панель; здесь сброс убирает заливку образца.',
 			},
+			source: storySource({ template, imports: ['BaseColorPicker', 'BaseIcon'], models, state }),
 		},
 	},
 	render: args => ({
 		components: { BaseColorPicker, BaseIcon },
-		setup: () => {
-			const color = ref(String(args.modelValue))
-			const isNone = ref(false)
-			return { props: useArgsWithoutSlots(args, ['modelValue', 'onUpdate:modelValue']), color, isNone, centered: CENTERED }
-		},
-		template: `
-			<div :style="centered">
-				<BaseColorPicker
-					v-bind="props"
-					v-model="color"
-					:has-transparent-swatch="isNone"
-					@update:model-value="isNone = false"
-					@reset="isNone = true">
-					<template #trigger>
-						<BaseIcon v-if="isNone" name="minus" :size-scale="80" />
-					</template>
-				</BaseColorPicker>
-			</div>
-		`,
+		setup: useStorySetup(args, { models, state, slots: [] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const swatch = canvas.getByRole('button', { name: /Выбранный цвет/ })

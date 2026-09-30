@@ -1,7 +1,15 @@
 import type meta from '../../BaseFileUpload.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFileUpload from '../../../ui/BaseFileUpload.vue'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 280px; align-items: end;">
+		<BaseFileUpload v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" :label="preset.label" />
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
@@ -9,16 +17,17 @@ export const Sizes: StoryObj<typeof meta> = {
 		controls: { include: ['variant'] },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: отступы, шрифт и иконки зоны и строк файлов масштабируются вместе.' },
-			source: { code: SIZE_PRESETS.map(preset => `<BaseFileUpload :size-scale="${preset.sizeScale}" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BaseFileUpload'],
+				script: `const presets = ${literal(presets)}`,
+				omit: ['sizeScale', 'label'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseFileUpload },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['sizeScale', 'label']), presets: SIZE_PRESETS, sizeLabel }),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 280px; align-items: end;">
-				<BaseFileUpload v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets }, slots: ['sizeScale', 'label'] }),
+		template,
 	}),
 }

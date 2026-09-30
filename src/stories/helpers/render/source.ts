@@ -1,6 +1,7 @@
 /** Код для «Show code»: ровно то, что рисует превью истории, — её шаблон и текущие значения из Controls. */
 
 import { STORY_STYLES } from './storyStyles'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useSizeScale/useSizeScale'
 import type { ShownAttribute, StorySourceContext, StorySourceOptions } from '../types/helpers.types'
 
 const PACKAGE = '@ramzes1385/rise-ui-kit'
@@ -12,6 +13,9 @@ const INLINE_LIMIT = 40
 const LINE_LIMIT = 90
 
 const NO_DEFAULT = Symbol('no-default')
+
+/** Значения по умолчанию, общие для всех компонентов кита, но не объявленные в пропсах: `sizeScale` — 100% */
+const KIT_DEFAULTS: Readonly<Record<string, unknown>> = { sizeScale: SIZE_SCALE_DEFAULT }
 
 /** Код для «Show code» из шаблона story: без пустой первой строки и общего отступа. */
 export function templateSource(template: string): string {
@@ -37,14 +41,16 @@ function scalar(value: unknown): string {
 	return String(value)
 }
 
-/** Значение как код: объекты и массивы — литералами, длинные — в несколько строк */
+/** Значение как код: объекты и массивы — литералами, длинные — в несколько строк; поля `undefined` не пишутся */
 export function literal(value: unknown, depth = 0): string {
 	const isArray = Array.isArray(value)
 	if (!isArray && !isPlainObject(value)) return scalar(value)
 	const key = (name: string): string => (/^[A-Za-z_$][\w$]*$/.test(name) ? name : `'${name}'`)
 	const items = isArray
 		? value.map(item => literal(item, depth + 1))
-		: Object.entries(value).map(([name, item]) => `${key(name)}: ${literal(item, depth + 1)}`)
+		: Object.entries(value)
+				.filter(([, item]) => item !== undefined)
+				.map(([name, item]) => `${key(name)}: ${literal(item, depth + 1)}`)
 	const [open, close] = isArray ? ['[', ']'] : ['{ ', ' }']
 	if (!items.length) return `${open.trim()}${close.trim()}`
 	const inline = `${open}${items.join(', ')}${close}`
@@ -55,7 +61,7 @@ export function literal(value: unknown, depth = 0): string {
 
 function defaultOf(component: unknown, name: string): unknown {
 	const definition = (component as { props?: Record<string, unknown> } | undefined)?.props?.[name]
-	if (!isPlainObject(definition) || !('default' in definition)) return NO_DEFAULT
+	if (!isPlainObject(definition) || !('default' in definition)) return name in KIT_DEFAULTS ? KIT_DEFAULTS[name] : NO_DEFAULT
 	const value = definition.default
 	return typeof value === 'function' && definition.type !== Function ? (value as (props: object) => unknown)({}) : value
 }
@@ -147,7 +153,14 @@ function explicitNames(template: string, at: number): Set<string> {
 	const end = at + tagEndIndex(template.slice(at))
 	const names = tokens(template.slice(start, end))
 		.slice(1)
-		.map(token => kebab(token.split('=')[0].replace(/^(:|v-bind:|v-model:)/, '')))
+		.map(token =>
+			kebab(
+				token
+					.split('=')[0]
+					.replace(/^v-model$/, 'model-value')
+					.replace(/^(:|v-bind:|v-model:)/, ''),
+			),
+		)
 	return new Set(names)
 }
 
@@ -213,19 +226,27 @@ const escapeText = (text: string): string => text.replace(/&/g, '&amp;').replace
 const fillSlots = (template: string, args: Record<string, unknown>): string =>
 	template.replace(/\{\{\s*slots\.(\w+)\s*\}\}/g, (_, name: string) => escapeText(String(args[name] ?? '')))
 
+/** Импорты в порядке кодов символов, как `sort()`; типы — `type Name` — стоят среди остальных по имени */
+function sortImports(names: readonly string[]): string[] {
+	const key = (name: string): string => name.replace(/^type /, '')
+	return [...names].sort((left, right) => (key(left) < key(right) ? -1 : Number(key(left) > key(right))))
+}
+
 function buildSource(options: StorySourceOptions, context: StorySourceContext): string {
 	const attributes = shownArgs(options, context).map(attribute)
 	const template = expandArgs(fillSlots(templateSource(options.template), context.args), attributes)
 	const hoisted = attributes.filter(item => item.hoist && template.includes(item.code)).map(item => item.hoist)
 	const refs = [
 		...Object.entries(options.models ?? {}).map(([name, arg]) => `const ${name} = ref(${literal(context.args[arg] ?? '')})`),
-		...Object.entries(options.state ?? {}).map(([name, value]) => `const ${name} = ref(${literal(value)})`),
+		...Object.entries(options.state ?? {}).map(
+			([name, value]) => `const ${name} = ref${options.types?.[name] ? `<${options.types[name]}>` : ''}(${literal(value)})`,
+		),
 	]
 	const vue = [...new Set([...(refs.length ? ['ref'] : []), ...(options.vue ?? [])])].sort()
 	const imports = [
 		...(vue.length ? [`import { ${vue.join(', ')} } from 'vue'`] : []),
-		`import { ${[...options.imports].sort().join(', ')} } from '${PACKAGE}'`,
-		...Object.entries(options.importsFrom ?? {}).map(([from, names]) => `import { ${[...names].sort().join(', ')} } from '${from}'`),
+		`import { ${sortImports(options.imports).join(', ')} } from '${PACKAGE}'`,
+		...Object.entries(options.importsFrom ?? {}).map(([from, names]) => `import { ${sortImports(names).join(', ')} } from '${from}'`),
 	]
 	const script = [imports.join('\n'), [...refs, ...hoisted].join('\n'), templateSource(options.script ?? '')].filter(Boolean)
 	const body = template

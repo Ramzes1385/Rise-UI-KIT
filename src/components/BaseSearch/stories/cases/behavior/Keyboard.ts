@@ -1,8 +1,15 @@
-import { tabTo } from '@/stories/helpers'
+import { resultTitles } from '../../shared'
 import type { SearchArgs } from '../../shared'
 import { waitFor, expect } from 'storybook/test'
+import BaseSearch from '../../../ui/BaseSearch.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { renderWithLocalQuery, resultTitles } from '../../shared'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const state = { query: '' }
+
+const template = `
+	<div class="story-narrow"><BaseSearch v-bind="args" v-model="query" /></div>
+`
 
 export const Keyboard: StoryObj<SearchArgs> = {
 	parameters: {
@@ -13,10 +20,15 @@ export const Keyboard: StoryObj<SearchArgs> = {
 					'Enter выбирает его — запрос заменяется названием результата.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseSearch'], state, omit: ['modelValue'] }),
 		},
 	},
 	tags: ['!autodocs'],
-	render: renderWithLocalQuery,
+	render: args => ({
+		components: { BaseSearch },
+		setup: useStorySetup(args, { state, slots: ['modelValue'] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const field = canvas.getByPlaceholderText('Поиск по проекту')
 		await tabTo(field, userEvent)

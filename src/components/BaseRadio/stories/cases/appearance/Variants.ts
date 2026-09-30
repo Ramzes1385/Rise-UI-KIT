@@ -1,9 +1,25 @@
-import { ref } from 'vue'
 import type meta from '../../BaseRadio.stories'
 import BaseRadio from '../../../ui/BaseRadio.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { RADIO_VARIANTS } from '../../../types/BaseRadio.types'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const variants = RADIO_VARIANTS
+
+const state = { values: Object.fromEntries(RADIO_VARIANTS.map(variant => [variant, 'pickup'])) }
+
+const template = `
+	<div class="story-stack">
+		<BaseRadio
+			v-for="variant in variants"
+			:key="variant"
+			v-bind="args"
+			v-model="values[variant]"
+			:name="'delivery-' + variant"
+			:variant="variant"
+			:label="variant" />
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,31 +31,23 @@ export const Variants: StoryObj<typeof meta> = {
 					'`shadow` — с тенью; `bordered` — опции-кнопки без круга.',
 				].join('\n'),
 			},
-			source: {
-				code: RADIO_VARIANTS.map(
-					variant => `<BaseRadio v-model="value" :options="options" name="${variant}" variant="${variant}" label="${variant}" />`,
-				).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseRadio'],
+				script: `const variants = ${literal(variants)}`,
+				state,
+				types: { values: 'Record<string, string | number>' },
+				omit: ['default', 'modelValue', 'name', 'label', 'variant', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseRadio },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'name', 'label', 'variant', 'onUpdate:modelValue']),
-			variants: RADIO_VARIANTS,
-			values: ref<Record<string, string | number>>(Object.fromEntries(RADIO_VARIANTS.map(variant => [variant, 'pickup']))),
+		setup: useStorySetup(args, {
+			state,
+			data: { variants },
+			slots: ['default', 'modelValue', 'name', 'label', 'variant', 'onUpdate:modelValue'],
 		}),
-		template: `
-			<div class="story-stack">
-				<BaseRadio
-					v-for="variant in variants"
-					:key="variant"
-					v-bind="props"
-					v-model="values[variant]"
-					:name="'delivery-' + variant"
-					:variant="variant"
-					:label="variant" />
-			</div>
-		`,
+		template,
 	}),
 }

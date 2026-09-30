@@ -1,9 +1,21 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import BasePin from '../../../ui/BasePin.vue'
 import type meta from '../../BasePin.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const state = { values: Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, '48'])) }
+
+const template = `
+	<div class="story-col">
+		<div v-for="preset in presets" :key="preset.name" class="story-row">
+			<span class="story-label">{{ preset.label }}</span>
+			<BasePin v-bind="args" v-model="values[preset.name]" :size-scale="preset.sizeScale" :aria-label="'Код, размер ' + preset.name" />
+		</div>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,25 +24,20 @@ export const Sizes: StoryObj<typeof meta> = {
 			description: {
 				story: 'Размеры через `sizeScale`: ячейки 24, 28, 32, 36 и 40px — такие же, как высота инпута и кнопки того же размера.',
 			},
-			source: { code: SIZE_PRESETS.map(p => `<BasePin v-model="code" :size-scale="${p.sizeScale}" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BasePin'],
+				script: `const presets = ${literal(presets)}`,
+				state,
+				types: { values: 'Record<string, string>' },
+				omit: ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BasePin },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue']),
-			presets: SIZE_PRESETS,
-			sizeLabel,
-			values: ref<Record<string, string>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, '48']))),
-		}),
-		template: `
-			<div class="story-col">
-				<div v-for="preset in presets" :key="preset.name" class="story-row">
-					<span class="story-label">{{ sizeLabel(preset) }}</span>
-					<BasePin v-bind="props" v-model="values[preset.name]" :size-scale="preset.sizeScale" :aria-label="'Код, размер ' + preset.name" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { presets }, slots: ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const heights = ['xs', 'md', 'xl'].map(

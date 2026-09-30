@@ -1,12 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseDatePicker },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<div class="story-narrow"><BaseDatePicker v-bind="props" @update:model-value="onUpdate" /></div>',
-	}
-}) satisfies Meta<typeof BaseDatePicker>['render']
+const models = { date: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseDatePicker v-bind="args" v-model="date" /></div>
+`
+
+export const source = storySource({ template, imports: ['BaseDatePicker'], models })
+
+export const render = (args => ({
+	components: { BaseDatePicker },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseDatePicker>['render']

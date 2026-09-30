@@ -2,10 +2,18 @@ import { expect } from 'storybook/test'
 import type meta from '../BaseMention.stories'
 import BaseMention from '../../ui/BaseMention.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div style="max-width: 560px; min-height: 240px"><BaseMention v-bind="args" /></div>
+`
 
 export const CustomTrigger: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Свой триггер: `#` — ссылки на каналы; выбор мышью тоже вставляет упоминание.' } },
+		docs: {
+			description: { story: 'Свой триггер: `#` — ссылки на каналы; выбор мышью тоже вставляет упоминание.' },
+			source: storySource({ template, imports: ['BaseMention'] }),
+		},
 	},
 	args: {
 		label: 'Сообщение',
@@ -19,8 +27,8 @@ export const CustomTrigger: StoryObj<typeof meta> = {
 	},
 	render: args => ({
 		components: { BaseMention },
-		setup: () => ({ args }),
-		template: '<div style="max-width: 560px; min-height: 240px"><BaseMention v-bind="args" /></div>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByRole('textbox', { name: 'Сообщение' })

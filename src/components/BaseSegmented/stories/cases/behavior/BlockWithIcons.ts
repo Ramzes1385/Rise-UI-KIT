@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseSegmented.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSegmented from '../../../ui/BaseSegmented.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import type { SegmentedOption } from '../../../types/BaseSegmented.types'
 
 const VIEWS: SegmentedOption[] = [
@@ -11,17 +11,25 @@ const VIEWS: SegmentedOption[] = [
 	{ value: 'calendar', label: 'Календарь', icon: 'calendar' },
 ]
 
+const models = { selected: 'modelValue' }
+
+const template = `
+	<div style="max-width: 420px;"><BaseSegmented v-bind="args" v-model="selected" /></div>
+`
+
 export const BlockWithIcons: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Во всю ширину с иконками: сегменты делят ширину поровну.' } } },
-	args: { options: VIEWS, modelValue: 'cards', isBlock: true, label: 'Вид' },
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseSegmented },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-			template: '<div style="max-width: 420px;"><BaseSegmented v-bind="props" @update:model-value="onUpdate" /></div>',
-		}
+	parameters: {
+		docs: {
+			description: { story: 'Во всю ширину с иконками: сегменты делят ширину поровну.' },
+			source: storySource({ template, imports: ['BaseSegmented'], models, omit: [] }),
+		},
 	},
+	args: { options: VIEWS, modelValue: 'cards', isBlock: true, label: 'Вид' },
+	render: args => ({
+		components: { BaseSegmented },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvasElement }) => {
 		const segments = canvasElement.querySelectorAll<HTMLElement>('.base-segmented__segment')
 		await expect(Math.abs(segments[0].offsetWidth - segments[2].offsetWidth)).toBeLessThanOrEqual(1)

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseAutocomplete from '../ui/BaseAutocomplete.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поле с подсказками: город, компания, тег из справочника. Список фильтруется по вводу, выбор — мышью или с клавиатуры.',

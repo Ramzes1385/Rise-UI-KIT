@@ -21,7 +21,7 @@ export type UserEvent = Pick<typeof defaultUserEvent, 'tab'>
 export interface StorySourceOptions {
 	/** Шаблон истории — тот же, что в render. `v-bind="args"` в коде раскрывается в пропсы из Controls */
 	template: string
-	/** Что импортировать из пакета кита: компоненты и константы шаблона */
+	/** Что импортировать из пакета кита: компоненты, константы шаблона и типы строк `script` (`'type AutocompleteOption'`) */
 	imports: readonly string[]
 	/** Переменные `v-model` шаблона: имя → аргумент Storybook. В коде — `const phone = ref(значение из Controls)` */
 	models?: Readonly<Record<string, string>>
@@ -35,6 +35,8 @@ export interface StorySourceOptions {
 	importsFrom?: Readonly<Record<string, readonly string[]>>
 	/** Состояние шаблона: имя → начальное значение. В коде — `const isOpen = ref(false)`; в `useStorySetup` — те же `state` */
 	state?: Readonly<Record<string, unknown>>
+	/** Типы переменных `state` для кода: `{ values: 'Record<string, string>' }` → `ref<Record<string, string>>({})` */
+	types?: Readonly<Record<string, string>>
 }
 
 /** Настройки `useStorySetup` — те же `models` и `state`, что у `storySource` */
@@ -47,6 +49,8 @@ export interface StorySetupOptions {
 	data?: Readonly<Record<string, unknown>>
 	/** Аргументы-слоты: в `v-bind="args"` не попадают, их тексты — в `slots` */
 	slots?: readonly string[]
+	/** Логика шаблона — то же, что строки `script` в `storySource`: вызывается у каждого показа, её значения — в шаблоне */
+	setup?: () => Record<string, unknown>
 }
 
 /** Пропс из Controls для кода: имя атрибута и сам атрибут */

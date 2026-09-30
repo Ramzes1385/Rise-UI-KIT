@@ -1,12 +1,17 @@
 import BasePin from '../ui/BasePin.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BasePin },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BasePin v-bind="props" aria-label="Код из СМС" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BasePin>['render']
+const models = { code: 'modelValue' }
+
+const template = `
+	<BasePin v-bind="args" aria-label="Код из СМС" v-model="code" />
+`
+
+export const source = storySource({ template, imports: ['BasePin'], models })
+
+export const render = (args => ({
+	components: { BasePin },
+	setup: useStorySetup(args, { models }),
+	template,
+})) satisfies Meta<typeof BasePin>['render']

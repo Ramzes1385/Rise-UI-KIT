@@ -205,7 +205,7 @@ describe('код для «Show code»', () => {
 		expect(literal(`data:image/svg+xml;charset=utf-8,${'%3Csvg'.repeat(20)}`)).toBe("'data:image/svg+xml;charset=utf-8,…'")
 		expect(literal([])).toBe('[]')
 		expect(literal({})).toBe('{}')
-		expect(literal({ 'data-id': 1, ok: null })).toBe("{ 'data-id': 1, ok: null }")
+		expect(literal({ 'data-id': 1, ok: null, avatar: undefined })).toBe("{ 'data-id': 1, ok: null }")
 		expect(literal(Array.from({ length: 12 }, (_, index) => ({ id: `item-${index}` })))).toMatch(/^\[\n\t\{ id: 'item-0' \},\n/)
 	})
 
@@ -245,6 +245,8 @@ describe('код для «Show code»', () => {
 			].join('\n'),
 		)
 		expect(template({ title: 'Из Controls' })).toContain('\t\t\t:key="type"\n\t\t\t:type="type"')
+		const model = storySource({ template: '<BaseInput v-bind="args" v-model="text" />', imports: ['BaseInput'] })
+		expect(model.transform('', { args: { modelValue: 'а', label: 'Имя' } })).toContain('<BaseInput label="Имя" v-model="text" />')
 	})
 
 	it('несколько v-bind="args" в строке с текстом — пропсы в каждом теге, без переноса строки', () => {
@@ -273,6 +275,14 @@ describe('код для «Show code»', () => {
 		)
 	})
 
+	it('sizeScale 100 — значение по умолчанию у всех компонентов, в код не попадает', () => {
+		const source = storySource({ template: '<BaseRange v-bind="args" />', imports: ['BaseRange'] })
+		expect(source.transform('', { args: { sizeScale: 100, hasLabel: true }, component: { props: {} } })).toContain(
+			'<BaseRange has-label />',
+		)
+		expect(source.transform('', { args: { sizeScale: 125 }, component: { props: {} } })).toContain('<BaseRange :size-scale="125" />')
+	})
+
 	it('подпись варианта из mapping в Controls — значением, которое получает компонент', () => {
 		const code = storySource({ template: '<BaseImage v-bind="args" />', imports: ['BaseImage'] }).transform('', {
 			args: { src: 'Горы', alt: 'Горы' },
@@ -285,10 +295,20 @@ describe('код для «Show code»', () => {
 		const code = storySource({
 			template: '<BaseTable v-if="isVisible" v-bind="args" :columns="shortColumns" @close="isVisible = false" />',
 			imports: ['BaseTable'],
-			state: { isVisible: true, items: ['а'] },
+			state: { isVisible: true, items: ['а'], values: {} },
+			types: { values: 'Record<string, string>' },
 		}).transform('', { args: { columns: [{ key: 'name', title: 'Имя сотрудника отдела' }] } })
 		expect(code).toContain("import { ref } from 'vue'")
-		expect(code).toContain("const isVisible = ref(true)\nconst items = ref(['а'])\n</script>")
+		expect(code).toContain(
+			"const isVisible = ref(true)\nconst items = ref(['а'])\nconst values = ref<Record<string, string>>({})\n</script>",
+		)
 		expect(code).toContain('<BaseTable v-if="isVisible" :columns="shortColumns" @close="isVisible = false" />')
+	})
+
+	it('типы для строк script — среди импортов пакета по имени', () => {
+		const code = storySource({ template: '<BaseTable />', imports: ['type TableRow', 'BaseTable', 'type AutocompleteOption'] })
+		expect(code.transform('', { args: {} })).toContain(
+			"import { type AutocompleteOption, BaseTable, type TableRow } from '@ramzes1385/rise-ui-kit'",
+		)
 	})
 })

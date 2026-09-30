@@ -1,8 +1,20 @@
-import { ref } from 'vue'
 import type meta from '../../BaseRating.stories'
 import BaseRating from '../../../ui/BaseRating.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const state = { values: Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 3])) }
+
+const template = `
+	<div class="story-col">
+		<div v-for="preset in presets" :key="preset.name" class="story-row">
+			<span class="story-label">{{ preset.label }}</span>
+			<BaseRating v-bind="args" v-model="values[preset.name]" :size-scale="preset.sizeScale" />
+		</div>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
@@ -11,24 +23,19 @@ export const Sizes: StoryObj<typeof meta> = {
 			description: {
 				story: 'Размеры через `sizeScale`: звезда 15, 17.5, 20, 22.5 и 25px; коробка вариантов — 24–40px, как поле того же размера.',
 			},
-			source: { code: SIZE_PRESETS.map(p => `<BaseRating v-model="rating" :size-scale="${p.sizeScale}" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BaseRating'],
+				script: `const presets = ${literal(presets)}`,
+				state,
+				types: { values: 'Record<string, number>' },
+				omit: ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseRating },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue']),
-			presets: SIZE_PRESETS,
-			sizeLabel,
-			values: ref<Record<string, number>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 3]))),
-		}),
-		template: `
-			<div class="story-col">
-				<div v-for="preset in presets" :key="preset.name" class="story-row">
-					<span class="story-label">{{ sizeLabel(preset) }}</span>
-					<BaseRating v-bind="props" v-model="values[preset.name]" :size-scale="preset.sizeScale" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { presets }, slots: ['default', 'modelValue', 'sizeScale', 'onUpdate:modelValue'] }),
+		template,
 	}),
 }

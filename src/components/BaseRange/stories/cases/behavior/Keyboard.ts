@@ -1,9 +1,14 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseRange.stories'
 import BaseRange from '../../../ui/BaseRange.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots, tabTo } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const state = { volume: 40 }
+
+const template = `
+	<div class="story-narrow"><BaseRange v-bind="args" v-model="volume" /></div>
+`
 
 export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,13 +19,14 @@ export const Keyboard: StoryObj<typeof meta> = {
 					'уменьшают; каждый шаг с клавиатуры — завершённый выбор, поэтому приходит и `change`.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseRange'], state, omit: ['modelValue', 'thumb', 'onUpdate:modelValue'] }),
 		},
 	},
 	tags: ['!autodocs'],
 	render: args => ({
 		components: { BaseRange },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'thumb', 'onUpdate:modelValue']), volume: ref(40) }),
-		template: '<div class="story-narrow"><BaseRange v-bind="props" v-model="volume" /></div>',
+		setup: useStorySetup(args, { state, slots: ['modelValue', 'thumb', 'onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const thumb = canvas.getByRole('slider', { name: 'Громкость' })

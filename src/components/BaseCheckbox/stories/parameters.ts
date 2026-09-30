@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseCheckbox from '../ui/BaseCheckbox.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Чекбокс — одиночный выбор «да/нет»: согласие с условиями, включение опции в форме.',

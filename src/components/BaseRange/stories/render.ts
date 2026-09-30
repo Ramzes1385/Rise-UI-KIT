@@ -1,12 +1,17 @@
 import BaseRange from '../ui/BaseRange.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseRange },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['thumb']), onUpdate }),
-		template: '<div class="story-narrow"><BaseRange v-bind="props" @update:model-value="onUpdate" /></div>',
-	}
-}) satisfies Meta<typeof BaseRange>['render']
+const models = { value: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseRange v-bind="args" v-model="value" /></div>
+`
+
+export const source = storySource({ template, imports: ['BaseRange'], models, omit: ['thumb'] })
+
+export const render = (args => ({
+	components: { BaseRange },
+	setup: useStorySetup(args, { models, slots: ['thumb'] }),
+	template,
+})) satisfies Meta<typeof BaseRange>['render']

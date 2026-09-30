@@ -2,7 +2,7 @@ import { storyDate } from '@/stories/helpers'
 import { within, expect } from 'storybook/test'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { docsFrame, renderWithLocalModel, findPanel, dayName } from '../../shared'
+import { docsFrame, findPanel, dayName } from '../../shared'
 
 export const Constraints: StoryObj<typeof meta> = {
 	args: {
@@ -18,7 +18,6 @@ export const Constraints: StoryObj<typeof meta> = {
 			description: { story: 'Ограничения: `minDate`/`maxDate` и `disabledWeekdays` — недоступные дни приглушены и не выбираются.' },
 		},
 	},
-	render: renderWithLocalModel(),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByLabelText('Дата доставки'))
 		const panel = within(await findPanel())

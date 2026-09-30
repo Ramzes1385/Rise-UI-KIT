@@ -1,12 +1,17 @@
 import BaseInplace from '../ui/BaseInplace.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseInplace },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<BaseInplace v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseInplace>['render']
+const models = { value: 'modelValue' }
+
+const template = `
+	<BaseInplace v-bind="args" v-model="value" />
+`
+
+export const source = storySource({ template, imports: ['BaseInplace'], models })
+
+export const render = (args => ({
+	components: { BaseInplace },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseInplace>['render']

@@ -4,7 +4,22 @@ import BaseSearch from '../../../ui/BaseSearch.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, waitFor, expect } from 'storybook/test'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { query: 'modelValue' }
+
+const template = `
+	<div class="story-narrow">
+		<BaseSearch v-bind="args" v-model="query">
+			<template #result-before>
+				<div class="story-label" style="padding: 6px 8px 2px;">Файлы проекта</div>
+			</template>
+			<template #result-after="{ query }">
+				<BaseButton variant="ghost" style="width: 100%;">Все результаты по запросу «{{ query }}»</BaseButton>
+			</template>
+		</BaseSearch>
+	</div>
+`
 
 export const Slots: StoryObj<SearchArgs> = {
 	args: { modelValue: 'Лис' },
@@ -17,35 +32,14 @@ export const Slots: StoryObj<SearchArgs> = {
 				].join('\n'),
 			},
 			...docsFrame(280),
-			source: {
-				code: [
-					'<BaseSearch v-model="query" :results="results">',
-					'  <template #result-before>Файлы проекта</template>',
-					'  <template #result-after="{ query }"><BaseButton variant="ghost">Все результаты по запросу «{{ query }}»</BaseButton></template>',
-					'</BaseSearch>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseSearch', 'BaseButton'], models, omit: [] }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseSearch, BaseButton },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-			template: `
-				<div class="story-narrow">
-					<BaseSearch v-bind="props" @update:model-value="onUpdate">
-						<template #result-before>
-							<div class="story-label" style="padding: 6px 8px 2px;">Файлы проекта</div>
-						</template>
-						<template #result-after="{ query }">
-							<BaseButton variant="ghost" style="width: 100%;">Все результаты по запросу «{{ query }}»</BaseButton>
-						</template>
-					</BaseSearch>
-				</div>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseSearch, BaseButton },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByPlaceholderText('Поиск по проекту'))
 		const action = await screen.findByRole('button', { name: 'Все результаты по запросу «Лис»' })

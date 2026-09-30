@@ -1,12 +1,17 @@
 import BaseSelect from '../ui/BaseSelect.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseSelect },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<div class="story-narrow"><BaseSelect v-bind="props" @update:model-value="onUpdate" /></div>',
-	}
-}) satisfies Meta<typeof BaseSelect>['render']
+const models = { selected: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseSelect v-bind="args" v-model="selected" /></div>
+`
+
+export const source = storySource({ template, imports: ['BaseSelect'], models })
+
+export const render = (args => ({
+	components: { BaseSelect },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseSelect>['render']

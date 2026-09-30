@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSwitch from '../ui/BaseSwitch.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Переключатель — включает и выключает настройку, которая применяется сразу: уведомления, тёмная тема, автопродление.',

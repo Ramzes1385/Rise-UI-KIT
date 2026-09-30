@@ -4,7 +4,7 @@ import BaseSelect from '../../../ui/BaseSelect.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import type { BaseSelectOption } from '../../../types/BaseSelect.types'
 
 const STATUSES: (BaseSelectOption & { color: string })[] = [
@@ -13,6 +13,26 @@ const STATUSES: (BaseSelectOption & { color: string })[] = [
 	{ value: 'review', label: 'На проверке', color: 'var(--rise-warning)' },
 	{ value: 'done', label: 'Готово', color: 'var(--rise-success)' },
 ]
+
+const models = { selected: 'modelValue' }
+
+const template = `
+	<div class="story-narrow">
+		<BaseSelect v-bind="args" v-model="selected">
+			<template #option="{ option }">
+				<span :style="{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: option.color }" />
+				{{ option.label }}
+			</template>
+			<template #selected="{ option }">
+				<span :style="{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: option.color }" />
+				{{ option.label }}
+			</template>
+			<template #footer>
+				<BaseButton variant="ghost" style="width: 100%;">Настроить статусы</BaseButton>
+			</template>
+		</BaseSelect>
+	</div>
+`
 
 export const Slots: StoryObj<typeof meta> = {
 	args: { label: 'Статус задачи', options: STATUSES, modelValue: 'progress', placeholder: 'Выберите статус' },
@@ -25,41 +45,14 @@ export const Slots: StoryObj<typeof meta> = {
 				].join('\n'),
 			},
 			...docsFrame(300),
-			source: {
-				code: [
-					'<BaseSelect v-model="status" :options="statuses" label="Статус задачи">',
-					'  <template #option="{ option }"><span class="dot" :style="{ background: option.color }" />{{ option.label }}</template>',
-					'  <template #selected="{ option }"><span class="dot" :style="{ background: option.color }" />{{ option.label }}</template>',
-					'  <template #footer><BaseButton variant="ghost">Настроить статусы</BaseButton></template>',
-					'</BaseSelect>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseSelect', 'BaseButton'], models, omit: [] }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseSelect, BaseButton },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-			template: `
-				<div class="story-narrow">
-					<BaseSelect v-bind="props" @update:model-value="onUpdate">
-						<template #option="{ option }">
-							<span :style="{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: option.color }" />
-							{{ option.label }}
-						</template>
-						<template #selected="{ option }">
-							<span :style="{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: option.color }" />
-							{{ option.label }}
-						</template>
-						<template #footer>
-							<BaseButton variant="ghost" style="width: 100%;">Настроить статусы</BaseButton>
-						</template>
-					</BaseSelect>
-				</div>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseSelect, BaseButton },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const trigger = canvas.getByRole('combobox', { name: 'Статус задачи' })
 		await expect(trigger).toHaveTextContent('В работе')

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseColorPicker from '../ui/BaseColorPicker.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Выбор цвета: образец-триггер открывает панель с областью насыщенности и яркости, слайдером тона,',

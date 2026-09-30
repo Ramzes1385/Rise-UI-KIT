@@ -1,9 +1,14 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseRating.stories'
 import BaseRating from '../../../ui/BaseRating.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots, tabTo } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const state = { rating: 3 }
+
+const template = `
+	<BaseRating v-bind="args" v-model="rating" />
+`
 
 export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,13 +19,14 @@ export const Keyboard: StoryObj<typeof meta> = {
 					'влево/вниз — уменьшают, End — максимум, Home — 0. Каждое изменение — событие `change`.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseRating'], state, omit: ['default', 'modelValue', 'onUpdate:modelValue'] }),
 		},
 	},
 	tags: ['!autodocs'],
 	render: args => ({
 		components: { BaseRating },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'modelValue', 'onUpdate:modelValue']), rating: ref(3) }),
-		template: '<BaseRating v-bind="props" v-model="rating" />',
+		setup: useStorySetup(args, { state, slots: ['default', 'modelValue', 'onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const rating = canvas.getByRole('slider', { name: 'Оценка от 0 до 5' })

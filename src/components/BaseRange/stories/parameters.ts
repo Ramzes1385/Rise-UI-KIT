@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseRange from '../ui/BaseRange.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Слайдер значения: один ползунок (`v-model`), диапазон (`v-model:range-value`) или несколько точек',

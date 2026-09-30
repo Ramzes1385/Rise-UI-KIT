@@ -1,12 +1,17 @@
 import BaseRadio from '../ui/BaseRadio.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseRadio },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BaseRadio v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseRadio>['render']
+const models = { picked: 'modelValue' }
+
+const template = `
+	<BaseRadio v-bind="args" v-model="picked" />
+`
+
+export const source = storySource({ template, imports: ['BaseRadio'], models })
+
+export const render = (args => ({
+	components: { BaseRadio },
+	setup: useStorySetup(args, { models }),
+	template,
+})) satisfies Meta<typeof BaseRadio>['render']

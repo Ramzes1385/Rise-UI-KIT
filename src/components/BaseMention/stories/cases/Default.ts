@@ -1,21 +1,27 @@
 import { expect } from 'storybook/test'
 import type meta from '../BaseMention.stories'
-import { useModelArg } from '@/stories/helpers'
 import BaseMention from '../../ui/BaseMention.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { text: 'modelValue' }
+
+const template = `
+	<div style="max-width: 560px; min-height: 280px"><BaseMention v-bind="args" v-model="text" /></div>
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Наберите @ и начало имени: стрелки выбирают коллегу, Enter вставляет упоминание.' } },
+		docs: {
+			description: { story: 'Наберите @ и начало имени: стрелки выбирают коллегу, Enter вставляет упоминание.' },
+			source: storySource({ template, imports: ['BaseMention'], models }),
+		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseMention },
-			setup: () => ({ args, onUpdate }),
-			template: '<div style="max-width: 560px; min-height: 280px"><BaseMention v-bind="args" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseMention },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByRole('textbox', { name: 'Комментарий' })
 		await userEvent.tab()

@@ -1,23 +1,28 @@
 import { DEMO_DELAY } from '../shared'
-import { useModelArg } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
 import type meta from '../BaseAddressInput.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseAddressInput from '../../ui/BaseAddressInput.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { address: 'modelValue' }
+
+const template = `
+	<div style="max-width: 420px; min-height: 280px"><BaseAddressInput v-bind="args" v-model="address" /></div>
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Наберите «тверская 13»: подсказки придут через 300 мс, стрелка вниз и Enter выбирают адрес.' } },
+		docs: {
+			description: { story: 'Наберите «тверская 13»: подсказки придут через 300 мс, стрелка вниз и Enter выбирают адрес.' },
+			source: storySource({ template, imports: ['BaseAddressInput'], models }),
+		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseAddressInput },
-			setup: () => ({ args, onUpdate }),
-			template:
-				'<div style="max-width: 420px; min-height: 280px"><BaseAddressInput v-bind="args" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseAddressInput },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByRole('combobox', { name: 'Адрес доставки' })
 		await userEvent.tab()

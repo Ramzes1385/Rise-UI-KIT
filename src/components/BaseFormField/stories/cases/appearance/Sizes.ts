@@ -1,9 +1,25 @@
-import { ref } from 'vue'
 import { BasePin } from '@components/BasePin'
 import type meta from '../../BaseFormField.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFormField from '../../../ui/BaseFormField.vue'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const state = { values: Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, ''])) }
+
+const template = `
+	<div class="story-col story-narrow">
+		<BaseFormField
+			v-for="preset in presets"
+			:key="preset.name"
+			v-bind="args"
+			:size-scale="preset.sizeScale"
+			:label="preset.label">
+			<BasePin v-model="values[preset.name]" />
+		</BaseFormField>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,30 +28,19 @@ export const Sizes: StoryObj<typeof meta> = {
 			description: {
 				story: 'Размеры через `sizeScale`: масштабируются подпись, описание и вложенный контрол без своего `sizeScale`.',
 			},
-			source: {
-				code: SIZE_PRESETS.map(p => `<BaseFormField :size-scale="${p.sizeScale}" label="${p.name}">…</BaseFormField>`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseFormField', 'BasePin'],
+				script: `const presets = ${literal(presets)}`,
+				state,
+				types: { values: 'Record<string, string>' },
+				omit: ['default', 'label', 'sizeScale'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseFormField, BasePin },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'label', 'sizeScale']),
-			presets: SIZE_PRESETS,
-			sizeLabel,
-			values: ref<Record<string, string>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, '']))),
-		}),
-		template: `
-			<div class="story-col story-narrow">
-				<BaseFormField
-					v-for="preset in presets"
-					:key="preset.name"
-					v-bind="props"
-					:size-scale="preset.sizeScale"
-					:label="sizeLabel(preset)">
-					<BasePin v-model="values[preset.name]" />
-				</BaseFormField>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { presets }, slots: ['default', 'label', 'sizeScale'] }),
+		template,
 	}),
 }

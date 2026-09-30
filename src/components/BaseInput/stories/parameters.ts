@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseInput from '../ui/BaseInput.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Однострочное поле ввода с подписью, ошибкой, префиксом/постфиксом, маской и режимом пароля.',

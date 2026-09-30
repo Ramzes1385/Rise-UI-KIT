@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseInputNumber from '../ui/BaseInputNumber.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поле числа: количество, возраст, сумма с шагом. Кнопки −/+ по краям, ввод с клавиатуры, границы `min`/`max`.',

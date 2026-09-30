@@ -2,12 +2,19 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseRange.stories'
 import BaseRange from '../../../ui/BaseRange.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { value: 'modelValue' }
+
+const template = `
+	<div style="padding: 8px 0;"><BaseRange v-bind="args" v-model="value" /></div>
+`
 
 export const Vertical: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: { story: 'Вертикальный слайдер (`isVertical`): высота 200px, значение растёт снизу вверх, деления — справа.' },
+			source: storySource({ template, imports: ['BaseRange'], models, omit: ['thumb'] }),
 		},
 	},
 	args: {
@@ -19,14 +26,11 @@ export const Vertical: StoryObj<typeof meta> = {
 			{ value: 100, label: '100' },
 		],
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseRange },
-			setup: () => ({ props: useArgsWithoutSlots(args, ['thumb']), onUpdate }),
-			template: '<div style="padding: 8px 0;"><BaseRange v-bind="props" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseRange },
+		setup: useStorySetup(args, { models, slots: ['thumb'] }),
+		template,
+	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('slider', { name: 'Громкость' })).toHaveAttribute('aria-orientation', 'vertical')
 	},

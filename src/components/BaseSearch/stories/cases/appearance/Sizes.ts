@@ -1,8 +1,23 @@
-import { ref } from 'vue'
 import type { SearchArgs } from '../../shared'
 import BaseSearch from '../../../ui/BaseSearch.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const state = { values: { md: 'Лисья тропа' } }
+
+const template = `
+	<div class="story-col story-narrow">
+		<BaseSearch
+			v-for="preset in presets"
+			:key="preset.name"
+			v-bind="args"
+			v-model="values[preset.name]"
+			:size-scale="preset.sizeScale"
+			:placeholder="preset.label" />
+	</div>
+`
 
 export const Sizes: StoryObj<SearchArgs> = {
 	parameters: {
@@ -11,29 +26,19 @@ export const Sizes: StoryObj<SearchArgs> = {
 			description: {
 				story: 'Размеры через `sizeScale`: высота поля 24, 28, 32, 36 и 40px; иконка, кнопка очистки и список масштабируются вместе.',
 			},
-			source: {
-				code: SIZE_PRESETS.map(p => `<BaseSearch v-model="query" :results="results" :size-scale="${p.sizeScale}" />`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseSearch'],
+				script: `const presets = ${literal(presets)}`,
+				state,
+				types: { values: 'Record<string, string>' },
+				omit: ['modelValue', 'sizeScale', 'placeholder', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseSearch },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['modelValue', 'sizeScale', 'placeholder', 'onUpdate:modelValue']),
-			presets: SIZE_PRESETS,
-			sizeLabel,
-			values: ref<Record<string, string>>({ md: 'Лисья тропа' }),
-		}),
-		template: `
-			<div class="story-col story-narrow">
-				<BaseSearch
-					v-for="preset in presets"
-					:key="preset.name"
-					v-bind="props"
-					v-model="values[preset.name]"
-					:size-scale="preset.sizeScale"
-					:placeholder="sizeLabel(preset)" />
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { presets }, slots: ['modelValue', 'sizeScale', 'placeholder', 'onUpdate:modelValue'] }),
+		template,
 	}),
 }

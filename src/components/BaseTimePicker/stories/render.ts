@@ -1,13 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseTimePicker from '../ui/BaseTimePicker.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseTimePicker },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template:
-			'<div class="story-narrow" style="max-width: 220px;"><BaseTimePicker v-bind="props" @update:model-value="onUpdate" /></div>',
-	}
-}) satisfies Meta<typeof BaseTimePicker>['render']
+const models = { time: 'modelValue' }
+
+const template = `
+	<div class="story-narrow" style="max-width: 220px;"><BaseTimePicker v-bind="args" v-model="time" /></div>
+`
+
+export const source = storySource({ template, imports: ['BaseTimePicker'], models })
+
+export const render = (args => ({
+	components: { BaseTimePicker },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseTimePicker>['render']

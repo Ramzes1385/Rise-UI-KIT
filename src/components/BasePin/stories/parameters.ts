@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BasePin from '../ui/BasePin.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Ввод кода по ячейкам: PIN, код из СМС или письма. Ячейка — поле 32×32 (как инпут высотой 32px).',

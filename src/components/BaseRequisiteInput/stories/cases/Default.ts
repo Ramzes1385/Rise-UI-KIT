@@ -1,21 +1,27 @@
-import { useModelArg } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../BaseRequisiteInput.stories'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseRequisiteInput from '../../ui/BaseRequisiteInput.vue'
+
+const models = { value: 'modelValue' }
+
+const template = `
+	<div style="max-width: 320px"><BaseRequisiteInput v-bind="args" v-model="value" /></div>
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'ИНН: неверная контрольная цифра видна после ухода из поля; верный ИНН Сбербанка — 7707083893.' } },
+		docs: {
+			description: { story: 'ИНН: неверная контрольная цифра видна после ухода из поля; верный ИНН Сбербанка — 7707083893.' },
+			source: storySource({ template, imports: ['BaseRequisiteInput'], models }),
+		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseRequisiteInput },
-			setup: () => ({ args, onUpdate }),
-			template: '<div style="max-width: 320px"><BaseRequisiteInput v-bind="args" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseRequisiteInput },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByLabelText('ИНН')
 		await userEvent.tab()

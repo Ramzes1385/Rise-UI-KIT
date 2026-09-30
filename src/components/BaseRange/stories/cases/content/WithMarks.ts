@@ -2,8 +2,8 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseRange.stories'
 import BaseRange from '../../../ui/BaseRange.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import type { RangeMark } from '../../../types/BaseRange.types'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
 
 const VOLUME_MARKS: RangeMark[] = [
 	{ value: 0, label: '0' },
@@ -14,6 +14,12 @@ const VOLUME_MARKS: RangeMark[] = [
 	...[5, 10, 15, 20, 30, 35, 40, 45, 55, 60, 65, 70, 80, 85, 90, 95].map(value => ({ value, tickSize: 'sub' as const })),
 ]
 
+const models = { value: 'modelValue' }
+
+const template = `
+	<div class="story-narrow" style="padding: 0 12px;"><BaseRange v-bind="args" v-model="value" /></div>
+`
+
 export const WithMarks: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
@@ -23,18 +29,15 @@ export const WithMarks: StoryObj<typeof meta> = {
 					'Деления только размечают шкалу: значение по-прежнему меняется с шагом `step`.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseRange'], models, omit: ['thumb'] }),
 		},
 	},
 	args: { modelValue: 60, marks: VOLUME_MARKS, step: 5 },
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseRange },
-			setup: () => ({ props: useArgsWithoutSlots(args, ['thumb']), onUpdate }),
-			template:
-				'<div class="story-narrow" style="padding: 0 12px;"><BaseRange v-bind="props" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseRange },
+		setup: useStorySetup(args, { models, slots: ['thumb'] }),
+		template,
+	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByText('50')).toBeVisible()
 		await expect(canvas.getByRole('slider', { name: 'Громкость' })).toHaveAttribute('aria-valuenow', '60')

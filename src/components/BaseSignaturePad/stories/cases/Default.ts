@@ -1,8 +1,14 @@
 import { expect } from 'storybook/test'
 import type meta from '../BaseSignaturePad.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { tabTo, useModelArg } from '@/stories/helpers'
 import BaseSignaturePad from '../../ui/BaseSignaturePad.vue'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const models = { signature: 'modelValue' }
+
+const template = `
+	<BaseSignaturePad v-bind="args" v-model="signature" />
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
@@ -10,16 +16,14 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: 'Песочница: v-model связан с Controls — штрихи появляются в панели. Проверка рисует штрих и отменяет его с клавиатуры.',
 			},
+			source: storySource({ template, imports: ['BaseSignaturePad'], models }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseSignaturePad },
-			setup: () => ({ args, onUpdate }),
-			template: '<BaseSignaturePad v-bind="args" @update:model-value="onUpdate" />',
-		}
-	},
+	render: args => ({
+		components: { BaseSignaturePad },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const surface = canvas.getByRole('img', { name: 'Подписи нет' })
 		const { left, top } = surface.getBoundingClientRect()

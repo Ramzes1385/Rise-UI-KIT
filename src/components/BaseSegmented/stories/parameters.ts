@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSegmented from '../ui/BaseSegmented.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Переключатель сегментами: выбор одного из двух–пяти коротких вариантов, который сразу меняет вид — период отчёта, вид списка, тариф.',

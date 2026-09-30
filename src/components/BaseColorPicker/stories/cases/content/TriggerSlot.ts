@@ -4,7 +4,19 @@ import { BaseIcon } from '@components/BaseIcon'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseColorPicker.stories'
 import BaseColorPicker from '../../../ui/BaseColorPicker.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { textColor: 'modelValue' }
+
+const template = `
+	<div style="${CENTERED}">
+		<BaseColorPicker v-bind="args" v-model="textColor">
+			<template #trigger>
+				<BaseIcon name="color-picker" :color="textColor" :size-scale="80" />
+			</template>
+		</BaseColorPicker>
+	</div>
+`
 
 export const TriggerSlot: StoryObj<typeof meta> = {
 	args: { hasTransparentSwatch: true, modelValue: '#be123c' },
@@ -16,31 +28,14 @@ export const TriggerSlot: StoryObj<typeof meta> = {
 					'так выглядит кнопка цвета текста в тулбаре редактора.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseColorPicker v-model="textColor" has-transparent-swatch>',
-					'  <template #trigger><BaseIcon name="color-picker" :color="textColor" /></template>',
-					'</BaseColorPicker>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseColorPicker', 'BaseIcon'], models }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseColorPicker, BaseIcon },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate, centered: CENTERED }),
-			template: `
-				<div :style="centered">
-					<BaseColorPicker v-bind="props" @update:model-value="onUpdate">
-						<template #trigger>
-							<BaseIcon name="color-picker" :color="props.modelValue" :size-scale="80" />
-						</template>
-					</BaseColorPicker>
-				</div>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseColorPicker, BaseIcon },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('button', { name: 'Выбранный цвет #be123c' }).style.backgroundColor).toBe('')
 	},

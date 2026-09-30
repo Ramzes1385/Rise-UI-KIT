@@ -1,12 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseSegmented from '../ui/BaseSegmented.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseSegmented },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<BaseSegmented v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseSegmented>['render']
+const models = { selected: 'modelValue' }
+
+const template = `
+	<BaseSegmented v-bind="args" v-model="selected" />
+`
+
+export const source = storySource({ template, imports: ['BaseSegmented'], models })
+
+export const render = (args => ({
+	components: { BaseSegmented },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseSegmented>['render']

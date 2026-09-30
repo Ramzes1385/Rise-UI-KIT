@@ -1,12 +1,17 @@
 import BaseSwitch from '../ui/BaseSwitch.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseSwitch },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BaseSwitch v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseSwitch>['render']
+const models = { enabled: 'modelValue' }
+
+const template = `
+	<BaseSwitch v-bind="args" v-model="enabled" />
+`
+
+export const source = storySource({ template, imports: ['BaseSwitch'], models })
+
+export const render = (args => ({
+	components: { BaseSwitch },
+	setup: useStorySetup(args, { models }),
+	template,
+})) satisfies Meta<typeof BaseSwitch>['render']

@@ -2,8 +2,16 @@ import { docsFrame } from '../../shared'
 import type meta from '../../BaseSelect.stories'
 import BaseSelect from '../../../ui/BaseSelect.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { screen, waitFor, expect } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-narrow">
+		<BaseSelect v-bind="args">
+			<template #empty>Складов пока нет — добавьте первый в настройках</template>
+		</BaseSelect>
+	</div>
+`
 
 export const Empty: StoryObj<typeof meta> = {
 	args: { options: [], label: 'Склад', placeholder: 'Выберите склад' },
@@ -11,18 +19,13 @@ export const Empty: StoryObj<typeof meta> = {
 		docs: {
 			...docsFrame(200),
 			description: { story: 'Пустой список: вместо опций — текст из слота `empty` (по умолчанию «Ничего не найдено»).' },
+			source: storySource({ template, imports: ['BaseSelect'], omit: ['onUpdate:modelValue'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseSelect },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['onUpdate:modelValue']) }),
-		template: `
-			<div class="story-narrow">
-				<BaseSelect v-bind="props">
-					<template #empty>Складов пока нет — добавьте первый в настройках</template>
-				</BaseSelect>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: ['onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('combobox', { name: 'Склад' }))

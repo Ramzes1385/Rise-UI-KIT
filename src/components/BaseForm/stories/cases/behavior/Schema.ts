@@ -5,9 +5,9 @@ import { waitFor, expect } from 'storybook/test'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 import type { StandardSchemaV1, StandardSchemaIssue } from '@utils/form/formUtils'
 
 interface WebinarRequest {
@@ -37,6 +37,59 @@ const WEBINAR_TOPICS = [
 	{ value: 'a11y', label: 'Доступность' },
 ]
 
+const SERVICE_ARGS = ['default', 'onSubmit']
+
+const template = `
+	<div class="story-narrow">
+		<BaseForm v-bind="args" :schema="schema" :state="state" aria-label="Заявка на вебинар" @submit="handleSubmit">
+			<div class="story-col">
+				<BaseFormField label="Имя" name="name" is-required>
+					<BaseInput v-model="state.name" placeholder="Как к вам обращаться" />
+				</BaseFormField>
+				<BaseFormField label="E-mail" name="email" is-required description="Пришлём ссылку на трансляцию">
+					<BaseInput v-model="state.email" type="email" placeholder="name@example.com" />
+				</BaseFormField>
+				<BaseFormField label="Темы" name="topics" is-required>
+					<BaseCheckboxGroup v-model="state.topics" :options="topics" />
+				</BaseFormField>
+				<BaseButton type="submit">Записаться</BaseButton>
+				<p v-if="sentName" role="status" style="margin: 0; color: var(--rise-success);">{{ sentName }}, вы записаны</p>
+			</div>
+		</BaseForm>
+	</div>
+`
+
+const script = String.raw`
+interface WebinarRequest {
+	name: string
+	email: string
+	topics: (string | number)[]
+}
+
+const schema: StandardSchemaV1<WebinarRequest> = {
+	'~standard': {
+		version: 1,
+		vendor: 'story',
+		validate: value => {
+			const data = value as WebinarRequest
+			const issues: StandardSchemaIssue[] = []
+			if (!data.name.trim()) issues.push({ message: 'Введите имя', path: ['name'] })
+			if (!/^\S+@\S+\.\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
+			if (data.topics.length === 0) issues.push({ message: 'Выберите хотя бы одну тему', path: ['topics'] })
+			return issues.length ? { issues } : { value: { ...data, name: data.name.trim() } }
+		},
+	},
+}
+
+const topics = ${literal(WEBINAR_TOPICS)}
+const state = reactive<WebinarRequest>({ name: '', email: '', topics: [] })
+const sentName = ref('')
+
+function handleSubmit(_event: Event, data?: unknown): void {
+	sentName.value = (data as WebinarRequest).name
+}
+`
+
 export const Schema: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['variant', 'sizeScale'] },
@@ -48,58 +101,31 @@ export const Schema: StoryObj<typeof meta> = {
 					'как только поле исправлено. `submit` получает данные после схемы вторым аргументом.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<script setup lang="ts">',
-					'const schema = z.object({ name: z.string().trim().min(1, "Введите имя"), email: z.email("Введите e-mail"), topics: z.array(z.string()).min(1) })',
-					'const state = reactive({ name: "", email: "", topics: [] })',
-					'</script>',
-					'',
-					'<BaseForm :schema="schema" :state="state" @submit="(event, data) => send(data)">',
-					'  <BaseFormField label="Имя" name="name" is-required><BaseInput v-model="state.name" /></BaseFormField>',
-					'  <BaseFormField label="E-mail" name="email" is-required><BaseInput v-model="state.email" type="email" /></BaseFormField>',
-					'  <BaseFormField label="Темы" name="topics" is-required><BaseCheckboxGroup v-model="state.topics" :options="topics" /></BaseFormField>',
-					'  <BaseButton type="submit">Записаться</BaseButton>',
-					'</BaseForm>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseForm', 'BaseFormField', 'BaseInput', 'BaseCheckboxGroup', 'BaseButton'],
+				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
+				vue: ['reactive', 'ref'],
+				script,
+				omit: SERVICE_ARGS,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseForm, BaseFormField, BaseInput, BaseCheckboxGroup, BaseButton },
-		setup: () => {
-			const state = reactive<WebinarRequest>({ name: '', email: '', topics: [] })
-			const sentName = ref('')
-			return {
-				props: useArgsWithoutSlots(args, ['default', 'onSubmit']),
-				schema: WEBINAR_SCHEMA,
-				state,
-				topics: WEBINAR_TOPICS,
-				sentName,
-				handleSubmit: (_event: Event, data?: unknown) => {
+		setup: useStorySetup(args, {
+			slots: SERVICE_ARGS,
+			data: { schema: WEBINAR_SCHEMA, topics: WEBINAR_TOPICS },
+			setup: () => {
+				const state = reactive<WebinarRequest>({ name: '', email: '', topics: [] })
+				const sentName = ref('')
+				const handleSubmit = (_event: Event, data?: unknown): void => {
 					sentName.value = (data as WebinarRequest).name
-				},
-			}
-		},
-		template: `
-			<div class="story-narrow">
-				<BaseForm v-bind="props" :schema="schema" :state="state" aria-label="Заявка на вебинар" @submit="handleSubmit">
-					<div class="story-col">
-						<BaseFormField label="Имя" name="name" is-required>
-							<BaseInput v-model="state.name" placeholder="Как к вам обращаться" />
-						</BaseFormField>
-						<BaseFormField label="E-mail" name="email" is-required description="Пришлём ссылку на трансляцию">
-							<BaseInput v-model="state.email" type="email" placeholder="name@example.com" />
-						</BaseFormField>
-						<BaseFormField label="Темы" name="topics" is-required>
-							<BaseCheckboxGroup v-model="state.topics" :options="topics" />
-						</BaseFormField>
-						<BaseButton type="submit">Записаться</BaseButton>
-						<p v-if="sentName" role="status" style="margin: 0; color: var(--rise-success);">{{ sentName }}, вы записаны</p>
-					</div>
-				</BaseForm>
-			</div>
-		`,
+				}
+				return { state, sentName, handleSubmit }
+			},
+		}),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Записаться' }))

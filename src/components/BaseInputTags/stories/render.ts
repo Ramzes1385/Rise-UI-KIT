@@ -1,12 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseInputTags from '../ui/BaseInputTags.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseInputTags },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<div class="story-narrow"><BaseInputTags v-bind="props" @update:model-value="onUpdate" /></div>',
-	}
-}) satisfies Meta<typeof BaseInputTags>['render']
+const models = { tags: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseInputTags v-bind="args" v-model="tags" /></div>
+`
+
+export const source = storySource({ template, imports: ['BaseInputTags'], models })
+
+export const render = (args => ({
+	components: { BaseInputTags },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseInputTags>['render']

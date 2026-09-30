@@ -1,8 +1,16 @@
 import type meta from '../../BaseFileUpload.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import BaseFileUpload from '../../../ui/BaseFileUpload.vue'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 import { FILE_UPLOAD_VARIANTS } from '../../../types/BaseFileUpload.types'
+
+const variants = FILE_UPLOAD_VARIANTS
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 220px;">
+		<BaseFileUpload v-for="variant in variants" :key="variant" v-bind="args" :variant="variant" :label="variant" />
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,16 +23,17 @@ export const Variants: StoryObj<typeof meta> = {
 					'`ghost` — без рамки и фона (для плотных интерфейсов); `shadow` — приподнятая с тенью.',
 				].join('\n'),
 			},
-			source: { code: FILE_UPLOAD_VARIANTS.map(variant => `<BaseFileUpload variant="${variant}" label="${variant}" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BaseFileUpload'],
+				script: `const variants = ${literal(variants)}`,
+				omit: ['variant', 'label'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseFileUpload },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['variant', 'label']), variants: FILE_UPLOAD_VARIANTS }),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 220px;">
-				<BaseFileUpload v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :label="variant" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { variants }, slots: ['variant', 'label'] }),
+		template,
 	}),
 }

@@ -1,8 +1,8 @@
 import { storyDate } from '@/stories/helpers'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { docsFrame, findPanel, dayName } from '../../shared'
 import { within, expect, waitFor, screen } from 'storybook/test'
-import { docsFrame, renderWithLocalModel, findPanel, dayName } from '../../shared'
 
 export const WithTime: StoryObj<typeof meta> = {
 	args: { label: 'Начало встречи', modelValue: storyDate(0, 14, 30), showTime: true },
@@ -17,7 +17,6 @@ export const WithTime: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	render: renderWithLocalModel(),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByLabelText('Начало встречи')
 		await userEvent.click(field)

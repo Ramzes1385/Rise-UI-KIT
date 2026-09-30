@@ -1,6 +1,7 @@
 /** Синхронизация v-model компонента с args Storybook. */
 
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { WritableComputedRef } from 'vue'
 import { useArgs } from 'storybook/preview-api'
 import type { StorySetupOptions } from '../types/helpers.types'
 
@@ -23,6 +24,38 @@ import type { StorySetupOptions } from '../types/helpers.types'
 export function useModelArg(name = 'modelValue'): (value: unknown) => void {
 	const [, updateArgs] = useArgs()
 	return (value: unknown) => updateArgs({ [name]: value })
+}
+
+const sameValue = (left: unknown, right: unknown): boolean => left === right || JSON.stringify(left) === JSON.stringify(right)
+
+/**
+ * Переменная `v-model`, связанная с аргументом Storybook: значение меняется сразу, в Controls уходит следом.
+ * Ответ Storybook на своё же изменение приходит позже и пропускается — иначе быстрый ввод или выбор диапазона
+ * получал бы устаревшее значение; изменение в Controls применяется.
+ */
+function modelArg(
+	args: Record<string, unknown>,
+	arg: string,
+	updateArgs: (update: Record<string, unknown>) => void,
+): WritableComputedRef<unknown> {
+	const local = ref(args[arg])
+	let sent: unknown[] = []
+	watch(
+		() => args[arg],
+		value => {
+			const echo = sent.findIndex(item => sameValue(item, value))
+			if (echo >= 0) sent = sent.slice(echo + 1)
+			else local.value = value
+		},
+	)
+	return computed({
+		get: () => local.value,
+		set: (value: unknown) => {
+			local.value = value
+			sent.push(value)
+			updateArgs({ [arg]: value })
+		},
+	})
 }
 
 /**
@@ -48,13 +81,9 @@ export function useStorySetup(storyArgs: object, options: StorySetupOptions = {}
 	return () => ({
 		args: computed(() => Object.fromEntries(Object.entries(args).filter(([key]) => !hidden.has(key)))),
 		slots: computed(() => Object.fromEntries(slots.map(name => [name, args[name]]))),
-		...Object.fromEntries(
-			Object.entries(models).map(([name, arg]) => [
-				name,
-				computed({ get: () => args[arg], set: (value: unknown) => updateArgs({ [arg]: value }) }),
-			]),
-		),
+		...Object.fromEntries(Object.entries(models).map(([name, arg]) => [name, modelArg(args, arg, updateArgs)])),
 		...Object.fromEntries(Object.entries(options.state ?? {}).map(([name, value]) => [name, ref(structuredClone(value))])),
 		...options.data,
+		...options.setup?.(),
 	})
 }

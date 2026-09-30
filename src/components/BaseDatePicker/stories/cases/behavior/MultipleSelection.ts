@@ -1,8 +1,17 @@
-import { storyDate } from '@/stories/helpers'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
+import { docsFrame, findPanel, dayName } from '../../shared'
 import { within, expect, waitFor, screen } from 'storybook/test'
-import { docsFrame, renderWithLocalModel, findPanel, dayName } from '../../shared'
+import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { dates: 'selectedDates' }
+
+const template = `
+	<div class="story-narrow">
+		<BaseDatePicker v-bind="args" v-model:selected-dates="dates" />
+	</div>
+`
 
 export const MultipleSelection: StoryObj<typeof meta> = {
 	args: {
@@ -16,9 +25,14 @@ export const MultipleSelection: StoryObj<typeof meta> = {
 			description: {
 				story: 'Несколько дат (`selectionMode="multiple"`): панель не закрывается после клика; до трёх дат видны в поле списком.',
 			},
+			source: storySource({ template, imports: ['BaseDatePicker'], models }),
 		},
 	},
-	render: renderWithLocalModel(),
+	render: args => ({
+		components: { BaseDatePicker },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByLabelText('Дни дежурства')
 		await userEvent.click(field)

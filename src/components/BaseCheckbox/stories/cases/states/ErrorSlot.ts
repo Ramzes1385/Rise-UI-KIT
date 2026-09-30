@@ -1,9 +1,20 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseCheckbox.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCheckbox from '../../../ui/BaseCheckbox.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { checked: false }
+
+const template = `
+	<BaseCheckbox v-bind="args" v-model="checked">
+		<template #error>
+			<span style="padding-left: 24px; color: var(--rise-error); font-size: 14px; line-height: 20px;">
+				Прочитайте <a href="#offer" style="color: inherit;">условия оферты</a> и отметьте согласие
+			</span>
+		</template>
+	</BaseCheckbox>
+`
 
 export const ErrorSlot: StoryObj<typeof meta> = {
 	args: { label: 'Принимаю условия оферты', error: 'Нужно согласие с условиями' },
@@ -15,21 +26,14 @@ export const ErrorSlot: StoryObj<typeof meta> = {
 					'Чекбокс описан содержимым слота через `aria-describedby` так же, как обычным текстом ошибки.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseCheckbox'], state, omit: ['modelValue', 'onUpdate:modelValue'] }),
 		},
 		controls: { include: ['variant', 'sizeScale'] },
 	},
 	render: args => ({
 		components: { BaseCheckbox },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['modelValue', 'onUpdate:modelValue']), checked: ref(false) }),
-		template: `
-			<BaseCheckbox v-bind="props" v-model="checked">
-				<template #error>
-					<span style="padding-left: 24px; color: var(--rise-error); font-size: 14px; line-height: 20px;">
-						Прочитайте <a href="#offer" style="color: inherit;">условия оферты</a> и отметьте согласие
-					</span>
-				</template>
-			</BaseCheckbox>
-		`,
+		setup: useStorySetup(args, { state, slots: ['modelValue', 'onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('link', { name: 'условия оферты' })).toHaveAttribute('href', '#offer')

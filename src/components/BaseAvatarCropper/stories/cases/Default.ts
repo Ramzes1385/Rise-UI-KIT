@@ -1,8 +1,14 @@
 import { expect, waitFor } from 'storybook/test'
 import type meta from '../BaseAvatarCropper.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { tabTo, useModelArg } from '@/stories/helpers'
 import BaseAvatarCropper from '../../ui/BaseAvatarCropper.vue'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const models = { crop: 'crop' }
+
+const template = `
+	<BaseAvatarCropper v-bind="args" v-model:crop="crop" />
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
@@ -10,16 +16,14 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: 'Песочница: кадр `v-model:crop` виден в Controls. Проверка сдвигает фото стрелкой и увеличивает клавишей «+».',
 			},
+			source: storySource({ template, imports: ['BaseAvatarCropper'], models }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg('crop')
-		return {
-			components: { BaseAvatarCropper },
-			setup: () => ({ args, onUpdate }),
-			template: '<BaseAvatarCropper v-bind="args" @update:crop="onUpdate" />',
-		}
-	},
+	render: args => ({
+		components: { BaseAvatarCropper },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const slider = canvas.getByRole('slider', { name: 'Масштаб' })
 		await waitFor(() => expect(slider).not.toHaveAttribute('aria-disabled', 'true'))

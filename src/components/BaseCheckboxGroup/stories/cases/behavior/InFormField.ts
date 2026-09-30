@@ -1,26 +1,36 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseCheckboxGroup.stories'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseFormField } from '@components/BaseFormField'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseCheckboxGroup from '../../../ui/BaseCheckboxGroup.vue'
+
+const state = { selected: ['push'] }
+
+const template = `
+	<BaseFormField label="Куда присылать отчёты" description="Отчёт приходит каждый понедельник">
+		<BaseCheckboxGroup v-bind="args" v-model="selected" />
+	</BaseFormField>
+`
 
 export const InFormField: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: { story: 'Группа в BaseFormField: подпись обёртки — имя группы, описание и ошибка обёртки описывают группу.' },
+			source: storySource({
+				template,
+				imports: ['BaseCheckboxGroup', 'BaseFormField'],
+				state,
+				types: { selected: '(string | number)[]' },
+				omit: ['label', 'modelValue'],
+			}),
 		},
 		controls: { include: ['variant', 'sizeScale', 'isVertical'] },
 	},
 	render: args => ({
 		components: { BaseCheckboxGroup, BaseFormField },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['label', 'modelValue']), selected: ref<(string | number)[]>(['push']) }),
-		template: `
-			<BaseFormField label="Куда присылать отчёты" description="Отчёт приходит каждый понедельник">
-				<BaseCheckboxGroup v-bind="props" v-model="selected" />
-			</BaseFormField>
-		`,
+		setup: useStorySetup(args, { state, slots: ['label', 'modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const group = canvas.getByRole('group', { name: 'Куда присылать отчёты' })

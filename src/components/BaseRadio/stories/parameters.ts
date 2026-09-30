@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseRadio from '../ui/BaseRadio.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Группа радиокнопок — выбор одного варианта из нескольких видимых: способ доставки, тариф, формат файла.',

@@ -1,12 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseCheckbox from '../ui/BaseCheckbox.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseCheckbox },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BaseCheckbox v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseCheckbox>['render']
+const models = { checked: 'modelValue' }
+
+const template = `
+	<BaseCheckbox v-bind="args" v-model="checked" />
+`
+
+export const source = storySource({ template, imports: ['BaseCheckbox'], models })
+
+export const render = (args => ({
+	components: { BaseCheckbox },
+	setup: useStorySetup(args, { models }),
+	template,
+})) satisfies Meta<typeof BaseCheckbox>['render']

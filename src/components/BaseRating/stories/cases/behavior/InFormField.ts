@@ -1,11 +1,20 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { starOf, pointOn } from '../../shared'
 import type meta from '../../BaseRating.stories'
 import BaseRating from '../../../ui/BaseRating.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseFormField } from '@components/BaseFormField'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { rating: 0 }
+
+const template = `
+	<div class="story-narrow">
+		<BaseFormField label="Качество озвучки" description="Оцените дубляж серии от 1 до 5">
+			<BaseRating v-bind="args" v-model="rating" />
+		</BaseFormField>
+	</div>
+`
 
 export const InFormField: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,25 +26,18 @@ export const InFormField: StoryObj<typeof meta> = {
 					'описание связано с ней через `aria-describedby`.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseFormField label="Качество озвучки" description="Оцените дубляж серии от 1 до 5">',
-					'  <BaseRating v-model="rating" />',
-					'</BaseFormField>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseRating', 'BaseFormField'],
+				state,
+				omit: ['default', 'modelValue', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseRating, BaseFormField },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'modelValue', 'onUpdate:modelValue']), rating: ref(0) }),
-		template: `
-			<div class="story-narrow">
-				<BaseFormField label="Качество озвучки" description="Оцените дубляж серии от 1 до 5">
-					<BaseRating v-bind="props" v-model="rating" />
-				</BaseFormField>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, slots: ['default', 'modelValue', 'onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const group = canvas.getByRole('group', { name: 'Качество озвучки' })

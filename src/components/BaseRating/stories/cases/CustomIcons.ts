@@ -1,10 +1,24 @@
-import { ref } from 'vue'
 import { starOf } from '../shared'
 import { expect } from 'storybook/test'
 import type meta from '../BaseRating.stories'
 import BaseRating from '../../ui/BaseRating.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { quality: 4, stages: 3 }
+
+const template = `
+	<div class="story-col">
+		<div class="story-row">
+			<span class="story-label">Озвучка</span>
+			<BaseRating v-bind="args" v-model="quality" icon="mic" />
+		</div>
+		<div class="story-row">
+			<span class="story-label">Этапы серии</span>
+			<BaseRating v-bind="args" v-model="stages" icon="x-circle" icon-filled="check-circle" />
+		</div>
+	</div>
+`
 
 export const CustomIcons: StoryObj<typeof meta> = {
 	parameters: {
@@ -16,33 +30,18 @@ export const CustomIcons: StoryObj<typeof meta> = {
 					'состояния. Иконки берутся из спрайта библиотеки.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseRating v-model="quality" icon="mic" />',
-					'<BaseRating v-model="stages" icon="x-circle" icon-filled="check-circle" />',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseRating'],
+				state,
+				omit: ['default', 'modelValue', 'icon', 'iconFilled', 'onUpdate:modelValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseRating },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'modelValue', 'icon', 'iconFilled', 'onUpdate:modelValue']),
-			quality: ref(4),
-			stages: ref(3),
-		}),
-		template: `
-			<div class="story-col">
-				<div class="story-row">
-					<span class="story-label">Озвучка</span>
-					<BaseRating v-bind="props" v-model="quality" icon="mic" />
-				</div>
-				<div class="story-row">
-					<span class="story-label">Этапы серии</span>
-					<BaseRating v-bind="props" v-model="stages" icon="x-circle" icon-filled="check-circle" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, slots: ['default', 'modelValue', 'icon', 'iconFilled', 'onUpdate:modelValue'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const star = starOf(canvas.getAllByRole('slider')[1] as HTMLElement, 0)

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseTextarea from '../ui/BaseTextarea.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Многострочное поле ввода: комментарии, описания, отзывы. Выглядит и ведёт себя как `BaseInput`.',

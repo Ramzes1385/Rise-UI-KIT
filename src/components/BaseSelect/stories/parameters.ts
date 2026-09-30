@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSelect from '../ui/BaseSelect.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Выбор одного или нескольких значений из списка. Триггер выглядит как поле `BaseInput` (32px),',
