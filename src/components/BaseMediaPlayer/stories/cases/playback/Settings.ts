@@ -10,7 +10,7 @@ export const Settings: StoryObj<typeof meta> = {
 				story: [
 					'Все контролы — отдельные кнопки, как в VideoStack. Скорость — панель как в YouTube: крупно текущее значение,',
 					'ползунок от 0,25× до 4× с шагом 0,05, кнопки «−» и «+» и готовые значения `playbackRates`; на кнопке — текущая.',
-					'Качество (источники с подписью `label`, если их хотя бы два; переключается с той же позиции) — своё меню,',
+					'Качество («Авто» и источники с подписью `label`, если их хотя бы два; переключается с той же позиции) — своё меню,',
 					'выбор закрывает его. Вложенные списки открываются на месте текущего, с «Назад», — каскадов в плеере нет.',
 					'Меню открываются внутри плеера, поэтому видны и в полноэкранном режиме. Перемотка на 30, 10 и 5 секунд — во',
 					'втором ряду, он раскрывается кнопкой «Точная перемотка». Озвучка — только значком, название дорожки — в подсказке.',
@@ -29,6 +29,6 @@ export const Settings: StoryObj<typeof meta> = {
 		await expect(speed).toHaveTextContent('1,5×')
 		await userEvent.click(canvas.getByRole('button', { name: 'Качество' }))
 		await waitFor(() => expect(player.queryByRole('group', { name: 'Скорость воспроизведения' })).toBeNull())
-		await expect(await player.findByRole('menuitemradio', { name: '270p' })).toHaveAttribute('aria-checked', 'true')
+		await expect(await player.findByRole('menuitemradio', { name: /^Авто/ })).toHaveAttribute('aria-checked', 'true')
 	},
 }

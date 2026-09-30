@@ -127,7 +127,7 @@ export function useMediaMenus(source: MediaMenusSource) {
 	const activeAudio = computed(() => source.audioOptions().find(option => option.id === source.activeAudioId()))
 	return {
 		rateText: computed(() => `${formatNumber(source.rate())}×`),
-		qualityText: computed(() => activeQuality.value?.label ?? ''),
+		qualityText: computed(() => activeQuality.value?.text ?? activeQuality.value?.label ?? ''),
 		audioHint: computed(() =>
 			activeAudio.value ? formatMessage(UI_PLAYER.AUDIO_CURRENT, { name: activeAudio.value.label }) : UI_PLAYER.AUDIO,
 		),

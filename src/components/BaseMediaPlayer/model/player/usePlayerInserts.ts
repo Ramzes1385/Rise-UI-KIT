@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-import { MEDIA_PROTOCOLS } from '../core/useMediaSources'
 import { useMediaClips } from '../playlist/useMediaClips'
 import { useMediaAdBreaks } from '../ads/useMediaAdBreaks'
 import { useMediaBanners } from '../notices/useMediaBanners'
@@ -7,12 +6,12 @@ import { useMediaAdSegments } from '../ads/useMediaAdSegments'
 import { useMediaAchievements } from '../notices/useMediaAchievements'
 import type { usePlayerPlaylist } from '../playlist/usePlayerPlaylist'
 import type { MediaAdEvent } from '../../types/overlays/MediaAds.types'
+import { MEDIA_PROTOCOLS, sizedSources } from '../core/useMediaSources'
 import type { BaseMediaPlayerEmits, MediaPlayerProps } from '../../types/BaseMediaPlayer.types'
 import type { MediaState, MediaActions, MediaSourceItem } from '../../types/playback/MediaCore.types'
 
 export function lowestSource(sources: MediaSourceItem[]): MediaSourceItem | undefined {
-	const height = (item: MediaSourceItem): number => Number.parseInt(item.label ?? '', 10)
-	return sources.filter(item => Number.isFinite(height(item))).sort((a, b) => height(a) - height(b))[0]
+	return sizedSources(sources)[0]
 }
 
 export function usePlayerAds(

@@ -7,11 +7,12 @@ import { usePlayerOverlays } from '../overlays/usePlayerOverlays'
 import { usePlayerPlaylist } from '../playlist/usePlayerPlaylist'
 import { isHlsSource, useHlsAdapter } from '../core/useHlsAdapter'
 import { UI_PLAYER, formatMessage, formatNumber } from '../messages'
-import { isAudioSource, useMediaSources } from '../core/useMediaSources'
 import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget'
 import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import type { MediaQualityOption } from '../../types/playback/MediaHls.types'
 import type { MediaState, MediaSourceItem } from '../../types/playback/MediaCore.types'
 import type { BaseMediaPlayerEmits, MediaPlayerProps } from '../../types/BaseMediaPlayer.types'
+import { isAudioSource, sizedSources, sourceHeight, useMediaSources } from '../core/useMediaSources'
 
 const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
 
@@ -38,6 +39,41 @@ export function useLabels(state: Readonly<MediaState>) {
 	}
 }
 
+const AUTO_QUALITY = 'auto'
+
+const qualityLabel = (item: MediaSourceItem): string => item.label ?? `${sourceHeight(item)}p`
+
+function fileQualityOptions(sources: ReturnType<typeof useMediaSources>): MediaQualityOption[] {
+	const playable = sources.playableSources.value
+	if (!sources.hasAutoQuality.value)
+		return playable.filter(item => item.label).map(item => ({ id: item.src, label: item.label as string }))
+	const active = sources.isAutoQuality.value ? sources.activeSource.value : null
+	const auto = active
+		? { id: AUTO_QUALITY, label: `${UI_PLAYER.QUALITY_AUTO} (${qualityLabel(active)})`, text: qualityLabel(active) }
+		: { id: AUTO_QUALITY, label: UI_PLAYER.QUALITY_AUTO }
+	return [
+		auto,
+		...sizedSources(playable)
+			.reverse()
+			.map(item => ({ id: item.src, label: qualityLabel(item) })),
+	]
+}
+
+function useQualityTarget(media: Readonly<Ref<HTMLVideoElement | null>>, setTargetHeight: (height: number) => void) {
+	let observer: ResizeObserver | null = null
+	const measure = (): void => {
+		const element = media.value
+		if (element) setTargetHeight(Math.round(element.clientHeight * (window.devicePixelRatio || 1)))
+	}
+	onMounted(() => {
+		measure()
+		if (typeof ResizeObserver === 'undefined' || !media.value) return
+		observer = new ResizeObserver(measure)
+		observer.observe(media.value)
+	})
+	onBeforeUnmount(() => observer?.disconnect())
+}
+
 function usePlayerSources(
 	props: MediaPlayerProps,
 	player: { media: Readonly<Ref<HTMLVideoElement | null>>; sources: () => MediaSourceItem[] | string | undefined },
@@ -49,20 +85,21 @@ function usePlayerSources(
 		media,
 		canPlay: item => isHlsSource(item) && Boolean(props.hls?.isSupported()),
 	})
+	useQualityTarget(media, sources.setTargetHeight)
 	const hls = useHlsAdapter({ Hls: () => props.hls, config: () => props.hlsConfig, media, source: () => sources.activeSource.value })
-	const fileQualities = computed(() =>
-		sources.playableSources.value.filter(source => source.label).map(source => ({ id: source.src, label: source.label as string })),
-	)
+	const fileActiveId = (): string | undefined =>
+		sources.hasAutoQuality.value && sources.isAutoQuality.value ? AUTO_QUALITY : sources.activeSource.value?.src
 	return {
 		sources,
 		hls,
 		view: {
 			src: computed(() => (hls.isHlsActive.value ? undefined : sources.activeSource.value?.src)),
-			qualities: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.options.value : fileQualities.value)),
-			activeQualityId: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.activeId.value : sources.activeSource.value?.src)),
+			qualities: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.options.value : fileQualityOptions(sources))),
+			activeQualityId: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.activeId.value : fileActiveId())),
 			isAudioMode: computed(() => props.mode === 'audio' || (props.mode === 'auto' && isAudioSource(sources.activeSource.value))),
 			selectQuality(id: string): void {
 				if (hls.isHlsActive.value) return hls.hlsQuality.select(id)
+				if (id === AUTO_QUALITY) return sources.setAutoQuality()
 				const source = sources.playableSources.value.find(item => item.src === id)
 				if (source) sources.setSource(source)
 			},

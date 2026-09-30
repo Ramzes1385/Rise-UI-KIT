@@ -48,6 +48,8 @@ export interface MediaHlsConstructor {
 export interface MediaQualityOption {
 	id: string
 	label: string
+	/** Короткий текст на кнопке «Качество», если он короче подписи: у файлового «Авто» — текущее разрешение */
+	text?: string
 }
 
 export interface MediaHlsOptions {

@@ -179,13 +179,50 @@ describe('BaseMediaPlayer: панель', () => {
 		await rate(0.25)
 		expect(wrapper.get('button[aria-label="Скорость воспроизведения"]').text()).toBe('0,25×')
 
-		expect(quality.options()).toEqual(['720p', '360p'])
-		expect(quality.checked()).toBe('720p')
+		expect(quality.options()).toEqual(['Авто (720p)', '720p', '360p'])
+		expect(quality.checked()).toBe('Авто (720p)')
 		quality.pick('360p')
 		await nextTick()
 		expect(video.getAttribute('src')).toBe('/media/sd.webm')
 		expect(wrapper.get('button[aria-label="Качество"]').text()).toBe('360p')
+		expect(quality.options()[0]).toBe('Авто')
+		quality.pick('Авто')
+		await nextTick()
+		expect(video.getAttribute('src')).toBe('/media/hd.webm')
+		expect(wrapper.get('button[aria-label="Качество"]').text()).toBe('720p')
 		wrapper.unmount()
+	})
+
+	it('меню качества без высоты кадра: подписи в порядке источников, без «Авто»', async () => {
+		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
+		const sources = [
+			{ src: '/media/cut.webm', type: 'video/webm', label: 'Режиссёрская' },
+			{ src: '/media/tv.webm', type: 'video/webm', label: 'Телеверсия' },
+		]
+		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо' }, attachTo: document.body })
+		await nextTick()
+		const quality = playerMenu(wrapper, 'Качество')
+
+		expect(quality.options()).toEqual(['Режиссёрская', 'Телеверсия'])
+		expect(quality.checked()).toBe('Режиссёрская')
+		wrapper.unmount()
+	})
+
+	it('высота кадра без подписи — «<height>p»; «Авто» по размеру плеера', async () => {
+		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
+		vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
+		const sources = [
+			{ src: '/media/a.webm', type: 'video/webm', height: 1080 },
+			{ src: '/media/b.webm', type: 'video/webm', height: 480 },
+		]
+		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо' }, attachTo: document.body })
+		await nextTick()
+		const quality = playerMenu(wrapper, 'Качество')
+
+		expect(quality.options()).toEqual(['Авто (480p)', '1080p', '480p'])
+		expect(wrapper.get('video').attributes('src')).toBe('/media/b.webm')
+		wrapper.unmount()
+		vi.restoreAllMocks()
 	})
 
 	it('меню открываются кнопками и закрываются выбором: качество, субтитры, озвучка, главы; серии — в панели', async () => {

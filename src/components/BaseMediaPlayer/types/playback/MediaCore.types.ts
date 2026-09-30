@@ -8,8 +8,23 @@ export interface MediaSourceItem {
 	src: string
 	/** MIME с кодеками для canPlayType, например 'video/webm; codecs="vp9, opus"' */
 	type?: string
-	/** Подпись в меню качества, например «1080p» */
+	/** Подпись в меню качества, например «1080p». Без неё, но с `height` подпись — «<height>p». */
 	label?: string
+	/**
+	 * Высота кадра в пикселях. Если её нет, берётся из числа в начале `label` («720p» → 720). Источники с высотой
+	 * сортируются в меню качества от лучшего, а при двух и больше появляется «Авто».
+	 */
+	height?: number
+}
+
+/** Состояние воспроизведения, которое переносится на источник другого качества */
+export interface MediaSwitchSnapshot {
+	/** Позиция, секунды */
+	time: number
+	/** Шло воспроизведение */
+	isPlaying: boolean
+	/** Скорость: браузер сбрасывает её при загрузке нового адреса */
+	rate: number
 }
 
 export const MEDIA_ERROR_CODES = ['aborted', 'network', 'decode', 'unsupported', 'autoplay-blocked', 'unknown'] as const
