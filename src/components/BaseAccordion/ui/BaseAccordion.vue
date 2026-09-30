@@ -1,5 +1,8 @@
 <template>
-	<div class="base-accordion" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<div
+		class="base-accordion"
+		:class="[variantClass, appearanceClass, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div
 			v-for="(item, index) in items"
 			:key="index"
@@ -19,6 +22,8 @@
 				tabindex="0"
 				:aria-expanded="isOpen(index)"
 				:aria-controls="getPanelId(index)"
+				:aria-labelledby="`${getHeaderId(index)}-label`"
+				:aria-describedby="item.description ? `${getHeaderId(index)}-description` : undefined"
 				:aria-disabled="item.isDisabled || undefined"
 				@click="toggleItem(index)"
 				@keydown.enter.prevent="toggleItem(index)"
@@ -29,9 +34,21 @@
 					:size-scale="calcIconScale('sm', sizeScale)"
 					class="base-accordion__icon"
 					:custom-class="classes.icon" />
-				<span class="base-accordion__label" :class="classes.label">{{ item.label }}</span>
-				<span class="base-accordion__arrow" :class="classes.arrow">
-					<BaseIcon name="chevron-down" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.arrowIcon" />
+				<span class="base-accordion__title">
+					<span :id="`${getHeaderId(index)}-label`" class="base-accordion__label" :class="classes.label">{{ item.label }}</span>
+					<span
+						v-if="item.description"
+						:id="`${getHeaderId(index)}-description`"
+						class="base-accordion__description"
+						:class="classes.description"
+						>{{ item.description }}</span
+					>
+				</span>
+				<span v-if="hasArrow" class="base-accordion__arrow" :class="classes.arrow">
+					<BaseIcon
+						:name="arrowIconName(isOpen(index))"
+						:size-scale="calcIconScale('md', sizeScale)"
+						:custom-class="classes.arrowIcon" />
 				</span>
 			</div>
 
@@ -40,7 +57,7 @@
 				class="base-accordion__collapse"
 				:class="[{ 'base-accordion__collapse--open': isOpen(index) }, classes.collapse]"
 				role="region"
-				:aria-labelledby="getHeaderId(index)"
+				:aria-labelledby="`${getHeaderId(index)}-label`"
 				:aria-hidden="isOpen(index) ? undefined : true"
 				:inert="isOpen(index) ? undefined : true">
 				<div class="base-accordion__content" :class="classes.content">
@@ -67,6 +84,11 @@ const props = withDefaults(
 	kitDefaults('BaseAccordion', {
 		variant: DEFAULT_VARIANT,
 		isMultiple: false,
+		arrowPosition: 'end',
+		showArrow: true,
+		expandIcon: 'chevron-down',
+		density: 'default',
+		isAccented: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -74,6 +96,18 @@ const props = withDefaults(
 const emit = defineEmits<BaseAccordionEmits>()
 defineSlots<BaseAccordionSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isOpen, toggleItem, getHeaderId, getPanelId } =
-	useBaseAccordion(props, emit)
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	appearanceClass,
+	hasArrow,
+	arrowIconName,
+	isOpen,
+	toggleItem,
+	getHeaderId,
+	getPanelId,
+} = useBaseAccordion(props, emit)
 </script>

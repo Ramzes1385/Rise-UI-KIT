@@ -842,3 +842,18 @@
 - `BaseTour`: стрелка карточки к цели (`showArrow`, `true`), ключ `arrow` в `customClass`. Карточка у края окна сдвигается внутрь вдоль края цели (CSS-переменные `--tour-card-shift`, `--tour-arrow-offset`, классы `base-tour__card--arrow-<край>`). Новый composable `useTourArrow` и чистые функции `fitDesktopCard`, `fitMobileCard`.
 
 **Что сделать.** Стили приложения на `.base-popover__arrow--<сторона>` перенесите на `.base-dropdown__panel--arrow-<край> .base-popover__arrow` (край — противоположная сторона: панель снизу → стрелка на верхнем крае). Стрелку у BasePopconfirm или BaseTour убирает `:show-arrow="false"`.
+
+## Эпик overlays-nav: настройка BaseAccordion (порция Р.17)
+
+**Что изменилось.** Новые пропсы, по умолчанию вид прежний:
+- `arrowPosition: 'start' | 'end'` (`end`) — стрелка справа или перед заголовком; слева у закрытого пункта стрелка смотрит вправо, содержимое выровнено по заголовку.
+- `showArrow` (`true`), `expandIcon` (`chevron-down`), `collapseIcon` — свой значок открытого пункта, значки меняются без поворота (`plus` / `minus`).
+- `divider: 'solid' | 'dashed' | 'none'` — линия между пунктами; по умолчанию — как у варианта.
+- `density: 'compact' | 'default' | 'comfortable'` — отступ заголовка и содержимого 8 / 14 / 20px.
+- `isAccented` — открытый пункт цвета primary.
+- Вариант `separated` в `ACCORDION_VARIANTS`: пункты отдельными карточками.
+- Поле пункта `description` — пояснение под заголовком (описание кнопки, `aria-describedby`); ключ `description` в `customClass`. Константы `ACCORDION_ARROW_POSITIONS`, `ACCORDION_DIVIDERS`, `ACCORDION_DENSITIES`.
+
+**Поведение и разметка.** Текст заголовка обёрнут в `.base-accordion__title` (колонка: `__label` и `__description`); `flex: 1` перенесён с `__label` на `__title`. Имя заголовка и области — из `__label` (`aria-labelledby`), а не из всего заголовка. CSS-переменные `--accordion-pad-y` и `--accordion-divider-style`.
+
+**Что сделать.** Ничего, если стили приложения не опираются на `flex` у `.base-accordion__label`.

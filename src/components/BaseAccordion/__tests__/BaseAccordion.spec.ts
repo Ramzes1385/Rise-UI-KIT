@@ -193,4 +193,77 @@ describe('BaseAccordion unit', () => {
 			expect(content).toHaveClass('custom-content')
 		})
 	})
+
+	describe('настройка вида', () => {
+		it('по умолчанию: стрелка справа, плотность default, без линии, акцента и замены значка', () => {
+			const { container } = render(BaseAccordion, { props: { items: ITEMS } })
+
+			const root = container.querySelector('.base-accordion')
+			expect(root).toHaveClass('base-accordion--arrow-end', 'base-accordion--density-default')
+			expect(root?.className).not.toMatch(/--divider-|--icon-swap|--accented/)
+			expect(container.querySelectorAll('.base-accordion__arrow')).toHaveLength(ITEMS.length)
+		})
+
+		it('классы arrowPosition, divider, density, isAccented и variant=separated', () => {
+			const { container } = render(BaseAccordion, {
+				props: {
+					items: ITEMS,
+					arrowPosition: 'start',
+					divider: 'dashed',
+					density: 'compact',
+					isAccented: true,
+					variant: 'separated',
+				},
+			})
+
+			expect(container.querySelector('.base-accordion')).toHaveClass(
+				'base-accordion--separated',
+				'base-accordion--arrow-start',
+				'base-accordion--divider-dashed',
+				'base-accordion--density-compact',
+				'base-accordion--accented',
+			)
+		})
+
+		it('showArrow=false убирает стрелку, пункт раскрывается кликом по заголовку', async () => {
+			const { container } = render(BaseAccordion, { props: { items: ITEMS, showArrow: false } })
+
+			expect(container.querySelector('.base-accordion__arrow')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-accordion')?.className).not.toMatch(/--arrow-/)
+			const header = screen.getByRole('button', { name: 'Материалы' })
+			header.click()
+			await waitFor(() => expect(header).toHaveAttribute('aria-expanded', 'true'))
+		})
+
+		it('expandIcon и collapseIcon: значок меняется у открытого пункта без поворота', async () => {
+			const { container } = render(BaseAccordion, {
+				props: {
+					items: [{ label: 'Материалы', content: 'Металл', defaultOpen: true }, ITEMS[1]],
+					expandIcon: 'plus',
+					collapseIcon: 'minus',
+				},
+			})
+
+			expect(container.querySelector('.base-accordion')).toHaveClass('base-accordion--icon-swap')
+			await waitFor(() => {
+				const uses = [...container.querySelectorAll('.base-accordion__arrow use')].map(use => use.getAttribute('href'))
+				expect(uses[0]).toContain('minus')
+				expect(uses[1]).toContain('plus')
+			})
+		})
+
+		it('description — пояснение под заголовком: описание кнопки, а не часть имени', () => {
+			render(BaseAccordion, {
+				props: {
+					items: [{ label: 'Оплата', description: 'Карта и СБП', content: 'Текст' }],
+					customClass: { description: 'custom-description' },
+				},
+			})
+
+			const header = screen.getByRole('button', { name: 'Оплата' })
+			expect(header).toHaveAccessibleDescription('Карта и СБП')
+			expect(screen.getByText('Карта и СБП')).toHaveClass('base-accordion__description', 'custom-description')
+			expect(screen.getByRole('region', { hidden: true })).toHaveAttribute('aria-labelledby', `${header.id}-label`)
+		})
+	})
 })

@@ -1,8 +1,39 @@
-import { onMounted, ref, useId } from 'vue'
+import { computed, onMounted, ref, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseAccordionEmits, BaseAccordionProps } from '../types/BaseAccordion.types'
 
-const ACCORDION_ELEMENTS = ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText']
+const ACCORDION_ELEMENTS = [
+	'root',
+	'item',
+	'header',
+	'icon',
+	'label',
+	'description',
+	'arrow',
+	'arrowIcon',
+	'collapse',
+	'content',
+	'contentText',
+]
+
+const DEFAULT_EXPAND_ICON = 'chevron-down'
+
+function useAccordionAppearance(props: BaseAccordionProps) {
+	return {
+		appearanceClass: computed((): string[] =>
+			[
+				props.showArrow === false ? '' : `base-accordion--arrow-${props.arrowPosition ?? 'end'}`,
+				`base-accordion--density-${props.density ?? 'default'}`,
+				props.divider ? `base-accordion--divider-${props.divider}` : '',
+				props.collapseIcon ? 'base-accordion--icon-swap' : '',
+				props.isAccented ? 'base-accordion--accented' : '',
+			].filter(Boolean),
+		),
+		hasArrow: computed((): boolean => props.showArrow !== false),
+		arrowIconName: (isItemOpen: boolean): string =>
+			isItemOpen && props.collapseIcon ? props.collapseIcon : (props.expandIcon ?? DEFAULT_EXPAND_ICON),
+	}
+}
 
 function useOpenItems(props: BaseAccordionProps, emit: BaseAccordionEmits) {
 	const openIndexes = ref<number[]>([])
@@ -38,6 +69,7 @@ export function useBaseAccordion(props: BaseAccordionProps, emit: BaseAccordionE
 	return {
 		...useStandardBaseComponent('base-accordion', props, ACCORDION_ELEMENTS),
 		...useOpenItems(props, emit),
+		...useAccordionAppearance(props),
 		getHeaderId: (index: number): string => `${baseId}-header-${index}`,
 		getPanelId: (index: number): string => `${baseId}-panel-${index}`,
 	}

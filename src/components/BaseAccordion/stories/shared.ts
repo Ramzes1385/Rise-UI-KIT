@@ -11,9 +11,12 @@ export const ITEMS: BaseAccordionItem[] = [
 	{ label: 'Как связаться с поддержкой?', content: 'Напишите в чат на сайте или позвоните по номеру 8 800 555-35-35.' },
 ]
 
-const EXTRA_ITEM: BaseAccordionItem = { label: 'Есть ли подарочная упаковка?', content: 'Да, её можно выбрать при оформлении заказа.' }
+const EXTRA_ITEMS: BaseAccordionItem[] = [
+	{ label: 'Есть ли подарочная упаковка?', content: 'Да, её можно выбрать при оформлении заказа.' },
+	{ label: 'Можно ли изменить заказ?', content: 'Да, пока он не передан в доставку: в личном кабинете или через поддержку.' },
+]
 
 export function showcaseItems(index: number): BaseAccordionItem[] {
-	const pool = [...ITEMS, EXTRA_ITEM].map(item => ({ ...item, defaultOpen: false }))
+	const pool = [...ITEMS, ...EXTRA_ITEMS].map(item => ({ ...item, defaultOpen: false }))
 	return [0, 1, 2].map(offset => ({ ...pool[(index + offset) % pool.length], defaultOpen: offset === 0 }))
 }

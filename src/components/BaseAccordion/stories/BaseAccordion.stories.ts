@@ -21,6 +21,7 @@ export const Default = cases.Default
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
+export const Customization = cases.Customization
 export const Disabled = cases.Disabled
 export const Empty = cases.Empty
 export const LongContent = cases.LongContent
