@@ -29,45 +29,4 @@
 			margin-bottom: 0;
 		}
 	}
-
-	&__arrow {
-		position: absolute;
-		box-sizing: border-box;
-		width: sz(8px);
-		height: sz(8px);
-		border: 1px solid var(--dd-border);
-		background-color: var(--dd-bg);
-
-		&--bottom {
-			top: 0;
-			left: 50%;
-			border-right-color: transparent;
-			border-bottom-color: transparent;
-			transform: translate(-50%, -50%) rotate(45deg);
-		}
-
-		&--top {
-			bottom: 0;
-			left: 50%;
-			border-top-color: transparent;
-			border-left-color: transparent;
-			transform: translate(-50%, 50%) rotate(45deg);
-		}
-
-		&--left {
-			top: 50%;
-			right: 0;
-			border-bottom-color: transparent;
-			border-left-color: transparent;
-			transform: translate(50%, -50%) rotate(45deg);
-		}
-
-		&--right {
-			top: 50%;
-			left: 0;
-			border-top-color: transparent;
-			border-right-color: transparent;
-			transform: translate(-50%, -50%) rotate(45deg);
-		}
-	}
 }

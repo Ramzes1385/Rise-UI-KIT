@@ -27,11 +27,12 @@ function cycleFocus(event: KeyboardEvent, dialog: HTMLElement): void {
 function usePopconfirmView(props: PopconfirmProps) {
 	const { classes } = useCustomClass({
 		getClass: () => props.customClass,
-		elementKeys: ['root', 'trigger', 'panel', 'title', 'description', 'cancel', 'confirm'],
+		elementKeys: ['root', 'trigger', 'panel', 'arrow', 'title', 'description', 'cancel', 'confirm'],
 	})
 	return {
 		classes,
 		dangerColor: DANGER_COLOR,
+		hasArrow: computed(() => props.showArrow !== false && props.variant !== 'ghost'),
 		rootClass: computed((): string => ['base-popconfirm-root', classes.value.root].filter(Boolean).join(' ')),
 		buttonScale: computed(() => props.sizeScale * BUTTON_SCALE_RATIO),
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),

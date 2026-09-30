@@ -32,22 +32,22 @@
 	max-width: calc(100vw - #{sz(32px)});
 
 	&--top {
-		transform: translate(-50%, -100%);
+		transform: translate(calc(-50% + var(--tour-card-shift, 0px)), -100%);
 		transform-origin: bottom center;
 	}
 
 	&--bottom {
-		transform: translate(-50%, 0);
+		transform: translate(calc(-50% + var(--tour-card-shift, 0px)), 0);
 		transform-origin: top center;
 	}
 
 	&--left {
-		transform: translate(-100%, -50%);
+		transform: translate(-100%, calc(-50% + var(--tour-card-shift, 0px)));
 		transform-origin: right center;
 	}
 
 	&--right {
-		transform: translate(0, -50%);
+		transform: translate(0, calc(-50% + var(--tour-card-shift, 0px)));
 		transform-origin: left center;
 	}
 
@@ -57,6 +57,49 @@
 		max-width: none;
 		transform: none;
 		transform-origin: bottom center;
+	}
+}
+
+.base-tour__arrow {
+	position: absolute;
+	z-index: 1;
+	box-sizing: border-box;
+	width: sz(10px);
+	height: sz(10px);
+	border: 1px solid var(--rise-border);
+	background-color: var(--rise-bg);
+	pointer-events: none;
+
+	.base-tour__card--arrow-top > & {
+		top: 0;
+		left: var(--tour-arrow-offset, 50%);
+		border-right-color: transparent;
+		border-bottom-color: transparent;
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	.base-tour__card--arrow-bottom > & {
+		bottom: 0;
+		left: var(--tour-arrow-offset, 50%);
+		border-top-color: transparent;
+		border-left-color: transparent;
+		transform: translate(-50%, 50%) rotate(45deg);
+	}
+
+	.base-tour__card--arrow-left > & {
+		top: var(--tour-arrow-offset, 50%);
+		left: 0;
+		border-top-color: transparent;
+		border-right-color: transparent;
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	.base-tour__card--arrow-right > & {
+		top: var(--tour-arrow-offset, 50%);
+		right: 0;
+		border-bottom-color: transparent;
+		border-left-color: transparent;
+		transform: translate(50%, -50%) rotate(45deg);
 	}
 }
 

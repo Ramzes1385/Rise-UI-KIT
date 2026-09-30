@@ -23,5 +23,6 @@ export const LastStep = cases.LastStep
 export const ProgressBar = cases.ProgressBar
 export const Minimal = cases.Minimal
 export const Placements = cases.Placements
+export const ArrowAtEdge = cases.ArrowAtEdge
 export const CustomContent = cases.CustomContent
 export const Keyboard = cases.Keyboard

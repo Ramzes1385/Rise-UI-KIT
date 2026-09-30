@@ -95,40 +95,29 @@ describe('BasePopover unit', () => {
 	})
 
 	describe('пропс position', () => {
-		it('должен применять стрелку --bottom по умолчанию', () => {
+		it.each([
+			[undefined, 'top'],
+			['top', 'bottom'],
+			['left', 'right'],
+			['right', 'left'],
+		] as const)('position=%s: стрелка на крае панели %s, обращённом к триггеру', (position, edge) => {
 			render(BasePopover, {
-				props: { isOpen: true },
+				props: { isOpen: true, ...(position ? { position } : {}) },
 				slots: SLOTS,
 			})
 
-			expect(document.querySelector('.base-popover__arrow--bottom')).toBeInTheDocument()
+			const panel = document.querySelector('.base-dropdown__panel')
+			expect(panel).toHaveClass(`base-dropdown__panel--arrow-${edge}`)
+			expect(panel?.querySelector('.base-popover__arrow')).toBeInTheDocument()
 		})
 
-		it('должен применять стрелку --top когда position=top', () => {
+		it('у варианта ghost стрелки нет', () => {
 			render(BasePopover, {
-				props: { isOpen: true, position: 'top' },
+				props: { isOpen: true, variant: 'ghost' },
 				slots: SLOTS,
 			})
 
-			expect(document.querySelector('.base-popover__arrow--top')).toBeInTheDocument()
-		})
-
-		it('должен применять стрелку --left когда position=left', () => {
-			render(BasePopover, {
-				props: { isOpen: true, position: 'left' },
-				slots: SLOTS,
-			})
-
-			expect(document.querySelector('.base-popover__arrow--left')).toBeInTheDocument()
-		})
-
-		it('должен применять стрелку --right когда position=right', () => {
-			render(BasePopover, {
-				props: { isOpen: true, position: 'right' },
-				slots: SLOTS,
-			})
-
-			expect(document.querySelector('.base-popover__arrow--right')).toBeInTheDocument()
+			expect(document.querySelector('.base-popover__arrow')).not.toBeInTheDocument()
 		})
 	})
 

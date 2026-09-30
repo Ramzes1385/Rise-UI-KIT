@@ -7,8 +7,9 @@
 		:color="color"
 		:size-scale="sizeScale"
 		:prevent-mousedown="false"
+		:show-arrow="hasArrow"
 		panel-class="base-popconfirm__panel"
-		:custom-class="{ root: rootClass, panel: classes.panel }"
+		:custom-class="{ root: rootClass, panel: classes.panel, arrow: classes.arrow }"
 		@update:is-open="handleDropdownUpdate">
 		<span ref="triggerRef" class="base-popconfirm-trigger" :class="classes.trigger" @click="toggle">
 			<slot :is-open="isOpenState" :trigger-props="triggerAttributes" />
@@ -72,6 +73,7 @@ const props = withDefaults(
 		isDanger: false,
 		isOpen: undefined,
 		position: 'top',
+		showArrow: true,
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -81,6 +83,7 @@ defineSlots<BasePopconfirmSlots>()
 
 const {
 	classes,
+	hasArrow,
 	dangerColor,
 	rootClass,
 	buttonScale,

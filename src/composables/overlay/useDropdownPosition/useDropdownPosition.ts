@@ -7,6 +7,9 @@ import type { Align, Edge, Geometry, Side, Size, UseDropdownPositionOptions } fr
 /** Отступ панели от края окна при сдвиге, px */
 export const VIEWPORT_MARGIN = 8
 
+/** Ближе к углу панели стрелка не подходит: иначе она вылезает за скругление, px */
+export const ARROW_EDGE_OFFSET = 12
+
 const OPPOSITE: Record<Side, Side> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
 
 /** Точка, из которой панель вырастает при появлении: угол или край у триггера */
@@ -85,12 +88,64 @@ function fits(geometry: Geometry, side: Side): boolean {
 }
 
 /**
+ * Сторона и угол панели. Размер панели известен — у края окна она переворачивается на противоположную сторону,
+ * если там хватает места, и сдвигается вдоль края окна, чтобы не выйти за него
+ */
+function layoutPanel(geometry: Geometry, position: DropdownPosition): { side: Side; align: Align; top: number; left: number } {
+	const { size, viewport } = geometry
+	const { align } = parsePosition(position)
+	let { side } = parsePosition(position)
+	const isMeasured = size.width > 0 && size.height > 0
+	if (isMeasured && !fits(geometry, side) && fits(geometry, OPPOSITE[side])) side = OPPOSITE[side]
+
+	let { top, left } = place(geometry, side, align)
+	if (isMeasured) {
+		if (side === 'top' || side === 'bottom') left = clamp(left, VIEWPORT_MARGIN, viewport.width - size.width - VIEWPORT_MARGIN)
+		else top = clamp(top, VIEWPORT_MARGIN, viewport.height - size.height - VIEWPORT_MARGIN)
+	}
+	return { side, align, top, left }
+}
+
+/**
+ * Где стрелка на краю панели, обращённом к триггеру: расстояние от начала края до середины триггера.
+ * Панель сдвинули у края окна — стрелка остаётся напротив триггера, но не заходит на скругление угла
+ */
+function arrowOffsetFor(geometry: Geometry, side: Side, point: { top: number; left: number }): number {
+	const { rect, size, border } = geometry
+	const isVertical = side === 'top' || side === 'bottom'
+	const length = isVertical ? size.width : size.height
+	const target = isVertical ? rect.left + rect.width / 2 - point.left : rect.top + rect.height / 2 - point.top
+	const inset = isVertical ? border.left : border.top
+	if (length < ARROW_EDGE_OFFSET * 2) return length / 2 - inset
+	return clamp(target, ARROW_EDGE_OFFSET, length - ARROW_EDGE_OFFSET) - inset
+}
+
+/**
  * Угол панели в её системе отсчёта. Обычно это окно, но панель внутри предка с transform
  * (Storybook Docs, анимированное окно) отсчитывается от этого предка
  */
 function toPanelSpace(point: { top: number; left: number }, panel: HTMLElement | null): { top: number; left: number } {
 	const origin = getFixedOrigin(panel?.parentElement)
 	return { top: point.top - origin.y, left: point.left - origin.x }
+}
+
+/** Размер панели и ширина её рамки; до отрисовки — нули */
+function measurePanel(panel: HTMLElement | null): Pick<Geometry, 'size' | 'border'> {
+	if (!panel) return { size: { width: 0, height: 0 }, border: { left: 0, top: 0 } }
+	return { size: { width: panel.offsetWidth, height: panel.offsetHeight }, border: { left: panel.clientLeft, top: panel.clientTop } }
+}
+
+/** Стрелка панели: сторона панели, обращённая к триггеру, и расстояние от начала этой стороны до середины триггера */
+function useArrowState(initialSide: Side) {
+	const arrow = ref<{ side: Side; offset: number }>({ side: initialSide, offset: 0 })
+	return {
+		arrow,
+		arrowStyle: computed((): Record<string, string> => ({ '--dd-arrow-offset': `${arrow.value.offset}px` })),
+		/** Та же стрелка — без нового объекта, чтобы панель не перерисовывалась */
+		updateArrow(next: { side: Side; offset: number }): void {
+			if (arrow.value.side !== next.side || arrow.value.offset !== next.offset) arrow.value = next
+		},
+	}
 }
 
 /**
@@ -118,6 +173,7 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 	const triggerWidth = ref(0)
 	/** Сторона, с которой панель показана сейчас: после переворота отличается от `position` */
 	const placement = ref<DropdownPosition>(position())
+	const { arrow, arrowStyle, updateArrow } = useArrowState(OPPOSITE[parsePosition(position()).side])
 
 	/** Rect триггера (первый дочерний элемент обёртки) */
 	function getTriggerRect(): DOMRect | null {
@@ -134,27 +190,13 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		const rect = getTriggerRect()
 		if (!rect) return
 
-		const gapValue = gap()
 		triggerWidth.value = rect.width
 		const panel = dropdownRef.value
-		const size: Size = { width: panel?.offsetWidth ?? 0, height: panel?.offsetHeight ?? 0 }
-		const viewport = getViewport()
-		const { align } = parsePosition(position())
-		let { side } = parsePosition(position())
-
-		const isMeasured = size.width > 0 && size.height > 0
-		const geometry: Geometry = { rect, size, viewport, gap: gapValue }
-		if (isMeasured && !fits(geometry, side) && fits(geometry, OPPOSITE[side])) {
-			side = OPPOSITE[side]
-		}
-
-		let { top, left } = place(geometry, side, align)
-		if (isMeasured) {
-			if (side === 'top' || side === 'bottom') left = clamp(left, VIEWPORT_MARGIN, viewport.width - size.width - VIEWPORT_MARGIN)
-			else top = clamp(top, VIEWPORT_MARGIN, viewport.height - size.height - VIEWPORT_MARGIN)
-		}
+		const geometry: Geometry = { rect, ...measurePanel(panel), viewport: getViewport(), gap: gap() }
+		const { side, align, top, left } = layoutPanel(geometry, position())
 
 		placement.value = toPosition(side, align)
+		updateArrow({ side: OPPOSITE[side], offset: arrowOffsetFor(geometry, side, { top, left }) })
 		const next = toPanelSpace({ top, left }, panel)
 		// Тот же угол — без нового объекта: иначе каждая прокрутка и отчёт ResizeObserver перерисовывали бы панель
 		// и её содержимое (например, сбрасывали бы набираемое в поле панели значение)
@@ -179,13 +221,9 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 	/** Размер панели меняется (подгрузились пункты) — позиция пересчитывается */
 	let resizeObserver: ResizeObserver | null = null
 
-	function handleScrollOrResize(): void {
-		updatePosition()
-	}
-
 	function listen(): void {
-		window.addEventListener('scroll', handleScrollOrResize, true)
-		window.addEventListener('resize', handleScrollOrResize)
+		window.addEventListener('scroll', updatePosition, true)
+		window.addEventListener('resize', updatePosition)
 		nextTick(() => {
 			if (!dropdownRef.value || resizeObserver) return
 			resizeObserver = new ResizeObserver(() => updatePosition())
@@ -194,8 +232,8 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 	}
 
 	function unlisten(): void {
-		window.removeEventListener('scroll', handleScrollOrResize, true)
-		window.removeEventListener('resize', handleScrollOrResize)
+		window.removeEventListener('scroll', updatePosition, true)
+		window.removeEventListener('resize', updatePosition)
 		resizeObserver?.disconnect()
 		resizeObserver = null
 	}
@@ -229,6 +267,8 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		coords,
 		triggerWidth,
 		placement,
+		arrow,
+		arrowStyle,
 		panelStyle,
 		updatePosition,
 	}

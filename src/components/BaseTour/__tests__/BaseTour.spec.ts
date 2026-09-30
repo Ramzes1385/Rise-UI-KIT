@@ -592,6 +592,36 @@ describe('BaseTour unit', () => {
 			rectSpy.mockRestore()
 		})
 
+		it('стрелка на крае карточки у цели; showArrow=false её убирает', async () => {
+			Object.defineProperty(window, 'innerWidth', { value: 1280, configurable: true })
+			const rectSpy = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rectMock)
+			const widthSpy = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(320)
+			const heightSpy = vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(160)
+
+			const { unmount } = render(BaseTour, {
+				props: {
+					isOpen: true,
+					steps: [{ target: '#step-1', title: 'A', placement: 'bottom' }],
+					customClass: { arrow: 'custom-arrow' },
+				},
+			})
+			await screen.findByText('A')
+			await vi.waitFor(() => expect(document.querySelector('.base-tour__arrow')).toBeInTheDocument())
+			const card = document.querySelector<HTMLElement>('.base-tour__card')
+			expect(card).toHaveClass('base-tour__card--arrow-top')
+			expect(card?.style.getPropertyValue('--tour-arrow-offset')).toBe('160px')
+			expect(document.querySelector('.base-tour__arrow')).toHaveClass('custom-arrow')
+			unmount()
+
+			render(BaseTour, { props: { isOpen: true, showArrow: false, steps: [{ target: '#step-1', title: 'B', placement: 'bottom' }] } })
+			await screen.findByText('B')
+			expect(document.querySelector('.base-tour__arrow')).not.toBeInTheDocument()
+
+			rectSpy.mockRestore()
+			widthSpy.mockRestore()
+			heightSpy.mockRestore()
+		})
+
 		it('использует обычное позиционирование на широком экране', async () => {
 			Object.defineProperty(window, 'innerWidth', { value: 1280, configurable: true })
 			const rectSpy = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rectMock)

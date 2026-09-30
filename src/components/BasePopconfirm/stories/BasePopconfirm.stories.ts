@@ -20,6 +20,7 @@ export default meta
 export const Default = cases.Default
 export const Variants = cases.Variants
 export const Positions = cases.Positions
+export const ArrowAtEdge = cases.ArrowAtEdge
 export const Sizes = cases.Sizes
 export const Danger = cases.Danger
 export const LongContent = cases.LongContent

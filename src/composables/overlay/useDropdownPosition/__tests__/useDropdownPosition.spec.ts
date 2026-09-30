@@ -2,8 +2,8 @@
 
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
-import { useDropdownPosition, VIEWPORT_MARGIN } from '../useDropdownPosition'
 import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
+import { ARROW_EDGE_OFFSET, useDropdownPosition, VIEWPORT_MARGIN } from '../useDropdownPosition'
 
 const GAP = 4
 
@@ -264,5 +264,59 @@ describe('useDropdownPosition', () => {
 		expect(api.placement.value).toBe('top-start')
 		expect(api.coords.value).toEqual({ top: 700 - GAP - 50 - 120, left: 400 - 30 })
 		container.remove()
+	})
+
+	describe('стрелка', () => {
+		it.each([
+			{ position: 'bottom', side: 'top', offset: 50 },
+			{ position: 'top-start', side: 'bottom', offset: 100 - ARROW_EDGE_OFFSET },
+			{ position: 'right', side: 'left', offset: 25 },
+			{ position: 'left-end', side: 'right', offset: 30 },
+		] as const)(
+			'$position: на крае $side против середины триггера, не ближе к углу, чем ARROW_EDGE_OFFSET',
+			({ position, side, offset }) => {
+				const { api } = setup({ position })
+
+				expect(api.arrow.value).toEqual({ side, offset })
+				expect(api.arrowStyle.value).toEqual({ '--dd-arrow-offset': `${offset}px` })
+			},
+		)
+
+		it('панель сдвинута у края окна — стрелка остаётся напротив середины триггера', () => {
+			const { api } = setup({ position: 'bottom', trigger: rect(300, 960, { width: 40 }) })
+
+			const panelLeft = 1024 - 100 - VIEWPORT_MARGIN
+			expect(api.coords.value.left).toBe(panelLeft)
+			expect(api.arrow.value).toEqual({ side: 'top', offset: 980 - panelLeft })
+		})
+
+		it('место стрелки — от внутреннего края рамки панели', () => {
+			const panel = createPanel()
+			Object.defineProperty(panel, 'clientLeft', { value: 1 })
+			Object.defineProperty(panel, 'clientTop', { value: 2 })
+
+			expect(setup({ position: 'bottom', panel }).api.arrow.value.offset).toBe(49)
+			expect(setup({ position: 'right', panel }).api.arrow.value.offset).toBe(23)
+		})
+
+		it('панель перевернулась — стрелка переходит на другой край', () => {
+			const { api } = setup({ position: 'bottom', trigger: rect(700, 400) })
+
+			expect(api.arrow.value.side).toBe('bottom')
+		})
+
+		it('край панели короче двух отступов от углов — стрелка посередине', () => {
+			const { api } = setup({ position: 'right', panel: createPanel(100, 20) })
+
+			expect(api.arrow.value).toEqual({ side: 'left', offset: 10 })
+		})
+
+		it('пересчёт с тем же местом стрелки оставляет прежний объект', () => {
+			const { api } = setup({ position: 'bottom' })
+			const before = api.arrow.value
+
+			api.updatePosition()
+			expect(api.arrow.value).toBe(before)
+		})
 	})
 })

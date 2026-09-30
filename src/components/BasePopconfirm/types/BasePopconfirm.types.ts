@@ -9,7 +9,7 @@ export type PopconfirmPosition = 'top' | 'bottom' | 'left' | 'right'
 
 export interface BasePopconfirmProps extends BaseComponentProps<
 	(typeof POPCONFIRM_VARIANTS)[number],
-	'root' | 'trigger' | 'panel' | 'title' | 'description' | 'cancel' | 'confirm'
+	'root' | 'trigger' | 'panel' | 'arrow' | 'title' | 'description' | 'cancel' | 'confirm'
 > {
 	/** Вопрос: имя диалога, например «Удалить серию?» */
 	title: string
@@ -28,6 +28,12 @@ export interface BasePopconfirmProps extends BaseComponentProps<
 	isOpen?: boolean
 	/** Сторона от кнопки, по умолчанию сверху */
 	position?: PopconfirmPosition
+	/**
+	 * Стрелка к кнопке: показывает, откуда открыт вопрос. У края окна панель переворачивается —
+	 * стрелка переходит на другой край; при сдвиге панели остаётся напротив середины кнопки. По умолчанию включена;
+	 * у варианта `ghost` стрелки нет, как у BasePopover
+	 */
+	showArrow?: boolean
 }
 
 export interface BasePopconfirmEmits {

@@ -10,6 +10,7 @@ export const args = {
 	placement: 'auto',
 	showSkip: true,
 	showProgress: true,
+	showArrow: true,
 	onSkip: fn(),
 	onFinish: fn(),
 	onClose: fn(),

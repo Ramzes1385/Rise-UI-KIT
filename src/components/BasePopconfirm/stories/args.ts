@@ -7,6 +7,7 @@ export const args = {
 	description: 'Подписчики перестанут её видеть. Вернуть можно в любой момент.',
 	confirmLabel: 'Снять',
 	position: 'top',
+	showArrow: true,
 	isDanger: false,
 	variant: 'default',
 	sizeScale: 100,

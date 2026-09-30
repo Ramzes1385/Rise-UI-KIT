@@ -12,6 +12,7 @@ export const argTypes = {
 	padding: { control: { type: 'number', min: 0, max: 40 }, table: propGroup(ARG_GROUP.appearance) },
 	radius: { control: { type: 'number', min: 0, max: 40 }, table: propGroup(ARG_GROUP.appearance) },
 	showProgress: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	showArrow: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	showSkip: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	customClass: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },

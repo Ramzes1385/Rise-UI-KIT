@@ -831,3 +831,14 @@
   - Слоты: `column-title`, `nav-item`, `item` заменены на `link` (`{ link, group, item }` — содержимое ссылки), `promo` (`{ promo, item }`) и `end` (правая часть строки).
   - Разметка: корень — `<nav aria-label>`; разделы — кнопки с `aria-expanded` и `aria-controls`; Escape, клик вне и уход фокуса закрывают панель (раньше не закрывали, MM-1, MM-3, MM-4, MM-5, MM-7, MM-8). Классы `base-mega-menu__column`, `__title`, `__nav*`, `__node*`, `__dropdown`, `__sub-list` удалены; `customClass` — ключи `root`, `bar`, `list`, `trigger`, `panel`, `group`, `link`, `promo`.
   - Как перейти: `columns` → один раздел с `groups: columns.map(c => ({ title: c.title, items: c.items }))`; `layout="dropdown"` + `children` → `groups: [{ items: children }]` (третий уровень вложенности вынесите в отдельную колонку); `@navigate` → `@select` или обычные маршруты `to`.
+
+## Эпик overlays-nav: стрелка у всплывающих окон (порция Р.9)
+
+**Что изменилось.**
+- `BaseDropdown`: новый проп `showArrow` (по умолчанию `false`) и ключ `arrow` в `customClass`. Стрелка стоит на крае панели, обращённом к триггеру, напротив середины триггера; после переворота у края окна переходит на другой край. Панель со стрелкой — `overflow: visible`: для длинных прокручиваемых списков стрелка не подходит. Классы панели: `base-dropdown__panel--arrow`, `base-dropdown__panel--arrow-<top|bottom|left|right>` (край со стрелкой), CSS-переменная `--dd-arrow-offset`.
+- `useDropdownPosition` возвращает ещё `arrow` (`{ side, offset }`) и `arrowStyle`; экспорт `ARROW_EDGE_OFFSET`.
+- `BasePopconfirm`: стрелка по умолчанию (`showArrow`, `true`), ключ `arrow` в `customClass`. У варианта `ghost` стрелки нет.
+- `BasePopover`: стрелка теперь элемент BaseDropdown (`.base-dropdown__arrow`, класс `base-popover__arrow` на нём остался). Модификаторы `base-popover__arrow--top|bottom|left|right` убраны: сторону задаёт класс панели `base-dropdown__panel--arrow-<край>`. Раньше стрелка стояла по запрошенной стороне и посередине панели — после переворота или сдвига у края окна она указывала мимо кнопки; теперь следует за кнопкой. У варианта `ghost` стрелки нет.
+- `BaseTour`: стрелка карточки к цели (`showArrow`, `true`), ключ `arrow` в `customClass`. Карточка у края окна сдвигается внутрь вдоль края цели (CSS-переменные `--tour-card-shift`, `--tour-arrow-offset`, классы `base-tour__card--arrow-<край>`). Новый composable `useTourArrow` и чистые функции `fitDesktopCard`, `fitMobileCard`.
+
+**Что сделать.** Стили приложения на `.base-popover__arrow--<сторона>` перенесите на `.base-dropdown__panel--arrow-<край> .base-popover__arrow` (край — противоположная сторона: панель снизу → стрелка на верхнем крае). Стрелку у BasePopconfirm или BaseTour убирает `:show-arrow="false"`.

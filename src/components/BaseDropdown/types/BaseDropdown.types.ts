@@ -23,7 +23,7 @@ export type DropdownPosition =
 	| 'right-end'
 	| 'right'
 
-export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number], 'root' | 'panel'> {
+export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number], 'root' | 'panel' | 'arrow'> {
 	/** Открыт ли список */
 	isOpen?: boolean
 	/** Позиция относительно триггера */
@@ -40,6 +40,12 @@ export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_V
 	preventMousedown?: boolean
 	/** CSS-класс панели */
 	panelClass?: string
+	/**
+	 * Стрелка на краю панели, обращённом к триггеру. Показывает, откуда открыта панель и с какой стороны:
+	 * после переворота у края окна стрелка переходит на другой край, при сдвиге панели остаётся напротив середины триггера.
+	 * Панель со стрелкой не обрезает содержимое по краям (`overflow: visible`) — для длинных прокручиваемых списков стрелка не подходит
+	 */
+	showArrow?: boolean
 	/**
 	 * Внутренние отступы панели. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения

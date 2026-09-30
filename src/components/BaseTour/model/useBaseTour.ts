@@ -6,6 +6,7 @@ import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { useFocusTrap } from '@composables/overlay/useFocusTrap'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useScrollLock } from '@composables/overlay/useScrollLock'
+import { useTourArrow } from '@composables/navigation/useTourArrow'
 import { useTourLogic } from '@composables/navigation/useTourLogic'
 import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseTourEmits, TourProps } from '../types/BaseTour.types'
@@ -16,6 +17,7 @@ const TOUR_ELEMENTS = [
 	'overlay',
 	'spotlight',
 	'card',
+	'arrow',
 	'cardInner',
 	'title',
 	'closeButton',
@@ -102,6 +104,7 @@ export function useBaseTour(props: TourProps, emit: BaseTourEmits) {
 	})
 	const cardRef = useCardFocus(props)
 	useTourOpen(props, internalIndex, steps)
+	const { arrowSide, arrowStyle } = useTourArrow({ cardRef, geometry: steps.logic.geometry, isMobile: steps.isMobile })
 
 	return {
 		teleportTarget,
@@ -115,6 +118,8 @@ export function useBaseTour(props: TourProps, emit: BaseTourEmits) {
 		isLast: steps.logic.isLast,
 		total: steps.logic.total,
 		cardRef,
+		arrowSide: computed(() => (props.showArrow === false ? null : arrowSide.value)),
+		arrowStyle,
 		...steps.coordination,
 	}
 }

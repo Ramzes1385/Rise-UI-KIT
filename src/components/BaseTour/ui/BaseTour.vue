@@ -21,8 +21,13 @@
 					v-if="cardStyle && slotContext && geometry && !isFocusing"
 					ref="cardRef"
 					class="base-tour__card"
-					:class="[isMobile ? 'base-tour__card--mobile' : `base-tour__card--${geometry.placement}`, classes.card]"
-					:style="cardStyle">
+					:class="[
+						isMobile ? 'base-tour__card--mobile' : `base-tour__card--${geometry.placement}`,
+						arrowSide && `base-tour__card--arrow-${arrowSide}`,
+						classes.card,
+					]"
+					:style="[cardStyle, arrowStyle]">
+					<span v-if="arrowSide" class="base-tour__arrow" :class="classes.arrow" aria-hidden="true" />
 					<slot v-bind="slotContext">
 						<div class="base-tour__panel" :class="classes.cardInner">
 							<div v-if="hasHeader || showSkip" class="base-tour__header">
@@ -110,6 +115,7 @@ const props = withDefaults(
 		placement: 'auto',
 		showSkip: true,
 		showProgress: true,
+		showArrow: true,
 	}),
 )
 const emit = defineEmits<BaseTourEmits>()
@@ -127,6 +133,8 @@ const {
 	isLast,
 	total,
 	cardRef,
+	arrowSide,
+	arrowStyle,
 	isFocusing,
 	spotlightStyle,
 	cardStyle,

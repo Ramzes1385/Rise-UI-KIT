@@ -10,6 +10,7 @@ export const argTypes = {
 	confirmLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	cancelLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	position: { control: 'inline-radio', options: ['top', 'bottom', 'left', 'right'], table: propGroup(ARG_GROUP.appearance) },
+	showArrow: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isDanger: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	default: { control: false },

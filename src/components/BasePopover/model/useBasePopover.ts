@@ -50,6 +50,7 @@ export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 		triggerAttributes,
 		triggerId,
 		rootClass: computed(() => ['base-popover', classes.value.root].filter(Boolean).join(' ')),
+		arrowClass: computed(() => ['base-popover__arrow', classes.value.arrow].filter(Boolean).join(' ')),
 		panelClasses: computed(() => `base-popover__panel base-popover__panel--${props.variant}`),
 	}
 }

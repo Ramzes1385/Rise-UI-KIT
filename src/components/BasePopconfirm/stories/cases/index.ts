@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Variants } from './appearance/Variants'
 export { Positions } from './appearance/Positions'
+export { ArrowAtEdge } from './appearance/ArrowAtEdge'
 export { Sizes } from './appearance/Sizes'
 export { Danger } from './behavior/Danger'
 export { LongContent } from './LongContent'

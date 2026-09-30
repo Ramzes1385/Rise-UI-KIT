@@ -8,11 +8,12 @@
 					v-if="isOpen"
 					ref="dropdownRef"
 					class="base-dropdown__panel"
-					:class="[panelClass, variantClass, classes.panel]"
+					:class="[panelClass, variantClass, arrowPanelClass, classes.panel]"
 					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
 					:data-theme="inheritedTheme"
 					@mousedown="handlePanelMousedown"
 					@focusin="handlePanelFocusin">
+					<span v-if="showArrow" class="base-dropdown__arrow" :class="classes.arrow" aria-hidden="true" />
 					<slot name="dropdown" />
 				</div>
 			</Transition>
@@ -38,6 +39,7 @@ const props = withDefaults(
 		matchWidth: false,
 		panelClass: '',
 		padding: undefined,
+		showArrow: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -56,6 +58,7 @@ const {
 	layerStyle,
 	dropdownRef,
 	panelStyle,
+	arrowPanelClass,
 	paddingStyle,
 	handlePanelMousedown,
 	handlePanelFocusin,

@@ -11,14 +11,14 @@
 		:panel-class="panelClasses"
 		:padding="0"
 		:size-scale="sizeScale"
-		:custom-class="{ root: rootClass, panel: classes.panel }"
+		:show-arrow="variant !== 'ghost'"
+		:custom-class="{ root: rootClass, panel: classes.panel, arrow: arrowClass }"
 		@close="handleClose">
 		<div ref="triggerRef" class="base-popover__trigger" :class="classes.trigger" @click="toggle">
 			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
 		<template #dropdown>
-			<div class="base-popover__arrow" :class="[`base-popover__arrow--${position}`, classes.arrow]"></div>
 			<div :id="panelId" class="base-popover__inner" :class="classes.inner" role="dialog" :aria-labelledby="triggerId">
 				<slot />
 			</div>
@@ -48,6 +48,17 @@ const props = withDefaults(
 const emit = defineEmits<BasePopoverEmits>()
 defineSlots<BasePopoverSlots>()
 
-const { classes, isOpenLocal, toggle, handleClose, triggerRef, panelId, triggerAttributes, triggerId, rootClass, panelClasses } =
-	useBasePopover(props, emit)
+const {
+	classes,
+	isOpenLocal,
+	toggle,
+	handleClose,
+	triggerRef,
+	panelId,
+	triggerAttributes,
+	triggerId,
+	rootClass,
+	panelClasses,
+	arrowClass,
+} = useBasePopover(props, emit)
 </script>

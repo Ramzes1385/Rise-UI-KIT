@@ -36,6 +36,8 @@ vi.mock('@composables/overlay/useDropdownPosition', () => ({
 		options.isOpen()
 		return {
 			panelStyle: { value: {} },
+			arrow: { value: { side: 'top', offset: 30 } },
+			arrowStyle: { value: { '--dd-arrow-offset': '30px' } },
 			triggerWidth: { value: 0 },
 			coords: { value: { top: 0, left: 0 } },
 			updatePosition: vi.fn(),
@@ -326,6 +328,34 @@ describe('BaseDropdown unit', () => {
 			})
 
 			expect(document.querySelector('.base-dropdown__panel')).toBeInTheDocument()
+		})
+	})
+
+	describe('пропс showArrow', () => {
+		it('по умолчанию стрелки нет', () => {
+			render(BaseDropdown, {
+				props: { isOpen: true },
+				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
+			})
+
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			expect(panel.querySelector('.base-dropdown__arrow')).not.toBeInTheDocument()
+			expect(panel).not.toHaveClass('base-dropdown__panel--arrow')
+			expect(panel.style.getPropertyValue('--dd-arrow-offset')).toBe('')
+		})
+
+		it('стрелка на крае, обращённом к триггеру, со своим классом и местом', () => {
+			render(BaseDropdown, {
+				props: { isOpen: true, showArrow: true, customClass: { arrow: 'custom-arrow' } },
+				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
+			})
+
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			expect(panel).toHaveClass('base-dropdown__panel--arrow', 'base-dropdown__panel--arrow-top')
+			expect(panel.style.getPropertyValue('--dd-arrow-offset')).toBe('30px')
+			const arrow = panel.querySelector('.base-dropdown__arrow')
+			expect(arrow).toHaveClass('custom-arrow')
+			expect(arrow).toHaveAttribute('aria-hidden', 'true')
 		})
 	})
 

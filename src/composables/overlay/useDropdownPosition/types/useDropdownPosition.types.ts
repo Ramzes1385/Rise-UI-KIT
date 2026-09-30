@@ -33,6 +33,8 @@ export interface Geometry {
 	size: Size
 	viewport: Size
 	gap: number
+	/** Рамка панели (`clientLeft`, `clientTop`): стрелка отсчитывается от её внутреннего края */
+	border: { left: number; top: number }
 }
 
 /** Край триггера вдоль стороны, у которой стоит панель: начало, конец и середина */

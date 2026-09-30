@@ -112,4 +112,22 @@ describe('BasePopconfirm', () => {
 		await nextTick()
 		expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
 	})
+
+	it('стрелка к кнопке по умолчанию; showArrow=false её убирает', async () => {
+		const { trigger, unmount } = renderConfirm({ customClass: { arrow: 'custom-arrow' } })
+		const dialog = await open(trigger)
+		const panel = dialog.closest('.base-dropdown__panel')
+		expect(panel).toHaveClass('base-dropdown__panel--arrow-bottom')
+		expect(panel?.querySelector('.base-dropdown__arrow')).toHaveClass('custom-arrow')
+		unmount()
+
+		const withoutArrow = renderConfirm({ showArrow: false })
+		const plainDialog = await open(withoutArrow.trigger)
+		expect(plainDialog.closest('.base-dropdown__panel')?.querySelector('.base-dropdown__arrow')).toBeNull()
+		withoutArrow.unmount()
+
+		const ghost = renderConfirm({ variant: 'ghost' })
+		const ghostDialog = await open(ghost.trigger)
+		expect(ghostDialog.closest('.base-dropdown__panel')?.querySelector('.base-dropdown__arrow')).toBeNull()
+	})
 })

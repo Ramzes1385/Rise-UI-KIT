@@ -55,6 +55,7 @@ export interface BaseTourProps extends BaseComponentProps<
 	| 'overlay'
 	| 'spotlight'
 	| 'card'
+	| 'arrow'
 	| 'cardInner'
 	| 'title'
 	| 'closeButton'
@@ -91,6 +92,12 @@ export interface BaseTourProps extends BaseComponentProps<
 	showSkip?: boolean
 	/** Показывать индикатор прогресса (точки шагов) */
 	showProgress?: boolean
+	/**
+	 * Стрелка карточки к подсвеченному элементу. Сторона стрелки меняется вместе со стороной карточки; у края окна
+	 * карточка сдвигается внутрь, а стрелка остаётся напротив середины элемента. На мобильном карточка прижата к низу
+	 * экрана — стрелка на её верхнем крае, если элемент выше карточки. По умолчанию включена
+	 */
+	showArrow?: boolean
 }
 
 /** Контекст, передаваемый в default-слот карточки тура */

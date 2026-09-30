@@ -80,7 +80,7 @@ function useDropdownClose(
 export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 	const teleportTarget = useTeleportTarget()
 	const { closeOnEscape, preventMousedown } = useExplicitFlags(props)
-	const standard = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel'])
+	const standard = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel', 'arrow'])
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad' })
 	const wrapperRef = ref<HTMLElement | null>(null)
 	const inheritedTheme = useInheritedTheme(
@@ -90,7 +90,7 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 	const layerStyle = useLayerIndex(() => props.isOpen)
 	const dropdownRef = ref<HTMLElement | null>(null)
 	const savedActiveElement = useFocusReturn(props, dropdownRef)
-	const { panelStyle, updatePosition } = usePanelPosition(props, wrapperRef, dropdownRef)
+	const { panelStyle, arrow, arrowStyle, updatePosition } = usePanelPosition(props, wrapperRef, dropdownRef)
 	useDropdownClose(props, emit, { targets: [wrapperRef, dropdownRef], closeOnEscape })
 
 	return {
@@ -100,7 +100,10 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 		inheritedTheme,
 		layerStyle,
 		dropdownRef,
-		panelStyle,
+		panelStyle: computed(() => (props.showArrow ? { ...panelStyle.value, ...arrowStyle.value } : panelStyle.value)),
+		arrowPanelClass: computed(() =>
+			props.showArrow ? ['base-dropdown__panel--arrow', `base-dropdown__panel--arrow-${arrow.value.side}`] : undefined,
+		),
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		handlePanelMousedown(event: MouseEvent): void {
 			if (preventMousedown.value && !isTextEntryTarget(event.target)) event.preventDefault()
