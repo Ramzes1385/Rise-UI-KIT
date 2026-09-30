@@ -61,4 +61,13 @@ export const enData = {
 		EXPAND: 'Expand column “{column}”',
 		FILTERED: '{shown} of {total}',
 	},
+	/** Графики: сводка для скринридера, «Другое» у круговой диаграммы, шкала календаря активности */
+	charts: {
+		SUMMARY: '{label}: from {min} to {max}, latest value {last}',
+		OTHER: 'Other',
+		TOTAL: 'Total',
+		LESS: 'Less',
+		MORE: 'More',
+		HEATMAP_SUMMARY: '{label}: {total} in total, peak {max} on {date}',
+	},
 }

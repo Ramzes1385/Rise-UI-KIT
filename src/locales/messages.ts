@@ -58,3 +58,9 @@ export const UI_REQUISITES = localized('requisites')
 
 /** Палитра команд */
 export const UI_COMMAND_PALETTE = localized('commandPalette')
+
+/** Графики */
+export const UI_CHARTS = localized('charts')
+
+/** Сравнение картинок */
+export const UI_IMAGE_COMPARE = localized('imageCompare')

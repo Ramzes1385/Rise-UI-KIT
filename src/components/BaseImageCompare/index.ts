@@ -1,0 +1,3 @@
+export { default as BaseImageCompare } from './ui/BaseImageCompare.vue'
+export { IMAGE_COMPARE_VARIANTS } from './types/BaseImageCompare.types'
+export type { BaseImageCompareEmits, BaseImageCompareProps } from './types/BaseImageCompare.types'

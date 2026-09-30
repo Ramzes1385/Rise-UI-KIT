@@ -39,6 +39,7 @@ import { BaseSlider } from '../components/BaseSlider'
 import { BaseSwitch } from '../components/BaseSwitch'
 import { BaseBackTop } from '../components/BaseBackTop'
 import { BaseConfirm } from '../components/BaseConfirm'
+import { BaseHeatmap } from '../components/BaseHeatmap'
 import { BaseInplace } from '../components/BaseInplace'
 import { BaseMention } from '../components/BaseMention'
 import { BasePopover } from '../components/BasePopover'
@@ -50,6 +51,7 @@ import { BaseCheckbox } from '../components/BaseCheckbox'
 import { BaseDropdown } from '../components/BaseDropdown'
 import { BaseMarkdown } from '../components/BaseMarkdown'
 import { BaseMegaMenu } from '../components/BaseMegaMenu'
+import { BasePieChart } from '../components/BasePieChart'
 import { BaseProgress } from '../components/BaseProgress'
 import { BaseSkeleton } from '../components/BaseSkeleton'
 import { BaseSplitter } from '../components/BaseSplitter'
@@ -72,6 +74,7 @@ import { BaseReasoning } from '../components/BaseReasoning'
 import { BaseSegmented } from '../components/BaseSegmented'
 import { BaseSeparator } from '../components/BaseSeparator'
 import { BaseSlideover } from '../components/BaseSlideover'
+import { BaseSparkline } from '../components/BaseSparkline'
 import { BaseMoneyInput } from '../components/BaseMoneyInput'
 import { BasePagination } from '../components/BasePagination'
 import { BasePhoneInput } from '../components/BasePhoneInput'
@@ -93,6 +96,7 @@ import { BaseVirtualList } from '../components/BaseVirtualList'
 import { BaseAddressInput } from '../components/BaseAddressInput'
 import { BaseAutocomplete } from '../components/BaseAutocomplete'
 import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
+import { BaseImageCompare } from '../components/BaseImageCompare'
 import { BaseNotification } from '../components/BaseNotification'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
 import { BaseFilterBuilder } from '../components/BaseFilterBuilder'
@@ -158,8 +162,10 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseForm,
 	BaseFormField,
 	BaseHeader,
+	BaseHeatmap,
 	BaseIcon,
 	BaseImage,
+	BaseImageCompare,
 	BaseInfiniteScroll,
 	BaseInplace,
 	BaseInput,
@@ -179,6 +185,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseNotification,
 	BasePagination,
 	BasePhoneInput,
+	BasePieChart,
 	BasePin,
 	BasePopconfirm,
 	BasePopover,
@@ -198,6 +205,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseSkeleton,
 	BaseSlideover,
 	BaseSlider,
+	BaseSparkline,
 	BaseSplitButton,
 	BaseSplitter,
 	BaseStepper,

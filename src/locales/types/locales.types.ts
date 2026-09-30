@@ -43,6 +43,8 @@ export interface UiKitLocale {
 	phoneInput: Section<'phoneInput'>
 	requisites: Section<'requisites'>
 	commandPalette: Section<'commandPalette'>
+	charts: Section<'charts'>
+	imageCompare: Section<'imageCompare'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

@@ -227,6 +227,17 @@ $light-main-shade: (
 	// Подложка модальных окон и выезжающих панелей
 	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
 
+	// Графики: восемь категориальных цветов в фиксированном порядке — синий, оранжевый, бирюзовый, жёлтый,
+	// розовый, зелёный, фиолетовый, красный. Соседние пары различимы при дальтонизме (ΔE ≥ 8 в OKLab)
+	--rise-chart-1: #2a78d6;
+	--rise-chart-2: #eb6834;
+	--rise-chart-3: #1baf7a;
+	--rise-chart-4: #eda100;
+	--rise-chart-5: #e87ba4;
+	--rise-chart-6: #008300;
+	--rise-chart-7: #4a3aa7;
+	--rise-chart-8: #e34948;
+
 	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
 	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
 	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
@@ -274,6 +285,16 @@ $light-main-shade: (
 	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -2px rgb(0 0 0 / 40%);
 	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 50%), 0 4px 6px -4px rgb(0 0 0 / 50%);
 	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 60%), 0 8px 10px -6px rgb(0 0 0 / 60%);
+
+	// Графики: те же восемь оттенков, подобранные для тёмного фона (контраст с фоном не ниже 3:1)
+	--rise-chart-1: #3987e5;
+	--rise-chart-2: #d95926;
+	--rise-chart-3: #199e70;
+	--rise-chart-4: #c98500;
+	--rise-chart-5: #d55181;
+	--rise-chart-6: #008300;
+	--rise-chart-7: #9085e9;
+	--rise-chart-8: #e66767;
 }
 
 /// Совместимость с переменными 1.x (`--color-*`, `--shadow-*`, `--border-radius-*`, `--transition-*`, `--font-family-*`).

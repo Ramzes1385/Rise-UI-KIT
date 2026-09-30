@@ -1,0 +1,98 @@
+.base-heatmap {
+	display: flex;
+	flex-direction: column;
+	gap: sz(8px);
+	box-sizing: border-box;
+	max-width: 100%;
+	color: var(--rise-text-muted);
+	@include text-size(xs);
+
+	&__scroll {
+		max-width: 100%;
+		overflow-x: auto;
+		@include scrollbar-thin;
+	}
+
+	&__svg {
+		display: block;
+	}
+
+	&__caption {
+		fill: var(--rise-text-muted);
+		font-size: 10px;
+	}
+
+	&__cell,
+	&__swatch {
+		rx: 2px;
+		fill: var(--rise-bg-elevated);
+	}
+
+	&__cell--1 {
+		fill: color-mix(in srgb, var(--heatmap-color) 30%, var(--rise-bg-elevated));
+	}
+
+	&__cell--2 {
+		fill: color-mix(in srgb, var(--heatmap-color) 55%, var(--rise-bg-elevated));
+	}
+
+	&__cell--3 {
+		fill: color-mix(in srgb, var(--heatmap-color) 80%, var(--rise-bg-elevated));
+	}
+
+	&__cell--4 {
+		fill: var(--heatmap-color);
+	}
+
+	&__cell--active {
+		stroke: var(--rise-text-highlighted);
+		stroke-width: 1.5px;
+	}
+
+	&--square &__cell {
+		rx: 0;
+	}
+
+	&__footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		min-height: sz(18px);
+	}
+
+	&__tooltip {
+		color: var(--rise-text);
+	}
+
+	&__scale {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(3px);
+	}
+
+	&__swatch {
+		display: inline-block;
+		width: 11px;
+		height: 11px;
+		border-radius: 2px;
+		background-color: var(--rise-bg-elevated);
+
+		&.base-heatmap__cell--1 {
+			background-color: color-mix(in srgb, var(--heatmap-color) 30%, var(--rise-bg-elevated));
+		}
+
+		&.base-heatmap__cell--2 {
+			background-color: color-mix(in srgb, var(--heatmap-color) 55%, var(--rise-bg-elevated));
+		}
+
+		&.base-heatmap__cell--3 {
+			background-color: color-mix(in srgb, var(--heatmap-color) 80%, var(--rise-bg-elevated));
+		}
+
+		&.base-heatmap__cell--4 {
+			background-color: var(--heatmap-color);
+		}
+	}
+}

@@ -209,4 +209,10 @@ export const enMedia = {
 		INVALID_TIME: 'Invalid time',
 		ORDER_ERROR: 'End is before start',
 	},
+	/** Сравнение картинок «до / после» */
+	imageCompare: {
+		BEFORE: 'Before',
+		AFTER: 'After',
+		HANDLE: 'Divider between “{before}” and “{after}”',
+	},
 }

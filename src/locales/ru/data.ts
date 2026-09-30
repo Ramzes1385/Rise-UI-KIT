@@ -69,4 +69,13 @@ export const ruData = {
 		EXPAND: 'Развернуть колонку «{column}»',
 		FILTERED: '{shown} из {total}',
 	},
+	/** Графики: сводка для скринридера, «Другое» у круговой диаграммы, шкала календаря активности */
+	charts: {
+		SUMMARY: '{label}: от {min} до {max}, последнее значение {last}',
+		OTHER: 'Другое',
+		TOTAL: 'Всего',
+		LESS: 'Меньше',
+		MORE: 'Больше',
+		HEATMAP_SUMMARY: '{label}: всего {total}, больше всего {max} — {date}',
+	},
 }

@@ -249,4 +249,10 @@ export const ruMedia = {
 		INVALID_TIME: 'Неверное время',
 		ORDER_ERROR: 'Конец раньше начала',
 	},
+	/** Сравнение картинок «до / после» */
+	imageCompare: {
+		BEFORE: 'До',
+		AFTER: 'После',
+		HANDLE: 'Граница между «{before}» и «{after}»',
+	},
 }
