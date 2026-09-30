@@ -165,9 +165,23 @@
 	&--soft {
 		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
+
+	&--soft .base-side-bar-nav__link:not(.base-side-bar-nav__link--current) {
+		@include hover {
+			background-color: var(--custom-bg-hover, var(--rise-bg-accented));
+		}
+	}
+
+	&--soft .base-side-bar-nav__badge.base-badge {
+		background-color: var(--rise-bg-accented);
+	}
 }
 
 .base-side-bar-nav {
+	--sidebar-item-height: 32px;
+	--sidebar-item-pad-x: 8px;
+	--sidebar-icon-size: 20px;
+
 	display: flex;
 	flex-direction: column;
 	gap: sz(var(--sidebar-gap));
@@ -177,6 +191,8 @@
 	list-style: none;
 
 	&--nested {
+		--sidebar-item-height: 30px;
+
 		gap: sz(2px);
 	}
 
@@ -197,11 +213,12 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
+		gap: sz(10px);
 		width: 100%;
 		min-width: 0;
+		min-height: sz(var(--sidebar-item-height));
 		margin: 0;
-		padding: sz(6px 8px);
+		padding: sz(4px) sz(var(--sidebar-item-pad-x));
 		border: none;
 		border-radius: sz(var(--rise-radius-md));
 		background-color: transparent;
@@ -213,7 +230,20 @@
 		text-decoration: none;
 		cursor: pointer;
 		@include transition-colors;
-		@include focus-ring;
+		@include focus-ring(-2px);
+
+		&::before {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			width: sz(3px);
+			height: 0;
+			border-radius: sz(var(--rise-radius-full));
+			background-color: var(--rise-primary);
+			transform: translateY(-50%);
+			content: '';
+			@include transition(height);
+		}
 
 		@include hover {
 			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
@@ -227,22 +257,43 @@
 
 		&--parent-active {
 			color: var(--custom-text-hover, var(--rise-text-highlighted));
-		}
-
-		&--current {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-			color: var(--custom-text-hover, var(--rise-text-highlighted));
 
 			.base-side-bar-nav__icon {
 				color: var(--rise-primary);
 			}
 		}
 
+		&--current {
+			background-color: var(--custom-bg-hover, var(--rise-primary-soft));
+			color: var(--custom-text-hover, var(--rise-primary-text));
+
+			&::before {
+				height: sz(16px);
+			}
+
+			.base-side-bar-nav__icon {
+				color: var(--rise-primary);
+			}
+
+			@include hover {
+				background-color: var(--custom-bg-hover, var(--rise-primary-soft-hover));
+				color: var(--custom-text-hover, var(--rise-primary-text));
+
+				.base-side-bar-nav__icon {
+					color: var(--rise-primary);
+				}
+			}
+		}
+
 		&--collapsed {
 			justify-content: center;
-			width: sz(32px);
-			height: sz(32px);
+			width: sz(36px);
+			min-height: sz(36px);
 			padding: 0;
+
+			&::before {
+				display: none;
+			}
 		}
 	}
 
@@ -255,8 +306,8 @@
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		width: sz(20px);
-		height: sz(20px);
+		width: sz(var(--sidebar-icon-size));
+		height: sz(var(--sidebar-icon-size));
 		color: var(--rise-text-dimmed);
 		@include transition-colors;
 	}
@@ -274,11 +325,18 @@
 		height: sz(20px);
 		padding: 0 sz(6px);
 		border: none;
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-primary-soft);
-		color: var(--rise-primary-text);
+		border-radius: sz(var(--rise-radius-full));
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-toned);
 		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: var(--rise-font-weight-semibold);
+		font-variant-numeric: tabular-nums;
+		@include transition-colors;
+	}
+
+	&__link--current &__badge.base-badge {
+		background-color: var(--rise-primary);
+		color: var(--rise-on-primary);
 	}
 
 	&__chevron {
@@ -298,14 +356,27 @@
 	}
 
 	&__children {
-		margin: sz(2px) 0 0 sz(18px);
-		padding-left: sz(8px);
+		position: relative;
+		margin: sz(2px) 0 sz(2px) calc(#{sz(var(--sidebar-item-pad-x))} + #{sz(var(--sidebar-icon-size))} / 2);
+		padding-left: sz(10px);
 		border-left: 1px solid var(--rise-border);
+	}
+
+	&--nested &__link::before {
+		left: calc(-1 * #{sz(10px)} - 1px);
+		width: 1px;
+		border-radius: 0;
+	}
+
+	&--nested &__link--current::before {
+		width: sz(2px);
+		height: 100%;
+		transform: translate(-0.5px, -50%);
 	}
 
 	&__divider {
 		height: 1px;
-		margin: sz(8px) 0;
+		margin: sz(8px) sz(var(--sidebar-item-pad-x));
 		background-color: var(--rise-border);
 	}
 }
