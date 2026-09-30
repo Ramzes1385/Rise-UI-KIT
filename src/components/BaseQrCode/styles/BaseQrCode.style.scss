@@ -1,0 +1,33 @@
+.base-qr-code {
+	display: inline-flex;
+	box-sizing: border-box;
+	flex-shrink: 0;
+	width: sz(var(--qr-size));
+	max-width: 100%;
+	overflow: hidden;
+	border-radius: sz(var(--rise-radius-md));
+	background-color: var(--qr-background);
+	aspect-ratio: 1;
+
+	&--outline {
+		border: 1px solid var(--rise-border);
+		padding: sz(4px);
+	}
+
+	&__svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	&--overflow {
+		align-items: center;
+		justify-content: center;
+		padding: sz(12px);
+		border: 1px dashed var(--rise-border-accented);
+		background-color: var(--rise-bg-muted);
+		color: var(--rise-text-toned);
+		text-align: center;
+		@include text-size(xs);
+	}
+}

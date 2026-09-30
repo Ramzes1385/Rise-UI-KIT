@@ -70,3 +70,6 @@ export const UI_JSON_VIEWER = localized('jsonViewer')
 
 /** Сравнение текстов */
 export const UI_TEXT_DIFF = localized('textDiff')
+
+/** QR-код */
+export const UI_QR_CODE = localized('qrCode')

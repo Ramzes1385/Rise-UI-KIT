@@ -141,4 +141,9 @@ export const enBase = {
 		HINT_RUN: 'to run',
 		HINT_CLOSE: 'to close',
 	},
+	/** QR-код: имя картинки и сообщение, когда текст не помещается */
+	qrCode: {
+		LABEL: 'QR code: {value}',
+		TOO_LONG: 'The text is too long for a QR code',
+	},
 }

@@ -1,0 +1,17 @@
+import { expect } from 'storybook/test'
+import type meta from '../BaseQrCode.stories'
+import type { StoryObj } from '@storybook/vue3-vite'
+
+export const TooLong: StoryObj<typeof meta> = {
+	parameters: {
+		docs: {
+			description: {
+				story: 'Текст не помещается в версию 10 при выбранном уровне — вместо кода сообщение, для скринридера — то же.',
+			},
+		},
+	},
+	args: { value: 'Длинный текст '.repeat(12), errorCorrection: 'H' },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('img', { name: 'Текст слишком длинный для QR-кода' })).toBeVisible()
+	},
+}

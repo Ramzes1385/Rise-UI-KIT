@@ -47,6 +47,7 @@ export interface UiKitLocale {
 	imageCompare: Section<'imageCompare'>
 	jsonViewer: Section<'jsonViewer'>
 	textDiff: Section<'textDiff'>
+	qrCode: Section<'qrCode'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

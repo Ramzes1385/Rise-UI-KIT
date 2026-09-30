@@ -32,6 +32,7 @@ import { BaseHeader } from '../components/BaseHeader'
 import { BaseKanban } from '../components/BaseKanban'
 import { BaseLayout } from '../components/BaseLayout'
 import { BaseLoader } from '../components/BaseLoader'
+import { BaseQrCode } from '../components/BaseQrCode'
 import { BaseRating } from '../components/BaseRating'
 import { BaseSearch } from '../components/BaseSearch'
 import { BaseSelect } from '../components/BaseSelect'
@@ -194,6 +195,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BasePopover,
 	BaseProgress,
 	BasePromptInput,
+	BaseQrCode,
 	BaseRadio,
 	BaseRange,
 	BaseRating,
