@@ -73,12 +73,19 @@ export interface BaseSelectEmits {
 
 export interface BaseSelectSlots {
 	default?: () => unknown
+	/** Всё содержимое кнопки-триггера вместо выбранных значений: `isOpen`, подпись выбранного и подписи при `isMultiple` */
 	trigger?: (props: { isOpen: boolean; selectedLabel: string; selectedLabels: string[] }) => unknown
+	/** Выбранные значения при `isMultiple` вместо меток-бейджей; `remove(value)` снимает выбор */
 	tag?: (props: { labels: string[]; items: BaseSelectOption[]; remove: (value: string | number) => void }) => unknown
+	/** Выбранный вариант в триггере при одиночном выборе */
 	selected?: (props: { option: BaseSelectOption }) => unknown
+	/** Верх выпадающего списка, над вариантами */
 	header?: () => unknown
+	/** Строка варианта в списке: `option` и отмечен ли он (`isSelected`) */
 	option?: (props: { option: BaseSelectOption; isSelected: boolean }) => unknown
+	/** Содержимое списка, когда вариантов нет или поиск ничего не нашёл */
 	empty?: () => unknown
+	/** Низ выпадающего списка, под вариантами */
 	footer?: () => unknown
 }
 

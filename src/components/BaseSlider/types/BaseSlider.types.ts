@@ -97,9 +97,13 @@ export interface BaseSliderEmits {
 }
 
 export interface BaseSliderSlots {
+	/** Содержимое слайда вместо картинки или видео: `item` — слайд из `items`, `index` — его номер */
 	default?: (props: { item: SliderItem; index: number }) => unknown
+	/** Подпись слайда вместо `title` и `description`; показывается, если у слайда они есть */
 	caption?: (props: { item: SliderItem; index: number }) => unknown
+	/** Над слайдами */
 	header?: () => unknown
+	/** Под слайдами и навигацией */
 	footer?: () => unknown
 }
 

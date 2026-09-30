@@ -190,7 +190,7 @@ function templateSlots(root: TemplateNode | undefined): { names: string[]; dynam
 export function readComponentSlots(file: string, source: string): ComponentSlots {
 	const { descriptor } = parseSfc(source, { filename: file })
 	const used = templateSlots(descriptor.template?.ast as TemplateNode | undefined)
-	const interfaceName = /defineSlots<\s*([\w$]+)\s*>/.exec(descriptor.scriptSetup?.content ?? '')?.[1] ?? null
+	const interfaceName = /defineSlots<\s*([\w$]+)(?:<[^>]*>)?\s*>/.exec(descriptor.scriptSetup?.content ?? '')?.[1] ?? null
 	const members: Members = { slots: new Map(), patterns: [], found: false }
 	if (interfaceName) {
 		const own = listTypeFiles(path.join(path.dirname(file), '..', 'types'))

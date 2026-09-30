@@ -240,12 +240,22 @@ export const TABLE_EXPAND_TRANSITION_KEY = Symbol('TABLE_EXPAND_TRANSITION') as 
 
 export interface BaseTableSlots {
 	default?: () => unknown
+	/** Над таблицей и панелью инструментов: заголовок, описание, свои кнопки */
 	header?: () => unknown
+	/** Под таблицей и пагинацией */
 	footer?: () => unknown
+	/** Строка «нет данных» вместо `emptyText`, когда строк нет или фильтр ничего не нашёл */
 	empty?: () => unknown
+	/** Начало панели инструментов — перед поиском и фильтрами */
 	'toolbar-prepend'?: () => unknown
+	/** Конец панели инструментов — после поиска, фильтров и настроек колонок */
 	'toolbar-append'?: () => unknown
+	/** Содержимое раскрытой строки при `features.isExpandable`: `row` — её данные */
 	'expanded-content'?: (props: { row: TableRow }) => unknown
+	/**
+	 * Пагинация вместо подписи с диапазоном строк и BasePagination: номер и число страниц, видимые номера, размер страницы
+	 * и `handlePageSizeChange` для своего выбора размера
+	 */
 	pagination?: (props: {
 		currentPage: number
 		totalPages: number
@@ -256,7 +266,9 @@ export interface BaseTableSlots {
 		pageSizeSelectOptions: Array<{ value: string; label: string }>
 		handlePageSizeChange: (value: string | number) => void
 	}) => unknown
+	/** Заголовок одной колонки по её `key`: `header-status` — колонка `status`; `column` — её описание */
 	[key: `header-${string}`]: (props: { column: TableColumn }) => unknown
+	/** Ячейки одной колонки по её `key`: `cell-status` — колонка `status`; `row` — строка, `column` — колонка */
 	[key: `cell-${string}`]: (props: { column: TableColumn; row: TableRow }) => unknown
 }
 

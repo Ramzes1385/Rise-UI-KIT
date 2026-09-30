@@ -70,6 +70,9 @@ jobs:
       - name: Check UI strings go through the locale dictionaries
         run: npm run test:l10n
 
+      - name: Check slot descriptions in Docs
+        run: npm run test:slot-docs
+
   stories-run:
     name: Stories Run (render, play, axe)
     runs-on: ubuntu-latest

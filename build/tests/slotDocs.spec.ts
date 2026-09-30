@@ -96,6 +96,12 @@ describe('слоты в Docs Storybook', () => {
 		expect(result.dynamic).toEqual(['item.slot'])
 	})
 
+	it('интерфейс с параметром типа (defineSlots<BaseXSlots<T>>) тоже находится', () => {
+		const result = readComponentSlots(file, COMPONENT.replace('defineSlots<BaseXSlots>()', 'defineSlots<BaseXSlots<T>>()'))
+		expect(result.interfaceName).toBe('BaseXSlots')
+		expect(result.found).toBe(true)
+	})
+
 	it('плагин после docgen заменяет __docgenInfo.slots компонента кита', () => {
 		const plugin = createSlotDocsPlugin()
 		const transform = plugin.transform as (code: string, id: string) => { code: string } | undefined
