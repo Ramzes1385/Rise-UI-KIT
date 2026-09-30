@@ -1,7 +1,14 @@
 import type meta from '../../BaseEditor.stories'
-import { renderWithLocalModel } from '../../shared'
+import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { html: '<p>Текст с <strong>жирным</strong> словом.</p>' }
+
+const template = `
+	<BaseEditor v-bind="args" v-model="html" />
+`
 
 export const CodeMode: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,10 +19,15 @@ export const CodeMode: StoryObj<typeof meta> = {
 					'после повторного нажатия. Кнопки тулбара в режиме кода оборачивают выделенный фрагмент в теги.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseEditor'], state, omit: ['toolbar'] }),
 		},
 	},
-	render: renderWithLocalModel,
-	args: { modelValue: '<p>Текст с <strong>жирным</strong> словом.</p>' },
+	render: args => ({
+		components: { BaseEditor },
+		setup: useStorySetup(args, { state, slots: ['toolbar', 'modelValue'] }),
+		template,
+	}),
+	args: { modelValue: state.html },
 	play: async ({ canvas, userEvent }) => {
 		const toggle = canvas.getByRole('button', { name: 'Режим кода' })
 		await userEvent.click(toggle)

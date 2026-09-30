@@ -1,8 +1,14 @@
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseEditor.stories'
-import { renderWithLocalModel } from '../../shared'
+import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, within, waitFor } from 'storybook/test'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const state = { html: '<p>Проверка клавиатуры</p>' }
+
+const template = `
+	<BaseEditor v-bind="args" v-model="html" />
+`
 
 export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -13,11 +19,16 @@ export const Keyboard: StoryObj<typeof meta> = {
 					'к последней кнопке. Ctrl+B / Ctrl+I / Ctrl+U (⌘ на macOS) переключают начертание выделенного текста.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseEditor'], state, omit: ['toolbar'] }),
 		},
 	},
 	tags: ['!autodocs'],
-	render: renderWithLocalModel,
-	args: { modelValue: '<p>Проверка клавиатуры</p>' },
+	render: args => ({
+		components: { BaseEditor },
+		setup: useStorySetup(args, { state, slots: ['toolbar', 'modelValue'] }),
+		template,
+	}),
+	args: { modelValue: state.html },
 	play: async ({ canvas, userEvent }) => {
 		const bold = canvas.getByRole('button', { name: 'Жирный' })
 		await userEvent.tab()

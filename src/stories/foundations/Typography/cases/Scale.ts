@@ -1,6 +1,6 @@
 import type meta from '../Typography.stories'
-import { templateSource } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const SIZES = [
 	{ name: '2xs', size: 10, line: 14, usage: 'Счётчики в бейджах xs' },
@@ -14,29 +14,29 @@ const SIZES = [
 ]
 
 const template = `
-			<div>
-				<div v-for="item in sizes" :key="item.name" class="fnd-type">
-					<span class="fnd-type__meta">
-						text-size({{ item.name }})<br />{{ item.size }}/{{ item.line }}px · {{ item.usage }}
-					</span>
-					<span
-						class="fnd-type__sample"
-						:style="{ fontSize: 'var(--rise-font-size-' + item.name + ')', lineHeight: 'var(--rise-line-height-' + item.name + ')' }">
-						Съешь же ещё этих мягких французских булок
-					</span>
-				</div>
-			</div>
-		`
+	<div>
+		<div v-for="item in sizes" :key="item.name" class="fnd-type">
+			<span class="fnd-type__meta">
+				text-size({{ item.name }})<br />{{ item.size }}/{{ item.line }}px · {{ item.usage }}
+			</span>
+			<span
+				class="fnd-type__sample"
+				:style="{ fontSize: 'var(--rise-font-size-' + item.name + ')', lineHeight: 'var(--rise-line-height-' + item.name + ')' }">
+				Съешь же ещё этих мягких французских булок
+			</span>
+		</div>
+	</div>
+`
 
 export const Scale: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: { story: 'Шкала размеров: токен, размер/интервал в пикселях при sizeScale = 100 и где применяется.' },
-			source: { code: templateSource(template) },
+			source: staticStorySource({ template, imports: [], script: `const sizes = ${literal(SIZES)}` }),
 		},
 	},
-	render: () => ({
-		setup: () => ({ sizes: SIZES }),
+	render: args => ({
+		setup: useStorySetup(args, { data: { sizes: SIZES } }),
 		template,
 	}),
 }

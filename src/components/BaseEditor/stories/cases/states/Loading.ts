@@ -12,9 +12,6 @@ export const Loading: StoryObj<typeof meta> = {
 					'только для чтения с плейсхолдером «Загрузка…», после ответа сервера передайте HTML и снимите `isReadonly`.',
 				].join('\n'),
 			},
-			source: {
-				code: '<BaseEditor v-model="html" :is-readonly="isLoading" :placeholder="isLoading ? \'Загрузка документа…\' : \'\'" />',
-			},
 		},
 	},
 	play: async ({ canvas }) => {

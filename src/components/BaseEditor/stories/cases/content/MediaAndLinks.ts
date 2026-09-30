@@ -1,13 +1,19 @@
 import type meta from '../../BaseEditor.stories'
-import { STORY_IMAGES } from '@/stories/helpers'
-import { renderWithLocalModel } from '../../shared'
+import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { spyOn, within, expect, screen, waitFor } from 'storybook/test'
+import { STORY_IMAGES, storySource, useStorySetup } from '@/stories/helpers'
 
 function storyImageFile(): File {
 	const svg = decodeURIComponent(STORY_IMAGES[0].src.split(',')[1])
 	return new File([svg], 'mountains.svg', { type: 'image/svg+xml' })
 }
+
+const state = { html: '<p>Макеты главной страницы</p><p>Фото стенда: </p>' }
+
+const template = `
+	<BaseEditor v-bind="args" v-model="html" />
+`
 
 export const MediaAndLinks: StoryObj<typeof meta> = {
 	parameters: {
@@ -19,10 +25,15 @@ export const MediaAndLinks: StoryObj<typeof meta> = {
 					'фокус переходит в поле «Ширина», Enter или «Применить» задают размер, «Удалить» убирает медиа, Escape закрывает меню.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseEditor'], state, omit: ['toolbar'] }),
 		},
 	},
-	render: renderWithLocalModel,
-	args: { modelValue: '<p>Макеты главной страницы</p><p>Фото стенда: </p>' },
+	render: args => ({
+		components: { BaseEditor },
+		setup: useStorySetup(args, { state, slots: ['toolbar', 'modelValue'] }),
+		template,
+	}),
+	args: { modelValue: state.html },
 	play: async ({ canvas, userEvent }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 

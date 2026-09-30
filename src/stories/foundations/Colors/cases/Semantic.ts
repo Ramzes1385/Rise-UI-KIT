@@ -1,6 +1,6 @@
 import type meta from '../Colors.stories'
-import { templateSource } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 interface TokenInfo {
 	token: string
@@ -44,41 +44,41 @@ const SEMANTIC_GROUPS: { title: string; hint: string; tokens: TokenInfo[] }[] = 
 ]
 
 const template = `
-			<div class="fnd">
-				<section v-for="group in groups" :key="group.title" class="fnd__section">
-					<h3 class="fnd__title">{{ group.title }}</h3>
-					<p class="fnd__hint">{{ group.hint }}</p>
-					<div class="fnd__grid">
-						<div v-for="item in group.tokens" :key="item.token" class="fnd-token">
-							<!-- Образец текста «Aa» — псевдоэлемент: dimmed-цвет намеренно низкоконтрастный и не должен проверяться как текст -->
-							<span
-								class="fnd-token__swatch"
-								:class="{ 'fnd-token__swatch--text': group.title === 'Текст' }"
-								aria-hidden="true"
-								:style="group.title === 'Текст'
-									? { background: 'var(--rise-bg)', color: 'var(' + item.token + ')' }
-									: group.title === 'Рамки'
-										? { background: 'var(--rise-bg)', boxShadow: 'inset 0 0 0 3px var(' + item.token + ')' }
-										: { background: 'var(' + item.token + ')' }" />
-							<span>
-								<span class="fnd-token__name">{{ item.token }}</span>
-								<span class="fnd-token__desc">{{ item.description }}</span>
-							</span>
-						</div>
-					</div>
-				</section>
+	<div class="fnd">
+		<section v-for="group in groups" :key="group.title" class="fnd__section">
+			<h3 class="fnd__title">{{ group.title }}</h3>
+			<p class="fnd__hint">{{ group.hint }}</p>
+			<div class="fnd__grid">
+				<div v-for="item in group.tokens" :key="item.token" class="fnd-token">
+					<!-- Образец текста «Aa» — псевдоэлемент: dimmed-цвет намеренно низкоконтрастный и не должен проверяться как текст -->
+					<span
+						class="fnd-token__swatch"
+						:class="{ 'fnd-token__swatch--text': group.title === 'Текст' }"
+						aria-hidden="true"
+						:style="group.title === 'Текст'
+							? { background: 'var(--rise-bg)', color: 'var(' + item.token + ')' }
+							: group.title === 'Рамки'
+								? { background: 'var(--rise-bg)', boxShadow: 'inset 0 0 0 3px var(' + item.token + ')' }
+								: { background: 'var(' + item.token + ')' }" />
+					<span>
+						<span class="fnd-token__name">{{ item.token }}</span>
+						<span class="fnd-token__desc">{{ item.description }}</span>
+					</span>
+				</div>
 			</div>
-		`
+		</section>
+	</div>
+`
 
 export const Semantic: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: { story: 'Семантические токены фона, текста и рамок с назначением. Эти имена используют стили компонентов.' },
-			source: { code: templateSource(template) },
+			source: staticStorySource({ template, imports: [], script: `const groups = ${literal(SEMANTIC_GROUPS)}` }),
 		},
 	},
-	render: () => ({
-		setup: () => ({ groups: SEMANTIC_GROUPS }),
+	render: args => ({
+		setup: useStorySetup(args, { data: { groups: SEMANTIC_GROUPS } }),
 		template,
 	}),
 }

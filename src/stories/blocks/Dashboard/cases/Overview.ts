@@ -5,7 +5,6 @@ import { BaseCard } from '@components/BaseCard'
 import { BaseLink } from '@components/BaseLink'
 import { BaseUser } from '@components/BaseUser'
 import { BaseTable } from '@components/BaseTable'
-import { templateSource } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseHeader } from '@components/BaseHeader'
 import { BaseLayout } from '@components/BaseLayout'
@@ -18,6 +17,7 @@ import { BaseSparkline } from '@components/BaseSparkline'
 import { screen, waitFor, within, expect } from 'storybook/test'
 import type { CommandItem } from '@components/BaseCommandPalette'
 import { BaseCommandPalette } from '@components/BaseCommandPalette'
+import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
 import {
 	KPIS,
 	WEEKS,
@@ -110,6 +110,90 @@ const template = `
 	</BaseLayout>
 `
 
+const script = `
+const rub = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 })
+const millions = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 })
+const formatRub = (value: unknown): string => rub.format(Number(value))
+const formatMillions = (value: number): string => \`\${millions.format(value / 1_000_000)} млн ₽\`
+
+const weeks = ${literal(WEEKS)}
+
+const kpis = [
+	{
+		id: 'revenue',
+		label: 'Выручка',
+		value: '4,82 млн ₽',
+		delta: '▲ 12% к августу',
+		trend: [3.1, 3.4, 3.2, 3.8, 3.6, 4.0, 4.1, 3.9, 4.3, 4.5, 4.4, 4.82],
+		format: (value: number) => \`\${millions.format(value)} млн ₽\`,
+	},
+	{
+		id: 'orders',
+		label: 'Заказы',
+		value: '1 284',
+		delta: '▲ 8% к августу',
+		trend: [880, 910, 940, 1010, 990, 1050, 1080, 1120, 1150, 1190, 1230, 1284],
+		format: (value: number) => \`\${value} заказов\`,
+	},
+	{
+		id: 'check',
+		label: 'Средний чек',
+		value: '3 750 ₽',
+		delta: '▲ 3% к августу',
+		trend: [3520, 3560, 3490, 3610, 3580, 3640, 3600, 3660, 3700, 3680, 3720, 3750],
+		format: (value: number) => formatRub(value),
+	},
+	{
+		id: 'returns',
+		label: 'Возвраты',
+		value: '2,1%',
+		delta: '▼ 0,4 п. п. к августу',
+		trend: [3.2, 3.0, 2.9, 3.1, 2.8, 2.7, 2.6, 2.5, 2.5, 2.3, 2.2, 2.1],
+		format: (value: number) => \`\${millions.format(value)}%\`,
+	},
+]
+
+const channels = ${literal(CHANNELS)}
+
+const activityEnd = ${literal(ACTIVITY_END)}
+const activityWeeks = ${literal(ACTIVITY_WEEKS)}
+const activity = Array.from({ length: activityWeeks * 7 }, (_, index) => {
+	const date = new Date(Date.UTC(2026, 8, 30 - index))
+	const weekday = date.getUTCDay()
+	const isWeekend = weekday === 0 || weekday === 6
+	return { date: date.toISOString().slice(0, 10), value: isWeekend ? index % 2 : (index * 7 + weekday * 3) % 12 }
+})
+
+const orderColumns: TableColumn[] = [
+	{ key: 'number', label: 'Заказ', width: '96px' },
+	{ key: 'customer', label: 'Покупатель' },
+	{ key: 'status', label: 'Статус', width: '120px' },
+	{ key: 'total', label: 'Сумма', align: 'right', width: '120px', formatter: formatRub },
+]
+
+const orderRows: TableRow[] = ${literal(ORDER_ROWS)}
+
+const events: TimelineItem[] = ${literal(EVENTS)}
+
+const sections = ${literal(SECTIONS)}
+
+const commands: CommandItem[] = [
+	...sections.map(section => ({ id: section.key, label: section.label, group: 'Разделы', icon: section.icon })),
+	{ id: 'new-order', label: 'Новый заказ', group: 'Действия', icon: 'plus', shortcut: 'mod+shift+n', keywords: ['создать'] },
+	{ id: 'export', label: 'Выгрузить отчёт', group: 'Действия', icon: 'download', keywords: ['excel', 'csv'] },
+]
+
+const active = ref('overview')
+const message = ref('')
+const isPaletteOpen = ref(false)
+
+function choose(command: CommandItem): void {
+	const isSection = sections.some(section => section.key === command.id)
+	if (isSection) active.value = command.id
+	message.value = isSection ? \`Открыт раздел «\${command.label}»\` : \`Выполнено: \${command.label}\`
+}
+`
+
 export const Overview: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
@@ -120,10 +204,34 @@ export const Overview: StoryObj<typeof meta> = {
 					'открывают палитру команд: раздел из палитры подсвечивается в боковом меню.',
 				].join('\n'),
 			},
-			source: { code: templateSource(template) },
+			source: staticStorySource({
+				template,
+				imports: [
+					'BaseButton',
+					'BaseCard',
+					'BaseCommandPalette',
+					'BaseHeader',
+					'BaseHeatmap',
+					'BaseKbd',
+					'BaseLayout',
+					'BaseLink',
+					'BasePieChart',
+					'BaseSideBar',
+					'BaseSparkline',
+					'BaseTable',
+					'BaseTimeline',
+					'BaseUser',
+					'type CommandItem',
+					'type TableColumn',
+					'type TableRow',
+					'type TimelineItem',
+				],
+				vue: ['ref'],
+				script,
+			}),
 		},
 	},
-	render: () => ({
+	render: args => ({
 		components: {
 			BaseButton,
 			BaseCard,
@@ -140,13 +248,8 @@ export const Overview: StoryObj<typeof meta> = {
 			BaseTimeline,
 			BaseUser,
 		},
-		setup: () => {
-			const active = ref('overview')
-			const message = ref('')
-			return {
-				active,
-				message,
-				isPaletteOpen: ref(false),
+		setup: useStorySetup(args, {
+			data: {
 				kpis: KPIS,
 				weeks: WEEKS,
 				channels: CHANNELS,
@@ -159,13 +262,19 @@ export const Overview: StoryObj<typeof meta> = {
 				sections: SECTIONS,
 				commands: COMMANDS,
 				formatMillions,
-				choose: (command: CommandItem) => {
+			},
+			setup: () => {
+				const active = ref('overview')
+				const message = ref('')
+				const isPaletteOpen = ref(false)
+				const choose = (command: CommandItem): void => {
 					const isSection = SECTIONS.some(section => section.key === command.id)
 					if (isSection) active.value = command.id
 					message.value = isSection ? `Открыт раздел «${command.label}»` : `Выполнено: ${command.label}`
-				},
-			}
-		},
+				}
+				return { active, message, isPaletteOpen, choose }
+			},
+		}),
 		template,
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {

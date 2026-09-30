@@ -1,7 +1,14 @@
 import type meta from '../../BaseEditor.stories'
-import { renderWithLocalModel } from '../../shared'
+import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, within, waitFor } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { html: '<p>Сроки сдвигаются на неделю.</p><p>Ответственный — Иван Петров.</p>' }
+
+const template = `
+	<BaseEditor v-bind="args" v-model="html" />
+`
 
 export const ToolbarFormatting: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,10 +19,15 @@ export const ToolbarFormatting: StoryObj<typeof meta> = {
 					'и озвучивается как нажатая (`aria-pressed`).',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseEditor'], state, omit: ['toolbar'] }),
 		},
 	},
-	render: renderWithLocalModel,
-	args: { modelValue: '<p>Сроки сдвигаются на неделю.</p><p>Ответственный — Иван Петров.</p>' },
+	render: args => ({
+		components: { BaseEditor },
+		setup: useStorySetup(args, { state, slots: ['toolbar', 'modelValue'] }),
+		template,
+	}),
+	args: { modelValue: state.html },
 	play: async ({ canvas, userEvent, args }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		const bold = canvas.getByRole('button', { name: 'Жирный' })

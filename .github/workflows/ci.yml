@@ -73,6 +73,9 @@ jobs:
       - name: Check slot descriptions in Docs
         run: npm run test:slot-docs
 
+      - name: Check «Show code» is the exact preview code
+        run: npm run test:story-source
+
   stories-run:
     name: Stories Run (render, play, axe)
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 import type meta from '../Typography.stories'
-import { templateSource } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const WEIGHTS = [
 	{ token: '--rise-font-weight-normal', value: 400, usage: 'Текст' },
@@ -10,20 +10,25 @@ const WEIGHTS = [
 ]
 
 const template = `
-			<div>
-				<div v-for="item in weights" :key="item.token" class="fnd-type">
-					<span class="fnd-type__meta">{{ item.token }}<br />{{ item.value }} · {{ item.usage }}</span>
-					<span class="fnd-type__sample" :style="{ fontWeight: 'var(' + item.token + ')', fontSize: '18px' }">
-						Интерфейс Rise UI Kit — Interface 0123456789
-					</span>
-				</div>
-			</div>
-		`
+	<div>
+		<div v-for="item in weights" :key="item.token" class="fnd-type">
+			<span class="fnd-type__meta">{{ item.token }}<br />{{ item.value }} · {{ item.usage }}</span>
+			<span class="fnd-type__sample" :style="{ fontWeight: 'var(' + item.token + ')', fontSize: '18px' }">
+				Интерфейс Rise UI Kit — Interface 0123456789
+			</span>
+		</div>
+	</div>
+`
 
 export const Weights: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Начертания шрифта.' }, source: { code: templateSource(template) } } },
-	render: () => ({
-		setup: () => ({ weights: WEIGHTS }),
+	parameters: {
+		docs: {
+			description: { story: 'Начертания шрифта.' },
+			source: staticStorySource({ template, imports: [], script: `const weights = ${literal(WEIGHTS)}` }),
+		},
+	},
+	render: args => ({
+		setup: useStorySetup(args, { data: { weights: WEIGHTS } }),
 		template,
 	}),
 }

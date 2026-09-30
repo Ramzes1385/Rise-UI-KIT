@@ -1,21 +1,22 @@
-import { ref } from 'vue'
 import { OPTIONS } from '../shared'
 import { expect } from 'storybook/test'
 import type meta from '../Sizing.stories'
 import { BaseInput } from '@components/BaseInput'
-import { templateSource } from '@/stories/helpers'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
+
+const STATE = { text: '', lang: 'ru' }
 
 const template = `
-			<div class="story-row" style="flex-wrap: nowrap; align-items: flex-start;">
-				<div style="width: 220px;"><BaseInput v-model="text" placeholder="Название проекта" /></div>
-				<div style="width: 160px;"><BaseSelect v-model="lang" :options="options" /></div>
-				<BaseButton variant="outline">Отмена</BaseButton>
-				<BaseButton>Создать</BaseButton>
-			</div>
-		`
+	<div class="story-row" style="flex-wrap: nowrap; align-items: flex-start;">
+		<div style="width: 220px;"><BaseInput v-model="text" placeholder="Название проекта" /></div>
+		<div style="width: 160px;"><BaseSelect v-model="lang" :options="options" /></div>
+		<BaseButton variant="outline">Отмена</BaseButton>
+		<BaseButton>Создать</BaseButton>
+	</div>
+`
 
 export const Alignment: StoryObj<typeof meta> = {
 	parameters: {
@@ -26,12 +27,17 @@ export const Alignment: StoryObj<typeof meta> = {
 					'Play-функция сверяет высоты — если стили компонента разойдутся со шкалой, проверка упадёт.',
 				].join('\n'),
 			},
-			source: { code: templateSource(template) },
+			source: staticStorySource({
+				template,
+				imports: ['BaseButton', 'BaseInput', 'BaseSelect'],
+				state: STATE,
+				script: `const options = ${literal(OPTIONS)}`,
+			}),
 		},
 	},
-	render: () => ({
+	render: args => ({
 		components: { BaseButton, BaseInput, BaseSelect },
-		setup: () => ({ options: OPTIONS, text: ref(''), lang: ref('ru') }),
+		setup: useStorySetup(args, { state: STATE, data: { options: OPTIONS } }),
 		template,
 	}),
 	play: async ({ canvasElement }) => {

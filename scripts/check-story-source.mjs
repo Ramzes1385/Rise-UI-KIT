@@ -3,7 +3,8 @@
  * `storySource()` или `staticStorySource()`; если свой `render` у meta компонента, код для историй без своего
  * `render` задаёт `parameters.docs.source` в `stories/parameters.ts`. Код, написанный вручную (`source.code`),
  * не допускается: он расходится с превью. Состояние шаблона — `state` помощников, а не `ref` в константе модуля:
- * такое состояние общее для всех показов истории и в код не попадает. `--group=Element` проверяет один раздел.
+ * такое состояние общее для всех показов истории и в код не попадает. Проверяются истории компонентов и витрины
+ * `src/stories/blocks` и `src/stories/foundations`. `--group=Element` проверяет один раздел.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
@@ -12,6 +13,8 @@ import ts from 'typescript'
 
 const ROOT = join(import.meta.dirname, '..')
 const COMPONENTS = join(ROOT, 'src/components')
+/** Витрины без компонента: `src/stories/<раздел>/<Имя>/` — истории и `parameters.ts` прямо в папке */
+const STORY_SECTIONS = ['src/stories/blocks', 'src/stories/foundations'].map(path => join(ROOT, path))
 const SOURCE_HELPERS = new Set(['storySource', 'staticStorySource'])
 const REACTIVE = new Set(['ref', 'shallowRef', 'reactive', 'computed'])
 
@@ -70,9 +73,9 @@ function isExactSource(file, node) {
 const docsSource = parameters => property(property(parameters, 'docs'), 'source')
 
 function metaInfo(dir) {
-	const metaFile = readdirSync(join(dir, 'stories')).find(name => name.endsWith('.stories.ts'))
+	const metaFile = readdirSync(dir).find(name => name.endsWith('.stories.ts'))
 	if (!metaFile) return null
-	const source = sourceFile(join(dir, 'stories', metaFile))
+	const source = sourceFile(join(dir, metaFile))
 	let meta = null
 	const visit = node => {
 		if (ts.isVariableDeclaration(node) && node.name.getText() === 'meta') meta = node.initializer
@@ -81,7 +84,7 @@ function metaInfo(dir) {
 	visit(source)
 	while (meta && (ts.isSatisfiesExpression(meta) || ts.isAsExpression(meta))) meta = meta.expression
 	const title = property(meta, 'title')?.text ?? ''
-	const parametersFile = join(dir, 'stories', 'parameters.ts')
+	const parametersFile = join(dir, 'parameters.ts')
 	const parameters = existsSync(parametersFile) ? resolveIdentifier(parametersFile, 'parameters') : null
 	const unwrapped =
 		parameters && (ts.isSatisfiesExpression(parameters) || ts.isAsExpression(parameters)) ? parameters.expression : parameters
@@ -94,7 +97,7 @@ function metaInfo(dir) {
 }
 
 function storiesOf(dir) {
-	return listFiles(join(dir, 'stories')).flatMap(file =>
+	return listFiles(dir).flatMap(file =>
 		sourceFile(file)
 			.statements.filter(ts.isVariableStatement)
 			.flatMap(statement => statement.declarationList.declarations)
@@ -118,7 +121,7 @@ function moduleRefs(file) {
 function checkComponent(dir, meta) {
 	const problems = []
 	const at = file => relative(ROOT, file)
-	for (const file of listFiles(join(dir, 'stories'))) {
+	for (const file of listFiles(dir)) {
 		for (const name of moduleRefs(file)) problems.push(`${at(file)}: ${name} — ref в константе модуля, нужен state`)
 	}
 	if (meta.source && !isExactSource(meta.parametersFile, meta.source))
@@ -133,12 +136,24 @@ function checkComponent(dir, meta) {
 	return problems
 }
 
+/** Папки историй: `stories/` каждого компонента и папки витрин из `STORY_SECTIONS` */
+function storyDirs() {
+	const components = readdirSync(COMPONENTS)
+		.sort()
+		.map(name => join(COMPONENTS, name, 'stories'))
+	const sections = STORY_SECTIONS.flatMap(section =>
+		readdirSync(section)
+			.sort()
+			.map(name => join(section, name))
+			.filter(path => statSync(path).isDirectory()),
+	)
+	return [...components, ...sections].filter(dir => existsSync(dir))
+}
+
 const { groups } = parseArgs(process.argv.slice(2))
 const problems = []
 let checked = 0
-for (const name of readdirSync(COMPONENTS).sort()) {
-	const dir = join(COMPONENTS, name)
-	if (!existsSync(join(dir, 'stories'))) continue
+for (const dir of storyDirs()) {
 	const meta = metaInfo(dir)
 	if (!meta || (groups && !groups.includes(meta.group))) continue
 	checked++
@@ -150,4 +165,4 @@ if (problems.length) {
 	for (const problem of problems) console.error(`  ${problem}`)
 	process.exit(1)
 }
-console.log(`✅ «Show code» — точный код превью: ${checked} компонентов${groups ? ` (${groups.join(', ')})` : ''}.`)
+console.log(`✅ «Show code» — точный код превью: ${checked} компонентов и витрин${groups ? ` (${groups.join(', ')})` : ''}.`)

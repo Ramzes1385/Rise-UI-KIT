@@ -1,10 +1,25 @@
-import { ref } from 'vue'
-import { COMPACT_STYLE } from '../../shared'
 import type meta from '../../BaseEditor.stories'
 import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import { EDITOR_VARIANTS } from '../../../types/BaseEditor.types'
+
+const state = {
+	values: Object.fromEntries(
+		EDITOR_VARIANTS.map(variant => [variant, `<p>Вариант <strong>${variant}</strong>: рамка, фон и тулбар.</p>`]),
+	),
+}
+
+const SERVICE_ARGS = ['toolbar', 'modelValue', 'variant', 'onUpdate:modelValue']
+
+const template = `
+	<div class="story-stack">
+		<div v-for="variant in EDITOR_VARIANTS" :key="variant" class="story-stack" style="gap: 6px;">
+			<span class="story-label">{{ variant }}</span>
+			<BaseEditor v-bind="args" v-model="values[variant]" :variant="variant" style="--editor-min-height: 72px" />
+		</div>
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	argTypes: { variant: { control: false } },
@@ -17,28 +32,18 @@ export const Variants: StoryObj<typeof meta> = {
 					'где рамка лишняя; `shadow` — с лёгкой тенью. Фокус в тексте во всех вариантах — рамка и кольцо основного цвета.',
 				].join('\n'),
 			},
-			source: { code: EDITOR_VARIANTS.map(variant => `<BaseEditor v-model="html" variant="${variant}" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BaseEditor', 'EDITOR_VARIANTS'],
+				state,
+				types: { values: 'Record<string, string>' },
+				omit: SERVICE_ARGS,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseEditor },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['toolbar', 'modelValue', 'variant', 'onUpdate:modelValue']),
-			variants: EDITOR_VARIANTS,
-			values: ref<Record<string, string>>(
-				Object.fromEntries(
-					EDITOR_VARIANTS.map(variant => [variant, `<p>Вариант <strong>${variant}</strong>: рамка, фон и тулбар.</p>`]),
-				),
-			),
-			compactStyle: COMPACT_STYLE,
-		}),
-		template: `
-			<div class="story-stack">
-				<div v-for="variant in variants" :key="variant" class="story-stack" style="gap: 6px;">
-					<span class="story-label">{{ variant }}</span>
-					<BaseEditor v-bind="props" v-model="values[variant]" :variant="variant" :style="compactStyle" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { EDITOR_VARIANTS }, slots: SERVICE_ARGS }),
+		template,
 	}),
 }
