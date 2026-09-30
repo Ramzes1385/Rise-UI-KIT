@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSplitButton from '../ui/BaseSplitButton.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Кнопка с меню: основное действие по клику и несколько похожих в меню справа («Сохранить» и «Сохранить как…»).',

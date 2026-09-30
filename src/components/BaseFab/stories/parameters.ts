@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseFab from '../ui/BaseFab.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Плавающая кнопка главного действия страницы: «Новая задача», «Написать». Стоит в углу окна поверх контента.',

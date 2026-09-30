@@ -2,7 +2,17 @@ import { expect } from 'storybook/test'
 import type meta from '../BaseLoader.stories'
 import BaseLoader from '../../ui/BaseLoader.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-frame story-narrow" data-testid="container">
+		<div class="story-col">
+			<strong>Отчёт за май</strong>
+			<span>Выручка выросла на 12%, число заказов — на 8%. Данные обновляются раз в час.</span>
+		</div>
+		<BaseLoader v-bind="args" />
+	</div>
+`
 
 export const Overlay: StoryObj<typeof meta> = {
 	args: { isOverlay: true, hasLabel: true, label: 'Обновление…' },
@@ -15,28 +25,13 @@ export const Overlay: StoryObj<typeof meta> = {
 					'обновляется карточка или таблица. Родителю нужен `position: relative`.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<div style="position: relative;">',
-					'  <ReportCard />',
-					'  <BaseLoader v-if="isRefreshing" is-overlay has-label label="Обновление…" />',
-					'</div>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseLoader'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseLoader },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<div class="story-frame story-narrow" data-testid="container">
-				<div class="story-col">
-					<strong>Отчёт за май</strong>
-					<span>Выручка выросла на 12%, число заказов — на 8%. Данные обновляются раз в час.</span>
-				</div>
-				<BaseLoader v-bind="props" />
-			</div>
-		`,
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const container = canvas.getByTestId('container')

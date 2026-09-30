@@ -1,9 +1,15 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseSplitButton from '../ui/BaseSplitButton.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseSplitButton v-bind="args" />
+`
+
+export const source = storySource({ template, imports: ['BaseSplitButton'] })
 
 export const render = (args => ({
 	components: { BaseSplitButton },
-	setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-	template: '<BaseSplitButton v-bind="props" />',
+	setup: useStorySetup(args, { slots: [] }),
+	template,
 })) satisfies Meta<typeof BaseSplitButton>['render']

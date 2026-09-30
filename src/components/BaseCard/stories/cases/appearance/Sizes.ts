@@ -2,30 +2,35 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseCard.stories'
 import BaseCard from '../../../ui/BaseCard.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
+		<BaseCard v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" :title="preset.label" subtitle="Обновлён 15 мая">
+			Выручка выросла на 12%.
+		</BaseCard>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['variant'] },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: отступы, текст и радиус масштабируются вместе.' },
-			source: {
-				code: SIZE_PRESETS.map(preset => `<BaseCard :size-scale="${preset.sizeScale}" title="${preset.name}">…</BaseCard>`).join(
-					'\n',
-				),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseCard'],
+				script: `const presets = ${literal(presets)}`,
+				omit: ['default', 'title', 'subtitle'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseCard },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'title', 'subtitle']), presets: SIZE_PRESETS, sizeLabel }),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
-				<BaseCard v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :title="sizeLabel(preset)" subtitle="Обновлён 15 мая">
-					Выручка выросла на 12%.
-				</BaseCard>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets }, slots: ['default', 'title', 'subtitle'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const title = canvas.getByRole('heading', { name: 'xl · 125' })

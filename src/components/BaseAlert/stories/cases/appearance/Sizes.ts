@@ -2,7 +2,15 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseAlert.stories'
 import BaseAlert from '../../../ui/BaseAlert.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const template = `
+	<div class="story-stack story-medium">
+		<BaseAlert v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" :title="preset.label" />
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	args: { isClosable: true, description: '' },
@@ -10,21 +18,13 @@ export const Sizes: StoryObj<typeof meta> = {
 		controls: { include: ['type', 'variant'] },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: отступы, текст, иконка и кнопка закрытия масштабируются вместе.' },
-			source: {
-				code: SIZE_PRESETS.map(preset => `<BaseAlert :size-scale="${preset.sizeScale}" title="${preset.name}" is-closable />`).join(
-					'\n',
-				),
-			},
+			source: storySource({ template, imports: ['BaseAlert'], script: `const presets = ${literal(presets)}` }),
 		},
 	},
 	render: args => ({
 		components: { BaseAlert },
-		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),
-		template: `
-			<div class="story-stack story-medium">
-				<BaseAlert v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :title="sizeLabel(preset)" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets } }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const closeButtons = canvas.getAllByRole('button', { name: 'Закрыть' })

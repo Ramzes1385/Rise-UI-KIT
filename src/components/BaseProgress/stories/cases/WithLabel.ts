@@ -2,7 +2,17 @@ import { expect } from 'storybook/test'
 import type meta from '../BaseProgress.stories'
 import BaseProgress from '../../ui/BaseProgress.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-stack">
+		<BaseProgress v-bind="args" :value="5" aria-label="Загрузка отчёта" />
+		<BaseProgress v-bind="args" :value="100" aria-label="Загрузка фото" />
+		<BaseProgress v-bind="args" :value="3" :max="5" aria-label="Регистрация">
+			<template #default="{ value }">Шаг {{ value }} из 5</template>
+		</BaseProgress>
+	</div>
+`
 
 export const WithLabel: StoryObj<typeof meta> = {
 	args: { hasLabel: true },
@@ -15,28 +25,13 @@ export const WithLabel: StoryObj<typeof meta> = {
 					'Слот меняет текст подписи — например, на «Шаг 3 из 5».',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseProgress :value="5" has-label />',
-					'<BaseProgress :value="3" :max="5" has-label>',
-					'  <template #default="{ value }">Шаг {{ value }} из 5</template>',
-					'</BaseProgress>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseProgress'], omit: ['default', 'value', 'max', 'shape'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseProgress },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'value', 'max', 'shape']) }),
-		template: `
-			<div class="story-stack">
-				<BaseProgress v-bind="props" :value="5" aria-label="Загрузка отчёта" />
-				<BaseProgress v-bind="props" :value="100" aria-label="Загрузка фото" />
-				<BaseProgress v-bind="props" :value="3" :max="5" aria-label="Регистрация">
-					<template #default="{ value }">Шаг {{ value }} из 5</template>
-				</BaseProgress>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: ['default', 'value', 'max', 'shape'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('progressbar', { name: 'Загрузка отчёта' })).toHaveTextContent('5%')

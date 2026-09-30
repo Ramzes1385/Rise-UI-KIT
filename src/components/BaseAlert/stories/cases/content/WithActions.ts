@@ -4,7 +4,17 @@ import type meta from '../../BaseAlert.stories'
 import BaseAlert from '../../../ui/BaseAlert.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-medium">
+		<BaseAlert v-bind="args">
+			<template #actions>
+				<BaseButton variant="outline" :size-scale="87.5">Продлить</BaseButton>
+			</template>
+		</BaseAlert>
+	</div>
+`
 
 export const WithActions: StoryObj<typeof meta> = {
 	args: {
@@ -17,29 +27,13 @@ export const WithActions: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: { story: 'Слот `actions`: кнопки справа от текста. Вместе с `isClosable` кнопка «Закрыть» идёт последней.' },
-			source: {
-				code: [
-					'<BaseAlert type="warning" variant="soft" title="…" description="…" is-closable @close="hide">',
-					'  <template #actions>',
-					'    <BaseButton variant="outline" :size-scale="87.5">Продлить</BaseButton>',
-					'  </template>',
-					'</BaseAlert>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseAlert', 'BaseButton'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseAlert, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<div class="story-medium">
-				<BaseAlert v-bind="props">
-					<template #actions>
-						<BaseButton variant="outline" :size-scale="87.5">Продлить</BaseButton>
-					</template>
-				</BaseAlert>
-			</div>
-		`,
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const [renew, close] = canvas.getAllByRole('button')

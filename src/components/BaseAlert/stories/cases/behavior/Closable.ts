@@ -1,11 +1,19 @@
-import { ref } from 'vue'
 import { MESSAGES } from '../../shared'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseAlert.stories'
 import BaseAlert from '../../../ui/BaseAlert.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { isVisible: true }
+
+const template = `
+	<div class="story-col story-medium">
+		<BaseAlert v-if="isVisible" v-bind="args" style="width: 100%;" @close="isVisible = false" />
+		<BaseButton v-else variant="outline" @click="isVisible = true">Показать снова</BaseButton>
+	</div>
+`
 
 export const Closable: StoryObj<typeof meta> = {
 	args: {
@@ -22,22 +30,13 @@ export const Closable: StoryObj<typeof meta> = {
 					'После закрытия здесь появляется кнопка «Показать снова».',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseAlert v-if="isVisible" type="success" title="Изменения сохранены" is-closable @close="isVisible = false" />',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseAlert', 'BaseButton'], state }),
 		},
 	},
 	render: args => ({
 		components: { BaseAlert, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args), isVisible: ref(true) }),
-		template: `
-			<div class="story-col story-medium">
-				<BaseAlert v-if="isVisible" v-bind="props" style="width: 100%;" @close="isVisible = false" />
-				<BaseButton v-else variant="outline" @click="isVisible = true">Показать снова</BaseButton>
-			</div>
-		`,
+		setup: useStorySetup(args, { state }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Закрыть' }))

@@ -4,7 +4,24 @@ import type meta from '../../BaseProgress.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseProgress from '../../../ui/BaseProgress.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-stack">
+		<BaseProgress v-bind="args" :value="value" aria-label="Загрузка файла" />
+		<div>
+			<BaseButton variant="outline" @click="add">Загрузить ещё 20%</BaseButton>
+		</div>
+	</div>
+`
+
+const script = `
+	const value = ref(60)
+
+	function add() {
+		value.value = Math.min(value.value + 20, 100)
+	}
+`
 
 export const Complete: StoryObj<typeof meta> = {
 	args: { hasLabel: true, value: 60 },
@@ -12,27 +29,20 @@ export const Complete: StoryObj<typeof meta> = {
 		controls: { include: ['sizeScale', 'shape'] },
 		docs: {
 			description: { story: 'Событие `complete` приходит, когда прогресс доходит до 100%: например, чтобы показать «Готово».' },
-			source: { code: '<BaseProgress :value="uploaded" has-label aria-label="Загрузка файла" @complete="onUploaded" />' },
+			source: storySource({ template, imports: ['BaseProgress', 'BaseButton'], vue: ['ref'], script, omit: ['default', 'value'] }),
 		},
 	},
-	render: args => ({
-		components: { BaseProgress, BaseButton },
-		setup: () => {
-			const value = ref(args.value)
-			const add = (): void => {
-				value.value = Math.min(value.value + 20, 100)
-			}
-			return { props: useArgsWithoutSlots(args, ['default', 'value']), value, add }
-		},
-		template: `
-			<div class="story-stack">
-				<BaseProgress v-bind="props" :value="value" aria-label="Загрузка файла" />
-				<div>
-					<BaseButton variant="outline" @click="add">Загрузить ещё 20%</BaseButton>
-				</div>
-			</div>
-		`,
-	}),
+	render: args => {
+		const value = ref(args.value)
+		const add = (): void => {
+			value.value = Math.min(value.value + 20, 100)
+		}
+		return {
+			components: { BaseProgress, BaseButton },
+			setup: useStorySetup(args, { slots: ['default', 'value'], data: { value, add } }),
+			template,
+		}
+	},
 	play: async ({ canvas, userEvent, args }) => {
 		const button = canvas.getByRole('button', { name: 'Загрузить ещё 20%' })
 		await userEvent.click(button)

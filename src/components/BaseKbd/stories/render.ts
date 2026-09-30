@@ -1,9 +1,15 @@
 import BaseKbd from '../ui/BaseKbd.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseKbd v-bind="args" />
+`
+
+export const source = storySource({ template, imports: ['BaseKbd'] })
 
 export const render = (args => ({
 	components: { BaseKbd },
-	setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-	template: '<BaseKbd v-bind="props" />',
+	setup: useStorySetup(args, { slots: [] }),
+	template,
 })) satisfies Meta<typeof BaseKbd>['render']

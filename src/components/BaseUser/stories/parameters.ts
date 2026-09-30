@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseUser from '../ui/BaseUser.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Человек: аватар, имя и подпись — автор комментария, исполнитель задачи, строка списка участников.',

@@ -3,15 +3,23 @@ import type meta from '../BaseUser.stories'
 import BaseUser from '../../ui/BaseUser.vue'
 import { BaseBadge } from '@components/BaseBadge'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseUser v-bind="args"><template #description><BaseBadge variant="soft" label="Администратор" /></template></BaseUser>
+`
 
 export const CustomDescription: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Своя подпись: слот `description` — роль бейджем.' } } },
+	parameters: {
+		docs: {
+			description: { story: 'Своя подпись: слот `description` — роль бейджем.' },
+			source: storySource({ template, imports: ['BaseUser', 'BaseBadge'], omit: ['description'] }),
+		},
+	},
 	render: args => ({
 		components: { BaseUser, BaseBadge },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['description']) }),
-		template:
-			'<BaseUser v-bind="props"><template #description><BaseBadge variant="soft" label="Администратор" /></template></BaseUser>',
+		setup: useStorySetup(args, { slots: ['description'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByText('Администратор')).toBeVisible()

@@ -1,7 +1,7 @@
 /** Код для «Show code»: ровно то, что рисует превью истории, — её шаблон и текущие значения из Controls. */
 
 import { STORY_STYLES } from './storyStyles'
-import type { StorySourceContext, StorySourceOptions } from '../types/helpers.types'
+import type { ShownAttribute, StorySourceContext, StorySourceOptions } from '../types/helpers.types'
 
 const PACKAGE = '@ramzes1385/rise-ui-kit'
 
@@ -62,53 +62,132 @@ function defaultOf(component: unknown, name: string): unknown {
 
 const sameValue = (left: unknown, right: unknown): boolean => left === right || JSON.stringify(left) === JSON.stringify(right)
 
-/** Пропсы из Controls, которые меняют пример: без слотов, обработчиков, пустых и значений по умолчанию */
+/** Значение, которое получает компонент: подпись варианта из `mapping` в Controls → сам вариант */
+function mappedValue(context: StorySourceContext, [name, value]: [string, unknown]): [string, unknown] {
+	const mapping = context.argTypes?.[name]?.mapping
+	return [name, mapping && typeof value === 'string' && value in mapping ? mapping[value] : value]
+}
+
+/** Пропсы из Controls, которые меняют пример: без слотов (`default` — всегда), обработчиков, пустых и значений по умолчанию */
 function shownArgs(options: StorySourceOptions, context: StorySourceContext): [string, unknown][] {
-	const hidden = new Set([...(options.omit ?? []), ...Object.values(options.models ?? {})])
-	return Object.entries(context.args).filter(
-		([name, value]) =>
-			!hidden.has(name) &&
-			value !== undefined &&
-			typeof value !== 'function' &&
-			context.argTypes?.[name]?.table?.category !== 'slots' &&
-			!sameValue(defaultOf(context.component, name), value),
-	)
+	const slotNames = [...options.template.matchAll(/\{\{\s*slots\.(\w+)\s*\}\}/g)].map(match => match[1])
+	const hidden = new Set(['default', ...(options.omit ?? []), ...Object.values(options.models ?? {}), ...slotNames])
+	return Object.entries(context.args)
+		.map(entry => mappedValue(context, entry))
+		.filter(
+			([name, value]) =>
+				!hidden.has(name) &&
+				value !== undefined &&
+				typeof value !== 'function' &&
+				context.argTypes?.[name]?.table?.category !== 'slots' &&
+				!sameValue(defaultOf(context.component, name), value),
+		)
 }
 
 /** Картинки data URI всегда уходят в константу: в теге их не прочитать */
 const isDataUri = (value: unknown): boolean => typeof value === 'string' && value.startsWith('data:')
 
-function attribute([name, value]: [string, unknown], hoisted: string[]): string {
-	if (value === true) return kebab(name)
-	if (isDataUri(value)) {
-		hoisted.push(`const ${name} = ${literal(value)}`)
-		return `:${kebab(name)}="${name}"`
-	}
-	if (typeof value === 'string' && !value.includes('\n')) return `${kebab(name)}="${value.replace(/"/g, '&quot;')}"`
+/** Пропс как атрибут тега; длинное значение и картинка data URI — через константу `hoist` */
+function attribute([name, value]: [string, unknown]): ShownAttribute {
+	const prop = kebab(name)
+	if (value === true) return { name: prop, code: prop }
+	const isInline = !isDataUri(value)
+	if (isInline && typeof value === 'string' && !value.includes('\n'))
+		return { name: prop, code: `${prop}="${value.replace(/"/g, '&quot;')}"` }
 	const code = literal(value)
-	if (code.length <= INLINE_LIMIT && !code.includes('\n')) return `:${kebab(name)}="${code.replace(/"/g, '&quot;')}"`
-	hoisted.push(`const ${name} = ${literal(value)}`)
-	return `:${kebab(name)}="${name}"`
+	if (isInline && code.length <= INLINE_LIMIT && !code.includes('\n'))
+		return { name: prop, code: `:${prop}="${code.replace(/"/g, '&quot;')}"` }
+	return { name: prop, code: `:${prop}="${name}"`, hoist: `const ${name} = ${code}` }
 }
 
 /** Части тега: имя, атрибуты (значения в кавычках — целиком) и закрывающая скобка */
 const tokens = (text: string): string[] => text.match(/(?:[^\s"]+(?:"[^"]*")?)+/g) ?? []
 
-/** `v-bind="args"` → пропсы: в строку, если помещаются, иначе по одному на строку */
+/** Индекс `>`, которым заканчивается открывающий тег, — вне кавычек; нет его — длина текста */
+function tagEndIndex(text: string): number {
+	let quote = ''
+	for (let index = 0; index < text.length; index++) {
+		const char = text[index]
+		if (quote) quote = char === quote ? '' : quote
+		else if (char === '"') quote = char
+		else if (char === '>') return index
+	}
+	return text.length
+}
+
+/** Конец открывающего тега в хвосте строки: атрибуты до `>` или `/>` и всё, что после (содержимое, закрывающий тег) */
+function splitTagEnd(text: string): { rest: string[]; end: string } {
+	const index = tagEndIndex(text)
+	const start = index < text.length && text[index - 1] === '/' ? index - 1 : index
+	return { rest: tokens(text.slice(0, start)), end: text.slice(start) }
+}
+
+const closeTag = (end: string): string => (end.startsWith('/') ? ` ${end}` : end)
+
+/**
+ * Тег с `v-bind="args"` в начале строки → пропсы: в строку, если помещаются, иначе по одному на строку; текст после
+ * тега не разрывается. Строка не переносится, если атрибут один или перед тегом на строке есть другой тег.
+ */
 function expandLine(line: string, attributes: readonly string[]): string {
 	const [, indent, before, after] = /^(\s*)(.*?)\s*v-bind="args"(.*)$/.exec(line) as RegExpExecArray
-	const oneLine = [before, ...attributes, after.trim()].filter(Boolean).join(' ')
-	if (`${indent}${oneLine}`.length <= LINE_LIMIT) return `${indent}${oneLine}`
+	const { rest, end } = splitTagEnd(after)
+	const oneLine = `${indent}${[before, ...attributes, ...rest].filter(Boolean).join(' ')}${closeTag(end)}`
 	const [tag, ...own] = tokens(before)
-	const items = [...own, ...attributes, ...tokens(after)]
-	if (items.length > 1 && /^\/?>$/.test(items.at(-1) as string)) items.splice(-2, 2, `${items.at(-2)} ${items.at(-1)}`)
+	const items = [...own, ...attributes, ...rest]
+	if (oneLine.length <= LINE_LIMIT || items.length < 2 || before.lastIndexOf('<') > 0) return oneLine
+	items.push(`${items.pop()}${closeTag(end)}`)
 	return [`${indent}${tag}`, ...items.map(item => `${indent}\t${item}`)].join('\n')
 }
 
-function expandArgs(template: string, attributes: readonly string[]): string {
+const V_BIND = 'v-bind="args"'
+
+/** Имена атрибутов, которые тег задаёт сам (`title`, `:title`, `v-model:open`): они перекрывают `v-bind="args"` */
+function explicitNames(template: string, at: number): Set<string> {
+	const start = template.lastIndexOf('<', at)
+	const end = at + tagEndIndex(template.slice(at))
+	const names = tokens(template.slice(start, end))
+		.slice(1)
+		.map(token => kebab(token.split('=')[0].replace(/^(:|v-bind:|v-model:)/, '')))
+	return new Set(names)
+}
+
+/** Пропсы из Controls для тега, где стоит `v-bind="args"` (позиция `at` в шаблоне) */
+function argsAt(template: string, at: number, attributes: readonly ShownAttribute[]): string[] {
+	const explicit = explicitNames(template, at)
+	return attributes.filter(item => !explicit.has(item.name)).map(item => item.code)
+}
+
+/** Строка шаблона с `v-bind="args"` → строки кода; `start` — позиция строки в шаблоне */
+function expandArgsLine(
+	template: string,
+	{ line, start }: { line: string; start: number },
+	attributes: readonly ShownAttribute[],
+): string[] {
+	const positions = [...line.matchAll(/v-bind="args"/g)].map(match => start + (match.index ?? 0))
+	const trimmed = line.trim()
+	if (trimmed === V_BIND) {
+		const indent = line.slice(0, line.indexOf(V_BIND))
+		return argsAt(template, positions[0], attributes).map(code => `${indent}${code}`)
+	}
+	if (positions.length === 1 && trimmed.startsWith('<')) return [expandLine(line, argsAt(template, positions[0], attributes))]
+	let index = 0
+	const expanded = line.replace(/ ?v-bind="args"/g, () => {
+		const codes = argsAt(template, positions[index++], attributes)
+		return codes.length ? ` ${codes.join(' ')}` : ''
+	})
+	return [expanded]
+}
+
+/** `v-bind="args"` в каждом теге → пропсы из Controls, кроме заданных тегом явно */
+function expandArgs(template: string, attributes: readonly ShownAttribute[]): string {
+	let start = 0
 	return template
 		.split('\n')
-		.map(line => (line.includes('v-bind="args"') ? expandLine(line, attributes) : line))
+		.flatMap(line => {
+			const lines = line.includes(V_BIND) ? expandArgsLine(template, { line, start }, attributes) : [line]
+			start += line.length + 1
+			return lines
+		})
 		.join('\n')
 }
 
@@ -128,20 +207,32 @@ function storyStyles(template: string): string {
 	return rules.length ? `\n\n<style scoped>\n${rules.join('\n\n')}\n</style>` : ''
 }
 
+const escapeText = (text: string): string => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+/** `{{ slots.default }}` в шаблоне → текст слота из Controls: в коде он стоит прямо в теге */
+const fillSlots = (template: string, args: Record<string, unknown>): string =>
+	template.replace(/\{\{\s*slots\.(\w+)\s*\}\}/g, (_, name: string) => escapeText(String(args[name] ?? '')))
+
 function buildSource(options: StorySourceOptions, context: StorySourceContext): string {
-	const hoisted: string[] = []
-	const attributes = shownArgs(options, context).map(entry => attribute(entry, hoisted))
-	const models = Object.entries(options.models ?? {}).map(([name, arg]) => `const ${name} = ref(${literal(context.args[arg] ?? '')})`)
-	const imports = [
-		...(models.length ? ["import { ref } from 'vue'"] : []),
-		`import { ${[...options.imports].sort().join(', ')} } from '${PACKAGE}'`,
+	const attributes = shownArgs(options, context).map(attribute)
+	const template = expandArgs(fillSlots(templateSource(options.template), context.args), attributes)
+	const hoisted = attributes.filter(item => item.hoist && template.includes(item.code)).map(item => item.hoist)
+	const refs = [
+		...Object.entries(options.models ?? {}).map(([name, arg]) => `const ${name} = ref(${literal(context.args[arg] ?? '')})`),
+		...Object.entries(options.state ?? {}).map(([name, value]) => `const ${name} = ref(${literal(value)})`),
 	]
-	const script = [imports.join('\n'), [...models, ...hoisted].join('\n'), templateSource(options.script ?? '')].filter(Boolean)
-	const template = expandArgs(templateSource(options.template), attributes)
+	const vue = [...new Set([...(refs.length ? ['ref'] : []), ...(options.vue ?? [])])].sort()
+	const imports = [
+		...(vue.length ? [`import { ${vue.join(', ')} } from 'vue'`] : []),
+		`import { ${[...options.imports].sort().join(', ')} } from '${PACKAGE}'`,
+		...Object.entries(options.importsFrom ?? {}).map(([from, names]) => `import { ${[...names].sort().join(', ')} } from '${from}'`),
+	]
+	const script = [imports.join('\n'), [...refs, ...hoisted].join('\n'), templateSource(options.script ?? '')].filter(Boolean)
+	const body = template
 		.split('\n')
 		.map(line => (line ? `\t${line}` : line))
 		.join('\n')
-	return `<script setup lang="ts">\n${script.join('\n\n')}\n</script>\n\n<template>\n${template}\n</template>${storyStyles(options.template)}`
+	return `<script setup lang="ts">\n${script.join('\n\n')}\n</script>\n\n<template>\n${body}\n</template>${storyStyles(options.template)}`
 }
 
 /**

@@ -3,7 +3,27 @@ import { CONTENT_ARGS } from '../../shared'
 import type meta from '../../BaseAvatar.stories'
 import BaseAvatar from '../../../ui/BaseAvatar.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots, STORY_USERS } from '@/stories/helpers'
+import { literal, STORY_USERS, storySource, useStorySetup } from '@/stories/helpers'
+
+const users = STORY_USERS.slice(0, 3)
+
+const rest = STORY_USERS.length - 3
+
+const ring = '0 0 0 2px var(--rise-bg)'
+
+const template = `
+	<div class="story-row" style="gap: 0;">
+		<BaseAvatar
+			v-for="(user, index) in users"
+			:key="user.id"
+			v-bind="args"
+			:src="user.avatar"
+			:alt="user.name"
+			:name="user.name"
+			:style="{ marginLeft: index ? '-8px' : 0, boxShadow: ring }" />
+		<BaseAvatar v-bind="args" :style="{ marginLeft: '-8px', boxShadow: ring }">+{{ rest }}</BaseAvatar>
+	</div>
+`
 
 export const Group: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,42 +35,18 @@ export const Group: StoryObj<typeof meta> = {
 					'Последний аватар со слотом показывает, сколько участников не поместилось.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<div style="display: flex;">',
-					'  <BaseAvatar',
-					'    v-for="(user, index) in users.slice(0, 3)"',
-					'    :key="user.id"',
-					'    :src="user.avatar"',
-					'    :name="user.name"',
-					"    :style=\"{ marginLeft: index ? '-8px' : 0, boxShadow: '0 0 0 2px var(--rise-bg)' }\" />",
-					'  <BaseAvatar style="margin-left: -8px; box-shadow: 0 0 0 2px var(--rise-bg)">+{{ users.length - 3 }}</BaseAvatar>',
-					'</div>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseAvatar'],
+				script: [`const users = ${literal(users)}`, `const rest = ${literal(rest)}`, `const ring = ${literal(ring)}`].join('\n'),
+				omit: [...CONTENT_ARGS, 'isOnline', 'shape'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseAvatar },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [...CONTENT_ARGS, 'isOnline', 'shape']),
-			users: STORY_USERS.slice(0, 3),
-			rest: STORY_USERS.length - 3,
-			ring: '0 0 0 2px var(--rise-bg)',
-		}),
-		template: `
-			<div class="story-row" style="gap: 0;">
-				<BaseAvatar
-					v-for="(user, index) in users"
-					:key="user.id"
-					v-bind="props"
-					:src="user.avatar"
-					:alt="user.name"
-					:name="user.name"
-					:style="{ marginLeft: index ? '-8px' : 0, boxShadow: ring }" />
-				<BaseAvatar v-bind="props" :style="{ marginLeft: '-8px', boxShadow: ring }">+{{ rest }}</BaseAvatar>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { users, rest, ring }, slots: [...CONTENT_ARGS, 'isOnline', 'shape'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getAllByRole('img')).toHaveLength(3)

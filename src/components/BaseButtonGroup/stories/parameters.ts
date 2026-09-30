@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseButtonGroup from '../ui/BaseButtonGroup.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Склеенные кнопки связанных действий: выравнивание текста, навигация «назад / вперёд», вид списка.',

@@ -1,3 +1,4 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseColorModeButton from '../ui/BaseColorModeButton.vue'
 
@@ -15,6 +16,6 @@ export const parameters = {
 				'- `colorMode` — свой экземпляр из `createColorMode({ target })`, чтобы переключать тему части интерфейса.',
 			].join('\n'),
 		},
-		source: { code: '<BaseColorModeButton />' },
+		source,
 	},
 } satisfies Meta<typeof BaseColorModeButton>['parameters']

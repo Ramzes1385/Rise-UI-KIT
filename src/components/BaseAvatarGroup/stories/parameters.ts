@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseAvatarGroup from '../ui/BaseAvatarGroup.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Группа аватаров внахлёст: участники проекта, соавторы документа. Лишние — «+N».',

@@ -3,7 +3,11 @@ import { LONG_BODY } from '../../shared'
 import type meta from '../../BaseCard.stories'
 import BaseCard from '../../../ui/BaseCard.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-narrow"><BaseCard v-bind="args">{{ slots.default }}</BaseCard></div>
+`
 
 export const LongContent: StoryObj<typeof meta> = {
 	parameters: {
@@ -11,6 +15,7 @@ export const LongContent: StoryObj<typeof meta> = {
 			description: {
 				story: 'Длинные заголовок, подзаголовок и текст переносятся по словам и не выходят за ширину карточки (здесь — 360px).',
 			},
+			source: storySource({ template, imports: ['BaseCard'] }),
 		},
 	},
 	args: {
@@ -20,8 +25,8 @@ export const LongContent: StoryObj<typeof meta> = {
 	},
 	render: args => ({
 		components: { BaseCard },
-		setup: () => ({ props: useArgsWithoutSlots(args), args }),
-		template: '<div class="story-narrow"><BaseCard v-bind="props">{{ args.default }}</BaseCard></div>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const title = canvas.getByRole('heading', { level: 3 })

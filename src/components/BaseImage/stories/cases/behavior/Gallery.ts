@@ -3,7 +3,26 @@ import { screen, expect } from 'storybook/test'
 import BaseImage from '../../../ui/BaseImage.vue'
 import { GALLERY, GALLERY_SRCS } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const photos = GALLERY
+
+const gallery = GALLERY_SRCS
+
+const template = `
+	<div class="story-row">
+		<BaseImage
+			v-for="photo in photos"
+			:key="photo.src"
+			v-bind="args"
+			:src="photo.src"
+			:alt="photo.alt"
+			:gallery="gallery"
+			:zoom-config="{ hasZoom: true }"
+			:width="140"
+			:height="96" />
+	</div>
+`
 
 export const Gallery: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,42 +34,18 @@ export const Gallery: StoryObj<typeof meta> = {
 					'и клавиши ← → листают галерею, счётчик показывает позицию. Пример оставляет просмотр открытым на третьем снимке.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseImage',
-					'  v-for="photo in photos"',
-					'  :key="photo.src"',
-					'  :src="photo.src"',
-					'  :alt="photo.alt"',
-					'  :gallery="photos.map(p => p.src)"',
-					'  :zoom-config="{ hasZoom: true }"',
-					'  :width="140"',
-					'  :height="96" />',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseImage'],
+				script: [`const photos = ${literal(photos)}`, `const gallery = ${literal(gallery)}`].join('\n'),
+				omit: ['src', 'alt', 'width', 'height', 'gallery', 'zoomConfig'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseImage },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['src', 'alt', 'width', 'height', 'gallery', 'zoomConfig']),
-			photos: GALLERY,
-			gallery: GALLERY_SRCS,
-		}),
-		template: `
-			<div class="story-row">
-				<BaseImage
-					v-for="photo in photos"
-					:key="photo.src"
-					v-bind="props"
-					:src="photo.src"
-					:alt="photo.alt"
-					:gallery="gallery"
-					:zoom-config="{ hasZoom: true }"
-					:width="140"
-					:height="96" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { photos, gallery }, slots: ['src', 'alt', 'width', 'height', 'gallery', 'zoomConfig'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Горы в тумане' }))

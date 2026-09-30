@@ -3,24 +3,29 @@ import { LOADER_VARIANTS } from '../shared'
 import type meta from '../BaseLoader.stories'
 import BaseLoader from '../../ui/BaseLoader.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const variants = LOADER_VARIANTS
+
+const template = `
+	<div class="story-row" style="gap: 24px;">
+		<BaseLoader v-for="variant in variants" :key="variant" v-bind="args" :variant="variant" />
+	</div>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: { color: { text: { base: '#7c3aed' } } },
 	parameters: {
 		docs: {
 			description: { story: 'Кастомный цвет через `color.text`: перекрашивает любой вид индикатора, например под цвет раздела.' },
+			source: storySource({ template, imports: ['BaseLoader'], script: `const variants = ${literal(variants)}` }),
 		},
 		controls: { include: ['color', 'sizeScale'] },
 	},
 	render: args => ({
 		components: { BaseLoader },
-		setup: () => ({ props: useArgsWithoutSlots(args), variants: LOADER_VARIANTS }),
-		template: `
-			<div class="story-row" style="gap: 24px;">
-				<BaseLoader v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { variants } }),
+		template,
 	}),
 	play: async ({ canvasElement }) => {
 		const arc = canvasElement.querySelector('.base-loader__spinner-fill') as SVGElement

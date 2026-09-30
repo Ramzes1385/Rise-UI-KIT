@@ -1,11 +1,22 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseChip.stories'
 import BaseChip from '../../../ui/BaseChip.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { count: 0 }
+
+const template = `
+	<div style="padding: 12px;">
+		<BaseChip v-bind="args" :content="count" is-hidden-on-zero has-overflow :max-value="9">
+			<BaseButton variant="outline" :aria-label="'Корзина, товаров: ' + count" :padding="{ x: 5, y: 5 }" @click="count++">
+				<BaseIcon name="plus" />
+			</BaseButton>
+		</BaseChip>
+	</div>
+`
 
 export const Counter: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,30 +28,18 @@ export const Counter: StoryObj<typeof meta> = {
 					'больше 9 товаров — «9+». Количество продублировано в доступном имени кнопки.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseChip :content="count" is-hidden-on-zero has-overflow :max-value="9">',
-					'  <BaseButton variant="outline" :aria-label="`Корзина, товаров: ${count}`" @click="count++">…</BaseButton>',
-					'</BaseChip>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseChip', 'BaseButton', 'BaseIcon'],
+				state,
+				omit: ['default', 'content', 'isHiddenOnZero', 'hasOverflow', 'maxValue'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseChip, BaseButton, BaseIcon },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'content', 'isHiddenOnZero', 'hasOverflow', 'maxValue']),
-			count: ref(0),
-		}),
-		template: `
-			<div style="padding: 12px;">
-				<BaseChip v-bind="props" :content="count" is-hidden-on-zero has-overflow :max-value="9">
-					<BaseButton variant="outline" :aria-label="'Корзина, товаров: ' + count" :padding="{ x: 5, y: 5 }" @click="count++">
-						<BaseIcon name="plus" />
-					</BaseButton>
-				</BaseChip>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, slots: ['default', 'content', 'isHiddenOnZero', 'hasOverflow', 'maxValue'] }),
+		template,
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await expect(canvasElement.querySelector('.base-chip__badge')).toBeNull()

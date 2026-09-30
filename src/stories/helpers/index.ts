@@ -5,4 +5,4 @@ export { avatarImage, BROKEN_IMAGE_SRC, placeholderImage, STORY_IMAGES, STORY_TO
 export { STORY_WAIT_TIMEOUT, tabTo } from './play'
 export { StoryRouterLink } from './render/router'
 export { SIZE_PRESETS, sizeLabel } from './controls/sizes'
-export { literal, storySource, templateSource } from './render/source'
+export { literal, staticStorySource, storySource, templateSource } from './render/source'

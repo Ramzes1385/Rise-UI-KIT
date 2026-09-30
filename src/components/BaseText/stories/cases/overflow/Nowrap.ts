@@ -3,7 +3,11 @@ import { LONG_TEXT } from '../../shared'
 import type meta from '../../BaseText.stories'
 import BaseText from '../../../ui/BaseText.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-narrow" style="overflow: hidden;"><BaseText v-bind="args">{{ slots.default }}</BaseText></div>
+`
 
 export const Nowrap: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,13 +18,14 @@ export const Nowrap: StoryObj<typeof meta> = {
 					'лишнее обрезает контейнер (здесь `overflow: hidden`). Нужно многоточие — используйте `truncate`.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseText'] }),
 		},
 	},
 	args: { default: LONG_TEXT, nowrap: true },
 	render: args => ({
 		components: { BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args), text: args.default }),
-		template: '<div class="story-narrow" style="overflow: hidden;"><BaseText v-bind="props">{{ text }}</BaseText></div>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const text = canvas.getByText(/Ребрендинг/)

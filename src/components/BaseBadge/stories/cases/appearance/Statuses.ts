@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseBadge.stories'
 import BaseBadge from '../../../ui/BaseBadge.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const STATUSES = [
 	{ label: 'Новый', role: 'info' },
@@ -10,6 +10,19 @@ const STATUSES = [
 	{ label: 'Ждёт оплаты', role: 'warning' },
 	{ label: 'Отменён', role: 'error' },
 ] as const
+
+const statuses = STATUSES
+
+const template = `
+	<div class="story-row">
+		<BaseBadge
+			v-for="status in statuses"
+			:key="status.role"
+			v-bind="args"
+			:label="status.label"
+			:color="{ bg: { base: 'var(--rise-' + status.role + '-soft)' }, text: { base: 'var(--rise-' + status.role + '-text)' } }" />
+	</div>
+`
 
 export const Statuses: StoryObj<typeof meta> = {
 	parameters: {
@@ -21,27 +34,18 @@ export const Statuses: StoryObj<typeof meta> = {
 					'Токены пересчитываются в тёмной теме, контраст текста — не ниже 4.5:1.',
 				].join('\n'),
 			},
-			source: {
-				code: STATUSES.map(
-					({ label, role }) =>
-						`<BaseBadge label="${label}" :color="{ bg: { base: 'var(--rise-${role}-soft)' }, text: { base: 'var(--rise-${role}-text)' } }" />`,
-				).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseBadge'],
+				script: `const statuses = ${literal(statuses)}`,
+				omit: ['default', 'label', 'variant'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseBadge },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'label', 'variant']), statuses: STATUSES }),
-		template: `
-			<div class="story-row">
-				<BaseBadge
-					v-for="status in statuses"
-					:key="status.role"
-					v-bind="props"
-					:label="status.label"
-					:color="{ bg: { base: 'var(--rise-' + status.role + '-soft)' }, text: { base: 'var(--rise-' + status.role + '-text)' } }" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { statuses }, slots: ['default', 'label', 'variant'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const paid = canvas.getByText('Оплачен').closest('.base-badge') as HTMLElement

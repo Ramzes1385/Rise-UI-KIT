@@ -2,7 +2,22 @@ import { expect } from 'storybook/test'
 import type meta from '../BaseSkeleton.stories'
 import BaseSkeleton from '../../ui/BaseSkeleton.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-frame" role="group" aria-busy="true" aria-label="Загрузка профиля">
+		<div class="story-stack">
+			<div class="story-row" style="flex-wrap: nowrap;">
+				<BaseSkeleton v-bind="args" shape="circle" :width="40" :height="40" />
+				<div class="story-stack" style="gap: 8px;">
+					<BaseSkeleton v-bind="args" shape="text" width="40%" />
+					<BaseSkeleton v-bind="args" shape="text" width="25%" :height="12" />
+				</div>
+			</div>
+			<BaseSkeleton v-bind="args" shape="rect" width="100%" :height="72" />
+		</div>
+	</div>
+`
 
 export const CardPlaceholder: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,35 +29,13 @@ export const CardPlaceholder: StoryObj<typeof meta> = {
 					'`aria-busy="true"` и назван «Загрузка профиля» — так скринридер знает, что содержимое ещё грузится.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<div aria-busy="true" aria-label="Загрузка профиля" role="group">',
-					'  <BaseSkeleton shape="circle" :width="40" :height="40" />',
-					'  <BaseSkeleton shape="text" width="40%" />',
-					'  <BaseSkeleton shape="text" width="25%" :height="12" />',
-					'  <BaseSkeleton shape="rect" width="100%" :height="72" />',
-					'</div>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseSkeleton'], omit: ['default', 'shape', 'width', 'height'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseSkeleton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'shape', 'width', 'height']) }),
-		template: `
-			<div class="story-frame" role="group" aria-busy="true" aria-label="Загрузка профиля">
-				<div class="story-stack">
-					<div class="story-row" style="flex-wrap: nowrap;">
-						<BaseSkeleton v-bind="props" shape="circle" :width="40" :height="40" />
-						<div class="story-stack" style="gap: 8px;">
-							<BaseSkeleton v-bind="props" shape="text" width="40%" />
-							<BaseSkeleton v-bind="props" shape="text" width="25%" :height="12" />
-						</div>
-					</div>
-					<BaseSkeleton v-bind="props" shape="rect" width="100%" :height="72" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: ['default', 'shape', 'width', 'height'] }),
+		template,
 	}),
 	play: async ({ canvas, canvasElement }) => {
 		await expect(canvas.getByRole('group', { name: 'Загрузка профиля' })).toHaveAttribute('aria-busy', 'true')

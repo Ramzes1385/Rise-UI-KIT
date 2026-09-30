@@ -3,7 +3,23 @@ import { BaseIcon } from '@components/BaseIcon'
 import type meta from '../../BaseButton.stories'
 import BaseButton from '../../../ui/BaseButton.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-row">
+		<BaseButton v-bind="args">
+			<template #left><BaseIcon name="plus" /></template>
+			Добавить
+		</BaseButton>
+		<BaseButton v-bind="args" variant="outline">
+			Далее
+			<template #right><BaseIcon name="arrow-right" /></template>
+		</BaseButton>
+		<BaseButton v-bind="args" variant="ghost" aria-label="Удалить" :padding="{ x: 5, y: 5 }">
+			<BaseIcon name="trash" />
+		</BaseButton>
+	</div>
+`
 
 export const WithIcons: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,41 +30,13 @@ export const WithIcons: StoryObj<typeof meta> = {
 					'`:padding="{ x: 5, y: 5 }"` — тогда она квадратная 32 × 32.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseButton>',
-					'  <template #left><BaseIcon name="plus" /></template>',
-					'  Добавить',
-					'</BaseButton>',
-					'<BaseButton variant="outline">',
-					'  Далее',
-					'  <template #right><BaseIcon name="arrow-right" /></template>',
-					'</BaseButton>',
-					'<BaseButton variant="ghost" aria-label="Удалить" :padding="{ x: 5, y: 5 }">',
-					'  <BaseIcon name="trash" />',
-					'</BaseButton>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseButton', 'BaseIcon'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<div class="story-row">
-				<BaseButton v-bind="props">
-					<template #left><BaseIcon name="plus" /></template>
-					Добавить
-				</BaseButton>
-				<BaseButton v-bind="props" variant="outline">
-					Далее
-					<template #right><BaseIcon name="arrow-right" /></template>
-				</BaseButton>
-				<BaseButton v-bind="props" variant="ghost" aria-label="Удалить" :padding="{ x: 5, y: 5 }">
-					<BaseIcon name="trash" />
-				</BaseButton>
-			</div>
-		`,
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const iconButton = canvas.getByRole('button', { name: 'Удалить' })

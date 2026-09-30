@@ -1,11 +1,25 @@
-import { ICON_BUTTON } from '../shared'
 import { expect } from 'storybook/test'
 import type meta from '../BaseChip.stories'
 import BaseChip from '../../ui/BaseChip.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-row" style="gap: 32px; padding: 12px;">
+		<BaseChip v-bind="args" :content="0">
+			<BaseButton variant="outline" aria-label="Уведомления" :padding="{ x: 5, y: 5 }">
+				<BaseIcon name="inbox" />
+			</BaseButton>
+		</BaseChip>
+		<BaseChip v-bind="args" :content="0" is-hidden-on-zero>
+			<BaseButton variant="outline" aria-label="Уведомления" :padding="{ x: 5, y: 5 }">
+				<BaseIcon name="inbox" />
+			</BaseButton>
+		</BaseChip>
+	</div>
+`
 
 export const HiddenOnZero: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,20 +28,17 @@ export const HiddenOnZero: StoryObj<typeof meta> = {
 			description: {
 				story: 'Ноль: по умолчанию «0» виден, с `isHiddenOnZero` индикатор скрыт (слева — без флага, справа — с флагом).',
 			},
-			source: {
-				code: ['<BaseChip :content="0">…</BaseChip>', '<BaseChip :content="0" is-hidden-on-zero>…</BaseChip>'].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseChip', 'BaseButton', 'BaseIcon'],
+				omit: ['default', 'content', 'isHiddenOnZero'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseChip, BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'content', 'isHiddenOnZero']) }),
-		template: `
-			<div class="story-row" style="gap: 32px; padding: 12px;">
-				<BaseChip v-bind="props" :content="0">${ICON_BUTTON}</BaseChip>
-				<BaseChip v-bind="props" :content="0" is-hidden-on-zero>${ICON_BUTTON}</BaseChip>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: ['default', 'content', 'isHiddenOnZero'] }),
+		template,
 	}),
 	play: async ({ canvas, canvasElement }) => {
 		await expect(canvas.getByText('0')).toBeVisible()

@@ -1,7 +1,8 @@
 /** Синхронизация v-model компонента с args Storybook. */
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useArgs } from 'storybook/preview-api'
+import type { StorySetupOptions } from '../types/helpers.types'
 
 /**
  * Возвращает обработчик для `@update:<name>`, который записывает новое значение обратно в args.
@@ -25,8 +26,9 @@ export function useModelArg(name = 'modelValue'): (value: unknown) => void {
 }
 
 /**
- * `setup` истории со своим шаблоном — пара к `storySource` с теми же `models`: `args` для `v-bind="args"` без слотов
- * и аргументов `v-model`, переменные `v-model`, связанные с Controls, и данные шаблона.
+ * `setup` истории со своим шаблоном — пара к `storySource` с теми же `models` и `state`: `args` для `v-bind="args"`
+ * без слотов и аргументов `v-model`, `slots` — тексты слотов из Controls (`{{ slots.default }}`), переменные
+ * `v-model`, связанные с Controls, состояние шаблона (свой `ref` у каждого показа) и данные шаблона.
  *
  * Вызывайте в теле render (внутри — хук Storybook).
  *
@@ -37,21 +39,22 @@ export function useModelArg(name = 'modelValue'): (value: unknown) => void {
  *   template: '<BasePhoneInput v-bind="args" v-model="phone" />',
  * })
  */
-export function useStorySetup(
-	args: Record<string, unknown>,
-	options: { models?: Readonly<Record<string, string>>; data?: Readonly<Record<string, unknown>>; slots?: readonly string[] } = {},
-): () => Record<string, unknown> {
+export function useStorySetup(storyArgs: object, options: StorySetupOptions = {}): () => Record<string, unknown> {
+	const args = storyArgs as Record<string, unknown>
 	const [, updateArgs] = useArgs()
 	const models = options.models ?? {}
-	const hidden = new Set([...(options.slots ?? ['default']), ...Object.values(models)])
+	const slots = options.slots ?? ['default']
+	const hidden = new Set([...slots, ...Object.values(models)])
 	return () => ({
 		args: computed(() => Object.fromEntries(Object.entries(args).filter(([key]) => !hidden.has(key)))),
+		slots: computed(() => Object.fromEntries(slots.map(name => [name, args[name]]))),
 		...Object.fromEntries(
 			Object.entries(models).map(([name, arg]) => [
 				name,
 				computed({ get: () => args[arg], set: (value: unknown) => updateArgs({ [arg]: value }) }),
 			]),
 		),
+		...Object.fromEntries(Object.entries(options.state ?? {}).map(([name, value]) => [name, ref(structuredClone(value))])),
 		...options.data,
 	})
 }

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseChip from '../ui/BaseChip.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Индикатор в углу элемента: число непрочитанных у кнопки, метка «Новое» у пункта, статус у аватара.',

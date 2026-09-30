@@ -112,7 +112,7 @@ export const Variants: StoryObj<typeof meta> = {
   }
   ```
 
-- В кастомном `render` args передаются через `useArgsWithoutSlots(args)`. Иначе текст слота из args (`default: '…'`) попадёт в HTML-атрибут корня.
+- В кастомном `render` args передаются через `useStorySetup(args, …)`: он убирает из `v-bind="args"` слоты (`slots`, по умолчанию `default`). Иначе текст слота из args (`default: '…'`) попадёт в HTML-атрибут корня.
 - В витринах (Variants, Sizes) у каждого экземпляра свой `ref`. Один общий `modelValue` на все экземпляры не нужен: каждый пример должен реагировать на ввод отдельно.
 - Если витрина игнорирует часть Controls, оставьте только применимые: `parameters: { controls: { include: ['sizeScale', 'isDisabled'] } }`.
 
@@ -181,10 +181,15 @@ Stories, которые нужны только как проверка (кла�
 - Язык кита — переключатель «Язык» на панели (`&globals=locale:en`). Пропы, которые по умолчанию берутся из языка (`locale`, `firstDayOfWeek` календаря), в общие args не пишите — иначе переключатель на историю не действует; задавайте их только в истории, которая их показывает.
 - Цвета в примерах — только токены `var(--rise-…)`. Исключение — story `CustomColor`: она демонстрирует проп `color`, поэтому в ней допустимы произвольные HEX брендовых цветов.
 - **«Show code» — точный код превью.** Скопированный код должен рисовать ровно то, что показано в превью: те же компоненты, пропсы, разметка и данные. У истории со своим `render` шаблон — константа, общая для `render` и `parameters.docs.source`:
-  - `storySource({ template, imports, models, script, omit })` собирает файл Vue: импорты из пакета, переменные `v-model`, константы и строки `script`; `v-bind="args"` раскрывается в пропсы из Controls без значений по умолчанию, слотов и обработчиков. Код меняется вместе с Controls;
-  - `useStorySetup(args, { models, data })` — `setup` для того же шаблона: `args` для `v-bind`, переменные `v-model`, связанные с Controls, и данные шаблона;
-  - данные шаблона — константы кита (`X_VARIANTS`) в `imports` или своё значение, выведенное в `script` через `literal(...)` из тех же данных, что в `setup`, — чтобы код не расходился с примером;
+  - `storySource({ template, imports, models, state, script, omit, vue, importsFrom })` собирает файл Vue: импорты из пакета, переменные `v-model` и состояния, константы и строки `script`. `v-bind="args"` раскрывается в каждом теге в пропсы из Controls — без значений по умолчанию, слотов и обработчиков; атрибут, который тег задаёт сам (`:variant="variant"`), из Controls не повторяется; подпись варианта из `mapping` в Controls — значением, которое получает компонент. Код меняется вместе с Controls;
+  - текст слота из Controls в шаблоне — `{{ slots.default }}`: в коде он стоит прямо в теге;
+  - состояние шаблона — `state: { isOpen: false }`, одно и то же в `storySource` и `useStorySetup`: в коде `const isOpen = ref(false)`, в превью у каждого показа свой `ref`. Не храните `ref` в константе модуля: состояние переживёт перезапуск истории и не попадёт в код;
+  - `useStorySetup(args, { models, state, data, slots })` — `setup` для того же шаблона: `args` для `v-bind` без слотов, тексты слотов, переменные `v-model`, связанные с Controls, состояние и данные шаблона;
+  - данные шаблона — константы кита (`X_VARIANTS`) в `imports` или своё значение, выведенное в `script` через `literal(...)` из тех же данных, что в `setup`, — чтобы код не расходился с примером. Обработчики и таймеры — строками `script`, их импорты из vue — в `vue: ['onMounted']`, из других входов пакета — в `importsFrom`;
+  - разметку пишите прямо в шаблоне: вставка общей константы с несколькими строками (`${BUTTON}`) ломает отступы в коде;
   - история без Controls — `staticStorySource(...)`. Картинки data URI уходят в константы `<script setup>`, длинные — сокращаются: `const before = 'data:image/svg+xml,…'`;
+  - общий `render` у meta (`stories/render.ts`) экспортирует и `source`; `parameters.ts` компонента ставит его в `docs.source` — так код получают все истории без своего `render`;
+  - проверка — `npm run test:story-source` (один раздел — `-- --group=Element`): история со своим `render` без `storySource()`, код, написанный вручную, и общий `render` без `docs.source` — ошибка;
   - классы-помощники (`story-row`, `story-label` и другие из списка выше) в шаблоне можно оставлять: «Show code» добавит их правила блоком `<style scoped>`. Правила лежат в `src/stories/helpers/render/storyStyles.ts`, тест сверяет их с `build/storybook/preview.scss` — новый класс-помощник добавляйте в оба места.
 
 ## 9. Visual- и e2e-тесты
@@ -218,6 +223,6 @@ for (const theme of VISUAL_THEMES) {
 
 - `npx eslint --max-warnings 0 <файлы>` и `npm run typecheck` — без ошибок.
 - `node scripts/check-a11y-coverage.mjs` и `node scripts/check-stories-coverage.mjs` — зелёные.
-- «Show code» каждой story показывает точный код её превью (раздел 8).
+- «Show code» каждой story показывает точный код её превью (раздел 8): `npm run test:story-source -- --group=<раздел>`.
 - Каждая story открывается без ошибок в консоли, play-функции проходят в светлой и тёмной теме, axe без нарушений. Проверка — `npm run test:stories` по собранному Storybook (`npm run build-storybook`, затем `node scripts/serve-storybook-static.mjs`); для одного компонента — `npm run test:stories -- --filter=basebadge`. В CI она выполняется для всех stories в отдельном job.
 - В stories нет внешних URL, `new Date()` без аргументов, `Math.random()`, `try/catch`, inline-цветов.

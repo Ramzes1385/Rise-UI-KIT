@@ -3,7 +3,17 @@ import type meta from '../BaseIcon.stories'
 import BaseIcon from '../../ui/BaseIcon.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-row">
+		<BaseButton variant="outline">
+			<template #left><BaseIcon v-bind="args" name="download" /></template>
+			Скачать
+		</BaseButton>
+		<BaseIcon v-bind="args" name="check-circle" color="var(--rise-success)" aria-label="Задача выполнена" />
+	</div>
+`
 
 export const AriaLabel: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,26 +25,13 @@ export const AriaLabel: StoryObj<typeof meta> = {
 					'Иконка без текста, которая несёт смысл, получает `ariaLabel` — становится изображением с доступным именем.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Скачать</BaseButton>',
-					'<BaseIcon name="check-circle" color="var(--rise-success)" aria-label="Задача выполнена" />',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseIcon', 'BaseButton'], omit: ['name', 'ariaLabel', 'color'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseIcon, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['name', 'ariaLabel', 'color']) }),
-		template: `
-			<div class="story-row">
-				<BaseButton variant="outline">
-					<template #left><BaseIcon v-bind="props" name="download" /></template>
-					Скачать
-				</BaseButton>
-				<BaseIcon v-bind="props" name="check-circle" color="var(--rise-success)" aria-label="Задача выполнена" />
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: ['name', 'ariaLabel', 'color'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('img', { name: 'Задача выполнена' })).toBeVisible()

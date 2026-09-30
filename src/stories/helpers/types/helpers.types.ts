@@ -29,11 +29,39 @@ export interface StorySourceOptions {
 	script?: string
 	/** Аргументы, которые шаблон задаёт сам и которых нет в `v-bind="args"` */
 	omit?: readonly string[]
+	/** Что импортировать из vue для строк `script`: `ref`, `computed`, `onMounted`… (`ref` для `models` добавляется сам) */
+	vue?: readonly string[]
+	/** Импорты из других входов пакета: `{ '@ramzes1385/rise-ui-kit/composables': ['createColorMode'] }` */
+	importsFrom?: Readonly<Record<string, readonly string[]>>
+	/** Состояние шаблона: имя → начальное значение. В коде — `const isOpen = ref(false)`; в `useStorySetup` — те же `state` */
+	state?: Readonly<Record<string, unknown>>
+}
+
+/** Настройки `useStorySetup` — те же `models` и `state`, что у `storySource` */
+export interface StorySetupOptions {
+	/** Переменные `v-model` шаблона: имя → аргумент Storybook */
+	models?: Readonly<Record<string, string>>
+	/** Состояние шаблона: имя → начальное значение; у каждого показа истории — свой `ref` с копией значения */
+	state?: Readonly<Record<string, unknown>>
+	/** Данные и обработчики шаблона, которые не меняются */
+	data?: Readonly<Record<string, unknown>>
+	/** Аргументы-слоты: в `v-bind="args"` не попадают, их тексты — в `slots` */
+	slots?: readonly string[]
+}
+
+/** Пропс из Controls для кода: имя атрибута и сам атрибут */
+export interface ShownAttribute {
+	/** Имя атрибута в kebab-case: `title`, `size-scale` */
+	name: string
+	/** Атрибут целиком: `title="Отчёт"`, `:size-scale="125"` */
+	code: string
+	/** Константа `<script setup>` для длинного значения: `const items = [...]` */
+	hoist?: string
 }
 
 /** Часть контекста истории, из которой собирается код */
 export interface StorySourceContext {
 	args: Record<string, unknown>
-	argTypes?: Record<string, { table?: { category?: string } } | undefined>
+	argTypes?: Record<string, { table?: { category?: string }; mapping?: Record<string, unknown> } | undefined>
 	component?: unknown
 }

@@ -2,7 +2,25 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseText.stories'
 import BaseText from '../../../ui/BaseText.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const samples = [
+	{ token: '--rise-text-highlighted', label: 'Заголовок' },
+	{ token: '--rise-text', label: 'Основной текст' },
+	{ token: '--rise-text-muted', label: 'Подпись' },
+	{ token: '--rise-primary', label: 'Акцент' },
+	{ token: '--rise-success', label: 'Оплачено' },
+	{ token: '--rise-error', label: 'Просрочено' },
+]
+
+const template = `
+	<div class="story-col">
+		<div v-for="sample in samples" :key="sample.token" class="story-row">
+			<span class="story-label">{{ sample.token }}</span>
+			<BaseText v-bind="args" :color="{ text: { base: 'var(' + sample.token + ')' } }">{{ sample.label }}</BaseText>
+		</div>
+	</div>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,37 +32,13 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'`--rise-text-highlighted` для заголовков, `--rise-text-muted` для подписей, цвет роли для статусов.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					`<BaseText :color="{ text: { base: 'var(--rise-text-highlighted)' } }">Заголовок</BaseText>`,
-					`<BaseText :color="{ text: { base: 'var(--rise-text-muted)' } }">Подпись</BaseText>`,
-					`<BaseText :color="{ text: { base: 'var(--rise-success)' } }">Оплачено</BaseText>`,
-					`<BaseText :color="{ text: { base: 'var(--rise-error)' } }">Просрочено</BaseText>`,
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseText'], script: `const samples = ${literal(samples)}` }),
 		},
 	},
 	render: args => ({
 		components: { BaseText },
-		setup: () => ({
-			props: useArgsWithoutSlots(args),
-			samples: [
-				{ token: '--rise-text-highlighted', label: 'Заголовок' },
-				{ token: '--rise-text', label: 'Основной текст' },
-				{ token: '--rise-text-muted', label: 'Подпись' },
-				{ token: '--rise-primary', label: 'Акцент' },
-				{ token: '--rise-success', label: 'Оплачено' },
-				{ token: '--rise-error', label: 'Просрочено' },
-			],
-		}),
-		template: `
-			<div class="story-col">
-				<div v-for="sample in samples" :key="sample.token" class="story-row">
-					<span class="story-label">{{ sample.token }}</span>
-					<BaseText v-bind="props" :color="{ text: { base: 'var(' + sample.token + ')' } }">{{ sample.label }}</BaseText>
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { samples } }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const overdue = canvas.getByText('Просрочено')

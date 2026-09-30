@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseCard from '../ui/BaseCard.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поверхность для группы контента: сводка, настройки, превью объекта.',

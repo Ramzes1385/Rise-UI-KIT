@@ -1,27 +1,27 @@
 import type meta from '../../BaseBadge.stories'
 import BaseBadge from '../../../ui/BaseBadge.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const variants = ['default', 'soft', 'outline', 'ghost', 'shadow']
+
+const template = `
+	<div class="story-row">
+		<BaseBadge v-for="variant in variants" :key="variant" v-bind="args" :variant="variant" :label="variant" />
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['sizeScale'] },
 		docs: {
 			description: { story: 'Пять вариантов оформления. Размер из Controls применяется ко всем бейджам.' },
-			source: {
-				code: ['default', 'soft', 'outline', 'ghost', 'shadow']
-					.map(variant => `<BaseBadge variant="${variant}" label="${variant}" />`)
-					.join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseBadge'], script: `const variants = ${literal(variants)}` }),
 		},
 	},
 	render: args => ({
 		components: { BaseBadge },
-		setup: () => ({ props: useArgsWithoutSlots(args), variants: ['default', 'soft', 'outline', 'ghost', 'shadow'] }),
-		template: `
-			<div class="story-row">
-				<BaseBadge v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :label="variant" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { variants } }),
+		template,
 	}),
 }

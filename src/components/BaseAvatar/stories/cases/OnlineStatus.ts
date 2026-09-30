@@ -3,7 +3,14 @@ import type meta from '../BaseAvatar.stories'
 import BaseAvatar from '../../ui/BaseAvatar.vue'
 import { CONTENT_ARGS, anna, oleg } from '../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-row">
+		<BaseAvatar v-bind="args" :src="anna.avatar" :name="anna.name" />
+		<BaseAvatar v-bind="args" :name="oleg.name" />
+	</div>
+`
 
 export const OnlineStatus: StoryObj<typeof meta> = {
 	args: { isOnline: true },
@@ -15,18 +22,19 @@ export const OnlineStatus: StoryObj<typeof meta> = {
 					'у точки есть доступное имя «в сети».',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseAvatar'],
+				script: [`const anna = ${literal(anna)}`, `const oleg = ${literal(oleg)}`].join('\n'),
+				omit: CONTENT_ARGS,
+			}),
 		},
 		controls: { include: ['variant', 'sizeScale', 'shape', 'isOnline'] },
 	},
 	render: args => ({
 		components: { BaseAvatar },
-		setup: () => ({ props: useArgsWithoutSlots(args, CONTENT_ARGS), anna, oleg }),
-		template: `
-			<div class="story-row">
-				<BaseAvatar v-bind="props" :src="anna.avatar" :name="anna.name" />
-				<BaseAvatar v-bind="props" :name="oleg.name" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { anna, oleg }, slots: CONTENT_ARGS }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getAllByRole('img', { name: 'в сети' })).toHaveLength(2)

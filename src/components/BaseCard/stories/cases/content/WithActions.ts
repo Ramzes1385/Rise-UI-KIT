@@ -4,7 +4,19 @@ import BaseCard from '../../../ui/BaseCard.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-medium">
+		<BaseCard v-bind="args">
+			<template #actions>
+				<BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Скачать</BaseButton>
+				<BaseButton variant="ghost" aria-label="Ещё" :padding="{ x: 5, y: 5 }"><BaseIcon name="menu" /></BaseButton>
+			</template>
+			{{ slots.default }}
+		</BaseCard>
+	</div>
+`
 
 export const WithActions: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,33 +24,13 @@ export const WithActions: StoryObj<typeof meta> = {
 			description: {
 				story: 'Слот `actions` — кнопки справа в шапке. Кнопки высотой 32px стоят на строке заголовка и не увеличивают шапку.',
 			},
-			source: {
-				code: [
-					'<BaseCard title="Отчёт за май" subtitle="Обновлён 15 мая">',
-					'  <template #actions>',
-					'    <BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Скачать</BaseButton>',
-					'    <BaseButton variant="ghost" aria-label="Ещё" :padding="{ x: 5, y: 5 }"><BaseIcon name="menu" /></BaseButton>',
-					'  </template>',
-					'  …',
-					'</BaseCard>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseCard', 'BaseButton', 'BaseIcon'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseCard, BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args), args }),
-		template: `
-			<div class="story-medium">
-				<BaseCard v-bind="props">
-					<template #actions>
-						<BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Скачать</BaseButton>
-						<BaseButton variant="ghost" aria-label="Ещё" :padding="{ x: 5, y: 5 }"><BaseIcon name="menu" /></BaseButton>
-					</template>
-					{{ args.default }}
-				</BaseCard>
-			</div>
-		`,
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const download = canvas.getByRole('button', { name: 'Скачать' })

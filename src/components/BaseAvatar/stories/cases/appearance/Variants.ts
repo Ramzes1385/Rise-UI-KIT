@@ -2,8 +2,20 @@ import type meta from '../../BaseAvatar.stories'
 import BaseAvatar from '../../../ui/BaseAvatar.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { CONTENT_ARGS, anna, ivan } from '../../shared'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { AVATAR_VARIANTS } from '../../../types/BaseAvatar.types'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const variants = AVATAR_VARIANTS
+
+const template = `
+	<div class="story-col">
+		<div v-for="variant in variants" :key="variant" class="story-row">
+			<span class="story-label">{{ variant }}</span>
+			<BaseAvatar v-bind="args" :variant="variant" :name="anna.name" />
+			<BaseAvatar v-bind="args" :variant="variant" :src="ivan.avatar" :name="ivan.name" />
+		</div>
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,20 +27,19 @@ export const Variants: StoryObj<typeof meta> = {
 					'`outline` и `shadow` отделяют аватар от неоднородного фона; `ghost` — без фона.',
 				].join('\n'),
 			},
-			source: { code: AVATAR_VARIANTS.map(variant => `<BaseAvatar variant="${variant}" name="Анна Смирнова" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BaseAvatar'],
+				script: [`const variants = ${literal(variants)}`, `const anna = ${literal(anna)}`, `const ivan = ${literal(ivan)}`].join(
+					'\n',
+				),
+				omit: CONTENT_ARGS,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseAvatar },
-		setup: () => ({ props: useArgsWithoutSlots(args, CONTENT_ARGS), variants: AVATAR_VARIANTS, anna, ivan }),
-		template: `
-			<div class="story-col">
-				<div v-for="variant in variants" :key="variant" class="story-row">
-					<span class="story-label">{{ variant }}</span>
-					<BaseAvatar v-bind="props" :variant="variant" :name="anna.name" />
-					<BaseAvatar v-bind="props" :variant="variant" :src="ivan.avatar" :name="ivan.name" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { variants, anna, ivan }, slots: CONTENT_ARGS }),
+		template,
 	}),
 }

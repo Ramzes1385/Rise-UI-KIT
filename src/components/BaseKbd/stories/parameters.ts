@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseKbd from '../ui/BaseKbd.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Клавиша в тексте и подсказках: «Нажмите Ctrl + K», сочетание у пункта меню.',

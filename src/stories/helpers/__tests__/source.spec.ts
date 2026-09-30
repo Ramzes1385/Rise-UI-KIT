@@ -126,6 +126,33 @@ describe('код для «Show code»', () => {
 		}
 	})
 
+	it('{{ slots.default }} — текст слота из Controls прямо в теге, с экранированием', () => {
+		const source = storySource({ template: '<BaseCard v-bind="args">{{ slots.default }}</BaseCard>', imports: ['BaseCard'] })
+		expect(source.transform('', { args: { title: 'Отчёт', default: 'Выручка < план & рост' } })).toContain(
+			'<BaseCard title="Отчёт">Выручка &lt; план &amp; рост</BaseCard>',
+		)
+		expect(source.transform('', { args: {} })).toContain('<BaseCard></BaseCard>')
+	})
+
+	it('vue — импорты из vue для строк script, вместе с ref для v-model', () => {
+		const code = storySource({
+			template: '<BaseInput v-bind="args" v-model="text" @focus="count++" />',
+			imports: ['BaseInput'],
+			models: { text: 'modelValue' },
+			vue: ['ref', 'computed'],
+			importsFrom: { '@ramzes1385/rise-ui-kit/composables': ['useToast', 'createColorMode'] },
+			script: 'const count = ref(0)',
+		}).transform('', { args: { modelValue: 'а' } })
+		expect(code).toContain(
+			[
+				"import { computed, ref } from 'vue'",
+				"import { BaseInput } from '@ramzes1385/rise-ui-kit'",
+				"import { createColorMode, useToast } from '@ramzes1385/rise-ui-kit/composables'",
+			].join('\n'),
+		)
+		expect(code).toContain("const text = ref('а')\n\nconst count = ref(0)")
+	})
+
 	it('картинки data URI — константами, даже если коротки', () => {
 		const source = storySource({ template: '<BaseImageCompare v-bind="args" />', imports: ['BaseImageCompare'] })
 		const code = source.transform('', {
@@ -180,5 +207,88 @@ describe('код для «Show code»', () => {
 		expect(literal({})).toBe('{}')
 		expect(literal({ 'data-id': 1, ok: null })).toBe("{ 'data-id': 1, ok: null }")
 		expect(literal(Array.from({ length: 12 }, (_, index) => ({ id: `item-${index}` })))).toMatch(/^\[\n\t\{ id: 'item-0' \},\n/)
+	})
+
+	it('v-bind="args" на своей строке — пропсы на своих строках; что тег задаёт сам, из Controls не повторяется', () => {
+		const source = storySource({
+			template: [
+				'<div>',
+				'\t<BaseAlert',
+				'\t\tv-for="type in TYPES"',
+				'\t\t:key="type"',
+				'\t\tv-bind="args"',
+				'\t\t:type="type"',
+				'\t\ttitle="Заголовок"',
+				'\t/>',
+				'</div>',
+			].join('\n'),
+			imports: ['BaseAlert'],
+		})
+		const template = (args: Record<string, unknown>): string => {
+			const code = source.transform('', { args })
+			return code.slice(code.indexOf('<template>'))
+		}
+		expect(template({ title: 'Из Controls', type: 'info', isClosable: true, description: 'Текст' })).toBe(
+			[
+				'<template>',
+				'\t<div>',
+				'\t\t<BaseAlert',
+				'\t\t\tv-for="type in TYPES"',
+				'\t\t\t:key="type"',
+				'\t\t\tis-closable',
+				'\t\t\tdescription="Текст"',
+				'\t\t\t:type="type"',
+				'\t\t\ttitle="Заголовок"',
+				'\t\t/>',
+				'\t</div>',
+				'</template>',
+			].join('\n'),
+		)
+		expect(template({ title: 'Из Controls' })).toContain('\t\t\t:key="type"\n\t\t\t:type="type"')
+	})
+
+	it('несколько v-bind="args" в строке с текстом — пропсы в каждом теге, без переноса строки', () => {
+		const source = storySource({
+			template: '<p>Нажмите <BaseKbd v-bind="args" value="meta" /> + <BaseKbd v-bind="args" value="K" />, чтобы найти</p>',
+			imports: ['BaseKbd'],
+		})
+		expect(source.transform('', { args: { value: 'Z', isMuted: true } })).toContain(
+			'\t<p>Нажмите <BaseKbd is-muted value="meta" /> + <BaseKbd is-muted value="K" />, чтобы найти</p>',
+		)
+		expect(source.transform('', { args: { value: 'Z' } })).toContain('<BaseKbd value="meta" /> + <BaseKbd value="K" />')
+	})
+
+	it('тег с одним атрибутом не переносится, даже длинный; текст слота default — не атрибут', () => {
+		const source = storySource({
+			template:
+				'<div style="padding: 12px 64px 12px 12px;"><BaseChip v-bind="args"><BaseButton variant="outline">Журнал изменений</BaseButton></BaseChip></div>',
+			imports: ['BaseChip', 'BaseButton'],
+		})
+		expect(source.transform('', { args: { content: 'Новое обновление', default: 'Текст' } })).toContain(
+			'\t<div style="padding: 12px 64px 12px 12px;"><BaseChip content="Новое обновление"><BaseButton variant="outline">Журнал изменений</BaseButton></BaseChip></div>',
+		)
+		const chip = storySource({ template: '<BaseChip v-bind="args">{{ label }}</BaseChip>', imports: ['BaseChip'] })
+		expect(chip.transform('', { args: { content: 'Новое обновление для всех участников проекта сегодня' } })).toContain(
+			'\t<BaseChip content="Новое обновление для всех участников проекта сегодня">{{ label }}</BaseChip>',
+		)
+	})
+
+	it('подпись варианта из mapping в Controls — значением, которое получает компонент', () => {
+		const code = storySource({ template: '<BaseImage v-bind="args" />', imports: ['BaseImage'] }).transform('', {
+			args: { src: 'Горы', alt: 'Горы' },
+			argTypes: { src: { mapping: { Горы: '/mountains.jpg' } } },
+		})
+		expect(code).toContain('<BaseImage src="/mountains.jpg" alt="Горы" />')
+	})
+
+	it('state — переменные ref с начальными значениями; константа длинного пропса — только если он в коде', () => {
+		const code = storySource({
+			template: '<BaseTable v-if="isVisible" v-bind="args" :columns="shortColumns" @close="isVisible = false" />',
+			imports: ['BaseTable'],
+			state: { isVisible: true, items: ['а'] },
+		}).transform('', { args: { columns: [{ key: 'name', title: 'Имя сотрудника отдела' }] } })
+		expect(code).toContain("import { ref } from 'vue'")
+		expect(code).toContain("const isVisible = ref(true)\nconst items = ref(['а'])\n</script>")
+		expect(code).toContain('<BaseTable v-if="isVisible" :columns="shortColumns" @close="isVisible = false" />')
 	})
 })

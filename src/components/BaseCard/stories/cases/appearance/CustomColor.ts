@@ -3,7 +3,18 @@ import type meta from '../../BaseCard.stories'
 import BaseCard from '../../../ui/BaseCard.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-narrow">
+		<BaseCard v-bind="args">
+			Общий календарь, отчёты и приоритетная поддержка.
+			<template #footer>
+				<BaseButton variant="shadow">Подключить</BaseButton>
+			</template>
+		</BaseCard>
+	</div>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,6 +25,7 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'Вложенные компоненты (кнопка в подвале) цвет карточки не наследуют — у них свои цвета.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseCard', 'BaseButton'] }),
 		},
 	},
 	args: {
@@ -23,17 +35,8 @@ export const CustomColor: StoryObj<typeof meta> = {
 	},
 	render: args => ({
 		components: { BaseCard, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<div class="story-narrow">
-				<BaseCard v-bind="props">
-					Общий календарь, отчёты и приоритетная поддержка.
-					<template #footer>
-						<BaseButton variant="shadow">Подключить</BaseButton>
-					</template>
-				</BaseCard>
-			</div>
-		`,
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const title = canvas.getByRole('heading', { name: 'Тариф «Команда»' })

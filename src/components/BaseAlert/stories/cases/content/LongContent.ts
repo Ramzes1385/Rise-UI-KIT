@@ -2,11 +2,18 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseAlert.stories'
 import BaseAlert from '../../../ui/BaseAlert.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-narrow"><BaseAlert v-bind="args" /></div>
+`
 
 export const LongContent: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Длинный заголовок и описание переносятся по словам; иконка и кнопка закрытия остаются на месте.' } },
+		docs: {
+			description: { story: 'Длинный заголовок и описание переносятся по словам; иконка и кнопка закрытия остаются на месте.' },
+			source: storySource({ template, imports: ['BaseAlert'] }),
+		},
 	},
 	args: {
 		type: 'error',
@@ -18,8 +25,8 @@ export const LongContent: StoryObj<typeof meta> = {
 	},
 	render: args => ({
 		components: { BaseAlert },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: '<div class="story-narrow"><BaseAlert v-bind="props" /></div>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const alert = canvas.getByRole('alert')

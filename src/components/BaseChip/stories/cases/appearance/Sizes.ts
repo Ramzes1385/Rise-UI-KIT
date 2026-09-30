@@ -4,33 +4,39 @@ import BaseChip from '../../../ui/BaseChip.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const template = `
+	<div class="story-row" style="align-items: flex-end; gap: 32px; padding: 12px;">
+		<div v-for="preset in presets" :key="preset.name" class="story-col" style="align-items: center;">
+			<BaseChip v-bind="args" :size-scale="preset.sizeScale" :content="3">
+				<BaseButton variant="outline" aria-label="Уведомления" :size-scale="preset.sizeScale" :padding="{ x: 5, y: 5 }">
+					<BaseIcon name="inbox" />
+				</BaseButton>
+			</BaseChip>
+			<span class="story-label" style="min-width: 0;">{{ preset.label }}</span>
+		</div>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['variant', 'placement'] },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: при 100 индикатор высотой 18px. Кнопка здесь того же размера.' },
-			source: {
-				code: SIZE_PRESETS.map(preset => `<BaseChip :size-scale="${preset.sizeScale}" :content="3">…</BaseChip>`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseChip', 'BaseButton', 'BaseIcon'],
+				script: `const presets = ${literal(presets)}`,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseChip, BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),
-		template: `
-			<div class="story-row" style="align-items: flex-end; gap: 32px; padding: 12px;">
-				<div v-for="preset in presets" :key="preset.name" class="story-col" style="align-items: center;">
-					<BaseChip v-bind="props" :size-scale="preset.sizeScale" :content="3">
-						<BaseButton variant="outline" aria-label="Уведомления" :size-scale="preset.sizeScale" :padding="{ x: 5, y: 5 }">
-							<BaseIcon name="inbox" />
-						</BaseButton>
-					</BaseChip>
-					<span class="story-label" style="min-width: 0;">{{ sizeLabel(preset) }}</span>
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets } }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const heights = canvas.getAllByText('3').map(badge => badge.getBoundingClientRect().height)
