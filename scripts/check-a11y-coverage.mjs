@@ -110,6 +110,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseAvatarCropper',
 	'BaseNotificationCenter',
 	'BaseCommentThread',
+	'BaseDadataInput',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -157,6 +158,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseAddressInput',
 	'BaseSignaturePad',
 	'BaseAvatarCropper',
+	'BaseDadataInput',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -184,9 +186,19 @@ const FORM_COMPONENTS = new Set([
 	'BaseRequisiteInput',
 	'BaseAddressInput',
 	'BaseSignaturePad',
+	'BaseDadataInput',
 ])
 
-const LOADING_COMPONENTS = new Set(['BaseButton', 'BaseSearch', 'BaseFileUpload', 'BaseTable', 'BaseEditor', 'BaseChat', 'BaseSlider'])
+const LOADING_COMPONENTS = new Set([
+	'BaseButton',
+	'BaseSearch',
+	'BaseFileUpload',
+	'BaseTable',
+	'BaseEditor',
+	'BaseChat',
+	'BaseSlider',
+	'BaseDadataInput',
+])
 
 const EMPTY_COMPONENTS = new Set([
 	'BaseInput',
@@ -207,6 +219,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BasePagination',
 	'BaseBreadcrumbs',
 	'BaseChat',
+	'BaseDadataInput',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -241,6 +254,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseText',
 	'BaseStepper',
 	'BaseConfirm',
+	'BaseDadataInput',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']

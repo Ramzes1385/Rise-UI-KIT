@@ -938,3 +938,12 @@
 - BaseAddressInput загружает подсказки через `useRemoteSuggestions`, `createDadataAddressSource` — через `requestDadata`. Поведение и API не менялись; отличие одно: при размонтировании отложенный запрос отменяется так же, как раньше, но через `onScopeDispose`.
 
 **Что сделать.** Ничего. Для подсказок организаций, банков, ФИО и почты — `createDadataSource(kind, { token })` или компонент BaseDadataInput (Р.31).
+
+### Р.31 — компонент BaseDadataInput
+
+**Что изменилось.**
+- Новый компонент `BaseDadataInput` (раздел Form): подсказки DaData `kind` = `address`, `party`, `bank`, `fio`, `email` на основе BaseAutocomplete. Пропсы: `token`, `baseUrl`, `count`, `params`, `source`, `minChars`, `debounce`, `label`, `placeholder`, `error`, `isRequired`, `isDisabled`, общие `variant`, `sizeScale`, `color`, `customClass`. События: `update:modelValue`, `select(suggestion, requisites)`.
+- Ключ и адрес API можно задать для всех полей настройкой плагина: `createUiKitPlugin({ defaults: { BaseDadataInput: { token, baseUrl } } })`.
+- Новый раздел словаря `dadata` (`UI_DADATA`: `ADDRESS`, `PARTY`, `BANK`, `FIO`, `EMAIL`) — имя поля без `label`. Свой язык через `defineLocale` должен содержать этот раздел.
+
+**Что сделать.** Для своего словаря — добавить раздел `dadata`. Остальное — ничего; реквизиты из подсказки передавайте в BaseRequisiteInput из второго аргумента `select`.

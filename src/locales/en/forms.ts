@@ -96,6 +96,14 @@ export const enForms = {
 		INCOMPLETE: 'Digits required: {count}',
 		OR: 'or',
 	},
+	/** Подсказки DaData: названия полей по виду подсказок */
+	dadata: {
+		ADDRESS: 'Address',
+		PARTY: 'Company or sole trader',
+		BANK: 'Bank',
+		FIO: 'Full name',
+		EMAIL: 'Email',
+	},
 	signaturePad: {
 		LABEL: 'Signature',
 		HINT: 'Sign with a mouse, finger or pen',

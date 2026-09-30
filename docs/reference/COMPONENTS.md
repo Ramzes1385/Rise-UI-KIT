@@ -235,6 +235,29 @@ const source = createDadataAddressSource({ token: import.meta.env.VITE_DADATA_TO
 
 ---
 
+## BaseDadataInput
+
+Поле с подсказками DaData пяти видов (`kind`): `address` — адрес, `party` — организация или ИП, `bank` — банк, `fio` — ФИО, `email` — почта. Основа — BaseAutocomplete: список с ролью `listbox`, стрелки, Enter, Escape, объявление числа вариантов. У организации и банка во второй строке подсказки — ИНН или БИК и адрес.
+
+```vue
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+import { BaseDadataInput, BaseRequisiteInput } from '@ramzes1385/rise-ui-kit'
+
+const company = ref('')
+const requisites = reactive({ inn: '', kpp: '', ogrn: '' })
+</script>
+
+<template>
+	<BaseDadataInput v-model="company" kind="party" base-url="/api/dadata/suggest" @select="(_, found) => Object.assign(requisites, found)" />
+	<BaseRequisiteInput v-model="requisites.inn" kind="inn" />
+</template>
+```
+
+Ключ API — проп `token` или для всех полей настройка плагина `createUiKitPlugin({ defaults: { BaseDadataInput: { token } } })`; ключ в браузере виден всем, поэтому для открытого сайта лучше свой прокси (`base-url`), который добавит ключ сам. `count` — сколько подсказок, `params` — прочие поля запроса DaData (`locations`, `status`, `type`), `source` — свой источник вместо DaData. Запрос уходит после паузы `debounce` (300 мс) и с `min-chars` знаков (3), прежний отменяется. `select` передаёт подсказку и реквизиты из неё (`inn`, `kpp`, `ogrn`, `bik`, `correspondentAccount`) для BaseRequisiteInput. Без `label` имя поля — название вида («Организация или ИП»).
+
+---
+
 ## BaseInputTags
 
 Поле тегов: Enter или запятая (`separators`) добавляют тег, вставка «a, b, c» — несколько тегов, повторы не добавляются (`isUnique`), `maxTags` ограничивает число, `validate` отклоняет тег (текст остаётся в поле). В пустой строке ← или Backspace ведут к последнему тегу, ←/→ — между тегами, Backspace и Delete удаляют тег.
@@ -2474,6 +2497,7 @@ BaseCommentThread
 BaseConfirm
 BaseContainer
 BaseContextMenu
+BaseDadataInput
 BaseDatePicker
 BaseDrawer
 BaseDropdown

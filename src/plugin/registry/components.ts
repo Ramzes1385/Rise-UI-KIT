@@ -90,6 +90,7 @@ import { BaseBreadcrumbs } from '../../components/BaseBreadcrumbs'
 import { BaseButtonGroup } from '../../components/BaseButtonGroup'
 import { BaseColorPicker } from '../../components/BaseColorPicker'
 import { BaseContextMenu } from '../../components/BaseContextMenu'
+import { BaseDadataInput } from '../../components/BaseDadataInput'
 import { BaseEmojiPicker } from '../../components/BaseEmojiPicker'
 import { BaseInputNumber } from '../../components/BaseInputNumber'
 import { BasePromptInput } from '../../components/BasePromptInput'
@@ -143,6 +144,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseConfirm,
 	BaseContainer,
 	BaseContextMenu,
+	BaseDadataInput,
 	BaseDrawer,
 	BaseDropdown,
 	BaseDropdownMenu,

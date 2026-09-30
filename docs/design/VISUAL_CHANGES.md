@@ -834,3 +834,13 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 ### BaseMediaPlayer (Р.23)
 - Снимки не меняются: в `settings` открыта панель скорости, а на кнопке «Качество» по-прежнему «270p» (при «Авто» кнопка показывает текущее разрешение). В открытом меню «Качество» первым пунктом появилось «Авто (270p)» — в снимках меню качества нет.
 - Новая история `quality` — без снимка (play переключает источник и ждёт загрузки видео).
+
+## Эпик integrations — Dadata и карты
+
+### BaseAddressInput (Р.30)
+
+Вид не меняется: загрузка подсказок перенесена в `useRemoteSuggestions`, разметка и стили те же. Эталоны `base-address-input-*` обновлять не нужно.
+
+### BaseDadataInput (Р.31) — новый компонент
+
+Новые истории `form-basedadatainput--*`: Default, Kinds, WithRequisites, LongContent, Variants, Sizes, CustomColor, Disabled, WithError, Loading, Empty. Вид — как у BaseAddressInput (BaseAutocomplete на BaseInput): у организации и банка во второй строке подсказки — «ИНН …» или «БИК …» и адрес через «·». Нужны новые эталоны `base-dadata-input-{with-error,disabled,variants,sizes}-{light,dark}.png` (`__tests__/BaseDadataInput.visual.spec.ts`), их делает владелец.

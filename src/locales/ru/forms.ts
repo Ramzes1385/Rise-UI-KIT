@@ -100,6 +100,14 @@ export const ruForms = {
 		INCOMPLETE: 'Нужно цифр: {count}',
 		OR: 'или',
 	},
+	/** Подсказки DaData: названия полей по виду подсказок */
+	dadata: {
+		ADDRESS: 'Адрес',
+		PARTY: 'Организация или ИП',
+		BANK: 'Банк',
+		FIO: 'ФИО',
+		EMAIL: 'Электронная почта',
+	},
 	signaturePad: {
 		LABEL: 'Подпись',
 		HINT: 'Распишитесь мышью, пальцем или пером',

@@ -43,6 +43,7 @@ export interface UiKitLocale {
 	checklist: Section<'checklist'>
 	phoneInput: Section<'phoneInput'>
 	requisites: Section<'requisites'>
+	dadata: Section<'dadata'>
 	commandPalette: Section<'commandPalette'>
 	charts: Section<'charts'>
 	imageCompare: Section<'imageCompare'>
