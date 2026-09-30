@@ -81,3 +81,5 @@ stats.html
 .env
 .env.*
 !.env.example
+# Правила агентов для конкретной машины — не публикуются
+CLAUDE.local.md

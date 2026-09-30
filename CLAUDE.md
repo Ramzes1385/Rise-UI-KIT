@@ -1,0 +1,121 @@
+# Rise UI Kit — правила для Claude Code и агентов
+
+Библиотека Vue-компонентов `@ramzes1385/rise-ui-kit`: Vue 3.5 + TypeScript, SCSS на токенах `--rise-*`, Storybook 10, Vitest 4, Playwright. Здесь — сжатые правила и команды; подробности — в `docs/` по ссылкам. Правила конкретной машины (пути, перенос кода) — в `CLAUDE.local.md` (не в git).
+
+## Работа с владельцем
+
+- Отчёты, документы, описания историй и тексты коммитов в теле — по-русски.
+- До начала работы — оценка времени. Работа идёт короткими порциями (45–90 мин), один коммит на порцию (docs/v2/PLAN.md, «Правила порции»).
+- Не заявляй, что проверка прошла, если она не запускалась. Не называй аудит полным, если часть компонентов или направлений не проверена.
+- Push, публикация пакета, deployment и `release*` — только по отдельному указанию владельца.
+- Без новых зависимостей, monorepo и лишних слоёв без конкретной нужды (docs/CONTRIBUTING.md, раздел 12).
+
+## Структура
+
+```
+src/components/<BaseX>/  ui/ model/ types/ styles/ stories/ __tests__/ index.ts
+src/composables/<область>/useX/   base/ app/ overlay/ interaction/ form/ calendar/ chat/ table/ …
+src/utils/<область>/xUtils/       dom/ data/ media/ form/ navigation/
+src/locales/     ru/ en/ по областям, messages.ts, state.ts (formatMessage, pluralize), warn.ts
+src/styles/      _tokens.scss, _mixins.scss, _functions.scss (sz())
+src/stories/     Introduction.mdx, foundations/, blocks/, helpers/ (storySource, useStorySetup, play)
+src/plugin/      createUiKitPlugin, registry/
+build/           commitlint/ husky/ lib/ storybook/ tests/ (vitest, playwright, visual.ts) plugins/ release/
+scripts/         проверки (check-*.mjs), create-component, lint-new-files, serve-storybook-static
+docs/            CONTRIBUTING, reference/, design/, v2/, audit/
+```
+
+Подробно: docs/CONTRIBUTING.md, раздел 9. Импорт внутри кита — через алиасы с областью: `@composables/base/useDefaults`, `@utils/data/urlUtils`, `@components/BaseButton/...`.
+
+## Ветки
+
+- `main` — стабильные релизы, `develop` — prerelease; прямой push в обе запрещён. Рабочие ветки `feat/…`, `fix/…`, `refactor/…`, `docs/…` (CONTRIBUTING, раздел 1).
+- Версия 2.0 — ветка `feat/rise-v2`, план и статус — docs/v2/PLAN.md.
+
+## Правила кода
+
+Источник правды — `eslint.config.js`, `package.json` → `stylelint`, `prettier`, `knip`; описание — CONTRIBUTING, раздел 11.
+
+- **Типы** (`interface`, `type`, `enum`) — только в `types/**/*.types.ts` (кроме тестов, stories, `*.d.ts`). В `types/` нет функций и классов — только типы и константы, из которых они выводятся (`X_VARIANTS` → `XVariant`). JSDoc в types — источник описаний props/событий/слотов в Docs Storybook, он обязателен.
+- **`rise/no-comments`**: в `src/components/**` (скрипты, шаблоны `.vue`, тесты, stories) комментариев нет; исключение — `types/*.types.ts`. В SCSS компонентов то же проверяет stylelint (`comment-pattern`). Описания историй — в `parameters.docs.description`.
+- **`ui/**/*.vue`**: в `<script setup>` только макросы (`defineProps`, `defineEmits`, `defineSlots`, `defineExpose`), импорты и вызов composable из `model/` (`useBaseX(props, emit)`). ESLint запрещает там функции, `let`, `computed`/`ref`/`watch`/хуки и `use*` не из `model/`.
+- **Пороги «чистого кода»**: `max-params` 3, `max-depth` 3, `max-nested-callbacks` 3, без вложенных тернарников, без переприсваивания параметров, без `else` после `return` — ошибки везде. `complexity` 10, `max-statements` 15, `max-lines-per-function` 50, `max-lines` 400 — ошибки в `src/components/**/model/**`, в остальном коде предупреждения; в тестах и stories размер не проверяется.
+- **Новые файлы** `src/**/*.{ts,vue}` — без единого предупреждения: `npm run lint:new` (eslint `--max-warnings=0` по добавленным в индекс файлам).
+- **Импорты** — «лесенкой» `perfectionist/sort-imports`: сначала стили (`import '../styles/X.style.scss'` — первая строка `<script setup>`), затем прочие side-effect, затем остальные по длине строки, при равной — по алфавиту. Расставляет `npx eslint --fix <файлы>` / `npm run lint:fix`.
+- **Prettier**: табы (ширина 4), одинарные кавычки, без `;`, строка до 140, `trailingComma: all`. Документы, JSON и YAML не форматируются (`.prettierignore`).
+- **Stylelint**: `stylelint-config-standard-scss`; классы по БЭМ в kebab-case (`base-button__icon--active`); ключевые слова строчными; медиа-запросы в prefix-нотации (`min-width`/`max-width`); сокращённые свойства вместо пар (`overflow`, а не `overflow-x` + `overflow-y`). Отключение — только на строку и с причиной.
+- **knip** (`npm run lint:unused`): неиспользуемые файлы, экспорты, типы и зависимости удаляются.
+- **Папка больше 7 файлов** — раскладывается по подпапкам по назначению (CONTRIBUTING, «Подпапки»); правило и для `src/composables`, `src/utils`.
+- **Значения по умолчанию**: `withDefaults(defineProps<BaseXProps>(), kitDefaults('BaseX', { … }))` из `@composables/base/useDefaults` — каждое значение можно переопределить настройками плагина (`defaults.BaseX`, затем `defaults.global`). Пропсы после `withDefaults` описывает `PropsWithDefaults<…>`.
+- **Размер**: проп `sizeScale` в процентах (по умолчанию `SIZE_SCALE_DEFAULT = 100`); `useSizeScale` ставит `--size-scale` на корень, в SCSS размеры пишутся через `sz(...)` (`src/styles/_functions.scss`).
+- **Стили**: цвета, радиусы, тени, длительности — только токены `var(--rise-…)` (docs/design/DESIGN_SYSTEM.md). Миксины — `src/styles/_mixins.scss`: `transition`, `transition-colors`, `focus-ring`, `field-*`, `menu-item` и др. Анимации — внутри `@include motion-safe`, упрощение — `motion-reduce`; при `prefers-reduced-motion: reduce` токены `--rise-duration*` становятся `0.01ms`. В JS-анимациях учитывай `prefers-reduced-motion` сам.
+- **Тексты интерфейса** — только из словарей `src/locales/ru/` и `src/locales/en/` (одинаковые ключи в обоих; файл до 400 строк), через разделы `UI_TEXT`, `UI_ARIA`, `UI_CHAT_TEXT`… из `src/locales/messages.ts`. Подстановки — `formatMessage`, числа с подписью — `pluralize` (формы — раздел `plural`), предупреждения — `warn()` из `src/locales/warn.ts`. `npm run test:l10n` ищет тексты мимо словаря; исключения с причиной — `ALLOWED` в `scripts/check-l10n.mjs`.
+- **Компоненты кита переиспользуются**: `BaseIcon`, `BaseButton`, `BaseTooltip` (HTML `title` не используется), `BaseBadge`. `vue-router` внутрь кита не импортируется. Composable, который открывает компонент (`useConfirm`), лежит в папке компонента.
+- **JSDoc-заголовок модуля**: каждый модуль `src/` вне компонентов, тестов и stories начинается с однострочного `/** Composable: … */` или `/** Утилиты: … */` (CONTRIBUTING, раздел 10).
+- **Новый компонент** — только `npm run create:component -- <Name> --group=<Раздел> [--kind=display|interactive|form] [--loading --empty --long] [--dry-run]`: создаёт файлы, экспорт, регистрацию в плагине и в `check-a11y-coverage`. Места `TODO(scaffold)` заполняются вручную.
+
+## Истории Storybook
+
+Правила — docs/design/STORIES_GUIDE.md. Коротко:
+
+- Структура `stories/`: `BaseX.stories.ts` (meta и явный список `export const X = cases.X`), `parameters.ts`, `argTypes.ts`, `args.ts`, `shared.ts`, `cases/` — одна StoryObj на файл, по областям `appearance/ states/ content/ behavior/`.
+- **«Show code» — ровно код превью** (раздел 8). У истории со своим `render` шаблон — константа, общая для `render` и `parameters.docs.source: storySource({ template, imports, models, state, types, script, vue, importsFrom })`; история без Controls — `staticStorySource(...)`; `setup` — `useStorySetup(args, { models, state, data, slots, setup })`.
+- **v-model** — через `models` в `useStorySetup` (раздел 4): страница Docs не перерисовывает историю после `updateArgs`, значение меняется сразу и лишь потом уходит в Controls.
+- **Состояние шаблона** — `state` (тип для кода — `types`), не `ref` в константе модуля.
+- `resetAllMocksLoader` после `updateArgs` стирает вызовы шпионов `fn()`: история, которая проверяет шпионов после ввода, держит значение в `state` (docs/design/FOLLOW_UPS.md, сноска 2).
+- **Остановленные часы**: `openStory` в скриншот-тестах вызывает `page.clock.setFixedTime`, и Vue пропускает обработчики на родителе. Play историй из `*.visual.spec.ts` не кликает по триггерам меню и выпадающих списков (FOLLOW_UPS № 56).
+- Детерминированность: `placeholderImage()`/`STORY_IMAGES`, `STORY_TODAY`/`storyDate()`, без `Math.random()`, внешних URL, `try/catch`, inline-цветов (раздел 7).
+- Проверки: `npm run test:story-source -- --group=<Раздел>`, `npm run test:stories-coverage`, `npm run test:a11y:coverage` (обязательные истории `Default`, `Disabled`, `WithError`, `Loading`, `Empty`, `LongContent`, play с клавиатурой).
+
+## Проверки
+
+| Что | Команда |
+|---|---|
+| Тесты (unit и integration, jsdom) | `npx vitest run --config build/tests/vitest.config.ts --project unit-integration <пути>`; всё — `npm run test:unit` |
+| Покрытие composables — 100% на файл | `npm run test:composables:coverage` (исключения — `--coverage.exclude` в самом скрипте) |
+| Покрытие компонентов — 100% строк/функций на файл | `npm run test:components:coverage` (тяжёлые компоненты исключены, для них `test:components-heavy:coverage` без порога) |
+| Покрытие утилит | `npm run test:utils:coverage` |
+| Типы | `npx vue-tsc -b` (`npm run typecheck`) |
+| Линтеры | `npm run lint`, `npm run -s lint:new`, `npm run lint:styles`, `npm run lint:unused`, `npx prettier --check .` |
+| Локали, истории, доступность | `npm run test:l10n`, `npm run test:stories-coverage`, `npm run test:a11y:coverage`, `npm run test:story-source` |
+| Сборка Storybook (3–4 мин) | `npx storybook build --config-dir build/storybook -o storybook-static --quiet` |
+| Прогон историй (play, axe, обе темы) | `node scripts/serve-storybook-static.mjs` (порт 6006), затем `node scripts/check-stories.mjs --url=http://localhost:6006 --filter='<regex id>' --concurrency=2` |
+| E2E | `npm run test:e2e` |
+| Скриншот-тесты | `npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots=none` |
+| Сборка пакета | `npm run build`, `npm run pack:dry` |
+| Как в CI | `npm run ci:validate` |
+
+- Скриншот-тесты — только с `--update-snapshots=none`. Эталоны не создаются и не обновляются (`test:visual:update` не запускать): их делает владелец. Каждое ожидаемое визуальное изменение описывается в docs/design/VISUAL_CHANGES.md.
+- Для визуальных правок: собрать Storybook до изменений, снять затронутые истории дважды (отсеять недетерминированные), после — ещё раз и сравнить попиксельно; скриншоты «было / стало» — в отчёт.
+- Id истории: `<раздел>-<компонент>--<история>` в kebab-case (`element-basebutton--variants`).
+
+## Коммиты
+
+- Conventional Commits, `build/commitlint/commitlint.config.cjs`: типы `feat fix docs style refactor perf test build ci chore revert deps`, заголовок до 100 символов, область в скобках (`feat(chat): …`). Тип определяет версию релиза (CONTRIBUTING, 3.3).
+- Хуки `build/husky/`: pre-commit — `lint`, `lint:new`, `lint:styles`, `lint:unused`, `format:check` (несколько минут; в агентной среде запускай коммит в фоне и жди); commit-msg — commitlint; pre-push — `test:unit`.
+- Один коммит на порцию. Переформатирование Prettier — отдельным коммитом с записью в `.git-blame-ignore-revs`.
+
+## Документы — что где и когда обновлять
+
+| Документ | Что | Когда обновлять |
+|---|---|---|
+| docs/v2/PLAN.md | План 2.0: порции, решения, статус | Ведёт владелец или координирующая сессия; в параллельных ветках не править |
+| docs/v2/MIGRATION.md | Изменения API и поведения для приложений | При любом изменении API, DOM или поведения |
+| docs/design/VISUAL_CHANGES.md | Ожидаемые визуальные изменения по компонентам | При любом изменении вида истории или снимка |
+| docs/design/STORIES_GUIDE.md | Правила историй | При изменении правил историй или их помощников |
+| docs/design/DESIGN_SYSTEM.md | Токены, темы, размеры, рецепты стилей | При новых токенах и правилах стилей |
+| docs/design/FOLLOW_UPS.md | Открытые задачи редизайна и ограничения среды | Найденное и отложенное |
+| docs/design/CHANGES_FOR_APPS.md | Что заметит приложение после редизайна | Изменения умолчаний, DOM, доступности, токенов |
+| docs/CONTRIBUTING.md | Ветки, задачи, коммиты, релизы, структура, стиль кода | При изменении процесса или правил линтеров |
+| docs/reference/* | Справочник компонентов, composables, утилит; DEVELOPMENT — стек и CI | Новые компоненты, composables, утилиты |
+| docs/audit/* | Отчёт аудита, матрица компонентов, roadmap, план плеера | По итогам аудитов |
+
+Дописывая MIGRATION и VISUAL_CHANGES в параллельной ветке, добавляй раздел в конец под своим заголовком — меньше конфликтов при слиянии.
+
+## Окружение: подводные камни
+
+- `npm ci` падает: `package-lock.json` не содержит `@emnapi/runtime@1.11.3` (нужен `@napi-rs/wasm-runtime` как peer), ошибка `EUSAGE … Missing: @emnapi/runtime@1.11.3 from lock file`. Обход без правки lock-файла — `npm install --no-save --no-audit --no-fund` (проверено: `package-lock.json` не меняется). Исправлять lock-файл — отдельной задачей.
+- `npm install` запускает `prepare` → husky ставит хуки из `build/husky`.
+- Node `>=22.19.0` (`.nvmrc` — 22), npm `>=10.9.2`. Скрипты установки пакетов разрешаются в `package.json` → `allowScripts` (CONTRIBUTING, раздел 12).
+- E2E и скриншот-тесты сами поднимают dev-сервер Storybook (`npm run storybook -- --ci`); с `PLAYWRIGHT_REUSE_SERVER=true` используют уже запущенный (`build/tests/playwright.config.ts`).
+- Скрипты покрытия задают `NODE_OPTIONS=--max-old-space-size=16384`: на машине с меньшей памятью запускай тесты по путям.
