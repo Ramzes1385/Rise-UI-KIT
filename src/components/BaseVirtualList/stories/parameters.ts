@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type { BaseVirtualListProps } from '../types/BaseVirtualList.types'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Список на тысячи строк: в DOM только видимые строки и небольшой запас, остальные — высотой внутреннего блока.',

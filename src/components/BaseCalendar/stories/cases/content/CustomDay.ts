@@ -1,8 +1,24 @@
 import { expect } from 'storybook/test'
-import { storyDate } from '@/stories/helpers'
 import type meta from '../../BaseCalendar.stories'
-import { renderWithLocalModel } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseCalendar from '../../../ui/BaseCalendar.vue'
+import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
+
+function nightPrice(date: Date): string {
+	const day = date.getDay()
+	return day === 0 || day === 6 ? '4 200' : '3 100'
+}
+
+const models = { selected: 'modelValue' }
+
+const template = `
+	<BaseCalendar v-bind="args" v-model="selected">
+		<template #day="{ date, isDisabled }">
+			{{ date.getDate() }}
+			<small v-if="!isDisabled" style="font-size: 10px; line-height: 12px;">{{ nightPrice(date) }}</small>
+		</template>
+	</BaseCalendar>
+`
 
 export const CustomDay: StoryObj<typeof meta> = {
 	args: {
@@ -18,26 +34,24 @@ export const CustomDay: StoryObj<typeof meta> = {
 					'состояния (выбор, наведение, фокус) рисует календарь; в слот приходят `date`, `isSelected`, `isDisabled` и другие флаги.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseCalendar v-model="date">',
-					'  <template #day="{ date, isDisabled }">',
-					'    {{ date.getDate() }}',
-					'    <small v-if="!isDisabled">{{ price(date) }}</small>',
-					'  </template>',
-					'</BaseCalendar>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseCalendar'],
+				models,
+				script: `
+					function nightPrice(date: Date): string {
+						const day = date.getDay()
+						return day === 0 || day === 6 ? '4 200' : '3 100'
+					}
+				`,
+			}),
 		},
 	},
-	render: renderWithLocalModel(`
-		<BaseCalendar v-bind="props" v-model="value">
-			<template #day="{ date, isDisabled }">
-				{{ date.getDate() }}
-				<small v-if="!isDisabled" style="font-size: 10px; line-height: 12px;">{{ nightPrice(date) }}</small>
-			</template>
-		</BaseCalendar>
-	`),
+	render: args => ({
+		components: { BaseCalendar },
+		setup: useStorySetup(args, { models, slots: [], setup: () => ({ nightPrice }) }),
+		template,
+	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('button', { name: /^15\s*3 100$/ })).toHaveAttribute('aria-pressed', 'true')
 	},

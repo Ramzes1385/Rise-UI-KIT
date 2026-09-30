@@ -3,12 +3,23 @@ import type meta from '../../BaseTable.stories'
 import BaseTable from '../../../ui/BaseTable.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
-import { COMPACT_COLUMNS, toRows, ORDERS } from '../../shared'
+import { storySource, useStorySetup } from '@/stories/helpers'
+import type { TableColumn } from '../../../types/BaseTable.types'
+import { COMPACT_COLUMNS, toRows, ORDERS, tableScript } from '../../shared'
+
+const columns: TableColumn[] = [...COMPACT_COLUMNS, { key: 'actions', label: 'Действия', align: 'right' }]
+
+const template = `
+	<BaseTable v-bind="args" :columns="columns">
+		<template #cell-actions="{ row }">
+			<BaseButton variant="outline" :aria-label="'Открыть заказ ' + row.data.number" @click.stop>Открыть</BaseButton>
+		</template>
+	</BaseTable>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {
-		columns: [...COMPACT_COLUMNS, { key: 'actions', label: 'Действия', align: 'right' }],
+		columns,
 		rows: toRows(ORDERS.slice(0, 3)),
 		color: { bg: { base: '#f5f3ff', hover: '#ede9fe' }, text: { base: '#4c1d95' } },
 	},
@@ -20,25 +31,18 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'и ячеек. Кнопки, бейджи и поля внутри таблицы цвет не наследуют.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					`<BaseTable :columns="columns" :rows="rows" :color="{ bg: { base: '#f5f3ff', hover: '#ede9fe' }, text: { base: '#4c1d95' } }">`,
-					'  <template #cell-actions><BaseButton variant="outline">Открыть</BaseButton></template>',
-					'</BaseTable>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseButton', 'BaseTable', 'type TableColumn'],
+				script: tableScript({ columns }),
+				omit: ['columns'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseTable, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<BaseTable v-bind="props">
-				<template #cell-actions="{ row }">
-					<BaseButton variant="outline" :aria-label="'Открыть заказ ' + row.data.number" @click.stop>Открыть</BaseButton>
-				</template>
-			</BaseTable>
-		`,
+		setup: useStorySetup(args, { data: { columns: args.columns }, slots: ['default', 'columns'] }),
+		template,
 	}),
 	play: async ({ canvasElement, canvas }) => {
 		const body = canvasElement.querySelector('.base-table__body') as HTMLElement

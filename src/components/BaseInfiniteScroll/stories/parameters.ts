@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseInfiniteScroll from '../ui/BaseInfiniteScroll.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Бесконечная прокрутка: следующая часть списка подгружается, когда конец списка подходит к краю области.',

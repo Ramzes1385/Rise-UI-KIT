@@ -3,9 +3,20 @@ import { BaseIcon } from '@components/BaseIcon'
 import BaseTable from '../../../ui/BaseTable.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { toRows, ORDERS, bodyRows } from '../../shared'
 import { waitFor, expect, screen } from 'storybook/test'
-import { useArgsWithoutSlots, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
+import { COLUMNS, toRows, ORDERS, bodyRows, tableScript } from '../../shared'
+import { STORY_WAIT_TIMEOUT, storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseTable v-bind="args" :columns="columns">
+		<template #toolbar-append>
+			<BaseButton variant="outline">
+				<template #left><BaseIcon name="download" :size-scale="80" /></template>
+				Экспорт
+			</BaseButton>
+		</template>
+	</BaseTable>
+`
 
 export const Toolbar: StoryObj<typeof meta> = {
 	args: {
@@ -22,30 +33,18 @@ export const Toolbar: StoryObj<typeof meta> = {
 					'Поля и кнопки — 32px в один ряд. Панель «Колонки» ставит фокус на первый чекбокс, Escape возвращает его на кнопку.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseTable :columns="columns" :rows="rows" :features="{ search: true, filters: true, columnSettings: true }">',
-					'  <template #toolbar-append>',
-					'    <BaseButton variant="outline"><template #left><BaseIcon name="download" /></template>Экспорт</BaseButton>',
-					'  </template>',
-					'</BaseTable>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseButton', 'BaseIcon', 'BaseTable', 'type TableColumn'],
+				script: tableScript({ columns: COLUMNS }),
+				omit: ['columns'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseTable, BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<BaseTable v-bind="props">
-				<template #toolbar-append>
-					<BaseButton variant="outline">
-						<template #left><BaseIcon name="download" :size-scale="80" /></template>
-						Экспорт
-					</BaseButton>
-				</template>
-			</BaseTable>
-		`,
+		setup: useStorySetup(args, { data: { columns: args.columns }, slots: ['default', 'columns'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.type(canvas.getByLabelText('Поиск по таблице'), 'Москва')

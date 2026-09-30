@@ -1,11 +1,12 @@
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import type { Ref } from 'vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseFilterBuilder.stories'
 import { expect, waitFor, within } from 'storybook/test'
 import BaseFilterBuilder from '../../../ui/BaseFilterBuilder.vue'
-import { STORY_TODAY, useArgsWithoutSlots } from '@/stories/helpers'
 import { BaseKanban, type KanbanCard } from '@components/BaseKanban'
 import { createFilterPredicate } from '../../../model/filters/filterPredicate'
+import { literal, STORY_TODAY, storySource, useStorySetup } from '@/stories/helpers'
 import type { FilterBuilderField, FilterBuilderGroup } from '../../../types/BaseFilterBuilder.types'
 
 const FIELDS: FilterBuilderField[] = [
@@ -55,6 +56,23 @@ const CARDS: KanbanCard[] = [
 	{ id: 'k5', columnId: 'done', key: 'RISE-090', title: 'Markdown без v-html', priority: 'high', estimate: 2 },
 ]
 
+const models = { filter: 'modelValue' }
+
+const state = { cards: CARDS }
+
+const template = `
+	<div style="display: flex; flex-direction: column; gap: 16px">
+		<BaseFilterBuilder v-bind="args" v-model="filter" style="max-width: 720px" />
+		<BaseKanban v-model:cards="cards" :columns="columns" :filter="predicate" :today="today" />
+	</div>
+`
+
+const script = [
+	`const columns = ${literal(COLUMNS)}`,
+	`const today = ${literal(STORY_TODAY)}`,
+	'const predicate = computed(() => (filter.value.conditions.length ? createFilterPredicate<KanbanCard>(filter.value, fields) : undefined))',
+].join('\n')
+
 export const WithKanban: StoryObj<typeof meta> = {
 	args: {
 		fields: FIELDS,
@@ -65,23 +83,32 @@ export const WithKanban: StoryObj<typeof meta> = {
 			description: {
 				story: 'Фильтр для канбан-доски: `createFilterPredicate` передаётся в проп `filter` BaseKanban. Счётчики колонок показывают «1 из 2», скрытые карточки не теряются.',
 			},
+			source: storySource({
+				template,
+				imports: ['BaseFilterBuilder', 'BaseKanban', 'createFilterPredicate', 'type KanbanCard'],
+				models,
+				state,
+				types: { cards: 'KanbanCard[]' },
+				vue: ['computed'],
+				script,
+			}),
 		},
 	},
-	render: args => ({
-		components: { BaseFilterBuilder, BaseKanban },
-		setup() {
-			const filter = ref<FilterBuilderGroup>(args.modelValue as FilterBuilderGroup)
-			const predicate = computed(() =>
-				filter.value.conditions.length ? createFilterPredicate<KanbanCard>(filter.value, FIELDS) : undefined,
-			)
-			return { props: useArgsWithoutSlots(args), filter, predicate, cards: ref([...CARDS]), columns: COLUMNS, today: STORY_TODAY }
-		},
-		template: `
-			<div style="display: flex; flex-direction: column; gap: 16px">
-				<BaseFilterBuilder v-bind="props" v-model="filter" style="max-width: 720px" />
-				<BaseKanban v-model:cards="cards" :columns="columns" :filter="predicate" :today="today" />
-			</div>`,
-	}),
+	render: args => {
+		const storySetup = useStorySetup(args, { models, state, data: { columns: COLUMNS, today: STORY_TODAY } })
+		return {
+			components: { BaseFilterBuilder, BaseKanban },
+			setup() {
+				const context = storySetup()
+				const filter = context.filter as Ref<FilterBuilderGroup>
+				const predicate = computed(() =>
+					filter.value.conditions.length ? createFilterPredicate<KanbanCard>(filter.value, args.fields ?? FIELDS) : undefined,
+				)
+				return { ...context, predicate }
+			},
+			template,
+		}
+	},
 	play: async ({ canvas, userEvent }) => {
 		await expect(canvas.getByRole('list', { name: /^В работе, 1 карточка/ })).toBeInTheDocument()
 		await expect(canvas.queryByRole('button', { name: 'Канбан-доска' })).toBeNull()

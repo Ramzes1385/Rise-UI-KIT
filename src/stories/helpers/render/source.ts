@@ -232,28 +232,53 @@ function sortImports(names: readonly string[]): string[] {
 	return [...names].sort((left, right) => (key(left) < key(right) ? -1 : Number(key(left) > key(right))))
 }
 
-function buildSource(options: StorySourceOptions, context: StorySourceContext): string {
+/** Строки `ref` для `v-model` и состояния шаблона; тип из `types` — и для `models` */
+function refLines(options: StorySourceOptions, context: StorySourceContext): string[] {
+	const typed = (name: string): string => (options.types?.[name] ? `<${options.types[name]}>` : '')
+	return [
+		...Object.entries(options.models ?? {}).map(
+			([name, arg]) => `const ${name} = ref${typed(name)}(${literal(context.args[arg] ?? '')})`,
+		),
+		...Object.entries(options.state ?? {}).map(([name, value]) => `const ${name} = ref${typed(name)}(${literal(value)})`),
+	]
+}
+
+/** Импорты файла: vue, пакет кита (если есть что брать), другие входы пакета и свои компоненты `components` */
+function importLines(options: StorySourceOptions, hasRefs: boolean): string[] {
+	const vue = [...new Set([...(hasRefs ? ['ref'] : []), ...(options.vue ?? [])])].sort()
+	return [
+		...(vue.length ? [`import { ${vue.join(', ')} } from 'vue'`] : []),
+		...(options.imports.length ? [`import { ${sortImports(options.imports).join(', ')} } from '${PACKAGE}'`] : []),
+		...Object.entries(options.importsFrom ?? {}).map(([from, names]) => `import { ${sortImports(names).join(', ')} } from '${from}'`),
+		...Object.keys(options.components ?? {}).map(name => `import ${name} from './${name}.vue'`),
+	]
+}
+
+function buildFile(options: StorySourceOptions, context: StorySourceContext): string {
 	const attributes = shownArgs(options, context).map(attribute)
 	const template = expandArgs(fillSlots(templateSource(options.template), context.args), attributes)
 	const hoisted = attributes.filter(item => item.hoist && template.includes(item.code)).map(item => item.hoist)
-	const refs = [
-		...Object.entries(options.models ?? {}).map(([name, arg]) => `const ${name} = ref(${literal(context.args[arg] ?? '')})`),
-		...Object.entries(options.state ?? {}).map(
-			([name, value]) => `const ${name} = ref${options.types?.[name] ? `<${options.types[name]}>` : ''}(${literal(value)})`,
-		),
-	]
-	const vue = [...new Set([...(refs.length ? ['ref'] : []), ...(options.vue ?? [])])].sort()
-	const imports = [
-		...(vue.length ? [`import { ${vue.join(', ')} } from 'vue'`] : []),
-		`import { ${sortImports(options.imports).join(', ')} } from '${PACKAGE}'`,
-		...Object.entries(options.importsFrom ?? {}).map(([from, names]) => `import { ${sortImports(names).join(', ')} } from '${from}'`),
-	]
+	const refs = refLines(options, context)
+	const imports = importLines(options, refs.length > 0)
 	const script = [imports.join('\n'), [...refs, ...hoisted].join('\n'), templateSource(options.script ?? '')].filter(Boolean)
 	const body = template
 		.split('\n')
 		.map(line => (line ? `\t${line}` : line))
 		.join('\n')
 	return `<script setup lang="ts">\n${script.join('\n\n')}\n</script>\n\n<template>\n${body}\n</template>${storyStyles(options.template)}`
+}
+
+/** Свои компоненты примера и их вложенные компоненты — файлами под комментарием с именем */
+function componentFiles(components: StorySourceOptions['components']): string[] {
+	return Object.entries(components ?? {}).flatMap(([name, file]) => [
+		`<!-- ${name}.vue -->\n${buildFile(file, { args: {} })}`,
+		...componentFiles(file.components),
+	])
+}
+
+/** Код истории; свои компоненты `components` — отдельными файлами после основного */
+function buildSource(options: StorySourceOptions, context: StorySourceContext): string {
+	return [buildFile(options, context), ...componentFiles(options.components)].join('\n\n')
 }
 
 /**

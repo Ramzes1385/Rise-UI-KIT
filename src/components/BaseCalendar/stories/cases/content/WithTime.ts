@@ -1,8 +1,14 @@
 import { expect } from 'storybook/test'
-import { storyDate } from '@/stories/helpers'
 import type meta from '../../BaseCalendar.stories'
-import { renderWithLocalModel } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseCalendar from '../../../ui/BaseCalendar.vue'
+import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { date: storyDate(0, 14, 30) }
+
+const template = `
+	<BaseCalendar v-bind="args" v-model="date" />
+`
 
 export const WithTime: StoryObj<typeof meta> = {
 	parameters: {
@@ -13,13 +19,18 @@ export const WithTime: StoryObj<typeof meta> = {
 					'(уход из поля); часы ограничены 0–23, минуты и секунды — 0–59.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseCalendar'], state, omit: ['modelValue'] }),
 		},
 	},
 	args: {
 		modelValue: storyDate(0, 14, 30),
 		timeConfig: { showTime: true, showSeconds: true },
 	},
-	render: renderWithLocalModel(),
+	render: args => ({
+		components: { BaseCalendar },
+		setup: useStorySetup(args, { state, slots: ['modelValue'] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const minutes = canvas.getByLabelText('Минуты')
 		await userEvent.clear(minutes)

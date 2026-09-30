@@ -1,17 +1,37 @@
-import { formatRub } from '../../shared'
 import type meta from '../../BaseTable.stories'
 import { within, expect } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { formatRub, tableScript } from '../../shared'
+import { storySource, useStorySetup } from '@/stories/helpers'
+import type { TableColumn } from '../../../types/BaseTable.types'
+
+const columns: TableColumn[] = [
+	{ key: 'number', label: 'Заказ' },
+	{ key: 'comment', label: 'Комментарий покупателя' },
+	{ key: 'total', label: 'Сумма', align: 'right', formatter: formatRub },
+]
+
+const fixedColumns: TableColumn[] = [
+	{ key: 'number', label: 'Заказ', width: '120px' },
+	{ key: 'comment', label: 'Комментарий покупателя', width: '320px' },
+	{ key: 'total', label: 'Сумма', width: '120px', align: 'right', formatter: formatRub },
+]
+
+const template = `
+	<div class="story-stack">
+		<span class="story-label">Ширина по содержимому — перенос строк</span>
+		<BaseTable v-bind="args" :columns="columns" />
+		<span class="story-label">Заданы ширины колонок — многоточие</span>
+		<div style="max-width: 560px;">
+			<BaseTable v-bind="args" :columns="fixedColumns" />
+		</div>
+	</div>
+`
 
 export const LongContent: StoryObj<typeof meta> = {
 	args: {
-		columns: [
-			{ key: 'number', label: 'Заказ' },
-			{ key: 'comment', label: 'Комментарий покупателя' },
-			{ key: 'total', label: 'Сумма', align: 'right', formatter: formatRub },
-		],
+		columns,
 		rows: [
 			{
 				id: 1,
@@ -33,29 +53,19 @@ export const LongContent: StoryObj<typeof meta> = {
 					'(`width`), раскладка фиксированная и текст обрезается многоточием в одну строку.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseTable', 'type TableColumn'],
+				script: tableScript({ columns, fixedColumns }),
+				omit: ['columns'],
+			}),
 		},
 		controls: { include: ['variant', 'sizeScale'] },
 	},
 	render: args => ({
 		components: { BaseTable },
-		setup: () => ({
-			props: useArgsWithoutSlots(args),
-			fixedColumns: [
-				{ key: 'number', label: 'Заказ', width: '120px' },
-				{ key: 'comment', label: 'Комментарий покупателя', width: '320px' },
-				{ key: 'total', label: 'Сумма', width: '120px', align: 'right', formatter: formatRub },
-			],
-		}),
-		template: `
-			<div class="story-stack">
-				<span class="story-label">Ширина по содержимому — перенос строк</span>
-				<BaseTable v-bind="props" />
-				<span class="story-label">Заданы ширины колонок — многоточие</span>
-				<div style="max-width: 560px;">
-					<BaseTable v-bind="props" :columns="fixedColumns" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { columns: args.columns, fixedColumns }, slots: ['default', 'columns'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const [, fixedTable] = canvas.getAllByRole('table')

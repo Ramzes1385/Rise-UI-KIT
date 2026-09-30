@@ -5,6 +5,14 @@ import type { WritableComputedRef } from 'vue'
 import { useArgs } from 'storybook/preview-api'
 import type { StorySetupOptions } from '../types/helpers.types'
 
+/**
+ * Обработчик из args Storybook в имени события через дефис (`onDelete-messages`) → `onDeleteMessages`, как его
+ * называет шаблон (`@delete-messages`). Иначе `v-bind="args"` и обработчик шаблона — разные ключи, и Vue при `emit`
+ * вызывает только первый найденный: шпион из args, а обработчик шаблона молчит.
+ */
+const listenerKey = (key: string): string =>
+	/^on[A-Z]/.test(key) && key.includes('-') ? key.replace(/-(\w)/g, (_, letter: string) => letter.toUpperCase()) : key
+
 const sameValue = (left: unknown, right: unknown): boolean => left === right || JSON.stringify(left) === JSON.stringify(right)
 
 /** Сколько ждать ответа Storybook на своё изменение, мс: в Docs ответа нет, и позже значение из Controls применяется */
@@ -64,7 +72,13 @@ export function useStorySetup(storyArgs: object, options: StorySetupOptions = {}
 	const slots = options.slots ?? ['default']
 	const hidden = new Set([...slots, ...Object.values(models)])
 	return () => ({
-		args: computed(() => Object.fromEntries(Object.entries(args).filter(([key]) => !hidden.has(key)))),
+		args: computed(() =>
+			Object.fromEntries(
+				Object.entries(args)
+					.filter(([key]) => !hidden.has(key))
+					.map(([key, value]) => [listenerKey(key), value]),
+			),
+		),
 		slots: computed(() => Object.fromEntries(slots.map(name => [name, args[name]]))),
 		...Object.fromEntries(Object.entries(models).map(([name, arg]) => [name, modelArg(args, arg, updateArgs)])),
 		...Object.fromEntries(Object.entries(options.state ?? {}).map(([name, value]) => [name, ref(structuredClone(value))])),

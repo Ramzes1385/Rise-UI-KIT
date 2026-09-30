@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseTimeline from '../ui/BaseTimeline.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Хронология событий, которые уже случились: история заказа, изменения документа, журнал действий. Отвечает на',

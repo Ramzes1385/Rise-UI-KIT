@@ -311,4 +311,66 @@ describe('код для «Show code»', () => {
 			"import { type AutocompleteOption, BaseTable, type TableRow } from '@ramzes1385/rise-ui-kit'",
 		)
 	})
+
+	it('без импортов из корня пакета — строки импорта пакета нет; types — и для v-model', () => {
+		const code = storySource({
+			template: '<BaseMediaPlayer v-model="messages" />',
+			imports: [],
+			importsFrom: { '@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer'] },
+			models: { messages: 'modelValue' },
+			types: { messages: 'string[]' },
+		}).transform('', { args: { modelValue: ['а'] } })
+		expect(code).not.toContain("from '@ramzes1385/rise-ui-kit'\n")
+		expect(code).toContain("import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'")
+		expect(code).toContain("const messages = ref<string[]>(['а'])")
+	})
+
+	it('свои компоненты — файлами после основного, вложенные тоже; основной файл их импортирует', () => {
+		const { code } = staticStorySource({
+			template: '<BaseApp><ToastButtons /></BaseApp>',
+			imports: ['BaseApp'],
+			components: {
+				ToastButtons: {
+					template: '<BaseButton @click="show">Показать</BaseButton><RenameModal />',
+					imports: ['BaseButton', 'useToast'],
+					script: "const toast = useToast()\nconst show = () => toast.add({ title: 'Готово' })",
+					components: { RenameModal: { template: '<BaseModal />', imports: ['BaseModal'] } },
+				},
+			},
+		})
+		expect(code).toBe(
+			[
+				'<script setup lang="ts">',
+				"import { BaseApp } from '@ramzes1385/rise-ui-kit'",
+				"import ToastButtons from './ToastButtons.vue'",
+				'</script>',
+				'',
+				'<template>',
+				'\t<BaseApp><ToastButtons /></BaseApp>',
+				'</template>',
+				'',
+				'<!-- ToastButtons.vue -->',
+				'<script setup lang="ts">',
+				"import { BaseButton, useToast } from '@ramzes1385/rise-ui-kit'",
+				"import RenameModal from './RenameModal.vue'",
+				'',
+				'const toast = useToast()',
+				"const show = () => toast.add({ title: 'Готово' })",
+				'</script>',
+				'',
+				'<template>',
+				'\t<BaseButton @click="show">Показать</BaseButton><RenameModal />',
+				'</template>',
+				'',
+				'<!-- RenameModal.vue -->',
+				'<script setup lang="ts">',
+				"import { BaseModal } from '@ramzes1385/rise-ui-kit'",
+				'</script>',
+				'',
+				'<template>',
+				'\t<BaseModal />',
+				'</template>',
+			].join('\n'),
+		)
+	})
 })

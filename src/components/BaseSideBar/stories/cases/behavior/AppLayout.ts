@@ -33,7 +33,7 @@ export const AppLayout: StoryObj<typeof meta> = {
 				imports: ['BaseSideBar', 'BaseAvatar'],
 				script: `const user = ${literal(user)}`,
 				models,
-				omit: SLOT_KEYS,
+				omit: [...SLOT_KEYS, 'linkComponent'],
 			}),
 		},
 	},

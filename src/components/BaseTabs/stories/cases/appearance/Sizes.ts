@@ -1,9 +1,23 @@
-import { ref } from 'vue'
 import { MODEL_KEYS } from '../../shared'
 import type meta from '../../BaseTabs.stories'
 import BaseTabs from '../../../ui/BaseTabs.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const state = { tabs: Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 'overview'])) }
+
+const hidden = [...MODEL_KEYS, 'sizeScale', 'default']
+
+const template = `
+	<div class="story-stack">
+		<div v-for="preset in presets" :key="preset.name" class="story-col">
+			<span class="story-label">{{ preset.label }}</span>
+			<BaseTabs v-bind="args" v-model="tabs[preset.name]" :size-scale="preset.sizeScale" />
+		</div>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	args: { variant: 'pills' },
@@ -11,28 +25,19 @@ export const Sizes: StoryObj<typeof meta> = {
 		controls: { include: ['variant'] },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: высота вкладки 24, 28, 32, 36 и 40px — как у кнопки того же размера.' },
-			source: {
-				code: SIZE_PRESETS.map(p => `<BaseTabs v-model="tab" :items="items" variant="pills" :size-scale="${p.sizeScale}" />`).join(
-					'\n',
-				),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseTabs'],
+				script: `const presets = ${literal(presets)}`,
+				state,
+				types: { tabs: 'Record<string, string>' },
+				omit: hidden,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseTabs },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [...MODEL_KEYS, 'sizeScale', 'default']),
-			presets: SIZE_PRESETS,
-			sizeLabel,
-			tabs: ref<Record<string, string>>(Object.fromEntries(SIZE_PRESETS.map(preset => [preset.name, 'overview']))),
-		}),
-		template: `
-			<div class="story-stack">
-				<div v-for="preset in presets" :key="preset.name" class="story-col">
-					<span class="story-label">{{ sizeLabel(preset) }}</span>
-					<BaseTabs v-bind="props" v-model="tabs[preset.name]" :size-scale="preset.sizeScale" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { presets }, slots: hidden }),
+		template,
 	}),
 }

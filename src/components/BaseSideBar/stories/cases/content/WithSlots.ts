@@ -48,7 +48,7 @@ export const WithSlots: StoryObj<typeof meta> = {
 				imports: ['BaseSideBar', 'BaseAvatar', 'BaseIcon'],
 				script: [`const user = ${literal(user)}`, `const frameStyle = ${literal(frameStyle)}`].join('\n'),
 				models,
-				omit: SLOT_KEYS,
+				omit: [...SLOT_KEYS, 'linkComponent'],
 			}),
 		},
 	},

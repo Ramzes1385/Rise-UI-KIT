@@ -1,4 +1,5 @@
 import { within } from 'storybook/test'
+import { literal } from '@/stories/helpers'
 import type { TableRow, TableColumn } from '../types/BaseTable.types'
 
 export function formatRub(value: unknown): string {
@@ -145,4 +146,54 @@ export const COMPACT_COLUMNS: TableColumn[] = [COLUMNS[0], COLUMNS[1], COLUMNS[3
 
 export function bodyRows(table: HTMLElement): HTMLElement[] {
 	return within(table).getAllByRole('row').slice(1)
+}
+
+const FORMATTER_CODE = new Map<unknown, { name: string; code: string }>([
+	[
+		formatRub,
+		{
+			name: 'formatRub',
+			code: [
+				'function formatRub(value: unknown): string {',
+				"\treturn `${new Intl.NumberFormat('ru-RU').format(Number(value))}\\u00A0₽`",
+				'}',
+			].join('\n'),
+		},
+	],
+	[
+		formatDate,
+		{
+			name: 'formatDate',
+			code: [
+				'function formatDate(value: unknown): string {',
+				"\tconst [year, month, day] = String(value).split('-')",
+				'\treturn `${day}.${month}.${year}`',
+				'}',
+			].join('\n'),
+		},
+	],
+])
+
+function formatterOf(column: TableColumn): { name: string; code: string } | undefined {
+	if (!column.formatter) return undefined
+	const formatter = FORMATTER_CODE.get(column.formatter)
+	if (!formatter) throw new Error(`Нет кода форматтера колонки «${column.key}»`)
+	return formatter
+}
+
+export function tableScript(
+	columns: Readonly<Record<string, readonly TableColumn[]>>,
+	constants: Readonly<Record<string, unknown>> = {},
+): string {
+	const all = Object.values(columns).flat()
+	const formatters = [...FORMATTER_CODE.values()].filter(item => all.some(column => formatterOf(column) === item))
+	const columnLines = Object.entries(columns).map(([name, list]) => {
+		const marked = list.map(column => {
+			const formatter = formatterOf(column)
+			return formatter ? { ...column, formatter: `@@${formatter.name}` } : column
+		})
+		return `const ${name}: TableColumn[] = ${literal(marked).replace(/'@@(\w+)'/g, '$1')}`
+	})
+	const constantLines = Object.entries(constants).map(([name, value]) => `const ${name} = ${literal(value)}`)
+	return [...formatters.map(item => item.code), [...columnLines, ...constantLines].join('\n')].join('\n\n')
 }

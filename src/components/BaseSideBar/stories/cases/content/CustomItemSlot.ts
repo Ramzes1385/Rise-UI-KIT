@@ -33,7 +33,7 @@ export const CustomItemSlot: StoryObj<typeof meta> = {
 				imports: ['BaseSideBar', 'BaseIcon'],
 				script: `const frameStyle = ${literal(frameStyle)}`,
 				models,
-				omit: SLOT_KEYS,
+				omit: [...SLOT_KEYS, 'linkComponent'],
 			}),
 		},
 	},

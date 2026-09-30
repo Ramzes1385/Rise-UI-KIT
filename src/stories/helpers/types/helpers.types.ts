@@ -35,8 +35,14 @@ export interface StorySourceOptions {
 	importsFrom?: Readonly<Record<string, readonly string[]>>
 	/** Состояние шаблона: имя → начальное значение. В коде — `const isOpen = ref(false)`; в `useStorySetup` — те же `state` */
 	state?: Readonly<Record<string, unknown>>
-	/** Типы переменных `state` для кода: `{ values: 'Record<string, string>' }` → `ref<Record<string, string>>({})` */
+	/** Типы переменных `state` и `models` для кода: `{ values: 'Record<string, string>' }` → `ref<Record<string, string>>({})` */
 	types?: Readonly<Record<string, string>>
+	/**
+	 * Свои компоненты примера — отдельные файлы Vue: имя → их шаблон и код. Нужны, когда логика должна жить внутри
+	 * `<BaseApp>` (`useToast()`, `useConfirm()` находят ближайший `BaseApp` через inject). В коде основной файл
+	 * импортирует `import Name from './Name.vue'`, а сами файлы идут следом под комментарием `<!-- Name.vue -->`.
+	 */
+	components?: Readonly<Record<string, StorySourceOptions>>
 }
 
 /** Настройки `useStorySetup` — те же `models` и `state`, что у `storySource` */

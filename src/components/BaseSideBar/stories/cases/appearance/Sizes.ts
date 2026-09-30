@@ -2,7 +2,28 @@ import type meta from '../../BaseSideBar.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSideBar from '../../../ui/BaseSideBar.vue'
 import { SLOT_KEYS, BASIC_ITEMS } from '../../shared'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const items = BASIC_ITEMS
+
+const hidden = [...SLOT_KEYS, 'isCollapsed', 'onUpdate:isCollapsed', 'title', 'items', 'sizeScale', 'width']
+
+const template = `
+	<div class="story-row" style="align-items: stretch; height: 280px;">
+		<BaseSideBar
+			v-for="preset in presets"
+			:key="preset.name"
+			v-bind="args"
+			:items="items"
+			:title="preset.label"
+			:aria-label="'Боковая панель: ' + preset.name"
+			:width="200"
+			:size-scale="preset.sizeScale"
+			active-path="/dashboard" />
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	argTypes: { sizeScale: { control: false } },
@@ -11,30 +32,17 @@ export const Sizes: StoryObj<typeof meta> = {
 			description: {
 				story: 'Размеры через `sizeScale`: ширина панели, высота пунктов (24–40px), текст и иконки масштабируются пропорционально.',
 			},
-			source: { code: SIZE_PRESETS.map(p => `<BaseSideBar :items="items" :width="200" :size-scale="${p.sizeScale}" />`).join('\n') },
+			source: storySource({
+				template,
+				imports: ['BaseSideBar'],
+				script: [`const presets = ${literal(presets)}`, `const items = ${literal(items)}`].join('\n'),
+				omit: [...hidden, 'linkComponent'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseSideBar },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [...SLOT_KEYS, 'isCollapsed', 'onUpdate:isCollapsed', 'title', 'items', 'sizeScale', 'width']),
-			presets: SIZE_PRESETS,
-			sizeLabel,
-			items: BASIC_ITEMS,
-		}),
-		template: `
-			<div class="story-row" style="align-items: stretch; height: 280px;">
-				<BaseSideBar
-					v-for="preset in presets"
-					:key="preset.name"
-					v-bind="props"
-					:items="items"
-					:title="sizeLabel(preset)"
-					:aria-label="'Боковая панель: ' + preset.name"
-					:width="200"
-					:size-scale="preset.sizeScale"
-					active-path="/dashboard" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets, items }, slots: hidden }),
+		template,
 	}),
 }

@@ -25,7 +25,7 @@ export const Mobile: StoryObj<typeof meta> = {
 					'по ссылке закрывает панель. В примере брейкпоинт `xxl`, чтобы режим был виден на любом экране; обычно — `md`.',
 				].join('\n'),
 			},
-			source: storySource({ template, imports: ['BaseButton', 'BaseSideBar'], state, omit: SLOT_KEYS }),
+			source: storySource({ template, imports: ['BaseButton', 'BaseSideBar'], state, omit: [...SLOT_KEYS, 'linkComponent'] }),
 		},
 	},
 	render: args => ({

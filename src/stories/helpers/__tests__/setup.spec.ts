@@ -63,4 +63,11 @@ describe('setup истории со своим шаблоном', () => {
 		expect(setup().count).not.toBe(setup().count)
 		expect(setup().count).toEqual({ value: 0 })
 	})
+
+	it('обработчики событий через дефис — в camelCase, как у обработчиков шаблона: Vue вызовет оба', () => {
+		const onDelete = vi.fn()
+		const setup = useStorySetup({ 'onDelete-messages': onDelete, 'onUpdate:modelValue': onDelete, onSend: onDelete })()
+		expect(Object.keys((setup.args as Ref).value)).toEqual(['onDeleteMessages', 'onUpdate:modelValue', 'onSend'])
+		expect((setup.args as Ref).value.onDeleteMessages).toBe(onDelete)
+	})
 })

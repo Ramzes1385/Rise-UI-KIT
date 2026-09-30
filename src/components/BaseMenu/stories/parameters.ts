@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseMenu from '../ui/BaseMenu.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Панель пунктов-действий: контекстное меню файла, меню «ещё» в карточке, список команд.',

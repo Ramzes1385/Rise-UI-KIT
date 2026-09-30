@@ -2,15 +2,43 @@ import { ref } from 'vue'
 import type meta from '../../BaseTree.stories'
 import BaseTree from '../../../ui/BaseTree.vue'
 import { waitFor, expect } from 'storybook/test'
+import { nodeLabel, treeNode } from '../../shared'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
-import { FILES, nodeLabel, treeNode } from '../../shared'
 import type { TreeNode } from '../../../types/BaseTree.types'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 function folderIds(nodes: readonly TreeNode[]): string[] {
 	return nodes.flatMap(node => (node.children?.length ? [node.id, ...folderIds(node.children)] : []))
 }
+
+const hidden = ['expandedIds', 'onUpdate:expandedIds']
+
+const template = `
+	<div class="story-col story-narrow">
+		<div class="story-row">
+			<BaseButton variant="outline" @click="expandAll">Развернуть всё</BaseButton>
+			<BaseButton variant="outline" @click="collapseAll">Свернуть всё</BaseButton>
+		</div>
+		<BaseTree v-bind="args" v-model:expanded-ids="expanded" style="width: 100%;" />
+	</div>
+`
+
+const script = `
+const expanded = ref<string[]>([])
+
+function folderIds(nodes: readonly TreeNode[]): string[] {
+	return nodes.flatMap(node => (node.children?.length ? [node.id, ...folderIds(node.children)] : []))
+}
+
+function expandAll() {
+	expanded.value = folderIds(items)
+}
+
+function collapseAll() {
+	expanded.value = []
+}
+`
 
 export const Controlled: StoryObj<typeof meta> = {
 	parameters: {
@@ -22,39 +50,25 @@ export const Controlled: StoryObj<typeof meta> = {
 					'папок, а клик по дереву меняет его.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseButton variant="outline" @click="expanded = allFolderIds">Развернуть всё</BaseButton>',
-					'<BaseButton variant="outline" @click="expanded = []">Свернуть всё</BaseButton>',
-					'<BaseTree v-model:expanded-ids="expanded" :items="items" />',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseButton', 'BaseTree', 'type TreeNode'], vue: ['ref'], script, omit: hidden }),
 		},
 	},
 	render: args => ({
 		components: { BaseTree, BaseButton },
-		setup: () => {
-			const expanded = ref<string[]>([])
-			return {
-				props: useArgsWithoutSlots(args, ['expandedIds', 'onUpdate:expandedIds']),
-				expanded,
-				expandAll: () => {
-					expanded.value = folderIds(FILES)
-				},
-				collapseAll: () => {
+		setup: useStorySetup(args, {
+			slots: hidden,
+			setup: () => {
+				const expanded = ref<string[]>([])
+				const expandAll = () => {
+					expanded.value = folderIds(args.items)
+				}
+				const collapseAll = () => {
 					expanded.value = []
-				},
-			}
-		},
-		template: `
-			<div class="story-col story-narrow">
-				<div class="story-row">
-					<BaseButton variant="outline" @click="expandAll">Развернуть всё</BaseButton>
-					<BaseButton variant="outline" @click="collapseAll">Свернуть всё</BaseButton>
-				</div>
-				<BaseTree v-bind="props" v-model:expanded-ids="expanded" style="width: 100%;" />
-			</div>
-		`,
+				}
+				return { expanded, expandAll, collapseAll }
+			},
+		}),
+		template,
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Развернуть всё' }))

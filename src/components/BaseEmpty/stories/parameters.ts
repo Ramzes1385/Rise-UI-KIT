@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseEmpty from '../ui/BaseEmpty.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Пустое состояние: в списке ещё нет данных, поиск ничего не нашёл, раздел недоступен.',

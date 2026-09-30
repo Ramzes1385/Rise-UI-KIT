@@ -2,32 +2,39 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseEmpty.stories'
 import BaseEmpty from '../../../ui/BaseEmpty.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
+		<BaseEmpty
+			v-for="preset in presets"
+			:key="preset.name"
+			v-bind="args"
+			:size-scale="preset.sizeScale"
+			:title="preset.label"
+			description="Создайте первую задачу." />
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['variant', 'icon'] },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: отступы, иконка и текст масштабируются вместе.' },
-			source: {
-				code: SIZE_PRESETS.map(preset => `<BaseEmpty :size-scale="${preset.sizeScale}" title="${preset.name}" />`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseEmpty'],
+				script: `const presets = ${literal(presets)}`,
+				omit: ['title', 'description', 'sizeScale'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseEmpty },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['title', 'description']), presets: SIZE_PRESETS, sizeLabel }),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
-				<BaseEmpty
-					v-for="preset in presets"
-					:key="preset.name"
-					v-bind="props"
-					:size-scale="preset.sizeScale"
-					:title="sizeLabel(preset)"
-					description="Создайте первую задачу." />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets }, slots: ['title', 'description'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const title = canvas.getByRole('heading', { name: 'xl · 125' })

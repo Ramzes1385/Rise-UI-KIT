@@ -1,9 +1,20 @@
 import { expect } from 'storybook/test'
-import { toRows, ORDERS } from '../../shared'
 import type meta from '../../BaseTable.stories'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+import { COLUMNS, toRows, ORDERS, tableScript } from '../../shared'
+
+const rows = toRows(ORDERS.slice(0, 3))
+
+const template = `
+	<div class="story-stack">
+		<span class="story-label">Первая загрузка — скелетон</span>
+		<BaseTable v-bind="args" :columns="columns" :rows="[]" :page-size="3" />
+		<span class="story-label">Обновление — подложка поверх данных</span>
+		<BaseTable v-bind="args" :columns="columns" :rows="rows" />
+	</div>
+`
 
 export const Loading: StoryObj<typeof meta> = {
 	args: { isLoading: true },
@@ -16,25 +27,18 @@ export const Loading: StoryObj<typeof meta> = {
 					'строки недоступны для клика. Таблица помечена `aria-busy`.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseTable :columns="columns" :rows="[]" is-loading />',
-					'<BaseTable :columns="columns" :rows="rows" is-loading />',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseTable', 'type TableColumn'],
+				script: tableScript({ columns: COLUMNS }, { rows }),
+				omit: ['columns'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseTable },
-		setup: () => ({ props: useArgsWithoutSlots(args), rows: toRows(ORDERS.slice(0, 3)) }),
-		template: `
-			<div class="story-stack">
-				<span class="story-label">Первая загрузка — скелетон</span>
-				<BaseTable v-bind="props" :rows="[]" :page-size="3" />
-				<span class="story-label">Обновление — подложка поверх данных</span>
-				<BaseTable v-bind="props" :rows="rows" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { columns: args.columns, rows }, slots: ['default', 'columns'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		for (const table of canvas.getAllByRole('table')) {

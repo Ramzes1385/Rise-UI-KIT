@@ -2,8 +2,21 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseTable.stories'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
-import { COMPACT_COLUMNS, toRows, ORDERS } from '../../shared'
+import { storySource, useStorySetup } from '@/stories/helpers'
+import { COMPACT_COLUMNS, toRows, ORDERS, tableScript } from '../../shared'
+
+const columns = COMPACT_COLUMNS
+
+const rows = toRows(ORDERS.slice(0, 3))
+
+const template = `
+	<div class="story-stack">
+		<span class="story-label">padding: 6 → 6px 12px</span>
+		<BaseTable v-bind="args" :columns="columns" :rows="rows" :padding="6" :behavior="{ selectable: true }" />
+		<span class="story-label">padding: { x: 24, y: 16 }</span>
+		<BaseTable v-bind="args" :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />
+	</div>
+`
 
 export const Padding: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,25 +28,13 @@ export const Padding: StoryObj<typeof meta> = {
 					'Без `padding` отступы 12px 16px из стилей. Отступы шапки и служебных колонок меняются вместе с ячейками.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseTable :columns="columns" :rows="rows" :padding="6" />',
-					'<BaseTable :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseTable', 'type TableColumn'], script: tableScript({ columns }, { rows }) }),
 		},
 	},
 	render: args => ({
 		components: { BaseTable },
-		setup: () => ({ props: useArgsWithoutSlots(args), columns: COMPACT_COLUMNS, rows: toRows(ORDERS.slice(0, 3)) }),
-		template: `
-			<div class="story-stack">
-				<span class="story-label">padding: 6 → 6px 12px</span>
-				<BaseTable v-bind="props" :columns="columns" :rows="rows" :padding="6" :behavior="{ selectable: true }" />
-				<span class="story-label">padding: { x: 24, y: 16 }</span>
-				<BaseTable v-bind="props" :columns="columns" :rows="rows" :padding="{ x: 24, y: 16 }" />
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { columns, rows } }),
+		template,
 	}),
 	play: async ({ canvasElement }) => {
 		const [compact, spacious] = canvasElement.querySelectorAll<HTMLElement>('.base-table')

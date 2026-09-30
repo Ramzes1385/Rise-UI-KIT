@@ -1,6 +1,6 @@
 import type { FilterBuilderField, FilterBuilderGroup } from '../types/BaseFilterBuilder.types'
 
-const STATUSES = [
+export const STATUSES = [
 	{ value: 'todo', label: 'К выполнению' },
 	{ value: 'progress', label: 'В работе' },
 	{ value: 'done', label: 'Готово' },

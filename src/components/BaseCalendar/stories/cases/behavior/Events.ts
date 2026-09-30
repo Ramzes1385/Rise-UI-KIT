@@ -1,8 +1,8 @@
+import { getDay } from '../../shared'
 import { storyDate } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseCalendar.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { renderWithLocalModel, getDay } from '../../shared'
 import type { CalendarHighlight, CalendarWeekends } from '../../../types/BaseCalendar.types'
 
 const HIGHLIGHTS: CalendarHighlight[] = [
@@ -29,7 +29,6 @@ export const Events: StoryObj<typeof meta> = {
 		},
 	},
 	args: { modelValue: null, highlights: HIGHLIGHTS, weekends: WEEKENDS, showDatePopover: true },
-	render: renderWithLocalModel(),
 	play: async ({ canvas, userEvent }) => {
 		const day = getDay(canvas, 5)
 		await expect(day).toHaveAccessibleName(/Сдача монтажа/)

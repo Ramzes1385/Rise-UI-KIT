@@ -32,7 +32,7 @@ export const CollapsedMenu: StoryObj<typeof meta> = {
 				imports: ['BaseSideBar'],
 				models,
 				script: [`const items = ${literal(items)}`, `const frameStyle = ${literal(frameStyle)}`].join('\n'),
-				omit: SLOT_KEYS,
+				omit: [...SLOT_KEYS, 'linkComponent'],
 			}),
 		},
 	},

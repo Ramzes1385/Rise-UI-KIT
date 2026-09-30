@@ -1,9 +1,14 @@
-import { ref } from 'vue'
 import type meta from '../BaseChecklist.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseChecklist from '../../ui/BaseChecklist.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { expect, waitFor, within } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { completed: 'completed' }
+
+const template = `
+	<div style="max-width: 480px"><BaseChecklist v-bind="args" v-model:completed="completed" /></div>
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
@@ -11,12 +16,13 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: 'Первые шаги с китом: отмечайте шаги флажками, кнопка действия шлёт `action`. Следующий шаг подсвечен.',
 			},
+			source: storySource({ template, imports: ['BaseChecklist'], models }),
 		},
 	},
 	render: args => ({
 		components: { BaseChecklist },
-		setup: () => ({ props: useArgsWithoutSlots(args), completed: ref([...(args.completed ?? [])]) }),
-		template: '<div style="max-width: 480px"><BaseChecklist v-bind="props" v-model:completed="completed" /></div>',
+		setup: useStorySetup(args, { models }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const plugin = canvas.getByRole('checkbox', { name: 'Подключить плагин' })

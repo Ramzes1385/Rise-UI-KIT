@@ -2,7 +2,23 @@ import { showcaseItems } from '../../shared'
 import type meta from '../../BaseAccordion.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseAccordion from '../../../ui/BaseAccordion.vue'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+
+const presets = SIZE_PRESETS.map((preset, index) => ({
+	name: preset.name,
+	sizeScale: preset.sizeScale,
+	label: sizeLabel(preset),
+	items: showcaseItems(index),
+}))
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 320px;">
+		<div v-for="preset in presets" :key="preset.name" class="story-col">
+			<span class="story-label">{{ preset.label }}</span>
+			<BaseAccordion v-bind="args" :items="preset.items" :size-scale="preset.sizeScale" />
+		</div>
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
 	args: { variant: 'outline' },
@@ -10,21 +26,17 @@ export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: текст 12–17px, отступы и иконки масштабируются пропорционально.' },
-			source: {
-				code: SIZE_PRESETS.map(p => `<BaseAccordion :items="items" variant="outline" :size-scale="${p.sizeScale}" />`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseAccordion'],
+				script: `const presets = ${literal(presets)}`,
+				omit: ['items', 'sizeScale'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseAccordion },
-		setup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel, showcaseItems }),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 320px;">
-				<div v-for="(preset, index) in presets" :key="preset.name" class="story-col">
-					<span class="story-label">{{ sizeLabel(preset) }}</span>
-					<BaseAccordion v-bind="props" :items="showcaseItems(index)" :size-scale="preset.sizeScale" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { presets } }),
+		template,
 	}),
 }

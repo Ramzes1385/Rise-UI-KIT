@@ -1,9 +1,17 @@
-import { toRows, ORDERS } from '../../shared'
 import type meta from '../../BaseTable.stories'
 import { expect, waitFor } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+import { COLUMNS, toRows, ORDERS, tableScript } from '../../shared'
+
+const template = `
+	<BaseTable v-bind="args" :columns="columns">
+		<template #expanded-content="{ row }">
+			<p style="margin: 0;">Заказ {{ row.data.number }}: 3 позиции, доставка курьером, оплата картой онлайн.</p>
+		</template>
+	</BaseTable>
+`
 
 export const ExpandableRows: StoryObj<typeof meta> = {
 	args: {
@@ -47,25 +55,18 @@ export const ExpandableRows: StoryObj<typeof meta> = {
 					'дочерние строки с отступом. Кнопка раскрытия сообщает состояние через `aria-expanded`, событие — `expand`.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseTable :columns="columns" :rows="rows">',
-					'  <template #expanded-content="{ row }">Состав заказа {{ row.data.number }}…</template>',
-					'</BaseTable>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseTable', 'type TableColumn'],
+				script: tableScript({ columns: COLUMNS }),
+				omit: ['columns'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseTable },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<BaseTable v-bind="props">
-				<template #expanded-content="{ row }">
-					<p style="margin: 0;">Заказ {{ row.data.number }}: 3 позиции, доставка курьером, оплата картой онлайн.</p>
-				</template>
-			</BaseTable>
-		`,
+		setup: useStorySetup(args, { data: { columns: args.columns }, slots: ['default', 'columns'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const [expandFirst] = canvas.getAllByRole('button', { name: 'Развернуть строку' })

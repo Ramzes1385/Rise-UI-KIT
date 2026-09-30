@@ -4,7 +4,24 @@ import BaseEmpty from '../../ui/BaseEmpty.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots, placeholderImage } from '@/stories/helpers'
+import { literal, placeholderImage, storySource, useStorySetup } from '@/stories/helpers'
+
+const illustration = placeholderImage({ width: 160, height: 100, hue: 200 })
+
+const template = `
+	<div class="story-medium">
+		<BaseEmpty v-bind="args">
+			<template #icon>
+				<img :src="illustration" alt="" width="160" height="100" style="border-radius: var(--rise-radius-md);" />
+			</template>
+			Поддерживаются PDF, DOCX и XLSX до 20 МБ.
+			<template #actions>
+				<BaseButton><template #left><BaseIcon name="attach" /></template>Выбрать файлы</BaseButton>
+				<BaseButton variant="outline">Создать папку</BaseButton>
+			</template>
+		</BaseEmpty>
+	</div>
+`
 
 export const Slots: StoryObj<typeof meta> = {
 	args: { title: 'Нет загруженных файлов', description: 'Перетащите файлы сюда или выберите их на компьютере.' },
@@ -17,37 +34,17 @@ export const Slots: StoryObj<typeof meta> = {
 					'`actions` — кнопки следующего шага.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseEmpty title="Нет загруженных файлов" description="…">',
-					'  <template #icon><img :src="illustration" alt="" /></template>',
-					'  Поддерживаются PDF, DOCX и XLSX до 20 МБ.',
-					'  <template #actions>',
-					'    <BaseButton>Выбрать файлы</BaseButton>',
-					'    <BaseButton variant="outline">Создать папку</BaseButton>',
-					'  </template>',
-					'</BaseEmpty>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseButton', 'BaseEmpty', 'BaseIcon'],
+				script: `const illustration = ${literal(illustration)}`,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseEmpty, BaseButton, BaseIcon },
-		setup: () => ({ props: useArgsWithoutSlots(args), illustration: placeholderImage({ width: 160, height: 100, hue: 200 }) }),
-		template: `
-			<div class="story-medium">
-				<BaseEmpty v-bind="props">
-					<template #icon>
-						<img :src="illustration" alt="" width="160" height="100" style="border-radius: var(--rise-radius-md);" />
-					</template>
-					Поддерживаются PDF, DOCX и XLSX до 20 МБ.
-					<template #actions>
-						<BaseButton><template #left><BaseIcon name="attach" /></template>Выбрать файлы</BaseButton>
-						<BaseButton variant="outline">Создать папку</BaseButton>
-					</template>
-				</BaseEmpty>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { illustration } }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await expect(canvas.getByText('Поддерживаются PDF, DOCX и XLSX до 20 МБ.')).toBeVisible()

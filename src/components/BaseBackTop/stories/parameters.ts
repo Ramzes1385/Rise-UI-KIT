@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseBackTop from '../ui/BaseBackTop.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Кнопка «Наверх» для длинных страниц и списков: появляется после прокрутки и возвращает к началу.',

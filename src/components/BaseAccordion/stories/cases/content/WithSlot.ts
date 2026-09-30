@@ -1,14 +1,24 @@
 import { expect } from 'storybook/test'
 import type meta from '../../BaseAccordion.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import BaseAccordion from '../../../ui/BaseAccordion.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import type { BaseAccordionItem } from '../../../types/BaseAccordion.types'
 
 const SLOT_ITEMS: BaseAccordionItem[] = [
 	{ label: 'Контакты', slot: 'contacts' },
 	{ label: 'Реквизиты', content: 'ООО «Райз», ИНН 7700000000, КПП 770001001.' },
 ]
+
+const template = `
+	<div class="story-medium">
+		<BaseAccordion v-bind="args">
+			<template #contacts>
+				Почта поддержки: <a href="mailto:support@example.com">support@example.com</a>
+			</template>
+		</BaseAccordion>
+	</div>
+`
 
 export const WithSlot: StoryObj<typeof meta> = {
 	args: { items: SLOT_ITEMS },
@@ -20,29 +30,13 @@ export const WithSlot: StoryObj<typeof meta> = {
 					'ссылки внутри неё недоступны для Tab (`inert`).',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					"<BaseAccordion :items=\"[{ label: 'Контакты', slot: 'contacts' }, …]\">",
-					'  <template #contacts>',
-					'    <a href="mailto:support@example.com">support@example.com</a>',
-					'  </template>',
-					'</BaseAccordion>',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseAccordion'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseAccordion },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: `
-			<div class="story-medium">
-				<BaseAccordion v-bind="props">
-					<template #contacts>
-						Почта поддержки: <a href="mailto:support@example.com">support@example.com</a>
-					</template>
-				</BaseAccordion>
-			</div>
-		`,
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const link = canvas.getByRole('link', { name: 'support@example.com', hidden: true })

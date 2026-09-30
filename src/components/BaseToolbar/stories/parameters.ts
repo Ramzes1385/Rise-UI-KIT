@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseToolbar from '../ui/BaseToolbar.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Панель инструментов: форматирование текста, действия над выбранными строками, управление просмотром.',

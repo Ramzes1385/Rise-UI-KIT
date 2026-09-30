@@ -1,10 +1,14 @@
-import { ref } from 'vue'
-import { CARDS } from '../shared'
 import { expect } from 'storybook/test'
 import type meta from '../BaseKanban.stories'
 import BaseKanban from '../../ui/BaseKanban.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { cards: 'cards' }
+
+const template = `
+	<BaseKanban v-bind="args" v-model:cards="cards" />
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,12 +16,13 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: 'Space берёт карточку, стрелки переносят её между колонками, Space кладёт. Мышью — перетаскиванием.',
 			},
+			source: storySource({ template, imports: ['BaseKanban'], models }),
 		},
 	},
 	render: args => ({
 		components: { BaseKanban },
-		setup: () => ({ props: useArgsWithoutSlots(args), cards: ref([...CARDS]) }),
-		template: '<BaseKanban v-bind="props" v-model:cards="cards" />',
+		setup: useStorySetup(args, { models }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.tab()

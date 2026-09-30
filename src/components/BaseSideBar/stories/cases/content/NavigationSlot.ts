@@ -32,7 +32,7 @@ export const NavigationSlot: StoryObj<typeof meta> = {
 				imports: ['BaseSideBar', 'BaseButton'],
 				script: `const frameStyle = ${literal(frameStyle)}`,
 				models,
-				omit: SLOT_KEYS,
+				omit: [...SLOT_KEYS, 'linkComponent'],
 			}),
 		},
 	},

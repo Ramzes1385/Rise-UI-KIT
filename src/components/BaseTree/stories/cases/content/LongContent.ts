@@ -3,8 +3,8 @@ import { nodeLabel } from '../../shared'
 import type meta from '../../BaseTree.stories'
 import BaseTree from '../../../ui/BaseTree.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import type { TreeNode } from '../../../types/BaseTree.types'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 const DEEP: TreeNode[] = [
 	{
@@ -35,19 +35,24 @@ const DEEP: TreeNode[] = [
 	},
 ]
 
+const template = `
+	<div style="width: 300px;"><BaseTree v-bind="args" /></div>
+`
+
 export const LongContent: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
 				story: 'Длинные метки обрезаются многоточием в одну строку, глубокая вложенность сдвигает узлы на 20px за уровень.',
 			},
+			source: storySource({ template, imports: ['BaseTree'] }),
 		},
 	},
 	args: { items: DEEP, isDefaultExpandAll: true, expandedIds: undefined },
 	render: args => ({
 		components: { BaseTree },
-		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-		template: '<div style="width: 300px;"><BaseTree v-bind="props" /></div>',
+		setup: useStorySetup(args, { slots: [] }),
+		template,
 	}),
 	play: async ({ canvasElement }) => {
 		const label = nodeLabel(canvasElement, 'Пояснения к бухгалтерскому балансу и отчёту о финансовых результатах.xlsx')

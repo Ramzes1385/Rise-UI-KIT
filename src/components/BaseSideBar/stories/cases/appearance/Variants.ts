@@ -1,10 +1,33 @@
-import { ref } from 'vue'
 import type meta from '../../BaseSideBar.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSideBar from '../../../ui/BaseSideBar.vue'
 import { SLOT_KEYS, BASIC_ITEMS } from '../../shared'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { SIDEBAR_VARIANTS } from '../../../types/BaseSideBar.types'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const items = BASIC_ITEMS
+
+const collapsedState = (isCollapsed: boolean) => ({
+	collapsed: Object.fromEntries(SIDEBAR_VARIANTS.map(variant => [variant, isCollapsed])),
+})
+
+const hidden = [...SLOT_KEYS, 'isCollapsed', 'onUpdate:isCollapsed', 'title', 'items', 'variant', 'width']
+
+const template = `
+	<div class="story-row" style="align-items: stretch; height: 320px;">
+		<BaseSideBar
+			v-for="variant in SIDEBAR_VARIANTS"
+			:key="variant"
+			v-bind="args"
+			v-model:is-collapsed="collapsed[variant]"
+			:items="items"
+			:variant="variant"
+			:title="variant"
+			:aria-label="'Боковая панель: ' + variant"
+			:width="200"
+			active-path="/dashboard" />
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	argTypes: { variant: { control: false } },
@@ -16,35 +39,23 @@ export const Variants: StoryObj<typeof meta> = {
 					'отдельная панель со скруглением; `soft` — мягкий нейтральный фон.',
 				].join('\n'),
 			},
-			source: {
-				code: SIDEBAR_VARIANTS.map(variant => `<BaseSideBar :items="items" variant="${variant}" title="${variant}" />`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseSideBar', 'SIDEBAR_VARIANTS'],
+				script: `const items = ${literal(items)}`,
+				state: collapsedState(false),
+				types: { collapsed: 'Record<string, boolean>' },
+				omit: [...hidden, 'linkComponent'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseSideBar },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [...SLOT_KEYS, 'isCollapsed', 'onUpdate:isCollapsed', 'title', 'items', 'variant', 'width']),
-			variants: SIDEBAR_VARIANTS,
-			items: BASIC_ITEMS,
-			collapsed: ref<Record<string, boolean>>(
-				Object.fromEntries(SIDEBAR_VARIANTS.map(variant => [variant, Boolean(args.isCollapsed)])),
-			),
+		setup: useStorySetup(args, {
+			state: collapsedState(Boolean(args.isCollapsed)),
+			data: { SIDEBAR_VARIANTS, items },
+			slots: hidden,
 		}),
-		template: `
-			<div class="story-row" style="align-items: stretch; height: 320px;">
-				<BaseSideBar
-					v-for="variant in variants"
-					:key="variant"
-					v-bind="props"
-					v-model:is-collapsed="collapsed[variant]"
-					:items="items"
-					:variant="variant"
-					:title="variant"
-					:aria-label="'Боковая панель: ' + variant"
-					:width="200"
-					active-path="/dashboard" />
-			</div>
-		`,
+		template,
 	}),
 }

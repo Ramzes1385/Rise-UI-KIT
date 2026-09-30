@@ -8,9 +8,9 @@ import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseProgress } from '@components/BaseProgress'
-import { formatRub, toRows, ORDERS } from '../../shared'
-import type { TableRow } from '../../../types/BaseTable.types'
-import { avatarImage, useArgsWithoutSlots } from '@/stories/helpers'
+import { formatRub, toRows, ORDERS, tableScript } from '../../shared'
+import type { TableColumn, TableRow } from '../../../types/BaseTable.types'
+import { avatarImage, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const STATUS_COLORS: Record<string, { bg: { base: string }; text: { base: string } }> = {
 	Доставлен: { bg: { base: 'var(--rise-success-soft)' }, text: { base: 'var(--rise-success-text)' } },
@@ -19,15 +19,68 @@ const STATUS_COLORS: Record<string, { bg: { base: string }; text: { base: string
 	Отменён: { bg: { base: 'var(--rise-error-soft)' }, text: { base: 'var(--rise-error-text)' } },
 }
 
+const columns: TableColumn[] = [
+	{ key: 'customer', label: 'Покупатель' },
+	{ key: 'status', label: 'Статус' },
+	{ key: 'progress', label: 'Сборка' },
+	{ key: 'total', label: 'Сумма', align: 'right', formatter: formatRub },
+	{ key: 'actions', label: 'Действия', align: 'right' },
+]
+
+const initialRows = (): TableRow[] =>
+	toRows(ORDERS.slice(0, 4)).map((row, index) => ({ ...row, data: { ...row.data, avatar: avatarImage(24 + index * 70) } }))
+
+const template = `
+	<BaseTable v-bind="args" :columns="columns" :rows="rows">
+		<template #header>
+			<div style="display: flex; flex-direction: column; gap: 2px;">
+				<strong style="color: var(--rise-text-highlighted);">Заказы за май</strong>
+				<span style="color: var(--rise-text-muted);">Последние заказы интернет-магазина</span>
+			</div>
+		</template>
+		<template #header-total>Сумма, ₽</template>
+		<template #cell-customer="{ row }">
+			<div style="display: flex; align-items: center; gap: 12px;">
+				<BaseAvatar :src="row.data.avatar" :alt="row.data.customer" :name="row.data.customer" />
+				<div style="display: flex; flex-direction: column;">
+					<span style="color: var(--rise-text-highlighted); font-weight: var(--rise-font-weight-medium);">{{ row.data.customer }}</span>
+					<span style="color: var(--rise-text-muted);">{{ row.data.number }} · {{ row.data.city }}</span>
+				</div>
+			</div>
+		</template>
+		<template #cell-status="{ value }">
+			<BaseBadge :label="value" :color="statusColors[value]" />
+		</template>
+		<template #cell-progress="{ value }">
+			<div style="min-width: 120px;">
+				<BaseProgress :value="value" :aria-label="'Сборка заказа: ' + value + '%'" />
+			</div>
+		</template>
+		<template #cell-actions="{ row }">
+			<BaseButton variant="ghost" :padding="{ x: 5, y: 5 }" :aria-label="'Удалить заказ ' + row.data.number" @click.stop="remove(row.id)">
+				<BaseIcon name="trash" />
+			</BaseButton>
+		</template>
+		<template #footer>
+			<span>Заказов: {{ rows.length }} · на сумму {{ total() }}</span>
+		</template>
+	</BaseTable>
+`
+
+const script = [
+	tableScript({ columns }, { statusColors: STATUS_COLORS }),
+	[
+		`const rows = ref<TableRow[]>(${literal(initialRows())})`,
+		'const total = () => formatRub(rows.value.reduce((sum, row) => sum + Number(row.data.total), 0))',
+		'const remove = (id: string | number) => {',
+		'\trows.value = rows.value.filter(row => row.id !== id)',
+		'}',
+	].join('\n'),
+].join('\n\n')
+
 export const CustomCells: StoryObj<typeof meta> = {
 	args: {
-		columns: [
-			{ key: 'customer', label: 'Покупатель' },
-			{ key: 'status', label: 'Статус' },
-			{ key: 'progress', label: 'Сборка' },
-			{ key: 'total', label: 'Сумма', align: 'right', formatter: formatRub },
-			{ key: 'actions', label: 'Действия', align: 'right' },
-		],
+		columns,
 	},
 	parameters: {
 		controls: { include: ['variant', 'sizeScale'] },
@@ -38,70 +91,39 @@ export const CustomCells: StoryObj<typeof meta> = {
 					'а также `header` и `footer` над и под таблицей. Кнопка в ячейке не должна запускать клик по строке — `@click.stop`.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseTable :columns="columns" :rows="rows">',
-					'  <template #header>Заказы за май</template>',
-					'  <template #cell-customer="{ row }"><BaseAvatar :src="row.data.avatar" :name="row.data.customer" /> …</template>',
-					'  <template #cell-status="{ value }"><BaseBadge :label="value" :color="statusColors[value]" /></template>',
-					'  <template #cell-progress="{ value }"><BaseProgress :value="value" /></template>',
-					'  <template #cell-actions="{ row }">',
-					'    <BaseButton variant="ghost" aria-label="Удалить заказ" @click.stop="remove(row)"><BaseIcon name="trash" /></BaseButton>',
-					'  </template>',
-					'  <template #footer>Итого …</template>',
-					'</BaseTable>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: [
+					'BaseAvatar',
+					'BaseBadge',
+					'BaseButton',
+					'BaseIcon',
+					'BaseProgress',
+					'BaseTable',
+					'type TableColumn',
+					'type TableRow',
+				],
+				vue: ['ref'],
+				script,
+				omit: ['columns', 'rows'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseTable, BaseAvatar, BaseBadge, BaseButton, BaseIcon, BaseProgress },
-		setup: () => {
-			const rows = ref<TableRow[]>(
-				toRows(ORDERS.slice(0, 4)).map((row, index) => ({ ...row, data: { ...row.data, avatar: avatarImage(24 + index * 70) } })),
-			)
-			const total = () => formatRub(rows.value.reduce((sum, row) => sum + Number(row.data.total), 0))
-			const remove = (id: string | number) => {
-				rows.value = rows.value.filter(row => row.id !== id)
-			}
-			return { props: useArgsWithoutSlots(args, ['rows']), rows, total, remove, statusColors: STATUS_COLORS }
-		},
-		template: `
-			<BaseTable v-bind="props" :rows="rows">
-				<template #header>
-					<div style="display: flex; flex-direction: column; gap: 2px;">
-						<strong style="color: var(--rise-text-highlighted);">Заказы за май</strong>
-						<span style="color: var(--rise-text-muted);">Последние заказы интернет-магазина</span>
-					</div>
-				</template>
-				<template #header-total>Сумма, ₽</template>
-				<template #cell-customer="{ row }">
-					<div style="display: flex; align-items: center; gap: 12px;">
-						<BaseAvatar :src="row.data.avatar" :alt="row.data.customer" :name="row.data.customer" />
-						<div style="display: flex; flex-direction: column;">
-							<span style="color: var(--rise-text-highlighted); font-weight: var(--rise-font-weight-medium);">{{ row.data.customer }}</span>
-							<span style="color: var(--rise-text-muted);">{{ row.data.number }} · {{ row.data.city }}</span>
-						</div>
-					</div>
-				</template>
-				<template #cell-status="{ value }">
-					<BaseBadge :label="value" :color="statusColors[value]" />
-				</template>
-				<template #cell-progress="{ value }">
-					<div style="min-width: 120px;">
-						<BaseProgress :value="value" :aria-label="'Сборка заказа: ' + value + '%'" />
-					</div>
-				</template>
-				<template #cell-actions="{ row }">
-					<BaseButton variant="ghost" :padding="{ x: 5, y: 5 }" :aria-label="'Удалить заказ ' + row.data.number" @click.stop="remove(row.id)">
-						<BaseIcon name="trash" />
-					</BaseButton>
-				</template>
-				<template #footer>
-					<span>Заказов: {{ rows.length }} · на сумму {{ total() }}</span>
-				</template>
-			</BaseTable>
-		`,
+		setup: useStorySetup(args, {
+			data: { columns: args.columns, statusColors: STATUS_COLORS },
+			slots: ['default', 'columns', 'rows'],
+			setup: () => {
+				const rows = ref<TableRow[]>(initialRows())
+				const total = () => formatRub(rows.value.reduce((sum, row) => sum + Number(row.data.total), 0))
+				const remove = (id: string | number) => {
+					rows.value = rows.value.filter(row => row.id !== id)
+				}
+				return { rows, total, remove }
+			},
+		}),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		await expect(canvas.getByText('Заказов: 4', { exact: false })).toBeVisible()

@@ -2,14 +2,29 @@ import type meta from '../../BaseTable.stories'
 import { expect, waitFor } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import type { TableRow } from '../../../types/BaseTable.types'
-import { COMPACT_COLUMNS, bodyRows, ORDERS } from '../../shared'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { COMPACT_COLUMNS, bodyRows, ORDERS, tableScript } from '../../shared'
 
 const MANY_ROWS: TableRow[] = Array.from({ length: 5000 }, (_, index) => {
 	const order = ORDERS[index % ORDERS.length]
 	return { id: `many-${index}`, data: { ...order, number: `№ ${10000 + index}` } }
 })
+
+const template = `
+	<div style="max-width: 720px;"><BaseTable v-bind="args" :columns="columns" :rows="rows" /></div>
+`
+
+const script = [
+	tableScript({ columns: COMPACT_COLUMNS }),
+	`const orders = ${literal(ORDERS)}`,
+	[
+		'const rows: TableRow[] = Array.from({ length: 5000 }, (_, index) => {',
+		'\tconst order = orders[index % orders.length]',
+		'\treturn { id: `many-${index}`, data: { ...order, number: `№ ${10000 + index}` } }',
+		'})',
+	].join('\n'),
+].join('\n\n')
 
 export const Virtual: StoryObj<typeof meta> = {
 	parameters: {
@@ -21,13 +36,19 @@ export const Virtual: StoryObj<typeof meta> = {
 					'`rowHeight`; после отрисовки строки замеряются, раскрытые строки учитываются.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseTable', 'type TableColumn', 'type TableRow'],
+				script,
+				omit: ['columns', 'rows'],
+			}),
 		},
 	},
 	args: { height: '360px', rows: MANY_ROWS, columns: COMPACT_COLUMNS, isVirtual: true, features: { rowNumber: true } },
 	render: args => ({
 		components: { BaseTable },
-		setup: () => ({ props: useArgsWithoutSlots(args) }),
-		template: '<div style="max-width: 720px;"><BaseTable v-bind="props" /></div>',
+		setup: useStorySetup(args, { data: { columns: args.columns, rows: args.rows }, slots: ['default', 'columns', 'rows'] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const table = canvas.getByRole('table')

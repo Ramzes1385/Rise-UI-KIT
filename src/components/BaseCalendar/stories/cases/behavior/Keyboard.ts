@@ -1,8 +1,8 @@
+import { getDay } from '../../shared'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseCalendar.stories'
 import { storyDate, tabTo } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { renderWithLocalModel, getDay } from '../../shared'
 
 export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,7 +17,6 @@ export const Keyboard: StoryObj<typeof meta> = {
 	},
 	tags: ['!autodocs'],
 	args: { modelValue: storyDate(0, 0, 0) },
-	render: renderWithLocalModel(),
 	play: async ({ canvas, userEvent }) => {
 		const first = getDay(canvas, -14)
 		await tabTo(first, userEvent)

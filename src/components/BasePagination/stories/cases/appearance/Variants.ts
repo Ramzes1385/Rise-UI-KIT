@@ -1,10 +1,22 @@
-import { ref } from 'vue'
 import { MODEL_KEYS } from '../../shared'
 import type meta from '../../BasePagination.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import BasePagination from '../../../ui/BasePagination.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import { PAGINATION_VARIANTS } from '../../../types/BasePagination.types'
+
+const state = { pages: Object.fromEntries(PAGINATION_VARIANTS.map(variant => [variant, 5])) }
+
+const hidden = [...MODEL_KEYS, 'variant']
+
+const template = `
+	<div class="story-stack">
+		<div v-for="variant in PAGINATION_VARIANTS" :key="variant" class="story-col">
+			<span class="story-label">{{ variant }}</span>
+			<BasePagination v-bind="args" v-model="pages[variant]" :variant="variant" />
+		</div>
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
@@ -16,25 +28,18 @@ export const Variants: StoryObj<typeof meta> = {
 					'Текущая страница всегда залита основным цветом.',
 				].join('\n'),
 			},
-			source: {
-				code: PAGINATION_VARIANTS.map(variant => `<BasePagination v-model="page" :total="120" variant="${variant}" />`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BasePagination', 'PAGINATION_VARIANTS'],
+				state,
+				types: { pages: 'Record<string, number>' },
+				omit: hidden,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BasePagination },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [...MODEL_KEYS, 'variant']),
-			variants: PAGINATION_VARIANTS,
-			pages: ref<Record<string, number>>(Object.fromEntries(PAGINATION_VARIANTS.map(variant => [variant, 5]))),
-		}),
-		template: `
-			<div class="story-stack">
-				<div v-for="variant in variants" :key="variant" class="story-col">
-					<span class="story-label">{{ variant }}</span>
-					<BasePagination v-bind="props" v-model="pages[variant]" :variant="variant" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { PAGINATION_VARIANTS }, slots: hidden }),
+		template,
 	}),
 }

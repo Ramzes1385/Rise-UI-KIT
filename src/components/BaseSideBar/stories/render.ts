@@ -28,7 +28,7 @@ export const source = storySource({
 	imports: ['BaseSideBar', 'BaseAvatar'],
 	models,
 	script: [`const user = ${literal(user)}`, `const frameStyle = ${literal(frameStyle)}`].join('\n'),
-	omit: SLOT_KEYS,
+	omit: [...SLOT_KEYS, 'linkComponent'],
 })
 
 export const render = (args => ({

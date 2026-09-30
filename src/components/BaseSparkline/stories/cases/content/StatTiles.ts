@@ -1,6 +1,7 @@
 import type meta from '../../BaseSparkline.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSparkline from '../../../ui/BaseSparkline.vue'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const TILES = [
 	{
@@ -26,25 +27,33 @@ const TILES = [
 	},
 ]
 
+const hidden = ['values', 'label', 'height', 'sizeScale', 'markColor']
+
+const template = `
+	<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding-top: 40px">
+		<div
+			v-for="tile in tiles"
+			:key="tile.label"
+			style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--rise-border); border-radius: 12px">
+			<span style="font-size: 13px; color: var(--rise-text-muted)">{{ tile.label }}</span>
+			<strong style="font-size: 24px; color: var(--rise-text-highlighted)">{{ tile.value }}</strong>
+			<span style="font-size: 12px; color: var(--rise-text-muted)">{{ tile.delta }}</span>
+			<BaseSparkline v-bind="args" :values="tile.values" :label="tile.label" :mark-color="tile.color" :height="36" />
+		</div>
+	</div>
+`
+
 export const StatTiles: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Карточки показателей: число, изменение и тренд за 12 месяцев.' } },
+		docs: {
+			description: { story: 'Карточки показателей: число, изменение и тренд за 12 месяцев.' },
+			source: storySource({ template, imports: ['BaseSparkline'], script: `const tiles = ${literal(TILES)}`, omit: hidden }),
+		},
 		controls: { include: ['variant'] },
 	},
 	render: args => ({
 		components: { BaseSparkline },
-		setup: () => ({ args, tiles: TILES }),
-		template: `
-			<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding-top: 40px">
-				<div
-					v-for="tile in tiles"
-					:key="tile.label"
-					style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--rise-border); border-radius: 12px">
-					<span style="font-size: 13px; color: var(--rise-text-muted)">{{ tile.label }}</span>
-					<strong style="font-size: 24px; color: var(--rise-text-highlighted)">{{ tile.value }}</strong>
-					<span style="font-size: 12px; color: var(--rise-text-muted)">{{ tile.delta }}</span>
-					<BaseSparkline :values="tile.values" :labels="args.labels" :label="tile.label" :mark-color="tile.color" :variant="args.variant" :height="36" />
-				</div>
-			</div>`,
+		setup: useStorySetup(args, { data: { tiles: TILES }, slots: hidden }),
+		template,
 	}),
 }

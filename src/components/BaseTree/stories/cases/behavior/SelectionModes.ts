@@ -1,10 +1,38 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
 import { nodeHeader } from '../../shared'
 import type meta from '../../BaseTree.stories'
 import BaseTree from '../../../ui/BaseTree.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = {
+	expandedNone: ['src'],
+	expandedSingle: ['src'],
+	expandedMultiple: ['src', 'composables'],
+	single: ['app-vue'],
+	multiple: ['composables', 'use-auth', 'use-api'],
+}
+
+const hidden = ['selectionMode', 'expandedIds', 'selectedIds', 'onUpdate:expandedIds', 'onUpdate:selectedIds']
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 240px;">
+		<div class="story-stack" style="gap: 8px;">
+			<span class="story-label">none</span>
+			<BaseTree v-bind="args" v-model:expanded-ids="expandedNone" />
+		</div>
+		<div class="story-stack" style="gap: 8px;">
+			<span class="story-label">single</span>
+			<BaseTree v-bind="args" v-model:expanded-ids="expandedSingle" v-model:selected-ids="single" selection-mode="single" />
+			<span class="story-label">Выбрано: {{ single.join(', ') || '—' }}</span>
+		</div>
+		<div class="story-stack" style="gap: 8px;">
+			<span class="story-label">multiple</span>
+			<BaseTree v-bind="args" v-model:expanded-ids="expandedMultiple" v-model:selected-ids="multiple" selection-mode="multiple" />
+			<span class="story-label">Выбрано: {{ multiple.join(', ') || '—' }}</span>
+		</div>
+	</div>
+`
 
 export const SelectionModes: StoryObj<typeof meta> = {
 	parameters: {
@@ -16,49 +44,13 @@ export const SelectionModes: StoryObj<typeof meta> = {
 					'`multiple` — чекбоксы, выбор папки отмечает всё её содержимое. Под деревьями — значение `v-model:selected-ids`.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseTree :items="items" />',
-					'<BaseTree v-model:selected-ids="selected" :items="items" selection-mode="single" />',
-					'<BaseTree v-model:selected-ids="checked" :items="items" selection-mode="multiple" />',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseTree'], state, omit: hidden }),
 		},
 	},
 	render: args => ({
 		components: { BaseTree },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [
-				'selectionMode',
-				'expandedIds',
-				'selectedIds',
-				'onUpdate:expandedIds',
-				'onUpdate:selectedIds',
-			]),
-			expandedNone: ref(['src']),
-			expandedSingle: ref(['src']),
-			expandedMultiple: ref(['src', 'composables']),
-			single: ref(['app-vue']),
-			multiple: ref(['composables', 'use-auth', 'use-api']),
-		}),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 240px;">
-				<div class="story-stack" style="gap: 8px;">
-					<span class="story-label">none</span>
-					<BaseTree v-bind="props" v-model:expanded-ids="expandedNone" />
-				</div>
-				<div class="story-stack" style="gap: 8px;">
-					<span class="story-label">single</span>
-					<BaseTree v-bind="props" v-model:expanded-ids="expandedSingle" v-model:selected-ids="single" selection-mode="single" />
-					<span class="story-label">Выбрано: {{ single.join(', ') || '—' }}</span>
-				</div>
-				<div class="story-stack" style="gap: 8px;">
-					<span class="story-label">multiple</span>
-					<BaseTree v-bind="props" v-model:expanded-ids="expandedMultiple" v-model:selected-ids="multiple" selection-mode="multiple" />
-					<span class="story-label">Выбрано: {{ multiple.join(', ') || '—' }}</span>
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, slots: hidden }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const [, singleTree, multipleTree] = canvas

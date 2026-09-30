@@ -1,8 +1,15 @@
+import { getDay } from '../../shared'
 import { fn, expect } from 'storybook/test'
-import { storyDate } from '@/stories/helpers'
 import type meta from '../../BaseCalendar.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { renderWithLocalModel, getDay } from '../../shared'
+import BaseCalendar from '../../../ui/BaseCalendar.vue'
+import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { start: 'modelValue', end: 'modelValueEnd' }
+
+const template = `
+	<BaseCalendar v-bind="args" v-model="start" v-model:model-value-end="end" />
+`
 
 export const RangeSelection: StoryObj<typeof meta> = {
 	parameters: {
@@ -13,6 +20,7 @@ export const RangeSelection: StoryObj<typeof meta> = {
 					'полоса мягкого основного цвета, концы — заливка. Клик раньше начала меняет концы местами.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseCalendar'], models }),
 		},
 	},
 	args: {
@@ -22,7 +30,11 @@ export const RangeSelection: StoryObj<typeof meta> = {
 		'onUpdate:modelValueEnd': fn(),
 		'onRange-select': fn(),
 	},
-	render: renderWithLocalModel(),
+	render: args => ({
+		components: { BaseCalendar },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas, userEvent, args }) => {
 		await expect(getDay(canvas, 0)).toHaveAttribute('aria-pressed', 'true')
 		await userEvent.click(getDay(canvas, 8))

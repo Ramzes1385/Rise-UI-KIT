@@ -5,7 +5,25 @@ import { PROMO_ITEMS, PROMOS } from '../../shared'
 import BaseSlider from '../../../ui/BaseSlider.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots, tabTo } from '@/stories/helpers'
+import { literal, storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseSlider v-bind="args">
+		<template #header>
+			<div class="story-row" style="min-height: 32px; margin-bottom: 8px;">
+				<strong>Акции недели</strong>
+			</div>
+		</template>
+		<template #default="{ index }">
+			<BaseCard variant="soft" :title="promos[index].title" :subtitle="promos[index].subtitle" height="100%">
+				<div class="story-col">
+					<span>{{ promos[index].text }}</span>
+					<BaseButton variant="outline">Подробнее</BaseButton>
+				</div>
+			</BaseCard>
+		</template>
+	</BaseSlider>
+`
 
 export const CustomSlide: StoryObj<typeof meta> = {
 	args: {
@@ -27,38 +45,17 @@ export const CustomSlide: StoryObj<typeof meta> = {
 					'слайд не станет видимым.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseSlider :items="promos" :slides-per-view="2" :space-between="16" :has-caption="false" arrows-position="top-right">',
-					'  <template #header>…</template>',
-					'  <template #default="{ item }">',
-					'    <BaseCard variant="soft" :title="item.title" height="100%">…</BaseCard>',
-					'  </template>',
-					'</BaseSlider>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseButton', 'BaseCard', 'BaseSlider'],
+				script: `const promos = ${literal(PROMOS)}`,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseSlider, BaseCard, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args), promos: PROMOS }),
-		template: `
-			<BaseSlider v-bind="props">
-				<template #header>
-					<div class="story-row" style="min-height: 32px; margin-bottom: 8px;">
-						<strong>Акции недели</strong>
-					</div>
-				</template>
-				<template #default="{ index }">
-					<BaseCard variant="soft" :title="promos[index].title" :subtitle="promos[index].subtitle" height="100%">
-						<div class="story-col">
-							<span>{{ promos[index].text }}</span>
-							<BaseButton variant="outline">Подробнее</BaseButton>
-						</div>
-					</BaseCard>
-				</template>
-			</BaseSlider>
-		`,
+		setup: useStorySetup(args, { data: { promos: PROMOS } }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const [first, , third] = canvas.getAllByRole('button', { name: 'Подробнее' })
