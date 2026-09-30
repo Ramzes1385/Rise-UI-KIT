@@ -101,7 +101,7 @@ describe('слои оверлеев', () => {
 		await fireEvent.click(screen.getByRole('button', { name: 'Открыть выбор эмодзи' }))
 		expect(screen.getByRole('dialog', { name: 'Эмодзи' })).toBeInTheDocument()
 
-		await fireEvent.keyDown(screen.getAllByRole('button', { name: /Вставить эмодзи/ })[0], { key: 'Escape' })
+		await fireEvent.keyDown(screen.getByRole('searchbox', { name: 'Поиск эмодзи' }), { key: 'Escape' })
 		expect(screen.queryByRole('dialog', { name: 'Эмодзи' })).toBeNull()
 		expect(isModalOpen.value).toBe(true)
 	})
