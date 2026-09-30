@@ -2,7 +2,7 @@ import { nextTick } from 'vue'
 import type { Ref } from 'vue'
 import type { useMegaMenuState } from './useMegaMenuState'
 import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
-import { getFocusable, getItemKey, getNextIndex, hasPanel } from './megaMenuItems'
+import { getItemKey, getNextIndex, getPanelLinks, hasPanel, getFocusable } from './megaMenuItems'
 
 const TRIGGER_SELECTOR = '.base-mega-menu__trigger'
 const PANEL_FOCUSABLE = 'a[href], button'
@@ -10,7 +10,7 @@ const PANEL_SECTION = '.base-mega-menu__group, .base-mega-menu__promo'
 
 function focusPanelEdge(panelId: string, edge: 'first' | 'last'): void {
 	void nextTick(() => {
-		const links = getFocusable(document.getElementById(panelId), PANEL_FOCUSABLE)
+		const links = getPanelLinks(document.getElementById(panelId), PANEL_FOCUSABLE)
 		;(edge === 'first' ? links[0] : links.at(-1))?.focus()
 	})
 }
@@ -51,7 +51,7 @@ export function useMegaMenuKeyboard(listRef: Ref<HTMLElement | null>, state: Ret
 				focusAdjacentSection(panel, target, event.key)
 				return
 			}
-			const links = getFocusable(panel, PANEL_FOCUSABLE)
+			const links = getPanelLinks(panel, PANEL_FOCUSABLE)
 			const next = getNextIndex(event.key, links.indexOf(target), links.length)
 			if (next < 0) return
 			event.preventDefault()

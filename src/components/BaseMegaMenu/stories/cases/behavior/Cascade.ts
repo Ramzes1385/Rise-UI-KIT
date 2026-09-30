@@ -1,0 +1,38 @@
+import { CASCADE_ITEMS } from '../../shared'
+import { expect, waitFor } from 'storybook/test'
+import type meta from '../../BaseMegaMenu.stories'
+import type { StoryObj } from '@storybook/vue3-vite'
+
+export const Cascade: StoryObj<typeof meta> = {
+	parameters: {
+		docs: {
+			description: {
+				story: [
+					'Вложенные уровни: у ссылки колонки поле `children` — подменю раскрывается сбоку от пункта, у края экрана —',
+					'в другую сторону; глубина не ограничена. Наведение открывает уровень с теми же `openDelay` и `closeDelay`, что',
+					'у разделов, клик — сразу. Клавиатура: вправо открывает уровень и ставит фокус на первый пункт, влево и Escape',
+					'закрывают текущий уровень и возвращают фокус на его пункт, вверх и вниз — по пунктам уровня. В мобильном виде',
+					'уровни раскрываются списком под пунктом.',
+				].join('\n'),
+			},
+		},
+	},
+	args: { items: CASCADE_ITEMS, openKey: 'catalog' },
+	play: async ({ canvas, userEvent }) => {
+		const electronics = canvas.getByRole('button', { name: /Электроника/ })
+		await expect(electronics).toHaveAttribute('aria-haspopup', 'true')
+		await userEvent.click(electronics)
+		await expect(electronics).toHaveAttribute('aria-expanded', 'true')
+		const phones = canvas.getByRole('button', { name: 'Телефоны' })
+		phones.focus()
+		await userEvent.keyboard('{ArrowRight}')
+		await waitFor(() => expect(canvas.getByRole('link', { name: 'Смартфоны' })).toHaveFocus())
+		await userEvent.keyboard('{ArrowDown}')
+		await expect(canvas.getByRole('link', { name: 'Кнопочные' })).toHaveFocus()
+		await userEvent.keyboard('{Escape}')
+		await expect(phones).toHaveFocus()
+		await expect(phones).toHaveAttribute('aria-expanded', 'false')
+		await userEvent.keyboard('{ArrowRight}')
+		await waitFor(() => expect(canvas.getByRole('link', { name: 'Смартфоны' })).toBeVisible())
+	},
+}

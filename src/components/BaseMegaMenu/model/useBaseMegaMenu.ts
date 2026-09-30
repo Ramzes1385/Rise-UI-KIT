@@ -45,7 +45,8 @@ export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 	const listRef = ref<HTMLElement | null>(null)
 	const state = useMegaMenuState(props, emit)
 	const mobile = useMobileMenu(props)
-	const hover = useMegaMenuHover(props, state, () => props.trigger === 'hover' && !mobile.isMobileMode.value)
+	const isHoverEnabled = (): boolean => props.trigger === 'hover' && !mobile.isMobileMode.value
+	const hover = useMegaMenuHover(props, state, isHoverEnabled)
 	const layer = useMenuLayer(rootRef, state, () => Boolean(state.openItem.value) || mobile.isMobileOpen.value)
 
 	function select(link: MegaMenuLink | MegaMenuItem, event: MouseEvent): void {
@@ -69,6 +70,7 @@ export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 		getItemKey,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		hasPanel,
+		hoverDelays: computed(() => (isHoverEnabled() ? { open: props.openDelay, close: props.closeDelay } : undefined)),
 		select,
 		handleTriggerClick(item: MegaMenuItem): void {
 			hover.cancelHoverTimer()

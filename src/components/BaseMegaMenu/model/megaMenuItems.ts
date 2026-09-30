@@ -8,6 +8,10 @@ export function hasPanel(item: MegaMenuItem): boolean {
 	return Boolean(item.groups?.length || item.promo)
 }
 
+export function hasChildren(link: MegaMenuLink): boolean {
+	return Boolean(link.children?.length)
+}
+
 export function getFocusable(container: Element | null | undefined, selector: string): HTMLElement[] {
 	if (!container) return []
 	return [...container.querySelectorAll<HTMLElement>(selector)].filter(
@@ -21,4 +25,8 @@ export function getNextIndex(key: string, current: number, length: number): numb
 	if (key === 'ArrowRight' || key === 'ArrowDown') return (current + 1) % length
 	if (key === 'ArrowLeft' || key === 'ArrowUp') return (current - 1 + length) % length
 	return -1
+}
+
+export function getPanelLinks(container: Element | null | undefined, selector: string): HTMLElement[] {
+	return getFocusable(container, selector).filter(element => !element.closest('.base-mega-menu__sub'))
 }

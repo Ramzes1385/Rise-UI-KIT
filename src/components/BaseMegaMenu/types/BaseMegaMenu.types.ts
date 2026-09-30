@@ -30,6 +30,12 @@ export interface MegaMenuLink {
 	badge?: string
 	/** Отключённая ссылка */
 	isDisabled?: boolean
+	/**
+	 * Вложенный уровень — ссылки подменю. Пункт с `children` — кнопка: уровень раскрывается сбоку от пункта (у края экрана —
+	 * в другую сторону), в мобильном виде — списком под пунктом; `to`, `href` и `target` у такого пункта не используются.
+	 * Глубина не ограничена
+	 */
+	children?: MegaMenuLink[]
 }
 
 /** Колонка панели: заголовок и ссылки */
@@ -119,6 +125,8 @@ export interface BaseMegaMenuEmits {
 export interface MegaMenuLinkSlotProps {
 	/** Ссылка */
 	link: MegaMenuLink
+	/** Уровень ссылки: 0 — в колонке, 1 и глубже — во вложенных уровнях */
+	depth: number
 	/** Колонка ссылки */
 	group: MegaMenuGroup
 	/** Раздел */
@@ -146,11 +154,83 @@ export interface BaseMegaMenuExpose {
 	close: () => void
 }
 
+/** Задержки наведения для вложенных уровней (мс) */
+interface MegaMenuHoverDelays {
+	/** Задержка открытия уровня */
+	open: number
+	/** Задержка закрытия уровня после ухода курсора на соседний пункт */
+	close: number
+}
+
 export interface MegaMenuPanelProps {
 	/** Раздел, чья панель показана */
 	item: MegaMenuItem
 	/** Классы частей из customClass */
 	classes: Partial<Record<'group' | 'link' | 'promo', string>>
+	/** Задержки наведения; без них вложенные уровни открываются только кликом и с клавиатуры */
+	hoverDelays?: MegaMenuHoverDelays
+}
+
+/** Пункт уровня с идентификаторами для ARIA и фокуса */
+export interface MegaMenuLinkEntry {
+	/** Ссылка */
+	link: MegaMenuLink
+	/** Уровень */
+	depth: number
+	/** id пункта */
+	id: string
+	/** id вложенного уровня пункта */
+	subId: string
+	/** id пункта-родителя уровня (у уровня 0 — префикс колонки) */
+	parentId: string
+}
+
+export interface MegaMenuLinksProps {
+	/** Ссылки уровня */
+	links: MegaMenuLink[]
+	/** Уровень: 0 — колонка панели */
+	depth: number
+	/** id пункта-родителя уровня; у уровня 0 — префикс колонки */
+	parentId: string
+	/** Колонка */
+	group: MegaMenuGroup
+	/** Раздел */
+	item: MegaMenuItem
+	/** Класс ссылки из customClass */
+	linkClass?: string
+}
+
+export interface MegaMenuLinkContentProps {
+	/** Ссылка */
+	link: MegaMenuLink
+}
+
+export type MegaMenuLinksSlots = Pick<BaseMegaMenuSlots, 'link'>
+
+/** Управление открытыми уровнями для клавиатуры */
+export interface MegaMenuCascadeControls {
+	/** Открыть уровень пункта (соседние и более глубокие закрываются) */
+	open: (entry: MegaMenuLinkEntry) => void
+	/** Закрыть уровни начиная с глубины */
+	closeFrom: (depth: number) => void
+	/** Раскрыт ли уровень пункта */
+	isExpanded: (entry: MegaMenuLinkEntry) => boolean
+}
+
+/** Состояние вложенных уровней панели: общее для всех уровней, передаётся через provide */
+export interface MegaMenuCascadeContext {
+	/** Раскрыт ли уровень пункта */
+	isExpanded: (entry: MegaMenuLinkEntry) => boolean
+	/** Раскрывается ли уровень пункта в другую сторону (у края экрана) */
+	isFlipped: (entry: MegaMenuLinkEntry) => boolean
+	/** Клик по пункту с вложенным уровнем */
+	toggle: (entry: MegaMenuLinkEntry) => void
+	/** Выбор ссылки */
+	select: (link: MegaMenuLink, event: MouseEvent) => void
+	/** Наведение на пункт */
+	handleEnter: (entry: MegaMenuLinkEntry, event: PointerEvent) => void
+	/** Клавиши на пункте */
+	handleKeydown: (entry: MegaMenuLinkEntry, event: KeyboardEvent) => void
 }
 
 export interface MegaMenuPanelEmits {

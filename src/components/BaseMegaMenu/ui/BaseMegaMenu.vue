@@ -74,7 +74,7 @@
 						class="base-mega-menu__panel base-mega-menu__panel--inline"
 						:class="classes.panel"
 						@keydown="handlePanelKeydown">
-						<MegaMenuPanel :item="item" :classes="classes" @select="select">
+						<MegaMenuPanel :item="item" :classes="classes" :hover-delays="hoverDelays" @select="select">
 							<template v-if="$slots.link" #link="slotProps">
 								<slot name="link" v-bind="slotProps" />
 							</template>
@@ -101,7 +101,7 @@
 				@pointerenter="handlePanelEnter"
 				@pointerleave="handleLeave"
 				@keydown="handlePanelKeydown">
-				<MegaMenuPanel :key="getItemKey(openItem)" :item="openItem" :classes="classes" @select="select">
+				<MegaMenuPanel :key="getItemKey(openItem)" :item="openItem" :classes="classes" :hover-delays="hoverDelays" @select="select">
 					<template v-if="$slots.link" #link="slotProps">
 						<slot name="link" v-bind="slotProps" />
 					</template>
@@ -162,6 +162,7 @@ const {
 	toggleMobile,
 	getItemKey,
 	hasPanel,
+	hoverDelays,
 	isOpen,
 	triggerId,
 	panelId,

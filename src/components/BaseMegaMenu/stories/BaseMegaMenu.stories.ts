@@ -30,3 +30,4 @@ export const HoverTrigger = cases.HoverTrigger
 export const ClickTrigger = cases.ClickTrigger
 export const Mobile = cases.Mobile
 export const Keyboard = cases.Keyboard
+export const Cascade = cases.Cascade

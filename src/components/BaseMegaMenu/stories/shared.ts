@@ -135,3 +135,71 @@ export const LONG_ITEMS: MegaMenuItem[] = [
 	{ key: 'stores', label: 'Магазины', to: '/stores' },
 	{ key: 'business', label: 'Юридическим лицам', to: '/b2b' },
 ]
+
+export const CASCADE_ITEMS: MegaMenuItem[] = [
+	{
+		key: 'catalog',
+		label: 'Каталог',
+		groups: [
+			{
+				title: 'Товары',
+				items: [
+					{
+						label: 'Электроника',
+						icon: 'star',
+						description: 'Телефоны, ноутбуки, планшеты',
+						children: [
+							{
+								label: 'Телефоны',
+								children: [
+									{ label: 'Смартфоны', to: '/c/phones/smart' },
+									{ label: 'Кнопочные', to: '/c/phones/push' },
+									{
+										label: 'Аксессуары',
+										children: [
+											{ label: 'Чехлы', to: '/c/phones/cases' },
+											{ label: 'Зарядки', to: '/c/phones/chargers' },
+										],
+									},
+								],
+							},
+							{ label: 'Ноутбуки', to: '/c/laptops', badge: 'Новое' },
+							{
+								label: 'Планшеты',
+								children: [
+									{ label: 'С клавиатурой', to: '/c/tablets/keyboard' },
+									{ label: 'Для детей', to: '/c/tablets/kids' },
+								],
+							},
+						],
+					},
+					{
+						label: 'Дом и сад',
+						icon: 'folder',
+						description: 'Мебель, текстиль, инструменты',
+						children: [
+							{ label: 'Мебель', to: '/c/furniture' },
+							{ label: 'Текстиль', to: '/c/textile' },
+						],
+					},
+					{ label: 'Книги', icon: 'file', description: 'Бумажные и электронные', to: '/c/books' },
+				],
+			},
+			{
+				title: 'Покупателям',
+				items: [
+					{ label: 'Доставка', to: '/delivery' },
+					{ label: 'Оплата', to: '/payment' },
+					{
+						label: 'Возврат',
+						children: [
+							{ label: 'Условия', to: '/returns' },
+							{ label: 'Заявление', to: '/returns/form' },
+						],
+					},
+				],
+			},
+		],
+	},
+	{ key: 'pricing', label: 'Цены', to: '/pricing' },
+]

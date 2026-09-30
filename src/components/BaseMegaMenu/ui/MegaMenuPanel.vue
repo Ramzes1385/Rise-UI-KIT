@@ -4,30 +4,17 @@
 			<div v-for="(group, index) in item.groups" :key="group.title ?? index" class="base-mega-menu__group" :class="classes.group">
 				<p v-if="group.title" :id="groupTitleId(index)" class="base-mega-menu__group-title">{{ group.title }}</p>
 				<ul class="base-mega-menu__links" role="list" :aria-labelledby="group.title ? groupTitleId(index) : undefined">
-					<li v-for="link in group.items" :key="getItemKey(link)" class="base-mega-menu__links-item">
-						<BaseLink
-							class="base-mega-menu__link"
-							:class="[{ 'base-mega-menu__link--disabled': link.isDisabled }, classes.link]"
-							variant="ghost"
-							:to="link.to"
-							:href="link.href"
-							:target="link.target"
-							:is-disabled="link.isDisabled"
-							@click="handleSelect(link, $event)">
-							<slot name="link" :link="link" :group="group" :item="item">
-								<span v-if="link.icon" class="base-mega-menu__link-icon" aria-hidden="true">
-									<BaseIcon :name="link.icon" />
-								</span>
-								<span class="base-mega-menu__link-text">
-									<span class="base-mega-menu__link-label">
-										{{ link.label }}
-										<span v-if="link.badge" class="base-mega-menu__link-badge">{{ link.badge }}</span>
-									</span>
-									<span v-if="link.description" class="base-mega-menu__link-desc">{{ link.description }}</span>
-								</span>
-							</slot>
-						</BaseLink>
-					</li>
+					<MegaMenuLinks
+						:links="group.items"
+						:depth="0"
+						:parent-id="groupLinksId(index)"
+						:group="group"
+						:item="item"
+						:link-class="classes.link">
+						<template v-if="$slots.link" #link="slotProps">
+							<slot name="link" v-bind="slotProps" />
+						</template>
+					</MegaMenuLinks>
 				</ul>
 			</div>
 		</div>
@@ -52,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import MegaMenuLinks from './MegaMenuLinks.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { useMegaMenuPanel } from '../model/useMegaMenuPanel'
@@ -63,8 +51,5 @@ const props = defineProps<MegaMenuPanelProps>()
 const emit = defineEmits<MegaMenuPanelEmits>()
 defineSlots<MegaMenuPanelSlots>()
 
-const { getItemKey, groupTitleId, promoLinkLabel, hasPromoLink, groupCount, handleSelect, handlePromoSelect } = useMegaMenuPanel(
-	props,
-	emit,
-)
+const { groupTitleId, groupLinksId, promoLinkLabel, hasPromoLink, groupCount, handlePromoSelect } = useMegaMenuPanel(props, emit)
 </script>
