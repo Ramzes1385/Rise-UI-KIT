@@ -15,7 +15,7 @@ export const Providers: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Один API для Яндекс Карт и Google Maps: те же `center`, `zoom`, `markers` и события. Без ключа у каждой — заглушка с названием поставщика; у Google метки требуют Map ID (`mapId`, по умолчанию `DEMO_MAP_ID`).',
+				story: 'Один API для Яндекс Карт и Google Maps: те же `center`, `zoom`, `markers` и события. Без ключа у каждой — заглушка с названием поставщика; у Google, кроме ключа, обязателен Map ID стиля карты (`mapId`): без него — заглушка «Нужен Map ID».',
 			},
 			source: storySource({ template, imports: ['BaseMap', 'MAP_PROVIDERS'] }),
 		},

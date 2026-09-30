@@ -8,9 +8,14 @@
 		:aria-busy="status === 'loading' ? 'true' : undefined">
 		<div v-show="status === 'loading' || status === 'ready'" ref="canvasRef" class="base-map__canvas" :class="classes.canvas" />
 		<BaseLoader v-if="status === 'loading'" is-overlay has-label :label="UI_MAP.LOADING" />
-		<div v-if="status === 'no-key' || status === 'error'" class="base-map__placeholder" :class="classes.placeholder">
+		<div v-if="isPlaceholder" class="base-map__placeholder" :class="classes.placeholder">
 			<slot name="placeholder" :status="status">
-				<BaseEmpty variant="ghost" icon="pin" :title="placeholderTitle" :description="placeholderText" :size-scale="sizeScale" />
+				<BaseEmpty
+					variant="ghost"
+					icon="map-pin"
+					:title="placeholderTitle"
+					:description="placeholderText"
+					:size-scale="sizeScale" />
 			</slot>
 		</div>
 	</div>
@@ -32,6 +37,7 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		provider: 'yandex',
 		apiKey: undefined,
+		mapId: undefined,
 		zoom: 10,
 		height: '400px',
 		sizeScale: SIZE_SCALE_DEFAULT,
@@ -52,6 +58,7 @@ const {
 	status,
 	label,
 	rootStyle,
+	isPlaceholder,
 	placeholderTitle,
 	placeholderText,
 } = useBaseMap(props, emit)

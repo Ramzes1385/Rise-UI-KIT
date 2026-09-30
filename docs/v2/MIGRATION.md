@@ -962,7 +962,8 @@
 
 **Что изменилось.**
 - `provider="google"` — Google Maps JavaScript API с тем же API, что у Яндекса (`center`, `zoom`, `markers`, события). Скрипт загружается по требованию с `loading=async`, `libraries=marker` и `callback`; если `window.google.maps` уже есть, повторно не загружается.
-- Новый проп `mapId` — Map ID стиля Google, нужен меткам (`AdvancedMarkerElement`); по умолчанию `DEMO_MAP_ID` — только для разработки. Яндекс его не использует.
+- Новый проп `mapId` — Map ID стиля Google, обязателен для `provider="google"`: метки (`AdvancedMarkerElement`) без него не работают. Без Map ID скрипт не загружается, вместо карты — заглушка «Нужен Map ID» (`status` = `no-map-id`). Задаётся пропом или настройкой плагина `defaults: { BaseMap: { mapId } }`. Яндекс его не использует.
+- Новая иконка `map-pin` (своя: «капля» со звездой-компасом над линией земли) — в заглушке BaseMap и в наборе иконок кита.
 - `MAP_PROVIDERS` — `['yandex', 'google']`; строка словаря `map.GOOGLE`.
 
-**Что сделать.** Для Google в продакшене — создать Map ID в Google Cloud Console и передать в `map-id`; при CSP — разрешить `maps.googleapis.com` и `maps.gstatic.com`.
+**Что сделать.** Для Google — создать Map ID в Google Cloud Console и передать в `map-id` (или в `defaults.BaseMap.mapId`); при CSP — разрешить `maps.googleapis.com` и `maps.gstatic.com`.

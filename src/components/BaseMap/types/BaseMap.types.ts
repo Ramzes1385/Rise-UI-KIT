@@ -32,8 +32,8 @@ export interface MapView {
 	zoom: number
 }
 
-/** Состояние карты: нет ключа, загрузка скрипта, готова, ошибка загрузки */
-export type MapStatus = 'no-key' | 'loading' | 'ready' | 'error'
+/** Состояние карты: нет ключа, нет Map ID (Google), загрузка скрипта, готова, ошибка загрузки */
+export type MapStatus = 'no-key' | 'no-map-id' | 'loading' | 'ready' | 'error'
 
 /**
  * Пропсы компонента BaseMap
@@ -56,7 +56,10 @@ export interface BaseMapProps extends BaseComponentProps<MapVariant, 'root' | 'c
 	language?: string
 	/** Высота карты: CSS-значение; по умолчанию 400px */
 	height?: string
-	/** Map ID стиля карты Google — нужен для меток; по умолчанию демо-стиль `DEMO_MAP_ID`. Яндекс его не использует */
+	/**
+	 * Map ID стиля карты Google — обязателен для `provider="google"` (без него метки не работают): проп или настройка
+	 * плагина `defaults.BaseMap.mapId`. Без Map ID скрипт не загружается — вместо карты заглушка. Яндекс его не использует
+	 */
 	mapId?: string
 	/** Имя карты для экранного диктора; по умолчанию «Карта» */
 	ariaLabel?: string
@@ -84,6 +87,6 @@ export interface BaseMapEmits {
  * Слоты компонента BaseMap
  */
 export interface BaseMapSlots {
-	/** Своя заглушка вместо карты: без ключа или при ошибке; `status` — `no-key` или `error` */
+	/** Своя заглушка вместо карты: без ключа, без Map ID или при ошибке; `status` — `no-key`, `no-map-id` или `error` */
 	placeholder?: (props: { status: MapStatus }) => unknown
 }

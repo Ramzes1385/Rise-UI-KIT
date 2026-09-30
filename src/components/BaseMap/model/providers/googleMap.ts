@@ -33,7 +33,7 @@ function markerLayer(api: GoogleMapsApi, map: GoogleMapInstance, onClick: (marke
 
 export const createGoogleMap: MapAdapterFactory = async (element, { apiKey, language, view, mapId, handlers }) => {
 	const api = await googleApi(apiKey, language)
-	const map = new api.Map(element, { center: view.center, zoom: view.zoom, mapId: mapId ?? 'DEMO_MAP_ID' })
+	const map = new api.Map(element, { center: view.center, zoom: view.zoom, mapId: mapId as string })
 	map.addListener('idle', () => {
 		const center = map.getCenter()
 		if (center) handlers.onViewChange({ center: { lat: center.lat(), lng: center.lng() }, zoom: map.getZoom() ?? view.zoom })

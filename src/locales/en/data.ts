@@ -96,6 +96,8 @@ export const enData = {
 		LOADING: 'Loading map...',
 		NO_KEY_TITLE: 'API key required',
 		NO_KEY: 'The map ({provider}) needs a key: pass it to apiKey or to the plugin options',
+		NO_MAP_ID_TITLE: 'Map ID required',
+		NO_MAP_ID: '{provider} markers need a map style: pass a Map ID to mapId or to the plugin options',
 		ERROR_TITLE: 'Map failed to load',
 		ERROR: 'Check the API key and access to {provider}',
 		YANDEX: 'Yandex Maps',

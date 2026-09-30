@@ -20,17 +20,31 @@ describe('BaseMap · Google', () => {
 		expect(screen.getByRole('region')).toHaveTextContent('Для карты (Google Maps) нужен ключ')
 	})
 
-	it('загрузка с callback и языком кита, Map ID по умолчанию, метки и события', async () => {
+	it('Map ID обязателен: без него — заглушка, скрипт не загружается', async () => {
+		const { rerender } = render(BaseMap, { props: { provider: 'google', apiKey: 'KEY' } })
+		const region = screen.getByRole('region')
+		await waitFor(() => expect(region).toHaveClass('base-map--no-map-id'))
+		expect(region).toHaveTextContent('Нужен Map ID')
+		expect(region).toHaveTextContent('Метки Google Maps работают только со стилем карты')
+		expect(loadScript).not.toHaveBeenCalled()
+
+		await rerender({ provider: 'yandex' })
+		expect(region).not.toHaveClass('base-map--no-map-id')
+	})
+
+	it('загрузка с callback и языком кита, Map ID, метки и события', async () => {
 		const google = fakeGoogle()
 		vi.mocked(loadScript).mockImplementation(async () => void google.install())
-		const { emitted, rerender, unmount } = render(BaseMap, { props: { provider: 'google', apiKey: 'G K', markers: MARKERS, zoom: 11 } })
+		const { emitted, rerender, unmount } = render(BaseMap, {
+			props: { provider: 'google', apiKey: 'G K', mapId: 'style-1', markers: MARKERS, zoom: 11 },
+		})
 		await waitFor(() => expect(emitted('ready')).toHaveLength(1))
 
 		expect(loadScript).toHaveBeenCalledWith(
 			'https://maps.googleapis.com/maps/api/js?key=G%20K&language=ru&libraries=marker&loading=async&callback=__riseGoogleMapsReady',
 			{ callbackName: '__riseGoogleMapsReady' },
 		)
-		expect(google.api.Map.mock.calls[0][1]).toEqual({ center: { lat: 55.751244, lng: 37.618423 }, zoom: 11, mapId: 'DEMO_MAP_ID' })
+		expect(google.api.Map.mock.calls[0][1]).toEqual({ center: { lat: 55.751244, lng: 37.618423 }, zoom: 11, mapId: 'style-1' })
 		const office = screen.getByRole('button', { name: 'Офис' })
 		expect(office).toHaveClass('base-map__marker--anchored')
 		await fireEvent.click(office)

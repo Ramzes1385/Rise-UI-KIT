@@ -847,8 +847,14 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 ### BaseMap (Р.32) — новый компонент
 
-Новые истории `media-basemap--*`: Default (заглушка «Нужен ключ API» — BaseEmpty `ghost` с иконкой `pin` на фоне `bg-muted` в рамке), Markers и Loading (демо-поставщик без сети: сетка на `bg-muted`, метки-«капли» цвета `primary` или своего, подпись метки при наведении и фокусе), Variants, Sizes. Нужны новые эталоны `base-map-{default,variants}-{light,dark}.png` (`__tests__/BaseMap.visual.spec.ts`) — делает владелец. Внешние скрипты в историях и скриншотах не загружаются.
+Новые истории `media-basemap--*`: Default (заглушка «Нужен ключ API» — BaseEmpty `ghost` с иконкой `map-pin` на фоне `bg-muted` в рамке), Markers и Loading (демо-поставщик без сети: сетка на `bg-muted`, метки-«капли» цвета `primary` или своего, подпись метки при наведении и фокусе), Variants, Sizes. Нужны новые эталоны `base-map-{default,variants}-{light,dark}.png` (`__tests__/BaseMap.visual.spec.ts`) — делает владелец. Внешние скрипты в историях и скриншотах не загружаются.
 
 ### BaseMap (Р.33)
 
 Новая история `media-basemap--providers` — две заглушки рядом: «Для карты (Яндекс Карты) нужен ключ…» и «Для карты (Google Maps) нужен ключ…». Метки Google — та же «капля», якорь снизу по центру (модификатор `base-map__marker--anchored`). Эталоны `base-map-*` из Р.32 учитывают итоговый текст заглушки «Для карты ({поставщик}) нужен ключ: …».
+
+### Иконка map-pin и Map ID у Google (Р.33, доработка)
+
+- Новая своя иконка `map-pin` (`src/icons/svg/map-pin.svg`): контур «капли» 2px, внутри — залитая четырёхлучевая звезда-компас, под остриём — линия земли с разрывом. В заглушке BaseMap вместо булавки `pin`. Появляется в галерее BaseIcon (`element-baseicon--gallery`, снимается в `BaseIcon.visual.spec.ts`): в сетке иконок добавляется `map-pin` между `list-number` и `menu`, остальные сдвигаются на одну позицию — эталоны `base-icon-gallery-{light,dark}.png` (в репозитории их нет) должны учитывать новую иконку.
+- У `provider="google"` без `mapId` — заглушка «Нужен Map ID» (та же разметка, другой текст).
+

@@ -6,6 +6,14 @@ import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import type { BaseMapEmits, BaseMapProps, MapStatus, MapView } from '../types/BaseMap.types'
 
+const PLACEHOLDER_TEXTS: Partial<
+	Record<MapStatus, readonly ['NO_KEY_TITLE' | 'NO_MAP_ID_TITLE' | 'ERROR_TITLE', 'NO_KEY' | 'NO_MAP_ID' | 'ERROR']>
+> = {
+	'no-key': ['NO_KEY_TITLE', 'NO_KEY'],
+	'no-map-id': ['NO_MAP_ID_TITLE', 'NO_MAP_ID'],
+	error: ['ERROR_TITLE', 'ERROR'],
+}
+
 const DEFAULT_VIEW: MapView = { center: { lat: 55.751244, lng: 37.618423 }, zoom: 10 }
 
 const sameView = (left: MapView, right: MapView): boolean =>
@@ -58,12 +66,17 @@ function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, view: () => MapV
 		emit('error', error instanceof Error ? error : new Error(String(error)))
 	}
 
+	function blocked(): MapStatus | null {
+		if (!props.apiKey || !canvasRef.value) return 'no-key'
+		return entry().isMapIdRequired && !props.mapId ? 'no-map-id' : null
+	}
+
 	async function attach(): Promise<void> {
 		detach()
 		const current = generation
-		const element = canvasRef.value
-		status.value = props.apiKey && element ? 'loading' : 'no-key'
-		if (!props.apiKey || !element) return
+		const element = canvasRef.value as HTMLElement
+		status.value = blocked() ?? 'loading'
+		if (status.value !== 'loading') return
 		try {
 			const created = await entry().create(element, createOptions())
 			if (current === generation) show(created)
@@ -99,9 +112,10 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits) {
 		status: map.status,
 		label: computed(() => props.ariaLabel ?? UI_MAP.LABEL),
 		rootStyle: computed(() => ({ height: props.height ?? '400px' })),
-		placeholderTitle: computed(() => (map.status.value === 'error' ? UI_MAP.ERROR_TITLE : UI_MAP.NO_KEY_TITLE)),
+		isPlaceholder: computed(() => PLACEHOLDER_TEXTS[map.status.value] !== undefined),
+		placeholderTitle: computed(() => UI_MAP[PLACEHOLDER_TEXTS[map.status.value]?.[0] ?? 'NO_KEY_TITLE']),
 		placeholderText: computed(() =>
-			formatMessage(map.status.value === 'error' ? UI_MAP.ERROR : UI_MAP.NO_KEY, { provider: providerName.value }),
+			formatMessage(UI_MAP[PLACEHOLDER_TEXTS[map.status.value]?.[1] ?? 'NO_KEY'], { provider: providerName.value }),
 		),
 	}
 }

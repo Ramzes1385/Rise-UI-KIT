@@ -104,6 +104,8 @@ export const ruData = {
 		LOADING: 'Загрузка карты...',
 		NO_KEY_TITLE: 'Нужен ключ API',
 		NO_KEY: 'Для карты ({provider}) нужен ключ: передайте его в apiKey или в настройки плагина',
+		NO_MAP_ID_TITLE: 'Нужен Map ID',
+		NO_MAP_ID: 'Метки {provider} работают только со стилем карты: передайте Map ID в mapId или в настройки плагина',
 		ERROR_TITLE: 'Карта не загрузилась',
 		ERROR: 'Проверьте ключ API и доступ к сервису {provider}',
 		YANDEX: 'Яндекс Карты',

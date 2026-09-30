@@ -277,7 +277,7 @@ const markers: MapMarker[] = [{ id: 'office', coordinates: { lat: 55.7494, lng: 
 </template>
 ```
 
-Скрипт поставщика загружается по требованию и один раз на страницу — только когда есть `apiKey`; ключ можно задать для всех карт настройкой плагина `defaults: { BaseMap: { apiKey } }`. Без ключа или при ошибке — заглушка (слот `placeholder` со `status`). Если API уже загружено приложением (`window.ymaps3`, `window.google.maps`), скрипт не загружается повторно. Метки Google — `AdvancedMarkerElement`, им нужен Map ID (`map-id`; по умолчанию `DEMO_MAP_ID` — только для разработки). Язык подписей — по языку кита или `language`. Метки — кнопки с подписью (Tab, Enter), область карты — `role="region"` с именем «Карта» (`ariaLabel`).
+Скрипт поставщика загружается по требованию и один раз на страницу — только когда есть `apiKey`; ключ можно задать для всех карт настройкой плагина `defaults: { BaseMap: { apiKey } }`. Без ключа или при ошибке — заглушка (слот `placeholder` со `status`). Если API уже загружено приложением (`window.ymaps3`, `window.google.maps`), скрипт не загружается повторно. Для Google обязателен Map ID стиля карты (`map-id` или `defaults.BaseMap.mapId`): метки — `AdvancedMarkerElement`, без Map ID они не работают, поэтому карта без него не загружается и показывает заглушку «Нужен Map ID». Язык подписей — по языку кита или `language`. Метки — кнопки с подписью (Tab, Enter), область карты — `role="region"` с именем «Карта» (`ariaLabel`).
 
 ---
 

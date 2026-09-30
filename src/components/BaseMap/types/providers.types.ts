@@ -29,9 +29,10 @@ export interface MapAdapter {
 /** Создаёт карту поставщика в элементе */
 export type MapAdapterFactory = (element: HTMLElement, options: MapCreateOptions) => Promise<MapAdapter>
 
-/** Поставщик: создание карты, язык по тегу Intl (`ru-RU`), название для текстов */
+/** Поставщик: создание карты, язык по тегу Intl (`ru-RU`), название для текстов, нужен ли Map ID */
 export interface MapProviderEntry {
 	create: MapAdapterFactory
+	isMapIdRequired?: boolean
 	language: (intl: string) => string
 	name: () => string
 }
