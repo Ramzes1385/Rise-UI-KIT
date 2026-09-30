@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
-import { defineComponent, h, markRaw } from 'vue'
-import { resolveFlip } from '../model/cascade/cascadeItems'
+import { defineComponent, h, markRaw, nextTick } from 'vue'
 import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
+import { resolvePlacement } from '../model/cascade/cascadeItems'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
@@ -44,6 +44,15 @@ const ITEMS: MegaMenuItem[] = [
 const button = (name: string | RegExp): HTMLElement => screen.getByRole('button', { name })
 const link = (name: string | RegExp): HTMLElement => screen.getByRole('link', { name })
 const row = (element: HTMLElement): HTMLElement => element.closest('li')!
+const list = (name: string): HTMLElement => screen.getByRole('list', { name })
+
+function mockRects(initial: Record<string, number>): Record<string, number> {
+	const rights = { ...initial }
+	vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+		return { right: rights[this.getAttribute('aria-label') ?? ''] ?? 0 } as DOMRect
+	})
+	return rights
+}
 
 function setViewport(width: number): void {
 	Object.defineProperty(window, 'innerWidth', { configurable: true, value: width })
@@ -266,27 +275,98 @@ describe('BaseMegaMenu: каскад — наведение', () => {
 })
 
 describe('BaseMegaMenu: каскад — край экрана и мобильный вид', () => {
-	it('раскрывает уровень в другую сторону, если он не помещается справа, и держит направление вглубь', async () => {
+	it('открывает уровень под строкой пункта, если он не помещается справа; следующий уровень решает сам', async () => {
 		renderMenu()
-		const rects: Record<string, Pick<DOMRect, 'left' | 'right'>> = {
-			Электроника: { left: 900, right: 1400 },
-			Телефоны: { left: 400, right: 700 },
-		}
-		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-			return { ...(rects[this.getAttribute('aria-label') ?? ''] ?? { left: 0, right: 0 }) } as DOMRect
-		})
+		const rects = mockRects({ Электроника: 1400, Телефоны: 900 })
 
 		await fireEvent.click(button(/Электроника/))
-		await waitFor(() => expect(screen.getByRole('list', { name: 'Электроника' })).toHaveClass('base-mega-menu__sub--flip'))
+		await waitFor(() => expect(list('Электроника')).toHaveClass('base-mega-menu__sub--below'))
 		await fireEvent.click(button('Телефоны'))
-		await waitFor(() => expect(screen.getByRole('list', { name: 'Телефоны' })).toHaveClass('base-mega-menu__sub--flip'))
+		await waitFor(() => expect(list('Телефоны')).toBeInTheDocument())
+		expect(list('Телефоны')).not.toHaveClass('base-mega-menu__sub--below')
+
+		rects.Телефоны = 1300
+		await fireEvent.click(button('Планшеты'))
+		await fireEvent.click(button('Телефоны'))
+		await waitFor(() => expect(list('Телефоны')).toHaveClass('base-mega-menu__sub--below'))
+		expect(document.querySelector('.base-mega-menu__sub--flip')).toBeNull()
 	})
 
-	it('выбирает сторону по месту на экране', () => {
-		expect(resolveFlip({ left: 10, right: 1300 }, false, 1280)).toBe(true)
-		expect(resolveFlip({ left: 10, right: 900 }, false, 1280)).toBe(false)
-		expect(resolveFlip({ left: -20, right: 200 }, true, 1280)).toBe(false)
-		expect(resolveFlip({ left: 20, right: 200 }, true, 1280)).toBe(true)
+	it('после закрытия и повторного открытия меряет уровень заново', async () => {
+		renderMenu()
+		const rects = mockRects({ Электроника: 1400 })
+
+		await fireEvent.click(button(/Электроника/))
+		await waitFor(() => expect(list('Электроника')).toHaveClass('base-mega-menu__sub--below'))
+		await fireEvent.click(button(/Электроника/))
+		rects.Электроника = 900
+		await fireEvent.click(button(/Электроника/))
+		await waitFor(() => expect(list('Электроника')).toBeInTheDocument())
+		expect(list('Электроника')).not.toHaveClass('base-mega-menu__sub--below')
+	})
+
+	it('не меряет уровень, закрытый до замера', async () => {
+		renderMenu()
+		mockRects({ Электроника: 1400 })
+		const measure = vi.mocked(HTMLElement.prototype.getBoundingClientRect)
+
+		void fireEvent.click(button(/Электроника/))
+		await fireEvent.click(button(/Электроника/))
+		await nextTick()
+
+		expect(button(/Электроника/)).toHaveAttribute('aria-expanded', 'false')
+		expect(measure).not.toHaveBeenCalled()
+	})
+
+	it('при изменении размера окна пересчитывает открытые уровни от мелких к глубоким', async () => {
+		renderMenu()
+		const rects = mockRects({ Электроника: 900, Телефоны: 1100 })
+		await fireEvent.click(button(/Электроника/))
+		await fireEvent.click(button('Телефоны'))
+		await waitFor(() => expect(list('Телефоны')).toBeInTheDocument())
+		expect(list('Электроника')).not.toHaveClass('base-mega-menu__sub--below')
+		expect(list('Телефоны')).not.toHaveClass('base-mega-menu__sub--below')
+
+		rects.Электроника = 1300
+		setViewport(1000)
+		await waitFor(() => expect(list('Телефоны')).toHaveClass('base-mega-menu__sub--below'))
+		expect(list('Электроника')).toHaveClass('base-mega-menu__sub--below')
+
+		setViewport(1280)
+		await waitFor(() => expect(list('Телефоны')).not.toHaveClass('base-mega-menu__sub--below'))
+		expect(list('Электроника')).toHaveClass('base-mega-menu__sub--below')
+	})
+
+	it('на уровне под строкой → открывает следующий уровень с фокусом, ← и Escape возвращают фокус на родителя', async () => {
+		renderMenu()
+		mockRects({ Электроника: 1400, Телефоны: 1400 })
+		await fireEvent.click(button(/Электроника/))
+		await waitFor(() => expect(list('Электроника')).toHaveClass('base-mega-menu__sub--below'))
+
+		await fireEvent.keyDown(button('Телефоны'), { key: 'ArrowRight' })
+		await waitFor(() => expect(link('Смартфоны')).toHaveFocus())
+		await waitFor(() => expect(list('Телефоны')).toHaveClass('base-mega-menu__sub--below'))
+		await fireEvent.keyDown(link('Смартфоны'), { key: 'ArrowLeft' })
+		expect(button('Телефоны')).toHaveFocus()
+		await fireEvent.keyDown(button('Телефоны'), { key: 'Escape' })
+		expect(button(/Электроника/)).toHaveFocus()
+	})
+
+	it('выбирает место уровня по зазору до правого края окна', () => {
+		expect(resolvePlacement({ right: 1272 }, 1280)).toBe('side')
+		expect(resolvePlacement({ right: 1273 }, 1280)).toBe('below')
+		expect(resolvePlacement({ right: 900 }, 1280)).toBe('side')
+	})
+
+	it('в мобильном виде уровень не меряется и не открывается под строкой', async () => {
+		setViewport(500)
+		mockRects({ Электроника: 1400 })
+		renderMenu()
+		await fireEvent.click(button('Меню'))
+		await fireEvent.click(button(/Электроника/))
+		await waitFor(() => expect(list('Электроника')).toBeInTheDocument())
+		await nextTick()
+		expect(list('Электроника')).not.toHaveClass('base-mega-menu__sub--below')
 	})
 
 	it('в мобильном виде раскрывает уровни списком под пунктом кликом, наведение не открывает', async () => {

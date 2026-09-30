@@ -290,7 +290,7 @@
 		z-index: 1;
 		width: max-content;
 		min-width: sz(220px);
-		max-width: sz(320px);
+		max-width: min(#{sz(320px)}, calc(100vw - #{sz(16px)}));
 		padding: sz(8px);
 		@include floating-surface;
 		border-radius: sz(var(--rise-radius-lg));
@@ -305,13 +305,15 @@
 		}
 	}
 
-	&__sub--flip {
-		right: calc(100% + #{sz(8px)});
+	&__sub--below {
+		top: calc(100% + #{sz(4px)});
+		right: 0;
 		left: auto;
 
 		&::before {
-			right: auto;
-			left: 100%;
+			inset: auto 0 100%;
+			width: auto;
+			height: sz(8px);
 		}
 	}
 

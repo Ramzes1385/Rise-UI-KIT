@@ -8,8 +8,8 @@ export const Cascade: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Вложенные уровни: у ссылки колонки поле `children` — подменю раскрывается сбоку от пункта, у края экрана —',
-					'в другую сторону; глубина не ограничена. Наведение открывает уровень с теми же `openDelay` и `closeDelay`, что',
+					'Вложенные уровни: у ссылки колонки поле `children` — подменю раскрывается справа от пункта; если справа не',
+					'хватает места — под пунктом, прижат к его правому краю; путь по уровням остаётся виден. Глубина не ограничена. Наведение открывает уровень с теми же `openDelay` и `closeDelay`, что',
 					'у разделов, клик — сразу. Клавиатура: вправо открывает уровень и ставит фокус на первый пункт, влево и Escape',
 					'закрывают текущий уровень и возвращают фокус на его пункт, вверх и вниз — по пунктам уровня. В мобильном виде',
 					'уровни раскрываются списком под пунктом.',
@@ -26,13 +26,22 @@ export const Cascade: StoryObj<typeof meta> = {
 		const phones = canvas.getByRole('button', { name: 'Телефоны' })
 		phones.focus()
 		await userEvent.keyboard('{ArrowRight}')
-		await waitFor(() => expect(canvas.getByRole('link', { name: 'Смартфоны' })).toHaveFocus())
+		const smartphones = canvas.getByRole('button', { name: 'Смартфоны' })
+		await waitFor(() => expect(smartphones).toHaveFocus())
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(canvas.getByRole('link', { name: 'Кнопочные' })).toHaveFocus()
+		await userEvent.keyboard('{ArrowUp}')
+		await expect(smartphones).toHaveFocus()
+		await userEvent.keyboard('{ArrowRight}')
+		await waitFor(() => expect(canvas.getByRole('button', { name: 'Флагманы' })).toHaveFocus())
+		await expect(canvas.getByRole('list', { name: 'Смартфоны' })).toBeVisible()
+		await userEvent.keyboard('{ArrowLeft}')
+		await expect(smartphones).toHaveFocus()
+		await expect(smartphones).toHaveAttribute('aria-expanded', 'false')
 		await userEvent.keyboard('{Escape}')
 		await expect(phones).toHaveFocus()
 		await expect(phones).toHaveAttribute('aria-expanded', 'false')
 		await userEvent.keyboard('{ArrowRight}')
-		await waitFor(() => expect(canvas.getByRole('link', { name: 'Смартфоны' })).toBeVisible())
+		await waitFor(() => expect(canvas.getByRole('button', { name: 'Смартфоны' })).toBeVisible())
 	},
 }

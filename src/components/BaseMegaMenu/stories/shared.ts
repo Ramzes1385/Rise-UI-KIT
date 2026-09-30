@@ -152,13 +152,33 @@ export const CASCADE_ITEMS: MegaMenuItem[] = [
 							{
 								label: 'Телефоны',
 								children: [
-									{ label: 'Смартфоны', to: '/c/phones/smart' },
+									{
+										label: 'Смартфоны',
+										children: [
+											{
+												label: 'Флагманы',
+												children: [
+													{ label: 'С большим экраном', to: '/c/phones/smart/top/large' },
+													{ label: 'Компактные', to: '/c/phones/smart/top/compact' },
+												],
+											},
+											{ label: 'Средний класс', to: '/c/phones/smart/middle' },
+											{ label: 'Бюджетные', to: '/c/phones/smart/budget' },
+										],
+									},
 									{ label: 'Кнопочные', to: '/c/phones/push' },
 									{
 										label: 'Аксессуары',
 										children: [
-											{ label: 'Чехлы', to: '/c/phones/cases' },
+											{
+												label: 'Чехлы',
+												children: [
+													{ label: 'Кожаные', to: '/c/phones/cases/leather' },
+													{ label: 'Силиконовые', to: '/c/phones/cases/silicone' },
+												],
+											},
 											{ label: 'Зарядки', to: '/c/phones/chargers' },
+											{ label: 'Наушники', to: '/c/phones/headphones' },
 										],
 									},
 								],

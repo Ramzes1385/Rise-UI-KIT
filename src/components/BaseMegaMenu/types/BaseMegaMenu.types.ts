@@ -171,6 +171,9 @@ export interface MegaMenuPanelProps {
 	hoverDelays?: MegaMenuHoverDelays
 }
 
+/** Где открыт вложенный уровень: справа от пункта или, если справа не хватает места, под строкой пункта у её правого края */
+export type MegaMenuSubPlacement = 'side' | 'below'
+
 /** Пункт уровня с идентификаторами для ARIA и фокуса */
 export interface MegaMenuLinkEntry {
 	/** Ссылка */
@@ -221,8 +224,8 @@ export interface MegaMenuCascadeControls {
 export interface MegaMenuCascadeContext {
 	/** Раскрыт ли уровень пункта */
 	isExpanded: (entry: MegaMenuLinkEntry) => boolean
-	/** Раскрывается ли уровень пункта в другую сторону (у края экрана) */
-	isFlipped: (entry: MegaMenuLinkEntry) => boolean
+	/** Уровень не помещается справа и открыт под строкой пункта */
+	isBelow: (entry: MegaMenuLinkEntry) => boolean
 	/** Клик по пункту с вложенным уровнем */
 	toggle: (entry: MegaMenuLinkEntry) => void
 	/** Выбор ссылки */

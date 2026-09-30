@@ -1,38 +1,30 @@
+import { provide, shallowRef } from 'vue'
 import { hasChildren } from '../megaMenuItems'
 import { useHoverTimer } from '../useHoverTimer'
-import { nextTick, provide, ref, shallowRef } from 'vue'
+import { MEGA_MENU_CASCADE_KEY } from './cascadeItems'
 import { useCascadeKeyboard } from './useCascadeKeyboard'
-import { MEGA_MENU_CASCADE_KEY, resolveFlip } from './cascadeItems'
+import { useCascadePlacement } from './useCascadePlacement'
 import type { MegaMenuCascadeContext, MegaMenuLink, MegaMenuLinkEntry, MegaMenuPanelProps } from '../../types/BaseMegaMenu.types'
 
 function useCascadePath() {
 	const path = shallowRef<MegaMenuLink[]>([])
-	const flips = ref<boolean[]>([])
+	const placement = useCascadePlacement()
 	const timer = useHoverTimer()
-
-	function place(entry: MegaMenuLinkEntry): void {
-		const preferLeft = flips.value[entry.depth - 1] === true
-		flips.value = [...flips.value.slice(0, entry.depth), preferLeft]
-		void nextTick(() => {
-			const element = document.getElementById(entry.subId)
-			if (element) flips.value[entry.depth] = resolveFlip(element.getBoundingClientRect(), preferLeft, window.innerWidth)
-		})
-	}
 
 	return {
 		path,
 		timer,
 		isExpanded: (entry: MegaMenuLinkEntry): boolean => path.value[entry.depth] === entry.link,
-		isFlipped: (entry: MegaMenuLinkEntry): boolean => flips.value[entry.depth] === true,
+		isBelow: (entry: MegaMenuLinkEntry): boolean => placement.isBelow(entry.depth),
 		open(entry: MegaMenuLinkEntry): void {
 			timer.clearTimer()
 			path.value = [...path.value.slice(0, entry.depth), entry.link]
-			place(entry)
+			placement.place(entry.depth, entry.subId)
 		},
 		closeFrom(depth: number): void {
 			timer.clearTimer()
 			path.value = path.value.slice(0, depth)
-			flips.value = flips.value.slice(0, depth)
+			placement.cut(depth)
 		},
 	}
 }
@@ -55,7 +47,7 @@ export function useMegaMenuCascade(props: MegaMenuPanelProps, select: MegaMenuCa
 
 	const context: MegaMenuCascadeContext = {
 		isExpanded,
-		isFlipped: cascade.isFlipped,
+		isBelow: cascade.isBelow,
 		select,
 		handleEnter,
 		toggle: (entry: MegaMenuLinkEntry): void => (isExpanded(entry) ? closeFrom(entry.depth) : open(entry)),

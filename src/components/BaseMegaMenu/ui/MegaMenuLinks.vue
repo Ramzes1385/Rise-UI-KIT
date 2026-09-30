@@ -45,7 +45,7 @@
 			v-if="isExpanded(entry)"
 			:id="entry.subId"
 			class="base-mega-menu__links base-mega-menu__sub"
-			:class="{ 'base-mega-menu__sub--flip': isFlipped(entry) }"
+			:class="{ 'base-mega-menu__sub--below': isBelow(entry) }"
 			role="list"
 			:aria-label="entry.link.label">
 			<MegaMenuLinks
@@ -75,6 +75,6 @@ defineOptions({ name: 'MegaMenuLinks' })
 const props = defineProps<MegaMenuLinksProps>()
 defineSlots<MegaMenuLinksSlots>()
 
-const { entries, getItemKey, hasChildren, leafListeners, isExpanded, isFlipped, toggle, select, handleEnter, handleKeydown } =
+const { entries, getItemKey, hasChildren, leafListeners, isExpanded, isBelow, toggle, select, handleEnter, handleKeydown } =
 	useMegaMenuLinks(props)
 </script>
