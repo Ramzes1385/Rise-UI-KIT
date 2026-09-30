@@ -1,25 +1,11 @@
-// Дизайн-токены (CSS-переменные --rise-*) объявлены в _tokens.scss.
-// Этот модуль подключается prelude'ом в каждый .scss компонента (build/config/css.ts), поэтому токены
-// гарантированно попадают в dist/styles.css вместе с первым же компонентом. Повторы обычных правил схлопывает минификатор,
-// повторы блоков @media — плагин сборки build/plugins/cssDedupe.ts.
 @use './tokens';
 
-$breakpoint-xs: 320px;
-$breakpoint-sm: 480px;
-$breakpoint-mobile: 640px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 1024px;
-$breakpoint-xl: 1440px;
-$breakpoint-xxl: 1920px;
-
-// Единый источник брейкпоинтов. Карта переиспользуется миксинами respond-to/respond-below.
-// Числа продублированы в TS-константе BREAKPOINTS (src/composables/useBreakpoint) — держать синхронно.
 $breakpoints: (
-	'xs': $breakpoint-xs,
-	'sm': $breakpoint-sm,
-	'mobile': $breakpoint-mobile,
-	'md': $breakpoint-md,
-	'lg': $breakpoint-lg,
-	'xl': $breakpoint-xl,
-	'xxl': $breakpoint-xxl,
+	'xs': 320px,
+	'sm': 480px,
+	'mobile': 640px,
+	'md': 768px,
+	'lg': 1024px,
+	'xl': 1440px,
+	'xxl': 1920px,
 );

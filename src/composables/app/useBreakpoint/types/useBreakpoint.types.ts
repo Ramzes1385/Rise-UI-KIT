@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 
 /**
  * Брейкпоинты библиотеки в пикселях.
- * Дублируют SCSS-карту $breakpoints (src/styles/_variables.scss) — держать синхронно.
+ * Те же, что в SCSS-карте $breakpoints (src/styles/_variables.scss): совпадение проверяет тест useBreakpoint.
  */
 export const BREAKPOINTS = {
 	xs: 320,

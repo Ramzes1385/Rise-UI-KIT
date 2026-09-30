@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { readFileSync } from 'node:fs'
 import { render } from '@testing-library/vue'
 import { defineComponent, h, nextTick } from 'vue'
 import { BREAKPOINTS } from '../types/useBreakpoint.types'
@@ -96,5 +97,13 @@ describe('useBreakpoint', () => {
 		} finally {
 			vi.unstubAllGlobals()
 		}
+	})
+})
+
+describe('BREAKPOINTS и SCSS', () => {
+	it('совпадают с картой $breakpoints в src/styles/_variables.scss', () => {
+		const scss = readFileSync('src/styles/_variables.scss', 'utf8')
+		const map = Object.fromEntries([...scss.matchAll(/'(\w+)': (\d+)px/g)].map(([, name, value]) => [name, Number(value)]))
+		expect(map).toEqual(BREAKPOINTS)
 	})
 })

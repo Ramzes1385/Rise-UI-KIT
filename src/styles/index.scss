@@ -1,6 +1,4 @@
 @use './variables';
-@use './mixins';
-@use './functions';
 @use './fonts';
 
 :where(body, button, input, textarea, select, [class^='base-'], [class*=' base-']) {

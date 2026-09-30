@@ -1,9 +1,5 @@
 @use 'sass:map';
 
-// Перекраска всего приложения — палитра роли на :root; части интерфейса — data-theme на элементе.
-
-// Значения — палитры Tailwind CSS: orange (primary), zinc (neutral), green, blue, amber, red.
-
 $palettes: (
 	'primary': (
 		50: #fff7ed,
@@ -84,12 +80,7 @@ $palettes: (
 		950: #450a0a,
 	),
 );
-
-/// Цветовые роли с заливкой (у neutral свой набор токенов фона/текста/рамок).
 $roles: ('primary', 'success', 'info', 'warning', 'error');
-
-/// Какой оттенок палитры отвечает за «основной» цвет роли в светлой теме.
-/// Подобран так, чтобы белый текст на заливке и цвет роли на белом фоне давали контраст не ниже 4.5:1.
 $light-main-shade: (
 	'primary': 700,
 	'success': 700,
@@ -102,13 +93,10 @@ $light-main-shade: (
 	@return var(--rise-color-#{$role}-#{$shade});
 }
 
-/// Токены, не зависящие от темы: типографика, радиусы, размеры контролов, анимации.
 @mixin static-tokens {
-	// Шрифты. @font-face для Inter Variable / JetBrains Mono Variable подключает приложение (см. README → «Шрифты»).
 	--rise-font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 	--rise-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-	// Шкала шрифта: размер + межстрочный интервал парами (как text-xs … text-3xl в Tailwind).
 	--rise-font-size-2xs: 10px;
 	--rise-line-height-2xs: 14px;
 	--rise-font-size-xs: 12px;
@@ -131,11 +119,9 @@ $light-main-shade: (
 	--rise-font-weight-semibold: 600;
 	--rise-font-weight-bold: 700;
 
-	// База радиусов: поменяйте --rise-radius, чтобы сделать интерфейс острее или круглее (шкала — в derived-tokens).
 	--rise-radius: 4px;
 	--rise-radius-full: 9999px;
 
-	// Контролы (кнопка, поле ввода, селект…) при sizeScale = 100: высота 32px = рамка 1px × 2 + отступ 5px × 2 + строка 20px.
 	--rise-control-padding-y: 5px;
 	--rise-control-padding-x: 10px;
 	--rise-control-gap: 6px;
@@ -143,16 +129,11 @@ $light-main-shade: (
 
 	--rise-disabled-opacity: 0.5;
 
-	// Слои снизу вверх: окна, боковые панели, тур, выпадающие панели и меню → уведомления → тултипы → просмотр
-	// изображения поверх всего интерфейса. Слои первой группы сортируются по порядку открытия:
-	// z-index = --rise-z-overlay + --rise-layer-index (useLayerIndex), так список в окне — над окном,
-	// а окно, открытое из поповера, — над поповером. Escape и нажатие вне получает верхний открытый слой (useLayer).
 	--rise-z-overlay: 1000;
 	--rise-z-toast: 2000;
 	--rise-z-tooltip: 3000;
 	--rise-z-max: 9999;
 
-	// Анимации. При prefers-reduced-motion длительности обнуляются (см. ниже).
 	--rise-duration-fast: 150ms;
 	--rise-duration: 200ms;
 	--rise-duration-slow: 300ms;
@@ -161,9 +142,6 @@ $light-main-shade: (
 	--rise-ease-in: cubic-bezier(0.4, 0, 1, 1);
 }
 
-/// Токены, вычисляемые из других токенов (шкала радиусов, шрифт и радиус контролов).
-/// Объявлены на каждом элементе темы: если на контейнере с data-theme переопределить базу (--rise-radius,
-/// --rise-font-size-sm), производные пересчитаются внутри него. На :root без data-theme они считаются от значений :root.
 @mixin derived-tokens {
 	--rise-radius-xs: calc(var(--rise-radius) * 0.5);
 	--rise-radius-sm: var(--rise-radius);
@@ -177,7 +155,6 @@ $light-main-shade: (
 	--rise-control-radius: var(--rise-radius-md);
 }
 
-/// Палитры — сырые цвета ролей.
 @mixin palette-tokens {
 	@each $role, $shades in $palettes {
 		@each $shade, $value in $shades {
@@ -195,8 +172,6 @@ $light-main-shade: (
 	--rise-bg-accented: #{palette('neutral', 200)};
 	--rise-bg-inverted: #{palette('neutral', 900)};
 
-	// Текст: dimmed — плейсхолдеры и неактивное, muted — вторичный текст, toned — вторичный на приподнятом фоне,
-	// обычный — основной текст, highlighted — заголовки и значения, inverted — текст на bg-inverted.
 	--rise-text-dimmed: #{palette('neutral', 400)};
 	--rise-text-muted: #{palette('neutral', 500)};
 	--rise-text-toned: #{palette('neutral', 600)};
@@ -209,7 +184,6 @@ $light-main-shade: (
 	--rise-border-accented: #{palette('neutral', 300)};
 	--rise-border-inverted: #{palette('neutral', 900)};
 
-	// Роли: основной цвет, наведение, текст на заливке, мягкий фон, текст на мягком фоне, тонкая рамка
 	@each $role in $roles {
 		$main: map.get($light-main-shade, $role);
 
@@ -224,11 +198,8 @@ $light-main-shade: (
 
 	--rise-focus-ring: var(--rise-primary);
 
-	// Подложка модальных окон и выезжающих панелей
 	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
 
-	// Графики: восемь категориальных цветов в фиксированном порядке — синий, оранжевый, бирюзовый, жёлтый,
-	// розовый, зелёный, фиолетовый, красный. Соседние пары различимы при дальтонизме (ΔE ≥ 8 в OKLab)
 	--rise-chart-1: #2a78d6;
 	--rise-chart-2: #eb6834;
 	--rise-chart-3: #1baf7a;
@@ -266,7 +237,6 @@ $light-main-shade: (
 	--rise-border-accented: #{palette('neutral', 700)};
 	--rise-border-inverted: #fff;
 
-	// В тёмной теме роли светлее (оттенок 400), а текст на заливке — тёмный: так контраст выше 4.5:1.
 	@each $role in $roles {
 		--rise-#{$role}: #{palette($role, 400)};
 		--rise-#{$role}-hover: #{palette($role, 300)};
@@ -286,7 +256,6 @@ $light-main-shade: (
 	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 50%), 0 4px 6px -4px rgb(0 0 0 / 50%);
 	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 60%), 0 8px 10px -6px rgb(0 0 0 / 60%);
 
-	// Графики: те же восемь оттенков, подобранные для тёмного фона (контраст с фоном не ниже 3:1)
 	--rise-chart-1: #3987e5;
 	--rise-chart-2: #d95926;
 	--rise-chart-3: #199e70;
@@ -297,9 +266,6 @@ $light-main-shade: (
 	--rise-chart-8: #e66767;
 }
 
-/// Совместимость с переменными 1.x (`--color-*`, `--shadow-*`, `--border-radius-*`, `--transition-*`, `--font-family-*`).
-/// Компоненты их больше не используют; они оставлены для CSS приложений, которые их читают.
-/// @deprecated Используйте токены `--rise-*`. Будут удалены в 2.0.
 @mixin legacy-aliases {
 	--color-primary: var(--rise-text-highlighted);
 	--color-accent: var(--rise-primary);
@@ -381,14 +347,12 @@ $light-main-shade: (
 	@include dark-tokens;
 }
 
-// data-theme="system" — тема как в системе: тёмная при prefers-color-scheme: dark. Правило ниже светлого и сильнее его
 @media (prefers-color-scheme: dark) {
 	[data-theme='system'] {
 		@include dark-tokens;
 	}
 }
 
-// Производные токены и алиасы объявлены на каждом элементе темы: в поддереве с data-theme они считаются от его значений.
 :root,
 [data-theme='light'],
 [data-theme='dark'],

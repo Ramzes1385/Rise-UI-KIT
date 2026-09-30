@@ -9,10 +9,29 @@
 	justify-content: center;
 }
 
-/**
- * Возвращает значение брейкпоинта из карты $breakpoints.
- * Бросает ошибку, если имя неизвестно — защита от опечаток.
- */
+@mixin truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@mixin visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+@mixin scrollbar-thin {
+	scrollbar-width: thin;
+	scrollbar-color: var(--rise-border-accented) transparent;
+}
+
 @function breakpoint($name) {
 	@if not map.has-key($breakpoints, $name) {
 		@error 'Unknown breakpoint "#{$name}". Available: #{map.keys($breakpoints)}.';
@@ -21,50 +40,12 @@
 	@return map.get($breakpoints, $name);
 }
 
-/**
- * Mobile-first: применяет стили начиная с ширины брейкпоинта и выше.
- *
- * @example
- *   @include respond-to('md') { padding: 24px; }
- */
-@mixin respond-to($name) {
-	@media (min-width: breakpoint($name)) {
-		@content;
-	}
-}
-
-/**
- * Применяет стили на экранах уже брейкпоинта (max-width).
- * Граница берётся на 0.02px ниже, чтобы не пересекаться с respond-to.
- *
- * @example
- *   @include respond-below('mobile') { width: 100%; }
- */
 @mixin respond-below($name) {
 	@media (max-width: (breakpoint($name) - 0.02px)) {
 		@content;
 	}
 }
 
-/**
- * Применяет стили в диапазоне [$from, $to).
- *
- * @example
- *   @include respond-between('sm', 'lg') { display: grid; }
- */
-@mixin respond-between($from, $to) {
-	@media (min-width: breakpoint($from)) and (max-width: (breakpoint($to) - 0.02px)) {
-		@content;
-	}
-}
-
-/**
- * Плавный переход для перечисленных свойств с общей длительностью и кривой из токенов.
- * При prefers-reduced-motion длительность обнуляется токеном --rise-duration.
- *
- * @example
- *   @include transition(opacity, transform);
- */
 @mixin transition($props...) {
 	$transitions: ();
 
@@ -75,20 +56,24 @@
 	transition: $transitions;
 }
 
-/**
- * Переход цветов для интерактивных элементов (кнопки, пункты меню, поля): цвет, фон, рамка, кольцо, тень.
- * Короткая длительность, как transition-colors в Tailwind/Nuxt UI.
- */
 @mixin transition-colors($duration: var(--rise-duration-fast)) {
 	transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity;
 	transition-timing-function: var(--rise-ease);
 	transition-duration: $duration;
 }
 
-/**
- * Наведение мышью. Не срабатывает на отключённых элементах и на сенсорных экранах (hover: none),
- * чтобы состояние hover не «залипало» после касания.
- */
+@mixin motion-safe {
+	@media (prefers-reduced-motion: no-preference) {
+		@content;
+	}
+}
+
+@mixin motion-reduce {
+	@media (prefers-reduced-motion: reduce) {
+		@content;
+	}
+}
+
 @mixin hover {
 	@media (hover: hover) {
 		&:not(:disabled, [disabled], [aria-disabled='true'], .is-disabled, [class*='--disabled']):hover {
@@ -105,35 +90,71 @@
 	}
 }
 
-/** Фокус с клавиатуры (:focus-visible). */
-@mixin focus {
+@mixin focus-ring($offset: 2px) {
 	&:focus-visible {
-		@content;
-	}
-}
-
-/**
- * Кольцо фокуса для кнопок, ссылок и других фокусируемых элементов: 2px цвета --rise-focus-ring
- * снаружи элемента. Для элементов, прижатых к краю контейнера с overflow: hidden, передайте $offset: -2px.
- *
- * @example
- *   @include focus-ring;
- *   @include focus-ring(-2px); // кольцо внутри элемента
- */
-@mixin focus-ring($offset: 2px, $color: var(--rise-focus-ring)) {
-	&:focus-visible {
-		outline: 2px solid #{$color};
+		outline: 2px solid var(--rise-focus-ring);
 		outline-offset: $offset;
 	}
 }
 
-/**
- * Фокус поля ввода (обёртки с input внутри): рамка и внешнее кольцо 1px цвета роли — итого 2px без сдвига вёрстки.
- *
- * @example
- *   &__wrapper { @include field-focus; }
- *   &--error &__wrapper { @include field-focus(var(--rise-error)); }
- */
+@mixin disabled-state {
+	opacity: var(--rise-disabled-opacity);
+	cursor: not-allowed;
+}
+
+@mixin text-size($size) {
+	font-size: sz(var(--rise-font-size-#{$size}));
+	line-height: sz(var(--rise-line-height-#{$size}));
+}
+
+@mixin control-text {
+	font-size: sz(var(--rise-control-font-size));
+	line-height: sz(var(--rise-control-line-height));
+}
+
+@mixin reset-custom-color {
+	--custom-bg: initial;
+	--custom-bg-hover: initial;
+	--custom-bg-active: initial;
+	--custom-bg-focus: initial;
+	--custom-text: initial;
+	--custom-text-hover: initial;
+	--custom-text-active: initial;
+	--custom-text-focus: initial;
+}
+
+@mixin custom-bg($property, $fallback) {
+	#{$property}: var(--custom-bg, #{$fallback});
+}
+
+@mixin custom-bg-hover($property, $fallback) {
+	@include hover {
+		#{$property}: var(--custom-bg-hover, var(--custom-bg, #{$fallback}));
+	}
+}
+
+@mixin custom-bg-active($property, $fallback) {
+	@include active {
+		#{$property}: var(--custom-bg-active, var(--custom-bg, #{$fallback}));
+	}
+}
+
+@mixin custom-bg-all($property, $base, $hover: $base, $active: $base) {
+	@include custom-bg($property, $base);
+	@include custom-bg-hover($property, $hover);
+	@include custom-bg-active($property, $active);
+}
+
+@mixin custom-text($property, $fallback) {
+	#{$property}: var(--custom-text, #{$fallback});
+}
+
+@mixin custom-text-hover($property, $fallback) {
+	@include hover {
+		#{$property}: var(--custom-text-hover, var(--custom-text, #{$fallback}));
+	}
+}
+
 @mixin field-focus($color: var(--rise-primary)) {
 	&:focus-within {
 		border-color: #{$color};
@@ -141,38 +162,27 @@
 	}
 }
 
-// Общие элементы полей (Input, Textarea, Select, Search, DatePicker, Pin, группы Checkbox/Radio):
-// одинаковые подпись, звёздочка обязательности, ошибка и подсказка во всех компонентах.
-
-/** Подпись поля (label): 14/20, medium. */
 @mixin field-label {
 	@include text-size(sm);
 	font-weight: var(--rise-font-weight-medium);
 	color: var(--rise-text);
 }
 
-/** Звёздочка обязательного поля рядом с подписью. */
 @mixin field-required {
 	margin-left: sz(2px);
 	color: var(--rise-error);
 }
 
-/** Текст ошибки под полем. */
 @mixin field-error {
 	@include text-size(sm);
 	color: var(--rise-error);
 }
 
-/** Подсказка/описание под полем. */
 @mixin field-hint {
 	@include text-size(sm);
 	color: var(--rise-text-muted);
 }
 
-/**
- * Коробка поля ввода (вариант default, как outline в Nuxt UI): рамка --rise-border-accented, фон --rise-bg,
- * радиус контрола, фокус — рамка и кольцо --rise-primary. Цвет фона переопределяется пропом color (custom-bg).
- */
 @mixin field-box {
 	border: 1px solid var(--rise-border-accented);
 	border-radius: sz(var(--rise-control-radius));
@@ -181,28 +191,6 @@
 	@include field-focus;
 }
 
-/** Размер и межстрочный интервал текста контролов (14/20 при sizeScale = 100). */
-@mixin control-text {
-	font-size: sz(var(--rise-control-font-size));
-	line-height: sz(var(--rise-control-line-height));
-}
-
-/** Размер текста из шкалы токенов: xs, sm, base, lg, xl, 2xl, 3xl. */
-@mixin text-size($size) {
-	font-size: sz(var(--rise-font-size-#{$size}));
-	line-height: sz(var(--rise-line-height-#{$size}));
-}
-
-/** Неактивное состояние: приглушение и курсор not-allowed. */
-@mixin disabled-state {
-	opacity: var(--rise-disabled-opacity);
-	cursor: not-allowed;
-}
-
-/**
- * Плавающая панель: выпадающие списки, поповеры, меню, календарь в поповере.
- * Фон страницы, тонкая рамка, радиус md и крупная тень.
- */
 @mixin floating-surface {
 	background-color: var(--rise-bg);
 	color: var(--rise-text);
@@ -211,10 +199,6 @@
 	box-shadow: var(--rise-shadow-lg);
 }
 
-/**
- * Пункт списка/меню: отступ 6px 8px, радиус md, текст sm, подсветка фоном bg-elevated при наведении.
- * Активный (выбранный) пункт компонент оформляет сам.
- */
 @mixin menu-item {
 	display: flex;
 	align-items: center;
@@ -230,211 +214,5 @@
 	@include hover {
 		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-highlighted);
-	}
-}
-
-@mixin truncate {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-/** Скрывает элемент визуально, оставляя его доступным для скринридеров. */
-@mixin visually-hidden {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	/* stylelint-disable-next-line property-no-deprecated -- clip скрывает и в браузерах без clip-path */
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
-}
-
-/** Тонкая полоса прокрутки в цветах темы. */
-@mixin scrollbar-thin {
-	scrollbar-width: thin;
-	scrollbar-color: var(--rise-border-accented) transparent;
-}
-
-/** Стили только для пользователей без prefers-reduced-motion: декоративные анимации (пульсация, шиммер). */
-@mixin motion-safe {
-	@media (prefers-reduced-motion: no-preference) {
-		@content;
-	}
-}
-
-@mixin motion-reduce {
-	@media (prefers-reduced-motion: reduce) {
-		@content;
-	}
-}
-
-@mixin interactive {
-	@include transition(background-color, border-color, color, opacity, transform, box-shadow, outline-color);
-}
-
-/**
- * Сбрасывает переменные кастомного цвета (--custom-bg*, --custom-text*) для контейнера пользовательского слота.
- * Проп color красит сам компонент, но переменные наследуются: без сброса вложенные компоненты (кнопки в подвале
- * карточки, поля в модальном окне) получили бы цвет родителя. Ставится на обёртку слота, а не на корень компонента.
- *
- * @example
- *   &__body { @include reset-custom-color; }
- */
-@mixin reset-custom-color {
-	--custom-bg: initial;
-	--custom-bg-hover: initial;
-	--custom-bg-active: initial;
-	--custom-bg-focus: initial;
-	--custom-text: initial;
-	--custom-text-hover: initial;
-	--custom-text-active: initial;
-	--custom-text-focus: initial;
-}
-
-/**
- * Кастомный цвет фона с fallback.
- * Когда --custom-bg задана через useCustomColor — используется она,
- * иначе — значение по умолчанию из темы.
- *
- * @example
- *   @include custom-bg(background-color, var(--rise-bg));
- *   // → background-color: var(--custom-bg, var(--rise-bg));
- */
-@mixin custom-bg($property, $fallback) {
-	#{$property}: var(--custom-bg, #{$fallback});
-}
-
-/**
- * Кастомный hover-цвет фона с fallback.
- * Цепочка: --custom-bg-hover → --custom-bg → $fallback.
- *
- * @example
- *   @include custom-bg-hover(background-color, var(--rise-bg-elevated));
- */
-@mixin custom-bg-hover($property, $fallback) {
-	@include hover {
-		#{$property}: var(--custom-bg-hover, var(--custom-bg, #{$fallback}));
-	}
-}
-
-/**
- * Кастомный active-цвет фона с fallback.
- * Цепочка: --custom-bg-active → --custom-bg → $fallback.
- *
- * @example
- *   @include custom-bg-active(background-color, var(--rise-bg-accented));
- */
-@mixin custom-bg-active($property, $fallback) {
-	@include active {
-		#{$property}: var(--custom-bg-active, var(--custom-bg, #{$fallback}));
-	}
-}
-
-/**
- * Кастомный focus-цвет фона с fallback.
- *
- * @example
- *   @include custom-bg-focus(box-shadow, inset 0 0 0 2px var(--rise-primary));
- */
-@mixin custom-bg-focus($property, $fallback) {
-	@include focus {
-		#{$property}: var(--custom-bg-focus, #{$fallback});
-	}
-}
-
-/**
- * Комплексный миксин: кастомный цвет фона для всех состояний.
- *
- * @param {String} $property — CSS-свойство
- * @param {*} $base — базовый fallback
- * @param {*} $hover — hover fallback (по умолчанию = $base)
- * @param {*} $active — active fallback (по умолчанию = $base)
- * @param {*} $focus — focus fallback (по умолчанию = null)
- *
- * @example
- *   @include custom-bg-all(background-color, var(--rise-primary), var(--rise-primary-hover), var(--rise-primary-hover));
- */
-@mixin custom-bg-all($property, $base, $hover: $base, $active: $base, $focus: null) {
-	@include custom-bg($property, $base);
-	@include custom-bg-hover($property, $hover);
-	@include custom-bg-active($property, $active);
-
-	@if $focus != null {
-		@include custom-bg-focus($property, $focus);
-	}
-}
-
-/**
- * Кастомный цвет текста с fallback.
- *
- * @example
- *   @include custom-text(color, var(--rise-text-highlighted));
- *   // → color: var(--custom-text, var(--rise-text-highlighted));
- */
-@mixin custom-text($property, $fallback) {
-	#{$property}: var(--custom-text, #{$fallback});
-}
-
-/**
- * Кастомный hover-цвет текста с fallback.
- * Цепочка: --custom-text-hover → --custom-text → $fallback.
- *
- * @example
- *   @include custom-text-hover(color, var(--rise-primary));
- */
-@mixin custom-text-hover($property, $fallback) {
-	@include hover {
-		#{$property}: var(--custom-text-hover, var(--custom-text, #{$fallback}));
-	}
-}
-
-/**
- * Кастомный active-цвет текста с fallback.
- * Цепочка: --custom-text-active → --custom-text → $fallback.
- *
- * @example
- *   @include custom-text-active(color, var(--rise-text));
- */
-@mixin custom-text-active($property, $fallback) {
-	@include active {
-		#{$property}: var(--custom-text-active, var(--custom-text, #{$fallback}));
-	}
-}
-
-/**
- * Кастомный focus-цвет текста с fallback.
- *
- * @example
- *   @include custom-text-focus(color, var(--rise-primary));
- */
-@mixin custom-text-focus($property, $fallback) {
-	@include focus {
-		#{$property}: var(--custom-text-focus, #{$fallback});
-	}
-}
-
-/**
- * Комплексный миксин: кастомный цвет текста для всех состояний.
- *
- * @param {String} $property — CSS-свойство
- * @param {*} $base — базовый fallback
- * @param {*} $hover — hover fallback (по умолчанию = $base)
- * @param {*} $active — active fallback (по умолчанию = $base)
- * @param {*} $focus — focus fallback (по умолчанию = null)
- *
- * @example
- *   @include custom-text-all(color, var(--rise-text), var(--rise-primary));
- */
-@mixin custom-text-all($property, $base, $hover: $base, $active: $base, $focus: null) {
-	@include custom-text($property, $base);
-	@include custom-text-hover($property, $hover);
-	@include custom-text-active($property, $active);
-
-	@if $focus != null {
-		@include custom-text-focus($property, $focus);
 	}
 }

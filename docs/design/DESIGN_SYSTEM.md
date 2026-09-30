@@ -14,13 +14,13 @@
 
 ## 1. Токены
 
-Все токены объявлены в `src/styles/_tokens.scss`. Они подключаются в каждый стиль компонента через prelude (`build/config/css.ts`) и попадают в `dist/styles.css`.
+Все токены объявлены в `src/styles/_tokens.scss`. Они подключаются в каждый стиль компонента через prelude (`build/config/css.ts`) и попадают в `dist/styles.css`; повторы правил схлопывает минификатор, повторы блоков `@media` — плагин сборки `build/plugins/cssDedupe.ts`.
 
 ### 1.1. Три уровня
 
 | Уровень | Имена | Для чего |
 |---|---|---|
-| Палитры | `--rise-color-{роль}-{50…950}` | Сырые оттенки ролей: `primary` (orange), `neutral` (zinc), `success` (green), `info` (blue), `warning` (amber), `error` (red) |
+| Палитры | `--rise-color-{роль}-{50…950}` | Сырые оттенки ролей — палитры Tailwind CSS: `primary` (orange), `neutral` (zinc), `success` (green), `info` (blue), `warning` (amber), `error` (red) |
 | Семантические токены | `--rise-bg`, `--rise-text-muted`, `--rise-primary-soft`… | Что именно красится. Значения зависят от темы |
 | Компоненты | `var(--rise-…)` в SCSS | Только семантические токены: никаких HEX, `rgba()` и палитр напрямую |
 
@@ -72,13 +72,14 @@
 - `--rise-focus-ring` — цвет кольца фокуса (= primary).
 - `--rise-overlay` — подложка модальных окон.
 - `--rise-shadow-xs … xl` — тени.
-- `--rise-radius`, `--rise-radius-xs … 2xl`, `--rise-radius-full` — радиусы.
+- `--rise-radius`, `--rise-radius-xs … 2xl`, `--rise-radius-full` — радиусы. База — `--rise-radius` (4px): шкала `xs … 2xl` считается от неё, поэтому интерфейс становится острее или круглее одной переменной.
 - `--rise-font-sans`, `--rise-font-mono` — шрифты.
 - `--rise-font-size-2xs … 3xl` + `--rise-line-height-*` — кегль и интерлиньяж.
 - `--rise-font-weight-*` — начертания.
 - `--rise-control-*` — отступы, шрифт и радиус контролов.
 - `--rise-disabled-opacity` — прозрачность неактивных элементов.
-- `--rise-duration-*`, `--rise-ease*` — длительности и кривые анимаций.
+- `--rise-duration-*`, `--rise-ease*` — длительности и кривые анимаций; при `prefers-reduced-motion: reduce` длительности становятся 0.01ms.
+- `--rise-chart-1 … 8` — восемь категориальных цветов графиков в фиксированном порядке: синий, оранжевый, бирюзовый, жёлтый, розовый, зелёный, фиолетовый, красный. Соседние пары различимы при дальтонизме (ΔE ≥ 8 в OKLab); в тёмной теме — свои оттенки с контрастом к фону не ниже 3:1.
 - `--rise-z-overlay` (1000), `--rise-z-toast` (2000), `--rise-z-tooltip` (3000), `--rise-z-max` (9999) — z-index слоёв. Окна, боковые панели, тур, выпадающие панели и контекстные меню — один стек: `z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0))`, где `--rise-layer-index` — место слоя в порядке открытия (`useLayerIndex`). Уведомления, подсказки и просмотр изображения — поверх стека. Числа z-index в стилях компонентов не пишутся.
 
 ### 1.3. Контраст
@@ -96,7 +97,7 @@
 - Светлая тема — по умолчанию (`:root`) или `data-theme="light"`.
 - Тёмная тема — `data-theme="dark"` на `<html>` или на любом контейнере.
 - Тема «как в системе» — `data-theme="system"`: светлые токены, а при `prefers-color-scheme: dark` — тёмные. Переключает тему приложения `useColorMode()` (режимы `light`, `dark`, `system`, выбор сохраняется в localStorage), кнопка для шапки — `BaseColorModeButton`.
-- Семантические токены пересчитываются на каждом элементе с `data-theme`. Поэтому:
+- Семантические и производные токены (шкала радиусов, шрифт и радиус контролов) пересчитываются на каждом элементе с `data-theme`. Поэтому:
   - вложенная светлая область внутри тёмной работает;
   - палитру можно переопределить на отдельном контейнере с `data-theme`.
 - `color-scheme` выставляется вместе с темой: нативные элементы (скроллбары, календарь `input[type=date]`) тоже темнеют.
@@ -263,9 +264,35 @@
 ## 5. Файлы
 
 - `src/styles/_tokens.scss` — токены.
-- `src/styles/_mixins.scss` — миксины состояний, фокуса, полей, поверхностей.
+- `src/styles/_mixins.scss` — миксины (таблица ниже).
 - `src/styles/_functions.scss` — `sz()`.
-- `src/styles/_variables.scss` — брейкпоинты и подключение токенов.
+- `src/styles/_variables.scss` — брейкпоинты и подключение токенов. Карта `$breakpoints` совпадает с `BREAKPOINTS` из `useBreakpoint` — это проверяет тест.
+- `src/styles/_fonts.scss` — `@font-face` для Inter Variable и JetBrains Mono Variable из `@fontsource-variable`; `src/styles/index.scss` — токены, шрифты и базовый шрифт страницы для Storybook (в `dist/styles.css` не входит, FOLLOW_UPS № 8).
 - `build/storybook/preview.scss` — раскладки примеров в Storybook (`story-row`, `story-col`, `story-grid`…).
 - `src/stories/` — страницы Foundations и хелперы stories.
 - `scripts/check-contrast.mjs` — проверка контраста токенов.
+
+### Миксины и функции
+
+| Миксин или функция | Что делает |
+|---|---|
+| `sz($values)` | Умножает длины на `--size-scale`: `sz(10px 20px)` → `calc(10px * var(--size-scale, 1)) calc(20px * var(--size-scale, 1))`, ноль остаётся нулём |
+| `text-size($size)` | Кегль и интерлиньяж из шкалы: `2xs`, `xs`, `sm`, `base`, `lg`, `xl`, `2xl`, `3xl` |
+| `control-text` | Кегль и интерлиньяж контролов: 14/20 при `sizeScale` 100 |
+| `transition($props...)` | Переход перечисленных свойств с `--rise-duration` и `--rise-ease` |
+| `transition-colors($duration)` | Переход цвета, фона, рамки, контура, тени и прозрачности; по умолчанию `--rise-duration-fast` |
+| `motion-safe`, `motion-reduce` | Правила только без `prefers-reduced-motion` и только с ним |
+| `hover` | Наведение: только на устройствах с наведением и не на отключённых элементах — после касания состояние не «залипает» |
+| `active` | Нажатие, не на отключённых элементах |
+| `focus-ring($offset: 2px)` | Кольцо 2px `--rise-focus-ring` при `:focus-visible`; `-2px` — кольцо внутри элемента |
+| `disabled-state` | Прозрачность `--rise-disabled-opacity` и `cursor: not-allowed` |
+| `field-box` | Коробка поля: рамка `border-accented`, радиус контрола, фон, который перекрашивает проп `color`, переходы и фокус |
+| `field-focus($color)` | Фокус поля: рамка и кольцо 1px цвета роли, по умолчанию `--rise-primary` |
+| `field-label`, `field-required`, `field-error`, `field-hint` | Подпись поля, звёздочка обязательности, ошибка и подсказка |
+| `floating-surface` | Плавающая панель: фон, рамка, радиус md и тень lg |
+| `menu-item` | Пункт меню или списка: отступы 6px 8px, радиус md, подсветка при наведении |
+| `reset-custom-color` | Сбрасывает `--custom-*` на обёртке пользовательского слота (правило 11) |
+| `custom-bg`, `custom-bg-hover`, `custom-bg-active`, `custom-bg-all` | Фон, который перекрашивает проп `color`: `--custom-bg-hover` → `--custom-bg` → значение по умолчанию |
+| `custom-text`, `custom-text-hover` | То же для цвета текста |
+| `respond-below($name)` | Экран уже брейкпоинта (`max-width` на 0.02px меньше): `xs` 320, `sm` 480, `mobile` 640, `md` 768, `lg` 1024, `xl` 1440, `xxl` 1920 |
+| `truncate`, `visually-hidden`, `scrollbar-thin`, `flex-center` | Обрезка строки многоточием; скрытие с экрана, но не от скринридера; тонкая полоса прокрутки; центрирование flex |
