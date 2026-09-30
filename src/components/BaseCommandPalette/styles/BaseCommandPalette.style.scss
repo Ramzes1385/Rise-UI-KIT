@@ -1,0 +1,148 @@
+.base-command-palette {
+	&__content {
+		align-self: flex-start;
+		max-width: sz(640px);
+		margin-top: 12vh;
+		overflow: hidden;
+	}
+
+	&__body {
+		display: flex;
+		flex-direction: column;
+		padding: 0;
+	}
+
+	&__search {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		padding: 0 sz(16px);
+		border-bottom: 1px solid var(--rise-border);
+		color: var(--rise-text-muted);
+
+		.base-icon {
+			flex: none;
+			width: sz(18px);
+			height: sz(18px);
+		}
+	}
+
+	&__input {
+		flex: 1 1 auto;
+		min-width: 0;
+		height: sz(52px);
+		margin: 0;
+		padding: 0;
+		border: 0;
+		outline: none;
+		background: transparent;
+		color: var(--rise-text-highlighted);
+		font: inherit;
+		@include text-size(md);
+
+		&::placeholder {
+			color: var(--rise-text-muted);
+		}
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		max-height: sz(360px);
+		padding: sz(8px);
+		overflow-y: auto;
+		@include scrollbar-thin;
+
+		&:empty {
+			display: none;
+		}
+	}
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__group-title {
+		padding: sz(6px) sz(8px) sz(4px);
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__option {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		min-height: sz(40px);
+		padding: sz(6px) sz(8px);
+		border-radius: sz(var(--rise-radius-md));
+		color: var(--rise-text);
+		cursor: pointer;
+		@include text-size(sm);
+	}
+
+	&__option--active {
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-highlighted);
+	}
+
+	&__option--disabled {
+		cursor: not-allowed;
+		opacity: var(--rise-disabled-opacity);
+	}
+
+	&__icon {
+		flex: none;
+		width: sz(18px);
+		height: sz(18px);
+		color: var(--rise-text-muted);
+	}
+
+	&__text {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__label {
+		@include truncate;
+	}
+
+	&__description {
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		@include truncate;
+	}
+
+	&__shortcut {
+		display: inline-flex;
+		flex: none;
+		gap: sz(4px);
+	}
+
+	&__empty {
+		margin: 0;
+		padding: sz(24px) sz(16px);
+		color: var(--rise-text-muted);
+		text-align: center;
+	}
+
+	&__footer {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(16px);
+		padding: sz(8px) sz(16px);
+		border-top: 1px solid var(--rise-border);
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+
+		span {
+			display: inline-flex;
+			align-items: center;
+			gap: sz(4px);
+		}
+	}
+}

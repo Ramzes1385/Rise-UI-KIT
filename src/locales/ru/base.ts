@@ -148,4 +148,15 @@ export const ruBase = {
 		NEXT: 'Следующий шаг',
 		DONE: 'Всё готово',
 	},
+	/** Палитра команд */
+	commandPalette: {
+		LABEL: 'Палитра команд',
+		SEARCH: 'Поиск команды',
+		PLACEHOLDER: 'Найти команду…',
+		COMMANDS: 'Команды',
+		EMPTY: 'Ничего не найдено',
+		HINT_MOVE: 'выбрать',
+		HINT_RUN: 'выполнить',
+		HINT_CLOSE: 'закрыть',
+	},
 }

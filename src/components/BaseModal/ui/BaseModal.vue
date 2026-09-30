@@ -20,6 +20,7 @@
 					:role="dialogRole"
 					:aria-modal="isModal ? 'true' : undefined"
 					:aria-labelledby="title ? titleId : undefined"
+					:aria-label="title ? undefined : ariaLabel"
 					:aria-describedby="ariaDescribedby">
 					<div v-if="title" class="base-modal__header" :class="classes.header">
 						<div class="base-modal__header-left" :class="classes.headerLeft">

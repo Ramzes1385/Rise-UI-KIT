@@ -32,6 +32,7 @@ function readStories(storyPath) {
 
 /** Интерактивные компоненты, требующие keyboard navigation */
 const INTERACTIVE_COMPONENTS = new Set([
+	'BaseCommandPalette',
 	'BaseButton',
 	'BaseInput',
 	'BaseTextarea',

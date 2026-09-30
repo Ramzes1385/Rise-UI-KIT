@@ -97,6 +97,7 @@ import { BaseNotification } from '../components/BaseNotification'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
 import { BaseFilterBuilder } from '../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
+import { BaseCommandPalette } from '../components/BaseCommandPalette'
 import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
 import { BaseRequisiteInput } from '../components/BaseRequisiteInput'
 import { BaseSubtitleEditor } from '../components/BaseSubtitleEditor'
@@ -139,6 +140,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseChip,
 	BaseColorModeButton,
 	BaseColorPicker,
+	BaseCommandPalette,
 	BaseConfirm,
 	BaseContainer,
 	BaseContextMenu,

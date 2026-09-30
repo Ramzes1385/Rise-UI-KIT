@@ -78,6 +78,14 @@ describe('BaseModal unit', () => {
 			)
 		})
 
+		it('без заголовка имя окна задаёт ariaLabel; заголовок важнее', async () => {
+			const { rerender } = render(BaseModal, { props: { isOpen: true, ariaLabel: 'Палитра команд' } })
+			expect(screen.getByRole('dialog', { name: 'Палитра команд' })).not.toHaveAttribute('aria-labelledby')
+
+			await rerender({ title: 'Команды' })
+			expect(screen.getByRole('dialog', { name: 'Команды' })).not.toHaveAttribute('aria-label')
+		})
+
 		it('после анимации закрытия эмитит after-leave', async () => {
 			const { emitted, rerender } = render(BaseModal, {
 				props: { isOpen: true, title: 'Окно' },

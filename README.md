@@ -52,7 +52,7 @@
 
 - Новый `BaseApp` — корень приложения: показывает уведомления `useToast()` и окна `useOverlay()` / `useConfirm()` (см. [«BaseApp: уведомления и окна из кода»](#baseapp-уведомления-и-окна-из-кода)). Новый компонент `BaseConfirm` — окно подтверждения с `role="alertdialog"`.
 - `BaseNotification`: автозакрытие останавливается, пока указатель над уведомлениями или фокус внутри, и продолжается с остатка времени (WCAG 2.2.1). Новые props `isPersistent` (без автозакрытия), `actions` (кнопки вроде «Отменить»), `items` (управляемый список) и событие `remove(id)`. `add()` возвращает id; уведомление из `add()` без своего `duration` берёт `duration` компонента; длительность больше 2³¹−1 мс ограничивается этим значением.
-- `BaseModal`: props `dialogRole` (`dialog` или `alertdialog`) и `ariaDescribedby`, событие `after-leave` после анимации закрытия.
+- `BaseModal`: props `dialogRole` (`dialog` или `alertdialog`) и `ariaDescribedby`, событие `after-leave` после анимации закрытия; `ariaLabel` — имя окна без видимого заголовка (порция 3.1а).
 
 **Тема, настройки и ссылки**
 
@@ -131,6 +131,7 @@
 
 - `BaseKanban` — канбан-доска: колонки с WIP-лимитами, перетаскивание мышью и с клавиатуры (Space — взять, стрелки — перенести, Space — положить, Escape — отменить) с объявлениями для скринридера, `v-model:cards`, событие `move` и запрет мест через `can-move` (порция 4.16а); плавные перемещения карточек и меню карточки по правому клику и Shift+F10 — «Открыть», «Переместить в», «В начало / в конец колонки», свои пункты `card-actions` (правка К1); карточки как в Jira, Trello и YouGile — обложка, метки, приоритет, срок, подзадачи, счётчики, оценка и исполнители (правка К2а); работа с доской — добавление, переименование и удаление карточек (`is-editable`), фильтр (`filter`), свёртывание (`is-collapsible`, `v-model:collapsed-columns`) и цвет колонок (правка К2б).
 - `BaseFilterBuilder` — конструктор фильтров: условия «поле — сравнение — значение» для текста, чисел, дат, списков и флажков, связка «все» или «любое»; строки отбирает `createFilterPredicate` — для BaseTable, списков и `filter` у BaseKanban (порция 4.16б).
+- `BaseCommandPalette` — палитра команд по ⌘K (Ctrl+K): поиск по названию, группе и ключевым словам, группы, значки и сочетания клавиш, стрелки и Enter по образцу APG Combobox; composable `useHotkeys` — горячие клавиши, которые работают и в русской раскладке (порция 3.1а).
 - `BaseChecklist` — чек-лист первых шагов: флажки, прогресс «2 из 4», подсвеченный следующий шаг, кнопки действий шагов, «Всё готово» (порция 4.16б).
 
 **Доступность и клавиатура**
@@ -2580,6 +2581,39 @@ const steps = [{ label: 'Данные' }, { label: 'Проверка' }, { label
 	<BaseStepper v-model="step" :items="steps" />
 </template>
 ```
+
+---
+
+## BaseCommandPalette
+
+Палитра команд: окно с поиском по командам приложения. Открывается по ⌘K на macOS и Ctrl+K на Windows и Linux (`hotkey`, `null` — без сочетания) или через `v-model:is-open`.
+
+```vue
+<script setup lang="ts">
+import { BaseCommandPalette } from '@ramzes1385/rise-ui-kit'
+import type { CommandItem } from '@ramzes1385/rise-ui-kit'
+
+const commands: CommandItem[] = [
+	{ id: 'tasks', label: 'Задачи', group: 'Навигация', icon: 'list-bullet', onSelect: () => router.push('/tasks') },
+	{ id: 'new', label: 'Новая задача', group: 'Действия', icon: 'plus', shortcut: 'mod+shift+n', keywords: ['создать'] },
+	{ id: 'theme', label: 'Переключить тему', group: 'Вид', icon: 'moon', onSelect: toggleTheme },
+]
+</script>
+
+<template>
+	<BaseCommandPalette :commands="commands" @select="command => track(command.id)" />
+</template>
+```
+
+Поиск — по названию, группе, пояснению и `keywords`, без учёта регистра и «ё»; все слова запроса должны найтись. Группы идут в порядке первого появления, недоступные команды (`isDisabled`) видны, но пропускаются стрелками. Клавиатура по образцу APG Combobox: фокус остаётся в поле поиска, ↑/↓ — команда, Home/End — первая и последняя, Enter — выполнить, Escape — закрыть; после закрытия фокус возвращается туда, где был. `shortcut` у команды — только подсказка (⌘⇧N); сами сочетания подключаются через `useHotkeys`:
+
+```ts
+import { useHotkeys } from '@ramzes1385/rise-ui-kit/composables'
+
+useHotkeys({ 'mod+shift+n': createTask, '?': showHelp })
+```
+
+`mod` — ⌘ на macOS и Ctrl на остальных системах; буквы и цифры сравниваются по физической клавише, поэтому Ctrl+K работает и в русской раскладке. В полях ввода срабатывают только сочетания с Ctrl, ⌘ или Alt (`isAllowedInFields` — все); `isEnabled` включает и выключает сочетания, `target` — где слушать клавиши.
 
 ---
 

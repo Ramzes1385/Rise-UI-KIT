@@ -130,4 +130,15 @@ export const enBase = {
 		NEXT: 'Next step',
 		DONE: 'All done',
 	},
+	/** Палитра команд */
+	commandPalette: {
+		LABEL: 'Command palette',
+		SEARCH: 'Search commands',
+		PLACEHOLDER: 'Type a command…',
+		COMMANDS: 'Commands',
+		EMPTY: 'Nothing found',
+		HINT_MOVE: 'to navigate',
+		HINT_RUN: 'to run',
+		HINT_CLOSE: 'to close',
+	},
 }

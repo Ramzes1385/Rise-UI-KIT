@@ -55,3 +55,6 @@ export const UI_PHONE_INPUT = localized('phoneInput')
 
 /** Поля реквизитов */
 export const UI_REQUISITES = localized('requisites')
+
+/** Палитра команд */
+export const UI_COMMAND_PALETTE = localized('commandPalette')

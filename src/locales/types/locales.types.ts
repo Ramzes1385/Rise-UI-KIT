@@ -42,6 +42,7 @@ export interface UiKitLocale {
 	checklist: Section<'checklist'>
 	phoneInput: Section<'phoneInput'>
 	requisites: Section<'requisites'>
+	commandPalette: Section<'commandPalette'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

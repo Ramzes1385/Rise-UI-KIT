@@ -36,6 +36,8 @@ export interface BaseModalProps extends BaseComponentProps<
 	dialogRole?: 'dialog' | 'alertdialog'
 	/** id элемента с описанием окна: скринридер читает его после заголовка */
 	ariaDescribedby?: string
+	/** Имя окна для скринридера, когда видимого заголовка нет: «Палитра команд», «Просмотр фото» */
+	ariaLabel?: string
 }
 
 export interface BaseModalEmits {
