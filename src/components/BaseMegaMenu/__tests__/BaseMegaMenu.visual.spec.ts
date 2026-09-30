@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-const STORIES = ['variants', 'sizes', 'long-content', 'dropdown'] as const
+const STORIES = ['default', 'variants', 'sizes', 'disabled', 'long-content'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseMegaMenu · ${theme}`, () => {

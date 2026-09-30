@@ -1,32 +1,23 @@
 import { expect } from 'storybook/test'
+import { DISABLED_ITEMS } from '../../shared'
 import type meta from '../../BaseMegaMenu.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type { MegaMenuItem } from '../../../types/BaseMegaMenu.types'
-
-const DISABLED_ITEMS: MegaMenuItem[] = [
-	{
-		label: 'Продукты',
-		icon: 'folder',
-		children: [
-			{ label: 'Аналитика', icon: 'star', to: '/analytics' },
-			{ label: 'Прогнозы (скоро)', icon: 'calendar', isDisabled: true },
-			{ label: 'Документы', icon: 'file', to: '/docs' },
-		],
-	},
-	{ label: 'Маркетплейс', isDisabled: true },
-	{ label: 'Контакты', to: '/contacts' },
-]
 
 export const Disabled: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Отключённые пункты приглушены и помечены `aria-disabled`: не раскрываются и не выполняют переход.' },
+			description: {
+				story: [
+					'Отключённые: раздел с панелью «Для бизнеса» (кнопка `disabled`), раздел-ссылка «Партнёрам» (`aria-disabled`, без',
+					'адреса) и ссылка «Вебинары» в открытой панели «Ресурсы». Они приглушены и не получают фокус.',
+				].join('\n'),
+			},
 		},
 	},
-	args: { layout: 'dropdown', items: DISABLED_ITEMS },
-	play: async ({ canvas, userEvent }) => {
-		await expect(canvas.getByRole('button', { name: 'Маркетплейс' })).toBeDisabled()
-		await userEvent.click(canvas.getByRole('button', { name: 'Продукты' }))
-		await expect(canvas.getByRole('button', { name: 'Прогнозы (скоро)' })).toHaveAttribute('aria-disabled', 'true')
+	args: { items: DISABLED_ITEMS, openKey: 'resources' },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: 'Для бизнеса' })).toBeDisabled()
+		await expect(canvas.getByRole('link', { name: 'Партнёрам' })).toHaveAttribute('aria-disabled', 'true')
+		await expect(canvas.getByRole('link', { name: /Вебинары/ })).toHaveAttribute('aria-disabled', 'true')
 	},
 }

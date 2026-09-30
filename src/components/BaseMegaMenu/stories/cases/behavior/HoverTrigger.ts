@@ -6,17 +6,22 @@ export const HoverTrigger: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: '`trigger="hover"`: панели открываются при наведении и закрываются через `hoverDelay` после ухода курсора.',
+				story: [
+					'`trigger="hover"`: наведение открывает панель через `openDelay`, переход на соседний раздел переключает её сразу,',
+					'уход курсора из строки и панели закрывает через `closeDelay`. Клик по разделу закрепляет панель.',
+				].join('\n'),
 			},
 		},
 	},
-	args: { layout: 'dropdown', trigger: 'hover', hoverDelay: 100 },
+	args: { trigger: 'hover', openKey: undefined, openDelay: 100, closeDelay: 200 },
 	play: async ({ canvas, userEvent }) => {
 		const products = canvas.getByRole('button', { name: 'Продукты' })
+		const resources = canvas.getByRole('button', { name: 'Ресурсы' })
 		await userEvent.hover(products)
-		await expect(products).toHaveAttribute('aria-expanded', 'true')
-
-		await userEvent.unhover(products)
-		await waitFor(() => expect(products).toHaveAttribute('aria-expanded', 'false'))
+		await waitFor(() => expect(products).toHaveAttribute('aria-expanded', 'true'))
+		await userEvent.hover(resources)
+		await expect(resources).toHaveAttribute('aria-expanded', 'true')
+		await userEvent.unhover(resources)
+		await waitFor(() => expect(resources).toHaveAttribute('aria-expanded', 'false'))
 	},
 }

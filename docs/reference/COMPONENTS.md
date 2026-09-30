@@ -2057,28 +2057,33 @@ const pages: TreeNode[] = [
 
 ## BaseMegaMenu
 
-Многоуровневое меню.
+Главное меню сайта: строка разделов и под ней широкая панель раздела — колонки ссылок (`groups`) и промо-блок (`promo`).
 
-`items` используются в раскладке `layout="dropdown"`; раскладка по умолчанию — `columns` (колонки `{ title, items }` в пропе `columns`). Вложенность `children` не ограничена. По пунктам с `to` компонент сам не переходит, а эмитит `navigate` с путём — переход выполняет приложение (например, `router.push`); ссылки `href` открываются компонентом, небезопасные схемы URL блокируются.
+Раздел с `groups` — кнопка, открывающая панель, раздел с `to` или `href` — ссылка. По умолчанию панель открывается наведением (`trigger="hover"`, задержки `openDelay` и `closeDelay`) и кликом; `trigger="click"` — только кликом. Стрелки ходят между разделами и по ссылкам панели, Escape закрывает панель. Ссылки — BaseLink (RouterLink приложения или `<a href>`), выбор приходит в событии `select`. Уже `mobileBreakpoint` (md) строка сворачивается в кнопку «Меню».
 
 ```vue
 <script setup lang="ts">
 import { BaseMegaMenu } from '@ramzes1385/rise-ui-kit'
+import type { MegaMenuItem } from '@ramzes1385/rise-ui-kit'
 
-const items = [
+const items: MegaMenuItem[] = [
 	{
-		label: 'Раздел',
-		children: [{ label: 'Подраздел', to: '/section' }],
+		key: 'products',
+		label: 'Продукты',
+		groups: [
+			{
+				title: 'Платформа',
+				items: [{ label: 'Аналитика', icon: 'star', description: 'Отчёты и дашборды', to: '/analytics' }],
+			},
+		],
+		promo: { title: 'Rise 2.0', description: 'Что нового в версии', to: '/changelog' },
 	},
+	{ label: 'Цены', to: '/pricing' },
 ]
-
-function handleNavigate(path: string): void {
-	console.log(path) // например, router.push(path)
-}
 </script>
 
 <template>
-	<BaseMegaMenu layout="dropdown" :items="items" @navigate="handleNavigate" />
+	<BaseMegaMenu :items="items" />
 </template>
 ```
 

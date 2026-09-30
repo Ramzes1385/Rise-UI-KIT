@@ -1,31 +1,44 @@
 import type meta from '../../BaseMegaMenu.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseMegaMenu from '../../../ui/BaseMegaMenu.vue'
-import { SIZE_PRESETS, useArgsWithoutSlots, sizeLabel } from '@/stories/helpers'
+import { SLOT_KEYS, VARIANT_ITEMS } from '../../shared'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const items = VARIANT_ITEMS
+
+const sizes = [87.5, 100, 112.5]
+
+const template = `
+	<div class="story-stack">
+		<BaseMegaMenu
+			v-for="size in sizes"
+			:key="size"
+			v-bind="args"
+			:size-scale="size"
+			:items="items"
+			:aria-label="'Меню: ' + size" />
+	</div>
+`
 
 export const Sizes: StoryObj<typeof meta> = {
-	args: { layout: 'dropdown' },
 	argTypes: { sizeScale: { control: false } },
 	parameters: {
+		controls: { include: ['variant', 'trigger'] },
 		docs: {
 			description: {
-				story: 'Размеры через `sizeScale` (здесь — навигация dropdown): пункты 24–40px, текст и иконки масштабируются пропорционально.',
+				story: 'Размер задаёт `sizeScale`: строка, панель, отступы и иконки масштабируются вместе (87.5, 100 и 112.5).',
 			},
-			source: {
-				code: SIZE_PRESETS.map(p => `<BaseMegaMenu layout="dropdown" :items="items" :size-scale="${p.sizeScale}" />`).join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseMegaMenu'],
+				script: [`const items = ${literal(items)}`, `const sizes = ${literal(sizes)}`].join('\n'),
+				omit: [...SLOT_KEYS, 'items', 'openKey'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseMegaMenu },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['column-title', 'nav-item', 'item']), presets: SIZE_PRESETS, sizeLabel }),
-		template: `
-			<div class="story-stack">
-				<div v-for="preset in presets" :key="preset.name" class="story-col">
-					<span class="story-label">{{ sizeLabel(preset) }}</span>
-					<BaseMegaMenu v-bind="props" :size-scale="preset.sizeScale" />
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { items, sizes }, slots: [...SLOT_KEYS, 'items', 'openKey'] }),
+		template,
 	}),
 }

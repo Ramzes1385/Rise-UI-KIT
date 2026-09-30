@@ -1,11 +1,28 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { FRAME_STYLE, SLOT_KEYS } from './shared'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
-const DROPDOWN_FRAME = '<div style="min-height: 320px;">'
+const frameStyle = FRAME_STYLE
+
+const models = { openKey: 'openKey' }
+
+const template = `
+	<div :style="frameStyle">
+		<BaseMegaMenu v-bind="args" v-model:open-key="openKey" />
+	</div>
+`
+
+export const source = storySource({
+	template,
+	imports: ['BaseMegaMenu'],
+	models,
+	script: `const frameStyle = ${literal(frameStyle)}`,
+	omit: SLOT_KEYS,
+})
 
 export const render = (args => ({
 	components: { BaseMegaMenu },
-	setup: () => ({ props: useArgsWithoutSlots(args, ['column-title', 'nav-item', 'item']) }),
-	template: `${DROPDOWN_FRAME}<BaseMegaMenu v-bind="props" /></div>`,
+	setup: useStorySetup(args, { models, data: { frameStyle }, slots: SLOT_KEYS }),
+	template,
 })) satisfies Meta<typeof BaseMegaMenu>['render']

@@ -1,6 +1,8 @@
 /** Общие строки: подписи и кнопки, доступные имена, тур, рейтинг, чек-лист */
 export const ruBase = {
 	text: {
+		/** Ссылка промо-блока BaseMegaMenu */
+		MEGA_MENU_PROMO_LINK: 'Подробнее',
 		EMPTY: 'Нет данных',
 		NO_RESULTS: 'Ничего не найдено',
 		SEARCH_PLACEHOLDER: 'Поиск...',
@@ -48,6 +50,8 @@ export const ruBase = {
 		FILE_WRONG_FORMAT: 'Формат файла "{name}" не поддерживается. Допустимые: {formats}',
 	},
 	aria: {
+		/** Ориентир навигации BaseMegaMenu */
+		MEGA_MENU: 'Главное меню',
 		/** Ориентир навигации BaseSideBar без title */
 		SIDEBAR_NAVIGATION: 'Основная навигация',
 		BREADCRUMBS: 'Навигация',

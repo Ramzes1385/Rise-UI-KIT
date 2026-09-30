@@ -7,19 +7,17 @@ export const Default: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Песочница: раскладка columns. Пункты с адресом — ссылки (BaseLink: RouterLink приложения или `<a href>`), клик',
-					'эмитит `navigate` с адресом; узел «Интеграции» раскрывает вложенный уровень.',
+					'Песочница: открыт раздел «Продукты» (`openKey`) — две колонки ссылок и промо-блок. Наведите на «Ресурсы» —',
+					'панель переключится сразу; уведите курсор — закроется через `closeDelay`. «Цены» — раздел-ссылка.',
 				].join('\n'),
 			},
 		},
 	},
-	play: async ({ canvas, userEvent, args }) => {
-		await userEvent.click(canvas.getByRole('link', { name: 'Документы' }))
-		await expect(args.onNavigate).toHaveBeenCalledWith('/docs')
-
-		const integrations = canvas.getByRole('button', { name: 'Интеграции' })
-		await userEvent.click(integrations)
-		await expect(integrations).toHaveAttribute('aria-expanded', 'true')
-		await expect(canvas.getByRole('link', { name: 'Почта' })).toBeVisible()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('navigation', { name: 'Главное меню' })).toBeVisible()
+		await expect(canvas.getByRole('button', { name: 'Продукты' })).toHaveAttribute('aria-expanded', 'true')
+		await expect(canvas.getByRole('button', { name: 'Ресурсы' })).toHaveAttribute('aria-expanded', 'false')
+		await expect(canvas.getByRole('link', { name: /Аналитика/ })).toHaveAttribute('href', '/analytics')
+		await expect(canvas.getByRole('link', { name: 'Цены' })).toHaveAttribute('href', '/pricing')
 	},
 }

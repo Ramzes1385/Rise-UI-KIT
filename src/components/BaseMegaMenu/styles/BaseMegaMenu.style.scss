@@ -1,305 +1,357 @@
 .base-mega-menu {
+	--mega-menu-gap: 4px;
+
+	position: relative;
 	box-sizing: border-box;
 	width: 100%;
 	@include custom-text(color, var(--rise-text));
 
-	&--columns {
-		max-width: sz(1200px);
-		padding: sz(16px);
-		@include floating-surface;
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text));
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
 	}
 
-	&__container {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(#{sz(200px)}, 1fr));
-		gap: sz(16px) sz(24px);
-	}
-
-	&__column {
-		display: flex;
-		flex-direction: column;
-		gap: sz(4px);
-		min-width: 0;
-	}
-
-	&__title {
+	&__bar {
 		display: flex;
 		align-items: center;
-		gap: sz(6px);
-		margin: 0;
-		padding: sz(6px 8px);
-		border-radius: sz(var(--rise-radius-sm));
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
-		@include custom-text(color, var(--rise-text-highlighted));
-		@include focus-ring(-2px);
-	}
-
-	&__title-icon {
-		flex-shrink: 0;
-		color: var(--rise-text-muted);
-	}
-
-	&__title-text {
-		min-width: 0;
-		overflow-wrap: anywhere;
-	}
-
-	&__title-arrow {
-		display: none;
-		flex-shrink: 0;
-		margin-left: auto;
-		color: var(--rise-text-muted);
-		@include transition(transform);
-	}
-
-	&__title--open &__title-arrow {
-		transform: rotate(180deg);
+		gap: sz(8px);
+		min-height: sz(52px);
+		padding: sz(8px 12px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-lg));
+		@include custom-bg(background-color, var(--rise-bg));
+		@include transition-colors;
 	}
 
 	&__list {
 		display: flex;
-		flex-direction: column;
-		gap: sz(2px);
+		flex: 1 1 auto;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(var(--mega-menu-gap));
+		min-width: 0;
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	&__sub-list {
-		display: flex;
-		flex-direction: column;
-		gap: sz(2px);
-		margin: sz(2px) 0 0 sz(16px);
-		padding: 0 0 0 sz(8px);
-		border-left: 1px solid var(--rise-border);
-		list-style: none;
+	&__item {
+		min-width: 0;
 	}
 
-	&__sub-list--flyout {
-		z-index: var(--rise-z-overlay);
-		min-width: sz(220px);
+	&__trigger,
+	&__trigger.base-link {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		min-height: sz(36px);
 		margin: 0;
-		padding: sz(4px);
-		@include floating-surface;
-		@include custom-bg(background-color, var(--rise-bg));
-	}
-
-	&__node {
-		position: relative;
-	}
-
-	&__node-header {
-		@include menu-item;
-		@include custom-text(color, var(--rise-text));
-		@include focus-ring(-2px);
+		padding: sz(0 12px);
+		border: none;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: transparent;
+		@include custom-text(color, var(--rise-text-toned));
+		font: inherit;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
 
 		@include hover {
 			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
-
-			.base-mega-menu__node-icon,
-			.base-mega-menu__node-arrow {
-				color: inherit;
-			}
-		}
-	}
-
-	&__node-header.base-link {
-		display: flex;
-		@include text-size(sm);
-		text-decoration: none;
-		@include custom-text(color, var(--rise-text));
-
-		@include hover {
+			color: var(--custom-text-hover, var(--rise-text-highlighted));
 			text-decoration: none;
-			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+		}
+
+		&:disabled,
+		&.base-link--disabled {
+			@include disabled-state;
 		}
 	}
 
-	&__node--open > &__node-header {
+	&__trigger--open {
 		background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-		color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+		color: var(--custom-text-hover, var(--rise-text-highlighted));
 	}
 
-	&__node--disabled > &__node-header {
-		@include disabled-state;
-	}
-
-	&__node-icon {
+	&__trigger-icon {
 		flex-shrink: 0;
 		color: var(--rise-text-muted);
 	}
 
-	&__node-label {
-		flex: 1;
-		min-width: 0;
-		overflow-wrap: anywhere;
-	}
-
-	&__node-arrow {
+	&__chevron {
 		flex-shrink: 0;
 		color: var(--rise-text-muted);
-		transform: rotate(90deg);
 		@include transition(transform);
 	}
 
-	&__node--open > &__node-header &__node-arrow {
-		transform: rotate(-90deg);
+	&__trigger--open &__chevron {
+		transform: rotate(180deg);
 	}
 
-	&__node-desc {
-		margin: 0 0 sz(4px);
-		padding: 0 sz(8px);
-		@include text-size(xs);
-		@include custom-text(color, var(--rise-text-muted));
-	}
-
-	&__node-header:has(.base-mega-menu__node-icon) + &__node-desc {
-		padding-left: sz(30px);
-	}
-
-	&__nav {
+	&__end {
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(8px);
+		margin-left: auto;
+		@include reset-custom-color;
+	}
+
+	&__toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(8px);
+		min-height: sz(36px);
+		padding: sz(0 12px);
+		border: none;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: transparent;
+		@include custom-text(color, var(--rise-text-highlighted));
+		font: inherit;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-semibold);
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+		}
+	}
+
+	&__panel {
+		position: absolute;
+		top: calc(100% + #{sz(8px)});
+		right: 0;
+		left: 0;
+		z-index: var(--rise-z-overlay);
+		padding: sz(20px);
+		@include floating-surface;
+		border-radius: sz(var(--rise-radius-lg));
+		@include reset-custom-color;
+
+		&::before {
+			position: absolute;
+			right: 0;
+			bottom: 100%;
+			left: 0;
+			height: sz(8px);
+			content: '';
+		}
+	}
+
+	&__panel--inline {
+		position: static;
+		margin-top: sz(4px);
+		padding: sz(8px 0 8px 12px);
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+		background-color: transparent;
+
+		&::before {
+			display: none;
+		}
+	}
+
+	&__content {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: sz(24px);
+
+		&--promo {
+			grid-template-columns: minmax(0, 1fr) minmax(#{sz(220px)}, #{sz(280px)});
+		}
+	}
+
+	&__groups {
+		display: grid;
+		grid-template-columns: repeat(var(--mega-menu-columns, 1), minmax(0, 1fr));
+		gap: sz(16px 24px);
+	}
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		min-width: 0;
+	}
+
+	&__group-title {
+		margin: 0;
+		padding: sz(0 8px);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-muted);
+	}
+
+	&__links {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	&__nav-item {
-		position: relative;
-	}
-
-	&__nav-link.base-button {
-		background-color: transparent;
-		@include custom-text(color, var(--rise-text));
+	&__link.base-link {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(12px);
+		padding: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
+		color: var(--rise-text);
+		@include text-size(sm);
+		text-decoration: none;
+		@include transition-colors;
 
 		@include hover {
 			background-color: var(--rise-bg-elevated);
 			color: var(--rise-text-highlighted);
-		}
-
-		.base-button__label {
-			display: inline-flex;
-			align-items: center;
-			gap: sz(var(--rise-control-gap));
+			text-decoration: none;
 		}
 	}
 
-	&__nav-item--open > &__nav-link.base-button {
-		background-color: var(--rise-bg-elevated);
+	&__link-icon {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: sz(32px);
+		height: sz(32px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		color: var(--rise-text-muted);
+		@include transition-colors;
+	}
+
+	&__link-text {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+	}
+
+	&__link-label {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		font-weight: var(--rise-font-weight-medium);
 		color: var(--rise-text-highlighted);
 	}
 
-	&__nav-icon,
-	&__nav-arrow {
-		flex-shrink: 0;
+	&__link-badge {
+		padding: sz(0 6px);
+		border-radius: sz(var(--rise-radius-full));
+		background-color: var(--rise-primary-soft);
+		color: var(--rise-primary-text);
+		@include text-size(2xs);
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__link-desc {
+		@include text-size(xs);
 		color: var(--rise-text-muted);
 	}
 
-	&__nav-arrow {
-		@include transition(transform);
-	}
-
-	&__nav-item--open &__nav-arrow {
-		transform: rotate(180deg);
-	}
-
-	&__dropdown {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		z-index: 100;
-		min-width: sz(240px);
-		margin-top: sz(4px);
-		padding: sz(4px);
-		@include floating-surface;
-		@include custom-bg(background-color, var(--rise-bg));
-	}
-
-	&--dropdown:not(&--accordion) &__node-arrow,
-	&--dropdown:not(&--accordion) &__node--open > &__node-header &__node-arrow {
-		transform: none;
-	}
-
-	&--columns.base-mega-menu--ghost {
-		padding: 0;
-		border-color: transparent;
-		box-shadow: none;
-		@include custom-bg(background-color, transparent);
-	}
-
-	&--columns.base-mega-menu--outline {
-		border-color: var(--rise-border-accented);
-		box-shadow: none;
-	}
-
-	&--columns.base-mega-menu--shadow {
-		box-shadow: var(--rise-shadow-xl);
-	}
-
-	&--columns.base-mega-menu--soft {
-		border-color: transparent;
-		box-shadow: none;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-	}
-
-	&--accordion {
-		max-width: 100%;
-		overflow-x: hidden;
-	}
-
-	&--accordion &__container {
-		grid-template-columns: 1fr;
-		gap: sz(8px);
-	}
-
-	&--accordion &__title {
-		cursor: pointer;
-	}
-
-	&--accordion &__title-arrow {
+	&__promo {
 		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		min-width: 0;
+		padding: sz(16px);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg-muted);
 	}
 
-	&--accordion &__nav {
+	&__promo-image {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		margin-bottom: sz(6px);
+		border-radius: sz(var(--rise-radius-md));
+		object-fit: cover;
+	}
+
+	&__promo-title {
+		margin: 0;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-highlighted);
+	}
+
+	&__promo-desc {
+		margin: 0;
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+	}
+
+	&__promo-link.base-link {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(4px);
+		margin-top: auto;
+		padding-top: sz(6px);
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&--mobile &__bar {
+		flex-wrap: wrap;
+	}
+
+	&--mobile &__list {
+		flex-basis: 100%;
 		flex-direction: column;
 		align-items: stretch;
+		order: 1;
 	}
 
-	&--accordion &__nav-item {
-		position: static;
-	}
-
-	&--accordion &__nav-link.base-button {
+	&--mobile &__trigger {
+		justify-content: flex-start;
 		width: 100%;
-
-		.base-button__content {
-			justify-content: flex-start;
-		}
-
-		.base-button__label {
-			flex: 1;
-		}
 	}
 
-	&--accordion &__nav-arrow {
+	&--mobile &__chevron {
 		margin-left: auto;
 	}
 
-	&--accordion &__dropdown {
-		position: static;
-		min-width: 0;
-		margin: sz(2px) 0 0 sz(16px);
-		padding: 0 0 0 sz(8px);
-		border: none;
-		border-left: 1px solid var(--rise-border);
-		border-radius: 0;
-		box-shadow: none;
-		background-color: transparent;
+	&--mobile &__promo-image {
+		display: none;
+	}
+
+	&--mobile &__content,
+	&--mobile &__groups {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	&--ghost &__bar {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--outline &__bar {
+		border-color: var(--rise-border-accented);
+	}
+
+	&--shadow &__bar {
+		box-shadow: var(--rise-shadow-sm);
+	}
+
+	&--soft &__bar {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--soft &__trigger {
+		@include hover {
+			background-color: var(--custom-bg-hover, var(--rise-bg-accented));
+		}
 	}
 }

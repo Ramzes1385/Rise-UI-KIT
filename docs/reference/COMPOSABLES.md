@@ -247,7 +247,6 @@ useInputMask
 useLayer
 useLayerIndex
 useListNavigation
-useMegaMenuTree
 usePadding
 usePasswordVisibility
 usePopup

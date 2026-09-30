@@ -1,89 +1,79 @@
 import { computed, ref } from 'vue'
-import { useHoverTimer } from './useHoverTimer'
+import { UI_ARIA } from '@/locales/messages'
+import { useMegaMenuHover } from './useMegaMenuHover'
+import { useMegaMenuState } from './useMegaMenuState'
+import { getItemKey, hasPanel } from './megaMenuItems'
 import { calcIconScale } from '@utils/media/iconUtils'
+import { useLayer } from '@composables/app/useLayerStack'
+import { useMegaMenuKeyboard } from './useMegaMenuKeyboard'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
-import { navigateAndEmit } from '@utils/navigation/navigationUtils'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { useMegaMenuTreeProvider } from '@composables/navigation/useMegaMenuTree'
-import type { BaseMegaMenuEmits, MegaMenuItem, MegaMenuProps } from '../types/BaseMegaMenu.types'
+import type { BaseMegaMenuEmits, MegaMenuItem, MegaMenuLink, MegaMenuProps } from '../types/BaseMegaMenu.types'
 
-const MEGA_MENU_ELEMENTS = ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown']
+const MEGA_MENU_ELEMENTS = ['root', 'bar', 'list', 'trigger', 'panel', 'group', 'link', 'promo']
 
-function hasChildren(item: MegaMenuItem): boolean {
-	return Boolean(item.children && item.children.length > 0)
-}
-
-function useMenuContext(props: MegaMenuProps) {
-	const { isMobile } = useBreakpoint()
-	const effectiveTrigger = computed(() => (isMobile.value ? 'click' : props.trigger))
-	return { isMobile, effectiveTrigger, isHover: (): boolean => effectiveTrigger.value === 'hover', timer: useHoverTimer() }
-}
-
-function useColumns(props: MegaMenuProps, emit: BaseMegaMenuEmits, context: ReturnType<typeof useMenuContext>) {
-	const openColumns = ref<string[]>([])
+function useMobileMenu(props: MegaMenuProps) {
+	const { isSmallerThan } = useBreakpoint()
+	const isMobileOpen = ref(false)
 	return {
-		toggleColumn(title: string): void {
-			if (context.isHover()) return
-			const index = openColumns.value.indexOf(title)
-			if (index > -1) openColumns.value.splice(index, 1)
-			else openColumns.value.push(title)
-			const column = props.columns?.find(c => c.title === title)
-			if (column) emit('column-click', column)
-		},
-		isColumnOpen: (title: string): boolean => openColumns.value.includes(title) || !context.isMobile.value,
-		handleColumnEnter(title: string): void {
-			if (!context.isHover()) return
-			context.timer.clearTimer()
-			if (!openColumns.value.includes(title)) openColumns.value.push(title)
-		},
-		handleColumnLeave(): void {
-			if (!context.isHover()) return
-			context.timer.later(() => {
-				openColumns.value = []
-			}, props.hoverDelay)
+		isMobileMode: computed(() => isSmallerThan(props.mobileBreakpoint)),
+		isMobileOpen,
+		toggleMobile(): void {
+			isMobileOpen.value = !isMobileOpen.value
 		},
 	}
 }
 
-function useNavItems(props: MegaMenuProps, emit: BaseMegaMenuEmits, context: ReturnType<typeof useMenuContext>) {
-	const openNavItems = ref<string[]>([])
-	const navigate = (to?: string, href?: string, target?: '_blank' | '_self'): void => {
-		navigateAndEmit({ to, href, target }, url => emit('navigate', url))
+function useMenuLayer(rootRef: { value: HTMLElement | null }, state: ReturnType<typeof useMegaMenuState>, isActive: () => boolean) {
+	function closeAndReturnFocus(): void {
+		const item = state.openItem.value
+		const hadFocus = Boolean(rootRef.value?.contains(document.activeElement))
+		state.close()
+		if (item && hadFocus) document.getElementById(state.triggerId(item))?.focus()
 	}
+	useLayer({ isActive, elements: () => [rootRef.value], onEscape: closeAndReturnFocus, onPointerDownOutside: () => state.close() })
 	return {
-		navigate,
-		isNavOpen: (label: string): boolean => openNavItems.value.includes(label),
-		handleNavClick(item: MegaMenuItem): void {
-			emit('item-click', item)
-			if (hasChildren(item)) openNavItems.value = openNavItems.value.includes(item.label) ? [] : [item.label]
-			else navigate(item.to, item.href, item.target)
-		},
-		handleNavEnter(item: MegaMenuItem): void {
-			if (!context.isHover()) return
-			context.timer.clearTimer()
-			if (hasChildren(item) && !openNavItems.value.includes(item.label)) openNavItems.value = [item.label]
-		},
-		handleNavLeave(): void {
-			if (!context.isHover()) return
-			context.timer.later(() => {
-				openNavItems.value = []
-			}, props.hoverDelay)
+		handleFocusOut(event: FocusEvent): void {
+			const next = event.relatedTarget as Node | null
+			if (next && !rootRef.value?.contains(next)) state.close()
 		},
 	}
 }
 
 export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
-	const standard = useStandardBaseComponent('base-mega-menu', props, MEGA_MENU_ELEMENTS)
-	useMegaMenuTreeProvider()
-	const context = useMenuContext(props)
+	const rootRef = ref<HTMLElement | null>(null)
+	const listRef = ref<HTMLElement | null>(null)
+	const state = useMegaMenuState(props, emit)
+	const mobile = useMobileMenu(props)
+	const hover = useMegaMenuHover(props, state, () => props.trigger === 'hover' && !mobile.isMobileMode.value)
+	const layer = useMenuLayer(rootRef, state, () => Boolean(state.openItem.value) || mobile.isMobileOpen.value)
+
+	function select(link: MegaMenuLink | MegaMenuItem, event: MouseEvent): void {
+		emit('select', link, event)
+		hover.cancelHoverTimer()
+		state.close()
+		mobile.isMobileOpen.value = false
+	}
 
 	return {
-		...standard,
-		isMobile: context.isMobile,
-		effectiveTrigger: context.effectiveTrigger,
+		...useStandardBaseComponent('base-mega-menu', props, MEGA_MENU_ELEMENTS),
+		...state,
+		...mobile,
+		...hover,
+		...layer,
+		...useMegaMenuKeyboard(listRef, state),
+		rootRef,
+		listRef,
+		navLabel: computed(() => props.ariaLabel || UI_ARIA.MEGA_MENU),
+		mobileToggleLabel: UI_ARIA.MENU,
+		getItemKey,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
-		hasChildren,
-		...useColumns(props, emit, context),
-		...useNavItems(props, emit, context),
+		hasPanel,
+		select,
+		handleTriggerClick(item: MegaMenuItem): void {
+			hover.cancelHoverTimer()
+			const isPinned = state.isOpen(item) && state.source.value === 'click'
+			state.setOpen(isPinned ? undefined : getItemKey(item), 'click')
+		},
 	}
 }

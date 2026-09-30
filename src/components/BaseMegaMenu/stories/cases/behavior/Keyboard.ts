@@ -1,32 +1,35 @@
-import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
+import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseMegaMenu.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
+	tags: ['!autodocs'],
 	parameters: {
 		docs: {
 			description: {
 				story: [
-					'Клавиатура: Tab переводит фокус на пункт навигации, Enter открывает панель; следующий Tab — на узел панели,',
-					'Enter раскрывает его вложенный уровень. Закрытия по Escape пока нет.',
+					'Клавиатура: Tab — на первый раздел, стрелки влево и вправо — между разделами, стрелка вниз открывает панель',
+					'и ставит фокус на первую ссылку, стрелки вниз и вверх — по ссылкам, влево и вправо — по колонкам,',
+					'Escape закрывает панель и возвращает фокус на раздел.',
 				].join('\n'),
 			},
 		},
 	},
-	tags: ['!autodocs'],
-	args: { layout: 'dropdown' },
+	args: { trigger: 'click', openKey: undefined },
 	play: async ({ canvas, userEvent }) => {
 		const products = canvas.getByRole('button', { name: 'Продукты' })
-		await tabTo(products, userEvent)
-		await expect(getComputedStyle(products).outlineStyle).toBe('solid')
-		await userEvent.keyboard('{Enter}')
-		await expect(products).toHaveAttribute('aria-expanded', 'true')
-
 		await userEvent.tab()
-		const analytics = canvas.getByRole('button', { name: 'Аналитика' })
-		await expect(analytics).toHaveFocus()
-		await userEvent.keyboard('{Enter}')
-		await expect(analytics).toHaveAttribute('aria-expanded', 'true')
+		await expect(products).toHaveFocus()
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(canvas.getByRole('button', { name: 'Ресурсы' })).toHaveFocus()
+		await userEvent.keyboard('{ArrowLeft}{ArrowDown}')
+		await waitFor(() => expect(canvas.getByRole('link', { name: /Аналитика/ })).toHaveFocus())
+		await userEvent.keyboard('{ArrowDown}')
+		await expect(canvas.getByRole('link', { name: /Документы/ })).toHaveFocus()
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(canvas.getByRole('link', { name: /Почта/ })).toHaveFocus()
+		await userEvent.keyboard('{Escape}')
+		await expect(products).toHaveFocus()
+		await expect(products).toHaveAttribute('aria-expanded', 'false')
 	},
 }

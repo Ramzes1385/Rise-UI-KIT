@@ -12,8 +12,12 @@ export function useHoverTimer() {
 
 	return {
 		clearTimer,
-		later(callback: () => void, delay: number | undefined): void {
-			hoverTimer = setTimeout(callback, delay)
+		later(callback: () => void, delay: number): void {
+			clearTimer()
+			hoverTimer = setTimeout(() => {
+				hoverTimer = null
+				callback()
+			}, delay)
 		},
 	}
 }
