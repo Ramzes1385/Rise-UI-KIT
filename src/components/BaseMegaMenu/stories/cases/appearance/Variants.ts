@@ -9,13 +9,10 @@ const items = VARIANT_ITEMS
 
 const template = `
 	<div class="story-stack">
-		<BaseMegaMenu
-			v-for="variant in MEGA_MENU_VARIANTS"
-			:key="variant"
-			v-bind="args"
-			:variant="variant"
-			:items="items"
-			:aria-label="'Меню: ' + variant" />
+		<div v-for="variant in MEGA_MENU_VARIANTS" :key="variant" class="story-stack">
+			<span class="story-label">{{ variant }}</span>
+			<BaseMegaMenu v-bind="args" :variant="variant" :items="items" :aria-label="'Меню: ' + variant" />
+		</div>
 	</div>
 `
 

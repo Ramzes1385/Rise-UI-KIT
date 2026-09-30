@@ -78,6 +78,23 @@
 		color: var(--custom-text-hover, var(--rise-text-highlighted));
 	}
 
+	&__trigger--active,
+	&__trigger--active.base-link {
+		position: relative;
+		color: var(--custom-text-hover, var(--rise-text-highlighted));
+
+		&::after {
+			position: absolute;
+			right: sz(12px);
+			bottom: sz(2px);
+			left: sz(12px);
+			height: 2px;
+			border-radius: sz(var(--rise-radius-full));
+			background-color: var(--rise-primary);
+			content: '';
+		}
+	}
+
 	&__trigger-icon {
 		flex-shrink: 0;
 		color: var(--rise-text-muted);
@@ -172,7 +189,7 @@
 	&__groups {
 		display: grid;
 		grid-template-columns: repeat(var(--mega-menu-columns, 1), minmax(0, 1fr));
-		gap: sz(16px 24px);
+		gap: sz(16px);
 	}
 
 	&__group {
@@ -180,6 +197,11 @@
 		flex-direction: column;
 		gap: sz(6px);
 		min-width: 0;
+	}
+
+	&__group + &__group {
+		padding-left: sz(16px);
+		border-left: 1px solid var(--rise-border-muted);
 	}
 
 	&__group-title {
@@ -211,9 +233,20 @@
 		@include transition-colors;
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: var(--rise-bg-muted);
 			color: var(--rise-text-highlighted);
 			text-decoration: none;
+
+			.base-mega-menu__link-icon {
+				border-color: var(--rise-primary-border);
+				background-color: var(--rise-primary-soft);
+				color: var(--rise-primary);
+			}
+		}
+
+		&:focus-visible .base-mega-menu__link-icon {
+			border-color: var(--rise-primary-border);
+			color: var(--rise-primary);
 		}
 	}
 
@@ -266,6 +299,7 @@
 		gap: sz(6px);
 		min-width: 0;
 		padding: sz(16px);
+		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--rise-bg-muted);
 	}
@@ -281,7 +315,7 @@
 
 	&__promo-title {
 		margin: 0;
-		@include text-size(sm);
+		@include text-size(base);
 		font-weight: var(--rise-font-weight-semibold);
 		color: var(--rise-text-highlighted);
 	}
@@ -300,6 +334,11 @@
 		padding-top: sz(6px);
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&--mobile &__group + &__group {
+		padding-left: 0;
+		border-left: none;
 	}
 
 	&--mobile &__bar {
@@ -353,5 +392,19 @@
 		@include hover {
 			background-color: var(--custom-bg-hover, var(--rise-bg-accented));
 		}
+	}
+}
+
+.base-mega-menu-panel-enter-active,
+.base-mega-menu-panel-leave-active {
+	@include transition(opacity, transform);
+}
+
+.base-mega-menu-panel-enter-from,
+.base-mega-menu-panel-leave-to {
+	opacity: 0;
+
+	@include motion-safe {
+		transform: translateY(#{sz(-4px)});
 	}
 }

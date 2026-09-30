@@ -36,8 +36,12 @@
 						:id="triggerId(item)"
 						type="button"
 						class="base-mega-menu__trigger"
-						:class="[{ 'base-mega-menu__trigger--open': isOpen(item) }, classes.trigger]"
+						:class="[
+							{ 'base-mega-menu__trigger--open': isOpen(item), 'base-mega-menu__trigger--active': item.isActive },
+							classes.trigger,
+						]"
 						:disabled="item.isDisabled"
+						:aria-current="item.isActive || undefined"
 						:aria-expanded="isOpen(item)"
 						:aria-controls="panelId(item)"
 						@click="handleTriggerClick(item)"
@@ -51,7 +55,8 @@
 						v-else
 						:id="triggerId(item)"
 						class="base-mega-menu__trigger"
-						:class="classes.trigger"
+						:class="[{ 'base-mega-menu__trigger--active': item.isActive }, classes.trigger]"
+						:aria-current="item.isActive ? 'page' : undefined"
 						variant="ghost"
 						:to="item.to"
 						:href="item.href"
@@ -87,24 +92,26 @@
 			</div>
 		</div>
 
-		<div
-			v-if="openItem && !isMobileMode"
-			:id="panelId(openItem)"
-			class="base-mega-menu__panel"
-			:class="classes.panel"
-			@pointerenter="handlePanelEnter"
-			@pointerleave="handleLeave"
-			@keydown="handlePanelKeydown">
-			<MegaMenuPanel :key="getItemKey(openItem)" :item="openItem" :classes="classes" @select="select">
-				<template v-if="$slots.link" #link="slotProps">
-					<slot name="link" v-bind="slotProps" />
-				</template>
+		<Transition name="base-mega-menu-panel">
+			<div
+				v-if="openItem && !isMobileMode"
+				:id="panelId(openItem)"
+				class="base-mega-menu__panel"
+				:class="classes.panel"
+				@pointerenter="handlePanelEnter"
+				@pointerleave="handleLeave"
+				@keydown="handlePanelKeydown">
+				<MegaMenuPanel :key="getItemKey(openItem)" :item="openItem" :classes="classes" @select="select">
+					<template v-if="$slots.link" #link="slotProps">
+						<slot name="link" v-bind="slotProps" />
+					</template>
 
-				<template v-if="$slots.promo" #promo="slotProps">
-					<slot name="promo" v-bind="slotProps" />
-				</template>
-			</MegaMenuPanel>
-		</div>
+					<template v-if="$slots.promo" #promo="slotProps">
+						<slot name="promo" v-bind="slotProps" />
+					</template>
+				</MegaMenuPanel>
+			</div>
+		</Transition>
 	</nav>
 </template>
 

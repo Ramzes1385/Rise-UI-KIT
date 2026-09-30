@@ -769,3 +769,12 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 ### BaseMegaMenu — новая структура (Р.28)
 Компонент переписан, прежние снимки `base-mega-menu-<variants|sizes|long-content|dropdown>-<тема>` недействительны: истории `Dropdown`, `DeepNesting` удалены, остальные показывают новую разметку. Новый набор снимков в `BaseMegaMenu.visual.spec.ts`: `default`, `variants`, `sizes`, `disabled`, `long-content` (обе темы, окно 1000×600). Вид строки и панели описан в разделе Р.29 ниже — снимки делайте после неё.
+
+### BaseMegaMenu — дизайн (Р.29)
+Снимки `base-mega-menu-<default|variants|sizes|disabled|long-content>-<light|dark>-visual-chromium.png` — новые (см. Р.28).
+- Строка: высота не меньше 52px, отступ 8/12, рамка `border`, радиус `lg`, фон `bg`. Разделы — «пилюли» 36px, текст 14/20 medium `text-toned`, иконка и шеврон `text-muted`; наведение и открытый раздел — фон `bg-elevated`, текст `text-highlighted`, шеврон повёрнут вверх. Текущий раздел (`isActive`) — линия 2px `primary` под названием.
+- Варианты строки: `outline` — рамка `border-accented`; `shadow` — `shadow-sm`; `soft` — фон `bg-muted` без рамки, наведение `bg-accented`; `ghost` — без фона и рамки.
+- Панель: под строкой с зазором 8px на всю её ширину, `floating-surface` с радиусом `lg`, отступ 20px; появляется за `--rise-duration` — прозрачность и сдвиг на 4px сверху (сдвиг только без `prefers-reduced-motion`).
+- Колонки: подпись 12/16 полужирная `text-muted`; между колонками — линия `border-muted`. Ссылка: плитка иконки 32×32 с рамкой `border` и радиусом `md`, название 14/20 medium `text-highlighted`, пояснение 12/16 `text-muted`, бейдж — «пилюля» `primary-soft` 10px. Наведение — фон `bg-muted`, плитка — `primary-soft` с рамкой `primary-border` и иконкой `primary`; фокус с клавиатуры — кольцо и та же плитка.
+- Промо-блок справа (220–280px): рамка `border`, фон `bg-muted`, радиус `md`, картинка 16:9, заголовок 16/24 semibold, текст 12/16 `text-muted`, ссылка primary со стрелкой.
+- Мобильный вид (story Mobile): кнопка «Меню» с иконкой, разделы во всю ширину, панель под разделом одной колонкой без рамки и тени, без картинки промо и без линий между колонками.

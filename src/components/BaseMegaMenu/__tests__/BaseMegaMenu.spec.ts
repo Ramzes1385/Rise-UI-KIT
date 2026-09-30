@@ -71,6 +71,17 @@ describe('BaseMegaMenu: разметка', () => {
 		expect(screen.getByRole('button', { name: 'Войти' })).toBeInTheDocument()
 	})
 
+	it('помечает текущий раздел aria-current: кнопку — true, ссылку — page', () => {
+		const items: MegaMenuItem[] = [
+			{ label: 'Продукты', isActive: true, groups: [{ items: [{ label: 'Аналитика', to: '/a' }] }] },
+			{ label: 'Цены', to: '/pricing', isActive: true },
+		]
+		render(BaseMegaMenu, { props: { items } })
+
+		expect(trigger('Продукты')).toHaveAttribute('aria-current', 'true')
+		expect(screen.getByRole('link', { name: 'Цены' })).toHaveAttribute('aria-current', 'page')
+	})
+
 	it('без items рисует пустую строку', () => {
 		render(BaseMegaMenu)
 

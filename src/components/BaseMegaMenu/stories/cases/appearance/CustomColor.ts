@@ -8,7 +8,7 @@ export const CustomColor: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Кастомный цвет через `color`: `bg.base` — фон строки, `text.base` — разделы, `bg.hover` и `text.hover` — раздел',
-					'под курсором и открытый. Панель остаётся в цветах темы.',
+					'под курсором, открытый и текущий. Панель остаётся в цветах темы.',
 				].join('\n'),
 			},
 		},
@@ -20,6 +20,6 @@ export const CustomColor: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const bar = canvas.getByRole('navigation').firstElementChild as HTMLElement
 		await expect(getComputedStyle(bar).backgroundColor).toBe('rgb(15, 23, 42)')
-		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Продукты' })).color).toBe('rgb(203, 213, 225)')
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Ресурсы' })).color).toBe('rgb(203, 213, 225)')
 	},
 }

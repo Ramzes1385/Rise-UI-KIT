@@ -72,6 +72,8 @@ export interface MegaMenuItem {
 	target?: '_blank' | '_self'
 	/** Отключённый раздел */
 	isDisabled?: boolean
+	/** Текущий раздел сайта: подчёркнут в строке, `aria-current` */
+	isActive?: boolean
 	/** Колонки панели. Раздел с колонками — кнопка, открывающая панель */
 	groups?: MegaMenuGroup[]
 	/** Промо-блок справа в панели */

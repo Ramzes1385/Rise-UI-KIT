@@ -5,6 +5,7 @@ export const ITEMS: MegaMenuItem[] = [
 	{
 		key: 'products',
 		label: 'Продукты',
+		isActive: true,
 		groups: [
 			{
 				title: 'Платформа',
