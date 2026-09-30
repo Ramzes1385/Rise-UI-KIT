@@ -260,7 +260,7 @@ const requisites = reactive({ inn: '', kpp: '', ogrn: '' })
 
 ## BaseMap
 
-Карта с общим API для поставщиков (`provider`: `yandex` — Яндекс Карты API v3): центр (`v-model:center`, `{ lat, lng }`), масштаб (`v-model:zoom`), метки (`markers`: `{ id, coordinates, title?, color? }`), события `click` (координаты точки), `marker-click`, `ready`, `error`.
+Карта с общим API для поставщиков (`provider`: `yandex` — Яндекс Карты API v3, `google` — Google Maps JavaScript API): центр (`v-model:center`, `{ lat, lng }`), масштаб (`v-model:zoom`), метки (`markers`: `{ id, coordinates, title?, color? }`), события `click` (координаты точки), `marker-click`, `ready`, `error`.
 
 ```vue
 <script setup lang="ts">
@@ -277,7 +277,7 @@ const markers: MapMarker[] = [{ id: 'office', coordinates: { lat: 55.7494, lng: 
 </template>
 ```
 
-Скрипт поставщика загружается по требованию и один раз на страницу — только когда есть `apiKey`; ключ можно задать для всех карт настройкой плагина `defaults: { BaseMap: { apiKey } }`. Без ключа или при ошибке — заглушка (слот `placeholder` со `status`). Если API уже загружено приложением (`window.ymaps3`), скрипт не загружается повторно. Язык подписей — по языку кита или `language`. Метки — кнопки с подписью (Tab, Enter), область карты — `role="region"` с именем «Карта» (`ariaLabel`).
+Скрипт поставщика загружается по требованию и один раз на страницу — только когда есть `apiKey`; ключ можно задать для всех карт настройкой плагина `defaults: { BaseMap: { apiKey } }`. Без ключа или при ошибке — заглушка (слот `placeholder` со `status`). Если API уже загружено приложением (`window.ymaps3`, `window.google.maps`), скрипт не загружается повторно. Метки Google — `AdvancedMarkerElement`, им нужен Map ID (`map-id`; по умолчанию `DEMO_MAP_ID` — только для разработки). Язык подписей — по языку кита или `language`. Метки — кнопки с подписью (Tab, Enter), область карты — `role="region"` с именем «Карта» (`ariaLabel`).
 
 ---
 

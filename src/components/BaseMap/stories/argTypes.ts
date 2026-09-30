@@ -11,6 +11,7 @@ export const argTypes = {
 	zoom: { control: { type: 'number', min: 0, max: 21 }, table: propGroup(ARG_GROUP.content) },
 	markers: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	language: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+	mapId: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
 } satisfies Meta<typeof BaseMap>['argTypes']

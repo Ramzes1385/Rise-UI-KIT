@@ -15,6 +15,7 @@ interface MapCreateOptions {
 	apiKey: string
 	language: string
 	view: MapView
+	mapId?: string
 	handlers: MapHandlers
 }
 
@@ -63,4 +64,44 @@ interface YandexListenerProps {
 /** Окно с загруженными API поставщиков */
 export interface MapsWindow {
 	ymaps3?: YandexMapsApi
+	google?: { maps?: GoogleMapsApi }
+}
+
+/** Точка Google Maps */
+interface GoogleLatLng {
+	lat: () => number
+	lng: () => number
+}
+
+/** Подписка на событие Google Maps */
+interface GoogleListener {
+	remove: () => void
+}
+
+/** Карта Google */
+export interface GoogleMapInstance {
+	addListener: (name: string, handler: (event: { latLng?: GoogleLatLng | null }) => void) => GoogleListener
+	getCenter: () => GoogleLatLng | undefined
+	getZoom: () => number | undefined
+	setCenter: (center: MapCoordinates) => void
+	setZoom: (zoom: number) => void
+}
+
+/** Метка Google: `map = null` убирает её с карты */
+export interface GoogleMarker {
+	map: GoogleMapInstance | null
+}
+
+/** Нужная киту часть Google Maps JavaScript API: `google.maps` с библиотекой `marker` */
+export interface GoogleMapsApi {
+	Map: new (element: HTMLElement, options: { center: MapCoordinates; zoom: number; mapId: string }) => GoogleMapInstance
+	marker: {
+		AdvancedMarkerElement: new (options: {
+			map: GoogleMapInstance
+			position: MapCoordinates
+			title?: string
+			content: HTMLElement
+		}) => GoogleMarker
+	}
+	event: { clearInstanceListeners: (instance: object) => void }
 }

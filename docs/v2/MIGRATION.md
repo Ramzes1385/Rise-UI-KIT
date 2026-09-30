@@ -957,3 +957,12 @@
 - Новый раздел словаря `map` (`UI_MAP`).
 
 **Что сделать.** Для своего словаря — добавить раздел `map`. Если страница защищена CSP, разрешите домены поставщика (`api-maps.yandex.ru` и его ресурсы) в `script-src` и `img-src`.
+
+### Р.33 — BaseMap: Google Maps
+
+**Что изменилось.**
+- `provider="google"` — Google Maps JavaScript API с тем же API, что у Яндекса (`center`, `zoom`, `markers`, события). Скрипт загружается по требованию с `loading=async`, `libraries=marker` и `callback`; если `window.google.maps` уже есть, повторно не загружается.
+- Новый проп `mapId` — Map ID стиля Google, нужен меткам (`AdvancedMarkerElement`); по умолчанию `DEMO_MAP_ID` — только для разработки. Яндекс его не использует.
+- `MAP_PROVIDERS` — `['yandex', 'google']`; строка словаря `map.GOOGLE`.
+
+**Что сделать.** Для Google в продакшене — создать Map ID в Google Cloud Console и передать в `map-id`; при CSP — разрешить `maps.googleapis.com` и `maps.gstatic.com`.

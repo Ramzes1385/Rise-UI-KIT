@@ -6,8 +6,8 @@ export const MAP_VARIANTS = ['default', 'outline', 'ghost'] as const
 /** Вариант оформления карты */
 export type MapVariant = (typeof MAP_VARIANTS)[number]
 
-/** Поставщики карт: `yandex` — Яндекс Карты (API v3) */
-export const MAP_PROVIDERS = ['yandex'] as const
+/** Поставщики карт: `yandex` — Яндекс Карты (API v3), `google` — Google Maps JavaScript API */
+export const MAP_PROVIDERS = ['yandex', 'google'] as const
 
 /** Поставщик карты */
 export type MapProvider = (typeof MAP_PROVIDERS)[number]
@@ -52,10 +52,12 @@ export interface BaseMapProps extends BaseComponentProps<MapVariant, 'root' | 'c
 	zoom?: number
 	/** Метки на карте */
 	markers?: MapMarker[]
-	/** Язык подписей карты: `ru_RU`, `en_US` у Яндекса; по умолчанию — язык кита */
+	/** Язык подписей карты: `ru_RU`, `en_US` у Яндекса, `ru`, `en` у Google; по умолчанию — язык кита */
 	language?: string
 	/** Высота карты: CSS-значение; по умолчанию 400px */
 	height?: string
+	/** Map ID стиля карты Google — нужен для меток; по умолчанию демо-стиль `DEMO_MAP_ID`. Яндекс его не использует */
+	mapId?: string
 	/** Имя карты для экранного диктора; по умолчанию «Карта» */
 	ariaLabel?: string
 }

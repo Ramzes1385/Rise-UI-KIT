@@ -107,5 +107,6 @@ export const ruData = {
 		ERROR_TITLE: 'Карта не загрузилась',
 		ERROR: 'Проверьте ключ API и доступ к сервису {provider}',
 		YANDEX: 'Яндекс Карты',
+		GOOGLE: 'Google Maps',
 	},
 }

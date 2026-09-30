@@ -42,6 +42,7 @@ function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, view: () => MapV
 		apiKey: props.apiKey ?? '',
 		language: props.language ?? entry().language(getLocale().intl),
 		view: view(),
+		mapId: props.mapId,
 		handlers: viewHandlers(emit, lastView),
 	})
 
@@ -80,7 +81,7 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits) {
 	const map = useMapAdapter(props, emit, () => view.value)
 	onMounted(map.attach)
 	onBeforeUnmount(map.detach)
-	watch(() => [props.provider, props.apiKey, props.language], map.attach)
+	watch(() => [props.provider, props.apiKey, props.language, props.mapId], map.attach)
 	watch(view, next => {
 		if (sameView(next, map.lastView.value)) return
 		map.lastView.value = next

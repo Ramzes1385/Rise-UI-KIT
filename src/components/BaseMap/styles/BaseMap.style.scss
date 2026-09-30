@@ -66,6 +66,10 @@
 			@include text-size(xs);
 		}
 
+		&--anchored {
+			transform: rotate(-45deg);
+		}
+
 		&:hover::after,
 		&:focus-visible::after {
 			opacity: 1;

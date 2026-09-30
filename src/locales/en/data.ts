@@ -99,5 +99,6 @@ export const enData = {
 		ERROR_TITLE: 'Map failed to load',
 		ERROR: 'Check the API key and access to {provider}',
 		YANDEX: 'Yandex Maps',
+		GOOGLE: 'Google Maps',
 	},
 }

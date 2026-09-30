@@ -1,5 +1,6 @@
 export { Default } from './Default'
 export { Markers } from './behavior/Markers'
+export { Providers } from './appearance/Providers'
 export { Variants } from './appearance/Variants'
 export { Sizes } from './appearance/Sizes'
 export { Loading } from './states/Loading'

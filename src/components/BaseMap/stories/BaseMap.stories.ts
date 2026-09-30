@@ -17,6 +17,7 @@ export default meta
 
 export const Default = cases.Default
 export const Markers = cases.Markers
+export const Providers = cases.Providers
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Loading = cases.Loading

@@ -848,3 +848,7 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 ### BaseMap (Р.32) — новый компонент
 
 Новые истории `media-basemap--*`: Default (заглушка «Нужен ключ API» — BaseEmpty `ghost` с иконкой `pin` на фоне `bg-muted` в рамке), Markers и Loading (демо-поставщик без сети: сетка на `bg-muted`, метки-«капли» цвета `primary` или своего, подпись метки при наведении и фокусе), Variants, Sizes. Нужны новые эталоны `base-map-{default,variants}-{light,dark}.png` (`__tests__/BaseMap.visual.spec.ts`) — делает владелец. Внешние скрипты в историях и скриншотах не загружаются.
+
+### BaseMap (Р.33)
+
+Новая история `media-basemap--providers` — две заглушки рядом: «Для карты (Яндекс Карты) нужен ключ…» и «Для карты (Google Maps) нужен ключ…». Метки Google — та же «капля», якорь снизу по центру (модификатор `base-map__marker--anchored`). Эталоны `base-map-*` из Р.32 учитывают итоговый текст заглушки «Для карты ({поставщик}) нужен ключ: …».
