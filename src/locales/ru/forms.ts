@@ -63,4 +63,20 @@ export const ruForms = {
 	phoneInput: {
 		COUNTRY: 'Код страны',
 	},
+	/** Реквизиты: названия полей и ошибки проверки */
+	requisites: {
+		INN: 'ИНН',
+		KPP: 'КПП',
+		OGRN: 'ОГРН',
+		OGRNIP: 'ОГРНИП',
+		BIK: 'БИК',
+		ACCOUNT: 'Расчётный счёт',
+		CORRESPONDENT_ACCOUNT: 'Корреспондентский счёт',
+		SNILS: 'СНИЛС',
+		CHECKSUM: 'Неверное контрольное число',
+		FORMAT: 'Неверный формат',
+		ACCOUNT_MISMATCH: 'Счёт не подходит к БИК',
+		INCOMPLETE: 'Нужно цифр: {count}',
+		OR: 'или',
+	},
 }

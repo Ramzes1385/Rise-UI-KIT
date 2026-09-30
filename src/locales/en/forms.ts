@@ -60,4 +60,20 @@ export const enForms = {
 	phoneInput: {
 		COUNTRY: 'Country code',
 	},
+	/** Реквизиты: названия полей и ошибки проверки */
+	requisites: {
+		INN: 'INN',
+		KPP: 'KPP',
+		OGRN: 'OGRN',
+		OGRNIP: 'OGRNIP',
+		BIK: 'BIC',
+		ACCOUNT: 'Settlement account',
+		CORRESPONDENT_ACCOUNT: 'Correspondent account',
+		SNILS: 'SNILS',
+		CHECKSUM: 'Invalid check digit',
+		FORMAT: 'Invalid format',
+		ACCOUNT_MISMATCH: 'The account does not match the BIC',
+		INCOMPLETE: 'Digits required: {count}',
+		OR: 'or',
+	},
 }

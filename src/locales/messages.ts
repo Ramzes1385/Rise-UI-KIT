@@ -52,3 +52,6 @@ export const UI_CHECKLIST = localized('checklist')
 
 /** Поле телефона */
 export const UI_PHONE_INPUT = localized('phoneInput')
+
+/** Поля реквизитов */
+export const UI_REQUISITES = localized('requisites')

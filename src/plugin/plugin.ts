@@ -90,6 +90,7 @@ import { BaseInputNumber } from '../components/BaseInputNumber'
 import { BasePromptInput } from '../components/BasePromptInput'
 import { BaseSplitButton } from '../components/BaseSplitButton'
 import { BaseVirtualList } from '../components/BaseVirtualList'
+import { BaseAddressInput } from '../components/BaseAddressInput'
 import { BaseAutocomplete } from '../components/BaseAutocomplete'
 import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
 import { BaseNotification } from '../components/BaseNotification'
@@ -97,6 +98,7 @@ import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
 import { BaseFilterBuilder } from '../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
 import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
+import { BaseRequisiteInput } from '../components/BaseRequisiteInput'
 import { BaseSubtitleEditor } from '../components/BaseSubtitleEditor'
 import { BaseColorModeButton } from '../components/BaseColorModeButton'
 import { DEFAULTS_KEY } from '../composables/base/useDefaults/useDefaults'
@@ -114,6 +116,7 @@ const BaseFileUpload = defineAsyncComponent(() => import('../components/BaseFile
 
 const UI_COMPONENTS: Record<string, Component> = {
 	BaseAccordion,
+	BaseAddressInput,
 	BaseAiMessage,
 	BaseAlert,
 	BaseAnimation,
@@ -183,6 +186,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseRange,
 	BaseRating,
 	BaseReasoning,
+	BaseRequisiteInput,
 	BaseScrollArea,
 	BaseSearch,
 	BaseSegmented,

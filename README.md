@@ -110,6 +110,7 @@
 - `BaseVirtualList` — список на тысячи строк (в DOM только видимые) и composable `useVirtualList`; виртуальная прокрутка в `BaseTable` (`isVirtual`, `rowHeight`) и `BaseTree` (`isVirtual`, `height`, `itemSize`) — порция 2.4.
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
 - `BasePhoneInput` — телефон: выбор страны и маска номера, `v-model` — `+79161234567`, вставка «+375 29…» или «8 916…» сама выбирает страну; `BaseMoneyInput` — сумма с разрядами при вводе и знаком валюты по `currency`, округление и границы после ухода из поля (порция 4.17а).
+- `BaseRequisiteInput` — реквизиты с проверкой контрольных чисел: ИНН, КПП, ОГРН, ОГРНИП, БИК, расчётный и корреспондентский счёт (вместе с БИК), СНИЛС; те же проверки — функциями `isValidInn` и др. `BaseAddressInput` — адрес с подсказками из подключаемого источника, готовый адаптер DaData (порция 4.17б).
 
 **Медиа**
 
@@ -708,6 +709,42 @@ const country = ref('RU')
 ```
 
 `currency` — код ISO 4217: от него зависят знак и число знаков после запятой (у иены — ни одного). Запятая и точка обе ставят десятичный разделитель, буквы и лишние знаки отбрасываются. После ухода из поля сумма округляется до копеек и приводится к `min` и `max`; отрицательные суммы вводятся, только если `min` меньше нуля. На телефоне открывается цифровая клавиатура (`inputmode="decimal"`).
+
+---
+
+## BaseRequisiteInput
+
+Поле реквизита с проверкой контрольного числа. `kind` — `inn`, `kpp`, `ogrn`, `ogrnip`, `bik`, `account`, `correspondentAccount` или `snils`; подпись по умолчанию — название реквизита. В `v-model` — только цифры (у КПП — ещё заглавные латинские буквы), маска и длина — по виду реквизита.
+
+```vue
+<BaseRequisiteInput v-model="company.inn" kind="inn" @validate="isInnValid = $event" />
+<BaseRequisiteInput v-model="company.bik" kind="bik" />
+<BaseRequisiteInput v-model="company.account" kind="account" :bik="company.bik" />
+```
+
+ИНН (10 и 12 цифр), ОГРН, ОГРНИП и СНИЛС проверяются по алгоритмам ФНС и ПФР, расчётный и корреспондентский счёт — по ключу вместе с БИК. Ошибка появляется, когда введены все знаки или поле потеряло фокус: «Неверное контрольное число», «Счёт не подходит к БИК», «Нужно цифр: 10 или 12»; своя ошибка в `error` важнее. Событие `validate` сообщает `true`, `false` или `null` (пусто или не хватает знаков). Те же проверки есть отдельными функциями для схем форм: `isValidInn`, `isValidKpp`, `isValidOgrn`, `isValidBik`, `isValidAccount(счёт, бик)`, `isValidCorrespondentAccount(счёт, бик)`, `isValidSnils`.
+
+---
+
+## BaseAddressInput
+
+Адрес с подсказками: BaseAutocomplete, который загружает варианты из источника `source`. Готовый источник — «Подсказки» DaData.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseAddressInput, createDadataAddressSource } from '@ramzes1385/rise-ui-kit'
+
+const address = ref('')
+const source = createDadataAddressSource({ token: import.meta.env.VITE_DADATA_TOKEN, locations: [{ region: 'Москва' }] })
+</script>
+
+<template>
+	<BaseAddressInput v-model="address" :source="source" label="Адрес доставки" @select="suggestion => (delivery.postal = suggestion.data?.postal_code)" />
+</template>
+```
+
+Свой сервер подключается функцией `(query, { signal }) => Promise<{ value, unrestrictedValue?, data? }[]>`. Запрос уходит после паузы `debounce` (300 мс) и с `min-chars` знаков (3); прежний запрос отменяется через `AbortSignal`, ошибка сервиса просто оставляет список пустым. `v-model` — адрес строкой (выбранная подсказка или свой текст), `select` — подсказка со всеми данными сервиса. Ключ DaData виден в браузере: используйте публичный ключ с ограничением по домену или свой прокси через `url`.
 
 ---
 

@@ -41,6 +41,7 @@ export interface UiKitLocale {
 	filterBuilder: Section<'filterBuilder'>
 	checklist: Section<'checklist'>
 	phoneInput: Section<'phoneInput'>
+	requisites: Section<'requisites'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 
