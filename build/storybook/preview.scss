@@ -66,3 +66,20 @@ body.sb-show-main,
 	border: 1px dashed var(--rise-border-accented);
 	border-radius: 8px;
 }
+
+// Таблица параметров на странице Docs: длинная строка в значении-объекте (картинка data URI) — в одну строку
+// с многоточием, остальные длинные значения переносятся. Иначе таблица растягивается шире страницы.
+.docblock-argstable {
+	td {
+		overflow-wrap: anywhere;
+	}
+
+	.rejt-value {
+		display: inline-block;
+		max-width: 280px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		vertical-align: bottom;
+	}
+}

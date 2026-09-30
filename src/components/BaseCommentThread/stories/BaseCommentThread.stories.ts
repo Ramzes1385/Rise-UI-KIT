@@ -18,6 +18,7 @@ export default meta
 export const Default = cases.Default
 export const Live = cases.Live
 export const Collapsed = cases.Collapsed
+export const DeepNesting = cases.DeepNesting
 export const Readonly = cases.Readonly
 export const Empty = cases.Empty
 export const Variants = cases.Variants

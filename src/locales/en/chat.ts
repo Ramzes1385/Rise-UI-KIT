@@ -186,6 +186,7 @@ export const enChat = {
 		PLACEHOLDER: 'Write a comment',
 		REPLY: 'Reply',
 		REPLY_TO: 'Reply to {name}',
+		IN_REPLY_TO: 'replying to',
 		SEND: 'Send',
 		CANCEL: 'Cancel',
 		LIKE: 'Like',

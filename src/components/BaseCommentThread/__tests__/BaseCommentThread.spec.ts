@@ -108,11 +108,20 @@ describe('BaseCommentThread unit', () => {
 		expect(list).toBeVisible()
 	})
 
-	it('глубже maxDepth — без нового отступа', () => {
+	it('глубже maxDepth — без нового отступа, но с автором комментария, на который ответили', () => {
 		const { container } = renderThread({ maxDepth: 2 })
 		const lists = container.querySelectorAll('.base-comment-thread__replies')
 		expect(lists[0]).not.toHaveClass('base-comment-thread__replies--flat')
 		expect(lists[1]).toHaveClass('base-comment-thread__replies--flat')
+		const replyTo = container.querySelectorAll('.base-comment-thread__reply-to')
+		expect(replyTo).toHaveLength(1)
+		expect(replyTo[0]).toHaveTextContent('в ответ пользователю Иван Петров')
+		expect(lists[1].querySelector('.base-comment-thread__reply-to')).toBe(replyTo[0])
+	})
+
+	it('в пределах maxDepth автор родителя не повторяется: его видно по отступу', () => {
+		const { container } = renderThread()
+		expect(container.querySelector('.base-comment-thread__reply-to')).toBeNull()
 	})
 
 	it('только чтение: без «Ответить» и поля; пустая ветка', () => {

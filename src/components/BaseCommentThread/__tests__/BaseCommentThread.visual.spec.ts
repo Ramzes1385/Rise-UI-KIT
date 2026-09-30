@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-const STORIES = ['default', 'readonly'] as const
+const STORIES = ['default', 'readonly', 'deep-nesting'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseCommentThread · ${theme}`, () => {

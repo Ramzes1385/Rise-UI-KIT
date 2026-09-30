@@ -7,6 +7,11 @@
 			<div class="base-comment-thread__content">
 				<div class="base-comment-thread__meta">
 					<span :id="authorId" class="base-comment-thread__author">{{ comment.author.name }}</span>
+					<span v-if="parentAuthor" class="base-comment-thread__reply-to">
+						<BaseIcon name="reply" :size-scale="sizeScale * 0.75" aria-hidden="true" />
+						<span class="base-comment-thread__sr-only">{{ UI_COMMENT_THREAD.IN_REPLY_TO }}</span>
+						{{ parentAuthor }}
+					</span>
 					<time class="base-comment-thread__time" :datetime="iso">{{ time }}</time>
 				</div>
 				<p class="base-comment-thread__text">{{ comment.text }}</p>
@@ -54,12 +59,18 @@
 			:id="repliesId"
 			class="base-comment-thread__replies"
 			:class="{ 'base-comment-thread__replies--flat': isFlat }">
-			<CommentNode v-for="reply in replies" :key="reply.id" :comment="reply" :depth="depth + 1" />
+			<CommentNode
+				v-for="reply in replies"
+				:key="reply.id"
+				:comment="reply"
+				:depth="depth + 1"
+				:parent-author="isFlat ? comment.author.name : undefined" />
 		</ul>
 	</li>
 </template>
 
 <script setup lang="ts">
+import { BaseIcon } from '@components/BaseIcon'
 import CommentComposer from './CommentComposer.vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'

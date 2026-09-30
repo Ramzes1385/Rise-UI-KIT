@@ -199,6 +199,7 @@ export const ruChat = {
 		PLACEHOLDER: 'Напишите комментарий',
 		REPLY: 'Ответить',
 		REPLY_TO: 'Ответ пользователю {name}',
+		IN_REPLY_TO: 'в ответ пользователю',
 		SEND: 'Отправить',
 		CANCEL: 'Отмена',
 		LIKE: 'Нравится',

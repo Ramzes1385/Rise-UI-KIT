@@ -33,13 +33,25 @@
 		list-style: none;
 	}
 
+	&__list {
+		container-type: inline-size;
+	}
+
 	&__replies {
 		margin-top: sz(12px);
 		padding-left: sz(44px);
+
+		@container (max-width: 480px) {
+			padding-left: sz(20px);
+		}
 	}
 
 	&__replies--flat {
 		padding-left: 0;
+
+		@container (max-width: 480px) {
+			padding-left: 0;
+		}
 	}
 
 	&__card,
@@ -78,6 +90,20 @@
 	&__time {
 		color: var(--rise-text-toned);
 		@include text-size(xs);
+	}
+
+	&__reply-to {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(4px);
+		min-width: 0;
+		color: var(--rise-text-toned);
+		overflow-wrap: anywhere;
+		@include text-size(xs);
+	}
+
+	&__sr-only {
+		@include visually-hidden;
 	}
 
 	&__text {
