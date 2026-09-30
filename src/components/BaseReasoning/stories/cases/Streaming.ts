@@ -4,7 +4,31 @@ import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import BaseReasoning from '../../ui/BaseReasoning.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const STEP = 6
+
+const INTERVAL = 40
+
+const template = `
+	<BaseReasoning v-bind="args" :content="full.slice(0, length)" :is-streaming="isStreaming" />
+`
+
+const script = `
+const full = ${literal(REASONING_SAMPLE)}
+const length = ref(0)
+const isStreaming = ref(true)
+let timer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+	timer = setInterval(() => {
+		length.value = Math.min(full.length, length.value + ${STEP})
+		isStreaming.value = length.value < full.length
+		if (!isStreaming.value) clearInterval(timer)
+	}, ${INTERVAL})
+})
+onBeforeUnmount(() => clearInterval(timer))
+`
 
 export const Streaming: StoryObj<typeof meta> = {
 	parameters: {
@@ -12,27 +36,31 @@ export const Streaming: StoryObj<typeof meta> = {
 			description: {
 				story: 'Поток: блок раскрыт, «Думает…» переливается; когда рассуждения готовы, блок сворачивается и показывает время.',
 			},
+			source: storySource({ template, imports: ['BaseReasoning'], vue: ['onBeforeUnmount', 'onMounted', 'ref'], script }),
 		},
 		controls: { include: ['variant', 'sizeScale', 'hasAutoToggle'] },
 	},
 	args: { duration: undefined },
 	render: args => ({
 		components: { BaseReasoning },
-		setup() {
-			const length = ref(0)
-			const isStreaming = ref(true)
-			let timer: ReturnType<typeof setInterval> | undefined
-			onMounted(() => {
-				timer = setInterval(() => {
-					length.value = Math.min(REASONING_SAMPLE.length, length.value + 6)
-					isStreaming.value = length.value < REASONING_SAMPLE.length
-					if (!isStreaming.value) clearInterval(timer)
-				}, 40)
-			})
-			onBeforeUnmount(() => clearInterval(timer))
-			return { props: useArgsWithoutSlots(args), length, isStreaming, full: REASONING_SAMPLE }
-		},
-		template: '<BaseReasoning v-bind="props" :content="full.slice(0, length)" :is-streaming="isStreaming" />',
+		setup: useStorySetup(args, {
+			setup: () => {
+				const full = REASONING_SAMPLE
+				const length = ref(0)
+				const isStreaming = ref(true)
+				let timer: ReturnType<typeof setInterval> | undefined
+				onMounted(() => {
+					timer = setInterval(() => {
+						length.value = Math.min(full.length, length.value + STEP)
+						isStreaming.value = length.value < full.length
+						if (!isStreaming.value) clearInterval(timer)
+					}, INTERVAL)
+				})
+				onBeforeUnmount(() => clearInterval(timer))
+				return { full, length, isStreaming }
+			},
+		}),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const trigger = canvas.getByRole('button')

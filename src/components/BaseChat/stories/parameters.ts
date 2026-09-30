@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseChat from '../ui/BaseChat.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Окно чата: шапка с поиском и панелью «Информация», закреплённые сообщения, лента с ответами, вложениями и реакциями, поле ввода с @упоминаниями, /командами и эмодзи.',

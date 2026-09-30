@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import { storyDate, STORY_IMAGES, STORY_USERS, STORY_TODAY } from '@/stories/helpers'
-import type { ChatBadge, ChatMessage, ChatMessageAttachment, ChatMember, ChatCommand, ChatMessageReaction } from '../types/BaseChat.types'
+import type { ChatBadge, ChatMessage, ChatMessageAttachment, ChatMember, ChatCommand } from '../types/BaseChat.types'
 
 const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
@@ -178,69 +178,75 @@ export const SHOWCASE_MESSAGES: ChatMessage[] = [
 	{ ...PRIVATE_MESSAGES[3], replyToId: 'p1', replyToText: PRIVATE_MESSAGES[0].text, id: 's3' },
 ]
 
+const NOW = timeOf(STORY_TODAY)
+
 type SendPayload = { text: string; attachments?: ChatMessageAttachment[]; replyToId?: string }
 
-function toggleOwnReaction(reactions: ChatMessageReaction[], emoji: string): ChatMessageReaction[] {
-	const current = reactions.find(reaction => reaction.emoji === emoji)
-	if (!current) return [...reactions, { emoji, users: ['me'] }]
-	const users = current.users.includes('me') ? current.users.filter(user => user !== 'me') : [...current.users, 'me']
-	if (users.length === 0) return reactions.filter(reaction => reaction.emoji !== emoji)
-	return reactions.map(reaction => (reaction.emoji === emoji ? { ...reaction, users } : reaction))
+export const CHAT_SCRIPT = `
+type SendPayload = { text: string; attachments?: ChatMessage['attachments']; replyToId?: string }
+
+function update(id: string, patch: (message: ChatMessage) => Partial<ChatMessage>): void {
+	messages.value = messages.value.map(message => (message.id === id ? { ...message, ...patch(message) } : message))
 }
 
-function createChatHandlers(getMessages: () => ChatMessage[], setMessages: (messages: ChatMessage[]) => void) {
-	const update = (id: string, patch: (message: ChatMessage) => Partial<ChatMessage>) =>
-		setMessages(getMessages().map(message => (message.id === id ? { ...message, ...patch(message) } : message)))
-
-	return {
-		send(payload: SendPayload): void {
-			const messages = getMessages()
-			const quoted = messages.find(message => message.id === payload.replyToId)
-			setMessages([
-				...messages,
-				{
-					id: `new-${messages.length + 1}`,
-					sender: 'me',
-					text: payload.text,
-					attachments: payload.attachments,
-					status: 'sent',
-					time: timeOf(STORY_TODAY),
-					replyToId: quoted?.id,
-					replyToText: quoted?.text,
-					replyToSenderName: quoted ? (quoted.senderName ?? 'Вы') : undefined,
-				},
-			])
+function send({ text, attachments, replyToId }: SendPayload): void {
+	const quoted = messages.value.find(message => message.id === replyToId)
+	messages.value = [
+		...messages.value,
+		{
+			id: \`new-\${messages.value.length + 1}\`,
+			sender: 'me',
+			text,
+			attachments,
+			status: 'sent',
+			time: '${NOW}',
+			replyToId: quoted?.id,
+			replyToText: quoted?.text,
+			replyToSenderName: quoted ? (quoted.senderName ?? 'Вы') : undefined,
 		},
-		sendVoice({ recording, replyToId }: { recording: VoiceRecording; replyToId?: string }): void {
-			this.send({
-				text: '',
-				replyToId,
-				attachments: [
-					{
-						id: `voice-${getMessages().length + 1}`,
-						name: 'voice.webm',
-						type: 'audio',
-						url: URL.createObjectURL(recording.blob),
-						duration: recording.duration,
-						peaks: recording.peaks,
-					},
-				],
-			})
-		},
-		react({ messageId, emoji }: { messageId: string; emoji: string }): void {
-			update(messageId, message => ({ reactions: toggleOwnReaction(message.reactions ?? [], emoji) }))
-		},
-		remove(ids: string[]): void {
-			setMessages(getMessages().filter(message => !ids.includes(message.id)))
-		},
-		pin(id: string): void {
-			update(id, message => ({ isPinned: !message.isPinned }))
-		},
-		unpin(id: string): void {
-			update(id, () => ({ isPinned: false }))
-		},
-	}
+	]
 }
+
+function sendVoice({ recording, replyToId }: { recording: VoiceRecording; replyToId?: string }): void {
+	send({
+		text: '',
+		replyToId,
+		attachments: [
+			{
+				id: \`voice-\${messages.value.length + 1}\`,
+				name: 'voice.webm',
+				type: 'audio',
+				url: URL.createObjectURL(recording.blob),
+				duration: recording.duration,
+				peaks: recording.peaks,
+			},
+		],
+	})
+}
+
+function react({ messageId, emoji }: { messageId: string; emoji: string }): void {
+	update(messageId, message => {
+		const reactions = message.reactions ?? []
+		const current = reactions.find(reaction => reaction.emoji === emoji)
+		if (!current) return { reactions: [...reactions, { emoji, users: ['me'] }] }
+		const users = current.users.includes('me') ? current.users.filter(user => user !== 'me') : [...current.users, 'me']
+		if (users.length === 0) return { reactions: reactions.filter(reaction => reaction.emoji !== emoji) }
+		return { reactions: reactions.map(reaction => (reaction.emoji === emoji ? { ...reaction, users } : reaction)) }
+	})
+}
+
+function remove(ids: string[]): void {
+	messages.value = messages.value.filter(message => !ids.includes(message.id))
+}
+
+function pin(id: string): void {
+	update(id, message => ({ isPinned: !message.isPinned }))
+}
+
+function unpin(id: string): void {
+	update(id, () => ({ isPinned: false }))
+}
+`
 
 export function useStoryMessages(args: { messages: ChatMessage[] }) {
 	const messages = ref<ChatMessage[]>([...args.messages])
@@ -250,21 +256,70 @@ export function useStoryMessages(args: { messages: ChatMessage[] }) {
 			messages.value = [...value]
 		},
 	)
-	const chat = createChatHandlers(
-		() => messages.value,
-		value => {
-			messages.value = value
-		},
-	)
-	const listeners = {
-		send: chat.send,
-		'send-voice': chat.sendVoice.bind(chat),
-		'message-reaction': chat.react,
-		'delete-messages': chat.remove,
-		'pin-message': chat.pin,
-		'unpin-message': chat.unpin,
+
+	function update(id: string, patch: (message: ChatMessage) => Partial<ChatMessage>): void {
+		messages.value = messages.value.map(message => (message.id === id ? { ...message, ...patch(message) } : message))
 	}
-	return { messages, listeners }
+
+	function send({ text, attachments, replyToId }: SendPayload): void {
+		const quoted = messages.value.find(message => message.id === replyToId)
+		messages.value = [
+			...messages.value,
+			{
+				id: `new-${messages.value.length + 1}`,
+				sender: 'me',
+				text,
+				attachments,
+				status: 'sent',
+				time: NOW,
+				replyToId: quoted?.id,
+				replyToText: quoted?.text,
+				replyToSenderName: quoted ? (quoted.senderName ?? 'Вы') : undefined,
+			},
+		]
+	}
+
+	function sendVoice({ recording, replyToId }: { recording: VoiceRecording; replyToId?: string }): void {
+		send({
+			text: '',
+			replyToId,
+			attachments: [
+				{
+					id: `voice-${messages.value.length + 1}`,
+					name: 'voice.webm',
+					type: 'audio',
+					url: URL.createObjectURL(recording.blob),
+					duration: recording.duration,
+					peaks: recording.peaks,
+				},
+			],
+		})
+	}
+
+	function react({ messageId, emoji }: { messageId: string; emoji: string }): void {
+		update(messageId, message => {
+			const reactions = message.reactions ?? []
+			const current = reactions.find(reaction => reaction.emoji === emoji)
+			if (!current) return { reactions: [...reactions, { emoji, users: ['me'] }] }
+			const users = current.users.includes('me') ? current.users.filter(user => user !== 'me') : [...current.users, 'me']
+			if (users.length === 0) return { reactions: reactions.filter(reaction => reaction.emoji !== emoji) }
+			return { reactions: reactions.map(reaction => (reaction.emoji === emoji ? { ...reaction, users } : reaction)) }
+		})
+	}
+
+	function remove(ids: string[]): void {
+		messages.value = messages.value.filter(message => !ids.includes(message.id))
+	}
+
+	function pin(id: string): void {
+		update(id, message => ({ isPinned: !message.isPinned }))
+	}
+
+	function unpin(id: string): void {
+		update(id, () => ({ isPinned: false }))
+	}
+
+	return { messages, send, sendVoice, react, remove, pin, unpin }
 }
 
 export function getMessage(canvasElement: HTMLElement, id: string): HTMLElement {

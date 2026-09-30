@@ -1,9 +1,35 @@
 import { expect } from 'storybook/test'
 import type meta from '../../BaseChat.stories'
 import BaseChat from '../../../ui/BaseChat.vue'
-import { useStoryMessages } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { CHAT_SCRIPT, useStoryMessages } from '../../shared'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const LIGHT = { bg: { base: '#f0f9ff' }, text: { base: '#0c4a6e' } }
+
+const DARK = { bg: { base: '#0c1a2b' }, text: { base: '#e0f2fe' } }
+
+const template = `
+	<div class="story-medium">
+		<BaseChat
+			v-bind="args"
+			:messages="messages"
+			:color="color"
+			@send="send"
+			@send-voice="sendVoice"
+			@message-reaction="react"
+			@delete-messages="remove"
+			@pin-message="pin"
+			@unpin-message="unpin" />
+	</div>
+`
+
+const script = `
+const color =
+	document.documentElement.dataset.theme === 'dark'
+		? ${literal(DARK)}
+		: ${literal(LIGHT)}
+${CHAT_SCRIPT}`
 
 function resolveColor(value: string): string {
 	const probe = document.createElement('span')
@@ -15,17 +41,16 @@ function resolveColor(value: string): string {
 }
 
 export const CustomColor: StoryObj<typeof meta> = {
-	render: (args, { globals }) => ({
+	render: args => ({
 		components: { BaseChat },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['messages', 'color']),
-			color:
-				globals.theme === 'dark'
-					? { bg: { base: '#0c1a2b' }, text: { base: '#e0f2fe' } }
-					: { bg: { base: '#f0f9ff' }, text: { base: '#0c4a6e' } },
-			...useStoryMessages(args),
+		setup: useStorySetup(args, {
+			slots: ['messages', 'color'],
+			setup: () => ({
+				color: document.documentElement.dataset.theme === 'dark' ? DARK : LIGHT,
+				...useStoryMessages(args),
+			}),
 		}),
-		template: '<div class="story-medium"><BaseChat v-bind="props" :messages="messages" :color="color" v-on="listeners" /></div>',
+		template,
 	}),
 	parameters: {
 		docs: {
@@ -35,6 +60,14 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'«Отправить» остаётся цвета `--rise-primary`. Для тёмной темы пример подставляет тёмный брендовый фон.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseChat', 'type ChatMessage', 'type VoiceRecording'],
+				models: { messages: 'messages' },
+				types: { messages: 'ChatMessage[]' },
+				script,
+				omit: ['color'],
+			}),
 		},
 		controls: { exclude: ['color'] },
 	},

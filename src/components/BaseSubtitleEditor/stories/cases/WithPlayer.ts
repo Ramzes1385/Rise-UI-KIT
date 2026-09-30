@@ -4,9 +4,28 @@ import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../BaseSubtitleEditor.stories'
 import { BaseMediaPlayer } from '@components/BaseMediaPlayer'
+import { literal, staticStorySource } from '@/stories/helpers'
 import { serializeSubtitles } from '@utils/media/subtitleUtils'
 import BaseSubtitleEditor from '../../ui/BaseSubtitleEditor.vue'
 import { DEMO_SOURCES } from '@components/BaseMediaPlayer/stories/shared'
+
+const sources = DEMO_SOURCES
+
+const template = `
+	<div class="story-col" style="gap: 16px; max-width: 720px;">
+		<BaseMediaPlayer v-model:current-time="time" :sources="sources" :tracks="tracks" title="Демо-ролик" :has-caption-upload="false" />
+		<BaseSubtitleEditor v-model:cues="cues" v-model:current-time="time" :duration="12" file-name="demo" />
+	</div>
+`
+
+const script = `
+const sources = ${literal(sources)}
+const cues = ref<SubtitleCue[]>(${literal(DEMO_CUES)})
+const time = ref(0)
+const draft = computed(() => URL.createObjectURL(new Blob([serializeSubtitles(cues.value)], { type: 'text/vtt' })))
+watch(draft, (_, previous) => URL.revokeObjectURL(previous))
+const tracks = computed(() => [{ src: draft.value, label: 'Черновик', srclang: 'ru', isDefault: true }])
+`
 
 export const WithPlayer: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,6 +36,13 @@ export const WithPlayer: StoryObj<typeof meta> = {
 					'получает файлом из `serializeSubtitles(cues)` через `URL.createObjectURL` — правки сразу видны в кадре.',
 				].join('\n'),
 			},
+			source: staticStorySource({
+				template,
+				imports: ['BaseMediaPlayer', 'BaseSubtitleEditor'],
+				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['serializeSubtitles', 'type SubtitleCue'] },
+				vue: ['computed', 'ref', 'watch'],
+				script,
+			}),
 		},
 		controls: { disable: true },
 	},
@@ -28,14 +54,9 @@ export const WithPlayer: StoryObj<typeof meta> = {
 			const draft = computed(() => URL.createObjectURL(new Blob([serializeSubtitles(cues.value)], { type: 'text/vtt' })))
 			watch(draft, (_, previous) => URL.revokeObjectURL(previous))
 			const tracks = computed(() => [{ src: draft.value, label: 'Черновик', srclang: 'ru', isDefault: true }])
-			return { cues, time, tracks, sources: DEMO_SOURCES }
+			return { cues, time, tracks, sources }
 		},
-		template: `
-			<div class="story-col" style="gap: 16px; max-width: 720px;">
-				<BaseMediaPlayer v-model:current-time="time" :sources="sources" :tracks="tracks" title="Демо-ролик" :has-caption-upload="false" />
-				<BaseSubtitleEditor v-model:cues="cues" v-model:current-time="time" :duration="12" file-name="demo" />
-			</div>
-		`,
+		template,
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Перейти к реплике 2' }))

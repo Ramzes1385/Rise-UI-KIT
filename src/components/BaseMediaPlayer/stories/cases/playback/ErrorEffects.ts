@@ -3,8 +3,14 @@ import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseMediaPlayer.stories'
 import BaseMediaPlayer from '../../../ui/BaseMediaPlayer.vue'
-import { STORY_WAIT_TIMEOUT, useArgsWithoutSlots } from '@/stories/helpers'
 import { MEDIA_ERROR_EFFECTS } from '../../../types/overlays/MediaError.types'
+import { STORY_WAIT_TIMEOUT, storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px">
+		<BaseMediaPlayer v-for="effect in MEDIA_ERROR_EFFECTS" :key="effect" v-bind="args" :title="effect" :error-effect="effect" />
+	</div>
+`
 
 export const ErrorEffects: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,18 +23,18 @@ export const ErrorEffects: StoryObj<typeof meta> = {
 					'плеера (`accent-color`); при `prefers-reduced-motion` фон неподвижен. Свой текст — слот `error`, фон при этом остаётся.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: [],
+				importsFrom: { '@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer', 'MEDIA_ERROR_EFFECTS'] },
+			}),
 		},
 	},
 	args: { sources: MISSING_SOURCE, poster: undefined },
 	render: args => ({
 		components: { BaseMediaPlayer },
-		setup() {
-			return { props: useArgsWithoutSlots(args), effects: MEDIA_ERROR_EFFECTS }
-		},
-		template: `
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px">
-				<BaseMediaPlayer v-for="effect in effects" :key="effect" v-bind="props" :title="effect" :error-effect="effect" />
-			</div>`,
+		setup: useStorySetup(args, { data: { MEDIA_ERROR_EFFECTS } }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		await waitFor(() => expect(canvas.getAllByRole('alert')).toHaveLength(MEDIA_ERROR_EFFECTS.length), { timeout: STORY_WAIT_TIMEOUT })
