@@ -62,7 +62,6 @@ export const ruChat = {
 		MESSAGE_INPUT: 'Напишите сообщение...',
 		QUICK_REPLY: 'Быстрый ответ:',
 		REMOVE_ATTACHMENT: 'Удалить вложение',
-		INSERT_EMOJI: 'Вставить эмодзи',
 		ADMIN: 'Администратор',
 		MEMBER: 'Участник',
 		ONLINE: 'в сети',

@@ -36,4 +36,5 @@ export const Selection = cases.Selection
 export const InfoPanel = cases.InfoPanel
 export const MentionsAndCommands = cases.MentionsAndCommands
 export const Keyboard = cases.Keyboard
+export const EmojiPicker = cases.EmojiPicker
 export const VoiceMessages = cases.VoiceMessages

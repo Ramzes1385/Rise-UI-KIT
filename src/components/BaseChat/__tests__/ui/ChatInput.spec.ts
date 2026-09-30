@@ -413,13 +413,67 @@ describe('ChatInput unit', () => {
 	})
 
 	describe('эмодзи', () => {
-		it('должен открывать поповер эмодзи и вставлять выбранный эмодзи в поле', async () => {
-			render(ChatInput)
+		it('должен открывать BaseEmojiPicker и вставлять выбранный эмодзи в поле', async () => {
+			const { container } = render(ChatInput)
 
 			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
-			await fireEvent.click(screen.getByLabelText('Вставить эмодзи 😀'))
+			expect(container.querySelector('.base-chat-input__emoji-popover .base-emoji-picker')).toBeInTheDocument()
+			await fireEvent.click(await screen.findByRole('button', { name: 'широко улыбается' }))
 
 			expect(getInput().value).toBe('😀')
+			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeNull()
+		})
+
+		it('должен вставлять эмодзи в позицию курсора, заменяя выделение, и возвращать фокус в поле', async () => {
+			render(ChatInput)
+			const input = getInput()
+			await fireEvent.update(input, 'Привет мир')
+			input.setSelectionRange(7, 10)
+
+			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
+			await fireEvent.click(await screen.findByRole('button', { name: 'широко улыбается' }))
+
+			expect(input.value).toBe('Привет 😀')
+			await vi.waitFor(() => expect(input).toHaveFocus())
+			expect(input.selectionStart).toBe('Привет 😀'.length)
+		})
+
+		it('должен ставить фокус в поиск эмодзи при открытии и закрывать по Escape с возвратом фокуса', async () => {
+			const user = userEvent.setup()
+			const { container } = render(ChatInput)
+			const trigger = screen.getByLabelText('Открыть выбор эмодзи')
+
+			await user.click(trigger)
+			await vi.waitFor(() => expect(screen.getByRole('searchbox', { name: 'Поиск эмодзи' })).toHaveFocus())
+			await user.keyboard('{Escape}')
+
+			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeNull()
+			expect(trigger).toHaveFocus()
+		})
+
+		it('должен выбирать эмодзи с клавиатуры и показывать его в недавних', async () => {
+			const user = userEvent.setup()
+			render(ChatInput)
+			const trigger = screen.getByLabelText('Открыть выбор эмодзи')
+
+			await user.click(trigger)
+			await screen.findByRole('button', { name: 'широко улыбается' })
+			await vi.waitFor(() => expect(screen.getByRole('searchbox', { name: 'Поиск эмодзи' })).toHaveFocus())
+			await user.keyboard('{Enter}')
+			expect(getInput().value).toBe('😀')
+
+			await user.click(trigger)
+			expect(await screen.findByRole('group', { name: 'Недавние' })).toBeInTheDocument()
+		})
+
+		it('Escape при закрытом поповере не перехватывается', async () => {
+			render(ChatInput)
+			const trigger = screen.getByLabelText('Открыть выбор эмодзи')
+			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+
+			trigger.dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(false)
 		})
 
 		it('должен закрывать поповер эмодзи по клику снаружи', async () => {

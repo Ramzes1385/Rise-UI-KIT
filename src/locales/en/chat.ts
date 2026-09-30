@@ -62,7 +62,6 @@ export const enChat = {
 		MESSAGE_INPUT: 'Write a message...',
 		QUICK_REPLY: 'Quick reply:',
 		REMOVE_ATTACHMENT: 'Remove attachment',
-		INSERT_EMOJI: 'Insert emoji',
 		ADMIN: 'Admin',
 		MEMBER: 'Member',
 		ONLINE: 'online',

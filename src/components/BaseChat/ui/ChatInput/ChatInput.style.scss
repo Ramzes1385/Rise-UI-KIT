@@ -174,34 +174,11 @@
 		bottom: calc(100% + #{sz(8px)});
 		left: 0;
 		z-index: 20;
-		padding: sz(4px);
 		@include floating-surface;
 	}
 
-	&__emoji-list {
-		display: grid;
-		grid-template-columns: repeat(8, sz(32px));
-		gap: sz(2px);
-		max-height: sz(168px);
-		overflow-y: auto;
-		@include scrollbar-thin;
-	}
-
-	&__emoji-item {
-		@include chat-button-reset;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: sz(32px);
-		height: sz(32px);
-		border-radius: sz(var(--rise-radius-md));
-		@include text-size(lg);
-		@include transition-colors;
-		@include focus-ring(-2px);
-
-		@include hover {
-			background-color: var(--rise-bg-elevated);
-		}
+	&__emoji-picker {
+		max-width: none;
 	}
 
 	&__autocomplete {

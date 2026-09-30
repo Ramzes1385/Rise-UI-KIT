@@ -230,7 +230,17 @@ function useChatInputState(options: UseChatInputStateOptions) {
 	}
 
 	function insertEmoji(emoji: string): void {
-		text.value += emoji
+		const inputEl = getInputElement()
+		const start = inputEl?.selectionStart ?? text.value.length
+		const end = inputEl?.selectionEnd ?? start
+		const textBefore = text.value.slice(0, start) + emoji
+		text.value = textBefore + text.value.slice(end)
+
+		nextTick(() => {
+			if (!inputEl) return
+			inputEl.focus()
+			inputEl.setSelectionRange(textBefore.length, textBefore.length)
+		})
 	}
 
 	function sendMessage(messageText = text.value): void {
