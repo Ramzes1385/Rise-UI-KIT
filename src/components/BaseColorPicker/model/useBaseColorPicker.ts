@@ -1,5 +1,5 @@
-import { ref } from 'vue'
 import type { Ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useEyeDropper } from './useEyeDropper'
 import { useRecentColors } from './useRecentColors'
 import { useColorPickerArea } from './useColorPickerArea'
@@ -48,6 +48,7 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 	const isOpen = ref(false)
 	const formField = useFormField({ value: () => props.modelValue })
 	const picker = usePicker(props, emit)
+	const recent = useRecentColors(props, emit, { isOpen, picker })
 
 	return {
 		classes,
@@ -56,7 +57,10 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 		picker,
 		...useColorPickerArea(picker),
 		...useColorPickerFields(props, picker),
-		...useRecentColors(props, emit, { isOpen, picker }),
+		...recent,
+		hasSwatches: computed(
+			(): boolean => !props.isPresetsHidden || (props.palettes?.length ?? 0) > 0 || recent.recentColors.value.length > 0,
+		),
 		...useEyeDropper(picker),
 		...useSwatchSelection(picker, emit, isOpen),
 		exposed: {

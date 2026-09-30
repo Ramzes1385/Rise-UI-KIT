@@ -47,6 +47,7 @@
 					@click="pickFromScreen">
 					<BaseIcon name="eyedropper" :size-scale="sizeScale" aria-label="" />
 				</button>
+				<span class="base-color-picker__preview" :style="{ '--picker-swatch-color': swatchColor }" aria-hidden="true" />
 				<div class="base-color-picker__sliders">
 					<input
 						class="base-color-picker__hue"
@@ -109,28 +110,30 @@
 				</div>
 			</div>
 
-			<ColorSwatches
-				v-if="!isPresetsHidden"
-				:aria-label="UI_COLOR_PICKER.PRESETS"
-				:colors="presets"
-				:is-selected="isSwatchSelected"
-				:swatch-class="classes.preset"
-				@select="handleSwatchSelect" />
-			<ColorSwatches
-				v-for="palette in palettes"
-				:key="palette.label"
-				:label="palette.label"
-				:colors="palette.colors"
-				:is-selected="isSwatchSelected"
-				:swatch-class="classes.preset"
-				@select="handleSwatchSelect" />
-			<ColorSwatches
-				v-if="recentColors.length > 0"
-				:label="UI_COLOR_PICKER.RECENT"
-				:colors="recentColors"
-				:is-selected="isSwatchSelected"
-				:swatch-class="classes.preset"
-				@select="handleSwatchSelect" />
+			<div v-if="hasSwatches" class="base-color-picker__library">
+				<ColorSwatches
+					v-if="!isPresetsHidden"
+					:aria-label="UI_COLOR_PICKER.PRESETS"
+					:colors="presets"
+					:is-selected="isSwatchSelected"
+					:swatch-class="classes.preset"
+					@select="handleSwatchSelect" />
+				<ColorSwatches
+					v-for="palette in palettes"
+					:key="palette.label"
+					:label="palette.label"
+					:colors="palette.colors"
+					:is-selected="isSwatchSelected"
+					:swatch-class="classes.preset"
+					@select="handleSwatchSelect" />
+				<ColorSwatches
+					v-if="recentColors.length > 0"
+					:label="UI_COLOR_PICKER.RECENT"
+					:colors="recentColors"
+					:is-selected="isSwatchSelected"
+					:swatch-class="classes.preset"
+					@select="handleSwatchSelect" />
+			</div>
 
 			<button v-if="isResettable" type="button" class="base-color-picker__reset" :class="classes.reset" @click="handleReset">
 				{{ resetLabel ?? UI_TEXT.NO_COLOR }}
@@ -195,6 +198,7 @@ const {
 	handleHueInput,
 	handleAlphaInput,
 	recentColors,
+	hasSwatches,
 	isEyeDropperSupported,
 	pickFromScreen,
 	isSwatchSelected,
