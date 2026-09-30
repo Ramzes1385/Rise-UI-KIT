@@ -72,31 +72,32 @@ afterEach(() => {
 
 describe('useDropdownPosition', () => {
 	it.each([
-		['bottom-start', 344, 400],
-		['bottom-end', 344, 500],
-		['bottom', 344, 450],
-		['top-start', 246, 400],
-		['top-end', 246, 500],
-		['top', 246, 450],
-		['left-start', 300, 296],
-		['left-end', 290, 296],
-		['left', 295, 296],
-		['right-start', 300, 604],
-		['right-end', 290, 604],
-		['right', 295, 604],
-	] as const)('%s: панель у триггера', (position, top, left) => {
+		{ position: 'bottom-start', top: 344, left: 400, transformOrigin: 'top left' },
+		{ position: 'bottom-end', top: 344, left: 500, transformOrigin: 'top right' },
+		{ position: 'bottom', top: 344, left: 450, transformOrigin: 'top center' },
+		{ position: 'top-start', top: 246, left: 400, transformOrigin: 'bottom left' },
+		{ position: 'top-end', top: 246, left: 500, transformOrigin: 'bottom right' },
+		{ position: 'top', top: 246, left: 450, transformOrigin: 'bottom center' },
+		{ position: 'left-start', top: 300, left: 296, transformOrigin: 'top right' },
+		{ position: 'left-end', top: 290, left: 296, transformOrigin: 'bottom right' },
+		{ position: 'left', top: 295, left: 296, transformOrigin: 'center right' },
+		{ position: 'right-start', top: 300, left: 604, transformOrigin: 'top left' },
+		{ position: 'right-end', top: 290, left: 604, transformOrigin: 'bottom left' },
+		{ position: 'right', top: 295, left: 604, transformOrigin: 'center left' },
+	] as const)('$position: панель у триггера и растёт от него', ({ position, top, left, transformOrigin }) => {
 		const { api } = setup({ position })
 
 		expect(api.coords.value).toEqual({ top, left })
 		expect(api.placement.value).toBe(position)
-		expect(api.panelStyle.value).toEqual({ maxHeight: '320px', top: `${top}px`, left: `${left}px` })
+		expect(api.panelStyle.value).toEqual({ maxHeight: '320px', top: `${top}px`, left: `${left}px`, transformOrigin })
 	})
 
-	it('снизу нет места — панель переворачивается наверх', () => {
+	it('снизу нет места — панель переворачивается наверх и растёт снизу вверх', () => {
 		const { api } = setup({ position: 'bottom-start', trigger: rect(700, 400) })
 
 		expect(api.placement.value).toBe('top-start')
 		expect(api.coords.value.top).toBe(700 - GAP - 50)
+		expect(api.panelStyle.value.transformOrigin).toBe('bottom left')
 	})
 
 	it('справа нет места — панель переворачивается влево', () => {

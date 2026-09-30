@@ -1,8 +1,8 @@
 import type { ComputedRef } from 'vue'
 import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
-import { useSelect } from '@composables/form/useSelect'
 import { useFormField } from '@composables/form/useFormField'
+import { useSelect, useSelectKeys } from '@composables/form/useSelect'
 import type { BaseSelectEmits, SelectProps } from '../types/BaseSelect.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
@@ -35,10 +35,6 @@ const SELECT_ELEMENTS = [
 	'noResults',
 ]
 
-function isPrintableKey(event: KeyboardEvent): boolean {
-	return event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey
-}
-
 function useSelectField(props: SelectProps) {
 	const baseId = useId()
 	const labelId = `${baseId}-label`
@@ -65,63 +61,15 @@ function useSelectField(props: SelectProps) {
 	}
 }
 
-function createTriggerKeys(select: ReturnType<typeof useSelect>, closeDropdown: () => void): Map<string, (event: KeyboardEvent) => void> {
-	const toggleOrSelect = (event: KeyboardEvent): void => {
-		event.preventDefault()
-		if (select.isOpen.value && select.activeIndex.value >= 0) select.selectActive()
-		else select.toggleDropdown()
-	}
-	const moveOrOpen = (event: KeyboardEvent): void => {
-		event.preventDefault()
-		if (select.isOpen.value) select.moveActive(event.key === 'ArrowDown' ? 1 : -1)
-		else select.openDropdown()
-	}
-	const openAtEdge = (event: KeyboardEvent): void => {
-		event.preventDefault()
-		select.openDropdown()
-		select.setActiveEdge(event.key === 'Home' ? 'first' : 'last')
-	}
-	return new Map<string, (event: KeyboardEvent) => void>([
-		['Enter', toggleOrSelect],
-		[' ', toggleOrSelect],
-		['ArrowDown', moveOrOpen],
-		['ArrowUp', moveOrOpen],
-		['Home', openAtEdge],
-		['End', openAtEdge],
-		[
-			'Tab',
-			() => {
-				if (select.isOpen.value) closeDropdown()
-			},
-		],
-	])
-}
-
-function useSelectKeys(props: SelectProps, select: ReturnType<typeof useSelect>, isDisabled: ComputedRef<boolean>) {
-	const closeDropdown = (): void => {
-		select.isOpen.value = false
-		select.handleClose()
-	}
-	const triggerKeys = createTriggerKeys(select, closeDropdown)
+function useSelectKeyboard(props: SelectProps, select: ReturnType<typeof useSelect>, isDisabled: ComputedRef<boolean>) {
+	const { closeDropdown, handleTriggerKeydown } = useSelectKeys({
+		select,
+		isDisabled: () => isDisabled.value,
+		isSearchable: () => Boolean(props.isSearchable),
+	})
 
 	return {
-		handleTriggerKeydown(event: KeyboardEvent): void {
-			if (isDisabled.value) return
-			if (event.key === ' ' && select.isTypingAhead()) {
-				event.preventDefault()
-				select.typeaheadActive(' ')
-				return
-			}
-			const action = triggerKeys.get(event.key)
-			if (action) {
-				action(event)
-				return
-			}
-			if (props.isSearchable || !isPrintableKey(event)) return
-			event.preventDefault()
-			select.openDropdown()
-			select.typeaheadActive(event.key)
-		},
+		handleTriggerKeydown,
 		handleSearchKeydown(event: KeyboardEvent): void {
 			if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
 				event.preventDefault()
@@ -153,7 +101,7 @@ export function useBaseSelect(props: SelectProps, emit: BaseSelectEmits) {
 		focusTrigger(): void {
 			if (!field.isControlDisabled.value) selectRef.value?.focus()
 		},
-		...useSelectKeys(props, select, field.isControlDisabled),
+		...useSelectKeyboard(props, select, field.isControlDisabled),
 		exposed: {
 			rootRef: selectRef,
 			selectRef,

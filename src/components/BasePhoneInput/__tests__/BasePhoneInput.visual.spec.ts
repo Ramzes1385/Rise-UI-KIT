@@ -2,6 +2,7 @@ import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
 const STORIES = [
+	['countries', 440],
 	['with-error', 160],
 	['disabled', 140],
 	['variants', 360],

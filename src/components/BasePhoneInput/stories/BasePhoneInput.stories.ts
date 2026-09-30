@@ -16,6 +16,7 @@ const meta = {
 export default meta
 
 export const Default = cases.Default
+export const Countries = cases.Countries
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor

@@ -9,6 +9,22 @@ export const VIEWPORT_MARGIN = 8
 
 const OPPOSITE: Record<Side, Side> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
 
+/** Точка, из которой панель вырастает при появлении: угол или край у триггера */
+const TRANSFORM_ORIGIN: Record<DropdownPosition, string> = {
+	'bottom-start': 'top left',
+	'bottom-end': 'top right',
+	bottom: 'top center',
+	'top-start': 'bottom left',
+	'top-end': 'bottom right',
+	top: 'bottom center',
+	'left-start': 'top right',
+	'left-end': 'bottom right',
+	left: 'center right',
+	'right-start': 'top left',
+	'right-end': 'bottom left',
+	right: 'center left',
+}
+
 function parsePosition(position: DropdownPosition): { side: Side; align: Align } {
 	const [side, align] = position.split('-') as [Side, 'start' | 'end' | undefined]
 	return { side, align: align ?? 'center' }
@@ -145,12 +161,16 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		if (coords.value.top !== next.top || coords.value.left !== next.left) coords.value = next
 	}
 
-	/** Стили панели: координаты левого верхнего угла, предел высоты и ширина триггера при matchWidth */
+	/**
+	 * Стили панели: координаты левого верхнего угла, предел высоты, ширина триггера при matchWidth и точка роста
+	 * анимации появления — сторона триггера, с которой панель показана
+	 */
 	const panelStyle = computed((): Record<string, string> => {
 		const style: Record<string, string> = {
 			maxHeight: maxHeight(),
 			top: `${coords.value.top}px`,
 			left: `${coords.value.left}px`,
+			transformOrigin: TRANSFORM_ORIGIN[placement.value],
 		}
 		if (matchWidth()) style.width = `${triggerWidth.value}px`
 		return style

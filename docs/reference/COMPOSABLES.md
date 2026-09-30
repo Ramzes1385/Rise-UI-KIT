@@ -207,6 +207,20 @@ useHotkeys({ 'mod+k': openPalette, 'mod+shift+n': createTask, '?': showHelp }, {
 
 ---
 
+## useSelect и useSelectKeys
+
+Логика своего списка выбора по образцу APG Select-Only Combobox — на ней BaseSelect и выбор страны в BasePhoneInput. `useSelect` хранит состояние: открыт ли список, активную опцию (для `aria-activedescendant`), выбор, поиск по буквам; `useSelectKeys` — клавиатура элемента `role="combobox"`: Enter и пробел открывают список или выбирают активную опцию, стрелки открывают и двигают, Home/End — первая и последняя опция, Tab закрывает, буквы ищут опцию по началу подписи.
+
+```ts
+import { useSelect, useSelectKeys } from '@ramzes1385/rise-ui-kit/composables'
+
+const select = useSelect({ props, emit, onBlur })
+const { handleTriggerKeydown } = useSelectKeys({ select, isDisabled: () => Boolean(props.isDisabled) })
+// <div role="combobox" :aria-expanded="select.isOpen.value" @keydown="handleTriggerKeydown">…</div>
+```
+
+---
+
 ## Список composables
 
 Основные composables (полный перечень экспортов — `src/composables/index.ts`):
@@ -238,6 +252,8 @@ usePadding
 usePasswordVisibility
 usePopup
 useScrollLock
+useSelect
+useSelectKeys
 useSizeScale
 useSlider
 useSwipe

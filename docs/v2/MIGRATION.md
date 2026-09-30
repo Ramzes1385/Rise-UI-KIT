@@ -92,7 +92,7 @@
 - `BaseLayout`, `BaseHeader`, `BaseFooter`, `BaseContainer` — каркас страницы со ссылкой «Перейти к содержимому»; `BaseSplitter` (APG Window Splitter), `BaseScrollArea`, `BaseDrawer`, `BaseBackTop`, `BaseInfiniteScroll` — каркас и прокрутка (порция 2.3).
 - `BaseVirtualList` — список на тысячи строк (в DOM только видимые) и composable `useVirtualList`; виртуальная прокрутка в `BaseTable` (`isVirtual`, `rowHeight`) и `BaseTree` (`isVirtual`, `height`, `itemSize`) — порция 2.4.
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
-- `BasePhoneInput` — телефон: выбор страны и маска номера, `v-model` — `+79161234567`, вставка «+375 29…» или «8 916…» сама выбирает страну; `BaseMoneyInput` — сумма с разрядами при вводе и знаком валюты по `currency`, округление и границы после ухода из поля (порция 4.17а).
+- `BasePhoneInput` — телефон: выбор страны в списке с флагами (порция Н.5) и маска номера, `v-model` — `+79161234567`, вставка «+375 29…» или «8 916…» сама выбирает страну; `BaseMoneyInput` — сумма с разрядами при вводе и знаком валюты по `currency`, округление и границы после ухода из поля (порция 4.17а).
 - `BaseRequisiteInput` — реквизиты с проверкой контрольных чисел: ИНН, КПП, ОГРН, ОГРНИП, БИК, расчётный и корреспондентский счёт (вместе с БИК), СНИЛС; те же проверки — функциями `isValidInn` и др. `BaseAddressInput` — адрес с подсказками из подключаемого источника, готовый адаптер DaData (порция 4.17б).
 
 **Медиа**
@@ -630,6 +630,14 @@
 - Утилита `formatRelativeTime(date, { now, locale })` — «5 минут назад», «вчера», дальше недели — дата.
 - Иконка `bell` в спрайте.
 - Строки словаря (ru, en): разделы `notificationCenter` и `commentThread`, формы чисел `NOTIFICATIONS_UNREAD` и `REPLIES`.
+
+## Телефон: список стран с флагами (порция Н.5)
+
+- `BasePhoneInput`: страна выбирается в списке с флагами вместо системного `<select>`. Слева в поле — флаг и код («+7»); элемент «Код страны» — `role="combobox"`, список — `role="listbox"` в панели BaseDropdown, клавиатура — как у BaseSelect (стрелки, Enter, пробел, Home/End, буквы — поиск по названию, Escape). Тесты приложения, которые выбирали страну через `<select>` (`selectOptions`, `value` у «Код страны»), нужно переписать: открыть список кликом или стрелкой и выбрать `option` («Беларусь +375»); текущая страна — в тексте элемента («Россия +7»). `customClass.country` теперь стоит на обёртке списка.
+- Флаги нарисованы в SVG для всех 13 стран `PHONE_COUNTRIES`; у своей страны без флага в `countries` — нейтральная плашка с кодом («DE»).
+- Выпадающие панели (BaseDropdown и всё, что на нём: BaseSelect, BaseDropdownMenu, BaseAutocomplete и другие) при появлении растут от триггера: `transform-origin` — сторона, с которой показана панель, с учётом переворота. Положение и вид открытой панели не меняются.
+- Новый composable `useSelectKeys` — клавиатура элемента, который открывает список, по образцу APG Select-Only Combobox; на нём теперь и BaseSelect.
+- Для разработчиков кита: «Show code» историй собирается из шаблона истории и Controls — `storySource`, `useStorySetup`, `staticStorySource` в `src/stories/helpers` (STORIES_GUIDE, раздел 8).
 
 ## Структура исходников
 

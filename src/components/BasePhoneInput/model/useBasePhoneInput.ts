@@ -2,8 +2,8 @@ import { computed, shallowRef, watch } from 'vue'
 import { PHONE_COUNTRIES } from './phone/phoneCountries'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
+import { maskPlaceholder, maskSize, onlyDigits, parsePhone, pastedPhone } from './phone/phoneNumber'
 import type { BasePhoneInputEmits, BasePhoneInputProps, PhoneCountry } from '../types/BasePhoneInput.types'
-import { maskPlaceholder, maskSize, onlyDigits, parsePhone, pastedPhone, regionName } from './phone/phoneNumber'
 
 function usePhoneState(props: BasePhoneInputProps) {
 	const countries = computed(() => props.countries ?? PHONE_COUNTRIES)
@@ -40,13 +40,10 @@ export function useBasePhoneInput(props: BasePhoneInputProps, emit: BasePhoneInp
 		country,
 		digits,
 		placeholderText: computed(() => props.placeholder ?? maskPlaceholder(country.value.mask)),
-		countryOptions: computed(() =>
-			countries.value.map(item => ({ code: item.code, label: `${regionName(item.code)} +${item.dialCode}` })),
-		),
+		countries,
 		handleInput: (masked: string): void => commit(onlyDigits(masked)),
-		handleCountry(event: Event): void {
-			const value = (event.target as HTMLSelectElement).value
-			selectCountry(countries.value.find(item => item.code === value) as PhoneCountry)
+		handleCountry(code: string): void {
+			selectCountry(countries.value.find(item => item.code === code) as PhoneCountry)
 			commit(digits.value.slice(0, maskSize(country.value.mask)))
 		},
 		handlePaste(event: ClipboardEvent): void {

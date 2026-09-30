@@ -16,3 +16,24 @@ export interface PlaceholderOptions {
 }
 
 export type UserEvent = Pick<typeof defaultUserEvent, 'tab'>
+
+/** Код для «Show code» истории со своим шаблоном */
+export interface StorySourceOptions {
+	/** Шаблон истории — тот же, что в render. `v-bind="args"` в коде раскрывается в пропсы из Controls */
+	template: string
+	/** Что импортировать из пакета кита: компоненты и константы шаблона */
+	imports: readonly string[]
+	/** Переменные `v-model` шаблона: имя → аргумент Storybook. В коде — `const phone = ref(значение из Controls)` */
+	models?: Readonly<Record<string, string>>
+	/** Строки `<script setup>` после импортов: данные и обработчики, которые использует шаблон */
+	script?: string
+	/** Аргументы, которые шаблон задаёт сам и которых нет в `v-bind="args"` */
+	omit?: readonly string[]
+}
+
+/** Часть контекста истории, из которой собирается код */
+export interface StorySourceContext {
+	args: Record<string, unknown>
+	argTypes?: Record<string, { table?: { category?: string } } | undefined>
+	component?: unknown
+}

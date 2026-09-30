@@ -100,17 +100,16 @@ export const Variants: StoryObj<typeof meta> = {
 ## 4. Песочница `Default` и v-model
 
 - `Default` — первая story. Все props меняются в Controls. Она работает без кастомного `render`, если у компонента нет v-model.
-- Компонент с v-model получает `render` на уровне `meta`: значение живёт в args и синхронизируется хуком `useModelArg()`. Ввод пользователя виден в Controls, изменение в Controls — в компоненте:
+- Компонент с v-model получает свой `render`: значение живёт в args и синхронизируется с Controls через `useStorySetup` — ввод пользователя виден в Controls, изменение в Controls — в компоненте. Шаблон и `models` общие с `storySource`, поэтому «Show code» показывает тот же код с `v-model` и текущим значением:
 
   ```ts
-  render: args => {
-    const onUpdate = useModelArg()           // хук Storybook: вызывается в теле render
-    return {
-      components: { BaseX },
-      setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-      template: '<BaseX v-bind="props" @update:model-value="onUpdate" />',
-    }
-  },
+  const MODELS = { phone: 'modelValue' } as const
+  const template = `<BaseX v-bind="args" v-model="phone" />`
+
+  export const Default: StoryObj<typeof meta> = {
+    parameters: { docs: { source: storySource({ template, imports: ['BaseX'], models: MODELS }) } },
+    render: args => ({ components: { BaseX }, setup: useStorySetup(args, { models: MODELS }), template }),
+  }
   ```
 
 - В кастомном `render` args передаются через `useArgsWithoutSlots(args)`. Иначе текст слота из args (`default: '…'`) попадёт в HTML-атрибут корня.
@@ -180,7 +179,11 @@ Stories, которые нужны только как проверка (кла�
 - Inline `style` — только для размеров, которые важны примеру (ширина контейнера, чтобы показать обрезку).
 - Тёмная тема — переключатель «Тема» на панели инструментов. Отдельные stories `DarkTheme` не нужны. Visual-тесты открывают story с `&globals=theme:dark`.
 - Цвета в примерах — только токены `var(--rise-…)`. Исключение — story `CustomColor`: она демонстрирует проп `color`, поэтому в ней допустимы произвольные HEX брендовых цветов.
-- Для витрин с кастомным `render` задайте `parameters.docs.source.code` — короткий код использования, который можно скопировать.
+- **«Show code» — точный код превью.** Скопированный код должен рисовать ровно то, что показано в превью: те же компоненты, пропсы, разметка и данные. У истории со своим `render` шаблон — константа, общая для `render` и `parameters.docs.source`:
+  - `storySource({ template, imports, models, script, omit })` собирает файл Vue: импорты из пакета, переменные `v-model`, константы и строки `script`; `v-bind="args"` раскрывается в пропсы из Controls без значений по умолчанию, слотов и обработчиков. Код меняется вместе с Controls;
+  - `useStorySetup(args, { models, data })` — `setup` для того же шаблона: `args` для `v-bind`, переменные `v-model`, связанные с Controls, и данные шаблона;
+  - данные шаблона — константы кита (`X_VARIANTS`) в `imports` или своё значение, выведенное в `script` через `literal(...)` из тех же данных, что в `setup`, — чтобы код не расходился с примером;
+  - история без Controls — `staticStorySource(...)`. Длинные data URI в коде сокращаются: `'data:image/svg+xml,…'`.
 
 ## 9. Visual- и e2e-тесты
 
@@ -213,5 +216,6 @@ for (const theme of VISUAL_THEMES) {
 
 - `npx eslint --max-warnings 0 <файлы>` и `npm run typecheck` — без ошибок.
 - `node scripts/check-a11y-coverage.mjs` и `node scripts/check-stories-coverage.mjs` — зелёные.
+- «Show code» каждой story показывает точный код её превью (раздел 8).
 - Каждая story открывается без ошибок в консоли, play-функции проходят в светлой и тёмной теме, axe без нарушений. Проверка — `npm run test:stories` по собранному Storybook (`npm run build-storybook`, затем `node scripts/serve-storybook-static.mjs`); для одного компонента — `npm run test:stories -- --filter=basebadge`. В CI она выполняется для всех stories в отдельном job.
 - В stories нет внешних URL, `new Date()` без аргументов, `Math.random()`, `try/catch`, inline-цветов.
