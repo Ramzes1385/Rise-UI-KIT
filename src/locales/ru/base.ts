@@ -205,5 +205,6 @@ export const ruBase = {
 		SIDEBAR_UNSAFE_URL: 'BaseSideBar: пункт «{label}» с небезопасным адресом показан кнопкой: {url}',
 		DOWNLOAD_UNSAFE_URL: 'Скачивание по небезопасному URL заблокировано: {url}',
 		NAVIGATION_UNSAFE_URL: 'Переход по небезопасному URL заблокирован: {url}',
+		SEO_MISSING_FIELDS: '{component}: в SEO-разметке {type} нет обязательных полей: {fields}. Передайте их в seo.data',
 	},
 }

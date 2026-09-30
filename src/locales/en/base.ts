@@ -185,5 +185,6 @@ export const enBase = {
 		SIDEBAR_UNSAFE_URL: 'BaseSideBar: the item "{label}" with an unsafe URL is shown as a button: {url}',
 		DOWNLOAD_UNSAFE_URL: 'Download from an unsafe URL was blocked: {url}',
 		NAVIGATION_UNSAFE_URL: 'Navigation to an unsafe URL was blocked: {url}',
+		SEO_MISSING_FIELDS: '{component}: {type} SEO markup lacks required fields: {fields}. Pass them in seo.data',
 	},
 }

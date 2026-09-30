@@ -1011,3 +1011,15 @@
 - Новые строки словаря `aria.PROGRESS_VALUE` и `aria.PROGRESS_INDETERMINATE`.
 
 **Что сделать.** Свой словарь через `defineLocale` — добавить две строки. Если обработчик `complete` рассчитывал, что при монтировании на 100% событие не придёт, — учесть одно событие при монтировании. Тесты, которые искали текст видимой подписи лоадера по доступности, — искать по `role="status"` с именем.
+
+## Эпик seo — SEO-разметка schema.org (Р.34–Р.37)
+
+### Р.34 — общий механизм JSON-LD
+
+**Что изменилось.**
+- Новый composable `useStructuredData` и типы `SeoProp`, `SeoOptions`, `SeoComponentProps`, `StructuredDataBuilder`, `StructuredDataContext` (docs/reference/COMPOSABLES.md). Компоненты с разметкой получают проп `seo` в порциях Р.35–Р.37.
+- Проп `seo`: нет пропа или `false` — разметки нет (по умолчанию); `true` — JSON-LD из пропсов компонента; `{ data, baseUrl }` — плюс свои поля schema.org поверх собранных (вложенные объекты сливаются, списки и значения заменяются, `null` убирает поле) и адрес сайта для относительных ссылок. Разметка — `<script type="application/ld+json">` внутри корня компонента; microdata кит не выводит (вопрос владельцу — `.orchestration/inbox`).
+- Новые утилиты `serializeJsonLd`, `mergeStructuredData`, `findMissingFields`, `resolveStructuredUrl`, `isDevelopmentBuild` и константа `STRUCTURED_DATA_REQUIRED`, типы `StructuredData`, `StructuredDataObject`, `StructuredDataType`, `StructuredDataValue` (docs/reference/UTILS.md, «structuredDataUtils»).
+- В разработке нехватка обязательных полей — предупреждение `[rise-ui-kit]` (строка словаря `warnings.SEO_MISSING_FIELDS`), в production (`process.env.NODE_ENV === 'production'`) — тишина.
+
+**Что сделать.** Для своего словаря через `defineLocale` — добавить `warnings.SEO_MISSING_FIELDS` (параметры `{component}`, `{type}`, `{fields}`). Разметка по умолчанию выключена — без `seo` в DOM ничего не меняется.

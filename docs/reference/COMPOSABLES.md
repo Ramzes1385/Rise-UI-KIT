@@ -238,6 +238,25 @@ const { suggestions, isLoading, search, cancel } = useRemoteSuggestions({
 
 ---
 
+## useStructuredData
+
+SEO-разметка schema.org у компонента: проп `seo` (`SeoComponentProps`) → строка JSON-LD для `<script type="application/ld+json">`.
+
+- `useStructuredData(component, getSeo, build)`: `component` — имя в предупреждении, `getSeo` — значение пропа `seo`, `build({ url })` — поля schema.org из пропсов (`null` — описывать нечего). Возвращает `{ structuredData }` — пустая строка, когда разметка выключена.
+- `seo`: `false` или нет пропа — разметки нет (по умолчанию); `true` — поля из пропсов; `{ data, baseUrl }` — ещё и свои поля поверх собранных (кастомное SEO) и адрес сайта для относительных ссылок. Слияние — `mergeStructuredData` (docs/reference/UTILS.md).
+- В разработке (`process.env.NODE_ENV !== 'production'`) нехватка обязательных полей Google и schema.org — одно предупреждение `[rise-ui-kit]` на набор полей, без исключений.
+- Разметка одинакова на сервере и в браузере: SSR выводит тег сразу, гидратация его не меняет.
+
+```vue
+<template>
+	<section>
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
+	</section>
+</template>
+```
+
+---
+
 ## Список composables
 
 Основные composables (полный перечень экспортов — `src/composables/index.ts`):
@@ -275,6 +294,7 @@ useSelect
 useSelectKeys
 useSizeScale
 useSlider
+useStructuredData
 useSwipe
 useTableData
 useTeleportTarget

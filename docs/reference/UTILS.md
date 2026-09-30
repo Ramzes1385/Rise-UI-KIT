@@ -126,6 +126,24 @@ await loadScript('https://api-maps.yandex.ru/v3/?apikey=KEY&lang=ru_RU', { attri
 
 ---
 
+## structuredDataUtils
+
+Разметка schema.org в JSON-LD — основа проп `seo` у компонентов (composable `useStructuredData`).
+
+- `serializeJsonLd(data)` — строка для `<script type="application/ld+json">`: `@context: https://schema.org` первым полем, `<`, `>`, `&`, U+2028 и U+2029 — юникод-эскейпами. Строка `</script>` в данных не закроет тег, JSON остаётся тем же.
+- `mergeStructuredData(base, overrides)` — свои поля поверх собранных: вложенные объекты сливаются, списки и значения заменяются, `null` убирает поле, `undefined` оставляет собранное.
+- `findMissingFields(data)` — обязательные поля, которых нет, по `STRUCTURED_DATA_REQUIRED` для `@type` (требования Google Rich Results и schema.org; путь через точку — вложенный объект, `[]` — каждый элемент списка, `|` — хватит одного). Незнакомый тип не проверяется.
+- `resolveStructuredUrl(value, baseUrl)` — абсолютный адрес: поисковики ждут в разметке полные URL.
+- `isDevelopmentBuild()` — `process.env.NODE_ENV !== 'production'`; значение подставляет сборщик приложения, без сборщика — `false`.
+
+```ts
+import { serializeJsonLd } from '@ramzes1385/rise-ui-kit/utils'
+
+const json = serializeJsonLd({ '@type': 'Organization', name: 'Rise', url: 'https://example.com' })
+```
+
+---
+
 ## domUtils
 
 `getFixedOrigin(container)` — где на экране начало координат для `position: fixed` внутри `container`. Обычно это окно (`{ x: 0, y: 0 }`), но предок с `transform`, `filter`, `contain` или `container-type` становится точкой отсчёта: так Storybook оборачивает истории на странице Docs, так же ведут себя анимированные окна. Выпадающие панели, подсказки и контекстное меню кита уже учитывают это; функция нужна своим fixed-элементам.
@@ -163,6 +181,7 @@ rangeUtils
 ratingUtils
 schemaUtils
 scriptUtils
+structuredDataUtils
 subtitleUtils
 tableUtils
 timeUtils
