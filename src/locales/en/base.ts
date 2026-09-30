@@ -60,6 +60,10 @@ export const enBase = {
 		DARK_THEME: 'Dark theme',
 		OPENS_IN_NEW_TAB: '(opens in a new tab)',
 		PROGRESS: 'Progress',
+		/** aria-valuetext BaseProgress */
+		PROGRESS_VALUE: '{percent}% complete',
+		/** aria-valuetext BaseProgress в неопределённом режиме */
+		PROGRESS_INDETERMINATE: 'In progress',
 		PREV_YEAR: 'Previous year',
 		PREV_MONTH: 'Previous month',
 		NEXT_MONTH: 'Next month',

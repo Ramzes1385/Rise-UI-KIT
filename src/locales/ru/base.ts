@@ -64,6 +64,10 @@ export const ruBase = {
 		DARK_THEME: 'Тёмная тема',
 		OPENS_IN_NEW_TAB: '(откроется в новой вкладке)',
 		PROGRESS: 'Прогресс',
+		/** aria-valuetext BaseProgress */
+		PROGRESS_VALUE: 'Выполнено {percent}%',
+		/** aria-valuetext BaseProgress в неопределённом режиме */
+		PROGRESS_INDETERMINATE: 'Выполняется',
 		PREV_YEAR: 'Предыдущий год',
 		PREV_MONTH: 'Предыдущий месяц',
 		NEXT_MONTH: 'Следующий месяц',

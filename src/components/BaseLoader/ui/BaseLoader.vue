@@ -1,5 +1,6 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-loader"
 		:class="[`base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
@@ -31,7 +32,8 @@
 			</template>
 		</div>
 
-		<span v-if="hasLabel" class="base-loader__label" :class="classes.label">{{ resolvedLabel }}</span>
+		<span v-if="hasLabel" class="base-loader__label" :class="classes.label" aria-hidden="true">{{ resolvedLabel }}</span>
+		<span class="base-loader__announce">{{ isAnnounced ? accessibleName : '' }}</span>
 	</div>
 </template>
 
@@ -52,5 +54,5 @@ const props = withDefaults(
 	}),
 )
 
-const { classes, sizeScaleStyle, customColorStyle, resolvedLabel, accessibleName } = useBaseLoader(props)
+const { classes, sizeScaleStyle, customColorStyle, resolvedLabel, accessibleName, isAnnounced, rootRef } = useBaseLoader(props)
 </script>

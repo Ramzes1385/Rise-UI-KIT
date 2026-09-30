@@ -53,7 +53,10 @@ export interface BaseProgressProps extends BaseComponentProps<
 }
 
 export interface BaseProgressEmits {
-	/** Прогресс достиг 100%. */
+	/**
+	 * Значение достигло `max` (не по округлению процента). Срабатывает при каждом переходе на максимум и один раз при монтировании,
+	 * если значение уже на максимуме; в неопределённом режиме не срабатывает.
+	 */
 	(event: 'complete'): void
 }
 

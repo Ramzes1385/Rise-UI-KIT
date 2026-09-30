@@ -19,6 +19,10 @@
 		color: var(--rise-text-muted);
 	}
 
+	&__announce {
+		@include visually-hidden;
+	}
+
 	&__spinner {
 		width: 100%;
 		height: 100%;

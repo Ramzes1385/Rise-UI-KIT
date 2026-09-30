@@ -12,6 +12,7 @@
 		role="progressbar"
 		:aria-label="ariaLabel || UI_ARIA.PROGRESS"
 		:aria-valuenow="isIndeterminate ? undefined : percent"
+		:aria-valuetext="valueText"
 		aria-valuemin="0"
 		aria-valuemax="100">
 		<template v-if="shape === 'line'">
@@ -26,7 +27,7 @@
 		</template>
 
 		<template v-if="shape === 'circle'">
-			<svg class="base-progress__svg" :class="classes.svg" viewBox="0 0 120 120">
+			<svg class="base-progress__svg" :class="classes.svg" :viewBox="circleViewBox">
 				<defs v-if="gradientStops.length">
 					<linearGradient :id="gradientId" x1="0" y1="1" x2="1" y2="0">
 						<stop v-for="stop in gradientStops" :key="stop.offset" :offset="stop.offset" :style="{ stopColor: stop.color }" />
@@ -35,19 +36,19 @@
 				<circle
 					class="base-progress__track-circle"
 					:class="classes.trackCircle"
-					cx="60"
-					cy="60"
+					:cx="circleCenter"
+					:cy="circleCenter"
 					:r="circleRadius"
 					fill="none"
-					stroke-width="8" />
+					:stroke-width="circleStroke" />
 				<circle
 					class="base-progress__fill-circle"
 					:class="classes.fillCircle"
-					cx="60"
-					cy="60"
+					:cx="circleCenter"
+					:cy="circleCenter"
 					:r="circleRadius"
 					fill="none"
-					stroke-width="8"
+					:stroke-width="circleStroke"
 					:stroke-dasharray="circumference"
 					:stroke-dashoffset="circleOffset"
 					:style="circleStrokeStyle"
@@ -89,12 +90,16 @@ const {
 	sizeScaleStyle,
 	customColorStyle,
 	percent,
+	valueText,
 	isLabelVisible,
 	fillStyle,
 	fillClass,
 	gradientId,
 	gradientStops,
 	circleStrokeStyle,
+	circleViewBox,
+	circleCenter,
+	circleStroke,
 	circleRadius,
 	circumference,
 	circleOffset,
