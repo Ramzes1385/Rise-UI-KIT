@@ -6,7 +6,7 @@
 [![Vue 3.5+](https://img.shields.io/badge/Vue-3.5%2B-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-`@ramzes1385/rise-ui-kit` — библиотека компонентов для Vue 3: 112 компонентов, composables, utils, иконки и дизайн-токены со светлой и тёмной темой.
+`@ramzes1385/rise-ui-kit` — библиотека компонентов для Vue 3: 114 компонентов, composables, utils, иконки и дизайн-токены со светлой и тёмной темой.
 
 **[Открыть Storybook](https://ramzes1385.github.io/Rise-UI-KIT/)** — все компоненты вживую: варианты, состояния, клавиатура, обе темы, таблицы props и событий, а в разделе Blocks — готовые экраны из компонентов кита.
 

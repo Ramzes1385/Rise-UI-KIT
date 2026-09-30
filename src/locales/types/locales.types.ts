@@ -50,6 +50,8 @@ export interface UiKitLocale {
 	qrCode: Section<'qrCode'>
 	signaturePad: Section<'signaturePad'>
 	avatarCropper: Section<'avatarCropper'>
+	notificationCenter: Section<'notificationCenter'>
+	commentThread: Section<'commentThread'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

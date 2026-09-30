@@ -180,4 +180,17 @@ export const enChat = {
 		LIST: 'Mentions',
 		EMPTY: 'No matches',
 	},
+	commentThread: {
+		TITLE: 'Comments',
+		NEW: 'New comment',
+		PLACEHOLDER: 'Write a comment',
+		REPLY: 'Reply',
+		REPLY_TO: 'Reply to {name}',
+		SEND: 'Send',
+		CANCEL: 'Cancel',
+		LIKE: 'Like',
+		SHOW_REPLIES: 'Show {replies}',
+		HIDE_REPLIES: 'Hide replies',
+		EMPTY: 'No comments yet',
+	},
 }

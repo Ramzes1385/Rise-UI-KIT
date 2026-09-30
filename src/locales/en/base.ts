@@ -146,4 +146,16 @@ export const enBase = {
 		LABEL: 'QR code: {value}',
 		TOO_LONG: 'The text is too long for a QR code',
 	},
+	notificationCenter: {
+		TITLE: 'Notifications',
+		READ_ALL: 'Mark all as read',
+		FILTER: 'Show',
+		ALL: 'All',
+		UNREAD: 'Unread',
+		MARK_READ: 'Mark as read',
+		MARK_UNREAD: 'Mark as unread',
+		UNREAD_ITEM: 'unread',
+		EMPTY: 'No notifications',
+		EMPTY_UNREAD: 'All caught up',
+	},
 }

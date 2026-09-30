@@ -947,6 +947,36 @@ import { BaseNotification } from '@ramzes1385/rise-ui-kit'
 
 ---
 
+## BaseNotificationCenter
+
+Центр уведомлений: список уведомлений приложения с непрочитанными, «Прочитать все» и фильтром «Все / Непрочитанные». Обычно открывается из кнопки с колокольчиком в шапке — в BasePopover.
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { BaseBadge, BaseButton, BaseIcon, BaseNotificationCenter, BasePopover, type NotificationCenterItem } from '@ramzes1385/rise-ui-kit'
+
+const items = ref<NotificationCenterItem[]>([]) // заполняет приложение: API, WebSocket
+const unread = computed(() => items.value.filter(item => !item.isRead).length)
+</script>
+
+<template>
+	<BasePopover position="bottom">
+		<template #trigger>
+			<BaseButton variant="ghost" :aria-label="unread ? `Уведомления, новых: ${unread}` : 'Уведомления'">
+				<template #left><BaseIcon name="bell" /></template>
+				<BaseBadge v-if="unread" :label="String(unread)" aria-hidden="true" />
+			</BaseButton>
+		</template>
+		<BaseNotificationCenter v-model:items="items" variant="ghost" @select="item => router.push(`/inbox/${item.id}`)" @read="ids => api.markRead(ids)" />
+	</BasePopover>
+</template>
+```
+
+Уведомление — `{ id, title, text?, date, isRead?, avatar?, icon? }`: картинка или иконка слева (по умолчанию колокольчик `bell`), время — «5 минут назад», «вчера», дальше недели — дата (`formatRelativeTime`, точка отсчёта — `now`). Клик по уведомлению отмечает его прочитанным и даёт событие `select`, кнопка справа переключает «прочитано»; события `read` и `unread` передают id изменившихся — для записи на сервер. Непрочитанное — точка, полужирный заголовок и подложка; для скринридера в названии кнопки — «не прочитано», число новых в шапке — `role="status"`. `v-model:filter` — фильтр, `maxHeight` — высота списка до прокрутки (360px), слот `actions` — свои кнопки в шапке.
+
+---
+
 ## BaseBadge
 
 Badge-компонент.
@@ -1683,6 +1713,31 @@ function handleSend(payload: { text: string }): void {
 
 ---
 
+## BaseCommentThread
+
+Ветка комментариев: ответы с отступом, «Нравится», «Ответить», сворачивание ответов и поле нового комментария. Данные — у приложения: новый комментарий приходит событием `reply`, отметка — событием `like`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseCommentThread, type CommentItem, type CommentReply } from '@ramzes1385/rise-ui-kit'
+
+const comments = ref<CommentItem[]>([]) // заполняет приложение
+
+async function reply({ parentId, text }: CommentReply): Promise<void> {
+	comments.value = await api.addComment(taskId, { parentId, text })
+}
+</script>
+
+<template>
+	<BaseCommentThread :comments="comments" :current-user="me" @reply="reply" @like="({ id, isLiked }) => api.like(id, isLiked)" />
+</template>
+```
+
+Комментарий — `{ id, author: { name, avatar? }, text, date, likes?, isLiked?, replies? }`; `parentId` в `reply` — id комментария, на который ответили, `null` — комментарий в ветку. Глубже `maxDepth` (3) ответы идут без нового отступа. «Ответить» открывает поле и ставит в него фокус; Ctrl+Enter (⌘+Enter) отправляет, Escape отменяет, после этого фокус возвращается на «Ответить». «Нравится» — кнопка-переключатель (`aria-pressed`) со счётчиком, «Показать 3 ответа» — `aria-expanded`. Каждый комментарий — `article` с именем автора, ветка — область «Комментарии» (или `label`); `isReadonly` убирает поле и кнопки «Ответить».
+
+---
+
 ## BaseMarkdown
 
 Безопасный Markdown (CommonMark и GFM) без `v-html`: текст разбирается в дерево и выводится элементами Vue, поэтому HTML-теги из источника показываются как текст, а ссылки с `javascript:` и другими схемами — обычным текстом. Поддерживаются заголовки, абзацы, выделение, зачёркивание, код и блоки кода (язык и «Копировать»), цитаты, списки и задачи, таблицы с выравниванием, картинки, линии и автоссылки.
@@ -2367,6 +2422,7 @@ BaseChip
 BaseColorModeButton
 BaseColorPicker
 BaseCommandPalette
+BaseCommentThread
 BaseConfirm
 BaseContainer
 BaseContextMenu
@@ -2407,6 +2463,7 @@ BaseMenu
 BaseModal
 BaseMoneyInput
 BaseNotification
+BaseNotificationCenter
 BasePagination
 BasePhoneInput
 BasePieChart

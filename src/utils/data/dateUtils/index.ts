@@ -6,6 +6,7 @@ export {
 	formatMultiple,
 	formatPopoverDate,
 	formatRange,
+	formatRelativeTime,
 	getWeekday,
 	getWeekNumber,
 	isDateInRange,
@@ -13,4 +14,11 @@ export {
 	isToday,
 	toDateOnly,
 } from './dateUtils'
-export type { BuildDateOptions, DateFormat, DatePickerSelectionMode, FormatDatePickerValueOptions, Weekday } from './types/dateUtils.types'
+export type {
+	BuildDateOptions,
+	DateFormat,
+	DatePickerSelectionMode,
+	FormatDatePickerValueOptions,
+	FormatRelativeTimeOptions,
+	Weekday,
+} from './types/dateUtils.types'

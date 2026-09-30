@@ -164,4 +164,16 @@ export const ruBase = {
 		LABEL: 'QR-код: {value}',
 		TOO_LONG: 'Текст слишком длинный для QR-кода',
 	},
+	notificationCenter: {
+		TITLE: 'Уведомления',
+		READ_ALL: 'Прочитать все',
+		FILTER: 'Показать',
+		ALL: 'Все',
+		UNREAD: 'Непрочитанные',
+		MARK_READ: 'Отметить прочитанным',
+		MARK_UNREAD: 'Отметить непрочитанным',
+		UNREAD_ITEM: 'не прочитано',
+		EMPTY: 'Уведомлений нет',
+		EMPTY_UNREAD: 'Всё прочитано',
+	},
 }

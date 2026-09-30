@@ -120,6 +120,7 @@
 - `BaseJsonViewer` — JSON деревом с раскрытием, клавиатурой APG Tree View и «Копировать JSON»; `BaseTextDiff` — сравнение текстов одной колонкой или рядом с выделением изменённых слов (порция Н.3а).
 - `BaseQrCode` — QR-код со своим кодировщиком без зависимостей: версии 1–10, уровни коррекции L/M/Q/H, SVG и имя для скринридера; `encodeQr` — матрица модулей (порция Н.3б).
 - `BaseSignaturePad` — поле для подписи пером, пальцем и мышью с отменой штриха и файлами SVG и PNG; `BaseAvatarCropper` — кадрирование аватара кругом или квадратом с перетаскиванием, масштабом, клавиатурой и картинкой в Blob (порция Н.3в).
+- `BaseNotificationCenter` — центр уведомлений с непрочитанными, «Прочитать все» и фильтром; `BaseCommentThread` — ветка комментариев с ответами, «Нравится» и полем ответа; `formatRelativeTime` в utils (порция Н.4).
 
 **Доступность и клавиатура**
 
@@ -619,6 +620,16 @@
 - `BaseSignaturePad` — поле для подписи: `v-model` — штрихи (`SignatureStroke[]`, точки в единицах поля `width` × `height`), `penColor`, `lineWidth`, `label`, `placeholder`, `error`, `isDisabled`, варианты `default`, `soft`, `outline`; кнопки «Отменить штрих» и «Очистить»; через ref — `toSvg()`, `toPng()`, `undo()`, `clear()`.
 - `BaseAvatarCropper` — кадрирование аватара: `src`, `v-model:crop` (`{ x, y, size }` в пикселях фото), `shape` `circle` или `square`, `size`, `maxZoom`; перетаскивание, колёсико, ползунок «Масштаб» и клавиши (стрелки, `+`, `−`, `0`); событие `error`, если фото не загрузилось; через ref — `getBlob({ size, type, quality })` и `reset()`.
 - Строки словаря (ru, en): разделы `signaturePad` и `avatarCropper`, формы чисел `SIGNATURE_STROKES`.
+
+## Уведомления и комментарии (порция Н.4)
+
+Новое, существующее не меняется.
+
+- `BaseNotificationCenter` — центр уведомлений: `v-model:items` (`NotificationCenterItem`: `id`, `title`, `text`, `date`, `isRead`, `avatar`, `icon`), `v-model:filter` (`all` или `unread`), события `select`, `read` и `unread`, «Прочитать все», слот `actions`, варианты `default` и `ghost`. Тип назван `NotificationCenterItem`: `NotificationItem` уже есть у BaseNotification.
+- `BaseCommentThread` — ветка комментариев: `comments` (`CommentItem` с `replies`), `currentUser`, `maxDepth`, `isReadonly`, события `reply` (`{ parentId, text }`) и `like` (`{ id, isLiked }`), варианты `default` и `ghost`.
+- Утилита `formatRelativeTime(date, { now, locale })` — «5 минут назад», «вчера», дальше недели — дата.
+- Иконка `bell` в спрайте.
+- Строки словаря (ru, en): разделы `notificationCenter` и `commentThread`, формы чисел `NOTIFICATIONS_UNREAD` и `REPLIES`.
 
 ## Структура исходников
 

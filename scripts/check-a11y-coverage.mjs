@@ -108,6 +108,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseJsonViewer',
 	'BaseSignaturePad',
 	'BaseAvatarCropper',
+	'BaseNotificationCenter',
+	'BaseCommentThread',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */

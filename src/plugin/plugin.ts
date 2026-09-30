@@ -104,6 +104,7 @@ import { BaseNotification } from '../components/BaseNotification'
 import { BaseSignaturePad } from '../components/BaseSignaturePad'
 import { BaseAvatarCropper } from '../components/BaseAvatarCropper'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
+import { BaseCommentThread } from '../components/BaseCommentThread'
 import { BaseFilterBuilder } from '../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
 import { BaseCommandPalette } from '../components/BaseCommandPalette'
@@ -112,6 +113,7 @@ import { BaseRequisiteInput } from '../components/BaseRequisiteInput'
 import { BaseSubtitleEditor } from '../components/BaseSubtitleEditor'
 import { BaseColorModeButton } from '../components/BaseColorModeButton'
 import { DEFAULTS_KEY } from '../composables/base/useDefaults/useDefaults'
+import { BaseNotificationCenter } from '../components/BaseNotificationCenter'
 import { LINK_COMPONENT_KEY } from '../composables/interaction/useLink/useLink'
 import { ICON_MAP_KEY, ICON_SPRITE_PATH_KEY } from '../composables/app/useIcon/useIcon'
 import { TELEPORT_TARGET_KEY } from '../composables/app/useTeleportTarget/useTeleportTarget'
@@ -151,6 +153,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseColorModeButton,
 	BaseColorPicker,
 	BaseCommandPalette,
+	BaseCommentThread,
 	BaseConfirm,
 	BaseContainer,
 	BaseContextMenu,
@@ -190,6 +193,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseModal,
 	BaseMoneyInput,
 	BaseNotification,
+	BaseNotificationCenter,
 	BasePagination,
 	BasePhoneInput,
 	BasePieChart,

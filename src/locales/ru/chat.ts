@@ -192,4 +192,18 @@ export const ruChat = {
 		LIST: 'Упоминания',
 		EMPTY: 'Никого не нашлось',
 	},
+	/** Ветки комментариев */
+	commentThread: {
+		TITLE: 'Комментарии',
+		NEW: 'Новый комментарий',
+		PLACEHOLDER: 'Напишите комментарий',
+		REPLY: 'Ответить',
+		REPLY_TO: 'Ответ пользователю {name}',
+		SEND: 'Отправить',
+		CANCEL: 'Отмена',
+		LIKE: 'Нравится',
+		SHOW_REPLIES: 'Показать {replies}',
+		HIDE_REPLIES: 'Скрыть ответы',
+		EMPTY: 'Комментариев пока нет',
+	},
 }

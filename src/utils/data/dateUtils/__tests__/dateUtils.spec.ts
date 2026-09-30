@@ -8,6 +8,7 @@ import {
 	formatMultiple,
 	formatPopoverDate,
 	formatRange,
+	formatRelativeTime,
 	getWeekday,
 	getWeekNumber,
 	isDateInRange,
@@ -363,6 +364,36 @@ describe('dateUtils', () => {
 			expect(result).toContain('вторник')
 			expect(result).toContain('июня')
 			expect(result).toContain('2025')
+		})
+	})
+
+	describe('formatRelativeTime', () => {
+		const NOW = new Date(2025, 4, 15, 10, 30)
+		const ago = (seconds: number): Date => new Date(NOW.getTime() - seconds * 1000)
+
+		afterEach(() => setLocale('ru'))
+
+		it('секунды — «сейчас», минуты, часы и дни — относительно, по-русски', () => {
+			expect(formatRelativeTime(ago(10), { now: NOW })).toBe('сейчас')
+			expect(formatRelativeTime(ago(5 * 60), { now: NOW })).toBe('5 минут назад')
+			expect(formatRelativeTime(ago(3 * 3600), { now: NOW })).toBe('3 часа назад')
+			expect(formatRelativeTime(ago(86_400), { now: NOW })).toBe('вчера')
+			expect(formatRelativeTime(ago(-2 * 86_400), { now: NOW })).toBe('послезавтра')
+		})
+
+		it('дальше недели — дата, в другом году — с годом; строка и число тоже принимаются', () => {
+			expect(formatRelativeTime(new Date(2025, 4, 3, 9).toISOString(), { now: NOW })).toBe('3 мая')
+			expect(formatRelativeTime(new Date(2024, 4, 3, 9).getTime(), { now: NOW })).toBe('3 мая 2024 г.')
+		})
+
+		it('язык кита по умолчанию и свой язык', () => {
+			setLocale('en')
+			expect(formatRelativeTime(ago(5 * 60), { now: NOW })).toBe('5 minutes ago')
+			expect(formatRelativeTime(ago(3600), { now: NOW, locale: 'ru-RU' })).toBe('1 час назад')
+		})
+
+		it('без точки отсчёта — текущее время', () => {
+			expect(formatRelativeTime(new Date())).toBe('сейчас')
 		})
 	})
 })

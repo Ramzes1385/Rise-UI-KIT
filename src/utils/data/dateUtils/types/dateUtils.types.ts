@@ -64,3 +64,11 @@ export interface FormatPopoverDateOptions {
 	date: Date
 	locale: string
 }
+
+/** Параметры formatRelativeTime */
+export interface FormatRelativeTimeOptions {
+	/** Точка отсчёта; по умолчанию — текущее время */
+	now?: Date
+	/** Язык в формате Intl (`ru-RU`, `en-US`); по умолчанию — язык кита */
+	locale?: string
+}

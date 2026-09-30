@@ -61,6 +61,15 @@ const date = formatDate({
 })
 ```
 
+`formatRelativeTime(date, { now?, locale? })` — время относительно «сейчас» по правилам языка (`Intl.RelativeTimeFormat`): «сейчас», «5 минут назад», «вчера», «через 2 дня»; дальше недели — дата «3 мая», в другом году — с годом. Язык по умолчанию — язык кита. Так показывают время BaseNotificationCenter и BaseCommentThread.
+
+```ts
+import { formatRelativeTime } from '@ramzes1385/rise-ui-kit/utils'
+
+formatRelativeTime(message.sentAt) // «12 минут назад»
+formatRelativeTime('2025-05-14T09:00:00', { now: new Date(2025, 4, 15, 10, 30), locale: 'en-US' }) // «yesterday»
+```
+
 ---
 
 ## colorUtils

@@ -1,0 +1,120 @@
+.base-comment-thread {
+	display: flex;
+	flex-direction: column;
+	gap: sz(16px);
+	box-sizing: border-box;
+	min-width: 0;
+	padding: sz(16px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__count {
+		margin: 0;
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-semibold);
+		@include text-size(md);
+	}
+
+	&__list,
+	&__replies {
+		display: flex;
+		flex-direction: column;
+		gap: sz(16px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__replies {
+		margin-top: sz(12px);
+		padding-left: sz(44px);
+	}
+
+	&__replies--flat {
+		padding-left: 0;
+	}
+
+	&__card,
+	&__composer {
+		display: flex;
+		gap: sz(12px);
+	}
+
+	&__avatar {
+		display: inline-flex;
+		flex-shrink: 0;
+	}
+
+	&__content,
+	&__composer-body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: sz(8px);
+	}
+
+	&__author {
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-semibold);
+		@include text-size(sm);
+	}
+
+	&__time {
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+	}
+
+	&__text {
+		margin: 0;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		@include text-size(sm);
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(2px);
+		margin-left: sz(-6px);
+	}
+
+	&__like[aria-pressed='true'] {
+		color: var(--rise-primary-text);
+	}
+
+	&__composer--reply {
+		margin-top: sz(8px);
+	}
+
+	&__composer-body {
+		gap: sz(8px);
+	}
+
+	&__composer-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: sz(8px);
+	}
+
+	&__empty {
+		margin: 0;
+		color: var(--rise-text-toned);
+		@include text-size(sm);
+	}
+}

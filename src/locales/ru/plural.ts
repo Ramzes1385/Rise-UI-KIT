@@ -8,6 +8,8 @@ export const ruPlural = {
 	JSON_KEYS: { one: '{n} ключ', few: '{n} ключа', many: '{n} ключей', other: '{n} ключа' },
 	JSON_ITEMS: { one: '{n} элемент', few: '{n} элемента', many: '{n} элементов', other: '{n} элемента' },
 	SIGNATURE_STROKES: { one: '{n} штрих', few: '{n} штриха', many: '{n} штрихов', other: '{n} штриха' },
+	NOTIFICATIONS_UNREAD: { one: '{n} новое', few: '{n} новых', many: '{n} новых', other: '{n} новых' },
+	REPLIES: { one: '{n} ответ', few: '{n} ответа', many: '{n} ответов', other: '{n} ответа' },
 	/** Статус поиска для скринридера: сколько результатов в списке */
 	SEARCH_RESULTS: {
 		one: 'Найден {n} результат',

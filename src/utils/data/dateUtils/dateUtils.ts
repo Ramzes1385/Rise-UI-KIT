@@ -8,6 +8,7 @@ import type {
 	FormatMultipleOptions,
 	FormatPopoverDateOptions,
 	FormatRangeOptions,
+	FormatRelativeTimeOptions,
 } from './types/dateUtils.types'
 
 const MS_PER_DAY = 86_400_000
@@ -145,6 +146,31 @@ function formatPopoverDate(options: FormatPopoverDateOptions): string {
 	})
 }
 
+const RELATIVE_STEPS: readonly (readonly [number, number, Intl.RelativeTimeFormatUnit])[] = [
+	[45, 1, 'second'],
+	[45 * 60, 60, 'minute'],
+	[22 * 3600, 3600, 'hour'],
+	[7 * 86_400, 86_400, 'day'],
+]
+
+/**
+ * Время относительно «сейчас» по правилам языка: «сейчас», «5 минут назад», «вчера», «через 2 дня».
+ * Дальше недели — дата: «3 мая», в другом году — «3 мая 2024 г.».
+ */
+function formatRelativeTime(date: Date | string | number, options: FormatRelativeTimeOptions = {}): string {
+	const target = new Date(date)
+	const now = options.now ?? new Date()
+	const locale = options.locale ?? getLocale().intl
+	const seconds = Math.round((target.getTime() - now.getTime()) / 1000)
+	const step = RELATIVE_STEPS.find(([limit]) => Math.abs(seconds) < limit)
+	if (step) {
+		const [, size, unit] = step
+		return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(unit === 'second' ? 0 : Math.round(seconds / size), unit)
+	}
+	const year = target.getFullYear() === now.getFullYear() ? undefined : 'numeric'
+	return target.toLocaleDateString(locale, { day: 'numeric', month: 'long', year })
+}
+
 export {
 	buildDateWithTime,
 	daysInMonth,
@@ -153,6 +179,7 @@ export {
 	formatMultiple,
 	formatPopoverDate,
 	formatRange,
+	formatRelativeTime,
 	getWeekday,
 	getWeekNumber,
 	isDateInRange,
