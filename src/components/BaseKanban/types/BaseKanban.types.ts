@@ -41,6 +41,8 @@ export interface KanbanColumn {
 	title: string
 	limit?: number
 	isDone?: boolean
+	/** Цвет колонки: точка у заголовка и полоса сверху */
+	color?: string
 }
 
 /**
@@ -103,15 +105,20 @@ export interface KanbanPointerDrag {
 }
 
 /** Объявление для скринридера при перемещении с клавиатуры: ключ строки из словаря `kanban` */
-export type KanbanAnnouncement = 'PICKED' | 'MOVED' | 'DROPPED' | 'CANCELLED' | 'BLOCKED'
+export type KanbanAnnouncement = 'PICKED' | 'MOVED' | 'DROPPED' | 'CANCELLED' | 'BLOCKED' | 'CREATED' | 'RENAMED'
 
-/** Колонка для разметки: карточки колонки, счётчик и доступное имя списка */
+/**
+ * Колонка для разметки: показанные карточки, счётчик («3 / 5» с лимитом, «1 из 3» под фильтром), доступное имя
+ * списка и текст пустой колонки
+ */
 export interface KanbanColumnView {
 	column: KanbanColumn
 	cards: KanbanCard[]
 	count: string
 	label: string
+	emptyText: string
 	isOverLimit: boolean
+	isCollapsed: boolean
 }
 
 /**
@@ -126,11 +133,24 @@ export interface BaseKanbanProps extends BaseComponentProps<(typeof KANBAN_VARIA
 	canMove?: (move: KanbanMove) => boolean
 	/**
 	 * Пункты приложения в меню карточки (правый клик, Shift+F10 или клавиша меню) после встроенных «Открыть»,
-	 * «Переместить в» и «В начало / в конец колонки»: например, «Удалить» с `isDanger`
+	 * «Переместить в» и «В начало / в конец колонки»: например, «Копировать ссылку»
 	 */
 	cardActions?: (card: KanbanCard) => DropdownMenuItem[]
 	/** Сегодняшняя дата для сроков карточек: сегодня, завтра, просрочено. По умолчанию — текущая */
 	today?: string | Date
+	/**
+	 * Доска редактируется: «Добавить карточку» внизу колонки, переименование по F2 или из меню карточки,
+	 * «Удалить» в меню карточки
+	 */
+	isEditable?: boolean
+	/** Какие карточки показывать: например, результат BaseFilterBuilder или поиска. Скрытые карточки не теряются */
+	filter?: (card: KanbanCard) => boolean
+	/** Колонки сворачиваются кнопкой в заголовке */
+	isCollapsible?: boolean
+	/** Свёрнутые колонки (`v-model:collapsed-columns`): узкая полоса с названием и счётчиком */
+	collapsedColumns?: readonly string[]
+	/** Id новой карточки; по умолчанию — `card-` и метка времени */
+	createCardId?: () => string
 	/** Только просмотр: карточки не перетаскиваются, не открываются, меню карточки не показывается */
 	isDisabled?: boolean
 }
@@ -145,6 +165,14 @@ export interface BaseKanbanEmits {
 	(event: 'move', move: KanbanMove): void
 	/** Карточку открыли: клик без перетаскивания или Enter */
 	(event: 'open', card: KanbanCard): void
+	/** Добавлена карточка («Добавить карточку» при `is-editable`) */
+	(event: 'create', card: KanbanCard): void
+	/** Карточка переименована: карточка с новым названием */
+	(event: 'rename', card: KanbanCard): void
+	/** Карточка удалена из меню */
+	(event: 'delete', card: KanbanCard): void
+	/** Колонку свернули или развернули */
+	(event: 'update:collapsedColumns', ids: string[]): void
 }
 
 /**
@@ -153,11 +181,14 @@ export interface BaseKanbanEmits {
 export interface BaseKanbanSlots {
 	/** Содержимое карточки вместо названия, описания и меток; без кнопок и ссылок внутри — карточка сама кнопка */
 	card?: (props: { card: KanbanCard; isDragging: boolean }) => unknown
-	/** Низ колонки: например, «Добавить карточку» */
+	/** Низ колонки: например, сумма оценок или ссылка «Все задачи» */
 	'column-footer'?: (props: { column: KanbanColumn; cards: KanbanCard[] }) => unknown
 }
 
-/** Общее состояние доски для перетаскивания мышью и с клавиатуры */
+/**
+ * Общее состояние доски: `cards` — показанные карточки (с учётом фильтра и перетаскивания), `full` — все,
+ * `columns` — развёрнутые колонки для перехода стрелками
+ */
 export interface KanbanBoardContext {
 	props: BaseKanbanProps
 	emit: BaseKanbanEmits
@@ -165,7 +196,18 @@ export interface KanbanBoardContext {
 	draft: ShallowRef<KanbanCard[] | null>
 	cards: ComputedRef<readonly KanbanCard[]>
 	announce: (message: KanbanAnnouncement, cardId: string, cards?: readonly KanbanCard[]) => void
+	full: ComputedRef<readonly KanbanCard[]>
+	columns: ComputedRef<readonly KanbanColumn[]>
+	collapsed: ShallowRef<readonly string[]>
+	setCards: (cards: KanbanCard[]) => void
+	say: (text: string) => void
 	finish: (move: { cardId: string; origin: KanbanPlace }, done: () => void) => void
 	cancel: (cardId: string, done: () => void) => void
 	moveTo: (cardId: string, place: KanbanPlace) => void
+}
+
+/** Действия редактирования, которые меню карточки вызывает при `is-editable` */
+export interface KanbanMenuEdit {
+	startRename: (card: KanbanCard) => void
+	deleteCard: (card: KanbanCard) => void
 }

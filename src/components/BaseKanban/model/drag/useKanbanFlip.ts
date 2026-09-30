@@ -14,13 +14,21 @@ function measure(root: HTMLElement | null, selector: string, key: string): Map<s
 	return rects
 }
 
+const APPEAR = [
+	{ opacity: 0, transform: 'scale(0.96)' },
+	{ opacity: 1, transform: 'none' },
+]
+
+function cardFrames(old: DOMRect | undefined, now: DOMRect) {
+	if (!old) return APPEAR
+	if (old.left === now.left && old.top === now.top) return null
+	return [{ transform: `translate(${old.left - now.left}px, ${old.top - now.top}px)` }, { transform: 'none' }]
+}
+
 function playCards(root: HTMLElement | null, before: Map<string, DOMRect>): void {
 	for (const element of root?.querySelectorAll<HTMLElement>('[data-card-id]') ?? []) {
-		const old = before.get(element.dataset.cardId as string)
-		const now = element.getBoundingClientRect()
-		if (!old || (old.left === now.left && old.top === now.top)) continue
-		const transform = `translate(${old.left - now.left}px, ${old.top - now.top}px)`
-		element.animate?.([{ transform }, { transform: 'none' }], { duration: DURATION, easing: EASING })
+		const frames = cardFrames(before.get(element.dataset.cardId as string), element.getBoundingClientRect())
+		if (frames) element.animate?.(frames, { duration: DURATION, easing: EASING })
 	}
 }
 

@@ -96,4 +96,18 @@ describe('BaseKanban: анимации', () => {
 		settle.onfinish?.({} as AnimationPlaybackEvent)
 		await waitFor(() => expect(document.querySelector('.base-kanban__ghost')).toBeNull())
 	})
+
+	it('новая карточка появляется плавно', async () => {
+		render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS, isEditable: true, createCardId: () => 'n' } })
+
+		await fireEvent.click(screen.getAllByRole('button', { name: 'Добавить карточку' })[1])
+		await fireEvent.update(screen.getByRole('textbox'), 'Новая')
+		animate.mockClear()
+		await fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' })
+		const index = animate.mock.contexts.indexOf(card('Новая'))
+		expect(animate.mock.calls[index][0]).toEqual([
+			{ opacity: 0, transform: 'scale(0.96)' },
+			{ opacity: 1, transform: 'none' },
+		])
+	})
 })

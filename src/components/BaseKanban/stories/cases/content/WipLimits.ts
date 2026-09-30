@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import { CARDS } from '../shared'
+import { CARDS } from '../../shared'
 import { expect } from 'storybook/test'
-import type meta from '../BaseKanban.stories'
-import BaseKanban from '../../ui/BaseKanban.vue'
+import type meta from '../../BaseKanban.stories'
+import BaseKanban from '../../../ui/BaseKanban.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { useArgsWithoutSlots } from '@/stories/helpers'
-import type { KanbanMove } from '../../types/BaseKanban.types'
+import type { KanbanMove } from '../../../types/BaseKanban.types'
 
 export const WipLimits: StoryObj<typeof meta> = {
 	parameters: {

@@ -1,9 +1,16 @@
 import type { KanbanPlace } from '../../types/BaseKanban.types'
 
-export function cardElement(root: HTMLElement | null, cardId: string): HTMLElement | null {
-	const elements = root ? [...root.querySelectorAll<HTMLElement>('[data-card-id]')] : []
-	return elements.find(element => element.dataset.cardId === cardId) ?? null
+const DATA_SELECTORS = { cardId: '[data-card-id]', columnId: '[data-column-id]' }
+
+function dataElement(root: HTMLElement | null, key: keyof typeof DATA_SELECTORS, id: string): HTMLElement | null {
+	const elements = root ? [...root.querySelectorAll<HTMLElement>(DATA_SELECTORS[key])] : []
+	return elements.find(element => element.dataset[key] === id) ?? null
 }
+
+export const cardElement = (root: HTMLElement | null, cardId: string): HTMLElement | null => dataElement(root, 'cardId', cardId)
+
+export const columnPart = (root: HTMLElement | null, columnId: string, selector: string): HTMLElement | null =>
+	dataElement(root, 'columnId', columnId)?.querySelector<HTMLElement>(selector) ?? null
 
 const isInside = (element: HTMLElement, x: number): boolean => {
 	const rect = element.getBoundingClientRect()

@@ -1,8 +1,8 @@
 import { ref } from 'vue'
-import { CARDS } from '../shared'
-import type meta from '../BaseKanban.stories'
-import BaseKanban from '../../ui/BaseKanban.vue'
+import { CARDS } from '../../shared'
+import type meta from '../../BaseKanban.stories'
 import { expect, waitFor } from 'storybook/test'
+import BaseKanban from '../../../ui/BaseKanban.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { useArgsWithoutSlots } from '@/stories/helpers'
 

@@ -37,6 +37,7 @@
 	}
 
 	&__title {
+		flex: 1 1 auto;
 		min-width: 0;
 		font-weight: var(--rise-font-weight-semibold);
 		@include custom-text(color, var(--rise-text-highlighted));
@@ -53,6 +54,113 @@
 		@include text-size(xs);
 		font-variant-numeric: tabular-nums;
 		text-align: center;
+	}
+
+	&__dot {
+		flex: none;
+		width: sz(8px);
+		height: sz(8px);
+		border-radius: 50%;
+		background-color: var(--kanban-column-color);
+	}
+
+	&__column--colored {
+		box-shadow: inset 0 sz(3px) 0 var(--kanban-column-color);
+	}
+
+	&__toggle,
+	&__add {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		gap: sz(6px);
+		padding: 0;
+		border: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: transparent;
+		font: inherit;
+		cursor: pointer;
+		@include custom-text(color, var(--rise-text-muted));
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--rise-bg-accented);
+			color: var(--rise-text-highlighted);
+		}
+
+		.base-icon {
+			width: sz(16px);
+			height: sz(16px);
+		}
+	}
+
+	&__toggle {
+		width: sz(24px);
+		height: sz(24px);
+	}
+
+	&__add {
+		justify-content: flex-start;
+		min-height: sz(32px);
+		padding: 0 sz(8px);
+	}
+
+	&__editor {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+	}
+
+	&__field {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: sz(56px);
+		margin: 0;
+		padding: sz(8px) sz(12px);
+		border: 1px solid var(--rise-primary);
+		border-radius: sz(var(--rise-radius-md));
+		outline: none;
+		background-color: var(--rise-bg);
+		color: var(--rise-text-highlighted);
+		box-shadow:
+			0 0 0 1px var(--rise-primary),
+			var(--rise-shadow-xs);
+		font: inherit;
+		font-weight: var(--rise-font-weight-medium);
+		resize: none;
+		field-sizing: content;
+	}
+
+	&__editor-actions {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__column--collapsed {
+		align-items: center;
+		width: auto;
+		padding-inline: sz(4px);
+	}
+
+	&__column--collapsed &__header {
+		flex-direction: column;
+		padding: 0;
+	}
+
+	&__column--collapsed &__toggle {
+		order: -2;
+	}
+
+	&__column--collapsed &__count {
+		order: -1;
+	}
+
+	&__column--collapsed &__title {
+		max-height: sz(320px);
+		writing-mode: vertical-rl;
 	}
 
 	&__column--over &__count {
