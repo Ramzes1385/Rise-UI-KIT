@@ -40,6 +40,7 @@ export interface UiKitLocale {
 	kanban: Section<'kanban'>
 	filterBuilder: Section<'filterBuilder'>
 	checklist: Section<'checklist'>
+	phoneInput: Section<'phoneInput'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

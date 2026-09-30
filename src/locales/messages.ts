@@ -49,3 +49,6 @@ export const UI_FILTER_BUILDER = localized('filterBuilder')
 
 /** Чек-лист первых шагов */
 export const UI_CHECKLIST = localized('checklist')
+
+/** Поле телефона */
+export const UI_PHONE_INPUT = localized('phoneInput')

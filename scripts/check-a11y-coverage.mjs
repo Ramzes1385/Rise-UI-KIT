@@ -99,6 +99,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseKanban',
 	'BaseFilterBuilder',
 	'BaseChecklist',
+	'BasePhoneInput',
+	'BaseMoneyInput',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -140,6 +142,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseKanban',
 	'BaseFilterBuilder',
 	'BaseChecklist',
+	'BasePhoneInput',
+	'BaseMoneyInput',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -162,6 +166,8 @@ const FORM_COMPONENTS = new Set([
 	'BaseSegmented',
 	'BasePromptInput',
 	'BaseMention',
+	'BasePhoneInput',
+	'BaseMoneyInput',
 ])
 
 const LOADING_COMPONENTS = new Set(['BaseButton', 'BaseSearch', 'BaseFileUpload', 'BaseTable', 'BaseEditor', 'BaseChat', 'BaseSlider'])

@@ -72,7 +72,9 @@ import { BaseReasoning } from '../components/BaseReasoning'
 import { BaseSegmented } from '../components/BaseSegmented'
 import { BaseSeparator } from '../components/BaseSeparator'
 import { BaseSlideover } from '../components/BaseSlideover'
+import { BaseMoneyInput } from '../components/BaseMoneyInput'
 import { BasePagination } from '../components/BasePagination'
+import { BasePhoneInput } from '../components/BasePhoneInput'
 import { BasePopconfirm } from '../components/BasePopconfirm'
 import { BaseScrollArea } from '../components/BaseScrollArea'
 import { BaseTimePicker } from '../components/BaseTimePicker'
@@ -168,8 +170,10 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseMention,
 	BaseMenu,
 	BaseModal,
+	BaseMoneyInput,
 	BaseNotification,
 	BasePagination,
+	BasePhoneInput,
 	BasePin,
 	BasePopconfirm,
 	BasePopover,

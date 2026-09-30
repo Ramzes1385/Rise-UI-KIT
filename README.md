@@ -109,6 +109,7 @@
 - `BaseLayout`, `BaseHeader`, `BaseFooter`, `BaseContainer` — каркас страницы со ссылкой «Перейти к содержимому»; `BaseSplitter` (APG Window Splitter), `BaseScrollArea`, `BaseDrawer`, `BaseBackTop`, `BaseInfiniteScroll` — каркас и прокрутка (порция 2.3).
 - `BaseVirtualList` — список на тысячи строк (в DOM только видимые) и composable `useVirtualList`; виртуальная прокрутка в `BaseTable` (`isVirtual`, `rowHeight`) и `BaseTree` (`isVirtual`, `height`, `itemSize`) — порция 2.4.
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
+- `BasePhoneInput` — телефон: выбор страны и маска номера, `v-model` — `+79161234567`, вставка «+375 29…» или «8 916…» сама выбирает страну; `BaseMoneyInput` — сумма с разрядами при вводе и знаком валюты по `currency`, округление и границы после ухода из поля (порция 4.17а).
 
 **Медиа**
 
@@ -673,6 +674,40 @@ const guests = ref<number | null>(2)
 	<BaseInputNumber v-model="guests" label="Гостей" :min="1" :max="10" :format-value-text="n => `${n} гостей`" />
 </template>
 ```
+
+---
+
+## BasePhoneInput
+
+Поле телефона: слева выбор страны («Код страны»), справа номер по маске страны. `v-model` — номер в международном формате без пробелов, `v-model:country` — код страны ISO.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BasePhoneInput } from '@ramzes1385/rise-ui-kit'
+
+const phone = ref('')
+const country = ref('RU')
+</script>
+
+<template>
+	<BasePhoneInput v-model="phone" v-model:country="country" label="Телефон" :error="phone && phone.length < 12 ? 'Введите номер полностью' : ''" />
+</template>
+```
+
+Страны — `PHONE_COUNTRIES` (Россия, Казахстан, Беларусь, Узбекистан, Киргизия, Таджикистан, Армения, Азербайджан, Грузия, Турция, Китай, США, Великобритания) или свои `countries` вида `{ code: 'RS', dialCode: '381', mask: '(##) ###-####' }`, где `#` — цифра. Названия стран — на языке кита через `Intl.DisplayNames`. Вставка полного номера («+375 29 123-45-67», «8 916 123-45-67», «7 916…») сама выбирает страну и убирает код или восьмёрку. Поле — `type="tel"` с `autocomplete="tel-national"`, варианты и размеры — как у BaseInput.
+
+---
+
+## BaseMoneyInput
+
+Поле суммы: разряды расставляются при вводе, курсор остаётся на месте, знак валюты стоит там, где принято в языке кита («1 234,50 ₽», в английском — «$1,234.50»). `v-model` — число или `null`.
+
+```vue
+<BaseMoneyInput v-model="amount" label="Сумма перевода" currency="RUB" :max="100000" />
+```
+
+`currency` — код ISO 4217: от него зависят знак и число знаков после запятой (у иены — ни одного). Запятая и точка обе ставят десятичный разделитель, буквы и лишние знаки отбрасываются. После ухода из поля сумма округляется до копеек и приводится к `min` и `max`; отрицательные суммы вводятся, только если `min` меньше нуля. На телефоне открывается цифровая клавиатура (`inputmode="decimal"`).
 
 ---
 

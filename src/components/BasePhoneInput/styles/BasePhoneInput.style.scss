@@ -1,0 +1,46 @@
+.base-phone-input {
+	&__country {
+		position: relative;
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		gap: sz(2px);
+		align-self: stretch;
+		margin-right: sz(4px);
+		padding-right: sz(8px);
+		padding-left: sz(var(--rise-control-padding-x));
+		border-right: 1px solid var(--rise-border);
+		color: inherit;
+		white-space: nowrap;
+
+		select {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			margin: 0;
+			opacity: 0;
+			font: inherit;
+			cursor: pointer;
+		}
+
+		select:disabled {
+			cursor: not-allowed;
+		}
+
+		.base-icon {
+			width: sz(14px);
+			height: sz(14px);
+			color: var(--rise-text-muted);
+		}
+
+		&:has(select:focus-visible) {
+			border-radius: sz(var(--rise-radius-sm));
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: -2px;
+		}
+	}
+
+	&__dial {
+		font-variant-numeric: tabular-nums;
+	}
+}

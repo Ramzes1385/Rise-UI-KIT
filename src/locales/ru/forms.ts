@@ -59,4 +59,8 @@ export const ruForms = {
 		IS_TRUE: 'да',
 		IS_FALSE: 'нет',
 	},
+	/** Телефон: выбор страны */
+	phoneInput: {
+		COUNTRY: 'Код страны',
+	},
 }

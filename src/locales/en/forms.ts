@@ -56,4 +56,8 @@ export const enForms = {
 		IS_TRUE: 'yes',
 		IS_FALSE: 'no',
 	},
+	/** Телефон: выбор страны */
+	phoneInput: {
+		COUNTRY: 'Country code',
+	},
 }
