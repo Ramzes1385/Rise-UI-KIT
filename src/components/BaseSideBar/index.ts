@@ -1,4 +1,4 @@
-export { SIDEBAR_VARIANTS } from './types/BaseSideBar.types'
+export { SIDEBAR_BADGE_COLORS, SIDEBAR_VARIANTS } from './types/BaseSideBar.types'
 
 export type {
 	BaseSideBarEmits,
@@ -9,8 +9,11 @@ export type {
 	BaseSideBarProps,
 	BaseSideBarSlots,
 	SideBarActiveMatch,
+	SideBarBadgeColor,
 	SideBarItem,
 	SideBarItemKey,
+	SideBarItemSelectHandler,
+	SideBarItemType,
 	SideBarItemTo,
 } from './types/BaseSideBar.types'
 

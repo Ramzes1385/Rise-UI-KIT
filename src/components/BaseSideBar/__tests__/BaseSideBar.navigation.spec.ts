@@ -527,9 +527,8 @@ describe('BaseSideBar navigation items', () => {
 		expect(screen.queryByText('Настройки')).not.toBeInTheDocument()
 		expect(screen.queryByText('Профиль')).not.toBeInTheDocument()
 
-		const tooltips = screen.getAllByTestId('base-tooltip')
-
-		expect(tooltips.some(tooltip => tooltip.getAttribute('data-tooltip-text') === 'Настройки')).toBe(true)
+		expect(screen.getAllByTestId('base-tooltip').some(tooltip => tooltip.getAttribute('data-tooltip-text') === 'Настройки')).toBe(false)
+		expect(screen.getByRole('button', { name: 'Настройки' })).toHaveAttribute('aria-haspopup', 'menu')
 	})
 
 	it('в collapsed mode не показывает children у item с to', () => {

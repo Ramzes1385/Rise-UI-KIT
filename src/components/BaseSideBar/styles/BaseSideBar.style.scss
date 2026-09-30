@@ -172,8 +172,21 @@
 		}
 	}
 
-	&--soft .base-side-bar-nav__badge.base-badge {
+	&--soft .base-side-bar-nav__badge--neutral.base-badge {
 		background-color: var(--rise-bg-accented);
+	}
+
+	&__mobile-body.base-slideover__body {
+		display: flex;
+		padding: 0;
+	}
+
+	&--mobile {
+		width: 100%;
+		min-width: 0;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
 	}
 }
 
@@ -202,7 +215,41 @@
 		min-width: 0;
 	}
 
+	&--group {
+		gap: sz(var(--sidebar-gap));
+	}
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__group + &__group,
+	&__item + &__group {
+		margin-top: sz(12px);
+	}
+
+	&__group-label {
+		padding: 0 sz(var(--sidebar-item-pad-x));
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+		@include custom-text(color, var(--rise-text-muted));
+		@include truncate;
+	}
+
+	&__group-line {
+		align-self: center;
+		width: sz(20px);
+		height: 1px;
+		margin: sz(2px) 0;
+		background-color: var(--rise-border);
+	}
+
 	&__item > .base-tooltip,
+	&__flyout,
+	&__flyout > .base-tooltip,
 	&__tooltip-trigger {
 		display: flex;
 		justify-content: center;
@@ -334,9 +381,34 @@
 		@include transition-colors;
 	}
 
-	&__link--current &__badge.base-badge {
+	@each $role in (primary, success, info, warning, error) {
+		&__badge--#{$role}.base-badge {
+			background-color: var(--rise-#{$role}-soft);
+			color: var(--rise-#{$role}-text);
+		}
+
+		&__dot--#{$role} {
+			background-color: var(--rise-#{$role});
+		}
+	}
+
+	&__link--current &__badge--neutral.base-badge,
+	&__link--current &__badge--primary.base-badge {
 		background-color: var(--rise-primary);
 		color: var(--rise-on-primary);
+	}
+
+	&__dot {
+		position: absolute;
+		top: sz(5px);
+		right: sz(5px);
+		width: sz(7px);
+		height: sz(7px);
+		border-radius: sz(var(--rise-radius-full));
+
+		&--neutral {
+			background-color: var(--rise-text-muted);
+		}
 	}
 
 	&__chevron {

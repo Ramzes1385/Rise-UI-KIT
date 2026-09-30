@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSideBar from '../ui/BaseSideBar.vue'
+import { BREAKPOINTS } from '@composables/app/useBreakpoint'
 import { SIDEBAR_VARIANTS } from '../types/BaseSideBar.types'
 import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
@@ -18,6 +19,13 @@ export const argTypes = {
 	activeMatch: { control: 'inline-radio', options: ['exact', 'startsWith'], table: propGroup(ARG_GROUP.behavior) },
 	activeKey: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	linkComponent: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	mobileBreakpoint: {
+		control: 'select',
+		options: [undefined, ...Object.keys(BREAKPOINTS)],
+		table: propGroup(ARG_GROUP.behavior),
+	},
+	isMobileOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	navigationLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	default: { control: false },
 	header: { control: false },
 	footer: { control: false },

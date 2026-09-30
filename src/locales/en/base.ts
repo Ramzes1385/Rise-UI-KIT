@@ -44,6 +44,8 @@ export const enBase = {
 		FILE_WRONG_FORMAT: 'The format of file "{name}" is not supported. Allowed: {formats}',
 	},
 	aria: {
+		/** Ориентир навигации BaseSideBar без title */
+		SIDEBAR_NAVIGATION: 'Main navigation',
 		BREADCRUMBS: 'Navigation',
 		BREADCRUMBS_NAV: 'Breadcrumbs',
 		PAGINATION_PREV: 'Previous page',

@@ -48,6 +48,8 @@ export const ruBase = {
 		FILE_WRONG_FORMAT: 'Формат файла "{name}" не поддерживается. Допустимые: {formats}',
 	},
 	aria: {
+		/** Ориентир навигации BaseSideBar без title */
+		SIDEBAR_NAVIGATION: 'Основная навигация',
 		BREADCRUMBS: 'Навигация',
 		BREADCRUMBS_NAV: 'Хлебные крошки',
 		PAGINATION_PREV: 'Предыдущая страница',

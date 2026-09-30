@@ -1,80 +1,84 @@
 <template>
-	<aside
-		class="base-side-bar"
-		:class="[{ 'base-side-bar--collapsed': isCollapsedState }, variantClass, classes.root]"
-		:style="[variantStyle, customColorStyle, sizeScaleStyle, widthStyle, collapsedWidthStyle, paddingStyle, gapStyle]"
-		role="complementary">
-		<div v-if="hasHeader" class="base-side-bar__header" :class="classes.header">
-			<template v-if="!isCollapsedState">
-				<slot name="header">
-					<h3 v-if="title" class="base-side-bar__title" :class="classes.title">{{ title }}</h3>
-				</slot>
-			</template>
-
-			<BaseTooltip v-if="isCollapsible" :text="toggleLabel" position="right" class="base-side-bar__toggle-tooltip">
-				<BaseButton
-					variant="ghost"
-					:aria-label="toggleLabel"
-					class="base-side-bar__toggle"
-					:custom-class="classes.toggle"
-					@click="handleToggle">
-					<BaseIcon :name="toggleIcon" />
-				</BaseButton>
-			</BaseTooltip>
-		</div>
-
-		<div
-			v-if="hasNavigation && !isLoading && (!isCollapsedState || hasItems)"
-			class="base-side-bar__navigation"
-			:class="classes.navigation">
-			<slot v-if="!isCollapsedState && $slots.navigation" name="navigation" />
-
-			<BaseSideBarNavigation
-				v-else-if="hasItems"
-				:items="items"
-				:active-key="activeKey"
-				:active-path="activePath"
-				:active-match="activeMatch"
-				:link-component="resolvedLinkComponent"
-				:is-collapsed="isCollapsedState"
-				@item-click="handleItemClick">
-				<template v-if="$slots.item" #item="slotProps">
-					<slot name="item" v-bind="slotProps" />
+	<component :is="shellComponent" v-bind="shellProps">
+		<aside
+			v-bind="$attrs"
+			class="base-side-bar"
+			:class="[{ 'base-side-bar--collapsed': isCollapsedState, 'base-side-bar--mobile': isMobileMode }, variantClass, classes.root]"
+			:style="[variantStyle, customColorStyle, sizeScaleStyle, widthStyle, collapsedWidthStyle, paddingStyle, gapStyle]"
+			role="complementary">
+			<div v-if="hasHeader" class="base-side-bar__header" :class="classes.header">
+				<template v-if="!isCollapsedState">
+					<slot name="header">
+						<h3 v-if="title" class="base-side-bar__title" :class="classes.title">{{ title }}</h3>
+					</slot>
 				</template>
 
-				<template v-if="$slots.icon" #icon="slotProps">
-					<slot name="icon" v-bind="slotProps" />
-				</template>
+				<BaseTooltip v-if="isCollapsible" :text="toggleLabel" position="right" class="base-side-bar__toggle-tooltip">
+					<BaseButton
+						variant="ghost"
+						:aria-label="toggleLabel"
+						class="base-side-bar__toggle"
+						:custom-class="classes.toggle"
+						@click="handleToggle">
+						<BaseIcon :name="toggleIcon" />
+					</BaseButton>
+				</BaseTooltip>
+			</div>
 
-				<template v-if="$slots.label" #label="slotProps">
-					<slot name="label" v-bind="slotProps" />
-				</template>
+			<nav
+				v-if="hasNavigation && !isLoading && (!isCollapsedState || hasItems)"
+				class="base-side-bar__navigation"
+				:class="classes.navigation"
+				:aria-label="navigationLabelText">
+				<slot v-if="!isCollapsedState && $slots.navigation" name="navigation" />
 
-				<template v-if="$slots.badge" #badge="slotProps">
-					<slot name="badge" v-bind="slotProps" />
-				</template>
-			</BaseSideBarNavigation>
-		</div>
+				<BaseSideBarNavigation
+					v-else-if="hasItems"
+					:items="items"
+					:active-key="activeKey"
+					:active-path="activePath"
+					:active-match="activeMatch"
+					:link-component="resolvedLinkComponent"
+					:is-collapsed="isCollapsedState"
+					@item-click="handleItemClick">
+					<template v-if="$slots.item" #item="slotProps">
+						<slot name="item" v-bind="slotProps" />
+					</template>
 
-		<div v-if="isLoading" class="base-side-bar__loading" :class="classes.loading">
-			<BaseSkeleton shape="rect" :width="'100%'" :height="20" />
-			<BaseSkeleton shape="rect" :width="'82%'" :height="20" />
-			<BaseSkeleton shape="rect" :width="'64%'" :height="20" />
-			<BaseSkeleton shape="rect" :width="'92%'" :height="20" />
-		</div>
+					<template v-if="$slots.icon" #icon="slotProps">
+						<slot name="icon" v-bind="slotProps" />
+					</template>
 
-		<div v-if="hasBody && !isCollapsedState && !isLoading" class="base-side-bar__body" :class="classes.body">
-			<slot />
-		</div>
+					<template v-if="$slots.label" #label="slotProps">
+						<slot name="label" v-bind="slotProps" />
+					</template>
 
-		<div v-if="hasFooter && !isLoading" class="base-side-bar__footer" :class="classes.footer">
-			<slot name="footer" />
-		</div>
+					<template v-if="$slots.badge" #badge="slotProps">
+						<slot name="badge" v-bind="slotProps" />
+					</template>
+				</BaseSideBarNavigation>
+			</nav>
 
-		<div v-if="hasCollapsedContent && isCollapsedState" class="base-side-bar__collapsed" :class="classes.collapsed">
-			<slot name="collapsedContent" />
-		</div>
-	</aside>
+			<div v-if="isLoading" class="base-side-bar__loading" :class="classes.loading">
+				<BaseSkeleton shape="rect" :width="'100%'" :height="20" />
+				<BaseSkeleton shape="rect" :width="'82%'" :height="20" />
+				<BaseSkeleton shape="rect" :width="'64%'" :height="20" />
+				<BaseSkeleton shape="rect" :width="'92%'" :height="20" />
+			</div>
+
+			<div v-if="hasBody && !isCollapsedState && !isLoading" class="base-side-bar__body" :class="classes.body">
+				<slot />
+			</div>
+
+			<div v-if="hasFooter && !isLoading" class="base-side-bar__footer" :class="classes.footer">
+				<slot name="footer" />
+			</div>
+
+			<div v-if="hasCollapsedContent && isCollapsedState" class="base-side-bar__collapsed" :class="classes.collapsed">
+				<slot name="collapsedContent" />
+			</div>
+		</aside>
+	</component>
 </template>
 
 <script setup lang="ts">
@@ -92,6 +96,7 @@ import type { BaseSideBarEmits, BaseSideBarProps, BaseSideBarSlots } from '../ty
 
 defineOptions({
 	name: 'BaseSideBar',
+	inheritAttrs: false,
 })
 
 const props = withDefaults(
@@ -123,6 +128,10 @@ const {
 	collapsedWidthStyle,
 	gapStyle,
 	isCollapsedState,
+	isMobileMode,
+	shellComponent,
+	shellProps,
+	navigationLabelText,
 	toggleLabel,
 	handleToggle,
 	toggleIcon,

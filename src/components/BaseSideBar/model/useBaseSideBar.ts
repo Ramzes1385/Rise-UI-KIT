@@ -1,12 +1,44 @@
-import { UI_TEXT } from '@/locales/messages'
 import { computed, ref, useSlots, watch } from 'vue'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { SideBarPassthrough } from './SideBarPassthrough'
+import { BaseSlideover } from '@components/BaseSlideover'
 import { usePadding } from '@composables/base/usePadding'
+import { useBreakpoint } from '@composables/app/useBreakpoint'
 import { useLinkComponent } from '@composables/interaction/useLink'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseSideBarEmits, SideBarItem, SideBarProps } from '../types/BaseSideBar.types'
 
 const SIDEBAR_ELEMENTS = ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed']
+
+const SLIDEOVER_BASE_WIDTH = 420
+
+function useSideBarMobile(props: SideBarProps, emit: BaseSideBarEmits) {
+	const { isSmallerThan } = useBreakpoint()
+	const isMobileMode = computed(() => props.mobileBreakpoint !== undefined && isSmallerThan(props.mobileBreakpoint))
+	const setMobileOpen = (value: boolean): void => emit('update:isMobileOpen', value)
+
+	return {
+		isMobileMode,
+		shellComponent: computed(() => (isMobileMode.value ? BaseSlideover : SideBarPassthrough)),
+		shellProps: computed(() => {
+			if (!isMobileMode.value) return {}
+			return {
+				isOpen: props.isMobileOpen === true,
+				side: 'left',
+				title: props.title || UI_ARIA.MENU,
+				width: Math.round((props.width / SLIDEOVER_BASE_WIDTH) * 100),
+				customClass: { body: 'base-side-bar__mobile-body' },
+				sizeScale: props.sizeScale,
+				'onUpdate:isOpen': setMobileOpen,
+			}
+		}),
+		closeAfterNavigation(item: SideBarItem): void {
+			const isDisclosure = Boolean(item.children?.length) && !item.to
+			if (isMobileMode.value && props.isMobileOpen && !isDisclosure) setMobileOpen(false)
+		},
+	}
+}
 
 function useCollapsedState(props: SideBarProps, emit: BaseSideBarEmits) {
 	const { wasPropPassed } = useExplicitPropDetection()
@@ -45,12 +77,13 @@ function useSideBarLayout(props: SideBarProps) {
 	}
 }
 
-function useSideBarSections(props: SideBarProps) {
+function useSideBarSections(props: SideBarProps, isMobileMode: { value: boolean }) {
 	const slots = useSlots()
 	const hasItems = computed(() => Boolean(props.items?.length))
 	return {
 		hasItems,
-		hasHeader: computed(() => Boolean(slots.header) || Boolean(props.title) || props.isCollapsible),
+		navigationLabelText: computed(() => props.navigationLabel || props.title || UI_ARIA.SIDEBAR_NAVIGATION),
+		hasHeader: computed(() => !isMobileMode.value && (Boolean(slots.header) || Boolean(props.title) || props.isCollapsible)),
 		hasNavigation: computed(() => Boolean(slots.navigation) || hasItems.value),
 		hasFooter: computed(() => Boolean(slots.footer)),
 		hasBody: computed(() => Boolean(slots.default)),
@@ -60,6 +93,7 @@ function useSideBarSections(props: SideBarProps) {
 
 export function useBaseSideBar(props: SideBarProps, emit: BaseSideBarEmits) {
 	const collapsed = useCollapsedState(props, emit)
+	const mobile = useSideBarMobile(props, emit)
 	const appLinkComponent = useLinkComponent()
 
 	return {
@@ -67,10 +101,13 @@ export function useBaseSideBar(props: SideBarProps, emit: BaseSideBarEmits) {
 		...useStandardBaseComponent('base-side-bar', props, SIDEBAR_ELEMENTS),
 		...useSideBarLayout(props),
 		...collapsed,
+		isCollapsedState: computed(() => !mobile.isMobileMode.value && collapsed.isCollapsedState.value),
+		...mobile,
 		toggleIcon: 'menu',
-		...useSideBarSections(props),
+		...useSideBarSections(props, mobile.isMobileMode),
 		handleItemClick(item: SideBarItem, event: MouseEvent): void {
 			emit('itemClick', item, event)
+			mobile.closeAfterNavigation(item)
 		},
 	}
 }

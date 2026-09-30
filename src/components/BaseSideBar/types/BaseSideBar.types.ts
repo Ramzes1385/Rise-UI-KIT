@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import type { PaddingProp } from '@composables/base/usePadding'
+import type { BreakpointName } from '@composables/app/useBreakpoint'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -17,9 +18,25 @@ export type SideBarItemTo = string | Record<string, unknown>
 
 export type SideBarActiveMatch = 'exact' | 'startsWith'
 
+export const SIDEBAR_BADGE_COLORS = ['neutral', 'primary', 'success', 'info', 'warning', 'error'] as const
+
+/** Цвет бейджа пункта */
+export type SideBarBadgeColor = (typeof SIDEBAR_BADGE_COLORS)[number]
+
+/**
+ * Тип пункта.
+ *
+ * item — пункт навигации (ссылка или кнопка).
+ * group — раздел: подпись и пункты `children` под ней, всегда раскрыт. В свёрнутой панели вместо подписи — линия.
+ */
+export type SideBarItemType = 'item' | 'group'
+
 export interface SideBarItem {
 	/** Уникальный ключ пункта */
 	key?: SideBarItemKey
+
+	/** Тип пункта: пункт навигации или раздел с подписью. По умолчанию item */
+	type?: SideBarItemType
 
 	/** Заголовок пункта */
 	label: string
@@ -30,8 +47,11 @@ export interface SideBarItem {
 	/** Ссылка для навигации */
 	to?: SideBarItemTo
 
-	/** Бейдж справа от пункта */
+	/** Бейдж справа от пункта. В свёрнутой панели — точка у иконки, значение добавляется к имени пункта */
 	badge?: string | number
+
+	/** Цвет бейджа. По умолчанию neutral; у текущего пункта нейтральный бейдж — цвета primary */
+	badgeColor?: SideBarBadgeColor
 
 	/** Обработчик клика */
 	click?: (item: SideBarItem, event: MouseEvent) => void
@@ -45,9 +65,17 @@ export interface SideBarItem {
 	/** Разделитель после элемента */
 	hasDivider?: boolean
 
-	/** Дочерние элементы */
+	/**
+	 * Дочерние элементы.
+	 *
+	 * Пункт без `to` раскрывает их по клику, пункт с `to` показывает всегда. В свёрнутой панели пункт с детьми
+	 * открывает меню справа: сам пункт (если у него есть `to`) и его дети.
+	 */
 	children?: SideBarItem[]
 }
+
+/** Выбор пункта в меню свёрнутой панели (событие — клик или нажатие клавиши) */
+export type SideBarItemSelectHandler = (item: SideBarItem, event: Event) => void
 
 /**
  * Props, которые передаются в слоты item/icon/label/badge
@@ -153,11 +181,31 @@ export interface BaseSideBarProps extends BaseComponentProps<
 	 * или `a`: UI Kit не зависит от vue-router. Внешние адреса (`https://…`) всегда открываются обычной ссылкой.
 	 */
 	linkComponent?: string | Component
+
+	/**
+	 * Доступное имя ориентира навигации (`<nav>`).
+	 *
+	 * По умолчанию — `title`, без него — «Основная навигация».
+	 */
+	navigationLabel?: string
+
+	/**
+	 * Мобильный режим: на экране уже этого брейкпоинта панель не стоит в раскладке, а выезжает слева поверх
+	 * страницы (BaseSlideover: затемнение, Escape, ловушка фокуса). Открывает её приложение через
+	 * `v-model:isMobileOpen`; переход по ссылке закрывает панель. Без пропа мобильного режима нет.
+	 */
+	mobileBreakpoint?: BreakpointName
+
+	/** v-model открытой панели в мобильном режиме */
+	isMobileOpen?: boolean
 }
 
 export interface BaseSideBarEmits {
 	/** Обновление v-model:isCollapsed */
 	(event: 'update:isCollapsed', value: boolean): void
+
+	/** Обновление v-model:isMobileOpen */
+	(event: 'update:isMobileOpen', value: boolean): void
 
 	/** Сайдбар был свёрнут */
 	(event: 'collapse'): void
@@ -223,6 +271,9 @@ export interface BaseSideBarNavigationProps extends BaseComponentProps<(typeof S
 
 	/** Свёрнут ли сайдбар */
 	isCollapsed?: boolean
+
+	/** Список — пункты раздела (`type: 'group'`): без отступа вложенного уровня */
+	isGroup?: boolean
 }
 
 export interface BaseSideBarNavigationEmits {
@@ -244,4 +295,4 @@ export interface BaseSideBarNavigationSlots {
 	badge?: (props: BaseSideBarItemSlotProps) => unknown
 }
 
-export type SideBarProps = PropsWithDefaults<BaseSideBarProps, 'isCollapsible'>
+export type SideBarProps = PropsWithDefaults<BaseSideBarProps, 'isCollapsible' | 'width'>
