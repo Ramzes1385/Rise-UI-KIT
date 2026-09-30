@@ -20,7 +20,7 @@ src/locales/     ru/ en/ по областям, messages.ts, state.ts (formatMes
 src/styles/      _tokens.scss, _mixins.scss, _functions.scss (sz())
 src/stories/     Introduction.mdx, foundations/, blocks/, helpers/ (storySource, useStorySetup, play)
 src/plugin/      createUiKitPlugin, registry/
-build/           commitlint/ husky/ lib/ storybook/ tests/ (vitest, playwright, visual.ts) plugins/ release/
+build/           commitlint/ config/ husky/ lib/ media-package/ plugins/ release/ storybook/ tests/ (vitest, playwright, visual.ts) utils/
 scripts/         проверки (check-*.mjs), create-component, lint-new-files, serve-storybook-static
 docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 ```
@@ -114,8 +114,8 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 
 ## Окружение: подводные камни
 
-- `npm ci` падает: `package-lock.json` не содержит `@emnapi/runtime@1.11.3` (нужен `@napi-rs/wasm-runtime` как peer), ошибка `EUSAGE … Missing: @emnapi/runtime@1.11.3 from lock file`. Обход без правки lock-файла — `npm install --no-save --no-audit --no-fund` (проверено: `package-lock.json` не меняется). Исправлять lock-файл — отдельной задачей.
-- `npm install` запускает `prepare` → husky ставит хуки из `build/husky`.
+- Установка зависимостей — `npm ci` (по `package-lock.json`, как в CI).
+- `npm ci` и `npm install` запускают `prepare` → husky ставит хуки из `build/husky`.
 - Node `>=22.19.0` (`.nvmrc` — 22), npm `>=10.9.2`. Скрипты установки пакетов разрешаются в `package.json` → `allowScripts` (CONTRIBUTING, раздел 12).
 - E2E и скриншот-тесты сами поднимают dev-сервер Storybook (`npm run storybook -- --ci`); с `PLAYWRIGHT_REUSE_SERVER=true` используют уже запущенный (`build/tests/playwright.config.ts`).
 - Скрипты покрытия задают `NODE_OPTIONS=--max-old-space-size=16384`: на машине с меньшей памятью запускай тесты по путям.

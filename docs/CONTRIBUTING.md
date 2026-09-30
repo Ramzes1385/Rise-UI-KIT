@@ -602,18 +602,25 @@ ESLint, покрытие и сборка понимают вложенные п�
 - Тесты лежат в `__tests__` своей папки: `src/composables/<область>/useXxx/__tests__/useXxx.spec.ts`,
   `src/utils/<область>/xxxUtils/__tests__/xxxUtils.spec.ts`, `src/locales/__tests__/…`. Тесты пакета целиком (границы входов,
   `createUiKitPlugin`) и хелпер скриншотных тестов — в `build/tests/`.
-- Props: `withDefaults(defineProps<BaseComponentProps>(), {...})` — без inline-типов
+- Props: `withDefaults(defineProps<BaseComponentProps>(), kitDefaults('BaseComponent', {...}))` — без inline-типов
 - Emits: `defineEmits<BaseComponentEmits>()` — без inline-типов
-- Defaults: через `withDefaults`, не через `computed` fallback
+- Defaults: через `withDefaults` и `kitDefaults` из `@composables/base/useDefaults`, не через `computed` fallback.
+  `kitDefaults` превращает каждое значение в функцию, которая сначала берёт значение из настроек плагина
+  (`createUiKitPlugin({ defaults })`: `defaults.BaseComponent`, затем `defaults.global`). Функции — фабрики объектов
+  и массивов — остаются как есть, их настройками не переопределить. Общие умолчания (`DEFAULT_VARIANT`,
+  `SIZE_SCALE_DEFAULT`) импортируются из `@composables/base/useBaseComponent`
 
 ```vue
 <script setup lang="ts">
 // ✅ Правильно
-const props = withDefaults(defineProps<BaseButtonProps>(), {
-  variant: 'default',
-  sizeScale: 100,
-  isLoading: false,
-})
+const props = withDefaults(
+  defineProps<BaseButtonProps>(),
+  kitDefaults('BaseButton', {
+    variant: DEFAULT_VARIANT,
+    isLoading: false,
+    sizeScale: SIZE_SCALE_DEFAULT,
+  }),
+)
 
 // ❌ Неправильно — избыточный computed
 const variant = computed(() => props.variant ?? 'default')
@@ -691,7 +698,13 @@ import type { ... } from './types/xxxUtils.types'
 | Stylelint | SCSS по `stylelint-config-standard-scss`, классы по БЭМ. Настройки — `package.json` → `stylelint` | `npm run lint:styles` |
 | knip | Неиспользуемые файлы, экспорты, типы и зависимости. Настройки — `package.json` → `knip` | `npm run lint:unused` |
 
-Все четыре запускает git-хук pre-commit и CI.
+Все четыре проверяет CI. Git-хуки лежат в `build/husky/` (их ставит скрипт `prepare` при `npm ci` и `npm install`):
+
+| Хук | Что запускает |
+|---|---|
+| `pre-commit` | `npm run lint`, `npm run lint:new`, `npm run lint:styles`, `npm run lint:unused`, `npm run format:check` — несколько минут |
+| `commit-msg` | commitlint с правилами `build/commitlint/commitlint.config.cjs` (раздел 3.3) |
+| `pre-push` | `npm run test:unit` |
 
 **Неиспользуемый код не оставляем.** Переменные, функции и импорты проверяет ESLint — и в тестах со stories тоже.
 Файлы, экспорты, типы и зависимости проверяет knip: экспорт, который нигде не импортируется, удаляется или перестаёт

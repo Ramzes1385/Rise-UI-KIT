@@ -27,8 +27,8 @@
 ## Быстрый старт
 
 ```bash
-# Установка зависимостей
-npm install
+# Установка зависимостей по package-lock.json
+npm ci
 
 # Разработка: Storybook (отдельного демо-приложения нет)
 npm run storybook
@@ -55,11 +55,17 @@ Rise-UI-KIT/
 │   ├── icons/            # Иконки
 │   ├── styles/           # Дизайн-токены (_tokens.scss), миксины, функция sz()
 │   └── stories/          # Storybook: Introduction, Foundations, хелперы stories
-├── build/                # Конфигурация сборки
-│   ├── release/          # semantic-release конфиги
-│   ├── ci/               # CI/CD настройки
+├── build/                # Конфигурация сборки и инструментов
+│   ├── commitlint/       # правила сообщений коммитов
+│   ├── config/           # общие части Vite-конфигов: алиасы, SCSS, сборка библиотеки
+│   ├── husky/            # git-хуки
 │   ├── lib/              # Vite конфиг для библиотеки
-│   └── tests/            # Vitest и Playwright конфиги
+│   ├── media-package/    # заготовка отдельного пакета плеера
+│   ├── plugins/          # Vite-плагины: Vue, SVG, спрайт иконок
+│   ├── release/          # semantic-release конфиги
+│   ├── storybook/        # конфигурация Storybook
+│   ├── tests/            # Vitest и Playwright конфиги, тесты пакета целиком
+│   └── utils/            # вспомогательные функции сборки
 ├── docs/                 # Документация (эта папка)
 ├── scripts/              # Вспомогательные скрипты
 └── .github/workflows/    # GitHub Actions

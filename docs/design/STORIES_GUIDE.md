@@ -63,16 +63,22 @@ export const Variants: StoryObj<typeof meta> = {
 
 Заголовок `title` определяет место в сайдбаре и id story: `Element/BaseButton` → `element-basebutton--variants`.
 
+Порядок разделов в сайдбаре задаёт `storySort` в `build/storybook/preview.ts`.
+
 | Раздел | Компоненты |
 |---|---|
-| `Foundations` | Страницы токенов: Colors, Typography, Radius & Shadows, Sizing, Theming |
-| `Element` | BaseAlert, BaseAnimation, BaseAvatar, BaseBadge, BaseButton, BaseCard, BaseChip, BaseIcon, BaseImage, BaseLoader, BaseProgress, BaseSeparator, BaseSkeleton, BaseText |
-| `Form` | BaseCheckbox, BaseColorPicker, BaseDatePicker, BaseFileUpload, BaseForm, BaseFormField, BaseInput, BasePin, BaseRadio, BaseRange, BaseRating, BaseSearch, BaseSelect, BaseSwitch, BaseTextarea |
-| `Data` | BaseAccordion, BaseCalendar, BaseEmpty, BaseSlider, BaseTable, BaseTree |
-| `Navigation` | BaseBreadcrumbs, BaseMegaMenu, BaseMenu, BasePagination, BaseSideBar, BaseStepper, BaseTabs |
-| `Overlay` | BaseDropdown, BaseModal, BaseNotification, BasePopover, BaseSlideover, BaseTooltip, BaseTour |
-| `Chat` | BaseChat |
+| `Introduction` | Вводная страница `src/stories/Introduction.mdx` |
+| `Foundations` | Страницы токенов: Colors, Typography, Radius & Shadows, Sizing, Theming (`src/stories/foundations/`) |
+| `Blocks` | Готовые экраны из компонентов: Auth (вход, регистрация), Settings, Dashboard (`src/stories/blocks/`) |
+| `Element` | BaseAlert, BaseAnimation, BaseAvatar, BaseAvatarGroup, BaseBadge, BaseButton, BaseButtonGroup, BaseCard, BaseChip, BaseColorModeButton, BaseFab, BaseIcon, BaseImage, BaseKbd, BaseLoader, BaseMarkdown, BaseProgress, BaseQrCode, BaseSeparator, BaseSkeleton, BaseSplitButton, BaseText, BaseUser |
+| `Form` | BaseAddressInput, BaseAutocomplete, BaseAvatarCropper, BaseCheckbox, BaseCheckboxGroup, BaseColorPicker, BaseDadataInput, BaseDatePicker, BaseFileUpload, BaseForm, BaseFormField, BaseInplace, BaseInput, BaseInputNumber, BaseInputTags, BaseMention, BaseMoneyInput, BasePhoneInput, BasePin, BaseRadio, BaseRange, BaseRating, BaseRequisiteInput, BaseSearch, BaseSegmented, BaseSelect, BaseSignaturePad, BaseSwitch, BaseTextarea, BaseTimePicker |
+| `Data` | BaseAccordion, BaseCalendar, BaseChecklist, BaseEmpty, BaseFilterBuilder, BaseHeatmap, BaseInfiniteScroll, BaseJsonViewer, BaseKanban, BasePieChart, BaseSlider, BaseSparkline, BaseTable, BaseTextDiff, BaseTimeline, BaseTree, BaseVirtualList |
+| `Navigation` | BaseBackTop, BaseBreadcrumbs, BaseLink, BaseMegaMenu, BaseMenu, BasePagination, BaseSideBar, BaseStepper, BaseTabs, BaseToolbar |
+| `Layout` | BaseContainer, BaseFooter, BaseHeader, BaseLayout, BaseScrollArea, BaseSplitter |
+| `Overlay` | BaseApp, BaseCommandPalette, BaseConfirm, BaseContextMenu, BaseDrawer, BaseDropdown, BaseDropdownMenu, BaseModal, BaseNotification, BaseNotificationCenter, BasePopconfirm, BasePopover, BaseSlideover, BaseTooltip, BaseTour |
+| `Chat` | BaseAiMessage, BaseChat, BaseCommentThread, BaseEmojiPicker, BasePromptInput, BaseReasoning, BaseToolCall |
 | `Editor` | BaseEditor |
+| `Media` | BaseAudioPlayer, BaseImageCompare, BaseMap, BaseMediaPlayer, BaseSubtitleEditor, BaseVoiceRecorder, BaseWaveform |
 
 ## 3. Описание и argTypes
 
@@ -216,7 +222,7 @@ for (const theme of VISUAL_THEMES) {
 ```
 
 - Для оверлеев — `expectStoryScreenshot(page, name, 'page')`.
-- Baseline-скриншоты создаются только осознанно: `npm run test:visual:update` локально или метка `visual:update-baselines` у PR (CI перегенерирует их на Linux).
+- Скриншот-тесты запускаются только с `--update-snapshots=none`: `npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots=none`. Эталоны снимков создаёт и обновляет только владелец; `test:visual:update` и метку `visual:update-baselines` не используйте. Каждое ожидаемое визуальное изменение опишите в [VISUAL_CHANGES.md](./VISUAL_CHANGES.md).
 
 **E2E-тесты** (`__tests__/BaseX.e2e.spec.ts`) открывают stories по id. При переименовании story или раздела обновите id в e2e. Сценарий теста не меняйте.
 
