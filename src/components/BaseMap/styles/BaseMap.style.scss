@@ -1,0 +1,74 @@
+.base-map {
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: sz(160px);
+	overflow: hidden;
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include custom-bg(background-color, var(--rise-bg-muted));
+	@include custom-text(color, var(--rise-text));
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&--ghost {
+		border-color: transparent;
+		border-radius: 0;
+	}
+
+	&__canvas {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		height: 100%;
+		padding: sz(16px);
+	}
+
+	&__marker {
+		--base-map-marker-color: var(--rise-primary);
+
+		position: relative;
+		display: block;
+		width: sz(24px);
+		height: sz(24px);
+		padding: 0;
+		border: 2px solid var(--rise-bg);
+		border-radius: 50% 50% 50% 0;
+		background: var(--base-map-marker-color);
+		box-shadow: var(--rise-shadow-sm);
+		cursor: pointer;
+		transform: translate(-50%, -100%) rotate(-45deg);
+		@include focus-ring;
+
+		&::after {
+			content: attr(data-label);
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			padding: sz(2px) sz(6px);
+			border-radius: sz(var(--rise-radius-sm));
+			background: var(--rise-bg-inverted);
+			color: var(--rise-text-inverted);
+			white-space: nowrap;
+			opacity: 0;
+			pointer-events: none;
+			transform: rotate(45deg) translate(-50%, sz(-4px));
+			transform-origin: left bottom;
+			@include text-size(xs);
+		}
+
+		&:hover::after,
+		&:focus-visible::after {
+			opacity: 1;
+		}
+	}
+}

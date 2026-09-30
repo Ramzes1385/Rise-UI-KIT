@@ -74,6 +74,9 @@ export const UI_IMAGE_COMPARE = localized('imageCompare')
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')
 
+/** Карта */
+export const UI_MAP = localized('map')
+
 /** Сравнение текстов */
 export const UI_TEXT_DIFF = localized('textDiff')
 

@@ -114,6 +114,18 @@ dadataRequisites(first) // { inn: '7707083893', kpp: '773601001', ogrn: '1027700
 
 ---
 
+## scriptUtils
+
+`loadScript(src, options)` загружает внешний скрипт по требованию: один тег `<script async>` на адрес, повторный вызов ждёт ту же загрузку, после ошибки тег удаляется и следующий вызов пробует снова. `callbackName` — имя глобальной функции, которую вызовет сам скрипт (параметр `callback=` у Google Maps), `attributes` — атрибуты тега (`nonce`). `forgetScript(src)` убирает тег и запись о загрузке. На ней BaseMap загружает API поставщиков карт.
+
+```ts
+import { loadScript } from '@ramzes1385/rise-ui-kit/utils'
+
+await loadScript('https://api-maps.yandex.ru/v3/?apikey=KEY&lang=ru_RU', { attributes: { nonce: cspNonce } })
+```
+
+---
+
 ## domUtils
 
 `getFixedOrigin(container)` — где на экране начало координат для `position: fixed` внутри `container`. Обычно это окно (`{ x: 0, y: 0 }`), но предок с `transform`, `filter`, `contain` или `container-type` становится точкой отсчёта: так Storybook оборачивает истории на странице Docs, так же ведут себя анимированные окна. Выпадающие панели, подсказки и контекстное меню кита уже учитывают это; функция нужна своим fixed-элементам.
@@ -150,6 +162,7 @@ paginationUtils
 rangeUtils
 ratingUtils
 schemaUtils
+scriptUtils
 subtitleUtils
 tableUtils
 timeUtils

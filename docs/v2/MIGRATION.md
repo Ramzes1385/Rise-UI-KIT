@@ -947,3 +947,13 @@
 - Новый раздел словаря `dadata` (`UI_DADATA`: `ADDRESS`, `PARTY`, `BANK`, `FIO`, `EMAIL`) — имя поля без `label`. Свой язык через `defineLocale` должен содержать этот раздел.
 
 **Что сделать.** Для своего словаря — добавить раздел `dadata`. Остальное — ничего; реквизиты из подсказки передавайте в BaseRequisiteInput из второго аргумента `select`.
+
+### Р.32 — компонент BaseMap, Яндекс Карты
+
+**Что изменилось.**
+- Новый компонент `BaseMap` (раздел Media): общий API карты — `provider`, `apiKey`, `center` (`v-model:center`, `{ lat, lng }`), `zoom` (`v-model:zoom`), `markers`, `language`, `height`, `ariaLabel`; события `click`, `marker-click`, `ready`, `error`; слот `placeholder`. Поставщик в этой порции — `yandex` (API v3). Экспорт: `BaseMap`, `MAP_PROVIDERS`, `MAP_VARIANTS`, типы `MapCoordinates`, `MapMarker`, `MapProvider`, `MapStatus`, `MapVariant`, `MapView`.
+- Ключ для всех карт — настройка плагина `defaults: { BaseMap: { apiKey } }`. Без ключа внешний скрипт не загружается.
+- Новые утилиты `loadScript` и `forgetScript` (docs/reference/UTILS.md, «scriptUtils»).
+- Новый раздел словаря `map` (`UI_MAP`).
+
+**Что сделать.** Для своего словаря — добавить раздел `map`. Если страница защищена CSP, разрешите домены поставщика (`api-maps.yandex.ru` и его ресурсы) в `script-src` и `img-src`.

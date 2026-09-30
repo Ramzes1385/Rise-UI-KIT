@@ -258,6 +258,29 @@ const requisites = reactive({ inn: '', kpp: '', ogrn: '' })
 
 ---
 
+## BaseMap
+
+Карта с общим API для поставщиков (`provider`: `yandex` — Яндекс Карты API v3): центр (`v-model:center`, `{ lat, lng }`), масштаб (`v-model:zoom`), метки (`markers`: `{ id, coordinates, title?, color? }`), события `click` (координаты точки), `marker-click`, `ready`, `error`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseMap, type MapMarker } from '@ramzes1385/rise-ui-kit'
+
+const center = ref({ lat: 55.751244, lng: 37.618423 })
+const zoom = ref(12)
+const markers: MapMarker[] = [{ id: 'office', coordinates: { lat: 55.7494, lng: 37.5912 }, title: 'Офис' }]
+</script>
+
+<template>
+	<BaseMap v-model:center="center" v-model:zoom="zoom" :api-key="yandexKey" :markers="markers" height="360px" @marker-click="m => open(m.id)" />
+</template>
+```
+
+Скрипт поставщика загружается по требованию и один раз на страницу — только когда есть `apiKey`; ключ можно задать для всех карт настройкой плагина `defaults: { BaseMap: { apiKey } }`. Без ключа или при ошибке — заглушка (слот `placeholder` со `status`). Если API уже загружено приложением (`window.ymaps3`), скрипт не загружается повторно. Язык подписей — по языку кита или `language`. Метки — кнопки с подписью (Tab, Enter), область карты — `role="region"` с именем «Карта» (`ariaLabel`).
+
+---
+
 ## BaseInputTags
 
 Поле тегов: Enter или запятая (`separators`) добавляют тег, вставка «a, b, c» — несколько тегов, повторы не добавляются (`isUnique`), `maxTags` ограничивает число, `validate` отклоняет тег (текст остаётся в поле). В пустой строке ← или Backspace ведут к последнему тегу, ←/→ — между тегами, Backspace и Delete удаляют тег.
@@ -2527,6 +2550,7 @@ BaseKbd
 BaseLayout
 BaseLink
 BaseLoader
+BaseMap
 BaseMarkdown
 BaseMediaPlayer  # вход @ramzes1385/rise-ui-kit/media
 BaseMegaMenu

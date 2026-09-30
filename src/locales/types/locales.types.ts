@@ -48,6 +48,7 @@ export interface UiKitLocale {
 	charts: Section<'charts'>
 	imageCompare: Section<'imageCompare'>
 	jsonViewer: Section<'jsonViewer'>
+	map: Section<'map'>
 	textDiff: Section<'textDiff'>
 	qrCode: Section<'qrCode'>
 	signaturePad: Section<'signaturePad'>

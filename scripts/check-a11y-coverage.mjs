@@ -111,6 +111,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseNotificationCenter',
 	'BaseCommentThread',
 	'BaseDadataInput',
+	'BaseMap',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -198,6 +199,7 @@ const LOADING_COMPONENTS = new Set([
 	'BaseChat',
 	'BaseSlider',
 	'BaseDadataInput',
+	'BaseMap',
 ])
 
 const EMPTY_COMPONENTS = new Set([

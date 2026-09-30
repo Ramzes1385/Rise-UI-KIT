@@ -8,6 +8,7 @@ import { LAZY_COMPONENTS } from './lazy'
 import { BaseApp } from '../../components/BaseApp'
 import { BaseFab } from '../../components/BaseFab'
 import { BaseKbd } from '../../components/BaseKbd'
+import { BaseMap } from '../../components/BaseMap'
 import { BasePin } from '../../components/BasePin'
 import { BaseCard } from '../../components/BaseCard'
 import { BaseChip } from '../../components/BaseChip'
@@ -171,6 +172,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseLayout,
 	BaseLink,
 	BaseLoader,
+	BaseMap,
 	BaseMarkdown,
 	BaseMegaMenu,
 	BaseMention,

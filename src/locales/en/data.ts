@@ -89,4 +89,15 @@ export const enData = {
 		CHANGE: 'Change',
 		TEXT: 'Text',
 	},
+	/** Карта: имя области, метки, заглушка без ключа и ошибка загрузки */
+	map: {
+		LABEL: 'Map',
+		MARKER: 'Marker {id}',
+		LOADING: 'Loading map...',
+		NO_KEY_TITLE: 'API key required',
+		NO_KEY: 'The map ({provider}) needs a key: pass it to apiKey or to the plugin options',
+		ERROR_TITLE: 'Map failed to load',
+		ERROR: 'Check the API key and access to {provider}',
+		YANDEX: 'Yandex Maps',
+	},
 }

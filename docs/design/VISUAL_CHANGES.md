@@ -844,3 +844,7 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 ### BaseDadataInput (Р.31) — новый компонент
 
 Новые истории `form-basedadatainput--*`: Default, Kinds, WithRequisites, LongContent, Variants, Sizes, CustomColor, Disabled, WithError, Loading, Empty. Вид — как у BaseAddressInput (BaseAutocomplete на BaseInput): у организации и банка во второй строке подсказки — «ИНН …» или «БИК …» и адрес через «·». Нужны новые эталоны `base-dadata-input-{with-error,disabled,variants,sizes}-{light,dark}.png` (`__tests__/BaseDadataInput.visual.spec.ts`), их делает владелец.
+
+### BaseMap (Р.32) — новый компонент
+
+Новые истории `media-basemap--*`: Default (заглушка «Нужен ключ API» — BaseEmpty `ghost` с иконкой `pin` на фоне `bg-muted` в рамке), Markers и Loading (демо-поставщик без сети: сетка на `bg-muted`, метки-«капли» цвета `primary` или своего, подпись метки при наведении и фокусе), Variants, Sizes. Нужны новые эталоны `base-map-{default,variants}-{light,dark}.png` (`__tests__/BaseMap.visual.spec.ts`) — делает владелец. Внешние скрипты в историях и скриншотах не загружаются.

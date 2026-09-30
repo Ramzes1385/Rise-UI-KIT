@@ -68,7 +68,7 @@ describe('createUiKitPlugin', () => {
 		const wrapper = mount({ template: '<BaseButton>Сохранить</BaseButton>' }, { global: { plugins: [uiKitPlugin] } })
 
 		expect(wrapper.get('button').classes()).toContain('base-button')
-		expect(Object.keys(UI_COMPONENTS)).toHaveLength(114)
+		expect(Object.keys(UI_COMPONENTS)).toHaveLength(115)
 		expect(
 			Object.entries(UI_COMPONENTS)
 				.filter(([, component]) => '__asyncLoader' in component)
