@@ -21,8 +21,10 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
+		--base-footer-bar-padding: #{sz(24px)};
+
 		gap: sz(12px) sz(24px);
-		padding-block: sz(24px);
+		padding-block: var(--base-footer-bar-padding);
 
 		@media (max-width: 767.98px) {
 			flex-direction: column;
@@ -47,7 +49,11 @@
 	}
 
 	&__top + &__inner {
-		border-top: 1px solid var(--rise-border);
+		background-image: linear-gradient(var(--rise-border), var(--rise-border));
+		background-repeat: no-repeat;
+		background-position: 0 calc(-1 * var(--base-footer-bar-padding));
+		background-size: 100% 1px;
+		background-origin: content-box;
 	}
 
 	&__about {
@@ -80,8 +86,9 @@
 	}
 
 	&--compact &__inner {
+		--base-footer-bar-padding: #{sz(12px)};
+
 		gap: sz(8px) sz(16px);
-		padding-block: sz(12px);
 	}
 
 	&--compact &__top {
