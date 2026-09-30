@@ -1,10 +1,20 @@
 /** Утилиты: нумерация строк, стилизация колонок и сортировка значений таблицы */
 
+import { getLocale } from '@/locales/state'
 import type { SortDirection, SortType } from '@components/BaseTable/types/BaseTable.types'
 import type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSortKey } from './types/tableUtils.types'
 
-/** numeric: «Item 2» < «Item 10», а числа в строковой колонке сравниваются как числа, а не посимвольно */
-const SORT_COLLATOR = new Intl.Collator(undefined, { numeric: true })
+/** Сравнение строк по правилам языка кита; numeric: «Item 2» < «Item 10», числа в строковой колонке — как числа */
+const collators = new Map<string, Intl.Collator>()
+
+function sortCollator(): Intl.Collator {
+	const { intl } = getLocale()
+	const cached = collators.get(intl)
+	if (cached) return cached
+	const collator = new Intl.Collator(intl, { numeric: true })
+	collators.set(intl, collator)
+	return collator
+}
 
 /**
  * ISO 8601 (дата или дата-время с необязательной зоной) — единственный строковый формат,
@@ -140,7 +150,7 @@ function compareSortKeys(a: TableSortKey, b: TableSortKey, direction: SortDirect
 	if (typeof a.value === 'number' && typeof b.value === 'number') {
 		return (a.value - b.value) * sign
 	}
-	return SORT_COLLATOR.compare(String(a.value), String(b.value)) * sign
+	return sortCollator().compare(String(a.value), String(b.value)) * sign
 }
 
 export { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey }

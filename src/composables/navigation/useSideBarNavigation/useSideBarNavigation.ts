@@ -1,6 +1,8 @@
 /** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
 import { ref } from 'vue'
 import type { Component } from 'vue'
+import { warn } from '@/locales/warn'
+import { UI_WARNINGS } from '@/locales/messages'
 import { isExternalUrl, isSafeUrl } from '@utils/data/urlUtils'
 import type { UseSideBarNavigationOptions } from './types/useSideBarNavigation.types'
 import type { BaseSideBarItemSlotProps, SideBarItem, SideBarItemKey, SideBarItemTo } from '@components/BaseSideBar/types/BaseSideBar.types'
@@ -23,7 +25,7 @@ function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 		if (typeof item.to !== 'string' || isSafeUrl(item.to)) return true
 		if (!warnedUnsafeUrls.has(item.to)) {
 			warnedUnsafeUrls.add(item.to)
-			console.warn(`[rise-ui-kit] BaseSideBar: пункт «${item.label}» с небезопасным адресом показан кнопкой: ${item.to.slice(0, 80)}`)
+			warn(UI_WARNINGS.SIDEBAR_UNSAFE_URL, { label: item.label, url: item.to.slice(0, 80) })
 		}
 		return false
 	}

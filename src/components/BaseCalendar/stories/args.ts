@@ -7,8 +7,6 @@ export const args = {
 	selectionMode: 'single',
 	variant: 'default',
 	sizeScale: 100,
-	locale: 'ru-RU',
-	firstDayOfWeek: 1,
 	initialMonth: STORY_TODAY.getMonth(),
 	initialYear: STORY_TODAY.getFullYear(),
 	showDatePopover: false,

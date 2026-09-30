@@ -1,3 +1,5 @@
+import { warn } from '@/locales/warn'
+import { UI_WARNINGS } from '@/locales/messages'
 import type { Component, InjectionKey } from 'vue'
 /** Composable: модальные окна и панели, открываемые из кода, через BaseApp */
 import { getCurrentInstance, inject, markRaw, ref } from 'vue'
@@ -128,7 +130,7 @@ export function useOverlay(): UseOverlayReturn {
 
 	function resolve(): OverlayStore | null {
 		const store = injected ?? activeStore
-		if (!store) console.warn('[rise-ui-kit] useOverlay: не найден <BaseApp> — оверлей не показан. Оберните приложение в <BaseApp>.')
+		if (!store) warn(UI_WARNINGS.OVERLAY_WITHOUT_APP)
 		return store
 	}
 

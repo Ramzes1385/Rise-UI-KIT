@@ -3,20 +3,7 @@ import { ru } from '../ru'
 import type { UiKitLocale } from '../types/locales.types'
 import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
 
-const SECTIONS = [
-	'text',
-	'aria',
-	'tour',
-	'filter',
-	'calendar',
-	'colorPicker',
-	'rating',
-	'player',
-	'chat',
-	'editor',
-	'table',
-	'plural',
-] as const
+const SECTIONS = Object.keys(ru).filter(key => !['code', 'intl', 'firstDayOfWeek'].includes(key)) as (keyof typeof ru & keyof UiKitLocale)[]
 
 describe('словари', () => {
 	it.each(SECTIONS)('в английском разделе %s те же ключи, что в русском', section => {

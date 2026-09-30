@@ -1,6 +1,7 @@
 /** Утилиты: валидация и обработка файлов */
 
-import { UI_TEXT } from '@/locales/messages'
+import { warn } from '@/locales/warn'
+import { UI_TEXT, UI_WARNINGS } from '@/locales/messages'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/data/urlUtils'
 import type { FileValidationOptions, FileValidationResult } from './types/fileUtils.types'
@@ -108,8 +109,7 @@ function validateFile(file: File, options: FileValidationOptions): FileValidatio
 			return mime === t
 		})
 		if (!matches) {
-			const hint = formatAcceptHint(options.accept)
-			errors.push(`Формат файла "${file.name}" не поддерживается. Допустимые: ${hint}`)
+			errors.push(formatMessage(UI_TEXT.FILE_WRONG_FORMAT, { name: file.name, formats: formatAcceptHint(options.accept) }))
 		}
 	}
 
@@ -143,7 +143,7 @@ function createImagePreview(file: File): Promise<string | null> {
  */
 function downloadFile(url: string, filename: string): void {
 	if (!isSafeUrl(url, DOWNLOAD_PROTOCOLS)) {
-		console.warn(`[rise-ui-kit] Скачивание по небезопасному URL заблокировано: ${String(url).slice(0, 80)}`)
+		warn(UI_WARNINGS.DOWNLOAD_UNSAFE_URL, { url: String(url).slice(0, 80) })
 		return
 	}
 	const link = document.createElement('a')

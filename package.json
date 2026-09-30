@@ -85,6 +85,7 @@
     "test:stories": "node scripts/check-stories.mjs",
     "test:stories-coverage": "node scripts/check-stories-coverage.mjs",
     "test:contrast": "node scripts/check-contrast.mjs",
+    "test:l10n": "node scripts/check-l10n.mjs",
     "create:component": "node scripts/create-component.mjs",
     "generate:emoji-data": "node scripts/generate-emoji-data.mjs",
     "pretest:components:coverage": "node scripts/invalidate-merged-coverage.mjs",

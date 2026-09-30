@@ -1,8 +1,9 @@
+import { foldSearchText } from '@utils/data/textUtils'
 import type { MentionOption, MentionQuery } from '../types/BaseMention.types'
 
 const escapeRegExp = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-const normalize = (text: string): string => text.toLocaleLowerCase().replace(/ё/g, 'е')
+const normalize = foldSearchText
 
 export function findMentionQuery(text: string, caret: number, trigger: string): MentionQuery | null {
 	const match = new RegExp(`(?:^|\\s)${escapeRegExp(trigger)}([\\p{L}\\p{N}_.-]*)$`, 'u').exec(text.slice(0, caret))

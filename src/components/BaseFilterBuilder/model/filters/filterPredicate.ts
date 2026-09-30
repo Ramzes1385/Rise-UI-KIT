@@ -1,4 +1,6 @@
+import { getLocale } from '@/locales/state'
 import { valueKind } from './filterOperators'
+import { foldSearchText } from '@utils/data/textUtils'
 import type {
 	FilterBuilderCell,
 	FilterBuilderCondition,
@@ -7,11 +9,7 @@ import type {
 	FilterBuilderOperator,
 } from '../../types/BaseFilterBuilder.types'
 
-const normalize = (value: unknown): string =>
-	String(value ?? '')
-		.trim()
-		.toLocaleLowerCase()
-		.replace(/ё/g, 'е')
+const normalize = (value: unknown): string => foldSearchText(String(value ?? '').trim())
 
 function toDate(value: unknown): string {
 	if (value instanceof Date) {
@@ -30,7 +28,7 @@ function toCell(raw: unknown): FilterBuilderCell {
 function compare(cell: FilterBuilderCell, value: string, type: FilterBuilderField['type']): number {
 	if (type === 'number') return cell.number - Number(value)
 	if (type === 'date') return cell.date.localeCompare(value)
-	return cell.text.localeCompare(normalize(value))
+	return cell.text.localeCompare(normalize(value), getLocale().intl)
 }
 
 const TESTS: Record<

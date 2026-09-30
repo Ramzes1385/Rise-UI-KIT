@@ -77,3 +77,6 @@ export const UI_SIGNATURE_PAD = localized('signaturePad')
 export const UI_AVATAR_CROPPER = localized('avatarCropper')
 export const UI_NOTIFICATION_CENTER = localized('notificationCenter')
 export const UI_COMMENT_THREAD = localized('commentThread')
+
+/** Предупреждения в консоли */
+export const UI_WARNINGS = localized('warnings')

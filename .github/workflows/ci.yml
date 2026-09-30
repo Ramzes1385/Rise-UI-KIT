@@ -67,6 +67,9 @@ jobs:
       - name: Check missing play/keyboard a11y
         run: node scripts/check-a11y-coverage.mjs
 
+      - name: Check UI strings go through the locale dictionaries
+        run: npm run test:l10n
+
   stories-run:
     name: Stories Run (render, play, axe)
     runs-on: ubuntu-latest

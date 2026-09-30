@@ -17,7 +17,10 @@ export function setLocale(locale: LocaleInput): void {
 	}
 	const builtIn = LOCALES[locale]
 	if (builtIn) currentLocale.value = builtIn
-	else console.warn(`[rise-ui-kit] Неизвестный язык «${locale}». Встроенные: ${Object.keys(LOCALES).join(', ')}; свой — defineLocale()`)
+	else {
+		const message = formatMessage(currentLocale.value.warnings.UNKNOWN_LOCALE, { locale, locales: Object.keys(LOCALES).join(', ') })
+		console.warn(`[rise-ui-kit] ${message}`)
+	}
 }
 
 export function getLocale(): UiKitLocale {

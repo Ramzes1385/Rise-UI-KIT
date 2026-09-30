@@ -45,6 +45,7 @@ export const ruBase = {
 		SIZE_MB: 'МБ',
 		/** Ошибка выбора файла больше maxSize */
 		FILE_TOO_LARGE: 'Файл "{name}" превышает {size} МБ',
+		FILE_WRONG_FORMAT: 'Формат файла "{name}" не поддерживается. Допустимые: {formats}',
 	},
 	aria: {
 		BREADCRUMBS: 'Навигация',
@@ -175,5 +176,17 @@ export const ruBase = {
 		UNREAD_ITEM: 'не прочитано',
 		EMPTY: 'Уведомлений нет',
 		EMPTY_UNREAD: 'Всё прочитано',
+	},
+	/** Предупреждения в консоли для разработчика приложения */
+	warnings: {
+		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',
+		TOAST_WITHOUT_APP: 'useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.',
+		OVERLAY_WITHOUT_APP: 'useOverlay: не найден <BaseApp> — оверлей не показан. Оберните приложение в <BaseApp>.',
+		EDITOR_UNSAFE_LINK: 'BaseEditor: ссылка с небезопасной схемой не вставлена: {url}',
+		LINK_UNSAFE_URL: 'Ссылка с небезопасным адресом показана без адреса: {url}',
+		LINK_WITHOUT_COMPONENT: 'Объект `to` без компонента ссылок: передайте RouterLink в linkComponent',
+		SIDEBAR_UNSAFE_URL: 'BaseSideBar: пункт «{label}» с небезопасным адресом показан кнопкой: {url}',
+		DOWNLOAD_UNSAFE_URL: 'Скачивание по небезопасному URL заблокировано: {url}',
+		NAVIGATION_UNSAFE_URL: 'Переход по небезопасному URL заблокирован: {url}',
 	},
 }

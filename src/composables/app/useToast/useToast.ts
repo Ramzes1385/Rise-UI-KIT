@@ -1,4 +1,6 @@
+import { warn } from '@/locales/warn'
 import type { InjectionKey } from 'vue'
+import { UI_WARNINGS } from '@/locales/messages'
 /** Composable: уведомления из любого места приложения через BaseApp */
 import { computed, getCurrentInstance, inject, ref } from 'vue'
 import type { ToastId, ToastItem, ToastOptions, ToastStore, ToastStoreOptions, UseToastReturn } from './types/useToast.types'
@@ -74,7 +76,7 @@ export function useToast(): UseToastReturn {
 
 	function resolve(): ToastStore | null {
 		const store = injected ?? activeStore
-		if (!store) console.warn('[rise-ui-kit] useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.')
+		if (!store) warn(UI_WARNINGS.TOAST_WITHOUT_APP)
 		return store
 	}
 

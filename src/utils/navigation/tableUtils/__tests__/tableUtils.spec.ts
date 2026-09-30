@@ -1,4 +1,6 @@
 import '@testing-library/jest-dom/vitest'
+import { en } from '@/locales/en'
+import { defineLocale, setLocale } from '@/locales/state'
 import type { SortType } from '@components/BaseTable/types/BaseTable.types'
 import { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey } from '../tableUtils'
 
@@ -207,6 +209,20 @@ describe('tableUtils', () => {
 			expect(compareSortKeys(toSortKey(1, 'number'), toSortKey(2, 'number'), 'asc')).toBeLessThan(0)
 			expect(compareSortKeys(toSortKey(1, 'number'), toSortKey(2, 'number'), 'desc')).toBeGreaterThan(0)
 			expect(compareSortKeys(toSortKey('Item 2'), toSortKey('Item 10'), 'asc')).toBeLessThan(0)
+		})
+
+		it('строки сравниваются по правилам языка кита, коллатор один на язык', () => {
+			const RealCollator = Intl.Collator
+			const collator = vi.spyOn(Intl, 'Collator').mockImplementation(function (...args: ConstructorParameters<typeof Intl.Collator>) {
+				return new RealCollator(...args)
+			} as unknown as typeof Intl.Collator)
+			setLocale(defineLocale(en, { intl: 'de-DE' }))
+			compareSortKeys(toSortKey('a'), toSortKey('b'), 'asc')
+			compareSortKeys(toSortKey('b'), toSortKey('c'), 'asc')
+
+			expect(collator.mock.calls).toEqual([['de-DE', { numeric: true }]])
+			setLocale('ru')
+			collator.mockRestore()
 		})
 
 		it('даёт транзитивный порядок для смеси значений (Array.sort получает корректный компаратор)', () => {

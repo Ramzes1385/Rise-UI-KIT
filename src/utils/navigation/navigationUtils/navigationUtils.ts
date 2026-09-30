@@ -1,5 +1,6 @@
+import { warn } from '@/locales/warn'
+import { UI_WARNINGS } from '@/locales/messages'
 /** Утилиты: навигация и открытие внешних ссылок */
-
 import { isSafeUrl } from '@utils/data/urlUtils'
 import type { NavigateOptions } from './types/navigationUtils.types'
 
@@ -9,7 +10,7 @@ import type { NavigateOptions } from './types/navigationUtils.types'
  * поэтому небезопасные схемы не открываются.
  */
 function warnUnsafeUrl(url: string): void {
-	console.warn(`[rise-ui-kit] Переход по небезопасному URL заблокирован: ${url.slice(0, 80)}`)
+	warn(UI_WARNINGS.NAVIGATION_UNSAFE_URL, { url: url.slice(0, 80) })
 }
 
 function openExternalUrl(url: string, target: '_blank' | '_self' = '_blank'): void {

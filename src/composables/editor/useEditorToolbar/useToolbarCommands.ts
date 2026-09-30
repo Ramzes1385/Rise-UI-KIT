@@ -1,5 +1,7 @@
 /** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
 import { nextTick } from 'vue'
+import { warn } from '@/locales/warn'
+import { UI_WARNINGS } from '@/locales/messages'
 import { escapeHtml } from '@utils/dom/htmlUtils'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/data/urlUtils'
 import type { UseToolbarCommandsOptions } from './types/useToolbarCommands.types'
@@ -162,7 +164,7 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 		if (!url) return
 		// javascript:, data: и другие схемы исполнили бы код по клику на ссылку в документе
 		if (!isSafeUrl(url)) {
-			console.warn(`[rise-ui-kit] BaseEditor: ссылка с небезопасной схемой не вставлена: ${url.slice(0, 80)}`)
+			warn(UI_WARNINGS.EDITOR_UNSAFE_LINK, { url: url.slice(0, 80) })
 			return
 		}
 		if (isCodeMode.value) {

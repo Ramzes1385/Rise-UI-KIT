@@ -1,4 +1,5 @@
 import { UI_EMOJI } from '@/locales/messages'
+import { foldSearchText } from '@utils/data/textUtils'
 import { EMOJI_CATEGORIES } from '../types/BaseEmojiPicker.types'
 import type { EmojiCategory, EmojiPickerItem, EmojiPickerSection } from '../types/BaseEmojiPicker.types'
 
@@ -38,7 +39,7 @@ export function loadEmojiData(locale: string): Promise<EmojiPickerItem[]> {
 	return loading
 }
 
-const normalizeQuery = (text: string): string => text.trim().toLocaleLowerCase().replace(/ё/g, 'е')
+const normalizeQuery = (text: string): string => foldSearchText(text.trim())
 
 export const emojiKey = (emoji: string): string => emoji.replace(/\uFE0F/g, '')
 

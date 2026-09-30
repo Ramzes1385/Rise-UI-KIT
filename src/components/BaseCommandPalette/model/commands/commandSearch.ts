@@ -1,6 +1,7 @@
+import { foldSearchText } from '@utils/data/textUtils'
 import type { CommandGroupView, CommandItem, CommandOptionView } from '../../types/BaseCommandPalette.types'
 
-const normalize = (text: string): string => text.toLocaleLowerCase().replace(/ё/g, 'е')
+const normalize = foldSearchText
 
 export function matchesCommand(command: CommandItem, query: string): boolean {
 	const words = normalize(query).split(/\s+/).filter(Boolean)

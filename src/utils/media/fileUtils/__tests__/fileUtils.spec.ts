@@ -129,11 +129,16 @@ describe('fileUtils', () => {
 			expect(result.isValid).toBe(true)
 		})
 
-		it('отклоняет файл с недопустимым расширением', () => {
+		it('отклоняет файл с недопустимым расширением: сообщение на языке кита', () => {
 			const file = createFile('doc.exe', 100, 'application/x-msdownload')
 			const result = validateFile(file, { accept: '.pdf,.doc' })
 			expect(result.isValid).toBe(false)
-			expect(result.errors[0]).toContain('не поддерживается')
+			expect(result.errors[0]).toBe('Формат файла "doc.exe" не поддерживается. Допустимые: .PDF, .DOC')
+			setLocale('en')
+			expect(validateFile(file, { accept: '.pdf,.doc' }).errors[0]).toBe(
+				'The format of file "doc.exe" is not supported. Allowed: .PDF, .DOC',
+			)
+			setLocale('ru')
 		})
 
 		it('пропускает файл с допустимым MIME-типом', () => {

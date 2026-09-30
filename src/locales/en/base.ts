@@ -41,6 +41,7 @@ export const enBase = {
 		SIZE_KB: 'KB',
 		SIZE_MB: 'MB',
 		FILE_TOO_LARGE: 'File "{name}" is larger than {size} MB',
+		FILE_WRONG_FORMAT: 'The format of file "{name}" is not supported. Allowed: {formats}',
 	},
 	aria: {
 		BREADCRUMBS: 'Navigation',
@@ -157,5 +158,17 @@ export const enBase = {
 		UNREAD_ITEM: 'unread',
 		EMPTY: 'No notifications',
 		EMPTY_UNREAD: 'All caught up',
+	},
+	/** Console warnings for the app developer */
+	warnings: {
+		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',
+		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',
+		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> not found — the overlay was not shown. Wrap the app in <BaseApp>.',
+		EDITOR_UNSAFE_LINK: 'BaseEditor: a link with an unsafe scheme was not inserted: {url}',
+		LINK_UNSAFE_URL: 'A link with an unsafe URL is shown without the URL: {url}',
+		LINK_WITHOUT_COMPONENT: 'An object `to` needs a link component: pass RouterLink as linkComponent',
+		SIDEBAR_UNSAFE_URL: 'BaseSideBar: the item "{label}" with an unsafe URL is shown as a button: {url}',
+		DOWNLOAD_UNSAFE_URL: 'Download from an unsafe URL was blocked: {url}',
+		NAVIGATION_UNSAFE_URL: 'Navigation to an unsafe URL was blocked: {url}',
 	},
 }

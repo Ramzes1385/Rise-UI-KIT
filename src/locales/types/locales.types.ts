@@ -52,6 +52,7 @@ export interface UiKitLocale {
 	avatarCropper: Section<'avatarCropper'>
 	notificationCenter: Section<'notificationCenter'>
 	commentThread: Section<'commentThread'>
+	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

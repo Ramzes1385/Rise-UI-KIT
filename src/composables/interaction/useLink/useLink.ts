@@ -1,4 +1,6 @@
+import { warn } from '@/locales/warn'
 import type { InjectionKey } from 'vue'
+import { UI_WARNINGS } from '@/locales/messages'
 import { isExternalUrl, isSafeUrl } from '@utils/data/urlUtils'
 /** Composable: ссылки кита через RouterLink приложения или `<a href>` */
 import { getCurrentInstance, hasInjectionContext, inject } from 'vue'
@@ -13,7 +15,7 @@ const warnedUrls = new Set<string>()
 function warnUnsafe(url: string): void {
 	if (warnedUrls.has(url)) return
 	warnedUrls.add(url)
-	console.warn(`[rise-ui-kit] Ссылка с небезопасным адресом показана без адреса: ${url.slice(0, 80)}`)
+	warn(UI_WARNINGS.LINK_UNSAFE_URL, { url: url.slice(0, 80) })
 }
 
 function mergeRel(rel: string | undefined, target: string | undefined): string | undefined {
@@ -63,7 +65,7 @@ export function resolveLink(options: LinkOptions, linkComponent: LinkComponent =
 	const isRoute = typeof to !== 'string' || !isExternalUrl(to)
 	if (linkComponent !== 'a' && isRoute) return { is: linkComponent, attrs: { to, target, rel }, hasTarget: true }
 	if (typeof to !== 'string') {
-		console.warn('[rise-ui-kit] Объект `to` без компонента ссылок: передайте RouterLink в linkComponent')
+		warn(UI_WARNINGS.LINK_WITHOUT_COMPONENT)
 		return disabled
 	}
 	return { is: 'a', attrs: { href: to, target, rel }, hasTarget: true }
