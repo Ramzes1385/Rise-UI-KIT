@@ -1,12 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BaseCalendar from '../ui/BaseCalendar.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseCalendar },
-		setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-		template: '<BaseCalendar v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseCalendar>['render']
+const models = { date: 'modelValue' }
+
+const template = `
+	<BaseCalendar v-bind="args" v-model="date" />
+`
+
+export const source = storySource({ template, imports: ['BaseCalendar'], models })
+
+export const render = (args => ({
+	components: { BaseCalendar },
+	setup: useStorySetup(args, { models, slots: [] }),
+	template,
+})) satisfies Meta<typeof BaseCalendar>['render']

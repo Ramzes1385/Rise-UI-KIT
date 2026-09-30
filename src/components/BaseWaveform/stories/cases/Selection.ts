@@ -2,7 +2,13 @@ import type meta from '../BaseWaveform.stories'
 import { expect, waitFor } from 'storybook/test'
 import BaseWaveform from '../../ui/BaseWaveform.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { tabTo, useModelArg } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const models = { currentTime: 'currentTime', selection: 'selection' }
+
+const template = `
+	<BaseWaveform v-bind="args" v-model:current-time="currentTime" v-model:selection="selection" />
+`
 
 export const Selection: StoryObj<typeof meta> = {
 	parameters: {
@@ -13,18 +19,15 @@ export const Selection: StoryObj<typeof meta> = {
 					'Escape снимает выделение, щелчок без перетаскивания перематывает и тоже снимает его.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseWaveform'], models }),
 		},
 	},
 	args: { isSelectable: true, currentTime: 12, selection: { start: 12, end: 30 } },
-	render: args => {
-		const onTime = useModelArg('currentTime')
-		const onSelection = useModelArg('selection')
-		return {
-			components: { BaseWaveform },
-			setup: () => ({ args, onTime, onSelection }),
-			template: '<BaseWaveform v-bind="args" @update:current-time="onTime" @update:selection="onSelection" />',
-		}
-	},
+	render: args => ({
+		components: { BaseWaveform },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const waveform = canvas.getByRole('slider', { name: 'Перемотка' })
 		await expect(waveform).toHaveAccessibleDescription('Фрагмент 0:12–0:30')

@@ -94,11 +94,11 @@
 | 58 | Ленивые компоненты плагина (`defineAsyncComponent` у BaseCalendar, BaseChat, BaseDatePicker, BaseEditor, BaseFileUpload, BaseTable) в собранном пакете не загружаются отдельно: их `import()` ведут в чанки `chunks/components-*.js` и `chunks/BaseCalendar-*.js`, которые `dist/index.js` уже импортирует статически | `src/plugin/registry/lazy.ts`, `build/lib/vite.lib.config.ts` | Нужна своя разбивка чанков сборки, а корень пакета именованно экспортирует все компоненты; найдено в порции Д.4, поведение плагина не менялось | patch (сборка) | M |
 
 ² Ограничения тестовой среды Storybook:
-- `resetAllMocksLoader` после `updateArgs` (`useModelArg`) стирает вызовы шпионов `fn()`;
+- `resetAllMocksLoader` после `updateArgs` (переменные `models` в `useStorySetup`) стирает вызовы шпионов `fn()`: история, которая проверяет шпионов после ввода, держит значение в `state`;
 - play, который в конце меняет args, сталкивается с afterEach-axe («Axe is already running»);
 - шпион с ключом `'onDelete-messages'` при `@delete-messages` в шаблоне — вызывается только один обработчик;
 - `userEvent.tab()` не учитывает `inert`;
-- `useModelArg` с contenteditable отдаёт значения асинхронно.
+- ~~`useModelArg` с contenteditable отдаёт значения асинхронно~~ — `models` в `useStorySetup` меняют значение сразу, `updateArgs` — следом (порция Р.1).
 
 ## С чего начать
 

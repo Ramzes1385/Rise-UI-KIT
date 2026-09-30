@@ -1,9 +1,11 @@
+import { source } from './render'
 import type BaseTour from '../ui/BaseTour.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	layout: 'centered',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Пошаговый тур по интерфейсу: подсвечивает элемент и показывает рядом карточку с пояснением.',

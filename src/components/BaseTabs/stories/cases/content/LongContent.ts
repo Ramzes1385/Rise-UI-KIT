@@ -3,7 +3,7 @@ import type meta from '../../BaseTabs.stories'
 import BaseTabs from '../../../ui/BaseTabs.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TabItem } from '../../../types/BaseTabs.types'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 const LONG_TABS: TabItem[] = [
 	{ id: 'contract', label: 'Условия договора поставки оборудования' },
@@ -11,23 +11,27 @@ const LONG_TABS: TabItem[] = [
 	{ id: 'documents', label: 'Сопроводительные документы' },
 ]
 
+const models = { tab: 'modelValue' }
+
+const template = `
+	<div class="story-narrow"><BaseTabs v-bind="args" v-model="tab" /></div>
+`
+
 export const LongContent: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
 				story: 'Длинные названия не переносятся: список прокручивается по горизонтали и не растягивает контейнер (здесь — 360px).',
 			},
+			source: storySource({ template, imports: ['BaseTabs'], models }),
 		},
 	},
 	args: { items: LONG_TABS, modelValue: 'contract' },
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseTabs },
-			setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-			template: '<div class="story-narrow"><BaseTabs v-bind="props" @update:model-value="onUpdate" /></div>',
-		}
-	},
+	render: args => ({
+		components: { BaseTabs },
+		setup: useStorySetup(args, { models }),
+		template,
+	}),
 	play: async ({ canvas }) => {
 		const list = canvas.getByRole('tablist')
 		await expect(list.scrollWidth).toBeGreaterThan(list.clientWidth)

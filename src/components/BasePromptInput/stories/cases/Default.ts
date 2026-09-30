@@ -1,26 +1,32 @@
-import { ref } from 'vue'
 import { expect } from 'storybook/test'
-import { useModelArg } from '@/stories/helpers'
 import type meta from '../BasePromptInput.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePromptInput from '../../ui/BasePromptInput.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { prompt: 'modelValue' }
+
+const state = { sent: [] }
+
+const template = `
+	<div style="display: grid; gap: 12px; max-width: 640px">
+		<BasePromptInput v-bind="args" v-model="prompt" @submit="sent.push($event)" />
+		<p v-if="sent.length" style="margin: 0; white-space: pre-line">Отправлено: {{ sent.at(-1) }}</p>
+	</div>
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Песочница: v-model связан с Controls. Enter отправляет запрос, Shift+Enter — новая строка.' } },
+		docs: {
+			description: { story: 'Песочница: v-model связан с Controls. Enter отправляет запрос, Shift+Enter — новая строка.' },
+			source: storySource({ template, imports: ['BasePromptInput'], models, state, types: { sent: 'string[]' } }),
+		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BasePromptInput },
-			setup: () => ({ args, onUpdate, sent: ref<string[]>([]) }),
-			template: `
-				<div style="display: grid; gap: 12px; max-width: 640px">
-					<BasePromptInput v-bind="args" @update:model-value="onUpdate" @submit="sent.push($event)" />
-					<p v-if="sent.length" style="margin: 0; white-space: pre-line">Отправлено: {{ sent.at(-1) }}</p>
-				</div>`,
-		}
-	},
+	render: args => ({
+		components: { BasePromptInput },
+		setup: useStorySetup(args, { models, state }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const field = canvas.getByRole('textbox', { name: 'Сообщение' })
 		const send = canvas.getByRole('button', { name: 'Отправить' })

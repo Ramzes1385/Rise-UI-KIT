@@ -1,24 +1,26 @@
-import { computed } from 'vue'
 import BaseModal from '../ui/BaseModal.vue'
 import { BaseText } from '@components/BaseText'
 import type { Meta } from '@storybook/vue3-vite'
 import { BaseButton } from '@components/BaseButton'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg('isOpen')
-	return {
-		components: { BaseModal, BaseButton, BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args), text: computed(() => args.default), onUpdate }),
-		template: `
-				<BaseButton variant="outline" @click="onUpdate(true)">Открыть окно</BaseButton>
-				<BaseModal v-bind="props" @update:is-open="onUpdate">
-					<BaseText>{{ text }}</BaseText>
-					<template #footer>
-						<BaseButton variant="outline" @click="onUpdate(false)">Отмена</BaseButton>
-						<BaseButton @click="onUpdate(false)">Удалить</BaseButton>
-					</template>
-				</BaseModal>
-			`,
-	}
-}) satisfies Meta<typeof BaseModal>['render']
+const models = { isOpen: 'isOpen' }
+
+const template = `
+	<BaseButton variant="outline" @click="isOpen = true">Открыть окно</BaseButton>
+	<BaseModal v-bind="args" v-model:is-open="isOpen">
+		<BaseText>{{ slots.default }}</BaseText>
+		<template #footer>
+			<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
+			<BaseButton @click="isOpen = false">Удалить</BaseButton>
+		</template>
+	</BaseModal>
+`
+
+export const source = storySource({ template, imports: ['BaseModal', 'BaseButton', 'BaseText'], models })
+
+export const render = (args => ({
+	components: { BaseModal, BaseButton, BaseText },
+	setup: useStorySetup(args, { models }),
+	template,
+})) satisfies Meta<typeof BaseModal>['render']

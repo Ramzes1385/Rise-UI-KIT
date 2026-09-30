@@ -1,12 +1,17 @@
 import BaseTabs from '../ui/BaseTabs.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BaseTabs },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BaseTabs v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BaseTabs>['render']
+const models = { tab: 'modelValue' }
+
+const template = `
+	<BaseTabs v-bind="args" v-model="tab" />
+`
+
+export const source = storySource({ template, imports: ['BaseTabs'], models })
+
+export const render = (args => ({
+	components: { BaseTabs },
+	setup: useStorySetup(args, { models, slots: ['default'] }),
+	template,
+})) satisfies Meta<typeof BaseTabs>['render']

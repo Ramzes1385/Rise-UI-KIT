@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseStepper from '../ui/BaseStepper.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Степпер показывает прогресс многошагового процесса: оформление заказа, регистрация, мастер настройки.',

@@ -1,10 +1,26 @@
-import { SLOT_KEYS } from '../../shared'
+import { SLOT_KEYS, STEPS } from '../../shared'
 import { waitFor, expect } from 'storybook/test'
 import type meta from '../../BaseStepper.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseStepper from '../../../ui/BaseStepper.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { step: 'modelValue' }
+
+const HIDDEN = [...SLOT_KEYS, 'items']
+
+const template = `
+	<BaseStepper v-bind="args" v-model="step" :items="steps">
+		<template #header><strong>Оформление заказа</strong></template>
+		<template #footer>
+			<div class="story-row">
+				<BaseButton variant="outline" :is-disabled="step <= 1" @click="step = step - 1">Назад</BaseButton>
+				<BaseButton :is-disabled="step >= steps.length" @click="step = step + 1">Далее</BaseButton>
+			</div>
+		</template>
+	</BaseStepper>
+`
 
 export const Wizard: StoryObj<typeof meta> = {
 	args: { variant: 'animated', modelValue: 1 },
@@ -16,37 +32,20 @@ export const Wizard: StoryObj<typeof meta> = {
 					'плавно заполняет линию.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<BaseStepper v-model="step" :items="items" variant="animated">',
-					'  <template #header>Оформление заказа</template>',
-					'  <template #footer>',
-					'    <BaseButton variant="outline" :is-disabled="step === 1" @click="step--">Назад</BaseButton>',
-					'    <BaseButton :is-disabled="step === items.length" @click="step++">Далее</BaseButton>',
-					'  </template>',
-					'</BaseStepper>',
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseStepper', 'BaseButton'],
+				models,
+				script: `const steps = ${literal(STEPS)}`,
+				omit: HIDDEN,
+			}),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg()
-		return {
-			components: { BaseStepper, BaseButton },
-			setup: () => ({ props: useArgsWithoutSlots(args, SLOT_KEYS), onUpdate }),
-			template: `
-				<BaseStepper v-bind="props" @update:model-value="onUpdate">
-					<template #header><strong>Оформление заказа</strong></template>
-					<template #footer>
-						<div class="story-row">
-							<BaseButton variant="outline" :is-disabled="props.modelValue <= 1" @click="onUpdate(props.modelValue - 1)">Назад</BaseButton>
-							<BaseButton :is-disabled="props.modelValue >= props.items.length" @click="onUpdate(props.modelValue + 1)">Далее</BaseButton>
-						</div>
-					</template>
-				</BaseStepper>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseStepper, BaseButton },
+		setup: useStorySetup(args, { models, data: { steps: STEPS }, slots: HIDDEN }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Далее' }))
 		await waitFor(() => expect(canvas.getByRole('button', { name: /Доставка/ })).toHaveAttribute('aria-current', 'step'))

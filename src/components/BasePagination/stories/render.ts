@@ -1,12 +1,17 @@
 import type { Meta } from '@storybook/vue3-vite'
 import BasePagination from '../ui/BasePagination.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => {
-	const onUpdate = useModelArg()
-	return {
-		components: { BasePagination },
-		setup: () => ({ props: useArgsWithoutSlots(args), onUpdate }),
-		template: '<BasePagination v-bind="props" @update:model-value="onUpdate" />',
-	}
-}) satisfies Meta<typeof BasePagination>['render']
+const models = { page: 'modelValue' }
+
+const template = `
+	<BasePagination v-bind="args" v-model="page" />
+`
+
+export const source = storySource({ template, imports: ['BasePagination'], models })
+
+export const render = (args => ({
+	components: { BasePagination },
+	setup: useStorySetup(args, { models, slots: ['default'] }),
+	template,
+})) satisfies Meta<typeof BasePagination>['render']

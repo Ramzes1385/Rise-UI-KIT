@@ -100,7 +100,7 @@ export const Variants: StoryObj<typeof meta> = {
 ## 4. Песочница `Default` и v-model
 
 - `Default` — первая story. Все props меняются в Controls. Она работает без кастомного `render`, если у компонента нет v-model.
-- Компонент с v-model получает свой `render`: значение живёт в args и синхронизируется с Controls через `useStorySetup` — ввод пользователя виден в Controls, изменение в Controls — в компоненте. Шаблон и `models` общие с `storySource`, поэтому «Show code» показывает тот же код с `v-model` и текущим значением:
+- Компонент с v-model получает свой `render`: значение синхронизируется с Controls через `models` в `useStorySetup` — ввод пользователя виден в Controls, изменение в Controls — в компоненте. Переменная меняется сразу и лишь потом уходит в Controls: на странице Docs Storybook не перерисовывает историю после `updateArgs`, и пример, который ждёт ответа Controls, там не отвечает на ввод. Шаблон и `models` общие с `storySource`, поэтому «Show code» показывает тот же код с `v-model` и текущим значением:
 
   ```ts
   const MODELS = { phone: 'modelValue' } as const

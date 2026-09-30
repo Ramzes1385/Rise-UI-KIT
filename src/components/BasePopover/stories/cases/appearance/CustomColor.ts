@@ -4,7 +4,7 @@ import type meta from '../../BasePopover.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopover from '../../../ui/BasePopover.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 function resolveColor(value: string): string {
 	const probe = document.createElement('span')
@@ -14,6 +14,20 @@ function resolveColor(value: string): string {
 	probe.remove()
 	return resolved
 }
+
+const models = { isOpen: 'isOpen' }
+
+const template = `
+	<BasePopover v-bind="args" v-model:is-open="isOpen">
+		<template #trigger>
+			<BaseButton variant="outline">Новое в редакторе</BaseButton>
+		</template>
+		<div class="story-col">
+			Субтитры теперь можно сдвигать горячими клавишами.
+			<BaseButton>Включить</BaseButton>
+		</div>
+	</BasePopover>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {
@@ -30,26 +44,14 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'сохраняют контраст в обеих темах. Содержимое `color` не наследует — кнопка «Включить» сохраняет свой цвет.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BasePopover', 'BaseButton'], models, omit: [] }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg('isOpen')
-		return {
-			components: { BasePopover, BaseButton },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onUpdate }),
-			template: `
-				<BasePopover v-bind="props" @update:is-open="onUpdate">
-					<template #trigger>
-						<BaseButton variant="outline">Новое в редакторе</BaseButton>
-					</template>
-					<div class="story-col">
-						Субтитры теперь можно сдвигать горячими клавишами.
-						<BaseButton>Включить</BaseButton>
-					</div>
-				</BasePopover>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BasePopover, BaseButton },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async () => {
 		const action = await screen.findByRole('button', { name: 'Включить' })
 		const panel = action.closest('.base-dropdown__panel') as HTMLElement

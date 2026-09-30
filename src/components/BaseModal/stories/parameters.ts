@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseModal from '../ui/BaseModal.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Модальное окно — диалог поверх страницы: подтверждение действия, короткая форма, детали записи.',

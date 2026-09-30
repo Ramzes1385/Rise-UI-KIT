@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSideBar from '../ui/BaseSideBar.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Боковая панель приложения: заголовок, навигация, произвольное содержимое и подвал; сворачивается до полосы иконок.',

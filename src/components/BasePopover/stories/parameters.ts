@@ -1,9 +1,11 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BasePopover from '../ui/BasePopover.vue'
 
 export const parameters = {
 	layout: 'centered',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Поповер — панель со стрелкой у элемента: пояснение, небольшая форма, дополнительные действия.',

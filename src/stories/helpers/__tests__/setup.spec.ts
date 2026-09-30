@@ -32,6 +32,19 @@ describe('setup истории со своим шаблоном', () => {
 		expect(text.value).toBe('из Controls')
 	})
 
+	it('без ответа Storybook (страница Docs) позже то же значение из Controls применяется', async () => {
+		const now = vi.spyOn(performance, 'now').mockReturnValue(0)
+		const args = reactive<Record<string, unknown>>({ modelValue: 1 })
+		const value = useStorySetup(args, { models: { value: 'modelValue' } })().value as Ref
+		value.value = 2
+		value.value = 3
+		now.mockReturnValue(5000)
+		args.modelValue = 2
+		await nextTick()
+		expect(value.value).toBe(2)
+		now.mockRestore()
+	})
+
 	it('state — свой ref с копией начального значения у каждого показа истории', () => {
 		const state = { isVisible: true, items: ['а'] }
 		const setup = useStorySetup({}, { state, data: { names: ['x'] } })

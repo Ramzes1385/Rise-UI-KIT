@@ -4,7 +4,7 @@ import type meta from '../../BaseTree.stories'
 import BaseTree from '../../../ui/BaseTree.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TreeNode } from '../../../types/BaseTree.types'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 const DOCS_NAV: TreeNode[] = [
 	{ id: 'intro', label: 'Введение', icon: 'home', to: '/docs/intro' },
@@ -23,6 +23,15 @@ const DOCS_NAV: TreeNode[] = [
 	{ id: 'github', label: 'Исходный код', icon: 'link', href: 'https://github.com', target: '_blank' },
 ]
 
+const models = { expandedIds: 'expandedIds', selectedIds: 'selectedIds' }
+
+const template = `
+	<div class="story-stack story-narrow" style="gap: 8px;">
+		<BaseTree v-bind="args" v-model:expanded-ids="expandedIds" v-model:selected-ids="selectedIds" />
+		<span class="story-label">Текущая страница: {{ selectedIds?.join(', ') || '—' }}</span>
+	</div>
+`
+
 export const Links: StoryObj<typeof meta> = {
 	args: { items: DOCS_NAV, selectionMode: 'single', expandedIds: ['components'], selectedIds: ['intro'], ariaLabel: 'Документация' },
 	parameters: {
@@ -35,29 +44,14 @@ export const Links: StoryObj<typeof meta> = {
 					'так отмечается текущая страница. Маршруты открывает RouterLink приложения или `linkComponent` плагина.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'<!-- { id: "button", label: "Кнопка", to: "/docs/components/button" } -->',
-					'<!-- { id: "github", label: "Исходный код", href: "https://github.com/…", target: "_blank" } -->',
-					'<BaseTree v-model:selected-ids="current" :items="pages" selection-mode="single" aria-label="Документация" />',
-				].join('\n'),
-			},
+			source: storySource({ template, imports: ['BaseTree'], models }),
 		},
 	},
-	render: args => {
-		const onExpanded = useModelArg('expandedIds')
-		const onSelected = useModelArg('selectedIds')
-		return {
-			components: { BaseTree },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onExpanded, onSelected }),
-			template: `
-				<div class="story-stack story-narrow" style="gap: 8px;">
-					<BaseTree v-bind="props" @update:expanded-ids="onExpanded" @update:selected-ids="onSelected" />
-					<span class="story-label">Текущая страница: {{ props.selectedIds?.join(', ') || '—' }}</span>
-				</div>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseTree },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async ({ canvas, canvasElement, userEvent, args }) => {
 		const link = canvas.getByRole('link', { name: 'Кнопка' })
 		await expect(link).toHaveAttribute('href', '/docs/components/button')

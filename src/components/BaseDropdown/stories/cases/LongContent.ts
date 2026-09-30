@@ -1,4 +1,3 @@
-import { computed } from 'vue'
 import { docsFrame } from '../shared'
 import type meta from '../BaseDropdown.stories'
 import { BaseMenu } from '@components/BaseMenu'
@@ -7,7 +6,7 @@ import { BaseButton } from '@components/BaseButton'
 import BaseDropdown from '../../ui/BaseDropdown.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { BaseMenuItem } from '@components/BaseMenu'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const PROJECTS: BaseMenuItem[][] = [
 	[
@@ -26,6 +25,19 @@ const PROJECTS: BaseMenuItem[][] = [
 	].map(label => ({ label })),
 ]
 
+const projects = PROJECTS
+
+const models = { isOpen: 'isOpen' }
+
+const template = `
+	<BaseDropdown v-bind="args" v-model:is-open="isOpen">
+		<BaseButton variant="outline" @click="isOpen = !isOpen">Проекты</BaseButton>
+		<template #dropdown>
+			<BaseMenu variant="ghost" :items="projects" @select="isOpen = false" />
+		</template>
+	</BaseDropdown>
+`
+
 export const LongContent: StoryObj<typeof meta> = {
 	args: { isOpen: true, maxHeight: '200px' },
 	parameters: {
@@ -33,23 +45,19 @@ export const LongContent: StoryObj<typeof meta> = {
 		docs: {
 			...docsFrame(280),
 			description: { story: 'Длинный список прокручивается внутри панели: высоту ограничивает `maxHeight` (здесь 200px).' },
+			source: storySource({
+				template,
+				imports: ['BaseDropdown', 'BaseButton', 'BaseMenu'],
+				models,
+				script: `const projects = ${literal(projects)}`,
+			}),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg('isOpen')
-		return {
-			components: { BaseDropdown, BaseButton, BaseMenu },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), isOpen: computed(() => args.isOpen), onUpdate, projects: PROJECTS }),
-			template: `
-				<BaseDropdown v-bind="props" @update:is-open="onUpdate">
-					<BaseButton variant="outline" @click="onUpdate(!isOpen)">Проекты</BaseButton>
-					<template #dropdown>
-						<BaseMenu variant="ghost" :items="projects" @select="onUpdate(false)" />
-					</template>
-				</BaseDropdown>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseDropdown, BaseButton, BaseMenu },
+		setup: useStorySetup(args, { models, data: { projects }, slots: [] }),
+		template,
+	}),
 	play: async () => {
 		const panel = (await screen.findByText('Сайт студии')).closest('.base-dropdown__panel') as HTMLElement
 		await expect(panel.getBoundingClientRect().height).toBeLessThanOrEqual(200)

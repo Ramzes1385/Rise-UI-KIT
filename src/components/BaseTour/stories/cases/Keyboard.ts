@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { DEMO_TOOLBAR } from '../shared'
 import type meta from '../BaseTour.stories'
 import BaseTour from '../../ui/BaseTour.vue'
 import { BaseButton } from '@components/BaseButton'
@@ -28,7 +27,11 @@ export const Keyboard: StoryObj<typeof meta> = {
 		}),
 		template: `
 			<div class="story-stack">
-				${DEMO_TOOLBAR}
+				<div class="story-row">
+					<BaseButton id="tour-create">Создать проект</BaseButton>
+					<BaseButton id="tour-import" variant="outline">Импорт</BaseButton>
+					<BaseButton id="tour-settings" variant="ghost">Настройки</BaseButton>
+				</div>
 				<div>
 					<BaseButton variant="soft" @click="isOpen = true">Запустить тур</BaseButton>
 				</div>

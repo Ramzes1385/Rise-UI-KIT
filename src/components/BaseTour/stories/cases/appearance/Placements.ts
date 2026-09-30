@@ -3,8 +3,15 @@ import type meta from '../../BaseTour.stories'
 import BaseTour from '../../../ui/BaseTour.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import { screen, within, waitFor, expect } from 'storybook/test'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+
+const models = { isOpen: 'isOpen' }
+
+const template = `
+	<BaseButton id="tour-target" variant="outline" @click="isOpen = true">Цель тура</BaseButton>
+	<BaseTour v-bind="args" v-model:is-open="isOpen" />
+`
 
 export const Placements: StoryObj<typeof meta> = {
 	args: {
@@ -23,19 +30,14 @@ export const Placements: StoryObj<typeof meta> = {
 					'свою сторону полем `placement`. Меняйте значение в Controls.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseTour', 'BaseButton'], models }),
 		},
 	},
-	render: args => {
-		const onOpen = useModelArg('isOpen')
-		return {
-			components: { BaseTour, BaseButton },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), onOpen }),
-			template: `
-				<BaseButton id="tour-target" variant="outline" @click="onOpen(true)">Цель тура</BaseButton>
-				<BaseTour v-bind="props" @update:is-open="onOpen" />
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseTour, BaseButton },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async () => {
 		const dialog = await screen.findByRole('dialog', { name: 'Сторона карточки' })
 		await within(dialog).findByRole('button', { name: 'Завершить' })

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseTabs from '../ui/BaseTabs.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Вкладки переключают разделы одной области без перехода на другую страницу.',

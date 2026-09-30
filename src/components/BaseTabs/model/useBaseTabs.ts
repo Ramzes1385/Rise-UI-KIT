@@ -4,6 +4,8 @@ import type { BaseTabsEmits, BaseTabsProps } from '../types/BaseTabs.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'vue'
 
+const DRAG_THRESHOLD = 3
+
 const TABS_ELEMENTS = ['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content']
 
 function findEnabledIndex(items: BaseTabsProps['items'], start: number, step: 1 | -1): number {
@@ -94,6 +96,7 @@ function useScrollButtons(props: BaseTabsProps, listRef: Ref<HTMLElement | null>
 
 function useDragScroll(listRef: Ref<HTMLElement | null>) {
 	const isDragging = ref(false)
+	let isPressed = false
 	let dragStartX = 0
 	let dragStartScrollLeft = 0
 	let hasDragMoved = false
@@ -106,24 +109,23 @@ function useDragScroll(listRef: Ref<HTMLElement | null>) {
 			return true
 		},
 		handlePointerDown(event: PointerEvent): void {
-			if (event.pointerType === 'touch') return
-			const el = listRef.value
-			if (!el || el.scrollWidth <= el.clientWidth) return
-			isDragging.value = true
 			hasDragMoved = false
+			const el = listRef.value
+			if (event.pointerType === 'touch' || !el || el.scrollWidth <= el.clientWidth) return
+			isPressed = true
 			dragStartX = event.clientX
 			dragStartScrollLeft = el.scrollLeft
 		},
 		handlePointerMove(event: PointerEvent): void {
-			if (!isDragging.value) return
 			const el = listRef.value
-			if (!el) return
 			const delta = event.clientX - dragStartX
-			if (Math.abs(delta) > 3) hasDragMoved = true
+			if (!isPressed || !el || (!hasDragMoved && Math.abs(delta) <= DRAG_THRESHOLD)) return
+			hasDragMoved = true
+			isDragging.value = true
 			el.scrollLeft = dragStartScrollLeft - delta
 		},
 		handlePointerUp(): void {
-			if (!isDragging.value) return
+			isPressed = false
 			isDragging.value = false
 		},
 	}

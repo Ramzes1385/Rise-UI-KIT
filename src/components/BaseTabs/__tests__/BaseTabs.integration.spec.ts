@@ -146,6 +146,49 @@ describe('BaseTabs integration', () => {
 		})
 	})
 
+	describe('список шире контейнера', () => {
+		function overflowing(): HTMLElement {
+			const list = screen.getByRole('tablist')
+			Object.defineProperty(list, 'scrollWidth', { configurable: true, value: 600 })
+			Object.defineProperty(list, 'clientWidth', { configurable: true, value: 300 })
+			return list
+		}
+
+		it('клик мышью по вкладке выбирает её: режима перетаскивания без сдвига нет', async () => {
+			const { emitted } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const list = overflowing()
+			const tab = screen.getByRole('tab', { name: 'Характеристики' })
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 100 })
+			await fireEvent.pointerMove(tab, { pointerType: 'mouse', clientX: 102 })
+			expect(list).not.toHaveClass('base-tabs__list--dragging')
+			await fireEvent.pointerUp(tab, { pointerType: 'mouse', clientX: 102 })
+			await fireEvent.click(tab)
+
+			expect((emitted()['update:modelValue'] as string[][]).at(-1)?.[0]).toBe('specs')
+		})
+
+		it('перетаскивание прокручивает список и не выбирает вкладку; следующий клик выбирает', async () => {
+			const { emitted } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const list = overflowing()
+			const tab = screen.getByRole('tab', { name: 'Характеристики' })
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 200 })
+			await fireEvent.pointerMove(tab, { pointerType: 'mouse', clientX: 150 })
+			expect(list).toHaveClass('base-tabs__list--dragging')
+			expect(list.scrollLeft).toBe(50)
+			await fireEvent.pointerUp(list, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.click(tab)
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+			expect(list).not.toHaveClass('base-tabs__list--dragging')
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.pointerUp(tab, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.click(tab)
+			expect((emitted()['update:modelValue'] as string[][]).at(-1)?.[0]).toBe('specs')
+		})
+	})
+
 	describe('отключённый таб', () => {
 		it('не должен эмитить update:modelValue при клике на отключённый таб', async () => {
 			const { emitted } = render(BaseTabs, {

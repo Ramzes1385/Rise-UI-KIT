@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseEditor from '../ui/BaseEditor.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Визуальный редактор форматированного текста: заметки, описания задач, статьи. Значение — HTML-строка через `v-model`.',

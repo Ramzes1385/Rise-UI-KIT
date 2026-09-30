@@ -346,12 +346,14 @@ function styleTemplate(n, kind, variants) {
 }
 
 function storyFile(n, story) {
-	const description = `parameters: { docs: { description: { story: '${story.description}' } }${story.parameters ? `, ${story.parameters}` : ''} },`
+	const source = story.source ? `, source: ${story.source}` : ''
+	const description = `parameters: { docs: { description: { story: '${story.description}' }${source} }${story.parameters ? `, ${story.parameters}` : ''} },`
 	return [
 		...story.imports,
 		`import type meta from '../${n.name}.stories'`,
 		"import type { StoryObj } from '@storybook/vue3-vite'",
 		'',
+		...(story.consts ? [...story.consts, ''] : []),
 		`export const ${story.name}: StoryObj<typeof meta> = {`,
 		`\t${description}`,
 		...story.body,
@@ -409,16 +411,19 @@ function storiesTemplate(n, kind, variants, flags) {
 		},
 		form: {
 			description: 'Песочница: v-model связан с Controls — введённый текст появляется в панели.',
-			imports: ["import { expect } from 'storybook/test'", "import { useModelArg } from '@/stories/helpers'", component],
+			imports: [
+				"import { expect } from 'storybook/test'",
+				"import { storySource, useStorySetup } from '@/stories/helpers'",
+				component,
+			],
+			consts: ["const models = { value: 'modelValue' }", '', `const template = \`<${n.name} v-bind="args" v-model="value" />\``],
+			source: `storySource({ template, imports: ['${n.name}'], models })`,
 			body: [
-				'\trender: args => {',
-				'\t\tconst onUpdate = useModelArg()',
-				'\t\treturn {',
-				`\t\t\tcomponents: { ${n.name} },`,
-				'\t\t\tsetup: () => ({ args, onUpdate }),',
-				`\t\t\ttemplate: '<${n.name} v-bind="args" @update:model-value="onUpdate" />',`,
-				'\t\t}',
-				'\t},',
+				'\trender: args => ({',
+				`\t\tcomponents: { ${n.name} },`,
+				'\t\tsetup: useStorySetup(args, { models }),',
+				'\t\ttemplate,',
+				'\t}),',
 				'\tplay: async ({ canvas, userEvent }) => {',
 				"\t\tconst field = canvas.getByLabelText('Название')",
 				'\t\tawait userEvent.tab()',
@@ -438,14 +443,18 @@ function storiesTemplate(n, kind, variants, flags) {
 			parameters: "controls: { include: ['sizeScale'] }",
 			imports: [
 				component,
-				"import { useArgsWithoutSlots } from '@/stories/helpers'",
+				"import { storySource, useStorySetup } from '@/stories/helpers'",
 				`import { ${n.constName} } from '../../types/${n.name}.types'`,
 			],
+			consts: [
+				`const template = \`<div class="story-row"><${n.name} v-for="variant in ${n.constName}" :key="variant" v-bind="args" :variant="variant" :label="variant" /></div>\``,
+			],
+			source: `storySource({ template, imports: ['${n.name}', '${n.constName}'] })`,
 			body: [
 				'\trender: args => ({',
 				`\t\tcomponents: { ${n.name} },`,
-				`\t\tsetup: () => ({ props: useArgsWithoutSlots(args), variants: ${n.constName} }),`,
-				`\t\ttemplate: '<div class="story-row"><${n.name} v-for="variant in variants" :key="variant" v-bind="props" :variant="variant" :label="variant" /></div>',`,
+				`\t\tsetup: useStorySetup(args, { data: { ${n.constName} } }),`,
+				'\t\ttemplate,',
 				'\t}),',
 			],
 		},
@@ -453,12 +462,18 @@ function storiesTemplate(n, kind, variants, flags) {
 			name: 'Sizes',
 			description: 'Размеры через `sizeScale`: 75 / 87.5 / 100 / 112.5 / 125.',
 			parameters: "controls: { include: ['variant'] }",
-			imports: [component, "import { SIZE_PRESETS, sizeLabel, useArgsWithoutSlots } from '@/stories/helpers'"],
+			imports: [component, "import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'"],
+			consts: [
+				'const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))',
+				'',
+				`const template = \`<div class="story-row"><${n.name} v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" :label="preset.label" /></div>\``,
+			],
+			source: `storySource({ template, imports: ['${n.name}'], script: \`const presets = \${literal(presets)}\` })`,
 			body: [
 				'\trender: args => ({',
 				`\t\tcomponents: { ${n.name} },`,
-				'\t\tsetup: () => ({ props: useArgsWithoutSlots(args), presets: SIZE_PRESETS, sizeLabel }),',
-				`\t\ttemplate: '<div class="story-row"><${n.name} v-for="preset in presets" :key="preset.name" v-bind="props" :size-scale="preset.sizeScale" :label="sizeLabel(preset)" /></div>',`,
+				'\t\tsetup: useStorySetup(args, { data: { presets } }),',
+				'\t\ttemplate,',
 				'\t}),',
 			],
 		},

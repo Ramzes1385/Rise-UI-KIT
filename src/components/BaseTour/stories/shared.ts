@@ -6,14 +6,6 @@ export const STEPS: TourStep[] = [
 	{ target: '#tour-settings', title: 'Настройки', content: 'Здесь меняются язык озвучки, голоса и формат экспорта.' },
 ]
 
-export const DEMO_TOOLBAR = `
-	<div class="story-row">
-		<BaseButton id="tour-create">Создать проект</BaseButton>
-		<BaseButton id="tour-import" variant="outline">Импорт</BaseButton>
-		<BaseButton id="tour-settings" variant="ghost">Настройки</BaseButton>
-	</div>
-`
-
 export function docsFrame(height: number) {
 	return { story: { inline: false, height: `${height}px` } }
 }

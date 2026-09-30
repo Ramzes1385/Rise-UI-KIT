@@ -1,4 +1,4 @@
-export { useModelArg, useStorySetup } from './controls/model'
+export { useStorySetup } from './controls/model'
 export { useArgsWithoutSlots } from './controls/args'
 export { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, slotArgType } from './controls/argTypes'
 export { avatarImage, BROKEN_IMAGE_SRC, placeholderImage, STORY_IMAGES, STORY_TODAY, STORY_USERS, storyDate } from './render/fixtures'

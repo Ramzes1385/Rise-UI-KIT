@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseCalendar from '../ui/BaseCalendar.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Календарь для выбора даты, диапазона или нескольких дат — при необходимости со временем.',

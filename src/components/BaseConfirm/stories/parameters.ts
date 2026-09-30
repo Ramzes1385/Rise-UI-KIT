@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseConfirm from '../ui/BaseConfirm.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Окно подтверждения: вопрос, последствия и две кнопки. Для действий, которые трудно отменить: удаление,',

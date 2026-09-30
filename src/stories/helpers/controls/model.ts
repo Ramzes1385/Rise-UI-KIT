@@ -5,33 +5,16 @@ import type { WritableComputedRef } from 'vue'
 import { useArgs } from 'storybook/preview-api'
 import type { StorySetupOptions } from '../types/helpers.types'
 
-/**
- * Возвращает обработчик для `@update:<name>`, который записывает новое значение обратно в args.
- * Так значение из Controls попадает в компонент, а ввод пользователя — в Controls: песочница ведёт себя как v-model.
- *
- * Вызывайте в теле render (это хук Storybook), а не внутри setup компонента.
- *
- * @example
- * render: args => {
- *   const onUpdate = useModelArg()
- *   return {
- *     components: { BaseInput },
- *     setup: () => ({ args, onUpdate }),
- *     template: '<BaseInput v-bind="args" @update:model-value="onUpdate" />',
- *   }
- * }
- */
-export function useModelArg(name = 'modelValue'): (value: unknown) => void {
-	const [, updateArgs] = useArgs()
-	return (value: unknown) => updateArgs({ [name]: value })
-}
-
 const sameValue = (left: unknown, right: unknown): boolean => left === right || JSON.stringify(left) === JSON.stringify(right)
+
+/** Сколько ждать ответа Storybook на своё изменение, мс: в Docs ответа нет, и позже значение из Controls применяется */
+const ECHO_WINDOW = 1000
 
 /**
  * Переменная `v-model`, связанная с аргументом Storybook: значение меняется сразу, в Controls уходит следом.
  * Ответ Storybook на своё же изменение приходит позже и пропускается — иначе быстрый ввод или выбор диапазона
- * получал бы устаревшее значение; изменение в Controls применяется.
+ * получал бы устаревшее значение; изменение в Controls применяется. На странице Docs Storybook не перерисовывает
+ * историю после `updateArgs`, поэтому значение живёт в самой переменной — так примеры в Docs отвечают на ввод.
  */
 function modelArg(
 	args: Record<string, unknown>,
@@ -39,11 +22,13 @@ function modelArg(
 	updateArgs: (update: Record<string, unknown>) => void,
 ): WritableComputedRef<unknown> {
 	const local = ref(args[arg])
-	let sent: unknown[] = []
+	let sent: { value: unknown; at: number }[] = []
 	watch(
 		() => args[arg],
 		value => {
-			const echo = sent.findIndex(item => sameValue(item, value))
+			const now = performance.now()
+			sent = sent.filter(item => now - item.at < ECHO_WINDOW)
+			const echo = sent.findIndex(item => sameValue(item.value, value))
 			if (echo >= 0) sent = sent.slice(echo + 1)
 			else local.value = value
 		},
@@ -52,7 +37,7 @@ function modelArg(
 		get: () => local.value,
 		set: (value: unknown) => {
 			local.value = value
-			sent.push(value)
+			sent.push({ value, at: performance.now() })
 			updateArgs({ [arg]: value })
 		},
 	})

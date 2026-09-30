@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSplitter from '../ui/BaseSplitter.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Две панели с разделителем, который двигает пользователь: список и письмо, код и превью, дерево и таблица.',

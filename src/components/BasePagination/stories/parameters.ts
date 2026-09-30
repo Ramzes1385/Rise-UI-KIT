@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BasePagination from '../ui/BasePagination.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Пагинация переключает страницы списка или таблицы: стрелки «назад»/«вперёд», первая и последняя страницы,',

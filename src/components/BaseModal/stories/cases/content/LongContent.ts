@@ -4,7 +4,7 @@ import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, within, expect } from 'storybook/test'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const TERMS = [
 	'Сервис предоставляет доступ к облачному хранилищу проектов, редактору субтитров и инструментам совместной работы.',
@@ -21,30 +21,41 @@ const TERMS = [
 	'Удаление аккаунта необратимо. Перед удалением мы отправим письмо с подтверждением на почту аккаунта.',
 ] as const
 
+const terms = TERMS
+
+const models = { isOpen: 'isOpen' }
+
+const template = `
+	<BaseButton variant="outline" @click="onUpdate(true)">Открыть условия</BaseButton>
+	<BaseModal v-bind="args" v-model:is-open="isOpen">
+		<div class="story-stack">
+			<BaseText v-for="(term, index) in terms" :key="index">{{ index + 1 }}. {{ term }}</BaseText>
+		</div>
+		<template #footer>
+			<BaseButton @click="onUpdate(false)">Понятно</BaseButton>
+		</template>
+	</BaseModal>
+`
+
 export const LongContent: StoryObj<typeof meta> = {
 	parameters: {
-		docs: { description: { story: 'Длинный текст прокручивается внутри тела окна: шапка и подвал с действиями остаются на экране.' } },
+		docs: {
+			description: { story: 'Длинный текст прокручивается внутри тела окна: шапка и подвал с действиями остаются на экране.' },
+			source: storySource({
+				template,
+				imports: ['BaseModal', 'BaseButton', 'BaseText'],
+				script: `const terms = ${literal(terms)}`,
+				models,
+			}),
+		},
 	},
 	tags: ['!autodocs'],
 	args: { isOpen: true, title: 'Условия использования' },
-	render: args => {
-		const onUpdate = useModelArg('isOpen')
-		return {
-			components: { BaseModal, BaseButton, BaseText },
-			setup: () => ({ props: useArgsWithoutSlots(args), terms: TERMS, onUpdate }),
-			template: `
-				<BaseButton variant="outline" @click="onUpdate(true)">Открыть условия</BaseButton>
-				<BaseModal v-bind="props" @update:is-open="onUpdate">
-					<div class="story-stack">
-						<BaseText v-for="(term, index) in terms" :key="index">{{ index + 1 }}. {{ term }}</BaseText>
-					</div>
-					<template #footer>
-						<BaseButton @click="onUpdate(false)">Понятно</BaseButton>
-					</template>
-				</BaseModal>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseModal, BaseButton, BaseText },
+		setup: useStorySetup(args, { models, data: { terms } }),
+		template,
+	}),
 	play: async () => {
 		const dialog = await screen.findByRole('dialog', { name: 'Условия использования' })
 		const accept = within(dialog).getByRole('button', { name: 'Понятно' })

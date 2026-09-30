@@ -1,11 +1,10 @@
-import { computed } from 'vue'
 import { docsFrame } from '../../shared'
 import { screen, expect } from 'storybook/test'
 import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { useModelArg, useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 function resolveColor(value: string): string {
 	const probe = document.createElement('span')
@@ -15,6 +14,20 @@ function resolveColor(value: string): string {
 	probe.remove()
 	return resolved
 }
+
+const models = { isOpen: 'isOpen' }
+
+const template = `
+	<BaseDropdown v-bind="args" v-model:is-open="isOpen">
+		<BaseButton variant="outline" @click="isOpen = !isOpen">Загрузки</BaseButton>
+		<template #dropdown>
+			<div class="story-col" style="padding: 8px;">
+				Готово к скачиванию: 3 файла
+				<BaseButton>Скачать всё</BaseButton>
+			</div>
+		</template>
+	</BaseDropdown>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {
@@ -31,26 +44,14 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'в обеих темах. Содержимое панели `color` не наследует — кнопка «Скачать всё» сохраняет свой цвет.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseDropdown', 'BaseButton'], models }),
 		},
 	},
-	render: args => {
-		const onUpdate = useModelArg('isOpen')
-		return {
-			components: { BaseDropdown, BaseButton },
-			setup: () => ({ props: useArgsWithoutSlots(args, []), isOpen: computed(() => args.isOpen), onUpdate }),
-			template: `
-				<BaseDropdown v-bind="props" @update:is-open="onUpdate">
-					<BaseButton variant="outline" @click="onUpdate(!isOpen)">Загрузки</BaseButton>
-					<template #dropdown>
-						<div class="story-col" style="padding: 8px;">
-							Готово к скачиванию: 3 файла
-							<BaseButton>Скачать всё</BaseButton>
-						</div>
-					</template>
-				</BaseDropdown>
-			`,
-		}
-	},
+	render: args => ({
+		components: { BaseDropdown, BaseButton },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
 	play: async () => {
 		const action = await screen.findByRole('button', { name: 'Скачать всё' })
 		const panel = action.closest('.base-dropdown__panel') as HTMLElement

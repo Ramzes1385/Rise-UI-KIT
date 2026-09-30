@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseDrawer from '../ui/BaseDrawer.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Выдвижная панель у края окна: нижний лист на телефоне (фильтры, действия, корзина) или панель сверху и сбоку.',
