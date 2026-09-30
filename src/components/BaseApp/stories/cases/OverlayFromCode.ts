@@ -8,6 +8,31 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { useOverlay } from '@composables/overlay/useOverlay'
 import { screen, within, expect, waitFor } from 'storybook/test'
+import { staticStorySource, useStorySetup } from '@/stories/helpers'
+
+const renameModalTemplate = `
+	<BaseModal :is-open="isOpen" title="Переименовать проект" @close="cancel" @after-leave="$emit('after-leave')">
+		<BaseInput v-model="value" label="Название" />
+		<template #footer>
+			<BaseButton variant="outline" @click="cancel">Отмена</BaseButton>
+			<BaseButton :disabled="!value.trim()" @click="save">Сохранить</BaseButton>
+		</template>
+	</BaseModal>
+`
+
+const renameModalScript = `
+const props = defineProps<{ isOpen?: boolean; name: string }>()
+const emit = defineEmits<{ close: [result?: string]; 'after-leave': [] }>()
+const value = ref(props.name)
+
+function save(): void {
+	emit('close', value.value.trim())
+}
+
+function cancel(): void {
+	emit('close')
+}
+`
 
 const RenameProjectModal = defineComponent({
 	components: { BaseModal, BaseInput, BaseButton },
@@ -15,18 +40,30 @@ const RenameProjectModal = defineComponent({
 	emits: ['close', 'after-leave'],
 	setup(props, { emit }) {
 		const value = ref(props.name)
-		return { value, save: () => emit('close', value.value.trim()), cancel: () => emit('close') }
+		const save = (): void => emit('close', value.value.trim())
+		const cancel = (): void => emit('close')
+		return { value, save, cancel }
 	},
-	template: `
-		<BaseModal :is-open="isOpen" title="Переименовать проект" @close="cancel" @after-leave="$emit('after-leave')">
-			<BaseInput v-model="value" label="Название" />
-			<template #footer>
-				<BaseButton variant="outline" @click="cancel">Отмена</BaseButton>
-				<BaseButton :disabled="!value.trim()" @click="save">Сохранить</BaseButton>
-			</template>
-		</BaseModal>
-	`,
+	template: renameModalTemplate,
 })
+
+const projectHeaderTemplate = `
+	<div class="story-row">
+		<BaseText tag="h3">{{ name }}</BaseText>
+		<BaseButton variant="outline" @click="open">Переименовать</BaseButton>
+	</div>
+`
+
+const projectHeaderScript = `
+const overlay = useOverlay()
+const rename = overlay.create<string>(RenameProjectModal)
+const name = ref('Сайт студии')
+
+async function open(): Promise<void> {
+	const result = await rename.open({ name: name.value })
+	if (result) name.value = result
+}
+`
 
 const ProjectHeader = defineComponent({
 	components: { BaseButton, BaseText },
@@ -34,19 +71,18 @@ const ProjectHeader = defineComponent({
 		const overlay = useOverlay()
 		const rename = overlay.create<string>(RenameProjectModal)
 		const name = ref('Сайт студии')
-		async function open() {
+		const open = async (): Promise<void> => {
 			const result = await rename.open({ name: name.value })
 			if (result) name.value = result
 		}
 		return { name, open }
 	},
-	template: `
-		<div class="story-row">
-			<BaseText tag="h3">{{ name }}</BaseText>
-			<BaseButton variant="outline" @click="open">Переименовать</BaseButton>
-		</div>
-	`,
+	template: projectHeaderTemplate,
 })
+
+const template = `
+	<BaseApp><ProjectHeader /></BaseApp>
+`
 
 export const OverlayFromCode: StoryObj<typeof meta> = {
 	parameters: {
@@ -58,22 +94,32 @@ export const OverlayFromCode: StoryObj<typeof meta> = {
 					"результат передаёт в `emit('close', value)`. Шаблон окна и флаг открытия в родителе не нужны.",
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'const overlay = useOverlay()',
-					'const rename = overlay.create(RenameProjectModal)',
-					'',
-					'async function open() {',
-					'\tconst result = await rename.open({ name: project.name })',
-					'\tif (result) project.name = result',
-					'}',
-				].join('\n'),
-			},
+			source: staticStorySource({
+				template,
+				imports: ['BaseApp'],
+				components: {
+					ProjectHeader: {
+						template: projectHeaderTemplate,
+						imports: ['BaseButton', 'BaseText', 'useOverlay'],
+						vue: ['ref'],
+						script: projectHeaderScript,
+						components: {
+							RenameProjectModal: {
+								template: renameModalTemplate,
+								imports: ['BaseModal', 'BaseInput', 'BaseButton'],
+								vue: ['ref'],
+								script: renameModalScript,
+							},
+						},
+					},
+				},
+			}),
 		},
 	},
-	render: () => ({
+	render: args => ({
 		components: { BaseApp, ProjectHeader },
-		template: '<BaseApp><ProjectHeader /></BaseApp>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const trigger = canvas.getByRole('button', { name: 'Переименовать' })

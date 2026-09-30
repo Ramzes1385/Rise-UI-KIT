@@ -4,7 +4,7 @@ import { SHOWCASE_OWN_ARGS } from '../../shared'
 import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 function resolveColor(value: string): string {
 	const probe = document.createElement('span')
@@ -14,6 +14,17 @@ function resolveColor(value: string): string {
 	probe.remove()
 	return resolved
 }
+
+const template = `
+	<div class="story-frame story-medium" style="height: 280px;">
+		<BaseModal v-bind="args" :is-open="true" is-contained title="Годовая подписка">
+			Два месяца в подарок при оплате за год. Подписку можно отменить в любой момент.
+			<template #footer>
+				<BaseButton>Оформить</BaseButton>
+			</template>
+		</BaseModal>
+	</div>
+`
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {
@@ -32,22 +43,14 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'кнопка «Оформить» сохраняет свой цвет.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseModal', 'BaseButton'], omit: [...SHOWCASE_OWN_ARGS] }),
 		},
 		controls: { include: ['color', 'variant', 'sizeScale'] },
 	},
 	render: args => ({
 		components: { BaseModal, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]) }),
-		template: `
-			<div class="story-frame story-medium" style="height: 280px;">
-				<BaseModal v-bind="props" :is-open="true" is-contained title="Годовая подписка">
-					Два месяца в подарок при оплате за год. Подписку можно отменить в любой момент.
-					<template #footer>
-						<BaseButton>Оформить</BaseButton>
-					</template>
-				</BaseModal>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: [...SHOWCASE_OWN_ARGS] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const dialog = canvas.getByRole('dialog', { name: 'Годовая подписка' })

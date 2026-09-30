@@ -3,10 +3,40 @@ import { docsFrame } from '../../shared'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseDropdownMenu.stories'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseDropdownMenu from '../../../ui/BaseDropdownMenu.vue'
 import { screen, within, expect, waitFor } from 'storybook/test'
 import type { DropdownMenuItem } from '../../../types/BaseDropdownMenu.types'
+
+const script = `
+const columns = ref({ title: true, duration: true, author: false })
+const sort = ref<'date' | 'title'>('date')
+
+function items(): DropdownMenuItem[][] {
+	return [
+		[
+			{ type: 'label', label: 'Колонки' },
+			...(['title', 'duration', 'author'] as const).map(key => ({
+				type: 'checkbox' as const,
+				label: { title: 'Название', duration: 'Длительность', author: 'Автор перевода' }[key],
+				isChecked: columns.value[key],
+				onUpdateChecked: (value: boolean) => (columns.value[key] = value),
+			})),
+		],
+		[
+			{ type: 'label', label: 'Сортировка' },
+			{ type: 'radio', label: 'По дате', isChecked: sort.value === 'date', onUpdateChecked: () => (sort.value = 'date') },
+			{ type: 'radio', label: 'По названию', isChecked: sort.value === 'title', onUpdateChecked: () => (sort.value = 'title') },
+		],
+	]
+}
+`
+
+const template = `
+	<BaseDropdownMenu v-bind="args" :items="items()">
+		<BaseButton variant="outline">Вид таблицы</BaseButton>
+	</BaseDropdownMenu>
+`
 
 export const CheckboxesAndRadios: StoryObj<typeof meta> = {
 	parameters: {
@@ -19,41 +49,47 @@ export const CheckboxesAndRadios: StoryObj<typeof meta> = {
 					'Enter меняет отметку и закрывает меню. Подписи групп называют группы для скринридера.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseDropdownMenu', 'BaseButton', 'type DropdownMenuItem'],
+				vue: ['ref'],
+				script,
+				omit: ['items'],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseDropdownMenu, BaseButton },
-		setup: () => {
-			const columns = ref({ title: true, duration: true, author: false })
-			const sort = ref<'date' | 'title'>('date')
-			const items = (): DropdownMenuItem[][] => [
-				[
-					{ type: 'label', label: 'Колонки' },
-					...(['title', 'duration', 'author'] as const).map(key => ({
-						type: 'checkbox' as const,
-						label: { title: 'Название', duration: 'Длительность', author: 'Автор перевода' }[key],
-						isChecked: columns.value[key],
-						onUpdateChecked: (value: boolean) => (columns.value[key] = value),
-					})),
-				],
-				[
-					{ type: 'label', label: 'Сортировка' },
-					{ type: 'radio', label: 'По дате', isChecked: sort.value === 'date', onUpdateChecked: () => (sort.value = 'date') },
-					{
-						type: 'radio',
-						label: 'По названию',
-						isChecked: sort.value === 'title',
-						onUpdateChecked: () => (sort.value = 'title'),
-					},
-				],
-			]
-			return { props: useArgsWithoutSlots(args, ['items']), items }
-		},
-		template: `
-			<BaseDropdownMenu v-bind="props" :items="items()">
-				<BaseButton variant="outline">Вид таблицы</BaseButton>
-			</BaseDropdownMenu>
-		`,
+		setup: useStorySetup(args, {
+			slots: ['items'],
+			setup: () => {
+				const columns = ref({ title: true, duration: true, author: false })
+				const sort = ref<'date' | 'title'>('date')
+				const items = (): DropdownMenuItem[][] => [
+					[
+						{ type: 'label', label: 'Колонки' },
+						...(['title', 'duration', 'author'] as const).map(key => ({
+							type: 'checkbox' as const,
+							label: { title: 'Название', duration: 'Длительность', author: 'Автор перевода' }[key],
+							isChecked: columns.value[key],
+							onUpdateChecked: (value: boolean) => (columns.value[key] = value),
+						})),
+					],
+					[
+						{ type: 'label', label: 'Сортировка' },
+						{ type: 'radio', label: 'По дате', isChecked: sort.value === 'date', onUpdateChecked: () => (sort.value = 'date') },
+						{
+							type: 'radio',
+							label: 'По названию',
+							isChecked: sort.value === 'title',
+							onUpdateChecked: () => (sort.value = 'title'),
+						},
+					],
+				]
+				return { items }
+			},
+		}),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Вид таблицы' }))

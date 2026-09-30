@@ -4,8 +4,23 @@ import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import { DROPDOWN_VARIANTS } from '../../../types/BaseDropdown.types'
+
+const HIDDEN_ARGS = ['isOpen', 'variant', 'onUpdate:isOpen']
+
+const template = `
+	<div class="story-grid" style="--story-grid-min: 140px;">
+		<div v-for="variant in DROPDOWN_VARIANTS" :key="variant" style="height: 110px;">
+			<BaseDropdown v-bind="args" :is-open="true" :variant="variant">
+				<BaseButton variant="outline">{{ variant }}</BaseButton>
+				<template #dropdown>
+					<BaseText style="padding: 6px 8px;">Панель {{ variant }}</BaseText>
+				</template>
+			</BaseDropdown>
+		</div>
+	</div>
+`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
@@ -18,27 +33,12 @@ export const Variants: StoryObj<typeof meta> = {
 				].join('\n'),
 			},
 			...docsFrame(200),
-			source: {
-				code: DROPDOWN_VARIANTS.map(variant => `<BaseDropdown v-model:is-open="isOpen" variant="${variant}">…</BaseDropdown>`).join(
-					'\n',
-				),
-			},
+			source: storySource({ template, imports: ['BaseDropdown', 'BaseButton', 'BaseText', 'DROPDOWN_VARIANTS'], omit: HIDDEN_ARGS }),
 		},
 	},
 	render: args => ({
 		components: { BaseDropdown, BaseButton, BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'variant', 'onUpdate:isOpen']), variants: DROPDOWN_VARIANTS }),
-		template: `
-			<div class="story-grid" style="--story-grid-min: 140px;">
-				<div v-for="variant in variants" :key="variant" style="height: 110px;">
-					<BaseDropdown v-bind="props" :is-open="true" :variant="variant">
-						<BaseButton variant="outline">{{ variant }}</BaseButton>
-						<template #dropdown>
-							<BaseText style="padding: 6px 8px;">Панель {{ variant }}</BaseText>
-						</template>
-					</BaseDropdown>
-				</div>
-			</div>
-		`,
+		setup: useStorySetup(args, { data: { DROPDOWN_VARIANTS }, slots: HIDDEN_ARGS }),
+		template,
 	}),
 }

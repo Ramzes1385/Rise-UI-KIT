@@ -1,10 +1,16 @@
-import { ref } from 'vue'
 import type meta from '../BaseConfirm.stories'
 import BaseConfirm from '../../ui/BaseConfirm.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots, tabTo } from '@/stories/helpers'
 import { screen, within, waitFor, expect } from 'storybook/test'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const state = { isOpen: false }
+
+const template = `
+	<BaseButton variant="outline" @click="isOpen = true">Удалить проект</BaseButton>
+	<BaseConfirm v-bind="args" v-model:is-open="isOpen" />
+`
 
 export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,6 +21,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 					'и не уходит из окна, Escape отменяет и возвращает фокус на кнопку.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseConfirm', 'BaseButton'], state, omit: ['isOpen', 'onUpdate:isOpen'] }),
 		},
 	},
 	tags: ['!autodocs'],
@@ -26,11 +33,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 	},
 	render: args => ({
 		components: { BaseConfirm, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'onUpdate:isOpen']), isOpen: ref(false) }),
-		template: `
-			<BaseButton variant="outline" @click="isOpen = true">Удалить проект</BaseButton>
-			<BaseConfirm v-bind="props" v-model:is-open="isOpen" />
-		`,
+		setup: useStorySetup(args, { state, slots: ['isOpen', 'onUpdate:isOpen'] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		const trigger = canvas.getByRole('button', { name: 'Удалить проект' })

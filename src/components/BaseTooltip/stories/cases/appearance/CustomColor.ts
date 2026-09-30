@@ -4,7 +4,13 @@ import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseTooltip v-bind="args">
+		<BaseButton variant="outline">Субтитры</BaseButton>
+	</BaseTooltip>
+`
 
 function resolveColor(value: string): string {
 	const probe = document.createElement('span')
@@ -31,16 +37,13 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'сохраняют контраст в обеих темах. Кнопка в слоте цвет не наследует.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseTooltip', 'BaseButton'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseTooltip, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-		template: `
-			<BaseTooltip v-bind="props">
-				<BaseButton variant="outline">Субтитры</BaseButton>
-			</BaseTooltip>
-		`,
+		setup: useStorySetup(args, { slots: [] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const tooltip = await screen.findByRole('tooltip')

@@ -3,8 +3,19 @@ import type meta from '../BaseDropdownMenu.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdownMenu from '../../ui/BaseDropdownMenu.vue'
-import { useArgsWithoutSlots, tabTo } from '@/stories/helpers'
 import { screen, waitFor, expect, within } from 'storybook/test'
+import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-row">
+		<BaseDropdownMenu v-bind="args">
+			<BaseButton variant="outline">Черновик</BaseButton>
+		</BaseDropdownMenu>
+		<BaseDropdownMenu v-bind="args" aria-label="Недоступно">
+			<BaseButton variant="outline" is-disabled>Архив</BaseButton>
+		</BaseDropdownMenu>
+	</div>
+`
 
 export const Disabled: StoryObj<typeof meta> = {
 	args: {
@@ -26,21 +37,13 @@ export const Disabled: StoryObj<typeof meta> = {
 					'Отключённая кнопка (`isDisabled` у BaseButton) меню не открывает.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseDropdownMenu', 'BaseButton'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseDropdownMenu, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-		template: `
-			<div class="story-row">
-				<BaseDropdownMenu v-bind="props">
-					<BaseButton variant="outline">Черновик</BaseButton>
-				</BaseDropdownMenu>
-				<BaseDropdownMenu v-bind="props" aria-label="Недоступно">
-					<BaseButton variant="outline" is-disabled>Архив</BaseButton>
-				</BaseDropdownMenu>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: [] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const trigger = canvas.getByRole('button', { name: 'Черновик' })

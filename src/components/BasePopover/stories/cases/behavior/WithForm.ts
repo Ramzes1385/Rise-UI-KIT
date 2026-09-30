@@ -1,12 +1,25 @@
-import { ref } from 'vue'
 import { SHOWCASE_OWN_ARGS } from '../../shared'
 import type meta from '../../BasePopover.stories'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopover from '../../../ui/BasePopover.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import { screen, expect, within, waitFor } from 'storybook/test'
+
+const state = { isOpen: false, email: '' }
+
+const template = `
+	<BasePopover v-bind="args" v-model:is-open="isOpen">
+		<template #trigger>
+			<BaseButton variant="outline">Пригласить</BaseButton>
+		</template>
+		<form class="story-col" aria-label="Приглашение" @submit.prevent="isOpen = false">
+			<BaseInput v-model="email" type="email" label="Почта участника" placeholder="name@example.com" />
+			<BaseButton type="submit">Отправить приглашение</BaseButton>
+		</form>
+	</BasePopover>
+`
 
 export const WithForm: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,23 +30,14 @@ export const WithForm: StoryObj<typeof meta> = {
 					'После закрытия фокус возвращается на кнопку-триггер.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BasePopover', 'BaseButton', 'BaseInput'], state, omit: [...SHOWCASE_OWN_ARGS] }),
 		},
 		controls: { include: ['position', 'variant'] },
 	},
 	render: args => ({
 		components: { BasePopover, BaseButton, BaseInput },
-		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]), isOpen: ref(false), email: ref('') }),
-		template: `
-			<BasePopover v-bind="props" v-model:is-open="isOpen">
-				<template #trigger>
-					<BaseButton variant="outline">Пригласить</BaseButton>
-				</template>
-				<form class="story-col" aria-label="Приглашение" @submit.prevent="isOpen = false">
-					<BaseInput v-model="email" type="email" label="Почта участника" placeholder="name@example.com" />
-					<BaseButton type="submit">Отправить приглашение</BaseButton>
-				</form>
-			</BasePopover>
-		`,
+		setup: useStorySetup(args, { state, slots: [...SHOWCASE_OWN_ARGS] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		const trigger = canvas.getByRole('button', { name: 'Пригласить' })

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseScrollArea from '../ui/BaseScrollArea.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Область прокрутки с тонкой полосой поверх содержимого — одинаковой в Windows, macOS и Linux.',

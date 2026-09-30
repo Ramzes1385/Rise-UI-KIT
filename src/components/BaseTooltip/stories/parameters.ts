@@ -1,9 +1,11 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseTooltip from '../ui/BaseTooltip.vue'
 
 export const parameters = {
 	layout: 'centered',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Короткая подсказка к элементу: название кнопки-иконки, пояснение к сокращению, горячая клавиша.',

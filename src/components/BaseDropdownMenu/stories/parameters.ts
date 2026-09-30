@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Меню у кнопки по паттерну APG Menu Button: действия, флажки, переключатели, подменю, ссылки.',

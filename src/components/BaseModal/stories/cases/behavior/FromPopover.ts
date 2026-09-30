@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import type meta from '../../BaseModal.stories'
 import { BaseText } from '@components/BaseText'
 import { screen, expect } from 'storybook/test'
@@ -6,7 +5,30 @@ import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BasePopover } from '@components/BasePopover'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const OWN_ARGS = ['default', 'isOpen', 'title', 'onUpdate:isOpen']
+
+const state = { isPopoverOpen: true, isModalOpen: false }
+
+const template = `
+	<BasePopover v-model:is-open="isPopoverOpen" position="bottom">
+		<template #trigger>
+			<BaseButton variant="outline">Серия 3</BaseButton>
+		</template>
+		<div class="story-stack" style="width: 240px;">
+			<BaseText>Опубликована 12 сентября</BaseText>
+			<BaseButton variant="soft" @click="isModalOpen = true">Снять с публикации…</BaseButton>
+		</div>
+	</BasePopover>
+	<BaseModal v-bind="args" v-model:is-open="isModalOpen" title="Снять серию с публикации?">
+		<BaseText>Подписчики перестанут видеть серию 3, ссылки на неё перестанут открываться.</BaseText>
+		<template #footer>
+			<BaseButton variant="outline" @click="isModalOpen = false">Отмена</BaseButton>
+			<BaseButton @click="isModalOpen = false">Снять</BaseButton>
+		</template>
+	</BaseModal>
+`
 
 export const FromPopover: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,34 +39,19 @@ export const FromPopover: StoryObj<typeof meta> = {
 					'и его якорь в DOM стоит перед окном. Порядок наложения — порядок открытия (`--rise-layer-index`).',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseModal', 'BaseButton', 'BasePopover', 'BaseText'],
+				state,
+				omit: OWN_ARGS,
+			}),
 		},
 	},
 	tags: ['!autodocs'],
 	render: args => ({
 		components: { BaseModal, BaseButton, BasePopover, BaseText },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, ['default', 'isOpen', 'title', 'onUpdate:isOpen']),
-			isPopoverOpen: ref(true),
-			isModalOpen: ref(false),
-		}),
-		template: `
-			<BasePopover v-model:is-open="isPopoverOpen" position="bottom">
-				<template #trigger>
-					<BaseButton variant="outline">Серия 3</BaseButton>
-				</template>
-				<div class="story-stack" style="width: 240px;">
-					<BaseText>Опубликована 12 сентября</BaseText>
-					<BaseButton variant="soft" @click="isModalOpen = true">Снять с публикации…</BaseButton>
-				</div>
-			</BasePopover>
-			<BaseModal v-bind="props" v-model:is-open="isModalOpen" title="Снять серию с публикации?">
-				<BaseText>Подписчики перестанут видеть серию 3, ссылки на неё перестанут открываться.</BaseText>
-				<template #footer>
-					<BaseButton variant="outline" @click="isModalOpen = false">Отмена</BaseButton>
-					<BaseButton @click="isModalOpen = false">Снять</BaseButton>
-				</template>
-			</BaseModal>
-		`,
+		setup: useStorySetup(args, { state, slots: OWN_ARGS }),
+		template,
 	}),
 	play: async ({ userEvent }) => {
 		const action = await screen.findByRole('button', { name: 'Снять с публикации…' })

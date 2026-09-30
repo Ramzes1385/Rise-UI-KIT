@@ -3,10 +3,28 @@ import { BaseKbd } from '@components/BaseKbd'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../BaseCommandPalette.stories'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseCommandPalette from '../../ui/BaseCommandPalette.vue'
 import { expect, screen, waitFor, within } from 'storybook/test'
 import type { CommandItem } from '../../types/BaseCommandPalette.types'
+
+const state = { isOpen: false }
+
+const template = `
+	<div style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px">
+		<BaseButton variant="outline" @click="isOpen = true">Команды <BaseKbd value="meta" /><BaseKbd value="K" /></BaseButton>
+		<p style="margin: 0" aria-live="polite">{{ last ? 'Выполнено: ' + last : 'Команда ещё не выбрана' }}</p>
+		<BaseCommandPalette v-bind="args" v-model:is-open="isOpen" @select="handleSelect" />
+	</div>
+`
+
+const script = `
+const last = ref('')
+
+function handleSelect(command: CommandItem): void {
+	last.value = command.label
+}
+`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
@@ -14,24 +32,27 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: 'Нажмите Ctrl+K (⌘K на Mac) или кнопку. Наберите «тем», стрелкой выберите команду, Enter выполнит её.',
 			},
+			source: storySource({
+				template,
+				imports: ['BaseCommandPalette', 'BaseButton', 'BaseKbd', 'type CommandItem'],
+				state,
+				script,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseCommandPalette, BaseButton, BaseKbd },
-		setup() {
-			const isOpen = ref(false)
-			const last = ref('')
-			const handleSelect = (command: CommandItem) => {
-				last.value = command.label
-			}
-			return { props: useArgsWithoutSlots(args), isOpen, last, handleSelect }
-		},
-		template: `
-			<div style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px">
-				<BaseButton variant="outline" @click="isOpen = true">Команды <BaseKbd value="meta" /><BaseKbd value="K" /></BaseButton>
-				<p style="margin: 0" aria-live="polite">{{ last ? 'Выполнено: ' + last : 'Команда ещё не выбрана' }}</p>
-				<BaseCommandPalette v-bind="props" v-model:is-open="isOpen" @select="handleSelect" />
-			</div>`,
+		setup: useStorySetup(args, {
+			state,
+			setup: () => {
+				const last = ref('')
+				const handleSelect = (command: CommandItem): void => {
+					last.value = command.label
+				}
+				return { last, handleSelect }
+			},
+		}),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.keyboard('{Control>}k{/Control}')

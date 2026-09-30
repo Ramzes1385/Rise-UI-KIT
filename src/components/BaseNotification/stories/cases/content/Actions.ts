@@ -1,4 +1,4 @@
-import { fn, within, expect } from 'storybook/test'
+import { within, expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseNotification.stories'
 
@@ -7,7 +7,7 @@ export const Actions: StoryObj<typeof meta> = {
 		type: 'info',
 		title: 'Файл перемещён в корзину',
 		description: '«Интервью, дубль 4.mov» можно восстановить в течение 30 дней.',
-		actions: [{ label: 'Отменить', onClick: fn() }, { label: 'Открыть корзину' }],
+		actions: [{ label: 'Отменить', onClick: () => {} }, { label: 'Открыть корзину' }],
 	},
 	parameters: {
 		docs: {

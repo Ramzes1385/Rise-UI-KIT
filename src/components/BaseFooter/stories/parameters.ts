@@ -1,9 +1,11 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseFooter from '../ui/BaseFooter.vue'
 
 export const parameters = {
 	layout: 'fullscreen',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Подвал сайта или приложения: копирайт, ссылки на документы, соцсети.',

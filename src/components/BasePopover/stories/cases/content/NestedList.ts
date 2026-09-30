@@ -1,12 +1,30 @@
-import { ref } from 'vue'
 import type meta from '../../BasePopover.stories'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopover from '../../../ui/BasePopover.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { screen, waitFor, expect } from 'storybook/test'
 import { docsFrame, SHOWCASE_OWN_ARGS } from '../../shared'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const statuses = [
+	{ value: 'draft', label: 'Черновик' },
+	{ value: 'review', label: 'На проверке' },
+	{ value: 'published', label: 'Опубликована' },
+]
+
+const state = { isOpen: false, status: 'draft' }
+
+const template = `
+	<BasePopover v-bind="args" v-model:is-open="isOpen">
+		<template #trigger>
+			<BaseButton variant="outline">Фильтры</BaseButton>
+		</template>
+		<div style="width: 240px;">
+			<BaseSelect v-model="status" label="Статус серии" :options="statuses" />
+		</div>
+	</BasePopover>
+`
 
 export const NestedList: StoryObj<typeof meta> = {
 	parameters: {
@@ -19,30 +37,19 @@ export const NestedList: StoryObj<typeof meta> = {
 					'Escape сначала закрывает список, следующее нажатие — поповер.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BasePopover', 'BaseButton', 'BaseSelect'],
+				script: `const statuses = ${literal(statuses)}`,
+				state,
+				omit: [...SHOWCASE_OWN_ARGS],
+			}),
 		},
 	},
 	render: args => ({
 		components: { BasePopover, BaseButton, BaseSelect },
-		setup: () => ({
-			props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]),
-			isOpen: ref(false),
-			status: ref('draft'),
-			statuses: [
-				{ value: 'draft', label: 'Черновик' },
-				{ value: 'review', label: 'На проверке' },
-				{ value: 'published', label: 'Опубликована' },
-			],
-		}),
-		template: `
-			<BasePopover v-bind="props" v-model:is-open="isOpen">
-				<template #trigger>
-					<BaseButton variant="outline">Фильтры</BaseButton>
-				</template>
-				<div style="width: 240px;">
-					<BaseSelect v-model="status" label="Статус серии" :options="statuses" />
-				</div>
-			</BasePopover>
-		`,
+		setup: useStorySetup(args, { state, data: { statuses }, slots: [...SHOWCASE_OWN_ARGS] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Фильтры' }))

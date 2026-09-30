@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseNotification from '../ui/BaseNotification.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Всплывающие уведомления (toast) о результате действия: сохранено, ошибка загрузки, предупреждение.',

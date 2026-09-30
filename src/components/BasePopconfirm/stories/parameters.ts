@@ -1,9 +1,11 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BasePopconfirm from '../ui/BasePopconfirm.vue'
 
 export const parameters = {
 	layout: 'centered',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Вопрос у кнопки перед действием: «Снять с публикации?», «Удалить комментарий?». Легче окна',

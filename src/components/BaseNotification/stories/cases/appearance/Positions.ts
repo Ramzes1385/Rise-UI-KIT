@@ -1,11 +1,25 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
+import { remountOnArgs } from '../../shared'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseNotification.stories'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { screen, waitFor, expect } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseNotification from '../../../ui/BaseNotification.vue'
 import type { BaseNotificationExpose } from '../../../types/BaseNotification.types'
+
+const template = `
+	<BaseButton variant="outline" @click="showMore">Показать ещё</BaseButton>
+	<BaseNotification ref="list" v-bind="args" />
+`
+
+const script = `
+const list = ref<BaseNotificationExpose | null>(null)
+
+function showMore(): void {
+	list.value?.add({ type: 'info', title: 'Ещё одно уведомление', duration: 3000 })
+}
+`
 
 export const Positions: StoryObj<typeof meta> = {
 	args: { isContained: false, position: 'top-right' },
@@ -19,22 +33,29 @@ export const Positions: StoryObj<typeof meta> = {
 				].join('\n'),
 			},
 			story: { inline: false, height: '240px' },
-			source: { code: '<BaseNotification position="top-right" type="success" title="Изменения сохранены" />' },
+			source: storySource({
+				template,
+				imports: ['BaseNotification', 'BaseButton', 'type BaseNotificationExpose'],
+				vue: ['ref'],
+				script,
+			}),
 		},
 	},
-	render: args => ({
-		components: { BaseNotification, BaseButton },
-		setup: () => {
-			const list = ref<BaseNotificationExpose | null>(null)
-			const key = computed(() => `${args.position}-${args.variant}`)
-			const showMore = () => list.value?.add({ type: 'info', title: 'Ещё одно уведомление', duration: 3000 })
-			return { props: useArgsWithoutSlots(args, []), key, list, showMore }
-		},
-		template: `
-			<BaseButton variant="outline" @click="showMore">Показать ещё</BaseButton>
-			<BaseNotification ref="list" :key="key" v-bind="props" />
-		`,
-	}),
+	render: args =>
+		remountOnArgs(args, ['position', 'variant'], {
+			components: { BaseNotification, BaseButton },
+			setup: useStorySetup(args, {
+				slots: [],
+				setup: () => {
+					const list = ref<BaseNotificationExpose | null>(null)
+					const showMore = (): void => {
+						list.value?.add({ type: 'info', title: 'Ещё одно уведомление', duration: 3000 })
+					}
+					return { list, showMore }
+				},
+			}),
+			template,
+		}),
 	play: async () => {
 		const item = await screen.findByRole('status')
 		await waitFor(() => expect(item.getBoundingClientRect().right).toBeCloseTo(document.documentElement.clientWidth - 16, 0))

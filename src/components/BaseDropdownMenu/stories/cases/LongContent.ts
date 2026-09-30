@@ -2,9 +2,15 @@ import { docsFrame } from '../shared'
 import type meta from '../BaseDropdownMenu.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { screen, waitFor, expect } from 'storybook/test'
 import BaseDropdownMenu from '../../ui/BaseDropdownMenu.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseDropdownMenu v-bind="args">
+		<BaseButton variant="outline">Переместить</BaseButton>
+	</BaseDropdownMenu>
+`
 
 export const LongContent: StoryObj<typeof meta> = {
 	args: {
@@ -22,16 +28,13 @@ export const LongContent: StoryObj<typeof meta> = {
 			description: {
 				story: 'Длинные подписи переносятся по словам; панель не шире 320px. Длинный список прокручивается внутри панели.',
 			},
+			source: storySource({ template, imports: ['BaseDropdownMenu', 'BaseButton'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseDropdownMenu, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-		template: `
-			<BaseDropdownMenu v-bind="props">
-				<BaseButton variant="outline">Переместить</BaseButton>
-			</BaseDropdownMenu>
-		`,
+		setup: useStorySetup(args, { slots: [] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Переместить' }))

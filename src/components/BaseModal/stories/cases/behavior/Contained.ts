@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import type meta from '../../BaseModal.stories'
 import { BaseText } from '@components/BaseText'
 import { SHOWCASE_OWN_ARGS } from '../../shared'
@@ -6,7 +5,18 @@ import { expect, waitFor } from 'storybook/test'
 import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const state = { isOpen: false }
+
+const template = `
+	<div class="story-frame story-medium" style="height: 220px;">
+		<BaseButton variant="outline" @click="isOpen = true">Открыть в блоке</BaseButton>
+		<BaseModal v-bind="args" v-model:is-open="isOpen" is-contained title="Окно в блоке">
+			<BaseText>Окно перекрывает только этот блок. Кнопки и поля за его пределами доступны.</BaseText>
+		</BaseModal>
+	</div>
+`
 
 export const Contained: StoryObj<typeof meta> = {
 	parameters: {
@@ -17,20 +27,14 @@ export const Contained: StoryObj<typeof meta> = {
 					'и не выходит за его границы. Диалог немодальный — остальная страница доступна, прокрутка не блокируется.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseModal', 'BaseButton', 'BaseText'], state, omit: [...SHOWCASE_OWN_ARGS] }),
 		},
 		controls: { include: ['variant', 'sizeScale', 'closeOnOverlay'] },
 	},
 	render: args => ({
 		components: { BaseModal, BaseButton, BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]), isOpen: ref(false) }),
-		template: `
-			<div class="story-frame story-medium" style="height: 220px;">
-				<BaseButton variant="outline" @click="isOpen = true">Открыть в блоке</BaseButton>
-				<BaseModal v-bind="props" v-model:is-open="isOpen" is-contained title="Окно в блоке">
-					<BaseText>Окно перекрывает только этот блок. Кнопки и поля за его пределами доступны.</BaseText>
-				</BaseModal>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, slots: [...SHOWCASE_OWN_ARGS] }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Открыть в блоке' }))

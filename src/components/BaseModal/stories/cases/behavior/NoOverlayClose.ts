@@ -1,11 +1,25 @@
-import { ref } from 'vue'
 import type meta from '../../BaseModal.stories'
 import { BaseText } from '@components/BaseText'
 import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import { screen, expect, waitFor } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const OWN_ARGS = ['default', 'isOpen', 'onUpdate:isOpen']
+
+const state = { isOpen: false }
+
+const template = `
+	<BaseButton variant="outline" @click="isOpen = true">Отправить на согласование</BaseButton>
+	<BaseModal v-bind="args" v-model:is-open="isOpen">
+		<BaseText>После отправки редактировать документ нельзя, пока согласование не завершится.</BaseText>
+		<template #footer>
+			<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
+			<BaseButton @click="isOpen = false">Отправить</BaseButton>
+		</template>
+	</BaseModal>
+`
 
 export const NoOverlayClose: StoryObj<typeof meta> = {
 	args: { closeOnOverlay: false, title: 'Отправить на согласование?' },
@@ -17,22 +31,14 @@ export const NoOverlayClose: StoryObj<typeof meta> = {
 					'Escape и кнопка «Закрыть» — закрывают.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseModal', 'BaseButton', 'BaseText'], state, omit: OWN_ARGS }),
 		},
 		controls: { include: ['closeOnOverlay', 'hasOverlay'] },
 	},
 	render: args => ({
 		components: { BaseModal, BaseButton, BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['default', 'isOpen', 'onUpdate:isOpen']), isOpen: ref(false) }),
-		template: `
-			<BaseButton variant="outline" @click="isOpen = true">Отправить на согласование</BaseButton>
-			<BaseModal v-bind="props" v-model:is-open="isOpen">
-				<BaseText>После отправки редактировать документ нельзя, пока согласование не завершится.</BaseText>
-				<template #footer>
-					<BaseButton variant="outline" @click="isOpen = false">Отмена</BaseButton>
-					<BaseButton @click="isOpen = false">Отправить</BaseButton>
-				</template>
-			</BaseModal>
-		`,
+		setup: useStorySetup(args, { state, slots: OWN_ARGS }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Отправить на согласование' }))

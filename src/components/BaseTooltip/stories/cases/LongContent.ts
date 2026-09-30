@@ -4,7 +4,13 @@ import { screen, expect } from 'storybook/test'
 import BaseTooltip from '../../ui/BaseTooltip.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<BaseTooltip v-bind="args">
+		<BaseButton variant="outline">Сохранить копию</BaseButton>
+	</BaseTooltip>
+`
 
 export const LongContent: StoryObj<typeof meta> = {
 	args: {
@@ -19,16 +25,13 @@ export const LongContent: StoryObj<typeof meta> = {
 			description: {
 				story: 'Длинный текст переносится по словам: ширина подсказки не больше 280px. Переносы строк `\\n` сохраняются.',
 			},
+			source: storySource({ template, imports: ['BaseTooltip', 'BaseButton'] }),
 		},
 	},
 	render: args => ({
 		components: { BaseTooltip, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, []) }),
-		template: `
-			<BaseTooltip v-bind="props">
-				<BaseButton variant="outline">Сохранить копию</BaseButton>
-			</BaseTooltip>
-		`,
+		setup: useStorySetup(args, { slots: [] }),
+		template,
 	}),
 	play: async () => {
 		const tooltip = await screen.findByRole('tooltip')

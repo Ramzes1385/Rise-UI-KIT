@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseMenu } from '@components/BaseMenu'
 import { BaseText } from '@components/BaseText'
@@ -8,7 +7,28 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { docsFrame, FILE_ACTIONS } from '../../shared'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { literal, storySource, useStorySetup } from '@/stories/helpers'
+
+const HIDDEN_ARGS = ['isOpen', 'onUpdate:isOpen']
+
+const actions = FILE_ACTIONS
+
+const state = { isOpen: false }
+
+const template = `
+	<div data-theme="dark" class="story-stack" style="padding: 16px; border-radius: var(--rise-radius-md); background: var(--rise-bg); color: var(--rise-text);">
+		<BaseText>Плеер: тёмная панель на светлой странице</BaseText>
+		<BaseDropdown v-bind="args" v-model:is-open="isOpen">
+			<BaseButton variant="outline" @click="isOpen = !isOpen">
+				Действия
+				<template #right><BaseIcon name="chevron-down" :size-scale="80" /></template>
+			</BaseButton>
+			<template #dropdown>
+				<BaseMenu variant="ghost" :items="actions" @select="isOpen = false" />
+			</template>
+		</BaseDropdown>
+	</div>
+`
 
 export const InDarkBlock: StoryObj<typeof meta> = {
 	parameters: {
@@ -21,25 +41,19 @@ export const InDarkBlock: StoryObj<typeof meta> = {
 					'триггера — её цвета совпадают с блоком, а не со страницей.',
 				].join('\n'),
 			},
+			source: storySource({
+				template,
+				imports: ['BaseDropdown', 'BaseButton', 'BaseIcon', 'BaseMenu', 'BaseText'],
+				state,
+				script: `const actions = ${literal(actions)}`,
+				omit: HIDDEN_ARGS,
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseDropdown, BaseButton, BaseIcon, BaseMenu, BaseText },
-		setup: () => ({ props: useArgsWithoutSlots(args, ['isOpen', 'onUpdate:isOpen']), isOpen: ref(false), actions: FILE_ACTIONS }),
-		template: `
-			<div data-theme="dark" class="story-stack" style="padding: 16px; border-radius: var(--rise-radius-md); background: var(--rise-bg); color: var(--rise-text);">
-				<BaseText>Плеер: тёмная панель на светлой странице</BaseText>
-				<BaseDropdown v-bind="props" v-model:is-open="isOpen">
-					<BaseButton variant="outline" @click="isOpen = !isOpen">
-						Действия
-						<template #right><BaseIcon name="chevron-down" :size-scale="80" /></template>
-					</BaseButton>
-					<template #dropdown>
-						<BaseMenu variant="ghost" :items="actions" @select="isOpen = false" />
-					</template>
-				</BaseDropdown>
-			</div>
-		`,
+		setup: useStorySetup(args, { state, data: { actions }, slots: HIDDEN_ARGS }),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Действия' }))

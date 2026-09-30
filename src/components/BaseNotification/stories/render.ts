@@ -1,14 +1,17 @@
-import { computed } from 'vue'
+import { remountOnArgs } from './shared'
 import type { Meta } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import BaseNotification from '../ui/BaseNotification.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-export const render = (args => ({
-	components: { BaseNotification },
-	setup: () => {
-		const props = useArgsWithoutSlots(args, [])
-		const key = computed(() => JSON.stringify(Object.entries(args).filter(([, value]) => typeof value !== 'function')))
-		return { props, key }
-	},
-	template: '<BaseNotification :key="key" v-bind="props" />',
-})) satisfies Meta<typeof BaseNotification>['render']
+const template = `
+	<BaseNotification v-bind="args" />
+`
+
+export const source = storySource({ template, imports: ['BaseNotification'] })
+
+export const render = (args =>
+	remountOnArgs(args, null, {
+		components: { BaseNotification },
+		setup: useStorySetup(args, { slots: [] }),
+		template,
+	})) satisfies Meta<typeof BaseNotification>['render']

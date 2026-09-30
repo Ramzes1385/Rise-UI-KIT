@@ -1,10 +1,10 @@
 import BaseFooter from '../ui/BaseFooter.vue'
 import { BaseLink } from '@components/BaseLink'
 import type { Meta } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
-const TEMPLATE = `
-	<BaseFooter v-bind="props">
+const template = `
+	<BaseFooter v-bind="args">
 		<template #start>© 2026 Rise Studio</template>
 		<nav aria-label="Документы" style="display: flex; gap: 16px">
 			<BaseLink href="#terms">Условия</BaseLink>
@@ -15,8 +15,10 @@ const TEMPLATE = `
 	</BaseFooter>
 `
 
+export const source = storySource({ template, imports: ['BaseFooter', 'BaseLink'] })
+
 export const render = (args => ({
 	components: { BaseFooter, BaseLink },
-	setup: () => ({ props: useArgsWithoutSlots(args) }),
-	template: TEMPLATE,
+	setup: useStorySetup(args),
+	template,
 })) satisfies Meta<typeof BaseFooter>['render']

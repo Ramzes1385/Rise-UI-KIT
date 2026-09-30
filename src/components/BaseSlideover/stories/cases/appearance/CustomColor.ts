@@ -3,8 +3,19 @@ import { SHOWCASE_OWN_ARGS } from '../../shared'
 import type meta from '../../BaseSlideover.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { useArgsWithoutSlots } from '@/stories/helpers'
 import BaseSlideover from '../../../ui/BaseSlideover.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const template = `
+	<div class="story-frame" style="height: 260px;">
+		<BaseSlideover v-bind="args" :is-open="true" is-contained title="Заметки к серии">
+			Перезаписать реплики 12–15: в оригинале пауза длиннее.
+			<template #footer>
+				<BaseButton>Сохранить</BaseButton>
+			</template>
+		</BaseSlideover>
+	</div>
+`
 
 function resolveColor(value: string): string {
 	const probe = document.createElement('span')
@@ -31,22 +42,14 @@ export const CustomColor: StoryObj<typeof meta> = {
 					'в обеих темах. Компоненты в теле и подвале `color` не наследуют — кнопка «Сохранить» сохраняет свой цвет.',
 				].join('\n'),
 			},
+			source: storySource({ template, imports: ['BaseSlideover', 'BaseButton'], omit: [...SHOWCASE_OWN_ARGS] }),
 		},
 		controls: { include: ['color', 'sizeScale'] },
 	},
 	render: args => ({
 		components: { BaseSlideover, BaseButton },
-		setup: () => ({ props: useArgsWithoutSlots(args, [...SHOWCASE_OWN_ARGS]) }),
-		template: `
-			<div class="story-frame" style="height: 260px;">
-				<BaseSlideover v-bind="props" :is-open="true" is-contained title="Заметки к серии">
-					Перезаписать реплики 12–15: в оригинале пауза длиннее.
-					<template #footer>
-						<BaseButton>Сохранить</BaseButton>
-					</template>
-				</BaseSlideover>
-			</div>
-		`,
+		setup: useStorySetup(args, { slots: [...SHOWCASE_OWN_ARGS] }),
+		template,
 	}),
 	play: async ({ canvas }) => {
 		const dialog = canvas.getByRole('dialog', { name: 'Заметки к серии' })

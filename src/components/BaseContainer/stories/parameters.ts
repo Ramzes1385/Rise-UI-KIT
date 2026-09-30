@@ -1,9 +1,11 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseContainer from '../ui/BaseContainer.vue'
 
 export const parameters = {
 	layout: 'fullscreen',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Контейнер страницы: ограничивает ширину содержимого, центрирует его и даёт боковые отступы.',

@@ -1,8 +1,10 @@
+import { source } from './render'
 import type BaseApp from '../ui/BaseApp.vue'
 import type { Meta } from '@storybook/vue3-vite'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Корень приложения: показывает уведомления и окна, которые вызывают из кода. Оборачивает приложение один раз',

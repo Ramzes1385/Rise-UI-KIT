@@ -6,13 +6,36 @@ import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, within, expect } from 'storybook/test'
+import { staticStorySource, useStorySetup } from '@/stories/helpers'
+
+const deleteButtonTemplate = `
+	<div class="story-row">
+		<BaseButton variant="outline" @click="remove">Удалить проект</BaseButton>
+		<BaseText tag="span" role="status">{{ status }}</BaseText>
+	</div>
+`
+
+const deleteButtonScript = `
+const confirm = useConfirm()
+const status = ref('Проект на месте')
+
+async function remove(): Promise<void> {
+	const isConfirmed = await confirm({
+		title: 'Удалить проект «Сайт студии»?',
+		description: 'Проект, 48 файлов и история правок удалятся без возможности восстановления.',
+		confirmLabel: 'Удалить',
+		isDanger: true,
+	})
+	status.value = isConfirmed ? 'Проект удалён' : 'Удаление отменено'
+}
+`
 
 const DeleteProjectButton = defineComponent({
 	components: { BaseButton, BaseText },
 	setup() {
 		const confirm = useConfirm()
 		const status = ref('Проект на месте')
-		async function remove() {
+		const remove = async (): Promise<void> => {
 			const isConfirmed = await confirm({
 				title: 'Удалить проект «Сайт студии»?',
 				description: 'Проект, 48 файлов и история правок удалятся без возможности восстановления.',
@@ -23,13 +46,12 @@ const DeleteProjectButton = defineComponent({
 		}
 		return { remove, status }
 	},
-	template: `
-		<div class="story-row">
-			<BaseButton variant="outline" @click="remove">Удалить проект</BaseButton>
-			<BaseText tag="span" role="status">{{ status }}</BaseText>
-		</div>
-	`,
+	template: deleteButtonTemplate,
 })
+
+const template = `
+	<BaseApp><DeleteProjectButton /></BaseApp>
+`
 
 export const FromCode: StoryObj<typeof meta> = {
 	parameters: {
@@ -41,26 +63,24 @@ export const FromCode: StoryObj<typeof meta> = {
 					'Шаблон окна в компоненте не нужен.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'const confirm = useConfirm()',
-					'',
-					'async function remove() {',
-					'\tconst isConfirmed = await confirm({',
-					"\t\ttitle: 'Удалить проект «Сайт студии»?',",
-					"\t\tdescription: 'Проект, 48 файлов и история правок удалятся без возможности восстановления.',",
-					"\t\tconfirmLabel: 'Удалить',",
-					'\t\tisDanger: true,',
-					'\t})',
-					'\tif (isConfirmed) await api.deleteProject(id)',
-					'}',
-				].join('\n'),
-			},
+			source: staticStorySource({
+				template,
+				imports: ['BaseApp'],
+				components: {
+					DeleteProjectButton: {
+						template: deleteButtonTemplate,
+						imports: ['BaseButton', 'BaseText', 'useConfirm'],
+						vue: ['ref'],
+						script: deleteButtonScript,
+					},
+				},
+			}),
 		},
 	},
-	render: () => ({
+	render: args => ({
 		components: { BaseApp, DeleteProjectButton },
-		template: '<BaseApp><DeleteProjectButton /></BaseApp>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Удалить проект' }))

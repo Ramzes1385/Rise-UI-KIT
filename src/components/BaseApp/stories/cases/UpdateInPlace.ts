@@ -5,12 +5,35 @@ import { BaseButton } from '@components/BaseButton'
 import { useToast } from '@composables/app/useToast'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, expect, waitFor } from 'storybook/test'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const EXPORT_DELAY = 1200
+
+const reportExportTemplate = `
+	<BaseButton variant="outline" @click="exportReport">Выгрузить отчёт</BaseButton>
+`
+
+const reportExportScript = `
+const toast = useToast()
+
+function exportReport(): void {
+	const id = toast.add({ title: 'Готовим отчёт…', description: 'Собираем просмотры за сентябрь.', isPersistent: true })
+	setTimeout(() => {
+		toast.update(id, {
+			type: 'success',
+			title: 'Отчёт готов',
+			description: 'Файл «Просмотры, сентябрь.xlsx» в загрузках.',
+			isPersistent: false,
+		})
+	}, ${EXPORT_DELAY})
+}
+`
 
 const ReportExport = defineComponent({
 	components: { BaseButton },
 	setup() {
 		const toast = useToast()
-		function exportReport() {
+		const exportReport = (): void => {
 			const id = toast.add({ title: 'Готовим отчёт…', description: 'Собираем просмотры за сентябрь.', isPersistent: true })
 			setTimeout(() => {
 				toast.update(id, {
@@ -19,12 +42,16 @@ const ReportExport = defineComponent({
 					description: 'Файл «Просмотры, сентябрь.xlsx» в загрузках.',
 					isPersistent: false,
 				})
-			}, 1200)
+			}, EXPORT_DELAY)
 		}
 		return { exportReport }
 	},
-	template: '<BaseButton variant="outline" @click="exportReport">Выгрузить отчёт</BaseButton>',
+	template: reportExportTemplate,
 })
+
+const template = `
+	<BaseApp v-bind="args"><ReportExport /></BaseApp>
+`
 
 export const UpdateInPlace: StoryObj<typeof meta> = {
 	parameters: {
@@ -36,20 +63,19 @@ export const UpdateInPlace: StoryObj<typeof meta> = {
 					'меняет его текст и тип. Автозакрытие начинается, когда `isPersistent` снят.',
 				].join('\n'),
 			},
-			source: {
-				code: [
-					'const toast = useToast()',
-					"const id = toast.add({ title: 'Готовим отчёт…', isPersistent: true })",
-					'await api.exportReport()',
-					"toast.update(id, { type: 'success', title: 'Отчёт готов', isPersistent: false })",
-				].join('\n'),
-			},
+			source: storySource({
+				template,
+				imports: ['BaseApp'],
+				components: {
+					ReportExport: { template: reportExportTemplate, imports: ['BaseButton', 'useToast'], script: reportExportScript },
+				},
+			}),
 		},
 	},
 	render: args => ({
 		components: { BaseApp, ReportExport },
-		setup: () => ({ args }),
-		template: '<BaseApp v-bind="args"><ReportExport /></BaseApp>',
+		setup: useStorySetup(args),
+		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Выгрузить отчёт' }))

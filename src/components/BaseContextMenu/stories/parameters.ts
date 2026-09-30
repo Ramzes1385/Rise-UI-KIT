@@ -1,8 +1,10 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseContextMenu from '../ui/BaseContextMenu.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
 				'Меню по правому клику на области: карточка, строка таблицы, холст редактора.',

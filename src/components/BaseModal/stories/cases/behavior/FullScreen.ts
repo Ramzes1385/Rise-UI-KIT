@@ -18,14 +18,14 @@ const lines = SUBTITLES
 const models = { isOpen: 'isOpen' }
 
 const template = `
-	<BaseButton variant="outline" @click="onUpdate(true)">Предпросмотр</BaseButton>
+	<BaseButton variant="outline" @click="isOpen = true">Предпросмотр</BaseButton>
 	<BaseModal v-bind="args" v-model:is-open="isOpen">
 		<div class="story-stack">
 			<BaseText v-for="line in lines" :key="line.time">{{ line.time }} — {{ line.text }}</BaseText>
 		</div>
 		<template #footer>
-			<BaseButton variant="outline" @click="onUpdate(false)">Закрыть</BaseButton>
-			<BaseButton @click="onUpdate(false)">Экспортировать</BaseButton>
+			<BaseButton variant="outline" @click="isOpen = false">Закрыть</BaseButton>
+			<BaseButton @click="isOpen = false">Экспортировать</BaseButton>
 		</template>
 	</BaseModal>
 `

@@ -1,9 +1,11 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseHeader from '../ui/BaseHeader.vue'
 
 export const parameters = {
 	layout: 'fullscreen',
 	docs: {
+		source,
 		description: {
 			component: [
 				'Шапка сайта или приложения: название, основная навигация и действия.',
