@@ -9,6 +9,7 @@ export const argTypes = {
 	items: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	orientation: { control: 'inline-radio', options: STEPPER_ORIENTATIONS, table: propGroup(ARG_GROUP.appearance) },
 	shape: { control: 'inline-radio', options: STEPPER_SHAPES, table: propGroup(ARG_GROUP.appearance) },
+	isLinear: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	item: { control: false },
 	header: { control: false },
 	footer: { control: false },

@@ -23,6 +23,7 @@ export interface UiKitLocale {
 	text: Section<'text'>
 	aria: Section<'aria'>
 	tour: Section<'tour'>
+	stepper: Section<'stepper'>
 	filter: Section<'filter'>
 	calendar: Section<'calendar'>
 	colorPicker: Section<'colorPicker'>

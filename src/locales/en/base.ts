@@ -125,6 +125,11 @@ export const enBase = {
 		FINISH: 'Finish',
 		TITLE: 'Interface tour',
 	},
+	stepper: {
+		OPTIONAL: 'Optional',
+		COMPLETED: 'completed',
+		ERROR: 'error',
+	},
 	rating: {
 		ARIA_PREFIX: 'Rating from 0 to',
 		LABEL: 'Rating',

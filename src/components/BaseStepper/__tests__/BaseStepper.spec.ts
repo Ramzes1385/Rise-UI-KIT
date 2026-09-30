@@ -357,4 +357,53 @@ describe('BaseStepper unit', () => {
 			expect(container.querySelector('.base-stepper__footer')?.classList.contains('custom-stepper-footer')).toBe(true)
 		})
 	})
+
+	describe('ошибки, необязательные шаги и линейный процесс', () => {
+		const FLOW: BaseStepperStep[] = [
+			{ label: 'Корзина' },
+			{ label: 'Доставка' },
+			{ label: 'Оплата', isError: true, description: 'Карта отклонена' },
+			{ label: 'Отзыв', isOptional: true },
+		]
+
+		it('пройденный шаг и шаг с ошибкой озвучивают состояние; ошибка не отмечается пройденной', () => {
+			const { container } = render(BaseStepper, { props: { modelValue: 4, items: FLOW } })
+
+			expect(screen.getByRole('button', { name: 'Корзина, пройден' })).toHaveClass('base-stepper__step--completed')
+			const payment = screen.getByRole('button', { name: /^Оплата, ошибка/ })
+			expect(payment).toHaveClass('base-stepper__step--error')
+			expect(payment).not.toHaveClass('base-stepper__step--completed')
+			expect(payment.querySelector('.base-stepper__error-mark')).toHaveTextContent('!')
+			expect(container.querySelector('.base-stepper__optional')).toHaveTextContent('Необязательно')
+		})
+
+		it('isLinear: дальний шаг недоступен, следующий и пройденные — доступны', async () => {
+			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: FLOW, isLinear: true } })
+
+			const far = screen.getByRole('button', { name: /^Оплата/ })
+			expect(far).toHaveAttribute('aria-disabled', 'true')
+			expect(far).toHaveAttribute('tabindex', '-1')
+			await fireEvent.click(far)
+			expect(emitted('update:modelValue')).toBeUndefined()
+
+			await fireEvent.click(screen.getByRole('button', { name: /Доставка/ }))
+			expect(emitted('update:modelValue')).toEqual([[2]])
+		})
+
+		it('слот item получает isError и isDisabled линейного процесса', () => {
+			const slotProps: Record<string, unknown>[] = []
+			render(BaseStepper, {
+				props: { modelValue: 1, items: FLOW, isLinear: true },
+				slots: {
+					item: (props: Record<string, unknown>) => {
+						slotProps.push(props)
+						return String(props.stepNumber)
+					},
+				},
+			})
+
+			expect(slotProps[2]).toMatchObject({ isError: true, isDisabled: true, isCompleted: false })
+			expect(slotProps[1]).toMatchObject({ isError: false, isDisabled: false })
+		})
+	})
 })

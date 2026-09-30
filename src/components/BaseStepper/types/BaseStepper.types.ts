@@ -9,6 +9,10 @@ export interface BaseStepperStep {
 	icon?: string
 	/** Отключен ли шаг */
 	isDisabled?: boolean
+	/** Шаг с ошибкой: индикатор цвета ошибки со знаком «!», описание красным — например, «Карта отклонена» */
+	isError?: boolean
+	/** Необязательный шаг: под заголовком подпись «Необязательно» */
+	isOptional?: boolean
 }
 
 export interface BaseStepperItemSlot {
@@ -22,8 +26,10 @@ export interface BaseStepperItemSlot {
 	isActive: boolean
 	/** Пройден ли шаг */
 	isCompleted: boolean
-	/** Отключен ли шаг */
+	/** Отключен ли шаг: `isDisabled` или впереди в линейном режиме */
 	isDisabled: boolean
+	/** Шаг с ошибкой */
+	isError: boolean
 }
 
 export const STEPPER_SHAPES = ['circle', 'square', 'diamond', 'empty'] as const
@@ -50,6 +56,11 @@ export interface BaseStepperProps extends BaseComponentProps<
 	orientation?: StepperOrientation
 	/** Форма индикатора */
 	shape?: StepperShape
+	/**
+	 * Линейный процесс: вперёд — только на следующий шаг после текущего, дальние шаги недоступны до прохождения;
+	 * к пройденным шагам можно вернуться
+	 */
+	isLinear?: boolean
 }
 
 export interface BaseStepperEmits {

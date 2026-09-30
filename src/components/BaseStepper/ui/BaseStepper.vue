@@ -14,30 +14,25 @@
 				class="base-stepper__step"
 				:class="[
 					{
-						'base-stepper__step--active': modelValue === index + 1,
-						'base-stepper__step--completed': modelValue > index + 1,
-						'base-stepper__step--disabled': step.isDisabled,
+						'base-stepper__step--active': stepState(index).isActive,
+						'base-stepper__step--completed': stepState(index).isCompleted,
+						'base-stepper__step--error': stepState(index).isError,
+						'base-stepper__step--disabled': stepState(index).isDisabled,
 					},
 					classes.step,
 				]"
 				role="button"
-				:tabindex="step.isDisabled ? -1 : 0"
-				:aria-disabled="step.isDisabled || undefined"
-				:aria-current="modelValue === index + 1 ? 'step' : undefined"
+				:tabindex="stepState(index).isDisabled ? -1 : 0"
+				:aria-disabled="stepState(index).isDisabled || undefined"
+				:aria-current="stepState(index).isActive ? 'step' : undefined"
 				@click="handleStepClick(index + 1)"
 				@keydown.enter.prevent="handleStepClick(index + 1)"
 				@keydown.space.prevent="handleStepClick(index + 1)">
-				<slot
-					name="item"
-					:item="step"
-					:index="index"
-					:step-number="index + 1"
-					:is-active="modelValue === index + 1"
-					:is-completed="modelValue > index + 1"
-					:is-disabled="Boolean(step.isDisabled)">
+				<slot name="item" :item="step" :index="index" :step-number="index + 1" v-bind="stepState(index)">
 					<div class="base-stepper__indicator-wrapper" :class="classes.indicatorWrapper">
 						<div v-if="shape !== 'empty'" class="base-stepper__indicator" :class="classes.indicator">
-							<span v-if="modelValue > index + 1" class="base-stepper__check" :class="classes.check">
+							<span v-if="stepState(index).isError" class="base-stepper__error-mark" aria-hidden="true">!</span>
+							<span v-else-if="stepState(index).isCompleted" class="base-stepper__check" :class="classes.check">
 								<BaseIcon name="check" :size-scale="calcIconScale('sm', sizeScale)" />
 							</span>
 							<span v-else-if="step.icon" class="base-stepper__icon">
@@ -47,7 +42,11 @@
 						</div>
 					</div>
 					<div class="base-stepper__content" :class="classes.content">
-						<span class="base-stepper__label" :class="classes.label">{{ step.label }}</span>
+						<span class="base-stepper__label" :class="classes.label"
+							>{{ step.label
+							}}<span v-if="statusText(index)" class="base-stepper__status">, {{ statusText(index) }}</span></span
+						>
+						<span v-if="step.isOptional" class="base-stepper__optional">{{ optionalLabel }}</span>
 						<p v-if="step.description" class="base-stepper__description" :class="classes.description">
 							{{ step.description }}
 						</p>
@@ -77,6 +76,7 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		orientation: 'horizontal',
 		shape: 'circle',
+		isLinear: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -84,8 +84,16 @@ const props = withDefaults(
 const emit = defineEmits<BaseStepperEmits>()
 defineSlots<BaseStepperSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, progressStyle, handleStepClick } = useBaseStepper(
-	props,
-	emit,
-)
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	progressStyle,
+	optionalLabel,
+	stepState,
+	statusText,
+	handleStepClick,
+} = useBaseStepper(props, emit)
 </script>

@@ -9,6 +9,9 @@ export const UI_ARIA = localized('aria')
 
 export const UI_TOUR = localized('tour')
 
+/** Степпер: подписи и состояния шагов */
+export const UI_STEPPER = localized('stepper')
+
 /** Фильтр таблицы */
 export const UI_FILTER = localized('filter')
 

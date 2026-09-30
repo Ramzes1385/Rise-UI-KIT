@@ -64,7 +64,7 @@
 		position: absolute;
 		top: sz(24px);
 		bottom: 0;
-		left: calc(#{sz(12px)} - 1px);
+		left: calc(var(--timeline-side-offset, 0px) + #{sz(12px)} - 1px);
 		width: 2px;
 		background-color: var(--rise-border);
 	}
@@ -80,6 +80,33 @@
 	&__date {
 		@include text-size(xs);
 		color: var(--rise-text-muted);
+	}
+
+	&__date--side {
+		flex-shrink: 0;
+		font-variant-numeric: tabular-nums;
+		width: sz(88px);
+		padding-top: sz(4px);
+		text-align: right;
+	}
+
+	&--date-side {
+		--timeline-side-offset: #{sz(100px)};
+	}
+
+	&__day {
+		margin-bottom: sz(2px);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-highlighted);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	&__media {
+		width: 100%;
+		max-width: sz(280px);
+		margin-top: sz(6px);
 	}
 
 	&__title {

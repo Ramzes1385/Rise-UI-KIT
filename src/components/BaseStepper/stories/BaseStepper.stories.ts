@@ -23,6 +23,7 @@ export const Vertical = cases.Vertical
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Disabled = cases.Disabled
+export const Errors = cases.Errors
 export const LongContent = cases.LongContent
 export const WithIcons = cases.WithIcons
 export const CustomItem = cases.CustomItem

@@ -69,4 +69,59 @@ describe('BaseTimeline', () => {
 		expect(screen.getByText('Создан:true:false')).toBeInTheDocument()
 		expect(screen.getByText('На проверке:false:true')).toBeInTheDocument()
 	})
+
+	describe('хронология', () => {
+		const HISTORY: TimelineItem[] = [
+			{ id: 1, title: 'Создан', date: new Date(2026, 4, 12, 9, 40) },
+			{
+				id: 2,
+				title: 'Скриншот',
+				date: new Date(2026, 4, 12, 14, 15),
+				media: { src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=', alt: 'Экран оплаты' },
+			},
+			{ id: 3, title: 'Без даты' },
+			{ id: 4, title: 'Утверждён', date: new Date(2026, 4, 13, 11, 30) },
+		]
+
+		it('isGrouped: заголовок дня над первым событием дня, у событий — время', () => {
+			const { container } = render(BaseTimeline, { props: { items: HISTORY, isGrouped: true, customClass: { day: 'custom-day' } } })
+
+			const days = [...container.querySelectorAll('.base-timeline__day')].map(day => day.textContent)
+			expect(days).toHaveLength(2)
+			expect(days[0]).toMatch(/12 мая 2026/)
+			expect(days[1]).toMatch(/13 мая 2026/)
+			expect(container.querySelector('.base-timeline__day')).toHaveClass('custom-day')
+			expect(container.querySelector('time')).toHaveTextContent('09:40')
+		})
+
+		it('isGrouped и свой dateFormat: формат из пропа', () => {
+			const { container } = render(BaseTimeline, { props: { items: HISTORY, isGrouped: true, dateFormat: { weekday: 'long' } } })
+
+			expect(container.querySelector('time')).toHaveTextContent('вторник')
+		})
+
+		it('datePosition=side: время колонкой перед маркером; событие без даты держит колонку пустой', () => {
+			const { container } = render(BaseTimeline, { props: { items: HISTORY, datePosition: 'side' } })
+
+			expect(container.querySelector('.base-timeline')).toHaveClass('base-timeline--date-side')
+			const firstItem = container.querySelector('.base-timeline__item') as HTMLElement
+			expect(firstItem.firstElementChild).toHaveClass('base-timeline__date--side')
+			expect(firstItem.querySelector('.base-timeline__content time')).toBeNull()
+			expect(container.querySelectorAll('.base-timeline__date--side')).toHaveLength(4)
+			expect(container.querySelectorAll('time.base-timeline__date--side')).toHaveLength(3)
+		})
+
+		it('datePosition=side у горизонтальной ленты не действует', () => {
+			const { container } = render(BaseTimeline, { props: { items: HISTORY, datePosition: 'side', orientation: 'horizontal' } })
+
+			expect(container.querySelector('.base-timeline')).not.toHaveClass('base-timeline--date-side')
+			expect(container.querySelector('.base-timeline__content time')).not.toBeNull()
+		})
+
+		it('media — картинка события с описанием', () => {
+			render(BaseTimeline, { props: { items: HISTORY } })
+
+			expect(screen.getByRole('img', { name: 'Экран оплаты' })).toBeInTheDocument()
+		})
+	})
 })

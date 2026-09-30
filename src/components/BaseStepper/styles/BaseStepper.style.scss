@@ -161,6 +161,31 @@
 		color: var(--rise-text-highlighted);
 	}
 
+	&__status {
+		@include visually-hidden;
+	}
+
+	&__optional {
+		@include text-size(xs);
+		font-style: italic;
+		color: var(--rise-text-muted);
+	}
+
+	&__error-mark {
+		font-weight: var(--rise-font-weight-bold);
+	}
+
+	&__step--error &__indicator {
+		border-color: var(--rise-error);
+		background-color: var(--rise-error);
+		color: var(--rise-on-error);
+	}
+
+	&__step--error &__label,
+	&__step--error &__description {
+		color: var(--rise-error);
+	}
+
 	&__description {
 		margin: 0;
 		@include text-size(xs);
