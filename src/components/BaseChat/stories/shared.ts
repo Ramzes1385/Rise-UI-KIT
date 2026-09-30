@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import { storyDate, STORY_IMAGES, STORY_USERS, STORY_TODAY } from '@/stories/helpers'
-import type { ChatMessage, ChatMessageAttachment, ChatMember, ChatCommand, ChatMessageReaction } from '../types/BaseChat.types'
+import type { ChatBadge, ChatMessage, ChatMessageAttachment, ChatMember, ChatCommand, ChatMessageReaction } from '../types/BaseChat.types'
 
 const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
@@ -71,10 +71,24 @@ export const PRIVATE_MESSAGES: ChatMessage[] = [
 	{ id: 'p6', sender: 'me', text: 'Принято, посмотрю после обеда.', status: 'delivered', ...sentAt(9, 25) },
 ]
 
+const VERIFIED: ChatBadge = { id: 'verified', label: 'Подтверждённый аккаунт', icon: 'check-circle', color: 'var(--rise-info)' }
+
+export const MEMBER_BADGES: Record<string, ChatBadge[]> = {
+	u1: [
+		VERIFIED,
+		{ id: 'design-system', label: 'Автор дизайн-системы', emoji: '🎨' },
+		{ id: 'reviewer', label: 'Лучший ревьюер месяца', emoji: '🏆' },
+		{ id: 'streak', label: '100 дней подряд в чате', emoji: '🔥' },
+		{ id: 'releases', label: 'Выпустила 10 релизов', emoji: '🚀' },
+	],
+	u2: [VERIFIED, { id: 'bug-hunter', label: 'Нашёл 50 багов', emoji: '🐞' }],
+	u3: [{ id: 'mentor', label: 'Наставник новичков', icon: 'star-filled', color: 'var(--rise-warning)' }],
+}
+
 const MEMBERS: ChatMember[] = [
-	{ id: 'u1', name: ANNA.name, avatar: ANNA.avatar, role: 'admin', status: 'online' },
-	{ id: 'u2', name: IVAN.name, avatar: IVAN.avatar, role: 'member', status: 'online', warningsCount: 0 },
-	{ id: 'u3', name: MARIA.name, avatar: MARIA.avatar, role: 'member', status: 'offline', warningsCount: 1 },
+	{ id: 'u1', name: ANNA.name, avatar: ANNA.avatar, role: 'admin', status: 'online', badges: MEMBER_BADGES.u1 },
+	{ id: 'u2', name: IVAN.name, avatar: IVAN.avatar, role: 'member', status: 'online', warningsCount: 0, badges: MEMBER_BADGES.u2 },
+	{ id: 'u3', name: MARIA.name, avatar: MARIA.avatar, role: 'member', status: 'offline', warningsCount: 1, badges: MEMBER_BADGES.u3 },
 	{ id: 'u4', name: OLEG.name, avatar: OLEG.avatar, role: 'member', status: 'offline' },
 ]
 

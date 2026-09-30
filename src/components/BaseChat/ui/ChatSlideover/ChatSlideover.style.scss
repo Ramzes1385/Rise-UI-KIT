@@ -94,6 +94,12 @@
 		gap: sz(6px);
 	}
 
+	&__badges {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+	}
+
 	&__section-title {
 		margin: 0;
 		@include text-size(xs);
@@ -132,7 +138,15 @@
 		min-width: 0;
 	}
 
+	&__member-title {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
 	&__member-name {
+		min-width: 0;
 		font-weight: var(--rise-font-weight-medium);
 		color: var(--rise-text-highlighted);
 		@include truncate;

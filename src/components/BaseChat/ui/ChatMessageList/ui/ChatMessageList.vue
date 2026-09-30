@@ -17,6 +17,8 @@
 			:size-scale="sizeScale"
 			:search-query="searchQuery"
 			:all-images-urls="allImagesUrls"
+			:badges="senderBadges(message)"
+			:max-badges="maxBadges"
 			@avatar-click="handleAvatarClick(message)"
 			@select="handleSelect(message.id)"
 			@reply-action="handleReplyAction(message)"
@@ -77,6 +79,7 @@ import '../styles/ChatMessageList.style.scss'
 import ChatMessageItem from './ChatMessage.vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { CHAT_MAX_BADGES } from '../../ChatBadges'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseLoader } from '@components/BaseLoader'
 import { CHAT_SCALE } from '../../../model/chatScale'
@@ -95,6 +98,8 @@ const props = withDefaults(defineProps<ChatMessageListProps>(), {
 	avatar: '',
 	allImagesUrls: () => [],
 	currentUserRole: 'member',
+	members: () => [],
+	maxBadges: CHAT_MAX_BADGES,
 })
 
 const emit = defineEmits<ChatMessageListEmits>()
@@ -125,6 +130,7 @@ const {
 	activeContextMessageId,
 	isSelectionMode,
 	typingLabel,
+	senderBadges,
 	exposed,
 } = useChatMessageList(props, emit)
 

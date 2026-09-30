@@ -25,6 +25,7 @@ export const Empty = cases.Empty
 export const Loading = cases.Loading
 export const LongContent = cases.LongContent
 export const Group = cases.Group
+export const Badges = cases.Badges
 export const Reply = cases.Reply
 export const Delete = cases.Delete
 export const Attachments = cases.Attachments

@@ -2,13 +2,17 @@
 	<div v-if="pinnedMessages && pinnedMessages.length > 0" class="base-chat-pinned-panel">
 		<button type="button" class="base-chat-pinned-panel__content" @click="handlePanelClick">
 			<BaseIcon name="pin" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
-			<span class="base-chat-pinned-panel__text-wrapper">
-				<span class="base-chat-pinned-panel__title">
-					{{ UI_CHAT_TEXT.PINNED_MESSAGE }}
-					{{ pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_TEXT.PINNED_COUNTER} ${pinnedMessages.length})` : '' }}
+			<Transition name="base-chat-pinned-panel-swap" mode="out-in">
+				<span :key="currentIndex" class="base-chat-pinned-panel__text-wrapper">
+					<span class="base-chat-pinned-panel__title">
+						{{ UI_CHAT_TEXT.PINNED_MESSAGE }}
+						{{
+							pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_TEXT.PINNED_COUNTER} ${pinnedMessages.length})` : ''
+						}}
+					</span>
+					<span class="base-chat-pinned-panel__preview">{{ currentMessageText }}</span>
 				</span>
-				<span class="base-chat-pinned-panel__preview">{{ currentMessageText }}</span>
-			</span>
+			</Transition>
 		</button>
 
 		<div class="base-chat-pinned-panel__actions">

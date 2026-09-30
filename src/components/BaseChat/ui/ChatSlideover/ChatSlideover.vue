@@ -65,7 +65,14 @@
 										:size-scale="sizeScale"
 										:is-online="member.status === 'online'" />
 									<span class="base-chat-slideover__member-info">
-										<span class="base-chat-slideover__member-name">{{ member.name }}</span>
+										<span class="base-chat-slideover__member-title">
+											<span class="base-chat-slideover__member-name">{{ member.name }}</span>
+											<ChatBadges
+												v-if="member.badges?.length"
+												:badges="member.badges"
+												:max="maxBadges"
+												:size-scale="sizeScale" />
+										</span>
 										<span class="base-chat-slideover__member-role">{{ getMemberRoleLabel(member) }}</span>
 									</span>
 								</button>
@@ -154,6 +161,16 @@
 						</div>
 					</div>
 
+					<section
+						v-if="selectedMember.badges?.length"
+						class="base-chat-slideover__badges"
+						:aria-labelledby="`${idPrefix}-badges`">
+						<h4 :id="`${idPrefix}-badges`" class="base-chat-slideover__section-title">
+							{{ UI_CHAT_TEXT.BADGES }}
+						</h4>
+						<ChatBadges :badges="selectedMember.badges" is-labeled :size-scale="sizeScale" />
+					</section>
+
 					<dl class="base-chat-slideover__info-details">
 						<div class="base-chat-slideover__info-item">
 							<dt class="base-chat-slideover__info-label">
@@ -215,6 +232,7 @@ import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
 import { BaseSlideover } from '@components/BaseSlideover'
+import { ChatBadges, CHAT_MAX_BADGES } from '../ChatBadges'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { useChatSlideover } from '../../model/slideover/useChatSlideover'
 import type { ChatSlideoverEmits, ChatSlideoverProps } from '../../types/ChatSlideover.types'
@@ -226,6 +244,7 @@ const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	isGroup: false,
 	members: () => [],
 	currentUserRole: 'member',
+	maxBadges: CHAT_MAX_BADGES,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 

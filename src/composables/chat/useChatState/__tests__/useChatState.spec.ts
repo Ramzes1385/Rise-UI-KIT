@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { effectScope, nextTick } from 'vue'
 import { useChatState } from '../useChatState'
+import { effectScope, nextTick, reactive } from 'vue'
 import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 
 type Emit = Parameters<typeof useChatState>[1]
@@ -39,10 +39,11 @@ describe('useChatState unit', () => {
 			expect(state.pinnedMessages.value).toHaveLength(0)
 		})
 
-		it('возвращает текущий закреп по индексу', () => {
+		it('показывает последнее закреплённое сообщение', () => {
 			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
 			expect(state.pinnedMessages.value).toHaveLength(2)
-			expect(state.currentPinnedMessage.value?.id).toBe('1')
+			expect(state.currentPinnedIndex.value).toBe(1)
+			expect(state.currentPinnedMessage.value?.id).toBe('2')
 		})
 
 		it('возвращает null, когда индекс указывает мимо массива закрепов', () => {
@@ -62,13 +63,15 @@ describe('useChatState unit', () => {
 		it('перелистывает закрепы вперёд по кругу', () => {
 			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
 			state.handleNextPinned()
-			expect(state.currentPinnedIndex.value).toBe(1)
-			state.handleNextPinned()
 			expect(state.currentPinnedIndex.value).toBe(0)
+			state.handleNextPinned()
+			expect(state.currentPinnedIndex.value).toBe(1)
 		})
 
 		it('перелистывает закрепы назад по кругу', () => {
 			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
+			state.handlePrevPinned()
+			expect(state.currentPinnedIndex.value).toBe(0)
 			state.handlePrevPinned()
 			expect(state.currentPinnedIndex.value).toBe(1)
 		})
@@ -78,6 +81,26 @@ describe('useChatState unit', () => {
 			state.handleNextPinned()
 			state.handlePrevPinned()
 			expect(state.currentPinnedIndex.value).toBe(0)
+		})
+
+		it('новый закреп сразу становится показанным, откреп не сдвигает показанный', async () => {
+			const props = reactive({
+				messages: [message('1', { isPinned: true }), message('2'), message('3', { isPinned: true })],
+			})
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, vi.fn() as unknown as Emit)) as ReturnType<typeof useChatState>
+			expect(state.currentPinnedMessage.value?.id).toBe('3')
+
+			props.messages = props.messages.map(item => (item.id === '2' ? { ...item, isPinned: true } : item))
+			await nextTick()
+			expect(state.currentPinnedIndex.value).toBe(1)
+			expect(state.currentPinnedMessage.value?.id).toBe('2')
+
+			props.messages = props.messages.map(item => (item.id === '3' ? { ...item, isPinned: false } : item))
+			await nextTick()
+			expect(state.currentPinnedIndex.value).toBe(1)
+			expect(state.currentPinnedMessage.value?.id).toBe('2')
+			scope.stop()
 		})
 	})
 
@@ -174,6 +197,28 @@ describe('useChatState unit', () => {
 	})
 
 	describe('скролл к закрепу', () => {
+		it('ведёт к показанному закрепу и переключает панель на предыдущий, по кругу', () => {
+			const scrollToMessage = vi.fn()
+			const pinned = ['1', '2', '3'].map(id => message(id, { isPinned: true }))
+			const { state } = setup(pinned, { scrollToMessage })
+
+			for (const [id, next] of [
+				['3', 1],
+				['2', 0],
+				['1', 2],
+			] as const) {
+				state.handleScrollToPinned(id)
+				expect(scrollToMessage).toHaveBeenLastCalledWith(id)
+				expect(state.currentPinnedIndex.value).toBe(next)
+			}
+		})
+
+		it('не переключает панель, если прокрутка ведёт не к показанному закрепу', () => {
+			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
+			state.handleScrollToPinned('1')
+			expect(state.currentPinnedIndex.value).toBe(1)
+		})
+
 		it('делегирует скролл к сообщению во внешний callback', () => {
 			const scrollToMessage = vi.fn()
 			const { state } = setup([message('1')], { scrollToMessage })

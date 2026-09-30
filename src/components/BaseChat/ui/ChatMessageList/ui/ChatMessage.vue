@@ -33,9 +33,12 @@
 		</button>
 
 		<div class="base-chat-message-list__bubble-wrapper">
-			<button v-if="showSenderName" type="button" class="base-chat-message-list__sender-name" @click.stop="handleAvatarClick">
-				{{ message.senderName }}
-			</button>
+			<div v-if="showSenderName" class="base-chat-message-list__sender">
+				<button type="button" class="base-chat-message-list__sender-name" @click.stop="handleAvatarClick">
+					{{ message.senderName }}
+				</button>
+				<ChatBadges v-if="badges.length > 0" :badges="badges" :max="maxBadges" :size-scale="sizeScale" />
+			</div>
 
 			<div class="base-chat-message-list__bubble">
 				<div
@@ -146,6 +149,7 @@ import ChatMessageReply from './ChatMessageReply.vue'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { useChatMessage } from '../model/useChatMessage'
 import ChatMessageReactions from './ChatMessageReactions.vue'
+import { ChatBadges, CHAT_MAX_BADGES } from '../../ChatBadges'
 import ChatMessageAttachments from './ChatMessageAttachments.vue'
 import type { ChatMessageItemEmits, ChatMessageItemProps } from '../types/ChatMessageItem.types'
 
@@ -156,6 +160,8 @@ const props = withDefaults(defineProps<ChatMessageItemProps>(), {
 	isContextActive: false,
 	searchQuery: '',
 	allImagesUrls: () => [],
+	badges: () => [],
+	maxBadges: CHAT_MAX_BADGES,
 })
 
 const emit = defineEmits<ChatMessageItemEmits>()

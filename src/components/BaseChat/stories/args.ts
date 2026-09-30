@@ -16,6 +16,7 @@ export const args = {
 	typingUsername: '',
 	isGroup: false,
 	currentUserRole: 'member',
+	maxBadges: 3,
 	onSend: fn(),
 	onAttach: fn(),
 	'onSend-voice': fn(),

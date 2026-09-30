@@ -1,6 +1,6 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
-import type { ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
+import type { ChatMember, ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
 export interface ChatMessageListProps extends BaseComponentProps<string, 'root'> {
 	/** Список сообщений */
@@ -21,6 +21,10 @@ export interface ChatMessageListProps extends BaseComponentProps<string, 'root'>
 	allImagesUrls?: string[]
 	/** Роль текущего пользователя */
 	currentUserRole?: 'admin' | 'member'
+	/** Участники группы: значки отправителя ищутся по `senderId` */
+	members?: ChatMember[]
+	/** Сколько значков видно рядом с именем отправителя */
+	maxBadges?: number
 }
 
 export interface ChatMessageListEmits {
@@ -38,4 +42,4 @@ export interface ChatMessageListEmits {
 	(event: 'command-click', command: string): void
 }
 
-export type MessageListProps = PropsWithDefaults<ChatMessageListProps, 'selectedMessageIds'>
+export type MessageListProps = PropsWithDefaults<ChatMessageListProps, 'selectedMessageIds' | 'members'>

@@ -91,6 +91,7 @@ export const enChat = {
 		EMOJI_LIST: 'Emoji',
 		SELECTION_TOOLBAR: 'Actions for selected messages',
 		INFO_TABS: 'Info sections',
+		BADGES: 'Badges',
 	},
 	editor: {
 		BOLD: 'Bold',

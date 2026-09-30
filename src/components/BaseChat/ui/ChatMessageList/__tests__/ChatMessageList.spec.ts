@@ -658,8 +658,8 @@ describe('ChatMessageList unit', () => {
 	describe('публичный метод scrollToMessage', () => {
 		it('должен скроллить к сообщению и временно подсвечивать его', () => {
 			vi.useFakeTimers()
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 
 			const wrapper = mount(ChatMessageList, {
 				props: { messages: BASE_MESSAGES },
@@ -669,7 +669,8 @@ describe('ChatMessageList unit', () => {
 			;(wrapper.vm as unknown as { scrollToMessage: (id: string) => void }).scrollToMessage('1')
 
 			const target = wrapper.element.querySelector('#message-1') as HTMLElement
-			expect(scrollIntoView).toHaveBeenCalled()
+			expect(scrollBy).toHaveBeenCalledTimes(1)
+			expect(scrollBy.mock.contexts[0]).toBe(document.querySelector('.base-chat-message-list'))
 			expect(target.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
 
 			vi.advanceTimersByTime(1500)
@@ -680,8 +681,8 @@ describe('ChatMessageList unit', () => {
 		})
 
 		it('должен находить сообщение, id которого содержит спецсимволы CSS-селектора', () => {
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 			const messages: ChatMessage[] = [
 				{ id: '$ev:matrix.org', text: 'Matrix-событие', sender: 'other', time: '10:00' },
 				{ id: 'msg.1', text: 'С точкой', sender: 'me', time: '10:01' },
@@ -692,12 +693,12 @@ describe('ChatMessageList unit', () => {
 			const vm = wrapper.vm as unknown as { scrollToMessage: (id: string) => void }
 
 			for (const message of messages) {
-				scrollIntoView.mockClear()
+				scrollBy.mockClear()
 				expect(() => vm.scrollToMessage(message.id)).not.toThrow()
 
 				const target = document.getElementById(`message-${message.id}`)
-				expect(scrollIntoView).toHaveBeenCalledTimes(1)
-				expect(scrollIntoView.mock.contexts[0]).toBe(target)
+				expect(scrollBy).toHaveBeenCalledTimes(1)
+				expect(scrollBy.mock.contexts[0]).toBe(document.querySelector('.base-chat-message-list'))
 				expect(target?.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
 			}
 

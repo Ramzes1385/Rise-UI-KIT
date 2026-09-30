@@ -3,5 +3,6 @@ export const CHAT_SCALE = {
 	MENTION_AVATAR: 0.75,
 	AVATAR_LARGE: 1.5,
 	STATUS: 0.6,
+	BADGE: 0.7,
 	SPINNER: 0.5,
 } as const

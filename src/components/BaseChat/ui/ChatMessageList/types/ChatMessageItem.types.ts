@@ -1,5 +1,5 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
-import type { ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
+import type { ChatBadge, ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
 export interface ChatMessageItemProps {
 	message: ChatMessage
@@ -10,6 +10,10 @@ export interface ChatMessageItemProps {
 	sizeScale: number
 	searchQuery?: string
 	allImagesUrls?: string[]
+	/** Значки отправителя — из `members` по `senderId` */
+	badges?: ChatBadge[]
+	/** Сколько значков видно рядом с именем */
+	maxBadges?: number
 }
 
 export interface ChatMessageItemEmits {

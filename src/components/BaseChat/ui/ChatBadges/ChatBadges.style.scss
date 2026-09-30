@@ -1,0 +1,71 @@
+@use '../../styles/chat' as *;
+
+.base-chat-badges {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: sz(2px);
+
+	.base-tooltip {
+		display: inline-flex;
+	}
+
+	&__badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: sz(16px);
+		height: sz(16px);
+		color: var(--rise-text-toned);
+	}
+
+	&__emoji {
+		@include text-size(xs);
+		line-height: 1;
+	}
+
+	&__more {
+		display: inline-flex;
+		align-items: center;
+		height: sz(16px);
+		padding: 0 sz(5px);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-muted);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		line-height: 1;
+		color: var(--rise-text-toned);
+		font-variant-numeric: tabular-nums;
+	}
+
+	&--labeled {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(6px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__chip {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		max-width: 100%;
+		padding: sz(4px) sz(10px) sz(4px) sz(8px);
+		border: 1px solid var(--rise-border);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-bg-muted);
+		@include text-size(xs);
+		color: var(--rise-text);
+	}
+
+	&__chip &__icon {
+		color: var(--rise-text-toned);
+	}
+
+	&__label {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+}

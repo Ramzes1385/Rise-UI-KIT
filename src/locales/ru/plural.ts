@@ -10,6 +10,7 @@ export const ruPlural = {
 	SIGNATURE_STROKES: { one: '{n} штрих', few: '{n} штриха', many: '{n} штрихов', other: '{n} штриха' },
 	NOTIFICATIONS_UNREAD: { one: '{n} новое', few: '{n} новых', many: '{n} новых', other: '{n} новых' },
 	REPLIES: { one: '{n} ответ', few: '{n} ответа', many: '{n} ответов', other: '{n} ответа' },
+	BADGES_MORE: { one: 'Ещё {n} значок', few: 'Ещё {n} значка', many: 'Ещё {n} значков', other: 'Ещё {n} значка' },
 	/** Статус поиска для скринридера: сколько результатов в списке */
 	SEARCH_RESULTS: {
 		one: 'Найден {n} результат',

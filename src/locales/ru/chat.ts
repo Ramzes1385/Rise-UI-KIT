@@ -91,6 +91,7 @@ export const ruChat = {
 		EMOJI_LIST: 'Эмодзи',
 		SELECTION_TOOLBAR: 'Действия с выбранными сообщениями',
 		INFO_TABS: 'Разделы информации',
+		BADGES: 'Значки',
 	},
 	editor: {
 		BOLD: 'Жирный',

@@ -11,12 +11,45 @@ const CONTEXT_MENU_WIDTH = 200
 const CONTEXT_MENU_HEIGHT = 280
 /** Подсветка сообщения после перехода к нему, мс */
 const HIGHLIGHT_DURATION_MS = 1500
+const HIGHLIGHT_CLASS = 'base-chat-message-list__item--highlighted'
 
 /**
  * На сколько пикселей нужно прокрутить ленту, чтобы открытое меню закрылось. Мелкие сдвиги не в счёт: фокус кнопки
  * «Другие действия» у края ленты подкручивает её на несколько пикселей — меню не должно закрываться сразу после открытия.
  */
 const SCROLL_CLOSE_THRESHOLD = 16
+
+/** Прокрутка к сообщению: плавная, без анимации при системной настройке «уменьшить движение» */
+function scrollBehavior(): 'auto' | 'smooth' {
+	return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+}
+
+/**
+ * Сдвиг ленты, при котором сообщение встаёт по центру видимой области (длинное — верхним краем к верху ленты).
+ * Прокручивается только лента: scrollIntoView двигал бы и страницу, и панели вокруг чата.
+ */
+function centerOffset(container: HTMLElement, element: HTMLElement): number {
+	const top = container.getBoundingClientRect().top + container.clientTop
+	const rect = element.getBoundingClientRect()
+	return rect.top - top - Math.max(0, (container.clientHeight - rect.height) / 2)
+}
+
+/** Подсветка сообщения после перехода к нему; переход к следующему снимает подсветку с предыдущего */
+function useMessageHighlight(): (element: HTMLElement) => void {
+	let current: { element: HTMLElement; timer: ReturnType<typeof setTimeout> } | null = null
+	const clear = (): void => {
+		if (!current) return
+		clearTimeout(current.timer)
+		current.element.classList.remove(HIGHLIGHT_CLASS)
+		current = null
+	}
+	onBeforeUnmount(clear)
+	return element => {
+		clear()
+		element.classList.add(HIGHLIGHT_CLASS)
+		current = { element, timer: setTimeout(clear, HIGHLIGHT_DURATION_MS) }
+	}
+}
 
 /** Код символа «-»: влияет на экранирование цифры второй позицией идентификатора */
 const HYPHEN_CODE = 0x2d
@@ -58,7 +91,7 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 
 	const listRef = ref<HTMLElement | null>(null)
 	const contextMenuRef = ref<ChatMessageContextMenuExpose | null>(null)
-	const highlightTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
+	const highlight = useMessageHighlight()
 
 	/** Элемент с фокусом до открытия меню (кнопка «Другие действия»): после закрытия из меню фокус возвращается на него */
 	let returnFocusTarget: HTMLElement | null = null
@@ -227,23 +260,9 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		/* istanbul ignore next — defensive */
 		if (!element) return
 
-		if (highlightTimeoutId.value !== null) {
-			clearTimeout(highlightTimeoutId.value)
-		}
-
-		element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-		element.classList.add('base-chat-message-list__item--highlighted')
-		highlightTimeoutId.value = setTimeout(() => {
-			element.classList.remove('base-chat-message-list__item--highlighted')
-			highlightTimeoutId.value = null
-		}, HIGHLIGHT_DURATION_MS)
+		container.scrollBy({ top: centerOffset(container, element), behavior: scrollBehavior() })
+		highlight(element)
 	}
-
-	onBeforeUnmount(() => {
-		if (highlightTimeoutId.value !== null) {
-			clearTimeout(highlightTimeoutId.value)
-		}
-	})
 
 	function handleMentionClick(mention: string): void {
 		emit('mention-click', mention)

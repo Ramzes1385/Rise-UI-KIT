@@ -65,3 +65,20 @@
 		@include chat-icon-button(3px);
 	}
 }
+
+.base-chat-pinned-panel-swap-enter-active,
+.base-chat-pinned-panel-swap-leave-active {
+	transition-property: opacity, transform;
+	transition-duration: var(--rise-duration-fast);
+	transition-timing-function: var(--rise-ease-out);
+}
+
+.base-chat-pinned-panel-swap-enter-from {
+	opacity: 0;
+	transform: translateY(sz(6px));
+}
+
+.base-chat-pinned-panel-swap-leave-to {
+	opacity: 0;
+	transform: translateY(sz(-6px));
+}

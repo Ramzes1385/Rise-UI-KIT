@@ -9,5 +9,6 @@ export const enPlural = {
 	SIGNATURE_STROKES: { one: '{n} stroke', other: '{n} strokes' },
 	NOTIFICATIONS_UNREAD: { one: '{n} new', other: '{n} new' },
 	REPLIES: { one: '{n} reply', other: '{n} replies' },
+	BADGES_MORE: { one: '{n} more badge', other: '{n} more badges' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 }

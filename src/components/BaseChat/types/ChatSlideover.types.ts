@@ -14,6 +14,8 @@ export interface ChatSlideoverProps {
 	members?: ChatMember[]
 	messages: ChatMessage[]
 	currentUserRole?: 'admin' | 'member'
+	/** Сколько значков видно рядом с именем в списке участников; полный список — в профиле */
+	maxBadges?: number
 	sizeScale?: number
 }
 

@@ -13,6 +13,7 @@ export const argTypes = {
 	hasVoiceMessages: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	requestVoiceStream: { control: false, table: propGroup(ARG_GROUP.behavior) },
 	members: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	maxBadges: { control: { type: 'number', min: 0, max: 10 }, table: propGroup(ARG_GROUP.appearance) },
 	quickReplies: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	commands: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	pinnedMessages: { control: false, table: propGroup(ARG_GROUP.content) },

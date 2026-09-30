@@ -40,6 +40,8 @@
 				:avatar="avatar"
 				:all-images-urls="allImagesUrls"
 				:current-user-role="currentUserRole"
+				:members="members"
+				:max-badges="maxBadges"
 				@avatar-click="handleAvatarClick"
 				@message-select="handleMessageSelect"
 				@reply-click="handleReplyClick"
@@ -105,6 +107,7 @@
 				:members="members"
 				:messages="messages"
 				:current-user-role="currentUserRole"
+				:max-badges="maxBadges"
 				:size-scale="sizeScale"
 				@file-click="handleDownloadFile"
 				@download-file="handleDownloadFile"
@@ -120,6 +123,7 @@
 import '../styles/BaseChat.style.scss'
 import { ChatInput } from './ChatInput'
 import { ChatHeader } from './ChatHeader'
+import { CHAT_MAX_BADGES } from './ChatBadges'
 import { ChatSlideover } from './ChatSlideover'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
@@ -146,6 +150,7 @@ const props = withDefaults(
 		quickReplies: () => [],
 		commands: () => [],
 		currentUserRole: 'member',
+		maxBadges: CHAT_MAX_BADGES,
 	}),
 )
 const emit = defineEmits<BaseChatEmits>()

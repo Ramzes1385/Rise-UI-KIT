@@ -2,8 +2,8 @@ import '@testing-library/jest-dom/vitest'
 import BaseChat from '../ui/BaseChat.vue'
 import { afterEach, beforeEach, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import type { ChatMember, ChatMessage } from '../types/BaseChat.types'
+import { fireEvent, render, screen, within } from '@testing-library/vue'
 
 const MESSAGES: ChatMessage[] = [
 	{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна' },
@@ -129,18 +129,76 @@ describe('BaseChat integration', () => {
 	})
 
 	describe('навигация по закреплённым сообщениям', () => {
-		it('должен переключать текущий закреп при нажатии "Следующее"', async () => {
-			const pinned: ChatMessage[] = [
-				{ id: '1', text: 'Закреп 1', sender: 'me', time: '10:00', isPinned: true },
-				{ id: '2', text: 'Закреп 2', sender: 'me', time: '10:01', isPinned: true },
-			]
-			renderChat({ messages: pinned })
+		const PINNED: ChatMessage[] = [
+			{ id: '1', text: 'Закреп 1', sender: 'me', time: '10:00', isPinned: true },
+			{ id: '2', text: 'Обычное', sender: 'me', time: '10:01' },
+			{ id: '3', text: 'Закреп 2', sender: 'me', time: '10:02', isPinned: true },
+			{ id: '4', text: 'Закреп 3', sender: 'me', time: '10:03', isPinned: true },
+		]
 
-			expect(screen.getByText('Закреплённое сообщение (1 из 2)')).toBeInTheDocument()
+		afterEach(() => {
+			Reflect.deleteProperty(Element.prototype, 'scrollBy')
+		})
+
+		it('показывает последнее закреплённое, стрелки листают закрепы по кругу', async () => {
+			const { container } = renderChat({ messages: PINNED })
+			const panel = container.querySelector('.base-chat-pinned-panel') as HTMLElement
+
+			expect(screen.getByText('Закреплённое сообщение (3 из 3)')).toBeInTheDocument()
+			expect(within(panel).getByText('Закреп 3')).toBeInTheDocument()
 
 			await fireEvent.click(screen.getByLabelText('Следующее закреплённое сообщение'))
+			expect(screen.getByText('Закреплённое сообщение (1 из 3)')).toBeInTheDocument()
 
-			expect(screen.getByText('Закреплённое сообщение (2 из 2)')).toBeInTheDocument()
+			await fireEvent.click(screen.getByLabelText('Предыдущее закреплённое сообщение'))
+			expect(screen.getByText('Закреплённое сообщение (3 из 3)')).toBeInTheDocument()
+		})
+
+		it('клик по панели прокручивает ленту к показанному закрепу и переключает панель на предыдущий, по кругу', async () => {
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
+			const { container } = renderChat({ messages: PINNED })
+			const list = container.querySelector('.base-chat-message-list')
+			const panel = container.querySelector('.base-chat-pinned-panel__content') as HTMLElement
+
+			for (const [id, counter] of [
+				['4', '2 из 3'],
+				['3', '1 из 3'],
+				['1', '3 из 3'],
+			]) {
+				await fireEvent.click(panel)
+				expect(container.querySelector(`#message-${id}`)).toHaveClass('base-chat-message-list__item--highlighted')
+				expect(screen.getByText(`Закреплённое сообщение (${counter})`)).toBeInTheDocument()
+			}
+			expect(scrollBy).toHaveBeenCalledTimes(3)
+			expect(scrollBy.mock.contexts.every(context => context === list)).toBe(true)
+			expect(scrollBy).toHaveBeenLastCalledWith({ top: expect.any(Number), behavior: 'smooth' })
+			expect(container.querySelectorAll('.base-chat-message-list__item--highlighted')).toHaveLength(1)
+		})
+
+		it('без анимации прокручивает ленту при prefers-reduced-motion', async () => {
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
+			vi.stubGlobal(
+				'matchMedia',
+				vi.fn(() => ({ matches: true })),
+			)
+			const { container } = renderChat({ messages: PINNED })
+
+			await fireEvent.click(container.querySelector('.base-chat-pinned-panel__content') as HTMLElement)
+
+			expect(scrollBy).toHaveBeenCalledWith({ top: expect.any(Number), behavior: 'auto' })
+			vi.unstubAllGlobals()
+		})
+
+		it('новый закреп сразу показывается в панели', async () => {
+			const { container, rerender } = renderChat({ messages: PINNED })
+
+			await rerender({ messages: PINNED.map(message => (message.id === '2' ? { ...message, isPinned: true } : message)) })
+
+			const panel = container.querySelector('.base-chat-pinned-panel') as HTMLElement
+			expect(screen.getByText('Закреплённое сообщение (2 из 4)')).toBeInTheDocument()
+			expect(within(panel).getByText('Обычное')).toBeInTheDocument()
 		})
 	})
 
@@ -188,8 +246,8 @@ describe('BaseChat integration', () => {
 		})
 
 		it('должен скроллить к сообщению при клике по цитате', async () => {
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 			const withReply: ChatMessage[] = [
 				...MESSAGES,
 				{ id: '3', text: 'Ответ', sender: 'me', time: '10:02', replyToId: '1', replyToText: 'Привет!' },
@@ -199,7 +257,8 @@ describe('BaseChat integration', () => {
 			const quote = container.querySelector('.base-chat-message-list__reply-quote') as HTMLElement
 			await fireEvent.click(quote)
 
-			expect(scrollIntoView).toHaveBeenCalled()
+			expect(scrollBy).toHaveBeenCalled()
+			expect(container.querySelector('#message-1')).toHaveClass('base-chat-message-list__item--highlighted')
 		})
 	})
 
@@ -405,15 +464,65 @@ describe('BaseChat integration', () => {
 		})
 
 		it('должен скроллить к закреплённому сообщению при клике по панели', async () => {
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 			const pinned: ChatMessage = { id: '1', text: 'Закреп', sender: 'me', time: '10:00', isPinned: true }
 			const { container } = renderChat({ messages: [pinned] })
 
 			const panel = container.querySelector('.base-chat-pinned-panel__content') as HTMLElement
 			await fireEvent.click(panel)
 
-			expect(scrollIntoView).toHaveBeenCalled()
+			expect(scrollBy).toHaveBeenCalled()
+		})
+	})
+
+	describe('значки участников', () => {
+		const BADGES = [
+			{ id: 'verified', label: 'Подтверждён', icon: 'check-circle', color: 'var(--rise-info)' },
+			{ id: 'cup', label: 'Кубок', emoji: '🏆' },
+			{ id: 'fire', label: 'Серия', emoji: '🔥' },
+			{ id: 'rocket', label: 'Релизы', emoji: '🚀' },
+			{ id: 'plain', label: 'Без иконки' },
+		]
+		const MEMBERS_WITH_BADGES: ChatMember[] = [{ ...GROUP_MEMBERS[0], badges: BADGES }, GROUP_MEMBERS[1]]
+		const GROUP_MESSAGES: ChatMessage[] = [
+			{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна', senderId: 'a1' },
+			{ id: '2', text: 'Добрый день', sender: 'other', time: '10:01', senderName: 'Борис', senderId: 'm1' },
+		]
+
+		it('рядом с именем отправителя — первые maxBadges значков и счётчик остальных', () => {
+			const { container } = renderChat({ isGroup: true, members: MEMBERS_WITH_BADGES, messages: GROUP_MESSAGES })
+			const [anna, boris] = container.querySelectorAll('.base-chat-message-list__sender')
+
+			expect(anna.querySelectorAll('.base-chat-badges__badge')).toHaveLength(3)
+			expect(screen.getByRole('img', { name: 'Подтверждён' })).toBeInTheDocument()
+			expect(screen.getByRole('img', { name: 'Ещё 2 значка: Релизы, Без иконки' })).toHaveTextContent('+2')
+			expect(boris.querySelector('.base-chat-badges')).toBeNull()
+		})
+
+		it('maxBadges меняет число видимых значков', () => {
+			renderChat({ isGroup: true, members: MEMBERS_WITH_BADGES, messages: GROUP_MESSAGES, maxBadges: 1 })
+
+			expect(screen.getByRole('img', { name: 'Ещё 4 значка: Кубок, Серия, Релизы, Без иконки' })).toHaveTextContent('+4')
+		})
+
+		it('в списке участников — значки рядом с именем, в профиле — полный список с подписями', async () => {
+			const { container } = renderChat({ isGroup: true, members: MEMBERS_WITH_BADGES, messages: GROUP_MESSAGES })
+
+			await fireEvent.click(screen.getByLabelText('Информация о чате'))
+			const [annaItem, borisItem] = container.querySelectorAll('.base-chat-slideover__member-item')
+			expect(annaItem.querySelectorAll('.base-chat-badges__badge')).toHaveLength(3)
+			expect(borisItem.querySelector('.base-chat-badges')).toBeNull()
+
+			await fireEvent.click(annaItem.querySelector('.base-chat-slideover__member-main') as HTMLElement)
+			const section = screen.getByRole('region', { name: 'Значки' })
+			expect(Array.from(section.querySelectorAll('li'), item => item.textContent?.trim())).toEqual([
+				'Подтверждён',
+				'🏆Кубок',
+				'🔥Серия',
+				'🚀Релизы',
+				'Без иконки',
+			])
 		})
 	})
 

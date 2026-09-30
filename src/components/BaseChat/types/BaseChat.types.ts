@@ -58,8 +58,25 @@ export interface ChatMessage {
 	replyToSenderName?: string
 	/** Реакции на сообщение */
 	reactions?: ChatMessageReaction[]
-	/** Закреплено ли сообщение */
+	/**
+	 * Закреплено ли сообщение. Панель под шапкой показывает последнее закреплённое; клик по ней плавно прокручивает ленту
+	 * к сообщению и переключает панель на предыдущее закреплённое — повторные клики обходят закрепы по кругу
+	 */
 	isPinned?: boolean
+}
+
+/** Значок участника: «подтверждён», достижение, роль в сообществе */
+export interface ChatBadge {
+	/** Уникальный идентификатор значка */
+	id: string
+	/** Название: подсказка при наведении, текст для скринридеров и подпись в профиле */
+	label: string
+	/** Иконка кита (например, `check-circle` — «подтверждён»); без `icon` и `emoji` выводится `star` */
+	icon?: string
+	/** Эмодзи вместо иконки — для достижений (например, «🏆») */
+	emoji?: string
+	/** Цвет иконки: CSS-значение или переменная (например, `var(--rise-info)`) */
+	color?: string
 }
 
 export interface ChatMember {
@@ -70,6 +87,11 @@ export interface ChatMember {
 	role?: string
 	warningsCount?: number
 	isBanned?: boolean
+	/**
+	 * Значки участника. В групповом чате видны рядом с именем в сообщениях (по `senderId`) и в списке участников:
+	 * первые `maxBadges`, остальные — счётчиком «+N»; полный список с подписями — в профиле
+	 */
+	badges?: ChatBadge[]
 }
 
 export interface ChatCommand {
@@ -102,6 +124,8 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	currentUserRole?: 'admin' | 'member'
 	/** Описание чата или собеседника для панели «Информация»; без него блок описания не выводится */
 	description?: string
+	/** Сколько значков участника видно рядом с именем; остальные — счётчиком «+N» с подсказкой */
+	maxBadges?: number
 	/** Голосовые сообщения: кнопка микрофона вместо «Отправить», пока поле пустое; запись приходит событием `send-voice` */
 	hasVoiceMessages?: boolean
 	/** Источник звука для голосовых вместо микрофона — как `requestStream` у BaseVoiceRecorder */

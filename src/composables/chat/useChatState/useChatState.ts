@@ -1,11 +1,50 @@
 /** Composable: оркестратор состояния чата */
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useChatReply } from '@composables/chat/useChatReply'
 import { useChatSearch } from '@composables/chat/useChatSearch'
 import { useChatInfoPanel } from '@composables/chat/useChatInfoPanel'
 import { useChatSelection } from '@composables/chat/useChatSelection'
 import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from './types/useChatState.types'
+
+/**
+ * Закреплённые сообщения, как в Telegram: панель показывает последнее закреплённое, а новый закреп — сразу после
+ * закрепления. Клик по панели ведёт к показанному сообщению и переключает панель на предыдущее: повторные клики
+ * обходят все закрепы по кругу.
+ */
+function usePinnedMessages(props: UseChatStateProps, options: UseChatStateOptions) {
+	const currentPinnedIndex = ref(0)
+	const pinnedMessages = computed((): ChatMessage[] => props.messages.filter(message => message.isPinned))
+	const step = (offset: 1 | -1): void => {
+		const { length } = pinnedMessages.value
+		if (length > 1) currentPinnedIndex.value = (currentPinnedIndex.value + offset + length) % length
+	}
+	watch(
+		() => pinnedMessages.value.map(message => message.id),
+		(ids, previous = []) => {
+			const added = ids.filter(id => !previous.includes(id)).pop()
+			if (added !== undefined) currentPinnedIndex.value = ids.indexOf(added)
+		},
+		{ immediate: true },
+	)
+	return {
+		pinnedMessages,
+		currentPinnedIndex,
+		currentPinnedMessage: computed((): ChatMessage | null => {
+			if (pinnedMessages.value.length === 0) return null
+			if (currentPinnedIndex.value >= pinnedMessages.value.length) {
+				currentPinnedIndex.value = Math.max(0, pinnedMessages.value.length - 1)
+			}
+			return pinnedMessages.value[currentPinnedIndex.value] || null
+		}),
+		handleNextPinned: (): void => step(1),
+		handlePrevPinned: (): void => step(-1),
+		handleScrollToPinned(messageId: string): void {
+			options.scrollToMessage?.(messageId)
+			if (pinnedMessages.value[currentPinnedIndex.value]?.id === messageId) step(-1)
+		},
+	}
+}
 
 /** Оркестратор состояния чата — объединяет поиск, выделение, панель информации, ответ, закреплённые сообщения. */
 function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options: UseChatStateOptions = {}) {
@@ -19,17 +58,7 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 	})
 	const { replyingTo, handleMessageReply, handleCancelReply } = useChatReply()
 
-	const currentPinnedIndex = ref(0)
-	const pinnedMessages = computed((): ChatMessage[] => {
-		return props.messages.filter(message => message.isPinned)
-	})
-	const currentPinnedMessage = computed((): ChatMessage | null => {
-		if (pinnedMessages.value.length === 0) return null
-		if (currentPinnedIndex.value >= pinnedMessages.value.length) {
-			currentPinnedIndex.value = Math.max(0, pinnedMessages.value.length - 1)
-		}
-		return pinnedMessages.value[currentPinnedIndex.value] || null
-	})
+	const pinned = usePinnedMessages(props, options)
 
 	// Глобальный массив картинок для Telegram-like скролла галереи
 	const allImagesUrls = computed((): string[] =>
@@ -37,20 +66,6 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 			(message.attachments ?? []).filter(attachment => attachment.type === 'image').map(attachment => attachment.url),
 		),
 	)
-
-	function handleNextPinned(): void {
-		if (pinnedMessages.value.length <= 1) return
-		currentPinnedIndex.value = (currentPinnedIndex.value + 1) % pinnedMessages.value.length
-	}
-
-	function handlePrevPinned(): void {
-		if (pinnedMessages.value.length <= 1) return
-		currentPinnedIndex.value = (currentPinnedIndex.value - 1 + pinnedMessages.value.length) % pinnedMessages.value.length
-	}
-
-	function handleScrollToPinned(messageId: string): void {
-		options.scrollToMessage?.(messageId)
-	}
 
 	return {
 		searchQuery,
@@ -60,9 +75,7 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 		isInfoOpen,
 		activeTab,
 		selectedMemberId,
-		pinnedMessages,
-		currentPinnedIndex,
-		currentPinnedMessage,
+		...pinned,
 		filteredMessages,
 		allImagesUrls,
 		handleMessageSelect,
@@ -71,9 +84,6 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 		handleAvatarClick,
 		handleInfoClick,
 		openInfo,
-		handleNextPinned,
-		handlePrevPinned,
-		handleScrollToPinned,
 	}
 }
 
