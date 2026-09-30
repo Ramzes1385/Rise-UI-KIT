@@ -221,6 +221,23 @@ const { handleTriggerKeydown } = useSelectKeys({ select, isDisabled: () => Boole
 
 ---
 
+## useRemoteSuggestions
+
+Подсказки с сервера для поля с автодополнением: пауза после ввода (`debounce`), минимальная длина запроса (`minChars`), отмена прежнего запроса через `AbortSignal` — ответ устаревшего запроса не попадает в список, ошибка источника очищает список. На нём BaseAddressInput и BaseDadataInput.
+
+```ts
+import { useRemoteSuggestions } from '@ramzes1385/rise-ui-kit/composables'
+
+const { suggestions, isLoading, search, cancel } = useRemoteSuggestions({
+	source: () => (query, { signal }) => fetch(`/api/cities?q=${query}`, { signal }).then(r => r.json()),
+	minChars: () => 2,
+	debounce: () => 300,
+})
+// <BaseAutocomplete is-remote :is-loading="isLoading" :options="…" @search="search" />
+```
+
+---
+
 ## Список composables
 
 Основные composables (полный перечень экспортов — `src/composables/index.ts`):
@@ -250,6 +267,7 @@ useListNavigation
 usePadding
 usePasswordVisibility
 usePopup
+useRemoteSuggestions
 useScrollLock
 useSelect
 useSelectKeys

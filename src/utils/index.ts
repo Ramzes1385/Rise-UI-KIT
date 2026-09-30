@@ -1,6 +1,7 @@
 export * from './dom/clipboardUtils'
 export * from './data/colorUtils'
 export * from './data/dateUtils'
+export * from './data/dadataUtils'
 export * from './dom/domUtils'
 export {
 	ALIGN_MAP,

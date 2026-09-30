@@ -99,6 +99,21 @@ isSafeUrl('blob:https://example.com/7f3c', DOWNLOAD_PROTOCOLS) // true
 
 ---
 
+## dadataUtils
+
+Подсказки DaData без зависимостей: `createDadataSource(kind, options)` возвращает источник подсказок для `BaseDadataInput`, `BaseAddressInput` или своего поля. Виды — `DADATA_KINDS`: `address`, `party` (организации и ИП), `bank`, `fio`, `email`. Ключ API и адрес — снаружи: `token` уходит в заголовок `Authorization: Token …`; без ключа запросы идут на `baseUrl` — свой прокси, который сам добавляет ключ (ключ DaData в браузере виден всем). Источник принимает `signal` — устаревший запрос отменяется. `dadataRequisites(suggestion)` достаёт реквизиты организации или банка (`inn`, `kpp`, `ogrn`, `bik`, `correspondentAccount`) — их можно передать в `BaseRequisiteInput`; `dadataAddressText` — адрес организации или банка.
+
+```ts
+import { createDadataSource, dadataRequisites } from '@ramzes1385/rise-ui-kit/utils'
+
+const party = createDadataSource('party', { token: import.meta.env.VITE_DADATA_TOKEN, count: 5, params: { status: ['ACTIVE'] } })
+const viaProxy = createDadataSource('address', { baseUrl: '/api/dadata/suggest' })
+const [first] = await party('сбербанк', { signal: new AbortController().signal })
+dadataRequisites(first) // { inn: '7707083893', kpp: '773601001', ogrn: '1027700132195' }
+```
+
+---
+
 ## domUtils
 
 `getFixedOrigin(container)` — где на экране начало координат для `position: fixed` внутри `container`. Обычно это окно (`{ x: 0, y: 0 }`), но предок с `transform`, `filter`, `contain` или `container-type` становится точкой отсчёта: так Storybook оборачивает истории на странице Docs, так же ведут себя анимированные окна. Выпадающие панели, подсказки и контекстное меню кита уже учитывают это; функция нужна своим fixed-элементам.
@@ -117,6 +132,7 @@ panel.style.top = `${trigger.getBoundingClientRect().bottom - origin.y}px`
 ```txt
 clipboardUtils
 colorUtils
+dadataUtils
 dateUtils
 domUtils
 editorDomUtils
