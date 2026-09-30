@@ -106,3 +106,34 @@ describe('BaseHeader unit', () => {
 		expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 	})
 })
+
+describe('BaseHeader: раскладки', () => {
+	it('navAlign, isCompact — модификаторы корня; по умолчанию навигация посередине', async () => {
+		const { rerender } = render(BaseHeader, { props: { title: 'Rise' } })
+		const header = screen.getByRole('banner')
+		expect(header).toHaveClass('base-header--nav-center')
+		expect(header).not.toHaveClass('base-header--compact')
+		await rerender({ title: 'Rise', navAlign: 'stretch', isCompact: true })
+		expect(header).toHaveClass('base-header--nav-stretch', 'base-header--compact')
+	})
+
+	it('isOverlay: поверх обложки, не прилипает', () => {
+		render(BaseHeader, { props: { title: 'Rise', isOverlay: true } })
+		const header = screen.getByRole('banner')
+		expect(header).toHaveClass('base-header--overlay')
+		expect(header).not.toHaveClass('base-header--sticky')
+	})
+
+	it('слот bottom — второй ряд под шапкой', () => {
+		const { container } = render(BaseHeader, {
+			props: { title: 'Rise' },
+			slots: { bottom: '<nav aria-label="Категории">Смартфоны</nav>' },
+		})
+		expect(container.querySelector('.base-header__bottom')).toContainElement(screen.getByRole('navigation', { name: 'Категории' }))
+	})
+
+	it('без слота bottom второго ряда нет', () => {
+		const { container } = render(BaseHeader, { props: { title: 'Rise' } })
+		expect(container.querySelector('.base-header__bottom')).not.toBeInTheDocument()
+	})
+})

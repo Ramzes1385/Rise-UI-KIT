@@ -19,5 +19,11 @@ export default meta
 
 export const Default = cases.Default
 export const Variants = cases.Variants
+export const Landing = cases.Landing
+export const App = cases.App
+export const Shop = cases.Shop
+export const WithSearch = cases.WithSearch
+export const OverCover = cases.OverCover
+export const Compact = cases.Compact
 export const WithMenu = cases.WithMenu
 export const Keyboard = cases.Keyboard

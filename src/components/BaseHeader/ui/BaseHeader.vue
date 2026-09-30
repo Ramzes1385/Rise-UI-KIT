@@ -1,7 +1,17 @@
 <template>
 	<header
 		class="base-header"
-		:class="[variantClass, { 'base-header--sticky': isSticky, 'base-header--has-menu': hasMenu }, classes.root]"
+		:class="[
+			variantClass,
+			`base-header--nav-${navAlign}`,
+			{
+				'base-header--sticky': isSticky && !isOverlay,
+				'base-header--has-menu': hasMenu,
+				'base-header--compact': isCompact,
+				'base-header--overlay': isOverlay,
+			},
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseContainer :size="containerSize" class="base-header__inner" :custom-class="{ root: classes.inner }" :size-scale="sizeScale">
 			<div class="base-header__start">
@@ -29,6 +39,9 @@
 					<BaseIcon name="menu" />
 				</BaseButton>
 			</div>
+		</BaseContainer>
+		<BaseContainer v-if="slots.bottom" :size="containerSize" class="base-header__bottom" :size-scale="sizeScale">
+			<slot name="bottom" />
 		</BaseContainer>
 		<BaseDrawer
 			v-if="hasMenu"
@@ -61,6 +74,9 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		containerSize: 'full',
 		isSticky: true,
+		navAlign: 'center',
+		isCompact: false,
+		isOverlay: false,
 		menuDirection: 'right',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),

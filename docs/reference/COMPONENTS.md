@@ -2141,6 +2141,15 @@ function handleSelect(item: BaseMenuItem): void {
 </BaseHeader>
 ```
 
+Раскладки: `nav-align` — где навигация: `center` (лендинг, по умолчанию), `start` — сразу за названием (приложение), `end` — у действий, `stretch` — на всё свободное место (поле поиска). Слот `bottom` — второй ряд (категории магазина), `is-compact` — высота 48px, `is-overlay` — поверх обложки без места в потоке (с `variant="ghost"`, внутри позиционированного блока).
+
+```vue
+<BaseHeader title="Rise Docs" to="/" nav-align="stretch">
+	<BaseSearch placeholder="Поиск по документации" />
+	<template #bottom><CategoryLinks /></template>
+</BaseHeader>
+```
+
 ---
 
 ## BaseFooter

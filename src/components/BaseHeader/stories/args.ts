@@ -6,7 +6,10 @@ export const args = {
 	href: '#home',
 	variant: 'default',
 	containerSize: 'full',
+	navAlign: 'center',
+	isCompact: false,
 	isSticky: true,
+	isOverlay: false,
 	menuDirection: 'right',
 	sizeScale: 100,
 } satisfies Meta<typeof BaseHeader>['args']
