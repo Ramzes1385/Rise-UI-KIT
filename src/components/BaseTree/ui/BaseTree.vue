@@ -24,7 +24,10 @@
 					is-flat>
 					<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
 					<template #arrow="slotProps"><slot name="arrow" v-bind="slotProps" /></template>
-					<template #label="slotProps"><slot name="label" v-bind="slotProps" /></template>
+					<template #label="slotProps">
+						<slot v-if="$slots[`label-${slotProps.node.id}`]" :name="`label-${slotProps.node.id}`" v-bind="slotProps" />
+						<slot v-else name="label" v-bind="slotProps" />
+					</template>
 					<template #actions="slotProps"><slot name="actions" v-bind="slotProps" /></template>
 				</BaseTreeNode>
 			</div>
@@ -40,7 +43,10 @@
 				:size-scale="sizeScale">
 				<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
 				<template #arrow="slotProps"><slot name="arrow" v-bind="slotProps" /></template>
-				<template #label="slotProps"><slot name="label" v-bind="slotProps" /></template>
+				<template #label="slotProps">
+					<slot v-if="$slots[`label-${slotProps.node.id}`]" :name="`label-${slotProps.node.id}`" v-bind="slotProps" />
+					<slot v-else name="label" v-bind="slotProps" />
+				</template>
 				<template #actions="slotProps"><slot name="actions" v-bind="slotProps" /></template>
 			</BaseTreeNode>
 		</template>

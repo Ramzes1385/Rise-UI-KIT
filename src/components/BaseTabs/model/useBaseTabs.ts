@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import type { BaseTabsEmits, BaseTabsProps } from '../types/BaseTabs.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, useId, useSlots, watch } from 'vue'
 
 const DRAG_THRESHOLD = 3
 
@@ -131,6 +131,14 @@ function useDragScroll(listRef: Ref<HTMLElement | null>) {
 	}
 }
 
+function usePanelSlot(props: BaseTabsProps) {
+	const slots = useSlots()
+	return {
+		hasPanel: (): boolean => Object.keys(slots).some(name => name === 'default' || name.startsWith('panel-')),
+		panelSlot: (): `panel-${string}` | 'default' => (slots[`panel-${props.modelValue}`] ? `panel-${props.modelValue}` : 'default'),
+	}
+}
+
 export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 	const standard = useStandardBaseComponent('base-tabs', props, TABS_ELEMENTS)
 	const listRef = ref<HTMLElement | null>(null)
@@ -165,5 +173,6 @@ export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 		handlePointerMove: drag.handlePointerMove,
 		handlePointerUp: drag.handlePointerUp,
 		...useScrollButtons(props, listRef),
+		...usePanelSlot(props),
 	}
 }

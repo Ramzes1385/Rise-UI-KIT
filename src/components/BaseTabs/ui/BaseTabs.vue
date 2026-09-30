@@ -41,7 +41,7 @@
 					]"
 					:is-disabled="item.isDisabled"
 					:aria-selected="modelValue === item.id"
-					:aria-controls="$slots.default ? panelId : undefined"
+					:aria-controls="hasPanel() ? panelId : undefined"
 					:tabindex="index === rovingIndex ? 0 : -1"
 					:size-scale="sizeScale"
 					@click="handleTabClick(item.id)">
@@ -64,10 +64,10 @@
 			:id="panelId"
 			class="base-tabs__content"
 			:class="classes.content"
-			:role="$slots.default ? 'tabpanel' : undefined"
-			:aria-labelledby="$slots.default && selectedIndex !== -1 ? getTabId(selectedIndex) : undefined"
-			:tabindex="$slots.default ? 0 : undefined">
-			<slot></slot>
+			:role="hasPanel() ? 'tabpanel' : undefined"
+			:aria-labelledby="hasPanel() && selectedIndex !== -1 ? getTabId(selectedIndex) : undefined"
+			:tabindex="hasPanel() ? 0 : undefined">
+			<slot :name="panelSlot()"></slot>
 		</div>
 	</div>
 </template>
@@ -116,5 +116,7 @@ const {
 	handleListScroll,
 	handleScrollLeft,
 	handleScrollRight,
+	hasPanel,
+	panelSlot,
 } = useBaseTabs(props, emit)
 </script>

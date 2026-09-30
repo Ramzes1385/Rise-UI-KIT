@@ -59,4 +59,7 @@ export interface BaseTimelineProps extends BaseComponentProps<
 export interface BaseTimelineSlots {
 	/** Своё содержимое события (маркер и линию рисует компонент) */
 	item?: (props: { item: TimelineItem; index: number; isCurrent: boolean; isUpcoming: boolean }) => unknown
+	/** Содержимое одного события по его `id`: `item-deploy` — событие `deploy`; у остальных — `item` */
+	[name: `item-${string}`]:
+		((props: { item: TimelineItem; index: number; isCurrent: boolean; isUpcoming: boolean }) => unknown) | undefined
 }

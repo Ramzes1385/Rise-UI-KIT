@@ -31,7 +31,14 @@
 			<span v-if="index < items.length - 1" class="base-timeline__line" aria-hidden="true" />
 			<div class="base-timeline__content" :class="classes.content">
 				<span v-if="dayLabel(index)" class="base-timeline__day" :class="classes.day">{{ dayLabel(index) }}</span>
-				<slot name="item" :item="item" :index="index" :is-current="index === currentIndex" :is-upcoming="isUpcoming(index)">
+				<slot
+					v-if="$slots[`item-${item.id}`]"
+					:name="`item-${item.id}`"
+					:item="item"
+					:index="index"
+					:is-current="index === currentIndex"
+					:is-upcoming="isUpcoming(index)" />
+				<slot v-else name="item" :item="item" :index="index" :is-current="index === currentIndex" :is-upcoming="isUpcoming(index)">
 					<time
 						v-if="item.date && !isDateSide"
 						class="base-timeline__date"

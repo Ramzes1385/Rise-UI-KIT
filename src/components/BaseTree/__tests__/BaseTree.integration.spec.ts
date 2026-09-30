@@ -801,4 +801,19 @@ describe('BaseTree integration', () => {
 			expect(emitted().select).toBeUndefined()
 		})
 	})
+
+	describe('слоты label-<id>', () => {
+		it('метка одного узла по id на любой глубине, у остальных — слот label', () => {
+			render(BaseTree, {
+				props: { items: NESTED_ITEMS, expandedIds: ['metall'] },
+				slots: {
+					label: DEFAULT_SLOT,
+					'label-copper': '<template #label-copper="{ node, depth }">{{ node.label }} · уровень {{ depth }}</template>',
+				},
+			})
+			expect(screen.getByText('Медь · уровень 1')).toBeInTheDocument()
+			expect(screen.getByText('Сталь')).toBeInTheDocument()
+			expect(screen.getByText('Дерево')).toBeInTheDocument()
+		})
+	})
 })

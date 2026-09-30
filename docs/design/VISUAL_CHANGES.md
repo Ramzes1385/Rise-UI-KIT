@@ -867,3 +867,4 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - Снимки не меняются: в Р.10–Р.12 меняются только описания в таблице параметров Docs и типы.
 - Новая история BaseTable `slots-by-key` (слоты `header-<key>` и `cell-<key>`, в том числе с динамическим именем в `v-for`) — без снимка.
+- Новые истории без снимков: BaseTabs `panel-slots`, BaseTimeline `item-by-id`, BaseTree `label-by-id` (слоты по id элемента, Р.13). Прежние истории этих компонентов не меняются.

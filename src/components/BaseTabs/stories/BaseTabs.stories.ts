@@ -27,5 +27,6 @@ export const Empty = cases.Empty
 export const LongContent = cases.LongContent
 export const WithIcons = cases.WithIcons
 export const WithContent = cases.WithContent
+export const PanelSlots = cases.PanelSlots
 export const Scrollable = cases.Scrollable
 export const Keyboard = cases.Keyboard

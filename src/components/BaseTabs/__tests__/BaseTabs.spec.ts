@@ -318,4 +318,35 @@ describe('BaseTabs unit', () => {
 			}
 		})
 	})
+
+	describe('слоты panel-<id>', () => {
+		it('выбранная вкладка со своим слотом показывает его, остальные — default', async () => {
+			const { rerender } = render(BaseTabs, {
+				props: { modelValue: 'specs', items: TABS },
+				slots: { default: 'Общая панель', 'panel-specs': 'Панель характеристик' },
+			})
+			expect(screen.getByRole('tabpanel')).toHaveTextContent('Панель характеристик')
+			await rerender({ modelValue: 'info', items: TABS })
+			expect(screen.getByRole('tabpanel')).toHaveTextContent('Общая панель')
+		})
+
+		it('только слоты panel-<id>: панель связана с вкладкой, у вкладки без слота панель пустая', async () => {
+			const { rerender } = render(BaseTabs, {
+				props: { modelValue: 'info', items: TABS },
+				slots: { 'panel-info': 'О товаре' },
+			})
+			const panel = screen.getByRole('tabpanel')
+			expect(panel).toHaveTextContent('О товаре')
+			expect(screen.getByRole('tab', { name: 'Информация' })).toHaveAttribute('aria-controls', panel.id)
+			await rerender({ modelValue: 'specs', items: TABS })
+			await nextTick()
+			expect(screen.getByRole('tabpanel').textContent?.trim()).toBe('')
+		})
+
+		it('без слотов панели нет роли tabpanel и aria-controls', () => {
+			const { container } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			expect(container.querySelector('[role="tabpanel"]')).toBeNull()
+			expect(screen.getByRole('tab', { name: 'Информация' })).not.toHaveAttribute('aria-controls')
+		})
+	})
 })

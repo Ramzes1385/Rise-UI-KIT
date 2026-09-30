@@ -37,4 +37,9 @@ export interface BaseTabsEmits {
 export interface BaseTabsSlots {
 	/** Содержимое выбранной вкладки — панель `tabpanel`, связанная с вкладкой */
 	default?: () => unknown
+	/**
+	 * Содержимое одной вкладки по её `id`: `panel-orders` — вкладка `orders`. Показывается, когда вкладка выбрана;
+	 * у вкладки без своего слота — `default`
+	 */
+	[name: `panel-${string}`]: (() => unknown) | undefined
 }

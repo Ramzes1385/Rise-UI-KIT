@@ -104,6 +104,8 @@ export interface BaseTreeSlots {
 	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => unknown
 	/** Кастомное содержимое метки узла */
 	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown
+	/** Метка одного узла по его `id`: `label-docs` — узел `docs`, на любой глубине; у остальных — `label` */
+	[name: `label-${string}`]: ((props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown) | undefined
 	/** Действия справа от узла */
 	actions?: (props: { node: TreeNode }) => unknown
 }

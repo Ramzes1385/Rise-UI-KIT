@@ -124,4 +124,14 @@ describe('BaseTimeline', () => {
 			expect(screen.getByRole('img', { name: 'Экран оплаты' })).toBeInTheDocument()
 		})
 	})
+
+	it('слот item-<id> — своё содержимое одного события, у остальных — item или содержимое по умолчанию', () => {
+		render(BaseTimeline, {
+			props: { items: ITEMS },
+			slots: { 'item-2': '<template #item-2="{ item, index }">{{ index }}: {{ item.title }} — своё</template>' },
+		})
+		expect(screen.getByText('1: На проверке — своё')).toBeInTheDocument()
+		expect(screen.getByText('Создан')).toBeInTheDocument()
+		expect(screen.getByText('Опубликован')).toBeInTheDocument()
+	})
 })
