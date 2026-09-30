@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
+import { defineComponent, h, markRaw } from 'vue'
 import { resolveFlip } from '../model/cascade/cascadeItems'
 import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -57,6 +58,11 @@ function renderMenu(props: Record<string, unknown> = {}) {
 	return render(BaseMegaMenu, { props: { items: ITEMS, openKey: 'catalog', trigger: 'click', ...props } })
 }
 
+function renderPlain(items: MegaMenuItem[], props: Record<string, unknown> = {}) {
+	const Host = defineComponent({ setup: () => () => h(BaseMegaMenu, { items, openKey: 'catalog', trigger: 'click', ...props }) })
+	return render(Host)
+}
+
 beforeEach(() => setViewport(1280))
 
 afterEach(() => {
@@ -66,13 +72,13 @@ afterEach(() => {
 })
 
 describe('BaseMegaMenu: каскад — разметка и клик', () => {
-	it('рисует пункт с children кнопкой с aria-haspopup, aria-expanded и aria-controls', () => {
+	it('рисует пункт с children кнопкой с aria-haspopup и aria-expanded, без aria-controls у свёрнутого', () => {
 		renderMenu()
 		const parent = button(/Электроника/)
 
 		expect(parent).toHaveAttribute('aria-haspopup', 'true')
 		expect(parent).toHaveAttribute('aria-expanded', 'false')
-		expect(parent.getAttribute('aria-controls')).toMatch(/-sub$/)
+		expect(parent).not.toHaveAttribute('aria-controls')
 		expect(button(/Мебель/)).toBeDisabled()
 		expect(link('Одежда')).toHaveAttribute('href', '/clothes')
 	})
@@ -89,6 +95,7 @@ describe('BaseMegaMenu: каскад — разметка и клик', () => {
 
 		await fireEvent.click(parent)
 		expect(parent).toHaveAttribute('aria-expanded', 'false')
+		expect(parent).not.toHaveAttribute('aria-controls')
 		expect(screen.queryByRole('list', { name: 'Электроника' })).not.toBeInTheDocument()
 	})
 
@@ -295,5 +302,55 @@ describe('BaseMegaMenu: каскад — край экрана и мобильн
 
 		await fireEvent.click(button(/Электроника/))
 		expect(screen.getByRole('list', { name: 'Электроника' }).closest('.base-mega-menu__panel--inline')).not.toBeNull()
+	})
+})
+
+describe('BaseMegaMenu: каскад — обычный, не reactive массив items', () => {
+	it.each([
+		['обычный массив', (): MegaMenuItem[] => structuredClone(ITEMS)],
+		['markRaw', (): MegaMenuItem[] => markRaw(structuredClone(ITEMS))],
+	])('%s: на рабочем столе раскрывает уровни кликом и стрелкой вправо', async (_, create) => {
+		renderPlain(create())
+
+		await fireEvent.click(button(/Электроника/))
+		expect(button(/Электроника/)).toHaveAttribute('aria-expanded', 'true')
+		expect(button(/Электроника/)).toHaveAttribute('aria-controls', screen.getByRole('list', { name: 'Электроника' }).id)
+
+		await fireEvent.click(button('Телефоны'))
+		expect(button('Телефоны')).toHaveAttribute('aria-expanded', 'true')
+		expect(link('Смартфоны')).toBeInTheDocument()
+
+		await fireEvent.keyDown(button('Планшеты'), { key: 'ArrowRight' })
+		expect(button('Планшеты')).toHaveAttribute('aria-expanded', 'true')
+		expect(button('Телефоны')).toHaveAttribute('aria-expanded', 'false')
+		await waitFor(() => expect(link('iPad')).toHaveFocus())
+	})
+
+	it('на рабочем столе раскрывает уровень наведением', async () => {
+		vi.useFakeTimers()
+		renderPlain(structuredClone(ITEMS), { trigger: 'hover', openDelay: 50 })
+
+		await hover(button(/Электроника/))
+		await vi.advanceTimersByTimeAsync(100)
+		expect(button(/Электроника/)).toHaveAttribute('aria-expanded', 'true')
+	})
+
+	it('в мобильном виде раскрывает второй уровень кликом и стрелкой вправо', async () => {
+		setViewport(500)
+		renderPlain(structuredClone(ITEMS), { trigger: undefined })
+
+		expect(screen.getByRole('navigation')).toHaveClass('base-mega-menu--mobile')
+		await fireEvent.click(button('Меню'))
+		await fireEvent.click(button(/Электроника/))
+		expect(button(/Электроника/)).toHaveAttribute('aria-expanded', 'true')
+
+		await fireEvent.click(button('Телефоны'))
+		expect(button('Телефоны')).toHaveAttribute('aria-expanded', 'true')
+		expect(screen.getByRole('list', { name: 'Телефоны' }).closest('.base-mega-menu__panel--inline')).not.toBeNull()
+
+		await fireEvent.keyDown(button('Планшеты'), { key: 'ArrowRight' })
+		expect(button('Планшеты')).toHaveAttribute('aria-expanded', 'true')
+		expect(button('Телефоны')).toHaveAttribute('aria-expanded', 'false')
+		await waitFor(() => expect(link('iPad')).toHaveFocus())
 	})
 })

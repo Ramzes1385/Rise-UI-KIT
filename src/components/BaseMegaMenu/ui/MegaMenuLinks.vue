@@ -16,7 +16,7 @@
 			:disabled="entry.link.isDisabled"
 			aria-haspopup="true"
 			:aria-expanded="isExpanded(entry)"
-			:aria-controls="entry.subId"
+			:aria-controls="isExpanded(entry) ? entry.subId : undefined"
 			@click="toggle(entry)"
 			@keydown="handleKeydown(entry, $event)">
 			<slot name="link" :link="entry.link" :depth="depth" :group="group" :item="item">

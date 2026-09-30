@@ -1,12 +1,12 @@
-import { nextTick, provide, ref } from 'vue'
 import { hasChildren } from '../megaMenuItems'
 import { useHoverTimer } from '../useHoverTimer'
+import { nextTick, provide, ref, shallowRef } from 'vue'
 import { useCascadeKeyboard } from './useCascadeKeyboard'
 import { MEGA_MENU_CASCADE_KEY, resolveFlip } from './cascadeItems'
 import type { MegaMenuCascadeContext, MegaMenuLink, MegaMenuLinkEntry, MegaMenuPanelProps } from '../../types/BaseMegaMenu.types'
 
 function useCascadePath() {
-	const path = ref<MegaMenuLink[]>([])
+	const path = shallowRef<MegaMenuLink[]>([])
 	const flips = ref<boolean[]>([])
 	const timer = useHoverTimer()
 
