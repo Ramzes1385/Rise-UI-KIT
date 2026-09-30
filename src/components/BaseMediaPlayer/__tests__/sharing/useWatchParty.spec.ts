@@ -77,6 +77,19 @@ describe('совместный просмотр', () => {
 		expect(emitSync).toHaveBeenCalledExactlyOnceWith({ type: 'pause', time: 42 })
 	})
 
+	it('своё действие сразу после команды участника уходит: гасится только ответное событие той же команды', () => {
+		vi.useFakeTimers()
+		const { result, media, emitSync } = setup()
+		const video = media.value as HTMLVideoElement
+
+		result.applyWatchEvent({ type: 'seek', time: 30 })
+		vi.advanceTimersByTime(100)
+		video.dispatchEvent(new Event('seeked'))
+		video.dispatchEvent(new Event('pause'))
+		video.dispatchEvent(new Event('seeked'))
+		expect(emitSync.mock.calls.map(([event]) => event.type)).toEqual(['pause', 'seek'])
+	})
+
 	it('участники: инициалы, безопасный аватар, подпись статуса, счётчик смотрящих; ссылка копируется', () => {
 		const { result, copy } = setup({
 			link: 'https://example.com/watch/room-1',

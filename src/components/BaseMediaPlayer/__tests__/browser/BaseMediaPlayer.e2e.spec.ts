@@ -192,7 +192,7 @@ test('совместный просмотр: вкладка по ссылке п
 	await expect.poll(() => media(guest).evaluate(video => Math.round((video as HTMLVideoElement).currentTime))).toBeGreaterThanOrEqual(8)
 	await media(guest).evaluate(video => (video as HTMLVideoElement).pause())
 	await expect.poll(() => media(page).evaluate(video => (video as HTMLVideoElement).paused)).toBe(true)
-	await guest.close()
+	await guest.close({ runBeforeUnload: true })
 	await page.getByRole('button', { name: 'Совместный просмотр' }).click()
 	await expect(page.locator('.base-media-player__watch-member').filter({ hasText: 'Смотрит' })).toHaveCount(0)
 })

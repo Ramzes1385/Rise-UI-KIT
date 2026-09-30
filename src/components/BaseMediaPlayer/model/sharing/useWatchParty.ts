@@ -1,9 +1,15 @@
 import { isSafeUrl } from '@utils/data/urlUtils'
 import { UI_PLAYER, formatMessage } from '../messages'
 import { computed, onBeforeUnmount, watch } from 'vue'
-import type { MediaWatchEvent, MediaWatchMember, MediaWatchOptions, MediaWatchMemberView } from '../../types/panels/MediaWatch.types'
+import type {
+	MediaWatchEvent,
+	MediaWatchMember,
+	MediaWatchOptions,
+	MediaWatchEventType,
+	MediaWatchMemberView,
+} from '../../types/panels/MediaWatch.types'
 
-const QUIET_AFTER_REMOTE = 600
+const ECHO_WINDOW = 600
 
 const DRIFT = 0.5
 
@@ -29,11 +35,25 @@ function memberView(member: MediaWatchMember): MediaWatchMemberView {
 	return { ...member, avatar, initials, statusText: statusText(member) }
 }
 
-function useSyncEvents(options: MediaWatchOptions, isQuiet: () => boolean): void {
+function useEchoGuard() {
+	const expected = new Map<MediaWatchEventType, number>()
+	return {
+		expect(type: MediaWatchEventType): void {
+			expected.set(type, Date.now() + ECHO_WINDOW)
+		},
+		isEcho(type: MediaWatchEventType): boolean {
+			const until = expected.get(type)
+			expected.delete(type)
+			return until !== undefined && Date.now() < until
+		},
+	}
+}
+
+function useSyncEvents(options: MediaWatchOptions, isEcho: (type: MediaWatchEventType) => boolean): void {
 	const send = (event: Event): void => {
-		if (!options.party() || isQuiet()) return
-		const media = event.target as HTMLMediaElement
 		const type = MEDIA_EVENTS[event.type as keyof typeof MEDIA_EVENTS]
+		if (!options.party() || isEcho(type)) return
+		const media = event.target as HTMLMediaElement
 		options.emitSync(type === 'rate' ? { type, time: media.currentTime, rate: media.playbackRate } : { type, time: media.currentTime })
 	}
 	const listen = (media: HTMLMediaElement | null | undefined, method: 'addEventListener' | 'removeEventListener'): void =>
@@ -50,8 +70,8 @@ function useSyncEvents(options: MediaWatchOptions, isQuiet: () => boolean): void
 }
 
 export function useWatchParty(options: MediaWatchOptions) {
-	let quietUntil = 0
-	useSyncEvents(options, () => Date.now() < quietUntil)
+	const echo = useEchoGuard()
+	useSyncEvents(options, echo.isEcho)
 	const members = computed(() => options.party()?.members ?? [])
 
 	return {
@@ -68,11 +88,20 @@ export function useWatchParty(options: MediaWatchOptions) {
 			return true
 		},
 		applyWatchEvent(event: MediaWatchEvent): void {
-			quietUntil = Date.now() + QUIET_AFTER_REMOTE
-			if (Math.abs(options.state.currentTime - event.time) > DRIFT) options.actions.seek(event.time)
-			if (event.type === 'play') void options.actions.play()
-			else if (event.type === 'pause') options.actions.pause()
-			else if (event.type === 'rate' && event.rate) options.actions.setPlaybackRate(event.rate)
+			if (Math.abs(options.state.currentTime - event.time) > DRIFT) {
+				echo.expect('seek')
+				options.actions.seek(event.time)
+			}
+			if (event.type === 'play') {
+				echo.expect('play')
+				void options.actions.play()
+			} else if (event.type === 'pause') {
+				echo.expect('pause')
+				options.actions.pause()
+			} else if (event.type === 'rate' && event.rate) {
+				echo.expect('rate')
+				options.actions.setPlaybackRate(event.rate)
+			}
 		},
 	}
 }

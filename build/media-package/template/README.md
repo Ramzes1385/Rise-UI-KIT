@@ -27,7 +27,7 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-media-player'
 </template>
 ```
 
-Свойства, события и слоты — те же, что у `BaseMediaPlayer` в ките (раздел BaseMediaPlayer в README кита и Storybook). Строки интерфейса плеера — раздел `player` словаря кита: язык переключает `setLocale()`, свои строки задаёт `defineLocale()`.
+Свойства, события и слоты — те же, что у `BaseMediaPlayer` в ките (раздел BaseMediaPlayer в справочнике компонентов кита — `docs/reference/COMPONENTS.md` — и Storybook). Строки интерфейса плеера — раздел `player` словаря кита: язык переключает `setLocale()`, свои строки задаёт `defineLocale()`.
 
 - **HLS.** Потоки .m3u8 Safari играет сам; для остальных браузеров передайте класс hls.js: `<BaseMediaPlayer :hls="Hls" … />`. В плеере hls.js нет — его ставит приложение.
 - **Трансляция.** Remote Playback API браузера работает без настройки. Для Google Cast подключите скрипт `https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1`; своё приложение-приёмник — `cast-receiver-id`.

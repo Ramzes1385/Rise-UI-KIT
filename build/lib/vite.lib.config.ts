@@ -6,6 +6,7 @@ import { createLibBuildConfig } from '../config/build.lib'
 import { createCssConfig } from '../config/css'
 import { createResolveConfig } from '../config/resolve'
 import { createPlugins } from '../plugins'
+import { createCssDedupePlugin } from '../plugins/cssDedupe'
 
 /**
  * Типы для `import '@ramzes1385/rise-ui-kit/styles'` (exports в package.json): без них TypeScript у потребителя
@@ -23,7 +24,7 @@ function createStylesTypesPlugin(): Plugin {
 export default defineConfig(({ mode }) => ({
 	resolve: createResolveConfig(),
 	css: createCssConfig(mode),
-	plugins: [...createPlugins(mode), createStylesTypesPlugin()],
+	plugins: [...createPlugins(mode), createStylesTypesPlugin(), createCssDedupePlugin()],
 	build: createLibBuildConfig(),
 	// Каталога public/ у библиотеки нет: в dist попадает только собранный код, стили и спрайт
 	publicDir: false,

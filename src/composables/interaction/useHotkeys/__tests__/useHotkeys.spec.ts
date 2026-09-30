@@ -86,4 +86,16 @@ describe('useHotkeys', () => {
 		scope.stop()
 		input.remove()
 	})
+
+	it('без window (SSR) слушатель не ставится и ошибок нет', () => {
+		const run = vi.fn()
+		const scope = effectScope()
+		vi.stubGlobal('window', undefined)
+
+		expect(() => scope.run(() => useHotkeys({ 'mod+k': run }))).not.toThrow()
+		vi.unstubAllGlobals()
+		press({ key: 'k', code: 'KeyK', ctrlKey: true })
+		expect(run).not.toHaveBeenCalled()
+		scope.stop()
+	})
 })

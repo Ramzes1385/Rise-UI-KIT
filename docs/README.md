@@ -6,6 +6,10 @@
 
 | Документ | Описание |
 |---|---|
+| [reference/COMPONENTS.md](./reference/COMPONENTS.md) | Справочник компонентов: назначение, основные props и события, примеры |
+| [reference/COMPOSABLES.md](./reference/COMPOSABLES.md) | Composables кита и примеры |
+| [reference/UTILS.md](./reference/UTILS.md) | Утилиты кита и примеры |
+| [reference/DEVELOPMENT.md](./reference/DEVELOPMENT.md) | Разработка: стек, структура, Storybook, проверки, сборка, CI |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Полное руководство по ведению репозитория: ветки, задачи, коммиты, PR, релизы, заготовка нового компонента |
 | [v2/PLAN.md](./v2/PLAN.md) | План версии 2.0: порции работы, решения, статус |
 | [v2/MIGRATION.md](./v2/MIGRATION.md) | Переход на 2.0: что меняется для приложения (пополняется по порциям) |
