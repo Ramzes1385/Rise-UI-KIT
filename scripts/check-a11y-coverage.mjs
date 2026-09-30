@@ -105,6 +105,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseMoneyInput',
 	'BaseRequisiteInput',
 	'BaseAddressInput',
+	'BaseJsonViewer',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */

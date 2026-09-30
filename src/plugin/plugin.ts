@@ -56,6 +56,7 @@ import { BaseProgress } from '../components/BaseProgress'
 import { BaseSkeleton } from '../components/BaseSkeleton'
 import { BaseSplitter } from '../components/BaseSplitter'
 import { BaseTextarea } from '../components/BaseTextarea'
+import { BaseTextDiff } from '../components/BaseTextDiff'
 import { BaseTimeline } from '../components/BaseTimeline'
 import { BaseToolCall } from '../components/BaseToolCall'
 import { BaseWaveform } from '../components/BaseWaveform'
@@ -75,6 +76,7 @@ import { BaseSegmented } from '../components/BaseSegmented'
 import { BaseSeparator } from '../components/BaseSeparator'
 import { BaseSlideover } from '../components/BaseSlideover'
 import { BaseSparkline } from '../components/BaseSparkline'
+import { BaseJsonViewer } from '../components/BaseJsonViewer'
 import { BaseMoneyInput } from '../components/BaseMoneyInput'
 import { BasePagination } from '../components/BasePagination'
 import { BasePhoneInput } from '../components/BasePhoneInput'
@@ -171,6 +173,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseInput,
 	BaseInputNumber,
 	BaseInputTags,
+	BaseJsonViewer,
 	BaseKanban,
 	BaseKbd,
 	BaseLayout,
@@ -214,6 +217,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseTable,
 	BaseTabs,
 	BaseText,
+	BaseTextDiff,
 	BaseTextarea,
 	BaseTimePicker,
 	BaseTimeline,

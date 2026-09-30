@@ -70,4 +70,23 @@ export const enData = {
 		MORE: 'More',
 		HEATMAP_SUMMARY: '{label}: {total} in total, peak {max} on {date}',
 	},
+	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
+	jsonViewer: {
+		EXPAND_ALL: 'Expand all',
+		COLLAPSE_ALL: 'Collapse all',
+		COPY: 'Copy JSON',
+		COPIED: 'JSON copied',
+		COPY_FAILED: 'Could not copy',
+	},
+	/** Сравнение текстов: подписи колонок, строк и итог для скринридера */
+	textDiff: {
+		BEFORE: 'Before',
+		AFTER: 'After',
+		ADDED: 'Added',
+		REMOVED: 'Removed',
+		SUMMARY: '{label}: {added} lines added, {removed} removed',
+		NO_CHANGES: 'No changes',
+		CHANGE: 'Change',
+		TEXT: 'Text',
+	},
 }

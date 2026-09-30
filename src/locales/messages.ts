@@ -64,3 +64,9 @@ export const UI_CHARTS = localized('charts')
 
 /** Сравнение картинок */
 export const UI_IMAGE_COMPARE = localized('imageCompare')
+
+/** Просмотр JSON */
+export const UI_JSON_VIEWER = localized('jsonViewer')
+
+/** Сравнение текстов */
+export const UI_TEXT_DIFF = localized('textDiff')

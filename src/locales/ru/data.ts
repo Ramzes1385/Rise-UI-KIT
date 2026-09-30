@@ -78,4 +78,23 @@ export const ruData = {
 		MORE: 'Больше',
 		HEATMAP_SUMMARY: '{label}: всего {total}, больше всего {max} — {date}',
 	},
+	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
+	jsonViewer: {
+		EXPAND_ALL: 'Развернуть всё',
+		COLLAPSE_ALL: 'Свернуть всё',
+		COPY: 'Копировать JSON',
+		COPIED: 'JSON скопирован',
+		COPY_FAILED: 'Не удалось скопировать',
+	},
+	/** Сравнение текстов: подписи колонок, строк и итог для скринридера */
+	textDiff: {
+		BEFORE: 'Было',
+		AFTER: 'Стало',
+		ADDED: 'Добавлено',
+		REMOVED: 'Удалено',
+		SUMMARY: '{label}: добавлено строк — {added}, удалено — {removed}',
+		NO_CHANGES: 'Изменений нет',
+		CHANGE: 'Изменение',
+		TEXT: 'Текст',
+	},
 }

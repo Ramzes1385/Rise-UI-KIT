@@ -1822,6 +1822,30 @@ const visible = computed(() => tasks.value.filter(createFilterPredicate(filter.v
 
 ---
 
+## BaseJsonViewer
+
+Просмотр JSON деревом: ответы API, настройки, журналы событий. Объекты и массивы раскрываются, у свёрнутого — сводка «3 ключа» или «2 элемента», значения окрашены по типу.
+
+```vue
+<BaseJsonViewer :value="order" label="Заказ З-1052" :expand-depth="1" @copy="text => track('json-copied')" />
+```
+
+Дерево — BaseTree по образцу APG Tree View: одна точка Tab, стрелки, Home/End, Enter и пробел, поиск по буквам; `label` — имя дерева для скринридера. Над деревом — «Развернуть всё», «Свернуть всё» и «Копировать JSON» (текст с отступом в два пробела, событие `copy`, итог — в `role="status"`); `hasToolbar: false` убирает панель, слот `actions` добавляет свои кнопки. Путь узла — `$.customer.name`, `$.items[0]`. Значения вне JSON (`undefined`, функции) показываются как `null`.
+
+---
+
+## BaseTextDiff
+
+Сравнение двух текстов по строкам: редакции договора, описания товара, настройки.
+
+```vue
+<BaseTextDiff :before="draft" :after="final" label="Договор, раздел 4" mode="split" before-label="Черновик" after-label="Итог" />
+```
+
+Удалённые строки — на красном фоне со знаком «−», добавленные — на зелёном со знаком «+»; в паре «было — стало» с общими словами изменённые слова выделены (`<del>` и `<ins>`, `isWordDiff`). `mode`: `unified` — одной колонкой, как `git diff`, `split` — рядом. Для скринридера у строки есть подпись «Добавлено» или «Удалено», у сравнения — сводка «добавлено строк — 3, удалено — 3». Расчёт — наибольшая общая подпоследовательность строк; функции `diffLines`, `diffWords` и `splitRows` экспортируются для своих отчётов.
+
+---
+
 ## BaseTree
 
 Дерево данных.
@@ -2300,6 +2324,7 @@ BaseInplace
 BaseInput
 BaseInputNumber
 BaseInputTags
+BaseJsonViewer
 BaseKanban
 BaseKbd
 BaseLayout
@@ -2345,6 +2370,7 @@ BaseTable
 BaseTabs
 BaseText
 BaseTextarea
+BaseTextDiff
 BaseTimeline
 BaseTimePicker
 BaseToolbar

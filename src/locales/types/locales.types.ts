@@ -45,6 +45,8 @@ export interface UiKitLocale {
 	commandPalette: Section<'commandPalette'>
 	charts: Section<'charts'>
 	imageCompare: Section<'imageCompare'>
+	jsonViewer: Section<'jsonViewer'>
+	textDiff: Section<'textDiff'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

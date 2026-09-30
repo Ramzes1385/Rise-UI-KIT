@@ -4,5 +4,7 @@ export const enPlural = {
 	CARDS: { one: '{n} card', other: '{n} cards' },
 	COMMENTS: { one: '{n} comment', other: '{n} comments' },
 	ATTACHMENTS: { one: '{n} attachment', other: '{n} attachments' },
+	JSON_KEYS: { one: '{n} key', other: '{n} keys' },
+	JSON_ITEMS: { one: '{n} item', other: '{n} items' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 }

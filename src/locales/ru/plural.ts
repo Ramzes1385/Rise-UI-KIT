@@ -5,6 +5,8 @@ export const ruPlural = {
 	CARDS: { one: '{n} карточка', few: '{n} карточки', many: '{n} карточек', other: '{n} карточки' },
 	COMMENTS: { one: '{n} комментарий', few: '{n} комментария', many: '{n} комментариев', other: '{n} комментария' },
 	ATTACHMENTS: { one: '{n} вложение', few: '{n} вложения', many: '{n} вложений', other: '{n} вложения' },
+	JSON_KEYS: { one: '{n} ключ', few: '{n} ключа', many: '{n} ключей', other: '{n} ключа' },
+	JSON_ITEMS: { one: '{n} элемент', few: '{n} элемента', many: '{n} элементов', other: '{n} элемента' },
 	/** Статус поиска для скринридера: сколько результатов в списке */
 	SEARCH_RESULTS: {
 		one: 'Найден {n} результат',
