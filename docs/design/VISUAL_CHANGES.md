@@ -716,6 +716,10 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Новые истории: `simple` (копирайт и две ссылки, ширина `lg`), `columns` (описание в `top` и три колонки ссылок, под ними линия и нижняя строка), `with-subscribe` (`soft`, форма подписки; в снимке после play — «Готово: письмо придёт на anna@example.ru»), `with-apps` (ссылки на магазины приложений, соцсети в нижней строке), `compact` (`soft`, строка с отступом 12px). В visual-тест не добавлены.
 - Линия между верхней частью и нижней строкой — по ширине текста, без боковых отступов BaseContainer (решение владельца). Линия нарисована фоном в верхнем отступе нижней строки, поэтому подвал с верхней частью на 1px ниже, чем с рамкой.
 
+### Эталоны Layout (эпик layout, по решению владельца)
+- Новые истории добавлены в visual-тесты: BaseSplitter — `mail`, `ide`, `dashboard`; BaseHeader — `landing`, `app`, `shop`, `with-search`, `over-cover`, `compact`; BaseFooter — `simple`, `columns`, `with-subscribe`, `with-apps`, `compact`. Снимаются при окне 1200×600.
+- Эталоны всех снимков этих трёх компонентов (44 файла в `tests/visual-snapshots/`, в том числе прежние истории — в ветке эталонов не было) сделаны в контейнере агента: Linux, Chromium 1194, `--update-snapshots=missing`, повторный прогон с `--update-snapshots=none` — 44 из 44. Если CI снимает в другой сборке Chromium, перегенерируйте их меткой `visual:update-baselines`.
+
 ## Эпик forms (30.09)
 
 ### BaseRating — точность (порция Р.7)
