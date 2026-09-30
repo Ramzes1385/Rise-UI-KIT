@@ -12,4 +12,6 @@ export interface UseChatActionsOptions {
 	messageListRef: Ref<MessageListExposed | null>
 	handleAvatarClick: (senderId: string) => void
 	handleCancelReply: () => void
+	/** Открыть «Информацию» о чате — по аватару в шапке. Без неё аватар шапки открывает профиль, как аватар сообщения */
+	openInfo?: () => void
 }

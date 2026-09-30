@@ -25,6 +25,7 @@ export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 		messageListRef,
 		handleAvatarClick: state.handleAvatarClick,
 		handleCancelReply: state.handleCancelReply,
+		openInfo: state.openInfo,
 	})
 
 	return {

@@ -25,12 +25,21 @@ function useChatInfoPanel(options: UseChatInfoPanelOptions) {
 		options.onInfoClick()
 	}
 
+	/** Открыть вкладку «Информация» о чате (аватар в шапке): не переключает, а открывает */
+	function openInfo(): void {
+		isInfoOpen.value = true
+		activeTab.value = 'info'
+		selectedMemberId.value = null
+		options.onInfoClick()
+	}
+
 	return {
 		isInfoOpen,
 		activeTab,
 		selectedMemberId,
 		handleAvatarClick,
 		handleInfoClick,
+		openInfo,
 	}
 }
 

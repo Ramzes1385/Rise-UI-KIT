@@ -24,18 +24,22 @@ function getTabbableElements(container: HTMLElement): HTMLElement[] {
 	)
 }
 
-/** Перевести фокус внутрь контейнера: [autofocus], иначе первый фокусируемый, иначе сам контейнер */
+/**
+ * Перевести фокус внутрь контейнера: [autofocus], иначе первый фокусируемый, иначе сам контейнер.
+ * Без прокрутки: панель ещё въезжает из-за края (transform), и браузер прокрутил бы к ней ближайший
+ * контейнер с `overflow: hidden` — содержимое под панелью дёргалось бы в сторону и обратно
+ */
 function focusInitial(container: HTMLElement): void {
 	const target = container.querySelector<HTMLElement>('[autofocus]') ?? getTabbableElements(container)[0]
 	if (target) {
-		target.focus()
+		target.focus({ preventScroll: true })
 		return
 	}
 
 	// Нет фокусируемых элементов — фокусируем сам диалог, чтобы клавиатура и скринридер оказались внутри.
 	// tabindex, заданный потребителем, не перезаписываем
 	if (!container.hasAttribute('tabindex')) container.setAttribute('tabindex', '-1')
-	container.focus()
+	container.focus({ preventScroll: true })
 }
 
 /**

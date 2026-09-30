@@ -20,11 +20,11 @@
 		align-items: center;
 
 		&--read {
-			color: var(--rise-primary);
+			color: var(--rise-info);
 		}
 	}
 
 	&__status-icon--second {
-		margin-left: sz(-7px);
+		margin-left: sz(-14px);
 	}
 }

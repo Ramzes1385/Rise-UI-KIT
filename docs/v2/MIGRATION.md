@@ -656,6 +656,15 @@
 - Новый composable `useSelectKeys` — клавиатура элемента, который открывает список, по образцу APG Select-Only Combobox; на нём теперь и BaseSelect.
 - Для разработчиков кита: «Show code» историй собирается из шаблона истории и Controls — `storySource`, `useStorySetup`, `staticStorySource` в `src/stories/helpers` (STORIES_GUIDE, раздел 8).
 
+## Правки после просмотра Storybook (порции Р.1–Р.4)
+
+- `BasePopover`: тело панели не прокручивается по горизонтали (`overflow: hidden auto`); содержимое шире панели обрезается, а не даёт полосу прокрутки. То же у списка `BaseNotificationCenter` (порция Р.2).
+- `BaseTabs`: у списка шире контейнера перетаскивание мышью начинается после сдвига больше 3px — раньше любое нажатие сразу включало его, и клик не выбирал вкладку (порция Р.1).
+- `BaseCommentThread`: у ответа глубже `maxDepth`, который идёт без отступа, рядом с именем — «↩ Имя» того, кому ответили; в колонке до 480px отступ уровня 20px вместо 44px. Новый ключ словаря `commentThread.IN_REPLY_TO` (порция Р.3).
+- `BaseChat`: аватар в шапке открывает вкладку «Инфо» панели «Информация» и эмитит `info-click`. Раньше он открывал «профиль участника» с id, равным адресу картинки, и эмитил `avatar-click` с этим адресом: обработчик `avatar-click` для шапки перенесите на `info-click`. Аватары и имена в ленте по-прежнему открывают профиль и эмитят `avatar-click` с `senderId`. Новое в composables: `openInfo()` у `useChatInfoPanel` и `useChatState`, необязательный `openInfo` в параметрах `useChatActions` (порция Р.4).
+- `BaseChat`: вторая галочка статуса заходит на первую; прочитанное сообщение — цветом `--rise-info` вместо `--rise-primary` (порция Р.4).
+- Окна и панели с удержанием фокуса (`useFocusTrap`: BaseModal, BaseSlideover, BaseDrawer, панель «Информация» BaseChat и другие) ставят начальный фокус без прокрутки (`focus({ preventScroll: true })`): панель, которая въезжает из-за края, больше не сдвигает содержимое под собой (порция Р.4).
+
 ## Структура исходников
 
 - `createIconPlugin` переехал в `src/icons/`: импорт из `@ramzes1385/rise-ui-kit/icons` (или namespace `icons` из корня

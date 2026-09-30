@@ -24,7 +24,11 @@ function usePanelFocus(props: ChatSlideoverPanelProps, contentRef: Ref<HTMLEleme
 		isOpen => {
 			if (isOpen) {
 				returnFocusTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null
-				nextTick(() => contentRef.value?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"], button')?.focus())
+				nextTick(() =>
+					contentRef.value
+						?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"], button')
+						?.focus({ preventScroll: true }),
+				)
 				return
 			}
 			onClose()

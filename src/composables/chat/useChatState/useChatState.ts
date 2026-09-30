@@ -13,7 +13,7 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 	const { selectedMessageIds, handleMessageSelect } = useChatSelection({
 		onMessageSelect: messageId => emit('message-select', messageId),
 	})
-	const { isInfoOpen, activeTab, selectedMemberId, handleAvatarClick, handleInfoClick } = useChatInfoPanel({
+	const { isInfoOpen, activeTab, selectedMemberId, handleAvatarClick, handleInfoClick, openInfo } = useChatInfoPanel({
 		onAvatarClick: senderId => emit('avatar-click', senderId),
 		onInfoClick: () => emit('info-click'),
 	})
@@ -70,6 +70,7 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 		handleCancelReply,
 		handleAvatarClick,
 		handleInfoClick,
+		openInfo,
 		handleNextPinned,
 		handlePrevPinned,
 		handleScrollToPinned,

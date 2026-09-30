@@ -145,14 +145,15 @@ describe('BaseChat integration', () => {
 	})
 
 	describe('клик по аватару в шапке', () => {
-		it('должен эмитить avatar-click и открывать профиль при клике по аватару с заданным avatar', async () => {
+		it('открывает «Информацию» о чате и эмитит info-click, а не профиль участника', async () => {
 			const { container, emitted } = renderChat({ avatar: 'https://ex.com/a.png' })
 
 			const avatar = container.querySelector('.base-chat-header__avatar') as HTMLElement
 			await fireEvent.click(avatar)
 
-			const events = emitted()['avatar-click'] as Array<[string]>
-			expect(events[0][0]).toBe('https://ex.com/a.png')
+			expect(emitted()).not.toHaveProperty('avatar-click')
+			expect(emitted()['info-click']).toHaveLength(1)
+			expect(await screen.findByRole('tab', { name: 'Инфо', selected: true })).toBeInTheDocument()
 		})
 	})
 

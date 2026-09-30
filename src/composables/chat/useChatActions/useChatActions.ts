@@ -5,9 +5,14 @@ import type { ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.
 
 /** Описание: предоставляет обработчики действий чата — отправка, ответ, вложение, реакции, пин/удаление, аватар и команды */
 function useChatActions(options: UseChatActionsOptions) {
-	const { emit, replyingTo, getAvatar, messageListRef, handleAvatarClick, handleCancelReply } = options
+	const { emit, replyingTo, getAvatar, messageListRef, handleAvatarClick, handleCancelReply, openInfo } = options
 
+	/** Аватар в шапке — это чат или собеседник целиком: открывает «Информацию», а не профиль участника */
 	function handleHeaderAvatarClick(): void {
+		if (openInfo) {
+			openInfo()
+			return
+		}
 		/* istanbul ignore next — defensive: ChatHeader рендерит аватар (и эмитит avatar-click) только при truthy avatar */
 		handleAvatarClick(getAvatar() || '')
 	}

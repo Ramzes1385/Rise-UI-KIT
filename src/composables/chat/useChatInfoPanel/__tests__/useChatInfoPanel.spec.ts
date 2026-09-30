@@ -43,4 +43,17 @@ describe('useChatInfoPanel unit', () => {
 		expect(panel.selectedMemberId.value).toBeNull()
 		expect(onInfoClick).toHaveBeenCalledTimes(2)
 	})
+
+	it('openInfo открывает «Информацию» даже из профиля и не закрывает открытую панель', () => {
+		const { panel, onInfoClick } = setup()
+		panel.handleAvatarClick('user-1')
+
+		panel.openInfo()
+		panel.openInfo()
+
+		expect(panel.isInfoOpen.value).toBe(true)
+		expect(panel.activeTab.value).toBe('info')
+		expect(panel.selectedMemberId.value).toBeNull()
+		expect(onInfoClick).toHaveBeenCalledTimes(2)
+	})
 })
