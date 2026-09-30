@@ -22,3 +22,4 @@ export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Square = cases.Square
 export const NoSingleRest = cases.NoSingleRest
+export const Media = cases.Media

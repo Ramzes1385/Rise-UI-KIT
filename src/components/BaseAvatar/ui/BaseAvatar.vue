@@ -1,13 +1,14 @@
 <template>
 	<div
 		class="base-avatar"
-		:class="[`base-avatar--${shape}`, variantClass, classes.root]"
+		:class="[`base-avatar--${shape}`, ringClass, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@click="handleClick">
 		<div class="base-avatar__content" :class="classes.content">
 			<slot>
+				<AvatarMascot v-if="mascot !== 'none'" :label="alt" :is-eyes-closed="isEyesClosed" :class="classes.mascot" />
 				<img
-					v-if="src && !hasImageError"
+					v-else-if="src && !hasImageError"
 					:src="src"
 					:alt="alt"
 					class="base-avatar__img"
@@ -24,6 +25,7 @@
 
 <script setup lang="ts">
 import '../styles/BaseAvatar.style.scss'
+import AvatarMascot from './AvatarMascot.vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useBaseAvatar } from '../model/useBaseAvatar'
 import { kitDefaults } from '@composables/base/useDefaults'
@@ -37,6 +39,9 @@ const props = withDefaults(
 		alt: '',
 		shape: 'circle',
 		isOnline: false,
+		ring: 'none',
+		mascot: 'none',
+		isEyesClosed: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -44,6 +49,16 @@ const props = withDefaults(
 const emit = defineEmits<BaseAvatarEmits>()
 defineSlots<BaseAvatarSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, hasImageError, initials, handleImageError, handleClick } =
-	useBaseAvatar(props, emit)
+const {
+	sizeScaleStyle,
+	ringClass,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	hasImageError,
+	initials,
+	handleImageError,
+	handleClick,
+} = useBaseAvatar(props, emit)
 </script>

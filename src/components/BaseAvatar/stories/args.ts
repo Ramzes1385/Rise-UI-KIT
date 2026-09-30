@@ -8,6 +8,9 @@ export const args = {
 	variant: 'default',
 	shape: 'circle',
 	isOnline: false,
+	ring: 'none',
+	mascot: 'none',
+	isEyesClosed: false,
 	sizeScale: 100,
 	onClick: fn(),
 } satisfies Meta<typeof BaseAvatar>['args']

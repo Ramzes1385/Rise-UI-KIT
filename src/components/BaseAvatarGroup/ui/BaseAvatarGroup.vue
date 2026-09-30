@@ -4,6 +4,8 @@
 			<BaseAvatar
 				:src="item.src"
 				:name="item.name"
+				:ring="item.ring"
+				:mascot="item.mascot"
 				:variant="variant"
 				:shape="shape"
 				:size-scale="sizeScale"

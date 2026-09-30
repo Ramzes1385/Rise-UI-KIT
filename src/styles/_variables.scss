@@ -9,3 +9,22 @@ $breakpoints: (
 	'xl': 1440px,
 	'xxl': 1920px,
 );
+$rainbow-colors: (
+	var(--rise-chart-8),
+	var(--rise-chart-2),
+	var(--rise-chart-4),
+	var(--rise-chart-3),
+	var(--rise-chart-1),
+	var(--rise-chart-7),
+	var(--rise-chart-5)
+);
+$rainbow-colors-loop: (
+	var(--rise-chart-8),
+	var(--rise-chart-2),
+	var(--rise-chart-4),
+	var(--rise-chart-3),
+	var(--rise-chart-1),
+	var(--rise-chart-7),
+	var(--rise-chart-5),
+	var(--rise-chart-8)
+);

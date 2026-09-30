@@ -23,7 +23,8 @@ export function useBaseAvatar(props: BaseAvatarProps, emit: BaseAvatarEmits) {
 	)
 
 	return {
-		...useStandardBaseComponent('base-avatar', props, ['root', 'content', 'img', 'initials', 'online']),
+		...useStandardBaseComponent('base-avatar', props, ['root', 'content', 'img', 'initials', 'online', 'mascot']),
+		ringClass: computed(() => (props.ring && props.ring !== 'none' ? `base-avatar--ring-${props.ring}` : '')),
 		hasImageError,
 		initials: computed(() => toInitials(props.name)),
 		handleImageError: (): void => {

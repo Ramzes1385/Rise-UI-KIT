@@ -25,3 +25,6 @@ export const Fallback = cases.Fallback
 export const WithSlot = cases.WithSlot
 export const OnlineStatus = cases.OnlineStatus
 export const Group = cases.Group
+export const Rings = cases.Rings
+export const Media = cases.Media
+export const Mascot = cases.Mascot
