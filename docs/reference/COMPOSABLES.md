@@ -240,7 +240,7 @@ const { suggestions, isLoading, search, cancel } = useRemoteSuggestions({
 
 ## useStructuredData
 
-SEO-разметка schema.org у компонента: проп `seo` (`SeoComponentProps`) → строка JSON-LD для `<script type="application/ld+json">`.
+SEO-разметка schema.org у компонента: проп `seo` (`SeoComponentProps`) → строка JSON-LD для `<script type="application/ld+json">`. Какие компоненты и как проверить разметку — docs/reference/SEO.md.
 
 - `useStructuredData(component, getSeo, build)`: `component` — имя в предупреждении, `getSeo` — значение пропа `seo`, `build({ url })` — поля schema.org из пропсов (`null` — описывать нечего). Возвращает `{ structuredData }` — пустая строка, когда разметка выключена.
 - `seo`: `false` или нет пропа — разметки нет (по умолчанию); `true` — поля из пропсов; `{ data, baseUrl }` — ещё и свои поля поверх собранных (кастомное SEO) и адрес сайта для относительных ссылок. Слияние — `mergeStructuredData` (docs/reference/UTILS.md).

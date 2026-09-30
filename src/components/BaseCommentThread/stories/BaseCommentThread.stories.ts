@@ -23,3 +23,4 @@ export const Readonly = cases.Readonly
 export const Empty = cases.Empty
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
+export const Seo = cases.Seo

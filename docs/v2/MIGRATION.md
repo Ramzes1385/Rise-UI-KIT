@@ -1044,3 +1044,13 @@
 - **BaseFooter** → `Organization`: полей из пропсов нет, всё — в `seo.data` (`name` обязателен; `url`, `logo`, `sameAs`, `contactPoint`); `@type` можно заменить на `LocalBusiness` и другие подтипы.
 
 **Что сделать.** Ничего; для разметки — добавить `seo` и недостающие поля в `seo.data`.
+
+### Р.37 — SEO: BaseCommentThread, BaseMap, проверка разметки
+
+**Что изменилось.**
+- **BaseCommentThread** → контейнер `WebPage` с `commentCount` и `comment`: каждый комментарий — `Comment` (`text`, `datePublished` в ISO 8601, `author` — `Person` с `name` и `image` из `avatar`, `upvoteCount` — `likes`, ответы — вложенные `comment`). Для статьи — `seo.data` с `@type: 'Article'`/`'BlogPosting'` и её полями.
+- **BaseMap** → `Place`: одна метка — её `title` и координаты (`geo`, `GeoCoordinates`); несколько — `ariaLabel`, `geo` из `center`, метки в `containsPlace`. `center` по умолчанию (Москва) в разметку не попадает. Адрес и телефон — в `seo.data`.
+- `findMissingFields` проверяет и вложенные объекты знакомых типов: предупреждение называет путь (`comment[].author.name`, `containsPlace[].name`).
+- Новый документ docs/reference/SEO.md: компоненты, поля и как проверить разметку в Google Rich Results, validator.schema.org и Яндекс Вебмастере.
+
+**Что сделать.** Ничего; для разметки — `seo` и недостающие поля в `seo.data`.

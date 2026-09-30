@@ -4,6 +4,7 @@
 		:class="[variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="label ?? UI_COMMENT_THREAD.TITLE">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 		<p class="base-comment-thread__count">{{ countText }}</p>
 		<ul v-if="comments.length" class="base-comment-thread__list" :class="classes.list">
 			<CommentNode v-for="comment in comments" :key="comment.id" :comment="comment" :depth="0" />
@@ -35,10 +36,12 @@ const props = withDefaults(defineProps<BaseCommentThreadProps>(), {
 	label: undefined,
 	now: undefined,
 	maxDepth: 3,
+	seo: false,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
 const emit = defineEmits<BaseCommentThreadEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, countText, submitRoot } = useBaseCommentThread(props, emit)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, countText, submitRoot, structuredData } =
+	useBaseCommentThread(props, emit)
 </script>

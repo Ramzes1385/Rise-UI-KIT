@@ -21,3 +21,4 @@ export const Providers = cases.Providers
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Loading = cases.Loading
+export const Seo = cases.Seo

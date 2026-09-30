@@ -1,3 +1,4 @@
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления: `default` — рамка и скругление, `outline` — акцентная рамка, `ghost` — без рамки и скругления */
@@ -38,7 +39,7 @@ export type MapStatus = 'no-key' | 'no-map-id' | 'loading' | 'ready' | 'error'
 /**
  * Пропсы компонента BaseMap
  */
-export interface BaseMapProps extends BaseComponentProps<MapVariant, 'root' | 'canvas' | 'placeholder'> {
+export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapVariant, 'root' | 'canvas' | 'placeholder'> {
 	/** Поставщик карты */
 	provider?: MapProvider
 	/**

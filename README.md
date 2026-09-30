@@ -339,6 +339,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 | [Компоненты](docs/reference/COMPONENTS.md) | Справочник: назначение, основные props и события, примеры |
 | [Composables](docs/reference/COMPOSABLES.md) | `useDebounce`, `useClickOutside`, `useEscapeKey`, `useFocusTrap`, `useHotkeys` и другие |
 | [Utils](docs/reference/UTILS.md) | Даты, файлы, цвета, субтитры, медиа, проверка ссылок, координаты `position: fixed` |
+| [SEO-разметка](docs/reference/SEO.md) | Проп `seo`: JSON-LD schema.org у компонентов и проверка в Google Rich Results и Яндекс Вебмастере |
 | [Переход на 2.0](docs/v2/MIGRATION.md) | Что изменилось для приложения и что сделать при обновлении с 1.x |
 | [Что заметит приложение после редизайна](docs/design/CHANGES_FOR_APPS.md) | Значения по умолчанию, DOM, доступность, токены |
 | [Дизайн-система](docs/design/DESIGN_SYSTEM.md) | Токены `--rise-*`, темы, размеры, правила стилей |

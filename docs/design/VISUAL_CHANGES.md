@@ -896,3 +896,8 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - Существующие истории и снимки не меняются: без `seo` разметки в DOM нет.
 - Новые истории `media-basemediaplayer--seo`, `element-baseimage--seo`, `element-baseuser--seo`, `layout-basefooter--seo` с блоком JSON-LD под примером (data URI в блоке сокращены до запятой и «…»). В скриншот-тесты не добавлены.
+
+### Р.37 — BaseCommentThread, BaseMap
+
+- Существующие истории и снимки не меняются: без `seo` разметки в DOM нет.
+- Новые истории `chat-basecommentthread--seo` и `media-basemap--seo` с блоком JSON-LD под примером. В скриншот-тесты не добавлены.

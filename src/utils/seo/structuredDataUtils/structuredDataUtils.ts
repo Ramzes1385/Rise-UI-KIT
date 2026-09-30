@@ -47,10 +47,27 @@ function hasPath(data: StructuredDataObject, path: string): boolean {
 	return values.every(value => !isEmptyValue(value))
 }
 
-/** Обязательные поля, которых нет в разметке, — по `STRUCTURED_DATA_REQUIRED` для её `@type` (незнакомый тип не проверяется) */
-export function findMissingFields(data: StructuredData): string[] {
-	const required: readonly string[] = Reflect.get(STRUCTURED_DATA_REQUIRED, data['@type']) ?? []
+function missingOwnFields(data: StructuredDataObject): string[] {
+	const required: readonly string[] = Reflect.get(STRUCTURED_DATA_REQUIRED, String(data['@type'])) ?? []
 	return required.filter(rule => !rule.split('|').some(path => hasPath(data, path)))
+}
+
+function collectTyped(value: StructuredDataValue, path: string, found: [string, StructuredDataObject][]): void {
+	if (Array.isArray(value)) value.forEach(item => collectTyped(item, `${path}[]`, found))
+	if (!isStructuredObject(value)) return
+	if (path && typeof value['@type'] === 'string') found.push([path, value])
+	for (const [key, item] of Object.entries(value)) collectTyped(item, path ? `${path}.${key}` : key, found)
+}
+
+/**
+ * Обязательные поля, которых нет в разметке, — по `STRUCTURED_DATA_REQUIRED` для её `@type` и для вложенных объектов
+ * знакомых типов (`comment[].author.name`). Незнакомый тип не проверяется.
+ */
+export function findMissingFields(data: StructuredData): string[] {
+	const nested: [string, StructuredDataObject][] = []
+	collectTyped(data, '', nested)
+	const missing = nested.flatMap(([path, item]) => missingOwnFields(item).map(rule => `${path}.${rule}`))
+	return [...new Set([...missingOwnFields(data), ...missing])]
 }
 
 /**

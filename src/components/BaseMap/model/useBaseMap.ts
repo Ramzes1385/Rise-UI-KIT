@@ -1,10 +1,12 @@
 import { UI_MAP } from '@/locales/messages'
 import { formatMessage, getLocale } from '@/locales/state'
 import { MAP_PROVIDER_ENTRIES } from './providers/registry'
+import { useStructuredData } from '@composables/seo/useStructuredData'
 import type { MapAdapter, MapHandlers } from '../types/providers.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
-import type { BaseMapEmits, BaseMapProps, MapStatus, MapView } from '../types/BaseMap.types'
+import type { StructuredData, StructuredDataObject } from '@utils/seo/structuredDataUtils'
+import type { BaseMapEmits, BaseMapProps, MapCoordinates, MapMarker, MapStatus, MapView } from '../types/BaseMap.types'
 
 const PLACEHOLDER_TEXTS: Partial<
 	Record<MapStatus, readonly ['NO_KEY_TITLE' | 'NO_MAP_ID_TITLE' | 'ERROR_TITLE', 'NO_KEY' | 'NO_MAP_ID' | 'ERROR']>
@@ -18,6 +20,22 @@ const DEFAULT_VIEW: MapView = { center: { lat: 55.751244, lng: 37.618423 }, zoom
 
 const sameView = (left: MapView, right: MapView): boolean =>
 	left.zoom === right.zoom && left.center.lat === right.center.lat && left.center.lng === right.center.lng
+
+const geoOf = (coordinates: MapCoordinates | undefined): StructuredDataObject | undefined =>
+	coordinates && { '@type': 'GeoCoordinates', latitude: coordinates.lat, longitude: coordinates.lng }
+
+const markerPlace = (marker: MapMarker): StructuredDataObject => ({ '@type': 'Place', name: marker.title, geo: geoOf(marker.coordinates) })
+
+function placeSchema(props: BaseMapProps): StructuredData {
+	const markers = props.markers ?? []
+	if (markers.length === 1) return { ...markerPlace(markers[0]!), '@type': 'Place', name: markers[0]!.title ?? props.ariaLabel }
+	return {
+		'@type': 'Place',
+		name: props.ariaLabel,
+		geo: geoOf(props.center),
+		containsPlace: markers.length ? markers.map(markerPlace) : undefined,
+	}
+}
 
 function viewHandlers(emit: BaseMapEmits, lastView: { value: MapView }): MapHandlers {
 	return {
@@ -108,6 +126,11 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits) {
 	const providerName = computed(() => MAP_PROVIDER_ENTRIES[props.provider ?? 'yandex'].name())
 	return {
 		...useStandardBaseComponent('base-map', props, ['root', 'canvas', 'placeholder']),
+		...useStructuredData(
+			'BaseMap',
+			() => props.seo,
+			() => placeSchema(props),
+		),
 		canvasRef: map.canvasRef,
 		status: map.status,
 		label: computed(() => props.ariaLabel ?? UI_MAP.LABEL),

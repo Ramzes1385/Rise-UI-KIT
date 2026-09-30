@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления BaseCommentThread: default — панель с рамкой и отступами, ghost — без рамки и фона. */
@@ -55,7 +56,8 @@ export interface CommentThreadContext {
 /**
  * Пропсы компонента BaseCommentThread
  */
-export interface BaseCommentThreadProps extends BaseComponentProps<(typeof COMMENT_THREAD_VARIANTS)[number], 'root' | 'list' | 'composer'> {
+export interface BaseCommentThreadProps
+	extends SeoComponentProps, BaseComponentProps<(typeof COMMENT_THREAD_VARIANTS)[number], 'root' | 'list' | 'composer'> {
 	/** Комментарии с ответами; новые комментарии и отметки «Нравится» приложение добавляет по событиям `reply` и `like` */
 	comments: CommentItem[]
 	/** Текущий пользователь: аватар у поля нового комментария */

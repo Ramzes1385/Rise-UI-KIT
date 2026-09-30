@@ -6,6 +6,7 @@
 		role="region"
 		:aria-label="label"
 		:aria-busy="status === 'loading' ? 'true' : undefined">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 		<div v-show="status === 'loading' || status === 'ready'" ref="canvasRef" class="base-map__canvas" :class="classes.canvas" />
 		<BaseLoader v-if="status === 'loading'" is-overlay has-label :label="UI_MAP.LOADING" />
 		<div v-if="isPlaceholder" class="base-map__placeholder" :class="classes.placeholder">
@@ -39,6 +40,7 @@ const props = withDefaults(
 		apiKey: undefined,
 		mapId: undefined,
 		zoom: 10,
+		seo: false,
 		height: '400px',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -61,5 +63,6 @@ const {
 	isPlaceholder,
 	placeholderTitle,
 	placeholderText,
+	structuredData,
 } = useBaseMap(props, emit)
 </script>

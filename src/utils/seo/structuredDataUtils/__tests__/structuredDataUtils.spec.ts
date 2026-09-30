@@ -72,6 +72,24 @@ describe('structuredDataUtils', () => {
 			])
 		})
 
+		it('проверяет вложенные объекты знакомых типов и не повторяет одно поле дважды', () => {
+			const page = {
+				'@type': 'WebPage',
+				comment: [
+					{ '@type': 'Comment', text: 'Отлично', datePublished: '2026-09-01', author: { '@type': 'Person', name: 'Анна' } },
+					{
+						'@type': 'Comment',
+						text: 'Согласен',
+						author: { '@type': 'Person' },
+						comment: [
+							{ '@type': 'Comment', text: 'И я', datePublished: '2026-09-02', author: { '@type': 'Person', name: 'Олег' } },
+						],
+					},
+				],
+			}
+			expect(findMissingFields(page)).toEqual(['comment[].author.name', 'comment[].datePublished'])
+		})
+
 		it('из альтернатив достаточно одной', () => {
 			const rating = {
 				'@type': 'AggregateRating',
