@@ -6,8 +6,9 @@ import { useVirtualList } from '@composables/interaction/useVirtualList'
 import type { BaseTableEmits, TableProps } from '../types/BaseTable.types'
 import { useTableComposition } from '@composables/table/useTableComposition'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { computed, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 import { useExpandTransition } from '@composables/interaction/useExpandTransition'
-import { computed, onBeforeUnmount, onMounted, provide, ref, useSlots, watch } from 'vue'
+import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 
 const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
 const PAGINATION_MAX_VISIBLE = 4
@@ -85,30 +86,6 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 	})
 }
 
-function useScrollable(wrapperRef: Ref<HTMLElement | null>): Ref<boolean> {
-	const isScrollable = ref(false)
-	let scrollObserver: ResizeObserver | null = null
-	const updateScrollable = (): void => {
-		const wrapper = wrapperRef.value
-		isScrollable.value = wrapper !== null && (wrapper.scrollHeight > wrapper.clientHeight || wrapper.scrollWidth > wrapper.clientWidth)
-	}
-
-	onMounted(() => {
-		const wrapper = wrapperRef.value
-		if (!wrapper) return
-		scrollObserver = new ResizeObserver(updateScrollable)
-		scrollObserver.observe(wrapper)
-		if (wrapper.firstElementChild) scrollObserver.observe(wrapper.firstElementChild)
-		updateScrollable()
-	})
-	onBeforeUnmount(() => {
-		scrollObserver?.disconnect()
-		scrollObserver = null
-	})
-
-	return isScrollable
-}
-
 function measureRows(wrapper: HTMLElement, measure: (index: number, size: number) => void): void {
 	const rowElements = [...wrapper.querySelectorAll<HTMLElement>('tr[data-virtual-index]')]
 	const end = wrapper.querySelector<HTMLElement>('.base-table__spacer--end') as HTMLElement
@@ -167,7 +144,7 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 	const features = useTableFeatures(props)
 	const table = useComposition(props, emit, features)
 	const tableWrapperRef = ref<HTMLElement | null>(null)
-	const isScrollable = useScrollable(tableWrapperRef)
+	const { isScrollable } = useScrollableRegion({ elementRef: tableWrapperRef, orientation: 'both' })
 
 	return {
 		...standard,

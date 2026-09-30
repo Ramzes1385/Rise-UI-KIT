@@ -1,2 +1,2 @@
 export { useScrollableRegion } from './useScrollableRegion'
-export type { UseScrollableRegionOptions, UseScrollableRegionReturn } from './types/useScrollableRegion.types'
+export type { ScrollableRegionOrientation, UseScrollableRegionOptions, UseScrollableRegionReturn } from './types/useScrollableRegion.types'
