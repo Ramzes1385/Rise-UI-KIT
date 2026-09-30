@@ -1,0 +1,176 @@
+.base-filter-builder {
+	display: flex;
+	flex-direction: column;
+	gap: sz(10px);
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	padding: sz(12px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
+	@include custom-bg(background-color, var(--rise-bg));
+
+	&__match {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__empty {
+		margin: 0;
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__joiner {
+		flex: none;
+		width: sz(36px);
+		@include custom-text(color, var(--rise-text-muted));
+		text-align: right;
+	}
+
+	&__select,
+	&__input {
+		position: relative;
+		display: inline-flex;
+		min-width: 0;
+	}
+
+	&__select select,
+	&__input {
+		box-sizing: border-box;
+		height: sz(32px);
+		margin: 0;
+		padding: 0 sz(10px);
+		color: var(--rise-text-highlighted);
+		font: inherit;
+		@include control-text;
+		outline: none;
+		@include field-box;
+	}
+
+	&__select select {
+		max-width: 100%;
+		padding-right: sz(30px);
+		appearance: none;
+		cursor: pointer;
+	}
+
+	&__select .base-icon {
+		position: absolute;
+		top: 50%;
+		right: sz(8px);
+		width: sz(16px);
+		height: sz(16px);
+		color: var(--rise-text-muted);
+		pointer-events: none;
+		transform: translateY(-50%);
+	}
+
+	&__select--inline select {
+		height: sz(28px);
+	}
+
+	&__input,
+	&__value {
+		width: sz(160px);
+	}
+
+	&__value select {
+		width: 100%;
+	}
+
+	&__remove,
+	&__button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: sz(6px);
+		border: 0;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: transparent;
+		color: var(--rise-text-muted);
+		font: inherit;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		.base-icon {
+			width: sz(16px);
+			height: sz(16px);
+		}
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text-highlighted);
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: var(--rise-disabled-opacity);
+		}
+	}
+
+	&__remove {
+		width: sz(32px);
+		height: sz(32px);
+		padding: 0;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+		margin-left: sz(-8px);
+	}
+
+	&__button {
+		height: sz(32px);
+		padding: 0 sz(10px);
+		color: var(--rise-text);
+	}
+
+	&__add {
+		color: var(--rise-primary);
+	}
+
+	&--disabled &__select select,
+	&--disabled &__input {
+		@include disabled-state;
+	}
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
+		border-radius: 0;
+		@include custom-bg(background-color, transparent);
+	}
+}

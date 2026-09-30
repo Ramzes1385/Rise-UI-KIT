@@ -64,6 +64,7 @@ import { BaseWaveform } from '../components/BaseWaveform'
 import { BaseAccordion } from '../components/BaseAccordion'
 import { BaseAiMessage } from '../components/BaseAiMessage'
 import { BaseAnimation } from '../components/BaseAnimation'
+import { BaseChecklist } from '../components/BaseChecklist'
 import { BaseContainer } from '../components/BaseContainer'
 import { BaseFormField } from '../components/BaseFormField'
 import { BaseInputTags } from '../components/BaseInputTags'
@@ -91,6 +92,7 @@ import { BaseAutocomplete } from '../components/BaseAutocomplete'
 import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
 import { BaseNotification } from '../components/BaseNotification'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
+import { BaseFilterBuilder } from '../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
 import { BaseInfiniteScroll } from '../components/BaseInfiniteScroll'
 import { BaseSubtitleEditor } from '../components/BaseSubtitleEditor'
@@ -128,6 +130,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseChat,
 	BaseCheckbox,
 	BaseCheckboxGroup,
+	BaseChecklist,
 	BaseChip,
 	BaseColorModeButton,
 	BaseColorPicker,
@@ -143,6 +146,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseEmpty,
 	BaseFab,
 	BaseFileUpload,
+	BaseFilterBuilder,
 	BaseFooter,
 	BaseForm,
 	BaseFormField,

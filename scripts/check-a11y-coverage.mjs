@@ -97,6 +97,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseEmojiPicker',
 	'BaseMention',
 	'BaseKanban',
+	'BaseFilterBuilder',
+	'BaseChecklist',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -136,6 +138,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseEmojiPicker',
 	'BaseMention',
 	'BaseKanban',
+	'BaseFilterBuilder',
+	'BaseChecklist',
 ])
 
 /** Формовые компоненты, требующие story Error */

@@ -38,6 +38,8 @@ export interface UiKitLocale {
 	emoji: Section<'emoji'>
 	mention: Section<'mention'>
 	kanban: Section<'kanban'>
+	filterBuilder: Section<'filterBuilder'>
+	checklist: Section<'checklist'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

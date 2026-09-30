@@ -43,3 +43,9 @@ export const UI_MENTION = localized('mention')
 
 /** Канбан-доска */
 export const UI_KANBAN = localized('kanban')
+
+/** Конструктор фильтров */
+export const UI_FILTER_BUILDER = localized('filterBuilder')
+
+/** Чек-лист первых шагов */
+export const UI_CHECKLIST = localized('checklist')

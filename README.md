@@ -128,6 +128,8 @@
 **Инструменты**
 
 - `BaseKanban` — канбан-доска: колонки с WIP-лимитами, перетаскивание мышью и с клавиатуры (Space — взять, стрелки — перенести, Space — положить, Escape — отменить) с объявлениями для скринридера, `v-model:cards`, событие `move` и запрет мест через `can-move` (порция 4.16а); плавные перемещения карточек и меню карточки по правому клику и Shift+F10 — «Открыть», «Переместить в», «В начало / в конец колонки», свои пункты `card-actions` (правка К1); карточки как в Jira, Trello и YouGile — обложка, метки, приоритет, срок, подзадачи, счётчики, оценка и исполнители (правка К2а); работа с доской — добавление, переименование и удаление карточек (`is-editable`), фильтр (`filter`), свёртывание (`is-collapsible`, `v-model:collapsed-columns`) и цвет колонок (правка К2б).
+- `BaseFilterBuilder` — конструктор фильтров: условия «поле — сравнение — значение» для текста, чисел, дат, списков и флажков, связка «все» или «любое»; строки отбирает `createFilterPredicate` — для BaseTable, списков и `filter` у BaseKanban (порция 4.16б).
+- `BaseChecklist` — чек-лист первых шагов: флажки, прогресс «2 из 4», подсвеченный следующий шаг, кнопки действий шагов, «Всё готово» (порция 4.16б).
 
 **Доступность и клавиатура**
 
@@ -2168,6 +2170,53 @@ function handleSend(payload: { text: string }): void {
 - `filter` — какие карточки показать (поиск, BaseFilterBuilder). Счётчик колонки — «1 из 3», пустая под фильтром колонка — «Ничего не найдено». Скрытые карточки не теряются: при переносе они сохраняют свои места в `cards`, а `move` сообщает места в полном списке.
 - `is-collapsible` — в заголовке колонки кнопка «Свернуть колонку»: колонка становится узкой полосой со счётчиком и вертикальным названием. Список свёрнутых — `v-model:collapsed-columns`; в свёрнутую колонку можно перетащить карточку или перенести её из меню.
 - `color` у колонки — точка у заголовка и полоса сверху (`{ id: 'done', title: 'Готово', color: 'var(--rise-success)' }`).
+
+---
+
+## BaseFilterBuilder
+
+Конструктор фильтров. Поля задаёт `fields` (`{ key, label, type, options? }`, тип — `text`, `number`, `date`, `select` или `boolean`), фильтр — `v-model` (`{ match: 'all' | 'any', conditions }`). Строки данных отбирает `createFilterPredicate(фильтр, поля)`; незаполненные условия не учитываются.
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { BaseFilterBuilder, createFilterPredicate } from '@ramzes1385/rise-ui-kit'
+import type { FilterBuilderField, FilterBuilderGroup } from '@ramzes1385/rise-ui-kit'
+
+const fields: FilterBuilderField[] = [
+	{ key: 'title', label: 'Задача', type: 'text' },
+	{ key: 'status', label: 'Статус', type: 'select', options: [{ value: 'done', label: 'Готово' }] },
+	{ key: 'estimate', label: 'Оценка', type: 'number' },
+	{ key: 'due', label: 'Срок', type: 'date' },
+]
+const filter = ref<FilterBuilderGroup>({ match: 'all', conditions: [] })
+const visible = computed(() => tasks.value.filter(createFilterPredicate(filter.value, fields)))
+</script>
+
+<template>
+	<BaseFilterBuilder v-model="filter" :fields="fields" />
+</template>
+```
+
+От типа поля зависят сравнения: для текста — «содержит», «не содержит», «равно», «начинается с», «заполнено»; для чисел — «больше», «не меньше», «в диапазоне»; для дат — «раньше», «позже», «в диапазоне» (`ГГГГ-ММ-ДД`); для списков — «равно» и «не равно»; для флажков — «да» и «нет». Текст сравнивается без учёта регистра и «ё». Третий аргумент `createFilterPredicate` читает значение из строки своим способом: `(row, key) => row.data[key]` для строк BaseTable. Для канбана предикат передаётся в `filter`. Каждое условие — группа «Условие N» с полями «Поле», «Сравнение» и «Значение». После добавления фокус переходит в новое условие, после удаления — в соседнее.
+
+---
+
+## BaseChecklist
+
+Чек-лист первых шагов: онбординг, настройка проекта, подготовка к запуску.
+
+```vue
+<BaseChecklist
+	v-model:completed="done"
+	:items="[
+		{ id: 'install', title: 'Установить пакет', description: 'npm install @ramzes1385/rise-ui-kit' },
+		{ id: 'theme', title: 'Выбрать тему', actionLabel: 'Настроить тему' },
+	]"
+	@action="openStep" />
+```
+
+Шаги — флажки с подписью и пояснением. Первый невыполненный шаг подсвечен и помечен «Следующий шаг», его кнопка действия — основная, у остальных — контурная; кнопка шлёт `action` с шагом. Прогресс — BaseProgress и счётчик «1 из 2», заголовок по умолчанию «Первые шаги» (`title`). Когда всё выполнено — «Всё готово» (слот `done`).
 
 ---
 

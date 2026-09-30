@@ -1,4 +1,4 @@
-/** Общие строки: подписи и кнопки, доступные имена, тур, рейтинг */
+/** Общие строки: подписи и кнопки, доступные имена, тур, рейтинг, чек-лист */
 export const enBase = {
 	text: {
 		EMPTY: 'No data',
@@ -122,5 +122,12 @@ export const enBase = {
 		ARIA_PREFIX: 'Rating from 0 to',
 		LABEL: 'Rating',
 		OF: 'of',
+	},
+	checklist: {
+		TITLE: 'Getting started',
+		PROGRESS: '{done} of {total}',
+		PROGRESS_LABEL: 'Steps completed',
+		NEXT: 'Next step',
+		DONE: 'All done',
 	},
 }
