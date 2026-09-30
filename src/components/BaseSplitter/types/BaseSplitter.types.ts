@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type { ComputedRef, Ref, StyleValue } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -10,8 +10,13 @@ export type SplitterOrientation = 'horizontal' | 'vertical'
 
 /** `sizeScale` масштабирует толщину разделителя и ручку; `color` не используется. */
 export interface BaseSplitterProps extends BaseComponentProps<(typeof SPLITTER_VARIANTS)[number], 'root' | 'pane' | 'separator'> {
-	/** Размер первой панели в процентах (v-model) */
+	/** Размер первой панели в процентах (v-model) — для двух панелей */
 	modelValue?: number
+	/**
+	 * Размеры всех панелей в процентах, в сумме 100 (`v-model:sizes`). Режим нескольких панелей: столько панелей, сколько значений,
+	 * со слотами `pane-1`, `pane-2`…; `min` и `max` тогда ограничивают каждую панель, а `modelValue` не используется
+	 */
+	sizes?: number[]
 	/** Расположение панелей */
 	orientation?: SplitterOrientation
 	/** Наименьший размер первой панели, % */
@@ -22,6 +27,8 @@ export interface BaseSplitterProps extends BaseComponentProps<(typeof SPLITTER_V
 	step?: number
 	/** Имя разделителя для скринридера (по умолчанию «Размер панелей»); лучше назвать первую панель: «Список писем» */
 	label?: string
+	/** Имена разделителей при нескольких панелях — по панели перед разделителем: «Папки», «Список писем»; по умолчанию — `label` с номером */
+	paneLabels?: string[]
 	/** Разделитель не двигается и не получает фокус */
 	isDisabled?: boolean
 }
@@ -31,6 +38,10 @@ export interface BaseSplitterEmits {
 	(event: 'update:modelValue', value: number): void
 	/** Итоговый размер: отпущен указатель или нажата клавиша — чтобы сохранить его */
 	(event: 'change', value: number): void
+	/** Размеры всех панелей при каждом движении — в режиме `sizes` */
+	(event: 'update:sizes', value: number[]): void
+	/** Итоговые размеры всех панелей в режиме `sizes` — чтобы сохранить их */
+	(event: 'sizes-change', value: number[]): void
 }
 
 export interface BaseSplitterSlots {
@@ -38,13 +49,41 @@ export interface BaseSplitterSlots {
 	start?: () => unknown
 	/** Вторая панель (справа или снизу) */
 	end?: () => unknown
+	/** Панели в режиме `sizes`: `pane-1`, `pane-2`… слева направо или сверху вниз */
+	[key: `pane-${number}`]: () => unknown
 }
 
 export type SplitterProps = PropsWithDefaults<BaseSplitterProps, 'modelValue' | 'orientation' | 'min' | 'max' | 'step' | 'isDisabled'>
 
-/** Размер первой панели, %: работает и без v-model */
-export interface SplitterSize {
-	size: Ref<number>
-	/** Новый размер в границах min и max; `isFinal` — итог движения, для события `change` */
-	setSize: (value: number, isFinal: boolean) => void
+/** Имя слота панели */
+type SplitterPaneSlot = 'start' | 'end' | `pane-${number}`
+
+/** Размеры панелей, %: работают и без v-model */
+export interface SplitterSizes {
+	sizes: Ref<number[]>
+	/** Режим `sizes`: панели заданы массивом размеров */
+	isMulti: ComputedRef<boolean>
+	/** Границы панели `index`: двигается только граница между ней и следующей */
+	boundsOf: (index: number) => [number, number]
+	/** Новый размер панели `index` в её границах; соседняя получает остаток; `isFinal` — итог движения, для события `change` */
+	setSize: (index: number, value: number, isFinal: boolean) => void
+	/** Сообщить итоговые размеры: `change` или `sizes-change` */
+	emitChange: () => void
+}
+
+/** Панель для шаблона */
+export interface SplitterPane {
+	id: string
+	slot: SplitterPaneSlot
+	modifier: string | undefined
+	style: StyleValue
+}
+
+/** Атрибуты разделителя после панели */
+export interface SplitterSeparator {
+	'aria-label': string
+	'aria-valuenow': number
+	'aria-valuemin': number
+	'aria-valuemax': number
+	'aria-controls': string
 }

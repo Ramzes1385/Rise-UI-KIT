@@ -2168,12 +2168,22 @@ function handleSelect(item: BaseMenuItem): void {
 
 ## BaseSplitter
 
-Две панели с разделителем по образцу APG Window Splitter: `v-model` — размер первой панели в процентах, `min` / `max` — границы, `change` — итог. Разделитель — `role="separator"`; стрелки двигают его на `step`, Home/End — к границам, Enter сворачивает первую панель и возвращает её. `orientation="vertical"` — панели одна над другой.
+Панели с разделителями по образцу APG Window Splitter: `v-model` — размер первой панели в процентах, `min` / `max` — границы, `change` — итог. Разделитель — `role="separator"`; стрелки двигают его на `step`, Home/End — к границам, Enter сворачивает первую панель и возвращает её. `orientation="vertical"` — панели одна над другой.
 
 ```vue
 <BaseSplitter v-model="listSize" :min="20" :max="60" label="Список писем" @change="saveLayout">
 	<template #start><MailList /></template>
 	<template #end><MailView /></template>
+</BaseSplitter>
+```
+
+Больше двух панелей — `v-model:sizes` (размеры всех панелей, в сумме 100) и слоты `pane-1`, `pane-2`…; итог — `sizes-change`. Разделитель двигает границу двух соседних панелей, `min` / `max` ограничивают каждую, `pane-labels` — имена разделителей. Панели вкладываются: внутри панели — ещё один BaseSplitter с другой `orientation`.
+
+```vue
+<BaseSplitter v-model:sizes="sizes" :min="15" :pane-labels="['Папки', 'Список писем']">
+	<template #pane-1><MailFolders /></template>
+	<template #pane-2><MailList /></template>
+	<template #pane-3><MailView /></template>
 </BaseSplitter>
 ```
 

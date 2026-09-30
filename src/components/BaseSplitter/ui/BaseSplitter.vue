@@ -8,47 +8,34 @@
 			{ 'base-splitter--dragging': isDragging, 'base-splitter--disabled': isDisabled },
 			classes.root,
 		]"
-		:style="[sizeScaleStyle, variantStyle, { '--base-splitter-ratio': String(size / 100) }]">
-		<div
-			:id="startId"
-			ref="startRef"
-			class="base-splitter__pane base-splitter__pane--start"
-			:class="classes.pane"
-			:tabindex="isStartScrollable ? 0 : undefined">
-			<slot name="start" />
-		</div>
-		<div
-			class="base-splitter__separator"
-			:class="classes.separator"
-			role="separator"
-			:tabindex="isDisabled ? undefined : 0"
-			:aria-label="label ?? UI_ARIA.SPLITTER"
-			:aria-orientation="orientation === 'horizontal' ? 'vertical' : 'horizontal'"
-			:aria-valuenow="Math.round(size)"
-			:aria-valuemin="min"
-			:aria-valuemax="max"
-			:aria-controls="startId"
-			:aria-disabled="isDisabled ? 'true' : undefined"
-			@keydown="handleKeydown"
-			@pointerdown="handlePointerdown"
-			@pointermove="handlePointermove"
-			@pointerup="handlePointerup"
-			@pointercancel="handlePointerup">
-			<span class="base-splitter__handle" aria-hidden="true" />
-		</div>
-		<div
-			ref="endRef"
-			class="base-splitter__pane base-splitter__pane--end"
-			:class="classes.pane"
-			:tabindex="isEndScrollable ? 0 : undefined">
-			<slot name="end" />
-		</div>
+		:style="[sizeScaleStyle, variantStyle, rootStyle]">
+		<template v-for="(pane, index) in panes" :key="pane.id">
+			<BaseSplitterPane :id="pane.id" class="base-splitter__pane" :class="[pane.modifier, classes.pane]" :style="pane.style">
+				<slot :name="pane.slot" />
+			</BaseSplitterPane>
+			<div
+				v-if="separators[index]"
+				v-bind="separators[index]"
+				class="base-splitter__separator"
+				:class="classes.separator"
+				role="separator"
+				:tabindex="isDisabled ? undefined : 0"
+				:aria-orientation="orientation === 'horizontal' ? 'vertical' : 'horizontal'"
+				:aria-disabled="isDisabled ? 'true' : undefined"
+				@keydown="handleKeydown($event, index)"
+				@pointerdown="handlePointerdown($event, index)"
+				@pointermove="handlePointermove"
+				@pointerup="handlePointerup"
+				@pointercancel="handlePointerup">
+				<span class="base-splitter__handle" aria-hidden="true" />
+			</div>
+		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseSplitter.style.scss'
-import { UI_ARIA } from '@/locales/messages'
+import BaseSplitterPane from './BaseSplitterPane.vue'
 import { useBaseSplitter } from '../model/useBaseSplitter'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -76,13 +63,10 @@ const {
 	variantClass,
 	variantStyle,
 	classes,
-	startId,
 	rootRef,
-	startRef,
-	endRef,
-	isStartScrollable,
-	isEndScrollable,
-	size,
+	panes,
+	separators,
+	rootStyle,
 	isDragging,
 	handleKeydown,
 	handlePointerdown,

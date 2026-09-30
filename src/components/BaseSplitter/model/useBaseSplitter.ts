@@ -1,104 +1,167 @@
 import type { Ref } from 'vue'
-import { ref, useId, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
+import { computed, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
-import type { BaseSplitterEmits, SplitterProps, SplitterSize } from '../types/BaseSplitter.types'
+import type { BaseSplitterEmits, SplitterPane, SplitterProps, SplitterSeparator, SplitterSizes } from '../types/BaseSplitter.types'
 
-function useSplitterSize(props: SplitterProps, emit: BaseSplitterEmits): SplitterSize {
-	const size = ref(props.modelValue)
-	watch(
-		() => props.modelValue,
-		value => {
-			size.value = value
-		},
-	)
+const round = (value: number): number => Math.round(value * 10) / 10
 
-	function setSize(value: number, isFinal: boolean): void {
-		const next = Math.min(props.max, Math.max(props.min, value))
-		if (next !== size.value) {
-			size.value = next
-			emit('update:modelValue', next)
-		}
-		if (isFinal) emit('change', next)
-	}
-
-	return { size, setSize }
+function sizesFrom(props: SplitterProps): number[] {
+	return props.sizes && props.sizes.length > 1 ? [...props.sizes] : [props.modelValue, round(100 - props.modelValue)]
 }
 
-function useSplitterKeyboard(props: SplitterProps, state: SplitterSize): (event: KeyboardEvent) => void {
-	let restoreSize = props.modelValue
+function useSplitterSizes(props: SplitterProps, emit: BaseSplitterEmits): SplitterSizes {
+	const sizes = ref(sizesFrom(props))
+	const isMulti = computed(() => (props.sizes?.length ?? 0) > 1)
+	watch([() => props.modelValue, () => props.sizes], () => {
+		sizes.value = sizesFrom(props)
+	})
 
-	function toggleCollapsed(): number {
-		if (state.size.value <= props.min) return restoreSize
-		restoreSize = state.size.value
-		return props.min
+	function boundsOf(index: number): [number, number] {
+		if (!isMulti.value) return [props.min, props.max]
+		const pair = sizes.value[index] + sizes.value[index + 1]
+		return [Math.max(props.min, round(pair - props.max)), Math.min(props.max, round(pair - props.min))]
 	}
 
-	function sizeFor(key: string): number | undefined {
+	function emitChange(): void {
+		if (isMulti.value) emit('sizes-change', sizes.value)
+		else emit('change', sizes.value[0])
+	}
+
+	function setSize(index: number, value: number, isFinal: boolean): void {
+		const [min, max] = boundsOf(index)
+		const next = Math.min(max, Math.max(min, value))
+		const current = sizes.value
+		if (next !== current[index]) {
+			const updated = [...current]
+			updated[index + 1] = round(current[index] + current[index + 1] - next)
+			updated[index] = next
+			sizes.value = updated
+			if (isMulti.value) emit('update:sizes', updated)
+			else emit('update:modelValue', next)
+		}
+		if (isFinal) emitChange()
+	}
+
+	return { sizes, isMulti, boundsOf, setSize, emitChange }
+}
+
+function useSplitterKeyboard(props: SplitterProps, state: SplitterSizes): (event: KeyboardEvent, index: number) => void {
+	const restoreSizes = new Map<number, number>()
+
+	function toggleCollapsed(index: number, min: number): number {
+		const size = state.sizes.value[index]
+		if (size > min) {
+			restoreSizes.set(index, size)
+			return min
+		}
+		return restoreSizes.get(index) ?? sizesFrom(props)[index]
+	}
+
+	function sizeFor(key: string, index: number): number | undefined {
 		const isHorizontal = props.orientation === 'horizontal'
-		if (key === (isHorizontal ? 'ArrowLeft' : 'ArrowUp')) return state.size.value - props.step
-		if (key === (isHorizontal ? 'ArrowRight' : 'ArrowDown')) return state.size.value + props.step
-		if (key === 'Home') return props.min
-		if (key === 'End') return props.max
-		if (key === 'Enter') return toggleCollapsed()
+		const size = state.sizes.value[index]
+		const [min, max] = state.boundsOf(index)
+		if (key === (isHorizontal ? 'ArrowLeft' : 'ArrowUp')) return size - props.step
+		if (key === (isHorizontal ? 'ArrowRight' : 'ArrowDown')) return size + props.step
+		if (key === 'Home') return min
+		if (key === 'End') return max
+		if (key === 'Enter') return toggleCollapsed(index, min)
 		return undefined
 	}
 
-	return event => {
-		const next = sizeFor(event.key)
+	return (event, index) => {
+		const next = sizeFor(event.key, index)
 		if (next === undefined) return
 		event.preventDefault()
-		state.setSize(next, true)
+		state.setSize(index, next, true)
 	}
 }
 
-function useSplitterDrag(props: SplitterProps, emit: BaseSplitterEmits, state: SplitterSize & { rootRef: Ref<HTMLElement | null> }) {
-	const isDragging = ref(false)
+function useSplitterDrag(props: SplitterProps, state: SplitterSizes & { rootRef: Ref<HTMLElement | null> }) {
+	const dragIndex = ref<number | null>(null)
 
-	function handlePointerdown(event: PointerEvent): void {
+	function handlePointerdown(event: PointerEvent, index: number): void {
 		if (props.isDisabled || event.button !== 0) return
 		event.preventDefault()
 		const separator = event.currentTarget as HTMLElement
 		separator.setPointerCapture?.(event.pointerId)
 		separator.focus()
-		isDragging.value = true
+		dragIndex.value = index
 	}
 
 	function handlePointermove(event: PointerEvent): void {
-		if (!isDragging.value) return
+		const index = dragIndex.value
+		if (index === null) return
 		const rect = (state.rootRef.value as HTMLElement).getBoundingClientRect()
 		const isHorizontal = props.orientation === 'horizontal'
 		const length = isHorizontal ? rect.width : rect.height
 		if (length <= 0) return
 		const offset = isHorizontal ? event.clientX - rect.left : event.clientY - rect.top
-		state.setSize(Math.round((offset / length) * 1000) / 10, false)
+		const before = state.sizes.value.slice(0, index).reduce((sum, size) => sum + size, 0)
+		state.setSize(index, round(round((offset / length) * 100) - before), false)
 	}
 
 	function handlePointerup(): void {
-		if (!isDragging.value) return
-		isDragging.value = false
-		emit('change', state.size.value)
+		if (dragIndex.value === null) return
+		dragIndex.value = null
+		state.emitChange()
 	}
 
-	return { isDragging, handlePointerdown, handlePointermove, handlePointerup }
+	return { isDragging: computed(() => dragIndex.value !== null), handlePointerdown, handlePointermove, handlePointerup }
+}
+
+function slotOf(index: number, isMulti: boolean): SplitterPane['slot'] {
+	if (isMulti) return `pane-${index + 1}`
+	return index === 0 ? 'start' : 'end'
+}
+
+function modifierOf(index: number, count: number): string | undefined {
+	if (index === count - 1) return 'base-splitter__pane--end'
+	return index === 0 ? 'base-splitter__pane--start' : undefined
+}
+
+function useSplitterPanes(props: SplitterProps, state: SplitterSizes) {
+	const baseId = useId()
+
+	const panes = computed<SplitterPane[]>(() => {
+		const count = state.sizes.value.length
+		return state.sizes.value.map((size, index) => ({
+			id: `${baseId}-${index + 1}`,
+			slot: slotOf(index, state.isMulti.value),
+			modifier: modifierOf(index, count),
+			style: index === count - 1 ? undefined : { '--base-splitter-ratio': String(size / 100) },
+		}))
+	})
+
+	const separators = computed<SplitterSeparator[]>(() =>
+		panes.value.slice(0, -1).map((pane, index) => {
+			const [min, max] = state.boundsOf(index)
+			const base = props.label ?? UI_ARIA.SPLITTER
+			return {
+				'aria-label': props.paneLabels?.[index] ?? (state.isMulti.value ? `${base} ${index + 1}` : base),
+				'aria-valuenow': Math.round(state.sizes.value[index]),
+				'aria-valuemin': min,
+				'aria-valuemax': max,
+				'aria-controls': pane.id,
+			}
+		}),
+	)
+
+	const rootStyle = computed(() => (state.isMulti.value ? { '--base-splitter-gaps': String(panes.value.length - 1) } : undefined))
+
+	return { panes, separators, rootStyle }
 }
 
 export function useBaseSplitter(props: SplitterProps, emit: BaseSplitterEmits) {
 	const rootRef = ref<HTMLElement | null>(null)
-	const startRef = ref<HTMLElement | null>(null)
-	const endRef = ref<HTMLElement | null>(null)
-	const state = useSplitterSize(props, emit)
+	const state = useSplitterSizes(props, emit)
 
 	return {
 		...useStandardBaseComponent('base-splitter', props, ['root', 'pane', 'separator']),
-		startId: useId(),
 		rootRef,
-		startRef,
-		endRef,
-		isStartScrollable: useScrollableRegion({ elementRef: startRef }).isScrollable,
-		isEndScrollable: useScrollableRegion({ elementRef: endRef }).isScrollable,
-		size: state.size,
+		...useSplitterPanes(props, state),
 		handleKeydown: useSplitterKeyboard(props, state),
-		...useSplitterDrag(props, emit, { ...state, rootRef }),
+		...useSplitterDrag(props, { ...state, rootRef }),
 	}
 }

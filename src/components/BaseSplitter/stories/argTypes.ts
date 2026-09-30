@@ -11,6 +11,8 @@ export const argTypes = {
 	min: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
 	max: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
 	step: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+	sizes: { control: false, table: propGroup(ARG_GROUP.state) },
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	paneLabels: { control: false, table: propGroup(ARG_GROUP.content) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 } satisfies Meta<typeof BaseSplitter>['argTypes']

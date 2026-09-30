@@ -21,4 +21,7 @@ export const Default = cases.Default
 export const Vertical = cases.Vertical
 export const Variants = cases.Variants
 export const Disabled = cases.Disabled
+export const Mail = cases.Mail
+export const Ide = cases.Ide
+export const Dashboard = cases.Dashboard
 export const Keyboard = cases.Keyboard

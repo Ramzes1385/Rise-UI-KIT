@@ -1,5 +1,6 @@
 .base-splitter {
 	--base-splitter-bar: #{sz(9px)};
+	--base-splitter-gaps: 1;
 
 	display: flex;
 	box-sizing: border-box;
@@ -23,9 +24,7 @@
 		@include scrollbar-thin;
 		@include focus-ring(-2px);
 
-		&--start {
-			flex: 0 0 calc((100% - var(--base-splitter-bar)) * var(--base-splitter-ratio, 0.5));
-		}
+		flex: 0 0 calc((100% - var(--base-splitter-bar) * var(--base-splitter-gaps)) * var(--base-splitter-ratio, 0.5));
 
 		&--end {
 			flex: 1 1 0;
@@ -51,7 +50,7 @@
 		@include focus-ring(-2px);
 	}
 
-	&--horizontal &__separator {
+	&--horizontal > &__separator {
 		cursor: col-resize;
 
 		&::before {
@@ -62,7 +61,7 @@
 		}
 	}
 
-	&--vertical &__separator {
+	&--vertical > &__separator {
 		cursor: row-resize;
 
 		&::before {
@@ -80,42 +79,42 @@
 		@include transition-colors;
 	}
 
-	&--horizontal &__handle {
+	&--horizontal > &__separator > &__handle {
 		width: sz(4px);
 		height: sz(24px);
 	}
 
-	&--vertical &__handle {
+	&--vertical > &__separator > &__handle {
 		width: sz(24px);
 		height: sz(4px);
 	}
 
 	&__separator:hover::before,
 	&__separator:focus-visible::before,
-	&--dragging &__separator::before {
+	&--dragging > &__separator::before {
 		background-color: var(--rise-primary);
 	}
 
-	&__separator:hover &__handle,
-	&--dragging &__handle {
+	&__separator:hover > &__handle,
+	&--dragging > &__separator > &__handle {
 		background-color: var(--rise-primary);
 	}
 
-	&--ghost &__separator:not(:hover, :focus-visible)::before {
+	&--ghost > &__separator:not(:hover, :focus-visible)::before {
 		background-color: transparent;
 	}
 
-	&--ghost &__handle {
+	&--ghost > &__separator > &__handle {
 		opacity: 0;
 	}
 
-	&--ghost &__separator:hover &__handle,
-	&--ghost &__separator:focus-visible &__handle,
-	&--ghost.base-splitter--dragging &__handle {
+	&--ghost > &__separator:hover > &__handle,
+	&--ghost > &__separator:focus-visible > &__handle,
+	&--ghost.base-splitter--dragging > &__separator > &__handle {
 		opacity: 1;
 	}
 
-	&--disabled &__separator {
+	&--disabled > &__separator {
 		cursor: default;
 		@include disabled-state;
 	}
