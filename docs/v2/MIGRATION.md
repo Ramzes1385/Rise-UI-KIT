@@ -888,3 +888,12 @@
 - SCSS: глобальные переменные `$rainbow-colors` и `$rainbow-colors-loop` (токены `--rise-chart-*` в порядке радуги) в `src/styles/_variables.scss`.
 
 **Что сделать.** Ничего: новые пропсы по умолчанию выключены.
+
+### BaseProgress: заливки и перелив (Р.16)
+
+**Что нового.**
+- `fill: 'solid' | 'gradient' | 'rainbow' | 'segments'` (по умолчанию `solid`, константа `PROGRESS_FILLS`, тип `ProgressFill`). `rainbow` растянута на всю шкалу — заливка открывает её по мере роста; у кольца `gradient` и `rainbow` рисуются SVG-градиентом (`<defs>` внутри `<svg>` с id из `useId`), `segments` — сплошное кольцо.
+- `animation: 'flow'` — перелив бежит вдоль полосы; у кольца неподвижен; при `prefers-reduced-motion` движения нет.
+- DOM: у `.base-progress__track` теперь `container-type: inline-size` (ширина полосы — единица `cqw` для градиентов). Фон заливки собран из слоёв `--progress-stripes` и `--progress-paint`; свой `background-image` на `.base-progress__fill` в приложении перекроет оба слоя.
+
+**Что сделать.** Ничего, если приложение не переопределяло `background-image` или `background-size` у `.base-progress__fill`.

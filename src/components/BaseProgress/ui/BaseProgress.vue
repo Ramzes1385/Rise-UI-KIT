@@ -4,6 +4,7 @@
 		:class="[
 			`base-progress--${shape}`,
 			animation !== 'none' ? `base-progress--${animation}` : '',
+			fillClass,
 			{ 'base-progress--indeterminate': isIndeterminate },
 			classes.root,
 		]"
@@ -26,6 +27,11 @@
 
 		<template v-if="shape === 'circle'">
 			<svg class="base-progress__svg" :class="classes.svg" viewBox="0 0 120 120">
+				<defs v-if="gradientStops.length">
+					<linearGradient :id="gradientId" x1="0" y1="1" x2="1" y2="0">
+						<stop v-for="stop in gradientStops" :key="stop.offset" :offset="stop.offset" :style="{ stopColor: stop.color }" />
+					</linearGradient>
+				</defs>
 				<circle
 					class="base-progress__track-circle"
 					:class="classes.trackCircle"
@@ -44,6 +50,7 @@
 					stroke-width="8"
 					:stroke-dasharray="circumference"
 					:stroke-dashoffset="circleOffset"
+					:style="circleStrokeStyle"
 					stroke-linecap="round" />
 			</svg>
 			<span v-if="isLabelVisible" class="base-progress__circle-label" :class="classes.circleLabel">
@@ -67,6 +74,7 @@ const props = withDefaults(
 		max: 100,
 		shape: 'line',
 		animation: 'none',
+		fill: 'solid',
 		hasLabel: false,
 		isIndeterminate: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
@@ -76,6 +84,19 @@ const props = withDefaults(
 const emit = defineEmits<BaseProgressEmits>()
 defineSlots<BaseProgressSlots>()
 
-const { classes, sizeScaleStyle, customColorStyle, percent, isLabelVisible, fillStyle, circleRadius, circumference, circleOffset } =
-	useBaseProgress(props, emit)
+const {
+	classes,
+	sizeScaleStyle,
+	customColorStyle,
+	percent,
+	isLabelVisible,
+	fillStyle,
+	fillClass,
+	gradientId,
+	gradientStops,
+	circleStrokeStyle,
+	circleRadius,
+	circumference,
+	circleOffset,
+} = useBaseProgress(props, emit)
 </script>

@@ -1,4 +1,5 @@
 $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
+$progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 
 .base-progress {
 	@include custom-bg('--progress-color', var(--custom-text, var(--rise-primary)));
@@ -25,6 +26,7 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 
 	&__track {
 		position: relative;
+		container-type: inline-size;
 		width: 100%;
 		height: sz(8px);
 		border-radius: var(--rise-radius-full);
@@ -35,6 +37,10 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 		height: 100%;
 		border-radius: inherit;
 		background-color: var(--progress-color);
+		background-image: var(--progress-stripes, none), var(--progress-paint, none);
+		background-size:
+			sz(16px) sz(16px),
+			100cqw 100%;
 		@include transition(width);
 	}
 
@@ -69,17 +75,28 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 	}
 
 	&--striped &__fill {
-		background-image: linear-gradient(
+		--progress-stripes: linear-gradient(
 			45deg,
-			$progress-stripe 25%,
+			#{$progress-stripe} 25%,
 			transparent 25%,
 			transparent 50%,
-			$progress-stripe 50%,
-			$progress-stripe 75%,
+			#{$progress-stripe} 50%,
+			#{$progress-stripe} 75%,
 			transparent 75%,
 			transparent
 		);
-		background-size: sz(16px) sz(16px);
+	}
+
+	&--fill-gradient &__fill {
+		--progress-paint: linear-gradient(90deg, #{$progress-light}, var(--progress-color));
+	}
+
+	&--fill-rainbow &__fill {
+		--progress-paint: linear-gradient(90deg, #{$rainbow-colors});
+	}
+
+	&--fill-segments &__track {
+		mask: repeating-linear-gradient(90deg, currentcolor 0 sz(10px), transparent sz(10px) sz(13px));
 	}
 
 	&--glow &__fill {
@@ -114,6 +131,16 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 			animation: base-progress-glow 2s var(--rise-ease) infinite;
 		}
 
+		&--flow &__fill {
+			--progress-paint: linear-gradient(90deg, var(--progress-color), #{$progress-light}, var(--progress-color));
+
+			animation: base-progress-flow 2.5s linear infinite;
+		}
+
+		&--flow#{&}--fill-rainbow &__fill {
+			--progress-paint: linear-gradient(90deg, #{$rainbow-colors-loop});
+		}
+
 		&--indeterminate &__fill {
 			width: 40%;
 			opacity: 1;
@@ -133,11 +160,29 @@ $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 
 @keyframes base-progress-stripes {
 	from {
-		background-position: sz(16px) 0;
+		background-position:
+			sz(16px) 0,
+			0 0;
 	}
 
 	to {
-		background-position: 0 0;
+		background-position:
+			0 0,
+			0 0;
+	}
+}
+
+@keyframes base-progress-flow {
+	from {
+		background-position:
+			0 0,
+			0 0;
+	}
+
+	to {
+		background-position:
+			0 0,
+			100cqw 0;
 	}
 }
 

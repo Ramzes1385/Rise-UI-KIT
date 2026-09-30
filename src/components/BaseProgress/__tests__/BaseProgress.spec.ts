@@ -119,6 +119,53 @@ describe('BaseProgress unit', () => {
 		})
 	})
 
+	describe('пропс fill', () => {
+		it('solid по умолчанию: без модификатора заливки и без градиента у кольца', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, shape: 'circle' } })
+
+			expect(container.querySelector('.base-progress')?.className).not.toContain('base-progress--fill-')
+			expect(container.querySelector('linearGradient')).not.toBeInTheDocument()
+			expect(container.querySelector<SVGElement>('.base-progress__fill-circle')?.style.stroke).toBe('')
+		})
+
+		it('rainbow: модификатор и семь цветов радуги из токенов у кольца', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, shape: 'circle', fill: 'rainbow' } })
+
+			expect(container.querySelector('.base-progress--fill-rainbow')).toBeInTheDocument()
+			const gradient = container.querySelector('linearGradient')
+			const stops = [...container.querySelectorAll('stop')]
+			expect(stops).toHaveLength(7)
+			expect(stops[0].getAttribute('offset')).toBe('0')
+			expect(stops[6].getAttribute('offset')).toBe('1')
+			expect(stops[0].getAttribute('style')).toContain('var(--rise-chart-8)')
+			expect(container.querySelector<SVGElement>('.base-progress__fill-circle')?.style.stroke).toBe(`url("#${gradient?.id}")`)
+		})
+
+		it('gradient: два цвета — светлый оттенок и цвет прогресса', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, shape: 'circle', fill: 'gradient' } })
+
+			expect(container.querySelectorAll('stop')).toHaveLength(2)
+		})
+
+		it('segments: модификатор полосы, у кольца заливка сплошная', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, fill: 'segments' } })
+
+			expect(container.querySelector('.base-progress--fill-segments')).toBeInTheDocument()
+			expect(container.querySelector('linearGradient')).not.toBeInTheDocument()
+		})
+
+		it('у двух индикаторов разные id градиента', () => {
+			const { container } = render({
+				components: { BaseProgress },
+				template:
+					'<div><BaseProgress :value="1" shape="circle" fill="rainbow" /><BaseProgress :value="2" shape="circle" fill="rainbow" /></div>',
+			})
+
+			const ids = [...container.querySelectorAll('linearGradient')].map(node => node.id)
+			expect(new Set(ids).size).toBe(2)
+		})
+	})
+
 	describe('пропс sizeScale', () => {
 		it('не должен устанавливать style когда sizeScale=100', () => {
 			const { container } = render(BaseProgress, {

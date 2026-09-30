@@ -19,7 +19,9 @@ export const Animations: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['value', 'sizeScale', 'color'] },
 		docs: {
-			description: { story: 'Оформление заливки `animation`: `striped` — полосы, `pulse` — мерцание, `glow` — свечение.' },
+			description: {
+				story: 'Движение заливки `animation`: `striped` — полосы, `pulse` — мерцание, `glow` — свечение, `flow` — перелив бежит вдоль полосы.',
+			},
 			source: storySource({
 				template,
 				imports: ['BaseProgress'],

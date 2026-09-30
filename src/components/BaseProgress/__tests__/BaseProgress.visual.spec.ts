@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-const STORIES = ['sizes', 'circle', 'with-label', 'indeterminate', 'animations'] as const
+const STORIES = ['sizes', 'circle', 'with-label', 'indeterminate', 'animations', 'fills'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseProgress · ${theme}`, () => {

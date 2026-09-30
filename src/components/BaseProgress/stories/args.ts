@@ -7,6 +7,7 @@ export const args = {
 	max: 100,
 	shape: 'line',
 	animation: 'none',
+	fill: 'solid',
 	hasLabel: false,
 	isIndeterminate: false,
 	sizeScale: 100,
