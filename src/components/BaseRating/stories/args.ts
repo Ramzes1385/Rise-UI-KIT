@@ -8,6 +8,7 @@ export const args = {
 	step: 1,
 	icon: 'star',
 	isHoverSmooth: true,
+	isValueShown: false,
 	variant: 'default',
 	sizeScale: 100,
 	isReadonly: false,

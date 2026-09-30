@@ -26,6 +26,7 @@
 				<BaseIcon :name="filledIcon" :size-scale="sizeScale" :custom-class="classes.iconFilled" aria-label="" />
 			</span>
 		</span>
+		<span v-if="isValueShown" class="base-rating__value" :class="classes.value" aria-hidden="true">{{ valueLabel }}</span>
 	</div>
 </template>
 
@@ -44,6 +45,7 @@ const props = withDefaults(
 		max: 5,
 		step: 1,
 		isHoverSmooth: true,
+		isValueShown: false,
 		icon: 'star',
 		isReadonly: false,
 		isDisabled: false,
@@ -66,6 +68,7 @@ const {
 	filledIcon,
 	ariaAttrs,
 	fillPercent,
+	valueLabel,
 	handleClick,
 	handleHover,
 	clearHover,

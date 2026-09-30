@@ -21,7 +21,7 @@ export const HalfStars: StoryObj<typeof meta> = {
 
 		const star = starOf(rating, 3)
 		await userEvent.pointer({ keys: '[MouseLeft]', target: star, coords: pointOn(star, 0.2) })
-		await waitFor(() => expect(canvas.getByRole('slider')).toHaveAttribute('aria-valuetext', '3.5 из 5'))
+		await waitFor(() => expect(canvas.getByRole('slider')).toHaveAttribute('aria-valuetext', '3,5 из 5'))
 		await userEvent.unhover(star)
 		await waitFor(() => expect(fillOf(starOf(canvas.getByRole('slider'), 3))).toBe('50%'))
 	},

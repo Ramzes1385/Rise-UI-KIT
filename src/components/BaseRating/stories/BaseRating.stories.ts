@@ -27,4 +27,5 @@ export const CustomIcons = cases.CustomIcons
 export const InFormField = cases.InFormField
 export const HalfStars = cases.HalfStars
 export const HoverPreview = cases.HoverPreview
+export const Precise = cases.Precise
 export const Keyboard = cases.Keyboard

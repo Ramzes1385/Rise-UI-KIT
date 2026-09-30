@@ -1,2 +1,2 @@
-export { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from './ratingUtils'
+export { rawValueFromPointer, snapRating, starFillPercent, stepDecimals, valueFromPointer } from './ratingUtils'
 export type { PointerValueOptions } from './types/ratingUtils.types'

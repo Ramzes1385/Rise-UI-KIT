@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { setLocale } from '@/locales/state'
 import BaseRating from '../ui/BaseRating.vue'
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
@@ -374,13 +375,13 @@ describe('BaseRating unit', () => {
 		it('должен озвучивать значение текстом «N из max» (aria-valuetext)', () => {
 			render(BaseRating, { props: { max: 5, modelValue: 3.5 } })
 
-			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3.5 из 5')
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3,5 из 5')
 		})
 
 		it('должен показывать рейтинг только для чтения изображением с оценкой в имени, вне порядка Tab', () => {
 			render(BaseRating, { props: { isReadonly: true, modelValue: 4.5 } })
 
-			const rating = screen.getByRole('img', { name: 'Оценка 4.5 из 5' })
+			const rating = screen.getByRole('img', { name: 'Оценка 4,5 из 5' })
 			expect(rating).not.toHaveAttribute('tabindex')
 			expect(rating).not.toHaveAttribute('aria-valuenow')
 			expect(screen.queryByRole('slider')).not.toBeInTheDocument()
@@ -592,6 +593,104 @@ describe('BaseRating unit', () => {
 
 			expect(() => exposed.reset()).not.toThrow()
 			wrapper.unmount()
+		})
+	})
+
+	describe('точный выбор (step=0.1)', () => {
+		function valueLabel(container: ParentNode): HTMLElement | null {
+			return container.querySelector<HTMLElement>('.base-rating__value')
+		}
+
+		it('PageUp и PageDown меняют оценку на целую звезду', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 2.3, step: 0.1 } })
+			const root = container.querySelector('.base-rating')!
+
+			await fireEvent.keyDown(root, { key: 'PageUp' })
+			await fireEvent.keyDown(root, { key: 'PageDown' })
+
+			expect(emitted()['update:modelValue']).toEqual([[3.3], [1.3]])
+		})
+
+		it('PageUp не выходит за max', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 4.6, step: 0.1 } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'PageUp' })
+
+			expect(emitted()['update:modelValue']).toEqual([[5]])
+		})
+
+		it('стрелки меняют оценку на 0.1 без накопления погрешности', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 0.2, step: 0.1 } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'ArrowRight' })
+
+			expect(emitted()['update:modelValue']).toEqual([[0.3]])
+		})
+
+		it('не показывает число без isValueShown', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 3 } })
+
+			expect(valueLabel(container)).toBeNull()
+		})
+
+		it('показывает текущую оценку со знаками как у step', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 3, step: 0.1, isValueShown: true } })
+
+			expect(valueLabel(container)).toHaveTextContent('3,0')
+			expect(valueLabel(container)).toHaveAttribute('aria-hidden', 'true')
+		})
+
+		it('при наведении показывает оценку, которую запишет клик, а не плавную заливку', async () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1, step: 0.1, isValueShown: true } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+
+			await fireEvent.mouseMove(star, { clientX: 7 })
+
+			expect(valueLabel(container)).toHaveTextContent('2,4')
+			expect(fillWidth(star)).toBe('35%')
+
+			await fireEvent.mouseLeave(container.querySelector('.base-rating')!)
+			expect(valueLabel(container)).toHaveTextContent('1,0')
+		})
+
+		it('клавиатура сбрасывает предпросмотр под курсором', async () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1, step: 0.1, isValueShown: true } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+			await fireEvent.mouseMove(star, { clientX: 7 })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'ArrowRight' })
+
+			expect(fillWidth(star)).toBe('0%')
+			expect(valueLabel(container)).toHaveTextContent('1,0')
+		})
+
+		it('не меняет предпросмотр при isReadonly', async () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1, step: 0.1, isValueShown: true, isReadonly: true } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+
+			await fireEvent.mouseMove(star, { clientX: 7 })
+
+			expect(valueLabel(container)).toHaveTextContent('1,0')
+		})
+
+		it('озвучивает десятые в формате языка', () => {
+			render(BaseRating, { props: { modelValue: 3.7, step: 0.1 } })
+
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3,7 из 5')
+		})
+
+		it('озвучивает десятые по-английски с точкой', () => {
+			setLocale('en')
+			try {
+				render(BaseRating, { props: { modelValue: 3.7, step: 0.1, isValueShown: true } })
+
+				expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3.7 of 5')
+			} finally {
+				setLocale('ru')
+			}
 		})
 	})
 })

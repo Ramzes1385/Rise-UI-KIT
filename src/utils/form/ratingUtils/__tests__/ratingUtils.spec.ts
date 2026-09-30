@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer } from '../ratingUtils'
+import { rawValueFromPointer, snapRating, starFillPercent, stepDecimals, valueFromPointer } from '../ratingUtils'
 
 describe('ratingUtils', () => {
 	describe('snapRating', () => {
@@ -148,6 +148,30 @@ describe('ratingUtils', () => {
 
 		it('ограничивает fill нулём', () => {
 			expect(starFillPercent(2, 0.5)).toBe(0)
+		})
+	})
+
+	describe('stepDecimals', () => {
+		it('возвращает число знаков после запятой у шага', () => {
+			expect(stepDecimals(1)).toBe(0)
+			expect(stepDecimals(0.5)).toBe(1)
+			expect(stepDecimals(0.1)).toBe(1)
+			expect(stepDecimals(0.25)).toBe(2)
+		})
+
+		it('ограничивает число знаков четырьмя', () => {
+			expect(stepDecimals(0.123456)).toBe(4)
+		})
+	})
+
+	describe('valueFromPointer с шагом 0.1', () => {
+		it('на границе шага даёт ровно эту десятую', () => {
+			expect(valueFromPointer({ star: 1, ratio: 0.3, step: 0.1, max: 5 })).toBe(0.3)
+			expect(valueFromPointer({ star: 3, ratio: 0.7, step: 0.1, max: 5 })).toBe(2.7)
+		})
+
+		it('округляет вверх до ближайшей десятой внутри шага', () => {
+			expect(valueFromPointer({ star: 3, ratio: 0.35, step: 0.1, max: 5 })).toBe(2.4)
 		})
 	})
 })

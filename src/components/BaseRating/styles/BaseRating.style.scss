@@ -33,6 +33,16 @@
 		@include transition(width, color);
 	}
 
+	&__value {
+		min-width: 3ch;
+		margin-inline-start: sz(6px);
+		color: var(--rise-text-toned);
+		font-size: sz(14px);
+		font-weight: var(--rise-font-weight-medium);
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+	}
+
 	&--interactive &__star {
 		cursor: pointer;
 	}

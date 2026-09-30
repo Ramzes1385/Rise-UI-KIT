@@ -2,6 +2,14 @@
 
 import type { PointerValueOptions } from './types/ratingUtils.types'
 
+const STEP_EPSILON = 1e-9
+
+/** Число знаков после запятой у шага: 1 → 0, 0.5 → 1, 0.1 → 1, 0.25 → 2 */
+function stepDecimals(step: number): number {
+	const [, fraction = ''] = String(step).split('.')
+	return Math.min(fraction.length, 4)
+}
+
 function snapRating(value: number, step: number, max: number): number {
 	const steps = Math.round(value / step)
 	const snapped = steps * step
@@ -12,7 +20,7 @@ function snapRating(value: number, step: number, max: number): number {
 /** Рассчитать оценку по позиции указателя внутри звезды (округление вверх до шага) */
 function valueFromPointer(options: PointerValueOptions): number {
 	const ratio = Math.min(Math.max(options.ratio, 0), 1)
-	const stepsInStar = Math.ceil(ratio / options.step)
+	const stepsInStar = Math.ceil(ratio / options.step - STEP_EPSILON)
 	const inStar = Math.min(stepsInStar * options.step, 1)
 	const raw = options.star - 1 + inStar
 	const value = Math.min(Math.max(raw, options.step), options.max)
@@ -34,4 +42,4 @@ function starFillPercent(star: number, value: number): number {
 	return Math.round(clamped * 1000) / 10
 }
 
-export { rawValueFromPointer, snapRating, starFillPercent, valueFromPointer }
+export { rawValueFromPointer, snapRating, starFillPercent, stepDecimals, valueFromPointer }

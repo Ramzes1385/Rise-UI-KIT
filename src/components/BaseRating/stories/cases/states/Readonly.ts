@@ -33,13 +33,13 @@ export const Readonly: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		const rating = canvas.getByRole('img', { name: 'Оценка 4.3 из 5' })
+		const rating = canvas.getByRole('img', { name: 'Оценка 4,3 из 5' })
 		await expect(rating).not.toHaveAttribute('tabindex')
 		await expect(fillOf(starOf(rating, 4))).toBe('30%')
 
 		const star = starOf(rating, 0)
 		await userEvent.pointer({ keys: '[MouseLeft]', target: star, coords: pointOn(star) })
-		await expect(rating).toHaveAccessibleName('Оценка 4.3 из 5')
+		await expect(rating).toHaveAccessibleName('Оценка 4,3 из 5')
 		await expect(fillOf(starOf(rating, 4))).toBe('30%')
 	},
 }
