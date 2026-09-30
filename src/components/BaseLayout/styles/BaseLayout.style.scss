@@ -48,6 +48,7 @@
 		top: var(--base-layout-sticky-top);
 		display: flex;
 		flex-direction: column;
+		flex-shrink: 0;
 		align-self: flex-start;
 		height: calc(100dvh - var(--base-layout-sticky-top));
 		overflow-y: auto;

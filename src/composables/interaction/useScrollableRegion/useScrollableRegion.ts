@@ -3,7 +3,8 @@ import { onBeforeUnmount, ref, watch } from 'vue'
 import type { UseScrollableRegionOptions, UseScrollableRegionReturn } from './types/useScrollableRegion.types'
 
 /**
- * Следит, прокручивается ли элемент: содержимое выше видимой области (scrollHeight > clientHeight).
+ * Следит, прокручивается ли элемент: содержимое выше видимой области (scrollHeight > clientHeight), а при
+ * `orientation: 'horizontal'` — шире её (scrollWidth > clientWidth).
  * Область с прокруткой, в которой нет фокусируемых элементов, нельзя прокрутить с клавиатуры, пока ей не дали
  * tabindex="0" (WCAG 2.1.1, правило axe scrollable-region-focusable). Постоянный tabindex добавил бы лишнюю остановку Tab
  * в каждое окно, поэтому компонент ставит его только при isScrollable.
@@ -17,6 +18,11 @@ import type { UseScrollableRegionOptions, UseScrollableRegionReturn } from './ty
  * // <div ref="bodyRef" :tabindex="isScrollable ? 0 : undefined">…</div>
  * ```
  */
+function isOverflowing(element: HTMLElement, orientation: UseScrollableRegionOptions['orientation']): boolean {
+	if (orientation === 'horizontal') return element.scrollWidth > element.clientWidth
+	return element.scrollHeight > element.clientHeight
+}
+
 function useScrollableRegion(options: UseScrollableRegionOptions): UseScrollableRegionReturn {
 	const { elementRef } = options
 	const isScrollable = ref(false)
@@ -24,7 +30,7 @@ function useScrollableRegion(options: UseScrollableRegionOptions): UseScrollable
 
 	function update(): void {
 		const element = elementRef.value
-		isScrollable.value = element !== null && element.scrollHeight > element.clientHeight
+		isScrollable.value = element !== null && isOverflowing(element, options.orientation)
 	}
 
 	function disconnect(): void {

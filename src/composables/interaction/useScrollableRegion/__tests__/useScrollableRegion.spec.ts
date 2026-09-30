@@ -17,10 +17,13 @@ class ResizeObserverMock {
 
 /** Хост: область появляется через v-if, признак прокрутки выводится в data-атрибут */
 const Host = defineComponent({
-	props: { isShown: { type: Boolean, default: false } },
-	setup() {
+	props: {
+		isShown: { type: Boolean, default: false },
+		orientation: { type: String as () => 'vertical' | 'horizontal' | undefined, default: undefined },
+	},
+	setup(props) {
 		const regionRef = ref<HTMLElement | null>(null)
-		const { isScrollable } = useScrollableRegion({ elementRef: regionRef })
+		const { isScrollable } = useScrollableRegion({ elementRef: regionRef, orientation: props.orientation })
 		return { regionRef, isScrollable }
 	},
 	template: `
@@ -103,6 +106,22 @@ describe('useScrollableRegion', () => {
 
 		expect(screen.getByTestId('state')).toHaveTextContent('false')
 		expect(observers[0]?.disconnect).toHaveBeenCalled()
+	})
+
+	it('horizontal: прокрутка по ширине — scrollWidth больше clientWidth, высота не важна', async () => {
+		mockSize(600, 300)
+		vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(300)
+		vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(300)
+		const { rerender } = render(Host, { props: { orientation: 'horizontal' } })
+		await rerender({ isShown: true })
+		await nextTick()
+		expect(screen.getByTestId('state')).toHaveTextContent('false')
+
+		vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(720)
+		observers[0]?.callback()
+		await nextTick()
+
+		expect(screen.getByTestId('state')).toHaveTextContent('true')
 	})
 
 	it('отключает наблюдатель при размонтировании', async () => {

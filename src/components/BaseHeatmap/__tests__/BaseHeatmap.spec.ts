@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
 import { setLocale } from '@/locales/state'
 import BaseHeatmap from '../ui/BaseHeatmap.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
@@ -11,7 +12,24 @@ const DATA = [
 ]
 
 describe('BaseHeatmap', () => {
-	afterEach(() => setLocale('ru'))
+	afterEach(() => {
+		setLocale('ru')
+		vi.restoreAllMocks()
+	})
+
+	it('календарь шире области прокручивается с клавиатуры: tabindex только при прокрутке', async () => {
+		vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(720)
+		vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(320)
+		const wide = render(BaseHeatmap, { props: { data: DATA, label: 'Коммиты', endDate: '2025-05-15' } })
+		await nextTick()
+		expect(wide.getByRole('img')).toHaveAttribute('tabindex', '0')
+		wide.unmount()
+
+		vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(320)
+		const narrow = render(BaseHeatmap, { props: { data: DATA, label: 'Коммиты', endDate: '2025-05-15', weeks: 4 } })
+		await nextTick()
+		expect(narrow.getByRole('img')).not.toHaveAttribute('tabindex')
+	})
 
 	it('недели столбцами с понедельника, уровни от максимума, сводка для скринридера', () => {
 		const { container } = render(BaseHeatmap, { props: { data: DATA, label: 'Коммиты', endDate: '2025-05-15', weeks: 4 } })

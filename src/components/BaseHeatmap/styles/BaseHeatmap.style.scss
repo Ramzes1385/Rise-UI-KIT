@@ -10,7 +10,9 @@
 	&__scroll {
 		max-width: 100%;
 		overflow-x: auto;
+		border-radius: var(--rise-radius-sm);
 		@include scrollbar-thin;
+		@include focus-ring(-2px);
 	}
 
 	&__svg {

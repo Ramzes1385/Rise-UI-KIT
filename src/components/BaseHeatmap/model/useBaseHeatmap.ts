@@ -1,9 +1,10 @@
-import { computed, shallowRef } from 'vue'
 import { UI_CHARTS } from '@/locales/messages'
+import { ref, computed, shallowRef } from 'vue'
 import { formatMessage, formatNumber, getLocale } from '@/locales/state'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseHeatmapProps, HeatmapCell } from '../types/BaseHeatmap.types'
 import { heatmapCells, heatmapMonths, toDay } from './calendar/heatmapCalendar'
+import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 
 const CELL = 11
 
@@ -15,8 +16,11 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 	const dateText = (date: Date): string =>
 		new Intl.DateTimeFormat(getLocale().intl, { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
 	const active = shallowRef<HeatmapCell | null>(null)
+	const scrollRef = ref<HTMLElement | null>(null)
 	return {
 		...useStandardBaseComponent('base-heatmap', props, ['root']),
+		scrollRef,
+		isScrollable: useScrollableRegion({ elementRef: scrollRef, orientation: 'horizontal' }).isScrollable,
 		cells,
 		months: computed(() => heatmapMonths(cells.value, getLocale().intl)),
 		weekdays: computed(() => {

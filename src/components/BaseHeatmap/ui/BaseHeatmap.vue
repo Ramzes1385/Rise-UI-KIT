@@ -1,6 +1,6 @@
 <template>
 	<div class="base-heatmap" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, { '--heatmap-color': mark }]">
-		<div class="base-heatmap__scroll" role="img" :aria-label="summary">
+		<div ref="scrollRef" class="base-heatmap__scroll" role="img" :aria-label="summary" :tabindex="isScrollable ? 0 : undefined">
 			<svg class="base-heatmap__svg" :width="width + 28" :height="step * 7 + 18" aria-hidden="true">
 				<text v-for="month in months" :key="month.key" class="base-heatmap__caption" :x="28 + month.week * step" y="10">
 					{{ month.label }}
@@ -53,6 +53,22 @@ const props = withDefaults(defineProps<BaseHeatmapProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
-const { sizeScaleStyle, variantClass, classes, cells, months, weekdays, width, cellSize, step, mark, active, tooltip, summary, setActive } =
-	useBaseHeatmap(props)
+const {
+	sizeScaleStyle,
+	variantClass,
+	classes,
+	scrollRef,
+	isScrollable,
+	cells,
+	months,
+	weekdays,
+	width,
+	cellSize,
+	step,
+	mark,
+	active,
+	tooltip,
+	summary,
+	setActive,
+} = useBaseHeatmap(props)
 </script>
