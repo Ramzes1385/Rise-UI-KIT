@@ -1,6 +1,29 @@
 <template>
-	<footer class="base-footer" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseContainer :size="containerSize" class="base-footer__inner" :custom-class="{ root: classes.inner }" :size-scale="sizeScale">
+	<footer
+		class="base-footer"
+		:class="[variantClass, { 'base-footer--compact': isCompact }, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<BaseContainer v-if="hasTop" :size="containerSize" class="base-footer__top" :size-scale="sizeScale">
+			<div v-if="slots.top" class="base-footer__about">
+				<slot name="top" />
+			</div>
+			<div v-if="columns?.length" class="base-footer__columns">
+				<nav v-for="column in columns" :key="column.title" class="base-footer__column" :aria-label="column.title">
+					<p class="base-footer__column-title" aria-hidden="true">{{ column.title }}</p>
+					<ul class="base-footer__links">
+						<li v-for="link in column.links" :key="link.label">
+							<BaseLink :to="link.to" :href="link.href" variant="ghost">{{ link.label }}</BaseLink>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</BaseContainer>
+		<BaseContainer
+			v-if="hasBar"
+			:size="containerSize"
+			class="base-footer__inner"
+			:custom-class="{ root: classes.inner }"
+			:size-scale="sizeScale">
 			<div v-if="slots.start" class="base-footer__start">
 				<slot name="start" />
 			</div>
@@ -15,7 +38,9 @@
 </template>
 
 <script setup lang="ts">
+import '@components/BaseLink/styles/BaseLink.style.scss'
 import '../styles/BaseFooter.style.scss'
+import { BaseLink } from '@components/BaseLink'
 import { useBaseFooter } from '../model/useBaseFooter'
 import { BaseContainer } from '@components/BaseContainer'
 import { kitDefaults } from '@composables/base/useDefaults'
@@ -27,10 +52,11 @@ const props = withDefaults(
 	kitDefaults('BaseFooter', {
 		variant: DEFAULT_VARIANT,
 		containerSize: 'full',
+		isCompact: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
 
 defineSlots<BaseFooterSlots>()
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots } = useBaseFooter(props)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots, hasTop, hasBar } = useBaseFooter(props)
 </script>

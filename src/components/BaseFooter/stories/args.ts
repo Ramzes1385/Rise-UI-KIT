@@ -4,5 +4,6 @@ import type BaseFooter from '../ui/BaseFooter.vue'
 export const args = {
 	variant: 'default',
 	containerSize: 'full',
+	isCompact: false,
 	sizeScale: 100,
 } satisfies Meta<typeof BaseFooter>['args']

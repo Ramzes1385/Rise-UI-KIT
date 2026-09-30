@@ -1,2 +1,7 @@
 export { Default } from './Default'
 export { Variants } from './Variants'
+export { Simple } from './layouts/Simple'
+export { Columns } from './layouts/Columns'
+export { WithSubscribe } from './layouts/WithSubscribe'
+export { WithApps } from './layouts/WithApps'
+export { Compact } from './layouts/Compact'

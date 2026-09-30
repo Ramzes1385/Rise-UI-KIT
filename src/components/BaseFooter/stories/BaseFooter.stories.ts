@@ -19,3 +19,8 @@ export default meta
 
 export const Default = cases.Default
 export const Variants = cases.Variants
+export const Simple = cases.Simple
+export const Columns = cases.Columns
+export const WithSubscribe = cases.WithSubscribe
+export const WithApps = cases.WithApps
+export const Compact = cases.Compact

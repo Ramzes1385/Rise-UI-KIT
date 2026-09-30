@@ -24,3 +24,40 @@ describe('BaseFooter unit', () => {
 		expect(container.querySelector('.base-footer__inner')).toHaveClass('base-container--lg', 'my-inner')
 	})
 })
+
+const COLUMNS = [
+	{
+		title: 'Продукт',
+		links: [
+			{ label: 'Цены', href: '#pricing' },
+			{ label: 'Обновления', to: '/changelog' },
+		],
+	},
+	{ title: 'Компания', links: [{ label: 'О нас', href: '#about' }] },
+]
+
+describe('BaseFooter: раскладки', () => {
+	it('columns — навигация на колонку с именем по заголовку', () => {
+		const { container } = render(BaseFooter, { props: { columns: COLUMNS }, slots: { start: '© 2026 Rise' } })
+		const product = screen.getByRole('navigation', { name: 'Продукт' })
+		expect(product.querySelectorAll('li')).toHaveLength(2)
+		expect(screen.getByRole('link', { name: 'Цены' })).toHaveAttribute('href', '#pricing')
+		expect(screen.getByRole('navigation', { name: 'Компания' })).toBeInTheDocument()
+		expect(container.querySelector('.base-footer__about')).not.toBeInTheDocument()
+		expect(container.querySelector('.base-footer__inner')).toHaveTextContent('© 2026 Rise')
+	})
+
+	it('слот top без нижней строки: нижней строки нет', () => {
+		const { container } = render(BaseFooter, { slots: { top: '<p>Rise Studio</p>' } })
+		expect(container.querySelector('.base-footer__about')).toHaveTextContent('Rise Studio')
+		expect(container.querySelector('.base-footer__columns')).not.toBeInTheDocument()
+		expect(container.querySelector('.base-footer__inner')).not.toBeInTheDocument()
+	})
+
+	it('без верхней части нижняя строка есть всегда; isCompact — модификатор', () => {
+		const { container } = render(BaseFooter, { props: { isCompact: true, columns: [] } })
+		expect(container.querySelector('.base-footer__top')).not.toBeInTheDocument()
+		expect(container.querySelector('.base-footer__inner')).toBeInTheDocument()
+		expect(container.querySelector('.base-footer')).toHaveClass('base-footer--compact')
+	})
+})

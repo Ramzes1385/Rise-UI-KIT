@@ -2163,6 +2163,15 @@ function handleSelect(item: BaseMenuItem): void {
 </BaseFooter>
 ```
 
+Верхняя часть: `columns` — колонки ссылок `{ title, links: [{ label, to?, href? }] }`, каждая — `<nav>` с именем по заголовку; слот `top` — описание, подписка, приложения слева от колонок. Нижняя строка (`start`, default, `end`) отделяется линией. `is-compact` — меньше отступы.
+
+```vue
+<BaseFooter container-size="lg" :columns="columns">
+	<template #top><SubscribeForm /></template>
+	<template #start>© 2026 Rise Studio</template>
+</BaseFooter>
+```
+
 ---
 
 ## BaseContainer
