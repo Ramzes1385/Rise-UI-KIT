@@ -105,3 +105,9 @@
 1. ~~**Безопасность.** Проверка схем ссылок (EDT-5, SB-6) и очистка HTML в BaseEditor (EDT-2)~~ — сделано в 2.0, порция 1.1.
 2. **Сквозные задачи, которые разблокируют остальное:** № 1–3 (имена полей, контекст формы, CORE-1); ~~№ 5 (flip/shift)~~ — сделано для выпадающих панелей в порции 1.5.
 3. **Быстрые patch:** № 8, 10, 11, 13, 14, 48, 49, 52.
+
+## Эпик cross (slots)
+
+| № | Проблема | Где | Почему отложено | Тип | Размер |
+|---|---|---|---|---|---|
+| S1 | Слоты объявлены в интерфейсе `defineSlots`, но компонент их не показывает: `default` у BaseChat, BaseFileUpload, BaseMenu, BaseNotification, BasePagination, BasePin, BaseRadio, BaseRange, BaseRating, BaseSelect, BaseStepper, BaseTable, BaseTextarea; `event` и `navigation` у BaseCalendar. Содержимое такого слота молча теряется. В Docs они скрыты (`hiddenArgTypes`), `npm run test:slot-docs` ловит новые случаи | `types/*.types.ts` этих компонентов | Удаление из типов — несовместимое изменение (vue-tsc начнёт ругаться на переданный слот); решает владелец: удалить или показать | minor (API) | S |

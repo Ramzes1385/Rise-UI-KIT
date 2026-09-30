@@ -49,6 +49,7 @@ export interface BaseSlideoverEmits {
 }
 
 export interface BaseSlideoverSlots {
+	/** Содержимое панели; длинное прокручивается внутри */
 	default?: () => unknown
 	/** Заголовок панели */
 	header?: () => unknown

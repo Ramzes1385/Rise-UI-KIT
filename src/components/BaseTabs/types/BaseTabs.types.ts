@@ -35,5 +35,6 @@ export interface BaseTabsEmits {
 }
 
 export interface BaseTabsSlots {
+	/** Содержимое выбранной вкладки — панель `tabpanel`, связанная с вкладкой */
 	default?: () => unknown
 }

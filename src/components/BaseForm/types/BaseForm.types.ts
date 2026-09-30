@@ -35,6 +35,7 @@ export interface BaseFormExpose {
 }
 
 export interface BaseFormSlots {
+	/** Поля и кнопки формы; при загрузке и `isDisabled` вся группа блокируется (`fieldset disabled`) */
 	default?: () => unknown
 }
 

@@ -87,6 +87,7 @@
     "test:contrast": "node scripts/check-contrast.mjs",
     "test:l10n": "node scripts/check-l10n.mjs",
     "test:story-source": "node scripts/check-story-source.mjs",
+    "test:slot-docs": "node scripts/check-slot-docs.mjs",
     "create:component": "node scripts/create-component.mjs",
     "generate:emoji-data": "node scripts/generate-emoji-data.mjs",
     "pretest:components:coverage": "node scripts/invalidate-merged-coverage.mjs",

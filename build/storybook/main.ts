@@ -8,6 +8,7 @@ import svgLoader from 'vite-svg-loader'
 import { createAliasConfig } from '../config/alias.ts'
 import { createScssOptions } from '../config/css.ts'
 import { createSpritePlugin } from '../plugins/sprite.ts'
+import { createSlotDocsPlugin } from '../plugins/slotDocs.ts'
 
 const PROJECT_ROOT = resolve(process.cwd())
 
@@ -46,7 +47,13 @@ const config: StorybookConfig = {
 		// vite:vue должен идти раньше storybook:vue-docgen-plugin из config.plugins: docgen дописывает
 		// `_sfc_main.__docgenInfo = …` к уже скомпилированному JS. Если vue() стоит после него, docgen дописывается
 		// к исходнику SFC и молча теряется (в Docs нет описаний props), а JSDoc с HTML-тегами ломает сборку.
-		merged.plugins = [vue(), ...[config.plugins], svgLoader({ defaultImport: 'component', svgo: true }), createSpritePlugin()]
+		merged.plugins = [
+			vue(),
+			...[config.plugins],
+			createSlotDocsPlugin(),
+			svgLoader({ defaultImport: 'component', svgo: true }),
+			createSpritePlugin(),
+		]
 		return merged
 	},
 }

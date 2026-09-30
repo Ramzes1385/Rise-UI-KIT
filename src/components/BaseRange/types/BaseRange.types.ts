@@ -83,6 +83,7 @@ export interface BaseRangeEmits {
 
 export interface BaseRangeSlots {
 	default?: () => unknown
+	/** Свой вид ползунка вместо точки: `value` — его значение, `index` — номер ползунка */
 	thumb?: (props: { value: number; index: number }) => unknown
 }
 

@@ -98,7 +98,9 @@ export interface BaseImageEmits {
 }
 
 export interface BaseImageSlots {
+	/** Заглушка, пока картинка загружается (по умолчанию — мерцающий фон) */
 	placeholder?: () => unknown
+	/** Содержимое при ошибке загрузки (по умолчанию — значок и текст «Ошибка загрузки») */
 	error?: () => unknown
 }
 

@@ -28,6 +28,7 @@ export interface BaseFormFieldProps extends BaseComponentProps<
 export type BaseFormFieldEmits = Record<string, never>
 
 export interface BaseFormFieldSlots {
+	/** Поле: контрол кита или свой `input`; обёртка связывает с ним подпись, описание и ошибку */
 	default?: () => unknown
 }
 

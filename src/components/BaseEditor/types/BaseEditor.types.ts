@@ -43,6 +43,7 @@ export interface BaseEditorEmits {
 }
 
 export interface BaseEditorSlots {
+	/** Свои кнопки в конце панели инструментов — после стандартных */
 	toolbar?: () => unknown
 }
 

@@ -233,3 +233,10 @@ for (const theme of VISUAL_THEMES) {
 - «Show code» каждой story показывает точный код её превью (раздел 8): `npm run test:story-source -- --group=<раздел>`.
 - Каждая story открывается без ошибок в консоли, play-функции проходят в светлой и тёмной теме, axe без нарушений. Проверка — `npm run test:stories` по собранному Storybook (`npm run build-storybook`, затем `node scripts/serve-storybook-static.mjs`); для одного компонента — `npm run test:stories -- --filter=basebadge`. В CI она выполняется для всех stories в отдельном job.
 - В stories нет внешних URL, `new Date()` без аргументов, `Math.random()`, `try/catch`, inline-цветов.
+
+## Эпик cross (slots): слоты в Docs
+
+- Описание слота в таблице параметров — JSDoc члена интерфейса `defineSlots<BaseXSlots>()` в `types/*.types.ts`. Плагин `build/plugins/slotDocs.ts` (в `build/storybook/main.ts`, после docgen) берёт слоты из интерфейса и шаблона: слоты в кавычках (`'date-popover'`), `extends` и шаблоны имён (`` [name: `cell-${string}`] `` → строка `cell-{key}`) получают описания, которые vue-docgen-api теряет; поля объекта-параметра слота с JSDoc — привязки слота.
+- `slotArgType('…')` в `argTypes.ts` — для слота, текст которого редактируется в Controls; описание можно не дублировать в JSDoc.
+- Слот, который компонент объявляет, но не показывает, скрывается `hiddenArgTypes('default')` (FOLLOW_UPS, S1).
+- Проверка — `npm run test:slot-docs` (`--component=BaseTable` — один компонент): `<slot>` без объявления в интерфейсе или без `defineSlots`, слот или шаблон имён без описания, динамический `<slot :name>` без шаблона имён, слот в таблице, который компонент не показывает.
