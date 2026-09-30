@@ -60,7 +60,7 @@ npm run storybook
 
 Отдельного демо-приложения нет: компоненты разрабатываются и проверяются в Storybook (порт 6006).
 
-- **Разделы:** Introduction, Foundations (цвета, типографика, радиусы и тени, размеры, темы), Element, Form, Data, Navigation, Layout, Overlay, Chat, Editor, Media.
+- **Разделы:** Introduction, Foundations (цвета, типографика, радиусы и тени, размеры, темы), Blocks (готовые экраны из компонентов: вход, регистрация, настройки), Element, Form, Data, Navigation, Layout, Overlay, Chat, Editor, Media.
 - **Тема** переключается кнопкой «Тема» на панели инструментов; для ссылок и скриншотов — параметр `&globals=theme:dark`.
 - **Stories каждого компонента** устроены одинаково: `Default` (песочница с рабочим v-model) → варианты, размеры, кастомный цвет → состояния → сценарии → `Keyboard`. Правила — [design/STORIES_GUIDE.md](../design/STORIES_GUIDE.md).
 - Описания props из JSDoc попадают во вкладку Docs: в `build/storybook/main.ts` плагин `vite:vue` подключается раньше docgen-плагина Storybook (при обратном порядке описания молча терялись).

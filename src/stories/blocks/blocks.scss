@@ -1,0 +1,153 @@
+// Оформление страниц Blocks в Storybook: примеры экранов из компонентов кита. В пакет не попадает.
+
+.blk-page {
+	color: var(--rise-text);
+	font-family: var(--rise-font-sans);
+	@include text-size(sm);
+}
+
+.blk-title {
+	margin: 0;
+	color: var(--rise-text-highlighted);
+	font-weight: var(--rise-font-weight-semibold);
+	@include text-size(xl);
+}
+
+.blk-muted {
+	margin: 0;
+	color: var(--rise-text-muted);
+}
+
+.blk-auth {
+	display: flex;
+	justify-content: center;
+	padding-block: 24px;
+
+	&__card {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: 100%;
+		max-width: 400px;
+		padding: 32px;
+		border: 1px solid var(--rise-border);
+		border-radius: var(--rise-radius-lg);
+		background-color: var(--rise-bg);
+		box-shadow: var(--rise-shadow-sm);
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		text-align: center;
+	}
+
+	&__logo {
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		border-radius: var(--rise-radius-lg);
+		background-color: var(--rise-primary);
+		color: var(--rise-text-inverted);
+		font-weight: var(--rise-font-weight-bold);
+		@include text-size(lg);
+	}
+
+	&__social {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+	}
+
+	&__fields {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	&__row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+
+	&__wide {
+		width: 100%;
+		justify-content: center;
+	}
+
+	&__footer {
+		margin: 0;
+		color: var(--rise-text-muted);
+		text-align: center;
+	}
+}
+
+.blk-settings {
+	display: flex;
+	flex-direction: column;
+	max-width: 960px;
+
+	&__header {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding-block-end: 24px;
+	}
+
+	&__section {
+		display: grid;
+		grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+		gap: 24px;
+		padding-block: 24px;
+		border-top: 1px solid var(--rise-border);
+	}
+
+	&__section-title {
+		margin: 0 0 4px;
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-semibold);
+		@include text-size(base);
+	}
+
+	&__fields {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		max-width: 480px;
+	}
+
+	&__avatar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 8px;
+		padding-block-start: 24px;
+		border-top: 1px solid var(--rise-border);
+	}
+
+	&__status {
+		margin: 0 auto 0 0;
+		color: var(--rise-success);
+	}
+}
+
+@media (max-width: 720px) {
+	.blk-settings__section {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+	}
+}

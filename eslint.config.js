@@ -119,6 +119,7 @@ export default tseslint.config(
 			'src/**/*.stories.ts',
 			'src/components/*/stories/**',
 			'src/stories/foundations/**',
+			'src/stories/blocks/**',
 			'src/**/*.d.ts',
 		],
 		rules: {
@@ -175,7 +176,13 @@ export default tseslint.config(
 	},
 
 	{
-		files: ['**/*.spec.ts', '**/*.stories.ts', 'src/components/*/stories/**/*.ts', 'src/stories/foundations/**/*.ts'],
+		files: [
+			'**/*.spec.ts',
+			'**/*.stories.ts',
+			'src/components/*/stories/**/*.ts',
+			'src/stories/foundations/**/*.ts',
+			'src/stories/blocks/**/*.ts',
+		],
 		languageOptions: {
 			globals: {
 				describe: 'readonly',

@@ -97,6 +97,8 @@ const preview: Preview = {
 					'Introduction',
 					'Foundations',
 					['Colors', 'Typography', 'Radius & Shadows', 'Sizing', 'Theming'],
+					'Blocks',
+					['Auth', 'Settings', 'Dashboard'],
 					'Element',
 					'Form',
 					'Data',
