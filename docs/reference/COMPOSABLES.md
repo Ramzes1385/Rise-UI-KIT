@@ -255,6 +255,7 @@ useDebounce
 useDropdownPosition
 useEditorToolbar
 useEscapeKey
+useExpandTransition
 useFlyoutPosition
 useFocusTrap
 useHotkeys
@@ -269,6 +270,7 @@ usePasswordVisibility
 usePopup
 useRemoteSuggestions
 useScrollLock
+useScrollableRegion
 useSelect
 useSelectKeys
 useSizeScale
@@ -280,3 +282,38 @@ useTriggerAttributes
 useVariant
 useVirtualList
 ```
+
+---
+
+## useScrollableRegion и useExpandTransition (scroll-expand)
+
+### useScrollableRegion
+
+Признак «область прокручивается» — чтобы дать `tabindex="0"` только прокручиваемой области (WCAG 2.1.1, правило axe `scrollable-region-focusable`). На нём тела BaseModal, BaseSlideover, BaseDrawer, обёртка BaseTable, панели BaseSplitter, BaseHeatmap и список стран BasePhoneInput.
+
+```ts
+import { useScrollableRegion } from '@ramzes1385/rise-ui-kit/composables'
+
+const wrapperRef = ref<HTMLElement | null>(null)
+const { isScrollable, update } = useScrollableRegion({ elementRef: wrapperRef, orientation: 'both' })
+// <div ref="wrapperRef" :tabindex="isScrollable ? 0 : undefined">…</div>
+```
+
+- `orientation`: `vertical` (по умолчанию) — содержимое выше области, `horizontal` — шире её, `both` — прокрутка хотя бы по одной оси.
+- Признак пересчитывается при появлении элемента, при изменении размера самого элемента и его прямых потомков (ResizeObserver) и при изменении разметки внутри — добавлены или убраны узлы, изменился текст (MutationObserver). Так видно и рост, и уменьшение содержимого при неизменном размере области.
+- `update()` — ручной пересчёт для изменений, которых наблюдатели не видят (например, стили глубоко вложенного элемента).
+
+### useExpandTransition
+
+JS-хуки `<Transition :css="false">` для раскрытия по высоте (от 0 до `scrollHeight` и обратно, с прозрачностью). На нём раскрытие строк BaseTable.
+
+```ts
+import { useExpandTransition } from '@ramzes1385/rise-ui-kit/composables'
+
+const expand = useExpandTransition({ duration: 200 })
+// <Transition :css="false" @before-enter="expand.onBeforeEnter" @enter="expand.onEnter" @after-enter="expand.onAfterEnter"
+//   @before-leave="expand.onBeforeLeave" @leave="expand.onLeave" @after-leave="expand.onAfterLeave">
+```
+
+- `duration` — мс, по умолчанию 300. `0` и системная настройка `prefers-reduced-motion: reduce` — без анимации: элемент сразу в конечном состоянии.
+- Переход завершается по `transitionend` самого элемента (всплывшие от потомков не считаются) или по таймеру-страховке через `duration` + 50 мс, если событие не пришло. Новый переход того же элемента (свернули во время раскрытия) отменяет ожидание прежнего.

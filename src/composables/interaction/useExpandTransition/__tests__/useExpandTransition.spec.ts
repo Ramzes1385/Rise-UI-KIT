@@ -150,4 +150,162 @@ describe('useExpandTransition', () => {
 			expect(el.style.transition).toContain('height 500ms ease')
 		})
 	})
+
+	describe('prefers-reduced-motion', () => {
+		function mockReducedMotion(matches: boolean): ReturnType<typeof vi.fn> {
+			const matchMedia = vi.fn().mockReturnValue({ matches })
+			vi.stubGlobal('matchMedia', matchMedia)
+			return matchMedia
+		}
+
+		afterEach(() => {
+			vi.unstubAllGlobals()
+		})
+
+		it('reduce: раскрытие сразу в конечном состоянии, без анимации и ожидания transitionend', () => {
+			const matchMedia = mockReducedMotion(true)
+			const { onBeforeEnter, onEnter } = useExpandTransition()
+			const el = createElement(120)
+			const done = vi.fn()
+
+			onBeforeEnter(el)
+			onEnter(el, done)
+
+			expect(matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)')
+			expect(done).toHaveBeenCalledOnce()
+			expect(rafCallbacks).toHaveLength(0)
+			expect(el.style.height).toBe('')
+			expect(el.style.opacity).toBe('')
+			expect(el.style.overflow).toBe('')
+			expect(el.style.transition).toBe('')
+		})
+
+		it('reduce: сворачивание завершается сразу', () => {
+			mockReducedMotion(true)
+			const { onBeforeLeave, onLeave } = useExpandTransition()
+			const el = createElement(80)
+			const done = vi.fn()
+
+			onBeforeLeave(el)
+			onLeave(el, done)
+
+			expect(done).toHaveBeenCalledOnce()
+			expect(rafCallbacks).toHaveLength(0)
+			expect(el.style.transition).toBe('')
+		})
+
+		it('no-preference: анимация как обычно', () => {
+			mockReducedMotion(false)
+			const { onEnter } = useExpandTransition()
+			const el = createElement(120)
+			const done = vi.fn()
+
+			onEnter(el, done)
+			flushRaf()
+
+			expect(el.style.transition).toContain('height 300ms ease')
+			expect(done).not.toHaveBeenCalled()
+		})
+
+		it('без matchMedia (SSR, старые окружения) анимация остаётся', () => {
+			vi.stubGlobal('matchMedia', undefined)
+			const { onEnter } = useExpandTransition()
+			const el = createElement(120)
+
+			onEnter(el, vi.fn())
+
+			expect(el.style.transition).toContain('height 300ms ease')
+		})
+	})
+
+	describe('нулевая длительность (EXP-1)', () => {
+		it.each(['onEnter', 'onLeave'] as const)('%s при duration: 0 вызывает done сразу, без transitionend', hook => {
+			const transition = useExpandTransition({ duration: 0 })
+			const el = createElement(60)
+			const done = vi.fn()
+
+			transition[hook](el, done)
+
+			expect(done).toHaveBeenCalledOnce()
+			expect(rafCallbacks).toHaveLength(0)
+			expect(el.style.transition).toBe('')
+		})
+	})
+
+	describe('страховка, если transitionend не пришёл', () => {
+		beforeEach(() => {
+			vi.useFakeTimers()
+		})
+
+		afterEach(() => {
+			vi.useRealTimers()
+		})
+
+		it.each(['onEnter', 'onLeave'] as const)('%s завершается по таймеру через duration + 50 мс', hook => {
+			const transition = useExpandTransition({ duration: 200 })
+			const el = createElement(60)
+			const done = vi.fn()
+
+			transition[hook](el, done)
+			flushRaf()
+			vi.advanceTimersByTime(249)
+			expect(done).not.toHaveBeenCalled()
+
+			vi.advanceTimersByTime(1)
+			expect(done).toHaveBeenCalledOnce()
+			expect(el.style.transition).toBe('')
+			expect(el.style.height).toBe('')
+		})
+
+		it('после transitionend таймер не вызывает done второй раз, повторные события игнорируются', () => {
+			const { onEnter } = useExpandTransition()
+			const el = createElement(60)
+			const done = vi.fn()
+
+			onEnter(el, done)
+			flushRaf()
+			el.dispatchEvent(new Event('transitionend'))
+			el.dispatchEvent(new Event('transitionend'))
+			vi.advanceTimersByTime(1000)
+
+			expect(done).toHaveBeenCalledOnce()
+		})
+
+		it('transitionend, всплывший от потомка, не завершает раскрытие', () => {
+			const { onEnter } = useExpandTransition()
+			const el = createElement(60)
+			const child = document.createElement('span')
+			el.append(child)
+			const done = vi.fn()
+
+			onEnter(el, done)
+			flushRaf()
+			child.dispatchEvent(new Event('transitionend', { bubbles: true }))
+
+			expect(done).not.toHaveBeenCalled()
+
+			el.dispatchEvent(new Event('transitionend'))
+			expect(done).toHaveBeenCalledOnce()
+		})
+
+		it('сворачивание во время раскрытия отменяет ожидание раскрытия: его done и сброс стилей не приходят', () => {
+			const { onEnter, onLeave } = useExpandTransition()
+			const el = createElement(60)
+			const enterDone = vi.fn()
+			const leaveDone = vi.fn()
+
+			onEnter(el, enterDone)
+			flushRaf()
+			onLeave(el, leaveDone)
+			flushRaf()
+			vi.advanceTimersByTime(349)
+
+			expect(enterDone).not.toHaveBeenCalled()
+			expect(el.style.height).toBe('0px')
+
+			vi.advanceTimersByTime(1)
+			expect(leaveDone).toHaveBeenCalledOnce()
+			expect(enterDone).not.toHaveBeenCalled()
+		})
+	})
 })
