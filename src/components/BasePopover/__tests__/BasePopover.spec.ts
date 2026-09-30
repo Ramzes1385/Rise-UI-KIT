@@ -39,6 +39,15 @@ describe('BasePopover unit', () => {
 	})
 
 	describe('пропс variant', () => {
+		it('должен ограничивать высоту панели 320px по умолчанию и maxHeight — если передан', async () => {
+			const first = render(BasePopover, { props: { isOpen: true }, slots: SLOTS })
+			expect(document.body.querySelector<HTMLElement>('.base-dropdown__panel')?.style.maxHeight).toBe('320px')
+			first.unmount()
+
+			render(BasePopover, { props: { isOpen: true, maxHeight: '480px' }, slots: SLOTS })
+			expect(document.body.querySelector<HTMLElement>('.base-dropdown__panel')?.style.maxHeight).toBe('480px')
+		})
+
 		it('должен применять вариант default по умолчанию', () => {
 			render(BasePopover, {
 				props: { isOpen: true },

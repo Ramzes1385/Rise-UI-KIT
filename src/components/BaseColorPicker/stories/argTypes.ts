@@ -1,10 +1,19 @@
 import type { Meta } from '@storybook/vue3-vite'
+import { COLOR_FORMATS } from '@utils/data/colorUtils'
 import { propGroup, ARG_GROUP } from '@/stories/helpers'
 import type BaseColorPicker from '../ui/BaseColorPicker.vue'
 import { COLOR_PICKER_POSITIONS } from '../types/BaseColorPicker.types'
 
 export const argTypes = {
 	modelValue: { control: 'color', table: propGroup(ARG_GROUP.content) },
+	format: { control: 'inline-radio', options: COLOR_FORMATS, table: propGroup(ARG_GROUP.content) },
+	formats: { control: 'check', options: COLOR_FORMATS, table: propGroup(ARG_GROUP.content) },
+	palettes: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	recentColors: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	maxRecentColors: { control: { type: 'number', min: 0, max: 24 }, table: propGroup(ARG_GROUP.behavior) },
+	hasAlpha: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	isRecentHidden: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	isEyeDropperHidden: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	presets: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	resetLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	position: { control: 'inline-radio', options: COLOR_PICKER_POSITIONS, table: propGroup(ARG_GROUP.appearance) },

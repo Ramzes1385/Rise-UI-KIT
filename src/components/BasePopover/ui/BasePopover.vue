@@ -6,6 +6,7 @@
 		:color="color"
 		:gap="10"
 		:match-width="false"
+		:max-height="maxHeight"
 		:prevent-mousedown="false"
 		:panel-class="panelClasses"
 		:padding="0"
@@ -38,6 +39,7 @@ const props = withDefaults(
 	kitDefaults('BasePopover', {
 		isOpen: false,
 		position: 'bottom',
+		maxHeight: '320px',
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),

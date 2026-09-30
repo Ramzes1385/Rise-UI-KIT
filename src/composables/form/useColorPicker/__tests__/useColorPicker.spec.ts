@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import { useColorPicker } from '../useColorPicker'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import type { UseColorPickerReturn } from '../types/useColorPicker.types'
+import type { UseColorPickerOptions, UseColorPickerReturn } from '../types/useColorPicker.types'
 
 interface HostResult {
 	api: UseColorPickerReturn
@@ -10,7 +10,7 @@ interface HostResult {
 	changes: string[]
 }
 
-function mountPicker(initial: string): HostResult {
+function mountPicker(initial: string, extra: Partial<UseColorPickerOptions> = {}): HostResult {
 	const result = {} as HostResult
 	const TestComponent = defineComponent({
 		setup() {
@@ -22,6 +22,7 @@ function mountPicker(initial: string): HostResult {
 					value.value = hex
 					changes.push(hex)
 				},
+				...extra,
 			})
 			result.api = api
 			result.value = value
@@ -156,6 +157,59 @@ describe('useColorPicker', () => {
 			value.value = '#abcdef'
 			await nextTick()
 			expect(api.hex.value).toBe('#abcdef')
+		})
+	})
+
+	describe('форматы и прозрачность', () => {
+		it('принимает rgba() и хранит прозрачность', () => {
+			const { api } = mountPicker('rgba(255, 0, 0, 0.5)')
+			expect(api.hex.value).toBe('#ff0000')
+			expect(api.alpha.value).toBe(0.5)
+			expect(api.value.value).toBe('#ff000080')
+		})
+
+		it('без hasAlpha входная прозрачность отбрасывается', () => {
+			const { api, changes } = mountPicker('#ff000080', { hasAlpha: () => false })
+			expect(api.alpha.value).toBe(1)
+			api.setHex('rgba(0, 0, 255, 0.2)')
+			expect(changes).toEqual(['#0000ff'])
+		})
+
+		it('эмитит значение в формате getFormat', () => {
+			const { api, changes } = mountPicker('#ff0000', { getFormat: () => 'rgb' })
+			api.setAlpha(0.25)
+			api.setHex('hsl(120, 100%, 50%)')
+			expect(changes).toEqual(['rgba(255, 0, 0, 0.25)', 'rgb(0, 255, 0)'])
+		})
+
+		it('setAlpha зажимает и округляет до сотых', () => {
+			const { api } = mountPicker('#000000')
+			api.setAlpha(1.4)
+			expect(api.alpha.value).toBe(1)
+			api.setAlpha(0.333)
+			expect(api.alpha.value).toBe(0.33)
+		})
+
+		it('setRgb меняет только переданные каналы', () => {
+			const { api, changes } = mountPicker('#102030')
+			api.setRgb({ g: 255 })
+			expect(api.rgb.value).toEqual({ r: 16, g: 255, b: 48 })
+			expect(changes).toEqual(['#10ff30'])
+		})
+
+		it('setHsl меняет тон, насыщенность или светлоту', () => {
+			const { api, changes } = mountPicker('#ff0000')
+			expect(api.hsl.value).toEqual({ h: 0, s: 100, l: 50 })
+			api.setHsl({ h: 240 })
+			expect(changes).toEqual(['#0000ff'])
+			expect(api.hsv.value).toEqual({ h: 240, s: 100, v: 100 })
+		})
+
+		it('внешнее значение с другой прозрачностью обновляет alpha', async () => {
+			const { api, value } = mountPicker('#ff0000')
+			value.value = '#ff000033'
+			await nextTick()
+			expect(api.alpha.value).toBe(0.2)
 		})
 	})
 })

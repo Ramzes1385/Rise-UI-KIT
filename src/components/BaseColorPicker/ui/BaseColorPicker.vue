@@ -2,6 +2,7 @@
 	<BasePopover
 		v-model:is-open="isOpen"
 		:position="position"
+		max-height="calc(100vh - 16px)"
 		:size-scale="sizeScale"
 		:custom-class="{ root: classes.root }"
 		class="base-color-picker">
@@ -10,11 +11,11 @@
 				ref="swatchRef"
 				type="button"
 				class="base-color-picker__swatch"
-				:class="classes.swatch"
-				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor }"
+				:class="[{ 'base-color-picker__swatch--translucent': !hasTransparentSwatch && alphaPercent < 100 }, classes.swatch]"
+				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor, '--picker-swatch-color': swatchColor }"
 				:disabled="isDisabled"
 				:aria-expanded="isOpen ? 'true' : 'false'"
-				:aria-label="`${UI_COLOR_PICKER.SELECTED_COLOR} ${swatchColor}`">
+				:aria-label="`${UI_COLOR_PICKER.SELECTED_COLOR} ${picker.value.value}`">
 				<slot name="trigger" />
 			</button>
 		</template>
@@ -36,37 +37,100 @@
 				<span class="base-color-picker__marker" :style="[picker.markerStyle.value, { backgroundColor: picker.hex.value }]" />
 			</div>
 
-			<input
-				class="base-color-picker__hue"
-				type="range"
-				min="0"
-				max="360"
-				:aria-label="UI_COLOR_PICKER.HUE"
-				:value="picker.hsv.value.h"
-				@input="handleHueInput" />
-
-			<input
-				v-if="!isHexHidden"
-				class="base-color-picker__hex"
-				type="text"
-				spellcheck="false"
-				autocomplete="off"
-				:aria-label="UI_COLOR_PICKER.HEX_VALUE"
-				:value="swatchColor"
-				@change="handleHexChange" />
-
-			<div v-if="!isPresetsHidden" class="base-color-picker__presets">
+			<div class="base-color-picker__controls">
 				<button
-					v-for="preset in presets"
-					:key="preset"
+					v-if="isEyeDropperSupported && !isEyeDropperHidden"
 					type="button"
-					class="base-color-picker__preset"
-					:class="[{ 'base-color-picker__preset--selected': isPresetSelected(preset) }, classes.preset]"
-					:style="{ backgroundColor: preset }"
-					:aria-label="`${UI_COLOR_PICKER.PRESET} ${preset}`"
-					:aria-pressed="isPresetSelected(preset) ? 'true' : 'false'"
-					@click="handlePresetClick(preset)" />
+					class="base-color-picker__eyedropper"
+					:aria-label="UI_COLOR_PICKER.EYE_DROPPER"
+					:title="UI_COLOR_PICKER.EYE_DROPPER"
+					@click="pickFromScreen">
+					<BaseIcon name="eyedropper" :size-scale="sizeScale" aria-label="" />
+				</button>
+				<div class="base-color-picker__sliders">
+					<input
+						class="base-color-picker__hue"
+						type="range"
+						min="0"
+						max="360"
+						:aria-label="UI_COLOR_PICKER.HUE"
+						:value="picker.hsv.value.h"
+						@input="handleHueInput" />
+					<input
+						v-if="hasAlpha"
+						class="base-color-picker__alpha"
+						type="range"
+						min="0"
+						max="100"
+						:aria-label="UI_COLOR_PICKER.ALPHA"
+						:aria-valuetext="`${alphaPercent}%`"
+						:value="alphaPercent"
+						:style="{ '--picker-alpha-color': picker.hex.value }"
+						@input="handleAlphaInput" />
+				</div>
 			</div>
+
+			<div v-if="!isHexHidden" class="base-color-picker__fields" :class="classes.fields">
+				<div v-if="formats.length > 1" class="base-color-picker__formats" role="group" :aria-label="UI_COLOR_PICKER.FORMAT">
+					<button
+						v-for="item in formats"
+						:key="item"
+						type="button"
+						class="base-color-picker__format"
+						:class="{ 'base-color-picker__format--active': item === inputFormat }"
+						:aria-pressed="item === inputFormat ? 'true' : 'false'"
+						@click="setInputFormat(item)">
+						{{ formatLabel(item) }}
+					</button>
+				</div>
+				<div class="base-color-picker__inputs">
+					<label v-if="inputFormat === 'hex'" class="base-color-picker__channel base-color-picker__channel--hex">
+						<input
+							class="base-color-picker__hex"
+							type="text"
+							spellcheck="false"
+							autocomplete="off"
+							:aria-label="UI_COLOR_PICKER.HEX_VALUE"
+							:value="hexText"
+							@change="handleHexChange" />
+						<span class="base-color-picker__channel-caption" aria-hidden="true">{{ UI_COLOR_PICKER.FORMAT_HEX }}</span>
+					</label>
+					<label v-for="channel in channels" :key="channel.key" class="base-color-picker__channel">
+						<input
+							class="base-color-picker__channel-input"
+							type="number"
+							min="0"
+							:max="channel.max"
+							:aria-label="channel.label"
+							:value="channel.value"
+							@change="handleChannelChange(channel, $event)" />
+						<span class="base-color-picker__channel-caption" aria-hidden="true">{{ channel.short }}</span>
+					</label>
+				</div>
+			</div>
+
+			<ColorSwatches
+				v-if="!isPresetsHidden"
+				:aria-label="UI_COLOR_PICKER.PRESETS"
+				:colors="presets"
+				:is-selected="isSwatchSelected"
+				:swatch-class="classes.preset"
+				@select="handleSwatchSelect" />
+			<ColorSwatches
+				v-for="palette in palettes"
+				:key="palette.label"
+				:label="palette.label"
+				:colors="palette.colors"
+				:is-selected="isSwatchSelected"
+				:swatch-class="classes.preset"
+				@select="handleSwatchSelect" />
+			<ColorSwatches
+				v-if="recentColors.length > 0"
+				:label="UI_COLOR_PICKER.RECENT"
+				:colors="recentColors"
+				:is-selected="isSwatchSelected"
+				:swatch-class="classes.preset"
+				@select="handleSwatchSelect" />
 
 			<button v-if="isResettable" type="button" class="base-color-picker__reset" :class="classes.reset" @click="handleReset">
 				{{ resetLabel ?? UI_TEXT.NO_COLOR }}
@@ -77,9 +141,12 @@
 
 <script setup lang="ts">
 import '../styles/BaseColorPicker.style.scss'
+import { BaseIcon } from '@components/BaseIcon'
 import { BasePopover } from '@components/BasePopover'
+import { COLOR_FORMATS } from '@utils/data/colorUtils'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'
+import ColorSwatches from './ColorSwatches/ColorSwatches.vue'
 import { UI_COLOR_PICKER, UI_TEXT } from '@/locales/messages'
 import { useBaseColorPicker } from '../model/useBaseColorPicker'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -88,7 +155,14 @@ import type { BaseColorPickerEmits, BaseColorPickerProps, BaseColorPickerSlots }
 const props = withDefaults(
 	defineProps<BaseColorPickerProps>(),
 	kitDefaults('BaseColorPicker', {
+		format: 'hex',
+		formats: () => COLOR_FORMATS,
+		hasAlpha: false,
 		position: 'bottom',
+		palettes: () => [],
+		maxRecentColors: 8,
+		isRecentHidden: false,
+		isEyeDropperHidden: false,
 		isHexHidden: false,
 		isPresetsHidden: false,
 		isResettable: false,
@@ -106,14 +180,25 @@ const {
 	swatchRef,
 	isOpen,
 	picker,
-	swatchColor,
 	areaRef,
 	handleAreaPointerDown,
 	handleAreaKeydown,
-	isPresetSelected,
-	handleHueInput,
+	inputFormat,
+	channels,
+	hexText,
+	alphaPercent,
+	swatchColor,
+	formatLabel,
+	setInputFormat,
+	handleChannelChange,
 	handleHexChange,
-	handlePresetClick,
+	handleHueInput,
+	handleAlphaInput,
+	recentColors,
+	isEyeDropperSupported,
+	pickFromScreen,
+	isSwatchSelected,
+	handleSwatchSelect,
 	handleReset,
 	exposed,
 } = useBaseColorPicker(props, emit)

@@ -1,3 +1,8 @@
+.base-color-picker,
+.base-color-picker__panel {
+	--picker-checker: repeating-conic-gradient(var(--rise-bg-accented) 0 25%, var(--rise-bg) 0 50%) 0 0 / #{sz(8px)} #{sz(8px)};
+}
+
 .base-color-picker {
 	display: inline-flex;
 
@@ -19,6 +24,10 @@
 
 		&:disabled {
 			@include disabled-state;
+		}
+
+		&--translucent {
+			background: linear-gradient(var(--picker-swatch-color), var(--picker-swatch-color)), var(--picker-checker);
 		}
 	}
 
@@ -65,7 +74,44 @@
 		pointer-events: none;
 	}
 
-	&__hue {
+	&__controls {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__sliders {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(10px);
+		min-width: 0;
+	}
+
+	&__eyedropper {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(28px);
+		height: sz(28px);
+		padding: 0;
+		border: none;
+		border-radius: sz(var(--rise-control-radius));
+		background-color: transparent;
+		color: var(--rise-text-muted);
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__hue,
+	&__alpha {
 		display: block;
 		width: 100%;
 		height: sz(12px);
@@ -98,6 +144,99 @@
 		}
 	}
 
+	&__alpha {
+		background: linear-gradient(to right, transparent, var(--picker-alpha-color)), var(--picker-checker);
+	}
+
+	&__fields {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+	}
+
+	&__formats {
+		display: flex;
+		gap: sz(2px);
+		padding: sz(2px);
+		border-radius: sz(var(--rise-control-radius));
+		background-color: var(--rise-bg-elevated);
+	}
+
+	&__format {
+		flex: 1;
+		padding: sz(2px) sz(6px);
+		border: none;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: transparent;
+		color: var(--rise-text-toned);
+		font-family: inherit;
+		font-weight: var(--rise-font-weight-medium);
+		cursor: pointer;
+		@include text-size(xs);
+		@include transition-colors;
+		@include focus-ring;
+
+		&--active {
+			background-color: var(--rise-bg);
+			color: var(--rise-text-highlighted);
+			box-shadow: var(--rise-shadow-xs);
+		}
+	}
+
+	&__inputs {
+		display: flex;
+		gap: sz(6px);
+	}
+
+	&__channel {
+		display: flex;
+		flex: 1 1 0;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(2px);
+		min-width: 0;
+
+		&--hex {
+			flex-grow: 2.5;
+		}
+	}
+
+	&__channel-caption {
+		color: var(--rise-text-muted);
+		@include text-size(2xs);
+	}
+
+	&__channel-input {
+		box-sizing: border-box;
+		width: 100%;
+		padding: sz(4px) sz(2px);
+		outline: none;
+		color: var(--rise-text-highlighted);
+		font-family: var(--rise-font-mono);
+		text-align: center;
+		appearance: textfield;
+		@include text-size(xs);
+		@include field-box;
+
+		&::-webkit-inner-spin-button,
+		&::-webkit-outer-spin-button {
+			margin: 0;
+			appearance: none;
+		}
+	}
+
+	&__swatches {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+	}
+
+	&__swatches-label {
+		color: var(--rise-text-muted);
+		font-weight: var(--rise-font-weight-semibold);
+		@include text-size(xs);
+	}
+
 	&__hex {
 		box-sizing: border-box;
 		width: 100%;
@@ -123,6 +262,7 @@
 		padding: 0;
 		border: none;
 		border-radius: sz(var(--rise-radius-sm));
+		background: linear-gradient(var(--picker-swatch-color), var(--picker-swatch-color)), var(--picker-checker);
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rise-text-highlighted) 12%, transparent);
 		cursor: pointer;
 		@include transition-colors;

@@ -17,6 +17,8 @@ export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'ro
 	isOpen?: boolean
 	/** Позиция */
 	position?: PopoverPosition
+	/** Предел высоты панели (CSS-длина): содержимое выше прокручивается. По умолчанию `320px`, как у BaseDropdown */
+	maxHeight?: string
 }
 
 export interface BasePopoverEmits {
