@@ -1,3 +1,4 @@
+export { SLIDER_ANIMATIONS } from './types/BaseSlider.types'
 export type {
 	BaseSliderEmits,
 	BaseSliderProps,

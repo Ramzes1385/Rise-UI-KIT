@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSlider from '../ui/BaseSlider.vue'
+import { SLIDER_ANIMATIONS } from '../types/BaseSlider.types'
 import { baseArgTypes, hiddenArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
@@ -18,7 +19,7 @@ export const argTypes = {
 	isVertical: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	spaceBetween: { control: { type: 'number', min: 0, max: 48, step: 4 }, table: propGroup(ARG_GROUP.appearance) },
 	slidesPerView: { control: { type: 'number', min: 1, max: 4 }, table: propGroup(ARG_GROUP.appearance) },
-	animation: { control: 'inline-radio', options: ['slide', 'fade', 'scale', 'flip'], table: propGroup(ARG_GROUP.behavior) },
+	animation: { control: 'inline-radio', options: SLIDER_ANIMATIONS, table: propGroup(ARG_GROUP.behavior) },
 	slidesPerGroup: { control: { type: 'number', min: 1, max: 4 }, table: propGroup(ARG_GROUP.behavior) },
 	isLoop: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isAutoplay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },

@@ -5,6 +5,7 @@ import { useSlider } from '@composables/range/useSlider'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BaseSliderEmits, SliderProps } from '../types/BaseSlider.types'
+import { SLIDER_EFFECT_RANGE, SLIDER_SPATIAL_ANIMATIONS } from '../types/BaseSlider.types'
 
 const HOLD_INTERVAL_MS = 150
 const SLIDER_ELEMENTS = [
@@ -23,6 +24,24 @@ const SLIDER_ELEMENTS = [
 	'thumbs',
 	'thumb',
 ]
+
+function relativeOffset(index: number, current: number, props: SliderProps): number {
+	const count = props.items.length
+	const raw = index - current
+	if (!props.isLoop || count < 3) return raw
+	if (raw > count / 2) return raw - count
+	if (raw < -count / 2) return raw + count
+	return raw
+}
+
+function useSlideEffect(props: SliderProps, currentIndex: () => number) {
+	return (index: number): Record<string, string> | undefined => {
+		if (!SLIDER_SPATIAL_ANIMATIONS.includes(props.animation)) return undefined
+		const offset = Math.max(-SLIDER_EFFECT_RANGE, Math.min(SLIDER_EFFECT_RANGE, relativeOffset(index, currentIndex(), props)))
+		const distance = Math.abs(offset)
+		return { '--slide-offset': String(offset), '--slide-distance': String(distance), zIndex: String(SLIDER_EFFECT_RANGE - distance) }
+	}
+}
 
 function useSliderState(props: SliderProps, emit: BaseSliderEmits) {
 	return useSlider({
@@ -79,6 +98,7 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 			return index >= slider.currentIndex.value && index < slider.currentIndex.value + perView.value
 		},
 		slideLabel: (index: number): string => formatMessage(UI_ARIA.SLIDE_POSITION, { current: index + 1, total: props.items.length }),
+		slideEffectStyle: useSlideEffect(props, () => slider.currentIndex.value),
 		...useHold(slider.goNext, slider.goPrev),
 	}
 }

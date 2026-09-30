@@ -17,7 +17,19 @@ export interface SliderItem {
 	description?: string
 }
 
-export type SliderAnimation = 'slide' | 'fade' | 'scale' | 'flip'
+/**
+ * Анимации переключения: `slide` — лента; `fade` — растворение; `scale` — растворение с приближением; `flip` — поворот;
+ * `cube` — грани куба; `coverflow` — соседние слайды видны по бокам под углом.
+ */
+export const SLIDER_ANIMATIONS = ['slide', 'fade', 'scale', 'flip', 'cube', 'coverflow'] as const
+
+export type SliderAnimation = (typeof SLIDER_ANIMATIONS)[number]
+
+/** Анимации, где слайды расставлены в пространстве относительно текущего: им нужно смещение каждого слайда. */
+export const SLIDER_SPATIAL_ANIMATIONS: readonly SliderAnimation[] = ['cube', 'coverflow']
+
+/** Дальше этого смещения слайды складываются в одну точку и скрыты. */
+export const SLIDER_EFFECT_RANGE = 3
 
 export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
@@ -42,7 +54,10 @@ export interface BaseSliderProps extends BaseComponentProps<
 > {
 	/** Элементы слайдера */
 	items: SliderItem[]
-	/** Анимация переключения */
+	/**
+	 * Анимация переключения, как эффекты Swiper: `slide`, `fade`, `scale`, `flip`, `cube`, `coverflow`.
+	 * Кроме `slide`, видимым считается один текущий слайд (`slidesPerView` не действует). При `prefers-reduced-motion` смена мгновенная.
+	 */
 	animation?: SliderAnimation
 	/** Тип навигации */
 	navigation?: SliderNavigation

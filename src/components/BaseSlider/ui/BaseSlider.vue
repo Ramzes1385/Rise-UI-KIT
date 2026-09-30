@@ -68,7 +68,7 @@
 						:key="index"
 						class="base-slider__slide"
 						:class="[{ 'base-slider__slide--active': index === currentIndex }, classes.slide]"
-						:style="slideStyle"
+						:style="[slideStyle, slideEffectStyle(index)]"
 						:inert="isSlideVisible(index) ? undefined : true">
 						<slot :item="item" :index="index">
 							<video
@@ -206,6 +206,7 @@ const {
 	arrowVariant,
 	perGroup,
 	isSlideVisible,
+	slideEffectStyle,
 	slideLabel,
 	startHold,
 	stopHold,

@@ -897,3 +897,12 @@
 - DOM: у `.base-progress__track` теперь `container-type: inline-size` (ширина полосы — единица `cqw` для градиентов). Фон заливки собран из слоёв `--progress-stripes` и `--progress-paint`; свой `background-image` на `.base-progress__fill` в приложении перекроет оба слоя.
 
 **Что сделать.** Ничего, если приложение не переопределяло `background-image` или `background-size` у `.base-progress__fill`.
+
+### BaseSlider: эффекты cube и coverflow (Р.21)
+
+**Что нового.**
+- `animation` принимает `cube` (грани куба; в вертикальном режиме — поворот вверх-вниз) и `coverflow` (соседние слайды по бокам под углом). Константа `SLIDER_ANIMATIONS` со всеми значениями; тип `SliderAnimation` выводится из неё.
+- DOM: при `cube` и `coverflow` у слайдов инлайн-переменные `--slide-offset` (смещение от текущего, по кругу при `isLoop`, от −3 до 3), `--slide-distance` (модуль смещения) и `z-index`; у `.base-slider__viewport` — `container-type: size`. Соседние слайды остаются `inert`: клики и Tab достаются текущему.
+- Как и у `fade`, `scale`, `flip`, при этих эффектах `slidesPerView` не действует. При `prefers-reduced-motion` смена мгновенная (длительности `--rise-duration*` сжимаются).
+
+**Что сделать.** Ничего.
