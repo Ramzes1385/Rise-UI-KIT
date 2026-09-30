@@ -749,20 +749,20 @@ function registerInBarrel(n, changes) {
 }
 
 function registerInPlugin(n, changes) {
-	const path = join(ROOT, 'src/plugin/plugin.ts')
+	const path = join(ROOT, 'src/plugin/registry/components.ts')
 	let source = readFileSync(path, 'utf-8')
-	const firstImport = source.match(/^import \{ Base\w+ \} from '\.\.\/components\/Base\w+'$/m)?.[0]
-	if (!firstImport) fail('В src/plugin/plugin.ts не найдены импорты компонентов')
+	const firstImport = source.match(/^import \{ Base\w+ \} from '\.\.\/\.\.\/components\/Base\w+'$/m)?.[0]
+	if (!firstImport) fail('В src/plugin/registry/components.ts не найдены импорты компонентов')
 	// Новый импорт — рядом с первым импортом компонента; порядок («лесенку») расставляет eslint --fix
-	source = source.replace(firstImport, `${firstImport}\nimport { ${n.name} } from '../components/${n.name}'`)
+	source = source.replace(firstImport, `${firstImport}\nimport { ${n.name} } from '../../components/${n.name}'`)
 
-	const block = source.match(/const UI_COMPONENTS: Record<string, Component> = \{\n([\s\S]*?)\n\}/)
-	if (!block) fail('В src/plugin/plugin.ts не найден объект UI_COMPONENTS')
+	const block = source.match(/export const UI_COMPONENTS: Record<string, Component> = \{\n([\s\S]*?)\n\}/)
+	if (!block) fail('В src/plugin/registry/components.ts не найден объект UI_COMPONENTS')
 	const entries = block[1]
 		.split('\n')
 		.concat(`\t${n.name},`)
 		.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
-	source = source.replace(block[0], `const UI_COMPONENTS: Record<string, Component> = {\n${entries.join('\n')}\n}`)
+	source = source.replace(block[0], `export const UI_COMPONENTS: Record<string, Component> = {\n${entries.join('\n')}\n}`)
 	changes.set(path, source)
 }
 
@@ -845,7 +845,7 @@ function main() {
 		execFileSync('npx', ['prettier', '--write', '--log-level', 'warn', ...formattable], { stdio: 'inherit', cwd: ROOT })
 		const lintable = [
 			...created.map(([path]) => path).filter(path => /\.(ts|vue)$/.test(path)),
-			join(ROOT, 'src/plugin/plugin.ts'),
+			join(ROOT, 'src/plugin/registry/components.ts'),
 			join(COMPONENTS_DIR, 'index.ts'),
 		]
 		try {
@@ -857,7 +857,7 @@ function main() {
 
 	console.log(`\n✅ Создан ${n.name} (${options.kind}) в разделе Storybook «${options.group}».`)
 	console.log(
-		`   Регистрация: src/components/index.ts, src/plugin/plugin.ts${sets.length ? `, check-a11y-coverage (${sets.join(', ')})` : ''}.`,
+		`   Регистрация: src/components/index.ts, src/plugin/registry/components.ts${sets.length ? `, check-a11y-coverage (${sets.join(', ')})` : ''}.`,
 	)
 	console.log(`\nДальше:`)
 	console.log(`  1. Заполните места с пометкой ${TODO} — без этого проверка stories не пройдёт.`)

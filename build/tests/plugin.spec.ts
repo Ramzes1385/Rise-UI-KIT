@@ -1,6 +1,9 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h } from 'vue'
-import { createUiKitPlugin } from '@/plugin'
+import { setLocale } from '@/locales/state'
+import { defineComponent, h, inject } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
+import { createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
+import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTeleportTarget'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
@@ -59,5 +62,26 @@ describe('createUiKitPlugin', () => {
 		})
 
 		expect(wrapper.get('a').attributes()).toMatchObject({ href: '/docs', 'data-router': '' })
+	})
+
+	it('без настроек: имена как есть, тяжёлые компоненты — асинхронные', () => {
+		const wrapper = mount({ template: '<BaseButton>Сохранить</BaseButton>' }, { global: { plugins: [uiKitPlugin] } })
+
+		expect(wrapper.get('button').classes()).toContain('base-button')
+		expect(Object.keys(UI_COMPONENTS)).toHaveLength(113)
+		expect(
+			Object.entries(UI_COMPONENTS)
+				.filter(([, component]) => '__asyncLoader' in component)
+				.map(([name]) => name),
+		).toEqual(['BaseCalendar', 'BaseChat', 'BaseDatePicker', 'BaseEditor', 'BaseFileUpload', 'BaseTable'])
+	})
+
+	it('teleportTo и locale: контейнер слоёв для provide, язык — для всего кита', () => {
+		const Probe = defineComponent({ setup: () => () => h('output', String(inject(TELEPORT_TARGET_KEY, 'body'))) })
+		const wrapper = mount(Probe, { global: { plugins: [createUiKitPlugin({ teleportTo: '#layers', locale: 'en' })] } })
+
+		expect(wrapper.text()).toBe('#layers')
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
+		setLocale('ru')
 	})
 })
