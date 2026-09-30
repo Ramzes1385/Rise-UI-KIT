@@ -40,7 +40,7 @@ describe('BaseImageCompare', () => {
 		expect(emitted('update:position')).toEqual([[51], [61], [60], [50], [60], [50], [100], [0]])
 	})
 
-	it('мышь: нажатие переносит границу, перетаскивание двигает до отпускания', async () => {
+	it('мышь: нажатие плавно переносит границу, перетаскивание ведёт её за указателем до отпускания', async () => {
 		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ left: 100, width: 200 } as DOMRect)
 		const { emitted, container } = render(BaseImageCompare, { props: PROPS })
 		const root = container.querySelector('.base-image-compare') as HTMLElement
@@ -48,8 +48,9 @@ describe('BaseImageCompare', () => {
 		await fireEvent.pointerDown(root, { button: 2, clientX: 150 })
 		expect(emitted('update:position')).toBeUndefined()
 		await fireEvent.pointerDown(root, { button: 0, clientX: 150 })
-		expect(root).toHaveClass('base-image-compare--dragging')
+		expect(root).not.toHaveClass('base-image-compare--dragging')
 		await fireEvent.pointerMove(window, { clientX: 290 })
+		expect(root).toHaveClass('base-image-compare--dragging')
 		await fireEvent.pointerMove(window, { clientX: 500 })
 		await fireEvent.pointerUp(window)
 		await fireEvent.pointerMove(window, { clientX: 100 })

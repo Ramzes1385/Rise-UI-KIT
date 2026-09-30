@@ -42,7 +42,10 @@ export function useBaseImageCompare(props: BaseImageCompareProps, emit: BaseImag
 		const rect = (rootRef.value as HTMLElement).getBoundingClientRect()
 		if (rect.width) setPosition(((clientX - rect.left) / rect.width) * 100)
 	}
-	const handleMove = (event: PointerEvent): void => moveTo(event.clientX)
+	const handleMove = (event: PointerEvent): void => {
+		isDragging.value = true
+		moveTo(event.clientX)
+	}
 	const stop = (): void => {
 		isDragging.value = false
 		window.removeEventListener('pointermove', handleMove)
@@ -65,7 +68,6 @@ export function useBaseImageCompare(props: BaseImageCompareProps, emit: BaseImag
 		handlePointerDown(event: PointerEvent): void {
 			if (event.button !== 0) return
 			event.preventDefault()
-			isDragging.value = true
 			moveTo(event.clientX)
 			window.addEventListener('pointermove', handleMove)
 			window.addEventListener('pointerup', stop)

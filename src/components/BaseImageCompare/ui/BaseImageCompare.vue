@@ -38,6 +38,7 @@ import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseImageCompareEmits, BaseImageCompareProps } from '../types/BaseImageCompare.types'
 
 const props = withDefaults(defineProps<BaseImageCompareProps>(), {
+	variant: 'default',
 	beforeLabel: undefined,
 	afterLabel: undefined,
 	position: 50,

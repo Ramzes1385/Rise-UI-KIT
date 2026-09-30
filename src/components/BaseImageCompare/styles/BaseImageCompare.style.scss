@@ -1,3 +1,9 @@
+@property --compare-position {
+	syntax: '<percentage>';
+	inherits: true;
+	initial-value: 50%;
+}
+
 .base-image-compare {
 	position: relative;
 	box-sizing: border-box;
@@ -91,12 +97,10 @@
 	}
 
 	@include motion-safe {
-		&:not(&--dragging) &__before,
-		&:not(&--dragging) &__divider,
-		&:not(&--dragging) &__handle {
-			transition:
-				clip-path 0.15s ease,
-				left 0.15s ease;
+		transition: --compare-position 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+
+		&--dragging {
+			transition-duration: 0.08s;
 		}
 	}
 }

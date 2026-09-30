@@ -183,7 +183,7 @@ Stories, которые нужны только как проверка (кла�
   - `storySource({ template, imports, models, script, omit })` собирает файл Vue: импорты из пакета, переменные `v-model`, константы и строки `script`; `v-bind="args"` раскрывается в пропсы из Controls без значений по умолчанию, слотов и обработчиков. Код меняется вместе с Controls;
   - `useStorySetup(args, { models, data })` — `setup` для того же шаблона: `args` для `v-bind`, переменные `v-model`, связанные с Controls, и данные шаблона;
   - данные шаблона — константы кита (`X_VARIANTS`) в `imports` или своё значение, выведенное в `script` через `literal(...)` из тех же данных, что в `setup`, — чтобы код не расходился с примером;
-  - история без Controls — `staticStorySource(...)`. Длинные data URI в коде сокращаются: `'data:image/svg+xml,…'`.
+  - история без Controls — `staticStorySource(...)`. Картинки data URI уходят в константы `<script setup>`, длинные — сокращаются: `const before = 'data:image/svg+xml,…'`.
 
 ## 9. Visual- и e2e-тесты
 

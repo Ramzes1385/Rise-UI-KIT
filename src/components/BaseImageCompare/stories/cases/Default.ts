@@ -1,19 +1,31 @@
-import { useModelArg } from '@/stories/helpers'
 import { expect, fireEvent } from 'storybook/test'
 import type meta from '../BaseImageCompare.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseImageCompare from '../../ui/BaseImageCompare.vue'
+import { storySource, useStorySetup } from '@/stories/helpers'
+
+const MODELS = { position: 'position' } as const
+
+const template = `
+	<div style="max-width: 560px">
+		<BaseImageCompare v-bind="args" v-model:position="position" />
+	</div>
+`
 
 export const Default: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Потяните границу или нажмите Tab и двигайте её стрелками.' } } },
-	render: args => {
-		const onUpdate = useModelArg('position')
-		return {
-			components: { BaseImageCompare },
-			setup: () => ({ args, onUpdate }),
-			template: '<div style="max-width: 560px"><BaseImageCompare v-bind="args" @update:position="onUpdate" /></div>',
-		}
+	parameters: {
+		docs: {
+			description: {
+				story: 'Потяните границу, щёлкните в любом месте или нажмите Tab и двигайте её стрелками — граница переезжает плавно.',
+			},
+			source: storySource({ template, imports: ['BaseImageCompare'], models: MODELS }),
+		},
 	},
+	render: args => ({
+		components: { BaseImageCompare },
+		setup: useStorySetup(args, { models: MODELS }),
+		template,
+	}),
 	play: async ({ canvas, userEvent }) => {
 		const handle = canvas.getByRole('slider', { name: 'Граница между «До» и «После»' })
 		await userEvent.tab()

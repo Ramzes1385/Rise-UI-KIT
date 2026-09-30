@@ -74,8 +74,15 @@ function shownArgs(options: StorySourceOptions, context: StorySourceContext): [s
 	)
 }
 
+/** Картинки data URI всегда уходят в константу: в теге их не прочитать */
+const isDataUri = (value: unknown): boolean => typeof value === 'string' && value.startsWith('data:')
+
 function attribute([name, value]: [string, unknown], hoisted: string[]): string {
 	if (value === true) return kebab(name)
+	if (isDataUri(value)) {
+		hoisted.push(`const ${name} = ${literal(value)}`)
+		return `:${kebab(name)}="${name}"`
+	}
 	if (typeof value === 'string' && !value.includes('\n')) return `${kebab(name)}="${value.replace(/"/g, '&quot;')}"`
 	const code = literal(value)
 	if (code.length <= INLINE_LIMIT && !code.includes('\n')) return `:${kebab(name)}="${code.replace(/"/g, '&quot;')}"`
@@ -83,10 +90,10 @@ function attribute([name, value]: [string, unknown], hoisted: string[]): string 
 	return `:${kebab(name)}="${name}"`
 }
 
-/** `v-bind="args"` → пропсы: в строку, если помещаются, иначе по одному на строку */
 /** Части тега: имя, атрибуты (значения в кавычках — целиком) и закрывающая скобка */
 const tokens = (text: string): string[] => text.match(/(?:[^\s"]+(?:"[^"]*")?)+/g) ?? []
 
+/** `v-bind="args"` → пропсы: в строку, если помещаются, иначе по одному на строку */
 function expandLine(line: string, attributes: readonly string[]): string {
 	const [, indent, before, after] = /^(\s*)(.*?)\s*v-bind="args"(.*)$/.exec(line) as RegExpExecArray
 	const oneLine = [before, ...attributes, after.trim()].filter(Boolean).join(' ')

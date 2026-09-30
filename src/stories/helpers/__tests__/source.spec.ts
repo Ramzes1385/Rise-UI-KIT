@@ -83,6 +83,15 @@ describe('код для «Show code»', () => {
 		expect(code).not.toContain('rows')
 	})
 
+	it('картинки data URI — константами, даже если коротки', () => {
+		const source = storySource({ template: '<BaseImageCompare v-bind="args" />', imports: ['BaseImageCompare'] })
+		const code = source.transform('', {
+			args: { before: 'data:image/png;base64,AAAA', after: `data:image/svg+xml,${'%3Csvg'.repeat(20)}` },
+		})
+		expect(code).toContain("const before = 'data:image/png;base64,AAAA'\nconst after = 'data:image/svg+xml,…'")
+		expect(code).toContain('<BaseImageCompare :before="before" :after="after" />')
+	})
+
 	it('в длинном теге каждый атрибут — на своей строке, значения в кавычках не разрываются', () => {
 		const source = storySource({
 			template: '<BaseChip v-for="variant in CHIP_VARIANTS" :key="variant" v-bind="args" :variant="variant" style="margin: 0 4px" />',
