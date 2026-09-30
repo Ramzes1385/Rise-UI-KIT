@@ -35,7 +35,7 @@ export const InPopover: StoryObj<typeof meta> = {
 							<BaseBadge v-if="unread" :label="String(unread)" aria-hidden="true" />
 						</BaseButton>
 					</template>
-					<div style="width: 288px">
+					<div style="width: 320px; max-width: 100%">
 						<BaseNotificationCenter v-model:items="items" variant="ghost" :now="now" :max-height="260" />
 					</div>
 				</BasePopover>

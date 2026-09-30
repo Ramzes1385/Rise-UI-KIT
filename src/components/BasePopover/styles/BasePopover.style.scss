@@ -17,7 +17,7 @@
 	&__inner {
 		min-height: 0;
 		padding: sz(12px) sz(16px);
-		overflow-y: auto;
+		overflow: hidden auto;
 		overflow-wrap: anywhere;
 		@include scrollbar-thin;
 
