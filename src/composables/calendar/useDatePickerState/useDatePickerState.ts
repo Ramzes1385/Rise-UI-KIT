@@ -51,7 +51,7 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 		// N календарей: N × calendarWidth + (N − 1) × gap + panelChrome ≤ ширина поля
 		const count = Math.floor((currentWidth - panelChrome + gap) / (calendarWidth + gap))
 
-		return Math.max(1, count)
+		return Math.max(1, Math.min(count, resolvedProps.value.maxMonths ?? count))
 	})
 
 	const panelEl = computed(() => panelRef.value?.panelRef ?? null)
@@ -136,9 +136,7 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 
 		/* istanbul ignore else -- defensive: wrapperRef всегда привязан после mount */
 		if (wrapperRef.value) {
-			if (resolvedProps.value.isMultiMonth) {
-				wrapperWidth.value = wrapperRef.value.clientWidth
-			}
+			wrapperWidth.value = wrapperRef.value.clientWidth
 			const themeEl = wrapperRef.value.closest('[data-theme]')
 			currentTheme.value = themeEl?.getAttribute('data-theme') ?? null
 		}
@@ -228,7 +226,7 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 	}
 
 	onMounted(() => {
-		if (resolvedProps.value.isMultiMonth && wrapperRef.value) {
+		if (wrapperRef.value) {
 			wrapperWidth.value = wrapperRef.value.clientWidth
 			resizeObserver = new ResizeObserver(entries => {
 				for (const entry of entries) {

@@ -42,8 +42,10 @@ export interface BaseDatePickerProps extends BaseComponentProps<string, 'root' |
 	closeOnEscape?: boolean
 	/** Отступ от инпута (px) */
 	gap?: number
-	/** Автоматически подстраивать количество месяцев под ширину поля */
+	/** Панель шириной с поле, месяцев в ней — столько, сколько помещается по ширине (2, 3 и больше). По умолчанию `true`; `false` — один месяц, панель по ширине календаря */
 	isMultiMonth?: boolean
+	/** Предел числа месяцев в панели при `isMultiMonth`. По умолчанию без предела */
+	maxMonths?: number
 }
 
 export interface BaseDatePickerEmits {

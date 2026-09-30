@@ -16,6 +16,8 @@ export interface UseDatePickerStateOptions {
 			dateFormat: DateFormat
 			isDisabled: boolean
 			isMultiMonth: boolean
+			/** Предел числа месяцев в панели при isMultiMonth */
+			maxMonths?: number
 			sizeScale: number
 			closeOnClickOutside: boolean
 			closeOnEscape: boolean

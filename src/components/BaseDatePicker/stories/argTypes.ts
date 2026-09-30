@@ -16,6 +16,7 @@ export const argTypes = {
 	inputVariant: { control: 'inline-radio', options: [...INPUT_VARIANTS], table: propGroup(ARG_GROUP.appearance) },
 	calendarVariant: { control: 'inline-radio', options: [...CALENDAR_VARIANTS], table: propGroup(ARG_GROUP.appearance) },
 	isMultiMonth: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	maxMonths: { control: { type: 'number', min: 1, max: 12 }, table: propGroup(ARG_GROUP.appearance) },
 	gap: { control: { type: 'number', min: 0, max: 24 }, table: propGroup(ARG_GROUP.appearance) },
 	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isRequired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },

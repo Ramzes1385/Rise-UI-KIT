@@ -26,6 +26,7 @@ export const WithError = cases.WithError
 export const Disabled = cases.Disabled
 export const Clearable = cases.Clearable
 export const RangeSelection = cases.RangeSelection
+export const MonthsByWidth = cases.MonthsByWidth
 export const MultipleSelection = cases.MultipleSelection
 export const WithTime = cases.WithTime
 export const Constraints = cases.Constraints

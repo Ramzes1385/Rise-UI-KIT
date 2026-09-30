@@ -16,3 +16,10 @@ export async function findPanel(): Promise<HTMLElement> {
 export function docsFrame(height: number) {
 	return { story: { inline: false, height: `${height}px` } }
 }
+
+export function monthsForWidth(width: number): number {
+	const calendar = 7 * 36 + 2 * 4 + 2
+	const gap = 8
+	const chrome = 2 * 4 + 2
+	return Math.max(1, Math.floor((width - chrome + gap) / (calendar + gap)))
+}

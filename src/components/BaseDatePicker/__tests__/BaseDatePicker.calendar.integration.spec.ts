@@ -207,4 +207,41 @@ describe('BaseDatePicker: поле и панель после редизайна
 		panel = await openPanel()
 		expect(panel.querySelectorAll('.base-calendar')).toHaveLength(1)
 	})
+
+	describe('ширина панели и число месяцев', () => {
+		function setFieldWidth(container: Element, width: number): void {
+			Object.defineProperty(container.querySelector('.base-date-picker')!, 'clientWidth', { value: width, configurable: true })
+		}
+
+		it('по умолчанию месяцев столько, сколько помещается в поле: 360px — один, 600px — два, 900px — три', async () => {
+			for (const [width, count] of [
+				[360, 1],
+				[600, 2],
+				[900, 3],
+			] as const) {
+				const { container, unmount } = render(BaseDatePicker, { props: { modelValue: new Date(2026, 8, 25) } })
+				setFieldWidth(container, width)
+
+				const panel = await openPanel()
+				expect(panel.querySelectorAll('.base-calendar')).toHaveLength(count)
+				unmount()
+			}
+		})
+
+		it('isMultiMonth=false оставляет один месяц в широком поле', async () => {
+			const { container } = render(BaseDatePicker, { props: { modelValue: new Date(2026, 8, 25), isMultiMonth: false } })
+			setFieldWidth(container, 900)
+
+			const panel = await openPanel()
+			expect(panel.querySelectorAll('.base-calendar')).toHaveLength(1)
+		})
+
+		it('maxMonths ограничивает число месяцев', async () => {
+			const { container } = render(BaseDatePicker, { props: { modelValue: new Date(2026, 8, 25), maxMonths: 2 } })
+			setFieldWidth(container, 1200)
+
+			const panel = await openPanel()
+			expect(panel.querySelectorAll('.base-calendar')).toHaveLength(2)
+		})
+	})
 })

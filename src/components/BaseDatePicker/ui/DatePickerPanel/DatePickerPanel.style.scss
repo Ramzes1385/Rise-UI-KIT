@@ -5,6 +5,7 @@
 	flex-direction: column;
 	gap: sz(4px);
 	box-sizing: border-box;
+	min-width: min-content;
 	max-width: calc(100vw - 16px);
 	padding: sz(4px);
 	overflow-y: auto;

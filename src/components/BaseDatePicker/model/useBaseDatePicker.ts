@@ -17,9 +17,15 @@ function resolveDisplayProps(props: DatePickerProps) {
 		inputVariant: props.inputVariant ?? 'default',
 		calendarVariant: props.calendarVariant ?? 'ghost',
 		sizeScale: props.sizeScale ?? 100,
-		gap: props.gap ?? 4,
 		label: props.label ?? '',
 		error: props.error ?? '',
+	}
+}
+
+function resolveLayoutProps(props: DatePickerProps) {
+	return {
+		gap: props.gap ?? 4,
+		maxMonths: props.maxMonths ?? Number.POSITIVE_INFINITY,
 	}
 }
 
@@ -34,13 +40,17 @@ function resolveFlagProps(
 		isClearable: props.isClearable ?? false,
 		closeOnClickOutside: resolveBoolean('closeOnClickOutside', props.closeOnClickOutside, true),
 		closeOnEscape: resolveBoolean('closeOnEscape', props.closeOnEscape, true),
-		isMultiMonth: props.isMultiMonth ?? false,
+		isMultiMonth: resolveBoolean('isMultiMonth', props.isMultiMonth, true),
 	}
 }
 
 export function useBaseDatePicker(props: DatePickerProps, emit: BaseDatePickerEmits) {
 	const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
-	const resolvedProps = computed(() => ({ ...resolveDisplayProps(props), ...resolveFlagProps(props, resolveBooleanPropDefault) }))
+	const resolvedProps = computed(() => ({
+		...resolveDisplayProps(props),
+		...resolveLayoutProps(props),
+		...resolveFlagProps(props, resolveBooleanPropDefault),
+	}))
 	const formField = useFormField({ value: () => props.modelValue ?? null, error: () => props.error, isRequired: () => props.isRequired })
 	const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
 	const { customColorStyle } = useCustomColor({ getColor: () => props.color })
