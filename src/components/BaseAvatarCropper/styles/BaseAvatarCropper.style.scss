@@ -1,0 +1,92 @@
+.base-avatar-cropper {
+	display: flex;
+	flex-direction: column;
+	gap: sz(12px);
+	width: 100%;
+	min-width: 0;
+	max-width: sz(var(--cropper-size));
+
+	&__area {
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		overflow: hidden;
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-bg-accented);
+		cursor: grab;
+		touch-action: none;
+		user-select: none;
+		aspect-ratio: 1;
+		@include focus-ring(2px);
+	}
+
+	&--outline &__area {
+		border: 1px solid var(--rise-border-accented);
+	}
+
+	&--dragging &__area {
+		cursor: grabbing;
+	}
+
+	&--disabled &__area {
+		@include disabled-state;
+	}
+
+	&__image {
+		position: absolute;
+		max-width: none;
+		pointer-events: none;
+		user-select: none;
+	}
+
+	&--loading &__image {
+		visibility: hidden;
+	}
+
+	&__frame {
+		position: absolute;
+		inset: 8%;
+		border-radius: 50%;
+		outline: 2px solid rgb(255 255 255 / 90%);
+		box-shadow: 0 0 0 100vmax rgb(0 0 0 / 55%);
+		pointer-events: none;
+	}
+
+	&--square &__frame {
+		border-radius: sz(var(--rise-radius-md));
+	}
+
+	&__message {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		max-width: 80%;
+		padding: sz(6px) sz(12px);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		color: var(--rise-text);
+		text-align: center;
+		transform: translate(-50%, -50%);
+		@include text-size(sm);
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+
+	&__zoom {
+		display: flex;
+		align-items: center;
+		gap: sz(16px);
+	}
+
+	&__zoom-label {
+		color: var(--rise-text-toned);
+		@include text-size(sm);
+	}
+
+	&__range {
+		flex: 1;
+		min-width: 0;
+	}
+}

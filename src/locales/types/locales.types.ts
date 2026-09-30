@@ -48,6 +48,8 @@ export interface UiKitLocale {
 	jsonViewer: Section<'jsonViewer'>
 	textDiff: Section<'textDiff'>
 	qrCode: Section<'qrCode'>
+	signaturePad: Section<'signaturePad'>
+	avatarCropper: Section<'avatarCropper'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 

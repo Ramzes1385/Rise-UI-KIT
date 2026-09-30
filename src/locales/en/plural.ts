@@ -6,5 +6,6 @@ export const enPlural = {
 	ATTACHMENTS: { one: '{n} attachment', other: '{n} attachments' },
 	JSON_KEYS: { one: '{n} key', other: '{n} keys' },
 	JSON_ITEMS: { one: '{n} item', other: '{n} items' },
+	SIGNATURE_STROKES: { one: '{n} stroke', other: '{n} strokes' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 }

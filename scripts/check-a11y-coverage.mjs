@@ -106,6 +106,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseRequisiteInput',
 	'BaseAddressInput',
 	'BaseJsonViewer',
+	'BaseSignaturePad',
+	'BaseAvatarCropper',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -151,6 +153,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseMoneyInput',
 	'BaseRequisiteInput',
 	'BaseAddressInput',
+	'BaseSignaturePad',
+	'BaseAvatarCropper',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -177,6 +181,7 @@ const FORM_COMPONENTS = new Set([
 	'BaseMoneyInput',
 	'BaseRequisiteInput',
 	'BaseAddressInput',
+	'BaseSignaturePad',
 ])
 
 const LOADING_COMPONENTS = new Set(['BaseButton', 'BaseSearch', 'BaseFileUpload', 'BaseTable', 'BaseEditor', 'BaseChat', 'BaseSlider'])

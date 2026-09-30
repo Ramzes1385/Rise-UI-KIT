@@ -101,6 +101,8 @@ import { BaseAutocomplete } from '../components/BaseAutocomplete'
 import { BaseDropdownMenu } from '../components/BaseDropdownMenu'
 import { BaseImageCompare } from '../components/BaseImageCompare'
 import { BaseNotification } from '../components/BaseNotification'
+import { BaseSignaturePad } from '../components/BaseSignaturePad'
+import { BaseAvatarCropper } from '../components/BaseAvatarCropper'
 import { BaseCheckboxGroup } from '../components/BaseCheckboxGroup'
 import { BaseFilterBuilder } from '../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../components/BaseVoiceRecorder'
@@ -132,6 +134,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseAudioPlayer,
 	BaseAutocomplete,
 	BaseAvatar,
+	BaseAvatarCropper,
 	BaseAvatarGroup,
 	BaseBackTop,
 	BaseBadge,
@@ -207,6 +210,7 @@ const UI_COMPONENTS: Record<string, Component> = {
 	BaseSelect,
 	BaseSeparator,
 	BaseSideBar,
+	BaseSignaturePad,
 	BaseSkeleton,
 	BaseSlideover,
 	BaseSlider,

@@ -1,0 +1,97 @@
+.base-signature-pad {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	min-width: 0;
+	max-width: sz(var(--signature-width));
+	@include custom-text(color, var(--rise-text-highlighted));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__surface {
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		overflow: hidden;
+		aspect-ratio: var(--signature-ratio);
+		@include field-box;
+	}
+
+	&__canvas {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		cursor: crosshair;
+		touch-action: none;
+	}
+
+	&__ink {
+		fill: none;
+		stroke: var(--signature-pen, currentcolor);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	&__baseline {
+		position: absolute;
+		right: sz(20px);
+		bottom: 24%;
+		left: sz(20px);
+		border-bottom: 1px solid var(--rise-border-accented);
+		color: var(--rise-text-toned);
+		line-height: 1;
+		pointer-events: none;
+		@include text-size(lg);
+	}
+
+	&__hint {
+		position: absolute;
+		inset: 0 0 24%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: sz(8px) sz(16px);
+		color: var(--rise-text-toned);
+		text-align: center;
+		pointer-events: none;
+		@include text-size(sm);
+	}
+
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+
+	&--soft &__surface {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline &__surface {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--error &__surface {
+		border-color: var(--rise-error);
+	}
+
+	&--disabled &__surface {
+		@include disabled-state;
+	}
+
+	&--disabled &__canvas {
+		cursor: not-allowed;
+	}
+}

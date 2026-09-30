@@ -73,3 +73,5 @@ export const UI_TEXT_DIFF = localized('textDiff')
 
 /** QR-код */
 export const UI_QR_CODE = localized('qrCode')
+export const UI_SIGNATURE_PAD = localized('signaturePad')
+export const UI_AVATAR_CROPPER = localized('avatarCropper')

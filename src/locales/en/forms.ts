@@ -76,4 +76,19 @@ export const enForms = {
 		INCOMPLETE: 'Digits required: {count}',
 		OR: 'or',
 	},
+	signaturePad: {
+		LABEL: 'Signature',
+		HINT: 'Sign with a mouse, finger or pen',
+		EMPTY: 'No signature',
+		DRAWN: 'Signature: {strokes}',
+		UNDO: 'Undo stroke',
+		CLEAR: 'Clear',
+	},
+	avatarCropper: {
+		LABEL: 'Photo crop',
+		ROLE: 'crop area',
+		HINT: 'Drag the photo with a mouse or finger. Arrow keys move the photo, plus and minus zoom, zero resets',
+		ZOOM: 'Zoom',
+		ERROR: 'The photo could not be loaded',
+	},
 }

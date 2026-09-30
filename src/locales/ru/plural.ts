@@ -7,6 +7,7 @@ export const ruPlural = {
 	ATTACHMENTS: { one: '{n} вложение', few: '{n} вложения', many: '{n} вложений', other: '{n} вложения' },
 	JSON_KEYS: { one: '{n} ключ', few: '{n} ключа', many: '{n} ключей', other: '{n} ключа' },
 	JSON_ITEMS: { one: '{n} элемент', few: '{n} элемента', many: '{n} элементов', other: '{n} элемента' },
+	SIGNATURE_STROKES: { one: '{n} штрих', few: '{n} штриха', many: '{n} штрихов', other: '{n} штриха' },
 	/** Статус поиска для скринридера: сколько результатов в списке */
 	SEARCH_RESULTS: {
 		one: 'Найден {n} результат',

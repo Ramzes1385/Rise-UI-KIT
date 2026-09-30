@@ -1567,6 +1567,62 @@ function handleFiles(files: File[]): void {
 
 ---
 
+## BaseSignaturePad
+
+Поле для подписи: рисуют мышью, пальцем или пером. Значение — штрихи в единицах поля `width` × `height` (по умолчанию 400 × 160): их можно сохранить как JSON и показать снова.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseSignaturePad, type BaseSignaturePadExpose, type SignatureStroke } from '@ramzes1385/rise-ui-kit'
+
+const strokes = ref<SignatureStroke[]>([])
+const pad = ref<BaseSignaturePadExpose | null>(null)
+
+async function submit(): Promise<void> {
+	const png = await pad.value?.toPng({ background: '#ffffff' })
+	if (png) await upload(png)
+}
+</script>
+
+<template>
+	<BaseSignaturePad ref="pad" v-model="strokes" label="Подпись клиента" :error="strokes.length ? undefined : 'Распишитесь'" />
+</template>
+```
+
+Штрих сглаживается кривыми через середины соседних точек; при рисовании прокрутка страницы отключена (`touch-action: none`). «Отменить штрих» и «Очистить» — кнопки под полем. Через ref: `toSvg()` — разметка SVG, `toPng({ pixelRatio, background })` — Blob (по умолчанию вдвое плотнее поля, фон прозрачный), `undo()`, `clear()`. Цвет линий — `penColor`: без него на экране цвет текста темы, в файле — чёрный. Для скринридера поле — группа «Подпись» (или `label`) с картинкой «Подписи нет» или «Подпись: 3 штриха». Нарисовать подпись с клавиатуры нельзя — это ввод, который зависит от пути движения (исключение WCAG 2.1.1); если подпись обязательна, дайте другой способ подтвердить согласие.
+
+---
+
+## BaseAvatarCropper
+
+Кадрирование аватара: круг или квадрат, фото двигают мышью или пальцем, масштаб — колёсиком, ползунком или клавишами.
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { BaseAvatarCropper, type AvatarCrop, type BaseAvatarCropperExpose } from '@ramzes1385/rise-ui-kit'
+
+const file = ref<File>()
+const src = computed(() => (file.value ? URL.createObjectURL(file.value) : ''))
+const crop = ref<AvatarCrop>()
+const cropper = ref<BaseAvatarCropperExpose | null>(null)
+
+async function save(): Promise<void> {
+	const avatar = await cropper.value?.getBlob({ size: 256 })
+	if (avatar) await uploadAvatar(avatar)
+}
+</script>
+
+<template>
+	<BaseAvatarCropper v-if="src" ref="cropper" v-model:crop="crop" :src="src" shape="circle" />
+</template>
+```
+
+`v-model:crop` — кадр в пикселях исходного фото `{ x, y, size }` (можно отправить на сервер вместе с файлом); без начального кадра — по центру во весь меньший край. `getBlob({ size, type, quality })` — картинка по кадру: по умолчанию PNG 256 × 256, у круга углы прозрачные. Фото с другого сайта без CORS браузер не отдаёт — тогда `null`; выбранный пользователем файл (object URL) работает всегда. Клавиатура: область в порядке Tab, стрелки сдвигают фото на 10px (с Shift — на 50px), `+` и `−` меняют масштаб, `0` возвращает кадр по центру; для скринридера — группа «Кадрирование фото» с подсказкой и ползунок «Масштаб». `maxZoom` — наибольшее увеличение (4), `size` — сторона области (280px).
+
+---
+
 ## BaseEditor
 
 Редактор текста.
@@ -2294,6 +2350,7 @@ BaseApp
 BaseAudioPlayer
 BaseAutocomplete
 BaseAvatar
+BaseAvatarCropper
 BaseAvatarGroup
 BaseBackTop
 BaseBadge
@@ -2370,6 +2427,7 @@ BaseSegmented
 BaseSelect
 BaseSeparator
 BaseSideBar
+BaseSignaturePad
 BaseSkeleton
 BaseSlideover
 BaseSlider
