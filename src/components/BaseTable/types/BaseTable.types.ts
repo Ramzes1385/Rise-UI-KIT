@@ -266,10 +266,28 @@ export interface BaseTableSlots {
 		pageSizeSelectOptions: Array<{ value: string; label: string }>
 		handlePageSizeChange: (value: string | number) => void
 	}) => unknown
-	/** Заголовок одной колонки по её `key`: `header-status` — колонка `status`; `column` — её описание */
-	[key: `header-${string}`]: (props: { column: TableColumn }) => unknown
-	/** Ячейки одной колонки по её `key`: `cell-status` — колонка `status`; `row` — строка, `column` — колонка */
-	[key: `cell-${string}`]: (props: { column: TableColumn; row: TableRow }) => unknown
+	/**
+	 * Заголовок одной колонки по её `key`: `header-status` — колонка `status`. Имя можно собрать в шаблоне:
+	 * ``#[`header-${key}`]`` в `v-for`
+	 */
+	[key: `header-${string}`]: (props: {
+		/** Колонка из `columns` */
+		column: TableColumn
+	}) => unknown
+	/**
+	 * Ячейки одной колонки по её `key`: `cell-status` — колонка `status`. Одинаковые ячейки нескольких колонок —
+	 * ``<template v-for="key in keys" :key="key" #[`cell-${key}`]="{ value }">``
+	 */
+	[key: `cell-${string}`]: (props: {
+		/** Значение ячейки — `row.data[column.key]` */
+		value: unknown
+		/** Строка целиком */
+		row: TableRow
+		/** Колонка из `columns` */
+		column: TableColumn
+		/** Номер строки на странице; у вложенных строк его нет */
+		index?: number
+	}) => unknown
 }
 
 export type TableProps = PropsWithDefaults<

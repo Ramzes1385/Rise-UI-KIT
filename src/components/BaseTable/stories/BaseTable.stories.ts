@@ -34,4 +34,5 @@ export const StickyHeader = cases.StickyHeader
 export const Virtual = cases.Virtual
 export const ResizableColumns = cases.ResizableColumns
 export const CustomCells = cases.CustomCells
+export const SlotsByKey = cases.SlotsByKey
 export const Keyboard = cases.Keyboard

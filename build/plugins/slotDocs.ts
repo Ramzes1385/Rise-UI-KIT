@@ -16,6 +16,8 @@ interface SlotBinding {
 	name: string
 	title: 'binding'
 	description?: string
+	/** Тип поля — Storybook показывает привязки слота как `name: type` */
+	type?: { name: string }
 }
 
 interface SlotDoc {
@@ -112,7 +114,12 @@ function slotBindings(type: ts.TypeNode | undefined): SlotBinding[] | undefined 
 	if (!parameter || !ts.isTypeLiteralNode(parameter)) return undefined
 	const bindings = parameter.members
 		.filter(member => member.name)
-		.map(member => ({ name: member.name!.getText(), title: 'binding' as const, description: jsDocText(member) || undefined }))
+		.map(member => ({
+			name: member.name!.getText(),
+			title: 'binding' as const,
+			description: jsDocText(member) || undefined,
+			type: ts.isPropertySignature(member) && member.type ? { name: member.type.getText().replace(/\s+/g, ' ') } : undefined,
+		}))
 	return bindings.length ? bindings : undefined
 }
 

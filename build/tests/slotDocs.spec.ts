@@ -57,7 +57,7 @@ describe('слоты в Docs Storybook', () => {
 
 	afterAll(() => rmSync(dir, { recursive: true, force: true }))
 
-	it('описания из JSDoc: ключи в кавычках, extends, привязки слота и шаблон имён', () => {
+	it('описания из JSDoc: ключи в кавычках, extends, привязки слота с типами и шаблон имён', () => {
 		const result = readComponentSlots(file, COMPONENT)
 		expect(result.interfaceName).toBe('BaseXSlots')
 		expect(result.found).toBe(true)
@@ -69,8 +69,8 @@ describe('слоты в Docs Storybook', () => {
 			['extra', ''],
 		])
 		expect(result.slots[1].bindings).toEqual([
-			{ name: 'date', title: 'binding', description: 'Дата' },
-			{ name: 'close', title: 'binding', description: undefined },
+			{ name: 'date', title: 'binding', description: 'Дата', type: { name: 'Date' } },
+			{ name: 'close', title: 'binding', description: undefined, type: { name: '() => void' } },
 		])
 		expect(result.patterns).toEqual([
 			{

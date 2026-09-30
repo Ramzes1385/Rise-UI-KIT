@@ -967,3 +967,8 @@
 - `MAP_PROVIDERS` — `['yandex', 'google']`; строка словаря `map.GOOGLE`.
 
 **Что сделать.** Для Google — создать Map ID в Google Cloud Console и передать в `map-id` (или в `defaults.BaseMap.mapId`); при CSP — разрешить `maps.googleapis.com` и `maps.gstatic.com`.
+
+## Эпик cross (slots)
+
+- **BaseTable, слоты `cell-<key>`:** в типе параметров слота появились `value` (значение ячейки) и `index?` (номер строки на странице) — компонент передавал их и раньше, теперь их видит TypeScript. `value` — `unknown`: для сравнения и вывода приводите явно (`Number(value)`, `String(value)`).
+- **Docs Storybook:** слоты, которые компонент объявляет, но не показывает (`default` у BaseChat, BaseMenu, BasePagination, BaseRange, BaseSelect, BaseStepper), скрыты из таблицы параметров. Типы не менялись — вопрос об их удалении в FOLLOW_UPS (S1).
