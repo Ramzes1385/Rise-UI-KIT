@@ -83,3 +83,7 @@ stats.html
 !.env.example
 # Правила агентов для конкретной машины — не публикуются
 CLAUDE.local.md
+
+# Claude Code: личные настройки и временные копии
+.claude/settings.local.json
+.claude/worktrees/
