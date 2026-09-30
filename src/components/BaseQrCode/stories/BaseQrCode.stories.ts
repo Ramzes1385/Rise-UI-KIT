@@ -18,6 +18,8 @@ export default meta
 export const Default = cases.Default
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
+export const Shapes = cases.Shapes
+export const Logo = cases.Logo
 export const CustomColor = cases.CustomColor
 export const ErrorCorrection = cases.ErrorCorrection
 export const TooLong = cases.TooLong

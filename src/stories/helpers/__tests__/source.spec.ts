@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { STORY_STYLES } from '../render/storyStyles'
 import { literal, staticStorySource, storySource, templateSource } from '../render/source'
 
 const COMPONENT = {
@@ -81,6 +83,47 @@ describe('код для «Show code»', () => {
 			'\t<BaseTable\n\t\t:columns="columns"\n\t\tcaption="Сотрудники отдела продаж и маркетинга"\n\t\t:date="new Date(\'2025-05-15T10:30:00.000Z\')" />',
 		)
 		expect(code).not.toContain('rows')
+	})
+
+	it('классы-помощники историй — своим блоком <style scoped>, каждый один раз', () => {
+		const source = storySource({
+			template:
+				'<div class="story-row" style="gap: 4px"><figure v-for="x in list" :key="x"><BaseBadge v-bind="args" /><figcaption class="story-label">{{ x }}</figcaption></figure><span class="story-label other" /></div>',
+			imports: ['BaseBadge'],
+		})
+		const code = source.transform('', { args: {} })
+		expect(code.slice(code.indexOf('</template>'))).toBe(
+			[
+				'</template>',
+				'',
+				'<style scoped>',
+				'.story-row {',
+				'\tdisplay: flex;',
+				'\tflex-wrap: wrap;',
+				'\talign-items: center;',
+				'\tgap: 12px;',
+				'}',
+				'',
+				'.story-label {',
+				'\tmin-width: 88px;',
+				'\tfont-size: 12px;',
+				'\tline-height: 16px;',
+				'\tcolor: var(--rise-text-muted);',
+				'}',
+				'</style>',
+			].join('\n'),
+		)
+		expect(storySource({ template: '<BaseBadge v-bind="args" />', imports: ['BaseBadge'] }).transform('', { args: {} })).not.toContain(
+			'<style',
+		)
+	})
+
+	it('правила классов-помощников совпадают с build/storybook/preview.scss', () => {
+		const scss = readFileSync('build/storybook/preview.scss', 'utf8')
+		for (const [name, rules] of Object.entries(STORY_STYLES)) {
+			const block = new RegExp(`\\.${name} \\{([^}]*)\\}`).exec(scss)?.[1] ?? ''
+			expect(block.replace(/\s+/g, ' ').trim(), name).toBe(rules)
+		}
 	})
 
 	it('картинки data URI — константами, даже если коротки', () => {

@@ -1,5 +1,6 @@
 /** Код для «Show code»: ровно то, что рисует превью истории, — её шаблон и текущие значения из Controls. */
 
+import { STORY_STYLES } from './storyStyles'
 import type { StorySourceContext, StorySourceOptions } from '../types/helpers.types'
 
 const PACKAGE = '@ramzes1385/rise-ui-kit'
@@ -111,6 +112,22 @@ function expandArgs(template: string, attributes: readonly string[]): string {
 		.join('\n')
 }
 
+/** Правила классов-помощников историй, которые встречаются в шаблоне, — блоком `<style scoped>` */
+function storyStyles(template: string): string {
+	const used = [...template.matchAll(/\sclass="([^"]+)"/g)].flatMap(match => match[1].split(/\s+/))
+	const rules = [...new Set(used)]
+		.filter(name => name in STORY_STYLES)
+		.map(
+			name =>
+				`.${name} {\n${STORY_STYLES[name]
+					.split(/;\s*/)
+					.filter(Boolean)
+					.map(rule => `\t${rule};`)
+					.join('\n')}\n}`,
+		)
+	return rules.length ? `\n\n<style scoped>\n${rules.join('\n\n')}\n</style>` : ''
+}
+
 function buildSource(options: StorySourceOptions, context: StorySourceContext): string {
 	const hoisted: string[] = []
 	const attributes = shownArgs(options, context).map(entry => attribute(entry, hoisted))
@@ -124,7 +141,7 @@ function buildSource(options: StorySourceOptions, context: StorySourceContext): 
 		.split('\n')
 		.map(line => (line ? `\t${line}` : line))
 		.join('\n')
-	return `<script setup lang="ts">\n${script.join('\n\n')}\n</script>\n\n<template>\n${template}\n</template>`
+	return `<script setup lang="ts">\n${script.join('\n\n')}\n</script>\n\n<template>\n${template}\n</template>${storyStyles(options.template)}`
 }
 
 /**

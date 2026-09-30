@@ -1,4 +1,4 @@
-import { GF, generatorPolynomial, multiply, reedSolomon } from '../../model/qr/galois'
+import { GF, generatorPolynomial, multiply, reedSolomon } from '../../model/encode/galois'
 
 describe('поле GF(256) и код Рида — Соломона', () => {
 	it('таблицы степеней и логарифмов обратны друг другу', () => {

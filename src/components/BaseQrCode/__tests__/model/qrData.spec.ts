@@ -1,5 +1,5 @@
-import { reedSolomon } from '../../model/qr/galois'
-import { chooseVersion, dataCapacity, dataCodewords, finalCodewords } from '../../model/qr/qrData'
+import { reedSolomon } from '../../model/encode/galois'
+import { chooseVersion, dataCapacity, dataCodewords, finalCodewords } from '../../model/encode/qrData'
 
 const bytesOf = (text: string): number[] => [...new TextEncoder().encode(text)]
 

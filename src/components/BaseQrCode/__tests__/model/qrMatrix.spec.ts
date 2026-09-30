@@ -1,4 +1,4 @@
-import { buildMatrix, formatBits, maskPenalty, versionBits } from '../../model/qr/qrMatrix'
+import { buildMatrix, formatBits, maskPenalty, versionBits } from '../../model/encode/qrMatrix'
 
 const light = (size: number): boolean[][] => Array.from({ length: size }, () => Array<boolean>(size).fill(false))
 

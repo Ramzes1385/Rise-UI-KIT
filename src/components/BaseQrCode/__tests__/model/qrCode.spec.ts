@@ -1,4 +1,4 @@
-import { encodeQr, qrPath } from '../../model/qr/qrCode'
+import { encodeQr } from '../../model/encode/qrCode'
 
 const bitsOf = (modules: readonly (readonly boolean[])[]): string[] => modules.map(row => row.map(isDark => (isDark ? '1' : '0')).join(''))
 
@@ -110,15 +110,5 @@ describe('кодирование QR', () => {
 	it('слишком длинный текст — null', () => {
 		expect(encodeQr('a'.repeat(271), 'L')?.version).toBe(10)
 		expect(encodeQr('a'.repeat(272), 'L')).toBeNull()
-	})
-
-	it('путь SVG: горизонтальные серии тёмных модулей со сдвигом на поле', () => {
-		const modules = [
-			[true, true, false, true],
-			[false, false, false, false],
-			[true, false, false, false],
-		]
-		expect(qrPath(modules, 1)).toBe('M1 1h2v1h-2zM4 1h1v1h-1zM1 3h1v1h-1z')
-		expect(qrPath(modules, 0)).toBe('M0 0h2v1h-2zM3 0h1v1h-1zM0 2h1v1h-1z')
 	})
 })

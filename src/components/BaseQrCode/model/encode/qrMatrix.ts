@@ -1,5 +1,5 @@
 import { ALIGNMENT, LEVEL_BITS, MASKS } from './qrTables'
-import type { QrGrid, QrMatrix, QrErrorLevel } from '../../types/BaseQrCode.types'
+import type { QrEncodeOptions, QrErrorLevel, QrGrid, QrMatrix } from '../../types/BaseQrCode.types'
 
 const FORMAT_MASK = 0x5412
 
@@ -90,20 +90,33 @@ function drawFunctionPatterns(grid: QrGrid, level: QrErrorLevel): void {
 	drawVersion(grid)
 }
 
-function placeData(grid: QrGrid, codewords: readonly number[]): void {
-	let bit = 0
+function dataPositions(grid: QrGrid): [number, number][] {
+	const positions: [number, number][] = []
 	for (let right = grid.size - 1; right >= 1; right -= 2) {
 		const column = right === 6 ? 5 : right
 		const isUpward = ((column + 1) & 2) === 0
 		for (let step = 0; step < grid.size * 2; step++) {
 			const x = column - (step % 2)
 			const y = isUpward ? grid.size - 1 - Math.floor(step / 2) : Math.floor(step / 2)
-			if (grid.reserved[y][x] || bit >= codewords.length * 8) continue
-			grid.modules[y][x] = bitAt(codewords[bit >>> 3], 7 - (bit & 7))
-			bit++
+			if (!grid.reserved[y][x]) positions.push([x, y])
 		}
 		right = column
 	}
+	return positions
+}
+
+function placeData(grid: QrGrid, codewords: readonly number[]): void {
+	dataPositions(grid)
+		.slice(0, codewords.length * 8)
+		.forEach(([x, y], bit) => {
+			grid.modules[y][x] = bitAt(codewords[bit >>> 3], 7 - (bit & 7))
+		})
+}
+
+export function codewordPositions(version: number): [number, number][] {
+	const grid = createGrid(version)
+	drawFunctionPatterns(grid, 'L')
+	return dataPositions(grid)
 }
 
 function applyMask(grid: QrGrid, mask: number): void {
@@ -168,7 +181,7 @@ function bestMask(grid: QrGrid, level: QrErrorLevel): number {
 	return best.mask
 }
 
-export function buildMatrix(codewords: readonly number[], options: { version: number; level: QrErrorLevel; mask?: number }): QrMatrix {
+export function buildMatrix(codewords: readonly number[], options: QrEncodeOptions): QrMatrix {
 	const grid = createGrid(options.version)
 	drawFunctionPatterns(grid, options.level)
 	placeData(grid, codewords)

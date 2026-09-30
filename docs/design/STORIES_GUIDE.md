@@ -183,7 +183,8 @@ Stories, которые нужны только как проверка (кла�
   - `storySource({ template, imports, models, script, omit })` собирает файл Vue: импорты из пакета, переменные `v-model`, константы и строки `script`; `v-bind="args"` раскрывается в пропсы из Controls без значений по умолчанию, слотов и обработчиков. Код меняется вместе с Controls;
   - `useStorySetup(args, { models, data })` — `setup` для того же шаблона: `args` для `v-bind`, переменные `v-model`, связанные с Controls, и данные шаблона;
   - данные шаблона — константы кита (`X_VARIANTS`) в `imports` или своё значение, выведенное в `script` через `literal(...)` из тех же данных, что в `setup`, — чтобы код не расходился с примером;
-  - история без Controls — `staticStorySource(...)`. Картинки data URI уходят в константы `<script setup>`, длинные — сокращаются: `const before = 'data:image/svg+xml,…'`.
+  - история без Controls — `staticStorySource(...)`. Картинки data URI уходят в константы `<script setup>`, длинные — сокращаются: `const before = 'data:image/svg+xml,…'`;
+  - классы-помощники (`story-row`, `story-label` и другие из списка выше) в шаблоне можно оставлять: «Show code» добавит их правила блоком `<style scoped>`. Правила лежат в `src/stories/helpers/render/storyStyles.ts`, тест сверяет их с `build/storybook/preview.scss` — новый класс-помощник добавляйте в оба места.
 
 ## 9. Visual- и e2e-тесты
 
