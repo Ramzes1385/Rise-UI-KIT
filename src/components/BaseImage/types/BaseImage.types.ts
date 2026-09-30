@@ -1,4 +1,5 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export type ImageFit = 'cover' | 'contain' | 'fill' | 'none'
@@ -22,31 +23,34 @@ export interface ImageZoomConfig {
 	showMinimap?: boolean
 }
 
-export interface BaseImageProps extends BaseComponentProps<
-	string,
-	| 'root'
-	| 'placeholder'
-	| 'error'
-	| 'img'
-	| 'zoomOutButton'
-	| 'zoomOutIcon'
-	| 'zoomScale'
-	| 'zoomInButton'
-	| 'zoomInIcon'
-	| 'zoomResetButton'
-	| 'zoomResetIcon'
-	| 'rotateLeftButton'
-	| 'rotateLeftIcon'
-	| 'rotateRightButton'
-	| 'rotateRightIcon'
-	| 'zoomCloseButton'
-	| 'zoomCloseIcon'
-	| 'galleryPrevButton'
-	| 'galleryPrevIcon'
-	| 'galleryNextButton'
-	| 'galleryNextIcon'
-	| 'galleryCounter'
-> {
+export interface BaseImageProps
+	extends
+		SeoComponentProps,
+		BaseComponentProps<
+			string,
+			| 'root'
+			| 'placeholder'
+			| 'error'
+			| 'img'
+			| 'zoomOutButton'
+			| 'zoomOutIcon'
+			| 'zoomScale'
+			| 'zoomInButton'
+			| 'zoomInIcon'
+			| 'zoomResetButton'
+			| 'zoomResetIcon'
+			| 'rotateLeftButton'
+			| 'rotateLeftIcon'
+			| 'rotateRightButton'
+			| 'rotateRightIcon'
+			| 'zoomCloseButton'
+			| 'zoomCloseIcon'
+			| 'galleryPrevButton'
+			| 'galleryPrevIcon'
+			| 'galleryNextButton'
+			| 'galleryNextIcon'
+			| 'galleryCounter'
+		> {
 	/** URL изображения */
 	src: string
 	/** Альтернативный текст */

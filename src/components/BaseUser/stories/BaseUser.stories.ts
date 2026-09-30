@@ -23,3 +23,4 @@ export const Vertical = cases.Vertical
 export const LongContent = cases.LongContent
 export const ProfileLink = cases.ProfileLink
 export const CustomDescription = cases.CustomDescription
+export const Seo = cases.Seo

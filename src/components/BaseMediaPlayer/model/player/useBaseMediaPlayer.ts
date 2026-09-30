@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { UI_PLAYER } from '../messages'
+import { usePlayerSeo } from './usePlayerSeo'
 import { computed, provide, watch } from 'vue'
 import { usePlayerTools } from './usePlayerTools'
 import { usePlayerModels } from './usePlayerModels'
@@ -320,11 +321,8 @@ export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMed
 		...screen,
 		state,
 		actions,
-		isIdle: usePlayerIdle(props, elements, {
-			state,
-			isAudio: view.isAudioMode,
-			isPanelOpen: () => isPanelOpen(extras),
-		}),
+		isIdle: usePlayerIdle(props, elements, { state, isAudio: view.isAudioMode, isPanelOpen: () => isPanelOpen(extras) }),
+		...usePlayerSeo(props, { name: () => accessibleName.value, poster: series.content.poster, sources: series.content.sources }),
 		togglePlay: () => void actions.togglePlay(),
 		retryPlayback,
 		accessibleName,

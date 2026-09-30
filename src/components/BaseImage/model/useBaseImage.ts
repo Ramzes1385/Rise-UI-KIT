@@ -8,6 +8,8 @@ import { useImageState } from '@composables/image/useImageState'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useCustomColor } from '@composables/base/useCustomColor'
 import { useImageGallery } from '@composables/image/useImageGallery'
+import type { StructuredData } from '@utils/seo/structuredDataUtils'
+import { useStructuredData } from '@composables/seo/useStructuredData'
 import type { BaseImageEmits, ImageProps } from '../types/BaseImage.types'
 
 const IMAGE_ELEMENTS = [
@@ -75,6 +77,10 @@ function useLoadState(props: ImageProps, emit: BaseImageEmits, imgRef: Ref<HTMLI
 	})
 }
 
+function imageSchema(props: ImageProps, url: (value?: string) => string | undefined): StructuredData {
+	return { '@type': 'ImageObject', contentUrl: url(props.src), caption: props.alt || undefined }
+}
+
 export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: IMAGE_ELEMENTS })
 	const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
@@ -100,6 +106,11 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 		gallery,
 		zoom,
 		...state,
+		...useStructuredData(
+			'BaseImage',
+			() => props.seo,
+			({ url }) => imageSchema(props, url),
+		),
 		radiusStyle: computed(() => (props.borderRadius === undefined ? undefined : borderRadiusStyle.value)),
 		handleImageClick(): void {
 			if (!resolvedHasZoom.value) return

@@ -1034,3 +1034,13 @@
 - Проп `seo` у всех трёх можно задать для приложения: `createUiKitPlugin({ defaults: { BaseBreadcrumbs: { seo: { baseUrl: 'https://example.com' } } } })`.
 
 **Что сделать.** Если страница полагалась на JSON-LD или microdata крошек — добавить `seo` (лучше с `baseUrl`). Вызовы `buildBreadcrumbsSchema` заменить на `serializeJsonLd({ '@type': 'BreadcrumbList', itemListElement: [...] })`. Для звёзд в выдаче — передать в BaseRating `seo.data` с `itemReviewed` и `ratingCount`.
+
+### Р.36 — SEO: BaseMediaPlayer, BaseImage, BaseUser, BaseFooter
+
+**Что изменилось.** Новый проп `seo` (по умолчанию выключен, без него DOM прежний):
+- **BaseMediaPlayer** → `VideoObject` (при `mode="audio"` — `AudioObject`): `name` — `title` и название серии, `thumbnailUrl` — `poster` (у серии — её обложка), `contentUrl` — первый источник из `sources`. `uploadDate` (обязателен у Google), `description`, `duration` — в `seo.data`.
+- **BaseImage** → `ImageObject`: `contentUrl` — `src`, `caption` — `alt`. Для метаданных в Google Картинках нужен один из `creator`, `creditText`, `copyrightNotice`, `license` — в `seo.data`.
+- **BaseUser** → `Person`: `name`, `description`, `image` — `src`, `url` — `href` или `to`.
+- **BaseFooter** → `Organization`: полей из пропсов нет, всё — в `seo.data` (`name` обязателен; `url`, `logo`, `sameAs`, `contactPoint`); `@type` можно заменить на `LocalBusiness` и другие подтипы.
+
+**Что сделать.** Ничего; для разметки — добавить `seo` и недостающие поля в `seo.data`.

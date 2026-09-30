@@ -24,3 +24,4 @@ export const Fallback = cases.Fallback
 export const WithZoom = cases.WithZoom
 export const Gallery = cases.Gallery
 export const Keyboard = cases.Keyboard
+export const Seo = cases.Seo

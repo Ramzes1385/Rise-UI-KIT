@@ -28,6 +28,7 @@
 		@dragover="onCaptionDragOver"
 		@dragleave="onCaptionDragLeave"
 		@drop="onCaptionDrop">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 		<div v-if="isMini" class="base-media-player__mini-placeholder" aria-hidden="true">
 			<MediaIcon name="mini" />
 			{{ UI_PLAYER.MINI_PLACEHOLDER }}
@@ -270,6 +271,7 @@ const props = withDefaults(
 		hasSeekPreview: true,
 		hasMiniPlayer: false,
 		errorEffect: 'retro',
+		seo: false,
 	}),
 )
 const emit = defineEmits<BaseMediaPlayerEmits>()
@@ -290,6 +292,7 @@ const {
 	isAmbient,
 	ambientStyle,
 	rotationClass,
+	structuredData,
 	isFullscreen,
 	isTheater,
 	src,

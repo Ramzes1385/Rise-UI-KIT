@@ -1,9 +1,11 @@
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Вариант оформления один: вид задают аватар и текст */
 export const USER_VARIANTS = ['default'] as const
 
-export interface BaseUserProps extends BaseComponentProps<(typeof USER_VARIANTS)[number], 'root' | 'avatar' | 'name' | 'description'> {
+export interface BaseUserProps
+	extends SeoComponentProps, BaseComponentProps<(typeof USER_VARIANTS)[number], 'root' | 'avatar' | 'name' | 'description'> {
 	/** Имя: текст и инициалы в аватаре */
 	name: string
 	/** Подпись под именем: должность, e-mail, статус */

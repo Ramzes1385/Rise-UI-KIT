@@ -1,5 +1,6 @@
 import type { ContainerSize } from '@components/BaseContainer'
 import type { LinkTo } from '@composables/interaction/useLink'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -27,7 +28,7 @@ export interface FooterColumn {
 	links: FooterLink[]
 }
 
-export interface BaseFooterProps extends BaseComponentProps<(typeof FOOTER_VARIANTS)[number], 'root' | 'inner'> {
+export interface BaseFooterProps extends SeoComponentProps, BaseComponentProps<(typeof FOOTER_VARIANTS)[number], 'root' | 'inner'> {
 	/** Ширина содержимого подвала — как у BaseContainer: `sm`…`xl` или `full` (во всю ширину) */
 	containerSize?: ContainerSize
 	/** Колонки ссылок в верхней части подвала; каждая — `<nav>` с именем по заголовку */

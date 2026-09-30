@@ -3,6 +3,7 @@ import type { MediaHlsConstructor } from './playback/MediaHls.types'
 import type { MediaAudioTrackItem } from './content/MediaAudio.types'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { MediaTextTrackItem } from './content/MediaSubtitles.types'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { createPlayerContext } from '../model/player/useBaseMediaPlayer'
 import type { MediaWatchEvent, MediaWatchParty } from './panels/MediaWatch.types'
@@ -48,10 +49,13 @@ export type MediaPreload = (typeof MEDIA_PRELOAD_MODES)[number]
 
 export type MediaPlayerMode = (typeof MEDIA_PLAYER_MODES)[number]
 
-export interface BaseMediaPlayerProps extends BaseComponentProps<
-	(typeof MEDIA_PLAYER_VARIANTS)[number],
-	'root' | 'media' | 'overlay' | 'controls' | 'seek' | 'volume' | 'time' | 'title' | 'logo'
-> {
+export interface BaseMediaPlayerProps
+	extends
+		SeoComponentProps,
+		BaseComponentProps<
+			(typeof MEDIA_PLAYER_VARIANTS)[number],
+			'root' | 'media' | 'overlay' | 'controls' | 'seek' | 'volume' | 'time' | 'title' | 'logo'
+		> {
 	/**
 	 * Источник: адрес или список с MIME. Играет первый источник, который поддерживает браузер (`canPlayType`).
 	 * Абсолютные адреса — только со схемами из `allowedProtocols`. С `playlists` источники берутся из выбранной серии.

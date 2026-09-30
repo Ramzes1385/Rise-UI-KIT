@@ -891,3 +891,8 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - Существующие истории и снимки не меняются: без `seo` в DOM нет разметки, у BaseBreadcrumbs убраны только невидимые `<meta itemprop>` и атрибуты microdata. Проверено попиксельно по собранному Storybook до и после (36 историй трёх компонентов; `form-baserating--in-form-field` отличается и между двумя снимками одной сборки — недетерминирована, не от правки).
 - Новые истории `navigation-basebreadcrumbs--seo`, `data-baseaccordion--seo`, `form-baserating--seo`: компонент и под ним блок JSON-LD (декоратор `withJsonLd`, класс `.story-json-ld` в `build/storybook/preview.scss`). В скриншот-тесты не добавлены — эталоны не нужны.
+
+### Р.36 — BaseMediaPlayer, BaseImage, BaseUser, BaseFooter
+
+- Существующие истории и снимки не меняются: без `seo` разметки в DOM нет.
+- Новые истории `media-basemediaplayer--seo`, `element-baseimage--seo`, `element-baseuser--seo`, `layout-basefooter--seo` с блоком JSON-LD под примером (data URI в блоке сокращены до запятой и «…»). В скриншот-тесты не добавлены.

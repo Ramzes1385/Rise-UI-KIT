@@ -3,6 +3,7 @@
 		class="base-footer"
 		:class="[variantClass, { 'base-footer--compact': isCompact }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 		<BaseContainer v-if="hasTop" :size="containerSize" class="base-footer__top" :size-scale="sizeScale">
 			<div v-if="slots.top" class="base-footer__about">
 				<slot name="top" />
@@ -53,10 +54,12 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		containerSize: 'full',
 		isCompact: false,
+		seo: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
 
 defineSlots<BaseFooterSlots>()
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots, hasTop, hasBar } = useBaseFooter(props)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots, hasTop, hasBar, structuredData } =
+	useBaseFooter(props)
 </script>

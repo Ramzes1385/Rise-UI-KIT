@@ -12,6 +12,8 @@
 			classes.root,
 		]"
 		:style="[containerStyle, radiusStyle, sizeScaleStyle, customColorStyle]">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
+
 		<div v-if="hasPlaceholder && !isLoaded && !hasError" class="base-image__placeholder" :class="classes.placeholder">
 			<slot name="placeholder">
 				<div class="base-image__shimmer"></div>
@@ -85,6 +87,7 @@ const props = withDefaults(
 		hasPlaceholder: true,
 		convertToWebp: false,
 		convertToAvif: false,
+		seo: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -114,5 +117,6 @@ const {
 	handleError,
 	radiusStyle,
 	handleImageClick,
+	structuredData,
 } = useBaseImage(props, emit)
 </script>

@@ -5,6 +5,7 @@
 		:class="[`base-user--${orientation}`, { 'base-user--link': isLink }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		v-bind="linkProps">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 		<BaseAvatar
 			class="base-user__avatar"
 			:src="src"
@@ -41,11 +42,12 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		isOnline: false,
 		orientation: 'horizontal',
+		seo: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
 
 defineSlots<BaseUserSlots>()
 
-const { sizeScaleStyle, customColorStyle, classes, isLink, linkProps } = useBaseUser(props)
+const { sizeScaleStyle, customColorStyle, classes, isLink, linkProps, structuredData } = useBaseUser(props)
 </script>

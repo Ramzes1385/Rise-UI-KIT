@@ -24,3 +24,4 @@ export const Columns = cases.Columns
 export const WithSubscribe = cases.WithSubscribe
 export const WithApps = cases.WithApps
 export const Compact = cases.Compact
+export const Seo = cases.Seo
