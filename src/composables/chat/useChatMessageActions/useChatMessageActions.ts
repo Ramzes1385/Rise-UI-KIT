@@ -51,38 +51,16 @@ function useMessageHighlight(): (element: HTMLElement) => void {
 	}
 }
 
-/** Код символа «-»: влияет на экранирование цифры второй позицией идентификатора */
-const HYPHEN_CODE = 0x2d
-
 /**
- * Экранировать строку как CSS-идентификатор (алгоритм CSSOM «serialize an identifier»).
- * id сообщений приходят из данных приложения и могут содержать `.`, `:`, `$`, пробелы
- * (Matrix, Firebase, составные ключи): без экранирования querySelector бросает SyntaxError
- * или находит не тот элемент. CSS.escape есть не во всех средах (jsdom, SSR, старые WebView),
- * поэтому ниже — запасная реализация того же алгоритма.
+ * Найти элемент сообщения `message-<id>` внутри ленты. id сообщений приходят из данных приложения и могут содержать
+ * `.`, `:`, `$`, пробелы (Matrix, Firebase, составные ключи) — поэтому поиск по id, а не CSS-селектором. Ищется в корне
+ * ленты (документ или shadow root), так что лента внутри веб-компонента тоже работает
  */
-function escapeCssIdentifier(value: string): string {
-	if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') return CSS.escape(value)
-	let result = ''
-	for (let index = 0; index < value.length; index++) {
-		const char = value.charAt(index)
-		const code = value.charCodeAt(index)
-		const isDigit = code >= 0x30 && code <= 0x39
-		const isControl = (code >= 0x01 && code <= 0x1f) || code === 0x7f
-		const isLeadingDigit = isDigit && (index === 0 || (index === 1 && value.charCodeAt(0) === HYPHEN_CODE))
-		if (code === 0) {
-			result += '\uFFFD'
-		} else if (isControl || isLeadingDigit) {
-			result += `\\${code.toString(16)} `
-		} else if (index === 0 && value.length === 1 && code === HYPHEN_CODE) {
-			result += `\\${char}`
-		} else if (code >= 0x80 || code === HYPHEN_CODE || char === '_' || /[\dA-Za-z]/.test(char)) {
-			result += char
-		} else {
-			result += `\\${char}`
-		}
-	}
-	return result
+function findMessageElement(container: HTMLElement, messageId: string): HTMLElement | null {
+	const root = container.getRootNode()
+	if (!(root instanceof Document || root instanceof ShadowRoot)) return null
+	const element = root.getElementById(`message-${messageId}`)
+	return element && container.contains(element) ? element : null
 }
 
 /** Описание: управляет действиями над сообщениями чата — контекстное меню, реакции, ответ, копирование, пин, удаление и скролл к сообщению */
@@ -256,8 +234,7 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		const container = listRef.value
 		/* istanbul ignore next — defensive */
 		if (!container) return
-		const element = container.querySelector<HTMLElement>(`#${escapeCssIdentifier(`message-${messageId}`)}`)
-		/* istanbul ignore next — defensive */
+		const element = findMessageElement(container, messageId)
 		if (!element) return
 
 		container.scrollBy({ top: centerOffset(container, element), behavior: scrollBehavior() })

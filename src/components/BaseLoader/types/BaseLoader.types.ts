@@ -23,9 +23,8 @@ export interface BaseLoaderProps extends BaseComponentProps<LoaderVariant, 'root
 
 export type BaseLoaderEmits = Record<string, never>
 
-export interface BaseLoaderSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseLoaderSlots = Record<never, never>
 
 export type LoaderProps = PropsWithDefaults<BaseLoaderProps, 'sizeScale'>
 

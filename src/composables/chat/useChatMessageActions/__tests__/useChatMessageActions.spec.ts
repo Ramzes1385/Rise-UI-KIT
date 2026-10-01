@@ -253,32 +253,70 @@ describe('useChatMessageActions', () => {
 			expect(element).not.toHaveClass('base-chat-message-list__item--highlighted')
 		})
 
-		it('без CSS.escape находит сообщения с любыми символами в id', () => {
-			vi.stubGlobal('CSS', undefined)
+		it('находит сообщения с любыми символами в id и снимает подсветку с предыдущего', () => {
 			const { actions, list } = setup()
 			list.scrollBy = vi.fn()
-			const ids = ['tab\u0001', 'ё-ж_9$', 'a\u007fb']
+			const ids = ['a.b', 'room:42', 'с пробелом', 'x$y', '-1', '1a', 'tab\u0001', 'x\u0000y', 'a#b[c]']
 			const elements = ids.map(id => addMessage(list, id))
 
 			ids.forEach((id, index) => {
 				actions.scrollToMessage(id)
 				expect(elements[index]).toHaveClass('base-chat-message-list__item--highlighted')
+				elements
+					.filter((_, other) => other !== index)
+					.forEach(element => expect(element).not.toHaveClass('base-chat-message-list__item--highlighted'))
 			})
-			expect(() => actions.scrollToMessage('x\u0000y')).not.toThrow()
 		})
 
-		it('использует CSS.escape, если он есть, и снимает подсветку с предыдущего', () => {
-			vi.stubGlobal('CSS', { escape: (value: string) => value.replace(/\./g, '\\.') })
+		it('без сообщения с таким id ничего не прокручивает', () => {
 			const { actions, list } = setup()
+			const scrollBy = vi.fn()
+			list.scrollBy = scrollBy
+			addMessage(list, 'm1')
+
+			actions.scrollToMessage('m2')
+
+			expect(scrollBy).not.toHaveBeenCalled()
+		})
+
+		it('не трогает элемент с таким id вне ленты', () => {
+			const { actions, list } = setup()
+			const scrollBy = vi.fn()
+			list.scrollBy = scrollBy
+			const outside = document.createElement('div')
+			outside.id = 'message-m1'
+			document.body.append(outside)
+
+			actions.scrollToMessage('m1')
+
+			expect(scrollBy).not.toHaveBeenCalled()
+			expect(outside).not.toHaveClass('base-chat-message-list__item--highlighted')
+		})
+
+		it('находит сообщение в ленте внутри shadow root', () => {
+			const { actions, list } = setup()
+			const host = document.createElement('div')
+			document.body.append(host)
+			host.attachShadow({ mode: 'open' }).append(list)
 			list.scrollBy = vi.fn()
-			const first = addMessage(list, 'a.1')
-			const second = addMessage(list, 'b.2')
+			const element = addMessage(list, 'a.b')
 
-			actions.scrollToMessage('a.1')
-			actions.scrollToMessage('b.2')
+			actions.scrollToMessage('a.b')
 
-			expect(first).not.toHaveClass('base-chat-message-list__item--highlighted')
-			expect(second).toHaveClass('base-chat-message-list__item--highlighted')
+			expect(element).toHaveClass('base-chat-message-list__item--highlighted')
+		})
+
+		it('у ленты вне документа ничего не прокручивает', () => {
+			const { actions, list } = setup()
+			const scrollBy = vi.fn()
+			list.scrollBy = scrollBy
+			const element = addMessage(list, 'm1')
+			list.remove()
+
+			actions.scrollToMessage('m1')
+
+			expect(scrollBy).not.toHaveBeenCalled()
+			expect(element).not.toHaveClass('base-chat-message-list__item--highlighted')
 		})
 
 		it('при «уменьшить движение» прокручивает без анимации', () => {

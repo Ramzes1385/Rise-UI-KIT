@@ -2,7 +2,7 @@ import { nextTick } from 'vue'
 import type { Ref } from 'vue'
 import type { useMegaMenuState } from './useMegaMenuState'
 import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
-import { getItemKey, getNextIndex, getPanelLinks, hasPanel, getFocusable } from './megaMenuItems'
+import { getFocusable, getItemKey, getNextIndex, getPanelLinks, hasPanel } from './megaMenuItems'
 
 const TRIGGER_SELECTOR = '.base-mega-menu__trigger'
 const PANEL_FOCUSABLE = 'a[href], button'
