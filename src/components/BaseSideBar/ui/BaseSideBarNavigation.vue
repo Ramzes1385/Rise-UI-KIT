@@ -37,7 +37,7 @@
 					</template>
 				</BaseSideBarNavigation>
 
-				<div v-if="item.hasDivider && !isCollapsed" class="base-side-bar-nav__divider" />
+				<BaseSeparator v-if="item.hasDivider && !isCollapsed" class="base-side-bar-nav__divider" />
 			</li>
 
 			<li
@@ -165,7 +165,7 @@
 					</BaseSideBarNavigation>
 				</div>
 
-				<div v-if="item.hasDivider && !isCollapsed" class="base-side-bar-nav__divider" />
+				<BaseSeparator v-if="item.hasDivider && !isCollapsed" class="base-side-bar-nav__divider" />
 			</li>
 		</template>
 	</ul>
@@ -175,6 +175,7 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseTooltip } from '@components/BaseTooltip'
+import { BaseSeparator } from '@components/BaseSeparator'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { SideBarPassthrough } from '../model/SideBarPassthrough'
 import { useBaseSideBarNavigation } from '../model/useBaseSideBarNavigation'

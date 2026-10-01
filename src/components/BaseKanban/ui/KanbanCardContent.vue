@@ -15,13 +15,11 @@
 	<span v-if="meta.hasFooter" class="base-kanban__meta" aria-hidden="true">
 		<span class="base-kanban__meta-info">
 			<span v-if="card.key" class="base-kanban__key">{{ card.key }}</span>
-			<span
-				v-if="meta.priority"
-				class="base-kanban__priority"
-				:class="`base-kanban__priority--${meta.priority.level}`"
-				:title="meta.priority.label">
-				<BaseIcon v-for="index in meta.priority.count" :key="index" :name="meta.priority.icon" />
-			</span>
+			<BaseTooltip v-if="meta.priority" :text="meta.priority.label">
+				<span class="base-kanban__priority" :class="`base-kanban__priority--${meta.priority.level}`">
+					<BaseIcon v-for="index in meta.priority.count" :key="index" :name="meta.priority.icon" />
+				</span>
+			</BaseTooltip>
 			<span v-if="meta.due" class="base-kanban__due" :class="`base-kanban__due--${meta.due.status}`">
 				<BaseIcon name="calendar" />
 				{{ meta.due.text }}
@@ -49,6 +47,7 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { BaseAvatarGroup } from '@components/BaseAvatarGroup'
 import type { KanbanCardContentProps } from '../types/KanbanParts.types'
 import { useKanbanCardContent } from '../model/card/useKanbanCardContent'

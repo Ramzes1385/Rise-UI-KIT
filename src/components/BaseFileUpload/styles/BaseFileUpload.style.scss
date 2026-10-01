@@ -153,7 +153,13 @@
 		min-width: 0;
 	}
 
+	&__info &__name-tooltip {
+		display: block;
+		min-width: 0;
+	}
+
 	&__name {
+		display: block;
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
 		color: var(--rise-text-highlighted);

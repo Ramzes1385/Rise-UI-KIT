@@ -65,39 +65,24 @@
 		margin-left: auto;
 	}
 
-	&__button {
-		display: inline-flex;
+	&__button.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
 		flex: none;
-		align-items: center;
-		justify-content: center;
 		width: sz(32px);
 		height: sz(32px);
-		padding: 0;
-		border: 0;
 		border-radius: 50%;
-		background-color: var(--rise-primary);
-		color: var(--rise-on-primary);
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring;
 
 		.base-icon {
 			width: sz(16px);
 			height: sz(16px);
 		}
-
-		@include hover {
-			background-color: color-mix(in oklab, var(--rise-primary) 88%, var(--rise-text-highlighted));
-		}
-
-		&:disabled {
-			background-color: var(--rise-bg-accented);
-			color: var(--rise-text-dimmed);
-			cursor: not-allowed;
-		}
 	}
 
-	&__button--stop {
+	&__button--stop.base-button {
 		background-color: var(--rise-text-highlighted);
 		color: var(--rise-bg);
 

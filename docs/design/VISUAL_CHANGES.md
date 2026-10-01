@@ -919,3 +919,22 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 Превью и снимки не меняются. Меняется только текст «Show code» на вкладке Docs:
 - `media-basemediaplayer--icons` — `MediaIcon` в превью берётся из входа плеера, как в коде; код и раньше импортировал его из `@ramzes1385/rise-ui-kit/media`, теперь этот импорт рабочий; список значков в коде объявлен как `const names: MediaIconName[]` (тип — из того же входа), чтобы скопированный код проходил vue-tsc;
 - `blocks-auth--sign-in`, `blocks-auth--sign-up`, `blocks-settings--profile`, `blocks-dashboard--overview` — строки `<script setup>` собираются из модуля `*.setup.ts`, который выполняет и превью: те же объявления, что раньше; в Settings и Dashboard данные написаны в модуле, а не выведены `literal()` (`initial`, `languages`, `themes`, `weeks`, `channels`, `events`…), поэтому в этих литералах могут поменяться переносы строк.
+
+## Эпик compose-audit (Р.39): компоненты кита внутри компонентов
+
+Своя разметка заменена компонентами кита; размеры и цвета сохранены переопределениями, но кнопки берут фокус-рамку, переходы и состояние disabled у BaseButton.
+
+- **BaseToolCall** — спиннер статуса «выполняется» — BaseLoader (14px, цвет статуса): у дуги появилась бледная дорожка.
+- **BaseAiMessage** — индикатор печати — BaseLoader `dots` (6px, круглые точки вместо скруглённых квадратов, анимация BaseLoader); «Повторить» и «Копировать» — BaseButton ghost.
+- **BaseDropdownMenu**, **BaseContextMenu**, **BaseSplitButton**, **BaseSideBar** — разделители — BaseSeparator (линия 1px, цвет `--rise-border` — как было).
+- **BaseDatePicker** — кнопки навигации панели показывают BaseTooltip вместо системной подсказки.
+- **BaseKanban** — приоритет карточки: BaseTooltip вместо системной подсказки; кнопки сворачивания колонки и «Добавить карточку» — BaseButton ghost.
+- **BaseColorPicker** — пипетка: BaseButton outline 28×28 и BaseTooltip; «Без цвета» — BaseButton outline на всю ширину.
+- **BaseFileUpload** — имя файла: BaseTooltip вместо системной подсказки.
+- **BaseInputNumber** — кнопки −/+ — BaseButton ghost (ширина 32px, на всю высоту поля, без скругления); состояние disabled — как у BaseButton.
+- **BasePromptInput** — «Отправить» и «Остановить» — BaseButton (круг 32px); неактивная «Отправить» — прозрачность disabled вместо серого фона.
+- **BaseFilterBuilder** — «Удалить условие», «Добавить условие», «Сбросить» — BaseButton ghost.
+- **BaseMarkdown** — «Копировать» в блоке кода — BaseButton ghost.
+- **BaseAudioPlayer**, **BaseVoiceRecorder**, **BaseChat** (голосовые) — кнопка скорости — BaseButton ghost с рамкой-пилюлей.
+- **BaseMegaMenu** — бейдж ссылки — BaseBadge soft.
+- **BaseMention**, **BaseSignaturePad** — подпись и ошибка — FormFieldLabel и FormFieldError, как у остальных полей (ошибка — `span` вместо `p`).

@@ -346,11 +346,9 @@
 		color: var(--rise-text-highlighted);
 	}
 
-	&__link-badge {
+	&__link-badge.base-badge {
 		padding: sz(0 6px);
 		border-radius: sz(var(--rise-radius-full));
-		background-color: var(--rise-primary-soft);
-		color: var(--rise-primary-text);
 		@include text-size(2xs);
 		font-weight: var(--rise-font-weight-semibold);
 	}

@@ -12,14 +12,14 @@
 		@contextmenu.prevent
 		@pointerenter="emit('pointerenter')">
 		<template v-for="(group, groupIndex) in groups" :key="groupIndex">
-			<div v-if="groupIndex > 0" class="base-dropdown-menu__separator" :class="classes.separator" role="separator" />
+			<BaseSeparator v-if="groupIndex > 0" class="base-dropdown-menu__separator" :class="classes.separator" :size-scale="sizeScale" />
 			<div class="base-dropdown-menu__group" role="group" :aria-labelledby="groupLabelId(group, groupIndex)">
 				<template v-for="(item, itemIndex) in group" :key="itemIndex">
-					<div
+					<BaseSeparator
 						v-if="item.type === 'separator'"
 						class="base-dropdown-menu__separator"
 						:class="classes.separator"
-						role="separator" />
+						:size-scale="sizeScale" />
 					<div
 						v-else-if="item.type === 'label'"
 						:id="labelId(groupIndex, itemIndex)"
@@ -103,6 +103,7 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { BaseDropdown } from '@components/BaseDropdown'
+import { BaseSeparator } from '@components/BaseSeparator'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { useDropdownMenuContent } from '../model/useDropdownMenuContent'
 import type { DropdownMenuContentEmits, DropdownMenuContentProps } from '../types/DropdownMenuContent.types'

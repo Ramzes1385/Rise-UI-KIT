@@ -2,10 +2,10 @@
 	<div class="base-markdown__code-block">
 		<div class="base-markdown__code-header">
 			<span class="base-markdown__code-lang">{{ block.lang || UI_MARKDOWN.CODE }}</span>
-			<button type="button" class="base-markdown__copy" @click="copy">
-				<BaseIcon :name="isCopied ? 'check' : 'copy'" />
+			<BaseButton variant="ghost" class="base-markdown__copy" @click="copy">
+				<template #left><BaseIcon :name="isCopied ? 'check' : 'copy'" /></template>
 				{{ isCopied ? UI_MARKDOWN.CODE_COPIED : UI_MARKDOWN.COPY_CODE }}
-			</button>
+			</BaseButton>
 		</div>
 		<pre
 			class="base-markdown__pre"
@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_MARKDOWN } from '@/locales/messages'
+import { BaseButton } from '@components/BaseButton'
 import { useMarkdownCode } from '../model/useMarkdownCode'
 import type { MarkdownCodeProps } from '../types/MarkdownParts.types'
 

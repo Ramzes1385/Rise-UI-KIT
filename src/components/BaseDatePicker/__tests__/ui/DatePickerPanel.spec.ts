@@ -8,8 +8,8 @@ const BASE_CALENDAR_PROP_NAMES = Object.keys((BaseCalendar as unknown as { props
 
 const GLOBAL_STUBS = {
 	BaseButton: {
-		template: '<button class="base-button" :title="title" @click="$emit(\'click\')"><slot /></button>',
-		props: ['variant', 'sizeScale', 'title'],
+		template: '<button class="base-button" @click="$emit(\'click\')"><slot /></button>',
+		props: ['variant', 'sizeScale'],
 		emits: ['click'],
 	},
 	BaseCalendar: {
@@ -289,7 +289,7 @@ describe('DatePickerPanel', () => {
 				global: { stubs: STUBS },
 			})
 
-			await user.click(screen.getByTitle('Предыдущий месяц'))
+			await user.click(screen.getByRole('button', { name: 'Предыдущий месяц' }))
 
 			const calendar = container.querySelector('.base-calendar')!
 			expect(calendar).toHaveAttribute('data-month', '11')
@@ -303,7 +303,7 @@ describe('DatePickerPanel', () => {
 				global: { stubs: STUBS },
 			})
 
-			await user.click(screen.getByTitle('Следующий месяц'))
+			await user.click(screen.getByRole('button', { name: 'Следующий месяц' }))
 
 			const calendar = container.querySelector('.base-calendar')!
 			expect(calendar).toHaveAttribute('data-month', '1')
@@ -317,7 +317,7 @@ describe('DatePickerPanel', () => {
 				global: { stubs: STUBS },
 			})
 
-			await user.click(screen.getByTitle('Предыдущий год'))
+			await user.click(screen.getByRole('button', { name: 'Предыдущий год' }))
 
 			const calendar = container.querySelector('.base-calendar')!
 			expect(calendar).toHaveAttribute('data-month', '0')
@@ -331,7 +331,7 @@ describe('DatePickerPanel', () => {
 				global: { stubs: STUBS },
 			})
 
-			await user.click(screen.getByTitle('Следующий год'))
+			await user.click(screen.getByRole('button', { name: 'Следующий год' }))
 
 			const calendar = container.querySelector('.base-calendar')!
 			expect(calendar).toHaveAttribute('data-month', '0')

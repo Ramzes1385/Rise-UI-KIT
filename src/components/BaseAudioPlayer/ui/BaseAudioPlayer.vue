@@ -44,16 +44,17 @@
 				@update:current-time="seek" />
 		</div>
 		<span class="base-audio-player__time" :class="classes.time">{{ timeText }}</span>
-		<button
+		<BaseButton
 			v-if="hasRates"
-			type="button"
+			variant="ghost"
 			class="base-audio-player__rate"
-			:class="classes.rate"
+			:custom-class="classes.rate"
 			:aria-label="rateLabel"
-			:disabled="isDisabled"
+			:is-disabled="isDisabled"
+			:size-scale="sizeScale"
 			@click="nextRate">
 			{{ rateText }}
-		</button>
+		</BaseButton>
 		<p v-if="state.error" class="base-audio-player__error" role="alert">{{ UI_AUDIO.ERROR }}</p>
 	</div>
 </template>

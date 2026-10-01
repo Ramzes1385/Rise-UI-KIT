@@ -1101,3 +1101,14 @@
 **Что нового.** Вход `@ramzes1385/rise-ui-kit/media` экспортирует компонент `MediaIcon` — значки панели управления плеера — и его типы `MediaIconProps` и `MediaIconName`. Код истории BaseMediaPlayer «Icons» теперь можно скопировать в приложение. Справочник — docs/reference/COMPONENTS.md, раздел BaseMediaPlayer, «MediaIcon — значки плеера».
 
 **Что сделать.** Ничего: только добавление, прежние экспорты и поведение плеера не менялись.
+
+## Эпик compose-audit (Р.39): компоненты кита внутри компонентов
+
+Публичные props, события и слоты не менялись. Изменилась внутренняя разметка — для приложений, которые стилизуют или ищут элементы по тегу:
+
+- Кнопки стали BaseButton: прежние классы сохранены на корне кнопки, добавились `base-button`, `base-button--<variant>` и обёртки `base-button__content`, `base-button__label`, `base-button__slot-left`. Затронуты: BaseInputNumber (`__button`), BasePromptInput (`__button`, `__button--stop`), BaseFilterBuilder (`__remove`, `__button`, `__add`), BaseKanban (`__toggle`, `__add`), BaseMarkdown (`__copy`), BaseAiMessage (`__action`), BaseAudioPlayer (`__rate`), BaseColorPicker (`__eyedropper`, `__reset`). Ключи `customClass` (`button`, `rate`, `reset`) по-прежнему попадают на кнопку. Неактивная кнопка — атрибут `disabled` и класс `base-button--disabled`.
+- Разделители BaseDropdownMenu и BaseSideBar — BaseSeparator: `div.base-separator` с `role="separator"` и линией `base-separator__line` внутри; классы `base-dropdown-menu__separator`, `base-side-bar-nav__divider` и ключ `customClass.separator` сохранены. У разделителя BaseSideBar появилась роль `separator`.
+- Спиннер BaseToolCall и индикатор печати BaseAiMessage — BaseLoader (`div.base-loader`); классы `base-tool-call__spinner` и `base-ai-message__typing` сохранены, индикатор печати по-прежнему `aria-hidden`.
+- HTML-атрибут `title` убран: кнопки навигации BaseDatePicker, пипетка BaseColorPicker, имя файла BaseFileUpload, приоритет BaseKanban — подсказка теперь BaseTooltip (элемент обёрнут в `span.base-tooltip`). Тесты, искавшие по `title`, ищите по роли и `aria-label`.
+- BaseMention и BaseSignaturePad: подпись и ошибка — FormFieldLabel и FormFieldError (BaseText); ошибка — `span` вместо `p`, классы `__label`, `__error` и ключи `customClass` сохранены.
+- BaseMegaMenu: бейдж ссылки — BaseBadge (`span.base-badge` с текстом в `base-badge__text`), класс `base-mega-menu__link-badge` сохранён.

@@ -84,24 +84,18 @@
 		gap: sz(10px);
 	}
 
-	&__eyedropper {
-		display: inline-flex;
+	&__eyedropper.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
 		flex: none;
-		align-items: center;
-		justify-content: center;
 		width: sz(28px);
 		height: sz(28px);
-		padding: 0;
-		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-control-radius));
-		background-color: var(--rise-bg);
 		color: var(--rise-text-toned);
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring;
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
 			color: var(--rise-text-highlighted);
 		}
 	}
@@ -318,23 +312,12 @@
 		}
 	}
 
-	&__reset {
+	&__reset.base-button {
+		--btn-pad-top: 4px;
+		--btn-pad-bottom: 4px;
+
 		box-sizing: border-box;
 		width: 100%;
-		padding: sz(4px) sz(var(--rise-control-padding-x));
-		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-control-radius));
-		background-color: var(--rise-bg);
-		color: var(--rise-text);
-		font-family: inherit;
-		font-weight: var(--rise-font-weight-medium);
-		cursor: pointer;
 		@include text-size(sm);
-		@include transition-colors;
-		@include focus-ring;
-
-		@include hover {
-			background-color: var(--rise-bg-elevated);
-		}
 	}
 }

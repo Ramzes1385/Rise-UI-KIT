@@ -175,19 +175,15 @@
 		text-transform: lowercase;
 	}
 
-	&__copy {
-		display: inline-flex;
-		align-items: center;
-		gap: sz(4px);
-		padding: sz(3px) sz(8px);
-		border: 0;
+	&__copy.base-button {
+		--btn-pad-top: 3px;
+		--btn-pad-right: 8px;
+		--btn-pad-bottom: 3px;
+		--btn-pad-left: 8px;
+
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: transparent;
 		color: inherit;
 		font: inherit;
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring;
 
 		.base-icon {
 			width: sz(14px);
@@ -195,7 +191,6 @@
 		}
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
 			color: var(--rise-text);
 		}
 	}

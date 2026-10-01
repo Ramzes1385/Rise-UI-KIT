@@ -12,49 +12,53 @@
 				:data-theme="resolvedProps.theme">
 				<div class="date-picker-panel__header">
 					<div class="date-picker-panel__nav-group">
-						<BaseButton
-							variant="ghost"
-							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
-							:aria-label="UI_ARIA.PREV_YEAR"
-							:title="UI_ARIA.PREV_YEAR"
-							:size-scale="resolvedProps.sizeScale"
-							@click="handlePrevYear">
-							<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
-							<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							class="date-picker-panel__nav-btn"
-							:aria-label="UI_ARIA.PREV_MONTH"
-							:title="UI_ARIA.PREV_MONTH"
-							:size-scale="resolvedProps.sizeScale"
-							@click="handlePrevRange">
-							<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
-						</BaseButton>
+						<BaseTooltip :text="UI_ARIA.PREV_YEAR" :size-scale="resolvedProps.sizeScale">
+							<BaseButton
+								variant="ghost"
+								class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
+								:aria-label="UI_ARIA.PREV_YEAR"
+								:size-scale="resolvedProps.sizeScale"
+								@click="handlePrevYear">
+								<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
+								<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
+							</BaseButton>
+						</BaseTooltip>
+						<BaseTooltip :text="UI_ARIA.PREV_MONTH" :size-scale="resolvedProps.sizeScale">
+							<BaseButton
+								variant="ghost"
+								class="date-picker-panel__nav-btn"
+								:aria-label="UI_ARIA.PREV_MONTH"
+								:size-scale="resolvedProps.sizeScale"
+								@click="handlePrevRange">
+								<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
+							</BaseButton>
+						</BaseTooltip>
 					</div>
 
 					<span class="date-picker-panel__year-title">{{ displayYear }}</span>
 
 					<div class="date-picker-panel__nav-group date-picker-panel__nav-group--next">
-						<BaseButton
-							variant="ghost"
-							class="date-picker-panel__nav-btn"
-							:aria-label="UI_ARIA.NEXT_MONTH"
-							:title="UI_ARIA.NEXT_MONTH"
-							:size-scale="resolvedProps.sizeScale"
-							@click="handleNextRange">
-							<BaseIcon name="chevron-right" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
-							:aria-label="UI_ARIA.NEXT_YEAR"
-							:title="UI_ARIA.NEXT_YEAR"
-							:size-scale="resolvedProps.sizeScale"
-							@click="handleNextYear">
-							<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
-							<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
-						</BaseButton>
+						<BaseTooltip :text="UI_ARIA.NEXT_MONTH" :size-scale="resolvedProps.sizeScale">
+							<BaseButton
+								variant="ghost"
+								class="date-picker-panel__nav-btn"
+								:aria-label="UI_ARIA.NEXT_MONTH"
+								:size-scale="resolvedProps.sizeScale"
+								@click="handleNextRange">
+								<BaseIcon name="chevron-right" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
+							</BaseButton>
+						</BaseTooltip>
+						<BaseTooltip :text="UI_ARIA.NEXT_YEAR" :size-scale="resolvedProps.sizeScale">
+							<BaseButton
+								variant="ghost"
+								class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
+								:aria-label="UI_ARIA.NEXT_YEAR"
+								:size-scale="resolvedProps.sizeScale"
+								@click="handleNextYear">
+								<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
+								<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', resolvedProps.sizeScale)" />
+							</BaseButton>
+						</BaseTooltip>
 					</div>
 				</div>
 
@@ -107,6 +111,7 @@ import './DatePickerPanel.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { useDatePickerPanel } from '../../model/useDatePickerPanel'

@@ -26,15 +26,16 @@
 						<span v-if="view.column.color" class="base-kanban__dot" aria-hidden="true" />
 						<span class="base-kanban__title">{{ view.column.title }}</span>
 						<span class="base-kanban__count" aria-hidden="true">{{ view.count }}</span>
-						<button
+						<BaseButton
 							v-if="isCollapsible"
-							type="button"
+							variant="ghost"
 							class="base-kanban__toggle"
 							:aria-label="collapseLabel(view)"
 							:aria-expanded="view.isCollapsed ? 'false' : 'true'"
+							:size-scale="sizeScale"
 							@click="toggleColumn(view.column.id)">
 							<BaseIcon :name="view.isCollapsed ? 'chevron-right' : 'chevron-left'" />
-						</button>
+						</BaseButton>
 					</div>
 					<template v-if="!view.isCollapsed">
 						<ul class="base-kanban__list" :aria-label="view.label">
@@ -89,10 +90,15 @@
 								@submit="addCard(view.column.id, $event)"
 								@cancel="closeAdd"
 								@leave="leaveAdd" />
-							<button v-else type="button" class="base-kanban__add" @click="startAdd(view.column.id)">
-								<BaseIcon name="plus" />
+							<BaseButton
+								v-else
+								variant="ghost"
+								class="base-kanban__add"
+								:size-scale="sizeScale"
+								@click="startAdd(view.column.id)">
+								<template #left><BaseIcon name="plus" /></template>
 								{{ UI_KANBAN.ADD_CARD }}
-							</button>
+							</BaseButton>
 						</template>
 						<slot name="column-footer" :column="view.column" :cards="view.cards" />
 					</template>
@@ -123,6 +129,7 @@
 import '../styles/BaseKanban.style.scss'
 import { UI_KANBAN } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
 import KanbanTextEditor from './KanbanTextEditor.vue'
 import { useBaseKanban } from '../model/useBaseKanban'
 import KanbanCardContent from './KanbanCardContent.vue'

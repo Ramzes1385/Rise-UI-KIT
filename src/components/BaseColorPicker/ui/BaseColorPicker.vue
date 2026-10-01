@@ -38,15 +38,19 @@
 			</div>
 
 			<div class="base-color-picker__controls">
-				<button
+				<BaseTooltip
 					v-if="isEyeDropperSupported && !isEyeDropperHidden"
-					type="button"
-					class="base-color-picker__eyedropper"
-					:aria-label="UI_COLOR_PICKER.EYE_DROPPER"
-					:title="UI_COLOR_PICKER.EYE_DROPPER"
-					@click="pickFromScreen">
-					<BaseIcon name="eyedropper" :size-scale="sizeScale" aria-label="" />
-				</button>
+					:text="UI_COLOR_PICKER.EYE_DROPPER"
+					:size-scale="sizeScale">
+					<BaseButton
+						variant="outline"
+						class="base-color-picker__eyedropper"
+						:aria-label="UI_COLOR_PICKER.EYE_DROPPER"
+						:size-scale="sizeScale"
+						@click="pickFromScreen">
+						<BaseIcon name="eyedropper" :size-scale="sizeScale" aria-label="" />
+					</BaseButton>
+				</BaseTooltip>
 				<span class="base-color-picker__preview" :style="{ '--picker-swatch-color': swatchColor }" aria-hidden="true" />
 				<div class="base-color-picker__sliders">
 					<input
@@ -135,9 +139,15 @@
 					@select="handleSwatchSelect" />
 			</div>
 
-			<button v-if="isResettable" type="button" class="base-color-picker__reset" :class="classes.reset" @click="handleReset">
+			<BaseButton
+				v-if="isResettable"
+				variant="outline"
+				class="base-color-picker__reset"
+				:custom-class="classes.reset"
+				:size-scale="sizeScale"
+				@click="handleReset">
 				{{ resetLabel ?? UI_TEXT.NO_COLOR }}
-			</button>
+			</BaseButton>
 		</div>
 	</BasePopover>
 </template>
@@ -145,7 +155,9 @@
 <script setup lang="ts">
 import '../styles/BaseColorPicker.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
 import { BasePopover } from '@components/BasePopover'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { COLOR_FORMATS } from '@utils/data/colorUtils'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_COLOR_PRESETS } from '../model/colorPresets'

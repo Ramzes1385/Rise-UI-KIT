@@ -98,20 +98,9 @@
 		width: 100%;
 	}
 
-	&__remove,
-	&__button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: sz(6px);
-		border: 0;
-		border-radius: sz(var(--rise-radius-md));
-		background-color: transparent;
+	&__remove.base-button,
+	&__button.base-button {
 		color: var(--rise-text-muted);
-		font: inherit;
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring;
 
 		.base-icon {
 			width: sz(16px);
@@ -119,20 +108,19 @@
 		}
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
 			color: var(--rise-text-highlighted);
-		}
-
-		&:disabled {
-			cursor: not-allowed;
-			opacity: var(--rise-disabled-opacity);
 		}
 	}
 
-	&__remove {
+	&__remove.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
+		flex: none;
 		width: sz(32px);
 		height: sz(32px);
-		padding: 0;
 	}
 
 	&__actions {
@@ -142,13 +130,11 @@
 		margin-left: sz(-8px);
 	}
 
-	&__button {
-		height: sz(32px);
-		padding: 0 sz(10px);
+	&__button.base-button {
 		color: var(--rise-text);
 	}
 
-	&__add {
+	&__add.base-button {
 		color: var(--rise-primary);
 	}
 

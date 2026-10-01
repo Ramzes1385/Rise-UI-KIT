@@ -16,20 +16,29 @@
 			</div>
 			<slot />
 			<BaseMarkdown v-if="content" class="base-ai-message__content" :source="content" :is-streaming="isStreaming" variant="ghost" />
-			<span v-else-if="isStreaming" class="base-ai-message__typing" aria-hidden="true"><span></span><span></span><span></span></span>
+			<BaseLoader
+				v-else-if="isStreaming"
+				class="base-ai-message__typing"
+				variant="dots"
+				:size-scale="(sizeScale * 75) / 100"
+				aria-hidden="true" />
 			<p v-if="error" class="base-ai-message__error" role="alert">
 				<BaseIcon name="alert-triangle" />
 				{{ error }}
-				<button type="button" class="base-ai-message__action base-ai-message__action--retry" @click="retry">
-					<BaseIcon name="rotate-ccw" />
+				<BaseButton
+					variant="ghost"
+					class="base-ai-message__action base-ai-message__action--retry"
+					:size-scale="sizeScale"
+					@click="retry">
+					<template #left><BaseIcon name="rotate-ccw" /></template>
 					{{ UI_AI.RETRY }}
-				</button>
+				</BaseButton>
 			</p>
 			<div v-if="!isStreaming && (hasCopy || $slots.actions)" class="base-ai-message__actions">
-				<button v-if="hasCopy && content" type="button" class="base-ai-message__action" @click="copy">
-					<BaseIcon :name="isCopied ? 'check' : 'copy'" />
+				<BaseButton v-if="hasCopy && content" variant="ghost" class="base-ai-message__action" :size-scale="sizeScale" @click="copy">
+					<template #left><BaseIcon :name="isCopied ? 'check' : 'copy'" /></template>
 					{{ isCopied ? UI_AI.COPIED : UI_AI.COPY }}
-				</button>
+				</BaseButton>
 				<slot name="actions" />
 			</div>
 			<span class="base-ai-message__status" role="status">{{ isStreaming ? UI_AI.GENERATING : '' }}</span>
@@ -41,6 +50,8 @@
 import '../styles/BaseAiMessage.style.scss'
 import { UI_AI } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
+import { BaseLoader } from '@components/BaseLoader'
 import { BaseMarkdown } from '@components/BaseMarkdown'
 import { useBaseAiMessage } from '../model/useBaseAiMessage'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'

@@ -68,22 +68,11 @@
 		box-shadow: inset 0 sz(3px) 0 var(--kanban-column-color);
 	}
 
-	&__toggle,
-	&__add {
-		display: inline-flex;
+	&__toggle.base-button,
+	&__add.base-button {
 		flex: none;
-		align-items: center;
-		justify-content: center;
-		gap: sz(6px);
-		padding: 0;
-		border: 0;
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: transparent;
-		font: inherit;
-		cursor: pointer;
 		@include custom-text(color, var(--rise-text-muted));
-		@include transition-colors;
-		@include focus-ring;
 
 		@include hover {
 			background-color: var(--rise-bg-accented);
@@ -96,15 +85,24 @@
 		}
 	}
 
-	&__toggle {
+	&__toggle.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
 		width: sz(24px);
 		height: sz(24px);
 	}
 
-	&__add {
+	&__add.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 8px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 8px;
+
 		justify-content: flex-start;
 		min-height: sz(32px);
-		padding: 0 sz(8px);
 	}
 
 	&__editor {

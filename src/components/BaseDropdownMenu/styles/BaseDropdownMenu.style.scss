@@ -116,10 +116,9 @@
 		color: var(--rise-text-muted);
 	}
 
-	&__separator {
+	&__separator.base-separator {
 		flex-shrink: 0;
-		height: 1px;
+		width: auto;
 		margin: sz(4px) sz(-4px);
-		background-color: var(--rise-border);
 	}
 }

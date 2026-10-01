@@ -1,25 +1,18 @@
 .base-input-number {
-	&__button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	&__button.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
 		flex-shrink: 0;
 		align-self: stretch;
 		width: sz(32px);
-		padding: 0;
-		border: none;
-		background-color: transparent;
+		border-radius: 0;
 		color: var(--rise-text-muted);
-		cursor: pointer;
-		@include transition-colors;
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
 			color: var(--rise-text-highlighted);
-		}
-
-		&:disabled {
-			@include disabled-state;
 		}
 	}
 

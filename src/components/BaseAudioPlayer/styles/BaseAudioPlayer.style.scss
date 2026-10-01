@@ -61,22 +61,18 @@
 		color: inherit;
 	}
 
-	&__rate {
-		min-width: sz(40px);
-		padding: sz(2px) sz(6px);
-		border: 1px solid currentcolor;
-		border-radius: var(--rise-radius-full);
-		background: none;
-		color: inherit;
-		font: inherit;
-		font-variant-numeric: tabular-nums;
-		cursor: pointer;
-		@include text-size(xs);
-		@include focus-ring;
+	&__rate.base-button {
+		--btn-pad-top: 2px;
+		--btn-pad-right: 6px;
+		--btn-pad-bottom: 2px;
+		--btn-pad-left: 6px;
 
-		&:disabled {
-			@include disabled-state;
-		}
+		min-width: sz(40px);
+		border-color: currentcolor;
+		border-radius: var(--rise-radius-full);
+		color: inherit;
+		font-variant-numeric: tabular-nums;
+		@include text-size(xs);
 	}
 
 	&__error {

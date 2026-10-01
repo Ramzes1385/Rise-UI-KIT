@@ -11,7 +11,11 @@
 			:aria-controls="contentId"
 			@click="toggle">
 			<span class="base-tool-call__status" aria-hidden="true">
-				<span v-if="status === 'running'" class="base-tool-call__spinner"></span>
+				<BaseLoader
+					v-if="status === 'running'"
+					class="base-tool-call__spinner"
+					variant="spinner"
+					:size-scale="(sizeScale * 44) / 100" />
 				<BaseIcon v-else :name="statusIcon" />
 			</span>
 			<span class="base-tool-call__heading">
@@ -51,6 +55,7 @@
 import '../styles/BaseToolCall.style.scss'
 import { UI_AI } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseLoader } from '@components/BaseLoader'
 import { useBaseToolCall } from '../model/useBaseToolCall'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseToolCallEmits, BaseToolCallProps, BaseToolCallSlots } from '../types/BaseToolCall.types'

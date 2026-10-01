@@ -21,30 +21,32 @@
 		@blur="handleBlur"
 		@focus="handleFocus">
 		<template v-if="showControls" #prefix>
-			<button
-				type="button"
+			<BaseButton
+				variant="ghost"
 				class="base-input-number__button"
-				:class="classes.button"
+				:custom-class="classes.button"
 				tabindex="-1"
 				:aria-label="UI_ARIA.NUMBER_DECREASE"
-				:disabled="isControlDisabled || isAtMin"
+				:is-disabled="isControlDisabled || isAtMin"
+				:size-scale="sizeScale"
 				@mousedown.prevent
 				@click="stepBy(-1)">
 				<BaseIcon name="minus" :size-scale="calcIconScale('sm', sizeScale)" />
-			</button>
+			</BaseButton>
 		</template>
 		<template v-if="showControls" #postfix>
-			<button
-				type="button"
+			<BaseButton
+				variant="ghost"
 				class="base-input-number__button"
-				:class="classes.button"
+				:custom-class="classes.button"
 				tabindex="-1"
 				:aria-label="UI_ARIA.NUMBER_INCREASE"
-				:disabled="isControlDisabled || isAtMax"
+				:is-disabled="isControlDisabled || isAtMax"
+				:size-scale="sizeScale"
 				@mousedown.prevent
 				@click="stepBy(1)">
 				<BaseIcon name="plus" :size-scale="calcIconScale('sm', sizeScale)" />
-			</button>
+			</BaseButton>
 		</template>
 	</BaseInput>
 </template>
@@ -54,6 +56,7 @@ import '../styles/BaseInputNumber.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseInputNumber } from '../model/useBaseInputNumber'

@@ -76,29 +76,37 @@
 							:disabled="isDisabled"
 							@input="setValue(row.condition.id, { valueTo: ($event.target as HTMLInputElement).value })" />
 					</template>
-					<button
-						type="button"
+					<BaseButton
+						variant="ghost"
 						class="base-filter-builder__remove"
 						:aria-label="removeLabel(index)"
-						:disabled="isDisabled"
+						:is-disabled="isDisabled"
+						:size-scale="sizeScale"
 						@click="removeCondition(row.condition.id)">
 						<BaseIcon name="x-mark" />
-					</button>
+					</BaseButton>
 				</div>
 			</li>
 		</ol>
 		<div class="base-filter-builder__actions" :class="classes.actions">
-			<button
-				type="button"
+			<BaseButton
+				variant="ghost"
 				class="base-filter-builder__button base-filter-builder__add"
-				:disabled="isDisabled || fields.length === 0"
+				:is-disabled="isDisabled || fields.length === 0"
+				:size-scale="sizeScale"
 				@click="addCondition">
-				<BaseIcon name="plus" />
+				<template #left><BaseIcon name="plus" /></template>
 				{{ UI_FILTER_BUILDER.ADD }}
-			</button>
-			<button v-if="rows.length" type="button" class="base-filter-builder__button" :disabled="isDisabled" @click="clear">
+			</BaseButton>
+			<BaseButton
+				v-if="rows.length"
+				variant="ghost"
+				class="base-filter-builder__button"
+				:is-disabled="isDisabled"
+				:size-scale="sizeScale"
+				@click="clear">
 				{{ UI_FILTER_BUILDER.CLEAR }}
-			</button>
+			</BaseButton>
 		</div>
 	</div>
 </template>
@@ -106,6 +114,7 @@
 <script setup lang="ts">
 import '../styles/BaseFilterBuilder.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
 import { UI_FILTER_BUILDER } from '@/locales/messages'
 import { useBaseFilterBuilder } from '../model/useBaseFilterBuilder'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'

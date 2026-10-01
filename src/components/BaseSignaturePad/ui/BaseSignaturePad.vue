@@ -17,7 +17,14 @@
 		:aria-label="labelledBy ? undefined : UI_SIGNATURE_PAD.LABEL"
 		:aria-describedby="describedBy"
 		:aria-disabled="isControlDisabled || undefined">
-		<span v-if="label" :id="labelId" class="base-signature-pad__label" :class="classes.label">{{ label }}</span>
+		<FormFieldLabel
+			v-if="label"
+			:id="labelId"
+			tag="span"
+			:label="label"
+			class-name="base-signature-pad__label"
+			:custom-class="classes.label"
+			:size-scale="sizeScale" />
 		<div class="base-signature-pad__surface" :class="classes.surface">
 			<span class="base-signature-pad__baseline" aria-hidden="true">×</span>
 			<span v-if="isEmpty" class="base-signature-pad__hint" aria-hidden="true">{{ placeholder ?? UI_SIGNATURE_PAD.HINT }}</span>
@@ -39,7 +46,13 @@
 				{{ UI_SIGNATURE_PAD.CLEAR }}
 			</BaseButton>
 		</div>
-		<p v-if="error" :id="errorId" class="base-signature-pad__error" :class="classes.error">{{ error }}</p>
+		<FormFieldError
+			v-if="error"
+			:id="errorId"
+			:error="error"
+			class-name="base-signature-pad__error"
+			:custom-class="classes.error"
+			:size-scale="sizeScale" />
 	</div>
 </template>
 
@@ -49,6 +62,7 @@ import { BaseButton } from '@components/BaseButton'
 import { UI_SIGNATURE_PAD } from '@/locales/messages'
 import { useBaseSignaturePad } from '../model/useBaseSignaturePad'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import type { BaseSignaturePadEmits, BaseSignaturePadExpose, BaseSignaturePadProps } from '../types/BaseSignaturePad.types'
 
 const props = withDefaults(defineProps<BaseSignaturePadProps>(), {

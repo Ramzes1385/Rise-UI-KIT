@@ -446,9 +446,8 @@
 		transform: translate(-0.5px, -50%);
 	}
 
-	&__divider {
-		height: 1px;
+	&__divider.base-separator {
+		width: auto;
 		margin: sz(8px) sz(var(--sidebar-item-pad-x));
-		background-color: var(--rise-border);
 	}
 }

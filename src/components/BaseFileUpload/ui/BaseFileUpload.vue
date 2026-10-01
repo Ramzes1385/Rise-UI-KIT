@@ -74,7 +74,9 @@
 				</div>
 
 				<div class="base-file-upload__info" :class="classes.info">
-					<span class="base-file-upload__name" :class="classes.name" :title="item.name">{{ item.name }}</span>
+					<BaseTooltip class="base-file-upload__name-tooltip" :text="item.name" :size-scale="sizeScale">
+						<span class="base-file-upload__name" :class="classes.name">{{ item.name }}</span>
+					</BaseTooltip>
 					<div class="base-file-upload__meta" :class="classes.meta">
 						<span v-if="item.extension" class="base-file-upload__ext" :class="classes.ext">{{
 							item.extension.toUpperCase()
@@ -131,6 +133,7 @@ import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseProgress } from '@components/BaseProgress'
 import { BaseAnimation } from '@components/BaseAnimation'

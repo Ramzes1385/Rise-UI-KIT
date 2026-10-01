@@ -24,24 +24,24 @@
 				<div v-if="$slots.start" class="base-prompt-input__start"><slot name="start" /></div>
 				<div class="base-prompt-input__end">
 					<slot name="end" />
-					<button
+					<BaseButton
 						v-if="isGenerating"
-						type="button"
 						class="base-prompt-input__button base-prompt-input__button--stop"
 						:aria-label="UI_AI.STOP"
-						:disabled="isDisabled"
+						:is-disabled="isDisabled"
+						:size-scale="sizeScale"
 						@click="stop">
 						<BaseIcon name="stop" />
-					</button>
-					<button
+					</BaseButton>
+					<BaseButton
 						v-else
-						type="button"
 						class="base-prompt-input__button"
 						:aria-label="UI_AI.SEND"
-						:disabled="!canSubmit"
+						:is-disabled="!canSubmit"
+						:size-scale="sizeScale"
 						@click="submit">
 						<BaseIcon name="send" />
-					</button>
+					</BaseButton>
 				</div>
 			</div>
 		</div>
@@ -54,6 +54,7 @@
 import '../styles/BasePromptInput.style.scss'
 import { UI_AI } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
 import { useBasePromptInput } from '../model/useBasePromptInput'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BasePromptInputEmits, BasePromptInputProps, BasePromptInputSlots } from '../types/BasePromptInput.types'

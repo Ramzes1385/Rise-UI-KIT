@@ -45,7 +45,7 @@ describe('BaseKanban: содержимое карточки', () => {
 			['ui', 'base-kanban__label base-kanban__label--neutral'],
 		])
 		expect(element.querySelector('.base-kanban__key')).toHaveTextContent('RISE-7')
-		expect(element.querySelector('.base-kanban__priority--highest')).toHaveAttribute('title', 'самый высокий')
+		expect(element.querySelector('.base-kanban__priority--highest')?.closest('.base-tooltip')).not.toBeNull()
 		expect(element.querySelectorAll('.base-kanban__priority .base-icon')).toHaveLength(2)
 		expect(element.querySelector('.base-kanban__due--overdue')).toHaveTextContent('12 мая')
 		expect(element.querySelector('.base-kanban__stat')).toHaveTextContent('2/5')

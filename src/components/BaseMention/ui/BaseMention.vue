@@ -3,7 +3,13 @@
 		class="base-mention"
 		:class="[variantClass, classes.root, { 'base-mention--error': Boolean(error), 'base-mention--disabled': isDisabled }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<label v-if="label" class="base-mention__label" :class="classes.label" :for="controlId">{{ label }}</label>
+		<FormFieldLabel
+			v-if="label"
+			:for-id="controlId"
+			:label="label"
+			class-name="base-mention__label"
+			:custom-class="classes.label"
+			:size-scale="sizeScale" />
 		<div class="base-mention__field">
 			<textarea
 				:id="controlId"
@@ -49,7 +55,13 @@
 				<p v-else :id="listId" class="base-mention__empty" role="status">{{ UI_MENTION.EMPTY }}</p>
 			</div>
 		</div>
-		<p v-if="error" :id="errorId" class="base-mention__error" :class="classes.error">{{ error }}</p>
+		<FormFieldError
+			v-if="error"
+			:id="errorId"
+			:error="error"
+			class-name="base-mention__error"
+			:custom-class="classes.error"
+			:size-scale="sizeScale" />
 	</div>
 </template>
 
@@ -58,6 +70,7 @@ import '../styles/BaseMention.style.scss'
 import { UI_MENTION } from '@/locales/messages'
 import { useBaseMention } from '../model/useBaseMention'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
 import type { BaseMentionEmits, BaseMentionProps } from '../types/BaseMention.types'
 
 const props = withDefaults(defineProps<BaseMentionProps>(), {

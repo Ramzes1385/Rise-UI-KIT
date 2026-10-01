@@ -61,17 +61,8 @@
 		}
 	}
 
-	&__spinner {
-		box-sizing: border-box;
-		width: sz(14px);
-		height: sz(14px);
-		border: sz(2px) solid color-mix(in oklab, currentcolor 25%, transparent);
-		border-top-color: currentcolor;
-		border-radius: 50%;
-
-		@include motion-safe {
-			animation: base-tool-call-spin 0.8s linear infinite;
-		}
+	&__status &__spinner {
+		--loader-color: currentcolor;
 	}
 
 	&__heading {
@@ -251,11 +242,5 @@
 
 	&--ghost &__content {
 		padding-inline: 0;
-	}
-}
-
-@keyframes base-tool-call-spin {
-	to {
-		transform: rotate(360deg);
 	}
 }
