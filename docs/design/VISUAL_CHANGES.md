@@ -941,22 +941,22 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 ## Эпик compose-audit — сверка Storybook «было / стало»
 
-Сравнение попиксельно: Storybook с `9f222d5a` (основа ветки, два прохода — нестабильные снимки отсеяны) и с ветки историй; 170 историй 19 компонентов × 2 темы, окно 800×500, часы зафиксированы. Изменились 85 снимков, без изменений 243, нестабильны в базе 12. Страница для владельца со снимками — `.rise-transfer\review\compose-audit.html`.
+Сравнение попиксельно: Storybook с `9f222d5a` (основа ветки, два прохода — нестабильные снимки отсеяны) и с ветки историй; 170 историй 19 компонентов × 2 темы, окно 800×500, часы зафиксированы. Изменились 85 снимков, без изменений 243, нестабильны в базе 12. После правок разработчика eefe517e и cb2c63c2 (02.10) истории BaseMarkdown, BaseAiMessage, BasePromptInput, BaseSideBar, BaseKanban и BaseAudioPlayer сняты заново: 21 снимок теперь совпадает с базой попиксельно, изменённых осталось 64. Страница для владельца со снимками — `.rise-transfer\review\compose-audit.html`.
 
 Что видно глазом:
 
-- **BaseKanban** — строка метаданных карточки с приоритетом выше на ≈3px (обёртка BaseTooltip вокруг значка), все карточки ниже неё сдвигаются; кнопки сворачивания колонки и «Добавить карточку» — вид BaseButton ghost. Самое заметное изменение задачи по площади снимков.
-- **BaseMarkdown** (и BaseAiMessage с кодом) — шапка блока кода выше на ≈2px (кнопка «Копировать» — BaseButton), код ниже сдвигается.
-- **BasePromptInput** — неактивная «Отправить» теперь круг цвета акцента с прозрачностью disabled вместо серого круга: заметно во всех вариантах и размерах.
+- **BaseKanban** — высота строки метаданных и карточек — как до задачи (обёртка подсказки приоритета `inline-flex`, cb2c63c2): Default, CustomColor, Disabled, Sizes, Variants, WipLimits и MouseDrag совпадают с базой попиксельно. Меняется только «Добавить карточку» (истории ContextMenu и FullBoard): BaseButton ghost, подпись с плюсом — по центру кнопки, а не у левого края (передано разработчику: `inbox\2026-10-02-0051-compose-audit-bug.md`).
+- **BaseMarkdown** (и BaseAiMessage с кодом) — шапка блока кода выше на ≈2px (кнопка «Копировать» — BaseButton), код ниже сдвигается. В CustomColor фон «Копировать» прозрачный, как до задачи (eefe517e); в BaseAiMessage Variants подпись кнопок — как до задачи, снимок совпадает с базой.
+- **BasePromptInput** — неактивная «Отправить» теперь круг цвета акцента с прозрачностью disabled вместо серого круга: заметно во всех вариантах и размерах. В CustomColor «Отправить» — круг акцента, как до задачи (cb2c63c2): снимок совпадает с базой, play проверяет, что фон кнопки отличается от фона поля.
 - **BaseFilterBuilder** — строка «Добавить условие» / «Сбросить» выше на ≈1px, «Сбросить» правее (отступы BaseButton); крестики удаления условий — BaseButton ghost.
 - **BaseColorPicker** — пипетка в рамке outline 28×28, строка с ней сдвинута на ≈1px.
 - **BaseAudioPlayer** — пилюля скорости чуть крупнее и с другой рамкой.
 - **BaseMegaMenu** — бейдж «Новое» — BaseBadge soft (другая высота и скругление).
 - **BaseToolCall** — у спиннера «выполняется» появилась бледная дорожка.
-- **BaseSideBar** — в CustomColor разделитель `hasDivider` стал почти невидим на тёмном фоне (был светлым) — ошибка передана разработчику (`inbox\2026-10-01-2220-compose-audit-bug.md`); в остальных историях без изменений.
+- **BaseSideBar** — без видимых изменений: в CustomColor разделитель `hasDivider` снова цвета `--rise-border` (исправлено в eefe517e), снимок совпадает с базой попиксельно.
 - **BaseInputNumber Default** — в превью поле с фокус-рамкой: play теперь проверяет, что фокус остаётся в поле при нажатии −/+ (изменение истории, не компонента).
 - Без видимых изменений: BaseDropdownMenu, BaseContextMenu, BaseSplitButton (разделители совпали попиксельно), BaseDatePicker, BaseFileUpload, BaseMention, BaseSignaturePad, BaseVoiceRecorder (кроме нестабильного Preview).
 
-Эталоны скриншот-тестов, которые это затронет (по `*.visual.spec.ts`, обе темы): `chat-baseaimessage` — default, composition, sizes, variants; `chat-basepromptinput` — disabled, sizes, variants; `chat-basetoolcall--statuses`; `data-basefilterbuilder` — disabled, empty, sizes, variants; `data-basekanban` — disabled, sizes, variants, wip-limits; `element-basemarkdown--default`; `form-basecolorpicker` — minimal, presets; `media-baseaudioplayer` — default, sizes, variants, with-error; `navigation-basemegamenu--default`. Эталоны не трогались.
+Эталоны скриншот-тестов, которые это затронет (по `*.visual.spec.ts`, обе темы): `chat-baseaimessage` — default, composition, sizes; `chat-basepromptinput` — disabled, sizes, variants; `chat-basetoolcall--statuses`; `data-basefilterbuilder` — disabled, empty, sizes, variants; `data-basekanban` — не затронуты (disabled, sizes, variants, wip-limits совпадают с базой); `element-basemarkdown--default`; `form-basecolorpicker` — minimal, presets; `media-baseaudioplayer` — default, sizes, variants, with-error; `navigation-basemegamenu--default`. Эталоны не трогались.
 
 Новые истории (в скриншот-тесты не добавлены): `form-basedatepicker--navigation-tooltips` (подсказки навигации панели по наведению и Tab), `form-basefileupload--long-content` (многоточие и подсказка длинного имени).
