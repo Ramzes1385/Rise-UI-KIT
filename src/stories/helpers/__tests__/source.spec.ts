@@ -373,4 +373,41 @@ describe('код для «Show code»', () => {
 			].join('\n'),
 		)
 	})
+
+	it('константа длинного пропса — только для отдельного атрибута и не повторяет объявление из script', () => {
+		const rows = [{ name: 'Анна Смирнова', email: 'anna@example.com' }]
+		const columns = [{ key: 'name', title: 'Имя сотрудника' }]
+		const declared = storySource({
+			template: '<BaseTable v-bind="args" />',
+			imports: ['BaseTable'],
+			script: `const rows = ${JSON.stringify(rows)}`,
+		}).transform('', { args: { rows, columns } })
+		expect(declared.match(/const rows\b/g)).toHaveLength(1)
+		expect(declared).toContain('const columns = ')
+		expect(declared).toContain(':rows="rows"')
+		const model = storySource({
+			template: '<BaseTable v-model:rows="rows" />',
+			imports: ['BaseTable'],
+			models: { rows: 'rows' },
+		}).transform('', { args: { rows } })
+		expect(model.match(/const rows\b/g)).toHaveLength(1)
+		expect(model).toContain('const rows = ref([')
+		const kebabName = storySource({
+			template: '<BaseTable v-bind="args" />',
+			imports: ['BaseTable'],
+			script: 'function rowActions() {}',
+		}).transform('', { args: { rowActions: rows } })
+		expect(kebabName).toContain(':row-actions="rowActions"')
+		expect(kebabName).not.toContain('const rowActions')
+	})
+
+	it('переменная v-model без значения в Controls — значение по умолчанию или ref()', () => {
+		const transform = (models: Record<string, string>) =>
+			storySource({ template: '<BaseSelect />', imports: ['BaseSelect'], models }).transform('', { args: {}, component: COMPONENT })
+		expect(transform({ selected: 'variant' })).toContain("const selected = ref('default')")
+		expect(transform({ list: 'items' })).toContain('const list = ref([])')
+		expect(transform({ date: 'modelValue' })).toContain('const date = ref()')
+		expect(transform({ text: 'label' })).toContain('const text = ref()')
+		expect(transform({ text: 'label' })).not.toContain("ref('')")
+	})
 })

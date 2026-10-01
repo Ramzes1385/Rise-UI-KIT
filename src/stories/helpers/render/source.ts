@@ -232,13 +232,28 @@ function sortImports(names: readonly string[]): string[] {
 	return [...names].sort((left, right) => (key(left) < key(right) ? -1 : Number(key(left) > key(right))))
 }
 
-/** Строки `ref` для `v-model` и состояния шаблона; тип из `types` — и для `models` */
+/** Начальное значение переменной `v-model` как код: из Controls, иначе значение пропса по умолчанию, иначе пусто — `ref()` */
+function modelValue(context: StorySourceContext, arg: string): string {
+	const value = context.args[arg]
+	if (value !== undefined) return literal(value)
+	const fallback = defaultOf(context.component, arg)
+	return fallback === NO_DEFAULT || fallback === undefined ? '' : literal(fallback)
+}
+
+const escapeRegExp = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const hasAttribute = (text: string, code: string): boolean => new RegExp(`(^|\\s)${escapeRegExp(code)}(?=[\\s/>]|$)`, 'm').test(text)
+
+const camel = (name: string): string => name.replace(/-(\w)/g, (_, letter: string) => letter.toUpperCase())
+
+/** Имена, которые строки `script` объявляют сами: константа длинного пропса с таким именем не нужна */
+const declaredNames = (script = ''): Set<string> =>
+	new Set([...script.matchAll(/^\s*(?:const|let|function)\s+([\w$]+)/gm)].map(match => match[1]))
+
 function refLines(options: StorySourceOptions, context: StorySourceContext): string[] {
 	const typed = (name: string): string => (options.types?.[name] ? `<${options.types[name]}>` : '')
 	return [
-		...Object.entries(options.models ?? {}).map(
-			([name, arg]) => `const ${name} = ref${typed(name)}(${literal(context.args[arg] ?? '')})`,
-		),
+		...Object.entries(options.models ?? {}).map(([name, arg]) => `const ${name} = ref${typed(name)}(${modelValue(context, arg)})`),
 		...Object.entries(options.state ?? {}).map(([name, value]) => `const ${name} = ref${typed(name)}(${literal(value)})`),
 	]
 }
@@ -257,7 +272,10 @@ function importLines(options: StorySourceOptions, hasRefs: boolean): string[] {
 function buildFile(options: StorySourceOptions, context: StorySourceContext): string {
 	const attributes = shownArgs(options, context).map(attribute)
 	const template = expandArgs(fillSlots(templateSource(options.template), context.args), attributes)
-	const hoisted = attributes.filter(item => item.hoist && template.includes(item.code)).map(item => item.hoist)
+	const declared = declaredNames(options.script)
+	const hoisted = attributes
+		.filter(item => item.hoist && hasAttribute(template, item.code) && !declared.has(camel(item.name)))
+		.map(item => item.hoist)
 	const refs = refLines(options, context)
 	const imports = importLines(options, refs.length > 0)
 	const script = [imports.join('\n'), [...refs, ...hoisted].join('\n'), templateSource(options.script ?? '')].filter(Boolean)
