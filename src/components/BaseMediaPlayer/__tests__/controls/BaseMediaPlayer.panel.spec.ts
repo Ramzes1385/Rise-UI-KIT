@@ -24,6 +24,8 @@ async function setup(props: Partial<BaseMediaPlayerProps> = {}, initial: Partial
 describe('BaseMediaPlayer: панель', () => {
 	afterEach(() => {
 		vi.useRealTimers()
+		vi.unstubAllGlobals()
+		vi.restoreAllMocks()
 	})
 
 	it('тёмная тема внутри плеера и слой для меню, который удаляется вместе с плеером', async () => {
@@ -222,7 +224,6 @@ describe('BaseMediaPlayer: панель', () => {
 		expect(quality.options()).toEqual(['Авто (480p)', '1080p', '480p'])
 		expect(wrapper.get('video').attributes('src')).toBe('/media/b.webm')
 		wrapper.unmount()
-		vi.restoreAllMocks()
 	})
 
 	it('без ResizeObserver «Авто» выбирает качество по высоте плеера при монтировании; devicePixelRatio 0 считается за 1', async () => {
@@ -241,8 +242,6 @@ describe('BaseMediaPlayer: панель', () => {
 		expect(playerMenu(wrapper, 'Качество').options()).toEqual(['Авто (720p)', '1080p', '720p', '480p'])
 		expect(wrapper.get('video').attributes('src')).toBe('/media/b.webm')
 		wrapper.unmount()
-		vi.unstubAllGlobals()
-		vi.restoreAllMocks()
 	})
 
 	it('меню открываются кнопками и закрываются выбором: качество, субтитры, озвучка, главы; серии — в панели', async () => {

@@ -35,6 +35,21 @@ const TwoOverlaysHost = defineComponent({
 	},
 })
 
+const TwoMountedOverlaysHost = defineComponent({
+	props: {
+		isFirstMounted: { type: Boolean, default: true },
+		isSecondMounted: { type: Boolean, default: true },
+	},
+	setup(props) {
+		return () =>
+			h('div', [
+				h('p', { 'data-testid': 'content', 'aria-busy': 'false' }, 'Содержимое'),
+				props.isFirstMounted ? h(BaseLoader, { isOverlay: true }) : null,
+				props.isSecondMounted ? h(BaseLoader, { isOverlay: true }) : null,
+			])
+	},
+})
+
 describe('BaseLoader доступность', () => {
 	describe('озвучивание появления (LDR-1)', () => {
 		beforeEach(() => {
@@ -155,6 +170,22 @@ describe('BaseLoader доступность', () => {
 
 			expect(screen.getByTestId('content')).toHaveAttribute('inert')
 			expect(screen.getByTestId('content')).toHaveAttribute('aria-busy', 'true')
+		})
+
+		it('должен держать соседей inert после размонтирования одного из двух оверлеев и возвращать атрибуты после второго', async () => {
+			const { rerender } = render(TwoMountedOverlaysHost)
+
+			await rerender({ isFirstMounted: false })
+
+			expect(screen.getAllByRole('status', { hidden: true })).toHaveLength(1)
+			expect(screen.getByTestId('content')).toHaveAttribute('inert')
+			expect(screen.getByTestId('content')).toHaveAttribute('aria-busy', 'true')
+
+			await rerender({ isSecondMounted: false })
+
+			expect(screen.queryAllByRole('status', { hidden: true })).toHaveLength(0)
+			expect(screen.getByTestId('content')).not.toHaveAttribute('inert')
+			expect(screen.getByTestId('content')).toHaveAttribute('aria-busy', 'false')
 		})
 
 		it('не должен трогать соседей без isOverlay', () => {

@@ -3,6 +3,18 @@ import { computed, ref, watch } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import type { UseFormFieldOptions, UseFormFieldReturn } from './types/useFormField.types'
 
+function isEmptyValue(value: unknown): boolean {
+	return value === null || value === undefined || value === ''
+}
+
+/** Первая ошибка проверки значения (обязательность, затем правила по порядку); null — значение верно */
+function findValidationError(options: UseFormFieldOptions): string | null {
+	const val = options.value()
+	if (options.isRequired?.() && isEmptyValue(val)) return UI_TEXT.REQUIRED_FIELD
+	const failedRule = options.rules?.find(rule => !rule.validate(val))
+	return failedRule ? failedRule.message : null
+}
+
 /** Composable для управления полем формы — touched/dirty, валидация, обработчики blur/change, reset. */
 function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 	const isTouched = ref(false)
@@ -18,44 +30,13 @@ function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 		},
 	)
 
-	const touchedError = computed<string>(() => {
-		if (!isTouched.value) return ''
+	const touchedError = computed<string>(() => (isTouched.value ? (findValidationError(options) ?? '') : ''))
 
-		const val = options.value()
-
-		if (options.isRequired?.()) {
-			if (val === null || val === undefined || val === '') {
-				return UI_TEXT.REQUIRED_FIELD
-			}
-		}
-
-		if (options.rules) {
-			for (const rule of options.rules) {
-				if (!rule.validate(val)) return rule.message
-			}
-		}
-
-		return ''
-	})
-
-	const error = computed<string>(() => {
-		const externalError = options.error?.()
-		if (externalError) return externalError
-		return touchedError.value
-	})
+	const error = computed<string>(() => options.error?.() || touchedError.value)
 
 	const isValid = computed<boolean>(() => {
 		if (options.error?.()) return false
-		if (!isTouched.value) return true
-
-		const val = options.value()
-		if (options.isRequired?.()) {
-			if (val === null || val === undefined || val === '') return false
-		}
-		if (options.rules) {
-			return options.rules.every(rule => rule.validate(val))
-		}
-		return true
+		return !isTouched.value || findValidationError(options) === null
 	})
 
 	function validate(): boolean {
