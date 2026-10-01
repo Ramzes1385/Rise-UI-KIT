@@ -19,9 +19,6 @@ function useFormField(options: UseFormFieldOptions): UseFormFieldReturn {
 	)
 
 	const touchedError = computed<string>(() => {
-		const externalError = options.error?.()
-		if (externalError) return externalError
-
 		if (!isTouched.value) return ''
 
 		const val = options.value()
