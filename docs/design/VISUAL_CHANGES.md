@@ -925,8 +925,8 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 Своя разметка заменена компонентами кита; размеры и цвета сохранены переопределениями, но кнопки берут фокус-рамку, переходы и состояние disabled у BaseButton.
 
 - **BaseToolCall** — спиннер статуса «выполняется» — BaseLoader (14px, цвет статуса): у дуги появилась бледная дорожка.
-- **BaseAiMessage** — индикатор печати — BaseLoader `dots` (6px, круглые точки вместо скруглённых квадратов, анимация BaseLoader); «Повторить» и «Копировать» — BaseButton ghost.
-- **BaseDropdownMenu**, **BaseContextMenu**, **BaseSplitButton**, **BaseSideBar** — разделители — BaseSeparator (линия 1px, цвет `--rise-border` — как было).
+- **BaseAiMessage** — индикатор печати — BaseLoader `dots` (6px, круглые точки вместо скруглённых квадратов, анимация BaseLoader); «Повторить» и «Копировать» — BaseButton ghost; вид, цвета и контраст — как у прежних кнопок (в варианте soft подпись `--rise-text-toned`, при своём цвете `color` фон кнопки прозрачный, а не цвет сообщения).
+- **BaseDropdownMenu**, **BaseContextMenu**, **BaseSplitButton**, **BaseSideBar** — разделители — BaseSeparator (линия 1px, цвет `--rise-border` — как было; в BaseSideBar со своим цветом `color` линия не берёт фон панели, а остаётся `--rise-border`, как до эпика).
 - **BaseDatePicker** — кнопки навигации панели показывают BaseTooltip вместо системной подсказки.
 - **BaseKanban** — приоритет карточки: BaseTooltip вместо системной подсказки; кнопки сворачивания колонки и «Добавить карточку» — BaseButton ghost.
 - **BaseColorPicker** — пипетка: BaseButton outline 28×28 и BaseTooltip; «Без цвета» — BaseButton outline на всю ширину.
@@ -934,7 +934,7 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - **BaseInputNumber** — кнопки −/+ — BaseButton ghost (ширина 32px, на всю высоту поля, без скругления); состояние disabled — как у BaseButton.
 - **BasePromptInput** — «Отправить» и «Остановить» — BaseButton (круг 32px); неактивная «Отправить» — прозрачность disabled вместо серого фона.
 - **BaseFilterBuilder** — «Удалить условие», «Добавить условие», «Сбросить» — BaseButton ghost.
-- **BaseMarkdown** — «Копировать» в блоке кода — BaseButton ghost.
+- **BaseMarkdown** — «Копировать» в блоке кода — BaseButton ghost; при своём цвете `color` фон кнопки прозрачный, как прежде (не цвет Markdown).
 - **BaseAudioPlayer**, **BaseVoiceRecorder**, **BaseChat** (голосовые) — кнопка скорости — BaseButton ghost с рамкой-пилюлей.
 - **BaseMegaMenu** — бейдж ссылки — BaseBadge soft.
 - **BaseMention**, **BaseSignaturePad** — подпись и ошибка — FormFieldLabel и FormFieldError, как у остальных полей (ошибка — `span` вместо `p`).

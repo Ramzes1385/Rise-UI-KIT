@@ -77,8 +77,7 @@
 		line-height: inherit;
 	}
 
-	&--soft &__time,
-	&--soft &__action {
+	&--soft &__time {
 		@include custom-text(color, var(--rise-text-toned));
 	}
 
@@ -151,9 +150,18 @@
 		--btn-pad-bottom: 4px;
 		--btn-pad-left: 8px;
 
+		@include custom-bg-reset;
 		border-radius: sz(var(--rise-radius-sm));
 		@include custom-text(color, var(--rise-text-muted));
 		@include text-size(xs);
+
+		@include hover {
+			color: var(--rise-text);
+		}
+	}
+
+	&--soft &__action.base-button {
+		@include custom-text(color, var(--rise-text-toned));
 	}
 
 	&__action--retry.base-button {

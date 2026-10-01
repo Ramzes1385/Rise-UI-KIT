@@ -181,6 +181,7 @@
 		--btn-pad-bottom: 3px;
 		--btn-pad-left: 8px;
 
+		@include custom-bg-reset;
 		border-radius: sz(var(--rise-radius-sm));
 		color: inherit;
 		font: inherit;

@@ -447,6 +447,7 @@
 	}
 
 	&__divider.base-separator {
+		@include custom-bg-reset;
 		width: auto;
 		margin: sz(8px) sz(var(--sidebar-item-pad-x));
 	}

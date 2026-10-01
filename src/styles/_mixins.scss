@@ -139,6 +139,13 @@
 	}
 }
 
+@mixin custom-bg-reset {
+	--custom-bg: initial;
+	--custom-bg-hover: initial;
+	--custom-bg-active: initial;
+	--custom-bg-focus: initial;
+}
+
 @mixin custom-bg-all($property, $base, $hover: $base, $active: $base) {
 	@include custom-bg($property, $base);
 	@include custom-bg-hover($property, $hover);
