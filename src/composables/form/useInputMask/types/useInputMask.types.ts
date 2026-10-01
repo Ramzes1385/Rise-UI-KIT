@@ -12,3 +12,29 @@ export interface UseInputMaskOptions {
 	/** Маска ввода */
 	getMask: () => string
 }
+
+/** Что возвращает useInputMask: функции маски с явной маской и те же операции по текущей маске из `getMask` */
+export interface UseInputMaskReturn {
+	/** Наложить маску на чистое значение */
+	applyMask: (value: string, mask: string) => string
+	/** Снять маску: оставить только символы, попавшие в токены */
+	stripMask: (value: string, mask: string) => string
+	/** Сколько символов значения вмещает маска */
+	getMaxTokenCount: (mask: string) => number
+	/** Позиция в маске для индекса в чистом значении */
+	getMaskPosition: (valueIndex: number, mask: string) => number
+	/** Ближайший токен слева от позиции в маске */
+	findNearestTokenLeft: (maskPos: number, mask: string) => NearestTokenResult
+	/** Наложить текущую маску */
+	maskValue: (value: string) => string
+	/** Снять текущую маску */
+	unmaskValue: (value: string) => string
+	/** Обрезать чистое значение до вместимости текущей маски */
+	limitValue: (value: string) => string
+	/** Позиция курсора после ввода — по длине чистого значения */
+	cursorAfterInput: (cleanLength: number) => number
+	/** Позиция курсора после Backspace */
+	cursorAfterBackspace: (cursorPos: number) => NearestTokenResult
+	/** Позиция курсора после Delete */
+	cursorAfterDelete: (cursorPos: number) => NearestTokenResult
+}

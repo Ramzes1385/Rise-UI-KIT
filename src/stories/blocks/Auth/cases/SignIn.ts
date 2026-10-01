@@ -1,5 +1,6 @@
-import { reactive, ref } from 'vue'
+import { setup } from './SignIn.setup'
 import type meta from '../Auth.stories'
+import setupSource from './SignIn.setup.ts?raw'
 import { BaseForm } from '@components/BaseForm'
 import { BaseLink } from '@components/BaseLink'
 import { waitFor, expect } from 'storybook/test'
@@ -9,28 +10,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { staticStorySource, useStorySetup } from '@/stories/helpers'
-import type { StandardSchemaV1, StandardSchemaIssue } from '@utils/form/formUtils'
-
-interface SignInForm {
-	email: string
-	password: string
-	isRemembered: boolean
-}
-
-const SCHEMA: StandardSchemaV1<SignInForm> = {
-	'~standard': {
-		version: 1,
-		vendor: 'story',
-		validate: value => {
-			const data = value as SignInForm
-			const issues: StandardSchemaIssue[] = []
-			if (!/^\S+@\S+\.\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
-			if (data.password.length < 8) issues.push({ message: 'Пароль — не короче 8 символов', path: ['password'] })
-			return issues.length ? { issues } : { value: data }
-		},
-	},
-}
+import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="blk-page blk-auth">
@@ -66,35 +46,6 @@ const template = `
 	</div>
 `
 
-const script = `
-interface SignInForm {
-	email: string
-	password: string
-	isRemembered: boolean
-}
-
-const schema: StandardSchemaV1<SignInForm> = {
-	'~standard': {
-		version: 1,
-		vendor: 'story',
-		validate: value => {
-			const data = value as SignInForm
-			const issues: StandardSchemaIssue[] = []
-			if (!/^\\S+@\\S+\\.\\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
-			if (data.password.length < 8) issues.push({ message: 'Пароль — не короче 8 символов', path: ['password'] })
-			return issues.length ? { issues } : { value: data }
-		},
-	},
-}
-
-const state = reactive<SignInForm>({ email: '', password: '', isRemembered: true })
-const message = ref('')
-
-function signIn(_event: Event, data?: unknown): void {
-	message.value = \`Вы вошли как \${(data as SignInForm).email}\`
-}
-`
-
 export const SignIn: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
@@ -109,23 +60,13 @@ export const SignIn: StoryObj<typeof meta> = {
 				imports: ['BaseButton', 'BaseCheckbox', 'BaseForm', 'BaseFormField', 'BaseInput', 'BaseLink', 'BaseSeparator'],
 				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
 				vue: ['reactive', 'ref'],
-				script,
+				script: scriptSource(setupSource),
 			}),
 		},
 	},
 	render: args => ({
 		components: { BaseButton, BaseCheckbox, BaseForm, BaseFormField, BaseInput, BaseLink, BaseSeparator },
-		setup: useStorySetup(args, {
-			data: { schema: SCHEMA },
-			setup: () => {
-				const state = reactive<SignInForm>({ email: '', password: '', isRemembered: true })
-				const message = ref('')
-				const signIn = (_event: Event, data?: unknown): void => {
-					message.value = `Вы вошли как ${(data as SignInForm).email}`
-				}
-				return { state, message, signIn }
-			},
-		}),
+		setup: useStorySetup(args, { setup }),
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {

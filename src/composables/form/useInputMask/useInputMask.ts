@@ -1,5 +1,5 @@
 /** Composable: применение маски ввода к значениям полей */
-import type { NearestTokenResult, UseInputMaskOptions } from './types/useInputMask.types'
+import type { NearestTokenResult, UseInputMaskOptions, UseInputMaskReturn } from './types/useInputMask.types'
 
 /**
  * Фиксированные токены (ровно 1 символ)
@@ -257,7 +257,7 @@ function findNearestTokenLeft(maskPos: number, mask: string): NearestTokenResult
  * const cleanValue = mask.stripMask(rawValue, props.mask)
  * ```
  */
-function useInputMask(options: UseInputMaskOptions) {
+function useInputMask(options: UseInputMaskOptions): UseInputMaskReturn {
 	function getMask(): string {
 		return options.getMask()
 	}

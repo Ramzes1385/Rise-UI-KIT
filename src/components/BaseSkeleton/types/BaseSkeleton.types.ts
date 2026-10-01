@@ -18,8 +18,7 @@ export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root
 
 export type BaseSkeletonEmits = Record<string, never>
 
-export interface BaseSkeletonSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseSkeletonSlots = Record<never, never>
 
 export type SkeletonProps = PropsWithDefaults<BaseSkeletonProps, 'sizeScale'>

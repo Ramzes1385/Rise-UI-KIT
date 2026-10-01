@@ -16,3 +16,17 @@ export interface UseChatMessageActionsOptions {
 		(event: 'command-click', command: string): void
 	}
 }
+
+/** Состояние контекстного меню сообщения: открыто ли, где стоит и к какому сообщению относится */
+export interface ChatContextMenuState {
+	isOpen: boolean
+	x: number
+	y: number
+	message: ChatMessage | null
+}
+
+/** Параметры контекстного меню: лента (её прокрутка закрывает меню) и выбранные сообщения (при выборе меню не открывается) */
+export interface UseChatContextMenuOptions {
+	listRef: { value: HTMLElement | null }
+	selectedMessageIds: UseChatMessageActionsOptions['selectedMessageIds']
+}

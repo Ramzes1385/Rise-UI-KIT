@@ -1448,6 +1448,29 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
 
 Клавиши работают, пока фокус внутри плеера: Space/K — пуск и пауза, ←/→ — 5 с (`seek-step`), J/L — 10 с (`seek-step-large`), 0–9 — переход к доле записи, ↑/↓ — громкость, M — звук, F — полный экран, T — широкий экран, C — субтитры, Shift+. и Shift+, — скорость, Shift+N и Shift+P — следующая и предыдущая серия. Отключаются `:has-keyboard-shortcuts="false"`.
 
+### MediaIcon — значки плеера
+
+Значки панели управления плеера (контуры Font Awesome Free 7, лицензия CC BY 4.0) — для своих кнопок рядом с плеером: та же форма и толщина, что у его кнопок. Вход тот же — `@ramzes1385/rise-ui-kit/media`; список имён — история BaseMediaPlayer «Icons».
+
+```vue
+<script setup lang="ts">
+import { MediaIcon } from '@ramzes1385/rise-ui-kit/media'
+import type { MediaIconName } from '@ramzes1385/rise-ui-kit/media'
+
+const icon: MediaIconName = 'share'
+</script>
+
+<template>
+	<button type="button" aria-label="Поделиться"><MediaIcon :name="icon" /></button>
+</template>
+```
+
+| Проп | Тип | Описание |
+|---|---|---|
+| `name` | `MediaIconName` | Имя значка: значок интерфейса (`play`, `pause`, `share`, `fullscreen`…) или соцсети (`telegram`, `vk`…) |
+
+Значок — `<svg aria-hidden="true">` 24×24, масштаб — переменная `--size-scale` предка, цвет — `currentColor`: подпись для скринридера даёт кнопка. Смена `name` анимируется (пуск и пауза перетекают друг в друга); переходы берут длительность из переменных плеера, вне плеера значок меняется сразу.
+
 ---
 
 ## BaseAudioPlayer

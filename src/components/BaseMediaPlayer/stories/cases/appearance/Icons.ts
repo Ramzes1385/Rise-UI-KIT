@@ -2,7 +2,7 @@ import '../../../styles/MediaControls.style.scss'
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseMediaPlayer.stories'
-import MediaIcon from '../../../ui/controls/MediaIcon.vue'
+import { MediaIcon } from '@components/BaseMediaPlayer'
 import { literal, staticStorySource } from '@/stories/helpers'
 import { MEDIA_ICONS } from '../../../types/controls/MediaIcon.types'
 import { MEDIA_BRAND_ICONS } from '../../../types/controls/MediaBrandIcon.types'
@@ -41,8 +41,8 @@ export const Icons: StoryObj<typeof meta> = {
 			source: staticStorySource({
 				template,
 				imports: [],
-				importsFrom: { '@ramzes1385/rise-ui-kit/media': ['MediaIcon'] },
-				script: `const names = ${literal(names)}`,
+				importsFrom: { '@ramzes1385/rise-ui-kit/media': ['MediaIcon', 'type MediaIconName'] },
+				script: `const names: MediaIconName[] = ${literal(names)}`,
 			}),
 		},
 	},

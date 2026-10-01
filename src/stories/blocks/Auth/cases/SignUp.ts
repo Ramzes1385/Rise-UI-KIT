@@ -1,5 +1,6 @@
-import { reactive, ref } from 'vue'
+import { setup } from './SignUp.setup'
 import type meta from '../Auth.stories'
+import setupSource from './SignUp.setup.ts?raw'
 import { BaseForm } from '@components/BaseForm'
 import { BaseLink } from '@components/BaseLink'
 import { waitFor, expect } from 'storybook/test'
@@ -8,40 +9,8 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseFormField } from '@components/BaseFormField'
-import type { PasswordRule } from '@components/BaseInput'
 import { BasePhoneInput } from '@components/BasePhoneInput'
-import { staticStorySource, useStorySetup } from '@/stories/helpers'
-import type { StandardSchemaV1, StandardSchemaIssue } from '@utils/form/formUtils'
-
-interface SignUpForm {
-	name: string
-	email: string
-	phone: string
-	password: string
-}
-
-const PASSWORD_RULES: PasswordRule[] = [
-	{ key: 'length', label: 'Не короче 8 символов', validate: (value: string) => value.length >= 8 },
-	{ key: 'digit', label: 'Есть цифра', validate: (value: string) => /\d/.test(value) },
-	{ key: 'upper', label: 'Есть заглавная буква', validate: (value: string) => /\p{Lu}/u.test(value) },
-]
-
-const SCHEMA: StandardSchemaV1<SignUpForm> = {
-	'~standard': {
-		version: 1,
-		vendor: 'story',
-		validate: value => {
-			const data = value as SignUpForm
-			const issues: StandardSchemaIssue[] = []
-			if (!data.name.trim()) issues.push({ message: 'Введите имя', path: ['name'] })
-			if (!/^\S+@\S+\.\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
-			if (!/^\+\d{10,15}$/.test(data.phone)) issues.push({ message: 'Введите номер полностью', path: ['phone'] })
-			if (!PASSWORD_RULES.every(rule => rule.validate(data.password)))
-				issues.push({ message: 'Пароль не подходит под правила ниже', path: ['password'] })
-			return issues.length ? { issues } : { value: data }
-		},
-	},
-}
+import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="blk-page blk-auth">
@@ -85,45 +54,6 @@ const template = `
 	</div>
 `
 
-const script = `
-interface SignUpForm {
-	name: string
-	email: string
-	phone: string
-	password: string
-}
-
-const passwordRules: PasswordRule[] = [
-	{ key: 'length', label: 'Не короче 8 символов', validate: (value: string) => value.length >= 8 },
-	{ key: 'digit', label: 'Есть цифра', validate: (value: string) => /\\d/.test(value) },
-	{ key: 'upper', label: 'Есть заглавная буква', validate: (value: string) => /\\p{Lu}/u.test(value) },
-]
-
-const schema: StandardSchemaV1<SignUpForm> = {
-	'~standard': {
-		version: 1,
-		vendor: 'story',
-		validate: value => {
-			const data = value as SignUpForm
-			const issues: StandardSchemaIssue[] = []
-			if (!data.name.trim()) issues.push({ message: 'Введите имя', path: ['name'] })
-			if (!/^\\S+@\\S+\\.\\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
-			if (!/^\\+\\d{10,15}$/.test(data.phone)) issues.push({ message: 'Введите номер полностью', path: ['phone'] })
-			if (!passwordRules.every(rule => rule.validate(data.password)))
-				issues.push({ message: 'Пароль не подходит под правила ниже', path: ['password'] })
-			return issues.length ? { issues } : { value: data }
-		},
-	},
-}
-
-const state = reactive<SignUpForm>({ name: '', email: '', phone: '', password: '' })
-const createdFor = ref('')
-
-function signUp(_event: Event, data?: unknown): void {
-	createdFor.value = (data as SignUpForm).email
-}
-`
-
 export const SignUp: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
@@ -147,23 +77,13 @@ export const SignUp: StoryObj<typeof meta> = {
 				],
 				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
 				vue: ['reactive', 'ref'],
-				script,
+				script: scriptSource(setupSource),
 			}),
 		},
 	},
 	render: args => ({
 		components: { BaseAlert, BaseButton, BaseForm, BaseFormField, BaseInput, BaseLink, BasePhoneInput },
-		setup: useStorySetup(args, {
-			data: { schema: SCHEMA, passwordRules: PASSWORD_RULES },
-			setup: () => {
-				const state = reactive<SignUpForm>({ name: '', email: '', phone: '', password: '' })
-				const createdFor = ref('')
-				const signUp = (_event: Event, data?: unknown): void => {
-					createdFor.value = (data as SignUpForm).email
-				}
-				return { state, createdFor, signUp }
-			},
-		}),
+		setup: useStorySetup(args, { setup }),
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {

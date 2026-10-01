@@ -167,7 +167,7 @@
 
 **Типы слотов и props**
 
-- Из типов удалены слоты и props, которые компонент объявлял, но не показывал: `default` у 13 компонентов, `event`, `navigation` и проп `events` у `BaseCalendar`, тип `CalendarEvent`. Разметка и вид прежние; переданное содержимое и раньше пропадало. Лишний слот в шаблоне vue-tsc ошибкой не считает — найдите такие места поиском; раздел [«Слоты и props, которые компонент не показывал»](#слоты-и-props-которые-компонент-не-показывал).
+- Из типов удалены слоты и props, которые компонент объявлял, но не показывал: `default` у 16 компонентов (у BaseIcon, BaseLoader и BaseSkeleton — только в типе `Base<X>Slots`), `event`, `navigation` и проп `events` у `BaseCalendar`, тип `CalendarEvent`. Разметка и вид прежние; переданное содержимое и раньше пропадало. Лишний слот в шаблоне vue-tsc ошибкой не считает — найдите такие места поиском; раздел [«Слоты и props, которые компонент не показывал»](#слоты-и-props-которые-компонент-не-показывал).
 
 ## Безопасность (порция 1.1)
 
@@ -711,7 +711,7 @@
 
 **Что изменилось.**
 - Закреплённые сообщения: панель показывает последнее закреплённое, а не первое; новый закреп сразу становится показанным. Клик по панели прокручивает ленту к сообщению и переключает панель на предыдущее закреплённое, по кругу; стрелки листают вручную, тоже по кругу.
-- `scrollToMessage(id)` прокручивает только ленту сообщений (`scrollBy` контейнера, сообщение по центру), а не страницу (`scrollIntoView` больше не вызывается). При `prefers-reduced-motion: reduce` — без анимации. Подсветка снимается с предыдущего сообщения при переходе к следующему.
+- `scrollToMessage(id)` прокручивает только ленту сообщений (`scrollBy` контейнера, сообщение по центру), а не страницу (`scrollIntoView` больше не вызывается). При `prefers-reduced-motion: reduce` — без анимации. Подсветка снимается с предыдущего сообщения при переходе к следующему. Сообщение ищется по id в корне ленты, поэтому переход работает и в ленте внутри веб-компонента (shadow root), iframe, окна Document Picture-in-Picture или `window.open`.
 - Значки участников: `members[].badges` — массив `ChatBadge` (`id`, `label`, `icon?`, `emoji?`, `color?`). Значки выводятся рядом с именем отправителя в группе (по `senderId`), в списке участников и разделом «Значки» в профиле.
 - Новый проп `maxBadges` (по умолчанию 3): сколько значков видно рядом с именем, остальные — счётчиком «+N» с подсказкой.
 - Из `BaseChat` экспортируются типы `ChatBadge` и `ChatMember`.
@@ -1062,12 +1062,14 @@
 
 **Что изменилось (несовместимо для проверки типов).** Эти слоты и props были объявлены в типах, но компонент их не рендерил и не читал: переданное содержимое молча пропадало. Теперь они удалены из типов. Вид и поведение не менялись, разметка — тоже, кроме случая с `events` ниже.
 
-Что заметит vue-tsc: импорт `CalendarEvent`, обращение к удалённым членам типов (`BaseChatSlots['default']`, `BaseCalendarProps['events']`), проп `events` в объекте типа `BaseCalendarProps` и в шаблоне при `strictTemplates`. Лишний слот в шаблоне (`#default`, `#navigation`, `#event`, содержимое между тегами) Vue ошибкой не считает ни в каком режиме — такие места найдите поиском. У BaseChat, BaseMenu, BaseNotification, BasePagination, BasePin, BaseRating и BaseTextarea слотов не осталось: их `Base<X>Slots` — пустой тип `Record<never, never>`, имя экспорта прежнее.
+Что заметит vue-tsc: импорт `CalendarEvent`, обращение к удалённым членам типов (`BaseChatSlots['default']`, `BaseCalendarProps['events']`), проп `events` в объекте типа `BaseCalendarProps` и в шаблоне при `strictTemplates`. Лишний слот в шаблоне (`#default`, `#navigation`, `#event`, содержимое между тегами) Vue ошибкой не считает ни в каком режиме — такие места найдите поиском. У BaseChat, BaseIcon, BaseLoader, BaseMenu, BaseNotification, BasePagination, BasePin, BaseRating, BaseSkeleton и BaseTextarea слотов не осталось: их `Base<X>Slots` — пустой тип `Record<never, never>`, имя экспорта прежнее.
 
 | Компонент | Удалено | Чем заменить |
 |---|---|---|
 | `BaseChat` | слот `default` | — (чат строится из `messages`, `title` и других props) |
 | `BaseFileUpload` | слот `default` | слот `trigger` |
+| `BaseIcon` | слот `default` (только в типе `BaseIconSlots`: компонент не подключал его и в Docs его не было) | — (иконка — `name`) |
+| `BaseLoader` | слот `default` (только в типе `BaseLoaderSlots`) | подпись — `label` |
 | `BaseMenu` | слот `default` | пункты — `items` |
 | `BaseNotification` | слот `default` | уведомления — `add()` или `items`; обёртка приложения — `BaseApp` |
 | `BasePagination` | слот `default` | — |
@@ -1076,6 +1078,7 @@
 | `BaseRange` | слот `default` | ползунок — слот `thumb` |
 | `BaseRating` | слот `default` | иконки — props `icon` и `filledIcon` |
 | `BaseSelect` | слот `default` | варианты — `options`, вид — слоты `option`, `selected`, `header`, `footer`, `empty` |
+| `BaseSkeleton` | слот `default` (только в типе `BaseSkeletonSlots`) | — |
 | `BaseStepper` | слот `default` | слоты `header`, `footer`, `item` |
 | `BaseTable` | слот `default` | колонки — `columns`, ячейки — `cell-<key>`, прочее — `header`, `footer`, `empty`, `toolbar-*` |
 | `BaseTextarea` | слот `default` | — |
@@ -1092,3 +1095,9 @@
 **Что изменилось.** Ничего в коде: минимальные версии браузеров впервые записаны — README, раздел «Поддержка браузеров». Chrome и Edge 111, Firefox 113, Safari 16.2. Их задаёт `color-mix()` в токенах цветов; JS собран под ES2020 (`target: 'es2020'`), из более новых API — только `Array.prototype.at`. В Firefox до 121 нет `:has()`: часть подсветок выбора и колец фокуса (BaseRadio с рамкой, BaseSegmented, BaseCalendar, BaseEditor) не показывается.
 
 **Что сделать.** Сверьте список браузеров приложения (`browserslist`) с этим минимумом. Полифилов кит не добавляет: для браузеров старше нужен свой полифил `Array.prototype.at`, а `color-mix()` полифилом не заменить.
+
+## Задача media-icon-export: MediaIcon во входе `/media`
+
+**Что нового.** Вход `@ramzes1385/rise-ui-kit/media` экспортирует компонент `MediaIcon` — значки панели управления плеера — и его типы `MediaIconProps` и `MediaIconName`. Код истории BaseMediaPlayer «Icons» теперь можно скопировать в приложение. Справочник — docs/reference/COMPONENTS.md, раздел BaseMediaPlayer, «MediaIcon — значки плеера».
+
+**Что сделать.** Ничего: только добавление, прежние экспорты и поведение плеера не менялись.

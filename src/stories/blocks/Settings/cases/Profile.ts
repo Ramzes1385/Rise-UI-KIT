@@ -1,6 +1,7 @@
-import { reactive, ref } from 'vue'
+import { setup } from './Profile.setup'
 import type meta from '../Settings.stories'
 import { BaseForm } from '@components/BaseForm'
+import setupSource from './Profile.setup.ts?raw'
 import { waitFor, expect } from 'storybook/test'
 import { BaseInput } from '@components/BaseInput'
 import { BaseAvatar } from '@components/BaseAvatar'
@@ -12,51 +13,7 @@ import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { BasePopconfirm } from '@components/BasePopconfirm'
-import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
-import type { StandardSchemaV1, StandardSchemaIssue } from '@utils/form/formUtils'
-
-interface ProfileForm {
-	name: string
-	email: string
-	bio: string
-	language: string
-	theme: string
-	notify: { tasks: boolean; mentions: boolean; digest: boolean }
-}
-
-const INITIAL: ProfileForm = {
-	name: 'Анна Петрова',
-	email: 'anna@example.com',
-	bio: 'Дизайнер интерфейсов в команде платежей',
-	language: 'ru',
-	theme: 'system',
-	notify: { tasks: true, mentions: true, digest: false },
-}
-
-const SCHEMA: StandardSchemaV1<ProfileForm> = {
-	'~standard': {
-		version: 1,
-		vendor: 'story',
-		validate: value => {
-			const data = value as ProfileForm
-			const issues: StandardSchemaIssue[] = []
-			if (!data.name.trim()) issues.push({ message: 'Введите имя', path: ['name'] })
-			if (!/^\S+@\S+\.\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
-			return issues.length ? { issues } : { value: data }
-		},
-	},
-}
-
-const LANGUAGES = [
-	{ value: 'ru', label: 'Русский' },
-	{ value: 'en', label: 'English' },
-]
-
-const THEMES = [
-	{ value: 'light', label: 'Светлая' },
-	{ value: 'dark', label: 'Тёмная' },
-	{ value: 'system', label: 'Как в системе' },
-]
+import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="blk-page blk-settings">
@@ -137,52 +94,6 @@ const template = `
 	</div>
 `
 
-const copyOf = (form: ProfileForm): ProfileForm => ({ ...form, notify: { ...form.notify } })
-
-const script = `
-interface ProfileForm {
-	name: string
-	email: string
-	bio: string
-	language: string
-	theme: string
-	notify: { tasks: boolean; mentions: boolean; digest: boolean }
-}
-
-const initial: ProfileForm = ${literal(INITIAL)}
-
-const schema: StandardSchemaV1<ProfileForm> = {
-	'~standard': {
-		version: 1,
-		vendor: 'story',
-		validate: value => {
-			const data = value as ProfileForm
-			const issues: StandardSchemaIssue[] = []
-			if (!data.name.trim()) issues.push({ message: 'Введите имя', path: ['name'] })
-			if (!/^\\S+@\\S+\\.\\S+$/.test(data.email)) issues.push({ message: 'Введите e-mail, например name@example.com', path: ['email'] })
-			return issues.length ? { issues } : { value: data }
-		},
-	},
-}
-
-const languages = ${literal(LANGUAGES)}
-const themes = ${literal(THEMES)}
-
-const copyOf = (form: ProfileForm): ProfileForm => ({ ...form, notify: { ...form.notify } })
-
-const state = reactive<ProfileForm>(copyOf(initial))
-const message = ref('')
-
-function save(): void {
-	message.value = 'Изменения сохранены'
-}
-
-function reset(): void {
-	Object.assign(state, copyOf(initial))
-	message.value = ''
-}
-`
-
 export const Profile: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
@@ -208,7 +119,7 @@ export const Profile: StoryObj<typeof meta> = {
 				],
 				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
 				vue: ['reactive', 'ref'],
-				script,
+				script: scriptSource(setupSource),
 			}),
 		},
 	},
@@ -225,21 +136,7 @@ export const Profile: StoryObj<typeof meta> = {
 			BaseSwitch,
 			BaseTextarea,
 		},
-		setup: useStorySetup(args, {
-			data: { schema: SCHEMA, languages: LANGUAGES, themes: THEMES },
-			setup: () => {
-				const state = reactive<ProfileForm>(copyOf(INITIAL))
-				const message = ref('')
-				const save = (): void => {
-					message.value = 'Изменения сохранены'
-				}
-				const reset = (): void => {
-					Object.assign(state, copyOf(INITIAL))
-					message.value = ''
-				}
-				return { state, message, save, reset }
-			},
-		}),
+		setup: useStorySetup(args, { setup }),
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {

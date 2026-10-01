@@ -17,6 +17,5 @@ export interface BaseIconProps extends Omit<BaseComponentProps<string, 'root' | 
 
 export type BaseIconEmits = Record<string, never>
 
-export interface BaseIconSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseIconSlots = Record<never, never>

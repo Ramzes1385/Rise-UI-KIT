@@ -3,41 +3,80 @@ import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { getLocale } from '@/locales/state'
 import type { ResolvedCalendarProps } from './types/useCalendarResolvedProps.types'
-import type { BaseCalendarProps, CalendarWeekday } from '@components/BaseCalendar/types/BaseCalendar.types'
+import type {
+	BaseCalendarProps,
+	CalendarConstraints,
+	CalendarDisplayConfig,
+	CalendarTimeConfig,
+	CalendarWeekday,
+} from '@components/BaseCalendar/types/BaseCalendar.types'
 
-function useCalendarResolvedProps(props: BaseCalendarProps): ComputedRef<ResolvedCalendarProps> {
-	return computed(() => ({
+function resolveSelection(props: BaseCalendarProps) {
+	return {
 		modelValue: props.modelValue ?? null,
 		modelValueEnd: props.modelValueEnd ?? null,
 		selectedDates: props.selectedDates ?? [],
 		selectionMode: props.selectionMode ?? 'single',
-		minDate: props.constraints?.minDate ?? null,
-		maxDate: props.constraints?.maxDate ?? null,
-		disabledDates: props.constraints?.disabledDates ?? [],
-		disabledWeekdays: props.constraints?.disabledWeekdays ?? [],
-		disableFrom: props.constraints?.disableFrom ?? null,
-		disableTo: props.constraints?.disableTo ?? null,
 		highlights: props.highlights ?? [],
 		weekends: props.weekends ?? null,
+	}
+}
+
+function resolveConstraints(props: BaseCalendarProps) {
+	const constraints: CalendarConstraints = props.constraints ?? {}
+	return {
+		minDate: constraints.minDate ?? null,
+		maxDate: constraints.maxDate ?? null,
+		disabledDates: constraints.disabledDates ?? [],
+		disabledWeekdays: constraints.disabledWeekdays ?? [],
+		disableFrom: constraints.disableFrom ?? null,
+		disableTo: constraints.disableTo ?? null,
+	}
+}
+
+function resolveTime(props: BaseCalendarProps) {
+	const timeConfig: CalendarTimeConfig = props.timeConfig ?? {}
+	return {
+		showTime: timeConfig.showTime ?? false,
+		showSeconds: timeConfig.showSeconds ?? false,
+		is24Hour: timeConfig.is24Hour ?? true,
+	}
+}
+
+function resolveDisplay(props: BaseCalendarProps) {
+	const displayConfig: CalendarDisplayConfig = props.displayConfig ?? {}
+	return {
+		showWeekNumber: displayConfig.showWeekNumber ?? false,
+		showNavigation: displayConfig.showNavigation ?? true,
+		canSwitchView: displayConfig.canSwitchView ?? true,
+		showTodayButton: displayConfig.showTodayButton ?? true,
+		showYear: displayConfig.showYear ?? true,
+	}
+}
+
+function resolveAppearance(props: BaseCalendarProps) {
+	return {
 		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
 		firstDayOfWeek: props.firstDayOfWeek ?? (getLocale().firstDayOfWeek as CalendarWeekday),
-		showTime: props.timeConfig?.showTime ?? false,
-		showSeconds: props.timeConfig?.showSeconds ?? false,
-		is24Hour: props.timeConfig?.is24Hour ?? true,
-		showWeekNumber: props.displayConfig?.showWeekNumber ?? false,
 		locale: props.locale ?? getLocale().intl,
 		variant: props.variant ?? 'default',
 		color: props.color,
 		showDatePopover: props.showDatePopover ?? false,
 		sizeScale: props.sizeScale ?? 100,
 		isDisabled: props.isDisabled ?? false,
-		showNavigation: props.displayConfig?.showNavigation ?? true,
-		canSwitchView: props.displayConfig?.canSwitchView ?? true,
-		showTodayButton: props.displayConfig?.showTodayButton ?? true,
-		showYear: props.displayConfig?.showYear ?? true,
 		initialMonth: props.initialMonth,
 		initialYear: props.initialYear,
 		customClass: props.customClass,
+	}
+}
+
+function useCalendarResolvedProps(props: BaseCalendarProps): ComputedRef<ResolvedCalendarProps> {
+	return computed(() => ({
+		...resolveSelection(props),
+		...resolveConstraints(props),
+		...resolveTime(props),
+		...resolveDisplay(props),
+		...resolveAppearance(props),
 	}))
 }
 

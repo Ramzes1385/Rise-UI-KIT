@@ -913,3 +913,9 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - `data-basecalendar--multiple-selection` — промежуточная версия ломала play (значение через `models`, `updateArgs` стирал вызовы шпиона); исправлено, снимок совпадает с базой.
 - BaseModal FullScreen: кнопки «Предпросмотр», «Закрыть», «Экспортировать» раньше падали с ошибкой (`onUpdate` не был определён) — теперь работают; начальный вид прежний.
 - Правки по проверке (01.10): меняется только текст «Show code» на вкладке Docs, превью и снимки — нет. Длинный пропс больше не поднимается в `const`, если строки `script` истории уже объявляют это имя (повторное объявление было у 16 историй: BaseTable, BaseChat, BaseMenu, BaseNotificationCenter, BaseTextDiff, BaseCommentThread, BaseSideBar). Переменная `v-model`, которой нет в Controls, начинается со значения пропса по умолчанию или `ref()` вместо `ref('')` (BaseDatePicker, BaseCalendar, BaseAutocomplete, BaseInputNumber, BaseMegaMenu, BaseAvatarCropper).
+
+## Задача media-icon-export: MediaIcon во входе `/media`, код витрин Blocks из модуля setup
+
+Превью и снимки не меняются. Меняется только текст «Show code» на вкладке Docs:
+- `media-basemediaplayer--icons` — `MediaIcon` в превью берётся из входа плеера, как в коде; код и раньше импортировал его из `@ramzes1385/rise-ui-kit/media`, теперь этот импорт рабочий; список значков в коде объявлен как `const names: MediaIconName[]` (тип — из того же входа), чтобы скопированный код проходил vue-tsc;
+- `blocks-auth--sign-in`, `blocks-auth--sign-up`, `blocks-settings--profile`, `blocks-dashboard--overview` — строки `<script setup>` собираются из модуля `*.setup.ts`, который выполняет и превью: те же объявления, что раньше; в Settings и Dashboard данные написаны в модуле, а не выведены `literal()` (`initial`, `languages`, `themes`, `weeks`, `channels`, `events`…), поэтому в этих литералах могут поменяться переносы строк.

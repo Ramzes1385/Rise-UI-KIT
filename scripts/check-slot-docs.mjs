@@ -3,7 +3,8 @@
  * члена интерфейса слотов (`defineSlots<BaseXSlots>()`, `types/*.types.ts`; в Docs его переносит плагин
  * build/plugins/slotDocs.ts) или `slotArgType('…')` в `stories/argTypes.ts`. Ошибка: `<slot>` в шаблоне без
  * `defineSlots` или без объявления в интерфейсе, слот или шаблон имён без описания, динамический `<slot :name>` без
- * шаблона имён в интерфейсе (`` [name: `cell-${string}`] ``), слот в таблице, который компонент не показывает. Слоты,
+ * шаблона имён в интерфейсе (`` [name: `cell-${string}`] ``), слот в таблице, который компонент не показывает,
+ * `Base<X>Slots` с членами в `types/<X>.types.ts` без `defineSlots` в `ui/<X>.vue`. Слоты,
  * скрытые `hiddenArgTypes(…)`, не проверяются.
  * `--component=BaseTable,BaseTabs` проверяет только эти компоненты.
  */
@@ -53,6 +54,19 @@ function storySlots(dir) {
 	return { described, hidden }
 }
 
+/**
+ * В `types/<X>.types.ts` у `<X>Slots` есть члены или родители: интерфейс с непустым телом или `extends`, тип-объект с
+ * членами. Без `defineSlots` такой интерфейс к компоненту не привязан — экспортируемое имя обещает слоты, которых нет.
+ */
+function hasSlotMembers(dir, name) {
+	const file = join(dir, 'types', `${name}.types.ts`)
+	if (!existsSync(file)) return false
+	const text = readFileSync(file, 'utf-8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
+	const slots = escapeRegExp(`${name}Slots`)
+	const declaration = new RegExp(`\\b(?:interface\\s+${slots}\\b([^{]*)|type\\s+${slots}\\s*=\\s*)\\{([^}]*)\\}`).exec(text)
+	return Boolean(declaration && (/\bextends\b/.test(declaration[1] ?? '') || declaration[2].trim()))
+}
+
 function checkComponent(name) {
 	const dir = join(COMPONENTS, name)
 	const file = join(dir, 'ui', `${name}.vue`)
@@ -63,7 +77,12 @@ function checkComponent(name) {
 	const problems = []
 	if (!result.interfaceName) {
 		const count = result.undeclared.length + result.dynamic.length
-		return { count, problems: count ? [`${at}: слоты в шаблоне без defineSlots — описаний в Docs нет`] : [] }
+		if (count) problems.push(`${at}: слоты в шаблоне без defineSlots — описаний в Docs нет`)
+		if (hasSlotMembers(dir, name))
+			problems.push(
+				`${at}: интерфейс слотов не подключён: defineSlots<${name}Slots>() или пустой тип ${name}Slots = Record<never, never>`,
+			)
+		return { count, problems }
 	}
 	if (!result.found) return { count: 0, problems: [`${at}: интерфейс ${result.interfaceName} не найден в types/`] }
 	for (const slot of result.undeclared) problems.push(`${at}: слот «${slot}» есть в шаблоне, но не объявлен в ${result.interfaceName}`)
