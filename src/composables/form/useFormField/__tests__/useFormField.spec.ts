@@ -189,5 +189,17 @@ describe('useFormField', () => {
 			await nextTick()
 			expect(field.isDirty).toBe(false)
 		})
+
+		it('после reset возврат к исходному значению не делает поле dirty', async () => {
+			const val = ref('initial')
+			const field = useFormField({ value: () => val.value })
+			val.value = 'changed'
+			await nextTick()
+			field.reset()
+
+			val.value = 'initial'
+			await nextTick()
+			expect(field.isDirty).toBe(false)
+		})
 	})
 })

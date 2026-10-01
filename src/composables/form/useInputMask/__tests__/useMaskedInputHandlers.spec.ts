@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { describe, it, expect, vi } from 'vitest'
 import { useMaskedInputHandlers } from '../useMaskedInputHandlers'
 
@@ -179,6 +179,214 @@ describe('useMaskedInputHandlers', () => {
 
 			const result = handlers.applyMask('123456', '###-###')
 			expect(result).toBe('123-456')
+		})
+	})
+})
+
+describe('useMaskedInputHandlers — ввод в поле', () => {
+	interface FieldOptions {
+		mask?: string
+		value?: string | number | null
+		allowedChars?: 'digits' | 'letters' | 'alphanumeric'
+		type?: string
+		isReadonly?: boolean
+		withInputRef?: boolean
+	}
+
+	function setupField(config: FieldOptions = {}) {
+		const input = document.createElement('input')
+		input.type = config.type ?? 'text'
+		document.body.appendChild(input)
+		const model = ref<string | number | null>(config.value === undefined ? '' : config.value)
+		const emit = vi.fn((_event: 'update:modelValue', value: string) => {
+			model.value = value
+		})
+		const handlers = useMaskedInputHandlers({
+			getMask: () => config.mask ?? '',
+			getAllowedChars: () => config.allowedChars,
+			getValue: () => model.value,
+			isPassword: () => false,
+			isReadonly: () => config.isReadonly ?? false,
+			emit,
+			inputRef: ref(config.withInputRef === false ? null : input),
+		})
+		return { input, handlers, emit, model }
+	}
+
+	function type(input: HTMLInputElement, value: string, cursor = value.length): Event {
+		input.value = value
+		if (input.selectionStart !== null) input.setSelectionRange(cursor, cursor)
+		const event = new Event('input')
+		Object.defineProperty(event, 'target', { value: input })
+		return event
+	}
+
+	function key(input: HTMLInputElement, name: string, cursor: number): KeyboardEvent {
+		input.setSelectionRange(cursor, cursor)
+		const event = new KeyboardEvent('keydown', { key: name, cancelable: true })
+		Object.defineProperty(event, 'target', { value: input })
+		return event
+	}
+
+	afterEach(() => {
+		document.body.innerHTML = ''
+	})
+
+	describe('с маской', () => {
+		it('эмитит чистое значение, показывает его по маске и ставит курсор за введённым', async () => {
+			const { input, handlers, emit } = setupField({ mask: '###-###' })
+			handlers.handleInput(type(input, '1234'))
+
+			expect(emit).toHaveBeenCalledWith('update:modelValue', '1234')
+			expect(input.value).toBe('123-4')
+			expect(input.selectionStart).toBe(5)
+			await nextTick()
+			expect(input.selectionStart).toBe(5)
+		})
+
+		it('обрезает ввод сверх маски', () => {
+			const { input, handlers, emit } = setupField({ mask: '##-##' })
+			handlers.handleInput(type(input, '12-345'))
+			expect(emit).toHaveBeenCalledWith('update:modelValue', '1234')
+			expect(input.value).toBe('12-34')
+		})
+
+		it('уже отформатированное значение поля не переписывает', () => {
+			const { input, handlers } = setupField({ mask: '##-##' })
+			const event = type(input, '12-3')
+			const setter = vi.spyOn(input, 'value', 'set')
+			handlers.handleInput(event)
+			expect(setter).not.toHaveBeenCalled()
+		})
+
+		it('не возвращает курсор, если до следующей отрисовки значение поля изменилось', async () => {
+			const { input, handlers } = setupField({ mask: '###-###' })
+			handlers.handleInput(type(input, '1234'))
+			input.value = '123-45'
+			input.setSelectionRange(1, 1)
+			await nextTick()
+			expect(input.selectionStart).toBe(1)
+		})
+
+		it('без поля в DOM значение всё равно эмитится', () => {
+			const { input, handlers, emit } = setupField({ mask: '###', withInputRef: false })
+			handlers.handleInput(type(input, '12'))
+			expect(emit).toHaveBeenCalledWith('update:modelValue', '12')
+		})
+
+		it('Backspace удаляет символ слева от курсора, пропуская разделители', () => {
+			const { input, handlers, emit } = setupField({ mask: '###-###', value: '1234' })
+			input.value = '123-4'
+			const event = key(input, 'Backspace', 4)
+			handlers.handleKeydown(event)
+
+			expect(event.defaultPrevented).toBe(true)
+			expect(emit).toHaveBeenCalledWith('update:modelValue', '124')
+			expect(input.selectionStart).toBe(2)
+		})
+
+		it('Backspace в начале поля ничего не удаляет', () => {
+			const { input, handlers, emit } = setupField({ mask: '###-###', value: '1234' })
+			input.value = '123-4'
+			handlers.handleKeydown(key(input, 'Backspace', 0))
+			expect(emit).not.toHaveBeenCalled()
+		})
+
+		it('Backspace ничего не удаляет, если модель ещё не приняла введённое', () => {
+			const { input, handlers, emit } = setupField({ mask: '###-###', value: '' })
+			input.value = '123-4'
+			const event = key(input, 'Backspace', 5)
+			handlers.handleKeydown(event)
+			expect(event.defaultPrevented).toBe(true)
+			expect(emit).not.toHaveBeenCalled()
+		})
+
+		it('Delete удаляет символ справа от курсора и оставляет курсор на месте', () => {
+			const { input, handlers, emit } = setupField({ mask: '###-###', value: '1234' })
+			input.value = '123-4'
+			const event = key(input, 'Delete', 1)
+			handlers.handleKeydown(event)
+
+			expect(event.defaultPrevented).toBe(true)
+			expect(emit).toHaveBeenCalledWith('update:modelValue', '134')
+			expect(input.selectionStart).toBe(1)
+		})
+
+		it('Delete в конце значения ничего не удаляет', () => {
+			const { input, handlers, emit } = setupField({ mask: '###-###', value: '12' })
+			input.value = '12'
+			handlers.handleKeydown(key(input, 'Delete', 2))
+			expect(emit).not.toHaveBeenCalled()
+		})
+
+		it('другие клавиши не отменяются', () => {
+			const { input, handlers, emit } = setupField({ mask: '###', value: '12' })
+			input.value = '12'
+			const event = key(input, 'ArrowLeft', 2)
+			handlers.handleKeydown(event)
+			expect(event.defaultPrevented).toBe(false)
+			expect(emit).not.toHaveBeenCalled()
+		})
+
+		it('клавиши не с поля ввода не обрабатываются', () => {
+			const { handlers, emit } = setupField({ mask: '###', value: '12' })
+			const event = new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true })
+			Object.defineProperty(event, 'target', { value: document.createElement('div') })
+			handlers.handleKeydown(event)
+			expect(event.defaultPrevented).toBe(false)
+			expect(emit).not.toHaveBeenCalled()
+		})
+
+		it('числовое значение модели показывается по маске', () => {
+			const { input, handlers } = setupField({ mask: '##-##', value: 1234, isReadonly: true })
+			handlers.handleInput(type(input, '9'))
+			expect(input.value).toBe('12-34')
+		})
+
+		it('пустая модель в поле только для чтения очищает поле, а совпадающее значение не трогает', () => {
+			const { input, handlers } = setupField({ mask: '##-##', value: null, isReadonly: true })
+			handlers.handleInput(type(input, '9'))
+			expect(input.value).toBe('')
+
+			const same = setupField({ mask: '##-##', value: '12', isReadonly: true })
+			const event = type(same.input, '12')
+			const setter = vi.spyOn(same.input, 'value', 'set')
+			same.handlers.handleInput(event)
+			expect(setter).not.toHaveBeenCalled()
+		})
+	})
+
+	describe('фильтр символов без маски', () => {
+		it.each([
+			['digits', 'a1b2', '12'],
+			['letters', 'Ab1Яё2', 'AbЯё'],
+			['alphanumeric', 'a-1 б_2', 'a1б2'],
+		] as const)('%s отбрасывает недопустимые символы', (allowedChars, typed, expected) => {
+			const { input, handlers, emit } = setupField({ allowedChars })
+			handlers.handleInput(type(input, typed))
+			expect(input.value).toBe(expected)
+			expect(emit).toHaveBeenCalledWith('update:modelValue', expected)
+		})
+
+		it('курсор остаётся там, где был бы без отброшенного символа', () => {
+			const { input, handlers } = setupField({ allowedChars: 'digits' })
+			handlers.handleInput(type(input, '12a34', 3))
+			expect(input.value).toBe('1234')
+			expect(input.selectionStart).toBe(2)
+		})
+
+		it('в поле без выделения текста (email) курсор не ставится', () => {
+			const { input, handlers, emit } = setupField({ allowedChars: 'alphanumeric', type: 'email' })
+			handlers.handleInput(type(input, 'ab!c'))
+			expect(input.value).toBe('abc')
+			expect(emit).toHaveBeenCalledWith('update:modelValue', 'abc')
+		})
+
+		it('допустимый ввод проходит без изменений', () => {
+			const { input, handlers, emit } = setupField({ allowedChars: 'digits' })
+			handlers.handleInput(type(input, '123'))
+			expect(input.value).toBe('123')
+			expect(emit).toHaveBeenCalledWith('update:modelValue', '123')
 		})
 	})
 })
