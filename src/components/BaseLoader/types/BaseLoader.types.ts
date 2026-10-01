@@ -29,8 +29,11 @@ export interface BaseLoaderSlots {
 
 export type LoaderProps = PropsWithDefaults<BaseLoaderProps, 'sizeScale'>
 
-/** Элемент, накрытый оверлеем: прежнее значение `aria-busy` возвращается, когда оверлей снят. */
+/**
+ * Элемент, накрытый оверлеями: прежнее значение `aria-busy` возвращается, когда снят последний оверлей из `owners`.
+ * Несколько оверлеев в одном родителе делят одну запись — сосед остаётся `inert`, пока виден хотя бы один из них.
+ */
 export interface LoaderCoveredElement {
-	element: Element
 	busy: string | null
+	owners: Set<HTMLElement>
 }

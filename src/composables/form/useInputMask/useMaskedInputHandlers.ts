@@ -94,7 +94,6 @@ function useMaskedInputHandlers(options: UseMaskedInputHandlersOptions): UseMask
 			e.preventDefault()
 			if (cursorPos <= 0) return
 			const { maskPos, valueIndex } = mask.cursorAfterBackspace(cursorPos)
-			/* istanbul ignore else -- DOM clamp boundary */
 			if (valueIndex < 0 || valueIndex >= current.length) return
 			const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
 			options.emit('update:modelValue', newValue)

@@ -115,7 +115,7 @@ describe('useRangeValues', () => {
 	it('округляет к шагу и держит результат в границах', () => {
 		const { range } = setup({ min: 0, max: 95, step: 10 })
 		expect(range.snapToStepValue(34)).toBe(30)
-		expect(range.snapToStepValue(96)).toBeLessThanOrEqual(95)
+		expect(range.snapToStepValue(96)).toBe(95)
 		expect(range.snapToStepValue(-20)).toBe(0)
 	})
 })

@@ -48,7 +48,7 @@ export const Disabled: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	args: { items: DOCUMENTS, expandedIds: undefined, selectionMode: 'single' },
+	args: { items: DOCUMENTS, expandedIds: [], selectionMode: 'single' },
 	play: async ({ canvasElement, userEvent, args }) => {
 		const header = nodeHeader(canvasElement, 'Архив — нет доступа')
 		await expect(header).toHaveAttribute('aria-disabled', 'true')

@@ -15,7 +15,7 @@ const STAFF: TreeNode[] = Array.from({ length: 60 }, (_, department) => ({
 }))
 
 export const Virtual: StoryObj<typeof meta> = {
-	args: { items: STAFF, isVirtual: true, height: 320, isDefaultExpandAll: true, expandedIds: undefined, ariaLabel: 'Сотрудники' },
+	args: { items: STAFF, isVirtual: true, height: 320, isDefaultExpandAll: true, expandedIds: [], ariaLabel: 'Сотрудники' },
 	parameters: {
 		docs: {
 			description: {

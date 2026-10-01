@@ -6,10 +6,10 @@ import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-frame story-narrow" data-testid="container">
-		<div class="story-col">
+		<section class="story-col" aria-label="Отчёт за май">
 			<strong>Отчёт за май</strong>
 			<span>Выручка выросла на 12%, число заказов — на 8%. Данные обновляются раз в час.</span>
-		</div>
+		</section>
 		<BaseLoader v-bind="args" />
 	</div>
 `
@@ -40,7 +40,7 @@ export const Overlay: StoryObj<typeof meta> = {
 		const overlay = status.getBoundingClientRect()
 		await expect(overlay.width).toBeCloseTo(container.clientWidth, 0)
 		await expect(overlay.height).toBeCloseTo(container.clientHeight, 0)
-		const content = container.querySelector('.story-col')
+		const content = canvas.getByRole('region', { name: 'Отчёт за май', hidden: true })
 		await expect(content).toHaveAttribute('inert')
 		await expect(content).toHaveAttribute('aria-busy', 'true')
 		await waitFor(() => expect(status.querySelector('.base-loader__announce')).toHaveTextContent('Обновление'))

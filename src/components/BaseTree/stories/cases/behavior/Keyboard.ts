@@ -18,7 +18,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		},
 	},
 	tags: ['!autodocs'],
-	args: { expandedIds: undefined },
+	args: { expandedIds: [] },
 	play: async ({ canvasElement, userEvent }) => {
 		const src = nodeHeader(canvasElement, 'src')
 		await tabTo(src, userEvent)

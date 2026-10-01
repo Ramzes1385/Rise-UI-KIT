@@ -225,6 +225,26 @@ describe('BaseMediaPlayer: панель', () => {
 		vi.restoreAllMocks()
 	})
 
+	it('без ResizeObserver «Авто» выбирает качество по высоте плеера при монтировании; devicePixelRatio 0 считается за 1', async () => {
+		vi.stubGlobal('ResizeObserver', undefined)
+		vi.stubGlobal('devicePixelRatio', 0)
+		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
+		vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(700)
+		const sources = [
+			{ src: '/media/a.webm', type: 'video/webm', height: 1080 },
+			{ src: '/media/b.webm', type: 'video/webm', height: 720 },
+			{ src: '/media/c.webm', type: 'video/webm', height: 480 },
+		]
+		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо' }, attachTo: document.body })
+		await nextTick()
+
+		expect(playerMenu(wrapper, 'Качество').options()).toEqual(['Авто (720p)', '1080p', '720p', '480p'])
+		expect(wrapper.get('video').attributes('src')).toBe('/media/b.webm')
+		wrapper.unmount()
+		vi.unstubAllGlobals()
+		vi.restoreAllMocks()
+	})
+
 	it('меню открываются кнопками и закрываются выбором: качество, субтитры, озвучка, главы; серии — в панели', async () => {
 		vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
 		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')

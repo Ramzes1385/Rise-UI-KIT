@@ -642,8 +642,8 @@ describe('useImageZoom', () => {
 			zoom.zoomOut()
 
 			expect(zoom.scalePercent.value).toBe(375)
-			expect(Math.abs(zoom.translateX.value)).toBeLessThan(100000)
-			expect(Math.abs(zoom.translateY.value)).toBeLessThan(100000)
+			expect(zoom.translateX.value).toBe((3840 * 3.75 - window.innerWidth) / 2)
+			expect(zoom.translateY.value).toBe(-(2160 * 3.75 - window.innerHeight) / 2)
 		})
 
 		it('стрелки в открытом зуме листают галерею', () => {
