@@ -1,5 +1,6 @@
+import type { Ref } from 'vue'
 import type { useSelect } from '../useSelect'
-import type { BaseSelectEmits, BaseSelectProps } from '@components/BaseSelect/types/BaseSelect.types'
+import type { BaseSelectEmits, BaseSelectOption, BaseSelectProps } from '@components/BaseSelect/types/BaseSelect.types'
 
 export interface UseSelectOptions {
 	props: BaseSelectProps
@@ -31,4 +32,20 @@ export interface UseSelectKeysOptions {
 	isDisabled: () => boolean
 	/** В списке есть поле поиска: буквы набираются в нём, а не ищут опцию по началу подписи */
 	isSearchable?: () => boolean
+}
+
+/** Значение опции выпадающего списка */
+export type SelectValue = BaseSelectOption['value']
+
+/** Направление сдвига активной опции: 1 — вниз, -1 — вверх */
+export type SelectStep = 1 | -1
+
+/** Внутреннее состояние useSelect, общее для действий выбора */
+export interface SelectContext {
+	props: BaseSelectProps
+	emit: BaseSelectEmits
+	onBlur: () => void
+	isDisabled: () => boolean
+	isOpen: Ref<boolean>
+	searchQuery: Ref<string>
 }

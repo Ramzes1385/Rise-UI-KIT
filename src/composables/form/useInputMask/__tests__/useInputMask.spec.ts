@@ -289,4 +289,31 @@ describe('useInputMask', () => {
 			expect(applyMask('AB12', '\\#X')).toBe('#AB12')
 		})
 	})
+
+	describe('Позиции на краях маски', () => {
+		it('findNearestTokenLeft — позиция за концом маски (Delete в конце) указывает на последний токен', () => {
+			expect(findNearestTokenLeft(20, '##.##')).toEqual({ maskPos: 4, valueIndex: 3 })
+		})
+
+		it('findNearestTokenLeft — экранированный токен не считается символом значения', () => {
+			expect(findNearestTokenLeft(4, '\\##-#')).toEqual({ maskPos: 2, valueIndex: 0 })
+		})
+
+		it('findNearestTokenLeft — жадный токен в начале не считается фиксированным', () => {
+			expect(findNearestTokenLeft(3, 'N-#')).toEqual({ maskPos: 2, valueIndex: 0 })
+		})
+
+		it('getMaskPosition — экранированный литерал перед токенами', () => {
+			expect(getMaskPosition(1, '\\##-##')).toBe(6)
+		})
+
+		it('getMaskPosition — жадный токен в начале: курсор за литералами после него', () => {
+			expect(getMaskPosition(0, 'N руб')).toBe(5)
+		})
+
+		it('stripMask и applyMask — жадный токен с литералами и частичный ввод', () => {
+			expect(stripMask('123 руб', 'N руб')).toBe('123')
+			expect(applyMask('12a34', '+7 (###) ###')).toBe('+7 (123) 4')
+		})
+	})
 })

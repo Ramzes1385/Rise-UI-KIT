@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import type { SearchMode, SearchResult } from '@components/BaseSearch/types/BaseSearch.types'
 
 export interface UseSearchStateOptions {
@@ -18,4 +19,29 @@ export interface UseSearchStateOptions {
 	}
 	focusActiveInput: () => void
 	closeOverlay: () => void
+}
+
+/** Отложенный запуск поиска при мгновенном режиме */
+export interface SearchDebounce {
+	/** Запускает поиск через debounceMs; прежний отложенный запуск отменяется */
+	schedule: (value: string) => void
+	/** Отменяет отложенный запуск */
+	cancel: () => void
+}
+
+/** Навигация по списку результатов (часть возврата useListNavigation, которой пользуется поиск) */
+export interface SearchNavigation {
+	highlightedIndex: Ref<number>
+	handleKeydown: (e: KeyboardEvent) => void
+	reset: () => void
+}
+
+/** Внутреннее состояние useSearchState, общее для действий поиска */
+export interface SearchStateContext {
+	options: UseSearchStateOptions
+	query: Ref<string>
+	isFocused: Ref<boolean>
+	/** Поиск запущен по Enter (для режима без мгновенного поиска) */
+	isSearchTriggered: Ref<boolean>
+	debounce: SearchDebounce
 }

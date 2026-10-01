@@ -38,3 +38,23 @@ export interface UseInputMaskReturn {
 	/** Позиция курсора после Delete */
 	cursorAfterDelete: (cursorPos: number) => NearestTokenResult
 }
+
+/** Проход по маске при наложении и снятии маски */
+export interface MaskScanState {
+	/** Собранный результат */
+	result: string
+	/** Позиция в маске */
+	maskIndex: number
+	/** Позиция в исходной строке */
+	valueIndex: number
+}
+
+/** Проход по маске при поиске позиции курсора */
+export interface MaskPositionState {
+	/** Найденная позиция курсора в маске */
+	pos: number
+	/** Позиция в маске */
+	maskIndex: number
+	/** Сколько фиксированных токенов уже пройдено */
+	valueIndex: number
+}
