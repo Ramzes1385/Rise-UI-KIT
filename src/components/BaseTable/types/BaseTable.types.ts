@@ -239,7 +239,6 @@ export interface TableExpandTransitionCallbacks {
 export const TABLE_EXPAND_TRANSITION_KEY = Symbol('TABLE_EXPAND_TRANSITION') as InjectionKey<TableExpandTransitionCallbacks>
 
 export interface BaseTableSlots {
-	default?: () => unknown
 	/** Над таблицей и панелью инструментов: заголовок, описание, свои кнопки */
 	header?: () => unknown
 	/** Под таблицей и пагинацией */

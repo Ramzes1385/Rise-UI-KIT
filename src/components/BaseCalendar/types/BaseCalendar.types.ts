@@ -13,13 +13,6 @@ export type CalendarView = 'days' | 'months' | 'years'
  */
 export type CalendarWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
-export interface CalendarEvent {
-	/** Дата события */
-	date: Date
-	/** Заголовок */
-	label: string
-}
-
 export interface CalendarHighlight {
 	/** Дата */
 	date: Date
@@ -98,8 +91,6 @@ export interface BaseCalendarProps extends BaseComponentProps<
 	displayConfig?: CalendarDisplayConfig
 	/** Выделенные даты */
 	highlights?: CalendarHighlight[]
-	/** События */
-	events?: CalendarEvent[]
 	/** Конфигурация выходных */
 	weekends?: CalendarWeekends | null
 	/** Первый день недели (0=вс, 1=пн) */
@@ -141,8 +132,4 @@ export interface BaseCalendarSlots {
 	header?: (props: { month: number; year: number }) => unknown
 	/** Кастомный popover для даты */
 	'date-popover'?: (props: { date: Date; close: () => void; highlights: CalendarHighlight[] }) => unknown
-	/** Кастомное событие */
-	event?: (props: { event: CalendarEvent }) => unknown
-	/** Кастомная навигация */
-	navigation?: () => unknown
 }

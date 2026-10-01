@@ -34,8 +34,7 @@ export interface BaseRatingEmits {
 	(event: 'change', value: number): void
 }
 
-export interface BaseRatingSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseRatingSlots = Record<never, never>
 
 export type RatingProps = PropsWithDefaults<BaseRatingProps, 'modelValue' | 'max' | 'step' | 'icon'>

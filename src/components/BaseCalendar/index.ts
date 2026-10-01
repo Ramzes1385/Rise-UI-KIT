@@ -5,7 +5,6 @@ export type {
 	BaseCalendarSlots,
 	CalendarConstraints,
 	CalendarDisplayConfig,
-	CalendarEvent,
 	CalendarHighlight,
 	CalendarSelectionMode,
 	CalendarTimeConfig,

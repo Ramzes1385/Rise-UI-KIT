@@ -1,6 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseStepper from '../ui/BaseStepper.vue'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 import { STEPPER_VARIANTS, STEPPER_ORIENTATIONS, STEPPER_SHAPES } from '../types/BaseStepper.types'
 
 export const argTypes = {
@@ -13,5 +13,4 @@ export const argTypes = {
 	item: { control: false },
 	header: { control: false },
 	footer: { control: false },
-	...hiddenArgTypes('default'),
 } satisfies Meta<typeof BaseStepper>['argTypes']

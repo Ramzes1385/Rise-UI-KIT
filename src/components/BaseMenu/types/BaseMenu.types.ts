@@ -32,6 +32,5 @@ export interface BaseMenuEmits {
 	(event: 'select', item: BaseMenuItem): void
 }
 
-export interface BaseMenuSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseMenuSlots = Record<never, never>

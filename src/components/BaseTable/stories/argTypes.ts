@@ -1,7 +1,7 @@
 import type BaseTable from '../ui/BaseTable.vue'
 import type { Meta } from '@storybook/vue3-vite'
 import { TABLE_VARIANTS } from '../types/BaseTable.types'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	...baseArgTypes({ variants: TABLE_VARIANTS }),
@@ -20,5 +20,4 @@ export const argTypes = {
 	pageSizeOptions: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	loadMode: { control: 'inline-radio', options: ['pagination', 'button', 'infinite'], table: propGroup(ARG_GROUP.behavior) },
 	searchDebounce: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
-	...hiddenArgTypes('default'),
 } satisfies Meta<typeof BaseTable>['argTypes']

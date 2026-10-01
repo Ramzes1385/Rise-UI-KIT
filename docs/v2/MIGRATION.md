@@ -165,6 +165,10 @@
 - Навигация по ссылкам (`openExternalUrl`, переходы компонентов через `navigateAndEmit`) и `downloadFile` блокируют опасные схемы URL (`javascript:`, `vbscript:`, `data:` для навигации и т. п.) с предупреждением в консоли. Новые утилиты: `isSafeUrl`, `NAVIGATION_PROTOCOLS`, `DOWNLOAD_PROTOCOLS`.
 - `utils` больше не содержит вспомогательные функции Storybook (`storybookUtils`): они импортировали `storybook/test`, которого нет в зависимостях пакета.
 
+**Типы слотов и props**
+
+- Из типов удалены слоты и props, которые компонент объявлял, но не показывал: `default` у 13 компонентов, `event`, `navigation` и проп `events` у `BaseCalendar`, тип `CalendarEvent`. Разметка и вид прежние; переданное содержимое и раньше пропадало. Лишний слот в шаблоне vue-tsc ошибкой не считает — найдите такие места поиском; раздел [«Слоты и props, которые компонент не показывал»](#слоты-и-props-которые-компонент-не-показывал).
+
 ## Безопасность (порция 1.1)
 
 ### BaseEditor очищает HTML
@@ -971,7 +975,7 @@
 ## Эпик cross (slots)
 
 - **BaseTable, слоты `cell-<key>`:** в типе параметров слота появились `value` (значение ячейки) и `index?` (номер строки на странице) — компонент передавал их и раньше, теперь их видит TypeScript. `value` — `unknown`: для сравнения и вывода приводите явно (`Number(value)`, `String(value)`).
-- **Docs Storybook:** слоты, которые компонент объявляет, но не показывает (`default` у BaseChat, BaseMenu, BasePagination, BaseRange, BaseSelect, BaseStepper), скрыты из таблицы параметров. Типы не менялись — вопрос об их удалении в FOLLOW_UPS (S1).
+- **Docs Storybook:** слоты, которые компонент объявлял, но не показывал, удалены из типов — раздел [«Слоты и props, которые компонент не показывал»](#слоты-и-props-которые-компонент-не-показывал).
 - **Слоты по id элемента (новое, совместимо):** BaseTabs — `panel-<id>` (содержимое вкладки `id`; у вкладки без своего слота — `default`; роль `tabpanel` и `aria-controls` появляются и тогда, когда переданы только слоты `panel-<id>`); BaseTimeline — `item-<id>` (содержимое события, иначе `item`); BaseTree — `label-<id>` (метка узла на любой глубине, иначе `label`). BaseAccordion уже умел это через `item.slot`, BaseTable — `cell-<key>` и `header-<key>`.
 
 ## Эпик megamenu-levels
@@ -1054,3 +1058,32 @@
 - Новый документ docs/reference/SEO.md: компоненты, поля и как проверить разметку в Google Rich Results, validator.schema.org и Яндекс Вебмастере.
 
 **Что сделать.** Ничего; для разметки — `seo` и недостающие поля в `seo.data`.
+
+## Слоты и props, которые компонент не показывал
+
+**Что изменилось (несовместимо для проверки типов).** Эти слоты и props были объявлены в типах, но компонент их не рендерил и не читал: переданное содержимое молча пропадало. Теперь они удалены из типов. Вид и поведение не менялись, разметка — тоже, кроме случая с `events` ниже.
+
+Что заметит vue-tsc: импорт `CalendarEvent`, обращение к удалённым членам типов (`BaseChatSlots['default']`, `BaseCalendarProps['events']`), проп `events` в объекте типа `BaseCalendarProps` и в шаблоне при `strictTemplates`. Лишний слот в шаблоне (`#default`, `#navigation`, `#event`, содержимое между тегами) Vue ошибкой не считает ни в каком режиме — такие места найдите поиском. У BaseChat, BaseMenu, BaseNotification, BasePagination, BasePin, BaseRating и BaseTextarea слотов не осталось: их `Base<X>Slots` — пустой тип `Record<never, never>`, имя экспорта прежнее.
+
+| Компонент | Удалено | Чем заменить |
+|---|---|---|
+| `BaseChat` | слот `default` | — (чат строится из `messages`, `title` и других props) |
+| `BaseFileUpload` | слот `default` | слот `trigger` |
+| `BaseMenu` | слот `default` | пункты — `items` |
+| `BaseNotification` | слот `default` | уведомления — `add()` или `items`; обёртка приложения — `BaseApp` |
+| `BasePagination` | слот `default` | — |
+| `BasePin` | слот `default` | — |
+| `BaseRadio` | слот `default` | варианты — `options`, подпись — слот `option` |
+| `BaseRange` | слот `default` | ползунок — слот `thumb` |
+| `BaseRating` | слот `default` | иконки — props `icon` и `filledIcon` |
+| `BaseSelect` | слот `default` | варианты — `options`, вид — слоты `option`, `selected`, `header`, `footer`, `empty` |
+| `BaseStepper` | слот `default` | слоты `header`, `footer`, `item` |
+| `BaseTable` | слот `default` | колонки — `columns`, ячейки — `cell-<key>`, прочее — `header`, `footer`, `empty`, `toolbar-*` |
+| `BaseTextarea` | слот `default` | — |
+| `BaseCalendar` | слот `navigation` | слот `header` (`{ month, year }`) |
+| `BaseCalendar` | слот `event`, проп `events`, тип `CalendarEvent` | `highlights` (`{ date, label, color }`): точка под датой и подпись в popover |
+
+**Что сделать.** Уберите `#default` и содержимое между тегами у этих компонентов (оно и раньше не показывалось), `#navigation` и `#event` у `BaseCalendar`. Проп `events` замените на `highlights`. Импорт типа `CalendarEvent` из `@ramzes1385/rise-ui-kit` удалите или замените на `CalendarHighlight`.
+
+- **`events` у `BaseCalendar` уберите из шаблона.** Раньше это был объявленный проп и в DOM он не попадал. Теперь это неизвестный атрибут: без `strictTemplates` vue-tsc промолчит, а Vue выведет его на корневой `<div>` календаря как `events="[object Object]"`.
+- **`CalendarEvent` из `@ramzes1385/rise-ui-kit/composables` — другой тип** (`useCalendar`, с полем `color`), он остаётся. Замена импорта на `/composables` ничего не чинит: календарь `events` не читает — данные переводите в `highlights`.

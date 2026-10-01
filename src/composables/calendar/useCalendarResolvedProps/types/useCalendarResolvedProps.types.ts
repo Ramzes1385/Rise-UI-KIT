@@ -12,7 +12,6 @@ export interface ResolvedCalendarProps {
 	disableFrom: Date | null
 	disableTo: Date | null
 	highlights: NonNullable<BaseCalendarProps['highlights']>
-	events: NonNullable<BaseCalendarProps['events']>
 	weekends: BaseCalendarProps['weekends']
 	firstDayOfWeek: NonNullable<BaseCalendarProps['firstDayOfWeek']>
 	showTime: boolean

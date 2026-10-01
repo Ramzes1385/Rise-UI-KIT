@@ -157,6 +157,5 @@ export interface BaseChatEmits {
 	(event: 'error', payload: { type: string; message: string; detail?: unknown }): void
 }
 
-export interface BaseChatSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseChatSlots = Record<never, never>

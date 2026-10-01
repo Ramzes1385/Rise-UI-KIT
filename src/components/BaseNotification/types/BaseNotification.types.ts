@@ -65,9 +65,8 @@ export interface BaseNotificationEmits {
 	(event: 'remove', id: NotificationId): void
 }
 
-export interface BaseNotificationSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseNotificationSlots = Record<never, never>
 
 export interface BaseNotificationExpose {
 	/** Добавить уведомление программно и получить его id. `variant` из аргумента задаёт оформление этого уведомления, иначе — проп компонента */

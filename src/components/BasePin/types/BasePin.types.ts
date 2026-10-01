@@ -21,8 +21,7 @@ export interface BasePinEmits {
 	(event: 'complete', value: string): void
 }
 
-export interface BasePinSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BasePinSlots = Record<never, never>
 
 export type PinProps = PropsWithDefaults<BasePinProps, 'length'>

@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseRating from '../ui/BaseRating.vue'
 import { RATING_VARIANTS } from '../types/BaseRating.types'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	...baseArgTypes({ variants: RATING_VARIANTS }),
@@ -14,5 +14,4 @@ export const argTypes = {
 	isHoverSmooth: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isReadonly: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
-	...hiddenArgTypes('default'),
 } satisfies Meta<typeof BaseRating>['argTypes']

@@ -69,7 +69,6 @@ export interface BaseStepperEmits {
 }
 
 export interface BaseStepperSlots {
-	default?: () => unknown
 	/** Заголовок степпера */
 	header?: () => unknown
 	/** Кастомный рендер шага */

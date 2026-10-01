@@ -18,7 +18,6 @@ function useCalendarResolvedProps(props: BaseCalendarProps): ComputedRef<Resolve
 		disableFrom: props.constraints?.disableFrom ?? null,
 		disableTo: props.constraints?.disableTo ?? null,
 		highlights: props.highlights ?? [],
-		events: props.events ?? [],
 		weekends: props.weekends ?? null,
 		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
 		firstDayOfWeek: props.firstDayOfWeek ?? (getLocale().firstDayOfWeek as CalendarWeekday),

@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseCalendar from '../ui/BaseCalendar.vue'
 import { CALENDAR_VARIANTS } from '../types/BaseCalendar.types'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	...baseArgTypes({ variants: CALENDAR_VARIANTS }),
@@ -21,5 +21,4 @@ export const argTypes = {
 	firstDayOfWeek: { control: 'inline-radio', options: [1, 0], table: propGroup(ARG_GROUP.behavior) },
 	locale: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	showDatePopover: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
-	...hiddenArgTypes('events', 'event', 'navigation'),
 } satisfies Meta<typeof BaseCalendar>['argTypes']

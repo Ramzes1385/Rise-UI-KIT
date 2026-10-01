@@ -80,7 +80,6 @@ export interface BaseFileUploadEmits {
 }
 
 export interface BaseFileUploadSlots {
-	default?: () => unknown
 	/** Кастомная зона загрузки */
 	trigger?: () => unknown
 }

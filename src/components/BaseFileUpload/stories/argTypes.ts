@@ -5,7 +5,7 @@ import { baseArgTypes, hiddenArgTypes, propGroup, ARG_GROUP } from '@/stories/he
 
 export const argTypes = {
 	...baseArgTypes({ variants: FILE_UPLOAD_VARIANTS }),
-	...hiddenArgTypes('emptyText', 'default'),
+	...hiddenArgTypes('emptyText'),
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	buttonText: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	previewSize: { control: 'number', table: propGroup(ARG_GROUP.appearance) },

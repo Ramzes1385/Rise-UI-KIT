@@ -2,7 +2,7 @@ import { DELIVERY_OPTIONS } from './shared'
 import type BaseRadio from '../ui/BaseRadio.vue'
 import type { Meta } from '@storybook/vue3-vite'
 import { RADIO_VARIANTS } from '../types/BaseRadio.types'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	...baseArgTypes({ variants: RADIO_VARIANTS }),
@@ -14,5 +14,4 @@ export const argTypes = {
 	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isRequired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	option: { control: false },
-	...hiddenArgTypes('default'),
 } satisfies Meta<typeof BaseRadio>['argTypes']

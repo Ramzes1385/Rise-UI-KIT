@@ -1,7 +1,7 @@
 import type BaseChat from '../ui/BaseChat.vue'
 import type { Meta } from '@storybook/vue3-vite'
 import { CHAT_VARIANTS } from '../types/BaseChat.types'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	...baseArgTypes({ variants: CHAT_VARIANTS }),
@@ -22,5 +22,4 @@ export const argTypes = {
 	typingUsername: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isGroup: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	currentUserRole: { control: 'inline-radio', options: ['member', 'admin'], table: propGroup(ARG_GROUP.behavior) },
-	...hiddenArgTypes('default'),
 } satisfies Meta<typeof BaseChat>['argTypes']

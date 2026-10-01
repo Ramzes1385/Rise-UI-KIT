@@ -24,8 +24,7 @@ export interface BasePaginationEmits {
 	(event: 'change', value: number): void
 }
 
-export interface BasePaginationSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BasePaginationSlots = Record<never, never>
 
 export type PaginationProps = PropsWithDefaults<BasePaginationProps, 'pageSize' | 'maxVisible' | 'showLastPage' | 'sizeScale'>

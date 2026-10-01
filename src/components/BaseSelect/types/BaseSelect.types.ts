@@ -72,7 +72,6 @@ export interface BaseSelectEmits {
 }
 
 export interface BaseSelectSlots {
-	default?: () => unknown
 	/** Всё содержимое кнопки-триггера вместо выбранных значений: `isOpen`, подпись выбранного и подписи при `isMultiple` */
 	trigger?: (props: { isOpen: boolean; selectedLabel: string; selectedLabels: string[] }) => unknown
 	/** Выбранные значения при `isMultiple` вместо меток-бейджей; `remove(value)` снимает выбор */

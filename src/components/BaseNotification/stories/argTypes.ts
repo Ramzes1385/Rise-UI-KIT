@@ -5,7 +5,7 @@ import { NOTIFICATION_VARIANTS, NOTIFICATION_TYPES, NOTIFICATION_POSITIONS } fro
 
 export const argTypes = {
 	...baseArgTypes({ variants: NOTIFICATION_VARIANTS }),
-	...hiddenArgTypes('notificationKey', 'default', 'items'),
+	...hiddenArgTypes('notificationKey', 'items'),
 	title: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	description: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	actions: { control: 'object', table: propGroup(ARG_GROUP.content) },

@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSelect from '../ui/BaseSelect.vue'
 import { SELECT_VARIANTS } from '../types/BaseSelect.types'
-import { baseArgTypes, propGroup, ARG_GROUP, hiddenArgTypes } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	...baseArgTypes({ variants: SELECT_VARIANTS }),
@@ -14,5 +14,4 @@ export const argTypes = {
 	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isRequired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
-	...hiddenArgTypes('default'),
 } satisfies Meta<typeof BaseSelect>['argTypes']

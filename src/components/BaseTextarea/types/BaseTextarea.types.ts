@@ -42,8 +42,7 @@ export interface BaseTextareaEmits {
 	(event: 'focus', e: FocusEvent): void
 }
 
-export interface BaseTextareaSlots {
-	default?: () => unknown
-}
+/** Слотов нет: содержимое строится из props */
+export type BaseTextareaSlots = Record<never, never>
 
 export type TextareaProps = PropsWithDefaults<BaseTextareaProps, 'modelValue' | 'isRequired' | 'isAutosize'>
