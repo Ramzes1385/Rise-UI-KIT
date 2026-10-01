@@ -1,54 +1,18 @@
 /** Composable: управление состоянием выделения в редакторе и определение активных форматов */
 import { reactive } from 'vue'
 import type { EditorActiveStates } from './types/useEditorToolbar.types'
+import { createActiveStates, readActiveStates } from './helpers/activeStates'
 import type { UseToolbarSelectionOptions } from './types/useToolbarSelection.types'
-import { FORMAT_CONFIG, getBlockAlign, getFormatBlock, isInsideList, isInsideTags } from '@utils/dom/editorDomUtils'
 
 function useToolbarSelection(options: UseToolbarSelectionOptions) {
 	const { editorRef } = options
 
-	const activeStates = reactive<EditorActiveStates>({
-		isBold: false,
-		isItalic: false,
-		isUnderline: false,
-		isStrike: false,
-		isJustifyLeft: false,
-		isJustifyCenter: false,
-		isJustifyRight: false,
-		isJustifyFull: false,
-		isUnorderedList: false,
-		isOrderedList: false,
-		isBlockquote: false,
-		isPre: false,
-		formatBlock: '',
-	})
+	const activeStates = reactive<EditorActiveStates>(createActiveStates())
 
 	let savedRange: Range | null = null
 
 	function updateActiveStates(): void {
-		const sel = window.getSelection()
-		const node = sel?.anchorNode ?? null
-		const root = editorRef.value
-		if (!root) return
-
-		activeStates.isBold = isInsideTags(node, FORMAT_CONFIG.bold.match, root)
-		activeStates.isItalic = isInsideTags(node, FORMAT_CONFIG.italic.match, root)
-		activeStates.isUnderline = isInsideTags(node, FORMAT_CONFIG.underline.match, root)
-		activeStates.isStrike = isInsideTags(node, FORMAT_CONFIG.strikeThrough.match, root)
-
-		const align = getBlockAlign(node, root)
-		activeStates.isJustifyLeft = align === 'left'
-		activeStates.isJustifyCenter = align === 'center'
-		activeStates.isJustifyRight = align === 'right'
-		activeStates.isJustifyFull = align === 'justify'
-
-		activeStates.isUnorderedList = isInsideList(node, root, 'UL')
-		activeStates.isOrderedList = isInsideList(node, root, 'OL')
-
-		const block = getFormatBlock(node, root)
-		activeStates.formatBlock = block
-		activeStates.isBlockquote = block === 'blockquote'
-		activeStates.isPre = block === 'pre'
+		readActiveStates(activeStates, editorRef.value)
 	}
 
 	function saveSelection(): void {

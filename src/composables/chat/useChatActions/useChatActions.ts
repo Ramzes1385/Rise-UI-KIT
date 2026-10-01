@@ -3,6 +3,17 @@ import { downloadFile } from '@utils/media/fileUtils'
 import type { UseChatActionsOptions } from './types/useChatActions.types'
 import type { ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 
+/** Скачивает вложение и сообщает о нём событием `download-file`; ошибку — событием `error` */
+function downloadAttachment(emit: UseChatActionsOptions['emit'], file: ChatMessageAttachment): void {
+	try {
+		downloadFile(file.url, file.name)
+		emit('download-file', file)
+	} catch (e) {
+		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
+		emit('error', { type: 'download', message: `[BaseChat] Download failed: ${file.name}`, detail: e })
+	}
+}
+
 /** Описание: предоставляет обработчики действий чата — отправка, ответ, вложение, реакции, пин/удаление, аватар и команды */
 function useChatActions(options: UseChatActionsOptions) {
 	const { emit, replyingTo, getAvatar, messageListRef, handleAvatarClick, handleCancelReply, openInfo } = options
@@ -29,76 +40,22 @@ function useChatActions(options: UseChatActionsOptions) {
 		handleCancelReply()
 	}
 
-	function handleAttach(files: FileList): void {
-		emit('attach', files)
-	}
-
-	function handleMessageReaction(payload: { messageId: string; emoji: string }): void {
-		emit('message-reaction', payload)
-	}
-
-	function handleQuickReply(text: string): void {
-		emit('quick-reply', text)
-	}
-
-	function handleDownloadFile(file: ChatMessageAttachment): void {
-		try {
-			downloadFile(file.url, file.name)
-			emit('download-file', file)
-		} catch (e) {
-			/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
-			emit('error', { type: 'download', message: `[BaseChat] Download failed: ${file.name}`, detail: e })
-		}
-	}
-
-	function handlePin(messageId: string): void {
-		emit('pin-message', messageId)
-	}
-
-	function handleUnpin(messageId: string): void {
-		emit('unpin-message', messageId)
-	}
-
-	function handleWriteMessage(memberId: string): void {
-		emit('avatar-click', memberId)
-	}
-
-	function handleKickMember(memberId: string): void {
-		emit('kick-member', memberId)
-	}
-
-	function handleBanMember(payload: { memberId: string; reason?: string; warningsCount?: number }): void {
-		emit('ban-member', payload)
-	}
-
-	function handleUpdateMemberRole(payload: { memberId: string; role: string }): void {
-		emit('update-member-role', payload)
-	}
-
-	function handleMentionClick(mention: string): void {
-		emit('mention-click', mention)
-	}
-
-	function handleCommandClick(command: string): void {
-		emit('command-click', command)
-	}
-
 	return {
 		handleHeaderAvatarClick,
 		handleReplyClick,
 		handleSend,
-		handleAttach,
-		handleMessageReaction,
-		handleQuickReply,
-		handleDownloadFile,
-		handlePin,
-		handleUnpin,
-		handleWriteMessage,
-		handleKickMember,
-		handleBanMember,
-		handleUpdateMemberRole,
-		handleMentionClick,
-		handleCommandClick,
+		handleAttach: (files: FileList) => emit('attach', files),
+		handleMessageReaction: (payload: { messageId: string; emoji: string }) => emit('message-reaction', payload),
+		handleQuickReply: (text: string) => emit('quick-reply', text),
+		handleDownloadFile: (file: ChatMessageAttachment) => downloadAttachment(emit, file),
+		handlePin: (messageId: string) => emit('pin-message', messageId),
+		handleUnpin: (messageId: string) => emit('unpin-message', messageId),
+		handleWriteMessage: (memberId: string) => emit('avatar-click', memberId),
+		handleKickMember: (memberId: string) => emit('kick-member', memberId),
+		handleBanMember: (payload: { memberId: string; reason?: string; warningsCount?: number }) => emit('ban-member', payload),
+		handleUpdateMemberRole: (payload: { memberId: string; role: string }) => emit('update-member-role', payload),
+		handleMentionClick: (mention: string) => emit('mention-click', mention),
+		handleCommandClick: (command: string) => emit('command-click', command),
 	}
 }
 

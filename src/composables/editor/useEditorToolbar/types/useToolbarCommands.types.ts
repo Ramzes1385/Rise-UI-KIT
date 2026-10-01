@@ -16,3 +16,18 @@ export interface UseToolbarCommandsOptions {
 	getCodeTextarea: () => HTMLTextAreaElement | null
 	promptForUrl?: () => string | null
 }
+
+/** Свойство встроенного стиля, которое меняют цветовые команды */
+export type InlineStyleProperty = 'backgroundColor' | 'color'
+
+/** Разметка медиа по адресу файла: для режима кода и для визуального режима */
+export interface MediaMarkup {
+	code: (url: string) => string
+	visual: (url: string) => string
+}
+
+/** Выделение и текстовый узел с кареткой внутри редактора */
+export interface CaretTextNode {
+	sel: Selection
+	node: Text
+}

@@ -808,6 +808,38 @@ describe('useEditorToolbar', () => {
 			expect(onInput).not.toHaveBeenCalled()
 		})
 
+		it('convertInlineHtml: пара в самом конце абзаца не создаёт пустой текстовый узел после элемента', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('текст <u>подчёркнуто</u>')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.innerHTML).toBe('текст <u>подчёркнуто</u>')
+			expect(editorRef.value!.lastChild).toBe(editorRef.value!.querySelector('u'))
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('convertInlineHtml: без выделения и без редактора ничего не меняет', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('<b>x</b>')
+			editorRef.value!.appendChild(textNode)
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			vi.spyOn(window, 'getSelection').mockReturnValue(null)
+			convertInlineHtml()
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 0 })
+			convertInlineHtml()
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 1 })
+			editorRef.value = null
+			convertInlineHtml()
+
+			expect(textNode.textContent).toBe('<b>x</b>')
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
 		it('convertInlineHtml: нет родителя', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const textNode = document.createTextNode('test </b>')

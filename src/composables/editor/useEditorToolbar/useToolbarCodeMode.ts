@@ -1,5 +1,6 @@
 /** Composable: переключение режима кода/HTML в редакторе и синхронизация содержимого */
 import { nextTick, ref } from 'vue'
+import { replaceCodeSelection, resolveCodeTextarea } from './helpers/codeText'
 import type { UseToolbarCodeModeOptions } from './types/useToolbarCodeMode.types'
 
 function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
@@ -9,34 +10,14 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 	const codeContent = ref('')
 
 	function getCodeTextarea(): HTMLTextAreaElement | null {
-		const ref = codeTextareaRef.value
-		if (!ref) return null
-		if (ref instanceof HTMLTextAreaElement) return ref
-		if ('textareaRef' in ref && ref.textareaRef instanceof HTMLTextAreaElement) return ref.textareaRef
-		return null
+		return resolveCodeTextarea(codeTextareaRef.value)
 	}
 
-	function wrapCodeSelection(openTag: string, closeTag: string): void {
+	/** Заменяет выделение в поле кода и сообщает о вводе */
+	function editCodeSelection(replace: (selected: string) => string): void {
 		const el = getCodeTextarea()
 		if (!el) return
-		const start = el.selectionStart
-		const end = el.selectionEnd
-		const selected = codeContent.value.substring(start, end)
-		const before = codeContent.value.substring(0, start)
-		const after = codeContent.value.substring(end)
-		codeContent.value = before + openTag + selected + closeTag + after
-		el.focus()
-		onInput()
-	}
-
-	function insertCodeAtCursor(html: string): void {
-		const el = getCodeTextarea()
-		if (!el) return
-		const pos = el.selectionStart
-		const before = codeContent.value.substring(0, pos)
-		const after = codeContent.value.substring(el.selectionEnd)
-		codeContent.value = before + html + after
-		el.focus()
+		replaceCodeSelection(el, codeContent, replace)
 		onInput()
 	}
 
@@ -45,29 +26,27 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 			if (!editorRef.value) return
 			codeContent.value = editorRef.value.innerHTML
 			isCodeMode.value = true
-		} else {
-			isCodeMode.value = false
-			nextTick(() => {
-				if (!editorRef.value) return
-				editorRef.value.innerHTML = sanitize(codeContent.value)
-				onInput()
-			})
+			return
 		}
-	}
-
-	function handleCodeInput(value: string): void {
-		codeContent.value = value
-		onInput()
+		isCodeMode.value = false
+		nextTick(() => {
+			if (!editorRef.value) return
+			editorRef.value.innerHTML = sanitize(codeContent.value)
+			onInput()
+		})
 	}
 
 	return {
 		isCodeMode,
 		codeContent,
 		getCodeTextarea,
-		wrapCodeSelection,
-		insertCodeAtCursor,
+		wrapCodeSelection: (openTag: string, closeTag: string) => editCodeSelection(selected => openTag + selected + closeTag),
+		insertCodeAtCursor: (html: string) => editCodeSelection(() => html),
 		toggleCodeMode,
-		handleCodeInput,
+		handleCodeInput: (value: string) => {
+			codeContent.value = value
+			onInput()
+		},
 	}
 }
 
