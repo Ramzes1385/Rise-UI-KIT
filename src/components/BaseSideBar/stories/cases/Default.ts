@@ -17,5 +17,6 @@ export const Default: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('link', { name: /Товары/ })).toHaveAttribute('aria-current', 'page')
 		await expect(canvas.getByRole('button', { name: 'Настройки' })).toHaveAttribute('aria-expanded', 'false')
 		await expect(canvas.getByRole('button', { name: 'Недоступно' })).toBeDisabled()
+		await expect(canvas.getAllByRole('separator')).toHaveLength(1)
 	},
 }

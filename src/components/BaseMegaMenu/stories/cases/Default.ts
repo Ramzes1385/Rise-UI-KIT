@@ -1,5 +1,5 @@
-import { expect } from 'storybook/test'
 import type meta from '../BaseMegaMenu.stories'
+import { expect, within } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Default: StoryObj<typeof meta> = {
@@ -19,6 +19,7 @@ export const Default: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('button', { name: 'Продукты' })).toHaveAttribute('aria-current', 'true')
 		await expect(canvas.getByRole('button', { name: 'Ресурсы' })).toHaveAttribute('aria-expanded', 'false')
 		await expect(canvas.getByRole('link', { name: /Аналитика/ })).toHaveAttribute('href', '/analytics')
+		await expect(within(canvas.getByRole('link', { name: /Аналитика/ })).getByText('Новое')).toBeVisible()
 		await expect(canvas.getByRole('link', { name: 'Цены' })).toHaveAttribute('href', '/pricing')
 	},
 }

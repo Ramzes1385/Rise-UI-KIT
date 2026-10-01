@@ -25,6 +25,7 @@ export const Default: StoryObj<typeof meta> = {
 		const menu = await screen.findByRole('menu', { name: 'Действия' })
 		await expect(trigger).toHaveAttribute('aria-expanded', 'true')
 		await waitFor(() => expect(within(menu).getByRole('menuitem', { name: /Переименовать/ })).toHaveFocus())
+		await expect(within(menu).getAllByRole('separator')).toHaveLength(2)
 
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(within(menu).getByRole('menuitem', { name: /Дублировать/ })).toHaveFocus()

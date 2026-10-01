@@ -938,3 +938,25 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - **BaseAudioPlayer**, **BaseVoiceRecorder**, **BaseChat** (голосовые) — кнопка скорости — BaseButton ghost с рамкой-пилюлей; без наведения фона нет, при наведении — фон цвета текста 12% (и при своём цвете `color` плеера — не цвет плеера).
 - **BaseMegaMenu** — бейдж ссылки — BaseBadge soft.
 - **BaseMention**, **BaseSignaturePad** — подпись и ошибка — FormFieldLabel и FormFieldError, как у остальных полей (ошибка — `span` вместо `p`).
+
+## Эпик compose-audit — сверка Storybook «было / стало»
+
+Сравнение попиксельно: Storybook с `9f222d5a` (основа ветки, два прохода — нестабильные снимки отсеяны) и с ветки историй; 170 историй 19 компонентов × 2 темы, окно 800×500, часы зафиксированы. Изменились 85 снимков, без изменений 243, нестабильны в базе 12. Страница для владельца со снимками — `.rise-transfer\review\compose-audit.html`.
+
+Что видно глазом:
+
+- **BaseKanban** — строка метаданных карточки с приоритетом выше на ≈3px (обёртка BaseTooltip вокруг значка), все карточки ниже неё сдвигаются; кнопки сворачивания колонки и «Добавить карточку» — вид BaseButton ghost. Самое заметное изменение задачи по площади снимков.
+- **BaseMarkdown** (и BaseAiMessage с кодом) — шапка блока кода выше на ≈2px (кнопка «Копировать» — BaseButton), код ниже сдвигается.
+- **BasePromptInput** — неактивная «Отправить» теперь круг цвета акцента с прозрачностью disabled вместо серого круга: заметно во всех вариантах и размерах.
+- **BaseFilterBuilder** — строка «Добавить условие» / «Сбросить» выше на ≈1px, «Сбросить» правее (отступы BaseButton); крестики удаления условий — BaseButton ghost.
+- **BaseColorPicker** — пипетка в рамке outline 28×28, строка с ней сдвинута на ≈1px.
+- **BaseAudioPlayer** — пилюля скорости чуть крупнее и с другой рамкой.
+- **BaseMegaMenu** — бейдж «Новое» — BaseBadge soft (другая высота и скругление).
+- **BaseToolCall** — у спиннера «выполняется» появилась бледная дорожка.
+- **BaseSideBar** — в CustomColor разделитель `hasDivider` стал почти невидим на тёмном фоне (был светлым) — ошибка передана разработчику (`inbox\2026-10-01-2220-compose-audit-bug.md`); в остальных историях без изменений.
+- **BaseInputNumber Default** — в превью поле с фокус-рамкой: play теперь проверяет, что фокус остаётся в поле при нажатии −/+ (изменение истории, не компонента).
+- Без видимых изменений: BaseDropdownMenu, BaseContextMenu, BaseSplitButton (разделители совпали попиксельно), BaseDatePicker, BaseFileUpload, BaseMention, BaseSignaturePad, BaseVoiceRecorder (кроме нестабильного Preview).
+
+Эталоны скриншот-тестов, которые это затронет (по `*.visual.spec.ts`, обе темы): `chat-baseaimessage` — default, composition, sizes, variants; `chat-basepromptinput` — disabled, sizes, variants; `chat-basetoolcall--statuses`; `data-basefilterbuilder` — disabled, empty, sizes, variants; `data-basekanban` — disabled, sizes, variants, wip-limits; `element-basemarkdown--default`; `form-basecolorpicker` — minimal, presets; `media-baseaudioplayer` — default, sizes, variants, with-error; `navigation-basemegamenu--default`. Эталоны не трогались.
+
+Новые истории (в скриншот-тесты не добавлены): `form-basedatepicker--navigation-tooltips` (подсказки навигации панели по наведению и Tab), `form-basefileupload--long-content` (многоточие и подсказка длинного имени).

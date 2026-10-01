@@ -32,4 +32,5 @@ export const WithTime = cases.WithTime
 export const Constraints = cases.Constraints
 export const WeekNumbers = cases.WeekNumbers
 export const CustomIcon = cases.CustomIcon
+export const NavigationTooltips = cases.NavigationTooltips
 export const Keyboard = cases.Keyboard

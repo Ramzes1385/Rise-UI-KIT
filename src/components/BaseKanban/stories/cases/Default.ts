@@ -1,7 +1,7 @@
-import { expect } from 'storybook/test'
 import type meta from '../BaseKanban.stories'
 import BaseKanban from '../../ui/BaseKanban.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { expect, screen, waitFor } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { cards: 'cards' }
@@ -14,7 +14,7 @@ export const Default: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Space берёт карточку, стрелки переносят её между колонками, Space кладёт. Мышью — перетаскиванием.',
+				story: 'Space берёт карточку, стрелки переносят её между колонками, Space кладёт. Мышью — перетаскиванием. Значок приоритета подписан подсказкой (BaseTooltip) при наведении.',
 			},
 			source: storySource({ template, imports: ['BaseKanban'], models }),
 		},
@@ -41,5 +41,13 @@ export const Default: StoryObj<typeof meta> = {
 			expect.objectContaining({ from: { columnId: 'todo', index: 1 }, to: { columnId: 'progress', index: 1 } }),
 		)
 		await expect(canvas.getByRole('button', { name: 'Поиск по эмодзи' })).toHaveFocus()
+
+		const priority = canvas
+			.getByRole('button', { name: 'Тёмная тема для таблиц' })
+			.querySelector('.base-kanban__priority') as HTMLElement
+		await userEvent.hover(priority)
+		await expect(await screen.findByRole('tooltip')).toHaveTextContent('средний')
+		await userEvent.unhover(priority)
+		await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument())
 	},
 }

@@ -25,6 +25,7 @@ export const Empty = cases.Empty
 export const WithError = cases.WithError
 export const Disabled = cases.Disabled
 export const Loading = cases.Loading
+export const LongContent = cases.LongContent
 export const Multiple = cases.Multiple
 export const ImagesOnly = cases.ImagesOnly
 export const DragAndDrop = cases.DragAndDrop
