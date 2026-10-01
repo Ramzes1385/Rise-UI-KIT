@@ -97,12 +97,17 @@
 
 	&__add.base-button {
 		--btn-pad-top: 0px;
-		--btn-pad-right: 8px;
+		--btn-pad-right: 7px;
 		--btn-pad-bottom: 0px;
-		--btn-pad-left: 8px;
+		--btn-pad-left: 7px;
 
 		justify-content: flex-start;
 		min-height: sz(32px);
+		font-weight: var(--rise-font-weight-normal);
+
+		.base-button__content {
+			justify-content: flex-start;
+		}
 	}
 
 	&__editor {
