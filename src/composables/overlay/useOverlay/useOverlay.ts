@@ -5,9 +5,11 @@ import type { Component, InjectionKey } from 'vue'
 import { getCurrentInstance, inject, markRaw, ref } from 'vue'
 import type {
 	OverlayCreateOptions,
+	OverlayDestroyTimers,
 	OverlayEntry,
 	OverlayHandle,
 	OverlayProps,
+	OverlayResults,
 	OverlayStore,
 	UseOverlayReturn,
 } from './types/useOverlay.types'
@@ -23,59 +25,77 @@ export const OVERLAY_DESTROY_DELAY = 1000
 /** Хранилище последнего смонтированного BaseApp — для вызовов вне его дерева (см. useToast) */
 let activeStore: OverlayStore | null = null
 
+/** Таймеры запасного удаления закрытых оверлеев по id */
+function createDestroyTimers(): OverlayDestroyTimers {
+	const timers = new Map<number, ReturnType<typeof setTimeout>>()
+	return {
+		schedule: (id, callback) => {
+			timers.set(id, setTimeout(callback, OVERLAY_DESTROY_DELAY))
+		},
+		clear: id => {
+			clearTimeout(timers.get(id))
+			timers.delete(id)
+		},
+	}
+}
+
+/** Промисы открытых оверлеев по id: разрешаются результатом закрытия */
+function createOverlayResults(): OverlayResults {
+	const resolvers = new Map<number, (result: unknown) => void>()
+	const pending = new Map<number, Promise<unknown>>()
+	return {
+		get: id => pending.get(id),
+		start: id => {
+			const promise = new Promise<unknown>(resolve => resolvers.set(id, resolve))
+			pending.set(id, promise)
+			return promise
+		},
+		settle: (id, result) => {
+			resolvers.get(id)?.(result)
+			resolvers.delete(id)
+			pending.delete(id)
+		},
+	}
+}
+
+/** Новая запись хранилища: оверлей добавляется закрытым */
+function createEntry(id: number, component: Component, options: Required<OverlayCreateOptions>): OverlayEntry {
+	return { id, component: markRaw(component), props: { ...options.props }, isOpen: false, destroyOnClose: options.destroyOnClose }
+}
+
 /** Создаёт хранилище оверлеев. Его создаёт BaseApp */
 export function createOverlayStore(): OverlayStore {
 	const entries = ref<OverlayEntry[]>([])
-	const resolvers = new Map<number, (result: unknown) => void>()
-	const pending = new Map<number, Promise<unknown>>()
-	const destroyTimers = new Map<number, ReturnType<typeof setTimeout>>()
+	const results = createOverlayResults()
+	const destroyTimers = createDestroyTimers()
 	let nextId = 0
 
 	function find(id: number): OverlayEntry | undefined {
 		return entries.value.find(entry => entry.id === id)
 	}
 
-	function clearDestroyTimer(id: number): void {
-		clearTimeout(destroyTimers.get(id))
-		destroyTimers.delete(id)
-	}
-
 	function register(component: Component, options: Required<OverlayCreateOptions>): number {
 		const id = ++nextId
-		entries.value.push({
-			id,
-			component: markRaw(component),
-			props: { ...options.props },
-			isOpen: false,
-			destroyOnClose: options.destroyOnClose,
-		})
+		entries.value.push(createEntry(id, component, options))
 		return id
 	}
 
 	function open<TResult>(id: number, props: OverlayProps = {}): Promise<TResult | undefined> {
 		const entry = find(id)
 		if (!entry) return Promise.resolve(undefined)
-		clearDestroyTimer(id)
+		destroyTimers.clear(id)
 		entry.props = { ...entry.props, ...props }
-		if (entry.isOpen) return pending.get(id) as Promise<TResult | undefined>
+		if (entry.isOpen) return results.get(id) as Promise<TResult | undefined>
 		entry.isOpen = true
-		const promise = new Promise<TResult | undefined>(resolve => resolvers.set(id, resolve as (result: unknown) => void))
-		pending.set(id, promise)
-		return promise
+		return results.start(id) as Promise<TResult | undefined>
 	}
 
 	function close(id: number, result?: unknown): void {
 		const entry = find(id)
 		if (!entry?.isOpen) return
 		entry.isOpen = false
-		resolvers.get(id)?.(result)
-		resolvers.delete(id)
-		pending.delete(id)
-		if (entry.destroyOnClose)
-			destroyTimers.set(
-				id,
-				setTimeout(() => destroyIfClosed(id), OVERLAY_DESTROY_DELAY),
-			)
+		results.settle(id, result)
+		if (entry.destroyOnClose) destroyTimers.schedule(id, () => destroyIfClosed(id))
 	}
 
 	function patch(id: number, props: OverlayProps): void {
@@ -85,7 +105,7 @@ export function createOverlayStore(): OverlayStore {
 
 	function destroy(id: number): void {
 		close(id)
-		clearDestroyTimer(id)
+		destroyTimers.clear(id)
 		entries.value = entries.value.filter(entry => entry.id !== id)
 	}
 

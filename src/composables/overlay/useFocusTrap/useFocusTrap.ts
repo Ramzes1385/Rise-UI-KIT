@@ -43,6 +43,40 @@ function focusInitial(container: HTMLElement): void {
 }
 
 /**
+ * Куда перевести фокус по Tab / Shift+Tab: на противоположный край контейнера, если фокус на крайнем элементе
+ * или снаружи; `null` — внутри контейнера браузер переводит фокус сам
+ */
+function getWrapTarget(event: KeyboardEvent, container: HTMLElement, edges: [HTMLElement, HTMLElement]): HTMLElement | null {
+	const [first, last] = edges
+	const active = document.activeElement
+	const isOutside = !container.contains(active)
+	// active === container: фокус на самом диалоге (клик по его фону) — Shift+Tab не должен уходить наружу
+	if (event.shiftKey) return isOutside || active === first || active === container ? last : null
+	return isOutside || active === last ? first : null
+}
+
+/** Обработать Tab / Shift+Tab: удержать фокус внутри контейнера, переходя с края на край */
+function cycleTabFocus(event: KeyboardEvent, container: HTMLElement): void {
+	const active = document.activeElement
+	// Фокус во вложенном телепортированном слое (панель селекта, поповер) — это его навигация
+	if (!container.contains(active) && active !== null && active !== document.body) return
+
+	const tabbable = getTabbableElements(container)
+	const first = tabbable[0]
+	const last = tabbable[tabbable.length - 1]
+	if (!first || !last) {
+		event.preventDefault()
+		container.focus()
+		return
+	}
+
+	const target = getWrapTarget(event, container, [first, last])
+	if (!target) return
+	event.preventDefault()
+	target.focus()
+}
+
+/**
  * Composable для модальных окон: удерживает фокус клавиатуры внутри контейнера.
  * При активации запоминает элемент с фокусом (обычно триггер) и переводит фокус внутрь:
  * на элемент с [autofocus], иначе на первый фокусируемый, иначе на сам контейнер (tabindex="-1").
@@ -69,34 +103,9 @@ function useFocusTrap(options: UseFocusTrapOptions): void {
 
 	/** Циклический обход Tab / Shift+Tab внутри контейнера */
 	function handleKeydown(event: KeyboardEvent): void {
-		if (event.key !== 'Tab') return
 		const container = containerRef.value
 		// Контейнер не отрендерен (например, не найдена цель Teleport) — удерживать фокус негде
-		if (!container) return
-
-		const active = document.activeElement
-		const isInside = container.contains(active)
-		// Фокус во вложенном телепортированном слое (панель селекта, поповер) — это его навигация
-		if (!isInside && active !== null && active !== document.body) return
-
-		const tabbable = getTabbableElements(container)
-		const first = tabbable[0]
-		const last = tabbable[tabbable.length - 1]
-
-		if (!first || !last) {
-			event.preventDefault()
-			container.focus()
-			return
-		}
-
-		// active === container: фокус на самом диалоге (клик по его фону) — Shift+Tab не должен уходить наружу
-		if (event.shiftKey && (!isInside || active === first || active === container)) {
-			event.preventDefault()
-			last.focus()
-		} else if (!event.shiftKey && (!isInside || active === last)) {
-			event.preventDefault()
-			first.focus()
-		}
+		if (event.key === 'Tab' && container) cycleTabFocus(event, container)
 	}
 
 	/** Включить ловушку. Вызывается только при переходе в активное состояние, дважды подряд не срабатывает */

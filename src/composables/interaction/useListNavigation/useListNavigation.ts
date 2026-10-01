@@ -2,6 +2,18 @@
 import { ref, type Ref } from 'vue'
 import type { UseListNavigationOptions } from './types/useListNavigation.types'
 
+/** Индекс следующего пункта; с последнего — на первый при `isLoop`, иначе остаётся на месте */
+function nextIndex(current: number, count: number, isLoop: boolean): number {
+	if (current < count - 1) return current + 1
+	return isLoop ? 0 : current
+}
+
+/** Индекс предыдущего пункта; с первого (и без подсветки) — на последний при `isLoop`, иначе остаётся на месте */
+function previousIndex(current: number, count: number, isLoop: boolean): number {
+	if (current > 0) return current - 1
+	return isLoop ? count - 1 : current
+}
+
 /**
  * Composable для навигации по списку клавишами ArrowUp/ArrowDown/Enter/Escape.
  *
@@ -23,26 +35,11 @@ function useListNavigation(options: UseListNavigationOptions): {
 
 	const highlightedIndex = ref(-1)
 
-	function highlightNext(): void {
+	/** Перевести подсветку: `getIndex` даёт новый индекс; в пустом списке подсветка не меняется */
+	function move(getIndex: (current: number, count: number, isLoop: boolean) => number): void {
 		const count = itemCount()
 		if (count === 0) return
-
-		if (highlightedIndex.value < count - 1) {
-			highlightedIndex.value++
-		} else if (isLoop) {
-			highlightedIndex.value = 0
-		}
-	}
-
-	function highlightPrev(): void {
-		const count = itemCount()
-		if (count === 0) return
-
-		if (highlightedIndex.value > 0) {
-			highlightedIndex.value--
-		} else if (isLoop) {
-			highlightedIndex.value = count - 1
-		}
+		highlightedIndex.value = getIndex(highlightedIndex.value, count, isLoop)
 	}
 
 	function selectHighlighted(): void {
@@ -58,10 +55,10 @@ function useListNavigation(options: UseListNavigationOptions): {
 	function handleKeydown(e: KeyboardEvent): void {
 		if (e.key === 'ArrowDown') {
 			e.preventDefault()
-			highlightNext()
+			move(nextIndex)
 		} else if (e.key === 'ArrowUp') {
 			e.preventDefault()
-			highlightPrev()
+			move(previousIndex)
 		} else if (e.key === 'Enter') {
 			e.preventDefault()
 			selectHighlighted()

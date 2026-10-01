@@ -36,6 +36,24 @@ export interface OverlayHandle<TResult = unknown> {
 	destroy: () => void
 }
 
+/** Таймеры запасного удаления закрытых оверлеев (внутреннее устройство хранилища) */
+export interface OverlayDestroyTimers {
+	/** Удалить оверлей через `OVERLAY_DESTROY_DELAY` */
+	schedule: (id: number, callback: () => void) => void
+	/** Отменить отложенное удаление */
+	clear: (id: number) => void
+}
+
+/** Промисы открытых оверлеев (внутреннее устройство хранилища) */
+export interface OverlayResults {
+	/** Промис уже открытого оверлея */
+	get: (id: number) => Promise<unknown> | undefined
+	/** Новый промис открытия */
+	start: (id: number) => Promise<unknown>
+	/** Разрешить промис результатом закрытия и забыть его */
+	settle: (id: number, result: unknown) => void
+}
+
 /** Хранилище оверлеев одного BaseApp */
 export interface OverlayStore {
 	entries: Ref<OverlayEntry[]>

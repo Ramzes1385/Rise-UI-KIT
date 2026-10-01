@@ -7,6 +7,20 @@ const DEFAULT_GAP = 4
 const DEFAULT_MIN_WIDTH = 220
 const VIEWPORT_PADDING = 8
 
+/** Левый край панели: справа от границы, а если справа не хватает места — слева от неё (flip), не ближе отступа окна */
+function resolveLeft(boundaryRect: DOMRect, panelWidth: number, gap: number): { left: number; isFlipped: boolean } {
+	const spaceRight = window.innerWidth - boundaryRect.right
+	const fitsRight = spaceRight >= panelWidth + gap + VIEWPORT_PADDING
+	if (fitsRight) return { left: boundaryRect.right + gap, isFlipped: false }
+	return { left: Math.max(VIEWPORT_PADDING, boundaryRect.left - panelWidth - gap), isFlipped: true }
+}
+
+/** Верхний край панели: вровень с якорем, но прижат так, чтобы панель не уходила за край окна */
+function resolveTop(anchorRect: DOMRect, panelHeight: number): number {
+	const maxTop = window.innerHeight - panelHeight - VIEWPORT_PADDING
+	return Math.max(VIEWPORT_PADDING, Math.min(anchorRect.top, maxTop))
+}
+
 /**
  * Позиционирует каскадную flyout-панель относительно якоря через position: fixed.
  * По умолчанию раскрывает вправо; при нехватке места справа делает flip влево.
@@ -30,20 +44,6 @@ function useFlyoutPosition(options: UseFlyoutPositionOptions): UseFlyoutPosition
 	const panelStyle = ref<Record<string, string>>({})
 	const isFlipped = ref(false)
 
-	function resolveLeft(boundaryRect: DOMRect, panelWidth: number): number {
-		const spaceRight = window.innerWidth - boundaryRect.right
-		const fitsRight = spaceRight >= panelWidth + gap + VIEWPORT_PADDING
-		isFlipped.value = !fitsRight
-
-		if (fitsRight) return boundaryRect.right + gap
-		return Math.max(VIEWPORT_PADDING, boundaryRect.left - panelWidth - gap)
-	}
-
-	function resolveTop(anchorRect: DOMRect, panelHeight: number): number {
-		const maxTop = window.innerHeight - panelHeight - VIEWPORT_PADDING
-		return Math.max(VIEWPORT_PADDING, Math.min(anchorRect.top, maxTop))
-	}
-
 	function updatePosition(): void {
 		/* istanbul ignore next -- defensive: SSR-guard, в jsdom window всегда определён */
 		if (typeof window === 'undefined') return
@@ -54,12 +54,11 @@ function useFlyoutPosition(options: UseFlyoutPositionOptions): UseFlyoutPosition
 		const panelRect = panelRef.value.getBoundingClientRect()
 		const panelWidth = Math.max(panelRect.width, minWidth)
 		const origin = getFixedOrigin(panelRef.value.parentElement)
+		const top = resolveTop(anchorRect, panelRect.height)
+		const horizontal = resolveLeft(boundaryRect, panelWidth, gap)
+		isFlipped.value = horizontal.isFlipped
 
-		panelStyle.value = {
-			position: 'fixed',
-			top: `${resolveTop(anchorRect, panelRect.height) - origin.y}px`,
-			left: `${resolveLeft(boundaryRect, panelWidth) - origin.x}px`,
-		}
+		panelStyle.value = { position: 'fixed', top: `${top - origin.y}px`, left: `${horizontal.left - origin.x}px` }
 	}
 
 	function handleScrollOrResize(): void {

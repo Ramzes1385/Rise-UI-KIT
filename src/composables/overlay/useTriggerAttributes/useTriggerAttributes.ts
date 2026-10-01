@@ -24,6 +24,24 @@ function updateTokens(element: Element, name: string, change: { previous?: strin
 	else element.removeAttribute(name)
 }
 
+/** Записать атрибуты на триггер: в списках id `previous` заменяется новым значением, `undefined` снимает атрибут */
+function writeAttributes(element: HTMLElement, attributes: TriggerAttributes, previous: TriggerAttributes): void {
+	for (const [name, value] of Object.entries(attributes)) {
+		if (TOKEN_ATTRIBUTES.has(name)) updateTokens(element, name, { previous: previous[name], next: value })
+		else if (value === undefined) element.removeAttribute(name)
+		else element.setAttribute(name, value)
+	}
+}
+
+/** Снять с триггера поставленные атрибуты: из списков id — только свои значения; id — если его выдал composable */
+function removeAttributes(element: HTMLElement, attributes: TriggerAttributes, ownId: boolean): void {
+	for (const [name, value] of Object.entries(attributes)) {
+		if (TOKEN_ATTRIBUTES.has(name)) updateTokens(element, name, { previous: value })
+		else element.removeAttribute(name)
+	}
+	if (ownId) element.removeAttribute('id')
+}
+
 /**
  * Ставит атрибуты (`aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-describedby`…) на элемент-триггер
  * внутри обёртки: первый фокусируемый элемент, иначе первый дочерний. Так кнопка приложения в слоте получает
@@ -54,32 +72,23 @@ export function useTriggerAttributes(
 		return container.querySelector<HTMLElement>(FOCUSABLE_SELECTOR) ?? (container.firstElementChild as HTMLElement | null)
 	}
 
-	function remove(target: NonNullable<typeof applied>): void {
-		for (const [name, value] of Object.entries(target.attributes)) {
-			if (TOKEN_ATTRIBUTES.has(name)) updateTokens(target.element, name, { previous: value })
-			else target.element.removeAttribute(name)
-		}
-		if (target.ownId) target.element.removeAttribute('id')
+	/** Снять атрибуты с прежнего триггера, если триггер сменился или пропал (`element` — текущий триггер) */
+	function release(element: HTMLElement | null): void {
+		if (!applied || applied.element === element) return
+		removeAttributes(applied.element, applied.attributes, applied.ownId)
+		applied = null
 	}
 
 	function apply(): void {
 		const element = getTrigger()
-		if (applied && applied.element !== element) {
-			remove(applied)
-			applied = null
-		}
+		release(element)
 		if (!element) {
 			triggerId.value = undefined
 			return
 		}
 
 		const attributes = getAttributes()
-		const previous = applied?.attributes ?? {}
-		for (const [name, value] of Object.entries(attributes)) {
-			if (TOKEN_ATTRIBUTES.has(name)) updateTokens(element, name, { previous: previous[name], next: value })
-			else if (value === undefined) element.removeAttribute(name)
-			else element.setAttribute(name, value)
-		}
+		writeAttributes(element, attributes, applied?.attributes ?? {})
 
 		const ownId = applied?.ownId ?? (Boolean(options.withId) && !element.id)
 		if (ownId) element.id = generatedId
@@ -90,10 +99,7 @@ export function useTriggerAttributes(
 	watch(getAttributes, apply, { flush: 'post' })
 	onMounted(apply)
 	onUpdated(apply)
-	onBeforeUnmount(() => {
-		if (applied) remove(applied)
-		applied = null
-	})
+	onBeforeUnmount(() => release(null))
 
 	return { triggerId, getTrigger }
 }

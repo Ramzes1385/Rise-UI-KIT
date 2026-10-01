@@ -124,6 +124,17 @@ describe('useListNavigation', () => {
 		expect(highlightedIndex.value).toBe(4)
 	})
 
+	it('без isLoop по умолчанию не зацикливается ни вниз, ни вверх', () => {
+		const { handleKeydown, highlightedIndex } = useListNavigation({ itemCount: () => 2, onSelect: vi.fn() })
+
+		handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
+		expect(highlightedIndex.value).toBe(-1)
+		handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+		handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+		handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+		expect(highlightedIndex.value).toBe(1)
+	})
+
 	it('Escape не вызывает onEscape если не передан', () => {
 		const opts = { itemCount: () => 5, onSelect: vi.fn(), isLoop: false }
 		const { handleKeydown } = useListNavigation(opts)

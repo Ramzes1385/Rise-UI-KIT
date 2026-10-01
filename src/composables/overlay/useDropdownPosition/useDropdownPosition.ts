@@ -1,7 +1,7 @@
 /** Composable: позиционирование выпадающей панели с переворотом и сдвигом у края окна */
 import { getFixedOrigin } from '@utils/dom/domUtils'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, type Ref, watch } from 'vue'
 import type { Align, Edge, Geometry, Side, Size, UseDropdownPositionOptions } from './types/useDropdownPosition.types'
 
 /** Отступ панели от края окна при сдвиге, px */
@@ -148,6 +148,58 @@ function useArrowState(initialSide: Side) {
 	}
 }
 
+/** Rect триггера (первый дочерний элемент обёртки), без триггера — самой обёртки */
+function getTriggerRect(wrapper: HTMLElement | null): DOMRect | null {
+	if (!wrapper) return null
+	const trigger = wrapper.firstElementChild
+	if (trigger) return trigger.getBoundingClientRect()
+	return wrapper.getBoundingClientRect()
+}
+
+/**
+ * Стили панели: координаты левого верхнего угла, предел высоты, ширина (`width: null` — без неё) и точка роста
+ * анимации появления — сторона триггера, с которой панель показана
+ */
+function buildPanelStyle(
+	point: { top: number; left: number },
+	placement: DropdownPosition,
+	size: { maxHeight: string; width: number | null },
+): Record<string, string> {
+	const style: Record<string, string> = {
+		maxHeight: size.maxHeight,
+		top: `${point.top}px`,
+		left: `${point.left}px`,
+		transformOrigin: TRANSFORM_ORIGIN[placement],
+	}
+	if (size.width !== null) style.width = `${size.width}px`
+	return style
+}
+
+/**
+ * Слушатели пересчёта открытой панели: прокрутка (в любом контейнере), размер окна и размер самой панели
+ * (подгрузились пункты). `listen` повторно наблюдатель размера не создаёт
+ */
+function useRepositionListeners(update: () => void, dropdownRef: Ref<HTMLElement | null>): { listen: () => void; unlisten: () => void } {
+	let resizeObserver: ResizeObserver | null = null
+	return {
+		listen: () => {
+			window.addEventListener('scroll', update, true)
+			window.addEventListener('resize', update)
+			nextTick(() => {
+				if (!dropdownRef.value || resizeObserver) return
+				resizeObserver = new ResizeObserver(() => update())
+				resizeObserver.observe(dropdownRef.value)
+			})
+		},
+		unlisten: () => {
+			window.removeEventListener('scroll', update, true)
+			window.removeEventListener('resize', update)
+			resizeObserver?.disconnect()
+			resizeObserver = null
+		},
+	}
+}
+
 /**
  * Позиция выпадающей панели (`position: fixed`) у триггера. Если на выбранной стороне не хватает места,
  * а на противоположной хватает, панель переворачивается; вдоль края окна она сдвигается, чтобы не выйти за него.
@@ -175,19 +227,11 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 	const placement = ref<DropdownPosition>(position())
 	const { arrow, arrowStyle, updateArrow } = useArrowState(OPPOSITE[parsePosition(position()).side])
 
-	/** Rect триггера (первый дочерний элемент обёртки) */
-	function getTriggerRect(): DOMRect | null {
-		if (!wrapperRef.value) return null
-		const trigger = wrapperRef.value.firstElementChild
-		if (trigger) return trigger.getBoundingClientRect()
-		return wrapperRef.value.getBoundingClientRect()
-	}
-
 	/** Вычислить позицию панели. До первой отрисовки размер панели неизвестен — второй проход в nextTick уточняет его */
 	function updatePosition(): void {
 		if (!isOpen()) return
 
-		const rect = getTriggerRect()
+		const rect = getTriggerRect(wrapperRef.value)
 		if (!rect) return
 
 		triggerWidth.value = rect.width
@@ -203,39 +247,17 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		if (coords.value.top !== next.top || coords.value.left !== next.left) coords.value = next
 	}
 
-	/**
-	 * Стили панели: координаты левого верхнего угла, предел высоты, ширина триггера при matchWidth и точка роста
-	 * анимации появления — сторона триггера, с которой панель показана
-	 */
-	const panelStyle = computed((): Record<string, string> => {
-		const style: Record<string, string> = {
-			maxHeight: maxHeight(),
-			top: `${coords.value.top}px`,
-			left: `${coords.value.left}px`,
-			transformOrigin: TRANSFORM_ORIGIN[placement.value],
-		}
-		if (matchWidth()) style.width = `${triggerWidth.value}px`
-		return style
-	})
+	/** Стили панели (см. `buildPanelStyle`): ширина триггера — только при matchWidth */
+	const panelStyle = computed(() =>
+		buildPanelStyle(coords.value, placement.value, { maxHeight: maxHeight(), width: matchWidth() ? triggerWidth.value : null }),
+	)
 
-	/** Размер панели меняется (подгрузились пункты) — позиция пересчитывается */
-	let resizeObserver: ResizeObserver | null = null
+	const { listen, unlisten } = useRepositionListeners(updatePosition, dropdownRef)
 
-	function listen(): void {
-		window.addEventListener('scroll', updatePosition, true)
-		window.addEventListener('resize', updatePosition)
-		nextTick(() => {
-			if (!dropdownRef.value || resizeObserver) return
-			resizeObserver = new ResizeObserver(() => updatePosition())
-			resizeObserver.observe(dropdownRef.value)
-		})
-	}
-
-	function unlisten(): void {
-		window.removeEventListener('scroll', updatePosition, true)
-		window.removeEventListener('resize', updatePosition)
-		resizeObserver?.disconnect()
-		resizeObserver = null
+	/** Пересчитать сейчас и после отрисовки, когда известен размер панели */
+	function refresh(): void {
+		updatePosition()
+		nextTick(updatePosition)
 	}
 
 	watch(isOpen, (open: boolean) => {
@@ -243,35 +265,21 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 			unlisten()
 			return
 		}
-		updatePosition()
-		nextTick(updatePosition)
+		refresh()
 		listen()
 	})
 
-	watch([gap, position, matchWidth], () => {
-		updatePosition()
-		nextTick(updatePosition)
-	})
+	watch([gap, position, matchWidth], refresh)
 
 	onMounted(() => {
-		if (isOpen()) {
-			updatePosition()
-			nextTick(updatePosition)
-			listen()
-		}
+		if (!isOpen()) return
+		refresh()
+		listen()
 	})
 
 	onBeforeUnmount(unlisten)
 
-	return {
-		coords,
-		triggerWidth,
-		placement,
-		arrow,
-		arrowStyle,
-		panelStyle,
-		updatePosition,
-	}
+	return { coords, triggerWidth, placement, arrow, arrowStyle, panelStyle, updatePosition }
 }
 
 export { useDropdownPosition }

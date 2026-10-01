@@ -143,6 +143,26 @@ describe('useFocusTrap', () => {
 		expect(screen.getByRole('button', { name: 'Готово' })).toHaveFocus()
 	})
 
+	it('Shift+Tab и Tab между элементами внутри контейнера не перехватываются', async () => {
+		const user = userEvent.setup()
+		render(createHost('<input aria-label="Имя" /><button type="button">Отмена</button>'))
+
+		await user.click(screen.getByRole('button', { name: 'Открыть' }))
+		await waitFor(() => expect(screen.getByRole('textbox', { name: 'Имя' })).toHaveFocus())
+		await user.tab()
+		const cancel = screen.getByRole('button', { name: 'Отмена' })
+		expect(cancel).toHaveFocus()
+
+		const shiftTab = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+		cancel.dispatchEvent(shiftTab)
+		const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+		cancel.dispatchEvent(tab)
+
+		expect(shiftTab.defaultPrevented).toBe(false)
+		expect(tab.defaultPrevented).toBe(false)
+		expect(cancel).toHaveFocus()
+	})
+
 	it('Shift+Tab с самого контейнера (после клика по фону диалога) переходит на последний элемент', async () => {
 		const user = userEvent.setup()
 		const { dialog } = await showActiveTrapDialog({

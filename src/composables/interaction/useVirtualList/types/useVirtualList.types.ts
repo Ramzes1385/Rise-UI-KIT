@@ -52,3 +52,34 @@ export interface UseVirtualListReturn {
 	/** Высота области, px */
 	viewportSize: Ref<number>
 }
+
+/** Диапазон строк или границы одной строки: `start` включительно, `end` — не включая */
+export interface VirtualRange {
+	start: number
+	end: number
+}
+
+/** Высоты строк виртуального списка (внутреннее устройство useVirtualList) */
+export interface VirtualSizes {
+	/** Начало каждой строки; последний элемент — полная высота */
+	offsets: ComputedRef<number[]>
+	/** Ключ строки: getKey или индекс */
+	keyOf: (index: number) => VirtualKey
+	/** Запомнить замеренную высоту строки */
+	measure: (index: number, size: number) => void
+}
+
+/** Замер элементов строк через ResizeObserver */
+export interface VirtualItemObserver {
+	measureElement: (element: unknown, index: number) => void
+	/** Отключить наблюдатель при размонтировании */
+	disconnect: () => void
+}
+
+/** Прокрутка и высота прокручиваемой области */
+export interface VirtualScrollState {
+	scrollTop: Ref<number>
+	viewportSize: Ref<number>
+	/** Прочитать прокрутку и высоту из элемента */
+	update: () => void
+}
