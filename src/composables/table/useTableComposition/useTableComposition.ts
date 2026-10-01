@@ -1,136 +1,17 @@
 /** Composable: агрегация логики таблицы */
 import { computed, watch } from 'vue'
-import { toHTMLElement } from '@utils/dom/domUtils'
 import { calcRowNumber } from '@utils/navigation/tableUtils'
-import { useTableData } from '@composables/table/useTableData'
 import { calcPageInfo } from '@utils/navigation/paginationUtils'
-import { useTableExpand } from '@composables/table/useTableExpand'
-import { useColumnResize } from '@composables/table/useColumnResize'
-import { useTableColumns } from '@composables/table/useTableColumns'
-import { useTableToolbar } from '@composables/table/useTableToolbar'
-import { useTableSelection } from '@composables/table/useTableSelection'
+import { useTableCompositionModel } from './useTableCompositionModel'
+import { useTableCompositionActions } from './useTableCompositionActions'
 import type { UseTableCompositionOptions } from './types/useTableComposition.types'
-import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
-
-/** Наименьшая ширина колонки при изменении размера, px */
-const MIN_COL_WIDTH = 50
+import { pickColumnsState, pickDataHandlers, pickDataState, pickToolbarState } from './useTableCompositionUtils'
 
 /** Описание: агрегирует логику таблицы — сортировка, фильтрация, поиск, пагинация, выбор строк, раскрытие, ресайз колонок и infinite scroll */
 function useTableComposition(options: UseTableCompositionOptions) {
-	const {
-		rows,
-		columns,
-		loadMode,
-		pageSize,
-		isMultiSort,
-		searchDebounce,
-		isResizable,
-		hasRowNumber,
-		isSelectable,
-		hasSearch,
-		hasFilters,
-		hasColumnSettings,
-		isLoading,
-		pageSizeOptions,
-		infiniteScrollThreshold,
-		emit,
-		slots,
-	} = options
-
-	const {
-		localColumns,
-		visibleColumns,
-		columnWidths,
-		useFixedLayout,
-		totalCols,
-		filterableColumns,
-		hasExpandableRows,
-		skeletonRows,
-		isColumnResizable,
-		getColumnStyle,
-		toggleColumnVisibility,
-		formatCellValue,
-		snapshotColumns,
-	} = useTableColumns({
-		columns,
-		rows,
-		isResizable: () => isResizable.value,
-		hasRowNumber: () => hasRowNumber.value,
-		isSelectable: () => isSelectable.value,
-		pageSize: () => pageSize.value,
-		emit,
-	})
-
-	const {
-		searchQuery,
-		activeFilters,
-		currentPage,
-		localPageSize,
-		processedRows,
-		displayedRows,
-		totalPages,
-		visiblePages,
-		hasMoreRows,
-		getSortDirection,
-		getSortIndex,
-		handleSort,
-		handleSearchInput,
-		addFilter,
-		removeFilter,
-		getFilterLabel,
-		handlePageSizeChange,
-		loadMore,
-	} = useTableData({
-		rows,
-		columns: localColumns,
-		loadMode: () => loadMode.value,
-		pageSize,
-		isMultiSort: () => isMultiSort.value,
-		searchDebounce: () => searchDebounce.value,
-		onSearch: (q: string) => emit('search', q),
-		onSort: states => emit('sort', states),
-		onFilter: filters => emit('filter', filters),
-		onPageSizeChange: (size: number) => emit('page-size-change', size),
-	})
-
-	// «Выбрать все» действует на строки, прошедшие поиск и фильтры, а не на все переданные rows
-	const {
-		isAllSelected,
-		isSelected,
-		toggleRow: toggleRowSelection,
-		toggleAll: toggleAllRows,
-	} = useTableSelection({
-		rows,
-		filteredRows: processedRows,
-		onSelect: selectedRows => emit('select', selectedRows),
-	})
-
-	const { isExpanded, toggleExpand, handleRowClick } = useTableExpand({
-		rows: () => rows.value,
-		emit,
-	})
-
-	const {
-		filterColumn,
-		filterOperator,
-		filterValue,
-		isSettingsOpen,
-		filterColumnOptions,
-		filterOperatorOptions,
-		showToolbar,
-		setFilterColumn,
-		setFilterOperator,
-		handleAddFilter,
-		handleRemoveFilter,
-	} = useTableToolbar({
-		filterableColumns: () => filterableColumns.value,
-		hasSearch: () => hasSearch.value,
-		hasFilters: () => hasFilters.value,
-		hasColumnSettings: () => hasColumnSettings.value,
-		slots,
-		addFilter,
-		removeFilter,
-	})
+	const { loadMode, pageSizeOptions, emit } = options
+	const { tableColumns, data, selection, expand, toolbar } = useTableCompositionModel(options)
+	const { currentPage, localPageSize, processedRows } = data
 
 	watch(currentPage, newPage => {
 		emit('page-change', newPage)
@@ -160,95 +41,22 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		})
 	}
 
-	function toggleRow(row: TableRow): void {
-		toggleRowSelection(row)
-	}
-
-	function toggleAll(): void {
-		toggleAllRows()
-	}
-
-	function handleLoadMore(): void {
-		loadMore()
-		emit('load-more')
-	}
-
-	function handleScroll(e: Event): void {
-		if (loadMode.value !== 'infinite' || !hasMoreRows.value || isLoading.value) return
-
-		const target = toHTMLElement(e.target)
-		if (!target) return
-		const { scrollTop, scrollHeight, clientHeight } = target
-
-		if (scrollHeight - scrollTop - clientHeight < infiniteScrollThreshold) {
-			handleLoadMore()
-		}
-	}
-
-	const { startResize: startColumnResize } = useColumnResize({
-		columns: localColumns,
-		visibleColumns,
-		minWidth: MIN_COL_WIDTH,
-		onColumnResize: (key, width) => emit('column-resize', key, width),
-		// Копия, а не внутренний массив: если родитель вернёт payload в props, таблица не должна мутировать его объекты
-		onColumnsChange: () => emit('columns-change', snapshotColumns()),
-	})
-
-	function startResize(event: MouseEvent, column: TableColumn): void {
-		startColumnResize(event, column.key)
-	}
+	const actions = useTableCompositionActions(options, { tableColumns, data, selection })
 
 	return {
-		searchQuery,
-		activeFilters,
-		currentPage,
-		localPageSize,
-		processedRows,
-		displayedRows,
-		totalPages,
-		visiblePages,
-		hasMoreRows,
-		localColumns,
-		visibleColumns,
-		columnWidths,
-		useFixedLayout,
-		totalCols,
-		hasExpandableRows,
-		skeletonRows,
-		isColumnResizable,
-		getColumnStyle,
-		toggleColumnVisibility,
-		formatCellValue,
-		isAllSelected,
-		isSelected,
-		isExpanded,
-		toggleExpand,
-		handleRowClick,
-		getSortDirection,
-		getSortIndex,
-		handleSort,
-		handleSearchInput,
-		getFilterLabel,
-		handlePageSizeChange,
-		filterColumn,
-		filterOperator,
-		filterValue,
-		isSettingsOpen,
-		filterColumnOptions,
-		filterOperatorOptions,
-		showToolbar,
-		setFilterColumn,
-		setFilterOperator,
-		handleAddFilter,
-		handleRemoveFilter,
+		...pickDataState(data),
+		...pickColumnsState(tableColumns),
+		isAllSelected: selection.isAllSelected,
+		isSelected: selection.isSelected,
+		isExpanded: expand.isExpanded,
+		toggleExpand: expand.toggleExpand,
+		handleRowClick: expand.handleRowClick,
+		...pickDataHandlers(data),
+		...pickToolbarState(toolbar),
 		pageSizeSelectOptions,
 		paginationInfo,
 		getRowNumber,
-		toggleRow,
-		toggleAll,
-		handleLoadMore,
-		handleScroll,
-		startResize,
+		...actions,
 	}
 }
 

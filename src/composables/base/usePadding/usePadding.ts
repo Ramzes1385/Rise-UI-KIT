@@ -1,8 +1,37 @@
 /** Composable: разрешение padding (число/объект) в отступы по четырём сторонам */
 import { computed } from 'vue'
-import type { PaddingProp, PaddingValue, ResolvedPaddingSides, ResolvePaddingResult, UsePaddingOptions } from './types/usePadding.types'
+import type {
+	PaddingProp,
+	PaddingValue,
+	ResolvedPadding,
+	ResolvedPaddingSides,
+	ResolvePaddingResult,
+	UsePaddingOptions,
+} from './types/usePadding.types'
 
 const ALL_SIDES_SET: ResolvedPaddingSides = { top: true, right: true, bottom: true, left: true }
+
+/** Объект: оси x/y задают пары сторон, точечные стороны их переопределяют */
+function resolveObjectValues(object: PaddingValue): ResolvedPadding {
+	const fallbackY = object.y ?? 0
+	const fallbackX = object.x ?? 0
+	return {
+		top: object.top ?? fallbackY,
+		right: object.right ?? fallbackX,
+		bottom: object.bottom ?? fallbackY,
+		left: object.left ?? fallbackX,
+	}
+}
+
+/** Стороны, значение которых задано во входном объекте (точечно или осью) */
+function resolveObjectSides(object: PaddingValue): ResolvedPaddingSides {
+	return {
+		top: object.top !== undefined || object.y !== undefined,
+		right: object.right !== undefined || object.x !== undefined,
+		bottom: object.bottom !== undefined || object.y !== undefined,
+		left: object.left !== undefined || object.x !== undefined,
+	}
+}
 
 /**
  * Разрешает значение padding (число или объект) в отступы по четырём сторонам.
@@ -20,24 +49,7 @@ function resolvePadding(value: PaddingProp, axisMultiplier: number): ResolvePadd
 		}
 	}
 
-	const object: PaddingValue = value
-	const fallbackY = object.y ?? 0
-	const fallbackX = object.x ?? 0
-
-	return {
-		values: {
-			top: object.top ?? fallbackY,
-			right: object.right ?? fallbackX,
-			bottom: object.bottom ?? fallbackY,
-			left: object.left ?? fallbackX,
-		},
-		sides: {
-			top: object.top !== undefined || object.y !== undefined,
-			right: object.right !== undefined || object.x !== undefined,
-			bottom: object.bottom !== undefined || object.y !== undefined,
-			left: object.left !== undefined || object.x !== undefined,
-		},
-	}
+	return { values: resolveObjectValues(value), sides: resolveObjectSides(value) }
 }
 
 /**

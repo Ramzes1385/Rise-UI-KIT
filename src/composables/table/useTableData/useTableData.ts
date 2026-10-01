@@ -1,12 +1,11 @@
-import type { Ref } from 'vue'
 /** Composable: сортировка, фильтрация, пагинация и поиск таблицы */
-import { computed, watch } from 'vue'
+import { watch } from 'vue'
 import { useTableSort } from '@composables/table/useTableSort'
+import { useTableProcessedRows } from './useTableProcessedRows'
+import { createTableDataActions } from './createTableDataActions'
 import { useTableFilter } from '@composables/table/useTableFilter'
 import { useTableSearch } from '@composables/table/useTableSearch'
-import { compareSortKeys, toSortKey } from '@utils/navigation/tableUtils'
 import { useTablePagination } from '@composables/table/useTablePagination'
-import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { UseTableDataOptions, UseTableDataReturn } from './types/useTableData.types'
 
 /**
@@ -43,100 +42,22 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 		addFilter: baseAddFilter,
 		removeFilter: baseRemoveFilter,
 		getFilterLabel,
-	} = useTableFilter({
-		columns,
-		onFilter,
-	})
+	} = useTableFilter({ columns, onFilter })
 
-	const { sortStates, getSortDirection, getSortIndex, handleSort } = useTableSort({
-		isMultiSort,
-		onSort,
-	})
+	const { sortStates, getSortDirection, getSortIndex, handleSort } = useTableSort({ isMultiSort, onSort })
 
 	/** Обработанные строки (поиск + фильтры + сортировка) */
-	const processedRows = computed((): TableRow[] => {
-		let result = [...rows.value]
-
-		if (searchQuery.value) {
-			const query = searchQuery.value.toLowerCase()
-			result = result.filter(row => {
-				return Object.values(row.data).some(val => String(val).toLowerCase().includes(query))
-			})
-		}
-
-		for (const filter of activeFilters.value) {
-			result = result.filter(row => {
-				const val = row.data[filter.key]
-				if (val === undefined) return false
-				const strVal = String(val).toLowerCase()
-				const filterVal = filter.value.toLowerCase()
-
-				switch (filter.operator) {
-					case 'eq':
-						return strVal === filterVal
-					case 'ne':
-						return strVal !== filterVal
-					case 'contains':
-						return strVal.includes(filterVal)
-					case 'gt':
-						return Number(val) > Number(filter.value)
-					case 'lt':
-						return Number(val) < Number(filter.value)
-					case 'gte':
-						return Number(val) >= Number(filter.value)
-					case 'lte':
-						return Number(val) <= Number(filter.value)
-					default:
-						return true
-				}
-			})
-		}
-
-		// Множественная сортировка. Ключи нормализуются один раз на строку (а не в каждом сравнении):
-		// пустые и нераспознанные значения получают ранг и уходят в конец, поэтому NaN не ломает компаратор
-		const activeSorts = sortStates.value.filter(sort => sort.direction)
-		if (activeSorts.length > 0) {
-			const sortTypes = new Map(columns.value.map((column: TableColumn) => [column.key, column.sortType]))
-			const keyedRows = result.map(row => ({
-				row,
-				keys: activeSorts.map(sort => toSortKey(row.data[sort.key], sortTypes.get(sort.key))),
-			}))
-
-			keyedRows.sort((a, b) => {
-				for (let index = 0; index < activeSorts.length; index++) {
-					const cmp = compareSortKeys(a.keys[index], b.keys[index], activeSorts[index].direction)
-					if (cmp !== 0) return cmp
-				}
-				return 0
-			})
-			result = keyedRows.map(item => item.row)
-		}
-
-		return result
-	})
+	const processedRows = useTableProcessedRows({ rows, columns, searchQuery, activeFilters, sortStates })
 
 	const { currentPage, localPageSize, displayedRows, totalPages, visiblePages, hasMoreRows, loadMore, resetPage, handlePageSizeChange } =
-		useTablePagination({
-			processedRows,
-			loadMode,
-			pageSize,
-			onPageSizeChange,
-		})
+		useTablePagination({ processedRows, loadMode, pageSize, onPageSizeChange })
 
-	function addFilter(filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>): void {
-		baseAddFilter(filterColumn, filterOperator, filterValue)
-		resetPage()
-	}
-
-	function removeFilter(index: number): void {
-		baseRemoveFilter(index)
-		resetPage()
-	}
-
-	// Сброс страницы при поиске требует resetPage из pagination
-	function handleSearchInputWithReset(value: string): void {
-		handleSearchInput(value, resetPage)
-	}
+	const { addFilter, removeFilter, handleSearchInputWithReset } = createTableDataActions({
+		baseAddFilter,
+		baseRemoveFilter,
+		handleSearchInput,
+		resetPage,
+	})
 
 	/** Сброс страницы при изменении данных */
 	watch(

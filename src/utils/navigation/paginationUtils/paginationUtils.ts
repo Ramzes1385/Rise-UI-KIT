@@ -9,25 +9,8 @@ function calcTotalPages(total: number, pageSize: number): number {
 	return Math.ceil(total / pageSize)
 }
 
-/**
- * Рассчитать массив видимых номеров страниц с многоточиями.
- * Всегда показывает первую страницу, опционально — последнюю.
- * Между разрывами вставляет '...'.
- */
-function calcVisiblePages(options: VisiblePagesOptions): VisiblePageItem[] {
-	const current = options.current
-	const total = options.total
-	const maxVisible = options.maxVisible ?? 7
-	const showLastPage = options.showLastPage ?? true
-
-	if (total <= 0) return []
-
-	if (total <= maxVisible) {
-		return Array.from({ length: total }, (_, i) => i + 1)
-	}
-
-	const result: VisiblePageItem[] = []
-	const last = showLastPage ? total : total
+/** Диапазон средних страниц [start, end] вокруг текущей, прижатый к краям 2…total-1 */
+function calcMiddleRange(current: number, total: number, maxVisible: number): [number, number] {
 	const slotsForMiddle = maxVisible - 2 // минус первая и последняя
 	const half = Math.floor(slotsForMiddle / 2)
 
@@ -35,16 +18,22 @@ function calcVisiblePages(options: VisiblePagesOptions): VisiblePageItem[] {
 	let end = current + half
 
 	if (start < 2) {
-		end = Math.min(last - 1, end + (2 - start))
+		end = Math.min(total - 1, end + (2 - start))
 		start = 2
 	}
 
-	if (end > last - 1) {
-		start = Math.max(2, start - (end - (last - 1)))
-		end = last - 1
+	if (end > total - 1) {
+		start = Math.max(2, start - (end - (total - 1)))
+		end = total - 1
 	}
 
-	result.push(1)
+	return [start, end]
+}
+
+/** Собрать список: первая страница, многоточия, средний диапазон и (опционально) последняя */
+function buildPageItems(range: [number, number], total: number, showLastPage: boolean): VisiblePageItem[] {
+	const [start, end] = range
+	const result: VisiblePageItem[] = [1]
 
 	if (start > 2) {
 		result.push('...')
@@ -54,15 +43,34 @@ function calcVisiblePages(options: VisiblePagesOptions): VisiblePageItem[] {
 		result.push(i)
 	}
 
-	if (showLastPage && end < last - 1) {
+	if (showLastPage && end < total - 1) {
 		result.push('...')
 	}
 
-	if (showLastPage && last > 1) {
-		result.push(last)
+	if (showLastPage && total > 1) {
+		result.push(total)
 	}
 
 	return result
+}
+
+/**
+ * Рассчитать массив видимых номеров страниц с многоточиями.
+ * Всегда показывает первую страницу, опционально — последнюю.
+ * Между разрывами вставляет '...'.
+ */
+function calcVisiblePages(options: VisiblePagesOptions): VisiblePageItem[] {
+	const { current, total } = options
+	const maxVisible = options.maxVisible ?? 7
+	const showLastPage = options.showLastPage ?? true
+
+	if (total <= 0) return []
+
+	if (total <= maxVisible) {
+		return Array.from({ length: total }, (_, i) => i + 1)
+	}
+
+	return buildPageItems(calcMiddleRange(current, total, maxVisible), total, showLastPage)
 }
 
 /** Рассчитать строку информации о странице («1–10 из 100») */

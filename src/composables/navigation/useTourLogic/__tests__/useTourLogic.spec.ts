@@ -1,9 +1,10 @@
 /** Логика тестируется в изоляции через эффект-скоуп Vue, чтобы покрыть расчёт авторазмещения и поведение при отсутствии placement у пропов. */
 
 import '@testing-library/jest-dom/vitest'
-import { effectScope } from 'vue'
 import type { EffectScope } from 'vue'
+import { mount } from '@vue/test-utils'
 import { resolvePlacement, useTourLogic } from '../useTourLogic'
+import { defineComponent, effectScope, nextTick, ref } from 'vue'
 import type { BaseTourProps } from '@components/BaseTour/types/BaseTour.types'
 
 /** Прямоугольник элемента 60×40 в точке (top, left) */
@@ -126,5 +127,81 @@ describe('useTourLogic unit', () => {
 		await logic.recalculate()
 
 		expect(logic.geometry.value).toBeNull()
+	})
+	it('считает общее число шагов и крайние позиции по текущему индексу', () => {
+		const index = ref(0)
+		const logic = runLogic({ steps: [{ target: '#t' }, { target: '#t' }, { target: '#t' }] }, () => index.value)
+
+		expect(logic.total.value).toBe(3)
+		expect([logic.isFirst.value, logic.isLast.value]).toEqual([true, false])
+
+		index.value = 2
+		expect([logic.isFirst.value, logic.isLast.value]).toEqual([false, true])
+		expect(logic.currentStep.value).toEqual({ target: '#t' })
+	})
+
+	it('ставит карточку над целью и слева от неё по заданной стороне шага', async () => {
+		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(RECT)
+
+		const top = runLogic({ steps: [{ target: '#t', placement: 'top' }], padding: 4, gap: 10 })
+		await top.recalculate()
+		expect(top.geometry.value).toEqual({
+			spotlight: { top: 496, left: 96, width: 68, height: 48 },
+			card: { top: 490, left: 130 },
+			placement: 'top',
+		})
+
+		const left = runLogic({ steps: [{ target: '#t', placement: 'left' }] })
+		await left.recalculate()
+		expect(left.geometry.value?.card).toEqual({ top: 520, left: 88 })
+	})
+
+	it('не прокручивает к цели, когда behavior.scrollIntoView = false', async () => {
+		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(RECT)
+		const scrollIntoView = vi.fn()
+		HTMLElement.prototype.scrollIntoView = scrollIntoView
+
+		const logic = runLogic({ steps: [{ target: '#t' }], behavior: { scrollIntoView: false } })
+		await logic.recalculate()
+		expect(scrollIntoView).not.toHaveBeenCalled()
+
+		const scrolling = runLogic({ steps: [{ target: '#t' }] })
+		await scrolling.recalculate()
+		expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center', inline: 'center' })
+
+		Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView')
+	})
+
+	it('пересчитывает геометрию при смене шага', async () => {
+		const index = ref(0)
+		const logic = runLogic({ steps: [{ target: '#t' }, { target: '#missing' }] }, () => index.value)
+		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(RECT)
+		await logic.recalculate()
+		expect(logic.geometry.value).not.toBeNull()
+
+		index.value = 1
+		await nextTick()
+		await nextTick()
+		await nextTick()
+		expect(logic.geometry.value).toBeNull()
+	})
+
+	it('снимает слушатели окна при размонтировании компонента', () => {
+		const removeEventListener = vi.spyOn(window, 'removeEventListener')
+		let logic: ReturnType<typeof useTourLogic> | undefined
+		const wrapper = mount(
+			defineComponent({
+				setup() {
+					logic = useTourLogic({ props: { steps: [{ target: '#t' }] }, getIndex: () => 0 })
+					return () => null
+				},
+			}),
+		)
+		logic!.attachListeners()
+
+		wrapper.unmount()
+
+		expect(removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function))
+		expect(removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function), true)
 	})
 })

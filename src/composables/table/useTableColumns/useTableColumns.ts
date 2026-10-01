@@ -1,16 +1,10 @@
 /** Composable: управление колонками таблицы */
-import { computed, ref, toRaw, watch } from 'vue'
-import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
-import type { ColumnPropState, UseTableColumnsOptions, UseTableColumnsReturn } from './types/useTableColumns.types'
-import { calcColumnWidths, calcTotalColumns, getColumnStyle as buildColumnStyle } from '@utils/navigation/tableUtils'
-
-/** Строк скелетона, когда размер страницы не задан */
-const DEFAULT_SKELETON_ROWS = 5
-
-/** Снять значения isHidden/width, пришедшие из props, по ключу колонки */
-function readPropState(columns: TableColumn[]): Map<string, ColumnPropState> {
-	return new Map(columns.map(column => [column.key, { isHidden: column.isHidden, width: column.width }]))
-}
+import { ref, toRaw, watch } from 'vue'
+import { useTableColumnsDerived } from './useTableColumnsDerived'
+import type { TableColumn } from '@components/BaseTable/types/BaseTable.types'
+import { getColumnStyle as buildColumnStyle } from '@utils/navigation/tableUtils'
+import { formatCellValue, mergePropColumns, readPropState } from './useTableColumnsUtils'
+import type { UseTableColumnsOptions, UseTableColumnsReturn } from './types/useTableColumns.types'
 
 /** Composable для управления колонками таблицы — видимость, ширины, стили, skeleton-строки. */
 function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn {
@@ -26,19 +20,7 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 	watch(
 		() => columns.value,
 		newCols => {
-			const localByKey = new Map(localColumns.value.map(column => [column.key, column]))
-			localColumns.value = newCols.map(column => {
-				const local = localByKey.get(column.key)
-				const previous = lastPropState.get(column.key)
-				if (!local || !previous) return { ...column }
-				// Значение из props побеждает, только если родитель его действительно изменил;
-				// иначе сохраняем выбор пользователя (скрытие/ширину) при пересоздании колонок
-				return {
-					...column,
-					isHidden: previous.isHidden === column.isHidden ? local.isHidden : column.isHidden,
-					width: previous.width === column.width ? local.width : column.width,
-				}
-			})
+			localColumns.value = mergePropColumns(newCols, localColumns.value, lastPropState)
 			lastPropState = readPropState(newCols)
 		},
 		{ deep: true },
@@ -49,41 +31,12 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 		return localColumns.value.map(column => ({ ...toRaw(column) }))
 	}
 
-	const visibleColumns = computed((): TableColumn[] => {
-		return localColumns.value.filter(column => !column.isHidden)
-	})
-
-	const skeletonRows = computed((): number => {
-		return pageSize() || DEFAULT_SKELETON_ROWS
-	})
-
-	const filterableColumns = computed((): TableColumn[] => {
-		return localColumns.value.filter(column => !column.isHidden && column.isFilterable !== false)
-	})
-
-	const hasExpandableRows = computed((): boolean => {
-		return rows.value.some(row => row.isExpandable || (row.children && row.children.length > 0))
-	})
-
-	const totalCols = computed((): number => {
-		return calcTotalColumns(visibleColumns.value.length, {
-			isSelectable: isSelectable(),
-			hasRowNumber: hasRowNumber(),
-			hasExpandableRows: hasExpandableRows.value,
-		})
-	})
+	const { visibleColumns, skeletonRows, filterableColumns, hasExpandableRows, totalCols, useFixedLayout, columnWidths } =
+		useTableColumnsDerived({ localColumns, rows, isResizable, hasRowNumber, isSelectable, pageSize })
 
 	function isColumnResizable(column: TableColumn): boolean {
 		return isResizable() || !!column.isResizable
 	}
-
-	const useFixedLayout = computed((): boolean => {
-		return isResizable() || visibleColumns.value.some(column => column.flex || column.width)
-	})
-
-	const columnWidths = computed((): string[] => {
-		return calcColumnWidths(visibleColumns.value)
-	})
 
 	function getColumnStyle(column: TableColumn): Record<string, string> {
 		return buildColumnStyle({ minWidth: column.minWidth, maxWidth: column.maxWidth })
@@ -96,12 +49,6 @@ function useTableColumns(options: UseTableColumnsOptions): UseTableColumnsReturn
 			localColumns.value[index].isHidden = !localColumns.value[index].isHidden
 			emit('columns-change', snapshotColumns())
 		}
-	}
-
-	function formatCellValue(column: TableColumn, row: TableRow): string {
-		const value = row.data[column.key]
-		if (column.formatter) return column.formatter(value, row)
-		return String(value ?? '')
 	}
 
 	return {

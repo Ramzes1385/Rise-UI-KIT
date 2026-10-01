@@ -32,6 +32,36 @@ function writeStored(key: string | false, value: ColorMode): void {
 	}
 }
 
+function getDarkMedia(hasWindow: boolean): MediaQueryList | null {
+	return hasWindow && typeof window.matchMedia === 'function' ? window.matchMedia(DARK_QUERY) : null
+}
+
+/** Ставит `data-theme` на элемент из опций или `<html>`; без window — никуда */
+function createThemeApplier(options: ColorModeOptions, hasWindow: boolean): (value: ColorMode) => void {
+	function resolveTarget(): HTMLElement | null | undefined {
+		if (options.target) return options.target()
+		return hasWindow ? document.documentElement : null
+	}
+
+	return value => {
+		// data-theme="system" переключает токены сам (CSS prefers-color-scheme): тема верна и до загрузки скриптов
+		resolveTarget()?.setAttribute('data-theme', value)
+	}
+}
+
+/** Выбор в другой вкладке; возвращает отписку */
+function listenStorage(storageKey: string | false, hasWindow: boolean, onChange: (value: ColorMode) => void): () => void {
+	function handleStorage(event: StorageEvent): void {
+		if (event.key === storageKey && isColorMode(event.newValue)) onChange(event.newValue)
+	}
+
+	if (hasWindow && storageKey) window.addEventListener('storage', handleStorage)
+
+	return () => {
+		if (hasWindow) window.removeEventListener('storage', handleStorage)
+	}
+}
+
 /**
  * Создаёт отдельное управление темой. Для всего приложения используйте `useColorMode()`:
  * он возвращает одно общее управление. Отдельное нужно для темы части интерфейса (`target`) и в тестах.
@@ -39,7 +69,7 @@ function writeStored(key: string | false, value: ColorMode): void {
 export function createColorMode(options: ColorModeOptions = {}): ColorModeInstance {
 	const storageKey = options.storageKey ?? COLOR_MODE_STORAGE_KEY
 	const hasWindow = typeof window !== 'undefined'
-	const media = hasWindow && typeof window.matchMedia === 'function' ? window.matchMedia(DARK_QUERY) : null
+	const media = getDarkMedia(hasWindow)
 
 	const isSystemDark = ref(media?.matches ?? false)
 	const mode = ref<ColorMode>(readStored(storageKey) ?? options.initialMode ?? 'system')
@@ -47,30 +77,17 @@ export function createColorMode(options: ColorModeOptions = {}): ColorModeInstan
 		if (mode.value !== 'system') return mode.value
 		return isSystemDark.value ? 'dark' : 'light'
 	})
-
-	/** Элемент с атрибутом темы: из опций или `<html>`; без window — нет */
-	function resolveTarget(): HTMLElement | null | undefined {
-		if (options.target) return options.target()
-		return hasWindow ? document.documentElement : null
-	}
-
-	function apply(value: ColorMode): void {
-		// data-theme="system" переключает токены сам (CSS prefers-color-scheme): тема верна и до загрузки скриптов
-		resolveTarget()?.setAttribute('data-theme', value)
-	}
+	const apply = createThemeApplier(options, hasWindow)
 
 	function handleSystemChange(event: MediaQueryListEvent): void {
 		isSystemDark.value = event.matches
 	}
 
-	/** Выбор в другой вкладке */
-	function handleStorage(event: StorageEvent): void {
-		if (event.key === storageKey && isColorMode(event.newValue)) mode.value = event.newValue
-	}
-
 	apply(mode.value)
 	media?.addEventListener('change', handleSystemChange)
-	if (hasWindow && storageKey) window.addEventListener('storage', handleStorage)
+	const stopStorage = listenStorage(storageKey, hasWindow, value => {
+		mode.value = value
+	})
 
 	const stopWatch = watch(mode, value => {
 		apply(value)
@@ -84,7 +101,7 @@ export function createColorMode(options: ColorModeOptions = {}): ColorModeInstan
 	function stop(): void {
 		stopWatch()
 		media?.removeEventListener('change', handleSystemChange)
-		if (hasWindow) window.removeEventListener('storage', handleStorage)
+		stopStorage()
 	}
 
 	return { mode, resolvedMode, isDark: computed(() => resolvedMode.value === 'dark'), toggle, stop }

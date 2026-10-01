@@ -72,6 +72,18 @@ function parseZoneOffset(zone: string | undefined): number {
 	return zone.startsWith('-') ? -minutes : minutes
 }
 
+/** Совпадают ли части даты в UTC [месяц, день, часы, минуты, секунды] — иначе дата была перенесена */
+function hasUtcParts(date: Date, parts: readonly number[]): boolean {
+	const [month, day, hours, minutes, seconds] = parts
+	return (
+		date.getUTCMonth() === month &&
+		date.getUTCDate() === day &&
+		date.getUTCHours() === hours &&
+		date.getUTCMinutes() === minutes &&
+		date.getUTCSeconds() === seconds
+	)
+}
+
 /** Разобрать ISO 8601 в timestamp; несуществующие даты (2024-02-30) не переносим на следующий месяц, а отклоняем */
 function parseIsoDate(value: string): number | null {
 	const match = ISO_DATE_PATTERN.exec(value)
@@ -83,13 +95,7 @@ function parseIsoDate(value: string): number | null {
 	date.setUTCFullYear(Number(year), Number(month) - 1, Number(day))
 	date.setUTCHours(Number(hours), Number(minutes), Number(seconds), Number(fraction.padEnd(3, '0')))
 
-	const isValid =
-		date.getUTCMonth() === Number(month) - 1 &&
-		date.getUTCDate() === Number(day) &&
-		date.getUTCHours() === Number(hours) &&
-		date.getUTCMinutes() === Number(minutes) &&
-		date.getUTCSeconds() === Number(seconds)
-	if (!isValid) return null
+	if (!hasUtcParts(date, [Number(month) - 1, Number(day), Number(hours), Number(minutes), Number(seconds)])) return null
 
 	// Строка без зоны трактуется как UTC: результат не зависит от часового пояса окружения
 	return date.getTime() - parseZoneOffset(zone) * MS_IN_MINUTE

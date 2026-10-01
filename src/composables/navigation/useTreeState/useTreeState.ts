@@ -1,11 +1,13 @@
 /** Composable: состояние дерева (expand/collapse, выбор, кэш потомков) */
 import { computed, ref, watch } from 'vue'
-import type { UseTreeStateOptions, UseTreeStateResult } from './types/useTreeState.types'
+import { createTreeExpansion } from './useTreeStateExpansion'
+import { createTreeSelection } from './useTreeStateSelection'
 import { buildDescendantsCache, collectExpandableIds } from '@utils/navigation/treeUtils'
+import type { TreeStateContext, UseTreeStateOptions, UseTreeStateResult } from './types/useTreeState.types'
 
-/** Поддерживает режимы выбора single/multi/checkbox */
-function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
-	const { items, selectionMode, expandedIds: propExpandedIds, selectedIds: propSelectedIds, isDefaultExpandAll, emit } = options
+/** Внутренние списки и производные от них: проп (контролируемый режим) важнее внутреннего значения */
+function createTreeStateContext(options: UseTreeStateOptions): TreeStateContext {
+	const { expandedIds: propExpandedIds, selectedIds: propSelectedIds } = options
 
 	const internalExpandedIds = ref<string[]>([])
 	const internalSelectedIds = ref<string[]>([])
@@ -27,72 +29,13 @@ function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 		return new Set(selectedIds.value)
 	})
 
-	function toggleNode(id: string): void {
-		const current = [...expandedIds.value]
-		const pos = current.indexOf(id)
-		const isExpanded = pos > -1
+	return { internalExpandedIds, internalSelectedIds, descendantsCache, expandedIds, selectedIds, expandedSet, selectedSet }
+}
 
-		if (isExpanded) {
-			current.splice(pos, 1)
-		} else {
-			current.push(id)
-		}
-
-		internalExpandedIds.value = current
-		emit('update:expandedIds', current)
-		emit('toggle', id, !isExpanded)
-	}
-
-	/** Раскрыть несколько узлов разом (клавиша `*` раскрывает соседей) — одно событие update:expandedIds */
-	function expandNodes(ids: string[]): void {
-		const toExpand = ids.filter(id => !expandedSet.value.has(id))
-		if (!toExpand.length) return
-		const next = [...expandedIds.value, ...toExpand]
-		internalExpandedIds.value = next
-		emit('update:expandedIds', next)
-		for (const id of toExpand) emit('toggle', id, true)
-	}
-
-	function handleSingleSelection(id: string, isSelected: boolean): void {
-		const newIds = isSelected ? [] : [id]
-		internalSelectedIds.value = newIds
-		emit('update:selectedIds', newIds)
-		emit('select', id, !isSelected)
-	}
-
-	function handleCascadeSelection(id: string, isSelected: boolean): void {
-		const current = [...selectedIds.value]
-		const descendantIds = descendantsCache.get(id) ?? []
-		const affectedIds = [id, ...descendantIds]
-		const affectedSet = new Set(affectedIds)
-
-		let newIds: string[]
-		if (isSelected) {
-			newIds = current.filter(function isNotAffected(i): boolean {
-				return !affectedSet.has(i)
-			})
-		} else {
-			newIds = [...new Set([...current, ...affectedIds])]
-		}
-
-		internalSelectedIds.value = newIds
-		emit('update:selectedIds', newIds)
-		emit('select', id, !isSelected)
-	}
-
-	function selectNode(id: string): void {
-		const mode = selectionMode.value
-		if (mode === 'none') {
-			return
-		}
-
-		const isSelected = selectedSet.value.has(id)
-		if (mode === 'single') {
-			handleSingleSelection(id, isSelected)
-		} else {
-			handleCascadeSelection(id, isSelected)
-		}
-	}
+/** Кэш потомков при смене узлов и раскрытие всего дерева по isDefaultExpandAll */
+function watchTreeSources(options: UseTreeStateOptions, context: TreeStateContext): void {
+	const { items, isDefaultExpandAll, emit } = options
+	const { internalExpandedIds, descendantsCache } = context
 
 	watch(
 		items,
@@ -114,6 +57,17 @@ function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 		},
 		{ immediate: true },
 	)
+}
+
+/** Поддерживает режимы выбора single/multi/checkbox */
+function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
+	const context = createTreeStateContext(options)
+	const { expandedIds, selectedIds, expandedSet, selectedSet } = context
+
+	const { toggleNode, expandNodes } = createTreeExpansion(context, options.emit)
+	const { selectNode } = createTreeSelection(context, options)
+
+	watchTreeSources(options, context)
 
 	return {
 		expandedIds,

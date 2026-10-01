@@ -1,11 +1,10 @@
 /** Composable: управление пагинацией таблицы */
 import { computed, ref, watch } from 'vue'
-import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
+import { useTableDisplayedRows } from './useTableDisplayedRows'
 import { calcTotalPages, calcVisiblePages } from '@utils/navigation/paginationUtils'
+import { createTablePaginationActions, DEFAULT_PAGE_SIZE } from './createTablePaginationActions'
 import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/paginationUtils.types'
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './types/useTablePagination.types'
-
-const DEFAULT_PAGE_SIZE = 5
 
 function useTablePagination(options: UseTablePaginationOptions): UseTablePaginationReturn {
 	const { processedRows, loadMode, pageSize, onPageSizeChange } = options
@@ -28,30 +27,7 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		},
 	)
 
-	const displayedRows = computed((): TableRow[] => {
-		const mode = loadMode()
-		if (mode === 'pagination') {
-			if (!localPageSize.value) return processedRows.value
-			const start = (currentPage.value - 1) * localPageSize.value
-			return processedRows.value.slice(start, start + localPageSize.value)
-		}
-		if (mode === 'button' || mode === 'infinite') {
-			return processedRows.value.slice(0, loadedCount.value)
-		}
-		return processedRows.value
-	})
-
-	const hasMoreRows = computed((): boolean => {
-		const mode = loadMode()
-		if (mode === 'button' || mode === 'infinite') {
-			return loadedCount.value < processedRows.value.length
-		}
-		return false
-	})
-
-	function loadMore(): void {
-		loadedCount.value += effectivePageSize.value
-	}
+	const { displayedRows, hasMoreRows } = useTableDisplayedRows({ processedRows, loadMode, currentPage, localPageSize, loadedCount })
 
 	const totalPages = computed((): number => {
 		return calcTotalPages(processedRows.value.length, localPageSize.value)
@@ -61,24 +37,14 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		return calcVisiblePages({ current: currentPage.value, total: totalPages.value })
 	})
 
-	function handlePageSizeChange(value: string | number | (string | number)[]): void {
-		const newSize = Number(Array.isArray(value) ? value[0] : value)
-		if (newSize !== localPageSize.value) {
-			localPageSize.value = newSize
-			currentPage.value = 1
-			loadedCount.value = newSize || DEFAULT_PAGE_SIZE
-			if (onPageSizeChange) onPageSizeChange(newSize)
-		}
-	}
-
-	/** Сброс страницы и счётчика подгрузки */
-	function resetPage(): void {
-		if (loadMode() === 'pagination') {
-			currentPage.value = 1
-		} else {
-			loadedCount.value = effectivePageSize.value
-		}
-	}
+	const { loadMore, handlePageSizeChange, resetPage } = createTablePaginationActions({
+		loadMode,
+		currentPage,
+		localPageSize,
+		effectivePageSize,
+		loadedCount,
+		onPageSizeChange,
+	})
 
 	watch(pageSize, newSize => {
 		localPageSize.value = newSize

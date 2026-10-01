@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { UseTableSelectionOptions, UseTableSelectionReturn } from './types/useTableSelection.types'
+import { collectDisabledSelectedIds, collectSelectedIds, toggleSelectedId } from './useTableSelectionUtils'
 
 function useTableSelection(options: UseTableSelectionOptions): UseTableSelectionReturn {
 	const { rows, filteredRows = rows, onSelect } = options
@@ -10,11 +11,7 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 
 	/** Синхронизация выбранных ID с isSelected в строках (read-only) */
 	function syncFromRows(): void {
-		const next = new Set<string | number>()
-		for (const row of rows.value) {
-			if (row.isSelected) next.add(row.id)
-		}
-		selectedIds.value = next
+		selectedIds.value = collectSelectedIds(rows.value)
 	}
 
 	watch(() => rows.value, syncFromRows, { immediate: true })
@@ -39,13 +36,7 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 	})
 
 	function toggleRow(row: TableRow): void {
-		const next = new Set(selectedIds.value)
-		if (next.has(row.id)) {
-			next.delete(row.id)
-		} else {
-			next.add(row.id)
-		}
-		selectedIds.value = next
+		selectedIds.value = toggleSelectedId(selectedIds.value, row.id)
 		if (onSelect) onSelect(selectedRows.value)
 	}
 
@@ -60,10 +51,7 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 		if (!selectable.length) return
 
 		const shouldSelect = !isAllSelected.value
-		const next = new Set<string | number>()
-		for (const row of rows.value) {
-			if (row.isDisabled && selectedIds.value.has(row.id)) next.add(row.id)
-		}
+		const next = collectDisabledSelectedIds(rows.value, selectedIds.value)
 		if (shouldSelect) {
 			for (const row of selectable) next.add(row.id)
 		}

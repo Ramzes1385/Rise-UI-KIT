@@ -1,45 +1,18 @@
-import type { UseTourLogicOptions, UseTourLogicReturn } from './types/useTourLogic.types'
 /** Composable: guided tour — навигация по шагам, геометрия подсветки, размещение тултипа */
+
+import { createTourListeners } from './useTourLogicListeners'
+import type { TourGeometry, TourStep } from '@components/BaseTour/types/BaseTour.types'
+import type { UseTourLogicOptions, UseTourLogicReturn } from './types/useTourLogic.types'
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import type { TourGeometry, TourPlacement, TourStep } from '@components/BaseTour/types/BaseTour.types'
-
-const DEFAULT_GAP = 12
-const DEFAULT_PADDING = 8
-const DEFAULT_RADIUS = 8
-
-function readTargetRect(selector: string): DOMRect | null {
-	const element = document.querySelector(selector)
-	if (!element) return null
-	return element.getBoundingClientRect()
-}
-
-function scrollTargetIntoView(selector: string): void {
-	const element = document.querySelector(selector)
-	if (!element || typeof element.scrollIntoView !== 'function') return
-	element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
-}
-
-function resolvePlacement(rect: DOMRect, preferred: TourPlacement): Exclude<TourPlacement, 'auto'> {
-	if (preferred !== 'auto') return preferred
-	const spaceBelow = window.innerHeight - rect.bottom
-	const spaceAbove = rect.top
-	const spaceRight = window.innerWidth - rect.right
-	const spaceLeft = rect.left
-	const max = Math.max(spaceBelow, spaceAbove, spaceRight, spaceLeft)
-	if (max === spaceBelow) return 'bottom'
-	if (max === spaceAbove) return 'top'
-	if (max === spaceRight) return 'right'
-	return 'left'
-}
-
-function computeCardPosition(rect: DOMRect, placement: Exclude<TourPlacement, 'auto'>, gap: number): { top: number; left: number } {
-	const centerX = rect.left + rect.width / 2
-	const centerY = rect.top + rect.height / 2
-	if (placement === 'top') return { top: rect.top - gap, left: centerX }
-	if (placement === 'bottom') return { top: rect.bottom + gap, left: centerX }
-	if (placement === 'left') return { top: centerY, left: rect.left - gap }
-	return { top: centerY, left: rect.right + gap }
-}
+import {
+	DEFAULT_GAP,
+	DEFAULT_PADDING,
+	DEFAULT_RADIUS,
+	buildTourGeometry,
+	readTargetRect,
+	resolvePlacement,
+	scrollTargetIntoView,
+} from './useTourLogicUtils'
 
 function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 	const { props, getIndex } = options
@@ -70,36 +43,10 @@ function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 			return
 		}
 
-		const padding = props.padding ?? DEFAULT_PADDING
-		const gap = props.gap ?? DEFAULT_GAP
-		const preferred = step.placement ?? props.placement ?? 'auto'
-		const placement = resolvePlacement(rect, preferred)
-
-		geometry.value = {
-			spotlight: {
-				top: rect.top - padding,
-				left: rect.left - padding,
-				width: rect.width + padding * 2,
-				height: rect.height + padding * 2,
-			},
-			card: computeCardPosition(rect, placement, gap),
-			placement,
-		}
+		geometry.value = buildTourGeometry(rect, step, props)
 	}
 
-	function handleViewportChange(): void {
-		void recalculate()
-	}
-
-	function attachListeners(): void {
-		window.addEventListener('resize', handleViewportChange)
-		window.addEventListener('scroll', handleViewportChange, true)
-	}
-
-	function detachListeners(): void {
-		window.removeEventListener('resize', handleViewportChange)
-		window.removeEventListener('scroll', handleViewportChange, true)
-	}
+	const { attachListeners, detachListeners } = createTourListeners(recalculate)
 
 	watch(
 		() => getIndex(),

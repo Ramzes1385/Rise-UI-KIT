@@ -1,7 +1,9 @@
 /** Composable: изменение ширины колонок таблицы через перетаскивание */
 import { onBeforeUnmount, ref } from 'vue'
+import { useResizeDrag } from './useResizeDrag'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './types/useColumnResize.types'
+import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth } from './useColumnResizeUtils'
 
 function useColumnResize<TColumn extends ResizeColumn>({
 	columns,
@@ -10,70 +12,15 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	onColumnResize,
 	onColumnsChange,
 }: UseColumnResizeParams<TColumn>) {
-	const resizeState = ref<ResizeState>({
-		isResizing: false,
-		columnKey: '',
-		nextColumnKey: '',
-		startX: 0,
-		startWidth: 0,
-		nextStartWidth: 0,
-	})
+	const resizeState = ref<ResizeState>(createIdleResizeState())
 
-	/** Стили body до начала перетаскивания: после него возвращаем их, а не затираем пустой строкой */
-	let savedBodyStyles: { cursor: string; userSelect: string } | null = null
-
-	/** Снять слушатели перетаскивания и вернуть стили body */
-	function releaseDrag(): void {
-		document.removeEventListener('mousemove', handleMouseMove)
-		document.removeEventListener('mouseup', stopResize)
-		if (savedBodyStyles) {
-			document.body.style.cursor = savedBodyStyles.cursor
-			document.body.style.userSelect = savedBodyStyles.userSelect
-			savedBodyStyles = null
-		}
-	}
-
-	function findSiblingKey(columnKey: string): string {
-		const visibleKeys = visibleColumns.value.map(column => column.key)
-		const visibleIndex = visibleKeys.indexOf(columnKey)
-
-		if (visibleIndex === visibleKeys.length - 1 && visibleIndex > 0) {
-			return visibleKeys[visibleIndex - 1]
-		}
-
-		if (visibleIndex < visibleKeys.length - 1) {
-			return visibleKeys[visibleIndex + 1]
-		}
-
-		return ''
-	}
+	const drag = useResizeDrag({ onMove: handleMouseMove, onEnd: stopResize })
 
 	function handleMouseMove(event: MouseEvent): void {
 		/* istanbul ignore next -- Защитный выход без активного resize. */
 		if (!resizeState.value.isResizing) return
 
-		const diff = event.pageX - resizeState.value.startX
-		const newWidth = Math.max(minWidth, resizeState.value.startWidth + diff)
-
-		const hasSibling = resizeState.value.nextColumnKey && resizeState.value.nextStartWidth > 0
-		const maxWidth = hasSibling ? resizeState.value.startWidth + resizeState.value.nextStartWidth - minWidth : Infinity
-		const clampedWidth = Math.min(newWidth, maxWidth)
-
-		const columnIndex = columns.value.findIndex(column => column.key === resizeState.value.columnKey)
-		/* istanbul ignore else -- Колонка может исчезнуть только при внешнем обновлении во время resize. */
-		if (columnIndex !== -1) {
-			columns.value[columnIndex].width = `${clampedWidth}px`
-		}
-
-		if (hasSibling) {
-			const actualDiff = clampedWidth - resizeState.value.startWidth
-			const siblingWidth = Math.max(minWidth, resizeState.value.nextStartWidth - actualDiff)
-			const siblingIndex = columns.value.findIndex(column => column.key === resizeState.value.nextColumnKey)
-			/* istanbul ignore else -- Соседняя колонка синхронизируется с видимыми колонками. */
-			if (siblingIndex !== -1) {
-				columns.value[siblingIndex].width = `${siblingWidth}px`
-			}
-		}
+		applyResizeWidths({ columns: columns.value, state: resizeState.value, minWidth, pageX: event.pageX })
 	}
 
 	function stopResize(): void {
@@ -81,7 +28,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		if (!resizeState.value.isResizing) return
 
 		resizeState.value.isResizing = false
-		releaseDrag()
+		drag.release()
 
 		const column = columns.value.find(item => item.key === resizeState.value.columnKey)
 		/* istanbul ignore else -- Колонка существует для пользовательского resize. */
@@ -97,16 +44,11 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		/* istanbul ignore next -- defensive: resize-handle всегда внутри th */
 		if (!th) return
 
-		const siblingKey = findSiblingKey(columnKey)
+		const siblingKey = findSiblingKey(visibleColumns.value, columnKey)
 		let siblingWidth = 0
 
 		if (siblingKey) {
-			const visibleKeys = visibleColumns.value.map(column => column.key)
-			const visibleIndex = visibleKeys.indexOf(columnKey)
-			const isLast = visibleIndex === visibleKeys.length - 1
-			const siblingTh = isLast ? th.previousElementSibling : th.nextElementSibling
-			/* istanbul ignore next -- defensive `: 0`: соседний th существует при наличии siblingKey */
-			siblingWidth = siblingTh instanceof HTMLElement ? siblingTh.offsetWidth : 0
+			siblingWidth = measureSiblingWidth(th, visibleColumns.value, columnKey)
 		}
 
 		resizeState.value = {
@@ -118,21 +60,14 @@ function useColumnResize<TColumn extends ResizeColumn>({
 			nextStartWidth: siblingWidth,
 		}
 
-		document.addEventListener('mousemove', handleMouseMove)
-		document.addEventListener('mouseup', stopResize)
-		// Повторный старт без mouseup (потерян за пределами окна) не должен перезаписать исходные стили
-		if (!savedBodyStyles) {
-			savedBodyStyles = { cursor: document.body.style.cursor, userSelect: document.body.style.userSelect }
-		}
-		document.body.style.cursor = 'col-resize'
-		document.body.style.userSelect = 'none'
+		drag.attach()
 	}
 
 	// Размонтирование посреди перетаскивания: mouseup уже не дойдёт до stopResize, поэтому
 	// освобождаем здесь — иначе выделение текста и курсор останутся сломанными во всём приложении
 	onBeforeUnmount(() => {
 		resizeState.value.isResizing = false
-		releaseDrag()
+		drag.release()
 	})
 
 	return {

@@ -1,0 +1,58 @@
+/** Composable: действия таблицы — выбор строк, подгрузка, infinite scroll и ресайз колонок */
+import { toHTMLElement } from '@utils/dom/domUtils'
+import { useColumnResize } from '@composables/table/useColumnResize'
+import type { UseTableCompositionOptions } from './types/useTableComposition.types'
+import type { TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
+import type { UseTableCompositionActionsParts } from './types/useTableCompositionActions.types'
+
+/** Наименьшая ширина колонки при изменении размера, px */
+const MIN_COL_WIDTH = 50
+
+function useTableCompositionActions(options: UseTableCompositionOptions, parts: UseTableCompositionActionsParts) {
+	const { loadMode, isLoading, infiniteScrollThreshold, emit } = options
+	const { localColumns, visibleColumns, snapshotColumns } = parts.tableColumns
+	const { hasMoreRows, loadMore } = parts.data
+	const { toggleRow: toggleRowSelection, toggleAll: toggleAllRows } = parts.selection
+
+	function toggleRow(row: TableRow): void {
+		toggleRowSelection(row)
+	}
+
+	function toggleAll(): void {
+		toggleAllRows()
+	}
+
+	function handleLoadMore(): void {
+		loadMore()
+		emit('load-more')
+	}
+
+	function handleScroll(e: Event): void {
+		if (loadMode.value !== 'infinite' || !hasMoreRows.value || isLoading.value) return
+
+		const target = toHTMLElement(e.target)
+		if (!target) return
+		const { scrollTop, scrollHeight, clientHeight } = target
+
+		if (scrollHeight - scrollTop - clientHeight < infiniteScrollThreshold) {
+			handleLoadMore()
+		}
+	}
+
+	const { startResize: startColumnResize } = useColumnResize({
+		columns: localColumns,
+		visibleColumns,
+		minWidth: MIN_COL_WIDTH,
+		onColumnResize: (key, width) => emit('column-resize', key, width),
+		// Копия, а не внутренний массив: если родитель вернёт payload в props, таблица не должна мутировать его объекты
+		onColumnsChange: () => emit('columns-change', snapshotColumns()),
+	})
+
+	function startResize(event: MouseEvent, column: TableColumn): void {
+		startColumnResize(event, column.key)
+	}
+
+	return { toggleRow, toggleAll, handleLoadMore, handleScroll, startResize }
+}
+
+export { useTableCompositionActions }

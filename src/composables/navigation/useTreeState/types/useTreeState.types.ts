@@ -20,3 +20,14 @@ export interface UseTreeStateResult {
 	expandNodes: (ids: string[]) => void
 	selectNode: (id: string) => void
 }
+
+/** Внутреннее состояние useTreeState, общее для раскрытия и выбора узлов */
+export interface TreeStateContext {
+	internalExpandedIds: Ref<string[]>
+	internalSelectedIds: Ref<string[]>
+	descendantsCache: Map<string, string[]>
+	expandedIds: ComputedRef<string[]>
+	selectedIds: ComputedRef<string[]>
+	expandedSet: ComputedRef<Set<string>>
+	selectedSet: ComputedRef<Set<string>>
+}
