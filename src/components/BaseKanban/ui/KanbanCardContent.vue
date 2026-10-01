@@ -15,7 +15,7 @@
 	<span v-if="meta.hasFooter" class="base-kanban__meta" aria-hidden="true">
 		<span class="base-kanban__meta-info">
 			<span v-if="card.key" class="base-kanban__key">{{ card.key }}</span>
-			<BaseTooltip v-if="meta.priority" :text="meta.priority.label">
+			<BaseTooltip v-if="meta.priority" class="base-kanban__priority-tooltip" :text="meta.priority.label">
 				<span class="base-kanban__priority" :class="`base-kanban__priority--${meta.priority.level}`">
 					<BaseIcon v-for="index in meta.priority.count" :key="index" :name="meta.priority.icon" />
 				</span>

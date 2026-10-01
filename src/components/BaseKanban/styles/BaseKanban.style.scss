@@ -328,6 +328,10 @@
 		min-height: sz(24px);
 	}
 
+	&__meta-info &__priority-tooltip {
+		display: inline-flex;
+	}
+
 	&__key {
 		font-family: var(--rise-font-mono);
 	}

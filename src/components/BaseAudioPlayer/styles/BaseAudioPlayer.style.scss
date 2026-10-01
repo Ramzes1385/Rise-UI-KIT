@@ -67,6 +67,10 @@
 		--btn-pad-bottom: 2px;
 		--btn-pad-left: 6px;
 
+		@include custom-bg-reset;
+		--custom-bg-hover: color-mix(in srgb, currentcolor 12%, transparent);
+		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
+
 		min-width: sz(40px);
 		border-color: currentcolor;
 		border-radius: var(--rise-radius-full);

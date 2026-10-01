@@ -71,6 +71,7 @@
 		--btn-pad-bottom: 0px;
 		--btn-pad-left: 0px;
 
+		@include reset-custom-color;
 		flex: none;
 		width: sz(32px);
 		height: sz(32px);
