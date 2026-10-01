@@ -20,3 +20,15 @@ export interface UseImageStateOptions {
 	onLoad?: () => void
 	onError?: () => void
 }
+
+/** Параметры таймаута загрузки изображения (useImageLoadingTimeout) */
+export interface UseImageLoadingTimeoutOptions {
+	/** Параметры useImageState: timeout, loading, imgRef */
+	options: UseImageStateOptions
+	/** Изображение загружено */
+	isLoaded: Readonly<Ref<boolean>>
+	/** Изображение не загрузилось */
+	hasError: Readonly<Ref<boolean>>
+	/** Вызывается, когда время загрузки истекло, а изображение не загрузилось и не упало */
+	onTimeout: () => void
+}
