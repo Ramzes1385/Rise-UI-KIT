@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../../build/tests/visual'
 
 const STORIES = ['default', 'variants', 'collapsed', 'loading', 'with-slots', 'long-content'] as const
 
