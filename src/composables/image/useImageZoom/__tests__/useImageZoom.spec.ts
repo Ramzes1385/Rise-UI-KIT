@@ -632,4 +632,58 @@ describe('useImageZoom', () => {
 		expect(zoom.scalePercent.value).toBe(prevScale)
 		expect(zoom.isZoomOpen.value).toBe(true)
 	})
+
+	describe('дополнительные сценарии', () => {
+		it('уменьшение при большом масштабе удерживает изображение в кадре', () => {
+			const zoom = createZoomWithMocks({ initialScale: () => 4 })
+			zoom.translateX.value = 100000
+			zoom.translateY.value = -100000
+
+			zoom.zoomOut()
+
+			expect(zoom.scalePercent.value).toBe(375)
+			expect(Math.abs(zoom.translateX.value)).toBeLessThan(100000)
+			expect(Math.abs(zoom.translateY.value)).toBeLessThan(100000)
+		})
+
+		it('стрелки в открытом зуме листают галерею', () => {
+			const onArrowLeft = vi.fn<() => void>()
+			const onArrowRight = vi.fn<() => void>()
+			const zoom = withSetup(() => useImageZoom(createOptions({ onArrowLeft, onArrowRight })))
+			zoom.openZoom()
+
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+
+			expect(onArrowLeft).toHaveBeenCalledOnce()
+			expect(onArrowRight).toHaveBeenCalledOnce()
+		})
+
+		it('стрелки без обработчиков галереи ничего не ломают', () => {
+			const zoom = withSetup(() => useImageZoom(createOptions()))
+			zoom.openZoom()
+
+			expect(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))).not.toThrow()
+			expect(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))).not.toThrow()
+		})
+
+		it('клик по миникарте без элемента-цели не двигает изображение', () => {
+			const zoom = createZoomWithMocks()
+			zoom.translateX.value = 10
+
+			zoom.handleMinimapClick({ currentTarget: null, clientX: 50, clientY: 50 } as unknown as MouseEvent)
+
+			expect(zoom.translateX.value).toBe(10)
+		})
+
+		it('без window (SSR) рамка миникарты считается от нулевого окна', () => {
+			const zoom = createZoomWithMocks()
+			vi.stubGlobal('window', undefined)
+			try {
+				expect(zoom.minimapViewportStyle.value).toMatchObject({ width: '10px', height: '10px' })
+			} finally {
+				vi.unstubAllGlobals()
+			}
+		})
+	})
 })
