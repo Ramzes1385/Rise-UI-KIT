@@ -41,8 +41,8 @@ export const Icons: StoryObj<typeof meta> = {
 			source: staticStorySource({
 				template,
 				imports: [],
-				importsFrom: { '@ramzes1385/rise-ui-kit/media': ['MediaIcon'] },
-				script: `const names = ${literal(names)}`,
+				importsFrom: { '@ramzes1385/rise-ui-kit/media': ['MediaIcon', 'type MediaIconName'] },
+				script: `const names: MediaIconName[] = ${literal(names)}`,
 			}),
 		},
 	},

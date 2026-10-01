@@ -917,5 +917,5 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 ## Задача media-icon-export: MediaIcon во входе `/media`, код витрин Blocks из модуля setup
 
 Превью и снимки не меняются. Меняется только текст «Show code» на вкладке Docs:
-- `media-basemediaplayer--icons` — `MediaIcon` в превью берётся из входа плеера, как в коде; код и раньше импортировал его из `@ramzes1385/rise-ui-kit/media`, теперь этот импорт рабочий;
+- `media-basemediaplayer--icons` — `MediaIcon` в превью берётся из входа плеера, как в коде; код и раньше импортировал его из `@ramzes1385/rise-ui-kit/media`, теперь этот импорт рабочий; список значков в коде объявлен как `const names: MediaIconName[]` (тип — из того же входа), чтобы скопированный код проходил vue-tsc;
 - `blocks-auth--sign-in`, `blocks-auth--sign-up`, `blocks-settings--profile`, `blocks-dashboard--overview` — строки `<script setup>` собираются из модуля `*.setup.ts`, который выполняет и превью: те же объявления, что раньше; в Settings и Dashboard данные написаны в модуле, а не выведены `literal()` (`initial`, `languages`, `themes`, `weeks`, `channels`, `events`…), поэтому в этих литералах могут поменяться переносы строк.
