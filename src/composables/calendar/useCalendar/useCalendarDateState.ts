@@ -1,25 +1,10 @@
 /** Composable: управление выбором дат календаря — диапазон, отключённые даты, подсветки */
-import { getWeekday, isSameDay, toDateOnly } from '@utils/data/dateUtils'
-import type { CalendarHighlight, CalendarWeekday } from './types/useCalendar.types'
+import { createDayMarkers } from './calendarUtils'
+import { isSameDay, toDateOnly } from '@utils/data/dateUtils'
 import type { UseCalendarDateStateOptions } from './types/useCalendarDateState.types'
 
 function useCalendarDateState(options: UseCalendarDateStateOptions) {
-	const {
-		internalValue,
-		internalValueEnd,
-		internalSelectedDates,
-		currentMonth,
-		currentYear,
-		selectionMode,
-		disabledDates,
-		disabledWeekdays,
-		minDate,
-		maxDate,
-		disableFrom,
-		disableTo,
-		highlights,
-		weekends,
-	} = options
+	const { internalValue, internalValueEnd, internalSelectedDates, currentMonth, currentYear, selectionMode } = options
 
 	function isToday(date: Date): boolean {
 		return isSameDay(date, new Date())
@@ -51,58 +36,11 @@ function useCalendarDateState(options: UseCalendarDateStateOptions) {
 		return !isSelected(date) && !isInRange(date) && isCurrentMonth(date)
 	}
 
-	function isDayDisabled(date: Date): boolean {
-		const dateOnly = toDateOnly(date)
-		const dateTs = dateOnly.getTime()
-
-		const disabled = disabledDates()
-		if (Array.isArray(disabled)) {
-			for (const dis of disabled) {
-				if (dis && isSameDay(dateOnly, new Date(dis))) return true
-			}
-		}
-
-		const weekdays = disabledWeekdays()
-		if (Array.isArray(weekdays) && weekdays.includes(getWeekday(dateOnly) as CalendarWeekday)) return true
-
-		const min = minDate()
-		if (min && dateTs < toDateOnly(new Date(min)).getTime()) return true
-
-		const max = maxDate()
-		if (max && dateTs > toDateOnly(new Date(max)).getTime()) return true
-
-		const from = disableFrom()
-		if (from && dateTs >= toDateOnly(new Date(from)).getTime()) return true
-
-		const to = disableTo()
-		if (to && dateTs <= toDateOnly(new Date(to)).getTime()) return true
-
-		return false
-	}
-
-	function isWeekend(date: Date): boolean {
-		const w = weekends()
-		if (!w) return false
-		const day = getWeekday(date)
-		if (w.days.includes(day as CalendarWeekday)) return true
-		return w.holidays.some(h => isSameDay(date, h))
-	}
-
-	function getHighlight(date: Date): CalendarHighlight | undefined {
-		const hls = highlights()
-		if (!Array.isArray(hls)) return undefined
-		return hls.find(h => isSameDay(date, new Date(h.date)))
-	}
-
-	function getEvents(date: Date): CalendarHighlight[] {
-		const hls = highlights()
-		if (!Array.isArray(hls)) return []
-		return hls.filter(h => isSameDay(date, new Date(h.date)))
-	}
-
 	function isCurrentMonth(date: Date): boolean {
 		return date.getMonth() === currentMonth.value && date.getFullYear() === currentYear.value
 	}
+
+	const { isDayDisabled, isWeekend, getHighlight, getEvents } = createDayMarkers(options)
 
 	return {
 		isToday,

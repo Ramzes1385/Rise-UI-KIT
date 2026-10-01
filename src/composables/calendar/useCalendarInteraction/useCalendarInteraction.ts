@@ -1,23 +1,13 @@
 /** Composable: обработка кликов по дням календаря, переключение AM/PM и кнопки «Сегодня» */
 import { computed, watch } from 'vue'
-import type { UseCalendarInteractionOptions } from './types/useCalendarInteraction.types'
+import { useCalendarSelectionClick } from './useCalendarSelectionClick'
+import type {
+	CalendarDatePopoverSources,
+	CalendarViewEventSources,
+	UseCalendarInteractionOptions,
+} from './types/useCalendarInteraction.types'
 
-function useCalendarInteraction(options: UseCalendarInteractionOptions) {
-	const { calendar, popover, getSelectionMode, getShowTime, getIsDisabled, getShowDatePopover, isAm, emit } = options
-
-	const {
-		hours,
-		isDayDisabled,
-		isSameDay,
-		getEvents,
-		setSingleValue,
-		setRangeStart,
-		setRangeEnd,
-		toggleMultipleDate,
-		buildDateWithTime,
-		goToToday,
-	} = calendar
-
+function watchViewChanges({ calendar, emit }: CalendarViewEventSources): void {
 	watch(calendar.currentMonth, newMonth => {
 		emit('month-change', newMonth)
 	})
@@ -29,6 +19,24 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 	watch(calendar.currentView, newView => {
 		emit('view-change', newView)
 	})
+}
+
+function toggleDatePopover(options: CalendarDatePopoverSources, date: Date): void {
+	const { popoverDate, popoverStyle } = options.popover
+	popoverDate.value = popoverDate.value && options.calendar.isSameDay(popoverDate.value, date) ? null : date
+	popoverStyle.value = {
+		top: '100%',
+		left: '50%',
+		transform: 'translateX(-50%)',
+	}
+}
+
+function useCalendarInteraction(options: UseCalendarInteractionOptions) {
+	const { calendar, getIsDisabled, getShowDatePopover, isAm, emit } = options
+	const { hours, isDayDisabled, getEvents, setSingleValue, buildDateWithTime, goToToday } = calendar
+	const { handleSelectionClick } = useCalendarSelectionClick(options)
+
+	watchViewChanges(options)
 
 	/** AM/PM выводится из часов — единственного источника истины о времени */
 	const isAmResolved = computed((): boolean => hours.value < 12)
@@ -53,63 +61,9 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 
 	function handleDayClick(date: Date): void {
 		if (isDayDisabled(date) || getIsDisabled()) return
-
 		emit('date-click', date)
-
-		if (getShowDatePopover() || getEvents(date).length > 0) {
-			popover.popoverDate.value = popover.popoverDate.value && isSameDay(popover.popoverDate.value, date) ? null : date
-			popover.popoverStyle.value = {
-				top: '100%',
-				left: '50%',
-				transform: 'translateX(-50%)',
-			}
-		}
-
-		if (getSelectionMode() === 'single') {
-			handleSingleClick(date)
-			return
-		}
-
-		if (getSelectionMode() === 'range') {
-			handleRangeClick(date)
-			return
-		}
-
-		handleMultipleClick(date)
-	}
-
-	function handleSingleClick(date: Date): void {
-		const result = getShowTime() ? buildDateWithTime(date) : date
-		setSingleValue(result)
-		emit('update:modelValue', result)
-	}
-
-	function handleRangeClick(date: Date): void {
-		const start = calendar.internalValue.value
-		const end = calendar.internalValueEnd.value
-
-		if (!start || (start && end)) {
-			setRangeStart(date)
-			setRangeEnd(null)
-			emit('update:modelValue', date)
-			emit('update:modelValueEnd', null)
-		} else {
-			if (date < start) {
-				setRangeStart(date)
-				setRangeEnd(start)
-				emit('update:modelValue', date)
-				emit('update:modelValueEnd', start)
-			} else {
-				setRangeEnd(date)
-				emit('update:modelValueEnd', date)
-			}
-			emit('range-select', calendar.internalValue.value!, calendar.internalValueEnd.value!)
-		}
-	}
-
-	function handleMultipleClick(date: Date): void {
-		toggleMultipleDate(date)
-		emit('update:selectedDates', [...calendar.internalSelectedDates.value])
+		if (getShowDatePopover() || getEvents(date).length > 0) toggleDatePopover(options, date)
+		handleSelectionClick(date)
 	}
 
 	function toggleAmPm(): void {

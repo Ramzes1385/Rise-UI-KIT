@@ -1,108 +1,14 @@
 /** Composable: управление состоянием календаря — навигация, переключение вида, выбор дат */
-import { ref, watch } from 'vue'
 import { useCalendarGrid } from './useCalendarGrid'
+import { useCalendarState } from './useCalendarState'
 import { useCalendarDateState } from './useCalendarDateState'
+import type { UseCalendarOptions } from './types/useCalendar.types'
+import type { CalendarState } from './types/useCalendarState.types'
 import { useCalendarViewNavigation } from './useCalendarViewNavigation'
-import type { CalendarView, UseCalendarOptions } from './types/useCalendar.types'
 import { buildDateWithTime as buildDateWithTimeUtil, getWeekNumber, isSameDay } from '@utils/data/dateUtils'
 
-function useCalendar(options: UseCalendarOptions) {
-	const currentMonth = ref(options.initialMonth?.() ?? new Date().getMonth())
-	const currentYear = ref(options.initialYear?.() ?? new Date().getFullYear())
-	const currentView = ref<CalendarView>('days')
-
-	const hours = ref(0)
-	const minutes = ref(0)
-	const seconds = ref(0)
-
-	const internalValue = ref<Date | null>(null)
-	const internalValueEnd = ref<Date | null>(null)
-	const internalSelectedDates = ref<Date[]>([])
-
-	watch(
-		() => options.initialMonth?.(),
-		month => {
-			if (month !== undefined) currentMonth.value = month
-		},
-	)
-
-	watch(
-		() => options.initialYear?.(),
-		year => {
-			if (year !== undefined) currentYear.value = year
-		},
-	)
-
-	watch(
-		() => options.modelValue(),
-		newValue => {
-			const date = newValue ? new Date(newValue) : null
-			internalValue.value = date
-			if (!date) return
-			// Время всегда берётся из значения: initialMonth управляет только отображаемым месяцем.
-			// Иначе при заданном initialMonth (панель date picker передаёт его всегда) поля времени
-			// оставались 00:00 и следующий клик по дню затирал время значения.
-			hours.value = date.getHours()
-			minutes.value = date.getMinutes()
-			seconds.value = date.getSeconds()
-			if (options.initialMonth?.() !== undefined) return
-			currentMonth.value = date.getMonth()
-			currentYear.value = date.getFullYear()
-		},
-		{ immediate: true },
-	)
-
-	watch(
-		() => options.modelValueEnd(),
-		endDate => {
-			internalValueEnd.value = endDate ? new Date(endDate) : null
-		},
-		{ immediate: true },
-	)
-
-	watch(
-		() => options.selectedDates(),
-		dates => {
-			internalSelectedDates.value = Array.isArray(dates) ? dates.map(item => new Date(item)) : []
-		},
-		{ immediate: true },
-	)
-
-	const grid = useCalendarGrid({
-		currentMonth,
-		currentYear,
-		currentView,
-		locale: options.locale,
-		firstDayOfWeek: options.firstDayOfWeek,
-		showYear: options.showYear,
-	})
-
-	const dateState = useCalendarDateState({
-		internalValue,
-		internalValueEnd,
-		internalSelectedDates,
-		currentMonth,
-		currentYear,
-		selectionMode: options.selectionMode,
-		disabledDates: options.disabledDates,
-		disabledWeekdays: options.disabledWeekdays,
-		minDate: options.minDate,
-		maxDate: options.maxDate,
-		disableFrom: options.disableFrom,
-		disableTo: options.disableTo,
-		highlights: options.highlights,
-		weekends: options.weekends,
-	})
-
-	const navigation = useCalendarViewNavigation({
-		currentMonth,
-		currentYear,
-		currentView,
-		minDate: options.minDate,
-		maxDate: options.maxDate,
-		disableFrom: options.disableFrom,
-		disableTo: options.disableTo,
-	})
+function createSelectionActions(state: CalendarState) {
+	const { hours, minutes, seconds, internalValue, internalValueEnd, internalSelectedDates } = state
 
 	function setSingleValue(date: Date | null): void {
 		internalValue.value = date
@@ -134,24 +40,21 @@ function useCalendar(options: UseCalendarOptions) {
 		})
 	}
 
+	return { setSingleValue, setRangeStart, setRangeEnd, toggleMultipleDate, buildDateWithTime }
+}
+
+function useCalendar(options: UseCalendarOptions) {
+	const state = useCalendarState(options)
+	const grid = useCalendarGrid({ ...options, ...state })
+	const dateState = useCalendarDateState({ ...options, ...state })
+	const navigation = useCalendarViewNavigation({ ...options, ...state })
+
 	return {
-		currentMonth,
-		currentYear,
-		currentView,
-		hours,
-		minutes,
-		seconds,
-		internalValue,
-		internalValueEnd,
-		internalSelectedDates,
+		...state,
 		...grid,
 		...dateState,
 		...navigation,
-		setSingleValue,
-		setRangeStart,
-		setRangeEnd,
-		toggleMultipleDate,
-		buildDateWithTime,
+		...createSelectionActions(state),
 		getWeekNumber,
 		isSameDay,
 	}

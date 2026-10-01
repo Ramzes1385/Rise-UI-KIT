@@ -1,35 +1,15 @@
 /** Composable: вычисление сетки дней календаря, названий месяцев, дней недели и диапазонов годов */
 import { computed } from 'vue'
+import { getWeekNumber } from '@utils/data/dateUtils'
 import type { UseCalendarGridOptions } from './types/useCalendarGrid.types'
-import { daysInMonth, getWeekNumber, getWeekday } from '@utils/data/dateUtils'
-
-/** Ячеек в сетке месяца: 6 недель по 7 дней — высота сетки не меняется от месяца к месяцу */
-const GRID_CELLS = 42
+import { buildMonthDays, buildYearRange, getMonthNames, getWeekdayNames, orderWeekdays } from './calendarUtils'
 
 function useCalendarGrid(options: UseCalendarGridOptions) {
 	const { currentMonth, currentYear, currentView, locale, firstDayOfWeek, showYear } = options
 
-	const monthNames = computed<string[]>(() => {
-		const formatter = new Intl.DateTimeFormat(locale(), { month: 'long' })
-		const names: string[] = []
-		for (let i = 0; i < 12; i++) {
-			const d = new Date(2000, i, 1)
-			names.push(formatter.format(d))
-		}
-		return names
-	})
+	const monthNames = computed<string[]>(() => getMonthNames(locale()))
 
-	const weekdayNames = computed<string[]>(() => {
-		const formatter = new Intl.DateTimeFormat(locale(), { weekday: 'short' })
-		const names: string[] = []
-		const base = new Date(2023, 0, 1)
-		for (let i = 0; i < 7; i++) {
-			const d = new Date(base)
-			d.setDate(d.getDate() + i)
-			names.push(formatter.format(d))
-		}
-		return names
-	})
+	const weekdayNames = computed<string[]>(() => getWeekdayNames(locale()))
 
 	const headerTitle = computed((): string => {
 		if (currentView.value === 'days') {
@@ -42,52 +22,11 @@ function useCalendarGrid(options: UseCalendarGridOptions) {
 		return `${currentYear.value - 5} – ${currentYear.value + 6}`
 	})
 
-	const orderedWeekdays = computed<string[]>(() => {
-		const names = weekdayNames.value
-		const offset = firstDayOfWeek()
-		const result: string[] = []
-		for (let i = 0; i < 7; i++) {
-			result.push(names[(i + offset) % 7])
-		}
-		return result
-	})
+	const orderedWeekdays = computed<string[]>(() => orderWeekdays(weekdayNames.value, firstDayOfWeek()))
 
-	const calendarDays = computed<Date[]>(() => {
-		const days: Date[] = []
-		const total = daysInMonth(currentYear.value, currentMonth.value)
-		const firstDay = new Date(currentYear.value, currentMonth.value, 1)
-		let startWeekday = getWeekday(firstDay) - firstDayOfWeek()
-		if (startWeekday < 0) startWeekday += 7
+	const calendarDays = computed<Date[]>(() => buildMonthDays({ year: currentYear.value, month: currentMonth.value }, firstDayOfWeek()))
 
-		const prevMonth = currentMonth.value === 0 ? 11 : currentMonth.value - 1
-		const prevYear = currentMonth.value === 0 ? currentYear.value - 1 : currentYear.value
-		const prevTotal = daysInMonth(prevYear, prevMonth)
-		for (let i = startWeekday - 1; i >= 0; i--) {
-			days.push(new Date(prevYear, prevMonth, prevTotal - i))
-		}
-
-		for (let d = 1; d <= total; d++) {
-			days.push(new Date(currentYear.value, currentMonth.value, d))
-		}
-
-		const remaining = GRID_CELLS - days.length
-		const nextMonth = currentMonth.value === 11 ? 0 : currentMonth.value + 1
-		const nextYear = currentMonth.value === 11 ? currentYear.value + 1 : currentYear.value
-		for (let d = 1; d <= remaining; d++) {
-			days.push(new Date(nextYear, nextMonth, d))
-		}
-
-		return days
-	})
-
-	const yearRange = computed<number[]>(() => {
-		const years: number[] = []
-		const start = currentYear.value - 5
-		for (let i = 0; i < 12; i++) {
-			years.push(start + i)
-		}
-		return years
-	})
+	const yearRange = computed<number[]>(() => buildYearRange(currentYear.value))
 
 	function getRowWeekNumber(rowStartIdx: number): number {
 		const days = calendarDays.value

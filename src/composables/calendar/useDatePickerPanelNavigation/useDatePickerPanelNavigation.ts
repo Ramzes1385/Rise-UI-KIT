@@ -1,26 +1,21 @@
 /** Composable: навигация по месяцам/годам панели дейтпикера, вычисление отображаемого года и списка месяцев */
 import { computed, ref, watch } from 'vue'
 import type { MonthItem, UseDatePickerPanelNavigationOptions } from './types/useDatePickerPanelNavigation.types'
-
-function resolveBaseDate(options: UseDatePickerPanelNavigationOptions): Date {
-	const firstSelectedDate = options.selectedDates()?.[0]
-	const sourceDate = options.modelValue() ?? options.modelValueEnd() ?? firstSelectedDate ?? new Date()
-
-	return new Date(sourceDate.getFullYear(), sourceDate.getMonth(), 1)
-}
+import {
+	baseForMonth,
+	baseForYear,
+	buildMonthItems,
+	formatDisplayYear,
+	monthStart,
+	normalizeMonthsCount,
+	resolveBaseDate,
+} from './datePickerPanelUtils'
 
 /** Описание: обеспечивает навигацию по месяцам/годам панели дейтпикера, вычисляет отображаемый год, список месяцев и обработчики переключения диапазона */
 function useDatePickerPanelNavigation(options: UseDatePickerPanelNavigationOptions) {
 	const currentBaseDate = ref<Date>(resolveBaseDate(options))
 
-	const safeMonthsCount = computed((): number => {
-		const rawCount = options.monthsCount()
-		const count = typeof rawCount === 'number' ? rawCount : Number.NaN
-
-		if (!Number.isFinite(count) || count < 1) return 1
-
-		return Math.floor(count)
-	})
+	const safeMonthsCount = computed((): number => normalizeMonthsCount(options.monthsCount()))
 
 	watch(
 		() => [
@@ -37,57 +32,32 @@ function useDatePickerPanelNavigation(options: UseDatePickerPanelNavigationOptio
 		{ immediate: true },
 	)
 
-	const displayYear = computed((): string => {
-		const startYear = currentBaseDate.value.getFullYear()
-		const lastMonthDate = new Date(startYear, currentBaseDate.value.getMonth() + safeMonthsCount.value - 1, 1)
-		const endYear = lastMonthDate.getFullYear()
+	const displayYear = computed((): string => formatDisplayYear(currentBaseDate.value, safeMonthsCount.value))
 
-		return startYear === endYear ? `${startYear}` : `${startYear} - ${endYear}`
-	})
-
-	const monthItems = computed((): MonthItem[] => {
-		const result: MonthItem[] = []
-
-		for (let index = 0; index < safeMonthsCount.value; index++) {
-			const monthDate = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + index, 1)
-			result.push({
-				key: `${monthDate.getFullYear()}-${monthDate.getMonth()}`,
-				month: monthDate.getMonth(),
-				year: monthDate.getFullYear(),
-			})
-		}
-
-		return result
-	})
+	const monthItems = computed((): MonthItem[] => buildMonthItems(currentBaseDate.value, safeMonthsCount.value))
 
 	function handleMonthChange(month: number, itemIndex: number): void {
-		const targetDate = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + itemIndex, 1)
-		const monthDiff = month - targetDate.getMonth()
-
-		currentBaseDate.value = new Date(targetDate.getFullYear(), targetDate.getMonth() + monthDiff - itemIndex, 1)
+		currentBaseDate.value = baseForMonth(currentBaseDate.value, month, itemIndex)
 	}
 
 	function handleYearChange(year: number, itemIndex: number): void {
-		const targetDate = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + itemIndex, 1)
-		const yearDiff = year - targetDate.getFullYear()
-
-		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear() + yearDiff, currentBaseDate.value.getMonth(), 1)
+		currentBaseDate.value = baseForYear(currentBaseDate.value, year, itemIndex)
 	}
 
 	function handlePrevRange(): void {
-		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() - safeMonthsCount.value, 1)
+		currentBaseDate.value = monthStart(currentBaseDate.value, -safeMonthsCount.value)
 	}
 
 	function handleNextRange(): void {
-		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear(), currentBaseDate.value.getMonth() + safeMonthsCount.value, 1)
+		currentBaseDate.value = monthStart(currentBaseDate.value, safeMonthsCount.value)
 	}
 
 	function handlePrevYear(): void {
-		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear() - 1, currentBaseDate.value.getMonth(), 1)
+		currentBaseDate.value = monthStart(currentBaseDate.value, 0, -1)
 	}
 
 	function handleNextYear(): void {
-		currentBaseDate.value = new Date(currentBaseDate.value.getFullYear() + 1, currentBaseDate.value.getMonth(), 1)
+		currentBaseDate.value = monthStart(currentBaseDate.value, 0, 1)
 	}
 
 	return {

@@ -1,69 +1,23 @@
 /** Composable: навигация по календарю — переключение месяцев, лет и видов отображения */
 import { computed } from 'vue'
-import { toDateOnly } from '@utils/data/dateUtils'
+import { hasNextMonth, hasPrevMonth, shiftCalendarView } from './calendarUtils'
 import type { UseCalendarViewNavigationOptions } from './types/useCalendarViewNavigation.types'
 
 function useCalendarViewNavigation(options: UseCalendarViewNavigationOptions) {
-	const { currentMonth, currentYear, currentView, minDate, maxDate, disableFrom, disableTo } = options
+	const { currentMonth, currentYear, currentView } = options
 
-	const canPrev = computed((): boolean => {
-		const prevM = currentMonth.value === 0 ? 11 : currentMonth.value - 1
-		const prevY = currentMonth.value === 0 ? currentYear.value - 1 : currentYear.value
-		const lastDayPrev = new Date(prevY, prevM + 1, 0).getTime()
+	const canPrev = computed((): boolean => hasPrevMonth({ year: currentYear.value, month: currentMonth.value }, options))
 
-		const min = minDate()
-		if (min && toDateOnly(new Date(min)).getTime() > lastDayPrev) return false
-
-		const to = disableTo()
-		if (to && toDateOnly(new Date(to)).getTime() > lastDayPrev) return false
-
-		return true
-	})
-
-	const canNext = computed((): boolean => {
-		const nextM = currentMonth.value === 11 ? 0 : currentMonth.value + 1
-		const nextY = currentMonth.value === 11 ? currentYear.value + 1 : currentYear.value
-		const firstDayNext = new Date(nextY, nextM, 1).getTime()
-
-		const max = maxDate()
-		if (max && toDateOnly(new Date(max)).getTime() < firstDayNext) return false
-
-		const from = disableFrom()
-		if (from && toDateOnly(new Date(from)).getTime() < firstDayNext) return false
-
-		return true
-	})
+	const canNext = computed((): boolean => hasNextMonth({ year: currentYear.value, month: currentMonth.value }, options))
 
 	function prevMonth(): void {
 		if (!canPrev.value) return
-		if (currentView.value === 'days') {
-			if (currentMonth.value === 0) {
-				currentMonth.value = 11
-				currentYear.value--
-			} else {
-				currentMonth.value--
-			}
-		} else if (currentView.value === 'months') {
-			currentYear.value--
-		} else {
-			currentYear.value -= 12
-		}
+		shiftCalendarView(options, -1)
 	}
 
 	function nextMonth(): void {
 		if (!canNext.value) return
-		if (currentView.value === 'days') {
-			if (currentMonth.value === 11) {
-				currentMonth.value = 0
-				currentYear.value++
-			} else {
-				currentMonth.value++
-			}
-		} else if (currentView.value === 'months') {
-			currentYear.value++
-		} else {
-			currentYear.value += 12
-		}
+		shiftCalendarView(options, 1)
 	}
 
 	function goToToday(): void {

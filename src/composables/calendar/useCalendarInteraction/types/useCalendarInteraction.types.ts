@@ -24,3 +24,12 @@ export interface UseCalendarInteractionOptions {
 		(event: 'range-select', start: Date, end: Date): void
 	}
 }
+
+/** Источники для обработки выбора даты кликом: календарь, режим выбора, время и события */
+export type UseCalendarSelectionClickOptions = Pick<UseCalendarInteractionOptions, 'calendar' | 'getSelectionMode' | 'getShowTime' | 'emit'>
+
+/** Источники событий смены вида: календарь и emit */
+export type CalendarViewEventSources = Pick<UseCalendarInteractionOptions, 'calendar' | 'emit'>
+
+/** Источники всплывающего окна даты: календарь и popover */
+export type CalendarDatePopoverSources = Pick<UseCalendarInteractionOptions, 'calendar' | 'popover'>
