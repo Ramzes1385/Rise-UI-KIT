@@ -5,7 +5,8 @@
 ## Работа с владельцем
 
 - Отчёты, документы, описания историй и тексты коммитов в теле — по-русски.
-- До начала работы — оценка времени; после каждого этапа — сколько сделано, осталось и когда будет готово. Работа идёт короткими порциями (45–90 мин), один коммит на порцию (docs/v2/PLAN.md, «Правила порции»).
+- Отчёт об итогах этапа или задачи начинается с того, что нужно от владельца (или «от тебя ничего»): это он читает первым. Дальше — сроки (оценка и факт), что сделано, коммит, проверки (команда — результат), визуальные изменения и снимки «было / стало», решения и почему. Не удалось подтвердить — так и пиши и называй, где смотрел.
+- Сроки — по часам владельца (UTC+3). Первое сообщение задачи — оценка каждого этапа и всей задачи; после каждого этапа — сколько сделано, потрачено, осталось и когда будет готово; оценка выросла больше чем на 15 минут — сразу и с причиной. Работа идёт короткими порциями (45–90 мин), один коммит на порцию (docs/v2/PLAN.md, «Правила порции»).
 - Решения принимай сам — лучшим вариантом для пользователей кита и приложений; трудный выбор — агенту `rise-researcher`. Каждое заметное решение (API, поведение, вид) — в отчёт с причиной.
 - Работай до конца задачи без остановок: после этапа — сразу следующий, не жди слова «продолжай». Служебные сообщения (сжатие контекста, хуки, напоминания) — не повод останавливаться; остановиться — когда задача сдана или владелец сам написал «стоп».
 - Не заявляй, что проверка прошла, если она не запускалась. Не называй аудит полным, если часть компонентов или направлений не проверена.
@@ -23,7 +24,7 @@ src/styles/      _tokens.scss, _mixins.scss, _functions.scss (sz())
 src/stories/     Introduction.mdx, foundations/, blocks/, helpers/ (storySource, useStorySetup, play)
 src/plugin/      createUiKitPlugin, registry/
 build/           commitlint/ config/ husky/ lib/ media-package/ plugins/ release/ storybook/ tests/ (vitest, playwright, visual.ts) utils/
-scripts/         проверки (check-*.mjs), create-component, lint-new-files, serve-storybook-static
+scripts/         проверки (check-*.mjs), create-component, lint-new-files, serve-storybook-static, portion-scope
 docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 ```
 
@@ -73,13 +74,16 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 
 | Что | Команда |
 |---|---|
+| Состав порции и команды по нему | `node scripts/portion-scope.mjs [--base=feat/rise-v2] [BaseX \| путь …]` — разделы, id историй, тесты с порогом покрытия |
 | Тесты (unit и integration, jsdom) | `npx vitest run --config build/tests/vitest.config.ts --project unit-integration <пути>`; всё — `npm run test:unit` |
 | Покрытие composables — 100% на файл | `npm run test:composables:coverage` (исключения — `--coverage.exclude` в самом скрипте) |
-| Покрытие компонентов — 100% строк/функций на файл | `npm run test:components:coverage` (тяжёлые компоненты исключены, для них `test:components-heavy:coverage` без порога) |
+| Покрытие компонентов — 100% строк, функций и операторов на файл | `npm run test:components:coverage` (тяжёлые компоненты исключены, для них `test:components-heavy:coverage` без порога) |
 | Покрытие утилит | `npm run test:utils:coverage` |
 | Типы | `npx vue-tsc -b` (`npm run typecheck`) |
+| Типы сборки пакета (~20 с, без записи в `dist/`) | `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit` — то же, что `build:lib:types` в `npm run build` |
 | Линтеры | `npm run lint`, `npm run -s lint:new`, `npm run lint:styles`, `npm run lint:unused`, `npx prettier --check .` |
-| Локали, истории, доступность | `npm run test:l10n`, `npm run test:stories-coverage`, `npm run test:a11y:coverage`, `npm run test:story-source` |
+| Локали, истории, доступность | `npm run test:l10n`, `npm run test:stories-coverage`, `npm run test:a11y:coverage`, `npm run test:story-source`, `npm run test:slot-docs` |
+| Контраст токенов (WCAG 2.2 AA) | `npm run test:contrast` — при правке токенов и цветов тем |
 | Сборка Storybook (3–4 мин) | `npx storybook build --config-dir build/storybook -o storybook-static --quiet` |
 | Прогон историй (play, axe, обе темы) | `node scripts/serve-storybook-static.mjs` (порт 6006), затем `node scripts/check-stories.mjs --url=http://localhost:6006 --filter='<regex id>' --concurrency=2` |
 | E2E | `npm run test:e2e` |
@@ -95,7 +99,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 
 - Conventional Commits, `build/commitlint/commitlint.config.cjs`: типы `feat fix docs style refactor perf test build ci chore revert deps`, заголовок до 100 символов, область в скобках (`feat(chat): …`). Тип определяет версию релиза (CONTRIBUTING, 3.3).
 - Хуки `build/husky/`: pre-commit — `lint`, `lint:new`, `lint:styles`, `lint:unused`, `format:check` (несколько минут; в агентной среде запускай коммит в фоне и жди); commit-msg — commitlint; pre-push — `test:unit`.
-- Один коммит на порцию. Переформатирование Prettier — отдельным коммитом с записью в `.git-blame-ignore-revs`.
+- Один коммит на порцию. Переформатирование Prettier — отдельным коммитом без других правок.
 
 ## Документы — что где и когда обновлять
 
@@ -114,9 +118,21 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 
 Дописывая MIGRATION и VISUAL_CHANGES в параллельной ветке, добавляй раздел в конец под своим заголовком — меньше конфликтов при слиянии.
 
+## Код: подводные камни
+
+Эти ошибки прошли линтеры и тесты, их чинили отдельными `fix`-коммитами. Разработчик проверяет их сам, ревьюер — по диффу. Новый такой случай — допиши сюда строкой.
+
+- `npx vue-tsc -b` не проверяет сборку типов пакета: у `build/lib/tsconfig.lib.json` свои `lib` и `types`, и `.at()` (нет в `lib`) и `process` (нет типов Node) дважды ломали `build:lib:types` — после того как `vue-tsc -b` прошёл. Проверка — `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit`.
+- Объект из пропсов, положенный в глубокий `ref`, становится proxy, и `===` с исходным элементом даёт `false` (BaseMegaMenu не раскрывал уровни при обычном массиве `items`). Ссылки на элементы — в `shallowRef`; в тестах — обычный массив и `markRaw`, не только `reactive`.
+- `aria-controls` и любая другая ссылка по id указывают только на элемент, который сейчас есть в DOM: у свёрнутого списка ссылки нет.
+- Live-регион (`aria-live`, `role="status"`) озвучивает изменение, а не начальный текст: текст ставится после монтирования.
+- Переход, который ждёт `transitionend`: при `prefers-reduced-motion` или нулевой длительности события не будет — сразу конечное состояние, без ожидания; при обычной анимации — страховочный таймер на случай, если событие не придёт. Всплывший `transitionend` потомка переход не завершает.
+- `withDefaults` без `kitDefaults` молча отключает `defaults` из плагина: нужен тест с `createUiKitPlugin({ defaults })`.
+
 ## Окружение: подводные камни
 
 - Установка зависимостей — `npm ci` (по `package-lock.json`, как в CI).
+- Концы строк — LF на любой машине (`.gitattributes`): с CRLF `format:check` и pre-commit падают на каждом файле. `format` и `format:check` учитывают ещё и `.git/info/exclude`, поэтому служебные папки машины в проверку не попадают.
 - `npm ci` и `npm install` запускают `prepare` → husky ставит хуки из `build/husky`.
 - Node `>=22.19.0` (`.nvmrc` — 22), npm `>=10.9.2`. Скрипты установки пакетов разрешаются в `package.json` → `allowScripts` (CONTRIBUTING, раздел 12).
 - E2E и скриншот-тесты сами поднимают dev-сервер Storybook (`npm run storybook -- --ci`); с `PLAYWRIGHT_REUSE_SERVER=true` используют уже запущенный (`build/tests/playwright.config.ts`).
@@ -124,7 +140,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 
 ## Агенты Claude Code
 
-Всё для Claude Code, запущенного в папке репозитория, — в `.claude/`: агенты — `agents/`, навыки (команды `/…`) — `skills/`, правила по путям — `rules/`, стиль отчётов — `output-styles/`, разрешения — `settings.json` (личные — `settings.local.json`, не в git). Поиск по коду — встроенный Explore.
+Всё для Claude Code, запущенного в папке репозитория, — в `.claude/`: агенты — `agents/`, навыки (команды `/…`) — `skills/`, правила по путям — `rules/`, стиль отчётов — `output-styles/`, разрешения — `settings.json`. `.claude/` и этот файл в git не входят (`.gitignore`): bundle их не несёт, облачной сессии их нужно передавать отдельно. Поиск по коду — встроенный Explore: его чтения не занимают контекст сессии.
 
 | Агент | Когда | Модель |
 |---|---|---|
@@ -133,7 +149,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 | `rise-storybook` | истории, «Show code», play, доступность в историях, визуальные изменения; код и unit-тесты не меняет | как у сессии |
 | `rise-checker` | конец порции и перед коммитом: проверки затронутого, отчёт без логов | sonnet |
 | `rise-reviewer` | после OK от `rise-checker`: независимое ревью диффа, ничего не правит | как у сессии, effort high |
-| `rise-docs` | документация, сверенная с кодом; код не меняет | как у сессии |
+| `rise-docs` | документация, сверенная с кодом; код не меняет | как у сессии, effort medium |
 | `rise-researcher` | трудный выбор: лучшее решение по стандартам и практикам других библиотек, с источниками и поручением; код не меняет | как у сессии, effort high |
 
 | Навык | Что делает |
@@ -145,6 +161,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 | `/orchestra` | сводка облачной оркестровки на компьютере владельца: сессии, сроки, вопросы |
 
 - Правила по путям: `rules/tests.md` — для тестов, `rules/orchestration.md` — служебные папки оркестровки. Стиль отчётов — `/output-style Rise`.
+- Модель и effort агента подбираются под цену ошибки. Прогон проверок и чтение логов — sonnet: ошибку там видно сразу. Ревью и исследование — модель сессии с effort high: там скрытые крайние случаи. Разработчик, тесты и истории — effort сессии, его владелец ставит `/effort` под сложность задачи.
 
 - Агент не видит историю чата: в задаче — ЦЕЛЬ, КОНТЕКСТ (порция плана), ФАЙЛЫ или компоненты, БАЗА (ветка), ГОТОВО КОГДА.
 - FAIL от `rise-checker` — исправить и запустить снова; после двух кругов — разобрать причину с `rise-researcher` и записать решение в отчёт.

@@ -76,6 +76,9 @@ npm run storybook
 | `npm run typecheck` | типы исходников, тестов, stories и конфигов сборки (`vue-tsc -b`) |
 | `npm run test:unit` | unit- и интеграционные тесты (Vitest, jsdom); один файл — `npm run test:unit -- src/components/BaseChat/__tests__/ChatInput.spec.ts` |
 | `npm run test:components:coverage`, `test:composables:coverage`, `test:utils:coverage` | те же тесты с порогом покрытия 100% на файл |
+| `node scripts/portion-scope.mjs [--base=feat/rise-v2] [--json] [BaseX \| путь …]` | состав порции — что изменилось относительно базы; разделы и id историй; команды тестов с порогом покрытия по путям (пороги и исключения — из `test:*:coverage`) |
+| `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit` | типы сборки пакета — то же, что `build:lib:types`, без записи в `dist/` |
+| `npm run test:slot-docs` | у каждого слота есть описание в JSDoc |
 | `npm run test:stories` | все истории в светлой и тёмной теме: рендер, play-проверки, ошибки консоли, axe. Нужен Storybook на порту 6006: `npm run storybook` или собранный — `npm run build-storybook` и `node scripts/serve-storybook-static.mjs` |
 | `npm run test:stories-coverage`, `test:a11y:coverage` | у каждого компонента есть обязательные истории и проверка клавиатуры |
 | `npm run test:contrast` | контраст пар токенов «текст/фон» в обеих темах |

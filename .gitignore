@@ -40,13 +40,12 @@ coverage-run.log
 .playwright-mcp/
 lighthouse-report.*
 lighthouse-report-mobile.*
-# tests/ — точечные исключения вместо broad 'tests/': broad не работает с '!' re-include
-# (Git запрещает re-include файла, если родительская директория исключена).
+
+# tests
 tests/**/__screenshots__/
 tests/**/*-diff.png
 tests/**/*-actual.png
 tests/**/*-expected.png
-# Visual baselines (Playwright snapshot) — коммитим, CI диффит против них
 !tests/visual-snapshots/
 !tests/visual-snapshots/**/*.png
 
@@ -81,9 +80,8 @@ stats.html
 .env
 .env.*
 !.env.example
-# Правила агентов для конкретной машины — не публикуются
 CLAUDE.local.md
 
-# Claude Code: личные настройки и временные копии
-.claude/settings.local.json
-.claude/worktrees/
+.claude/
+CLAUDE.md
+docs

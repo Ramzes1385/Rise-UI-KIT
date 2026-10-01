@@ -749,7 +749,7 @@ JSDoc в `types/*.types.ts`: описания props, событий, слото�
 -webkit-appearance: none;
 ```
 
-**git blame.** Переформатирование Prettier — отдельный коммит, он записан в `.git-blame-ignore-revs`. GitHub пропускает его в blame сам, локально — после `git config blame.ignoreRevsFile .git-blame-ignore-revs`.
+**git blame.** Переформатирование Prettier — отдельный коммит без других правок: в истории его легко отличить от изменений кода.
 
 ## 12. Зависимости
 

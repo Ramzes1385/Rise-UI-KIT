@@ -2,7 +2,7 @@
 
 import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import * as sass from 'sass'
+import * as sass from 'sass-embedded'
 
 const ROOT = resolve(process.cwd())
 const ROLES = ['primary', 'success', 'info', 'warning', 'error']

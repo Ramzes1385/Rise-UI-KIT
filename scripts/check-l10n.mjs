@@ -118,7 +118,7 @@ function problemsOf(item) {
 const problems = []
 for (const dir of SOURCES) {
 	for (const path of listFiles(join(ROOT, dir))) {
-		const file = relative(ROOT, path)
+		const file = relative(ROOT, path).replaceAll('\\', '/')
 		const code = readFileSync(path, 'utf-8')
 		const items = path.endsWith('.vue') ? vueStrings(code) : scriptStrings(code)
 		for (const item of items) {

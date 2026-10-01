@@ -29,19 +29,16 @@
       "Bash(npm run build-storybook *)",
       "Bash(node scripts/serve-storybook-static.mjs *)",
       "Bash(node scripts/check-stories.mjs *)",
+      "Bash(node scripts/portion-scope.mjs)",
+      "Bash(node scripts/portion-scope.mjs *)",
+      "Bash(npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit)",
+      "Bash(npm run test:slot-docs)",
       "Bash(npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots=none *)",
       "Bash(npm run test:e2e *)",
       "Bash(npm run build)",
       "Bash(npm run pack:dry)",
       "Bash(npm run ci:validate)",
-      "Bash(npm run create:component *)"
-    ],
-    "ask": [
-      "Bash(git push *)",
-      "Bash(npm publish *)",
-      "Bash(npm run release*)",
-      "Bash(npm run ci:release*)",
-      "Bash(npx semantic-release *)",
+      "Bash(npm run create:component *)",
       "Bash(npm install *)",
       "Bash(npm ci *)",
       "Bash(npm uninstall *)",
@@ -51,15 +48,25 @@
       "Edit(/package-lock.json)",
       "Edit(/docs/v2/PLAN.md)"
     ],
-    "deny": [
+    "deny": [],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(npm publish *)",
+      "Bash(npm run release*)",
+      "Bash(npm run ci:release*)",
+      "Bash(npx semantic-release *)",
       "Bash(npm run test:visual:update*)",
       "Bash(* --update-snapshots)",
       "Bash(* --update-snapshots *)",
       "Bash(* --update-snapshots=all*)",
       "Bash(* --update-snapshots=changed*)",
       "Bash(* --update-snapshots=missing*)",
-      "Read(/.kilo/**)",
-      "Read(/storybook-static/**)"
+      "Read(/.kilo/**)"
     ]
+  },
+  "enabledPlugins": {
+    "context7@context7-marketplace": true,
+    "frontend-design@anthropic-plugin-directory": true,
+    "superpowers@anthropic-plugin-directory": true
   }
 }

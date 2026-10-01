@@ -563,7 +563,6 @@
 - `BaseDropdownMenu`: `closeOnCheck` — флажок или переключатель закрывает меню и при выборе мышью (для меню выбора одного значения).
 - Утилиты: `mediaUtils` (`formatMediaTime`, `parseMediaTime`, `computeWaveformPeaks`, `resampleLevels`, `decodeWaveformPeaks`) и `subtitleUtils` (`parseSubtitles`, `decodeSubtitles`, `serializeSubtitles`).
 - Иконки спрайта: `cast`, `fullscreen`, `fullscreen-exit`, `settings`, `skip-next`, `skip-previous`, `stop`, `subtitles`, `theater`, `theater-exit`, `volume`, `volume-off`.
-- В пакете — `THIRD_PARTY_NOTICES.md`: лицензии значков плеера (Font Awesome Free) и данных эмодзи.
 - Строки словаря (ru, en): разделы `player`, `audio`, `subtitles`.
 
 **Что сделать.** Ничего. hls.js для потоков HLS подключает само приложение и передаёт в проп `hls`.

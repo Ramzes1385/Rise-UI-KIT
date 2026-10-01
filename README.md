@@ -365,4 +365,4 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## Лицензия
 
-MIT (поле `license` в `package.json`). Сторонние материалы в пакете — значки видеоплеера (Font Awesome Free) и данные эмодзи (emojibase-data, Unicode CLDR) — под своими лицензиями: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT (поле `license` в `package.json`). Сторонние материалы в пакете — значки видеоплеера (Font Awesome Free) и данные эмодзи (emojibase-data, Unicode CLDR) — под своими лицензиями.

@@ -21,8 +21,7 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "THIRD_PARTY_NOTICES.md"
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
@@ -75,8 +74,8 @@
     "lint:styles": "stylelint \"src/**/*.scss\"",
     "lint:unused": "knip --no-config-hints",
     "lint:new": "node scripts/lint-new-files.mjs",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",
+    "format:check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",
     "storybook": "node scripts/storybook-dev.mjs",
     "build-storybook": "storybook build --config-dir build/storybook",
     "typecheck": "vue-tsc -b",

@@ -21,6 +21,8 @@ function shouldReuse(): boolean {
 
 export default defineConfig({
 	testDir: '../..',
+	// Рабочие копии агентов (git worktree) лежат внутри репозитория: их src/ подходит под testMatch, но это не наши тесты
+	testIgnore: ['**/node_modules/**', '**/.kilo/**', '**/.claude/worktrees/**'],
 	snapshotPathTemplate: '{testDir}/tests/visual-snapshots/{testFilePath}-snapshots/{arg}-{projectName}{ext}',
 	timeout: 60_000,
 	workers: 2,

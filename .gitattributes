@@ -1,0 +1,5 @@
+# Концы строк — LF на любой машине: Prettier требует LF (package.json → prettier.endOfLine), а Windows с core.autocrlf=true выдавал CRLF
+* text=auto eol=lf
+
+# Субтитры для тестов разбора хранятся с CRLF как есть
+*.srt -text
