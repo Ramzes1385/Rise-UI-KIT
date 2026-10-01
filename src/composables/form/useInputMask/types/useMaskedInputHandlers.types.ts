@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { useInputMask } from '../useInputMask'
+import type { UseInputMaskReturn } from './useInputMask.types'
 
 /** Фильтр допустимых символов для поля без маски */
 export type AllowedCharsFilter = 'digits' | 'letters' | 'alphanumeric'
@@ -26,5 +26,5 @@ export type UseMaskedInputHandlersReturn = {
 /** Общие данные обработчиков маскированного поля: опции и маска */
 export type MaskedInputContext = {
 	options: UseMaskedInputHandlersOptions
-	mask: ReturnType<typeof useInputMask>
+	mask: UseInputMaskReturn
 }

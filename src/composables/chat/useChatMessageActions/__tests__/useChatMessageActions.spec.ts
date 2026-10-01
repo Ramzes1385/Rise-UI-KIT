@@ -306,6 +306,24 @@ describe('useChatMessageActions', () => {
 			expect(element).toHaveClass('base-chat-message-list__item--highlighted')
 		})
 
+		it('находит сообщение в ленте внутри iframe', () => {
+			const { actions, list } = setup()
+			const frame = document.createElement('iframe')
+			document.body.append(frame)
+			const frameDocument = frame.contentDocument as Document
+			frameDocument.body.append(list)
+			const scrollBy = vi.fn()
+			list.scrollBy = scrollBy
+			const element = addMessage(list, 'm1')
+
+			actions.scrollToMessage('m1')
+
+			expect(list.getRootNode()).toBe(frameDocument)
+			expect(list.getRootNode()).not.toBeInstanceOf(Document)
+			expect(scrollBy).toHaveBeenCalled()
+			expect(element.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
+		})
+
 		it('у ленты вне документа ничего не прокручивает', () => {
 			const { actions, list } = setup()
 			const scrollBy = vi.fn()

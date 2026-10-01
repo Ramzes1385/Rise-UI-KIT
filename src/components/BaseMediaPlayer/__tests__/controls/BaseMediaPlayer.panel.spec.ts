@@ -1,13 +1,15 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { FakeMediaValues } from '../utils/BaseMediaPlayer.test-utils'
 import { fakeMedia, playerMenu } from '../utils/BaseMediaPlayer.test-utils'
 import type { BaseMediaPlayerProps } from '../../types/BaseMediaPlayer.types'
 
 const SOURCE = '/media/demo.webm'
+
+enableAutoUnmount(afterEach)
 
 async function setup(props: Partial<BaseMediaPlayerProps> = {}, initial: Partial<FakeMediaValues> = {}) {
 	vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
@@ -192,7 +194,6 @@ describe('BaseMediaPlayer: панель', () => {
 		await nextTick()
 		expect(video.getAttribute('src')).toBe('/media/hd.webm')
 		expect(wrapper.get('button[aria-label="Качество"]').text()).toBe('720p')
-		wrapper.unmount()
 	})
 
 	it('меню качества без высоты кадра: подписи в порядке источников, без «Авто»', async () => {
@@ -207,7 +208,6 @@ describe('BaseMediaPlayer: панель', () => {
 
 		expect(quality.options()).toEqual(['Режиссёрская', 'Телеверсия'])
 		expect(quality.checked()).toBe('Режиссёрская')
-		wrapper.unmount()
 	})
 
 	it('высота кадра без подписи — «<height>p»; «Авто» по размеру плеера', async () => {
@@ -223,7 +223,6 @@ describe('BaseMediaPlayer: панель', () => {
 
 		expect(quality.options()).toEqual(['Авто (480p)', '1080p', '480p'])
 		expect(wrapper.get('video').attributes('src')).toBe('/media/b.webm')
-		wrapper.unmount()
 	})
 
 	it('без ResizeObserver «Авто» выбирает качество по высоте плеера при монтировании; devicePixelRatio 0 считается за 1', async () => {
@@ -241,7 +240,6 @@ describe('BaseMediaPlayer: панель', () => {
 
 		expect(playerMenu(wrapper, 'Качество').options()).toEqual(['Авто (720p)', '1080p', '720p', '480p'])
 		expect(wrapper.get('video').attributes('src')).toBe('/media/b.webm')
-		wrapper.unmount()
 	})
 
 	it('меню открываются кнопками и закрываются выбором: качество, субтитры, озвучка, главы; серии — в панели', async () => {
@@ -309,7 +307,6 @@ describe('BaseMediaPlayer: панель', () => {
 		await wrapper.get('.base-media-player__episode-card').trigger('click')
 		expect(wrapper.find('.base-media-player__episodes').exists()).toBe(false)
 		expect(wrapper.emitted('update:episode')).toEqual([['e3']])
-		wrapper.unmount()
 	})
 
 	it('кнопки перемотки: ±30, ±10 и ±5 с — во втором ряду, он раскрывается кнопкой «Точная перемотка»', async () => {

@@ -712,7 +712,7 @@
 
 **Что изменилось.**
 - Закреплённые сообщения: панель показывает последнее закреплённое, а не первое; новый закреп сразу становится показанным. Клик по панели прокручивает ленту к сообщению и переключает панель на предыдущее закреплённое, по кругу; стрелки листают вручную, тоже по кругу.
-- `scrollToMessage(id)` прокручивает только ленту сообщений (`scrollBy` контейнера, сообщение по центру), а не страницу (`scrollIntoView` больше не вызывается). При `prefers-reduced-motion: reduce` — без анимации. Подсветка снимается с предыдущего сообщения при переходе к следующему.
+- `scrollToMessage(id)` прокручивает только ленту сообщений (`scrollBy` контейнера, сообщение по центру), а не страницу (`scrollIntoView` больше не вызывается). При `prefers-reduced-motion: reduce` — без анимации. Подсветка снимается с предыдущего сообщения при переходе к следующему. Сообщение ищется по id в корне ленты, поэтому переход работает и в ленте внутри веб-компонента (shadow root), iframe, окна Document Picture-in-Picture или `window.open`.
 - Значки участников: `members[].badges` — массив `ChatBadge` (`id`, `label`, `icon?`, `emoji?`, `color?`). Значки выводятся рядом с именем отправителя в группе (по `senderId`), в списке участников и разделом «Значки» в профиле.
 - Новый проп `maxBadges` (по умолчанию 3): сколько значков видно рядом с именем, остальные — счётчиком «+N» с подсказкой.
 - Из `BaseChat` экспортируются типы `ChatBadge` и `ChatMember`.
@@ -1078,8 +1078,8 @@
 | `BaseRadio` | слот `default` | варианты — `options`, подпись — слот `option` |
 | `BaseRange` | слот `default` | ползунок — слот `thumb` |
 | `BaseRating` | слот `default` | иконки — props `icon` и `filledIcon` |
-| `BaseSkeleton` | слот `default` (только в типе `BaseSkeletonSlots`) | — |
 | `BaseSelect` | слот `default` | варианты — `options`, вид — слоты `option`, `selected`, `header`, `footer`, `empty` |
+| `BaseSkeleton` | слот `default` (только в типе `BaseSkeletonSlots`) | — |
 | `BaseStepper` | слот `default` | слоты `header`, `footer`, `item` |
 | `BaseTable` | слот `default` | колонки — `columns`, ячейки — `cell-<key>`, прочее — `header`, `footer`, `empty`, `toolbar-*` |
 | `BaseTextarea` | слот `default` | — |

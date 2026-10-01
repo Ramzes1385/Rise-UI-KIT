@@ -1448,7 +1448,6 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
 
 Клавиши работают, пока фокус внутри плеера: Space/K — пуск и пауза, ←/→ — 5 с (`seek-step`), J/L — 10 с (`seek-step-large`), 0–9 — переход к доле записи, ↑/↓ — громкость, M — звук, F — полный экран, T — широкий экран, C — субтитры, Shift+. и Shift+, — скорость, Shift+N и Shift+P — следующая и предыдущая серия. Отключаются `:has-keyboard-shortcuts="false"`.
 
-
 ### MediaIcon — значки плеера
 
 Значки панели управления плеера (контуры Font Awesome Free 7, лицензия CC BY 4.0) — для своих кнопок рядом с плеером: та же форма и толщина, что у его кнопок. Вход тот же — `@ramzes1385/rise-ui-kit/media`; список имён — история BaseMediaPlayer «Icons».
