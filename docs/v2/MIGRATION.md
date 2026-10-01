@@ -1096,3 +1096,9 @@
 **Что изменилось.** Ничего в коде: минимальные версии браузеров впервые записаны — README, раздел «Поддержка браузеров». Chrome и Edge 111, Firefox 113, Safari 16.2. Их задаёт `color-mix()` в токенах цветов; JS собран под ES2020 (`target: 'es2020'`), из более новых API — только `Array.prototype.at`. В Firefox до 121 нет `:has()`: часть подсветок выбора и колец фокуса (BaseRadio с рамкой, BaseSegmented, BaseCalendar, BaseEditor) не показывается.
 
 **Что сделать.** Сверьте список браузеров приложения (`browserslist`) с этим минимумом. Полифилов кит не добавляет: для браузеров старше нужен свой полифил `Array.prototype.at`, а `color-mix()` полифилом не заменить.
+
+## Задача media-icon-export: MediaIcon во входе `/media`
+
+**Что нового.** Вход `@ramzes1385/rise-ui-kit/media` экспортирует компонент `MediaIcon` — значки панели управления плеера — и его типы `MediaIconProps` и `MediaIconName`. Код истории BaseMediaPlayer «Icons» теперь можно скопировать в приложение. Справочник — docs/reference/COMPONENTS.md, раздел BaseMediaPlayer, «MediaIcon — значки плеера».
+
+**Что сделать.** Ничего: только добавление, прежние экспорты и поведение плеера не менялись.

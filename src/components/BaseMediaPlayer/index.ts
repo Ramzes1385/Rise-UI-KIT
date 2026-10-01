@@ -55,4 +55,6 @@ export type {
 } from './types/panels/MediaWatch.types'
 export { MEDIA_SHARE_NETWORKS } from './types/panels/MediaShare.types'
 export type { MediaShareEvent, MediaShareNetwork } from './types/panels/MediaShare.types'
+export type { MediaIconName, MediaIconProps } from './types/controls/MediaIcon.types'
+export { default as MediaIcon } from './ui/controls/MediaIcon.vue'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'
