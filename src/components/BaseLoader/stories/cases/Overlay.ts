@@ -1,6 +1,6 @@
-import { expect } from 'storybook/test'
 import type meta from '../BaseLoader.stories'
 import BaseLoader from '../../ui/BaseLoader.vue'
+import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
@@ -22,7 +22,8 @@ export const Overlay: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Оверлей: `isOverlay` накрывает родительский контейнер подложкой с индикатором по центру — например, пока',
-					'обновляется карточка или таблица. Родителю нужен `position: relative`.',
+					'обновляется карточка или таблица. Родителю нужен `position: relative`. Пока подложка показана, накрытое содержимое',
+					'получает `inert` и `aria-busy="true"`: фокус и скринридер в него не попадают, а появление статуса озвучивается.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseLoader'] }),
@@ -35,8 +36,13 @@ export const Overlay: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const container = canvas.getByTestId('container')
-		const overlay = canvas.getByRole('status', { name: 'Обновление' }).getBoundingClientRect()
+		const status = canvas.getByRole('status', { name: 'Обновление' })
+		const overlay = status.getBoundingClientRect()
 		await expect(overlay.width).toBeCloseTo(container.clientWidth, 0)
 		await expect(overlay.height).toBeCloseTo(container.clientHeight, 0)
+		const content = container.querySelector('.story-col')
+		await expect(content).toHaveAttribute('inert')
+		await expect(content).toHaveAttribute('aria-busy', 'true')
+		await waitFor(() => expect(status.querySelector('.base-loader__announce')).toHaveTextContent('Обновление'))
 	},
 }

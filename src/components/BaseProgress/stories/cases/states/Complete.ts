@@ -28,7 +28,12 @@ export const Complete: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['sizeScale', 'shape'] },
 		docs: {
-			description: { story: 'Событие `complete` приходит, когда прогресс доходит до 100%: например, чтобы показать «Готово».' },
+			description: {
+				story: [
+					'Событие `complete` приходит, когда значение доходит до `max` (не по округлению процента): например, чтобы показать',
+					'«Готово». Смонтированный сразу на максимуме прогресс присылает `complete` один раз.',
+				].join('\n'),
+			},
 			source: storySource({ template, imports: ['BaseProgress', 'BaseButton'], vue: ['ref'], script, omit: ['default', 'value'] }),
 		},
 	},
@@ -48,7 +53,9 @@ export const Complete: StoryObj<typeof meta> = {
 		await userEvent.click(button)
 		await expect(args.onComplete).not.toHaveBeenCalled()
 		await userEvent.click(button)
-		await expect(canvas.getByRole('progressbar', { name: 'Загрузка файла' })).toHaveAttribute('aria-valuenow', '100')
+		const progressbar = canvas.getByRole('progressbar', { name: 'Загрузка файла' })
+		await expect(progressbar).toHaveAttribute('aria-valuenow', '100')
+		await expect(progressbar).toHaveAttribute('aria-valuetext', 'Выполнено 100%')
 		await expect(args.onComplete).toHaveBeenCalledOnce()
 	},
 }
