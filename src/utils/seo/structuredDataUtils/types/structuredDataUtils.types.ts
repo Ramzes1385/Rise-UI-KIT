@@ -30,3 +30,8 @@ export const STRUCTURED_DATA_REQUIRED = {
 
 /** Тип schema.org, для которого кит знает обязательные поля */
 export type StructuredDataType = keyof typeof STRUCTURED_DATA_REQUIRED
+
+/** Окружение сборки в той части, которую читает кит: `process.env.NODE_ENV` подставляет сборщик приложения */
+export interface BuildProcess {
+	env: { NODE_ENV?: string }
+}

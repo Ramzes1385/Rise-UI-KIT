@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { createUiKitPlugin } from '@/plugin'
 import { render } from '@testing-library/vue'
 import BaseCommentThread from '../ui/BaseCommentThread.vue'
 import type { CommentItem } from '../types/BaseCommentThread.types'
@@ -77,6 +78,22 @@ describe('BaseCommentThread SEO', () => {
 
 	it('без комментариев разметки нет', () => {
 		const { container } = render(BaseCommentThread, { props: { comments: [], seo: true } })
+		expect(jsonLd(container)).toBeNull()
+	})
+
+	it('seo из createUiKitPlugin({ defaults }) включает разметку без пропа', () => {
+		const { container } = render(BaseCommentThread, {
+			props: { comments: COMMENTS },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseCommentThread: { seo: { data: { name: 'Обсуждение' } } } } })] },
+		})
+		expect(readJsonLd(container)).toMatchObject({ '@type': 'WebPage', name: 'Обсуждение', commentCount: 2 })
+	})
+
+	it('проп seo важнее настройки плагина', () => {
+		const { container } = render(BaseCommentThread, {
+			props: { comments: COMMENTS, seo: false },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseCommentThread: { seo: true } } })] },
+		})
 		expect(jsonLd(container)).toBeNull()
 	})
 })

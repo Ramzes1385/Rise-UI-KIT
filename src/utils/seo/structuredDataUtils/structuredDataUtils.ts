@@ -1,6 +1,8 @@
 /** Утилиты: разметка schema.org в JSON-LD — слияние своих полей, проверка обязательных, безопасный вывод в `<script>` */
 import { STRUCTURED_DATA_REQUIRED } from './types/structuredDataUtils.types'
-import type { StructuredData, StructuredDataObject, StructuredDataValue } from './types/structuredDataUtils.types'
+import type { BuildProcess, StructuredData, StructuredDataObject, StructuredDataValue } from './types/structuredDataUtils.types'
+
+declare const process: BuildProcess
 
 const SCHEMA_CONTEXT = 'https://schema.org'
 

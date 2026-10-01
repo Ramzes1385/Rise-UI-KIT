@@ -26,19 +26,23 @@ import '../styles/BaseCommentThread.style.scss'
 import CommentNode from './CommentNode.vue'
 import CommentComposer from './CommentComposer.vue'
 import { UI_COMMENT_THREAD } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseCommentThread } from '../model/useBaseCommentThread'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseCommentThreadEmits, BaseCommentThreadProps } from '../types/BaseCommentThread.types'
 
-const props = withDefaults(defineProps<BaseCommentThreadProps>(), {
-	variant: 'default',
-	currentUser: undefined,
-	label: undefined,
-	now: undefined,
-	maxDepth: 3,
-	seo: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseCommentThreadProps>(),
+	kitDefaults('BaseCommentThread', {
+		variant: 'default',
+		currentUser: undefined,
+		label: undefined,
+		now: undefined,
+		maxDepth: 3,
+		seo: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseCommentThreadEmits>()
 

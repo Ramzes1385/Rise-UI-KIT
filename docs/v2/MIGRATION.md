@@ -1018,7 +1018,7 @@
 
 **Что изменилось.**
 - Новый composable `useStructuredData` и типы `SeoProp`, `SeoOptions`, `SeoComponentProps`, `StructuredDataBuilder`, `StructuredDataContext` (docs/reference/COMPOSABLES.md). Компоненты с разметкой получают проп `seo` в порциях Р.35–Р.37.
-- Проп `seo`: нет пропа или `false` — разметки нет (по умолчанию); `true` — JSON-LD из пропсов компонента; `{ data, baseUrl }` — плюс свои поля schema.org поверх собранных (вложенные объекты сливаются, списки и значения заменяются, `null` убирает поле) и адрес сайта для относительных ссылок. Разметка — `<script type="application/ld+json">` внутри корня компонента; microdata кит не выводит (вопрос владельцу — `.orchestration/inbox`).
+- Проп `seo`: нет пропа или `false` — разметки нет (по умолчанию); `true` — JSON-LD из пропсов компонента; `{ data, baseUrl }` — плюс свои поля schema.org поверх собранных (вложенные объекты сливаются, списки и значения заменяются, `null` убирает поле) и адрес сайта для относительных ссылок. Разметка — `<script type="application/ld+json">` внутри корня компонента; microdata кит не выводит — решение «только JSON-LD» (`.orchestration/DECISIONS.md`, 01.10 02:05).
 - Новые утилиты `serializeJsonLd`, `mergeStructuredData`, `findMissingFields`, `resolveStructuredUrl`, `isDevelopmentBuild` и константа `STRUCTURED_DATA_REQUIRED`, типы `StructuredData`, `StructuredDataObject`, `StructuredDataType`, `StructuredDataValue` (docs/reference/UTILS.md, «structuredDataUtils»).
 - В разработке нехватка обязательных полей — предупреждение `[rise-ui-kit]` (строка словаря `warnings.SEO_MISSING_FIELDS`), в production (`process.env.NODE_ENV === 'production'`) — тишина.
 

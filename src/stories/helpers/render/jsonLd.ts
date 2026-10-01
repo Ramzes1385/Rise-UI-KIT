@@ -1,8 +1,9 @@
-import type { Decorator } from '@storybook/vue3-vite'
 /**
  * Витрина JSON-LD для историй с SEO: под превью — разметка компонента из `<script type="application/ld+json">`,
  * как её прочитает поисковик. Картинки data URI сокращены. Декоратор не попадает в «Show code»: код истории остаётся кодом компонента.
  */
+
+import type { Decorator } from '@storybook/vue3-vite'
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const EMPTY_TEXT = 'SEO выключено — разметки нет'

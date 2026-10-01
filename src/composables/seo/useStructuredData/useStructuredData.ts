@@ -1,5 +1,6 @@
-import { warn } from '@/locales/warn'
 /** Composable: SEO-разметка schema.org компонента — JSON-LD из пропсов и своих полей, проверка обязательных полей в разработке */
+
+import { warn } from '@/locales/warn'
 import { computed, watch } from 'vue'
 import { UI_WARNINGS } from '@/locales/messages'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
