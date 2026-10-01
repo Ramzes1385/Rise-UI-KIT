@@ -25,3 +25,10 @@ export interface UseRangeValuesReturn {
 	/** Эмитить change; values — значения точек после изменения (по умолчанию — текущие props) */
 	emitChange: (values?: number[]) => void
 }
+
+/** Что нужно для эмита значений range-слайдера: emit, режим и значения точек */
+export interface RangeEmitContext {
+	emit: BaseRangeEmits
+	mode: RangeMode
+	values: number[]
+}

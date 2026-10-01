@@ -22,3 +22,16 @@ export interface UseRangeDragReturn {
 	handleTrackDown: (e: MouseEvent) => void
 	handleThumbKeydown: (payload: { event: KeyboardEvent; index: number }) => void
 }
+
+/** Способ перетаскивания: мышь или касание — у каждого свои события документа */
+export type RangeDragKind = 'mouse' | 'touch'
+
+/** Подписки документа на время перетаскивания ползунка (useRangeDragListeners) */
+export interface UseRangeDragListenersOptions {
+	/** Индекс перетаскиваемого ползунка; null — перетаскивания нет */
+	activeIndex: { value: number | null }
+	/** Движение указателя при активном перетаскивании */
+	onMove: (index: number, event: MouseEvent | TouchEvent) => void
+	/** Конец перетаскивания (отпускание кнопки или пальца) */
+	onEnd: () => void
+}

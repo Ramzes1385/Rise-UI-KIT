@@ -83,4 +83,24 @@ interface UseSliderReturn {
 	onClickCapture: (event: MouseEvent) => void
 }
 
-export type { UseSliderOptions, UseSliderReturn }
+/** Обработчики перехода useSlider: вызываются при смене слайда */
+type SliderCallbacks = Pick<UseSliderOptions, 'onChange' | 'onNext' | 'onPrev'>
+
+/** Параметры useSlider со значениями по умолчанию */
+type ResolvedSliderOptions = Required<Omit<UseSliderOptions, keyof SliderCallbacks>> & SliderCallbacks
+
+/** Данные для стиля трека слайдера */
+interface SliderTrackStyleInput {
+	/** Параметры слайдера */
+	settings: ResolvedSliderOptions
+	/** Текущий индекс слайда */
+	currentIndex: number
+	/** Размер viewport по оси прокрутки, px */
+	viewportSize: number
+	/** Смещение при перетаскивании, px */
+	dragOffset: number
+	/** Идёт перетаскивание — без анимации перехода */
+	isDragging: boolean
+}
+
+export type { ResolvedSliderOptions, SliderTrackStyleInput, UseSliderOptions, UseSliderReturn }
