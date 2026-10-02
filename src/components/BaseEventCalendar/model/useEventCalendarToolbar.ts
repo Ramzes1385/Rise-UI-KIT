@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { daysInMonth } from '@utils/data/dateUtils'
 import { addDays } from '@utils/calendar/eventUtils'
@@ -19,9 +19,8 @@ export function shiftPeriod(view: EventCalendarView, date: Date, direction: numb
 }
 
 export function useEventCalendarToolbar(context: EventCalendarContext) {
-	const { props, view, date, period, setDate, setView } = context
+	const { props, view, date, period, status, setDate, setView } = context
 	const title = computed(() => periodTitle(period.value, date.value))
-	const status = ref('')
 	watch([title, view], () => {
 		status.value = formatMessage(UI_EVENT_CALENDAR.STATUS, { period: title.value, view: viewLabel(view.value) })
 	})

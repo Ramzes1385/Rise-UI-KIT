@@ -1,10 +1,11 @@
 import { getLocale } from '@/locales/state'
 import type { CalendarEventDate } from '@utils/calendar/eventUtils'
-import { computed, onMounted, onUnmounted, shallowRef, watch } from 'vue'
+import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
+import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { buildMonthDays } from '@composables/calendar/useCalendar/calendarUtils'
-import type { EventCalendarContext, EventCalendarProps } from '../types/BaseEventCalendarModel.types'
 import { addDays, getEventsInRange, parseEventDate, startOfDay, startOfWeek } from '@utils/calendar/eventUtils'
 import type { BaseEventCalendarEmits, EventCalendarPeriod, EventCalendarView } from '../types/BaseEventCalendar.types'
+import type { EventCalendarContext, EventCalendarDraft, EventCalendarProps } from '../types/BaseEventCalendarModel.types'
 
 const MINUTE = 60_000
 
@@ -38,6 +39,13 @@ function useNow() {
 	return now
 }
 
+function withDraft(items: NormalizedCalendarEvent[], draft: EventCalendarDraft | null): NormalizedCalendarEvent[] {
+	if (!draft) return items
+	return items
+		.map(item => (item.key === draft.key ? { ...item, start: draft.start, end: draft.end } : item))
+		.sort((first, second) => first.start.getTime() - second.start.getTime() || second.end.getTime() - first.end.getTime())
+}
+
 function propCopy<T>(source: () => T) {
 	const copy = shallowRef(source())
 	watch(source, value => {
@@ -53,7 +61,8 @@ export function useEventCalendarContext(props: EventCalendarProps, emit: BaseEve
 	const today = computed(() => startOfDay(toDate(props.today) ?? now.value))
 	const firstDay = computed(() => props.firstDayOfWeek ?? getLocale().firstDayOfWeek)
 	const period = computed(() => periodOf(view.value, date.value, firstDay.value))
-	const items = computed(() => getEventsInRange(props.events, period.value))
+	const draft = shallowRef<EventCalendarDraft | null>(null)
+	const items = computed(() => withDraft(getEventsInRange(props.events, period.value), draft.value))
 	watch(
 		[() => period.value.view, () => period.value.start.getTime(), () => period.value.end.getTime()],
 		() => emit('period-change', period.value),
@@ -69,6 +78,10 @@ export function useEventCalendarContext(props: EventCalendarProps, emit: BaseEve
 		firstDay,
 		period,
 		items,
+		step: computed(() => Math.min(60, Math.max(5, props.slotDuration))),
+		status: ref(''),
+		draft,
+		rootRef: ref<HTMLElement | null>(null),
 		setDate(value: Date): void {
 			date.value = startOfDay(value)
 			emit('update:date', date.value)

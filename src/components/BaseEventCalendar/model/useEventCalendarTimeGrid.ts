@@ -7,10 +7,10 @@ import { addDays, daysBetween, layoutDay, layoutWeek, toDayKey } from '@utils/ca
 import type { EventCalendarContext, EventCalendarTimeDay, EventCalendarTimeSlot } from '../types/BaseEventCalendarModel.types'
 
 const MINUTES_PER_DAY = 1440
-const DEFAULT_SCROLL_MINUTE = 8 * 60
+export const DEFAULT_SCROLL_MINUTE = 8 * 60
 const WORK_DAYS = [1, 2, 3, 4, 5]
 
-function parseMinutes(value: string): number | null {
+export function parseMinutes(value: string): number | null {
 	const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim())
 	return match ? Math.min(MINUTES_PER_DAY, Number(match[1]) * 60 + Number(match[2])) : null
 }
@@ -43,7 +43,7 @@ function useTimeScroll(context: EventCalendarContext) {
 
 function useTimeColumns(context: EventCalendarContext, dayCount: ComputedRef<number>) {
 	const { props, period, items, today } = context
-	const step = computed(() => Math.min(60, Math.max(5, props.slotDuration)))
+	const { step } = context
 	return {
 		timeDays: computed(() =>
 			Array.from({ length: dayCount.value }, (_, index): EventCalendarTimeDay => {
